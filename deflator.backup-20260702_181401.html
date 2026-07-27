@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plateau Strategy Deflator — Automated Trading Research</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9; color: #0f172a; line-height: 1.6;
+        }
+        header {
+            background: linear-gradient(135deg, #1e3a8a, #1e40af);
+            color: #fff; padding: 18px 24px;
+            display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+        }
+        header .brand { font-size: 1.25rem; font-weight: 800; }
+        header a.back {
+            color: #fff; text-decoration: none; background: rgba(255,255,255,.14);
+            padding: 8px 16px; border-radius: 8px; font-size: .9rem; font-weight: 600;
+        }
+        header a.back:hover { background: rgba(255,255,255,.24); }
+        .wrap { max-width: 880px; margin: 0 auto; padding: 40px 20px 60px; }
+        h1 { font-size: 2rem; font-weight: 800; margin-bottom: 6px; }
+        .sub { color: #475569; font-size: 1.05rem; margin-bottom: 26px; }
+        .status {
+            background: #fffbeb; border: 1px solid #f59e0b55; border-left: 5px solid #f59e0b;
+            border-radius: 10px; padding: 14px 18px; margin-bottom: 30px; font-size: .95rem;
+        }
+        .status b { color: #92400e; }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 36px; }
+        .card {
+            background: #fff; border-radius: 12px; padding: 22px;
+            box-shadow: 0 1px 3px rgba(15,23,42,.08); border-top: 4px solid #2563eb;
+        }
+        .card h3 { font-size: 1.02rem; margin-bottom: 8px; }
+        .card p { font-size: .9rem; color: #475569; }
+        .card:nth-child(2) { border-top-color: #16a34a; }
+        .card:nth-child(3) { border-top-color: #f59e0b; }
+        .wait {
+            background: #fff; border-radius: 12px; padding: 26px;
+            box-shadow: 0 1px 3px rgba(15,23,42,.08); margin-bottom: 30px;
+        }
+        .wait h2 { font-size: 1.2rem; margin-bottom: 6px; }
+        .wait p { color: #475569; font-size: .92rem; margin-bottom: 16px; }
+        .row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .row input {
+            flex: 1; min-width: 220px; padding: 12px 14px; border: 1px solid #cbd5e1;
+            border-radius: 8px; font-size: 1rem; font-family: inherit; background: #f8fafc;
+        }
+        .row button {
+            background: #2563eb; color: #fff; border: none; border-radius: 8px;
+            padding: 12px 22px; font-size: 1rem; font-weight: 700; cursor: pointer;
+        }
+        .row button:hover { background: #1d4ed8; }
+        #wlMsg { margin-top: 12px; font-size: .92rem; font-weight: 600; }
+        .fine {
+            font-size: .78rem; color: #64748b; background: #fff; border-radius: 10px;
+            padding: 16px 18px; box-shadow: 0 1px 3px rgba(15,23,42,.06);
+        }
+        .fine b { color: #334155; }
+    </style>
+</head>
+<body>
+<header>
+    <div class="brand">Plateau Strategy Solution Lab</div>
+    <a class="back" href="/">← Back to Lab</a>
+</header>
+
+<div class="wrap">
+    <h1>Plateau Strategy Deflator</h1>
+    <div class="sub">An automated crypto-trading <b>research project</b> — fighting inflation with disciplined, self-learning automation.</div>
+
+    <div class="status">
+        <b>Status: private verification phase.</b> The system is currently trading only its founder's own capital
+        while it builds an audited, honest track record. <b>Nothing is offered or sold today</b> — this page exists
+        so you can follow the research.
+    </div>
+
+    <div class="cards">
+        <div class="card">
+            <h3>🎯 Disciplined accumulation</h3>
+            <p>Buys Chainlink dips only inside a data-defined value zone (90-day market structure), with hard
+               rules a human can't hold at 2am: depth gates, cooldowns, position caps.</p>
+        </div>
+        <div class="card">
+            <h3>🧠 Self-learning execution</h3>
+            <p>The order engine calibrates itself from every single trade outcome — tightening or deepening its
+               bids automatically — and every layer of the system is audited against real exchange fees.</p>
+        </div>
+        <div class="card">
+            <h3>📊 One honest scoreboard</h3>
+            <p>Performance is measured as <b>True Net</b> — realized plus unrealized, fees included. No vanity
+               win-rates. When results are published, they will be the real number.</p>
+        </div>
+    </div>
+
+    <div class="wait">
+        <h2>Follow the research</h2>
+        <p>Leave your email and you'll be notified when the verified track record is published. No spam, no sales
+           pitch — one update when the numbers are real.</p>
+        <div class="row">
+            <input type="email" id="wlEmail" placeholder="you@email.com" autocomplete="email">
+            <button onclick="joinWaitlist()">Notify me</button>
+        </div>
+        <div id="wlMsg"></div>
+    </div>
+
+    <div class="fine">
+        <b>Important:</b> This page describes an internal research project of Plateau Strategy Solution Lab.
+        It is <b>not investment advice</b> and <b>not an offer to sell — or a solicitation to buy — any security,
+        investment product, or advisory service</b>. No customer funds are accepted or managed. Cryptocurrency is
+        highly volatile and you can lose the entire amount you put at risk. Past performance, once published,
+        will not guarantee future results.
+    </div>
+</div>
+
+<script>
+async function joinWaitlist() {
+    const email = document.getElementById('wlEmail').value.trim();
+    const msg   = document.getElementById('wlMsg');
+    if (!email || !email.includes('@') || !email.includes('.')) {
+        msg.style.color = '#dc2626'; msg.textContent = 'Please enter a valid email.'; return;
+    }
+    try {
+        const r = await fetch('/api/deflator/waitlist', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ email })
+        }).then(x => x.json());
+        if (r.success) {
+            msg.style.color = '#16a34a';
+            msg.textContent = r.already ? 'You are already on the list — we will be in touch.' :
+                                          '✓ You are on the list. We will email you when verified results are published.';
+            document.getElementById('wlEmail').value = '';
+        } else {
+            msg.style.color = '#dc2626'; msg.textContent = r.error || 'Something went wrong — try again.';
+        }
+    } catch (e) {
+        msg.style.color = '#dc2626'; msg.textContent = 'Network error — try again.';
+    }
+}
+document.getElementById('wlEmail').addEventListener('keydown', e => { if (e.key === 'Enter') joinWaitlist(); });
+</script>
+</body>
+</html>

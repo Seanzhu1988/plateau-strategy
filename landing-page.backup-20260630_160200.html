@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plateau Strategy Holding - Integrated Business Ecosystem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            background: #f9fafb;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: white;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            display: flex;
+            flex: 1;
+        }
+
+        .phase-tabs {
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, #ffffff 0%, #f3f4f6 100%);
+            padding: 1.5rem 0;
+            gap: 0.5rem;
+            width: 220px;
+            min-height: calc(100vh - 80px);
+            position: sticky;
+            top: 80px;
+            z-index: 99;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.08);
+        }
+
+        .phase-tab {
+            padding: 1rem 1.5rem;
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-left: 3px solid transparent;
+            border-bottom: none;
+            transition: all 0.25s ease;
+            white-space: normal;
+            cursor: pointer;
+            text-align: left;
+            margin: 0 0.8rem;
+            border-radius: 6px;
+            line-height: 1.4;
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        .phase-tab:hover {
+            color: #6b7280;
+            background: rgba(0, 0, 0, 0.05);
+            border-left-color: #d1d5db;
+        }
+
+        .phase-tab.active {
+            color: #1e3a8a;
+            border-left-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.12);
+            font-weight: 700;
+        }
+
+        .phase-tab.active:hover {
+            color: #1e3a8a;
+            background: rgba(59, 130, 246, 0.15);
+            border-left-color: #3b82f6;
+        }
+
+        .sub-tab-sidebar {
+            padding: 0.6rem 1rem;
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-left: 2px solid transparent;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+        }
+
+        .sub-tab-sidebar:hover {
+            color: #1e3a8a;
+            background: rgba(30, 58, 138, 0.08);
+            border-left-color: #3b82f6;
+        }
+
+        .sub-tab-sidebar.active {
+            color: #1e3a8a;
+            border-left-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+            font-weight: 600;
+        }
+
+        .sub-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        .sub-tab {
+            padding: 0.8rem 1.2rem;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            color: #374151;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            flex: 1;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .sub-tab:hover {
+            border-color: #bfdbfe;
+            background: #f0f9ff;
+            transform: translateY(-1px);
+        }
+
+        .sub-tab.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-color: #2563eb;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .sub-content {
+            display: none;
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .sub-content.active {
+            display: block;
+        }
+
+        .sub-content h3 {
+            color: #1e3a8a;
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .sub-content p {
+            color: #4b5563;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 0.5rem 0;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav a {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            margin: 0 1.2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0.85;
+            transition: opacity 0.3s, color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+
+        nav a:hover {
+            opacity: 1;
+            color: #93c5fd;
+            border-bottom-color: #93c5fd;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1e40af 100%);
+            color: white;
+            padding: 5rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            line-height: 1.7;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 0.9rem 2.2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .cta-button:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        section {
+            padding: 4rem 2rem;
+        }
+
+        section h2 {
+            font-size: 2.4rem;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            color: #0f172a;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .overview {
+            background: #f9fafb;
+        }
+
+        .overview-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .overview-text h3 {
+            font-size: 1.8rem;
+            color: #0f172a;
+            margin-bottom: 1.2rem;
+            font-weight: 800;
+        }
+
+        .overview-text p {
+            margin-bottom: 1.2rem;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #4b5563;
+        }
+
+        .value-props {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .value-prop {
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .value-prop:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .value-prop h4 {
+            color: #1e3a8a;
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        .value-prop p {
+            font-size: 0.95rem;
+            color: #4b5563;
+            line-height: 1.6;
+        }
+
+        .phases {
+            background: white;
+        }
+
+        .phases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .phase-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border-left: 5px solid #3b82f6;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .phase-card:nth-child(2) {
+            border-left-color: #06b6d4;
+        }
+
+        .phase-card:nth-child(3) {
+            border-left-color: #10b981;
+        }
+
+        .phase-card:nth-child(4) {
+            border-left-color: #f59e0b;
+        }
+
+        .phase-card:nth-child(5) {
+            border-left-color: #ec4899;
+        }
+
+        .phase-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+        }
+
+        .phase-card h3 {
+            color: #0f172a;
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        .phase-card .phase-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            line-height: 45px;
+            text-align: center;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .phase-card:nth-child(2) .phase-number {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        }
+
+        .phase-card:nth-child(3) .phase-number {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .phase-card:nth-child(4) .phase-number {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .phase-card:nth-child(5) .phase-number {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+        }
+
+        .phase-card p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #4b5563;
+        }
+
+        .phase-highlights {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .phase-highlights li {
+            list-style: none;
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .phase-highlights li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #ff6b35;
+            font-weight: bold;
+        }
+
+        .ecosystem {
+            background: #f8f9fa;
+        }
+
+        .ecosystem-text {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 2.5rem;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #4b5563;
+        }
+
+        .integration-diagram {
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .integration-diagram h3 {
+            color: #0f172a;
+            margin-bottom: 2.5rem;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .diagram-items {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .diagram-item {
+            padding: 1.8rem;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 10px;
+            color: #0f172a;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .diagram-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.15);
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1e40af 100%);
+            color: white;
+            text-align: center;
+            padding: 5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .cta-section h2 {
+            color: white;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-section p {
+            font-size: 1.05rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-group {
+            display: flex;
+            gap: 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-group input {
+            flex: 1;
+            padding: 0.9rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.95);
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .form-group button {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 0.9rem 2.2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .form-group button:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        footer {
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding: 2.5rem;
+            font-size: 0.9rem;
+            opacity: 0.85;
+            width: 100%;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        @media (max-width: 768px) {
+            main {
+                flex-direction: column;
+            }
+
+            .phase-tabs {
+                flex-direction: row;
+                width: 100%;
+                min-height: auto;
+                position: static;
+                overflow-x: auto;
+                padding: 0;
+            }
+
+            .phase-tab {
+                padding: 1rem 1.5rem;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+                white-space: nowrap;
+            }
+
+            .phase-tab:hover {
+                border-left-color: transparent;
+                border-bottom-color: #ff6b35;
+            }
+
+            .phase-tab.active {
+                border-left-color: transparent;
+                border-bottom-color: #ff6b35;
+            }
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .overview-content {
+                grid-template-columns: 1fr;
+            }
+
+            .value-props {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .diagram-items {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group {
+                flex-direction: column;
+            }
+
+            .phase-tab {
+                padding: 0.8rem 1rem;
+                font-size: 0.8rem;
+            }
+
+            .phase-tabs {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div class="logo">Plateau Strategy</div>
+            <nav>
+                <a href="#overview">Overview</a>
+                <a href="#ecosystem">Ecosystem</a>
+                <a href="#cta">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="phase-tabs">
+            <div style="display: flex; flex-direction: column; width: 100%;">
+                <a class="phase-tab active" href="#phase-1" onclick="setActivePhase(1, event)">Transportation</a>
+                <div id="transportation-subtabs-sidebar" style="display: none; flex-direction: column; gap: 0.3rem; padding-left: 1rem; margin-top: 0.3rem;">
+                    <a class="sub-tab-sidebar active" href="#" onclick="showSubContent('transportation', 'customer', event)">Customer</a>
+                    <a class="sub-tab-sidebar" href="#" onclick="showSubContent('transportation', 'renter', event)">Renter</a>
+                    <a class="sub-tab-sidebar" href="#" onclick="showSubContent('transportation', 'agent', event)">Agent</a>
+                </div>
+            </div>
+            <a class="phase-tab" href="#phase-2" onclick="setActivePhase(2, event)">Operations</a>
+            <a class="phase-tab" href="#phase-3" onclick="setActivePhase(3, event)">Real Estate</a>
+            <a class="phase-tab" href="#phase-4" onclick="setActivePhase(4, event)">Finance</a>
+            <a class="phase-tab" href="#phase-5" onclick="setActivePhase(5, event)">Reinvestment</a>
+        </div>
+
+        <div style="flex: 1;">
+            <section class="hero">
+        <h1>Integrated Business Ecosystem</h1>
+        <p>Building a vertically integrated platform connecting transportation, real estate, and financial services into a unified growth engine.</p>
+        <button class="cta-button">Get Early Access</button>
+    </section>
+
+    <section class="overview" id="overview">
+        <div class="container">
+            <div class="overview-content">
+                <div class="overview-text">
+                    <h3>Why Plateau Strategy</h3>
+                    <p>We're building an interconnected business ecosystem where each phase funds and strengthens the next. Our model unlocks capital efficiency by leveraging shared infrastructure, customer relationships, and operational synergies across five integrated phases.</p>
+                    <p>Unlike traditional startups that compete in siloed markets, we're creating a closed-loop system where transportation revenue generates real estate acquisition capital, which funds financial services development, creating sustainable, compounding growth.</p>
+                </div>
+                <div>
+                    <div class="value-props">
+                        <div class="value-prop">
+                            <h4>💰 Capital Efficient</h4>
+                            <p>Each phase funds the next through shared cash flow and operational leverage.</p>
+                        </div>
+                        <div class="value-prop">
+                            <h4>🔄 Vertically Integrated</h4>
+                            <p>Full control over supply chain, customer experience, and margin capture.</p>
+                        </div>
+                        <div class="value-prop">
+                            <h4>📈 Compounding Growth</h4>
+                            <p>Revenue synergies accelerate expansion across all business lines.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="phases" id="phases">
+        <div class="container">
+            <h2>Five Integrated Phases</h2>
+
+            <!-- Transportation Three-Way Connection -->
+            <div id="transportation-container" style="display: none;">
+                <div class="sub-tabs">
+                    <button class="sub-tab active" onclick="showSubContent('transportation', 'customer')">🚗 Customer</button>
+                    <button class="sub-tab" onclick="showSubContent('transportation', 'renter')">👤 Renter</button>
+                    <button class="sub-tab" onclick="showSubContent('transportation', 'agent')">🤝 Agent</button>
+                </div>
+
+                <!-- Customer Content -->
+                <div id="transportation-customer" class="sub-content active">
+                    <h3>🚗 Customer</h3>
+                    <p><strong>Need:</strong> Affordable Tesla rentals for rideshare/delivery</p>
+                    <p><strong>Get From:</strong> Renters provide vehicles | Agents manage platform</p>
+                    <p><strong>Provide:</strong> Revenue stream & platform demand</p>
+                </div>
+
+                <!-- Renter Content -->
+                <div id="transportation-renter" class="sub-content">
+                    <h3>👤 Renter</h3>
+                    <p><strong>Need:</strong> Income opportunity & path to ownership</p>
+                    <p><strong>Get From:</strong> Customers generate demand | Agents provide support</p>
+                    <p><strong>Provide:</strong> Available vehicles & service quality</p>
+                </div>
+
+                <!-- Agent Content -->
+                <div id="transportation-agent" class="sub-content">
+                    <h3>🤝 Agent</h3>
+                    <p><strong>Need:</strong> Connect supply & demand efficiently</p>
+                    <p><strong>Get From:</strong> Renters supply vehicles | Customers create demand</p>
+                    <p><strong>Provide:</strong> Platform, insurance, support & earnings</p>
+                </div>
+            </div>
+
+            <div class="phases-grid">
+                <div class="phase-card">
+                    <span class="phase-number">1</span>
+                    <h3>Rental Car & Transportation Network</h3>
+                    <p><strong>Platform Concept:</strong> Turn the Tesla rental website into a focused, self-service funnel for rideshare and delivery drivers — and make low-cost commercial insurance the hook that brings them in and keeps them. Design every element around driver intent: apply, rent, and insure directly online. No offline friction.</p>
+                    <p style="font-size: 0.9rem; margin-top: 1rem; color: #666;"><em>📋 See detailed concept brief: <a href="Phase_1_Rental_Insurance_Platform.md" style="color: #3b82f6; text-decoration: none; font-weight: 600;">Phase_1_Rental_Insurance_Platform.md</a></em></p>
+                    <div class="phase-highlights">
+                        <ul>
+                            <li><strong>Intent-Driven Design:</strong> Every page element earns its place—single purpose, clear conversion path</li>
+                            <li><strong>End-to-End Self-Service:</strong> Apply → Rent → Insure all online; minimize manual back-and-forth</li>
+                            <li><strong>Commercial Insurance Hook:</strong> Partner with insurers for low-cost coverage; earn margin per policy</li>
+                            <li><strong>Referral Engine:</strong> Drivers earn commissions for referrals; track and pay out automatically</li>
+                            <li><strong>Insurance Economics:</strong> Validate driver price vs. our margin per policy (pending validation)</li>
+                            <li><strong>Referral Mechanics:</strong> Commission structure, payout velocity, fraud prevention (pending validation)</li>
+                            <li><strong>Insurance Partners:</strong> Identify provider with platform integration capability (pending validation)</li>
+                            <li><strong>Tier 1:</strong> Rent-to-own (0-100k miles) with equity build</li>
+                            <li><strong>Tier 2:</strong> Turo public rentals (100k-130k miles) for secondary income</li>
+                            <li><strong>Tier 3:</strong> Hotel partnerships (Radisson, etc.) for daily rentals at $100+/day</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="phase-card">
+                    <span class="phase-number">2</span>
+                    <h3>Digital Operations Platform</h3>
+                    <p>Unified software infrastructure powering fleet management, customer interactions, and data analytics across all business phases. AI-driven optimization and decision support.</p>
+                    <div class="phase-highlights">
+                        <ul>
+                            <li>Fleet and asset tracking</li>
+                            <li>Customer relationship management</li>
+                            <li>Financial transaction processing</li>
+                            <li>Business intelligence & analytics</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="phase-card">
+                    <span class="phase-number">3</span>
+                    <h3>Real Estate Development</h3>
+                    <p>Acquire and develop properties supporting Phase 1 operations plus generate rental income. Transform land into mixed-use hubs with residential, commercial, and operational space.</p>
+                    <div class="phase-highlights">
+                        <ul>
+                            <li>Strategic property acquisition</li>
+                            <li>Mixed-use development (MU zoning)</li>
+                            <li>Rent-to-own property programs</li>
+                            <li>Airbnb & tenant revenue streams</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="phase-card">
+                    <span class="phase-number">4</span>
+                    <h3>Finance</h3>
+                    <p>AI-powered debt elimination platform. Users' paychecks run through proprietary trading bot generating 5–15% monthly returns. 100% of profits automatically route to debt payoff. Principal always protected.</p>
+                    <div class="phase-highlights">
+                        <ul>
+                            <li>Automated crypto trading engine</li>
+                            <li>Paycheck bridge (Plaid integration)</li>
+                            <li>Profit vault (no re-trading)</li>
+                            <li>$170/year per user model</li>
+                            <li>$1.14T addressable market (US credit card debt)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="phase-card">
+                    <span class="phase-number">5</span>
+                    <h3>Reinvestment USA</h3>
+                    <p>Deploy accumulated capital back into American infrastructure, communities, and businesses. Create a virtuous cycle of economic value creation and reinvestment.</p>
+                    <div class="phase-highlights">
+                        <ul>
+                            <li>Community development</li>
+                            <li>Strategic reinvestment</li>
+                            <li>Economic impact scaling</li>
+                            <li>Long-term wealth creation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ecosystem" id="ecosystem">
+        <div class="container">
+            <h2>Integrated Ecosystem</h2>
+            <div class="ecosystem-text">
+                <p>Each phase creates value that feeds the next. Transportation generates cash flow that funds real estate development. Real estate provides infrastructure for transportation and financial operations. Financial services optimize capital across all phases. This creates a self-reinforcing cycle that compounds growth and margin.</p>
+            </div>
+            <div class="integration-diagram">
+                <h3>How Phases Connect</h3>
+                <div class="diagram-items">
+                    <div class="diagram-item">
+                        <strong>Transportation</strong><br>
+                        Generates revenue & data
+                    </div>
+                    <div class="diagram-item">
+                        <strong>Real Estate</strong><br>
+                        Provides infrastructure
+                    </div>
+                    <div class="diagram-item">
+                        <strong>Finance</strong><br>
+                        Optimizes capital
+                    </div>
+                </div>
+                <p style="margin-top: 2rem; color: #666; font-size: 0.95rem;">Revenue flows through all phases. Operational synergies reduce costs. Customer relationships deepen across platforms. Capital efficiency improves with scale.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section" id="cta">
+        <div class="container">
+            <h2>Join Us in Building the Future</h2>
+            <p>We're currently validating the market and preparing for Phase 1 launch. Early partners, investors, and team members are critical to our success.</p>
+            <form class="form-group" onsubmit="handleSubmit(event)">
+                <input type="email" placeholder="your@email.com" required>
+                <button type="submit">Get Early Access</button>
+            </form>
+            <p style="margin-top: 1.5rem; font-size: 0.9rem; opacity: 0.8;">We're building something ambitious. Join our community of early believers.</p>
+        </div>
+    </section>
+
+            <footer>
+                <p>&copy; 2026 Plateau Strategy Holding. Building integrated wealth through connected ecosystems.</p>
+            </footer>
+        </div>
+    </main>
+
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault();
+            const email = event.target.querySelector('input[type="email"]').value;
+            alert(`Thanks for your interest! We'll be in touch at ${email}`);
+            event.target.reset();
+        }
+
+        function setActivePhase(phaseNum, evt) {
+            evt.preventDefault();
+
+            // Update main tab styling
+            document.querySelectorAll('.phase-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            evt.target.classList.add('active');
+
+            // Hide all sub-tabs
+            document.getElementById('transportation-subtabs-sidebar').style.display = 'none';
+            document.getElementById('transportation-container').style.display = 'none';
+
+            // Show sub-tabs and container for Transportation (Phase 1)
+            if (phaseNum === 1) {
+                document.getElementById('transportation-subtabs-sidebar').style.display = 'flex';
+                document.getElementById('transportation-container').style.display = 'block';
+
+                // Auto-select first sub-tab
+                const firstSubTab = document.querySelectorAll('.sub-tab-sidebar')[0];
+                showSubContent('transportation', 'customer', {target: firstSubTab});
+            }
+        }
+
+        function showSubContent(phase, subtype, evt) {
+            evt.preventDefault();
+
+            // Update active sub-tab in sidebar
+            document.querySelectorAll('.sub-tab-sidebar').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            evt.target.classList.add('active');
+
+            // Update active sub-content in main area
+            document.querySelectorAll('.sub-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            const activeContent = document.getElementById(`${phase}-${subtype}`);
+            if (activeContent) {
+                activeContent.classList.add('active');
+            }
+        }
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

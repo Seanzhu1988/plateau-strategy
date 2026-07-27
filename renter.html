@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Portal — Plateau Strategy Solution Lab</title>
+    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0f172a; --panel: #1e293b; --line: #334155;
+            --text: #e2e8f0; --head: #f8fafc; --muted: #94a3b8; --muted2: #64748b;
+            --accent: #3b82f6; --accent2: #2563eb;
+            --serif: Georgia, 'Times New Roman', serif;
+            --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        }
+        body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #fff; padding: 1rem 2rem;
+            display: flex; align-items: center; gap: 0.85rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); position: sticky; top: 0; z-index: 10; }
+        header img { height: 38px; width: 38px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.18); }
+        header .brand { font-family: var(--serif); font-weight: 700; font-size: 1.25rem; letter-spacing: 0.3px; }
+        header .right { margin-left: auto; display: flex; align-items: center; gap: 1.3rem; font-size: 0.9rem; }
+        header a { color: #cbd5e1; text-decoration: none; font-weight: 600; }
+        header a:hover { color: #fff; }
+        .who { color: #93c5fd; font-weight: 600; }
+        .linkbtn { background: none; border: none; color: #f87171; cursor: pointer; font: inherit; font-weight: 600; }
+        .linkbtn:hover { color: #fca5a5; }
+
+        .wrap { max-width: 1040px; margin: 2rem auto; padding: 0 1.3rem; }
+        h2 { font-family: var(--serif); font-size: 1.18rem; color: var(--head); font-weight: 700; margin: 2rem 0 0.6rem; }
+        h2:first-of-type { margin-top: 0.4rem; }
+        .section-note { color: var(--muted); font-size: 0.85rem; margin: 0 0 1rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.1rem; }
+
+        .car, .res, .contract-card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+
+        /* Vehicle card */
+        .car { padding: 1.4rem 1.6rem; background: linear-gradient(135deg, #1e293b 0%, #243049 100%); }
+        .car .title { font-family: var(--serif); font-size: 1.2rem; font-weight: 700; color: #fff; }
+        .car .specs { color: var(--muted); font-size: 0.88rem; margin-top: 0.35rem; }
+        .car .plate { display: inline-block; margin-top: 0.7rem; background: #0f172a; border: 1px solid #475569;
+            color: #fcd34d; font-weight: 700; letter-spacing: 2px; padding: 0.3rem 0.8rem; border-radius: 4px; font-size: 0.9rem; }
+
+        /* Reservation card */
+        .res { padding: 1.3rem 1.4rem; border-left: 3px solid #f59e0b; }
+        .res.ASSIGNED { border-left-color: var(--accent); }
+        .res.COMPLETED { border-left-color: #22c55e; opacity: 0.85; }
+        .res.CANCELED { border-left-color: #ef4444; opacity: 0.6; }
+        .res .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; }
+        .res .id { font-size: 0.72rem; letter-spacing: 0.5px; color: var(--muted2); font-weight: 700; }
+        .badge { font-size: 0.65rem; font-weight: 700; padding: 0.24rem 0.7rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.8px; }
+        .badge.NEW { background: #78350f; color: #fcd34d; }
+        .badge.ASSIGNED { background: #1e3a8a; color: #93c5fd; }
+        .badge.COMPLETED { background: #14532d; color: #86efac; }
+        .badge.CANCELED { background: #7f1d1d; color: #fecaca; }
+        .route { font-size: 1.02rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.55rem; }
+        .route .arrow { color: #60a5fa; margin: 0 0.4rem; }
+        .meta { font-size: 0.85rem; color: var(--muted); margin: 0.22rem 0; }
+        .meta b { color: #cbd5e1; font-weight: 600; }
+        .agent-tag { display: inline-block; font-size: 0.7rem; background: #312e81; color: #c7d2fe;
+            padding: 0.18rem 0.55rem; border-radius: 4px; margin-top: 0.35rem; }
+        .fare { font-family: var(--serif); font-size: 1.25rem; font-weight: 700; color: #4ade80; margin: 0.6rem 0; }
+        .res button { width: 100%; margin-top: 0.6rem; padding: 0.7rem; border: none; border-radius: 6px;
+            font-weight: 700; font-size: 0.86rem; cursor: pointer; font-family: var(--sans); }
+        .pick { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
+        .pick:hover { filter: brightness(1.08); }
+        .done { background: #334155; color: #cbd5e1; }
+        .done:hover { background: #475569; }
+        .giveup { background: transparent; color: #f87171; border: 1px solid #7f1d1d !important; }
+        .giveup:hover { background: rgba(127,29,29,0.25); }
+        .giveup:disabled { opacity: 0.55; cursor: not-allowed; }
+
+        .deadline { font-size: 0.78rem; font-weight: 600; padding: 0.5rem 0.75rem; border-radius: 6px; margin-top: 0.7rem; line-height: 1.45; }
+        .deadline.ok { background: rgba(34,197,94,0.10); color: #86efac; border: 1px solid #14532d; }
+        .deadline.late { background: rgba(239,68,68,0.12); color: #fca5a5; border: 1px solid #7f1d1d; }
+        .empty { color: var(--muted2); padding: 1.5rem; text-align: center; border: 1px dashed var(--line); border-radius: 8px; }
+
+        /* Auth screen */
+        .auth { max-width: 560px; margin: 2.5rem auto; background: var(--panel); border: 1px solid var(--line);
+            border-radius: 10px; padding: 2.2rem; }
+        .auth h1 { font-family: var(--serif); color: #fff; font-size: 1.6rem; margin-bottom: 0.35rem; }
+        .auth p.sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+        label { display: block; font-weight: 600; font-size: 0.72rem; letter-spacing: 0.6px; color: #cbd5e1;
+            margin: 0.9rem 0 0.35rem; text-transform: uppercase; }
+        input, select { width: 100%; padding: 0.72rem 0.9rem; border: 1px solid #334155; border-radius: 6px;
+            font-size: 0.95rem; font-family: var(--sans); background: #0f172a; color: var(--text); }
+        input:focus, select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+        .row { display: flex; gap: 0.8rem; } .row > div { flex: 1; }
+        .primary { width: 100%; margin-top: 1.4rem; padding: 0.9rem; background: linear-gradient(135deg,#3b82f6,#2563eb);
+            color: #fff; border: none; border-radius: 6px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: var(--sans); }
+        .primary:hover { filter: brightness(1.08); }
+        .divider { text-align: center; color: var(--muted2); margin: 1.5rem 0 0.6rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+        .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #1e293b;
+            border: 1px solid #475569; color: #e2e8f0; padding: 0.8rem 1.4rem; border-radius: 6px; display: none; z-index: 50; font-size: 0.9rem; }
+
+        /* Modals */
+        .taken-overlay, .sig-overlay { display: none; position: fixed; inset: 0; background: rgba(2,6,23,0.75);
+            z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
+        .taken-overlay.open, .sig-overlay.open { display: flex; }
+        .taken-box { background: #1e293b; border: 1px solid #475569; border-top: 3px solid #3b82f6; border-radius: 10px;
+            padding: 2rem; max-width: 410px; width: 100%; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.6); }
+        .taken-box .big { font-family: var(--serif); font-size: 2.3rem; line-height: 1; margin-bottom: 0.6rem; color: #93c5fd; }
+        .taken-box h3 { font-family: var(--serif); color: #fff; font-size: 1.25rem; margin-bottom: 0.5rem; }
+        .taken-box p { color: var(--muted); font-size: 0.92rem; line-height: 1.55; margin-bottom: 1.4rem; }
+        .taken-box button { width: 100%; padding: 0.85rem; border: none; border-radius: 6px;
+            background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; font-size: 1rem; font-weight: 700; cursor: pointer; }
+        .taken-box button:hover { filter: brightness(1.08); }
+
+        /* Contract reminder banner */
+        .banner { display: none; align-items: center; gap: 1rem; flex-wrap: wrap; background: rgba(245,158,11,0.12);
+            border: 1px solid #b45309; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 1.1rem 1.3rem; margin-bottom: 1.4rem; }
+        .banner.show { display: flex; }
+        .banner .b-text { flex: 1; min-width: 220px; }
+        .banner .b-text b { color: #fcd34d; display: block; font-size: 0.98rem; font-family: var(--serif); }
+        .banner .b-text span { color: #fde68a; font-size: 0.85rem; }
+        .banner button { background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; border: none;
+            border-radius: 6px; padding: 0.7rem 1.4rem; font-weight: 700; font-size: 0.88rem; cursor: pointer; }
+        .banner button:hover { filter: brightness(1.08); }
+
+        /* Contract status card */
+        .contract-card { padding: 1.2rem 1.4rem; display: flex; align-items: center; gap: 1.1rem; flex-wrap: wrap; }
+        .contract-card .c-body { flex: 1; min-width: 220px; }
+        .contract-card .c-title { font-family: var(--serif); font-weight: 700; color: #f1f5f9; font-size: 1.02rem; }
+        .contract-card .c-sub { color: var(--muted); font-size: 0.85rem; margin-top: 0.25rem; }
+        .cstat { font-size: 0.66rem; font-weight: 700; padding: 0.28rem 0.75rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.8px; }
+        .cstat.signed { background: #14532d; color: #86efac; }
+        .cstat.unsigned, .cstat.outdated { background: #78350f; color: #fcd34d; }
+        .contract-card .c-btn { background: #334155; color: #e2e8f0; border: 1px solid #475569; border-radius: 6px;
+            padding: 0.6rem 1.15rem; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+        .contract-card .c-btn:hover { background: #475569; }
+        .contract-card .c-btn.primary-btn { background: linear-gradient(135deg,#3b82f6,#2563eb); border: none; color: #fff; }
+        .contract-card .c-btn.primary-btn:hover { filter: brightness(1.08); }
+
+        /* Sign modal */
+        .sig-box { background: #1e293b; border: 1px solid #475569; border-top: 3px solid #3b82f6; border-radius: 10px;
+            max-width: 620px; width: 100%; max-height: 92vh; overflow-y: auto; padding: 1.8rem; box-shadow: 0 24px 60px rgba(0,0,0,0.6); }
+        .sig-box h3 { font-family: var(--serif); color: #fff; font-size: 1.3rem; margin-bottom: 0.2rem; }
+        .sig-box .ver { color: var(--muted2); font-size: 0.75rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.6px; }
+        .contract-text { background: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 1.1rem 1.2rem;
+            max-height: 240px; overflow-y: auto; white-space: pre-wrap; color: #cbd5e1; font-family: var(--serif);
+            font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.2rem; }
+        .contract-text .fill { color: #93c5fd; font-weight: 600; padding: 0 3px;
+            border-bottom: 1px solid rgba(147,197,253,.55); border-radius: 2px; background: rgba(59,130,246,.08); }
+        .sig-pad-wrap { position: relative; }
+        .sig-pad { width: 100%; height: 160px; background: #fff; border: 1px solid #475569; border-radius: 6px;
+            touch-action: none; cursor: crosshair; display: block; }
+        .sig-hint { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%);
+            text-align: center; color: #94a3b8; font-size: 0.85rem; pointer-events: none; }
+        .sig-row { display: flex; justify-content: space-between; align-items: center; margin: 0.4rem 0 1rem; }
+        .sig-row .clear { background: none; border: none; color: #f87171; cursor: pointer; font-weight: 600; font-size: 0.82rem; }
+        .chk { display: flex; align-items: flex-start; gap: 0.6rem; margin: 0.6rem 0 1.2rem; color: #cbd5e1; font-size: 0.9rem; }
+        .chk input { width: auto; margin-top: 0.2rem; }
+        .sig-actions { display: flex; gap: 0.8rem; }
+        .sig-actions button { flex: 1; padding: 0.85rem; border-radius: 6px; border: none; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
+        .sig-actions .cancel { background: #334155; color: #cbd5e1; }
+        .sig-actions .submit { background: linear-gradient(135deg,#22c55e,#16a34a); color: #fff; }
+        .sig-actions .submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Dashboard shell: left sidebar nav + content */
+        .shell { display: flex; gap: 1.6rem; max-width: 1200px; margin: 1.8rem auto; padding: 0 1.3rem; align-items: flex-start; }
+        .sidebar { flex: 0 0 224px; position: sticky; top: 90px; }
+        .sidebar .side-label { font-size: 0.68rem; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted2); font-weight: 700; margin: 0 0 0.55rem 0.4rem; }
+        .sidebar nav { display: flex; flex-direction: column; gap: 0.3rem; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 0.55rem; }
+        .navitem { position: relative; text-align: left; background: transparent; border: none; color: #cbd5e1;
+            font-family: var(--sans); font-size: 0.92rem; font-weight: 600; padding: 0.72rem 0.9rem; border-radius: 7px;
+            cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; width: 100%; }
+        .navitem:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .navitem.active { background: linear-gradient(135deg,#1e3a8a,#2563eb); color: #fff; }
+        .navitem .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; display: none; flex: 0 0 auto; }
+        .navitem.alert .nav-dot { display: inline-block; }
+        .content { flex: 1; min-width: 0; }
+        .content .panel { display: none; }
+        .content .panel.active { display: block; }
+        .content .panel h2:first-child { margin-top: 0; }
+        @media (max-width: 780px) {
+            .shell { flex-direction: column; gap: 1rem; }
+            .sidebar { position: static; flex: 1 1 auto; width: 100%; }
+            .sidebar .side-label { display: none; }
+            .sidebar nav { flex-direction: row; flex-wrap: wrap; }
+            .navitem { flex: 1 1 auto; justify-content: center; }
+        }
+
+        /* Rent-to-own payments (Square) */
+        .rto-hero { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 1.5rem 1.6rem; margin-bottom: 1.1rem; }
+        .rto-big { font-family: var(--serif); font-size: 1.9rem; font-weight: 700; color: #f8fafc; }
+        .rto-big small { font-size: 1rem; color: var(--muted); font-weight: 400; }
+        .rto-bar { height: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 999px; overflow: hidden; margin: 0.9rem 0 0.4rem; }
+        .rto-bar > i { display: block; height: 100%; background: linear-gradient(90deg,#22c55e,#16a34a); }
+        .rto-barnote { color: var(--muted); font-size: 0.8rem; }
+        .rto-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.2rem; }
+        .rto-stat { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 1.1rem 1.2rem; }
+        .rto-stat .n { font-family: var(--serif); font-size: 1.3rem; font-weight: 700; color: #fff; }
+        .rto-stat.green .n { color: #4ade80; }
+        .rto-stat .l { color: var(--muted); font-size: 0.78rem; margin-top: 0.25rem; }
+        .rto-src { color: var(--muted2); font-size: 0.78rem; margin-bottom: 0.7rem; }
+        .rto-table { width: 100%; border-collapse: collapse; }
+        .rto-table th { text-align: left; padding: 0.5rem 0.5rem; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted2); border-bottom: 1px solid var(--line); }
+        .rto-table td { padding: 0.55rem 0.5rem; font-size: 0.85rem; border-bottom: 1px solid #24324a; color: #cbd5e1; }
+        .rto-paid { color: #86efac; font-weight: 700; font-size: 0.66rem; letter-spacing: 0.5px; }
+        @media (max-width: 640px) { .rto-stats { grid-template-columns: 1fr; } }
+    </style>
+    <script src="/session.js"></script>
+</head>
+<body>
+    <header>
+        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="right">
+            <span id="whoami" class="who"></span>
+            <a href="/">Home</a>
+            <button class="linkbtn" id="logoutBtn" style="display:none" onclick="logout()">Switch driver</button>
+        </div>
+    </header>
+
+    <!-- AUTH (register / pick existing) -->
+    <div class="wrap" id="authScreen" style="display:none;">
+        <div class="auth">
+            <h1>Driver Portal</h1>
+            <p class="sub">For drivers operating vehicles with Plateau Strategy Solution Lab. Register your vehicle to view and claim client reservations.</p>
+
+            <label>Renting VIN <span style="color:#f87171">*</span></label>
+            <input id="li_vin" placeholder="5YJ3E1EA7PF000000">
+            <label>Birthday <span style="color:#f87171">*</span> <span style="color:#94a3b8;font-weight:400;text-transform:none;letter-spacing:0;">DDMMYYYY — your login pass</span></label>
+            <input id="li_dob" inputmode="numeric" placeholder="07031990" maxlength="10" onkeydown="if(event.key==='Enter')loginExisting()">
+            <button class="primary" onclick="loginExisting()">Sign in</button>
+            <div id="li_msg" style="margin-top:0.8rem;font-size:0.85rem;color:#fca5a5;"></div>
+
+            <div class="divider">or register a new vehicle</div>
+
+            <label>Your name <span style="color:#f87171">*</span></label>
+            <input id="r_name" placeholder="Carlos Diaz">
+            <div class="row">
+                <div><label>Email</label><input id="r_email" type="email" placeholder="carlos@email.com"></div>
+                <div><label>Phone</label><input id="r_phone" placeholder="(415) 555-0143"></div>
+            </div>
+            <div class="row">
+                <div><label>Vehicle make</label><input id="r_make" placeholder="Tesla"></div>
+                <div><label>Model</label><input id="r_model" placeholder="Model 3"></div>
+            </div>
+            <div class="row">
+                <div><label>Year</label><input id="r_year" placeholder="2024"></div>
+                <div><label>Color</label><input id="r_color" placeholder="White"></div>
+                <div><label>Plate</label><input id="r_plate" placeholder="8ABC123"></div>
+            </div>
+            <label>Vehicle VIN <span style="color:#f87171">*</span> <span style="color:#94a3b8;font-weight:400;text-transform:none;letter-spacing:0;">(used to sign in)</span></label>
+            <input id="r_vin" placeholder="5YJ3E1EA7PF000000">
+            <label>Birthday <span style="color:#f87171">*</span> <span style="color:#94a3b8;font-weight:400;text-transform:none;letter-spacing:0;">DDMMYYYY — this becomes your login pass</span></label>
+            <input id="r_dob" inputmode="numeric" placeholder="07031990" maxlength="10">
+            <button class="primary" onclick="register()">Register &amp; Enter Portal</button>
+        </div>
+    </div>
+
+    <!-- PORTAL -->
+    <div id="portal" style="display:none;">
+        <div class="shell">
+            <aside class="sidebar">
+                <div class="side-label">Driver Menu</div>
+                <nav>
+                    <button class="navitem active" id="nav-pool" onclick="showPanel('pool')"><span>Open Reservations</span></button>
+                    <button class="navitem" id="nav-mine" onclick="showPanel('mine')"><span>My Rides</span></button>
+                    <button class="navitem" id="nav-refer" onclick="showPanel('refer')"><span>Refer &amp; Drive</span></button>
+                    <button class="navitem" id="nav-payments" onclick="showPanel('payments')" style="display:none;"><span>Payments</span></button>
+                    <button class="navitem" id="nav-agreement" onclick="showPanel('agreement')"><span>Driver Agreement</span><span class="nav-dot"></span></button>
+                    <button class="navitem" id="nav-insurance" onclick="showPanel('insurance')"><span>Insurance</span><span class="nav-dot"></span></button>
+                    <button class="navitem" id="nav-compliance" onclick="showPanel('compliance')"><span>Compliance</span><span class="nav-dot"></span></button>
+                    <button class="navitem" id="nav-paperwork" onclick="showPanel('paperwork')"><span>Paperwork</span></button>
+                    <button class="navitem" id="nav-vehicle" onclick="showPanel('vehicle')"><span>Your Vehicle</span></button>
+                </nav>
+            </aside>
+
+            <main class="content">
+                <div class="banner" id="contractBanner">
+                    <div class="b-text">
+                        <b>Action Required — Sign Your Driver Agreement</b>
+                        <span id="bannerSub">You must sign your agreement before you can accept any rides.</span>
+                    </div>
+                    <button onclick="openSign()">Review &amp; Sign</button>
+                </div>
+
+                <div class="banner" id="insBanner">
+                    <div class="b-text">
+                        <b>Action Required — Proof of Insurance</b>
+                        <span id="insBannerSub">Upload valid proof of insurance before you can accept rides.</span>
+                    </div>
+                    <button onclick="showPanel('insurance')">Upload Insurance</button>
+                </div>
+
+                <div class="panel active" id="panel-pool">
+                    <h2>Open Reservations</h2>
+                    <p class="section-note">Visible to all drivers. The first to claim secures the ride.</p>
+                    <div class="grid" id="poolGrid"></div>
+                    <div class="empty" id="poolEmpty" style="display:none;">No open reservations at this time. New client bookings appear here automatically.</div>
+                </div>
+
+                <div class="panel" id="panel-mine">
+                    <h2>My Rides</h2>
+                    <div class="grid" id="mineGrid"></div>
+                    <div class="empty" id="mineEmpty" style="display:none;">You have not claimed any rides yet.</div>
+                </div>
+
+                <div class="panel" id="panel-refer">
+                    <h2>Refer &amp; Drive</h2>
+                    <p class="section-note">Met a customer who needs a ride? Refer them here and drive them yourself — you keep the full fare.</p>
+                    <div class="car" style="max-width:620px;">
+                        <div style="background:rgba(34,197,94,0.10); border:1px solid #14532d; color:#bbf7d0; border-radius:8px; padding:0.9rem 1rem; font-size:0.86rem; line-height:1.55; margin-bottom:1.2rem;">
+                            <b style="color:#bbf7d0;">You're both the agent and the driver on this trip.</b>
+                            <div style="margin-top:0.4rem;">Normally about $15 of a $75 fare goes to a separate referring agent — but since you referred and drove it, that stays with you. You keep the full fare.</div>
+                            <div style="margin-top:0.55rem; color:#86efac; font-size:0.78rem;">Tax note: the full fare is your income (referral + trip) and is reportable on your 1099. The customer is charged once.</div>
+                        </div>
+                        <label>Customer name <span style="color:#f87171">*</span></label>
+                        <input id="rf_name" placeholder="Airport customer">
+                        <div class="row">
+                            <div><label>Customer email</label><input id="rf_email" type="email" placeholder="customer@email.com"></div>
+                            <div><label>Customer phone</label><input id="rf_phone" placeholder="(415) 555-0100"></div>
+                        </div>
+                        <div class="row">
+                            <div><label>Pickup</label><input id="rf_pickup" placeholder="Hotel lobby"></div>
+                            <div><label>Drop-off</label><input id="rf_dropoff" placeholder="SeaTac Airport"></div>
+                        </div>
+                        <label>Fare (USD)</label>
+                        <input id="rf_fare" type="number" value="75" step="1" min="1">
+                        <button class="primary" onclick="submitRefer()">Refer &amp; Assign to Me</button>
+                        <div id="rf_msg" style="margin-top:0.9rem; font-size:0.88rem;"></div>
+                    </div>
+                </div>
+
+                <div class="panel" id="panel-payments">
+                    <h2>Rent-to-Own Payments</h2>
+                    <div id="rtoBody"></div>
+                </div>
+
+                <div class="panel" id="panel-agreement">
+                    <h2>Driver Agreement</h2>
+                    <div class="contract-card" id="contractCard"></div>
+                </div>
+
+                <div class="panel" id="panel-insurance">
+                    <h2>Insurance</h2>
+                    <p class="section-note">Valid proof of insurance is required to accept rides. We track your expiry date so your coverage never lapses.</p>
+                    <div id="insStatus"></div>
+                    <div class="car" style="max-width:620px; margin-top:1.2rem;">
+                        <label>Insurance provider</label>
+                        <input id="ins_provider" placeholder="e.g. GEICO, State Farm">
+                        <div class="row">
+                            <div><label>Policy number</label><input id="ins_policy" placeholder="Policy #"></div>
+                            <div><label>Expiry date <span style="color:#f87171">*</span></label><input id="ins_expires" type="date"></div>
+                        </div>
+                        <label>Proof of insurance <span style="color:#94a3b8;font-weight:400;text-transform:none;letter-spacing:0;">— photo or PDF</span></label>
+                        <input id="ins_file" type="file" accept="image/*,application/pdf" style="padding:0.55rem 0.6rem;">
+                        <button class="primary" onclick="submitInsurance()">Upload &amp; Save</button>
+                        <div id="ins_msg" style="margin-top:0.9rem; font-size:0.88rem;"></div>
+                    </div>
+                </div>
+
+                <div class="panel" id="panel-compliance">
+                    <h2>Compliance</h2>
+                    <p class="section-note">Your standing against the Driver Agreement. The system flags issues automatically, and anything logged by dispatch appears here too. Clear all issues to keep accepting rides.</p>
+                    <div id="complBody"></div>
+                </div>
+
+                <div class="panel" id="panel-paperwork">
+                    <h2>Paperwork</h2>
+                    <p class="section-note">Upload your documents — each one is archived and kept on file permanently (nothing is ever overwritten). This is your paper trail.</p>
+                    <div class="car" style="max-width:620px;">
+                        <label>Document type</label>
+                        <select id="doc_type"></select>
+                        <label>File <span style="color:#94a3b8;font-weight:400;text-transform:none;letter-spacing:0;">— photo or PDF</span></label>
+                        <input id="doc_file" type="file" accept="image/*,application/pdf" style="padding:0.55rem 0.6rem;">
+                        <label>Note <span style="color:#94a3b8;font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
+                        <input id="doc_note" placeholder="e.g. front of license, 2026 renewal">
+                        <button class="primary" onclick="submitDocument()">Upload &amp; Archive</button>
+                        <div id="doc_msg" style="margin-top:0.9rem; font-size:0.88rem;"></div>
+                    </div>
+                    <div id="docArchive" style="margin-top:1.6rem;"></div>
+                </div>
+
+                <div class="panel" id="panel-vehicle">
+                    <h2>Your Vehicle</h2>
+                    <div class="car" id="carCard"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- Contract signing modal -->
+    <div class="sig-overlay" id="sigOverlay">
+        <div class="sig-box">
+            <h3 id="sigTitle">Driver Agreement</h3>
+            <div class="ver" id="sigVer"></div>
+            <div class="contract-text" id="sigText"></div>
+            <a href="/media/vehicle_rental_agreement.docx" target="_blank" style="display:inline-block;margin:0.5rem 0 0.2rem;font-size:0.82rem;color:#93c5fd;text-decoration:none;">⬇ Download the official copy (Word)</a>
+
+            <label>Type your full legal name <span style="color:#f87171">*</span></label>
+            <input id="sigName" placeholder="Xiaojun Zhu" autocomplete="off">
+
+            <label style="margin-top:0.9rem;">Draw your signature <span style="color:#f87171">*</span></label>
+            <div class="sig-pad-wrap">
+                <canvas class="sig-pad" id="sigPad"></canvas>
+                <div class="sig-hint" id="sigHint">Sign here with your mouse or finger</div>
+            </div>
+            <div class="sig-row">
+                <span style="color:#94a3b8;font-size:0.78rem;">Draw above</span>
+                <button class="clear" onclick="clearSig()">Clear</button>
+            </div>
+
+            <label class="chk" style="text-transform:none;letter-spacing:0;font-size:0.9rem;color:#cbd5e1;">
+                <input type="checkbox" id="sigAgree">
+                <span>I have read and agree to the terms of this Driver Agreement, and this is my legal electronic signature.</span>
+            </label>
+
+            <div class="sig-actions">
+                <button class="cancel" onclick="closeSign()">Cancel</button>
+                <button class="submit" id="sigSubmit" onclick="submitSign()">Sign &amp; Agree</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notice pop-up (claim conflicts, release results, confirmations) -->
+    <div class="taken-overlay" id="takenOverlay">
+        <div class="taken-box">
+            <div class="big" id="takenEmoji">!</div>
+            <h3>Reservation Already Taken</h3>
+            <p id="takenMsg">Another driver claimed this ride first. It has been removed from your list.</p>
+            <button onclick="closeTaken()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+        let RENTER = null;
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.style.display = 'block';
+            clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 2600);
+        }
+
+        function logout() { localStorage.removeItem('renter_id'); location.reload(); }
+
+        function showPanel(name) {
+            document.querySelectorAll('.content .panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sidebar .navitem').forEach(b => b.classList.remove('active'));
+            const panel = document.getElementById('panel-' + name);
+            const nav = document.getElementById('nav-' + name);
+            if (panel) panel.classList.add('active');
+            if (nav) nav.classList.add('active');
+        }
+
+        async function boot() {
+            const id = localStorage.getItem('renter_id');
+            if (id) {
+                try {
+                    const r = await fetch('/api/renters/' + id);
+                    const j = await r.json();
+                    if (j.ok) { RENTER = j.renter; return enterPortal(); }
+                } catch (e) {}
+                localStorage.removeItem('renter_id');
+            }
+            showAuth();
+        }
+
+        function showAuth() {
+            document.getElementById('authScreen').style.display = 'block';
+            document.getElementById('portal').style.display = 'none';
+        }
+
+        async function register() {
+            const name = document.getElementById('r_name').value.trim();
+            if (!name) { showToast('Please enter your name'); return; }
+            const dob = val('r_dob').replace(/\D/g, '');
+            if (dob.length !== 8) { showToast('Enter your birthday as DDMMYYYY (8 digits)'); return; }
+            if (!val('r_vin')) { showToast('Vehicle VIN is required'); return; }
+            const body = {
+                name, dob, email: val('r_email'), phone: val('r_phone'),
+                car_make: val('r_make'), car_model: val('r_model'), car_year: val('r_year'),
+                car_color: val('r_color'), car_plate: val('r_plate'), car_vin: val('r_vin')
+            };
+            const r = await fetch('/api/renters/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+            const j = await r.json();
+            if (!j.ok) { showToast(j.error || 'Could not register'); return; }
+            RENTER = j.renter; localStorage.setItem('renter_id', RENTER.id); enterPortal();
+        }
+        function val(id) { return document.getElementById(id).value.trim(); }
+
+        async function loginExisting() {
+            const msg = document.getElementById('li_msg');
+            msg.textContent = '';
+            const vin = val('li_vin');
+            const dob = val('li_dob').replace(/\D/g, '');
+            if (!vin) { msg.textContent = 'Enter your renting VIN.'; return; }
+            if (dob.length !== 8) { msg.textContent = 'Enter your birthday as DDMMYYYY (8 digits).'; return; }
+            let j;
+            try { j = await (await fetch('/api/renters/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ vin, dob }) })).json(); }
+            catch (e) { msg.textContent = 'Connection problem — try again.'; return; }
+            if (!j.ok) { msg.textContent = j.error || 'Sign in failed.'; return; }
+            RENTER = j.renter; localStorage.setItem('renter_id', RENTER.id); enterPortal();
+        }
+
+        function enterPortal() {
+            if (window.PS) PS.activate('driver');   // privacy: one active portal login per browser
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('portal').style.display = 'block';
+            document.getElementById('whoami').textContent = RENTER.name;
+            document.getElementById('logoutBtn').style.display = 'inline';
+            const c = RENTER.car || {};
+            const carName = [c.year, c.color, c.make, c.model].filter(Boolean).join(' ') || 'Vehicle details not set';
+            document.getElementById('carCard').innerHTML =
+                '<div class="title">' + esc(carName) + '</div>' +
+                '<div class="specs">Operated for Plateau Strategy Solution Lab · Driver: ' + esc(RENTER.name) + '</div>' +
+                (c.plate ? '<span class="plate">' + esc(c.plate) + '</span>' : '');
+            loadContract();
+            loadInsurance();
+            loadViolations();
+            loadDocuments();
+            loadRto();
+            refresh();
+            clearInterval(window._poll); window._poll = setInterval(refresh, 8000);
+        }
+
+        let INSURANCE = null;   // {state: VALID|EXPIRING|EXPIRED|MISSING, expires, days_left, provider, ...}
+        function insOk() { return INSURANCE && (INSURANCE.state === 'VALID' || INSURANCE.state === 'EXPIRING'); }
+
+        async function loadInsurance() {
+            if (!RENTER) return;
+            try { INSURANCE = (await (await fetch('/api/renters/' + RENTER.id + '/insurance')).json()).insurance; }
+            catch (e) { return; }
+            renderInsurance();
+        }
+
+        function insBadge(st) {
+            const m = { VALID: ['#052e16', '#86efac', 'Valid'], EXPIRING: ['#422006', '#fcd34d', 'Expiring soon'],
+                        EXPIRED: ['#450a0a', '#fca5a5', 'Expired'], MISSING: ['#450a0a', '#fca5a5', 'Not on file'] }[st] || ['#450a0a', '#fca5a5', 'Not on file'];
+            return '<span style="background:' + m[0] + ';color:' + m[1] + ';padding:.24rem .7rem;border-radius:4px;font-weight:700;font-size:.72rem;">' + m[2] + '</span>';
+        }
+
+        function renderInsurance() {
+            const s = INSURANCE || { state: 'MISSING' };
+            const ok = insOk();
+            const accent = s.state === 'VALID' ? '#22c55e' : (s.state === 'EXPIRING' ? '#f59e0b' : '#ef4444');
+            let c = '<div class="car" style="max-width:620px; border-left:3px solid ' + accent + ';">';
+            c += '<div style="display:flex;justify-content:space-between;align-items:center;"><b>Insurance status</b>' + insBadge(s.state) + '</div>';
+            if (s.state === 'MISSING') {
+                c += '<div class="specs" style="margin-top:.5rem;">No proof of insurance on file. Upload it below to start accepting rides.</div>';
+            } else {
+                c += '<div class="specs" style="margin-top:.5rem;">Provider: ' + esc(s.provider || '—') + (s.policy_number ? ' · Policy ' + esc(s.policy_number) : '') + '</div>';
+                c += '<div class="specs">Expires: ' + esc(s.expires || '—') +
+                    (s.days_left != null ? (s.days_left < 0 ? ' <span style="color:#fca5a5;">(' + Math.abs(s.days_left) + ' days ago)</span>' : ' (' + s.days_left + ' days left)') : '') + '</div>';
+                if (s.state === 'EXPIRED') c += '<div class="specs" style="color:#fca5a5;">Your coverage has lapsed — upload a current policy to keep driving.</div>';
+                if (s.state === 'EXPIRING') c += '<div class="specs" style="color:#fcd34d;">Renew soon — your policy expires in ' + s.days_left + ' days.</div>';
+                if (s.has_file) c += '<div class="specs" style="color:#86efac;">✓ Proof document on file' + (s.uploaded_at ? ' (uploaded ' + fmtDate(s.uploaded_at) + ')' : '') + '.</div>';
+            }
+            c += '</div>';
+            const box = document.getElementById('insStatus');
+            if (box) box.innerHTML = c;
+            const nav = document.getElementById('nav-insurance');
+            if (nav) nav.classList.toggle('alert', !ok);
+            const banner = document.getElementById('insBanner');
+            if (banner) banner.classList.toggle('show', !ok);
+        }
+
+        async function submitInsurance() {
+            const msg = document.getElementById('ins_msg'); msg.textContent = '';
+            const expires = document.getElementById('ins_expires').value;
+            if (!expires) { msg.style.color = '#fca5a5'; msg.textContent = 'Choose the policy expiry date.'; return; }
+            const fileEl = document.getElementById('ins_file');
+            const hasNew = fileEl.files && fileEl.files[0];
+            if (!hasNew && !(INSURANCE && INSURANCE.has_file)) { msg.style.color = '#fca5a5'; msg.textContent = 'Attach a photo or PDF of your proof of insurance.'; return; }
+            let fileData = '';
+            if (hasNew) {
+                if (fileEl.files[0].size > 8 * 1024 * 1024) { msg.style.color = '#fca5a5'; msg.textContent = 'That file is too large (max 8 MB).'; return; }
+                fileData = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(fileEl.files[0]); });
+            }
+            const body = { provider: val('ins_provider'), policy_number: val('ins_policy'), expires, file: fileData };
+            let j;
+            try { j = await (await fetch('/api/renters/' + RENTER.id + '/insurance/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json(); }
+            catch (e) { msg.style.color = '#fca5a5'; msg.textContent = 'Connection problem — try again.'; return; }
+            if (!j.ok) { msg.style.color = '#fca5a5'; msg.textContent = j.error || 'Upload failed.'; return; }
+            msg.style.color = '#86efac'; msg.textContent = 'Saved — your insurance is on file. You can now accept rides.';
+            fileEl.value = '';
+            INSURANCE = j.insurance; renderInsurance(); refresh();
+            loadViolations();
+        }
+
+        let DOCS = null;
+        function fmtSize(n) { n = +n || 0; return n < 1024 ? n + ' B' : n < 1048576 ? (n / 1024).toFixed(0) + ' KB' : (n / 1048576).toFixed(1) + ' MB'; }
+        async function loadDocuments() {
+            if (!RENTER) return;
+            try { DOCS = await (await fetch('/api/renters/' + RENTER.id + '/documents')).json(); }
+            catch (e) { return; }
+            const sel = document.getElementById('doc_type');
+            if (sel && !sel.options.length) sel.innerHTML = (DOCS.types || []).map(t => '<option>' + esc(t) + '</option>').join('');
+            renderDocuments();
+        }
+        async function submitDocument() {
+            const msg = document.getElementById('doc_msg'); msg.textContent = '';
+            const fileEl = document.getElementById('doc_file');
+            if (!fileEl.files || !fileEl.files[0]) { msg.style.color = '#fca5a5'; msg.textContent = 'Choose a file to upload.'; return; }
+            if (fileEl.files[0].size > 15 * 1024 * 1024) { msg.style.color = '#fca5a5'; msg.textContent = 'That file is too large (max 15 MB).'; return; }
+            const fileData = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(fileEl.files[0]); });
+            const body = { doc_type: document.getElementById('doc_type').value, original_name: fileEl.files[0].name, notes: val('doc_note'), file: fileData };
+            let j;
+            try { j = await (await fetch('/api/renters/' + RENTER.id + '/documents/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json(); }
+            catch (e) { msg.style.color = '#fca5a5'; msg.textContent = 'Connection problem — try again.'; return; }
+            if (!j.ok) { msg.style.color = '#fca5a5'; msg.textContent = j.error || 'Upload failed.'; return; }
+            msg.style.color = '#86efac'; msg.textContent = 'Archived — kept on file permanently.';
+            fileEl.value = ''; document.getElementById('doc_note').value = '';
+            loadDocuments();
+        }
+        function renderDocuments() {
+            const box = document.getElementById('docArchive'); if (!box || !DOCS) return;
+            const docs = DOCS.documents || [], ags = DOCS.agreements || [];
+            const hd = 'font-family:var(--serif);color:#cbd5e1;font-size:.78rem;text-transform:uppercase;letter-spacing:.6px;margin:.4rem 0 .7rem;';
+            let html = '<div style="' + hd + '">On file · archive (' + docs.length + ')</div>';
+            if (!docs.length) html += '<div class="empty">No documents uploaded yet.</div>';
+            else html += docs.map(function (d) {
+                return '<div style="background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:.75rem 1rem;margin-bottom:.6rem;display:flex;justify-content:space-between;align-items:center;gap:.8rem;">' +
+                    '<div><b style="color:#f1f5f9;">' + esc(d.doc_type) + '</b>' + (d.source === 'insurance' ? ' <span class="agent-tag">from Insurance</span>' : '') +
+                    '<div style="color:var(--muted);font-size:.8rem;margin-top:.2rem;">' + esc(d.original_name || '') + (d.notes ? ' · ' + esc(d.notes) : '') + '</div></div>' +
+                    '<div style="text-align:right;color:var(--muted2);font-size:.74rem;white-space:nowrap;">' + esc(fmtDate(d.uploaded_at)) + '<br>' + fmtSize(d.size) + '</div></div>';
+            }).join('');
+            if (ags.length) {
+                html += '<div style="' + hd + 'margin-top:1.3rem;">Signed Driver Agreements</div>' + ags.map(function (a) {
+                    return '<div style="background:var(--panel);border:1px solid var(--line);border-left:3px solid #22c55e;border-radius:8px;padding:.7rem 1rem;margin-bottom:.6rem;">' +
+                        '<b style="color:#f1f5f9;">Driver Agreement v' + esc(a.version) + '</b>' +
+                        '<div style="color:var(--muted);font-size:.8rem;margin-top:.2rem;">Signed by ' + esc(a.typed_name || '') + ' · ' + esc(fmtDate(a.signed_at)) + '</div></div>';
+                }).join('');
+            }
+            box.innerHTML = html;
+        }
+
+        let VIOLATIONS = null;
+        async function loadViolations() {
+            if (!RENTER) return;
+            try { VIOLATIONS = await (await fetch('/api/renters/' + RENTER.id + '/violations')).json(); }
+            catch (e) { return; }
+            renderViolations();
+        }
+        function violCard(v) {
+            const sev = v.severity || 'medium';
+            const c = { high: ['#450a0a', '#fca5a5', '#ef4444'], medium: ['#422006', '#fcd34d', '#f59e0b'],
+                        low: ['#1e293b', '#cbd5e1', '#64748b'] }[sev] || ['#422006', '#fcd34d', '#f59e0b'];
+            let fix = '';
+            if (v.kind === 'insurance') fix = '<button class="pick" style="margin-top:.7rem;width:auto;padding:.5rem 1rem;" onclick="showPanel(\'insurance\')">Fix — upload insurance</button>';
+            else if (v.kind === 'agreement') fix = '<button class="pick" style="margin-top:.7rem;width:auto;padding:.5rem 1rem;" onclick="openSign()">Fix — sign the agreement</button>';
+            return '<div style="background:var(--panel);border:1px solid var(--line);border-left:3px solid ' + c[2] + ';border-radius:8px;padding:1rem 1.2rem;margin-bottom:.8rem;">' +
+                '<div style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;"><b style="color:#f1f5f9;">' + esc(v.title || v.type || 'Violation') + '</b>' +
+                '<span style="font-size:.62rem;font-weight:700;background:' + c[0] + ';color:' + c[1] + ';padding:.15rem .55rem;border-radius:4px;text-transform:uppercase;letter-spacing:.4px;flex:0 0 auto;">' + sev + '</span></div>' +
+                (v.detail ? '<div class="section-note" style="margin:.45rem 0 0;">' + esc(v.detail) + '</div>' : '') +
+                (v.logged_at ? '<div style="color:var(--muted2);font-size:.72rem;margin-top:.35rem;">Logged by dispatch · ' + esc(fmtDate(v.logged_at)) + '</div>' : '') +
+                fix + '</div>';
+        }
+        function renderViolations() {
+            const d = VIOLATIONS || {}, box = document.getElementById('complBody');
+            if (!box) return;
+            const nav = document.getElementById('nav-compliance');
+            if (nav) nav.classList.toggle('alert', (d.active_count || 0) > 0);
+            if (d.in_good_standing) {
+                box.innerHTML = '<div class="car" style="max-width:580px;border-left:3px solid #22c55e;">' +
+                    '<div style="font-size:1.15rem;color:#86efac;font-weight:700;">✓ In good standing</div>' +
+                    '<div class="section-note" style="margin-top:.35rem;">No agreement, insurance, or ride-completion issues detected. Keep it up.</div></div>';
+                return;
+            }
+            const auto = d.auto || [], manual = d.manual || [];
+            const hd = 'font-family:var(--serif);color:#cbd5e1;font-size:.78rem;text-transform:uppercase;letter-spacing:.6px;margin:.4rem 0 .7rem;';
+            let html = '';
+            if (auto.length) html += '<div style="' + hd + '">Detected by the system</div>' + auto.map(violCard).join('');
+            if (manual.length) html += '<div style="' + hd + 'margin-top:1.2rem;">Logged by dispatch</div>' + manual.map(violCard).join('');
+            box.innerHTML = html;
+        }
+
+        async function loadRto() {
+            if (!RENTER) return;
+            const nav = document.getElementById('nav-payments');
+            if (!RENTER.rto) { if (nav) nav.style.display = 'none'; return; }   // not rent-to-own — skip the Square call
+            let d;
+            try { d = await (await fetch('/api/renters/' + RENTER.id + '/rto')).json(); } catch (e) { return; }
+            if (!d || !d.ok || !d.enrolled) { if (nav) nav.style.display = 'none'; return; }
+            if (nav) nav.style.display = '';
+            const usd = n => '$' + Math.round(n).toLocaleString('en-US');
+            const pct = d.total_payments ? Math.round(d.payments_made / d.total_payments * 100) : 0;
+            const rel = d.release_estimate
+                ? new Date(d.release_estimate + 'T00:00').toLocaleDateString([], { year:'numeric', month:'short', day:'numeric' })
+                : '—';
+            const rows = (d.payments || []).slice().reverse().map(p =>
+                '<tr><td>' + esc(p.date) + '</td><td>' + usd(p.amount) + '</td><td><span class="rto-paid">PAID</span></td></tr>').join('');
+            document.getElementById('rtoBody').innerHTML =
+                '<div class="rto-hero">' +
+                    '<div class="rto-big">' + d.payments_made + ' <small>of ' + d.total_payments + ' payments made</small></div>' +
+                    '<div class="rto-bar"><i style="width:' + pct + '%"></i></div>' +
+                    '<div class="rto-barnote">' + pct + '% complete · synced from Square · ' + usd(d.payment_usd) + ' per payment</div>' +
+                '</div>' +
+                '<div class="rto-stats">' +
+                    '<div class="rto-stat green"><div class="n">' + usd(d.total_paid) + '</div><div class="l">Paid so far</div></div>' +
+                    '<div class="rto-stat"><div class="n">' + d.remaining_payments + ' · ' + usd(d.remaining_usd) + '</div><div class="l">Remaining</div></div>' +
+                    '<div class="rto-stat"><div class="n">' + rel + '</div><div class="l">Est. contract release</div></div>' +
+                '</div>' +
+                '<div class="rto-src">Every payment below is pulled live from your Square account.</div>' +
+                '<table class="rto-table"><thead><tr><th>Date</th><th>Amount</th><th>Status</th></tr></thead><tbody>' + rows + '</tbody></table>';
+        }
+
+        function resCard(r, mine) {
+            const t = r.trip || {}, c = r.client || {};
+            const when = ((t.date || '') + ' ' + (t.time || '')).trim();
+            const ag = r.self_service
+                ? '<div><span class="agent-tag" style="background:#052e16;color:#86efac;">🤝+🚗 You referred &amp; drove · you keep the full $' + esc(r.fare_usd) + '</span></div>'
+                : ((r.agent && r.agent.name) ? '<div><span class="agent-tag">Referred by ' + esc(r.agent.name) + '</span></div>' : '');
+            let action = '';
+            if (!mine && r.status === 'NEW') {
+                if (CONTRACT && CONTRACT.needs_signature)
+                    action = '<button class="pick" style="background:#475569;" onclick="openSign()">Sign agreement to claim</button>';
+                else if (INSURANCE && !insOk())
+                    action = '<button class="pick" style="background:#475569;" onclick="showPanel(\'insurance\')">Add insurance to claim</button>';
+                else
+                    action = '<button class="pick" onclick="pick(\'' + r.id + '\', this)">Claim Ride</button>';
+            }
+            if (mine && r.status === 'ASSIGNED') {
+                const w = giveupWindow(t);
+                action = '<div class="deadline ' + w.cls + '">' + w.text + '</div>' +
+                    '<button class="done" onclick="complete(\'' + r.id + '\')">Mark Complete</button>' +
+                    (w.allowed
+                        ? '<button class="giveup" onclick="giveup(\'' + r.id + '\', this)">Release Ride</button>'
+                        : '<button class="giveup" disabled>Release window closed — contact dispatch</button>');
+            }
+            return '<div class="res ' + r.status + '">' +
+                '<div class="top"><span class="id">' + esc(r.id) + '</span><span class="badge ' + r.status + '">' + r.status + '</span></div>' +
+                '<div class="route">' + esc(t.pickup) + '<span class="arrow">→</span>' + esc(t.dropoff) + '</div>' +
+                '<div class="meta"><b>Client:</b> ' + esc(c.name) + (c.phone ? ' · ' + esc(c.phone) : '') + '</div>' +
+                (when ? '<div class="meta"><b>When:</b> ' + esc(when) + '</div>' : '') +
+                (t.flight ? '<div class="meta"><b>Flight:</b> ' + esc(t.flight) + '</div>' : '') +
+                (t.notes ? '<div class="meta"><b>Notes:</b> ' + esc(t.notes) + '</div>' : '') +
+                ag + '<div class="fare">$' + esc(r.fare_usd) + '</div>' + action + '</div>';
+        }
+
+        async function submitRefer() {
+            const msg = document.getElementById('rf_msg');
+            msg.textContent = '';
+            const name = val('rf_name');
+            if (!name) { msg.style.color = '#fca5a5'; msg.textContent = 'Enter the customer name.'; return; }
+            const body = {
+                name, email: val('rf_email'), phone: val('rf_phone'),
+                pickup: val('rf_pickup'), dropoff: val('rf_dropoff'),
+                fare: parseFloat(document.getElementById('rf_fare').value) || 75
+            };
+            let j;
+            try { j = await (await fetch('/api/renters/' + RENTER.id + '/refer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json(); }
+            catch (e) { msg.style.color = '#fca5a5'; msg.textContent = 'Connection problem — try again.'; return; }
+            if (j.contract_required) { msg.style.color = '#fca5a5'; msg.textContent = j.error; openSign(); return; }
+            if (j.insurance_required) { msg.style.color = '#fca5a5'; msg.textContent = j.error; loadInsurance(); showPanel('insurance'); return; }
+            if (!j.ok) { msg.style.color = '#fca5a5'; msg.textContent = j.error || 'Could not create the ride.'; return; }
+            msg.style.color = '#86efac';
+            msg.textContent = 'Done — ' + j.reservation.id + ' is assigned to you. You keep the full $' + j.reservation.fare_usd + '. Complete it under “My Rides”.';
+            ['rf_name', 'rf_email', 'rf_phone', 'rf_pickup', 'rf_dropoff'].forEach(id => document.getElementById(id).value = '');
+            refresh();
+        }
+
+        async function refresh() {
+            if (!RENTER) return;
+            let all = [];
+            try { all = ((await (await fetch('/api/reservations')).json()).reservations) || []; } catch (e) { return; }
+            const pool = all.filter(r => r.status === 'NEW');
+            const mine = all.filter(r => r.renter_id === RENTER.id);
+            document.getElementById('poolGrid').innerHTML = pool.map(r => resCard(r, false)).join('');
+            document.getElementById('poolEmpty').style.display = pool.length ? 'none' : 'block';
+            document.getElementById('mineGrid').innerHTML = mine.map(r => resCard(r, true)).join('');
+            document.getElementById('mineEmpty').style.display = mine.length ? 'none' : 'block';
+        }
+
+        function showTaken(msg, title, glyph) {
+            if (msg) document.getElementById('takenMsg').textContent = msg;
+            document.querySelector('#takenOverlay h3').textContent = title || 'Reservation Already Taken';
+            document.getElementById('takenEmoji').textContent = glyph || '!';
+            document.getElementById('takenOverlay').classList.add('open');
+        }
+        function closeTaken() { document.getElementById('takenOverlay').classList.remove('open'); }
+
+        async function pick(id, btn) {
+            if (btn) { btn.disabled = true; btn.textContent = 'Claiming…'; }
+            let j;
+            try {
+                const r = await fetch('/api/reservations/' + id + '/claim', {
+                    method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ renter_id: RENTER.id }) });
+                j = await r.json();
+            } catch (e) {
+                if (btn) { btn.disabled = false; btn.textContent = 'Claim Ride'; }
+                showToast('Connection problem — try again'); return;
+            }
+            if (!j.ok) {
+                if (j.contract_required) {   // server blocked: agreement not signed
+                    if (btn) { btn.disabled = false; btn.textContent = 'Claim Ride'; }
+                    loadContract(); openSign(); return;
+                }
+                if (j.insurance_required) {   // server blocked: no valid insurance
+                    if (btn) { btn.disabled = false; btn.textContent = 'Claim Ride'; }
+                    loadInsurance(); showPanel('insurance'); showToast(j.error || 'Upload valid insurance first'); return;
+                }
+                showTaken('Another driver claimed ride ' + id + ' first. It has been removed from your list.');
+                refresh();
+                return;
+            }
+            showToast('Ride secured — ' + id); refresh();
+        }
+        async function complete(id) {
+            await fetch('/api/reservations/' + id + '/complete', { method:'POST' });
+            showToast('Ride marked complete'); refresh();
+        }
+
+        // 12-hour release window for an assigned ride, shown live on the card
+        function giveupWindow(t) {
+            if (!t || !t.date) return { cls: 'ok', allowed: true, text: 'Release window: open (pickup time not set)' };
+            const dt = new Date(t.date + 'T' + (t.time || '00:00'));
+            if (isNaN(dt.getTime())) return { cls: 'ok', allowed: true, text: 'Release window: open' };
+            const deadline = new Date(dt.getTime() - 12 * 3600 * 1000);
+            const ms = deadline.getTime() - Date.now();
+            const fmt = deadline.toLocaleString([], { month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+            if (ms > 0) {
+                const h = Math.floor(ms / 3600000), m = Math.floor((ms % 3600000) / 60000);
+                return { cls: 'ok', allowed: true,
+                    text: 'Release window open — closes ' + fmt + ' (' + h + 'h ' + m + 'm remaining, 12 hours before pickup)' };
+            }
+            return { cls: 'late', allowed: false,
+                text: 'Past the 12-hour mark (closed ' + fmt + ') — release locked; contact dispatch if you cannot make it' };
+        }
+
+        async function giveup(id, btn) {
+            if (!confirm('Release this ride? It returns to the open pool for other drivers, and dispatch is notified.')) return;
+            if (btn) { btn.disabled = true; btn.textContent = 'Releasing…'; }
+            let j;
+            try {
+                const r = await fetch('/api/reservations/' + id + '/giveup', {
+                    method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ renter_id: RENTER.id }) });
+                j = await r.json();
+            } catch (e) {
+                if (btn) { btn.disabled = false; btn.textContent = 'Release Ride'; }
+                showToast('Connection problem — try again'); return;
+            }
+            if (!j.ok) {
+                if (btn) { btn.disabled = false; btn.textContent = 'Release Ride'; }
+                showTaken(j.error || 'This ride could not be released.',
+                          j.blocked ? '12-Hour Release Rule' : 'Could Not Release Ride', '!');
+                return;
+            }
+            showTaken('Dispatch has been notified. Ride ' + id + ' has returned to the open pool for other drivers.',
+                      'Ride Released', '✓');
+            refresh();
+        }
+
+        // ---------- driver contract ----------
+        let CONTRACT = null;       // status: {status, needs_signature, current_version, signed_version, history}
+        let CONTRACT_DOC = null;   // {version, title, body, effective_date}
+
+        async function loadContract() {
+            if (!RENTER) return;
+            try {
+                const [docR, stR] = await Promise.all([
+                    fetch('/api/contract'),
+                    fetch('/api/contract/status?renter_id=' + encodeURIComponent(RENTER.id))
+                ]);
+                CONTRACT_DOC = (await docR.json()).contract || null;
+                CONTRACT = await stR.json();
+            } catch (e) { return; }
+            renderContract();
+        }
+
+        function fmtDate(iso) {
+            try { return new Date(iso).toLocaleString([], { year:'numeric', month:'short', day:'numeric', hour:'numeric', minute:'2-digit' }); }
+            catch (e) { return iso; }
+        }
+
+        function renderContract() {
+            const banner = document.getElementById('contractBanner');
+            const card = document.getElementById('contractCard');
+            if (!CONTRACT) { banner.classList.remove('show'); return; }
+            const need = CONTRACT.needs_signature;
+            banner.classList.toggle('show', need);
+            const naNav = document.getElementById('nav-agreement');
+            if (naNav) naNav.classList.toggle('alert', need);
+            if (need) {
+                document.getElementById('bannerSub').textContent = (CONTRACT.status === 'outdated')
+                    ? 'The agreement was updated to Version ' + CONTRACT.current_version + '. Please sign the new version before you can accept rides.'
+                    : 'You must sign your agreement before you can accept any rides.';
+            }
+            const statusLabel = need ? (CONTRACT.status === 'outdated' ? 'Update — Re-sign' : 'Not Signed') : 'Signed';
+            const cls = need ? CONTRACT.status : 'signed';
+            let sub;
+            if (need) {
+                sub = 'Current version: v' + CONTRACT.current_version +
+                    (CONTRACT.signed_version ? ' · you last signed v' + CONTRACT.signed_version : '');
+            } else {
+                const last = (CONTRACT.history && CONTRACT.history[0]) || {};
+                sub = 'Signed v' + CONTRACT.current_version + (last.signed_at ? ' on ' + fmtDate(last.signed_at) : '');
+            }
+            card.innerHTML =
+                '<div class="c-body"><div class="c-title">' + esc(CONTRACT_DOC ? CONTRACT_DOC.title : 'Driver Agreement') + '</div>' +
+                '<div class="c-sub">' + esc(sub) + '</div></div>' +
+                '<span class="cstat ' + cls + '">' + esc(statusLabel) + '</span>' +
+                '<button class="c-btn ' + (need ? 'primary-btn' : '') + '" onclick="openSign()">' +
+                (need ? 'Review &amp; Sign' : 'View Agreement') + '</button>';
+            refresh();  // re-render the pool so the lock state applies to Claim buttons
+        }
+
+        // Signature pad (mouse + touch)
+        let _sigCtx = null, _sigDrawing = false, _sigHas = false;
+        function _sigInit() {
+            const cv = document.getElementById('sigPad');
+            const rect = cv.getBoundingClientRect();
+            cv.width = rect.width; cv.height = rect.height;
+            _sigCtx = cv.getContext('2d');
+            _sigCtx.lineWidth = 2.5; _sigCtx.lineCap = 'round'; _sigCtx.lineJoin = 'round'; _sigCtx.strokeStyle = '#0f172a';
+            _sigHas = false;
+            document.getElementById('sigHint').style.display = 'block';
+            const pos = e => { const r = cv.getBoundingClientRect(); const p = e.touches ? e.touches[0] : e;
+                return { x: p.clientX - r.left, y: p.clientY - r.top }; };
+            const start = e => { e.preventDefault(); _sigDrawing = true; const p = pos(e);
+                _sigCtx.beginPath(); _sigCtx.moveTo(p.x, p.y);
+                _sigHas = true; document.getElementById('sigHint').style.display = 'none'; };
+            const move = e => { if (!_sigDrawing) return; e.preventDefault(); const p = pos(e); _sigCtx.lineTo(p.x, p.y); _sigCtx.stroke(); };
+            const end = () => { _sigDrawing = false; };
+            cv.onmousedown = start; cv.onmousemove = move; window.onmouseup = end;
+            cv.ontouchstart = start; cv.ontouchmove = move; cv.ontouchend = end;
+        }
+        function clearSig() {
+            if (_sigCtx) _sigCtx.clearRect(0, 0, _sigCtx.canvas.width, _sigCtx.canvas.height);
+            _sigHas = false; document.getElementById('sigHint').style.display = 'block';
+        }
+
+        function openSign() {
+            if (!CONTRACT_DOC) { showToast('Loading agreement…'); loadContract(); return; }
+            document.getElementById('sigTitle').textContent = CONTRACT_DOC.title || 'Driver Agreement';
+            document.getElementById('sigVer').textContent = 'Version ' + CONTRACT_DOC.version +
+                (CONTRACT_DOC.effective_date ? ' · effective ' + CONTRACT_DOC.effective_date : '');
+            document.getElementById('sigName').value = (RENTER && RENTER.name) || '';
+            renderSignAgreement();  // auto-detects & fills the name/date/contact lines in the signature block
+            document.getElementById('sigName').oninput = renderSignFills;  // live-update as they type
+            document.getElementById('sigAgree').checked = false;
+            document.getElementById('sigOverlay').classList.add('open');
+            setTimeout(_sigInit, 40);  // canvas must be visible before we size it
+        }
+        function closeSign() { document.getElementById('sigOverlay').classList.remove('open'); }
+
+        // --- Generic signature-block auto-fill ---------------------------------------------
+        // Detects the standard signer lines (name / signature / date / phone-email / address)
+        // on ANY document and fills the current signer's side. Works line-by-line so a new
+        // signable doc (e.g. a Bill of Sale) fills itself with zero extra wiring.
+        //   • Fills the INDIVIDUAL / counterparty side (Renter, Driver, Tenant, Buyer, …).
+        //   • Never fills the COMPANY side (Legal Owner, Lessor, Seller, "Plateau Strategy LLC").
+        //   • Underscore fields ("Label: ____") fill inline; bare-label lines ("Renter Signature",
+        //     "Date") fill only inside an individual signer block.
+        function _escHtml(s) {
+            return String(s == null ? '' : s).replace(/[&<>]/g, function (c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c];
+            });
+        }
+        function renderSignAgreement() {
+            var body = (CONTRACT_DOC && CONTRACT_DOC.body) || '';
+            var r = RENTER || {};
+            var typed   = (document.getElementById('sigName').value || r.name || '').trim();
+            var today   = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            var contact = [r.phone, r.email].filter(Boolean).join('  /  ');
+            var addr    = (r.address || '').trim();
+
+            var usedName = false, usedSig = false;
+            function span(id, val) {
+                return '<span class="fill"' + (id ? ' id="' + id + '"' : '') + '>' + _escHtml(val) + '</span>';
+            }
+            function valueFor(kind) {          // returns HTML span, or null → leave the blank as-is
+                if (kind === 'name')    { var idn = usedName ? '' : 'fillName'; usedName = true; return span(idn, typed || '—'); }
+                if (kind === 'sig')     { var ids = usedSig ? '' : 'fillSig'; usedSig = true; return span(ids, (typed || '—') + '  (electronically signed)'); }
+                if (kind === 'date')    return span('', today);
+                if (kind === 'contact') return contact ? span('', contact) : null;
+                if (kind === 'address') return addr ? span('', addr) : null;
+                return null;
+            }
+            function classify(label) {         // label text → field kind (null = not a fill field)
+                var s = ' ' + label.toLowerCase() + ' ';
+                if (/signature/.test(s))            return 'sig';
+                if (/\bname\b/.test(s))             return 'name';
+                if (/phone|e-?mail|contact/.test(s)) return 'contact';
+                if (/address/.test(s))              return 'address';
+                if (/\bdate\b/.test(s))             return 'date';
+                return null;
+            }
+
+            var COMPANY    = /(legal owner|lessor|landlord|plateau strategy|the company\b)/i;   // a company-side line — never fill
+            var INDIV_HD   = /^\s*(renter|driver|tenant|buyer|lessee|customer|guest)\s*([—\-:].*)?$/i;   // signer heading (line is just the role)
+            var COMPANY_HD = /^\s*(legal owner|owner|lessor|seller|landlord|the company)\s*([—\-:].*)?$/i;
+            var BARE_LBL   = /^\s*((?:renter|driver|tenant|buyer|lessee|customer|guest|authorized|your)\s+)?(signature|printed name|print name|full name|legal name|name|date(?:\s+signed)?)\s*:?\s*$/i;
+
+            var mode = 'fill';                 // 'fill' = current signer's side; 'skip' = company side
+            var out = [];
+            var arr = body.split('\n');
+            for (var i = 0; i < arr.length; i++) {
+                var line = arr[i], t = line.trim();
+                if (COMPANY_HD.test(t)) { mode = 'skip'; out.push(_escHtml(line)); continue; }
+                if (INDIV_HD.test(t))   { mode = 'fill'; out.push(_escHtml(line)); continue; }
+
+                var companyLine = COMPANY.test(t);
+
+                // (1) inline underscore field:  "Label: ______"
+                if (/_{4,}/.test(line) && mode !== 'skip' && !companyLine) {
+                    var ui  = line.search(/_{4,}/);
+                    var run = line.match(/_{4,}/)[0];
+                    var v1  = valueFor(classify(line.slice(0, ui).replace(/[:\s]+$/, '').trim()));
+                    if (v1) { out.push(_escHtml(line.slice(0, ui)) + v1 + _escHtml(line.slice(ui + run.length))); continue; }
+                    out.push(_escHtml(line)); continue;   // no value (address/unknown) → keep the blank
+                }
+
+                // (2) bare-label line inside an individual signer block
+                if (mode === 'fill' && !companyLine && BARE_LBL.test(t)) {
+                    var v2 = valueFor(classify(t));
+                    if (v2) {
+                        var lead = line.match(/^\s*/)[0];
+                        out.push(_escHtml(lead + t.replace(/\s*:?\s*$/, '')) + ': ' + v2);
+                        continue;
+                    }
+                }
+                out.push(_escHtml(line));
+            }
+            document.getElementById('sigText').innerHTML = out.join('\n');
+        }
+        function renderSignFills() {  // cheap live update of just the name-driven spans
+            var v = (document.getElementById('sigName').value || '').trim() || '—';
+            var fn = document.getElementById('fillName'); if (fn) fn.textContent = v;
+            var fs = document.getElementById('fillSig'); if (fs) fs.textContent = v + '  (electronically signed)';
+        }
+
+        async function submitSign() {
+            const name = document.getElementById('sigName').value.trim();
+            const agree = document.getElementById('sigAgree').checked;
+            if (!name) { showToast('Please type your full legal name'); return; }
+            if (!_sigHas) { showToast('Please draw your signature'); return; }
+            if (!agree) { showToast('Please check the agreement box'); return; }
+            const btn = document.getElementById('sigSubmit');
+            btn.disabled = true; btn.textContent = 'Signing…';
+            let j;
+            try {
+                const img = document.getElementById('sigPad').toDataURL('image/png');
+                const r = await fetch('/api/contract/sign', {
+                    method:'POST', headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify({ renter_id: RENTER.id, typed_name: name, signature: img, agree: true }) });
+                j = await r.json();
+            } catch (e) {
+                btn.disabled = false; btn.textContent = 'Sign & Agree';
+                showToast('Connection problem — try again'); return;
+            }
+            btn.disabled = false; btn.textContent = 'Sign & Agree';
+            if (!j.ok) { showToast(j.error || 'Could not sign'); return; }
+            CONTRACT = j;
+            closeSign();
+            renderContract();
+            loadViolations();
+            showTaken('Your agreement has been signed. You may now accept rides.', 'Agreement Signed', '✓');
+        }
+
+        boot();
+    </script>
+    <script src="/floatback.js"></script>
+    <script src="/jarvis-widget.js"></script>
+    <script src="/i18n.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+/* ============================================================
+   Admin "Terminal" theme — shared dark-navy dashboard styling.
+   Link this in any owner/admin page to match the trading dashboard:
+       <link rel="stylesheet" href="/admin-terminal.css">
+   Palette:  bg #0d1526 · panel #121f38 · card #182845 · border #26395c
+             text #dfe8f7 · dim #94a6c6 · muted #5d7195 · accent #4da6ff
+   Green/red are reserved for money & status; blue is the one accent.
+   ============================================================ */
+
+body { background: #0d1526 !important; color: #dfe8f7 !important; }
+h1 { color: #f8fafc !important; }
+h2, h3 { color: #dfe8f7 !important; }
+.sub, .note, .empty, .count, .l { color: #94a6c6 !important; }
+
+/* panels / tiles / cards */
+.card, .tile, .p-card, .board { background: #121f38 !important; border-color: #26395c !important; }
+.tile:hover { border-color: #4da6ff !important; box-shadow: 0 8px 24px rgba(0,0,0,.45) !important; }
+.tile .lbl { color: #dfe8f7 !important; }
+.tile .n { color: #4da6ff !important; }
+.tile .d, .tile .last { color: #94a6c6 !important; }
+.tile.green .n { color: #4ade80 !important; }
+.tile.amber .n { color: #fbbf24 !important; }
+.tile.red .n { color: #f87171 !important; }
+.tile.hot { background: #14251f !important; border-color: #2f6f5a !important; }
+.tile.hot .n { color: #4ade80 !important; }
+
+/* tables */
+table th { color: #7d9bd6 !important; background: #121f38 !important; border-bottom-color: #26395c !important; }
+table td { color: #dfe8f7 !important; border-bottom-color: #26395c !important; }
+td.amt { color: #dfe8f7 !important; }
+td a, .back { color: #4da6ff !important; }
+
+/* inputs */
+input, select, textarea { background: #1c2e4f !important; border-color: #26395c !important; color: #dfe8f7 !important; }
+input::placeholder, textarea::placeholder { color: #5d7195 !important; }
+
+/* buttons */
+.btn.blue { background: linear-gradient(135deg,#3b82f6,#2563eb) !important; }
+.btn.dark { background: #1c2e4f !important; border: 1px solid #3a4f7a !important; color: #dfe8f7 !important; }
+
+/* badges */
+.badge { background: #24324a !important; color: #cbd5e1 !important; }
+.badge.PAID, .badge.COMPLETED { background: #14532d !important; color: #86efac !important; }
+.badge.UNPAID, .badge.PUBLISHED, .badge.SCHEDULED, .badge.PARTIALLY_PAID, .badge.NEW, .badge.QUOTE { background: #78350f !important; color: #fcd34d !important; }
+.badge.ASSIGNED { background: #1e3a8a !important; color: #93c5fd !important; }
+.badge.CANCELED { background: #7f1d1d !important; color: #fecaca !important; }
+.badge.SIMULATED, .badge.UNKNOWN { background: #24324a !important; color: #94a6c6 !important; }
+
+/* callout notes (marketing list / tax help) — money-green */
+.mkt-note { background: #10261f !important; border-color: #2f6f5a !important; color: #86efac !important; }
+.mkt-note b { color: #d1fae5 !important; }
+.qb { background: #10261f !important; border-color: #2f6f5a !important; color: #a7f3d0 !important; }
+.qb b { color: #d1fae5 !important; }

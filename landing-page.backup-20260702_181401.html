@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plateau Strategy Solution Lab - Integrated Business Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <link rel="apple-touch-icon" href="plateau-logo.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            background: #f9fafb;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: white;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            display: block;
+        }
+
+        /* Section tabs — hidden by default, slide in when the mouse goes to the top */
+        .phase-tabs {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+            justify-content: center;
+            gap: 0.2rem;
+            background: #ffffff;
+            padding: 0 1.5rem;
+            width: 100%;
+            position: fixed;
+            top: 86px;
+            left: 0;
+            z-index: 98;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            border-bottom: 1px solid #e5e7eb;
+            overflow-x: auto;
+            transform: translateY(-160%);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+        }
+        .phase-tabs.shown { transform: translateY(0); opacity: 1; pointer-events: auto; }
+
+        .nav-back {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #fff; font-weight: 700; font-size: 0.9rem;
+            padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .nav-back:hover { background: rgba(255,255,255,0.24); }
+        .sections-trigger {
+            color: rgba(255,255,255,0.85); font-size: 0.9rem; font-weight: 600; cursor: pointer;
+            margin: 0 1.2rem; padding-bottom: 2px; border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .sections-trigger:hover { color: #93c5fd; border-bottom-color: #93c5fd; }
+
+        /* Floating "Back" that appears where the mouse stops */
+        #floatBack {
+            position: fixed; z-index: 300; left: 0; top: 0; width: auto; margin: 0;
+            background: #0f172a; color: #fff; border: none; border-radius: 999px;
+            padding: 0.55rem 1.15rem; font-size: 0.9rem; font-weight: 700; cursor: pointer;
+            box-shadow: 0 10px 28px rgba(0,0,0,0.4); white-space: nowrap;
+            opacity: 0; pointer-events: none; transform: translateY(4px) scale(0.94);
+            transition: opacity 0.14s ease, transform 0.14s ease;
+        }
+        #floatBack.shown { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
+        #floatBack:hover { background: #1e293b; }
+
+        .phase-tab {
+            padding: 1rem 1.4rem;
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.92rem;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .phase-tab:hover {
+            color: #6b7280;
+            border-bottom-color: #d1d5db;
+        }
+
+        .phase-tab.active {
+            color: #1e3a8a;
+            border-bottom-color: #3b82f6;
+            font-weight: 700;
+        }
+
+        .phase-tab.active:hover {
+            color: #1e3a8a;
+            border-bottom-color: #3b82f6;
+        }
+
+        .sub-tab-sidebar {
+            padding: 0.6rem 1rem;
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-left: 2px solid transparent;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+        }
+
+        .sub-tab-sidebar:hover {
+            color: #1e3a8a;
+            background: rgba(30, 58, 138, 0.08);
+            border-left-color: #3b82f6;
+        }
+
+        .sub-tab-sidebar.active {
+            color: #1e3a8a;
+            border-left-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+            font-weight: 600;
+        }
+
+        .sub-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        .sub-tab {
+            padding: 0.8rem 1.2rem;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            color: #374151;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            flex: 1;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .sub-tab:hover {
+            border-color: #bfdbfe;
+            background: #f0f9ff;
+            transform: translateY(-1px);
+        }
+
+        .sub-tab.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-color: #2563eb;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .sub-content {
+            display: none;
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .sub-content.active {
+            display: block;
+        }
+
+        .sub-content h3 {
+            color: #1e3a8a;
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .sub-content p {
+            color: #4b5563;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 0.5rem 0;
+        }
+
+        .book-cta {
+            display: inline-block;
+            margin-top: 1.1rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: #fff;
+            padding: 0.7rem 1.6rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+            transition: all 0.25s;
+        }
+
+        .book-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59,130,246,0.45);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .logo-img {
+            height: 48px;
+            width: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border: 2px solid rgba(255,255,255,0.18);
+            flex-shrink: 0;
+        }
+
+        .logo-text {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav a {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            margin: 0 1.2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0.85;
+            transition: opacity 0.3s, color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+
+        nav a:hover {
+            opacity: 1;
+            color: #93c5fd;
+            border-bottom-color: #93c5fd;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1e40af 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero-logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto 1.2rem;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.4);
+            border: 3px solid rgba(255,255,255,0.22);
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            line-height: 1.7;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 0.9rem 2.2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .cta-button:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        section {
+            padding: 2.5rem 2rem;
+        }
+
+        section h2 {
+            font-size: 2.4rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #0f172a;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .overview {
+            background: #f9fafb;
+        }
+
+        .overview-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .overview-text h3 {
+            font-size: 1.8rem;
+            color: #0f172a;
+            margin-bottom: 1.2rem;
+            font-weight: 800;
+        }
+
+        .overview-text p {
+            margin-bottom: 1.2rem;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #4b5563;
+        }
+
+        .value-props {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .value-prop {
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .value-prop:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .value-prop h4 {
+            color: #1e3a8a;
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        .value-prop p {
+            font-size: 0.95rem;
+            color: #4b5563;
+            line-height: 1.6;
+        }
+
+        .phases {
+            background: white;
+        }
+
+        .phases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Filter view: show only the currently selected phase card */
+        .phases-grid .phase-card {
+            display: none;
+        }
+
+        .phases-grid .phase-card.show {
+            display: block;
+            animation: phaseFade 0.35s ease;
+        }
+
+        @keyframes phaseFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* App-style views: one section visible at a time, anchored at the top */
+        .view { display: none; }
+        .view.active { display: block; animation: phaseFade 0.35s ease; }
+        .view-intro {
+            text-align: center; max-width: 760px; margin: -1.5rem auto 2.5rem;
+            color: #4b5563; font-size: 1.05rem; line-height: 1.7;
+        }
+
+        /* Transportation service cards (Ride Service / Car Rentals / Agent Program) */
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .service-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-top: 4px solid #3b82f6;
+            border-radius: 14px;
+            padding: 2rem;
+            box-shadow: 0 4px 16px rgba(15,23,42,0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+        }
+        .service-card:nth-child(2) { border-top-color: #10b981; }
+        .service-card:nth-child(3) { border-top-color: #f59e0b; }
+        .service-card:hover { transform: translateY(-5px); box-shadow: 0 16px 32px rgba(15,23,42,0.12); }
+        .service-icon { font-size: 2.4rem; margin-bottom: 0.6rem; }
+        .service-card h3 { color: #0f172a; font-size: 1.3rem; font-weight: 800; margin-bottom: 0.3rem; }
+        .service-for { color: #3b82f6; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.9rem; }
+        .service-card > p { color: #4b5563; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.4rem; }
+        .service-card .book-cta { margin-top: auto; }
+
+        /* Finance: product directory (AI Debt Eliminator + future products) */
+        .fin-menu {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem; margin: 1rem auto 0; max-width: 900px;
+        }
+        .fin-card {
+            background: #fff; border: 1px solid #e5e7eb; border-top: 4px solid #f59e0b;
+            border-radius: 14px; padding: 2rem; cursor: pointer;
+            box-shadow: 0 4px 16px rgba(15,23,42,0.06); transition: all 0.25s;
+        }
+        .fin-card:hover { transform: translateY(-5px); box-shadow: 0 16px 32px rgba(15,23,42,0.12); }
+        .fin-card-icon { font-size: 2.4rem; margin-bottom: 0.6rem; }
+        .fin-card h3 { color: #0f172a; font-size: 1.3rem; font-weight: 800; margin-bottom: 0.4rem; }
+        .fin-card > p { color: #4b5563; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1rem; }
+        .fin-card-link { color: #d97706; font-weight: 700; font-size: 0.95rem; }
+        .fin-back {
+            background: none; border: none; color: #64748b; font-weight: 700; font-size: 0.9rem;
+            cursor: pointer; padding: 0.4rem 0; margin-bottom: 0.5rem;
+        }
+        .fin-back:hover { color: #0f172a; }
+        .fin-pane { display: none; }
+        .fin-pane.active { display: block; animation: phaseFade 0.35s ease; }
+
+        /* Finance: AI Debt Eliminator */
+        .fin-flow {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 1rem; margin-bottom: 2.5rem;
+        }
+        .fin-step {
+            background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+            padding: 1.2rem; box-shadow: 0 2px 8px rgba(15,23,42,0.05);
+        }
+        .fin-num {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 30px; height: 30px; border-radius: 50%; margin-bottom: 0.6rem;
+            background: linear-gradient(135deg,#f59e0b,#d97706); color: #fff; font-weight: 800; font-size: 0.9rem;
+        }
+        .fin-step p { color: #374151; font-size: 0.9rem; line-height: 1.45; }
+
+        .pricing-title { text-align: center; color: #0f172a; font-size: 1.4rem; font-weight: 800; margin: 0.5rem 0 1.5rem; }
+        .pricing-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem; max-width: 720px; margin: 0 auto;
+        }
+        .price-card {
+            position: relative; background: #fff; border: 2px solid #e5e7eb; border-radius: 16px;
+            padding: 2rem; text-align: center; box-shadow: 0 4px 16px rgba(15,23,42,0.06);
+            transition: all 0.25s;
+        }
+        .price-card.best { border-color: #f59e0b; box-shadow: 0 10px 30px rgba(245,158,11,0.18); }
+        .price-card:hover { transform: translateY(-4px); }
+        .price-badge {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(135deg,#f59e0b,#d97706); color: #fff;
+            font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+            padding: 0.25rem 0.9rem; border-radius: 999px;
+        }
+        .price-card h4 { color: #64748b; font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+        .price { color: #0f172a; font-size: 2.6rem; font-weight: 800; line-height: 1; }
+        .price span { font-size: 1rem; font-weight: 600; color: #64748b; }
+        .price-sub { color: #64748b; font-size: 0.85rem; margin: 0.5rem 0 1.2rem; }
+        .price-card ul { list-style: none; text-align: left; margin: 0 auto 1.5rem; max-width: 200px; }
+        .price-card ul li { color: #374151; font-size: 0.9rem; margin: 0.5rem 0; }
+        .price-btn {
+            width: 100%; padding: 0.85rem; border: none; border-radius: 10px; cursor: pointer;
+            background: linear-gradient(135deg,#f59e0b,#d97706); color: #fff; font-size: 1rem; font-weight: 700;
+        }
+        .price-btn:hover { filter: brightness(1.06); }
+        .price-btn.ghost { background: #0f172a; }
+        .fin-fineprint { text-align: center; color: #94a3b8; font-size: 0.82rem; max-width: 620px; margin: 1.8rem auto 0; line-height: 1.5; }
+
+        /* "I wish that to be happening" interest capture */
+        .wish-box { text-align: center; margin-top: 2.2rem; }
+        .wish-lead { color: #64748b; font-size: 0.95rem; margin-bottom: 0.9rem; }
+        .wish-btn {
+            background: linear-gradient(135deg,#8b5cf6,#6d28d9); color: #fff; border: none;
+            border-radius: 999px; padding: 0.85rem 2rem; font-size: 1rem; font-weight: 700; cursor: pointer;
+            box-shadow: 0 6px 18px rgba(124,58,237,0.35); transition: all 0.2s;
+        }
+        .wish-btn:hover { filter: brightness(1.08); transform: translateY(-2px); }
+        .wish-form { display: flex; gap: 0.6rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap; }
+        .wish-form input { padding: 0.7rem 1rem; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 1rem; min-width: 240px; }
+        .wish-form input:focus { outline: none; border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.15); }
+        .wish-form button { padding: 0.7rem 1.4rem; border: none; border-radius: 10px; background: #6d28d9; color: #fff; font-weight: 700; cursor: pointer; }
+        .wish-form button:hover { filter: brightness(1.08); }
+        .wish-msg { margin-top: 0.8rem; font-size: 0.9rem; font-weight: 600; }
+        /* Single-card division views render the card full width */
+        .view .phase-card { display: block; margin-top: 1rem; }
+
+        /* Main-page role picker */
+        .role-pick { margin-top: 2.5rem; position: relative; z-index: 1; }
+        .role-pick-label { display: block; color: #cbd5e1; font-size: 1.15rem; margin-bottom: 1.1rem; font-weight: 600; }
+        .role-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .role-btn {
+            display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+            background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.25);
+            color: #fff; padding: 1.3rem 2.2rem; border-radius: 14px; cursor: pointer;
+            font-size: 1.05rem; font-weight: 700; min-width: 150px; transition: all 0.2s;
+        }
+        .role-emoji { font-size: 2rem; }
+        .role-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-3px); border-color: #fff; }
+
+        /* Role login modal */
+        .role-modal { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6);
+            z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
+        .role-modal.open { display: flex; }
+        .role-modal-card { background: #fff; border-radius: 18px; padding: 2rem; width: 100%;
+            max-width: 440px; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .role-close { position: absolute; top: 0.9rem; right: 1.2rem; background: none; border: none;
+            font-size: 1.7rem; color: #94a3b8; cursor: pointer; line-height: 1; }
+        .role-form h2 { color: #0f172a; font-size: 1.5rem; margin-bottom: 0.3rem; }
+        .rm-sub { color: #64748b; font-size: 0.9rem; margin-bottom: 1.2rem; }
+        .role-form label { display: block; font-weight: 600; font-size: 0.82rem; color: #334155; margin: 0.8rem 0 0.3rem; }
+        .role-form input { width: 100%; padding: 0.75rem 1rem; border: 1.5px solid #e2e8f0; border-radius: 10px;
+            font-size: 1rem; font-family: inherit; background: #f8fafc; }
+        .role-form input:focus { outline: none; border-color: #3b82f6; background: #fff; box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+        .rm-row { display: flex; gap: 0.8rem; } .rm-row > div { flex: 1; }
+        .rm-primary { width: 100%; margin-top: 1.3rem; padding: 0.9rem; background: linear-gradient(135deg,#3b82f6,#2563eb);
+            color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; }
+        .rm-primary:hover { filter: brightness(1.08); }
+        .rm-msg { color: #dc2626; font-size: 0.85rem; margin-top: 0.8rem; min-height: 1rem; }
+        .rm-alt { text-align: center; margin-top: 1rem; font-size: 0.85rem; color: #64748b; }
+        .rm-alt a { color: #2563eb; font-weight: 700; text-decoration: none; }
+
+        .phase-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border-left: 5px solid #3b82f6;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .phase-card:nth-child(2) {
+            border-left-color: #06b6d4;
+        }
+
+        .phase-card:nth-child(3) {
+            border-left-color: #10b981;
+        }
+
+        .phase-card:nth-child(4) {
+            border-left-color: #f59e0b;
+        }
+
+        .phase-card:nth-child(5) {
+            border-left-color: #ec4899;
+        }
+
+        .phase-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+        }
+
+        .phase-card h3 {
+            color: #0f172a;
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        .phase-card .phase-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            line-height: 45px;
+            text-align: center;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .phase-card:nth-child(2) .phase-number {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        }
+
+        .phase-card:nth-child(3) .phase-number {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .phase-card:nth-child(4) .phase-number {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .phase-card:nth-child(5) .phase-number {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+        }
+
+        .phase-card p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #4b5563;
+        }
+
+        .phase-highlights {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .phase-highlights li {
+            list-style: none;
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .phase-highlights li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #ff6b35;
+            font-weight: bold;
+        }
+
+        .ecosystem {
+            background: #f8f9fa;
+        }
+
+        .ecosystem-text {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 2.5rem;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #4b5563;
+        }
+
+        .integration-diagram {
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .integration-diagram h3 {
+            color: #0f172a;
+            margin-bottom: 2.5rem;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .diagram-items {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .diagram-item {
+            padding: 1.8rem;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 10px;
+            color: #0f172a;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .diagram-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.15);
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1e40af 100%);
+            color: white;
+            text-align: center;
+            padding: 5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .cta-section h2 {
+            color: white;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-section p {
+            font-size: 1.05rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-group {
+            display: flex;
+            gap: 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-group input {
+            flex: 1;
+            padding: 0.9rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.95);
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .form-group button {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 0.9rem 2.2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .form-group button:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        footer {
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding: 2.5rem;
+            font-size: 0.9rem;
+            opacity: 0.85;
+            width: 100%;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        @media (max-width: 768px) {
+            main {
+                flex-direction: column;
+            }
+
+            .phase-tabs {
+                flex-direction: row;
+                width: 100%;
+                min-height: auto;
+                position: static;
+                overflow-x: auto;
+                padding: 0;
+                transform: none;
+                opacity: 1;
+                pointer-events: auto;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            }
+
+            .phase-tab {
+                padding: 1rem 1.5rem;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+                white-space: nowrap;
+            }
+
+            .phase-tab:hover {
+                border-left-color: transparent;
+                border-bottom-color: #ff6b35;
+            }
+
+            .phase-tab.active {
+                border-left-color: transparent;
+                border-bottom-color: #ff6b35;
+            }
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .overview-content {
+                grid-template-columns: 1fr;
+            }
+
+            .value-props {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .diagram-items {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group {
+                flex-direction: column;
+            }
+
+            .phase-tab {
+                padding: 0.8rem 1rem;
+                font-size: 0.8rem;
+            }
+
+            .phase-tabs {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div style="display:flex; align-items:center; gap:1rem;">
+                <button class="nav-back" id="navBack" onclick="goBack()" style="display:none;">← Back</button>
+                <div class="logo" style="cursor: pointer;" onclick="showView('overview')" title="Home">
+                    <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab logo" class="logo-img">
+                    <span class="logo-text">Plateau Strategy Solution Lab</span>
+                </div>
+            </div>
+            <nav>
+                <span class="sections-trigger" id="sectionsTrigger">☰ Sections</span>
+                <a href="/articles">Articles</a>
+                <a href="/book">Book a Ride</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="phase-tabs">
+            <a class="phase-tab active" href="#" onclick="showView('overview', event)">Overview</a>
+            <a class="phase-tab" href="#" onclick="showView('transportation', event)">Transportation</a>
+            <a class="phase-tab" href="#" onclick="showView('operations', event)">Operations</a>
+            <a class="phase-tab" href="#" onclick="showView('realestate', event)">Real Estate</a>
+            <a class="phase-tab" href="#" onclick="showView('finance', event)">Finance</a>
+            <a class="phase-tab" href="#" onclick="showView('reinvestment', event)">Reinvestment</a>
+        </div>
+
+        <div>
+
+            <!-- ============ OVERVIEW (the introduction) ============ -->
+            <div class="view active" id="view-overview">
+                <section class="hero">
+                    <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab" class="hero-logo">
+                    <h1>Welcome to Plateau Strategy Solution Lab</h1>
+                    <p>An integrated business ecosystem creating opportunity for the people who ride, drive, and grow with us.</p>
+                </section>
+
+                <section class="overview" id="overview">
+                    <div class="container">
+                        <div class="overview-content">
+                            <div class="overview-text">
+                                <h3>About Plateau Strategy Solution Lab</h3>
+                                <p>Plateau Strategy Solution Lab is an integrated business ecosystem built to create opportunity at every level — for the people who <strong>ride</strong> with us, <strong>drive</strong> with us, and <strong>grow</strong> with us.</p>
+                                <p>We started with transportation: affordable Tesla rentals that turn everyday drivers into earners and everyday riders into loyal clients. From there, each part of our business funds and strengthens the next — operations, real estate, finance, and reinvestment — a closed loop where revenue compounds instead of leaking away.</p>
+                                <p>Our model is simple: control the full value chain, share the upside with our drivers and partners, and reinvest profits back into the community. Whether you need a ride, want to earn behind the wheel, or want to refer clients and earn commission — there's a place for you here.</p>
+                            </div>
+                            <div>
+                                <div class="value-props">
+                                    <div class="value-prop">
+                                        <h4>💰 Capital Efficient</h4>
+                                        <p>Each part funds the next through shared cash flow and operational leverage.</p>
+                                    </div>
+                                    <div class="value-prop">
+                                        <h4>🔄 Vertically Integrated</h4>
+                                        <p>Full control over supply chain, client experience, and margin capture.</p>
+                                    </div>
+                                    <div class="value-prop">
+                                        <h4>📈 Compounding Growth</h4>
+                                        <p>Revenue synergies accelerate expansion across all business lines.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="integration-diagram" style="margin-top: 3rem;">
+                            <h3>How It Connects</h3>
+                            <div class="diagram-items">
+                                <div class="diagram-item"><strong>Transportation</strong><br>Generates revenue &amp; data</div>
+                                <div class="diagram-item"><strong>Real Estate</strong><br>Provides infrastructure</div>
+                                <div class="diagram-item"><strong>Finance</strong><br>Optimizes capital</div>
+                            </div>
+                            <p style="margin-top: 2rem; color: #666; font-size: 0.95rem;">Each part creates value that feeds the next — a self-reinforcing cycle that compounds growth and margin as it scales.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="cta-section" id="cta">
+                    <div class="container">
+                        <h2>Join Us in Building the Future</h2>
+                        <p>We're currently validating the market and preparing to launch. Early partners, investors, and team members are critical to our success.</p>
+                        <form class="form-group" onsubmit="handleSubmit(event)">
+                            <input type="email" placeholder="your@email.com" required>
+                            <button type="submit">Get Early Access</button>
+                        </form>
+                        <p style="margin-top: 1.5rem; font-size: 0.9rem; opacity: 0.8;">We're building something ambitious. Join our community of early believers.</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ============ TRANSPORTATION ============ -->
+            <div class="view" id="view-transportation">
+                <section class="phases">
+                    <div class="container">
+                        <h2>Transportation</h2>
+                        <p class="view-intro">Our flagship business — affordable Tesla rentals powering rides, drivers, and referral partners. Here's what we do, and where you fit in.</p>
+
+                        <div class="service-grid">
+                            <div class="service-card">
+                                <div class="service-icon">🚗</div>
+                                <h3>Ride Service</h3>
+                                <p class="service-for">For riders &amp; clients</p>
+                                <p>Affordable, reliable Tesla rides — booked online in seconds, with your invoice sent automatically. No app to download, no surge-pricing games.</p>
+                                <a href="/book" class="book-cta">Book a Ride →</a>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">🔑</div>
+                                <h3>Car Rentals</h3>
+                                <p class="service-for">For drivers</p>
+                                <p>Rent a Tesla from us and earn from a shared pool of client rides. Low-cost entry, steady income, and a path to owning the car you drive.</p>
+                                <a href="/renter" class="book-cta">Driver Portal →</a>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">🤝</div>
+                                <h3>Agent Program</h3>
+                                <p class="service-for">For partners — organizations or individuals</p>
+                                <p>Refer clients and earn commission on every ride they take. Ideal for hotels, travel agencies, or any individual with a network to tap.</p>
+                                <a href="/agent" class="book-cta">Agent Portal →</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ============ OPERATIONS ============ -->
+            <div class="view" id="view-operations">
+                <section class="phases">
+                    <div class="container">
+                        <h2>Operations</h2>
+                        <div class="phase-card" style="border-left-color:#06b6d4;">
+                            <h3>Digital Operations Platform</h3>
+                            <p>Unified software infrastructure powering fleet management, client interactions, and data analytics across all business lines. AI-driven optimization and decision support.</p>
+                            <div class="phase-highlights">
+                                <ul>
+                                    <li>Fleet and asset tracking</li>
+                                    <li>Client relationship management</li>
+                                    <li>Financial transaction processing</li>
+                                    <li>Business intelligence &amp; analytics</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ============ REAL ESTATE ============ -->
+            <div class="view" id="view-realestate">
+                <section class="phases">
+                    <div class="container">
+                        <h2>Real Estate</h2>
+                        <div class="phase-card" style="border-left-color:#10b981;">
+                            <h3>Real Estate Development</h3>
+                            <p>Acquire and develop properties supporting our transportation operations plus generate rental income. Transform land into mixed-use hubs with residential, commercial, and operational space.</p>
+                            <div class="phase-highlights">
+                                <ul>
+                                    <li>Strategic property acquisition</li>
+                                    <li>Mixed-use development (MU zoning)</li>
+                                    <li>Rent-to-own property programs</li>
+                                    <li>Airbnb &amp; tenant revenue streams</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ============ FINANCE ============ -->
+            <div class="view" id="view-finance">
+                <section class="phases">
+                    <div class="container">
+                        <h2>Finance</h2>
+
+                        <div class="fin-menu" id="finMenu">
+                            <p class="view-intro" style="grid-column: 1 / -1;">Our financial products — choose one to explore.</p>
+                            <div class="fin-card" onclick="openFinProduct('debt')">
+                                <div class="fin-card-icon">💸</div>
+                                <h3>AI Debt Eliminator</h3>
+                                <p>Your paycheck's profits automatically pay down your debt — principal never at risk. From $14.17/mo.</p>
+                                <span class="fin-card-link">Open →</span>
+                            </div>
+                            <div class="fin-card" onclick="window.location.href='/deflator'">
+                                <div class="fin-card-icon">📈</div>
+                                <h3>Plateau Deflator <span style="font-size:.68rem;background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:10px;vertical-align:middle">RESEARCH</span></h3>
+                                <p>Our automated crypto-trading research project — in private verification, building an audited track record. Nothing for sale yet; follow the results.</p>
+                                <span class="fin-card-link">Follow the research →</span>
+                            </div>
+                            <!-- Add more finance product cards here (same pattern):
+                            <div class="fin-card" onclick="openFinProduct('savings')">
+                                <div class="fin-card-icon">🏦</div><h3>Savings Vault</h3>
+                                <p>…</p><span class="fin-card-link">Open →</span>
+                            </div> -->
+                        </div>
+
+                        <div class="fin-pane" id="fin-debt">
+                            <button class="fin-back" onclick="closeFinProduct()">← All Finance products</button>
+                            <p class="view-intro">Your paycheck works while you sleep — profits go straight to your debt, and your principal is never at risk.</p>
+
+                        <div class="fin-flow">
+                            <div class="fin-step"><span class="fin-num">1</span><p>Your paycheck arrives as normal</p></div>
+                            <div class="fin-step"><span class="fin-num">2</span><p>Our AI trades the balance during a 1–2 week window</p></div>
+                            <div class="fin-step"><span class="fin-num">3</span><p>Profits lock in a protected vault (5–15%/mo target)</p></div>
+                            <div class="fin-step"><span class="fin-num">4</span><p>100% of profit auto-pays your debt</p></div>
+                            <div class="fin-step"><span class="fin-num">5</span><p>Your principal returns intact — no risk</p></div>
+                        </div>
+
+                        <h3 class="pricing-title">Simple pricing · 30-day free trial</h3>
+                        <div class="pricing-grid">
+                            <div class="price-card best">
+                                <div class="price-badge">Best value</div>
+                                <h4>Annual</h4>
+                                <div class="price">$170<span>/year</span></div>
+                                <p class="price-sub">Just $14.17/mo — billed once a year</p>
+                                <ul>
+                                    <li>✓ Automated trading engine</li>
+                                    <li>✓ Principal always protected</li>
+                                    <li>✓ Auto debt payoff</li>
+                                    <li>✓ Real-time dashboard</li>
+                                </ul>
+                                <button class="price-btn" onclick="openEnroll('annual')">Start free trial →</button>
+                            </div>
+                            <div class="price-card">
+                                <h4>Monthly</h4>
+                                <div class="price">$14.17<span>/month</span></div>
+                                <p class="price-sub">Billed monthly · cancel anytime</p>
+                                <ul>
+                                    <li>✓ Automated trading engine</li>
+                                    <li>✓ Principal always protected</li>
+                                    <li>✓ Auto debt payoff</li>
+                                    <li>✓ Real-time dashboard</li>
+                                </ul>
+                                <button class="price-btn ghost" onclick="openEnroll('monthly')">Start free trial →</button>
+                            </div>
+                        </div>
+                        <p class="fin-fineprint">Less than one month's minimum credit-card payment. Only profits go toward debt — your principal is never spent. Trading involves risk; results are not guaranteed.</p>
+
+                        <div class="wish-box">
+                            <p class="wish-lead">Not ready to enroll, but want this to exist?</p>
+                            <button class="wish-btn" id="wishBtn" onclick="showWish()">💜 I wish that to be happening</button>
+                            <div class="wish-form" id="wishForm" style="display:none;">
+                                <input id="wish_email" type="email" placeholder="your@email.com">
+                                <button onclick="submitWish()">Save my email</button>
+                            </div>
+                            <p class="wish-msg" id="wish_msg"></p>
+                        </div>
+                        </div><!-- /fin-debt pane -->
+
+                        <!-- Future finance product panes go here:
+                        <div class="fin-pane" id="fin-savings"> ... </div> -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- ============ REINVESTMENT ============ -->
+            <div class="view" id="view-reinvestment">
+                <section class="phases">
+                    <div class="container">
+                        <h2>Reinvestment</h2>
+                        <div class="phase-card" style="border-left-color:#ec4899;">
+                            <h3>Reinvestment USA</h3>
+                            <p>Deploy accumulated capital back into American infrastructure, communities, and businesses. Create a virtuous cycle of economic value creation and reinvestment.</p>
+                            <div class="phase-highlights">
+                                <ul>
+                                    <li>Community development</li>
+                                    <li>Strategic reinvestment</li>
+                                    <li>Economic impact scaling</li>
+                                    <li>Long-term wealth creation</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <footer>
+                <p>&copy; 2026 Plateau Strategy Solution Lab. Building integrated wealth through connected ecosystems.</p>
+            </footer>
+        </div>
+    </main>
+
+    <!-- Role login modal -->
+    <div class="role-modal" id="roleModal">
+        <div class="role-modal-card">
+            <button class="role-close" onclick="closeRole()">&times;</button>
+
+            <div class="role-form" id="role-customer">
+                <h2>🚗 Customer</h2>
+                <p class="rm-sub">Enter your details and a password, then book your ride.</p>
+                <label>Full name</label>
+                <input id="cu_name" placeholder="Your name">
+                <div class="rm-row">
+                    <div><label>Email</label><input id="cu_email" type="email" placeholder="you@email.com"></div>
+                    <div><label>Phone</label><input id="cu_phone" placeholder="(415) 555-0100"></div>
+                </div>
+                <label>Password</label>
+                <input id="cu_pw" type="password" placeholder="••••••••">
+                <button class="rm-primary" onclick="customerAuth()">Continue to booking →</button>
+                <div class="rm-msg" id="cu_msg"></div>
+                <p class="rm-alt">New here? Just fill this in — we'll create your account.</p>
+            </div>
+
+            <div class="role-form" id="role-driver" style="display:none;">
+                <h2>👤 Driver</h2>
+                <p class="rm-sub">Log in with your renting VIN and last name.</p>
+                <label>Renting VIN</label>
+                <input id="dr_vin" placeholder="5YJ3E1EA7PF000000">
+                <label>Last name</label>
+                <input id="dr_last" placeholder="Diaz">
+                <button class="rm-primary" onclick="driverLogin()">Log in →</button>
+                <div class="rm-msg" id="dr_msg"></div>
+                <p class="rm-alt">New driver? <a href="/renter">Register your car →</a></p>
+            </div>
+
+            <div class="role-form" id="role-agent" style="display:none;">
+                <h2>🤝 Agent</h2>
+                <p class="rm-sub">Log in with your organization and last name.</p>
+                <label>Organization</label>
+                <input id="ag_org" placeholder="Lopez Travel Agency">
+                <label>Last name</label>
+                <input id="ag_last" placeholder="Lopez">
+                <button class="rm-primary" onclick="agentLogin()">Log in →</button>
+                <div class="rm-msg" id="ag_msg"></div>
+                <p class="rm-alt">New agent? <a href="/agent">Register your organization →</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Debt Eliminator enroll modal -->
+    <div class="role-modal" id="financeModal">
+        <div class="role-modal-card">
+            <button class="role-close" onclick="closeEnroll()">&times;</button>
+            <div class="role-form">
+                <h2>Start your free trial</h2>
+                <p class="rm-sub" id="fin_plan_sub">30-day free trial, then <strong>$170/year</strong>. Cancel anytime.</p>
+                <label>Full name</label>
+                <input id="fin_name" placeholder="Your name">
+                <div class="rm-row">
+                    <div><label>Email</label><input id="fin_email" type="email" placeholder="you@email.com"></div>
+                    <div><label>Phone</label><input id="fin_phone" placeholder="(415) 555-0100"></div>
+                </div>
+                <button class="rm-primary" style="background:linear-gradient(135deg,#f59e0b,#d97706);" onclick="submitEnroll()">Start free trial &amp; enroll →</button>
+                <div class="rm-msg" id="fin_msg"></div>
+                <p class="rm-alt" id="fin_result" style="display:none;"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating "Back" that appears where the mouse stops -->
+    <button id="floatBack" onclick="floatGoBack()">← Back</button>
+
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault();
+            const email = event.target.querySelector('input[type="email"]').value;
+            alert(`Thanks for your interest! We'll be in touch at ${email}`);
+            event.target.reset();
+        }
+
+        // ---- Finance product directory (AI Debt Eliminator + future products) ----
+        function openFinProduct(name) {
+            const menu = document.getElementById('finMenu');
+            if (menu) menu.style.display = 'none';
+            document.querySelectorAll('#view-finance .fin-pane').forEach(p => p.classList.remove('active'));
+            const pane = document.getElementById('fin-' + name);
+            if (pane) pane.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function closeFinProduct() {
+            document.querySelectorAll('#view-finance .fin-pane').forEach(p => p.classList.remove('active'));
+            const menu = document.getElementById('finMenu');
+            if (menu) menu.style.display = '';
+        }
+
+        // ---- AI Debt Eliminator enrollment ----
+        let _finPlan = 'annual';
+        function openEnroll(plan) {
+            _finPlan = plan;
+            document.getElementById('fin_plan_sub').innerHTML = (plan === 'monthly')
+                ? '30-day free trial, then <strong>$14.17/month</strong>. Cancel anytime.'
+                : '30-day free trial, then <strong>$170/year</strong>. Cancel anytime.';
+            document.getElementById('fin_msg').textContent = '';
+            document.getElementById('fin_result').style.display = 'none';
+            document.getElementById('financeModal').classList.add('open');
+        }
+        function closeEnroll() { document.getElementById('financeModal').classList.remove('open'); }
+        document.addEventListener('click', function (e) { if (e.target && e.target.id === 'financeModal') closeEnroll(); });
+
+        async function submitEnroll() {
+            const msg = document.getElementById('fin_msg');
+            const body = {
+                plan: _finPlan,
+                name: (document.getElementById('fin_name').value || '').trim(),
+                email: (document.getElementById('fin_email').value || '').trim(),
+                phone: (document.getElementById('fin_phone').value || '').trim(),
+            };
+            if (!body.name || !body.email) { msg.textContent = 'Name and email are required.'; return; }
+            msg.textContent = 'Enrolling…';
+            const j = await (await fetch('/api/finance/enroll', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
+            if (!j.ok) { msg.textContent = j.error || 'Could not enroll.'; return; }
+            msg.textContent = '';
+            const inv = j.signup.invoice || {};
+            const invLine = inv.url ? '<a href="' + inv.url + '" target="_blank">View your invoice →</a>' : 'Your invoice will be emailed to you.';
+            const res = document.getElementById('fin_result');
+            res.style.display = 'block'; res.style.color = '#047857';
+            res.innerHTML = "✅ You're enrolled on the " + j.signup.plan + ' plan (' + j.signup.billing + ').<br>' + invLine;
+        }
+
+        // ---- "I wish that to be happening" interest capture ----
+        function showWish() {
+            document.getElementById('wishForm').style.display = 'flex';
+            document.getElementById('wishBtn').style.display = 'none';
+            document.getElementById('wish_email').focus();
+        }
+        async function submitWish() {
+            const msg = document.getElementById('wish_msg');
+            const email = (document.getElementById('wish_email').value || '').trim();
+            if (!email) { msg.style.color = '#dc2626'; msg.textContent = 'Please enter your email.'; return; }
+            const j = await (await fetch('/api/finance/wish', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) })).json();
+            if (!j.ok) { msg.style.color = '#dc2626'; msg.textContent = j.error || 'Could not save.'; return; }
+            document.getElementById('wishForm').style.display = 'none';
+            msg.style.color = '#047857';
+            msg.textContent = "✅ Saved! We'll let you know the moment it's live.";
+        }
+
+        // ---- Role-based login (main page) ----
+        const rv = id => (document.getElementById(id).value || '').trim();
+
+        function openRole(role) {
+            document.querySelectorAll('.role-form').forEach(f => f.style.display = 'none');
+            document.getElementById('role-' + role).style.display = 'block';
+            document.getElementById('roleModal').classList.add('open');
+        }
+        function closeRole() {
+            document.getElementById('roleModal').classList.remove('open');
+        }
+        // Close when clicking the dark backdrop
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.id === 'roleModal') closeRole();
+        });
+
+        async function customerAuth() {
+            const msg = document.getElementById('cu_msg');
+            const body = { name: rv('cu_name'), email: rv('cu_email'), phone: rv('cu_phone'), password: rv('cu_pw') };
+            if (!body.email || !body.password) { msg.textContent = 'Email and password are required.'; return; }
+            const j = await (await fetch('/api/customers/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
+            if (!j.ok) { msg.textContent = j.error || 'Could not sign in.'; return; }
+            localStorage.setItem('customer', JSON.stringify(j.customer));
+            window.location.href = '/book';
+        }
+
+        async function driverLogin() {
+            const msg = document.getElementById('dr_msg');
+            const body = { vin: rv('dr_vin'), last_name: rv('dr_last') };
+            if (!body.vin || !body.last_name) { msg.textContent = 'VIN and last name are required.'; return; }
+            const j = await (await fetch('/api/renters/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
+            if (!j.ok) { msg.textContent = j.error || 'Login failed.'; return; }
+            localStorage.setItem('renter_id', j.renter.id);
+            window.location.href = '/renter';
+        }
+
+        async function agentLogin() {
+            const msg = document.getElementById('ag_msg');
+            const body = { organization: rv('ag_org'), last_name: rv('ag_last') };
+            if (!body.organization || !body.last_name) { msg.textContent = 'Organization and last name are required.'; return; }
+            const j = await (await fetch('/api/agents/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
+            if (!j.ok) { msg.textContent = j.error || 'Login failed.'; return; }
+            localStorage.setItem('agent_id', j.agent.id);
+            window.location.href = '/agent';
+        }
+
+        // Show a single section (view) at a time, anchored at the top of the page.
+        let _viewHistory = [];
+        function showView(name, evt, isBack) {
+            if (evt && evt.preventDefault) evt.preventDefault();
+
+            // Remember where we came from so "← Back" returns to the previous page
+            const cur = document.querySelector('.view.active');
+            const curName = cur ? cur.id.replace('view-', '') : null;
+            if (!isBack && curName && curName !== name) _viewHistory.push(curName);
+
+            // Highlight the matching tab
+            const tabs = document.querySelectorAll('.phase-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            const activeTab = (evt && evt.currentTarget) ? evt.currentTarget
+                : Array.from(tabs).find(t => (t.getAttribute('onclick') || '').includes("'" + name + "'"));
+            if (activeTab) activeTab.classList.add('active');
+
+            // Swap to the matching view
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            const view = document.getElementById('view-' + name);
+            if (view) view.classList.add('active');
+
+            // Finance always opens on its product menu (not a stale product page)
+            if (name === 'finance') closeFinProduct();
+
+            updateBackButton();
+            hideNav();
+            hideFloatBack();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Floating "← Back" that appears where the mouse stops, then STAYS so it's easy to catch.
+        let _fbShowT, _fbHideT, _fbX = 0, _fbY = 0;
+        function _fbEl() { return document.getElementById('floatBack'); }
+        function showFloatBack() {
+            if (!_viewHistory.length) return;            // nothing to go back to
+            const b = _fbEl(); if (!b) return;
+            if (!b.classList.contains('shown')) {        // position only when first appearing (no chasing)
+                b.style.left = Math.min(Math.max(_fbX + 10, 8), window.innerWidth - 118) + 'px';
+                b.style.top = Math.min(Math.max(_fbY + 12, 8), window.innerHeight - 50) + 'px';
+            }
+            b.classList.add('shown');
+            clearTimeout(_fbHideT);
+            _fbHideT = setTimeout(hideFloatBack, 4000);  // stays up ~4s
+        }
+        function hideFloatBack() { const b = _fbEl(); if (b) b.classList.remove('shown'); }
+        function floatGoBack() { clearTimeout(_fbHideT); hideFloatBack(); goBack(); }
+        document.addEventListener('mousemove', function (e) {
+            _fbX = e.clientX; _fbY = e.clientY;
+            clearTimeout(_fbShowT);
+            _fbShowT = setTimeout(showFloatBack, 500);   // appears when the mouse stops
+        });
+        (function () {
+            const b = _fbEl();
+            if (b) {
+                b.addEventListener('mouseenter', function () { clearTimeout(_fbHideT); });          // hovering keeps it
+                b.addEventListener('mouseleave', function () { clearTimeout(_fbHideT); _fbHideT = setTimeout(hideFloatBack, 1500); });
+            }
+        })();
+
+        function goBack() {
+            // Inside Finance, an open product backs to the product menu first (more accurate)
+            const finView = document.getElementById('view-finance');
+            if (finView && finView.classList.contains('active') && document.querySelector('#view-finance .fin-pane.active')) {
+                closeFinProduct(); hideFloatBack(); updateBackButton(); return;
+            }
+            const prev = _viewHistory.pop();
+            showView(prev || 'overview', null, true);
+        }
+        function updateBackButton() {
+            const btn = document.getElementById('navBack');
+            if (btn) btn.style.display = _viewHistory.length ? 'inline-flex' : 'none';
+        }
+
+        // Section tabs reveal when the mouse goes to the top of the screen, then tuck away.
+        let _navTimer;
+        function showNav() { const n = document.querySelector('.phase-tabs'); if (n) n.classList.add('shown'); clearTimeout(_navTimer); }
+        function hideNav() { const n = document.querySelector('.phase-tabs'); if (n) n.classList.remove('shown'); }
+        function scheduleHideNav() { clearTimeout(_navTimer); _navTimer = setTimeout(hideNav, 500); }
+        document.addEventListener('DOMContentLoaded', function () {
+            const nav = document.querySelector('.phase-tabs');
+            document.addEventListener('mousemove', function (e) {
+                if (e.clientY < 96) showNav();
+                else if (nav && !nav.matches(':hover')) scheduleHideNav();
+            });
+            if (nav) {
+                nav.addEventListener('mouseenter', showNav);
+                nav.addEventListener('mouseleave', scheduleHideNav);
+            }
+            const trig = document.getElementById('sectionsTrigger');
+            if (trig) { trig.addEventListener('mouseenter', showNav); trig.addEventListener('click', showNav); }
+        });
+
+        // Initialize on the Overview view.
+        document.addEventListener('DOMContentLoaded', function () {
+            showView('overview');
+        });
+    </script>
+</body>
+</html>

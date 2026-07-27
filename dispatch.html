@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dispatch — Plateau Strategy Solution Lab</title>
+    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            /* Dash "Terminal" palette — navy, hairline borders, dimmed hierarchy */
+            --bg: #0d1526; --panel: #121f38; --line: #26395c;
+            --text: #dfe8f7; --head: #f8fafc; --muted: #94a6c6; --muted2: #5d7195;
+            --accent: #4da6ff; --accent2: #2563eb;
+            --serif: Georgia, 'Times New Roman', serif;
+            --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        }
+        body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+        header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #fff; padding: 1rem 2rem;
+            display: flex; align-items: center; gap: 0.85rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); position: sticky; top: 0; z-index: 10; }
+        header img { height: 38px; width: 38px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.18); }
+        header .brand { font-family: var(--serif); font-weight: 700; font-size: 1.25rem; }
+        header .right { margin-left: auto; display: flex; align-items: center; gap: 1.1rem; font-size: 0.9rem; }
+        header a { color: #cbd5e1; text-decoration: none; font-weight: 600; }
+        header a:hover { color: #fff; }
+        header .live { color: #86efac; font-size: 0.78rem; }
+
+        .wrap { max-width: 1280px; margin: 1.8rem auto; padding: 0 1.3rem; }
+        h1 { font-family: var(--serif); color: var(--head); font-size: 1.7rem; margin-bottom: 0.25rem; }
+        .sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+        h2 { font-family: var(--serif); color: var(--head); font-size: 1.15rem; margin: 1.6rem 0 0.8rem; }
+
+        .stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.8rem; margin-bottom: 1.4rem; }
+        .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 9px; padding: 0.9rem 1rem; text-align: center; }
+        .stat .n { font-family: var(--serif); font-size: 1.6rem; font-weight: 700; color: #fff; }
+        .stat.amber .n { color: #fcd34d; } .stat.blue .n { color: #93c5fd; }
+        .stat.green .n { color: #86efac; } .stat.red .n { color: #fca5a5; }
+        .stat .l { color: var(--muted); font-size: 0.7rem; margin-top: 0.2rem; text-transform: uppercase; letter-spacing: 0.4px; }
+        @media (max-width: 860px) { .stats { grid-template-columns: repeat(3, 1fr); } }
+
+        .tools { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
+        .tool { flex: 1; min-width: 160px; background: var(--panel); border: 1px solid var(--line); border-radius: 9px;
+            padding: 0.9rem 1.1rem; text-decoration: none; color: var(--text); display: block; }
+        .tool:hover { border-color: var(--accent); }
+        .tool .t { font-family: var(--serif); font-weight: 700; color: #f1f5f9; }
+        .tool .d { color: var(--muted); font-size: 0.8rem; margin-top: 0.15rem; }
+
+        .filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0.4rem 0 1rem; }
+        .filters button { background: var(--panel); border: 1px solid var(--line); color: #cbd5e1; border-radius: 999px;
+            padding: 0.4rem 0.95rem; font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+        .filters button.on { background: linear-gradient(135deg,#1e3a8a,#2563eb); border-color: #2563eb; color: #fff; }
+
+        .board { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 0.4rem 1rem; overflow-x: auto; }
+        .attn { background: linear-gradient(135deg,#3a2a0a,#3a1d1d); border: 1px solid #a16207; border-radius: 10px; padding: 0.95rem 1.15rem; margin: 0.4rem 0 1.4rem; }
+        .attn-title { font-weight: 800; color: #fcd34d; font-size: 0.98rem; margin-bottom: 0.6rem; }
+        .attn-row { font-size: 0.85rem; color: #fde68a; padding: 0.34rem 0; border-top: 1px solid rgba(255,255,255,0.08); display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
+        .attn-row:first-of-type { border-top: none; }
+        .attn-row.urgent { color: #fecaca; }
+        .attn-row b { color: #fff; }
+        .attn-age { color: #cbd5e1; font-size: 0.78rem; }
+        .attn-go { margin-left: auto; background: linear-gradient(135deg,#f59e0b,#d97706); color: #16233f; border: none; border-radius: 6px; padding: 0.32rem 0.7rem; font-size: 0.76rem; font-weight: 800; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th { text-align: left; padding: 0.6rem 0.5rem; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted2); font-weight: 700; border-bottom: 1px solid var(--line); }
+        td { padding: 0.75rem 0.5rem; font-size: 0.85rem; border-bottom: 1px solid #24324a; vertical-align: top; color: #cbd5e1; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+        .rid { font-size: 0.72rem; color: var(--muted2); font-weight: 700; }
+        .route { font-weight: 700; color: #f1f5f9; }
+        .route .arrow { color: #60a5fa; margin: 0 0.3rem; }
+        .small { color: var(--muted); font-size: 0.78rem; }
+        .fare { color: #4ade80; font-weight: 700; }
+        .agent-tag { display: inline-block; font-size: 0.68rem; background: #312e81; color: #c7d2fe; padding: 0.12rem 0.5rem; border-radius: 4px; }
+        .badge { font-size: 0.64rem; font-weight: 700; padding: 0.2rem 0.55rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge.NEW { background: #78350f; color: #fcd34d; }
+        .badge.ASSIGNED { background: #1e3a8a; color: #93c5fd; }
+        .badge.COMPLETED { background: #14532d; color: #86efac; }
+        .badge.CANCELED { background: #7f1d1d; color: #fecaca; }
+        .badge.REQUESTED { background: #78350f; color: #fcd34d; }
+        .badge.PAID { background: #14532d; color: #86efac; }
+        .badge.DECLINED { background: #7f1d1d; color: #fecaca; }
+        .ctrls { display: flex; flex-direction: column; gap: 0.4rem; min-width: 200px; }
+        .ctrls select { background: #0f172a; border: 1px solid #334155; color: var(--text); border-radius: 6px; padding: 0.4rem 0.5rem; font-size: 0.82rem; }
+        .btnrow { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+        .btnrow button { border: none; border-radius: 6px; padding: 0.4rem 0.7rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; }
+        .b-complete { background: linear-gradient(135deg,#22c55e,#16a34a); color: #fff; }
+        .b-release { background: #334155; color: #cbd5e1; }
+        .b-cancel { background: transparent; color: #f87171; border: 1px solid #7f1d1d !important; }
+        .driver-name { color: #93c5fd; font-weight: 700; }
+        .empty { color: var(--muted2); padding: 1.6rem; text-align: center; }
+        .plabel { font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted2); font-weight: 700; margin-bottom: 0.3rem; }
+        .pin { width: 100%; background: #0f172a; border: 1px solid #334155; color: var(--text); border-radius: 6px; padding: 0.55rem 0.7rem; font-size: 0.88rem; }
+        .preset-row, .rate-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.5rem 0; border-bottom: 1px solid #24324a; }
+        .preset-row .nm, .rate-row .an { color: #f1f5f9; font-weight: 600; font-size: 0.88rem; }
+        .preset-row .pr { color: #4ade80; font-weight: 700; }
+        .preset-row .x { background: none; border: none; color: #7f1d1d; cursor: pointer; font-size: 1.1rem; font-weight: 700; }
+        .preset-row .x:hover { color: #f87171; }
+        .rate-row input { width: 88px; background: #0f172a; border: 1px solid #334155; color: var(--text); border-radius: 6px; padding: 0.4rem 0.5rem; font-size: 0.85rem; }
+        .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #1e293b;
+            border: 1px solid #475569; color: #e2e8f0; padding: 0.8rem 1.4rem; border-radius: 6px; display: none; z-index: 50; font-size: 0.9rem; }
+        .linkbtn { background: none; border: none; color: #e6b7b7; cursor: pointer; font: inherit; font-weight: 600; }
+        .linkbtn:hover { color: #fff; }
+
+        /* Dispatch login gate */
+        .auth-overlay { position: fixed; inset: 0; background: #0b1220; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+        .auth-overlay.hidden { display: none; }
+        .auth-box { position: relative; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: 12px; padding: 2rem; max-width: 380px; width: 100%; box-shadow: 0 24px 60px rgba(0,0,0,0.5); }
+        .auth-close { position: absolute; top: 0.7rem; right: 0.85rem; background: none; border: none; color: var(--muted); font-size: 1.5rem; line-height: 1; cursor: pointer; padding: 0.2rem 0.4rem; border-radius: 6px; }
+        .auth-close:hover { color: #fff; background: rgba(255,255,255,0.08); }
+        .auth-exit { display: block; text-align: center; margin-top: 1.1rem; color: var(--muted); font-size: 0.85rem; text-decoration: none; }
+        .auth-exit:hover { color: #93c5fd; }
+        .auth-logo { font-family: var(--serif); color: #fff; font-weight: 700; font-size: 1.05rem; margin-bottom: 1.1rem; }
+        .auth-box h3 { font-family: var(--serif); color: var(--head); font-size: 1.3rem; margin-bottom: 0.25rem; }
+        .auth-box .small { color: var(--muted); font-size: 0.85rem; }
+        .auth-box label { display: block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px; color: #cbd5e1; font-weight: 700; margin: 1rem 0 0.3rem; }
+        .auth-box input { width: 100%; background: #0f172a; border: 1px solid #334155; color: var(--text); border-radius: 6px; padding: 0.7rem 0.85rem; font-size: 0.95rem; }
+        .auth-box input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+        .auth-btn { width: 100%; margin-top: 1.3rem; padding: 0.85rem; background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; }
+        .auth-btn:hover { filter: brightness(1.08); }
+        .auth-msg { margin-top: 0.8rem; font-size: 0.85rem; color: #fca5a5; }
+    </style>
+    <link rel="stylesheet" href="/admin-terminal.css">
+</head>
+<body>
+    <header>
+        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="right"><span class="live" id="live">● live</span><button class="linkbtn" id="logoutBtn" style="display:none" onclick="logout()">Log out</button><a href="/">Home</a></div>
+    </header>
+
+    <div class="auth-overlay hidden" id="authOverlay">
+        <div class="auth-box">
+            <button class="auth-close" onclick="exitAuth()" title="Exit to homepage" aria-label="Exit">&times;</button>
+            <div class="auth-logo">Plateau Strategy Solution Lab</div>
+            <h3 id="authTitle">Dispatch Login</h3>
+            <p class="small" id="authSub">Sign in to your control center.</p>
+            <label>Username</label>
+            <input id="au_user" autocomplete="username">
+            <label>Password</label>
+            <input id="au_pass" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doAuth()">
+            <button class="auth-btn" id="authBtn" onclick="doAuth()">Sign in</button>
+            <div class="auth-msg" id="authMsg"></div>
+            <a class="auth-exit" href="/" onclick="exitAuth();return false;">← Exit to homepage</a>
+        </div>
+    </div>
+
+    <div class="wrap">
+        <h1>Dispatch</h1>
+        <p class="sub">Your control center — every reservation, from every source, in one place. Assign drivers, complete rides, and keep the whole operation organized.</p>
+
+        <div class="stats" id="stats"></div>
+
+        <div class="tools">
+            <a class="tool" href="/partners"><div class="t">Atlas →</div><div class="d" id="tool-partners">Partner pipeline · organizations to recruit as agents</div></a>
+            <a class="tool" href="/agent"><div class="t">Agents →</div><div class="d">Referral partners &amp; commissions</div></a>
+            <a class="tool" href="/renter"><div class="t">Drivers →</div><div class="d" id="tool-drivers">Rides, contracts &amp; rent-to-own</div></a>
+            <a class="tool" href="/books"><div class="t">Books &amp; Taxes →</div><div class="d">Live Square revenue</div></a>
+            <a class="tool" href="/archive"><div class="t">Archive →</div><div class="d">Every paper trail — bookings, contacts, agreements &amp; paperwork</div></a>
+        </div>
+
+        <div id="attention" style="display:none;"></div>
+        <h2>Reservations</h2>
+        <div class="filters" id="filters"></div>
+        <div class="board">
+            <table>
+                <thead><tr><th>Reservation</th><th>Client</th><th>Route</th><th>Fare</th><th>Agent</th><th>Status</th><th>Driver &amp; Controls</th></tr></thead>
+                <tbody id="rows"></tbody>
+            </table>
+            <div class="empty" id="empty" style="display:none;">No reservations yet. Bookings from customers and agents appear here automatically.</div>
+        </div>
+
+        <h2>Service Tickets &amp; Pricing</h2>
+        <div class="board" style="padding:1.3rem 1.4rem;">
+            <div style="display:flex;gap:2.4rem;flex-wrap:wrap;">
+                <div style="flex:1;min-width:300px;">
+                    <div class="small" style="margin-bottom:0.7rem;">Price presets — fill the price on the booking &amp; agent forms (still editable per ride).</div>
+                    <div id="presetList"></div>
+                    <div style="display:flex;gap:0.5rem;margin-top:0.9rem;align-items:flex-end;flex-wrap:wrap;">
+                        <div style="flex:1;min-width:150px;"><div class="plabel">Service name</div><input class="pin" id="pr_name" placeholder="Cruise Port Transfer"></div>
+                        <div style="width:100px;"><div class="plabel">Price $</div><input class="pin" id="pr_price" type="number" min="0" step="0.01" placeholder="89"></div>
+                        <div style="width:120px;"><div class="plabel">Agent earns $</div><input class="pin" id="pr_comm" type="number" min="0" step="0.01" placeholder="18"></div>
+                        <button class="b-complete" style="padding:0.55rem 1rem;" onclick="addPreset()">+ Add</button>
+                    </div>
+                </div>
+                <div style="flex:1;min-width:300px;">
+                    <div class="small" style="margin-bottom:0.7rem;">Per-agent rates — an agent's referrals pre-fill to their negotiated rate (blank = your default).</div>
+                    <div id="agentRates"><div class="small">No agents yet.</div></div>
+                </div>
+            </div>
+        </div>
+
+        <h2>Driver Paperwork &amp; Compliance</h2>
+        <div class="board" style="padding:1.2rem 1.4rem;">
+            <div class="small" style="margin-bottom:0.9rem;">Every driver's archived documents and compliance standing. Click a driver to open their paper trail, then open any document to review it.</div>
+            <div id="paperworkList"><div class="small">Loading…</div></div>
+        </div>
+
+        <h2>💸 Payouts</h2>
+        <div class="board" style="padding:1.2rem 1.4rem;">
+            <div class="small" style="margin-bottom:0.9rem;">Agents &amp; driver-agents request their earned money here. Send it your way (Zelle / cash / check), then mark it paid — the ledger stays honest. Balances show what each agent can still request.</div>
+            <table style="min-width:0;">
+                <thead><tr><th>Request</th><th>Agent</th><th>Amount</th><th>Preferred method</th><th>Requested</th><th>Status</th><th></th></tr></thead>
+                <tbody id="payoutRows"></tbody>
+            </table>
+            <div class="small" id="payoutNone" style="display:none; padding:0.8rem 0;">No payout requests yet.</div>
+            <div class="small" id="payoutBalances" style="margin-top:0.8rem;"></div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+        const STATUSES = ['NEW','ASSIGNED','COMPLETED','CANCELED'];
+        const SLABEL = { NEW:'Open', ASSIGNED:'Assigned', COMPLETED:'Completed', CANCELED:'Canceled' };
+        let RES = [], DRIVERS = [], PARTNERS = [], FILTER = 'active';
+
+        function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.style.display='block'; clearTimeout(t._h); t._h=setTimeout(()=>t.style.display='none',2200); }
+
+        async function loadAll(){
+            try {
+                const [r, d, p] = await Promise.all([
+                    fetch('/api/reservations').then(x=>x.json()),
+                    fetch('/api/renters').then(x=>x.json()),
+                    fetch('/api/partners').then(x=>x.json())
+                ]);
+                RES = (r.reservations || []); DRIVERS = (d.renters || []); PARTNERS = (p.partners || []);
+            } catch(e){ return; }
+            render();
+            loadAttention();
+            loadPayouts();
+        }
+
+        async function loadPayouts(){
+            let j;
+            try { j = await (await fetch('/api/payouts')).json(); } catch(e){ return; }
+            if (!j || !j.ok) return;
+            const pp = j.paypal || {};
+            const emailByAgent = {};
+            (j.balances || []).forEach(b => { emailByAgent[b.agent_id] = b.payout_email || ''; });
+            const rows = j.payouts || [];
+            document.getElementById('payoutNone').style.display = rows.length ? 'none' : 'block';
+            document.getElementById('payoutRows').innerHTML = rows.map(p => {
+                let payBtn = '';
+                if (p.status === 'REQUESTED' && pp.configured) {
+                    payBtn = emailByAgent[p.agent_id]
+                        ? '<button class="b-complete" style="background:linear-gradient(135deg,#0070ba,#003087);" onclick="payPaypal(\'' + p.id + '\')">Pay via PayPal' + (pp.env === 'sandbox' ? ' (sandbox)' : '') + '</button>'
+                        : '<span class="small">no PayPal email on file</span>';
+                }
+                const ctrl = p.status === 'REQUESTED'
+                    ? '<div class="btnrow">' + payBtn +
+                      '<button class="b-complete" onclick="markPaid(\'' + p.id + '\')">Mark paid ✓</button>' +
+                      '<button class="b-cancel" onclick="declinePayout(\'' + p.id + '\')">Decline</button></div>'
+                    : (p.status === 'PAID' ? '<span class="small">' + esc((p.paid_at||'').slice(0,16).replace('T',' ')) + (p.paid_method ? ' · ' + esc(p.paid_method) : '') + '</span>' : '');
+                return '<tr><td class="rid">' + esc(p.id) + '</td><td>' + esc(p.agent_name||'') + '</td>' +
+                    '<td class="fare">$' + esc(p.amount) + '</td><td class="small">' + esc(p.method||'—') + '</td>' +
+                    '<td class="small">' + esc((p.requested_at||'').slice(0,16).replace('T',' ')) + '</td>' +
+                    '<td><span class="badge ' + esc(p.status) + '">' + esc(p.status) + '</span></td>' +
+                    '<td>' + ctrl + '</td></tr>';
+            }).join('');
+            const bal = (j.balances || []).filter(b => b.total_take > 0 || b.paid_out > 0);
+            const ppLine = pp.configured
+                ? '🅿️ PayPal connected (' + esc(pp.env) + ') — one-click payouts on.'
+                : '🅿️ PayPal not connected — add PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET to .env to enable one-click payouts (until then, pay outside and Mark paid).';
+            document.getElementById('payoutBalances').innerHTML =
+                (bal.length ? '<b>Balances:</b> ' + bal.map(b => esc(b.name) + ' — earned $' + b.total_take + ' · paid $' + b.paid_out + ' · available $' + b.available).join(' &nbsp;·&nbsp; ') + '<br>' : '') + ppLine;
+        }
+
+        async function payPaypal(pid){
+            if (!confirm('Send this payout via PayPal now? The money leaves your PayPal balance immediately.')) return;
+            const j = await (await fetch('/api/payouts/' + pid + '/pay-paypal', { method:'POST',
+                headers:{'Content-Type':'application/json'}, body: '{}' })).json();
+            if (!j.ok) { showToast(j.error || 'PayPal payout failed'); loadPayouts(); return; }
+            showToast('Paid via PayPal — batch ' + (j.paypal && j.paypal.batch_id || 'ok'));
+            loadPayouts();
+        }
+
+        async function markPaid(pid){
+            const method = prompt('How did you send it? (Zelle / cash / check + reference — optional)') || '';
+            const j = await (await fetch('/api/payouts/' + pid + '/mark-paid', { method:'POST',
+                headers:{'Content-Type':'application/json'}, body: JSON.stringify({ method }) })).json();
+            if (!j.ok) { showToast(j.error || 'Failed'); return; }
+            showToast('Marked paid — the agent sees it instantly'); loadPayouts();
+        }
+
+        async function declinePayout(pid){
+            const reason = prompt('Reason (the agent will see their request declined):') || '';
+            const j = await (await fetch('/api/payouts/' + pid + '/decline', { method:'POST',
+                headers:{'Content-Type':'application/json'}, body: JSON.stringify({ reason }) })).json();
+            if (!j.ok) { showToast(j.error || 'Failed'); return; }
+            showToast('Request declined'); loadPayouts();
+        }
+
+        async function loadAttention(){
+            let j;
+            try { j = await (await fetch('/api/dispatch/uncovered')).json(); } catch(e){ return; }
+            if (!j || !j.ok) return;
+            const el = document.getElementById('attention');
+            const list = j.uncovered || [];
+            if (!list.length){ el.style.display='none'; el.innerHTML=''; return; }
+            const urgentN = list.filter(u => u.hours_left != null && u.hours_left < 3).length;
+            el.className = 'attn'; el.style.display='block';
+            el.innerHTML =
+                '<div class="attn-title">⚠️ ' + list.length + ' ride' + (list.length>1?'s':'') + ' with no driver yet' +
+                    (urgentN ? ' · 🚨 ' + urgentN + ' urgent' : '') + '</div>' +
+                list.map(u => {
+                    const urgent = u.hours_left != null && u.hours_left < 3;
+                    const pu = (u.hours_left == null) ? '' : (u.hours_left < 0 ? 'pickup passed' : 'pickup in ' + u.hours_left.toFixed(1) + 'h');
+                    return '<div class="attn-row' + (urgent?' urgent':'') + '">' + (urgent?'🚨 ':'') +
+                        '<b>' + esc(u.id) + '</b> · ' + esc(u.client||'—') + ' · ' + esc(u.pickup) + ' → ' + esc(u.dropoff) +
+                        ' <span class="attn-age">· open ' + u.mins_open + 'm' + (u.given_up?' (given up)':'') + (pu?' · '+pu:'') + '</span>' +
+                        '<button class="attn-go" onclick="document.getElementById(\'rows\').scrollIntoView({behavior:\'smooth\'})">Assign ↓</button>' +
+                        '</div>';
+                }).join('');
+        }
+
+        function render(){
+            const c = {}; STATUSES.forEach(s=> c[s] = RES.filter(r=>r.status===s).length);
+            document.getElementById('stats').innerHTML =
+                '<div class="stat amber"><div class="n">'+(c.NEW||0)+'</div><div class="l">Open</div></div>' +
+                '<div class="stat blue"><div class="n">'+(c.ASSIGNED||0)+'</div><div class="l">Assigned</div></div>' +
+                '<div class="stat green"><div class="n">'+(c.COMPLETED||0)+'</div><div class="l">Completed</div></div>' +
+                '<div class="stat red"><div class="n">'+(c.CANCELED||0)+'</div><div class="l">Canceled</div></div>' +
+                '<div class="stat"><div class="n">'+DRIVERS.length+'</div><div class="l">Drivers</div></div>' +
+                '<div class="stat"><div class="n">'+PARTNERS.length+'</div><div class="l">Prospects</div></div>';
+            const toContact = PARTNERS.filter(p=>p.status==='to_contact').length;
+            document.getElementById('tool-partners').textContent = PARTNERS.length + ' prospects · ' + toContact + ' to contact';
+            document.getElementById('tool-drivers').textContent = DRIVERS.length + ' drivers · rides, contracts, rent-to-own';
+
+            document.getElementById('filters').innerHTML =
+                [['active','Active'],['NEW','Open'],['ASSIGNED','Assigned'],['COMPLETED','Completed'],['CANCELED','Canceled'],['all','All']]
+                .map(([f,l])=>{
+                    const n = f==='all'?RES.length : f==='active'?(c.NEW||0)+(c.ASSIGNED||0) : (c[f]||0);
+                    return '<button class="'+(FILTER===f?'on':'')+'" onclick="setFilter(\''+f+'\')">'+l+' ('+n+')</button>';
+                }).join('');
+
+            let list = RES.slice().reverse();
+            if (FILTER==='active') list = list.filter(r=>r.status==='NEW'||r.status==='ASSIGNED');
+            else if (FILTER!=='all') list = list.filter(r=>r.status===FILTER);
+            document.getElementById('empty').style.display = list.length?'none':'block';
+            document.getElementById('rows').innerHTML = list.map(rowHtml).join('');
+        }
+
+        function rowHtml(r){
+            const t = r.trip||{}, cl = r.client||{};
+            const when = ((t.date||'')+' '+(t.time||'')).trim();
+            const agent = r.self_service
+                ? '<span class="agent-tag" style="background:#052e16;color:#86efac;">Driver-Agent · '+esc(r.driver||(r.agent&&r.agent.name)||'')+' · keeps full $'+esc(r.fare_usd)+'</span>'
+                : ((r.agent&&r.agent.name) ? '<span class="agent-tag">'+esc(r.agent.name)+' · $'+esc((r.agent.commission_usd)||0)+'</span>' : '<span class="small">—</span>');
+            let ctrls;
+            if (r.status==='NEW'){
+                const opts = '<option value="">Assign a driver…</option>' + DRIVERS.map(d=>'<option value="'+d.id+'">'+esc(d.name)+'</option>').join('');
+                ctrls = '<div class="ctrls"><select onchange="assign(\''+r.id+'\', this.value)">'+opts+'</select>' +
+                    '<div class="btnrow"><button class="b-cancel" onclick="cancelRes(\''+r.id+'\')">Cancel</button></div></div>';
+            } else if (r.status==='ASSIGNED'){
+                ctrls = '<div class="ctrls"><span class="driver-name">'+esc(r.driver||'—')+'</span>' +
+                    '<div class="btnrow"><button class="b-complete" onclick="complete(\''+r.id+'\')">Complete</button>' +
+                    '<button class="b-release" onclick="release(\''+r.id+'\')">Release</button>' +
+                    '<button class="b-cancel" onclick="cancelRes(\''+r.id+'\')">Cancel</button></div></div>';
+            } else {
+                ctrls = '<span class="small">'+esc(r.driver||'')+'</span>';
+            }
+            return '<tr>' +
+                '<td><span class="rid">'+esc(r.id)+'</span>'+(when?'<div class="small">'+esc(when)+'</div>':'')+'</td>' +
+                '<td>'+esc(cl.name||'—')+(cl.phone?'<div class="small">'+esc(cl.phone)+'</div>':'')+'</td>' +
+                '<td><span class="route">'+esc(t.pickup)+'<span class="arrow">→</span>'+esc(t.dropoff)+'</span>'+(t.flight?'<div class="small">✈ '+esc(t.flight)+'</div>':'')+'</td>' +
+                '<td><span class="fare">$'+esc(r.fare_usd)+'</span></td>' +
+                '<td>'+agent+'</td>' +
+                '<td><span class="badge '+r.status+'">'+SLABEL[r.status]+'</span></td>' +
+                '<td>'+ctrls+'</td></tr>';
+        }
+
+        function setFilter(f){ FILTER=f; render(); }
+
+        async function assign(rid, renter_id){
+            if(!renter_id) return;
+            const j = await (await fetch('/api/dispatch/assign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reservation_id:rid,renter_id})})).json();
+            if(!j.ok){ showToast(j.error||'Could not assign'); return; }
+            showToast('Assigned to '+j.reservation.driver); loadAll();
+        }
+        async function release(rid){
+            await fetch('/api/dispatch/release',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reservation_id:rid})});
+            showToast('Returned to open pool'); loadAll();
+        }
+        async function complete(rid){
+            await fetch('/api/reservations/'+rid+'/complete',{method:'POST'});
+            showToast('Marked complete'); loadAll();
+        }
+        async function cancelRes(rid){
+            if(!confirm('Cancel this reservation? Any Square invoice will be voided.')) return;
+            await fetch('/api/dispatch/cancel',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reservation_id:rid})});
+            showToast('Reservation canceled'); loadAll();
+        }
+
+        // ---------- service tickets & pricing (loaded once, not on the 10s poll) ----------
+        let PRESETS = [], AGENTS = [];
+        async function loadPricing(){
+            try {
+                const [pr, ag] = await Promise.all([
+                    fetch('/api/pricing').then(x=>x.json()),
+                    fetch('/api/agents').then(x=>x.json())
+                ]);
+                PRESETS = pr.presets || []; AGENTS = ag.agents || [];
+            } catch(e){ return; }
+            renderPricing();
+        }
+        function renderPricing(){
+            document.getElementById('presetList').innerHTML = PRESETS.length
+                ? PRESETS.map((p,i)=>'<div class="preset-row"><span class="nm">'+esc(p.name)+'</span><span><span class="pr">$'+esc(p.price)+'</span> <span class="small">agent $'+esc(p.commission!=null?p.commission:0)+'</span> <button class="x" title="Remove" onclick="delPreset('+i+')">×</button></span></div>').join('')
+                : '<div class="small">No presets yet — add one below.</div>';
+            document.getElementById('agentRates').innerHTML = AGENTS.length
+                ? AGENTS.map(a=>'<div class="rate-row"><span class="an">'+esc(a.name)+' <span class="small">'+esc(a.code||'')+'</span></span><span>$ <input type="number" min="0" step="0.01" value="'+(a.default_fare!=null?a.default_fare:'')+'" placeholder="default" onblur="setRate(\''+a.id+'\', this.value)"></span></div>').join('')
+                : '<div class="small">No agents yet.</div>';
+        }
+        async function addPreset(){
+            const name = document.getElementById('pr_name').value.trim();
+            const price = document.getElementById('pr_price').value.trim();
+            const commission = document.getElementById('pr_comm').value.trim();
+            if(!name || price===''){ showToast('Name and price required'); return; }
+            const j = await (await fetch('/api/pricing/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name, price, commission})})).json();
+            if(!j.ok){ showToast(j.error||'Could not add'); return; }
+            document.getElementById('pr_name').value=''; document.getElementById('pr_price').value=''; document.getElementById('pr_comm').value='';
+            showToast('Service added'); loadPricing();
+        }
+        async function delPreset(i){
+            const p = PRESETS[i]; if(!p) return;
+            await fetch('/api/pricing/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:p.name})});
+            showToast('Removed'); loadPricing();
+        }
+        async function setRate(agent_id, v){
+            await fetch('/api/pricing/agent-rate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({agent_id, default_fare: v})});
+            showToast('Rate saved');
+        }
+
+        // ---------- login gate ----------
+        let AUTH_MODE = 'login', _started = false;
+        async function checkAuth(){
+            let s;
+            try { s = await (await fetch('/api/owner/status')).json(); } catch(e){ return; }
+            if (s.logged_in){ startApp(); return; }
+            AUTH_MODE = s.configured ? 'login' : 'setup';
+            const setup = AUTH_MODE === 'setup';
+            document.getElementById('authTitle').textContent = setup ? 'Create Dispatch Login' : 'Dispatch Login';
+            document.getElementById('authSub').textContent = setup
+                ? 'First time here — set the username and password for your control center.'
+                : 'Sign in to your control center.';
+            document.getElementById('au_pass').setAttribute('autocomplete', setup ? 'new-password' : 'current-password');
+            document.getElementById('authBtn').textContent = setup ? 'Create login' : 'Sign in';
+            document.getElementById('authOverlay').classList.remove('hidden');
+            document.getElementById('au_user').focus();
+        }
+        async function doAuth(){
+            const u = document.getElementById('au_user').value.trim();
+            const p = document.getElementById('au_pass').value;
+            const msg = document.getElementById('authMsg');
+            if(!u || !p){ msg.textContent = 'Enter a username and password.'; return; }
+            const url = AUTH_MODE === 'setup' ? '/api/owner/setup' : '/api/owner/login';
+            let j;
+            try { j = await (await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})})).json(); }
+            catch(e){ msg.textContent = 'Connection problem — try again.'; return; }
+            if(!j.ok){ msg.textContent = j.error || 'Failed'; return; }
+            document.getElementById('authOverlay').classList.add('hidden');
+            document.getElementById('au_pass').value = '';
+            startApp();
+        }
+        function exitAuth(){ window.location.href = '/'; }
+        async function logout(){ await fetch('/api/owner/logout',{method:'POST'}); location.reload(); }
+        function startApp(){
+            if(_started) return; _started = true;
+            document.getElementById('logoutBtn').style.display = 'inline';
+            loadAll();
+            loadPricing();
+            loadPaperwork();
+            setInterval(loadAll, 10000);
+        }
+
+        function pwDate(s){ if(!s) return ''; const dt=new Date(s); return isNaN(dt)?s:dt.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}); }
+        function pwSize(n){ n=+n||0; return n<1024?n+' B':n<1048576?(n/1024).toFixed(0)+' KB':(n/1048576).toFixed(1)+' MB'; }
+        function pwBadge(c){
+            c = c || {};
+            if(c.good) return '<span style="font-size:.62rem;font-weight:700;background:#052e16;color:#86efac;padding:.14rem .55rem;border-radius:4px;">IN GOOD STANDING</span>';
+            const col = c.worst==='high'?['#450a0a','#fca5a5']:c.worst==='medium'?['#422006','#fcd34d']:['#1e293b','#cbd5e1'];
+            return '<span style="font-size:.62rem;font-weight:700;background:'+col[0]+';color:'+col[1]+';padding:.14rem .55rem;border-radius:4px;">'+(c.active||0)+' ISSUE'+((c.active||0)===1?'':'S')+'</span>';
+        }
+        function pwCard(dr){
+            const docs = dr.documents||[], ags = dr.agreements||[], bodyId='pw_'+dr.renter_id;
+            let body = docs.length ? docs.map(function(x){
+                return '<div style="display:flex;justify-content:space-between;align-items:center;gap:.8rem;padding:.55rem .2rem;border-bottom:1px solid #24324a;">'
+                  + '<div><b style="color:#e2e8f0;">'+esc(x.doc_type)+'</b>'+(x.source==='insurance'?' <span style="font-size:.6rem;background:#172554;color:#93c5fd;padding:.08rem .4rem;border-radius:3px;">insurance</span>':'')
+                  + '<div class="small">'+esc(x.original_name||'')+(x.notes?' · '+esc(x.notes):'')+' · '+pwDate(x.uploaded_at)+' · '+pwSize(x.size)+'</div></div>'
+                  + '<a href="/api/renters/'+dr.renter_id+'/documents/'+x.id+'/file" target="_blank" style="flex:0 0 auto;background:#1e3a8a;color:#fff;padding:.32rem .8rem;border-radius:6px;font-size:.78rem;font-weight:700;text-decoration:none;white-space:nowrap;">Open ↗</a></div>';
+            }).join('') : '<div class="small" style="padding:.4rem 0;">No documents uploaded yet.</div>';
+            if(ags.length){
+                body += '<div class="small" style="margin:.8rem 0 .3rem;text-transform:uppercase;letter-spacing:.5px;color:#93c5fd;">Signed agreements</div>'
+                  + ags.map(function(a){ return '<div class="small" style="padding:.22rem 0;">✓ Driver Agreement v'+esc(a.version)+' — '+esc(a.typed_name||'')+' · '+pwDate(a.signed_at)+'</div>'; }).join('');
+            }
+            const ins = dr.insurance||{};
+            const insTag = ins.state && ins.state!=='VALID' ? ' <span style="font-size:.6rem;background:#450a0a;color:#fca5a5;padding:.1rem .4rem;border-radius:3px;">insurance '+esc((ins.state||'').toLowerCase())+'</span>' : '';
+            return '<div style="border:1px solid var(--line);border-radius:8px;margin-bottom:.7rem;overflow:hidden;">'
+              + '<div onclick="var b=document.getElementById(\''+bodyId+'\');b.style.display=b.style.display===\'none\'?\'block\':\'none\';" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:.8rem;padding:.8rem 1rem;background:var(--panel);">'
+              + '<div><b>'+esc(dr.name||'Driver')+'</b> <span class="small">'+esc(dr.vin||'')+'</span>'+insTag+'</div>'
+              + '<div style="display:flex;gap:.6rem;align-items:center;">'+pwBadge(dr.compliance)+'<span class="small">'+(dr.doc_count||0)+' doc'+((dr.doc_count||0)===1?'':'s')+' ▾</span></div></div>'
+              + '<div id="'+bodyId+'" style="display:none;padding:.5rem 1rem 1rem;">'+body+'</div></div>';
+        }
+        async function loadPaperwork(){
+            let d;
+            try { d = await (await fetch('/api/documents')).json(); } catch(e){ return; }
+            const box = document.getElementById('paperworkList');
+            if(!box) return;
+            if(!d || !d.ok){ box.innerHTML='<div class="small">Could not load paperwork.</div>'; return; }
+            const drivers = d.drivers || [];
+            box.innerHTML = drivers.length ? drivers.map(pwCard).join('') : '<div class="small">No drivers registered yet.</div>';
+        }
+
+        checkAuth();
+    </script>
+    <script src="/floatback.js"></script>
+    <script src="/jarvis-widget.js"></script>
+    <script src="/i18n.js"></script>
+</body>
+</html>

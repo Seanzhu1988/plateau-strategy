@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Planner — Plateau Strategy Solution Lab</title>
+    <meta name="description" content="Free point-to-point trip planner: see which attractions you can still reach in time — traffic, closing hours and drive time all checked — and build a day-by-day plan.">
+    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9; color: #1f2937; min-height: 100vh; }
+        header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #fff;
+            padding: 1rem 2rem; display: flex; align-items: center; gap: 0.7rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 1100; }
+        header img { height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
+        header .brand { font-weight: 800; font-size: 1.2rem; }
+        header .right { margin-left: auto; display: flex; gap: 1.2rem; }
+        header a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+        header a:hover { color: #fff; }
+
+        .wrap { max-width: 1180px; margin: 1.6rem auto; padding: 0 1.2rem; }
+        .page-title { font-size: 1.9rem; font-weight: 800; color: #0f172a; }
+        .page-sub { color: #64748b; margin: 0.2rem 0 1.2rem; }
+
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1rem 1.2rem; margin-bottom: 1rem; }
+
+        .controls { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center; font-size: 0.9rem; }
+        .controls label { color: #64748b; font-weight: 600; }
+        .controls input[type=time], .controls select { padding: 0.4rem 0.6rem; border: 1.5px solid #e2e8f0;
+            border-radius: 8px; font-size: 0.9rem; font-family: inherit; background: #f8fafc; }
+        .btn { padding: 0.45rem 0.9rem; border: none; border-radius: 8px; cursor: pointer;
+            font-weight: 700; font-size: 0.85rem; font-family: inherit;
+            background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; }
+        .btn.ghost { background: #eef2f7; color: #1e3a8a; }
+        .btn:hover { filter: brightness(1.07); }
+
+        .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.7rem; }
+        .chip { font-size: 0.8rem; font-weight: 600; padding: 0.3rem 0.85rem; border-radius: 999px;
+            border: 1.5px solid #e2e8f0; color: #64748b; cursor: pointer; user-select: none; background: #fff; }
+        .chip.on { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
+
+        /* Sean's layout: content on the LEFT, the map large on the RIGHT */
+        .layout { display: grid; grid-template-columns: 380px minmax(0,1fr); gap: 1rem; align-items: start; }
+        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+        #map { height: 62vh; min-height: 380px; border-radius: 16px; border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 16px rgba(15,23,42,0.05); }
+        .legend { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.8rem; color: #64748b;
+            margin-top: 0.6rem; align-items: center; }
+        .ldot { width: 12px; height: 12px; border-radius: 50%; display: inline-block;
+            vertical-align: -1px; margin-right: 5px; border: 2px solid transparent; }
+        #status { font-size: 0.88rem; color: #334155; margin-top: 0.6rem; min-height: 1.2em; }
+
+        .side h3 { font-size: 1rem; color: #0f172a; margin-bottom: 0.4rem; display: flex;
+            align-items: center; gap: 0.4rem; }
+        .stop { display: flex; justify-content: space-between; gap: 0.6rem; font-size: 0.86rem;
+            padding: 0.42rem 0; border-top: 1px solid #eef2f7; }
+        .stop .t { color: #94a3b8; white-space: nowrap; }
+        .dayhead { font-weight: 800; font-size: 0.8rem; color: #1e3a8a; text-transform: uppercase;
+            letter-spacing: 0.04em; margin-top: 0.6rem; }
+        .muted { color: #94a3b8; font-size: 0.84rem; }
+
+        .place-row { display: flex; align-items: center; gap: 0.45rem; padding: 0.4rem 0;
+            border-top: 1px solid #eef2f7; font-size: 0.84rem; flex-wrap: wrap; }
+        .place-row .nm { flex: 1 1 120px; font-weight: 600; color: #334155; min-width: 110px; }
+        .place-row input[type=time] { width: 88px; }
+        .place-row input[type=number] { width: 58px; }
+        .place-row input, .place-row select { padding: 0.22rem 0.35rem; border: 1px solid #e2e8f0;
+            border-radius: 6px; font-size: 0.8rem; font-family: inherit; background: #f8fafc; }
+        .place-row .rm { color: #ef4444; cursor: pointer; font-weight: 800; padding: 0 0.3rem; }
+        .place-row .crowd { font-style: normal; font-weight: 700; font-size: 0.72rem; color: #0d9488;
+            background: #ecfdf5; border-radius: 6px; padding: 1px 5px; margin-left: 4px; white-space: nowrap; }
+        .place-row .crowd.guided { color: #7c2d12; background: #fef3c7; }
+        .dayhead .drivetime { font-weight: 700; font-size: 0.72rem; color: #1d4ed8;
+            background: #eff6ff; border-radius: 6px; padding: 1px 6px; margin-left: 6px; }
+
+        /* Sean's sketch: Current location → Destination + Add → D1 → D2 → … */
+        .build-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
+        .build-row .from { font-weight: 700; color: #0f172a; font-size: 0.9rem; white-space: nowrap; }
+        .build-row .loc-btn { cursor: pointer; border: 1px solid #cbd5e1; background: #fff; border-radius: 9px;
+            padding: 0.5rem 0.7rem; font-weight: 700; color: #0f172a; font-size: 0.85rem; white-space: nowrap; }
+        .build-row .loc-btn:hover { border-color: #2563eb; color: #1d4ed8; }
+        .build-row .loc-btn.located { border-color: #0d9488; color: #0f766e; background: #f0fdfa; }
+        .loc-info { font-size: 0.8rem; color: #0f766e; margin-top: 0.35rem; line-height: 1.4; }
+        .loc-info.warn { color: #b45309; }
+        .build-row .to { color: #94a3b8; font-weight: 800; }
+        .build-row #destAdd { flex: 1; min-width: 200px; border: 1px solid #cbd5e1; border-radius: 9px;
+            padding: 0.55rem 0.8rem; font-size: 0.92rem; }
+        .btn.add { background: linear-gradient(135deg,#2563eb,#1d4ed8); color: #fff; border: none;
+            border-radius: 9px; padding: 0.55rem 1rem; font-weight: 800; cursor: pointer; white-space: nowrap; }
+        .btn.add:hover { filter: brightness(1.08); }
+        .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-top: 0.6rem; }
+        .chain .dnode { background: #eef4ff; border: 1px solid #c7d7f5; color: #1d4ed8; font-weight: 700;
+            font-size: 0.8rem; border-radius: 999px; padding: 2px 10px; }
+        .chain .darrow { color: #94a3b8; font-weight: 800; }
+        .place-row .addbtn { width: 26px; text-align: center; cursor: pointer; color: #2563eb; font-weight: 900;
+            font-size: 1.05rem; user-select: none; }
+        .place-row .addbtn:hover { color: #1d4ed8; }
+        .place-row .addbtn.done { color: #16a34a; cursor: default; }
+        .place-row.in-route { background: #f0fdf4; }
+
+        /* the three doors */
+        .actionbar { display: flex; flex-wrap: wrap; gap: 0.7rem; align-items: stretch; margin-top: 1.2rem; }
+        .actionbar .act-lead { flex-basis: 100%; font-weight: 700; color: #334155; margin-bottom: 0.1rem; }
+        .act { flex: 1 1 210px; text-align: left; border: none; border-radius: 14px; padding: 0.85rem 1.05rem;
+            font-size: 1rem; font-weight: 800; color: #fff; cursor: pointer; line-height: 1.25;
+            display: flex; flex-direction: column; gap: 0.15rem; }
+        .act span { font-size: 0.76rem; font-weight: 600; opacity: 0.92; }
+        /* flat one-line bar above the map — compact, no subtitles, no wasted height */
+        .actionbar.flat { gap: 0.5rem; margin: 0 0 0.9rem; align-items: center; }
+        .actionbar.flat .act { flex: 1 1 120px; flex-direction: row; align-items: center; justify-content: center;
+            gap: 0.35rem; padding: 0.6rem 0.7rem; font-size: 0.9rem; border-radius: 11px; text-align: center;
+            white-space: nowrap; }
+        .actionbar.flat .act-link { flex-basis: 100%; text-align: center; margin-top: 0.1rem; }
+        .act.ride  { background: linear-gradient(135deg,#2563eb,#1d4ed8); }
+        .act.guide { background: linear-gradient(135deg,#0d9488,#0f766e); }
+        .act.hire  { background: linear-gradient(135deg,#7c3aed,#6d28d9); }
+        .act.sale  { background: linear-gradient(135deg,#d97706,#b45309); }
+        .act.robotaxi { background: #1e293b; border: 2px dashed #64748b; opacity: 0.55; }
+        .act.robotaxi:hover { opacity: 0.85; }
+        .soon-badge { font-size: 0.58rem; font-weight: 800; background: #fbbf24; color: #713f12;
+            border-radius: 6px; padding: 1px 6px; margin-left: 6px; vertical-align: middle; letter-spacing: 0.04em; }
+        .act:hover { filter: brightness(1.08); }
+        .act-link { flex-basis: 100%; text-align: center; color: #b45309; font-weight: 700;
+            font-size: 0.8rem; cursor: pointer; margin-top: 0.15rem; text-decoration: none; }
+        .act-link:hover { text-decoration: underline; }
+
+        .modal-back { position: fixed; inset: 0; background: rgba(15,23,42,0.55); display: none;
+            align-items: center; justify-content: center; padding: 1rem; z-index: 3000; }
+        .modal-back.on { display: flex; }
+        .modal { background: #fff; border-radius: 16px; padding: 1.4rem; width: 100%; max-width: 460px;
+            position: relative; max-height: 92vh; overflow-y: auto; }
+        .modal h3 { color: #0f172a; font-size: 1.2rem; margin-bottom: 0.25rem; }
+        .modal-x { position: absolute; top: 0.7rem; right: 0.8rem; border: none; background: none;
+            font-size: 1.2rem; color: #64748b; cursor: pointer; }
+        .ho-summary { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.7rem 0.9rem;
+            font-size: 0.85rem; color: #334155; margin: 0.7rem 0; line-height: 1.5; }
+        .ho-fee { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; border-radius: 10px;
+            padding: 0.6rem 0.85rem; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.4rem; line-height: 1.45; }
+        .ho-lab { display: block; font-size: 0.78rem; font-weight: 700; color: #475569; margin: 0.6rem 0 0.2rem; }
+        .modal input, .modal textarea { width: 100%; border: 1px solid #cbd5e1; border-radius: 8px;
+            padding: 0.55rem 0.7rem; font-size: 0.9rem; font-family: inherit; }
+        .ho-msg { font-size: 0.86rem; font-weight: 700; margin-top: 0.6rem; min-height: 1.1em; }
+        .ho-msg.ok { color: #0f766e; } .ho-msg.err { color: #dc2626; }
+        .col-lab { font-size: 0.68rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em; }
+
+        .search-box { position: relative; margin-top: 0.6rem; }
+        .search-box input { width: 100%; padding: 0.55rem 0.8rem; border: 1.5px solid #e2e8f0;
+            border-radius: 10px; font-size: 0.9rem; font-family: inherit; background: #f8fafc; }
+        .search-res { position: absolute; left: 0; right: 0; top: 100%; background: #fff; z-index: 1000;
+            border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 8px 24px rgba(15,23,42,0.12);
+            max-height: 220px; overflow-y: auto; display: none; }
+        .search-res div { padding: 0.5rem 0.8rem; font-size: 0.84rem; cursor: pointer; }
+        .search-res div:hover { background: #eff6ff; }
+
+        /* map pins */
+        .tp-pin { text-align: center; }
+        .tp-dot { width: 28px; height: 28px; border-radius: 50%; margin: 0 auto;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 800; border: 2.5px solid;
+            box-shadow: 0 2px 6px rgba(15,23,42,0.25); background: #fff; }
+        .tp-lit  .tp-dot { background: #dcfce7; border-color: #16a34a; color: #166534; }
+        .tp-tight .tp-dot { background: #fef3c7; border-color: #d97706; color: #92400e; }
+        .tp-off  { opacity: 0.42; }
+        .tp-off .tp-dot { background: #e2e8f0; border-color: #94a3b8; color: #64748b; }
+        .tp-catoff { opacity: 0.15; }
+        .tp-catoff .tp-dot { background: #e2e8f0; border-color: #cbd5e1; color: #94a3b8; }
+        .tp-vis  .tp-dot { background: #2563eb; border-color: #1d4ed8; color: #fff; }
+        .tp-lbl { font-size: 10.5px; font-weight: 700; color: #1f2937; white-space: nowrap;
+            background: rgba(255,255,255,0.85); border-radius: 6px; padding: 0 4px; margin-top: 2px;
+            display: inline-block; }
+        .tp-start .tp-dot { background: #0f172a; border-color: #0f172a; color: #fff; }
+
+        footer.attrib { text-align: center; color: #94a3b8; font-size: 0.75rem; padding: 1.2rem 0 2rem; }
+        footer.attrib a { color: #64748b; }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="right">
+            <a href="/">Home</a>
+            <a href="/book">Book a Ride</a>
+        </div>
+    </header>
+
+    <div class="wrap">
+        <div class="page-title">🗺️ Trip Planner</div>
+        <p class="page-sub">Free for everyone — drivers, tour guides, tourists. Tap where you are, and every attraction lights up or dims based on drive time, traffic and closing hours. Your taps build the plan, day by day.</p>
+
+        <div class="card">
+            <div class="controls" style="margin-bottom:0.55rem">
+                <label>State</label>
+                <select id="selState" onchange="onStateChange()"></select>
+                <label>County</label>
+                <select id="selCounty" onchange="onCountyChange()"></select>
+                <label>City</label>
+                <select id="selCity" onchange="onCityChange()"></select>
+            </div>
+            <div class="controls" style="margin-bottom:0.55rem">
+                <label>Date of departure</label>
+                <input type="date" id="departDate" onchange="onDepartChange()">
+                <label>Leave by</label>
+                <input type="time" id="leaveAt" value="09:30" onchange="resetTrip()">
+                <label>Traffic</label>
+                <select id="traffic" onchange="trafficChanged()">
+                    <option value="auto" selected>Auto (by time of day)</option>
+                    <option value="1">Light</option>
+                    <option value="1.35">Normal</option>
+                    <option value="1.9">Heavy</option>
+                </select>
+            </div>
+            <div class="controls">
+                <button class="btn ghost" onclick="useMyLocation()">📍 Start from my location</button>
+                <button class="btn ghost" onclick="undoStop()">↩ Undo</button>
+                <button class="btn ghost" onclick="nextDay()">➡ Start next day</button>
+                <button class="btn ghost" onclick="resetTrip()">⟲ Reset trip</button>
+            </div>
+            <div class="chips" id="chips"></div>
+
+            <div class="build-row">
+                <button type="button" class="from loc-btn" id="curLocBtn" onclick="detectLocation()" title="Use my exact GPS location">📍 <span id="curLocLabel">Set current location</span></button>
+                <span class="to">→</span>
+                <input id="destAdd" placeholder="Type a destination and press Add — or tap a pin on the map"
+                       autocomplete="off" onkeydown="if(event.key==='Enter')addDestination()">
+                <button class="btn add" onclick="addDestination()">＋ Add</button>
+            </div>
+            <div id="curLocInfo" class="loc-info"></div>
+            <div id="chain" class="chain"></div>
+        </div>
+
+        <div class="actionbar flat" id="actionbar">
+            <button class="act ride" onclick="doorRide()" title="Book a ride to your stop">🚗 I need a ride</button>
+            <button class="act robotaxi" onclick="doorRobotaxi()" title="Self-driving pickup — under research">🤖 Robotaxi <span class="soon-badge">RESEARCH</span></button>
+            <button class="act guide" onclick="doorGuide('prefer')" title="Hand it off — a local guide reaches out">🙋 Drop to a guide</button>
+            <button class="act hire" onclick="doorGuide('hire')" title="One person drives and guides you">🚕 Hire a driver-guide</button>
+            <a class="act-link" onclick="doorGuide('sale')">🏷️ Guide? Offer this route for sale →</a>
+        </div>
+
+        <div class="layout">
+            <div class="side">
+                <div class="card">
+                    <h3>🧭 Your route — D1 → D2 → …</h3>
+                    <div id="trip"><p class="muted">Add a destination above, or tap a pin — each one becomes the next stop, D1 → D2 → D3.</p></div>
+                </div>
+
+                <div class="card">
+                    <h3>✨ Auto-fill the rest</h3>
+                    <div id="auto"><p class="muted">Calculating…</p></div>
+                </div>
+            </div>
+
+            <div>
+                <div id="map"></div>
+                <div class="legend">
+                    <span><span class="ldot" style="background:#dcfce7;border-color:#16a34a"></span>Lit — enough time</span>
+                    <span><span class="ldot" style="background:#fef3c7;border-color:#d97706"></span>Tight</span>
+                    <span><span class="ldot" style="background:#e2e8f0;border-color:#94a3b8;opacity:.6"></span>Light off — can't make it</span>
+                    <span><span class="ldot" style="background:#2563eb;border-color:#1d4ed8"></span>In your trip</span>
+                    <span><span class="ldot" style="background:#0f172a;border-color:#0f172a"></span>Start point (drag it)</span>
+                </div>
+                <div id="status">Loading drive times…</div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:1rem">
+            <h3>📖 Destination Book — <span id="bookCity">this city</span> (<span id="pcount">0</span>)</h3>
+            <p class="muted" style="margin-bottom:0.3rem">Every destination we know here — tap ＋ to drop one into your route. Search adds new places to the book for everyone.</p>
+            <div class="place-row" style="border-top:none">
+                <span style="width:26px"></span>
+                <span class="nm col-lab">Place</span>
+                <span class="col-lab" style="width:88px">Closes</span>
+                <span class="col-lab" style="width:58px">Visit min</span>
+                <span class="col-lab" style="width:78px">Category</span>
+                <span style="width:18px"></span>
+            </div>
+            <div id="places"></div>
+            <div class="search-box">
+                <input id="q" placeholder="Search any address or attraction — it joins the book…"
+                       autocomplete="off" onkeydown="if(event.key==='Enter')searchPlace()">
+                <div class="search-res" id="qres"></div>
+            </div>
+            <div style="margin-top:0.6rem; display:flex; gap:0.5rem; flex-wrap:wrap">
+                <button class="btn ghost" onclick="searchPlace()">Search</button>
+                <button class="btn ghost" onclick="loadSample(true,'nyc')">🗽 New York sample</button>
+                <button class="btn ghost" onclick="loadSample(true,'dc')">🏛️ Washington DC sample</button>
+                <button class="btn ghost" onclick="loadSample(true,'seattle')">🌲 Seattle sample</button>
+            </div>
+        </div>
+
+        <footer class="attrib">
+            Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors ·
+            routing by <a href="https://project-osrm.org" target="_blank" rel="noopener">OSRM</a> ·
+            search by Nominatim · a free tool by Plateau Strategy Solution Lab
+        </footer>
+    </div>
+
+    <div class="modal-back" id="handoff">
+        <div class="modal">
+            <button class="modal-x" onclick="closeHandoff()">✕</button>
+            <h3 id="ho_title">Hand your trip to a guide</h3>
+            <p class="muted" id="ho_sub"></p>
+            <div id="ho_summary" class="ho-summary"></div>
+            <div id="ho_fee" class="ho-fee" style="display:none"></div>
+            <div id="ho_form">
+                <label class="ho-lab">Your name</label>
+                <input id="ho_name" placeholder="Who should the guide ask for?">
+                <label class="ho-lab">Email or phone</label>
+                <input id="ho_contact" placeholder="How the guide reaches you">
+                <div id="ho_guidefields" style="display:none">
+                    <label class="ho-lab">Your guide code</label>
+                    <input id="ho_code" placeholder="AGT-XXXX — proves you're a listed guide">
+                    <label class="ho-lab">Price for this guided trip (USD)</label>
+                    <input id="ho_price" type="number" min="0" step="5" placeholder="e.g. 120">
+                </div>
+                <label class="ho-lab">Anything to tell the guide? (optional)</label>
+                <textarea id="ho_note" rows="2" placeholder="Dates, group size, must-sees…"></textarea>
+                <button class="act guide" style="width:100%;margin-top:0.6rem" id="ho_send" onclick="sendHandoff()">Send</button>
+                <p class="ho-msg" id="ho_msg"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-back" id="robotaxi">
+        <div class="modal">
+            <button class="modal-x" onclick="closeRobotaxi()">✕</button>
+            <h3>🤖 Robotaxi ride <span class="soon-badge">UNDER RESEARCH</span></h3>
+            <p class="muted">Self-driving pickups are under research — we're studying how to hail an autonomous car straight from your planned route, safely and privately. It isn't bookable today, and no ride is being requested.</p>
+            <div id="rt_summary" class="ho-summary"></div>
+            <div id="rt_form">
+                <label class="ho-lab">Want us to tell you when it's ready?</label>
+                <input id="rt_contact" placeholder="Email or phone (optional)">
+                <button class="act robotaxi" style="width:100%;margin-top:0.6rem;color:#fff" id="rt_send" onclick="sendRobotaxi()">🔔 Notify me when robotaxi launches</button>
+                <p class="ho-msg" id="rt_msg"></p>
+                <p class="muted" style="margin-top:0.7rem;font-size:0.82rem">In the meantime, tap <b>🚗 I need a ride</b> to book a real driver to the same stop.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+    'use strict';
+    // ---------- data ----------
+    const CATS = [ ['history','History'], ['culture','Culture'], ['nature','Nature'], ['food','Food'], ['views','Views'] ];
+    const CITIES = {
+        nyc: { label:'New York', center:[40.7480,-73.9855], zoom:12, start:[40.7527,-73.9900], places:[
+            { name:'Times Square',          lat:40.7580, lon:-73.9855, close:1380, visit:30,  cat:'views' },
+            { name:'Central Park',          lat:40.7740, lon:-73.9708, close:1320, visit:60,  cat:'nature' },
+            { name:'The Met Museum',        lat:40.7794, lon:-73.9632, close:1020, visit:120, cat:'culture' },
+            { name:'Empire State Building', lat:40.7484, lon:-73.9857, close:1320, visit:60,  cat:'views' },
+            { name:'Brooklyn Bridge',       lat:40.7061, lon:-73.9969, close:1320, visit:45,  cat:'history' },
+            { name:'9/11 Memorial & Museum',lat:40.7115, lon:-74.0134, close:1020, visit:90,  cat:'history' },
+            { name:'The High Line',         lat:40.7480, lon:-74.0048, close:1320, visit:45,  cat:'nature' },
+            { name:'Grand Central Terminal',lat:40.7527, lon:-73.9772, close:1260, visit:30,  cat:'history' },
+            { name:'Statue of Liberty ferry',lat:40.7033, lon:-74.0170, close:930, visit:180, cat:'history' },
+            { name:'Chelsea Market',        lat:40.7424, lon:-74.0061, close:1260, visit:45,  cat:'food' }
+        ]},
+        dc: { label:'Washington DC', center:[38.8899,-77.0300], zoom:13, start:[38.8951,-77.0364], places:[
+            { name:'Lincoln Memorial',            lat:38.8893, lon:-77.0502, close:1380, visit:40, cat:'history' },
+            { name:'Washington Monument',         lat:38.8895, lon:-77.0353, close:1020, visit:45, cat:'views' },
+            { name:'Air & Space Museum',          lat:38.8882, lon:-77.0199, close:1050, visit:90, cat:'culture' },
+            { name:'Museum of American History',  lat:38.8913, lon:-77.0300, close:1050, visit:90, cat:'culture' },
+            { name:'National Gallery of Art',     lat:38.8913, lon:-77.0198, close:1020, visit:90, cat:'culture' },
+            { name:'US Capitol Visitor Center',   lat:38.8899, lon:-77.0091, close:990,  visit:60, cat:'history' },
+            { name:'White House (Lafayette Sq)',  lat:38.8977, lon:-77.0365, close:1320, visit:20, cat:'views' },
+            { name:'Jefferson Memorial',          lat:38.8814, lon:-77.0365, close:1380, visit:30, cat:'history' },
+            { name:'Georgetown Waterfront',       lat:38.9026, lon:-77.0603, close:1260, visit:60, cat:'food' },
+            { name:'Arlington National Cemetery', lat:38.8783, lon:-77.0687, close:1020, visit:90, cat:'history' }
+        ]},
+        seattle: { label:'Seattle', center:[47.6180,-122.3420], zoom:13, start:[47.6114,-122.3372], places:[
+            { name:'Pike Place Market',           lat:47.6097, lon:-122.3422, close:1080, visit:60, cat:'food' },
+            { name:'Space Needle',                lat:47.6205, lon:-122.3493, close:1380, visit:60, cat:'views' },
+            { name:'Chihuly Garden and Glass',    lat:47.6206, lon:-122.3504, close:1140, visit:60, cat:'culture' },
+            { name:'Museum of Pop Culture',       lat:47.6215, lon:-122.3481, close:1020, visit:90, cat:'culture' },
+            { name:'Seattle Aquarium',            lat:47.6074, lon:-122.3430, close:1080, visit:75, cat:'nature' },
+            { name:'Seattle Great Wheel',         lat:47.6061, lon:-122.3425, close:1320, visit:40, cat:'views' },
+            { name:'Kerry Park viewpoint',        lat:47.6295, lon:-122.3599, close:1380, visit:25, cat:'views' },
+            { name:'Gas Works Park',              lat:47.6456, lon:-122.3344, close:1320, visit:40, cat:'nature' },
+            { name:'Fremont Troll',               lat:47.6510, lon:-122.3473, close:1380, visit:15, cat:'culture' },
+            { name:'Starbucks Reserve Roastery',  lat:47.6141, lon:-122.3282, close:1320, visit:45, cat:'food' }
+        ]}
+    };
+    // State → County → cities. Seeded from what we have; grows as travelers add cities.
+    const GEO = {
+        'New York':      { 'New York County':        [['nyc','New York']] },
+        'Washington DC': { 'District of Columbia':   [['dc','Washington']] },
+        'Washington':    { 'King County':            [['seattle','Seattle']] }
+    };
+    // city key → its place in the hierarchy, for syncing the pickers to the loaded city
+    const CITY_META = {
+        nyc:     { state:'New York',      county:'New York County' },
+        dc:      { state:'Washington DC', county:'District of Columbia' },
+        seattle: { state:'Washington',    county:'King County' }
+    };
+    const DAY_START = 540;      // 9:00 next-day start
+    const DAY_CAP = 1380;       // nothing planned past 23:00
+    const LS_KEY = 'ps_tripplanner_v2';
+    const MATRIX_MAX = 80;      // routing-table ceiling; above this we estimate and say so
+    let curCity = 'nyc';
+
+    let places = [];
+    let st = { day:1, now:570, pos:-1, route:[], visited:new Set(), cats:new Set(CATS.map(c=>c[0])) };
+    let bootSaved = null;      // what was in storage at load (trip restored from it)
+    let booted = false;        // guards saving over a saved trip during boot
+    let dropped = [];          // community places this visitor removed — don't re-add them
+    let resumeNote = '';       // "your trip was restored" — survives the matrix refresh
+    let matrix = null, matrixMode = 'none', matrixTimer = null;
+    let map, startMarker, markers = [], routeLines = [];
+
+    // ---------- helpers ----------
+    const $ = id => document.getElementById(id);
+    function fmt(m){ m = Math.round(m); return Math.floor(m/60) + ':' + ('0' + (m % 60)).slice(-2); }
+    function parseTime(v){ const p = (v||'').split(':'); return (+p[0])*60 + (+p[1]||0); }
+    function say(t){ $('status').textContent = t; }
+    function trafficMult(depMin){
+        const v = $('traffic').value;
+        if (v !== 'auto') return +v;
+        const h = Math.floor(depMin/60) % 24;
+        if ((h >= 7 && h < 10) || (h >= 16 && h < 19)) return 1.5;   // rush hours
+        if (h >= 10 && h < 16) return 1.2;                            // daytime
+        return 1.0;                                                    // night
+    }
+    function havKm(a, b){
+        const R = 6371, dLa = (b.lat-a.lat)*Math.PI/180, dLo = (b.lon-a.lon)*Math.PI/180;
+        const s = Math.sin(dLa/2)**2 + Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLo/2)**2;
+        return 2*R*Math.asin(Math.sqrt(s));
+    }
+    function coordOf(idx){                             // idx -1 = start marker
+        if (idx === -1) { const ll = startMarker.getLatLng(); return { lat: ll.lat, lon: ll.lng }; }
+        return places[idx];
+    }
+    function travelMin(fromIdx, toIdx, depMin){
+        let base;
+        if (matrix && matrixMode === 'osrm') {
+            const row = matrix[fromIdx + 1];
+            const d = row ? row[toIdx + 1] : null;
+            base = (d == null) ? null : d / 60;
+        }
+        if (base == null || !isFinite(base)) base = havKm(coordOf(fromIdx), coordOf(toIdx)) / 22 * 60 + 4;
+        return base * trafficMult(depMin);
+    }
+
+    // ---------- drive-time matrix (OSRM table, free) ----------
+    async function fetchMatrix(){
+        clearTimeout(matrixTimer);
+        matrixTimer = setTimeout(async () => {
+            const ll = startMarker.getLatLng();
+            // Bug 6: the public routing table has a size ceiling. As community places
+            // pile up, an oversized request just fails and everything silently drops to
+            // estimates. Skip the call above the ceiling and SAY so instead of pretending.
+            if (places.length > MATRIX_MAX) {
+                matrix = null; matrixMode = 'est'; refresh();
+                say('Board is large (' + places.length + ' places) — drive times are estimated. Remove a few for exact routing.');
+                return;
+            }
+            const pts = [[ll.lng, ll.lat]].concat(places.map(p => [p.lon, p.lat]));
+            const url = 'https://router.project-osrm.org/table/v1/driving/'
+                + pts.map(p => p[0].toFixed(6) + ',' + p[1].toFixed(6)).join(';')
+                + '?annotations=duration';
+            try {
+                const r = await fetch(url);
+                const j = await r.json();
+                if (j.code === 'Ok' && j.durations) { matrix = j.durations; matrixMode = 'osrm'; }
+                else throw new Error(j.code || 'no data');
+            } catch (e) {
+                matrix = null; matrixMode = 'est';
+            }
+            refresh();
+        }, 350);
+    }
+
+    // ---------- trip engine (the factor base) ----------
+    function feasibility(i){
+        // factors: drive time (traffic-adjusted) → arrival; closing time; visit duration; day cap
+        const t = travelMin(st.pos, i, st.now);
+        const arr = st.now + t;
+        const p = places[i];
+        const slack = Math.min(p.close, DAY_CAP) - p.visit - arr;
+        return { t, arr, slack };
+    }
+    // One place → one stop in the chain. Both "Add" and tapping a pin land here.
+    // Feasibility is CHECKED (Sean: keep the engine) but does not BLOCK — the chain is
+    // the traveler's explicit order; a stop that won't fit is added with a clear warning
+    // so they can reorder or drop it, rather than being silently refused.
+    function addToRoute(i){
+        const p = places[i];
+        if (st.visited.has(i)) { say(p.name + ' is already in your route.'); return false; }
+        if (!st.cats.has(p.cat)) { st.cats.add(p.cat);      // adding it un-hides its category
+            [].forEach.call($('chips').children, (b, k) => b.classList.toggle('on', st.cats.has(CATS[k][0]))); }
+        const f = feasibility(i);
+        st.route.push({ i, day: st.day, arr: f.arr, leave: f.arr + p.visit,
+                        prev: { day: st.day, now: st.now, pos: st.pos } });
+        st.visited.add(i); st.pos = i; st.now = f.arr + p.visit;
+        const n = st.route.length;
+        if (f.slack < 0)
+            say('⚠ Added ' + p.name + ' as D' + n + ' — but it may not fit: arrive ' + fmt(f.arr)
+                + ', closes ' + fmt(p.close) + '. It\'s in your route — reorder, shorten, or drop it.');
+        else
+            say('✓ Added ' + p.name + ' as D' + n + ' — arrive ' + fmt(f.arr) + ', leave ' + fmt(st.now) + '.');
+        refresh();
+        return true;
+    }
+    function tap(i){ addToRoute(i); }
+
+    // The sketch's core: type a destination, press Add, it joins the chain (D1→D2→…).
+    async function addDestination(){
+        const q = ($('destAdd').value || '').trim();
+        if (!q) return;
+        say('Finding “' + q + '” near ' + ((CITIES[curCity] || {}).label || 'here') + '…');
+        try {
+            const b = map.getBounds();
+            const vb = '&viewbox=' + [b.getWest(), b.getNorth(), b.getEast(), b.getSouth()].map(n => n.toFixed(4)).join(',');
+            const base = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=' + encodeURIComponent(q);
+            let j = await (await fetch(base + vb + '&bounded=1')).json();
+            if (!j.length) j = await (await fetch(base + vb)).json();      // nearby if not in view
+            if (!j.length) { say('Couldn\'t find “' + q + '” — try adding the city name.'); return; }
+            const res = j[0];
+            const nm = res.display_name.split(',')[0].replace(/[<>&"]/g, '').slice(0, 60) || q;
+            const idx = places.findIndex(p => p.name.toLowerCase() === nm.toLowerCase());
+            let i = idx;
+            if (i < 0) {                                     // new place → add to board + book
+                const np = { name: nm, lat: +res.lat, lon: +res.lon, close: 1020, visit: 60, cat: 'culture' };
+                i = places.length; places.push(np);
+                rememberPlace(np, res);
+                rebuildMarkers(); renderPlaces(); savePlaces(); fetchMatrix();
+                map.setView([+res.lat, +res.lon], Math.max(map.getZoom(), 12));
+            }
+            $('destAdd').value = '';
+            addToRoute(i);                                   // append to the chain (feasibility-checked)
+        } catch (e) { say('Search unavailable right now — try again.'); }
+    }
+    function undoStop(){
+        const last = st.route.pop();
+        if (!last) { say('Nothing to undo.'); return; }
+        st.visited.delete(last.i);
+        st.day = last.prev.day; st.now = last.prev.now; st.pos = last.prev.pos;
+        say('Removed ' + places[last.i].name + '.');
+        refresh();
+    }
+    function nextDay(){
+        st.day++; st.now = DAY_START; st.pos = -1;
+        say('Day ' + st.day + ' starts ' + fmt(DAY_START) + ' from your start point — board re-lit.');
+        refresh();
+    }
+    function resetTrip(){
+        st.day = 1; st.now = parseTime($('leaveAt').value) || 570; st.pos = -1;
+        st.route = []; st.visited = new Set();
+        say('Fresh start at ' + fmt(st.now) + '.');
+        refresh();
+    }
+    function trafficChanged(){ resetTrip(); say('Traffic changed — trip re-planned from the start.'); }
+
+    function planDay(startPos, startT, avail){
+        // Pick the next stop by URGENCY vs DISTANCE, not by closing time alone.
+        // (Bug 2: ranking purely on the earliest close sent the day zigzagging across
+        // the city — a place closing 20 min sooner beat one 40 min closer.) Cost =
+        // drive time, plus a penalty that grows as a place's remaining slack shrinks,
+        // so things about to close still win when they're genuinely at risk.
+        let pos = startPos, t = startT; const out = [];
+        for (;;) {
+            let best = -1, bestCost = Infinity, bestArr = 0;
+            avail.forEach(i => {
+                const p = places[i], drive = travelMin(pos, i, t), arr = t + drive;
+                const shut = Math.min(p.close, DAY_CAP);
+                if (arr + p.visit > shut) return;              // can't make it in time
+                const slack = shut - p.visit - arr;            // minutes of breathing room left
+                const cost = drive + Math.min(slack, 240) * 0.5;
+                if (cost < bestCost) { bestCost = cost; best = i; bestArr = arr; }
+            });
+            if (best < 0) break;
+            out.push({ i: best, arr: bestArr });
+            t = bestArr + places[best].visit; pos = best; avail.delete(best);
+        }
+        return out;
+    }
+
+    // ---------- rendering ----------
+    function pinHtml(i, cls){
+        return '<div class="tp-pin ' + cls + '"><div class="tp-dot">' + (i + 1) + '</div>'
+             + '<span class="tp-lbl">' + places[i].name.split(' ').slice(0, 2).join(' ') + '</span></div>';
+    }
+    function refresh(){
+        let lit = 0, tight = 0, off = 0;
+        markers.forEach((mk, i) => {
+            const p = places[i];
+            if (!p) return;
+            let cls, tip;
+            if (st.visited.has(i)) { cls = 'tp-vis'; tip = p.name + ' — in your trip'; }
+            else if (!st.cats.has(p.cat)) { cls = 'tp-catoff'; tip = p.name + ' — category off'; }
+            else {
+                const f = feasibility(i);
+                if (f.slack < 0) { cls = 'tp-off'; off++;
+                    tip = p.name + ' — out of reach: arrive ' + fmt(f.arr) + ', closes ' + fmt(p.close); }
+                else if (f.slack < 35) { cls = 'tp-tight'; tight++;
+                    tip = p.name + ' — tight: ' + Math.round(f.t) + ' min drive, arrive ' + fmt(f.arr) + ', closes ' + fmt(p.close); }
+                else { cls = 'tp-lit'; lit++;
+                    tip = p.name + ' — ' + Math.round(f.t) + ' min drive, arrive ' + fmt(f.arr) + ', closes ' + fmt(p.close); }
+            }
+            mk.setIcon(L.divIcon({ className: '', html: pinHtml(i, cls), iconSize: [90, 46], iconAnchor: [45, 14] }));
+            mk.unbindTooltip(); mk.bindTooltip(tip);
+        });
+        const est = matrixMode === 'est' ? ' · drive times estimated (routing server unreachable)' : '';
+        if (st.route.length || lit + tight + off > 0)
+            say('Day ' + st.day + ' · ' + fmt(st.now) + ' · ' + lit + ' lit · ' + tight + ' tight · ' + off + ' out of reach' + est + resumeNote);
+        renderChain(); renderTrip(); renderAuto(); drawRoute(); renderPlaces();
+        if (booted) savePlaces();          // every trip change is persisted (bug 1)
+    }
+    function renderChain(){                 // the D1 → D2 → D3 strip from the sketch
+        const el = $('chain'); if (!el) return;
+        if (!st.route.length) { el.innerHTML = '<span class="muted">Your route builds here: D1 → D2 → D3 …</span>'; return; }
+        el.innerHTML = st.route.map((r, k) =>
+            '<span class="dnode" title="' + places[r.i].name + '">D' + (k + 1) + ' · '
+             + places[r.i].name.split(' ').slice(0, 2).join(' ') + '</span>'
+        ).join('<span class="darrow">→</span>');
+    }
+    function renderTrip(){
+        let h = '', lastDay = 0;
+        st.route.forEach((r, k) => {
+            if (r.day !== lastDay) {
+                const mins = dayDrive[r.day];
+                h += '<div class="dayhead">Day ' + r.day
+                   + (mins ? ' <span class="drivetime" title="Real road routing, adjusted by your traffic setting">🛣️ '
+                             + mins + ' min driving · real roads</span>' : '')
+                   + '</div>';
+                lastDay = r.day;
+            }
+            h += '<div class="stop"><span>D' + (k + 1) + ' · ' + places[r.i].name + '</span>'
+               + '<span class="t">' + fmt(r.arr) + '–' + fmt(r.leave) + '</span></div>';
+        });
+        $('trip').innerHTML = h || '<p class="muted">Add a destination above, or tap a pin — each one becomes the next stop, D1 → D2 → D3.</p>';
+    }
+    function renderAuto(){
+        const avail = new Set(places.map((_, i) => i).filter(i => !st.visited.has(i) && st.cats.has(places[i].cat)));
+        let h = '';
+        const today = planDay(st.pos, st.now, avail);
+        if (today.length) h += '<div class="dayhead">Rest of today</div>' + today.map(rowA).join('');
+        let d = st.day;
+        while (avail.size && d < st.day + 3) {
+            d++;
+            const plan = planDay(-1, DAY_START, avail);
+            if (!plan.length) break;
+            h += '<div class="dayhead">Day ' + d + '</div>' + plan.map(rowA).join('');
+        }
+        if (avail.size) h += '<p class="muted" style="margin-top:0.4rem">' + avail.size + ' place(s) don\'t fit — fewer categories or lighter traffic would help.</p>';
+        $('auto').innerHTML = h || '<p class="muted">Everything is planned — enjoy the trip.</p>';
+        function rowA(o){ return '<div class="stop"><span>' + places[o.i].name + '</span><span class="t">' + fmt(o.arr) + '</span></div>'; }
+    }
+    // ---------- the drawn route: REAL roads, not straight lines ----------
+    // Each day's stops are sent to the routing service in order; it returns the actual
+    // driving geometry and per-leg durations. Straight dashes are only the fallback,
+    // and when that happens the status line says so rather than pretending.
+    const DAY_COLORS = ['#2563eb', '#7c3aed', '#0d9488', '#d97706'];
+    let geoCache = {}, dayDrive = {};
+    function daySequences(){
+        const days = {};
+        st.route.forEach(r => { (days[r.day] = days[r.day] || []).push(r.i); });
+        return days;
+    }
+    function drawRoute(){
+        routeLines.forEach(l => map.removeLayer(l)); routeLines = [];
+        const days = daySequences();
+        Object.keys(days).forEach(d => {
+            const seq = [-1].concat(days[d]);                       // every day starts at the start pin
+            const pts = seq.map(coordOf);
+            const sig = pts.map(p => p.lat.toFixed(5) + ',' + p.lon.toFixed(5)).join(';');
+            const color = DAY_COLORS[(d - 1) % DAY_COLORS.length];
+            const cached = geoCache[sig];
+            if (cached === undefined) { straightLine(pts, color); fetchRoadGeometry(sig, pts); }
+            else if (cached === null)  { straightLine(pts, color); }
+            else {
+                const line = L.polyline(cached, { color, weight: 5, opacity: 0.8 });
+                line.addTo(map); routeLines.push(line);
+                // The routing service returns FREE-FLOW minutes. Apply the same traffic
+                // setting the rest of the planner uses, or the map would promise a drive
+                // time the itinerary itself doesn't believe.
+                const first = st.route.find(r => r.day == d);
+                const dep = first ? first.arr : DAY_START;
+                dayDrive[d] = Math.round(geoCache[sig + ':mins'] * trafficMult(dep));
+            }
+        });
+    }
+    function straightLine(pts, color){
+        for (let k = 1; k < pts.length; k++) {
+            const line = L.polyline([[pts[k-1].lat, pts[k-1].lon], [pts[k].lat, pts[k].lon]],
+                { color, weight: 3, opacity: 0.55, dashArray: '6 6' });
+            line.addTo(map); routeLines.push(line);
+        }
+    }
+    async function fetchRoadGeometry(sig, pts){
+        geoCache[sig] = null;                                        // claim it; don't re-request
+        try {
+            const url = 'https://router.project-osrm.org/route/v1/driving/'
+                + pts.map(p => p.lon.toFixed(6) + ',' + p.lat.toFixed(6)).join(';')
+                + '?overview=full&geometries=geojson';
+            const j = await (await fetch(url)).json();
+            const rt = j && j.code === 'Ok' && j.routes && j.routes[0];
+            if (!rt) return;
+            geoCache[sig] = rt.geometry.coordinates.map(c => [c[1], c[0]]);   // lon,lat -> lat,lng
+            geoCache[sig + ':mins'] = Math.round(rt.duration / 60);
+            drawRoute(); renderTrip();
+        } catch (e) { /* stays null — dashed fallback, honestly labelled */ }
+    }
+
+    // ---------- places list ----------
+    function crowdHint(p){
+        const c = crowdTimes[(p.name || '').toLowerCase()];
+        if (!c) return '';
+        let h = '';
+        if (c.public) h += ' <em class="crowd" title="' + c.public.n + ' traveler'
+            + (c.public.n > 1 ? 's' : '') + ' set a stay time here — median, not average">👥 '
+            + c.public.median + 'm public</em>';
+        if (c.guide) h += ' <em class="crowd guided" title="endorsed by ' + c.guide.n
+            + ' verified tour guide' + (c.guide.n > 1 ? 's' : '') + '">🎓 ' + c.guide.median + 'm guide</em>';
+        return h;
+    }
+    function renderPlaces(){
+        $('pcount').textContent = places.length;
+        const bc = $('bookCity'); if (bc) bc.textContent = (CITIES[curCity] || {}).label || curCity;
+        $('places').innerHTML = places.map((p, i) =>
+            '<div class="place-row' + (st.visited.has(i) ? ' in-route' : '') + '">'
+            + (st.visited.has(i)
+                ? '<span class="addbtn done" title="Already in your route">✓</span>'
+                : '<span class="addbtn" title="Add to your route" onclick="addToRoute(' + i + ')">＋</span>')
+            + '<span class="nm">' + (i + 1) + '. ' + p.name + crowdHint(p) + '</span>'
+            + '<input type="time" value="' + fmt(p.close).padStart(5, '0') + '" onchange="editPlace(' + i + ',\'close\',this.value)">'
+            + '<input type="number" min="10" step="5" value="' + p.visit + '" onchange="editPlace(' + i + ',\'visit\',this.value)">'
+            + '<select onchange="editPlace(' + i + ',\'cat\',this.value)" style="width:78px">'
+            + CATS.map(c => '<option value="' + c[0] + '"' + (p.cat === c[0] ? ' selected' : '') + '>' + c[1] + '</option>').join('')
+            + '</select>'
+            + '<span class="rm" title="Remove" onclick="removePlace(' + i + ')">✕</span>'
+            + '</div>').join('');
+    }
+    function editPlace(i, k, v){
+        if (k === 'close') places[i].close = parseTime(v);
+        else if (k === 'visit') {
+            places[i].visit = Math.max(10, +v || 30);
+            places[i].visit_mine = true;           // your choice outranks the crowd's
+            recordVisitTime(places[i]);            // ...and teaches the crowd
+        }
+        else places[i].cat = v;
+        savePlaces(); refresh();
+    }
+
+    // ---------- state → county → city selector ----------
+    function fillCounties(state){
+        const counties = Object.keys(GEO[state] || {});
+        $('selCounty').innerHTML = counties.map(c => '<option value="' + c + '">' + c + '</option>').join('');
+    }
+    function fillCities(state, county){
+        const list = (GEO[state] || {})[county] || [];
+        $('selCity').innerHTML = list.map(c => '<option value="' + c[0] + '">' + c[1] + '</option>').join('');
+    }
+    function initStateCity(){        // sync all three pickers to the loaded city
+        const ss = $('selState');
+        ss.innerHTML = Object.keys(GEO).sort().map(s => '<option value="' + s + '">' + s + '</option>').join('');
+        const m = CITY_META[curCity] || {};
+        ss.value = m.state || Object.keys(GEO)[0];
+        fillCounties(ss.value);
+        $('selCounty').value = m.county || Object.keys(GEO[ss.value])[0];
+        fillCities(ss.value, $('selCounty').value);
+        $('selCity').value = curCity;
+        // date defaults to today if the traveler hasn't chosen one
+        const dd = $('departDate');
+        if (dd && !dd.value && bootSaved && bootSaved.departDate) dd.value = bootSaved.departDate;
+    }
+    function onStateChange(){
+        const s = $('selState').value;
+        fillCounties(s);
+        const county = $('selCounty').value;
+        fillCities(s, county);
+        const first = ((GEO[s] || {})[county] || [])[0];
+        if (first) { $('selCity').value = first[0]; onCityChange(); }
+    }
+    function onCountyChange(){
+        const s = $('selState').value, county = $('selCounty').value;
+        fillCities(s, county);
+        const first = ((GEO[s] || {})[county] || [])[0];
+        if (first) { $('selCity').value = first[0]; onCityChange(); }
+    }
+    function onCityChange(){
+        const key = $('selCity').value;
+        if (key && key !== curCity) loadSample(true, key);
+    }
+    function onDepartChange(){ savePlaces(); }
+    function tripWhen(){          // the "when" of the trip, for the reservation
+        return { date: ($('departDate') || {}).value || '', leaveBy: ($('leaveAt') || {}).value || '' };
+    }
+
+    // ---------- crowd stay-times ----------
+    // Every time someone says how long they want at a place, the site learns it.
+    // We show the MEDIAN once enough people have spoken — never one person's number.
+    let crowdTimes = {}, crowdMinN = 3;
+    function recordVisitTime(p){
+        try {
+            fetch('/api/visit-time', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: p.name, city: curCity, minutes: p.visit })
+            }).then(r => r.json()).then(d => {
+                if (d && d.ok && d.median) {
+                    crowdTimes[p.name.toLowerCase()] = { median: d.median, n: d.n };
+                    renderPlaces();
+                }
+            }).catch(function(){});
+        } catch (e) {}
+    }
+    async function loadCrowdTimes(applyDefaults){
+        try {
+            const d = await (await fetch('/api/visit-times?city=' + encodeURIComponent(curCity))).json();
+            if (!d || !d.ok) return;
+            crowdTimes = d.places || {}; crowdMinN = d.min_n || 3;
+            let applied = 0;
+            if (applyDefaults) places.forEach(p => {
+                const c = crowdTimes[p.name.toLowerCase()];
+                if (c && !p.visit_mine && p.visit !== c.median) { p.visit = c.median; applied++; }
+            });
+            renderPlaces();
+            if (applied) { savePlaces(); refresh();
+                say(applied + ' stop' + (applied > 1 ? 's' : '') + ' set to how long travelers actually stay.'); }
+        } catch (e) {}
+    }
+    function removePlace(i){
+        if (st.visited.has(i)) { say('Remove it from the trip first (Undo).'); return; }
+        const gone = places[i].name;
+        places.splice(i, 1);
+        // Bug 5: removing a place shifts every index above it. This used to call
+        // resetTrip() — silently deleting the trip you were building. Remap instead.
+        const shift = k => (k === i ? -1 : (k > i ? k - 1 : k));
+        st.route.forEach(r => { r.i = shift(r.i); if (r.prev) r.prev.pos = shift(r.prev.pos); });
+        st.visited = new Set(st.route.map(r => r.i));
+        st.pos = shift(st.pos);
+        if (gone && dropped.indexOf(gone) < 0) dropped.push(gone);   // don't let it come back
+        rebuildMarkers(); renderPlaces(); savePlaces(); refresh(); fetchMatrix();
+        say('Removed ' + gone + ' — your trip is intact.');
+    }
+    // Bug 1: the TRIP is saved too, not just the place list. A route you spent ten
+    // minutes building survives a reload, a phone lock, a closed tab.
+    function savePlaces(){
+        try {
+            const payload = { city: curCity, places, dropped, departDate: ($('departDate') || {}).value || '' };
+            if (booted) payload.trip = {
+                day: st.day, now: st.now, pos: st.pos, route: st.route,
+                visited: Array.from(st.visited), cats: Array.from(st.cats),
+                leaveAt: ($('leaveAt') || {}).value || null
+            };
+            else if (bootSaved && bootSaved.trip) payload.trip = bootSaved.trip;
+            localStorage.setItem(LS_KEY, JSON.stringify(payload));
+        } catch (e) {}
+    }
+    function restoreTrip(){
+        const t = bootSaved && bootSaved.trip;
+        if (!t || !Array.isArray(t.route)) return false;
+        // Only restore stops that still point at a real place — a saved trip must
+        // never resurrect a stop whose place is gone.
+        const route = t.route.filter(r => r && places[r.i]);
+        if (!route.length && !(t.cats && t.cats.length)) return false;
+        st.route = route;
+        st.visited = new Set(route.map(r => r.i));
+        st.day = t.day || 1;
+        st.pos = (places[t.pos] ? t.pos : (route.length ? route[route.length - 1].i : -1));
+        st.now = typeof t.now === 'number' ? t.now : st.now;
+        if (t.cats && t.cats.length) {
+            st.cats = new Set(t.cats);
+            [].forEach.call($('chips').children, (b, k) => b.classList.toggle('on', st.cats.has(CATS[k][0])));
+        }
+        if (t.leaveAt && $('leaveAt')) $('leaveAt').value = t.leaveAt;
+        return route.length > 0;
+    }
+    function loadSample(force, city){
+        if (!force) {
+            try { const s = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+                if (s && s.places && s.places.length) {
+                    places = s.places; curCity = s.city || 'nyc';
+                    dropped = s.dropped || []; bootSaved = s; return;
+                } } catch (e) {}
+        }
+        curCity = city || 'nyc';
+        const c = CITIES[curCity];
+        places = c.places.map(p => Object.assign({}, p));
+        savePlaces();
+        if (force) {
+            rebuildMarkers(); renderPlaces();
+            startMarker.setLatLng(c.start);
+            map.setView(c.center, c.zoom);
+            resetTrip(); fetchMatrix();
+            say(c.label + ' sample loaded — ' + places.length + ' places, ready to plan.');
+            const ss = $('selState'), m = CITY_META[curCity];  // keep all three pickers in sync
+            if (ss && m) { ss.value = m.state; fillCounties(m.state); $('selCounty').value = m.county;
+                           fillCities(m.state, m.county); $('selCity').value = curCity; }
+            mergeCommunity(curCity);       // + everything past visitors taught the site
+            loadCrowdTimes(true);          // + how long they actually stayed
+        }
+    }
+
+    // ---------- community memory ----------
+    // Places anyone added through the search are remembered by the SITE
+    // (not just this browser) — merge the city's community places in.
+    async function mergeCommunity(city){
+        try {
+            const r = await fetch('/api/destinations');
+            const d = await r.json();
+            const have = new Set(places.map(p => p.name.toLowerCase()));
+            const gone = new Set(dropped.map(n => String(n).toLowerCase()));
+            let added = 0;
+            (d.entries || []).forEach(e => {
+                if (e.city !== city || e.source !== 'user') return;
+                if (have.has((e.name || '').toLowerCase())) return;
+                if (gone.has((e.name || '').toLowerCase())) return;   // this visitor removed it
+                places.push({ name: e.name, lat: e.lat, lon: e.lon,
+                              close: e.close || 1020, visit: e.visit || 60, cat: e.cat || 'culture' });
+                have.add(e.name.toLowerCase());
+                added++;
+            });
+            if (added) {
+                rebuildMarkers(); renderPlaces(); savePlaces(); refresh(); fetchMatrix();
+                say(added + ' place' + (added > 1 ? 's' : '') + ' added by earlier visitors joined the board.');
+            }
+        } catch (e) {}
+    }
+    function rememberPlace(p, meta){
+        // Fire-and-forget: the site keeps this place for every future visitor AND
+        // writes it into the Destination Book. The map's own classification rides
+        // along so the book entry gets a real description, not a blank row.
+        try {
+            fetch('/api/destinations/add', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: p.name, lat: p.lat, lon: p.lon, city: curCity,
+                                       close: p.close, visit: p.visit, found_via: 'planner',
+                                       osm_class: (meta || {}).class, type: (meta || {}).type,
+                                       address: (meta || {}).address })
+            }).then(r => r.json()).then(d => {
+                if (!d || !d.ok || !d.entry) return;
+                if (d.entry.cat && d.entry.cat !== p.cat) {     // adopt the derived category
+                    p.cat = d.entry.cat; renderPlaces(); refresh(); savePlaces();
+                }
+                if (!d.already_known) say('“' + p.name + '” added to your board — and to the Destination Book for this city.');
+            }).catch(function(){});
+        } catch (e) {}
+    }
+
+    // ---------- search (Nominatim, free) ----------
+    async function searchPlace(){
+        const q = $('q').value.trim();
+        if (!q) return;
+        const box = $('qres');
+        box.style.display = 'block'; box.innerHTML = '<div class="muted">Searching…</div>';
+        try {
+            // Bug 3: search used to be worldwide — "Museum" could land a pin in Europe,
+            // wrecking the map and the drive-time matrix. Bias to what's on screen, and
+            // fall back to a wide search only if the local one finds nothing.
+            const b = map.getBounds();
+            const vb = '&viewbox=' + [b.getWest(), b.getNorth(), b.getEast(), b.getSouth()].map(n => n.toFixed(4)).join(',');
+            const base = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=' + encodeURIComponent(q);
+            let hint = '';
+            let j = await (await fetch(base + vb + '&bounded=1')).json();
+            if (!j.length) {
+                j = await (await fetch(base + vb)).json();      // nearby-first, not bounded
+                if (j.length) hint = '<div class="muted">Nothing in view — closest matches:</div>';
+            }
+            if (!j.length) { box.innerHTML = '<div class="muted">No results — try adding the city name.</div>'; return; }
+            box.innerHTML = hint;
+            j.forEach(res => {
+                const d = document.createElement('div');
+                d.textContent = res.display_name;
+                d.onclick = () => {
+                    const nm = res.display_name.split(',')[0].replace(/[<>&"]/g, '').slice(0, 60) || 'New place';
+                    const np = { name: nm, lat: +res.lat, lon: +res.lon,
+                                 close: 1020, visit: 60, cat: 'culture' };
+                    places.push(np);
+                    rememberPlace(np, res);  // the site + the book remember it for everyone
+                    box.style.display = 'none'; $('q').value = '';
+                    rebuildMarkers(); renderPlaces(); savePlaces(); refresh(); fetchMatrix();
+                    map.setView([+res.lat, +res.lon], Math.max(map.getZoom(), 12));
+                    say('Added ' + nm + ' — saved to the site, so it\'s here for the next visitor too.');
+                };
+                box.appendChild(d);
+            });
+        } catch (e) { box.innerHTML = '<div class="muted">Search unavailable right now.</div>'; }
+    }
+    document.addEventListener('click', e => { if (!e.target.closest('.search-box')) $('qres').style.display = 'none'; });
+
+    // ---------- map ----------
+    function rebuildMarkers(){
+        markers.forEach(m => map.removeLayer(m)); markers = [];
+        places.forEach((p, i) => {
+            const mk = L.marker([p.lat, p.lon], { icon: L.divIcon({ className: '', html: pinHtml(i, 'tp-lit'), iconSize: [90, 46], iconAnchor: [45, 14] }) });
+            mk.on('click', () => tap(i));
+            mk.addTo(map); markers.push(mk);
+        });
+    }
+    // ---------- accurate current location ----------
+    // The pickup a customer books has to be RIGHT. We ask the device for a
+    // high-accuracy GPS fix, move the start pin there, reverse-geocode it to a real
+    // street address, and show the accuracy so they know whether to fine-tune.
+    let currentLoc = null;      // { lat, lon, address, accuracy } once detected
+    function setLocLabel(t){ const el = $('curLocLabel'); if (el) el.textContent = t; }
+    function setLocInfo(t, warn){ const el = $('curLocInfo'); if (!el) return; el.textContent = t; el.className = 'loc-info' + (warn ? ' warn' : ''); }
+    function shortAddr(a){ return a ? a.split(',').slice(0, 3).join(',') : ''; }
+
+    function detectLocation(){
+        return new Promise(resolve => {
+            if (!navigator.geolocation) {
+                setLocInfo('This browser can’t share location — drag the black pin or type your pickup on the booking form.', true);
+                resolve(false); return;
+            }
+            setLocLabel('Locating…'); setLocInfo('Getting your exact location…');
+            navigator.geolocation.getCurrentPosition(async pos => {
+                const lat = pos.coords.latitude, lon = pos.coords.longitude, acc = Math.round(pos.coords.accuracy || 0);
+                startMarker.setLatLng([lat, lon]);
+                map.setView([lat, lon], acc <= 60 ? 16 : 14);
+                let address = '';
+                try {
+                    const r = await fetch('https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1&lat=' + lat + '&lon=' + lon);
+                    const j = await r.json();
+                    address = (j && j.display_name) ? j.display_name : '';
+                } catch (e) {}
+                currentLoc = { lat, lon, address, accuracy: acc };
+                $('curLocBtn').classList.add('located');
+                setLocLabel(address ? shortAddr(address) : 'My location');
+                const weak = acc > 150;
+                setLocInfo('📍 ' + (address || (lat.toFixed(5) + ', ' + lon.toFixed(5)))
+                    + '  ·  accurate to ±' + acc + ' m'
+                    + (weak ? ' — weak signal, drag the black pin to fine-tune' : ''), weak);
+                // Refresh drive times from the new start, but NEVER wipe a route the
+                // traveler already built — "I need a ride" detects location mid-flow,
+                // and losing their stops here would be the old trip-wipe bug again.
+                if (!st.route.length) resetTrip();
+                fetchMatrix(); refresh();
+                resolve(true);
+            }, err => {
+                setLocLabel('Set current location');
+                const denied = err && err.code === 1;
+                setLocInfo(denied
+                    ? 'Location permission was blocked — drag the black pin to your spot, or set the pickup on the booking form.'
+                    : 'Couldn’t get a location fix — drag the black pin, or set the pickup on the booking form.', true);
+                resolve(false);
+            }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
+        });
+    }
+    const useMyLocation = detectLocation;    // the toolbar button uses the same accurate path
+
+    // Best pickup address we can give the reservation, in priority order:
+    // a detected GPS address → reverse-geocode of wherever the start pin sits → coords.
+    async function accuratePickup(){
+        if (currentLoc && currentLoc.address) return currentLoc.address;
+        const sm = startMarker.getLatLng();
+        try {
+            const r = await fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + sm.lat + '&lon=' + sm.lng);
+            const j = await r.json();
+            if (j && j.display_name) return j.display_name;
+        } catch (e) {}
+        return 'Current location (' + sm.lat.toFixed(4) + ', ' + sm.lng.toFixed(4) + ')';
+    }
+    // Real driving miles between two points — the destination's distance sets the fare.
+    async function driveMiles(from, to){
+        try {
+            const url = 'https://router.project-osrm.org/route/v1/driving/'
+                + from.lon.toFixed(6) + ',' + from.lat.toFixed(6) + ';'
+                + to.lon.toFixed(6) + ',' + to.lat.toFixed(6) + '?overview=false';
+            const j = await (await fetch(url)).json();
+            const rt = j && j.code === 'Ok' && j.routes && j.routes[0];
+            if (rt && isFinite(rt.distance)) return rt.distance / 1609.344;   // meters → miles
+        } catch (e) {}
+        return havKm(from, to) * 0.621371 * 1.3;   // fallback: straight-line × road factor
+    }
+    function initChips(){
+        const c = $('chips');
+        CATS.forEach(cat => {
+            const b = document.createElement('span');
+            b.className = 'chip on'; b.textContent = cat[1];
+            b.onclick = () => {
+                if (st.cats.has(cat[0])) { st.cats.delete(cat[0]); b.classList.remove('on'); }
+                else { st.cats.add(cat[0]); b.classList.add('on'); }
+                refresh();
+            };
+            c.appendChild(b);
+        });
+    }
+
+    // ---------- the three doors ----------
+    function tripSummary(){
+        if (!st.route.length) return null;
+        const cityLabel = (CITIES[curCity] || {}).label || curCity;
+        const stops = st.route.map((r, k) => (k + 1) + '. ' + places[r.i].name
+            + ' (' + fmt(r.arr) + '–' + fmt(r.leave) + ')');
+        return { city: curCity, cityLabel, days: st.day,
+                 stops: st.route.map(r => ({ name: places[r.i].name, lat: places[r.i].lat, lon: places[r.i].lon,
+                                             arr: r.arr, leave: r.leave, day: r.day })),
+                 text: cityLabel + ' · ' + st.route.length + ' stop' + (st.route.length > 1 ? 's' : '')
+                       + '\n' + stops.join('\n') };
+    }
+    // One location is enough. If nothing's in the route yet but a destination is typed,
+    // add it first — so a traveler can enter a single place and act on it immediately.
+    async function ensureLocation(){
+        if (!st.route.length && ($('destAdd').value || '').trim()) await addDestination();
+        return st.route.length > 0;
+    }
+    async function doorRide(){
+        if (!(await ensureLocation())) { say('Enter a location first — type where you want to go, then choose.'); return; }
+        // Ride = current location → your destination. Make the pickup ACCURATE: if we
+        // don't already have a GPS fix, ask for one now so the reservation gets the
+        // customer's real address, not the city's default start point.
+        if (!currentLoc) { say('Getting your exact pickup location…'); await detectLocation(); }
+        say('Preparing your ride…');
+        const drop = places[st.route[st.route.length - 1].i];      // the stop you want to reach
+        const pickup = await accuratePickup();
+        const t = tripSummary();
+        const gps = !!(currentLoc && currentLoc.address);          // true GPS fix vs map-pin guess
+        const when = tripWhen();
+        const m = CITY_META[curCity] || {};
+        // The destination sets the price: real drive miles × the owner's rate.
+        const pk = currentLoc ? { lat: currentLoc.lat, lon: currentLoc.lon }
+                              : (function(){ const ll = startMarker.getLatLng(); return { lat: ll.lat, lon: ll.lng }; })();
+        const miles = await driveMiles(pk, { lat: drop.lat, lon: drop.lon });
+        let base = 15, perMile = 2.5;
+        try { const p = await (await fetch('/api/pricing')).json();
+              if (p) { if (isFinite(p.base_fare)) base = p.base_fare; if (isFinite(p.per_mile)) perMile = p.per_mile; } } catch (e) {}
+        const distance_mi = Math.round(miles * 100) / 100;
+        const fare = Math.round((base + perMile * miles) * 100) / 100;
+        const ride = {
+            pickup,
+            dropoff: drop.name,
+            stops: t.stops,
+            pickup_accurate: gps,
+            pickup_accuracy_m: gps ? currentLoc.accuracy : null,
+            date: when.date,                       // date of departure → reservation
+            time: when.leaveBy,                    // leave by → reservation
+            county: m.county || '', state: m.state || '', city: t.cityLabel,
+            trip_type: 'destination',              // filed under where it concludes
+            dest_category: drop.cat || '',         // history / culture / nature / food / views
+            distance_mi, fare,                     // the destination drove this price
+            notes: (st.route.length > 1 ? 'Trip Planner route — ' + t.text : 'Via Trip Planner')
+        };
+        try { localStorage.setItem('ps_ride_trip', JSON.stringify(ride)); } catch (e) {}
+        location.href = '/book';               // the working reservation flow, now pre-filled
+    }
+    let handoffMode = 'prefer';
+    const HANDOFF_COPY = {
+        prefer: { title: 'Drop this trip to a guide', sub: "We'll pass your plan to a real local guide. They reach out; you decide." },
+        hire:   { title: 'Hire a driver-guide', sub: 'One person drives you and guides the trip. Tell us how to reach you.' },
+        sale:   { title: 'Offer this as a guided trip', sub: 'Guides only — publish this route so travelers and agents can book you to run it.' }
+    };
+    async function doorGuide(mode){
+        if (mode === 'sale') {
+            if (!st.route.length) { say('Build a route first, then offer it for sale.'); return; }
+        } else if (!(await ensureLocation())) {
+            say('Enter a location first, then choose.'); return;
+        }
+        handoffMode = mode;
+        const c = HANDOFF_COPY[mode] || HANDOFF_COPY.prefer;
+        $('ho_title').textContent = c.title;
+        $('ho_sub').textContent = c.sub;
+        $('ho_summary').textContent = tripSummary().text;
+        $('ho_guidefields').style.display = mode === 'sale' ? 'block' : 'none';
+        // disclose the platform connection fee for the two customer doors (not the guide listing)
+        const feeEl = $('ho_fee');
+        if (feeEl) {
+            if (mode === 'sale') { feeEl.style.display = 'none'; }
+            else {
+                fetch('/api/pricing').then(r => r.json()).then(p => {
+                    const fee = (p && isFinite(p.platform_fee)) ? p.platform_fee : 5;
+                    feeEl.textContent = '💳 A $' + fee + ' platform connection fee applies to this trip — it’s how the site keeps these tools free.';
+                    feeEl.style.display = 'block';
+                }).catch(() => { feeEl.style.display = 'none'; });
+            }
+        }
+        $('ho_msg').textContent = ''; $('ho_msg').className = 'ho-msg';
+        $('handoff').classList.add('on');
+    }
+    function closeHandoff(){ $('handoff').classList.remove('on'); }
+    $('handoff').addEventListener('click', e => { if (e.target.id === 'handoff') closeHandoff(); });
+    function sendHandoff(){
+        const t = tripSummary();
+        const msg = $('ho_msg'); msg.className = 'ho-msg';
+        const body = { mode: handoffMode, trip: t, city: curCity,
+                       name: $('ho_name').value.trim(), contact: $('ho_contact').value.trim(),
+                       note: $('ho_note').value.trim(),
+                       guide_code: $('ho_code').value.trim(), price: $('ho_price').value };
+        if (handoffMode === 'sale' && !body.guide_code) { msg.className = 'ho-msg err'; msg.textContent = 'A guide code is required to list a trip for sale.'; return; }
+        if (handoffMode !== 'sale' && !body.contact) { msg.className = 'ho-msg err'; msg.textContent = 'Add an email or phone so the guide can reach you.'; return; }
+        $('ho_send').disabled = true;
+        fetch('/api/guide-offer', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body) }).then(r => r.json()).then(d => {
+            $('ho_send').disabled = false;
+            if (d && d.ok) {
+                msg.className = 'ho-msg ok';
+                const feeNote = (isFinite(d.platform_fee) && d.platform_fee > 0)
+                    ? ' A $' + d.platform_fee + ' platform fee is billed to this trip.' : '';
+                msg.textContent = d.mode === 'sale'
+                    ? '✓ Listed. Reference ' + d.ref + ' — your route is now offered as a guided trip.'
+                    : d.mode === 'hire'
+                    ? '✓ Sent. Reference ' + d.ref + ' — a driver-guide will reach out.' + feeNote
+                    : '✓ Sent. Reference ' + d.ref + ' — a guide will reach out.' + feeNote;
+                $('ho_form').querySelectorAll('input,textarea').forEach(i => i.value = '');
+            } else { msg.className = 'ho-msg err'; msg.textContent = (d && d.error) || 'Could not send — please try again.'; }
+        }).catch(() => { $('ho_send').disabled = false; msg.className = 'ho-msg err'; msg.textContent = 'Could not reach the server — please try again.'; });
+    }
+
+    // ---------- robotaxi (under development — captures demand, books nothing) ----------
+    function doorRobotaxi(){
+        const t = tripSummary();
+        const el = $('rt_summary');
+        if (t) { el.textContent = t.text; el.style.display = 'block'; }
+        else { el.style.display = 'none'; }
+        $('rt_msg').textContent = ''; $('rt_msg').className = 'ho-msg';
+        $('robotaxi').classList.add('on');
+    }
+    function closeRobotaxi(){ $('robotaxi').classList.remove('on'); }
+    $('robotaxi').addEventListener('click', e => { if (e.target.id === 'robotaxi') closeRobotaxi(); });
+    function sendRobotaxi(){
+        const contact = $('rt_contact').value.trim();
+        const msg = $('rt_msg'); msg.className = 'ho-msg';
+        const t = tripSummary(), m = CITY_META[curCity] || {};
+        $('rt_send').disabled = true;
+        fetch('/api/robotaxi-interest', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contact, city: curCity,
+                                   cityLabel: (t ? t.cityLabel : ((CITIES[curCity] || {}).label || curCity)),
+                                   state: m.state || '' }) })
+            .then(r => r.json()).then(d => {
+                $('rt_send').disabled = false;
+                if (d && d.ok) {
+                    msg.className = 'ho-msg ok';
+                    msg.textContent = contact
+                        ? '✓ Thanks — we’ll tell you the moment robotaxi launches here.'
+                        : '✓ Noted — your interest was counted.';
+                    $('rt_contact').value = '';
+                } else { msg.className = 'ho-msg err'; msg.textContent = (d && d.error) || 'Could not record — please try again.'; }
+            }).catch(() => { $('rt_send').disabled = false; msg.className = 'ho-msg err'; msg.textContent = 'Could not reach the server — please try again.'; });
+    }
+
+    // ---------- boot ----------
+    loadSample(false);
+    const BOOT_CITY = CITIES[curCity] || CITIES.nyc;
+    map = L.map('map').setView(BOOT_CITY.center, BOOT_CITY.zoom);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19, attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    startMarker = L.marker(BOOT_CITY.start, {
+        draggable: true,
+        icon: L.divIcon({ className: '', html: '<div class="tp-pin tp-start"><div class="tp-dot">★</div><span class="tp-lbl">Start</span></div>', iconSize: [90, 46], iconAnchor: [45, 14] })
+    }).addTo(map).bindTooltip('Your start point — drag me');
+    startMarker.on('dragend', () => { resetTrip(); fetchMatrix(); });
+    initChips();
+    initStateCity();
+    rebuildMarkers();
+    renderPlaces();
+    if (places.length) {
+        const b = L.latLngBounds(places.map(p => [p.lat, p.lon]));
+        b.extend(startMarker.getLatLng());
+        map.fitBounds(b.pad(0.15), { maxZoom: 13 });   // frames book-added places too
+    }
+    st.now = parseTime($('leaveAt').value);
+    const resumed = restoreTrip();     // bug 1: pick the trip back up where it was left
+    booted = true;
+    if (resumed) {
+        resumeNote = ' · ✓ your ' + st.route.length + '-stop trip was restored';
+        setTimeout(() => { resumeNote = ''; refresh(); }, 12000);
+    }
+    refresh();
+    fetchMatrix();
+    mergeCommunity(curCity);           // bug 4: every visit, not just on a sample load
+    loadCrowdTimes(true);              // how long people actually stay, learned from everyone
+    </script>
+    <script src="/floatback.js"></script>
+    <script src="/jarvis-widget.js"></script>
+</body>
+</html>

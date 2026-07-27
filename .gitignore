@@ -1,0 +1,47 @@
+# --- SECRETS — never commit these ---
+.env
+.flask_secret
+owner_auth.json
+*.pem
+*.key
+
+# --- private uploads / PII ---
+insurance_uploads/
+documents/
+board_docs/
+board_docs.json
+board_members.json
+
+# --- python / os cruft ---
+__pycache__/
+*.pyc
+.DS_Store
+backups/
+clock_signups.json
+give_back.json
+visit_times.json
+guide_offers.json
+robotaxi_interest.json
+
+# --- runtime data with customer / business PII — NEVER commit or upload ---
+reservations.json
+customers.json
+renters.json
+agents.json
+owner_alerts.json
+contract_signatures.json
+finance_signups.json
+finance_wishlist.json
+deflator_waitlist.json
+partners.json
+documents.json
+violations.json
+app.log
+
+# --- sensitive: bank statements, archives, logs, temp — NEVER commit ---
+*.pdf
+*.zip
+*.tar.gz
+*.log
+booking_app.log
+zibS3LVQ

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive — Plateau Strategy Solution Lab</title>
+    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9; color: #1f2937; min-height: 100vh; }
+        header { background: linear-gradient(135deg,#0f172a,#1e3a8a); color: #fff; padding: 1rem 2rem;
+            display: flex; align-items: center; gap: 0.7rem; }
+        header img { height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
+        header .brand { font-weight: 800; font-size: 1.2rem; }
+        header .links { margin-left: auto; display: flex; gap: 1.3rem; }
+        header a { color: #cbd5e1; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+        .wrap { max-width: 1080px; margin: 2rem auto; padding: 0 1.2rem; }
+        h1 { font-size: 1.7rem; color: #0f172a; font-weight: 800; }
+        .sub { color: #64748b; margin: 0.2rem 0 1.6rem; }
+
+        .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+        .tile { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.3rem; cursor: pointer;
+            transition: box-shadow .15s, transform .15s, border-color .15s; }
+        .tile:hover { box-shadow: 0 8px 24px rgba(15,23,42,0.10); transform: translateY(-2px); border-color: #c7d2fe; }
+        .tile .lbl { font-size: 1.02rem; font-weight: 800; color: #0f172a; }
+        .tile .n { font-size: 1.9rem; font-weight: 800; color: #1e3a8a; margin: 0.35rem 0 0.1rem; }
+        .tile .d { color: #64748b; font-size: 0.82rem; line-height: 1.45; margin-top: 0.35rem; }
+        .tile .last { color: #94a3b8; font-size: 0.72rem; margin-top: 0.5rem; }
+        .tile.hot { border-color: #6ee7b7; background: linear-gradient(180deg,#ffffff,#f0fdf9); }
+        .tile.hot .n { color: #047857; }
+
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.4rem; margin-top: 1.2rem; }
+        .backbar { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
+        .back { background: none; border: none; color: #2563eb; font-weight: 700; cursor: pointer; font-size: 0.9rem; padding: 0; }
+        h2 { font-size: 1.25rem; color: #0f172a; }
+        .toolbar { display: flex; gap: 0.7rem; align-items: center; margin: 0.9rem 0 0.4rem; flex-wrap: wrap; }
+        .toolbar input { flex: 1; min-width: 180px; padding: 0.6rem 0.9rem; border: 1px solid #cbd5e1; border-radius: 9px; font-size: 0.9rem; }
+        .btn { padding: 0.62rem 1.1rem; border: none; border-radius: 10px; font-weight: 700; font-size: 0.86rem;
+            cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn.blue { background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; }
+        .btn.dark { background: #0f172a; color: #fff; }
+        .count { color: #64748b; font-size: 0.82rem; font-weight: 600; }
+        .tbl-scroll { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 0.5rem 0.6rem; font-size: 0.84rem; border-bottom: 1px solid #f1f5f9; white-space: nowrap; }
+        th { color: #94a3b8; font-weight: 700; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; background: #fff; }
+        td.amt { text-align: right; font-weight: 700; }
+        td a { color: #2563eb; }
+        .badge { font-size: 0.66rem; font-weight: 800; padding: 0.16rem 0.5rem; border-radius: 999px; background: #e2e8f0; color: #475569; }
+        .badge.NEW, .badge.QUOTE { background: #fef3c7; color: #92400e; }
+        .badge.COMPLETED, .badge.PAID { background: #dcfce7; color: #166534; }
+        .badge.ASSIGNED { background: #dbeafe; color: #1e40af; }
+        .badge.CANCELED { background: #fee2e2; color: #991b1b; }
+        .empty { color: #94a3b8; text-align: center; padding: 1.6rem; }
+        .note { color: #94a3b8; font-size: 0.8rem; margin-top: 1.2rem; line-height: 1.5; }
+        .mkt-note { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 0.9rem 1.1rem;
+            font-size: 0.85rem; color: #065f46; margin-top: 0.9rem; line-height: 1.5; display: none; }
+    </style>
+    <link rel="stylesheet" href="/admin-terminal.css">
+</head>
+<body>
+    <header>
+        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="links"><a href="/dispatch">Dispatch</a><a href="/books">Books</a><a href="/">← Home</a></div>
+    </header>
+
+    <div class="wrap">
+        <h1>Archive</h1>
+        <p class="sub">One place that keeps every paper trail the site produces — bookings, your customer contact list, signed agreements, uploaded paperwork, leads, partners and more. Private, owner only.</p>
+
+        <div id="gate"></div>
+        <div id="overview" class="tiles"></div>
+
+        <div id="section" style="display:none;">
+            <div class="card">
+                <div class="backbar">
+                    <button class="back" onclick="showOverview()">← All archives</button>
+                </div>
+                <h2 id="secLabel"></h2>
+                <p class="sub" id="secDesc" style="margin:0.2rem 0 0;"></p>
+                <div class="mkt-note" id="mktNote">📣 <b>This is your advertising list.</b> Every email and phone your site has ever captured — booking customers, account holders, finance leads, waitlists and partner contacts — de-duplicated. Export it to CSV and load it straight into your ad platform (Google/Meta customer match, Mailchimp, etc.). Only market to people per your privacy policy &amp; applicable law.</div>
+                <div class="toolbar">
+                    <input id="search" placeholder="Search…" oninput="renderRows()">
+                    <span class="count" id="secCount"></span>
+                    <a class="btn dark" id="exportBtn" href="#">⬇️ Export CSV</a>
+                </div>
+                <div class="tbl-scroll">
+                    <table>
+                        <thead><tr id="secHead"></tr></thead>
+                        <tbody id="secBody"></tbody>
+                    </table>
+                </div>
+                <div class="empty" id="secEmpty" style="display:none;">Nothing here yet — records appear automatically as they happen.</div>
+            </div>
+        </div>
+
+        <p class="note" id="footNote"></p>
+    </div>
+
+    <script>
+        const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+        let CUR = { section: '', columns: [], rows: [] };
+
+        const prettyCol = c => ({ id:'ID', fare_usd:'Fare', driver_id:'Driver', ref:'Reference', ip:'IP',
+            uploaded_at:'Uploaded', logged_at:'Logged', signed_at:'Signed', joined:'Joined', at:'Time' }[c])
+            || c.replace(/_/g,' ').replace(/\b\w/g, m => m.toUpperCase());
+
+        function cell(col, v) {
+            if (v == null || v === '') return '<td></td>';
+            if (col === 'email') return '<td><a href="mailto:' + esc(v) + '">' + esc(v) + '</a></td>';
+            if (col === 'fare_usd') return '<td class="amt">$' + Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</td>';
+            if (col === 'status' || col === 'role') return '<td><span class="badge ' + esc(v) + '">' + esc(v) + '</span></td>';
+            if (col === 'invoice' && /^https?:/.test(v)) return '<td><a href="' + esc(v) + '" target="_blank" rel="noopener">view</a></td>';
+            if (col === 'resolved') return '<td>' + (v ? '✓' : '—') + '</td>';
+            if ((col === 'date' || col.endsWith('_at') || col === 'joined' || col === 'at' || col === 'signed_at') && String(v).length >= 10)
+                return '<td>' + esc(String(v).slice(0,16).replace('T',' ')) + '</td>';
+            return '<td>' + esc(v) + '</td>';
+        }
+
+        async function boot() {
+            let res, d;
+            try { res = await fetch('/api/archive/overview'); d = await res.json(); } catch (e) { return; }
+            if (res.status === 401 || (d && d.auth_required)) {
+                document.getElementById('overview').style.display = 'none';
+                document.getElementById('gate').innerHTML =
+                    '<div class="card" style="text-align:center; max-width:520px; margin:2rem auto;">' +
+                    '<h1 style="margin-bottom:0.6rem;">🔒 Private — owner only</h1>' +
+                    '<p class="sub" style="margin-bottom:1.3rem;">The archive holds customer contacts, signed agreements and paperwork. Sign in through Dispatch to open it.</p>' +
+                    '<a class="btn blue" href="/dispatch">Go to Dispatch login →</a></div>';
+                return;
+            }
+            const cats = d.categories || [];
+            const total = cats.reduce((a,c) => a + c.count, 0);
+            document.getElementById('overview').innerHTML = cats.map(c =>
+                '<div class="tile' + (c.key === 'contacts' ? ' hot' : '') + '" onclick="openSection(\'' + c.key + '\')">' +
+                '<div class="lbl">' + esc(c.label) + '</div>' +
+                '<div class="n">' + c.count + '</div>' +
+                '<div class="d">' + esc(c.desc) + '</div>' +
+                (c.last ? '<div class="last">latest ' + esc(c.last.slice(0,16).replace('T',' ')) + '</div>' : '<div class="last">—</div>') +
+                '</div>').join('');
+            document.getElementById('footNote').textContent =
+                total + ' records across ' + cats.length + ' archives. Everything here is captured automatically — nothing to file by hand. Exports are CSV, ready for your accountant, CRM or ad platform.';
+        }
+
+        async function openSection(key) {
+            let res, d;
+            try { res = await fetch('/api/archive/' + key); d = await res.json(); } catch (e) { return; }
+            if (!d || !d.ok) return;
+            CUR = { section: key, columns: d.columns || [], rows: d.rows || [] };
+            // pull the label/desc from the overview tile we already rendered
+            const tile = [...document.querySelectorAll('#overview .tile')].find(t => t.getAttribute('onclick').includes("'" + key + "'"));
+            document.getElementById('secLabel').textContent = tile ? tile.querySelector('.lbl').textContent : key;
+            document.getElementById('secDesc').textContent = tile ? tile.querySelector('.d').textContent : '';
+            document.getElementById('mktNote').style.display = (key === 'contacts') ? 'block' : 'none';
+            document.getElementById('exportBtn').href = '/api/archive/export.csv?section=' + key;
+            document.getElementById('search').value = '';
+            document.getElementById('overview').style.display = 'none';
+            document.getElementById('footNote').style.display = 'none';
+            document.getElementById('section').style.display = 'block';
+            renderRows();
+            window.scrollTo(0, 0);
+        }
+
+        function renderRows() {
+            const q = document.getElementById('search').value.trim().toLowerCase();
+            const cols = CUR.columns;
+            let rows = CUR.rows;
+            if (q) rows = rows.filter(r => cols.some(c => String(r[c] == null ? '' : r[c]).toLowerCase().includes(q)));
+            document.getElementById('secHead').innerHTML = cols.map(c => '<th>' + esc(prettyCol(c)) + '</th>').join('');
+            document.getElementById('secBody').innerHTML = rows.map(r => '<tr>' + cols.map(c => cell(c, r[c])).join('') + '</tr>').join('');
+            document.getElementById('secEmpty').style.display = rows.length ? 'none' : 'block';
+            document.getElementById('secCount').textContent = rows.length + (rows.length === 1 ? ' record' : ' records') + (q ? ' (filtered)' : '');
+        }
+
+        function showOverview() {
+            document.getElementById('section').style.display = 'none';
+            document.getElementById('overview').style.display = 'grid';
+            document.getElementById('footNote').style.display = 'block';
+        }
+
+        boot();
+    </script>
+    <script src="/floatback.js"></script>
+    <script src="/jarvis-widget.js"></script>
+    <script src="/i18n.js"></script>
+</body>
+</html>

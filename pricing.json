@@ -1,0 +1,19 @@
+{
+  "presets": [
+    {
+      "name": "Airport Pickup (flat)",
+      "price": 75,
+      "commission": 15
+    },
+    {
+      "name": "Downtown Transfer",
+      "price": 45,
+      "commission": 10
+    },
+    {
+      "name": "Hourly (per hour)",
+      "price": 65,
+      "commission": 12
+    }
+  ]
+}

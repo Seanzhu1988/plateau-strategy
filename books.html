@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Books &amp; Taxes — Plateau Strategy Solution Lab</title>
+    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9; color: #1f2937; min-height: 100vh; }
+        header { background: linear-gradient(135deg,#0f172a,#1e3a8a); color: #fff; padding: 1rem 2rem;
+            display: flex; align-items: center; gap: 0.7rem; }
+        header img { height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
+        header .brand { font-weight: 800; font-size: 1.2rem; }
+        header a { margin-left: auto; color: #cbd5e1; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+        .wrap { max-width: 980px; margin: 2rem auto; padding: 0 1.2rem; }
+        h1 { font-size: 1.7rem; color: #0f172a; font-weight: 800; }
+        .sub { color: #64748b; margin: 0.2rem 0 1.6rem; }
+
+        .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .tile { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.3rem; }
+        .tile .n { font-size: 1.7rem; font-weight: 800; color: #0f172a; }
+        .tile.green .n { color: #047857; }
+        .tile.amber .n { color: #b45309; }
+        .tile.red .n { color: #b91c1c; }
+        .tile .l { color: #64748b; font-size: 0.82rem; margin-top: 0.2rem; }
+
+        .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 1.4rem; }
+        @media (max-width: 760px) { .row2 { grid-template-columns: 1fr; } }
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.4rem; }
+        .card h3 { font-size: 1rem; color: #0f172a; margin-bottom: 0.8rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 0.5rem 0.5rem; font-size: 0.85rem; border-bottom: 1px solid #f1f5f9; }
+        th { color: #94a3b8; font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        td.amt { text-align: right; font-weight: 700; }
+        th.amt { text-align: right; }
+        .badge { font-size: 0.66rem; font-weight: 800; padding: 0.16rem 0.5rem; border-radius: 999px; }
+        .badge.PAID { background: #dcfce7; color: #166534; }
+        .badge.UNPAID, .badge.PUBLISHED, .badge.SCHEDULED, .badge.PARTIALLY_PAID { background: #fef3c7; color: #92400e; }
+        .badge.CANCELED { background: #fee2e2; color: #991b1b; }
+        .badge.SIMULATED, .badge.UNKNOWN { background: #e2e8f0; color: #475569; }
+
+        .toolbar { display: flex; gap: 0.8rem; align-items: center; margin-top: 1.6rem; flex-wrap: wrap; }
+        .btn { padding: 0.7rem 1.3rem; border: none; border-radius: 10px; font-weight: 700; font-size: 0.9rem;
+            cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn.blue { background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; }
+        .btn.dark { background: #0f172a; color: #fff; }
+        .qb { margin-top: 1.6rem; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 14px; padding: 1.3rem; font-size: 0.9rem; color: #065f46; line-height: 1.6; }
+        .qb b { color: #064e3b; }
+        .empty { color: #94a3b8; text-align: center; padding: 1.6rem; }
+        .note { color: #94a3b8; font-size: 0.8rem; margin-top: 1rem; }
+    </style>
+    <link rel="stylesheet" href="/admin-terminal.css">
+</head>
+<body>
+    <header>
+        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <a href="/">← Home</a>
+    </header>
+
+    <div class="wrap">
+        <h1>Books &amp; Taxes</h1>
+        <p class="sub">Live revenue from your Square account — the numbers your taxes are built on.</p>
+
+        <div class="tiles">
+            <div class="tile green"><div class="n" id="t_paid">$0</div><div class="l">Collected revenue (PAID) · <span id="t_paidc">0</span> payments</div></div>
+            <div class="tile amber"><div class="n" id="t_unpaid">$0</div><div class="l">Outstanding (invoiced, unpaid) · <span id="t_unpaidc">0</span></div></div>
+        </div>
+
+        <div class="row2">
+            <div class="card">
+                <h3>Paid revenue by month</h3>
+                <table><thead><tr><th>Month</th><th class="amt">Collected</th></tr></thead><tbody id="monthly"></tbody></table>
+                <div class="empty" id="monthlyEmpty" style="display:none;">No paid invoices yet.</div>
+            </div>
+            <div class="card">
+                <h3>By business line</h3>
+                <table><thead><tr><th>Stream</th><th class="amt">Collected</th></tr></thead><tbody id="streams"></tbody></table>
+                <div class="empty" id="streamsEmpty" style="display:none;">No paid invoices yet.</div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:1.4rem;">
+            <h3>All transactions</h3>
+            <table>
+                <thead><tr><th>Date</th><th>Number</th><th>Customer</th><th>Description</th><th>Status</th><th class="amt">Amount</th></tr></thead>
+                <tbody id="rows"></tbody>
+            </table>
+            <div class="empty" id="rowsEmpty" style="display:none;">No transactions yet — they appear here as bookings come in.</div>
+        </div>
+
+        <div class="toolbar">
+            <a class="btn dark" href="/api/books/export.csv">⬇️ Export CSV (for QuickBooks / accountant)</a>
+            <button class="btn blue" onclick="load()">↻ Refresh from Square</button>
+        </div>
+
+        <div class="qb">
+            <b>QuickBooks — automatic sync (recommended):</b> since every payment runs through Square,
+            connect Square inside QuickBooks once and all revenue flows into your books automatically:
+            QuickBooks → <b>Apps</b> → search <b>"Connect to Square"</b> (by Intuit) → <b>Get app now</b> → sign in to Square → done.
+            After that, this page is your quick view and the CSV is your backup/manual import.
+        </div>
+        <p class="note">Statuses come live from your Square account (refreshed every minute). "Collected revenue" counts only invoices Square marks PAID — the number that matters for taxes.</p>
+    </div>
+
+    <script>
+        const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+        const usd = n => '$' + Number(n || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        async function load() {
+            let res, d;
+            try { res = await fetch('/api/books/summary'); d = await res.json(); } catch (e) { return; }
+            if (res.status === 401 || (d && d.auth_required)) {
+                document.querySelector('.wrap').innerHTML =
+                    '<div class="card" style="text-align:center; max-width:520px; margin:3rem auto;">' +
+                    '<h1 style="margin-bottom:0.6rem;">🔒 Private — owner only</h1>' +
+                    '<p class="sub" style="margin-bottom:1.3rem;">Your revenue and tax figures are protected. Sign in through the Dispatch portal to view them.</p>' +
+                    '<a class="btn blue" href="/dispatch">Go to Dispatch login →</a></div>';
+                return;
+            }
+            t_paid.textContent = usd(d.paid_total); t_paidc.textContent = d.paid_count;
+            t_unpaid.textContent = usd(d.unpaid_total); t_unpaidc.textContent = d.unpaid_count;
+
+            monthly.innerHTML = (d.monthly || []).map(m => '<tr><td>' + esc(m.month) + '</td><td class="amt">' + usd(m.paid) + '</td></tr>').join('');
+            monthlyEmpty.style.display = (d.monthly || []).length ? 'none' : 'block';
+
+            const st = Object.entries(d.streams || {});
+            streams.innerHTML = st.map(([k, v]) => '<tr><td>' + esc(k) + '</td><td class="amt">' + usd(v) + '</td></tr>').join('');
+            streamsEmpty.style.display = st.length ? 'none' : 'block';
+
+            rows.innerHTML = (d.rows || []).map(r =>
+                '<tr><td>' + esc(r.paid_date || r.date) + '</td><td>' + esc(r.number) + '</td><td>' + esc(r.customer) + '</td><td>' + esc(r.description) + '</td>' +
+                '<td><span class="badge ' + esc(r.status) + '">' + esc(r.status) + '</span></td><td class="amt">' + usd(r.amount) + '</td></tr>').join('');
+            rowsEmpty.style.display = (d.rows || []).length ? 'none' : 'block';
+        }
+        load();
+    </script>
+    <script src="/floatback.js"></script>
+    <script src="/jarvis-widget.js"></script>
+    <script src="/i18n.js"></script>
+</body>
+</html>

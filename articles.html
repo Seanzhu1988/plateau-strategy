@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Articles &amp; Proposals — Plateau Strategy Solution Lab</title>
+    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9; color: #1f2937; min-height: 100vh; }
+        header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #fff;
+            padding: 1rem 2rem; display: flex; align-items: center; gap: 0.7rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 10; }
+        header img { height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
+        header .brand { font-weight: 800; font-size: 1.2rem; }
+        header .right { margin-left: auto; display: flex; gap: 1.2rem; }
+        header a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+        header a:hover { color: #fff; }
+
+        .wrap { max-width: 760px; margin: 2rem auto; padding: 0 1.2rem; }
+        .page-title { font-size: 1.9rem; font-weight: 800; color: #0f172a; margin-bottom: 0.2rem; }
+        .page-sub { color: #64748b; margin-bottom: 1.6rem; }
+
+        /* composer */
+        .composer { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(15,23,42,0.06); margin-bottom: 2rem; overflow: hidden; }
+        .composer .head { display: flex; align-items: center; justify-content: space-between;
+            padding: 1rem 1.4rem; cursor: pointer; font-weight: 700; color: #1e3a8a; }
+        .composer .body { padding: 0 1.4rem 1.4rem; display: none; }
+        .composer.open .body { display: block; }
+        .composer .head .chev { transition: transform 0.2s; }
+        .composer.open .head .chev { transform: rotate(180deg); }
+        input, textarea { width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #e2e8f0;
+            border-radius: 10px; font-size: 1rem; font-family: inherit; background: #f8fafc; }
+        input:focus, textarea:focus { outline: none; border-color: #3b82f6; background: #fff;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+        .composer input { margin-bottom: 0.8rem; }
+        .composer textarea { min-height: 150px; resize: vertical; line-height: 1.6; }
+        .publish { margin-top: 0.9rem; padding: 0.8rem 1.8rem; border: none; border-radius: 9px;
+            background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; font-weight: 700;
+            font-size: 0.95rem; cursor: pointer; }
+        .publish:hover { filter: brightness(1.08); }
+
+        /* article card */
+        .article { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1.8rem; margin-bottom: 1.6rem; }
+        .article h2 { font-size: 1.5rem; color: #0f172a; font-weight: 800; margin-bottom: 0.3rem; }
+        .article h2 .stamp {
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 0.82rem; color: #64748b; font-weight: 700;
+            background: #eef2f7; border: 1px solid #e2e8f0;
+            padding: 0.15rem 0.55rem; border-radius: 6px;
+            vertical-align: middle; white-space: nowrap; margin-left: 0.4rem;
+        }
+        .article .date { color: #94a3b8; font-size: 0.82rem; margin-bottom: 1rem; }
+        .article .text { color: #334155; font-size: 1rem; line-height: 1.75; white-space: pre-wrap; }
+
+        .actions { margin-top: 1.6rem; padding-top: 1.2rem; border-top: 1px solid #eef2f7; }
+        .votes { display: flex; gap: 0.7rem; align-items: center; margin-bottom: 1rem; }
+        .vbtn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem;
+            border: 1.5px solid #e2e8f0; background: #f8fafc; border-radius: 999px; cursor: pointer;
+            font-weight: 700; font-size: 0.9rem; color: #475569; transition: all 0.18s; }
+        .vbtn:hover { border-color: #cbd5e1; }
+        .vbtn.like.active { background: #ecfdf5; border-color: #6ee7b7; color: #047857; }
+        .vbtn.unlike.active { background: #fef2f2; border-color: #fca5a5; color: #b91c1c; }
+
+        .follow { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+        .follow .lbl { font-size: 0.88rem; color: #475569; font-weight: 600; }
+        .follow input { flex: 1; min-width: 200px; padding: 0.6rem 0.9rem; margin: 0; }
+        .follow button { padding: 0.6rem 1.2rem; border: none; border-radius: 9px;
+            background: #0f172a; color: #fff; font-weight: 700; font-size: 0.88rem; cursor: pointer; }
+        .follow button:hover { background: #1e293b; }
+        .follow .count { font-size: 0.82rem; color: #64748b; }
+        .followed { color: #047857; font-weight: 700; font-size: 0.9rem; }
+
+        .empty { text-align: center; color: #94a3b8; padding: 3rem 1rem; }
+        .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+            background: #0f172a; color: #fff; padding: 0.8rem 1.3rem; border-radius: 10px; display: none; z-index: 50; }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="right">
+            <a href="/">Home</a>
+            <a href="/book">Book a Ride</a>
+        </div>
+    </header>
+
+    <div class="wrap">
+        <div class="page-title">📝 Articles &amp; Proposals</div>
+        <div class="page-sub">Ideas and proposals from Plateau Strategy Solution Lab. Like what resonates, and leave your email to follow a proposal you want to see happen.</div>
+
+        <div class="composer" id="composer">
+            <div class="head" onclick="document.getElementById('composer').classList.toggle('open')">
+                <span>✍️ Write a new article / proposal</span>
+                <span class="chev">▾</span>
+            </div>
+            <div class="body">
+                <input id="t_author" placeholder="Your name (author)">
+                <input id="t_title" placeholder="Title — e.g. Proposal: Rent-to-own Tesla program">
+                <textarea id="t_body" placeholder="Write your article or proposal here…"></textarea>
+                <button class="publish" onclick="publish()">Publish</button>
+            </div>
+        </div>
+
+        <div id="feed"></div>
+        <div class="empty" id="empty" style="display:none;">No articles yet. Write your first proposal above.</div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+        function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.style.display='block';
+            clearTimeout(t._h); t._h=setTimeout(()=>t.style.display='none',2600); }
+        function fmtStamp(s){ return s ? String(s).replace('T', ' ') : ''; }
+        const myVote = id => localStorage.getItem('article_vote_' + id) || 'none';
+        const iFollow = id => localStorage.getItem('article_follow_' + id) === '1';
+
+        async function load() {
+            let items = [];
+            try { items = ((await (await fetch('/api/articles')).json()).articles) || []; } catch(e){ return; }
+            document.getElementById('empty').style.display = items.length ? 'none' : 'block';
+            document.getElementById('feed').innerHTML = items.map(render).join('');
+        }
+
+        function render(a) {
+            const v = myVote(a.id);
+            const followed = iFollow(a.id);
+            return '<div class="article" id="art_' + a.id + '">' +
+                '<h2>' + esc(a.title) + (a.stamp ? ' <span class="stamp" title="Time-proof stamp — proposed on ' + fmtStamp(a.created_at) + '">#' + esc(a.stamp) + '</span>' : '') + '</h2>' +
+                '<div class="date">By <strong>' + esc(a.author || 'Anonymous') + '</strong> · ' + fmtStamp(a.created_at) + '</div>' +
+                '<div class="text">' + esc(a.body) + '</div>' +
+                '<div class="actions">' +
+                  '<div class="votes">' +
+                    '<button class="vbtn like ' + (v==='like'?'active':'') + '" onclick="vote(\'' + a.id + '\',\'like\')">👍 <span id="lk_' + a.id + '">' + a.likes + '</span></button>' +
+                    '<button class="vbtn unlike ' + (v==='unlike'?'active':'') + '" onclick="vote(\'' + a.id + '\',\'unlike\')">👎 <span id="ul_' + a.id + '">' + a.unlikes + '</span></button>' +
+                  '</div>' +
+                  '<div class="follow" id="fl_' + a.id + '">' +
+                    (followed
+                      ? '<span class="followed">✓ You\'re following this proposal</span> <span class="count" id="fc_' + a.id + '">· ' + a.follower_count + ' following</span>'
+                      : '<span class="lbl">Follow this proposal:</span>' +
+                        '<input type="email" id="em_' + a.id + '" placeholder="your@email.com">' +
+                        '<button onclick="follow(\'' + a.id + '\')">Notify me</button>' +
+                        '<span class="count" id="fc_' + a.id + '">· ' + a.follower_count + ' following</span>') +
+                  '</div>' +
+                '</div></div>';
+        }
+
+        async function publish() {
+            const author = document.getElementById('t_author').value.trim();
+            const title = document.getElementById('t_title').value.trim();
+            const body = document.getElementById('t_body').value.trim();
+            if (!author) { showToast('Add your name'); return; }
+            if (!title || !body) { showToast('Add a title and some text'); return; }
+            const j = await (await fetch('/api/articles', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({author, title, body}) })).json();
+            if (!j.ok) { showToast(j.error || 'Could not publish'); return; }
+            document.getElementById('t_author').value = ''; document.getElementById('t_title').value = ''; document.getElementById('t_body').value = '';
+            document.getElementById('composer').classList.remove('open');
+            showToast('✅ Published'); load();
+        }
+
+        async function vote(id, choice) {
+            const prev = myVote(id);
+            const next = (prev === choice) ? 'none' : choice;
+            const j = await (await fetch('/api/articles/' + id + '/vote', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({prev, vote: next}) })).json();
+            if (!j.ok) return;
+            localStorage.setItem('article_vote_' + id, next);
+            document.getElementById('lk_' + id).textContent = j.likes;
+            document.getElementById('ul_' + id).textContent = j.unlikes;
+            const card = document.getElementById('art_' + id);
+            card.querySelector('.vbtn.like').classList.toggle('active', next === 'like');
+            card.querySelector('.vbtn.unlike').classList.toggle('active', next === 'unlike');
+        }
+
+        async function follow(id) {
+            const email = (document.getElementById('em_' + id).value || '').trim();
+            if (!email) { showToast('Enter your email'); return; }
+            const j = await (await fetch('/api/articles/' + id + '/follow', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email}) })).json();
+            if (!j.ok) { showToast(j.error || 'Could not follow'); return; }
+            localStorage.setItem('article_follow_' + id, '1');
+            const fl = document.getElementById('fl_' + id);
+            fl.innerHTML = '<span class="followed">✓ You\'re following this proposal</span> <span class="count">· ' + j.follower_count + ' following</span>';
+            showToast('✅ We\'ll keep you posted');
+        }
+
+        load();
+    </script>
+    <script src="/floatback.js"></script>
+    <script src="/jarvis-widget.js"></script>
+    <script src="/i18n.js"></script>
+</body>
+</html>

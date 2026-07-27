@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destination Book — Plateau Strategy Solution Lab</title>
+    <meta name="description" content="A free curated guidebook of attractions and restaurants — every type of destination, organized by category, with descriptions and local tips. One tap sends any place into the Trip Planner.">
+    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9; color: #1f2937; min-height: 100vh; }
+        header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #fff;
+            padding: 1rem 2rem; display: flex; align-items: center; gap: 0.7rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 100; }
+        header img { height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
+        header .brand { font-weight: 800; font-size: 1.2rem; }
+        header .right { margin-left: auto; display: flex; gap: 1.2rem; }
+        header a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+        header a:hover { color: #fff; }
+
+        .wrap { max-width: 1100px; margin: 1.6rem auto; padding: 0 1.2rem; }
+        .page-title { font-size: 1.9rem; font-weight: 800; color: #0f172a; }
+        .page-sub { color: #64748b; margin: 0.2rem 0 1.2rem; }
+
+        .filters { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1rem 1.2rem; margin-bottom: 1.2rem; }
+        .frow { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 0.6rem; }
+        .frow:last-child { margin-bottom: 0; }
+        .flab { font-size: 0.72rem; font-weight: 800; color: #94a3b8; text-transform: uppercase;
+            letter-spacing: 0.05em; width: 76px; }
+        .chip { font-size: 0.82rem; font-weight: 600; padding: 0.32rem 0.9rem; border-radius: 999px;
+            border: 1.5px solid #e2e8f0; color: #64748b; cursor: pointer; user-select: none; background: #fff; }
+        .chip.on { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
+        .filters input[type=text] { flex: 1; min-width: 180px; padding: 0.45rem 0.8rem; border: 1.5px solid #e2e8f0;
+            border-radius: 10px; font-size: 0.9rem; font-family: inherit; background: #f8fafc; }
+        .count { font-size: 0.82rem; color: #94a3b8; margin: 0 0 0.8rem 0.2rem; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+        .entry { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1.1rem 1.2rem;
+            display: flex; flex-direction: column; gap: 0.5rem; }
+        .entry h3 { font-size: 1.05rem; color: #0f172a; }
+        .badges { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+        .badge { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
+            padding: 0.18rem 0.55rem; border-radius: 6px; }
+        .b-city { background: #eef2f7; color: #475569; }
+        .b-comm { background: #ecfdf5; color: #047857; }
+        .sugbtn { margin: 0.5rem 0 0 0; background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857;
+            border-radius: 9px; padding: 0.55rem 0.9rem; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+        .sugbtn:hover { background: #d1fae5; }
+        .sugitem { padding: 0.5rem 0.7rem; border: 1px solid #e2e8f0; border-top: none; font-size: 0.82rem;
+            cursor: pointer; background: #fff; color: #334155; }
+        .sugitem:first-of-type { border-top: 1px solid #e2e8f0; border-radius: 8px 8px 0 0; margin-top: 0.4rem; }
+        .sugitem:last-of-type { border-radius: 0 0 8px 8px; }
+        .sugitem:hover { background: #f0f9ff; }
+        .sugmuted { color: #94a3b8; font-size: 0.8rem; padding: 0.4rem 0.2rem; }
+        .b-attr { background: #dbeafe; color: #1d4ed8; }
+        .b-rest { background: #ffedd5; color: #c2410c; }
+        .b-cat  { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+        .b-price{ background: #dcfce7; color: #166534; }
+        .entry .desc { font-size: 0.9rem; color: #334155; line-height: 1.55; }
+        .entry .meta { font-size: 0.8rem; color: #94a3b8; }
+        .entry .tip { font-size: 0.84rem; color: #92400e; background: #fffbeb; border: 1px solid #fde68a;
+            border-radius: 8px; padding: 0.45rem 0.7rem; line-height: 1.45; }
+        .entry .actions { margin-top: auto; display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+        .addbtn { padding: 0.45rem 0.9rem; border: none; border-radius: 8px; cursor: pointer;
+            font-weight: 700; font-size: 0.82rem; font-family: inherit;
+            background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; }
+        .addbtn:hover { filter: brightness(1.07); }
+        .addbtn.added { background: #dcfce7; color: #166534; cursor: default; }
+        .openlink { font-size: 0.82rem; font-weight: 700; color: #1d4ed8; text-decoration: none; }
+        .empty { text-align: center; color: #94a3b8; padding: 3rem 0; }
+
+        footer.attrib { text-align: center; color: #94a3b8; font-size: 0.75rem; padding: 1.6rem 0 2rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="right">
+            <a href="/">Home</a>
+            <a href="/trip-planner">Trip Planner</a>
+        </div>
+    </header>
+
+    <div class="wrap">
+        <div class="page-title">📖 Destination Book</div>
+        <p class="page-sub">A curated guidebook of attractions and restaurants — every type of destination, organized by category, with descriptions and local tips from a professionally licensed tour guide. One tap sends any place into the <a href="/trip-planner">Trip Planner</a>. Hours shown are typical — check before you go.</p>
+
+        <div class="filters">
+            <div class="frow"><span class="flab">City</span><span id="cityChips"></span></div>
+            <div class="frow"><span class="flab">Type</span><span id="typeChips"></span></div>
+            <div class="frow"><span class="flab">Category</span><span id="catChips"></span></div>
+            <div class="frow"><span class="flab">Search</span>
+                <input type="text" id="q" placeholder="Search the book — or type a new place to suggest &amp; add…" oninput="render()"></div>
+            <div id="suggest"></div>
+        </div>
+
+        <div class="count" id="count"></div>
+        <div class="grid" id="grid"></div>
+        <div class="empty" id="empty" style="display:none">Nothing matches these filters — loosen one and the book fills back up.</div>
+
+        <footer class="attrib">A free tool by Plateau Strategy Solution Lab · descriptions curated with a professionally licensed tour guide</footer>
+    </div>
+
+    <script>
+    'use strict';
+    const LS_KEY = 'ps_tripplanner_v2';
+    const CATS = [ ['history','History'], ['culture','Culture'], ['nature','Nature'], ['food','Food'], ['views','Views'] ];
+    const TYPES = [ ['attraction','Attractions'], ['restaurant','Restaurants & food'] ];
+    let DATA = { cities: {}, entries: [] };
+    const f = { city: 'all', type: 'all', cats: new Set(CATS.map(c => c[0])) };
+
+    const $ = id => document.getElementById(id);
+    function fmt(m){ m = Math.round(m); return Math.floor(m/60) + ':' + ('0' + (m % 60)).slice(-2); }
+    function esc(s){ return String(s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])); }
+
+    function plannerNames(){
+        try { const s = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+              return new Set((s && s.places || []).map(p => p.name)); }
+        catch (e) { return new Set(); }
+    }
+    function addToPlanner(i, btn){
+        const e = DATA.entries[i];
+        let s = null;
+        try { s = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (err) {}
+        if (!s || !s.places) s = { city: e.city, places: [] };
+        if (!s.places.some(p => p.name === e.name)) {
+            s.places.push({ name: e.name, lat: e.lat, lon: e.lon, close: e.close, visit: e.visit, cat: e.cat });
+            try { localStorage.setItem(LS_KEY, JSON.stringify(s)); } catch (err) {}
+        }
+        btn.textContent = '✓ In your planner';
+        btn.classList.add('added');
+        btn.insertAdjacentHTML('afterend', '<a class="openlink" href="/trip-planner">Open Trip Planner →</a>');
+    }
+
+    function makeChip(label, on, fn){
+        const b = document.createElement('span');
+        b.className = 'chip' + (on ? ' on' : '');
+        b.textContent = label;
+        b.onclick = () => fn(b);
+        return b;
+    }
+    function initFilters(){
+        const cc = $('cityChips');
+        [['all','All cities']].concat(Object.entries(DATA.cities)).forEach(([k, label]) => {
+            cc.appendChild(makeChip(label, f.city === k, b => {
+                f.city = k;
+                Array.from(cc.children).forEach(x => x.classList.remove('on'));
+                b.classList.add('on'); render();
+            }));
+        });
+        const tc = $('typeChips');
+        [['all','All types']].concat(TYPES).forEach(([k, label]) => {
+            tc.appendChild(makeChip(label, f.type === k, b => {
+                f.type = k;
+                Array.from(tc.children).forEach(x => x.classList.remove('on'));
+                b.classList.add('on'); render();
+            }));
+        });
+        const kc = $('catChips');
+        CATS.forEach(([k, label]) => {
+            kc.appendChild(makeChip(label, true, b => {
+                if (f.cats.has(k)) { f.cats.delete(k); b.classList.remove('on'); }
+                else { f.cats.add(k); b.classList.add('on'); }
+                render();
+            }));
+        });
+    }
+
+    function render(){
+        const q = $('q').value.trim().toLowerCase();
+        const inPlanner = plannerNames();
+        const rows = [];
+        let shown = 0;
+        DATA.entries.forEach((e, i) => {
+            if (f.city !== 'all' && e.city !== f.city) return;
+            if (f.type !== 'all' && e.type !== f.type) return;
+            if (!f.cats.has(e.cat)) return;
+            if (q && !(e.name + ' ' + e.desc).toLowerCase().includes(q)) return;
+            shown++;
+            const catLabel = (CATS.find(c => c[0] === e.cat) || ['',''])[1];
+            const added = inPlanner.has(e.name);
+            rows.push('<div class="entry">'
+                + '<h3>' + esc(e.name) + '</h3>'
+                + '<div class="badges">'
+                +   '<span class="badge b-city">' + esc(DATA.cities[e.city] || e.city) + '</span>'
+                +   '<span class="badge ' + (e.type === 'restaurant' ? 'b-rest' : 'b-attr') + '">'
+                +       (e.type === 'restaurant' ? 'Restaurant' : 'Attraction') + '</span>'
+                +   '<span class="badge b-cat">' + catLabel + '</span>'
+                +   (e.price ? '<span class="badge b-price">' + e.price + '</span>' : '')
+                +   (e.source === 'user' ? '<span class="badge b-comm">🌱 Community</span>' : '')
+                + '</div>'
+                + '<p class="desc">' + esc(e.desc) + '</p>'
+                + '<p class="meta">Open till ' + fmt(e.close) + ' · ~' + e.visit + ' min visit</p>'
+                + (e.tip ? '<p class="tip">💡 ' + esc(e.tip) + '</p>' : '')
+                + '<div class="actions">'
+                +   (added
+                        ? '<button class="addbtn added">✓ In your planner</button><a class="openlink" href="/trip-planner">Open Trip Planner →</a>'
+                        : '<button class="addbtn" onclick="addToPlanner(' + i + ', this)">+ Add to Trip Planner</button>')
+                + '</div>'
+                + '</div>');
+        });
+        $('grid').innerHTML = rows.join('');
+        $('empty').style.display = shown ? 'none' : 'block';
+        $('count').textContent = shown + ' of ' + DATA.entries.length + ' destinations';
+        renderSuggest(q, shown);
+    }
+
+    // ---------- suggest & add: the book remembers what visitors teach it ----------
+    function renderSuggest(q, shown){
+        const box = $('suggest');
+        if (!box) return;
+        if (!q || q.length < 3) { box.innerHTML = ''; return; }
+        if (!box.querySelector('.sugbtn') || box.dataset.q !== q) {
+            box.dataset.q = q;
+            box.innerHTML = '<button class="sugbtn" onclick="suggestSearch()">🌱 ' +
+                (shown ? 'Missing something? ' : 'Not in the book yet — ') +
+                'Suggest &amp; add “' + esc(q) + '”</button><div id="sugres"></div>';
+        }
+    }
+    async function suggestSearch(){
+        const q = $('q').value.trim();
+        if (!q) return;
+        const r = document.getElementById('sugres');
+        r.innerHTML = '<div class="sugmuted">Searching the map…</div>';
+        try {
+            const res = await fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=' + encodeURIComponent(q));
+            const j = await res.json();
+            if (!j.length) { r.innerHTML = '<div class="sugmuted">No matches — try adding the city name.</div>'; return; }
+            r.innerHTML = '';
+            j.forEach(m => {
+                const d = document.createElement('div');
+                d.className = 'sugitem';
+                d.textContent = m.display_name;
+                d.onclick = () => addCommunity(m);
+                r.appendChild(d);
+            });
+        } catch (e) { r.innerHTML = '<div class="sugmuted">Map search unavailable right now.</div>'; }
+    }
+    async function addCommunity(m){
+        const name = m.display_name.split(',')[0].slice(0, 60);
+        const city = f.city !== 'all' ? f.city : 'other';
+        let resp = null;
+        try {
+            resp = await (await fetch('/api/destinations/add', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name, lat: +m.lat, lon: +m.lon, city: city,
+                                       found_via: 'book', osm_class: m.class, type: m.type,
+                                       address: m.address }) })).json();
+        } catch (e) {}
+        $('suggest').innerHTML = ''; $('suggest').dataset.q = '';
+        if (resp && resp.ok) {
+            try { DATA = await (await fetch('/api/destinations')).json(); } catch (e) {}
+            $('q').value = name;
+            render();
+            $('count').textContent += resp.already_known
+                ? ' · “' + name + '” was already in the book'
+                : ' · 🌱 “' + name + '” added — the book will remember it';
+        } else {
+            $('count').textContent = (resp && resp.error) || 'Could not add — try again.';
+        }
+    }
+
+    (async function boot(){
+        try {
+            const r = await fetch('/api/destinations');
+            DATA = await r.json();
+        } catch (e) {
+            $('count').textContent = 'Could not load the book — refresh to try again.';
+            return;
+        }
+        initFilters();
+        render();
+    })();
+    </script>
+    <script src="/floatback.js"></script>
+    <script src="/jarvis-widget.js"></script>
+</body>
+</html>

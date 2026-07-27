@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Square — Plateau Strategy Solution Lab</title>
+    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9; color: #1f2937; min-height: 100vh; }
+        header { background: linear-gradient(135deg,#0f172a,#1e3a8a); color: #fff; padding: 1rem 2rem;
+            display: flex; align-items: center; gap: 0.7rem; }
+        header img { height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
+        header .brand { font-weight: 800; font-size: 1.2rem; }
+        header a { margin-left: auto; color: #cbd5e1; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+        .wrap { max-width: 620px; margin: 2.5rem auto; padding: 0 1.2rem; }
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 2.2rem;
+            box-shadow: 0 10px 30px rgba(15,23,42,0.08); }
+        h1 { font-size: 1.7rem; color: #0f172a; font-weight: 800; margin-bottom: 0.3rem; }
+        .sub { color: #64748b; margin-bottom: 1.6rem; }
+        .status { border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: 1.6rem; font-weight: 600; font-size: 0.95rem; }
+        .status.on { background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; }
+        .status.off { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; }
+        .status small { display: block; font-weight: 500; opacity: 0.85; margin-top: 0.3rem; }
+        label { display: block; font-weight: 700; font-size: 0.85rem; color: #334155; margin: 1rem 0 0.4rem; }
+        input { width: 100%; padding: 0.85rem 1rem; border: 1.5px solid #e2e8f0; border-radius: 10px;
+            font-size: 1rem; font-family: ui-monospace, Menlo, monospace; background: #f8fafc; }
+        input:focus { outline: none; border-color: #3b82f6; background: #fff; box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+        .hint { color: #94a3b8; font-size: 0.82rem; margin-top: 0.4rem; }
+        button.connect { width: 100%; margin-top: 1.4rem; padding: 0.95rem; border: none; border-radius: 10px;
+            background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; font-size: 1.05rem; font-weight: 700; cursor: pointer; }
+        button.connect:hover:not(:disabled) { filter: brightness(1.07); }
+        button.connect:disabled { opacity: 0.6; cursor: not-allowed; }
+        .result { margin-top: 1.2rem; border-radius: 10px; padding: 1rem; display: none; font-size: 0.95rem; }
+        .result.ok { display: block; background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
+        .result.err { display: block; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+        .steps { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem 1.2rem; margin-top: 1.6rem; font-size: 0.88rem; color: #475569; line-height: 1.6; }
+        .steps b { color: #0f172a; }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <a href="/">← Home</a>
+    </header>
+
+    <div class="wrap">
+        <div class="card">
+            <h1>Connect Square</h1>
+            <p class="sub">Link your Square account so ride reservations send real payment requests to customers.</p>
+
+            <div class="status off" id="status">Checking connection…</div>
+
+            <label>Square Production Access Token</label>
+            <input id="token" type="password" placeholder="Paste your Access Token here" autocomplete="off">
+            <p class="hint">Paste the token you copied from Square. It's stored privately on your machine — this page never displays it back.</p>
+
+            <button class="connect" id="connectBtn" onclick="connect()">Connect Square</button>
+            <div class="result" id="result"></div>
+
+            <div class="steps">
+                <b>Where to get it:</b> Square Developer Console → your app → <b>Production</b> tab → <b>Access token</b> → click the copy icon. Your Location ID is already set (<span id="loc">…</span>).
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:1.5rem;">
+            <h1>Connect Twilio (driver texts)</h1>
+            <p class="sub">Link Twilio so new rides are texted to your drivers, and they can claim by replying YES.</p>
+
+            <label>Account SID</label>
+            <input id="tw_sid" autocomplete="off" placeholder="AC…">
+            <label>Auth Token</label>
+            <input id="tw_tok" type="password" autocomplete="off" placeholder="Paste your Auth Token">
+            <label>Your Twilio phone number</label>
+            <input id="tw_frm" autocomplete="off" placeholder="+1 555 555 0100">
+
+            <button class="connect" id="twBtn" onclick="connectTwilio()">Connect Twilio</button>
+            <div class="result" id="tw_result"></div>
+
+            <div class="steps">
+                <b>Where to get these:</b> Twilio Console home page shows <b>Account SID</b> and <b>Auth Token</b> (click "show"). Your Twilio number is under <b>Phone Numbers → Manage → Active numbers</b>.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function renderStatus(d) {
+            const s = document.getElementById('status');
+            document.getElementById('loc').textContent = d.location_id || '(not set)';
+            if (d.connected) {
+                s.className = 'status on';
+                s.innerHTML = '✅ Connected to Square (' + d.env + ')<small>Location: ' + (d.location_id || '') + ' · Bookings now send real payment requests.</small>';
+            } else if (d.location_id) {
+                s.className = 'status off';
+                s.innerHTML = '⚠️ Almost there — Location ID is set, just need your Access Token below.';
+            } else {
+                s.className = 'status off';
+                s.innerHTML = '⚠️ Not connected yet.';
+            }
+        }
+        fetch('/api/setup/status').then(r => r.json()).then(renderStatus).catch(() => {});
+
+        async function connectTwilio() {
+            const btn = document.getElementById('twBtn');
+            const result = document.getElementById('tw_result');
+            const body = {
+                account_sid: document.getElementById('tw_sid').value.trim(),
+                auth_token: document.getElementById('tw_tok').value.trim(),
+                from_number: document.getElementById('tw_frm').value.trim(),
+            };
+            if (!body.account_sid || !body.auth_token || !body.from_number) {
+                result.className = 'result err'; result.textContent = 'Please fill in all three values.'; return;
+            }
+            btn.disabled = true; btn.textContent = 'Connecting…';
+            try {
+                const j = await (await fetch('/api/setup/twilio', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                })).json();
+                if (!j.ok) throw new Error(j.error || 'Failed');
+                document.getElementById('tw_tok').value = '';
+                result.className = 'result ok';
+                result.innerHTML = '✅ Twilio saved (' + j.from_number + '). Sending you a test text…';
+                const t = await (await fetch('/api/setup/twilio/test', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({})
+                })).json();
+                result.innerHTML = t.ok
+                    ? '✅ <b>Twilio connected!</b> Test text sent to ' + t.to + ' — check your phone. Drivers will now get ride texts.'
+                    : '⚠️ Keys saved, but the test text failed: ' + (t.result || '') + '<br>Double-check the number format and that your Twilio number can send SMS.';
+            } catch (err) {
+                result.className = 'result err'; result.textContent = err.message;
+            } finally {
+                btn.disabled = false; btn.textContent = 'Connect Twilio';
+            }
+        }
+
+        async function connect() {
+            const btn = document.getElementById('connectBtn');
+            const result = document.getElementById('result');
+            const token = document.getElementById('token').value.trim();
+            if (!token) { result.className = 'result err'; result.textContent = 'Please paste your Access Token first.'; return; }
+            btn.disabled = true; btn.textContent = 'Connecting…';
+            try {
+                const j = await (await fetch('/api/setup/square', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ access_token: token })
+                })).json();
+                if (!j.ok) throw new Error(j.error || 'Failed');
+                document.getElementById('token').value = '';
+                result.className = 'result ok';
+                result.innerHTML = j.connected
+                    ? "✅ <b>Connected!</b> Your Square account is now linked (production). Every ride booking will email the customer a real Square payment request.<br><br>Next: try a booking on the <a href='/book'>Book a Ride</a> page with your OWN email to confirm the invoice arrives."
+                    : "Token saved, but no Location ID found. Tell your developer to set SQUARE_LOCATION_ID.";
+                renderStatus({ connected: j.connected, env: j.env, location_id: j.location_id });
+            } catch (err) {
+                result.className = 'result err'; result.textContent = err.message;
+            } finally {
+                btn.disabled = false; btn.textContent = 'Connect Square';
+            }
+        }
+    </script>
+    <script src="/floatback.js"></script>
+    <script src="/jarvis-widget.js"></script>
+</body>
+</html>

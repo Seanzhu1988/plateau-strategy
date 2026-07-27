@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plateau Strategy Solution Lab - Integrated Business Ecosystem</title>
+    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <link rel="apple-touch-icon" href="plateau-logo.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #dfe8f7;
+            background: #0d1526;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: white;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            display: block;
+        }
+
+        /* Section tabs — hidden by default, slide in when the mouse goes to the top */
+        .phase-tabs {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+            justify-content: center;
+            gap: 0.2rem;
+            background: #121f38;
+            padding: 0 1.5rem;
+            width: 100%;
+            position: fixed;
+            top: 86px;
+            left: 0;
+            z-index: 98;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            border-bottom: 1px solid #26395c;
+            overflow-x: auto;
+            transform: translateY(-160%);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+        }
+        .phase-tabs.shown { transform: translateY(0); opacity: 1; pointer-events: auto; }
+
+        .nav-back {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #fff; font-weight: 700; font-size: 0.9rem;
+            padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .nav-back:hover { background: rgba(255,255,255,0.24); }
+        .sections-trigger {
+            color: rgba(255,255,255,0.85); font-size: 0.9rem; font-weight: 600; cursor: pointer;
+            margin: 0 1.2rem; padding-bottom: 2px; border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .sections-trigger:hover { color: #93c5fd; border-bottom-color: #93c5fd; }
+
+        .phase-tab {
+            padding: 1rem 1.4rem;
+            color: #7385a3;
+            text-decoration: none;
+            font-size: 0.92rem;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .phase-tab:hover {
+            color: #8b99b5;
+            border-bottom-color: #2c4166;
+        }
+
+        .phase-tab.active {
+            color: #93c5fd;
+            border-bottom-color: #3b82f6;
+            font-weight: 700;
+        }
+
+        .phase-tab.active:hover {
+            color: #93c5fd;
+            border-bottom-color: #3b82f6;
+        }
+
+        .sub-tab-sidebar {
+            padding: 0.6rem 1rem;
+            color: #8b99b5;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-left: 2px solid transparent;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+        }
+
+        .sub-tab-sidebar:hover {
+            color: #93c5fd;
+            background: rgba(30, 58, 138, 0.08);
+            border-left-color: #3b82f6;
+        }
+
+        .sub-tab-sidebar.active {
+            color: #93c5fd;
+            border-left-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+            font-weight: 600;
+        }
+
+        .sub-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        .sub-tab {
+            padding: 0.8rem 1.2rem;
+            background: #121f38;
+            border: 2px solid #26395c;
+            border-radius: 8px;
+            color: #c3d0e5;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            flex: 1;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.35);
+        }
+
+        .sub-tab:hover {
+            border-color: #bfdbfe;
+            background: #f0f9ff;
+            transform: translateY(-1px);
+        }
+
+        .sub-tab.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-color: #2563eb;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .sub-content {
+            display: none;
+            background: #0d1526;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #26395c;
+        }
+
+        .sub-content.active {
+            display: block;
+        }
+
+        .sub-content h3 {
+            color: #93c5fd;
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .sub-content p {
+            color: #94a6c6;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 0.5rem 0;
+        }
+
+        .book-cta {
+            display: inline-block;
+            margin-top: 1.1rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: #fff;
+            padding: 0.7rem 1.6rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+            transition: all 0.25s;
+        }
+
+        .book-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59,130,246,0.45);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .logo-img {
+            height: 48px;
+            width: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border: 2px solid rgba(255,255,255,0.18);
+            flex-shrink: 0;
+        }
+
+        .logo-text {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav a {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            margin: 0 1.2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0.85;
+            transition: opacity 0.3s, color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+
+        nav a:hover {
+            opacity: 1;
+            color: #93c5fd;
+            border-bottom-color: #93c5fd;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1e40af 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero-logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto 1.2rem;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.4);
+            border: 3px solid rgba(255,255,255,0.22);
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            line-height: 1.7;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 0.9rem 2.2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .cta-button:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        section {
+            padding: 2.5rem 2rem;
+        }
+
+        section h2 {
+            font-size: 2.4rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #eef3fb;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .overview {
+            background: #0d1526;
+        }
+
+        .overview-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .overview-text h3 {
+            font-size: 1.8rem;
+            color: #eef3fb;
+            margin-bottom: 1.2rem;
+            font-weight: 800;
+        }
+
+        .overview-text p {
+            margin-bottom: 1.2rem;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #94a6c6;
+        }
+
+        .value-props {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .value-prop {
+            padding: 2rem;
+            background: #121f38;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.35);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .value-prop:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.45);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .value-prop h4 {
+            color: #93c5fd;
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        .value-prop p {
+            font-size: 0.95rem;
+            color: #94a6c6;
+            line-height: 1.6;
+        }
+
+        .phases {
+            background: #121f38;
+        }
+
+        .phases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Filter view: show only the currently selected phase card */
+        .phases-grid .phase-card {
+            display: none;
+        }
+
+        .phases-grid .phase-card.show {
+            display: block;
+            animation: phaseFade 0.35s ease;
+        }
+
+        @keyframes phaseFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* App-style views: one section visible at a time, anchored at the top */
+        .view { display: none; }
+        .view.active { display: block; animation: phaseFade 0.35s ease; }
+        .view-intro {
+            text-align: center; max-width: 760px; margin: -1.5rem auto 2.5rem;
+            color: #94a6c6; font-size: 1.05rem; line-height: 1.7;
+        }
+
+        /* Transportation service cards (Ride Service / Car Rentals / Agent Program) */
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .service-card {
+            background: #121f38;
+            border: 1px solid #26395c;
+            border-top: 4px solid #3b82f6;
+            border-radius: 14px;
+            padding: 2rem;
+            box-shadow: 0 4px 16px rgba(15,23,42,0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+        }
+        .service-card:nth-child(2) { border-top-color: #10b981; }
+        .service-card:nth-child(3) { border-top-color: #f59e0b; }
+        .service-card:hover { transform: translateY(-5px); box-shadow: 0 16px 32px rgba(15,23,42,0.12); }
+        .service-icon { font-size: 2.4rem; margin-bottom: 0.6rem; }
+        .service-card h3 { color: #eef3fb; font-size: 1.3rem; font-weight: 800; margin-bottom: 0.3rem; }
+        .service-for { color: #3b82f6; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.9rem; }
+        .service-card > p { color: #94a6c6; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.4rem; }
+        .service-card .book-cta { margin-top: auto; }
+
+        /* Finance: product directory (AI Debt Eliminator + future products) */
+        .fin-menu {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem; margin: 1rem auto 0; max-width: 900px;
+        }
+        .fin-card {
+            background: #121f38; border: 1px solid #26395c; border-top: 4px solid #f59e0b;
+            border-radius: 14px; padding: 2rem; cursor: pointer;
+            box-shadow: 0 4px 16px rgba(15,23,42,0.06); transition: all 0.25s;
+        }
+        .fin-card:hover { transform: translateY(-5px); box-shadow: 0 16px 32px rgba(15,23,42,0.12); }
+        .fin-card-icon { font-size: 2.4rem; margin-bottom: 0.6rem; }
+        .fin-card h3 { color: #eef3fb; font-size: 1.3rem; font-weight: 800; margin-bottom: 0.4rem; }
+        .fin-card > p { color: #94a6c6; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1rem; }
+        .fin-card-link { color: #d97706; font-weight: 700; font-size: 0.95rem; }
+        .fin-back {
+            background: none; border: none; color: #94a6c6; font-weight: 700; font-size: 0.9rem;
+            cursor: pointer; padding: 0.4rem 0; margin-bottom: 0.5rem;
+        }
+        .fin-back:hover { color: #eef3fb; }
+        .fin-pane { display: none; }
+        .fin-pane.active { display: block; animation: phaseFade 0.35s ease; }
+
+        /* ===== DO YOUR PART — give back to the country (bottom of Finance) ===== */
+        .giveback {
+            margin-top: 3.2rem; padding: 2.2rem 1.8rem 1.8rem; border-radius: 18px;
+            background: linear-gradient(180deg, #16233d 0%, #121f38 100%);
+            border: 1px solid #26395c; border-top: 3px solid #b91c1c; position: relative;
+        }
+        .gb-eyebrow { color: #7d9bd6; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.22em; text-align: center; margin-bottom: 0.9rem; }
+        .giveback h3 { color: #eef3fb; font-size: clamp(1.35rem, 3vw, 1.9rem); font-weight: 800; text-align: center; margin-bottom: 0.7rem; }
+        .gb-lede { color: #b9c8e2; font-size: 1rem; line-height: 1.65; max-width: 62ch; margin: 0 auto 1.8rem; text-align: center; }
+        .gb-lede strong { color: #fff; }
+        .gb-how { display: grid; gap: 0.9rem; max-width: 720px; margin: 0 auto 1.6rem; }
+        .gb-step { display: flex; gap: 0.85rem; align-items: flex-start; background: #182845;
+            border: 1px solid #26395c; border-radius: 12px; padding: 0.9rem 1.1rem; }
+        .gb-step div { color: #94a6c6; font-size: 0.92rem; line-height: 1.6; }
+        .gb-step b { color: #eef3fb; }
+        .gb-n { flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; background: #1e3a8a;
+            color: #cfe2ff; font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+        .gb-cta { display: block; width: fit-content; margin: 0 auto; padding: 0.95rem 1.9rem;
+            background: linear-gradient(135deg, #1d4ed8, #b91c1c); color: #fff; font-weight: 800; font-size: 1.02rem;
+            border-radius: 12px; text-decoration: none; box-shadow: 0 6px 18px rgba(29,78,216,0.28); }
+        .gb-cta:hover { filter: brightness(1.09); }
+        .gb-mail { color: #5d7195; font-size: 0.82rem; line-height: 1.6; text-align: center; margin: 1.1rem auto 0; max-width: 60ch; }
+        .gb-mail b, .gb-mail i { color: #94a6c6; }
+        .gb-addr { display: inline-block; margin-top: 0.35rem; font-family: ui-monospace, Menlo, monospace; font-size: 0.78rem; color: #94a6c6; }
+        .gb-log { margin: 1.9rem auto 0; max-width: 640px; background: #0f1b30; border: 1px solid #26395c;
+            border-radius: 14px; padding: 1.3rem 1.3rem 1.1rem; }
+        .gb-log h4 { color: #eef3fb; font-size: 1.05rem; font-weight: 800; margin-bottom: 0.3rem; }
+        .gb-sub { color: #5d7195; font-size: 0.82rem; line-height: 1.55; margin-bottom: 1rem; }
+        .gb-form { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+        .gb-form input { flex: 1; min-width: 150px; background: #1c2e4f; border: 1px solid #26395c; color: #dfe8f7;
+            border-radius: 9px; padding: 0.7rem 0.9rem; font-size: 0.92rem; }
+        .gb-form input:focus { outline: 2px solid #4da6ff; outline-offset: 1px; }
+        .gb-btn { background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; border: none; border-radius: 9px;
+            padding: 0.7rem 1.3rem; font-weight: 800; font-size: 0.92rem; cursor: pointer; white-space: nowrap; }
+        .gb-btn:hover { filter: brightness(1.1); }
+        .gb-msg { font-size: 0.9rem; font-weight: 700; margin-top: 0.8rem; min-height: 1.2em; color: #4ade80; }
+        .gb-msg.err { color: #fca5a5; }
+        .gb-tally { margin-top: 0.9rem; color: #94a6c6; font-size: 0.85rem; line-height: 1.7; }
+        .gb-tally .gb-row { display: flex; justify-content: space-between; gap: 1rem; border-top: 1px solid #1c2e4f; padding: 0.35rem 0; }
+        .gb-tally .gb-amt { color: #4ade80; font-weight: 700; font-family: ui-monospace, Menlo, monospace; }
+        .gb-fine { color: #4a5c7d; font-size: 0.76rem; line-height: 1.6; max-width: 68ch; margin: 1.6rem auto 0; text-align: center; }
+
+        /* Finance: AI Debt Eliminator */
+        .fin-flow {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 1rem; margin-bottom: 2.5rem;
+        }
+        .fin-step {
+            background: #121f38; border: 1px solid #26395c; border-radius: 12px;
+            padding: 1.2rem; box-shadow: 0 2px 8px rgba(15,23,42,0.05);
+        }
+        .fin-num {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 30px; height: 30px; border-radius: 50%; margin-bottom: 0.6rem;
+            background: linear-gradient(135deg,#f59e0b,#d97706); color: #fff; font-weight: 800; font-size: 0.9rem;
+        }
+        .fin-step p { color: #c3d0e5; font-size: 0.9rem; line-height: 1.45; }
+
+        .pricing-title { text-align: center; color: #eef3fb; font-size: 1.4rem; font-weight: 800; margin: 0.5rem 0 1.5rem; }
+        .pricing-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem; max-width: 720px; margin: 0 auto;
+        }
+        .price-card {
+            position: relative; background: #121f38; border: 2px solid #26395c; border-radius: 16px;
+            padding: 2rem; text-align: center; box-shadow: 0 4px 16px rgba(15,23,42,0.06);
+            transition: all 0.25s;
+        }
+        .price-card.best { border-color: #f59e0b; box-shadow: 0 10px 30px rgba(245,158,11,0.18); }
+        .price-card:hover { transform: translateY(-4px); }
+        .price-badge {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(135deg,#f59e0b,#d97706); color: #fff;
+            font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+            padding: 0.25rem 0.9rem; border-radius: 999px;
+        }
+        .price-card h4 { color: #94a6c6; font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+        .price { color: #eef3fb; font-size: 2.6rem; font-weight: 800; line-height: 1; }
+        .price span { font-size: 1rem; font-weight: 600; color: #94a6c6; }
+        .price-sub { color: #94a6c6; font-size: 0.85rem; margin: 0.5rem 0 1.2rem; }
+        .price-card ul { list-style: none; text-align: left; margin: 0 auto 1.5rem; max-width: 200px; }
+        .price-card ul li { color: #c3d0e5; font-size: 0.9rem; margin: 0.5rem 0; }
+        .price-btn {
+            width: 100%; padding: 0.85rem; border: none; border-radius: 10px; cursor: pointer;
+            background: linear-gradient(135deg,#f59e0b,#d97706); color: #fff; font-size: 1rem; font-weight: 700;
+        }
+        .price-btn:hover { filter: brightness(1.06); }
+        .price-btn.ghost { background: #0f172a; }
+        .fin-fineprint { text-align: center; color: #94a3b8; font-size: 0.82rem; max-width: 620px; margin: 1.8rem auto 0; line-height: 1.5; }
+
+        /* "I wish that to be happening" interest capture */
+        .wish-box { text-align: center; margin-top: 2.2rem; }
+        .wish-lead { color: #94a6c6; font-size: 0.95rem; margin-bottom: 0.9rem; }
+        .wish-btn {
+            background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; border: none;
+            border-radius: 999px; padding: 0.85rem 2rem; font-size: 1rem; font-weight: 700; cursor: pointer;
+            box-shadow: 0 6px 18px rgba(37,99,235,0.35); transition: all 0.2s;
+        }
+        .wish-btn:hover { filter: brightness(1.08); transform: translateY(-2px); }
+        .wish-form { display: flex; gap: 0.6rem; justify-content: center; margin-top: 1rem; flex-wrap: wrap; }
+        .wish-form input { padding: 0.7rem 1rem; border: 1.5px solid #26395c; border-radius: 10px; font-size: 1rem; min-width: 240px; }
+        .wish-form input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+        .wish-form button { padding: 0.7rem 1.4rem; border: none; border-radius: 10px; background: #2563eb; color: #fff; font-weight: 700; cursor: pointer; }
+        .wish-form button:hover { filter: brightness(1.08); }
+        .wish-msg { margin-top: 0.8rem; font-size: 0.9rem; font-weight: 600; }
+        /* Single-card division views render the card full width */
+        .view .phase-card { display: block; margin-top: 1rem; }
+
+        /* Main-page role picker */
+        .role-pick { margin-top: 2.5rem; position: relative; z-index: 1; }
+        .role-pick-label { display: block; color: #cbd5e1; font-size: 1.15rem; margin-bottom: 1.1rem; font-weight: 600; }
+        .role-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .role-btn {
+            display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+            background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.25);
+            color: #fff; padding: 1.3rem 2.2rem; border-radius: 14px; cursor: pointer;
+            font-size: 1.05rem; font-weight: 700; min-width: 150px; transition: all 0.2s;
+        }
+        .role-emoji { font-size: 2rem; }
+        .role-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-3px); border-color: #fff; }
+
+        /* Role login modal */
+        .role-modal { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6);
+            z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
+        .role-modal.open { display: flex; }
+        .role-modal-card { background: #121f38; border-radius: 18px; padding: 2rem; width: 100%;
+            max-width: 440px; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .role-close { position: absolute; top: 0.9rem; right: 1.2rem; background: none; border: none;
+            font-size: 1.7rem; color: #94a3b8; cursor: pointer; line-height: 1; }
+        .role-form h2 { color: #eef3fb; font-size: 1.5rem; margin-bottom: 0.3rem; }
+        .rm-sub { color: #94a6c6; font-size: 0.9rem; margin-bottom: 1.2rem; }
+        .role-form label { display: block; font-weight: 600; font-size: 0.82rem; color: #334155; margin: 0.8rem 0 0.3rem; }
+        .role-form input { width: 100%; padding: 0.75rem 1rem; border: 1.5px solid #26395c; border-radius: 10px;
+            font-size: 1rem; font-family: inherit; background: #f8fafc; }
+        .role-form input:focus { outline: none; border-color: #3b82f6; background: #121f38; box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+        .rm-row { display: flex; gap: 0.8rem; } .rm-row > div { flex: 1; }
+        .rm-primary { width: 100%; margin-top: 1.3rem; padding: 0.9rem; background: linear-gradient(135deg,#3b82f6,#2563eb);
+            color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; }
+        .rm-primary:hover { filter: brightness(1.08); }
+        .rm-msg { color: #dc2626; font-size: 0.85rem; margin-top: 0.8rem; min-height: 1rem; }
+        .rm-alt { text-align: center; margin-top: 1rem; font-size: 0.85rem; color: #94a6c6; }
+        .rm-alt a { color: #2563eb; font-weight: 700; text-decoration: none; }
+
+        .phase-card {
+            background: #121f38;
+            padding: 2rem;
+            border-radius: 12px;
+            border-left: 5px solid #3b82f6;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .phase-card:nth-child(2) {
+            border-left-color: #06b6d4;
+        }
+
+        .phase-card:nth-child(3) {
+            border-left-color: #10b981;
+        }
+
+        .phase-card:nth-child(4) {
+            border-left-color: #f59e0b;
+        }
+
+        .phase-card:nth-child(5) {
+            border-left-color: #ec4899;
+        }
+
+        .phase-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+        }
+
+        .phase-card h3 {
+            color: #eef3fb;
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        .phase-card .phase-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            line-height: 45px;
+            text-align: center;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .phase-card:nth-child(2) .phase-number {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        }
+
+        .phase-card:nth-child(3) .phase-number {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .phase-card:nth-child(4) .phase-number {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .phase-card:nth-child(5) .phase-number {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+        }
+
+        .phase-card p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #94a6c6;
+        }
+
+        .phase-highlights {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(0,0,0,0.45);
+        }
+
+        .phase-highlights li {
+            list-style: none;
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .phase-highlights li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #ff6b35;
+            font-weight: bold;
+        }
+
+        .ecosystem {
+            background: #f8f9fa;
+        }
+
+        .ecosystem-text {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 2.5rem;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #94a6c6;
+        }
+
+        .integration-diagram {
+            background: #121f38;
+            padding: 3rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .integration-diagram h3 {
+            color: #eef3fb;
+            margin-bottom: 2.5rem;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .diagram-items {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .diagram-item {
+            padding: 1.8rem;
+            background: linear-gradient(135deg, #1c2e4f 0%, #16233f 100%);
+            border-radius: 10px;
+            color: #eef3fb;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .diagram-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.15);
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1e40af 100%);
+            color: white;
+            text-align: center;
+            padding: 5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .cta-section h2 {
+            color: white;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-section p {
+            font-size: 1.05rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-group {
+            display: flex;
+            gap: 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-group input {
+            flex: 1;
+            padding: 0.9rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.95);
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            background: #121f38;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .form-group button {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 0.9rem 2.2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .form-group button:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        footer {
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding: 2.5rem;
+            font-size: 0.9rem;
+            opacity: 0.85;
+            width: 100%;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        @media (max-width: 768px) {
+            main {
+                flex-direction: column;
+            }
+
+            .phase-tabs {
+                flex-direction: row;
+                width: 100%;
+                min-height: auto;
+                position: static;
+                overflow-x: auto;
+                padding: 0;
+                transform: none;
+                opacity: 1;
+                pointer-events: auto;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+            }
+
+            .phase-tab {
+                padding: 1rem 1.5rem;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+                white-space: nowrap;
+            }
+
+            .phase-tab:hover {
+                border-left-color: transparent;
+                border-bottom-color: #ff6b35;
+            }
+
+            .phase-tab.active {
+                border-left-color: transparent;
+                border-bottom-color: #ff6b35;
+            }
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .overview-content {
+                grid-template-columns: 1fr;
+            }
+
+            .value-props {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .diagram-items {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group {
+                flex-direction: column;
+            }
+
+            .phase-tab {
+                padding: 0.8rem 1rem;
+                font-size: 0.8rem;
+            }
+
+            .phase-tabs {
+                padding: 0 1rem;
+            }
+        }
+
+        /* ============ The Machine — plain split counter framing a center slideshow ============ */
+        .nd-stage { position: relative; margin: -0.8rem 0 1.6rem; min-height: 470px; }
+        .nd-box { position: absolute; transform: translate(-50%, -50%); z-index: 3;
+            display: flex; align-items: center; justify-content: center; }
+        .nd-val { font-family: 'SF Mono', ui-monospace, 'Menlo', monospace; font-weight: 800;
+            font-variant-numeric: tabular-nums; letter-spacing: 2px; color: #cbd5e1;
+            font-size: clamp(1.25rem, 2.3vw, 1.95rem); transition: opacity 0.12s ease;
+            text-shadow: 0 1px 6px rgba(5,7,14,0.85), 0 0 2px rgba(5,7,14,0.9); }
+        .nd-val.tick { opacity: 0.5; }
+        .nd-zero .nd-val { color: #34d399; font-size: clamp(1.7rem, 3.6vw, 2.8rem); }
+        .nd-screen { position: absolute; top: 43%; left: 50%; transform: translate(-50%, -50%); z-index: 1;
+            width: min(46%, 540px); aspect-ratio: 1440 / 616; overflow: hidden; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; }
+        .nd-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+        .nd-screen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+            opacity: 0; transition: opacity 0.7s ease; }
+        .nd-screen img.on { opacity: 1; }
+        /* the 2D emblem the eagle "becomes" after it lands — fades in over the held last frame */
+        .nd-emblem { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+            opacity: 0; transition: opacity 1.1s ease; z-index: 3; pointer-events: none; }
+        .nd-emblem.on { opacity: 1; }
+        .nd-empty { display: flex; align-items: center; justify-content: center; opacity: 0.4; }
+        .nd-empty img { width: 48px; height: 48px; }
+        .nd-dots { position: absolute; bottom: 8px; left: 0; right: 0; display: flex; gap: 6px; justify-content: center; }
+        .nd-dots span { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); cursor: pointer; }
+        .nd-dots span.on { background: #34d399; }
+        /* the center film — an original animated run through US financial history, ending on the eagle */
+        .nd-film { position: absolute; inset: 0; overflow: hidden;
+            background: radial-gradient(120% 120% at 50% 22%, #101c37 0%, #05070e 82%); }
+        .nf-slide { position: absolute; inset: 0; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center; padding: 1rem;
+            opacity: 0; animation: nfCycle 28s infinite; }
+        .nf-slide:nth-child(1) { animation-delay: 0s; }
+        .nf-slide:nth-child(2) { animation-delay: 4s; }
+        .nf-slide:nth-child(3) { animation-delay: 8s; }
+        .nf-slide:nth-child(4) { animation-delay: 12s; }
+        .nf-slide:nth-child(5) { animation-delay: 16s; }
+        .nf-slide:nth-child(6) { animation-delay: 20s; }
+        .nf-slide:nth-child(7) { animation-delay: 24s; }
+        @keyframes nfCycle { 0% { opacity: 0; transform: scale(1.05); } 2% { opacity: 1; }
+            11% { opacity: 1; transform: scale(1); } 14% { opacity: 0; } 100% { opacity: 0; } }
+        .nf-yr { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-spacing: 3px;
+            color: #f1f5f9; font-size: clamp(1.6rem, 6vw, 2.8rem); }
+        .nf-txt { color: #94a3b8; font-size: clamp(0.72rem, 2.2vw, 1rem); margin-top: 0.5rem;
+            max-width: 84%; line-height: 1.45; }
+        .nf-stripes { position: absolute; inset: 0; opacity: 0.13;
+            background: repeating-linear-gradient(0deg, #7f1d1d 0 9%, transparent 9% 18%); }
+        .nf-eagle { position: relative; width: 46%; max-width: 168px;
+            filter: drop-shadow(0 4px 16px rgba(227,192,99,0.4)); }
+        .nf-motto { position: relative; margin-top: 0.55rem; font-family: Georgia, serif; font-weight: 700;
+            letter-spacing: clamp(2px, 1vw, 6px); color: #e6c56a; font-size: clamp(0.8rem, 2.4vw, 1.25rem); }
+        .nf-rule { position: relative; width: 74px; height: 1px; margin-top: 0.5rem;
+            background: linear-gradient(90deg, transparent, #e6c56a, transparent); }
+        @media (max-width: 720px) {
+            .nd-stage { min-height: 490px; }
+            .nd-screen { width: min(66%, 340px); }
+            .nd-box { min-width: 84px; padding: 0.5rem 0.85rem; }
+        }
+    </style>
+    <script src="/session.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div style="display:flex; align-items:center; gap:1rem;">
+                <button class="nav-back" id="navBack" onclick="goBack()" style="display:none;">← Back</button>
+                <div class="logo" style="cursor: pointer;" onclick="showView('overview')" title="Home">
+                    <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab logo" class="logo-img">
+                    <span class="logo-text">Plateau Strategy Solution Lab</span>
+                </div>
+            </div>
+            <nav>
+                <span class="sections-trigger" id="sectionsTrigger">☰ Sections</span>
+                <a href="/articles">Articles</a>
+                <a href="/dispatch">Dispatch</a>
+                <a href="/board">Board of Directors</a>
+                <a href="/book">Book a Ride</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="phase-tabs">
+            <a class="phase-tab active" href="#" onclick="showView('overview', event)">Overview</a>
+            <a class="phase-tab" href="#" onclick="showView('transportation', event)">Transportation</a>
+            <a class="phase-tab" href="#" onclick="showView('operations', event)">Operations</a>
+            <a class="phase-tab" href="#" onclick="showView('realestate', event)">Real Estate</a>
+            <a class="phase-tab" href="#" onclick="showView('finance', event)">Finance</a>
+            <a class="phase-tab" href="#" onclick="showView('reinvestment', event)">Reinvestment</a>
+            <a class="phase-tab" href="#" onclick="showView('tools', event)">Free Tools</a>
+            <a class="phase-tab" href="#" onclick="showView('security', event)">Security Parameter</a>
+        </div>
+
+        <div>
+
+            <!-- ============ OVERVIEW (the introduction) ============ -->
+            <div class="view active" id="view-overview">
+                <section class="hero">
+                    <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab" class="hero-logo">
+                    <h1>Welcome to Plateau Strategy Solution Lab</h1>
+                    <p>An integrated business ecosystem creating opportunity for the people who ride, drive, and grow with us.</p>
+                </section>
+
+                <section class="overview" id="overview">
+                    <div class="container">
+                        <div class="overview-content">
+                            <div class="overview-text">
+                                <h3>About Plateau Strategy Solution Lab</h3>
+                                <p>Plateau Strategy Solution Lab is an integrated business ecosystem built to create opportunity at every level — for the people who <strong>ride</strong> with us, <strong>drive</strong> with us, and <strong>grow</strong> with us.</p>
+                                <p>We started with transportation: affordable Tesla rentals that turn everyday drivers into earners and everyday riders into loyal clients. From there, each part of our business funds and strengthens the next — operations, real estate, finance, and reinvestment — a closed loop where revenue compounds instead of leaking away.</p>
+                                <p>Our model is simple: control the full value chain, share the upside with our drivers and partners, and reinvest profits back into the community. Whether you need a ride, want to earn behind the wheel, or want to refer clients and earn commission — there's a place for you here.</p>
+                            </div>
+                            <div>
+                                <div class="value-props">
+                                    <div class="value-prop">
+                                        <h4>💰 Capital Efficient</h4>
+                                        <p>Each part funds the next through shared cash flow and operational leverage.</p>
+                                    </div>
+                                    <div class="value-prop">
+                                        <h4>🔄 Vertically Integrated</h4>
+                                        <p>Full control over supply chain, client experience, and margin capture.</p>
+                                    </div>
+                                    <div class="value-prop">
+                                        <h4>📈 Compounding Growth</h4>
+                                        <p>Revenue synergies accelerate expansion across all business lines.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="integration-diagram" style="margin-top: 3rem;">
+                            <h3>How It Connects</h3>
+                            <div class="diagram-items">
+                                <div class="diagram-item"><strong>Transportation</strong><br>Generates revenue &amp; data</div>
+                                <div class="diagram-item"><strong>Real Estate</strong><br>Provides infrastructure</div>
+                                <div class="diagram-item"><strong>Finance</strong><br>Optimizes capital</div>
+                            </div>
+                            <p style="margin-top: 2rem; color: #666; font-size: 0.95rem;">Each part creates value that feeds the next — a self-reinforcing cycle that compounds growth and margin as it scales.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="cta-section" id="cta">
+                    <div class="container">
+                        <h2>Join Us in Building the Future</h2>
+                        <p>We're currently validating the market and preparing to launch. Early partners, investors, and team members are critical to our success.</p>
+                        <form class="form-group" onsubmit="handleSubmit(event)">
+                            <input type="email" placeholder="your@email.com" required>
+                            <button type="submit">Get Early Access</button>
+                        </form>
+                        <p style="margin-top: 1.5rem; font-size: 0.9rem; opacity: 0.8;">We're building something ambitious. Join our community of early believers.</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ============ TRANSPORTATION ============ -->
+            <div class="view" id="view-transportation">
+                <section class="phases">
+                    <div class="container">
+                        <h2>Transportation</h2>
+                        <p class="view-intro">Our flagship business — affordable Tesla rentals powering rides, drivers, and referral partners. Here's what we do, and where you fit in.</p>
+
+                        <div class="service-grid">
+                            <div class="service-card">
+                                <div class="service-icon">🚗</div>
+                                <h3>Ride &amp; Services</h3>
+                                <p class="service-for">For riders &amp; clients</p>
+                                <p>Affordable, reliable Tesla rides — booked online in seconds, with your invoice sent automatically. No app to download, no surge-pricing games.</p>
+                                <a href="/book" class="book-cta">Book a Ride →</a>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">🔑</div>
+                                <h3>Car Rentals</h3>
+                                <p class="service-for">For drivers</p>
+                                <p>Rent a Tesla from us and earn from a shared pool of client rides. Low-cost entry, steady income, and a path to owning the car you drive.</p>
+                                <a href="/renter" class="book-cta">Driver Portal →</a>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">🤝</div>
+                                <h3>Agent Program</h3>
+                                <p class="service-for">For partners — organizations or individuals</p>
+                                <p>Refer clients and earn commission on every ride they take. Ideal for hotels, travel agencies, or any individual with a network to tap.</p>
+                                <a href="/agent" class="book-cta">Agent Portal →</a>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">🗺️</div>
+                                <h3>Trip Planner</h3>
+                                <p class="service-for">For travelers &amp; tour guides — free</p>
+                                <p>Plan a real day on the map: every stop lights up or dims by drive time, traffic and closing hours. Guides build and name their own routes here — no website needed — and travelers who'd rather not drive it themselves can hand the route to a guide.</p>
+                                <a href="/trip-planner" class="book-cta">Open Trip Planner →</a>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">📖</div>
+                                <h3>Destination Book</h3>
+                                <p class="service-for">For everyone — free, and growing</p>
+                                <p>Every attraction and restaurant we know, city by city, with local tips from a licensed guide. It grows on its own: search a place in the planner and it's written into the book for the next traveler. One tap sends anything straight into your trip.</p>
+                                <a href="/destination-book" class="book-cta">Open the Book →</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ============ OPERATIONS ============ -->
+            <div class="view" id="view-operations">
+                <section class="phases">
+                    <div class="container">
+                        <h2>Operations</h2>
+                        <div class="phase-card" style="border-left-color:#06b6d4;">
+                            <h3>Digital Operations Platform</h3>
+                            <p>Unified software infrastructure powering fleet management, client interactions, and data analytics across all business lines. AI-driven optimization and decision support.</p>
+                            <div class="phase-highlights">
+                                <ul>
+                                    <li>Fleet and asset tracking</li>
+                                    <li>Client relationship management</li>
+                                    <li>Financial transaction processing</li>
+                                    <li>Business intelligence &amp; analytics</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ============ REAL ESTATE ============ -->
+            <div class="view" id="view-realestate">
+                <section class="phases">
+                    <div class="container">
+                        <h2>Real Estate</h2>
+                        <div class="phase-card" style="border-left-color:#10b981;">
+                            <h3>Real Estate Development</h3>
+                            <p>Acquire and develop properties supporting our transportation operations plus generate rental income. Transform land into mixed-use hubs with residential, commercial, and operational space.</p>
+                            <div class="phase-highlights">
+                                <ul>
+                                    <li>Strategic property acquisition</li>
+                                    <li>Mixed-use development (MU zoning)</li>
+                                    <li>Rent-to-own property programs</li>
+                                    <li>Airbnb &amp; tenant revenue streams</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ============ FINANCE ============ -->
+            <div class="view" id="view-finance">
+                <section class="phases">
+                    <div class="container">
+                        <div class="nd-stage" id="ndStage">
+                            <div class="nd-box nd-zero" style="left:44%;top:12%"><span class="nd-val" id="ndZero">0</span></div>
+                            <div class="nd-box" style="left:72%;top:13%"><span class="nd-val" data-seg="0">00</span></div>
+                            <div class="nd-box" style="left:18%;top:41%"><span class="nd-val" data-seg="1">000</span></div>
+                            <div class="nd-box" style="left:82%;top:46%"><span class="nd-val" data-seg="2">000</span></div>
+                            <div class="nd-box" style="left:26%;top:74%"><span class="nd-val" data-seg="3">000</span></div>
+                            <div class="nd-box" style="left:68%;top:78%"><span class="nd-val" data-seg="4">000</span></div>
+                            <div class="nd-screen" id="ndSlide">
+                                <video class="nd-video" id="ndVideo" src="/media/eagle_finance.mp4" poster="/media/eagle_finance_poster.png" muted playsinline preload="auto"></video>
+                                <img class="nd-emblem" id="ndEmblem" src="/media/eagle_emblem.svg" alt="Duty Honor Country eagle emblem">
+                                <div class="nd-dots" id="ndDots"></div>
+                            </div>
+                        </div>
+
+                        <div class="fin-menu" id="finMenu">
+                            <p class="view-intro" style="grid-column: 1 / -1;">Our financial products — choose one to explore.</p>
+                            <div class="fin-card" onclick="window.location.href='/deflator'">
+                                <div class="fin-card-icon">📈</div>
+                                <h3>Plateau Deflator <span style="font-size:.68rem;background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:10px;vertical-align:middle">RESEARCH</span></h3>
+                                <p>Our automated crypto-trading research project — in private verification, building an audited track record. Nothing for sale yet; follow the results.</p>
+                                <span class="fin-card-link">Follow the research →</span>
+                            </div>
+                            <!-- Add more finance product cards here (same pattern):
+                            <div class="fin-card" onclick="openFinProduct('savings')">
+                                <div class="fin-card-icon">🏦</div><h3>Savings Vault</h3>
+                                <p>…</p><span class="fin-card-link">Open →</span>
+                            </div> -->
+                        </div>
+
+                        <div class="fin-pane" id="fin-debt">
+                            <button class="fin-back" onclick="closeFinProduct()">← All Finance products</button>
+                            <p class="view-intro">Your paycheck works while you sleep — profits go straight to your debt, and your principal is never at risk.</p>
+
+                        <div class="fin-flow">
+                            <div class="fin-step"><span class="fin-num">1</span><p>Your paycheck arrives as normal</p></div>
+                            <div class="fin-step"><span class="fin-num">2</span><p>Our AI trades the balance during a 1–2 week window</p></div>
+                            <div class="fin-step"><span class="fin-num">3</span><p>Profits lock in a protected vault (5–15%/mo target)</p></div>
+                            <div class="fin-step"><span class="fin-num">4</span><p>100% of profit auto-pays your debt</p></div>
+                            <div class="fin-step"><span class="fin-num">5</span><p>Your principal returns intact — no risk</p></div>
+                        </div>
+
+                        <h3 class="pricing-title">Simple pricing · 30-day free trial</h3>
+                        <div class="pricing-grid">
+                            <div class="price-card best">
+                                <div class="price-badge">Best value</div>
+                                <h4>Annual</h4>
+                                <div class="price">$170<span>/year</span></div>
+                                <p class="price-sub">Just $14.17/mo — billed once a year</p>
+                                <ul>
+                                    <li>✓ Automated trading engine</li>
+                                    <li>✓ Principal always protected</li>
+                                    <li>✓ Auto debt payoff</li>
+                                    <li>✓ Real-time dashboard</li>
+                                </ul>
+                                <button class="price-btn" onclick="openEnroll('annual')">Start free trial →</button>
+                            </div>
+                            <div class="price-card">
+                                <h4>Monthly</h4>
+                                <div class="price">$14.17<span>/month</span></div>
+                                <p class="price-sub">Billed monthly · cancel anytime</p>
+                                <ul>
+                                    <li>✓ Automated trading engine</li>
+                                    <li>✓ Principal always protected</li>
+                                    <li>✓ Auto debt payoff</li>
+                                    <li>✓ Real-time dashboard</li>
+                                </ul>
+                                <button class="price-btn ghost" onclick="openEnroll('monthly')">Start free trial →</button>
+                            </div>
+                        </div>
+                        <p class="fin-fineprint">Less than one month's minimum credit-card payment. Only profits go toward debt — your principal is never spent. Trading involves risk; results are not guaranteed.</p>
+
+                        <div class="wish-box">
+                            <p class="wish-lead">Not ready to enroll, but want this to exist?</p>
+                            <button class="wish-btn" id="wishBtn" onclick="showWish()">💜 I wish that to be happening</button>
+                            <div class="wish-form" id="wishForm" style="display:none;">
+                                <input id="wish_email" type="email" placeholder="your@email.com">
+                                <button onclick="submitWish()">Save my email</button>
+                            </div>
+                            <p class="wish-msg" id="wish_msg"></p>
+                        </div>
+                        </div><!-- /fin-debt pane -->
+
+                        <!-- Future finance product panes go here:
+                        <div class="fin-pane" id="fin-savings"> ... </div> -->
+
+                        <!-- ===== DO YOUR PART — gifts straight to the U.S. Treasury =====
+                             Sean's rule: the tools get people out of poverty; when they
+                             make it, we ask them to do their part for the country. We
+                             never touch a cent — every dollar goes direct to Treasury. -->
+                        <div class="giveback" id="giveBack">
+                            <p class="gb-eyebrow">★ ★ ★ &nbsp;DO YOUR PART&nbsp; ★ ★ ★</p>
+                            <h3>When you make it, give a little back.</h3>
+                            <p class="gb-lede">Everything on this site is here to get people out of a hole and into a fortune — the free tools, the work, the trading research. If it works for you, we ask one thing, and only if you want to: <strong>give something to your country.</strong></p>
+
+                            <div class="gb-how">
+                                <div class="gb-step">
+                                    <span class="gb-n">1</span>
+                                    <div><b>You give directly to the U.S. Treasury.</b> The federal government runs a real program for this — <i>Gifts to Reduce the Public Debt</i>, at the Bureau of the Fiscal Service. Card, bank, or PayPal on Pay.gov.</div>
+                                </div>
+                                <div class="gb-step">
+                                    <span class="gb-n">2</span>
+                                    <div><b>We never touch the money.</b> No account of ours is involved, no cut, no processing, nothing held. The button below leaves this site and lands on the government's own payment page.</div>
+                                </div>
+                                <div class="gb-step">
+                                    <span class="gb-n">3</span>
+                                    <div><b>Then come back and tell us.</b> That's what moves the green zero at the top of this page — the number that counts what this community has given back.</div>
+                                </div>
+                            </div>
+
+                            <a class="gb-cta" href="https://www.pay.gov/public/form/start/23779454" target="_blank" rel="noopener noreferrer">🇺🇸 Give at the U.S. Treasury (Pay.gov) →</a>
+                            <p class="gb-mail">Prefer a check? Make it payable to the <b>Bureau of the Fiscal Service</b>, write <i>“gift to reduce the debt held by the public”</i> in the memo, and mail to:<br>
+                                <span class="gb-addr">Attn Dept G · Bureau of the Fiscal Service · P.O. Box 2188 · Parkersburg, WV 26106-2188</span></p>
+
+                            <div class="gb-log">
+                                <h4>I gave — count it</h4>
+                                <p class="gb-sub">Self-reported, on your honor. We can't verify a payment we deliberately never see — and we'd rather be honest about that than fake a number.</p>
+                                <div class="gb-form">
+                                    <input id="gb_name" placeholder="Name or initials (optional)" maxlength="60">
+                                    <input id="gb_amt" type="number" min="1" step="1" placeholder="Amount you gave ($)">
+                                    <button class="gb-btn" onclick="logGiveBack()">Move the zero →</button>
+                                </div>
+                                <p class="gb-msg" id="gb_msg"></p>
+                                <div class="gb-tally" id="gb_tally"></div>
+                            </div>
+
+                            <p class="gb-fine">The national debt is measured in trillions; no single gift changes that arithmetic. That isn't the point — the point is the act, and that it's real, voluntary, and goes where we say it goes. Gifts to the United States for exclusively public purposes are generally tax-deductible, but we're not tax advisors — ask yours. Plateau Strategy Solution Lab is not affiliated with, and does not represent, the U.S. Treasury or any government agency.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ============ REINVESTMENT ============ -->
+            <div class="view" id="view-reinvestment">
+                <section class="phases">
+                    <div class="container">
+                        <h2>Reinvestment</h2>
+                        <div class="phase-card" style="border-left-color:#ec4899;">
+                            <h3>Reinvestment USA</h3>
+                            <p>Deploy accumulated capital back into American infrastructure, communities, and businesses. Create a virtuous cycle of economic value creation and reinvestment.</p>
+                            <div class="phase-highlights">
+                                <ul>
+                                    <li>Community development</li>
+                                    <li>Strategic reinvestment</li>
+                                    <li>Economic impact scaling</li>
+                                    <li>Long-term wealth creation</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ============ FREE TOOLS ============ -->
+            <div class="view" id="view-tools">
+                <section class="phases">
+                    <div class="container">
+                        <h2>Free Tools</h2>
+                        <p class="view-intro">Practical tools for everyday life — built by our lab, free for everyone. No account, no cost.</p>
+
+                        <div class="service-grid">
+                            <div class="service-card">
+                                <div class="service-icon">🗺️</div>
+                                <h3>Trip Planner</h3>
+                                <p class="service-for">For drivers, tour guides &amp; tourists</p>
+                                <p>Pick your attractions and see which ones you can still reach in time — drive time, traffic and closing hours all checked. Every tap builds your day-one, day-two plan. Designed with a professionally licensed tour guide.</p>
+                                <a href="/trip-planner" class="book-cta">Open Trip Planner →</a>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">📖</div>
+                                <h3>Destination Book</h3>
+                                <p class="service-for">For tourists &amp; trip planning</p>
+                                <p>A curated guidebook of attractions and restaurants — every type of destination, organized by category, with descriptions and local tips. One tap sends any place into the Trip Planner.</p>
+                                <a href="/destination-book" class="book-cta">Open the Book →</a>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">🕐</div>
+                                <h3>The Factor Clock</h3>
+                                <p class="service-for">For anyone who wants an honest forecast</p>
+                                <p>A prediction clock that never lies to you — weather, markets, your own patterns, every forecast scored against what actually happened. It tells you when it doesn't know. Free while it earns its record ($10/year value).</p>
+                                <a href="/factor-clock" class="book-cta">Open the Factor Clock →</a>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">🧰</div>
+                                <h3>More on the way</h3>
+                                <p class="service-for">The lab keeps building</p>
+                                <p>We're adding more free daily-life tools here. Have an idea for a tool you'd use every day? Tell us through the Articles page.</p>
+                                <a href="/articles" class="book-cta">Suggest a Tool →</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ============ SECURITY PARAMETER ============ -->
+            <div class="view" id="view-security">
+                <section class="phases">
+                    <div class="container">
+                        <h2>🔒 Security Parameter</h2>
+                        <p class="view-intro">The rules that protect you when you use this site — your data, your money, and your bookings. These are the safeguards that are already in place, in plain language.</p>
+
+                        <div class="service-grid">
+                            <div class="service-card">
+                                <div class="service-icon">🔐</div>
+                                <h3>Owner-only vaults</h3>
+                                <p class="service-for">Financials · customer records · board documents</p>
+                                <p>The money records, customer information and governance documents are locked behind a private owner login. No one reaches them without those credentials.</p>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">🗝️</div>
+                                <h3>Secrets stay secret</h3>
+                                <p class="service-for">Keys, tokens &amp; passwords</p>
+                                <p>API keys, tokens and passwords live in encrypted server configuration — never in your browser, never shown on a page, never committed to our code.</p>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">💳</div>
+                                <h3>Payment safety</h3>
+                                <p class="service-for">Every checkout</p>
+                                <p>Payments run through Square's PCI-compliant system. We never see or store your full card number — the sensitive part never touches our servers.</p>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">🧾</div>
+                                <h3>We never hold your money</h3>
+                                <p class="service-for">Bookings · guide &amp; driver payouts</p>
+                                <p>We invoice for our own service and never hold a customer's funds in escrow. Every payout to a driver or guide takes an explicit owner approval — money never moves on its own.</p>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">🧍</div>
+                                <h3>Your data stays yours</h3>
+                                <p class="service-for">The free tools</p>
+                                <p>The Trip Planner and Destination Book store only place names and typical visit times — no personal tracking. Your planned trip stays on your own device until you choose to book.</p>
+                            </div>
+                            <div class="service-card">
+                                <div class="service-icon">🇺🇸</div>
+                                <h3>Give-back goes straight to Treasury</h3>
+                                <p class="service-for">The national-debt donation</p>
+                                <p>Any gift to reduce the national debt goes directly to the U.S. Treasury's own program. We never touch a cent — the button leaves our site for the government's payment page.</p>
+                            </div>
+                        </div>
+
+                        <p class="view-intro" style="margin-top:1.6rem; font-size:0.9rem; color:#94a6c6;">This list grows as the site adds features. If a new part of the site handles your data or your money, its safeguard is added here.</p>
+                    </div>
+                </section>
+            </div>
+
+            <footer>
+                <p>&copy; 2026 Plateau Strategy Solution Lab. Building integrated wealth through connected ecosystems.</p>
+            </footer>
+        </div>
+    </main>
+
+    <!-- Role login modal -->
+    <div class="role-modal" id="roleModal">
+        <div class="role-modal-card">
+            <button class="role-close" onclick="closeRole()">&times;</button>
+
+            <div class="role-form" id="role-customer">
+                <h2>🚗 Customer</h2>
+                <p class="rm-sub">Enter your details and a password, then book your ride.</p>
+                <label>Full name</label>
+                <input id="cu_name" placeholder="Your name">
+                <div class="rm-row">
+                    <div><label>Email</label><input id="cu_email" type="email" placeholder="you@email.com"></div>
+                    <div><label>Phone</label><input id="cu_phone" placeholder="(415) 555-0100"></div>
+                </div>
+                <label>Password</label>
+                <input id="cu_pw" type="password" placeholder="••••••••">
+                <button class="rm-primary" onclick="customerAuth()">Continue to booking →</button>
+                <div class="rm-msg" id="cu_msg"></div>
+                <p class="rm-alt">New here? Just fill this in — we'll create your account.</p>
+            </div>
+
+            <div class="role-form" id="role-driver" style="display:none;">
+                <h2>👤 Driver</h2>
+                <p class="rm-sub">Log in with your renting VIN and birthday.</p>
+                <label>Renting VIN</label>
+                <input id="dr_vin" placeholder="5YJ3E1EA7PF000000">
+                <label>Birthday (DDMMYYYY)</label>
+                <input id="dr_dob" inputmode="numeric" maxlength="10" placeholder="07031990">
+                <button class="rm-primary" onclick="driverLogin()">Log in →</button>
+                <div class="rm-msg" id="dr_msg"></div>
+                <p class="rm-alt">New driver? <a href="/renter">Register your car →</a></p>
+            </div>
+
+            <div class="role-form" id="role-agent" style="display:none;">
+                <h2>🤝 Agent</h2>
+                <p class="rm-sub">Log in with your last name and agent code.</p>
+                <label>Organization (if any)</label>
+                <input id="ag_org" placeholder="Lopez Travel Agency">
+                <label>Last name</label>
+                <input id="ag_last" placeholder="Lopez">
+                <label>Agent code</label>
+                <input id="ag_code" placeholder="AGT-7K2M" style="text-transform:uppercase;">
+                <button class="rm-primary" onclick="agentLogin()">Log in →</button>
+                <div class="rm-msg" id="ag_msg"></div>
+                <p class="rm-alt">New agent? <a href="/agent">Become an agent →</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Debt Eliminator enroll modal -->
+    <div class="role-modal" id="financeModal">
+        <div class="role-modal-card">
+            <button class="role-close" onclick="closeEnroll()">&times;</button>
+            <div class="role-form">
+                <h2>Start your free trial</h2>
+                <p class="rm-sub" id="fin_plan_sub">30-day free trial, then <strong>$170/year</strong>. Cancel anytime.</p>
+                <label>Full name</label>
+                <input id="fin_name" placeholder="Your name">
+                <div class="rm-row">
+                    <div><label>Email</label><input id="fin_email" type="email" placeholder="you@email.com"></div>
+                    <div><label>Phone</label><input id="fin_phone" placeholder="(415) 555-0100"></div>
+                </div>
+                <button class="rm-primary" style="background:linear-gradient(135deg,#f59e0b,#d97706);" onclick="submitEnroll()">Start free trial &amp; enroll →</button>
+                <div class="rm-msg" id="fin_msg"></div>
+                <p class="rm-alt" id="fin_result" style="display:none;"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- The floating mouse button is the 🎨 Pollock button (shared /floatback.js) -->
+
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault();
+            const email = event.target.querySelector('input[type="email"]').value;
+            alert(`Thanks for your interest! We'll be in touch at ${email}`);
+            event.target.reset();
+        }
+
+        // ---- Finance product directory (AI Debt Eliminator + future products) ----
+        function openFinProduct(name) {
+            const menu = document.getElementById('finMenu');
+            if (menu) menu.style.display = 'none';
+            document.querySelectorAll('#view-finance .fin-pane').forEach(p => p.classList.remove('active'));
+            const pane = document.getElementById('fin-' + name);
+            if (pane) pane.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function closeFinProduct() {
+            document.querySelectorAll('#view-finance .fin-pane').forEach(p => p.classList.remove('active'));
+            const menu = document.getElementById('finMenu');
+            if (menu) menu.style.display = '';
+        }
+
+        // ---- AI Debt Eliminator enrollment ----
+        let _finPlan = 'annual';
+        function openEnroll(plan) {
+            _finPlan = plan;
+            document.getElementById('fin_plan_sub').innerHTML = (plan === 'monthly')
+                ? '30-day free trial, then <strong>$14.17/month</strong>. Cancel anytime.'
+                : '30-day free trial, then <strong>$170/year</strong>. Cancel anytime.';
+            document.getElementById('fin_msg').textContent = '';
+            document.getElementById('fin_result').style.display = 'none';
+            document.getElementById('financeModal').classList.add('open');
+        }
+        function closeEnroll() { document.getElementById('financeModal').classList.remove('open'); }
+        document.addEventListener('click', function (e) { if (e.target && e.target.id === 'financeModal') closeEnroll(); });
+
+        async function submitEnroll() {
+            const msg = document.getElementById('fin_msg');
+            const body = {
+                plan: _finPlan,
+                name: (document.getElementById('fin_name').value || '').trim(),
+                email: (document.getElementById('fin_email').value || '').trim(),
+                phone: (document.getElementById('fin_phone').value || '').trim(),
+            };
+            if (!body.name || !body.email) { msg.textContent = 'Name and email are required.'; return; }
+            msg.textContent = 'Enrolling…';
+            const j = await (await fetch('/api/finance/enroll', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
+            if (!j.ok) { msg.textContent = j.error || 'Could not enroll.'; return; }
+            msg.textContent = '';
+            const inv = j.signup.invoice || {};
+            const invLine = inv.url ? '<a href="' + inv.url + '" target="_blank">View your invoice →</a>' : 'Your invoice will be emailed to you.';
+            const res = document.getElementById('fin_result');
+            res.style.display = 'block'; res.style.color = '#047857';
+            res.innerHTML = "✅ You're enrolled on the " + j.signup.plan + ' plan (' + j.signup.billing + ').<br>' + invLine;
+        }
+
+        // ---- "I wish that to be happening" interest capture ----
+        function showWish() {
+            document.getElementById('wishForm').style.display = 'flex';
+            document.getElementById('wishBtn').style.display = 'none';
+            document.getElementById('wish_email').focus();
+        }
+        async function submitWish() {
+            const msg = document.getElementById('wish_msg');
+            const email = (document.getElementById('wish_email').value || '').trim();
+            if (!email) { msg.style.color = '#dc2626'; msg.textContent = 'Please enter your email.'; return; }
+            const j = await (await fetch('/api/finance/wish', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) })).json();
+            if (!j.ok) { msg.style.color = '#dc2626'; msg.textContent = j.error || 'Could not save.'; return; }
+            document.getElementById('wishForm').style.display = 'none';
+            msg.style.color = '#047857';
+            msg.textContent = "✅ Saved! We'll let you know the moment it's live.";
+        }
+
+        // ---- Role-based login (main page) ----
+        const rv = id => (document.getElementById(id).value || '').trim();
+
+        function openRole(role) {
+            document.querySelectorAll('.role-form').forEach(f => f.style.display = 'none');
+            document.getElementById('role-' + role).style.display = 'block';
+            document.getElementById('roleModal').classList.add('open');
+        }
+        function closeRole() {
+            document.getElementById('roleModal').classList.remove('open');
+        }
+        // Close when clicking the dark backdrop
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.id === 'roleModal') closeRole();
+        });
+
+        async function customerAuth() {
+            const msg = document.getElementById('cu_msg');
+            const body = { name: rv('cu_name'), email: rv('cu_email'), phone: rv('cu_phone'), password: rv('cu_pw') };
+            if (!body.email || !body.password) { msg.textContent = 'Email and password are required.'; return; }
+            const j = await (await fetch('/api/customers/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
+            if (!j.ok) { msg.textContent = j.error || 'Could not sign in.'; return; }
+            localStorage.setItem('customer', JSON.stringify(j.customer));
+            if (window.PS) PS.activate('customer');
+            window.location.href = '/book';
+        }
+
+        async function driverLogin() {
+            const msg = document.getElementById('dr_msg');
+            const dob = rv('dr_dob').replace(/\D/g, '');
+            const body = { vin: rv('dr_vin'), dob };
+            if (!body.vin) { msg.textContent = 'Enter your renting VIN.'; return; }
+            if (dob.length !== 8) { msg.textContent = 'Enter your birthday as DDMMYYYY (8 digits).'; return; }
+            const j = await (await fetch('/api/renters/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
+            if (!j.ok) { msg.textContent = j.error || 'Login failed.'; return; }
+            localStorage.setItem('renter_id', j.renter.id);
+            if (window.PS) PS.activate('driver');
+            window.location.href = '/renter';
+        }
+
+        async function agentLogin() {
+            const msg = document.getElementById('ag_msg');
+            const body = { organization: rv('ag_org'), last_name: rv('ag_last'), code: rv('ag_code') };
+            if (!body.code || !body.last_name) { msg.textContent = 'Agent code and last name are required.'; return; }
+            const j = await (await fetch('/api/agents/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
+            if (!j.ok) { msg.textContent = j.error || 'Login failed.'; return; }
+            localStorage.setItem('agent_id', j.agent.id);
+            if (window.PS) PS.activate('agent');
+            window.location.href = '/agent';
+        }
+
+        // Show a single section (view) at a time, anchored at the top of the page.
+        let _viewHistory = [];
+        function showView(name, evt, isBack) {
+            if (evt && evt.preventDefault) evt.preventDefault();
+
+            // Remember where we came from so "← Back" returns to the previous page
+            const cur = document.querySelector('.view.active');
+            const curName = cur ? cur.id.replace('view-', '') : null;
+            if (!isBack && curName && curName !== name) _viewHistory.push(curName);
+
+            // Highlight the matching tab
+            const tabs = document.querySelectorAll('.phase-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            const activeTab = (evt && evt.currentTarget) ? evt.currentTarget
+                : Array.from(tabs).find(t => (t.getAttribute('onclick') || '').includes("'" + name + "'"));
+            if (activeTab) activeTab.classList.add('active');
+
+            // Swap to the matching view
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            const view = document.getElementById('view-' + name);
+            if (view) view.classList.add('active');
+
+            // Finance always opens on its product menu (not a stale product page)
+            if (name === 'finance') closeFinProduct();
+
+            updateBackButton();
+            hideNav();
+            hideFloatBack();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // The old inline floating "← Back" was RETIRED — the 🎨 Pollock button
+        // (shared /floatback.js) is the mouse companion now. Stub kept because
+        // goBack()/showView still call it.
+        function hideFloatBack() {}
+
+        function goBack() {
+            // Inside Finance, an open product backs to the product menu first (more accurate)
+            const finView = document.getElementById('view-finance');
+            if (finView && finView.classList.contains('active') && document.querySelector('#view-finance .fin-pane.active')) {
+                closeFinProduct(); hideFloatBack(); updateBackButton(); return;
+            }
+            const prev = _viewHistory.pop();
+            showView(prev || 'overview', null, true);
+        }
+        function updateBackButton() {
+            const btn = document.getElementById('navBack');
+            if (btn) btn.style.display = _viewHistory.length ? 'inline-flex' : 'none';
+        }
+
+        // Section tabs reveal when the mouse goes to the top of the screen, then tuck away.
+        let _navTimer;
+        function showNav() { const n = document.querySelector('.phase-tabs'); if (n) n.classList.add('shown'); clearTimeout(_navTimer); }
+        function hideNav() { const n = document.querySelector('.phase-tabs'); if (n) n.classList.remove('shown'); }
+        function scheduleHideNav() { clearTimeout(_navTimer); _navTimer = setTimeout(hideNav, 500); }
+        document.addEventListener('DOMContentLoaded', function () {
+            const nav = document.querySelector('.phase-tabs');
+            document.addEventListener('mousemove', function (e) {
+                if (e.clientY < 96) showNav();
+                else if (nav && !nav.matches(':hover')) scheduleHideNav();
+            });
+            if (nav) {
+                nav.addEventListener('mouseenter', showNav);
+                nav.addEventListener('mouseleave', scheduleHideNav);
+            }
+            const trig = document.getElementById('sectionsTrigger');
+            if (trig) { trig.addEventListener('mouseenter', showNav); trig.addEventListener('click', showNav); }
+        });
+
+        // Initialize on the Overview view — or the view named in the URL hash
+        // (e.g. /#finance from the Pollock button's Finance bubble). hashchange
+        // covers the same-page case, where no reload happens.
+        var HASH_VIEWS = ['overview', 'transportation', 'operations', 'realestate', 'finance', 'reinvestment', 'tools', 'security'];
+        function viewFromHash() {
+            var h = (location.hash || '').replace('#', '');
+            showView(HASH_VIEWS.indexOf(h) >= 0 ? h : 'overview');
+        }
+        document.addEventListener('DOMContentLoaded', viewFromHash);
+        window.addEventListener('hashchange', viewFromHash);
+
+        /* ===== The Machine: a split, unlabeled counter that only climbs, around a
+           center slideshow. The green 0 on top is what we've given back — still zero,
+           for now. No labels; the meaning reveals itself over time. ===== */
+        (function () {
+            // Center slideshow — leave empty; add slides later, e.g.
+            //   PS_SLIDES = ['/slides/one.jpg', {img:'/slides/two.jpg'}];
+            var SLIDES = (window.PS_SLIDES || []).map(function (s) { return typeof s === 'string' ? { img: s } : s; });
+
+            // ---- the REAL US national debt (live from the U.S. Treasury), split across
+            //      the boxes; it only climbs. Fallback figure is used only if the fetch fails. ----
+            var val = 39375254020492;                 // fallback (~Jul 2026); replaced by the live figure below
+            var segEls = [].slice.call(document.querySelectorAll('#ndStage .nd-val[data-seg]'));
+            function paint() {
+                var parts = Math.round(val).toLocaleString('en-US').split(',');   // e.g. 39 | 375 | 254 | 020 | 492
+                for (var i = 0; i < segEls.length; i++) {
+                    var p = parts[i] != null ? parts[i] : '000';
+                    if (segEls[i].textContent !== p) {
+                        segEls[i].textContent = p;
+                        segEls[i].classList.add('tick');
+                        (function (el) { setTimeout(function () { el.classList.remove('tick'); }, 120); })(segEls[i]);
+                    }
+                }
+            }
+            function step() {   // ~$90k/sec — roughly the real recent pace of the debt
+                // Only do the work when the Finance section is actually open and the tab is
+                // visible — otherwise this is a near-free early return (no CPU burned in the background).
+                var fin = document.getElementById('view-finance');
+                if (document.hidden || !fin || !fin.classList.contains('active')) return;
+                val += 7000 + Math.random() * 11000; paint();
+            }
+            if (segEls.length) {
+                paint(); setInterval(step, 200);
+                fetch('/api/national-debt').then(function (r) { return r.json(); })
+                    .then(function (d) { if (d && d.ok && d.amount) { val = d.amount; paint(); } })
+                    .catch(function () { });
+            }
+
+            /* ---- the green zero: what this community has given back to the country.
+                   It sits at zero until somebody actually gives — then it moves, and
+                   never moves back down. Money goes straight to the U.S. Treasury;
+                   this only counts what people report. ---- */
+            var zeroEl = document.getElementById('ndZero');
+            var zeroShown = 0;
+            function paintZero(target, animate) {
+                if (!zeroEl) return;
+                var t = Math.round(target || 0);
+                function land() {   // the number must ALWAYS end up correct, animation or not
+                    zeroShown = t;
+                    zeroEl.textContent = t.toLocaleString('en-US');
+                    setTimeout(function () { zeroEl.classList.remove('tick'); }, 200);
+                }
+                // A hidden tab freezes requestAnimationFrame — animating there would strand
+                // the count-up mid-way and show a wrong total. Set it straight instead.
+                if (!animate || document.hidden) { land(); return; }
+                var from = zeroShown, t0 = Date.now(), dur = 1100, done = false;
+                setTimeout(function () { if (!done) { done = true; land(); } }, dur + 400);   // safety net
+                (function tickUp() {
+                    if (done) return;
+                    var k = Math.min(1, (Date.now() - t0) / dur);
+                    var v = Math.round(from + (t - from) * (1 - Math.pow(1 - k, 3)));   // ease-out
+                    zeroEl.textContent = v.toLocaleString('en-US');
+                    zeroEl.classList.add('tick');
+                    if (k < 1) requestAnimationFrame(tickUp);
+                    else { done = true; land(); }
+                })();
+            }
+            window.refreshGiveBack = function (animate) {
+                return fetch('/api/give-back').then(function (r) { return r.json(); }).then(function (d) {
+                    if (!d || !d.ok) return null;
+                    paintZero(d.total, !!animate);
+                    var box = document.getElementById('gb_tally');
+                    if (box) {
+                        box.innerHTML = d.count
+                            ? '<div class="gb-row"><span><b>' + d.count + '</b> ' + (d.count === 1 ? 'person has' : 'people have') +
+                              ' given back</span><span class="gb-amt">$' + Number(d.total).toLocaleString('en-US') + '</span></div>' +
+                              d.recent.map(function (g) {
+                                  return '<div class="gb-row"><span>' + esc(g.name) + '</span><span class="gb-amt">$' +
+                                         Number(g.amount).toLocaleString('en-US') + '</span></div>';
+                              }).join('')
+                            : '<div class="gb-row"><span>Nobody has reported a gift yet — the zero is honest.</span><span class="gb-amt">$0</span></div>';
+                    }
+                    return d;
+                }).catch(function () { return null; });
+            };
+            function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
+            window.logGiveBack = function () {
+                var amt = document.getElementById('gb_amt'), nm = document.getElementById('gb_name'),
+                    msg = document.getElementById('gb_msg');
+                msg.className = 'gb-msg'; msg.textContent = '';
+                fetch('/api/give-back/log', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount: amt.value, name: nm.value })
+                }).then(function (r) { return r.json(); }).then(function (d) {
+                    if (d && d.ok) {
+                        msg.textContent = '🇺🇸 Thank you — counted. The zero just moved.';
+                        amt.value = ''; nm.value = '';
+                        window.refreshGiveBack(true);
+                    } else {
+                        msg.className = 'gb-msg err';
+                        msg.textContent = '⚠ ' + ((d && d.error) || 'Could not record that — please try again.');
+                    }
+                }).catch(function () {
+                    msg.className = 'gb-msg err';
+                    msg.textContent = '⚠ Could not reach the server — please try again.';
+                });
+            };
+            window.refreshGiveBack(false);
+
+            // ---- center slideshow (auto-advances only when slides exist) ----
+            // The center video sits inside a hidden view at page load, so the browser
+            // won't fetch it until it's visible. Kick off muted playback (browser-allowed)
+            // the moment it scrolls into view.
+            var vid = document.querySelector('.nd-video');
+            if (vid && 'IntersectionObserver' in window) {
+                vid.muted = true;
+                var vidStarted = false;                    // play through exactly once, then hold the last frame
+                function playOnce() {
+                    if (vidStarted) return;
+                    vidStarted = true;
+                    vid.play().catch(function () { vidStarted = false; });
+                }
+                vid.addEventListener('loadeddata', playOnce);
+                // when the eagle finishes landing, it "becomes 2D" — fade in the flat emblem logo
+                vid.addEventListener('ended', function () {
+                    var em = document.getElementById('ndEmblem');
+                    if (em) em.classList.add('on');
+                });
+                new IntersectionObserver(function (entries) {
+                    entries.forEach(function (e) {
+                        if (!e.isIntersecting || vidStarted) return;
+                        if (vid.readyState >= 2) playOnce();
+                        else vid.load();   // hidden <video> never auto-loads; load() -> 'loadeddata' -> playOnce
+                    });
+                }, { threshold: 0.1 }).observe(vid);
+            }
+
+            var stage = document.getElementById('ndSlide');
+            var film = document.getElementById('ndFilm');
+            var dots = document.getElementById('ndDots');
+            if (stage && SLIDES.length) {
+                if (film) film.style.display = 'none';
+                var imgs = SLIDES.map(function (sl, i) {
+                    var im = document.createElement('img');
+                    im.src = sl.img; if (i === 0) im.className = 'on';
+                    stage.insertBefore(im, dots); return im;
+                });
+                var dotEls = SLIDES.map(function (_, i) {
+                    var d = document.createElement('span'); if (i === 0) d.className = 'on';
+                    d.onclick = function () { go(i); }; dots.appendChild(d); return d;
+                });
+                var cur = 0;
+                function go(n) {
+                    imgs[cur].classList.remove('on'); dotEls[cur].classList.remove('on');
+                    cur = (n + SLIDES.length) % SLIDES.length;
+                    imgs[cur].classList.add('on'); dotEls[cur].classList.add('on');
+                }
+                if (SLIDES.length > 1) setInterval(function () { go(cur + 1); }, 5000);
+            }
+        })();
+    </script>
+    <script src="/i18n.js"></script>
+    <script src="/floatback.js"></script>
+    <script src="/jarvis-widget.js"></script>
+</body>
+</html>

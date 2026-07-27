@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas — Partner Pipeline · Plateau Strategy Solution Lab</title>
+    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0f172a; --panel: #1e293b; --line: #334155;
+            --text: #e2e8f0; --head: #f8fafc; --muted: #94a3b8; --muted2: #64748b;
+            --accent: #3b82f6; --accent2: #2563eb;
+            --serif: Georgia, 'Times New Roman', serif;
+            --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        }
+        body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+        header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #fff; padding: 1rem 2rem;
+            display: flex; align-items: center; gap: 0.85rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); position: sticky; top: 0; z-index: 10; }
+        header img { height: 38px; width: 38px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.18); }
+        header .brand { font-family: var(--serif); font-weight: 700; font-size: 1.25rem; }
+        header .right { margin-left: auto; font-size: 0.9rem; }
+        header a { color: #cbd5e1; text-decoration: none; font-weight: 600; }
+        header a:hover { color: #fff; }
+
+        .wrap { max-width: 1180px; margin: 2rem auto; padding: 0 1.3rem; }
+        h1 { font-family: var(--serif); color: var(--head); font-size: 1.7rem; margin-bottom: 0.3rem; }
+        .sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.6rem; max-width: 760px; }
+        h2 { font-family: var(--serif); color: var(--head); font-size: 1.15rem; margin: 1.8rem 0 0.8rem; }
+
+        .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1.4rem 1.5rem; }
+
+        /* pitch template */
+        .pitch { position: relative; }
+        .pitch pre { white-space: pre-wrap; font-family: var(--sans); color: #cbd5e1; font-size: 0.9rem; line-height: 1.6; }
+        .pitch .copy { position: absolute; top: 1.2rem; right: 1.3rem; background: var(--accent); color: #fff; border: none;
+            border-radius: 6px; padding: 0.5rem 0.9rem; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+        .pitch .copy:hover { background: var(--accent2); }
+
+        /* stats */
+        .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.8rem; margin-bottom: 1.4rem; }
+        .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 9px; padding: 0.9rem 1rem; text-align: center; }
+        .stat .n { font-family: var(--serif); font-size: 1.5rem; font-weight: 700; color: #fff; }
+        .stat .l { color: var(--muted); font-size: 0.72rem; margin-top: 0.2rem; text-transform: uppercase; letter-spacing: 0.4px; }
+        @media (max-width: 760px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+
+        /* add form */
+        .addrow { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: flex-end; }
+        .addrow > div { flex: 1; min-width: 130px; }
+        label { display: block; font-size: 0.68rem; letter-spacing: 0.5px; text-transform: uppercase; color: #cbd5e1; font-weight: 600; margin-bottom: 0.3rem; }
+        input, select { width: 100%; padding: 0.6rem 0.75rem; border: 1px solid #334155; border-radius: 6px;
+            font-size: 0.9rem; font-family: var(--sans); background: #0f172a; color: var(--text); }
+        input:focus, select:focus { outline: none; border-color: var(--accent); }
+        .addbtn { background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; border: none; border-radius: 6px;
+            padding: 0.62rem 1.3rem; font-weight: 700; font-size: 0.9rem; cursor: pointer; white-space: nowrap; }
+        .addbtn:hover { filter: brightness(1.08); }
+
+        .filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+        .filters button { background: var(--panel); border: 1px solid var(--line); color: #cbd5e1; border-radius: 999px;
+            padding: 0.4rem 0.95rem; font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+        .filters button.on { background: linear-gradient(135deg,#1e3a8a,#2563eb); border-color: #2563eb; color: #fff; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 0.6rem 0.6rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted2); font-weight: 700; border-bottom: 1px solid var(--line); }
+        td { padding: 0.75rem 0.6rem; font-size: 0.86rem; border-bottom: 1px solid #24324a; vertical-align: top; color: #cbd5e1; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+        .org { font-weight: 700; color: #f1f5f9; }
+        .org small { display: block; color: var(--muted2); font-weight: 400; font-size: 0.76rem; margin-top: 0.15rem; }
+        .typ { font-size: 0.66rem; font-weight: 700; padding: 0.16rem 0.5rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.4px; background: #263449; color: #93c5fd; }
+        .contact a { color: #93c5fd; text-decoration: none; }
+        .contact .miss { color: var(--muted2); font-style: italic; }
+        td .st { border-radius: 6px; font-weight: 700; font-size: 0.78rem; padding: 0.4rem 0.5rem; cursor: pointer; }
+        .st.to_contact { background: #1e293b; color: #cbd5e1; border-color: #475569; }
+        .st.contacted { background: #172554; color: #93c5fd; border-color: #1e3a8a; }
+        .st.interested { background: #422006; color: #fcd34d; border-color: #b45309; }
+        .st.signed { background: #052e16; color: #86efac; border-color: #166534; }
+        .st.declined { background: #450a0a; color: #fca5a5; border-color: #7f1d1d; }
+        .noteinput { width: 100%; min-width: 160px; background: #0f172a; border: 1px solid #24324a; color: #cbd5e1; border-radius: 5px; padding: 0.4rem 0.5rem; font-size: 0.8rem; font-family: var(--sans); }
+        .del { background: none; border: none; color: #7f1d1d; cursor: pointer; font-size: 1.1rem; font-weight: 700; }
+        .del:hover { color: #f87171; }
+        .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #1e293b;
+            border: 1px solid #475569; color: #e2e8f0; padding: 0.8rem 1.4rem; border-radius: 6px; display: none; z-index: 50; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="right"><a href="/">← Home</a></div>
+    </header>
+
+    <div class="wrap">
+        <h1>Atlas</h1>
+        <p class="sub"><strong style="color:#93c5fd;">Partner pipeline · Greater Seattle.</strong> Organizations to recruit as referral agents — hotels, travel agencies, and offices whose people need airport rides. Reach out personally (they earn $15 per completed referral), track each one here, and when they say yes, sign them up in the Agent portal.</p>
+
+        <div class="card pitch">
+            <button class="copy" onclick="copyPitch()">Copy pitch</button>
+            <h2 style="margin-top:0;">Partnership pitch (personalize the [brackets])</h2>
+            <pre id="pitchText">Hi [Name],
+
+I run Plateau Strategy Solution Lab, a licensed Seattle-area car service — flat-rate $75 airport pickups to and from SeaTac.
+
+Your [guests / clients] often need reliable airport transportation, and I'd like to make that easy for you and profitable. Through our Agent program, every time you refer a customer to us, you earn a flat $15 commission on their completed ride. No cost and no obligation — you share our booking link or give guests your agent code, and you get paid per ride.
+
+It takes about two minutes to sign up and get your code. Could we set up a quick call, or would you like me to send the sign-up link?
+
+Thank you,
+Sean (Xiaojun) Zhu
+Plateau Strategy Solution Lab
+(917) 588-6013 · seanzhu1988115@gmail.com</pre>
+        </div>
+
+        <h2>Prospects</h2>
+        <div class="stats" id="stats"></div>
+
+        <div class="card">
+            <div class="addrow">
+                <div><label>Organization</label><input id="p_name" placeholder="Hotel or agency name"></div>
+                <div style="flex:0 0 150px;"><label>Type</label>
+                    <select id="p_type">
+                        <option value="hotel">Hotel</option>
+                        <option value="travel_agency">Travel agency</option>
+                        <option value="office">Office</option>
+                        <option value="senior_living">Senior living</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div><label>Phone</label><input id="p_phone" placeholder="(206) 555-0100"></div>
+                <div><label>Email</label><input id="p_email" placeholder="sales@..."></div>
+                <div><label>Website</label><input id="p_website" placeholder="example.com"></div>
+                <button class="addbtn" onclick="addPartner()">+ Add prospect</button>
+            </div>
+        </div>
+
+        <div class="filters" id="filters"></div>
+
+        <div class="card" style="padding:0.6rem 1rem;">
+            <table>
+                <thead><tr><th>Organization</th><th>Type</th><th>General contact</th><th>Sales team (direct)</th><th>Status</th><th>Notes</th><th></th></tr></thead>
+                <tbody id="rows"></tbody>
+            </table>
+            <div id="empty" style="display:none;color:#64748b;padding:1.4rem;text-align:center;">No prospects yet. Add one above.</div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+        const STATUS_LABELS = { to_contact:'To contact', contacted:'Contacted', interested:'Interested', signed:'Signed', declined:'Declined' };
+        let PARTNERS = [], STATUSES = [], FILTER = 'all';
+
+        function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.style.display='block'; clearTimeout(t._h); t._h=setTimeout(()=>t.style.display='none',2200); }
+        function val(id){ return document.getElementById(id).value.trim(); }
+        function copyPitch(){ navigator.clipboard.writeText(document.getElementById('pitchText').textContent).then(()=>showToast('Pitch copied')).catch(()=>{}); }
+
+        async function load(){
+            const j = await (await fetch('/api/partners')).json();
+            PARTNERS = j.partners || []; STATUSES = j.statuses || [];
+            render();
+        }
+
+        function render(){
+            // stats
+            const counts = { all: PARTNERS.length };
+            STATUSES.forEach(s => counts[s] = PARTNERS.filter(p=>p.status===s).length);
+            document.getElementById('stats').innerHTML =
+                '<div class="stat"><div class="n">'+counts.all+'</div><div class="l">Total</div></div>' +
+                STATUSES.map(s=>'<div class="stat"><div class="n">'+counts[s]+'</div><div class="l">'+STATUS_LABELS[s]+'</div></div>').join('');
+            // filters
+            document.getElementById('filters').innerHTML =
+                ['all',...STATUSES].map(f=>'<button class="'+(FILTER===f?'on':'')+'" onclick="setFilter(\''+f+'\')">'+(f==='all'?'All':STATUS_LABELS[f])+' ('+(counts[f]||0)+')</button>').join('');
+            // rows
+            const list = FILTER==='all' ? PARTNERS : PARTNERS.filter(p=>p.status===FILTER);
+            document.getElementById('empty').style.display = list.length ? 'none' : 'block';
+            document.getElementById('rows').innerHTML = list.map(rowHtml).join('');
+        }
+
+        function salesCell(p){
+            const conf = p.contact_confidence || 'unknown';
+            const bc = { verified:['#052e16','#86efac'], likely:['#422006','#fcd34d'],
+                         route:['#172554','#93c5fd'], unknown:['#1e293b','#94a3b8'] }[conf] || ['#1e293b','#94a3b8'];
+            const badge = '<span style="font-size:.6rem;font-weight:700;padding:.1rem .45rem;border-radius:4px;background:'+bc[0]+';color:'+bc[1]+';text-transform:uppercase;letter-spacing:.4px;">'+(conf==='unknown'?'needs research':conf)+'</span>';
+            const lines = [];
+            if(p.sales_contact) lines.push('<b style="color:#f1f5f9;">'+esc(p.sales_contact)+'</b>'+(p.sales_title?' <span style="color:#94a3b8;">· '+esc(p.sales_title)+'</span>':''));
+            if(p.sales_email) lines.push('<a href="mailto:'+esc(p.sales_email)+'">'+esc(p.sales_email)+'</a>');
+            if(p.sales_phone) lines.push('<a href="tel:'+esc(p.sales_phone)+'">'+esc(p.sales_phone)+'</a>');
+            if(p.sales_route) lines.push('<span style="color:#94a3b8;font-size:.78rem;">'+esc(p.sales_route)+'</span>');
+            if(p.research_notes) lines.push('<span style="color:#64748b;font-size:.72rem;font-style:italic;">'+esc(p.research_notes)+'</span>');
+            if(p.source) lines.push('<a href="'+esc(p.source)+'" target="_blank" style="font-size:.72rem;">source ↗</a>');
+            const body = lines.length ? lines.join('<br>') : '<span class="miss">not researched yet</span>';
+            return badge + '<div style="margin-top:.3rem;line-height:1.5;">'+body+'</div>';
+        }
+
+        function rowHtml(p){
+            const contact = [
+                p.phone ? '<a href="tel:'+esc(p.phone)+'">'+esc(p.phone)+'</a>' : '',
+                p.email ? '<a href="mailto:'+esc(p.email)+'">'+esc(p.email)+'</a>' : '',
+                p.website ? '<a href="'+(p.website.startsWith('http')?'':'https://')+esc(p.website)+'" target="_blank">'+esc(p.website)+'</a>' : ''
+            ].filter(Boolean).join('<br>') || '<span class="miss">no contact yet</span>';
+            const opts = STATUSES.map(s=>'<option value="'+s+'"'+(p.status===s?' selected':'')+'>'+STATUS_LABELS[s]+'</option>').join('');
+            return '<tr>' +
+                '<td><span class="org">'+esc(p.name)+(p.address?'<small>'+esc(p.address)+'</small>':'')+'</span></td>' +
+                '<td><span class="typ">'+esc((p.type||'').replace("_"," "))+'</span></td>' +
+                '<td class="contact">'+contact+'</td>' +
+                '<td class="contact" style="max-width:300px;">'+salesCell(p)+'</td>' +
+                '<td><select class="st '+p.status+'" onchange="setStatus(\''+p.id+'\', this.value, this)">'+opts+'</select></td>' +
+                '<td><input class="noteinput" value="'+esc(p.notes||'')+'" placeholder="Notes…" onblur="setNotes(\''+p.id+'\', this.value)"></td>' +
+                '<td><button class="del" title="Remove" onclick="del(\''+p.id+'\')">×</button></td>' +
+                '</tr>';
+        }
+
+        function setFilter(f){ FILTER=f; render(); }
+
+        async function addPartner(){
+            const name = val('p_name');
+            if(!name){ showToast('Enter an organization name'); return; }
+            const body = { name, type: val('p_type'), phone: val('p_phone'), email: val('p_email'), website: val('p_website') };
+            const j = await (await fetch('/api/partners/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})).json();
+            if(!j.ok){ showToast(j.error||'Could not add'); return; }
+            ['p_name','p_phone','p_email','p_website'].forEach(i=>document.getElementById(i).value='');
+            showToast('Added'); load();
+        }
+
+        async function setStatus(id, status, el){
+            el.className = 'st ' + status;
+            await fetch('/api/partners/'+id+'/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})});
+            const p = PARTNERS.find(x=>x.id===id); if(p) p.status=status;
+            render();
+        }
+        async function setNotes(id, notes){
+            await fetch('/api/partners/'+id+'/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({notes})});
+            const p = PARTNERS.find(x=>x.id===id); if(p) p.notes=notes;
+        }
+        async function del(id){
+            if(!confirm('Remove this prospect from the pipeline?')) return;
+            await fetch('/api/partners/'+id+'/delete',{method:'POST'});
+            showToast('Removed'); load();
+        }
+
+        load();
+    </script>
+    <script src="/floatback.js"></script>
+    <script src="/jarvis-widget.js"></script>
+    <script src="/i18n.js"></script>
+</body>
+</html>

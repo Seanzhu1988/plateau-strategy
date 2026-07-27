@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Dashboard — Plateau Strategy</title>
+    <link rel="icon" type="image/png" href="plateau-logo.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a; color: #e2e8f0; min-height: 100vh;
+        }
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: #fff; padding: 1rem 2rem; display: flex; align-items: center;
+            gap: 0.7rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            position: sticky; top: 0; z-index: 10;
+        }
+        header img { height: 42px; width: 42px; border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.2); }
+        header .brand { font-weight: 800; font-size: 1.2rem; }
+        header .right { margin-left: auto; display: flex; align-items: center; gap: 1rem; }
+        header a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+        header a:hover { color: #fff; }
+        .dot { width: 9px; height: 9px; border-radius: 50%; background: #22c55e;
+            display: inline-block; animation: pulse 1.6s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .wrap { max-width: 1000px; margin: 2rem auto; padding: 0 1.2rem; }
+        .toolbar { display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1.4rem; }
+        .toolbar h1 { font-size: 1.5rem; font-weight: 800; color: #fff; }
+        .counts { font-size: 0.85rem; color: #94a3b8; }
+        .counts b { color: #60a5fa; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.2rem; }
+        .res {
+            background: #1e293b; border: 1px solid #334155; border-radius: 14px;
+            padding: 1.3rem; border-left: 4px solid #3b82f6;
+        }
+        .res.NEW { border-left-color: #f59e0b; }
+        .res.ASSIGNED { border-left-color: #3b82f6; }
+        .res.COMPLETED { border-left-color: #22c55e; opacity: 0.75; }
+        .res .top { display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 0.7rem; }
+        .res .id { font-size: 0.78rem; color: #64748b; font-weight: 600; }
+        .badge { font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.6rem;
+            border-radius: 999px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge.NEW { background: #78350f; color: #fcd34d; }
+        .badge.ASSIGNED { background: #1e3a8a; color: #93c5fd; }
+        .badge.COMPLETED { background: #14532d; color: #86efac; }
+        .route { font-size: 1.05rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.5rem; }
+        .route .arrow { color: #60a5fa; margin: 0 0.3rem; }
+        .meta { font-size: 0.85rem; color: #94a3b8; margin: 0.2rem 0; }
+        .meta b { color: #cbd5e1; font-weight: 600; }
+        .fare { font-size: 1.2rem; font-weight: 800; color: #4ade80; margin: 0.5rem 0; }
+        .inv { font-size: 0.8rem; }
+        .inv a { color: #60a5fa; }
+        .actions { display: flex; gap: 0.6rem; margin-top: 1rem; }
+        .actions button {
+            flex: 1; padding: 0.6rem; border: none; border-radius: 8px;
+            font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
+        }
+        .accept { background: #3b82f6; color: #fff; }
+        .accept:hover { background: #2563eb; }
+        .done { background: #334155; color: #cbd5e1; }
+        .done:hover { background: #475569; }
+        .empty { text-align: center; color: #64748b; padding: 4rem 1rem; }
+        .empty a { color: #60a5fa; }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="plateau-logo.png" alt="Plateau Strategy">
+        <span class="brand">Plateau Strategy</span>
+        <div class="right">
+            <span><span class="dot"></span> live</span>
+            <a href="/book">Booking page</a>
+            <a href="/">Home</a>
+        </div>
+    </header>
+
+    <div class="wrap">
+        <div class="toolbar">
+            <h1>🚗 Driver Dashboard</h1>
+            <div class="counts" id="counts"></div>
+        </div>
+        <div class="grid" id="grid"></div>
+        <div class="empty" id="empty" style="display:none;">
+            No reservations yet. New bookings from the
+            <a href="/book">booking page</a> appear here automatically.
+        </div>
+    </div>
+
+    <script>
+        const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g,
+            c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+
+        async function load() {
+            let items = [];
+            try {
+                const r = await fetch('/api/reservations');
+                items = (await r.json()).reservations || [];
+            } catch (e) { return; }
+
+            const grid = document.getElementById('grid');
+            const empty = document.getElementById('empty');
+            empty.style.display = items.length ? 'none' : 'block';
+
+            const counts = { NEW: 0, ASSIGNED: 0, COMPLETED: 0 };
+            items.forEach(r => counts[r.status] = (counts[r.status] || 0) + 1);
+            document.getElementById('counts').innerHTML =
+                '<b>' + (counts.NEW||0) + '</b> new · <b>' + (counts.ASSIGNED||0) +
+                '</b> assigned · <b>' + (counts.COMPLETED||0) + '</b> completed';
+
+            grid.innerHTML = items.map(r => {
+                const t = r.trip || {}, c = r.client || {}, inv = r.invoice || {};
+                let invHtml;
+                if (inv.mode === 'mock') invHtml = '<span class="inv">Invoice: simulated (demo)</span>';
+                else if (inv.url) invHtml = '<span class="inv">Invoice: <a href="' + esc(inv.url) + '" target="_blank">view →</a> (' + esc(inv.status) + ')</span>';
+                else if (inv.status === 'ERROR') invHtml = '<span class="inv">Invoice: error</span>';
+                else invHtml = '<span class="inv">Invoice: ' + esc(inv.status || '—') + '</span>';
+
+                const when = (t.date || '') + ' ' + (t.time || '');
+                const driver = r.driver ? '<div class="meta"><b>Driver:</b> ' + esc(r.driver) + '</div>' : '';
+                let actions = '';
+                if (r.status === 'NEW')
+                    actions = '<div class="actions"><button class="accept" onclick="accept(\'' + r.id + '\')">Accept ride</button></div>';
+                else if (r.status === 'ASSIGNED')
+                    actions = '<div class="actions"><button class="done" onclick="complete(\'' + r.id + '\')">Mark complete</button></div>';
+
+                return '<div class="res ' + r.status + '">' +
+                    '<div class="top"><span class="id">' + esc(r.id) + '</span>' +
+                    '<span class="badge ' + r.status + '">' + r.status + '</span></div>' +
+                    '<div class="route">' + esc(t.pickup) + '<span class="arrow">→</span>' + esc(t.dropoff) + '</div>' +
+                    '<div class="meta"><b>Client:</b> ' + esc(c.name) + (c.phone ? ' · ' + esc(c.phone) : '') + '</div>' +
+                    (when.trim() ? '<div class="meta"><b>When:</b> ' + esc(when) + '</div>' : '') +
+                    (t.notes ? '<div class="meta"><b>Notes:</b> ' + esc(t.notes) + '</div>' : '') +
+                    driver +
+                    '<div class="fare">$' + esc(r.fare_usd) + '</div>' +
+                    invHtml + actions + '</div>';
+            }).join('');
+        }
+
+        async function accept(id) {
+            const driver = prompt('Driver name for this ride:');
+            if (driver === null) return;
+            await fetch('/api/reservations/' + id + '/accept', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ driver: driver || 'Driver' })
+            });
+            load();
+        }
+        async function complete(id) {
+            await fetch('/api/reservations/' + id + '/complete', { method: 'POST' });
+            load();
+        }
+
+        load();
+        setInterval(load, 8000);
+    </script>
+</body>
+</html>

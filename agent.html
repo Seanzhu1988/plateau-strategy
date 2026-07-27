@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Portal — Plateau Strategy Solution Lab</title>
+    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0f172a; --panel: #1e293b; --line: #334155;
+            --text: #e2e8f0; --head: #f8fafc; --muted: #94a3b8; --muted2: #64748b;
+            --accent: #3b82f6; --accent2: #2563eb;
+            --serif: Georgia, 'Times New Roman', serif;
+            --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        }
+        body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #fff; padding: 1rem 2rem;
+            display: flex; align-items: center; gap: 0.85rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); position: sticky; top: 0; z-index: 10; }
+        header img { height: 38px; width: 38px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.18); }
+        header .brand { font-family: var(--serif); font-weight: 700; font-size: 1.25rem; letter-spacing: 0.3px; }
+        header .right { margin-left: auto; display: flex; align-items: center; gap: 1.3rem; font-size: 0.9rem; }
+        header a { color: #cbd5e1; text-decoration: none; font-weight: 600; }
+        header a:hover { color: #fff; }
+        .who { color: #93c5fd; font-weight: 600; }
+        .linkbtn { background: none; border: none; color: #f87171; cursor: pointer; font: inherit; font-weight: 600; }
+        .linkbtn:hover { color: #fca5a5; }
+
+        .wrap { max-width: 560px; margin: 2.4rem auto; padding: 0 1.3rem; }
+        h1 { font-family: var(--serif); color: var(--head); font-size: 1.6rem; margin-bottom: 0.35rem; }
+        h2 { font-family: var(--serif); font-size: 1.18rem; color: var(--head); font-weight: 700; margin: 0 0 0.9rem; }
+        p.sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.4rem; }
+
+        .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1.8rem; }
+        label { display: block; font-weight: 600; font-size: 0.72rem; letter-spacing: 0.6px; color: #cbd5e1;
+            margin: 0.9rem 0 0.35rem; text-transform: uppercase; }
+        input, select { width: 100%; padding: 0.72rem 0.9rem; border: 1px solid #334155; border-radius: 6px;
+            font-size: 0.95rem; font-family: var(--sans); background: #0f172a; color: var(--text); }
+        input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+        .row { display: flex; gap: 0.8rem; } .row > div { flex: 1; }
+        textarea { width: 100%; padding: 0.72rem 0.9rem; border: 1px solid #334155; border-radius: 6px;
+            font-size: 0.95rem; font-family: var(--sans); background: #0f172a; color: var(--text); resize: vertical; min-height: 68px; }
+        textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+        .triptype { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+        .triptype .tt { flex: 1; min-width: 88px; padding: 0.7rem 0.5rem; background: #0f172a; border: 1px solid #334155;
+            border-radius: 8px; color: #cbd5e1; font-family: var(--sans); font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+        .triptype .tt:hover { border-color: #475569; }
+        .triptype .tt.on { background: linear-gradient(135deg,#1e3a8a,#2563eb); border-color: #2563eb; color: #fff; }
+        .qrow { margin-top: 0.9rem; }
+        .qrow label { display: flex; align-items: center; gap: 0.5rem; margin: 0; text-transform: none;
+            letter-spacing: 0; font-size: 0.85rem; color: #cbd5e1; cursor: pointer; }
+        .qrow input[type=checkbox] { width: auto; }
+        .badge.QUOTE { background: #422006; color: #fbbf24; border-color: #a16207; }
+        .primary { width: 100%; margin-top: 1.3rem; padding: 0.9rem; background: linear-gradient(135deg,#3b82f6,#2563eb);
+            color: #fff; border: none; border-radius: 6px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: var(--sans); }
+        .primary:hover { filter: brightness(1.08); }
+        .divider { text-align: center; color: var(--muted2); margin: 1.6rem 0 0.4rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Type toggle (individual / organization) */
+        .toggle { display: flex; gap: 0.6rem; margin-top: 0.3rem; }
+        .toggle button { flex: 1; padding: 0.75rem; border: 1px solid #334155; border-radius: 8px; background: #0f172a;
+            color: #cbd5e1; font-weight: 700; font-size: 0.9rem; cursor: pointer; font-family: var(--sans); }
+        .toggle button.on { background: linear-gradient(135deg,#1e3a8a,#2563eb); border-color: #2563eb; color: #fff; }
+
+        .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #1e293b;
+            border: 1px solid #475569; color: #e2e8f0; padding: 0.8rem 1.4rem; border-radius: 6px; display: none; z-index: 60; font-size: 0.9rem; }
+        .result { margin-top: 1rem; padding: 1rem; border-radius: 8px; display: none; font-size: 0.9rem; line-height: 1.5; }
+        .result.ok { display: block; background: #052e16; border: 1px solid #166534; color: #86efac; }
+        .result.err { display: block; background: #450a0a; border: 1px solid #991b1b; color: #fca5a5; }
+
+        /* Code reveal modal */
+        .code-overlay { display: none; position: fixed; inset: 0; background: rgba(2,6,23,0.75); z-index: 100;
+            align-items: center; justify-content: center; padding: 1rem; }
+        .code-overlay.open { display: flex; }
+        .code-box { background: #1e293b; border: 1px solid #475569; border-top: 3px solid #3b82f6; border-radius: 12px;
+            padding: 2rem; max-width: 420px; width: 100%; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.6); }
+        .code-box h3 { font-family: var(--serif); color: #fff; font-size: 1.3rem; margin-bottom: 0.4rem; }
+        .code-box p { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.2rem; line-height: 1.5; }
+        .code-value { font-family: ui-monospace, Menlo, monospace; font-size: 2rem; font-weight: 800; letter-spacing: 3px;
+            color: #fcd34d; background: #0f172a; border: 1px dashed #b45309; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }
+        .code-box .cbtn { width: 100%; padding: 0.85rem; border: none; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; margin-top: 0.5rem; }
+        .code-box .copy { background: #334155; color: #e2e8f0; }
+        .code-box .enter { background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; }
+
+        /* Dashboard shell */
+        .shell { display: flex; gap: 1.6rem; max-width: 1200px; margin: 1.8rem auto; padding: 0 1.3rem; align-items: flex-start; }
+        .sidebar { flex: 0 0 224px; position: sticky; top: 90px; }
+        .sidebar .side-label { font-size: 0.68rem; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted2); font-weight: 700; margin: 0 0 0.55rem 0.4rem; }
+        .sidebar nav { display: flex; flex-direction: column; gap: 0.3rem; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 0.55rem; }
+        .navitem { text-align: left; background: transparent; border: none; color: #cbd5e1; font-family: var(--sans);
+            font-size: 0.92rem; font-weight: 600; padding: 0.72rem 0.9rem; border-radius: 7px; cursor: pointer; width: 100%; }
+        .navitem:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .navitem.active { background: linear-gradient(135deg,#1e3a8a,#2563eb); color: #fff; }
+        .content { flex: 1; min-width: 0; }
+        .content .panel { display: none; }
+        .content .panel.active { display: block; }
+
+        .p-card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1.6rem; }
+        .note { background: rgba(59,130,246,0.08); border: 1px solid #1e3a8a; border-radius: 8px; padding: 0.8rem 1rem;
+            color: #bfdbfe; font-size: 0.85rem; margin-bottom: 1rem; }
+
+        /* stat tiles */
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.4rem; }
+        .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1.3rem; }
+        .stat .n { font-family: var(--serif); font-size: 1.8rem; font-weight: 700; color: #fff; }
+        .stat.green .n { color: #4ade80; }
+        .stat.amber .n { color: #fcd34d; }
+        .stat .l { color: var(--muted); font-size: 0.8rem; margin-top: 0.3rem; }
+
+        /* your code card */
+        .mycode { background: linear-gradient(135deg,#1e293b,#243049); border: 1px solid #334155; border-radius: 10px; padding: 1.4rem; margin-bottom: 1.4rem; }
+        .mycode .kicker { font-size: 0.68rem; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted2); font-weight: 700; }
+        .mycode .v { font-family: ui-monospace, Menlo, monospace; font-size: 1.6rem; font-weight: 800; letter-spacing: 3px; color: #fcd34d; margin-top: 0.35rem; }
+        .mycode .h { color: var(--muted); font-size: 0.82rem; margin-top: 0.4rem; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 0.3rem; }
+        th, td { text-align: left; padding: 0.65rem 0.5rem; font-size: 0.85rem; border-bottom: 1px solid #263449; }
+        th { color: var(--muted2); font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.6px; }
+        td { color: #cbd5e1; }
+        .badge { font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.6px; }
+        .badge.NEW { background: #78350f; color: #fcd34d; }
+        .badge.ASSIGNED { background: #1e3a8a; color: #93c5fd; }
+        .badge.COMPLETED { background: #14532d; color: #86efac; }
+        .badge.CANCELED { background: #7f1d1d; color: #fecaca; }
+        .badge.REQUESTED { background: #78350f; color: #fcd34d; }
+        .badge.PAID { background: #14532d; color: #86efac; }
+        .badge.DECLINED { background: #7f1d1d; color: #fecaca; }
+        .comm { color: #4ade80; font-weight: 700; }
+        .empty { color: var(--muted2); padding: 1.3rem; text-align: center; }
+
+        @media (max-width: 780px) {
+            .shell { flex-direction: column; gap: 1rem; }
+            .sidebar { position: static; flex: 1 1 auto; width: 100%; }
+            .sidebar .side-label { display: none; }
+            .sidebar nav { flex-direction: row; flex-wrap: wrap; }
+            .navitem { flex: 1 1 auto; text-align: center; }
+            .stats { grid-template-columns: 1fr; }
+        }
+    </style>
+    <script src="/session.js"></script>
+</head>
+<body>
+    <header>
+        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="right">
+            <span id="whoami" class="who"></span>
+            <a href="/">Home</a>
+            <button class="linkbtn" id="logoutBtn" style="display:none" onclick="logout()">Switch agent</button>
+        </div>
+    </header>
+
+    <!-- AUTH -->
+    <div class="wrap" id="authScreen" style="display:none;">
+        <div class="card">
+            <h1>Agent Portal</h1>
+            <p class="sub">Refer customers and earn a commission on every completed ride. Anyone can be an agent — as an individual or an organization.</p>
+
+            <label>I am registering as</label>
+            <div class="toggle">
+                <button type="button" id="tIndividual" class="on" onclick="setType('individual')">Individual</button>
+                <button type="button" id="tOrganization" onclick="setType('organization')">Organization</button>
+            </div>
+
+            <label>Your name <span style="color:#f87171">*</span></label>
+            <input id="a_name" placeholder="Maria Lopez">
+            <div id="orgWrap" style="display:none;">
+                <label>Organization name <span style="color:#f87171">*</span></label>
+                <input id="a_org" placeholder="Lopez Travel Agency">
+            </div>
+            <div class="row">
+                <div><label>Email</label><input id="a_email" type="email" placeholder="maria@email.com"></div>
+                <div><label>Phone</label><input id="a_phone" placeholder="(415) 555-0177"></div>
+            </div>
+            <button class="primary" onclick="register()">Register &amp; Get My Agent Code</button>
+
+            <div class="divider">— already an agent? sign in —</div>
+            <div class="row">
+                <div><label>Organization (if any)</label><input id="l_org" placeholder="Lopez Travel Agency"></div>
+                <div><label>Last name <span style="color:#f87171">*</span></label><input id="l_last" placeholder="Lopez"></div>
+            </div>
+            <label>Agent code <span style="color:#f87171">*</span></label>
+            <input id="l_code" placeholder="AGT-7K2M" style="font-family:ui-monospace,Menlo,monospace;letter-spacing:2px;text-transform:uppercase;">
+            <button class="primary" style="background:#334155;" onclick="signIn()">Sign In</button>
+            <div class="result" id="authResult"></div>
+        </div>
+    </div>
+
+    <!-- PORTAL -->
+    <div id="portal" style="display:none;">
+        <div class="shell">
+            <aside class="sidebar">
+                <div class="side-label">Agent Menu</div>
+                <nav>
+                    <button class="navitem active" id="nav-refer" onclick="showPanel('refer')">Book a Trip</button>
+                    <button class="navitem" id="nav-referrals" onclick="showPanel('referrals')">My Referrals</button>
+                    <button class="navitem" id="nav-rates" onclick="showPanel('rates')">Services &amp; Rates</button>
+                    <button class="navitem" id="nav-earnings" onclick="showPanel('earnings')">Earnings &amp; Code</button>
+                </nav>
+            </aside>
+
+            <main class="content">
+                <div class="panel active" id="panel-refer">
+                    <h2>Book a Trip</h2>
+                    <div class="p-card">
+                        <div class="note">Book any trip for your client — airport, cruise, tour, or a custom day out. It comes straight to our dispatch and your commission is tracked automatically.</div>
+
+                        <label>Trip type</label>
+                        <div class="triptype" id="tripType">
+                            <button type="button" class="tt on" data-type="airport" onclick="setTripType('airport')">✈️ Airport</button>
+                            <button type="button" class="tt" data-type="cruise" onclick="setTripType('cruise')">🛳️ Cruise</button>
+                            <button type="button" class="tt" data-type="tour" onclick="setTripType('tour')">🗺️ Tour</button>
+                            <button type="button" class="tt" data-type="custom" onclick="setTripType('custom')">✨ Custom</button>
+                        </div>
+
+                        <label>Client name <span style="color:#f87171">*</span></label>
+                        <input id="c_name" placeholder="Daniel Park">
+                        <div class="row">
+                            <div><label>Client email</label><input id="c_email" type="email" placeholder="daniel@email.com"></div>
+                            <div><label>Client phone</label><input id="c_phone" placeholder="(415) 555-0190"></div>
+                        </div>
+
+                        <label id="lbl_pickup">Pickup <span style="color:#f87171">*</span></label>
+                        <input id="c_pickup" placeholder="500 Howard St, Seattle">
+
+                        <div class="tt-fields" data-for="airport">
+                            <label>Drop-off (airport) <span style="color:#f87171">*</span></label>
+                            <input id="c_dropoff" placeholder="SeaTac Airport">
+                            <label>Flight # (optional)</label>
+                            <input id="f_flight" placeholder="AS 1234">
+                        </div>
+
+                        <div class="tt-fields" data-for="cruise" style="display:none">
+                            <label>Cruise terminal / port <span style="color:#f87171">*</span></label>
+                            <input id="f_port" placeholder="Pier 91 Cruise Terminal, Seattle">
+                            <div class="row">
+                                <div><label>Cruise line</label><input id="f_cruiseline" placeholder="Princess"></div>
+                                <div><label>Ship</label><input id="f_ship" placeholder="Discovery Princess"></div>
+                            </div>
+                            <div class="row">
+                                <div><label>Sailing date</label><input id="f_sailing" type="date"></div>
+                                <div><label>Trip</label><select id="f_roundtrip"><option value="">One way (to the port)</option><option value="yes">Round trip (return pickup too)</option></select></div>
+                            </div>
+                        </div>
+
+                        <div class="tt-fields" data-for="tour" style="display:none">
+                            <label>Itinerary / stops</label>
+                            <textarea id="f_itinerary" placeholder="Pike Place → Chihuly Garden → Kerry Park → dinner in Ballard"></textarea>
+                            <div class="row">
+                                <div><label>Duration (hours)</label><input id="f_hours" type="number" min="1" step="0.5" placeholder="6"></div>
+                                <div><label>End location (optional)</label><input id="f_end" placeholder="Back to the hotel"></div>
+                            </div>
+                        </div>
+
+                        <div class="tt-fields" data-for="custom" style="display:none">
+                            <label>Trip title</label>
+                            <input id="f_title" placeholder="Woodinville wine tour">
+                            <label>What does the client want?</label>
+                            <textarea id="f_desc" placeholder="Pick up 4 guests, visit 3 wineries, lunch stop, ~5 hours, back by 5pm"></textarea>
+                            <label>Duration (hours, optional)</label>
+                            <input id="f_hours2" type="number" min="1" step="0.5">
+                        </div>
+
+                        <div class="row">
+                            <div><label>Date</label><input id="c_date" type="date"></div>
+                            <div><label>Time</label><input id="c_time" type="time"></div>
+                            <div><label>Passengers</label><input id="c_pax" type="number" min="1" value="1"></div>
+                        </div>
+
+                        <label>Special requests / notes</label>
+                        <textarea id="c_notes" placeholder="Car seat, extra luggage, meet &amp; greet, accessibility…"></textarea>
+
+                        <label>Price</label>
+                        <select id="c_service" onchange="applyService()"></select>
+                        <div class="row">
+                            <div><label>Fare (USD)</label><input id="c_fare" type="number" min="0" step="0.01"></div>
+                        </div>
+                        <div class="qrow">
+                            <label><input type="checkbox" id="c_quote" onchange="toggleQuote()"> Request a quote instead — we'll price it and confirm back</label>
+                        </div>
+                        <div class="note" id="commNote" style="margin-top:.7rem">You earn a flat commission on every trip you book that's completed.</div>
+
+                        <button class="primary" onclick="bookTrip()">Send Booking</button>
+                        <div class="result" id="result"></div>
+                    </div>
+                </div>
+
+                <div class="panel" id="panel-referrals">
+                    <h2>My Referrals</h2>
+                    <div class="p-card">
+                        <table>
+                            <thead><tr><th>Client</th><th>Route</th><th>Fare</th><th>Commission</th><th>Status</th></tr></thead>
+                            <tbody id="refBody"></tbody>
+                        </table>
+                        <div class="empty" id="refEmpty" style="display:none;">No referrals yet. Submit your first one under “Refer a Client.”</div>
+                    </div>
+                </div>
+
+                <div class="panel" id="panel-rates">
+                    <h2>Services &amp; Rates</h2>
+                    <div class="p-card">
+                        <div class="note">Here's what you earn for referring each service. Your commission depends on the service — pick it on the “Refer a Client” tab and the price fills in automatically.</div>
+                        <table>
+                            <thead><tr><th>Service</th><th>Price</th><th>You earn</th></tr></thead>
+                            <tbody id="ratesBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="panel" id="panel-earnings">
+                    <h2>Earnings &amp; Code</h2>
+                    <div class="stats">
+                        <div class="stat"><div class="n" id="s_count">0</div><div class="l">Referrals submitted</div></div>
+                        <div class="stat green"><div class="n" id="s_earned">$0</div><div class="l">Commission earned (completed)</div></div>
+                        <div class="stat amber"><div class="n" id="s_pending">$0</div><div class="l">Pending (in progress)</div></div>
+                    </div>
+
+                    <div class="p-card" style="margin:1rem 0;">
+                        <h2 style="margin-bottom:0.3rem;">💸 Get Paid</h2>
+                        <div class="stats" style="margin-bottom:0.9rem;">
+                            <div class="stat green"><div class="n" id="s_avail">$0</div><div class="l">Available to pay out</div></div>
+                            <div class="stat amber"><div class="n" id="s_reqd">$0</div><div class="l">Requested (awaiting)</div></div>
+                            <div class="stat"><div class="n" id="s_paidout">$0</div><div class="l">Paid out so far</div></div>
+                        </div>
+                        <div class="row">
+                            <div><label>PayPal email — get paid directly</label><input id="p_paypal" type="email" placeholder="you@paypal-email.com"></div>
+                            <div style="flex:0 0 auto; display:flex; align-items:flex-end;"><button class="primary" style="width:auto; margin-top:0; padding:0.72rem 1.1rem;" onclick="savePayoutEmail()">Save</button></div>
+                        </div>
+                        <div class="row">
+                            <div><label>Other way to be paid? (optional)</label><input id="p_method" placeholder="Zelle / cash / check — and where"></div>
+                        </div>
+                        <button class="primary" id="payoutBtn" onclick="requestPayout()">Request Payout</button>
+                        <div class="result" id="payoutResult"></div>
+                        <table style="margin-top:1rem;">
+                            <thead><tr><th>Request</th><th>Amount</th><th>Status</th><th>Requested</th><th>Paid</th></tr></thead>
+                            <tbody id="payoutBody"></tbody>
+                        </table>
+                        <div class="empty" id="payoutEmpty" style="display:none;">No payout requests yet — when rides complete, your money shows as available here.</div>
+                    </div>
+
+                    <div class="mycode">
+                        <div class="kicker">Your Agent Code — this is your sign-in</div>
+                        <div class="v" id="myCode">AGT-••••</div>
+                        <div class="h" id="commExplain">Keep this safe. You'll use your organization, last name, and this code to sign in.</div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- Code reveal after registration -->
+    <div class="code-overlay" id="codeOverlay">
+        <div class="code-box">
+            <h3>You're registered as an agent</h3>
+            <p>This is your unique agent code — <b>save it now</b>. You'll use it, with your last name, to sign in.</p>
+            <div class="code-value" id="revealCode">AGT-••••</div>
+            <button class="cbtn copy" onclick="copyCode()">Copy code</button>
+            <button class="cbtn enter" onclick="enterFromReveal()">Continue to portal</button>
+        </div>
+    </div>
+
+    <script>
+        const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+        let AGENT = null;
+        let REG_TYPE = 'individual';
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.style.display = 'block';
+            clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 2600);
+        }
+        function logout() { localStorage.removeItem('agent_id'); location.reload(); }
+        function val(id) { return document.getElementById(id).value.trim(); }
+
+        function setType(t) {
+            REG_TYPE = t;
+            document.getElementById('tIndividual').classList.toggle('on', t === 'individual');
+            document.getElementById('tOrganization').classList.toggle('on', t === 'organization');
+            document.getElementById('orgWrap').style.display = (t === 'organization') ? 'block' : 'none';
+        }
+
+        function showPanel(name) {
+            document.querySelectorAll('.content .panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sidebar .navitem').forEach(b => b.classList.remove('active'));
+            const panel = document.getElementById('panel-' + name);
+            const nav = document.getElementById('nav-' + name);
+            if (panel) panel.classList.add('active');
+            if (nav) nav.classList.add('active');
+        }
+
+        async function boot() {
+            const id = localStorage.getItem('agent_id');
+            if (id) {
+                try {
+                    const j = await (await fetch('/api/agents/' + id)).json();
+                    if (j.ok) { AGENT = j.agent; return enterPortal(); }
+                } catch (e) {}
+                localStorage.removeItem('agent_id');
+            }
+            document.getElementById('authScreen').style.display = 'block';
+        }
+
+        async function register() {
+            const name = val('a_name');
+            if (!name) { showToast('Please enter your name'); return; }
+            const body = {
+                agent_type: REG_TYPE, name,
+                organization: (REG_TYPE === 'organization') ? val('a_org') : '',
+                email: val('a_email'), phone: val('a_phone')
+            };
+            const j = await (await fetch('/api/agents/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })).json();
+            if (!j.ok) { const r = document.getElementById('authResult'); r.className = 'result err'; r.textContent = j.error || 'Could not register'; return; }
+            AGENT = j.agent;
+            localStorage.setItem('agent_id', AGENT.id);
+            document.getElementById('revealCode').textContent = AGENT.code;
+            document.getElementById('codeOverlay').classList.add('open');
+        }
+        function copyCode() {
+            navigator.clipboard.writeText(AGENT.code).then(() => showToast('Code copied')).catch(() => showToast(AGENT.code));
+        }
+        function enterFromReveal() {
+            document.getElementById('codeOverlay').classList.remove('open');
+            enterPortal();
+        }
+
+        async function signIn() {
+            const code = val('l_code'), last = val('l_last'), org = val('l_org');
+            const r = document.getElementById('authResult');
+            if (!code || !last) { r.className = 'result err'; r.textContent = 'Agent code and last name are required.'; return; }
+            const j = await (await fetch('/api/agents/login', { method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ code, last_name: last, organization: org }) })).json();
+            if (!j.ok) { r.className = 'result err'; r.textContent = j.error || 'Sign in failed'; return; }
+            AGENT = j.agent; localStorage.setItem('agent_id', AGENT.id); enterPortal();
+        }
+
+        function enterPortal() {
+            if (window.PS) PS.activate('agent');   // privacy: one active portal login per browser
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('codeOverlay').classList.remove('open');
+            document.getElementById('portal').style.display = 'block';
+            document.getElementById('whoami').textContent = AGENT.name + ' · ' + (AGENT.code || '');
+            document.getElementById('logoutBtn').style.display = 'inline';
+            document.getElementById('myCode').textContent = AGENT.code || '';
+            loadPricing();
+            fetch('/api/config').then(r => r.json()).then(c => {
+                GLOBAL_COMM = c.agent_commission_usd;
+                if (!val('c_fare')) document.getElementById('c_fare').value = (AGENT.default_fare != null ? AGENT.default_fare : c.default_fare);
+                updateCommNote();
+                document.getElementById('commExplain').textContent =
+                    'Your commission depends on which service you refer — see “Services & Rates.” Sign in with your last name and this code.';
+            }).catch(() => {});
+            refresh();
+            clearInterval(window._poll); window._poll = setInterval(refresh, 8000);
+        }
+
+        let PRESETS = [], AGENT_COMM = '', GLOBAL_COMM = 15;
+        async function loadPricing() {
+            try { PRESETS = ((await (await fetch('/api/pricing')).json()).presets) || []; } catch (e) { return; }
+            const sel = document.getElementById('c_service');
+            if (sel) {
+                sel.innerHTML = PRESETS.map(p => '<option value="' + p.price + '" data-comm="' + (p.commission != null ? p.commission : '') + '">'
+                    + esc(p.name) + ' — $' + p.price + ' (you earn $' + (p.commission != null ? p.commission : '?') + ')</option>').join('')
+                    + '<option value="">Custom amount…</option>';
+                applyService();
+            }
+            const rb = document.getElementById('ratesBody');
+            if (rb) rb.innerHTML = PRESETS.map(p =>
+                '<tr><td>' + esc(p.name) + '</td><td>$' + esc(p.price) + '</td><td class="comm">$' + esc(p.commission != null ? p.commission : '—') + '</td></tr>').join('');
+        }
+        function applyService() {
+            const sel = document.getElementById('c_service');
+            const opt = sel.options[sel.selectedIndex];
+            if (sel.value !== '') {
+                document.getElementById('c_fare').value = sel.value;
+                AGENT_COMM = opt ? (opt.getAttribute('data-comm') || '') : '';
+            } else {
+                AGENT_COMM = '';   // custom amount -> backend applies the default commission
+            }
+            updateCommNote();
+        }
+        function updateCommNote() {
+            const el = document.getElementById('commNote');
+            if (!el) return;
+            const c = (AGENT_COMM !== '' && AGENT_COMM != null) ? AGENT_COMM : GLOBAL_COMM;
+            el.textContent = 'For this service you earn $' + c + ' when the ride is completed. You can adjust the fare per ride.';
+        }
+
+        let TRIP_TYPE = 'airport';
+        function setTripType(type) {
+            TRIP_TYPE = type;
+            document.querySelectorAll('#tripType .tt').forEach(b => b.classList.toggle('on', b.dataset.type === type));
+            document.querySelectorAll('.tt-fields').forEach(d => d.style.display = (d.dataset.for === type ? '' : 'none'));
+            const lbl = document.getElementById('lbl_pickup');
+            if (lbl) {
+                const txt = type === 'cruise' ? 'Pickup (hotel / home) ' : (type === 'airport' ? 'Pickup ' : 'Pickup / start ');
+                lbl.innerHTML = txt + '<span style="color:#f87171">*</span>';
+            }
+        }
+        function toggleQuote() {
+            const q = document.getElementById('c_quote').checked;
+            document.getElementById('c_fare').disabled = q;
+            document.getElementById('c_service').disabled = q;
+            if (q) document.getElementById('c_fare').value = '';
+            const note = document.getElementById('commNote');
+            if (note) note.textContent = q
+                ? "We'll price this trip and confirm it back to you. Your commission still applies once it's completed."
+                : "You earn a flat commission on every trip you book that's completed.";
+        }
+
+        async function bookTrip() {
+            const name = val('c_name'), pickup = val('c_pickup');
+            const result = document.getElementById('result');
+            const quote = document.getElementById('c_quote').checked;
+            if (!name || !pickup) { showToast('Client name and pickup are required'); return; }
+            const body = {
+                agent_id: AGENT.id, trip_type: TRIP_TYPE,
+                name, email: val('c_email'), phone: val('c_phone'),
+                pickup, date: val('c_date'), time: val('c_time'),
+                passengers: val('c_pax') || 1, notes: val('c_notes'),
+                quote_requested: quote,
+                fare: quote ? '' : val('c_fare'),
+                agent_commission: quote ? '' : AGENT_COMM
+            };
+            if (TRIP_TYPE === 'airport') {
+                const dropoff = val('c_dropoff');
+                if (!dropoff) { showToast('Drop-off is required for an airport trip'); return; }
+                body.dropoff = dropoff; body.flight = val('f_flight');
+            } else if (TRIP_TYPE === 'cruise') {
+                const port = val('f_port');
+                if (!port) { showToast('Cruise terminal / port is required'); return; }
+                body.dropoff = port;
+                body.cruise_line = val('f_cruiseline'); body.ship = val('f_ship'); body.sailing_date = val('f_sailing');
+                if (document.getElementById('f_roundtrip').value === 'yes') {
+                    body.notes = ('Round trip — driver returns the client too. ' + body.notes).trim();
+                }
+            } else if (TRIP_TYPE === 'tour') {
+                body.itinerary = val('f_itinerary'); body.duration_hours = val('f_hours'); body.dropoff = val('f_end');
+            } else if (TRIP_TYPE === 'custom') {
+                body.title = val('f_title'); body.description = val('f_desc'); body.duration_hours = val('f_hours2');
+            }
+            const j = await (await fetch('/api/agent/book-trip', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })).json();
+            if (!j.ok) { result.className = 'result err'; result.textContent = j.error || 'Failed'; return; }
+            const r = j.reservation, comm = (r.agent && r.agent.commission_usd) || 0;
+            result.className = 'result ok';
+            result.innerHTML = r.quote_requested
+                ? 'Quote request sent — <b>' + r.id + '</b>. We\'ll price this trip and confirm it back to you. Your commission applies once it\'s completed.'
+                : 'Booking sent — <b>' + r.id + '</b>. Your commission: <b>$' + comm + '</b> once the trip is completed. It\'s now with our dispatch.';
+            ['c_name','c_email','c_phone','c_pickup','c_dropoff','c_date','c_time','c_notes',
+             'f_flight','f_port','f_cruiseline','f_ship','f_sailing','f_itinerary','f_hours','f_end',
+             'f_title','f_desc','f_hours2'].forEach(i => { const e = document.getElementById(i); if (e) e.value = ''; });
+            document.getElementById('c_quote').checked = false; toggleQuote();
+            refresh();
+        }
+
+        async function refresh() {
+            if (!AGENT) return;
+            let j;
+            try { j = await (await fetch('/api/agents/' + AGENT.id)).json(); } catch (e) { return; }
+            if (!j.ok) return;
+            document.getElementById('s_count').textContent = j.referral_count;
+            document.getElementById('s_earned').textContent = '$' + j.earned_commission;
+            document.getElementById('s_pending').textContent = '$' + j.pending_commission;
+
+            // ---- payout balances + history ----
+            const pp = document.getElementById('p_paypal');
+            if (pp && !pp.value && j.agent && j.agent.payout_email) pp.value = j.agent.payout_email;
+            const avail = j.available_to_pay_out || 0;
+            document.getElementById('s_avail').textContent = '$' + avail;
+            document.getElementById('s_reqd').textContent = '$' + (j.payout_requested || 0);
+            document.getElementById('s_paidout').textContent = '$' + (j.paid_out || 0);
+            const pb = document.getElementById('payoutBtn');
+            pb.disabled = avail <= 0;
+            pb.textContent = avail > 0 ? ('Request Payout — $' + avail) : 'Nothing available yet';
+            const outs = j.payouts || [];
+            document.getElementById('payoutEmpty').style.display = outs.length ? 'none' : 'block';
+            document.getElementById('payoutBody').innerHTML = outs.map(p =>
+                '<tr><td>' + esc(p.id) + '</td><td>$' + esc(p.amount) + '</td>' +
+                '<td><span class="badge ' + esc(p.status) + '">' + esc(p.status) + '</span></td>' +
+                '<td>' + esc((p.requested_at || '').slice(0,16).replace('T',' ')) + '</td>' +
+                '<td>' + esc(p.status === 'PAID' ? ((p.paid_at || '').slice(0,16).replace('T',' ') + (p.paid_method ? ' · ' + p.paid_method : '')) : '—') + '</td></tr>').join('');
+            const rows = j.referrals || [];
+            document.getElementById('refEmpty').style.display = rows.length ? 'none' : 'block';
+            document.getElementById('refBody').innerHTML = rows.map(r => {
+                const t = r.trip || {}, c = r.client || {}, comm = (r.agent && r.agent.commission_usd) || 0;
+                const icon = { airport: '✈️', cruise: '🛳️', tour: '🗺️', custom: '✨' }[r.trip_type] || '';
+                const summary = esc(t.title || t.itinerary || ((t.pickup || '') + ' → ' + (t.dropoff || '')));
+                const fareDisp = r.quote_requested ? '<span style="color:#fbbf24">quote</span>' : ('$' + esc(r.fare_usd));
+                return '<tr><td>' + esc(c.name) + '</td>' +
+                    '<td>' + icon + ' ' + summary + '</td>' +
+                    '<td>' + fareDisp + '</td>' +
+                    '<td class="comm">$' + esc(comm) + '</td>' +
+                    '<td><span class="badge ' + r.status + '">' + r.status + '</span></td></tr>';
+            }).join('');
+        }
+
+        async function savePayoutEmail() {
+            const email = val('p_paypal');
+            const out = document.getElementById('payoutResult');
+            let j;
+            try {
+                j = await (await fetch('/api/agents/' + AGENT.id + '/payout-email', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ payout_email: email }) })).json();
+            } catch (e) { out.className = 'result err'; out.textContent = 'Connection problem — try again.'; return; }
+            if (!j.ok) { out.className = 'result err'; out.textContent = j.error || 'Could not save.'; return; }
+            out.className = 'result ok';
+            out.textContent = email ? 'Saved — payouts can now be sent to ' + email + ' via PayPal.'
+                                    : 'PayPal email cleared.';
+        }
+
+        async function requestPayout() {
+            const out = document.getElementById('payoutResult');
+            const btn = document.getElementById('payoutBtn');
+            btn.disabled = true; const old = btn.textContent; btn.textContent = 'Sending request…';
+            let j;
+            try {
+                j = await (await fetch('/api/agents/' + AGENT.id + '/payout-request', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ method: val('p_method') }) })).json();
+            } catch (e) {
+                btn.disabled = false; btn.textContent = old;
+                out.className = 'result err'; out.textContent = 'Connection problem — try again.'; return;
+            }
+            if (!j.ok) {
+                btn.disabled = false; btn.textContent = old;
+                out.className = 'result err'; out.textContent = j.error || 'Could not request payout.'; return;
+            }
+            out.className = 'result ok';
+            out.innerHTML = 'Payout requested — <b>' + j.payout.id + '</b> for <b>$' + j.payout.amount + '</b>. The owner has been notified and will send it, then mark it paid here.';
+            document.getElementById('p_method').value = '';
+            refresh();
+        }
+
+        boot();
+    </script>
+    <script src="/floatback.js"></script>
+    <script src="/jarvis-widget.js"></script>
+    <script src="/i18n.js"></script>
+</body>
+</html>

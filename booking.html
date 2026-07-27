@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Reservation Ride — Plateau Strategy Solution Lab</title>
+    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9; color: #1f2937; line-height: 1.6;
+            min-height: 100vh;
+        }
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: #fff; padding: 1rem 2rem; display: flex; align-items: center;
+            gap: 0.7rem; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        header img { height: 42px; width: 42px; border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.2); }
+        header .brand { font-weight: 800; font-size: 1.2rem; letter-spacing: 0.3px; }
+        header a { margin-left: auto; color: #cbd5e1; text-decoration: none;
+            font-size: 0.9rem; font-weight: 600; }
+        header a:hover { color: #fff; }
+
+        .wrap { max-width: 640px; margin: 2.5rem auto; padding: 0 1.2rem; }
+        .card {
+            background: #fff; border-radius: 16px; padding: 2.2rem;
+            box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+            border: 1px solid #e2e8f0;
+        }
+        h1 { font-size: 1.8rem; color: #0f172a; font-weight: 800; margin-bottom: 0.3rem; }
+        .sub { color: #64748b; margin-bottom: 1.8rem; font-size: 0.95rem; }
+        .time-note { color: #475569; font-size: 0.85rem; margin: 0.1rem 0 0.2rem;
+            background: #f0f9ff; border: 1px solid #e0f2fe; border-radius: 8px; padding: 0.6rem 0.9rem; }
+        .mode-pill {
+            display: inline-block; font-size: 0.72rem; font-weight: 700;
+            padding: 0.2rem 0.7rem; border-radius: 999px; margin-left: 0.5rem;
+            background: #fef3c7; color: #92400e; vertical-align: middle;
+        }
+        label { display: block; font-weight: 600; font-size: 0.85rem;
+            color: #334155; margin: 1rem 0 0.35rem; }
+        .req { color: #dc2626; }
+        input, textarea, select {
+            width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #e2e8f0;
+            border-radius: 10px; font-size: 1rem; font-family: inherit;
+            background: #f8fafc; transition: all 0.2s;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none; border-color: #3b82f6; background: #fff;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+        .row { display: flex; gap: 1rem; }
+        .row > div { flex: 1; }
+        button {
+            width: 100%; margin-top: 1.8rem; padding: 1rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: #fff; border: none; border-radius: 10px;
+            font-size: 1.05rem; font-weight: 700; cursor: pointer;
+            transition: all 0.25s; box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+        }
+        button:hover:not(:disabled) { transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(59,130,246,0.45); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .result { margin-top: 1.5rem; border-radius: 12px; padding: 1.4rem;
+            display: none; }
+        .result.ok { display: block; background: #ecfdf5; border: 1px solid #a7f3d0; }
+        .result.err { display: block; background: #fef2f2; border: 1px solid #fecaca; }
+        .result h3 { color: #065f46; margin-bottom: 0.6rem; font-size: 1.1rem; }
+        .result.err h3 { color: #991b1b; }
+        .result .line { font-size: 0.9rem; color: #334155; margin: 0.25rem 0; }
+        .result a { color: #2563eb; font-weight: 700; }
+        .muted { color: #94a3b8; font-size: 0.8rem; margin-top: 0.6rem; }
+
+        .cancel-btn {
+            width: auto; margin-top: 0.8rem; padding: 0.5rem 1.1rem;
+            background: #fff; color: #b91c1c; border: 1.5px solid #fecaca;
+            border-radius: 8px; font-size: 0.85rem; font-weight: 700; box-shadow: none;
+        }
+        .cancel-btn:hover:not(:disabled) { background: #fef2f2; transform: none; box-shadow: none; }
+
+        .manage { margin-top: 1.6rem; text-align: center; }
+        .manage-toggle { color: #64748b; font-size: 0.88rem; font-weight: 600;
+            cursor: pointer; text-decoration: underline; }
+        .manage-box { display: none; text-align: left; background: #f8fafc;
+            border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.2rem; margin-top: 0.9rem; }
+        .manage-box.open { display: block; }
+        .manage-box .row { margin-bottom: 0.2rem; }
+        .manage-box button { margin-top: 0.9rem; padding: 0.7rem;
+            background: #b91c1c; box-shadow: none; }
+        .manage-box button:hover:not(:disabled) { background: #991b1b; transform: none; box-shadow: none; }
+        .manage-msg { font-size: 0.88rem; font-weight: 600; margin-top: 0.7rem; }
+    </style>
+    <script src="/session.js"></script>
+</head>
+<body>
+    <header>
+        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <a href="/">← Home</a>
+    </header>
+
+    <div class="wrap">
+        <div class="card">
+            <h1>Book a Reservation Ride</h1>
+            <p class="sub">Tell us where you're going — we'll take care of the rest.</p>
+
+            <form id="bookForm">
+                <label>Full name <span class="req">*</span></label>
+                <input name="name" required placeholder="Jane Smith">
+
+                <div class="row">
+                    <div>
+                        <label>Email <span class="req">*</span></label>
+                        <input name="email" type="email" required placeholder="jane@email.com">
+                    </div>
+                    <div>
+                        <label>Phone</label>
+                        <input name="phone" placeholder="(415) 555-0199">
+                    </div>
+                </div>
+
+                <label>Pickup location <span class="req">*</span></label>
+                <input name="pickup" required placeholder="123 Market St, San Francisco">
+
+                <label>Drop-off location <span class="req">*</span></label>
+                <input name="dropoff" required placeholder="SFO International Airport">
+
+                <label>Service</label>
+                <select name="fare" id="b_service"></select>
+
+                <div class="row">
+                    <div>
+                        <label>Date</label>
+                        <input name="date" type="date">
+                    </div>
+                    <div>
+                        <label>Time</label>
+                        <input name="time" type="time">
+                    </div>
+                </div>
+                <p class="time-note" id="timeNote">Your driver will arrive <strong>15 minutes before</strong> your departure time.</p>
+
+                <div class="row">
+                    <div>
+                        <label>Passengers</label>
+                        <input name="passengers" type="number" min="1" max="7" value="1">
+                    </div>
+                </div>
+
+                <label>If this is a trip to the airport, what is the flight number?</label>
+                <input name="flight" placeholder="e.g. UA 1234 (optional)">
+
+                <label>Notes for the driver</label>
+                <textarea name="notes" rows="2" placeholder="Two suitcases, call on arrival…"></textarea>
+
+                <button type="submit" id="submitBtn">Request a ride and Pay</button>
+            </form>
+
+            <div class="result" id="result"></div>
+
+            <div class="manage">
+                <span class="manage-toggle" onclick="document.getElementById('manageBox').classList.toggle('open')">Need to cancel a reservation?</span>
+                <div class="manage-box" id="manageBox">
+                    <label>Confirmation number</label>
+                    <input id="m_conf" placeholder="RES_20260701_001">
+                    <label>Email used for the booking</label>
+                    <input id="m_email" type="email" placeholder="you@email.com">
+                    <button type="button" onclick="cancelByConf()">Cancel my reservation</button>
+                    <div class="manage-msg" id="m_msg"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Prefill from a logged-in customer (arriving from the main-page login)
+        try {
+            const cust = JSON.parse(localStorage.getItem('customer') || 'null');
+            if (cust) {
+                if (window.PS) PS.activate('customer');   // privacy: one active portal login per browser
+                const f = document.getElementById('bookForm');
+                if (cust.name) f.querySelector('[name=name]').value = cust.name;
+                if (cust.email) f.querySelector('[name=email]').value = cust.email;
+                if (cust.phone) f.querySelector('[name=phone]').value = cust.phone;
+            }
+        } catch (e) {}
+
+        // Prefill from the Trip Planner — "I need a ride" carries the pickup (current
+        // location) and drop-off (your destination) straight into this reservation.
+        try {
+            const ride = JSON.parse(localStorage.getItem('ps_ride_trip') || 'null');
+            if (ride && (ride.pickup || ride.dropoff)) {
+                const f = document.getElementById('bookForm');
+                if (ride.pickup) f.querySelector('[name=pickup]').value = ride.pickup;
+                if (ride.dropoff) f.querySelector('[name=dropoff]').value = ride.dropoff;
+                if (ride.date) { const dt = f.querySelector('[name=date]'); if (dt) dt.value = ride.date; }
+                if (ride.time) { const tm = f.querySelector('[name=time]'); if (tm) { tm.value = ride.time; tm.dispatchEvent(new Event('change')); } }
+                if (ride.notes) {
+                    const nt = f.querySelector('[name=notes]');
+                    nt.value = nt.value ? (nt.value + ' · ' + ride.notes) : ride.notes;
+                }
+                const sub = document.querySelector('.sub');
+                if (sub) {
+                    if (ride.pickup_accurate) {
+                        sub.innerHTML = '✓ Brought over from your Trip Planner — pickup located by GPS'
+                            + (ride.pickup_accuracy_m ? ' (±' + ride.pickup_accuracy_m + ' m)' : '') + '. Confirm and request your ride.';
+                        sub.style.color = '#0f766e';
+                    } else {
+                        sub.innerHTML = '⚠ Brought over from your Trip Planner — your pickup is approximate, please double-check the pickup address before requesting.';
+                        sub.style.color = '#b45309';
+                    }
+                }
+                // A destination ride is categorized and priced by the destination —
+                // stash the extras so they ride into the reservation on submit, and let
+                // the pricing populate below show the distance-based fare.
+                window._rideExtra = {
+                    trip_type: ride.trip_type || '',
+                    distance_mi: ride.distance_mi,
+                    dest_category: ride.dest_category || '',
+                    fare: ride.fare
+                };
+                localStorage.removeItem('ps_ride_trip');   // one-shot: don't stick to future visits
+            }
+        } catch (e) {}
+
+        // Driver arrives 15 minutes before the departure time — show it live as they pick a time.
+        function fmtTime(hhmm) {
+            if (!hhmm) return '';
+            const [h, m] = hhmm.split(':').map(Number);
+            const d = new Date(); d.setHours(h, m, 0, 0);
+            return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        }
+        function arrivalOf(hhmm) {
+            if (!hhmm) return '';
+            const [h, m] = hhmm.split(':').map(Number);
+            const dep = new Date(); dep.setHours(h, m, 0, 0);
+            return new Date(dep.getTime() - 15 * 60000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        }
+        (function () {
+            const t = document.querySelector('[name=time]');
+            const note = document.getElementById('timeNote');
+            function update() {
+                note.innerHTML = t.value
+                    ? 'Your driver will arrive at <strong>' + arrivalOf(t.value) + '</strong> — 15 minutes before your ' + fmtTime(t.value) + ' departure.'
+                    : 'Your driver will arrive <strong>15 minutes before</strong> your departure time.';
+            }
+            t.addEventListener('input', update);
+            t.addEventListener('change', update);
+            update();     // reflect any time carried over from the Trip Planner
+        })();
+
+        // Populate the service / price options from the owner's pricing presets
+        fetch('/api/pricing').then(r => r.json()).then(p => {
+            const sel = document.getElementById('b_service');
+            if (!sel) return;
+            const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+            const presets = p.presets || [];
+            let html = presets.length
+                ? presets.map(x => '<option value="' + x.price + '">' + esc(x.name) + ' — $' + x.price + '</option>').join('')
+                : '<option value="' + (p.default_fare || 75) + '">Standard ride — $' + (p.default_fare || 75) + '</option>';
+            // Destination ride carried over from the planner — priced by distance
+            const rx = window._rideExtra;
+            if (rx && rx.trip_type === 'destination' && isFinite(rx.fare)) {
+                const miles = isFinite(rx.distance_mi) ? (' · ' + rx.distance_mi + ' mi') : '';
+                html = '<option value="' + rx.fare + '" selected>🎯 Destination ride — $' + rx.fare + miles + '</option>' + html;
+            }
+            sel.innerHTML = html;
+        }).catch(() => {});
+
+        document.getElementById('bookForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const result = document.getElementById('result');
+            const data = Object.fromEntries(new FormData(this).entries());
+            // carry the destination categorization + distance so the reservation is
+            // filed by destination and priced by distance server-side
+            const rx = window._rideExtra;
+            if (rx && rx.trip_type) {
+                data.trip_type = rx.trip_type;
+                if (isFinite(rx.distance_mi)) data.distance_mi = rx.distance_mi;
+                if (rx.dest_category) data.dest_category = rx.dest_category;
+            }
+            btn.disabled = true; btn.textContent = 'Booking…';
+            result.className = 'result';
+            try {
+                const res = await fetch('/api/book', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const j = await res.json();
+                if (!j.ok) throw new Error(j.error || 'Booking failed');
+                const r = j.reservation, inv = r.invoice || {};
+                let invLine;
+                if (inv.url) {
+                    invLine = '<div class="line">Invoice <strong>#' + r.id + '</strong> — <a href="' + inv.url + '" target="_blank">View &amp; pay your invoice →</a></div>' +
+                              '<div class="line">Payment is due within 3 days (or before your ride, if sooner).</div>';
+                } else {
+                    invLine = '<div class="line">Invoice <strong>#' + r.id + '</strong> will be emailed to you shortly. Payment is due within 3 days (or before your ride, if sooner).</div>';
+                }
+                const arriveLine = r.trip.time
+                    ? '<div class="line">Your driver will arrive at <strong>' + arrivalOf(r.trip.time) + '</strong> — 15 minutes before your ' + fmtTime(r.trip.time) + ' departure.</div>'
+                    : '<div class="line">Your driver arrives 15 minutes before your departure time.</div>';
+                window._lastBooking = { id: r.id, email: (data.email || '').trim() };
+                result.className = 'result ok';
+                result.innerHTML =
+                    '<h3>✅ You\'re booked!</h3>' +
+                    '<div class="line"><strong>' + r.trip.pickup + ' → ' + r.trip.dropoff + '</strong></div>' +
+                    '<div class="line">Fare: $' + r.fare_usd + '</div>' +
+                    invLine +
+                    arriveLine +
+                    '<div class="line">A driver will pick up your request shortly. Confirmation #' + r.id + '</div>' +
+                    '<button type="button" class="cancel-btn" id="cancelLastBtn" onclick="cancelLast()">Need to cancel? Cancel this ride</button>';
+                this.reset();
+                result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } catch (err) {
+                result.className = 'result err';
+                result.innerHTML = '<h3>Could not book</h3><div class="line">' + err.message + '</div>';
+            } finally {
+                btn.disabled = false; btn.textContent = 'Request a ride and Pay';
+            }
+        });
+
+        // ---- Customer cancellation ----
+        async function doCancel(rid, email) {
+            const res = await fetch('/api/reservations/' + encodeURIComponent(rid) + '/cancel', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email })
+            });
+            return res.json();
+        }
+
+        async function cancelLast() {
+            if (!window._lastBooking) return;
+            const btn = document.getElementById('cancelLastBtn');
+            btn.disabled = true; btn.textContent = 'Canceling…';
+            try {
+                const j = await doCancel(window._lastBooking.id, window._lastBooking.email);
+                if (!j.ok) throw new Error(j.error || 'Could not cancel');
+                btn.outerHTML = '<div class="line" style="color:#b91c1c;font-weight:700;">🚫 Ride canceled. Your invoice has been voided — nothing to pay.</div>';
+            } catch (err) {
+                btn.disabled = false; btn.textContent = 'Need to cancel? Cancel this ride';
+                alert(err.message);
+            }
+        }
+
+        async function cancelByConf() {
+            const msg = document.getElementById('m_msg');
+            const rid = (document.getElementById('m_conf').value || '').trim();
+            const email = (document.getElementById('m_email').value || '').trim();
+            if (!rid || !email) { msg.style.color = '#b91c1c'; msg.textContent = 'Enter your confirmation number and email.'; return; }
+            msg.style.color = '#64748b'; msg.textContent = 'Canceling…';
+            try {
+                const j = await doCancel(rid, email);
+                if (!j.ok) throw new Error(j.error || 'Could not cancel');
+                msg.style.color = '#047857';
+                msg.textContent = '✅ Reservation ' + rid + ' canceled. Your invoice has been voided — nothing to pay.';
+            } catch (err) {
+                msg.style.color = '#b91c1c'; msg.textContent = err.message;
+            }
+        }
+    </script>
+    <script src="/floatback.js"></script>
+    <script src="/jarvis-widget.js"></script>
+    <script src="/i18n.js"></script>
+</body>
+</html>

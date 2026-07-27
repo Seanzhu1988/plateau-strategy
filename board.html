@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board of Directors — Plateau Strategy Solution Lab</title>
+    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9; color: #1f2937; min-height: 100vh; }
+        header { background: linear-gradient(135deg,#0f172a,#1e3a8a); color: #fff; padding: 1rem 2rem;
+            display: flex; align-items: center; gap: 0.7rem; }
+        header img { height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
+        header .brand { font-weight: 800; font-size: 1.2rem; }
+        header .links { margin-left: auto; display: flex; gap: 1.3rem; }
+        header a { color: #cbd5e1; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+        .wrap { max-width: 1080px; margin: 2rem auto; padding: 0 1.2rem; }
+        h1 { font-size: 1.7rem; color: #0f172a; font-weight: 800; }
+        .sub { color: #64748b; margin: 0.2rem 0 1.6rem; }
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.4rem; margin-top: 1.2rem; }
+        h2 { font-size: 1.2rem; color: #0f172a; margin-bottom: 0.9rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 0.55rem 0.6rem; font-size: 0.86rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        th { color: #94a3b8; font-weight: 700; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        td a { color: #2563eb; }
+        .addrow { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; margin-top: 1rem; }
+        .addrow input, .addrow select { flex: 1; min-width: 140px; padding: 0.6rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; }
+        .btn { padding: 0.62rem 1.1rem; border: none; border-radius: 9px; font-weight: 700; font-size: 0.86rem; cursor: pointer; text-decoration: none; display: inline-block; white-space: nowrap; }
+        .btn.blue { background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; }
+        .btn.mini { padding: 0.3rem 0.6rem; font-size: 0.74rem; background: #ef4444; color: #fff; }
+        .badge { font-size: 0.66rem; font-weight: 800; padding: 0.16rem 0.55rem; border-radius: 999px; background: #e0e7ff; color: #3730a3; }
+        .empty { color: #94a3b8; text-align: center; padding: 1.4rem; }
+        .note { color: #94a3b8; font-size: 0.8rem; margin-top: 1.2rem; line-height: 1.5; }
+        .result { margin-top: 0.9rem; padding: 0.8rem 1rem; border-radius: 8px; display: none; font-size: 0.86rem; }
+        .result.ok { display: block; background: #052e16; border: 1px solid #166534; color: #86efac; }
+        .result.err { display: block; background: #450a0a; border: 1px solid #991b1b; color: #fca5a5; }
+        .doc-item { display: flex; align-items: center; gap: 0.7rem; padding: 0.7rem 0; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; }
+        .doc-item .meta { flex: 1; min-width: 220px; }
+        .doc-item .t { font-weight: 700; color: #0f172a; font-size: 0.92rem; }
+        .doc-item .d { color: #64748b; font-size: 0.78rem; margin-top: 0.1rem; }
+        .lock { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 0.9rem 1.1rem; font-size: 0.85rem; color: #065f46; margin-bottom: 1rem; line-height: 1.5; }
+    </style>
+    <link rel="stylesheet" href="/admin-terminal.css">
+</head>
+<body>
+    <header>
+        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="links"><a href="/dispatch">Dispatch</a><a href="/archive">Archive</a><a href="/">← Home</a></div>
+    </header>
+
+    <div class="wrap">
+        <h1>Board of Directors</h1>
+        <p class="sub">Private governance vault — for the managing members only. The company's corporate documents and ownership record, kept in one secure place.</p>
+
+        <div id="gate"></div>
+
+        <div id="content" style="display:none;">
+            <div class="lock">🔐 <b>Managing members only.</b> Everything here is private corporate governance material — bylaws, agreements, resolutions and contracts. Uploads are archived permanently and never overwritten.</div>
+
+            <div class="card">
+                <h2>👔 Managing Members</h2>
+                <table>
+                    <thead><tr><th>Name</th><th>Role</th><th>Ownership</th><th>Email</th><th>Since</th><th></th></tr></thead>
+                    <tbody id="memBody"></tbody>
+                </table>
+                <div class="empty" id="memEmpty">No members added yet.</div>
+                <div class="addrow">
+                    <input id="m_name" placeholder="Full name">
+                    <input id="m_role" placeholder="Role — e.g. Managing Member">
+                    <input id="m_own" placeholder="Ownership % — e.g. 50">
+                    <input id="m_email" type="email" placeholder="Email">
+                    <input id="m_since" type="date">
+                    <button class="btn blue" onclick="addMember()">+ Add member</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📁 Governance Vault</h2>
+                <p class="sub" style="margin:-0.5rem 0 0.4rem;">Bylaws · operating &amp; shareholder agreements · articles of formation · board resolutions · contracts · cap table · tax/EIN. Append-only — every version is kept.</p>
+                <div class="addrow">
+                    <select id="d_type"></select>
+                    <input id="d_title" placeholder="Document title — e.g. Operating Agreement v2">
+                    <input id="d_file" type="file" accept=".pdf,.doc,.docx,image/*">
+                    <input id="d_notes" placeholder="Notes (optional)">
+                    <button class="btn blue" id="upBtn" onclick="uploadDoc()">⬆ Upload</button>
+                </div>
+                <div class="result" id="upResult"></div>
+                <div id="docList" style="margin-top:1rem;"></div>
+                <div class="empty" id="docEmpty">No documents yet — upload your first governance record above.</div>
+            </div>
+        </div>
+
+        <p class="note" id="footNote"></p>
+    </div>
+
+    <script>
+        const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+        const val = id => (document.getElementById(id).value || '').trim();
+        const fmtSize = n => n < 1024 ? n + ' B' : n < 1048576 ? (n/1024).toFixed(0) + ' KB' : (n/1048576).toFixed(1) + ' MB';
+        const fmtDate = s => s ? String(s).slice(0,16).replace('T',' ') : '';
+        let TYPES = [];
+
+        async function boot() {
+            let res, d;
+            try { res = await fetch('/api/board/members'); d = await res.json(); } catch (e) { return; }
+            if (res.status === 401 || (d && d.auth_required)) {
+                document.getElementById('gate').innerHTML =
+                    '<div class="card" style="text-align:center; max-width:520px; margin:2rem auto;">' +
+                    '<h1 style="margin-bottom:0.6rem;">🔒 Private — board only</h1>' +
+                    '<p class="sub" style="margin-bottom:1.3rem;">The governance vault holds the company\'s bylaws, agreements and contracts. Sign in through Dispatch to open it.</p>' +
+                    '<a class="btn blue" href="/dispatch">Go to Dispatch login →</a></div>';
+                return;
+            }
+            document.getElementById('content').style.display = 'block';
+            renderMembers(d.members || []);
+            loadDocs();
+        }
+
+        function renderMembers(list) {
+            document.getElementById('memEmpty').style.display = list.length ? 'none' : 'block';
+            document.getElementById('memBody').innerHTML = list.map(m =>
+                '<tr><td><b>' + esc(m.name) + '</b></td><td>' + esc(m.role || '') + '</td>' +
+                '<td>' + (m.ownership_pct ? esc(m.ownership_pct) + '%' : '—') + '</td>' +
+                '<td>' + (m.email ? '<a href="mailto:' + esc(m.email) + '">' + esc(m.email) + '</a>' : '—') + '</td>' +
+                '<td>' + esc(m.since || '') + '</td>' +
+                '<td><button class="btn mini" onclick="removeMember(\'' + m.id + '\')">Remove</button></td></tr>').join('');
+        }
+
+        async function addMember() {
+            const name = val('m_name');
+            if (!name) { alert('Enter a member name.'); return; }
+            const body = { name, role: val('m_role'), ownership_pct: val('m_own'), email: val('m_email'), since: val('m_since') };
+            const j = await (await fetch('/api/board/members', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })).json();
+            if (!j.ok) { alert(j.error || 'Could not add member'); return; }
+            ['m_name','m_role','m_own','m_email','m_since'].forEach(i => document.getElementById(i).value = '');
+            const r = await (await fetch('/api/board/members')).json();
+            renderMembers(r.members || []);
+        }
+
+        async function removeMember(id) {
+            if (!confirm('Remove this member from the registry?')) return;
+            await fetch('/api/board/members/' + id + '/remove', { method:'POST' });
+            const r = await (await fetch('/api/board/members')).json();
+            renderMembers(r.members || []);
+        }
+
+        async function loadDocs() {
+            const j = await (await fetch('/api/board/documents')).json();
+            if (!j.ok) return;
+            TYPES = j.types || [];
+            const sel = document.getElementById('d_type');
+            if (sel && !sel.options.length) sel.innerHTML = TYPES.map(t => '<option>' + esc(t) + '</option>').join('');
+            renderDocs(j.documents || []);
+        }
+
+        function renderDocs(list) {
+            document.getElementById('docEmpty').style.display = list.length ? 'none' : 'block';
+            document.getElementById('docList').innerHTML = list.map(d =>
+                '<div class="doc-item">' +
+                    '<span class="badge">' + esc(d.doc_type || 'Other') + '</span>' +
+                    '<div class="meta"><div class="t">' + esc(d.title || d.original_name || 'Document') + '</div>' +
+                        '<div class="d">' + fmtDate(d.uploaded_at) + ' · ' + fmtSize(d.size || 0) +
+                        (d.notes ? ' · ' + esc(d.notes) : '') + '</div></div>' +
+                    '<a class="btn blue" href="/api/board/documents/' + d.id + '/file" target="_blank" rel="noopener">Open ↗</a>' +
+                '</div>').join('');
+        }
+
+        function fileToDataURL(file) {
+            return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(file); });
+        }
+
+        async function uploadDoc() {
+            const f = document.getElementById('d_file').files[0];
+            const out = document.getElementById('upResult');
+            if (!f) { out.className = 'result err'; out.textContent = 'Choose a file to upload.'; return; }
+            const btn = document.getElementById('upBtn'); btn.disabled = true; btn.textContent = 'Uploading…';
+            let j;
+            try {
+                const dataUrl = await fileToDataURL(f);
+                j = await (await fetch('/api/board/documents', { method:'POST', headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify({ file: dataUrl, doc_type: val('d_type'), title: val('d_title'), original_name: f.name, notes: val('d_notes') }) })).json();
+            } catch (e) { btn.disabled = false; btn.textContent = '⬆ Upload'; out.className = 'result err'; out.textContent = 'Upload failed — try again.'; return; }
+            btn.disabled = false; btn.textContent = '⬆ Upload';
+            if (!j.ok) { out.className = 'result err'; out.textContent = j.error || 'Upload failed'; return; }
+            out.className = 'result ok'; out.textContent = 'Saved — ' + (j.document.title || 'document') + ' archived.';
+            ['d_title','d_notes'].forEach(i => document.getElementById(i).value = '');
+            document.getElementById('d_file').value = '';
+            loadDocs();
+        }
+
+        boot();
+    </script>
+    <script src="/floatback.js"></script>
+    <script src="/jarvis-widget.js"></script>
+    <script src="/i18n.js"></script>
+</body>
+</html>
