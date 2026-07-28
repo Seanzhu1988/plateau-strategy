@@ -1010,6 +1010,206 @@
         }
     </style>
     <script src="/session.js"></script>
+    <style id="psx-redesign">
+      /* ============================================================
+         Plateau Strategy — higher-quality redesign (overview view)
+         Scoped to #view-overview + a refreshed global header.
+         ============================================================ */
+      :root{
+        --psx-bg:#070b16; --psx-hero:#080d1a; --psx-connect:#090f1e;
+        --psx-card:#0f1728; --psx-node:#101a2e;
+        --psx-text:#f5f7fa; --psx-text2:#a6b2c8; --psx-muted:#8c99ad;
+        --psx-border:rgba(255,255,255,.08);
+        --psx-blue:#3b82f6; --psx-indigo:#6366f1; --psx-violet:#8b5cf6; --psx-teal:#14b8a6;
+      }
+
+      /* ---------- refreshed global header ---------- */
+      header{
+        background:#090e1b !important;
+        border-bottom:1px solid rgba(255,255,255,.07) !important;
+        box-shadow:0 1px 0 rgba(0,0,0,.4) !important;
+        padding:.9rem 2.5rem !important;
+      }
+      .logo-img{
+        height:38px !important;width:38px !important;border-radius:11px !important;
+        border:none !important;box-shadow:0 6px 16px -4px rgba(59,130,246,.55) !important;
+      }
+      .logo-text{
+        font-size:1.22rem !important;font-weight:700 !important;letter-spacing:-.4px !important;
+        background-image:linear-gradient(135deg,#eef3fc,#c4d3f2) !important;
+        -webkit-background-clip:text !important;background-clip:text !important;
+        -webkit-text-fill-color:transparent !important;
+      }
+      nav{display:flex;align-items:center;}
+      nav a{color:#aeb8cc !important;font-size:.94rem !important;font-weight:500 !important;
+        margin:0 .85rem !important;opacity:1 !important;border-bottom:none !important;transition:color .2s,transform .2s,filter .2s;}
+      nav a:hover{color:#fff !important;border-bottom:none !important;}
+      nav a[href="/book"]{
+        background:linear-gradient(135deg,var(--psx-blue),var(--psx-indigo)) !important;
+        color:#fff !important;padding:.6rem 1.15rem !important;border-radius:10px !important;
+        margin-left:1rem !important;font-weight:600 !important;
+        box-shadow:0 10px 22px -8px rgba(59,130,246,.7) !important;
+      }
+      nav a[href="/book"]:hover{filter:brightness(1.07);transform:translateY(-1px);}
+      .sections-trigger{color:#aeb8cc !important;font-weight:500 !important;}
+      .sections-trigger:hover{color:#fff !important;border-bottom-color:transparent !important;}
+
+      /* ---------- overview view canvas ---------- */
+      #view-overview{background:var(--psx-bg);}
+      #view-overview section{padding:0;} /* neutralize global section padding */
+
+      /* ---------- HERO ---------- */
+      #view-overview .psx-hero{
+        position:relative;overflow:hidden;background:var(--psx-hero);
+        padding:6.5rem 2rem 6rem;text-align:center;
+      }
+      #view-overview .psx-glow{position:absolute;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;}
+      #view-overview .psx-glow-1{width:640px;height:420px;top:-140px;left:22%;background:rgba(43,91,214,.34);}
+      #view-overview .psx-glow-2{width:520px;height:380px;top:120px;right:8%;background:rgba(109,40,217,.26);}
+      #view-overview .psx-hero-inner{position:relative;z-index:1;max-width:920px;margin:0 auto;
+        display:flex;flex-direction:column;align-items:center;}
+      #view-overview .psx-eyebrow-pill{
+        display:inline-flex;align-items:center;gap:.5rem;
+        padding:.5rem 1rem;border-radius:100px;
+        background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
+        color:#b9c6de;font-size:.72rem;font-weight:600;letter-spacing:.14em;
+      }
+      #view-overview .psx-dot{width:7px;height:7px;border-radius:50%;background:#49e3c4;box-shadow:0 0 12px #49e3c4;}
+      #view-overview .psx-h1{
+        margin:1.6rem 0 0;font-weight:800;color:var(--psx-text);
+        font-size:clamp(2.3rem,5vw,3.75rem);line-height:1.06;letter-spacing:-.02em;max-width:14ch;
+      }
+      #view-overview .psx-accent{
+        background:linear-gradient(120deg,#7da2ff,#a78bfa);
+        -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+      }
+      #view-overview .psx-sub{
+        margin:1.5rem 0 0;max-width:640px;color:var(--psx-text2);
+        font-size:1.12rem;line-height:1.62;
+      }
+      #view-overview .psx-cta-row{display:flex;gap:.85rem;flex-wrap:wrap;justify-content:center;margin-top:2.2rem;}
+      #view-overview .psx-btn{
+        display:inline-flex;align-items:center;gap:.5rem;
+        padding:.9rem 1.5rem;border-radius:12px;font-size:1rem;font-weight:600;
+        text-decoration:none;cursor:pointer;transition:transform .2s,filter .2s,background .2s;border:1px solid transparent;
+      }
+      #view-overview .psx-btn-primary{
+        background:linear-gradient(135deg,var(--psx-blue),var(--psx-indigo));color:#fff;
+        box-shadow:0 14px 30px -10px rgba(59,130,246,.65);
+      }
+      #view-overview .psx-btn-primary:hover{transform:translateY(-2px);filter:brightness(1.06);}
+      #view-overview .psx-btn-ghost{
+        background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.16);color:#e7ecf5;
+      }
+      #view-overview .psx-btn-ghost:hover{background:rgba(255,255,255,.08);transform:translateY(-2px);}
+      #view-overview .psx-stats{
+        display:inline-flex;align-items:center;margin-top:2.6rem;
+        padding:1.35rem .5rem;border-radius:18px;
+        background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.09);
+        backdrop-filter:blur(6px);
+      }
+      #view-overview .psx-stat{display:flex;flex-direction:column;align-items:center;padding:0 2.6rem;}
+      #view-overview .psx-stat-val{font-size:1.9rem;font-weight:800;color:#fff;letter-spacing:-.02em;}
+      #view-overview .psx-stat-label{margin-top:.25rem;font-size:.84rem;color:var(--psx-muted);}
+      #view-overview .psx-divider{width:1px;height:46px;background:rgba(255,255,255,.10);}
+
+      /* ---------- shared section head ---------- */
+      #view-overview .psx-head{max-width:760px;margin:0 auto;text-align:center;display:flex;flex-direction:column;align-items:center;}
+      #view-overview .psx-eyebrow{color:#6e8be0;font-size:.8rem;font-weight:600;letter-spacing:.14em;}
+      #view-overview .psx-h2{
+        margin:.9rem 0 0;color:var(--psx-text);font-weight:800;
+        font-size:clamp(1.9rem,3.6vw,2.6rem);line-height:1.14;letter-spacing:-.02em;text-align:center;
+      }
+      #view-overview .psx-section-sub{margin:1rem 0 0;color:var(--psx-text2);font-size:1.06rem;line-height:1.62;}
+
+      /* ---------- MODEL / cards ---------- */
+      #view-overview .psx-section{background:var(--psx-bg);padding:6.5rem 2rem;}
+      #view-overview .psx-cards{
+        max-width:1180px;margin:3.2rem auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;
+      }
+      #view-overview .psx-card{
+        background:var(--psx-card);border:1px solid var(--psx-border);border-radius:18px;padding:2rem 1.9rem;
+        box-shadow:0 18px 44px -22px rgba(0,0,0,.7);transition:transform .25s,border-color .25s,box-shadow .25s;
+      }
+      #view-overview .psx-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.16);
+        box-shadow:0 26px 60px -24px rgba(0,0,0,.85);}
+      #view-overview .psx-chip{
+        width:54px;height:54px;border-radius:15px;display:flex;align-items:center;justify-content:center;
+        font-size:1.5rem;color:#fff;line-height:1;
+      }
+      #view-overview .psx-chip-blue{background:linear-gradient(135deg,#3b82f6,#2563eb);box-shadow:0 10px 22px -6px rgba(59,130,246,.6);}
+      #view-overview .psx-chip-violet{background:linear-gradient(135deg,#8b5cf6,#6366f1);box-shadow:0 10px 22px -6px rgba(139,92,246,.6);}
+      #view-overview .psx-chip-teal{background:linear-gradient(135deg,#14b8a6,#0ea5a4);box-shadow:0 10px 22px -6px rgba(20,184,166,.6);}
+      #view-overview .psx-card-title{margin:1.15rem 0 0;font-size:1.28rem;font-weight:700;color:#f2f5fa;letter-spacing:-.01em;}
+      #view-overview .psx-card-desc{margin:.7rem 0 0;font-size:.98rem;line-height:1.6;color:#9aa6bb;}
+
+      /* ---------- CONNECTS ---------- */
+      #view-overview .psx-connects{
+        background:var(--psx-connect);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);
+        padding:6rem 2rem;
+      }
+      #view-overview .psx-flow{
+        display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;margin:3rem auto 0;max-width:1000px;
+      }
+      #view-overview .psx-node{
+        width:250px;background:var(--psx-node);border:1px solid var(--psx-border);border-radius:16px;
+        padding:1.9rem 1.6rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.55rem;
+      }
+      #view-overview .psx-badge{
+        width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+        font-weight:700;font-size:.95rem;
+      }
+      #view-overview .psx-badge-blue{background:rgba(59,130,246,.16);color:#7da2ff;}
+      #view-overview .psx-badge-violet{background:rgba(139,92,246,.16);color:#b39cff;}
+      #view-overview .psx-badge-teal{background:rgba(20,184,166,.16);color:#4fd6c6;}
+      #view-overview .psx-node h4{font-size:1.18rem;font-weight:700;color:#f2f5fa;}
+      #view-overview .psx-node p{font-size:.86rem;color:#93a0b6;}
+      #view-overview .psx-arrow{font-size:1.5rem;color:#56627a;}
+      #view-overview .psx-caption{
+        max-width:600px;margin:2.6rem auto 0;text-align:center;color:#8a97ad;font-size:.98rem;line-height:1.6;
+      }
+
+      /* ---------- CTA ---------- */
+      #view-overview .psx-cta{background:var(--psx-bg);padding:5rem 2rem 6.5rem;}
+      #view-overview .psx-cta-panel{
+        position:relative;overflow:hidden;max-width:900px;margin:0 auto;text-align:center;
+        padding:4rem 2rem;border-radius:24px;
+        background:linear-gradient(135deg,#111b34,#0d1424);border:1px solid rgba(255,255,255,.10);
+      }
+      #view-overview .psx-cta-glow{position:absolute;inset:auto 0 -60% 0;height:320px;
+        background:radial-gradient(60% 100% at 50% 0,rgba(59,130,246,.28),transparent 70%);pointer-events:none;}
+      #view-overview .psx-cta-title{position:relative;z-index:1;font-size:clamp(1.8rem,3.4vw,2.5rem);font-weight:800;color:#fff;letter-spacing:-.02em;}
+      #view-overview .psx-cta-text{position:relative;z-index:1;max-width:560px;margin:1rem auto 0;color:var(--psx-text2);font-size:1.05rem;line-height:1.6;}
+      #view-overview .psx-form{position:relative;z-index:1;display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin:2rem auto 0;max-width:520px;}
+      #view-overview .psx-form input{
+        flex:1;min-width:240px;padding:.9rem 1.1rem;border-radius:12px;
+        background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#fff;font-size:1rem;
+      }
+      #view-overview .psx-form input::placeholder{color:#7d8aa0;}
+      #view-overview .psx-form input:focus{outline:none;border-color:var(--psx-blue);background:rgba(255,255,255,.09);}
+      #view-overview .psx-form button{
+        padding:.9rem 1.6rem;border:none;border-radius:12px;cursor:pointer;font-size:1rem;font-weight:600;color:#fff;
+        background:linear-gradient(135deg,var(--psx-blue),var(--psx-indigo));box-shadow:0 12px 26px -10px rgba(59,130,246,.7);
+        transition:transform .2s,filter .2s;
+      }
+      #view-overview .psx-form button:hover{transform:translateY(-2px);filter:brightness(1.06);}
+      #view-overview .psx-cta-note{position:relative;z-index:1;margin-top:1.4rem;font-size:.88rem;color:var(--psx-muted);}
+
+      /* ---------- responsive ---------- */
+      @media(max-width:860px){
+        #view-overview .psx-cards{grid-template-columns:1fr;max-width:460px;}
+        #view-overview .psx-flow{flex-direction:column;}
+        #view-overview .psx-arrow{transform:rotate(90deg);}
+        #view-overview .psx-stat{padding:0 1.5rem;}
+        #view-overview .psx-hero{padding:4.5rem 1.25rem 4rem;}
+        #view-overview .psx-section,#view-overview .psx-connects{padding:4.5rem 1.25rem;}
+      }
+      @media(max-width:520px){
+        #view-overview .psx-stats{flex-direction:column;padding:1.25rem 2rem;gap:1rem;}
+        #view-overview .psx-divider{width:120px;height:1px;}
+        nav .sections-trigger,nav a[href="/articles"],nav a[href="/dispatch"],nav a[href="/board"]{display:none;}
+      }
+    </style>
 </head>
 <body>
     <header>
@@ -1047,60 +1247,77 @@
 
             <!-- ============ OVERVIEW (the introduction) ============ -->
             <div class="view active" id="view-overview">
-                <section class="hero">
-                    <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab" class="hero-logo">
-                    <h1>Welcome to Plateau Strategy Solution Lab</h1>
-                    <p>An integrated business ecosystem creating opportunity for the people who ride, drive, and grow with us.</p>
-                </section>
-
-                <section class="overview" id="overview">
-                    <div class="container">
-                        <div class="overview-content">
-                            <div class="overview-text">
-                                <h3>About Plateau Strategy Solution Lab</h3>
-                                <p>Plateau Strategy Solution Lab is an integrated business ecosystem built to create opportunity at every level — for the people who <strong>ride</strong> with us, <strong>drive</strong> with us, and <strong>grow</strong> with us.</p>
-                                <p>We started with transportation: affordable Tesla rentals that turn everyday drivers into earners and everyday riders into loyal clients. From there, each part of our business funds and strengthens the next — operations, real estate, finance, and reinvestment — a closed loop where revenue compounds instead of leaking away.</p>
-                                <p>Our model is simple: control the full value chain, share the upside with our drivers and partners, and reinvest profits back into the community. Whether you need a ride, want to earn behind the wheel, or want to refer clients and earn commission — there's a place for you here.</p>
-                            </div>
-                            <div>
-                                <div class="value-props">
-                                    <div class="value-prop">
-                                        <h4>💰 Capital Efficient</h4>
-                                        <p>Each part funds the next through shared cash flow and operational leverage.</p>
-                                    </div>
-                                    <div class="value-prop">
-                                        <h4>🔄 Vertically Integrated</h4>
-                                        <p>Full control over supply chain, client experience, and margin capture.</p>
-                                    </div>
-                                    <div class="value-prop">
-                                        <h4>📈 Compounding Growth</h4>
-                                        <p>Revenue synergies accelerate expansion across all business lines.</p>
-                                    </div>
-                                </div>
-                            </div>
+                <section class="psx-hero">
+                    <div class="psx-glow psx-glow-1"></div>
+                    <div class="psx-glow psx-glow-2"></div>
+                    <div class="psx-hero-inner">
+                        <span class="psx-eyebrow-pill"><span class="psx-dot"></span>INTEGRATED BUSINESS ECOSYSTEM</span>
+                        <h1 class="psx-h1">Integrated wealth, built through <span class="psx-accent">connected ecosystems</span></h1>
+                        <p class="psx-sub">Affordable Tesla rentals turn everyday drivers into earners and riders into owners — the first loop in a closed system where revenue compounds instead of leaking away.</p>
+                        <div class="psx-cta-row">
+                            <a href="/book" class="psx-btn psx-btn-primary">Book a Ride <span aria-hidden="true">→</span></a>
+                            <a href="#psx-model" class="psx-btn psx-btn-ghost" onclick="event.preventDefault();document.getElementById('psx-model').scrollIntoView({behavior:'smooth'});">Explore the model</a>
                         </div>
-
-                        <div class="integration-diagram" style="margin-top: 3rem;">
-                            <h3>How It Connects</h3>
-                            <div class="diagram-items">
-                                <div class="diagram-item"><strong>Transportation</strong><br>Generates revenue &amp; data</div>
-                                <div class="diagram-item"><strong>Real Estate</strong><br>Provides infrastructure</div>
-                                <div class="diagram-item"><strong>Finance</strong><br>Optimizes capital</div>
-                            </div>
-                            <p style="margin-top: 2rem; color: #666; font-size: 0.95rem;">Each part creates value that feeds the next — a self-reinforcing cycle that compounds growth and margin as it scales.</p>
+                        <div class="psx-stats">
+                            <div class="psx-stat"><span class="psx-stat-val">3</span><span class="psx-stat-label">Business verticals</span></div>
+                            <div class="psx-divider"></div>
+                            <div class="psx-stat"><span class="psx-stat-val">100%</span><span class="psx-stat-label">Value chain owned</span></div>
+                            <div class="psx-divider"></div>
+                            <div class="psx-stat"><span class="psx-stat-val">24/7</span><span class="psx-stat-label">Ride availability</span></div>
                         </div>
                     </div>
                 </section>
 
-                <section class="cta-section" id="cta">
-                    <div class="container">
-                        <h2>Join Us in Building the Future</h2>
-                        <p>We're currently validating the market and preparing to launch. Early partners, investors, and team members are critical to our success.</p>
-                        <form class="form-group" onsubmit="handleSubmit(event)">
+                <section class="psx-section" id="psx-model">
+                    <div class="psx-head">
+                        <span class="psx-eyebrow">THE MODEL</span>
+                        <h2 class="psx-h2">One ecosystem. Every part funds the next.</h2>
+                        <p class="psx-section-sub">We control the full value chain and share the upside with drivers and partners — so revenue compounds across transportation, real estate, and finance instead of leaking away.</p>
+                    </div>
+                    <div class="psx-cards">
+                        <div class="psx-card">
+                            <div class="psx-chip psx-chip-blue">◆</div>
+                            <h3 class="psx-card-title">Capital Efficient</h3>
+                            <p class="psx-card-desc">Each part funds the next through shared cash flow and operational leverage — capital works harder across the whole system.</p>
+                        </div>
+                        <div class="psx-card">
+                            <div class="psx-chip psx-chip-violet">≡</div>
+                            <h3 class="psx-card-title">Vertically Integrated</h3>
+                            <p class="psx-card-desc">Full control over the supply chain, client experience, and margin capture, end to end — no middlemen skimming value.</p>
+                        </div>
+                        <div class="psx-card">
+                            <div class="psx-chip psx-chip-teal">↗</div>
+                            <h3 class="psx-card-title">Compounding Growth</h3>
+                            <p class="psx-card-desc">Revenue synergies accelerate expansion across every business line, so growth continuously reinvests into more growth.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="psx-connects">
+                    <div class="psx-head">
+                        <span class="psx-eyebrow">HOW IT CONNECTS</span>
+                        <h2 class="psx-h2">A closed loop, not a funnel</h2>
+                    </div>
+                    <div class="psx-flow">
+                        <div class="psx-node"><span class="psx-badge psx-badge-blue">1</span><h4>Transportation</h4><p>Generates revenue &amp; data</p></div>
+                        <span class="psx-arrow" aria-hidden="true">→</span>
+                        <div class="psx-node"><span class="psx-badge psx-badge-violet">2</span><h4>Real Estate</h4><p>Provides infrastructure</p></div>
+                        <span class="psx-arrow" aria-hidden="true">→</span>
+                        <div class="psx-node"><span class="psx-badge psx-badge-teal">3</span><h4>Finance</h4><p>Optimizes capital</p></div>
+                    </div>
+                    <p class="psx-caption">Each part creates value that feeds the next — a self-reinforcing cycle that compounds growth and margin as it scales.</p>
+                </section>
+
+                <section class="psx-cta" id="cta">
+                    <div class="psx-cta-panel">
+                        <div class="psx-cta-glow"></div>
+                        <h2 class="psx-cta-title">Join us in building the future</h2>
+                        <p class="psx-cta-text">We're validating the market and preparing to launch. Early partners, investors, and team members are critical to our success.</p>
+                        <form class="psx-form" onsubmit="handleSubmit(event)">
                             <input type="email" placeholder="your@email.com" required>
                             <button type="submit">Get Early Access</button>
                         </form>
-                        <p style="margin-top: 1.5rem; font-size: 0.9rem; opacity: 0.8;">We're building something ambitious. Join our community of early believers.</p>
+                        <p class="psx-cta-note">We're building something ambitious. Join our community of early believers.</p>
                     </div>
                 </section>
             </div>
