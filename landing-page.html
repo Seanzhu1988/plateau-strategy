@@ -1627,8 +1627,38 @@
       }
       @media (prefers-reduced-motion:reduce){.psx-foot a{transition:none;}}
     </style>
+    <style id="psx-a11y">
+      /* ============================================================
+         Keyboard and screen-reader basics.
+         ============================================================ */
+      .psx-skip{
+        position:absolute;left:-9999px;top:0;z-index:999;
+        background:#3b82f6;color:#fff;font-weight:600;
+        padding:.75rem 1.15rem;border-radius:0 0 10px 0;text-decoration:none;
+      }
+      .psx-skip:focus{left:0;}
+
+      /* One visible focus treatment everywhere, instead of the browser default
+         being suppressed in some places and inconsistent in others. */
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible,
+      [tabindex]:focus-visible{
+        outline:2px solid #7da2ff;
+        outline-offset:2px;
+        border-radius:4px;
+      }
+      /* Inputs already carry their own ring — don't double up */
+      #view-overview .psx-form input:focus-visible,
+      .role-form input:focus-visible,
+      .wish-form input:focus-visible,
+      .gb-form input:focus-visible{outline-offset:0;}
+    </style>
 </head>
 <body>
+    <a class="psx-skip" href="#main-content">Skip to content</a>
     <header>
         <div class="header-top">
             <div style="display:flex; align-items:center; gap:1rem;">
@@ -1648,8 +1678,8 @@
         </div>
     </header>
 
-    <main>
-        <div class="phase-tabs">
+    <main id="main-content">
+        <div class="phase-tabs" role="tablist" aria-label="Sections">
             <a class="phase-tab active" href="#" onclick="showView('overview', event)">Overview</a>
             <a class="phase-tab" href="#" onclick="showView('transportation', event)">Transportation</a>
             <a class="phase-tab" href="#" onclick="showView('operations', event)">Operations</a>
@@ -2635,6 +2665,39 @@
                 }
                 if (SLIDES.length > 1) setInterval(function () { go(cur + 1); }, 5000);
             }
+        })();
+    </script>
+    <script>
+        /* ---- keyboard / assistive-tech behaviour ----
+           Kept separate from the main script so it layers on top rather than
+           editing logic that already works. */
+        (function () {
+            // Escape closes whichever modal is open. Both modals share .role-modal,
+            // and clicking the backdrop already closes them — this adds the keyboard
+            // equivalent, which is what a keyboard-only user reaches for first.
+            document.addEventListener('keydown', function (e) {
+                if (e.key !== 'Escape') return;
+                var open = document.querySelector('.role-modal.open');
+                if (open) open.classList.remove('open');
+            });
+
+            // The active tab is styled, but nothing announced it. Mirror the
+            // .active class onto aria-current after every view change.
+            function markCurrentTab() {
+                document.querySelectorAll('.phase-tab').forEach(function (t) {
+                    t.removeAttribute('aria-current');
+                });
+                var active = document.querySelector('.phase-tab.active');
+                if (active) active.setAttribute('aria-current', 'page');
+            }
+            var original = window.showView;
+            if (typeof original === 'function') {
+                window.showView = function () {
+                    original.apply(this, arguments);
+                    markCurrentTab();
+                };
+            }
+            document.addEventListener('DOMContentLoaded', markCurrentTab);
         })();
     </script>
     <script src="/i18n.js"></script>
