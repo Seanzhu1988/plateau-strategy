@@ -1567,6 +1567,66 @@
         .service-card:hover,.book-cta:hover,.view .phase-card:hover,.fin-card:hover{transform:none;}
       }
     </style>
+    <style id="psx-footer">
+      /* ============================================================
+         Site footer — a real directory of the site, not one line.
+         ============================================================ */
+      footer{
+        background:#070b16 !important;
+        border-top:1px solid rgba(255,255,255,.08) !important;
+        padding:3.5rem 2rem 2rem !important;
+        text-align:left !important;
+        opacity:1 !important;
+      }
+      .psx-foot{
+        max-width:1180px;margin:0 auto;
+        display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:2.5rem;
+      }
+      .psx-foot-brand{display:flex;flex-direction:column;gap:.85rem;align-items:flex-start;}
+      .psx-foot-mark{display:flex;align-items:center;gap:.7rem;}
+      .psx-foot-mark img{width:34px;height:34px;border-radius:10px;}
+      .psx-foot-mark span{
+        font-size:1.02rem;font-weight:700;letter-spacing:-.01em;
+        background-image:linear-gradient(135deg,#eef3fc,#c4d3f2);
+        -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+      }
+      .psx-foot-brand p{color:#8c99ad;font-size:.92rem;line-height:1.62;max-width:34ch;margin:0;}
+      .psx-foot h4{
+        color:#e7ecf5;font-size:.74rem;font-weight:600;letter-spacing:.14em;
+        text-transform:uppercase;margin:0 0 1rem;
+      }
+      .psx-foot ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.6rem;}
+      .psx-foot a{
+        color:#8c99ad;text-decoration:none;font-size:.93rem;
+        transition:color .18s ease;
+      }
+      .psx-foot a:hover{color:#fff;}
+      .psx-foot a:focus-visible{outline:2px solid #7da2ff;outline-offset:3px;border-radius:3px;}
+      .psx-foot-bottom{
+        max-width:1180px;margin:2.75rem auto 0;padding-top:1.5rem;
+        /* the language switcher is fixed bottom-right — keep text clear of it */
+        padding-right:180px;
+        border-top:1px solid rgba(255,255,255,.07);
+        display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+        color:#6f7c92;font-size:.86rem;
+      }
+      .psx-foot-bottom p{margin:0;}
+      @media (max-width:860px){
+        .psx-foot{grid-template-columns:1fr 1fr;gap:2rem;}
+        .psx-foot-brand{grid-column:1 / -1;}
+      }
+      @media (max-width:860px){
+        /* stacked bottom bar — give the floating switcher its own room below */
+        .psx-foot-bottom{padding-right:0;}
+        footer{padding-bottom:5.5rem !important;}
+      }
+      @media (max-width:520px){
+        footer{padding:2.5rem 1.25rem 5.5rem !important;}
+        .psx-foot{grid-template-columns:1fr;gap:1.75rem;}
+        .psx-foot-bottom{flex-direction:column;gap:.5rem;}
+      }
+      @media (prefers-reduced-motion:reduce){.psx-foot a{transition:none;}}
+    </style>
 </head>
 <body>
     <header>
@@ -2094,7 +2154,49 @@
             </div>
 
             <footer>
-                <p>&copy; 2026 Plateau Strategy Solution Lab. Building integrated wealth through connected ecosystems.</p>
+                <div class="psx-foot">
+                    <div class="psx-foot-brand">
+                        <div class="psx-foot-mark">
+                            <img src="plateau-logo.svg" alt="">
+                            <span>Plateau Strategy</span>
+                        </div>
+                        <p>An integrated business ecosystem — transportation, real estate and finance in one closed loop, built so revenue compounds instead of leaking away.</p>
+                    </div>
+
+                    <div>
+                        <h4>Ride &amp; Drive</h4>
+                        <ul>
+                            <li><a href="/book">Book a Ride</a></li>
+                            <li><a href="/renter">Driver Portal</a></li>
+                            <li><a href="/agent">Agent Program</a></li>
+                            <li><a href="/partners">Partners</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4>Free Tools</h4>
+                        <ul>
+                            <li><a href="/trip-planner">Trip Planner</a></li>
+                            <li><a href="/destination-book">Destination Book</a></li>
+                            <li><a href="/factor-clock">The Factor Clock</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="/articles">Articles</a></li>
+                            <li><a href="/dispatch">Dispatch</a></li>
+                            <li><a href="/board">Board of Directors</a></li>
+                            <li><a href="#" onclick="showView('security', event)">Security</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="psx-foot-bottom">
+                    <p>&copy; 2026 Plateau Strategy Solution Lab</p>
+                    <p>Building integrated wealth through connected ecosystems.</p>
+                </div>
             </footer>
         </div>
     </main>
