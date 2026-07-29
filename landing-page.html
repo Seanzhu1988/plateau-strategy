@@ -1277,6 +1277,155 @@
         #view-realestate .bp-title h2{font-size:1.5rem;}
       }
     </style>
+    <style id="psx-tabs">
+      /* ============================================================
+         Section tabs — floating glass bar with pill tabs.
+         Overrides the original flat/underline bar. Same markup and
+         the same .shown toggle, so showNav()/hideNav() still drive it.
+         ============================================================ */
+      .phase-tabs{
+        position:fixed;
+        top:84px;
+        left:50%;
+        width:auto;
+        max-width:min(1180px,calc(100vw - 32px));
+        gap:4px;
+        padding:6px;
+        /* centering a scrollable flex row makes the left-hand overflow
+           unreachable — the bar hugs its content, so start-align it */
+        justify-content:flex-start;
+        background:rgba(12,20,38,.88);
+        border:1px solid rgba(255,255,255,.12);
+        border-bottom:1px solid rgba(255,255,255,.12);
+        border-radius:14px;
+        box-shadow:0 26px 60px -22px rgba(0,0,0,.92),0 0 0 1px rgba(0,0,0,.3);
+        backdrop-filter:blur(14px) saturate(1.25);
+        -webkit-backdrop-filter:blur(14px) saturate(1.25);
+        z-index:99;
+        overflow-x:auto;
+        scrollbar-width:none;
+        opacity:0;
+        visibility:hidden;
+        pointer-events:none;
+        transform:translateX(-50%) translateY(-12px);
+        transition:opacity .22s ease,transform .3s cubic-bezier(.22,1,.36,1),visibility .22s;
+      }
+      .phase-tabs::-webkit-scrollbar{display:none;}
+      .phase-tabs.shown{
+        opacity:1;
+        visibility:visible;
+        pointer-events:auto;
+        transform:translateX(-50%) translateY(0);
+      }
+
+      .phase-tab{
+        padding:.62rem 1.05rem;
+        border:none;
+        border-bottom:none;
+        border-radius:10px;
+        color:#aeb8cc;
+        font-size:.9rem;
+        font-weight:500;
+        white-space:nowrap;
+        transition:color .18s ease,background .18s ease;
+      }
+      .phase-tab:hover{
+        color:#fff;
+        background:rgba(255,255,255,.07);
+        border-bottom-color:transparent;
+      }
+      .phase-tab.active,.phase-tab.active:hover{
+        color:#fff;
+        font-weight:600;
+        background:linear-gradient(135deg,#3b82f6,#6366f1);
+        border-bottom-color:transparent;
+        box-shadow:0 8px 20px -8px rgba(59,130,246,.85);
+      }
+      .phase-tab:focus-visible{outline:2px solid #7da2ff;outline-offset:2px;}
+
+      /* ☰ Sections trigger reads as a control, not plain text */
+      .sections-trigger{
+        display:inline-flex;align-items:center;
+        padding:.45rem .8rem;border-radius:9px;
+        border:1px solid rgba(255,255,255,.14);
+        background:rgba(255,255,255,.05);
+        margin:0 .6rem 0 0 !important;
+        transition:background .18s ease,color .18s ease;
+      }
+      .sections-trigger:hover{background:rgba(255,255,255,.11);}
+
+      /* ← Back button, matched to the new header */
+      .nav-back{
+        background:rgba(255,255,255,.06) !important;
+        border:1px solid rgba(255,255,255,.16) !important;
+        border-radius:10px !important;
+        color:#e7ecf5 !important;
+        font-weight:500 !important;
+        font-size:.88rem !important;
+        padding:.5rem .95rem !important;
+        transition:background .18s ease,transform .18s ease;
+      }
+      .nav-back:hover{background:rgba(255,255,255,.12) !important;transform:translateX(-2px);}
+
+      /* On small screens the bar is docked and always visible, not a reveal */
+      @media (max-width:768px){
+        .phase-tabs{
+          position:static;
+          left:auto;
+          width:100%;
+          max-width:none;
+          border-radius:0;
+          border-left:none;border-right:none;border-top:none;
+          padding:.5rem .75rem;
+          box-shadow:0 8px 20px -12px rgba(0,0,0,.8);
+          opacity:1;
+          visibility:visible;
+          pointer-events:auto;
+          transform:none;
+          backdrop-filter:none;
+          -webkit-backdrop-filter:none;
+          background:#0c1426;
+        }
+        .phase-tabs.shown{transform:none;}
+        .phase-tab{padding:.55rem .85rem;font-size:.84rem;}
+      }
+
+      /* Mobile header: keep it to one row.
+         The redesign's `nav{display:flex}` overrides the original
+         `nav{display:none}` at this width, so the bar has to be sized
+         for small screens rather than hidden. */
+      @media (max-width:768px){
+        header{padding:.7rem 1rem !important;}
+        .header-top{gap:.6rem;}
+        .header-top > div:first-child{min-width:0;flex:1;}
+        .logo{min-width:0;}
+        .logo-img{height:32px !important;width:32px !important;}
+        .logo-text{
+          font-size:.95rem !important;
+          white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+        }
+        nav{flex-shrink:0;gap:.35rem;}
+        nav a{margin:0 !important;}
+        nav a[href="/book"]{
+          white-space:nowrap;
+          margin-left:0 !important;
+          padding:.5rem .85rem !important;
+          font-size:.85rem !important;
+        }
+        /* only the primary CTA earns the space down here */
+        nav .sections-trigger,
+        nav a[href="/articles"],
+        nav a[href="/dispatch"],
+        nav a[href="/board"]{display:none !important;}
+        .nav-back{padding:.42rem .7rem !important;font-size:.8rem !important;}
+      }
+
+      @media (prefers-reduced-motion:reduce){
+        .phase-tabs{transition:opacity .01ms,visibility .01ms;}
+        .phase-tab,.nav-back,.sections-trigger{transition:none;}
+        .nav-back:hover{transform:none;}
+      }
+    </style>
 </head>
 <body>
     <header>
