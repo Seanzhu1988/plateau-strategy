@@ -46,6 +46,15 @@
             padding: 0.18rem 0.55rem; border-radius: 6px; }
         .b-city { background: #eef2f7; color: #475569; }
         .b-comm { background: #ecfdf5; color: #047857; }
+        .rate-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.3rem 0 0.5rem; }
+        .stars { font-size: 1.15rem; letter-spacing: 1px; cursor: pointer; }
+        .stars .star { color: #d1d5db; transition: color 0.1s; }
+        .stars .star.on { color: #f59e0b; }
+        .stars .star:hover { color: #fbbf24; }
+        .rate-meta { font-size: 0.74rem; color: #94a3b8; font-weight: 600; }
+        .star-chip { cursor: pointer; user-select: none; }
+        .star-chip.on { background: #fef3c7; border-color: #fcd34d; color: #92400e; }
+        .star-hint { font-size: 0.72rem; color: #94a3b8; margin-left: 0.4rem; }
         .sugbtn { margin: 0.5rem 0 0 0; background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857;
             border-radius: 9px; padding: 0.55rem 0.9rem; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
         .sugbtn:hover { background: #d1fae5; }
@@ -93,6 +102,7 @@
             <div class="frow"><span class="flab">City</span><span id="cityChips"></span></div>
             <div class="frow"><span class="flab">Type</span><span id="typeChips"></span></div>
             <div class="frow"><span class="flab">Category</span><span id="catChips"></span></div>
+            <div class="frow"><span class="flab">Stars</span><span id="starFilter"></span><span class="star-hint">tap to cycle 5★ → 1★</span></div>
             <div class="frow"><span class="flab">Search</span>
                 <input type="text" id="q" placeholder="Search the book — or type a new place to suggest &amp; add…" oninput="render()"></div>
             <div id="suggest"></div>
@@ -111,7 +121,37 @@
     const CATS = [ ['history','History'], ['culture','Culture'], ['nature','Nature'], ['food','Food'], ['views','Views'] ];
     const TYPES = [ ['attraction','Attractions'], ['restaurant','Restaurants & food'] ];
     let DATA = { cities: {}, entries: [] };
-    const f = { city: 'all', type: 'all', cats: new Set(CATS.map(c => c[0])) };
+    const f = { city: 'all', type: 'all', cats: new Set(CATS.map(c => c[0])), minStars: 0 };
+
+    // ---------- star ratings (real, community) ----------
+    function starWidget(e, i){
+        const avg = e.stars || 0, cnt = e.rating_count || 0;
+        let s = '<span class="stars" title="Tap a star to rate this place">';
+        for (let n = 1; n <= 5; n++)
+            s += '<span class="star' + (n <= Math.round(avg) ? ' on' : '') + '" onclick="ratePlace(' + i + ',' + n + ')">★</span>';
+        s += '</span><span class="rate-meta">' +
+             (cnt ? (avg.toFixed(1) + ' · ' + cnt + (cnt > 1 ? ' ratings' : ' rating')) : 'tap to rate') + '</span>';
+        return s;
+    }
+    function ratePlace(i, stars){
+        const e = DATA.entries[i];
+        fetch('/api/rate', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: e.name, city: e.city, stars: stars }) })
+            .then(r => r.json()).then(d => {
+                if (d && d.ok) { e.stars = d.avg; e.rating_count = d.count; render(); }
+            }).catch(function(){});
+    }
+    // tap-to-cycle filter: Any → 5★ → 4★ → 3★ → 2★ → 1★ → Any
+    function cycleStars(){
+        f.minStars = f.minStars === 0 ? 5 : (f.minStars === 1 ? 0 : f.minStars - 1);
+        renderStarFilter(); render();
+    }
+    function renderStarFilter(){
+        const el = $('starFilter'); if (!el) return;
+        const label = f.minStars ? ('★'.repeat(f.minStars) + ' & up') : 'Any rating';
+        el.innerHTML = '<span class="chip star-chip' + (f.minStars ? ' on' : '') +
+            '" onclick="cycleStars()">' + label + ' &nbsp;⟳</span>';
+    }
 
     const $ = id => document.getElementById(id);
     function fmt(m){ m = Math.round(m); return Math.floor(m/60) + ':' + ('0' + (m % 60)).slice(-2); }
@@ -179,6 +219,7 @@
             if (f.city !== 'all' && e.city !== f.city) return;
             if (f.type !== 'all' && e.type !== f.type) return;
             if (!f.cats.has(e.cat)) return;
+            if (f.minStars && (!e.stars || e.stars < f.minStars)) return;   // higher-value filter
             if (q && !(e.name + ' ' + e.desc).toLowerCase().includes(q)) return;
             shown++;
             const catLabel = (CATS.find(c => c[0] === e.cat) || ['',''])[1];
@@ -193,6 +234,7 @@
                 +   (e.price ? '<span class="badge b-price">' + e.price + '</span>' : '')
                 +   (e.source === 'user' ? '<span class="badge b-comm">🌱 Community</span>' : '')
                 + '</div>'
+                + '<div class="rate-row">' + starWidget(e, i) + '</div>'
                 + '<p class="desc">' + esc(e.desc) + '</p>'
                 + '<p class="meta">Open till ' + fmt(e.close) + ' · ~' + e.visit + ' min visit</p>'
                 + (e.tip ? '<p class="tip">💡 ' + esc(e.tip) + '</p>' : '')
@@ -205,7 +247,8 @@
         });
         $('grid').innerHTML = rows.join('');
         $('empty').style.display = shown ? 'none' : 'block';
-        $('count').textContent = shown + ' of ' + DATA.entries.length + ' destinations';
+        $('count').textContent = shown + ' of ' + DATA.entries.length + ' destinations'
+            + (f.minStars ? ' · showing ' + '★'.repeat(f.minStars) + ' & up' : '');
         renderSuggest(q, shown);
     }
 
@@ -273,6 +316,7 @@
             return;
         }
         initFilters();
+        renderStarFilter();
         render();
     })();
     </script>

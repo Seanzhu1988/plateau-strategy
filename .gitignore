@@ -45,3 +45,4 @@ app.log
 *.log
 booking_app.log
 zibS3LVQ
+place_ratings.json

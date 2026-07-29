@@ -77,6 +77,28 @@
         .dayhead .drivetime { font-weight: 700; font-size: 0.72rem; color: #1d4ed8;
             background: #eff6ff; border-radius: 6px; padding: 1px 6px; margin-left: 6px; }
 
+        /* 🤵 Jarvis — the trip-organizer chat panel (replaces the stacked cards) */
+        .card.jarvis h3 { margin-bottom: 0.15rem; }
+        .jarvis-sub { color: #64748b; font-size: 0.78rem; line-height: 1.45; margin-bottom: 0.55rem; }
+        .jarvis-feed { display: flex; flex-direction: column; gap: 0.45rem; max-height: 300px;
+            overflow-y: auto; padding: 0.15rem 0 0.35rem; }
+        .jbub { display: flex; gap: 0.45rem; align-items: flex-start; }
+        .jbub .jav { flex: 0 0 auto; font-size: 1.05rem; }
+        .jbub .jtxt { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px 12px 12px 12px;
+            padding: 0.5rem 0.7rem; font-size: 0.8rem; line-height: 1.55; color: #334155; }
+        .jbub .jtxt b { color: #0f172a; }
+        .jbub .jtxt .warn { color: #b45309; font-weight: 700; }
+        .jarvis-sec { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase;
+            color: #94a3b8; margin: 0.75rem 0 0.3rem; border-top: 1px solid #f1f5f9; padding-top: 0.6rem; }
+        .leg { color: #64748b; font-size: 0.72rem; padding: 0.12rem 0 0.12rem 0.9rem; }
+        .jarvis-actions { display: none; gap: 0.45rem; flex-wrap: wrap; margin-top: 0.5rem; }
+        .jarvis-actions button { border: none; border-radius: 8px; color: #fff; font-weight: 700;
+            font-size: 0.76rem; padding: 0.42rem 0.62rem; cursor: pointer; }
+        .jarvis-actions button:hover { filter: brightness(1.1); }
+        .jarvis-actions .ja-ride { background: #1d4ed8; }
+        .jarvis-actions .ja-guide { background: #0f766e; }
+        .jarvis-actions .ja-hire { background: #6d28d9; }
+
         /* Sean's sketch: Current location → Destination + Add → D1 → D2 → … */
         .build-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
         .build-row .from { font-weight: 700; color: #0f172a; font-size: 0.9rem; white-space: nowrap; }
@@ -243,13 +265,18 @@
 
         <div class="layout">
             <div class="side">
-                <div class="card">
-                    <h3>🧭 Your route — D1 → D2 → …</h3>
-                    <div id="trip"><p class="muted">Add a destination above, or tap a pin — each one becomes the next stop, D1 → D2 → D3.</p></div>
-                </div>
-
-                <div class="card">
-                    <h3>✨ Auto-fill the rest</h3>
+                <div class="card jarvis">
+                    <h3>🤵 Jarvis — your trip organizer</h3>
+                    <p class="jarvis-sub">Add any place — Jarvis lays out distance, drive time, traffic, stars, how long to stay, and closing time, then builds your route.</p>
+                    <div id="jarvisFeed" class="jarvis-feed"></div>
+                    <div class="jarvis-sec">🧭 Your route</div>
+                    <div id="trip"><p class="muted">No stops yet — the route builds here as you add places.</p></div>
+                    <div class="jarvis-actions" id="jarvisActions">
+                        <button class="ja-ride" onclick="doorRide()">🚗 Get a ride</button>
+                        <button class="ja-guide" onclick="doorGuide('prefer')">🙋 Drop to a guide</button>
+                        <button class="ja-hire" onclick="doorGuide('hire')">🚕 Driver-guide</button>
+                    </div>
+                    <div class="jarvis-sec">✨ Jarvis suggests</div>
                     <div id="auto"><p class="muted">Calculating…</p></div>
                 </div>
             </div>
@@ -501,6 +528,7 @@
                 + ', closes ' + fmt(p.close) + '. It\'s in your route — reorder, shorten, or drop it.');
         else
             say('✓ Added ' + p.name + ' as D' + n + ' — arrive ' + fmt(f.arr) + ', leave ' + fmt(st.now) + '.');
+        jarvisAdded(st.route[st.route.length - 1]);   // Jarvis organizes the new stop
         refresh();
         return true;
     }
@@ -539,11 +567,13 @@
         st.visited.delete(last.i);
         st.day = last.prev.day; st.now = last.prev.now; st.pos = last.prev.pos;
         say('Removed ' + places[last.i].name + '.');
+        jarvisSay('Removed <b>' + escj(places[last.i] ? places[last.i].name : 'that stop') + '</b> — route updated below.');
         refresh();
     }
     function nextDay(){
         st.day++; st.now = DAY_START; st.pos = -1;
         say('Day ' + st.day + ' starts ' + fmt(DAY_START) + ' from your start point — board re-lit.');
+        jarvisSay('Starting <b>Day ' + st.day + '</b> at ' + fmt(DAY_START) + ' from your start point.');
         refresh();
     }
     function resetTrip(){
@@ -618,6 +648,13 @@
         ).join('<span class="darrow">→</span>');
     }
     function renderTrip(){
+        const el = $('trip'); if (!el) return;
+        const ja = $('jarvisActions');
+        if (!st.route.length) {
+            el.innerHTML = '<p class="muted">No stops yet — the route builds here as you add places.</p>';
+            if (ja) ja.style.display = 'none';
+            return;
+        }
         let h = '', lastDay = 0;
         st.route.forEach((r, k) => {
             if (r.day !== lastDay) {
@@ -628,10 +665,21 @@
                    + '</div>';
                 lastDay = r.day;
             }
-            h += '<div class="stop"><span>D' + (k + 1) + ' · ' + places[r.i].name + '</span>'
-               + '<span class="t">' + fmt(r.arr) + '–' + fmt(r.leave) + '</span></div>';
+            // point-to-point: distance, drive minutes, and time of arrival for every leg
+            const p = places[r.i];
+            if (p) {
+                const prev = r.prev || { pos: -1, now: r.arr };
+                // belt-and-braces: never dereference a missing previous place
+                const from = (prev.pos === -1 || places[prev.pos]) ? coordOf(prev.pos) : coordOf(-1);
+                const legMin = Math.max(0, Math.round(r.arr - prev.now));
+                h += '<div class="leg">↓ ' + legLabel(from, p) + ' · ' + legMin + ' min drive · arrive ' + fmt(r.arr) + '</div>';
+                h += '<div class="stop"><span>D' + (k + 1) + ' · ' + escj(p.name) + '</span>'
+                   + '<span class="t">' + fmt(r.arr) + '–' + fmt(r.leave) + '</span></div>';
+            }
         });
-        $('trip').innerHTML = h || '<p class="muted">Add a destination above, or tap a pin — each one becomes the next stop, D1 → D2 → D3.</p>';
+        el.innerHTML = h;
+        if (ja) ja.style.display = 'flex';
+        fillLegMiles();
     }
     function renderAuto(){
         const avail = new Set(places.map((_, i) => i).filter(i => !st.visited.has(i) && st.cats.has(places[i].cat)));
@@ -790,6 +838,75 @@
         return { date: ($('departDate') || {}).value || '', leaveBy: ($('leaveAt') || {}).value || '' };
     }
 
+    // ---------- 🤵 Jarvis — the free trip organizer ----------
+    // Not a paid chatbot: Jarvis narrates the REAL numbers the planner already
+    // computes — distance, drive minutes, traffic, stars, recommended stay, closing
+    // time — and assembles them into the route, then offers the professional handoff.
+    let bookStars = {};                     // "city|name(lower)" -> { stars, n } from the book
+    let bookStarsLoaded = false;            // don't claim "no ratings" before we've looked
+    const legMilesCache = {};               // legKey -> real road miles (OSRM, cached)
+    const legMilesInflight = {};
+    function escj(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
+    function jarvisSay(html){
+        const fd = $('jarvisFeed'); if (!fd) return;
+        const d = document.createElement('div');
+        d.className = 'jbub';
+        d.innerHTML = '<span class="jav">🤵</span><div class="jtxt">' + html + '</div>';
+        fd.appendChild(d);
+        while (fd.children.length > 14) fd.removeChild(fd.firstChild);   // feed stays light
+        fd.scrollTop = fd.scrollHeight;
+    }
+    function trafficLabel(dep){
+        const m = trafficMult(dep);
+        return m >= 1.45 ? 'heavy' : (m >= 1.15 ? 'moderate' : 'light');
+    }
+    function legKey(a, b){ return a.lat.toFixed(4) + ',' + a.lon.toFixed(4) + ';' + b.lat.toFixed(4) + ',' + b.lon.toFixed(4); }
+    function legLabel(a, b){
+        const key = legKey(a, b);
+        const real = legMilesCache[key];
+        const est = havKm(a, b) * 0.621371 * 1.25;                       // until the road answer lands
+        return '<span class="lm" data-lk="' + key + '">' + (real != null ? real.toFixed(1) : '~' + est.toFixed(1)) + ' mi</span>';
+    }
+    function fillLegMiles(){                 // swap estimates for real road miles, once per unique leg
+        document.querySelectorAll('.lm').forEach(elm => {
+            const key = elm.dataset.lk;
+            if (!key || legMilesCache[key] != null || legMilesInflight[key]) return;
+            legMilesInflight[key] = true;
+            const pts = key.split(';').map(s => { const p = s.split(','); return { lat: +p[0], lon: +p[1] }; });
+            driveMiles(pts[0], pts[1]).then(dm => {
+                if (dm.road) {                       // a real road answer — cache it, drop the '~'
+                    legMilesCache[key] = dm.mi;
+                    document.querySelectorAll('.lm[data-lk="' + key + '"]').forEach(x => { x.textContent = dm.mi.toFixed(1) + ' mi'; });
+                } else {                             // routing unreachable — stay honest, retry later
+                    document.querySelectorAll('.lm[data-lk="' + key + '"]').forEach(x => { x.textContent = '~' + dm.mi.toFixed(1) + ' mi'; });
+                    setTimeout(() => { delete legMilesInflight[key]; }, 60000);
+                }
+            });
+        });
+    }
+    function jarvisAdded(r){                 // the organizer card for a just-added stop
+        const p = places[r.i]; if (!p) return;
+        const prev = r.prev || { pos: -1, now: r.arr };
+        const from = (prev.pos === -1 || places[prev.pos]) ? coordOf(prev.pos) : coordOf(-1);
+        const fromName = prev.pos === -1 ? 'your start' : (places[prev.pos] ? places[prev.pos].name : 'previous stop');
+        const legMin = Math.max(0, Math.round(r.arr - prev.now));
+        const ct = crowdTimes[(p.name || '').toLowerCase()];
+        const stay = (ct && ct.median)
+            ? ct.median + ' min · ' + (ct.source === 'guide' ? '🎓 guide-endorsed' : '👥 what travelers do')
+            : '~' + p.visit + ' min';
+        const sb = bookStars[curCity + '|' + (p.name || '').toLowerCase()];
+        const stars = sb ? '★'.repeat(Math.max(1, Math.round(sb.stars))) + ' ' + sb.stars.toFixed(1) + (sb.n ? ' (' + sb.n + ')' : '')
+                         : (bookStarsLoaded ? 'no ratings yet — rate it in the book below' : 'ratings loading…');
+        const fits = (r.arr + p.visit) <= Math.min(p.close, DAY_CAP);
+        jarvisSay('<b>D' + st.route.length + ' · ' + escj(p.name) + '</b>'
+            + '<br>📏 ' + legLabel(from, p) + ' from ' + escj(fromName)
+            + ' · 🚗 ' + legMin + ' min (' + trafficLabel(prev.now) + ' traffic)'
+            + '<br>🕒 arrive ' + fmt(r.arr) + ' · ⏱ stay ' + stay
+            + '<br>⭐ ' + stars + ' · 🚪 closes ' + fmt(p.close)
+            + (fits ? '' : '<br><span class="warn">⚠ tight — it may close before you finish; consider an earlier slot</span>'));
+        fillLegMiles();
+    }
+
     // ---------- crowd stay-times ----------
     // Every time someone says how long they want at a place, the site learns it.
     // We show the MEDIAN once enough people have spoken — never one person's number.
@@ -855,6 +972,9 @@
         // Only restore stops that still point at a real place — a saved trip must
         // never resurrect a stop whose place is gone.
         const route = t.route.filter(r => r && places[r.i]);
+        // A dropped stop leaves its successor's prev.pos dangling — repair it to the
+        // start pin so the leg renderer can never dereference a missing place.
+        route.forEach(r => { if (r.prev && r.prev.pos !== -1 && !places[r.prev.pos]) r.prev.pos = -1; });
         if (!route.length && !(t.cats && t.cats.length)) return false;
         st.route = route;
         st.visited = new Set(route.map(r => r.i));
@@ -901,6 +1021,12 @@
         try {
             const r = await fetch('/api/destinations');
             const d = await r.json();
+            // Jarvis reads the book's community stars — keyed by CITY + name, because
+            // same-named places in different cities carry different ratings
+            (d.entries || []).forEach(e => {
+                if (e.stars) bookStars[(e.city || '') + '|' + (e.name || '').toLowerCase()] = { stars: e.stars, n: e.rating_count || 0 };
+            });
+            bookStarsLoaded = true;
             const have = new Set(places.map(p => p.name.toLowerCase()));
             const gone = new Set(dropped.map(n => String(n).toLowerCase()));
             let added = 0;
@@ -1054,6 +1180,8 @@
         return 'Current location (' + sm.lat.toFixed(4) + ', ' + sm.lng.toFixed(4) + ')';
     }
     // Real driving miles between two points — the destination's distance sets the fare.
+    // Returns { mi, road }: road=false means the routing server was unreachable and mi
+    // is a straight-line estimate — callers must keep the '~' honesty marker for those.
     async function driveMiles(from, to){
         try {
             const url = 'https://router.project-osrm.org/route/v1/driving/'
@@ -1061,9 +1189,9 @@
                 + to.lon.toFixed(6) + ',' + to.lat.toFixed(6) + '?overview=false';
             const j = await (await fetch(url)).json();
             const rt = j && j.code === 'Ok' && j.routes && j.routes[0];
-            if (rt && isFinite(rt.distance)) return rt.distance / 1609.344;   // meters → miles
+            if (rt && isFinite(rt.distance)) return { mi: rt.distance / 1609.344, road: true };
         } catch (e) {}
-        return havKm(from, to) * 0.621371 * 1.3;   // fallback: straight-line × road factor
+        return { mi: havKm(from, to) * 0.621371 * 1.3, road: false };
     }
     function initChips(){
         const c = $('chips');
@@ -1113,7 +1241,7 @@
         // The destination sets the price: real drive miles × the owner's rate.
         const pk = currentLoc ? { lat: currentLoc.lat, lon: currentLoc.lon }
                               : (function(){ const ll = startMarker.getLatLng(); return { lat: ll.lat, lon: ll.lng }; })();
-        const miles = await driveMiles(pk, { lat: drop.lat, lon: drop.lon });
+        const miles = (await driveMiles(pk, { lat: drop.lat, lon: drop.lon })).mi;
         let base = 15, perMile = 2.5;
         try { const p = await (await fetch('/api/pricing')).json();
               if (p) { if (isFinite(p.base_fare)) base = p.base_fare; if (isFinite(p.per_mile)) perMile = p.per_mile; } } catch (e) {}
@@ -1259,6 +1387,9 @@
         setTimeout(() => { resumeNote = ''; refresh(); }, 12000);
     }
     refresh();
+    jarvisSay(resumed
+        ? 'Welcome back — your <b>' + st.route.length + '-stop route</b> is laid out below, with distances, drive times and arrivals. Add more stops, or hand it to a pro when you\'re ready.'
+        : 'I\'m <b>Jarvis</b>, your trip organizer. Add any attraction, place or restaurant — type it above, tap a pin, or browse the book under the map — and I\'ll lay out the <b>distance, drive time, traffic, stars, how long to stay, and closing time</b>, then build your route. When it\'s ready, I can line up a ride, a guide, or a driver-guide.');
     fetchMatrix();
     mergeCommunity(curCity);           // bug 4: every visit, not just on a sample load
     loadCrowdTimes(true);              // how long people actually stay, learned from everyone

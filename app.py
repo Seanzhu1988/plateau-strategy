@@ -431,13 +431,18 @@ def api_destinations():
     try:
         with open(os.path.join(BASE_DIR, "destinations.json")) as f:
             data = json.load(f)
-        # ride the crowd's real stay times along with each place
+        # ride the crowd's real stay times AND star ratings along with each place
         times = _visit_all()
+        ratings = _ratings_all()
         for e in data.get("entries", []):
             rec = times.get(_visit_key(e.get("city"), e.get("name")))
             if rec and rec.get("n", 0) >= VISIT_MIN_N:
                 e["typical_visit"] = rec["median"]
                 e["visit_n"] = rec["n"]
+            r = ratings.get(_visit_key(e.get("city"), e.get("name")))
+            if r and r.get("n", 0) >= 1:
+                e["stars"] = r["avg"]           # community average, 1–5
+                e["rating_count"] = r["n"]
         return jsonify(data)
     except Exception as e:
         return jsonify({"cities": {}, "entries": [], "error": str(e)}), 500
@@ -491,6 +496,40 @@ def _median(nums):
         return None
     mid = n // 2
     return float(s[mid]) if n % 2 else (s[mid - 1] + s[mid]) / 2.0
+
+
+# ---------- star ratings (real, community-driven) ----------
+# Visitors rate a place 1–5 stars anywhere in the planner; we keep the average and
+# the count. No fabricated stars — a place shows stars only once someone rates it.
+RATINGS_PATH = os.path.join(BASE_DIR, "place_ratings.json")
+
+
+def _ratings_all():
+    d = _load(RATINGS_PATH)
+    return d if isinstance(d, dict) else {}
+
+
+@app.route("/api/rate", methods=["POST"])
+def api_rate():
+    d = request.get_json(silent=True) or {}
+    name = (d.get("name") or "").strip()[:80]
+    city = (d.get("city") or "").strip()[:40]
+    try:
+        stars = int(round(float(d.get("stars"))))
+    except (TypeError, ValueError):
+        return jsonify({"ok": False, "error": "stars required"}), 400
+    if len(name) < 2 or not (1 <= stars <= 5):
+        return jsonify({"ok": False, "error": "need a place and 1–5 stars"}), 400
+    key = _visit_key(city, name)
+    with _LOCK:
+        allr = _ratings_all()
+        rec = allr.get(key) or {"samples": [], "n": 0}
+        rec["samples"] = (rec.get("samples") or [])[-499:] + [stars]   # bounded
+        rec["n"] = len(rec["samples"])
+        rec["avg"] = round(sum(rec["samples"]) / rec["n"], 1)
+        allr[key] = rec
+        _save(RATINGS_PATH, allr)
+    return jsonify({"ok": True, "avg": rec["avg"], "count": rec["n"]})
 
 
 @app.route("/api/visit-times")
