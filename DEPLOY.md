@@ -52,6 +52,49 @@ the live site updates.
 
 ---
 
+---
+
+## Step 3 — Point plateaustrategy.io at the site
+
+The domain is registered. Two sides to connect: tell Render the domain is yours,
+then tell your registrar where to send visitors.
+
+**On Render** (Dashboard → your service → **Settings → Custom Domains**):
+
+1. **Add Custom Domain** → `plateaustrategy.io`
+2. **Add Custom Domain** again → `www.plateaustrategy.io`
+3. Render shows the DNS records to create. Leave the page open — you need those values.
+
+**At your registrar** (wherever you bought the domain), add what Render showed:
+
+| Type | Name | Value |
+|------|------|-------|
+| `A` | `@` (apex) | the IP Render lists |
+| `CNAME` | `www` | `<your-service>.onrender.com` |
+
+Some registrars call the apex record `ALIAS` or `ANAME` instead of `A` — use that
+if offered, it behaves better for a root domain.
+
+Then wait. DNS takes anywhere from a few minutes to a few hours to propagate.
+Render verifies automatically and issues a free TLS certificate once it sees the
+records, so `https://plateaustrategy.io` starts working on its own — you do not
+need to buy a certificate.
+
+**Check progress:**
+
+```bash
+dig +short plateaustrategy.io          # should return Render's IP
+curl -sI https://plateaustrategy.io | head -1   # should be HTTP/2 200
+```
+
+If `dig` returns nothing, DNS hasn't propagated yet — wait, don't re-add the records.
+
+> The site's canonical URL, link-preview cards, and social tags in
+> `landing-page.html` already point at `https://plateaustrategy.io/`, so shared
+> links show the right title, description, and logo once DNS resolves.
+
+---
+
 ## Two things you MUST know before real customers use it
 
 1. **Data won't survive on the free tier.** This app stores everything in JSON files
