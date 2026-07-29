@@ -16,6 +16,8 @@ board_members.json
 __pycache__/
 *.pyc
 .DS_Store
+.venv/
+venv/
 backups/
 clock_signups.json
 give_back.json
