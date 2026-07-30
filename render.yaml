@@ -5,6 +5,13 @@ services:
     plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 120
+    # Custom domains are claimed when the service is created from this
+    # blueprint, so they don't have to be added by hand. Render still needs
+    # the matching DNS records at the registrar before it issues the
+    # certificate — see DEPLOY.md Step 3.
+    domains:
+      - plateaustrategy.io
+      - www.plateaustrategy.io
     envVars:
       - key: PYTHON_VERSION
         value: "3.11.9"

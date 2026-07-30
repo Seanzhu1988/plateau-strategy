@@ -1296,15 +1296,51 @@ def api_agent_book_trip():
     return jsonify({"ok": True, "reservation": reservation})
 
 
+def _reservation_for_board(r):
+    """A copy of a reservation that is safe to show on the open board.
+
+    A driver deciding whether to take a ride needs the pickup, the time and
+    the fare — not the customer's phone, email or full name. Contact details
+    are released by /claim, to the one driver who actually took the ride."""
+    out = dict(r)
+    name = ((r.get("client") or {}).get("name") or "").strip()
+    out["client"] = {"name": (name.split(" ")[0] if name else "Client")}
+    out["contact_hidden"] = True
+    return out
+
+
 @app.route("/api/reservations")
 def api_reservations():
+    """Reservations, scoped to who is asking.
+
+    Owner  -> everything, in full.
+    Driver -> their own rides in full (they have to contact the customer),
+              plus the open board with contact details withheld.
+    Anyone else -> the open board only, contact details withheld.
+
+    This endpoint used to return every reservation — customer names, phones
+    and addresses — to anyone who requested it."""
     items = list(reversed(_load(RES_PATH)))
     status = (request.args.get("status") or "").upper()
     if status == "OPEN":
         items = [r for r in items if r.get("status") == "NEW"]
     elif status:
         items = [r for r in items if r.get("status") == status]
-    return jsonify({"reservations": items})
+
+    if session.get("owner"):
+        return jsonify({"reservations": items})
+
+    renter_id = (request.args.get("renter_id") or "").strip()
+    is_renter = bool(renter_id) and any(
+        (x.get("id") == renter_id) for x in _load(RENTERS_PATH))
+
+    visible = []
+    for r in items:
+        if is_renter and r.get("renter_id") == renter_id:
+            visible.append(r)                              # their own ride
+        elif r.get("status") == "NEW" and not r.get("renter_id"):
+            visible.append(_reservation_for_board(r))      # unclaimed, redacted
+    return jsonify({"reservations": visible})
 
 
 @app.route("/api/reservations/<rid>/claim", methods=["POST"])

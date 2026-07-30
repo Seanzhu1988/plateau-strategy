@@ -759,7 +759,9 @@
         async function refresh() {
             if (!RENTER) return;
             let all = [];
-            try { all = ((await (await fetch('/api/reservations')).json()).reservations) || []; } catch (e) { return; }
+            // identify ourselves so the server releases our own rides in full;
+            // the open pool comes back with the customer's contact withheld
+            try { all = ((await (await fetch('/api/reservations?renter_id=' + encodeURIComponent(RENTER.id))).json()).reservations) || []; } catch (e) { return; }
             const pool = all.filter(r => r.status === 'NEW');
             const mine = all.filter(r => r.renter_id === RENTER.id);
             document.getElementById('poolGrid').innerHTML = pool.map(r => resCard(r, false)).join('');
