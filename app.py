@@ -2770,6 +2770,7 @@ PARTNER_STATUSES = ["to_contact", "contacted", "interested", "signed", "declined
 
 
 @app.route("/api/partners")
+@owner_required
 def api_partners():
     return jsonify({"ok": True, "partners": _load(PARTNERS_PATH), "statuses": PARTNER_STATUSES})
 
@@ -2864,6 +2865,7 @@ def api_pricing_agent_rate():
 
 
 @app.route("/api/partners/add", methods=["POST"])
+@owner_required
 def api_partner_add():
     data = request.get_json(force=True, silent=True) or {}
     name = (data.get("name") or "").strip()
@@ -2890,6 +2892,7 @@ def api_partner_add():
 
 
 @app.route("/api/partners/<pid>/update", methods=["POST"])
+@owner_required
 def api_partner_update(pid):
     data = request.get_json(force=True, silent=True) or {}
     with _LOCK:
@@ -2909,6 +2912,7 @@ def api_partner_update(pid):
 
 
 @app.route("/api/partners/<pid>/delete", methods=["POST"])
+@owner_required
 def api_partner_delete(pid):
     with _LOCK:
         partners = _load(PARTNERS_PATH)
