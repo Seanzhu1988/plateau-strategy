@@ -290,6 +290,85 @@
           q: 'node(around:{R},{LAT},{LON})[tourism~"^(viewpoint|picnic_site)$"];' }
     ];
 
+    // Service plazas sit 30-40 miles apart, so checking a small circle at each
+    // break misses nearly all of them. Overpass accepts a whole linestring in
+    // `around`, so this sweeps the entire road in one query instead.
+    function sampleRoute(rt, maxPoints) {
+        var coords = rt.geometry.coordinates;
+        if (coords.length <= maxPoints) return coords.slice();
+        var step = coords.length / maxPoints, out = [];
+        for (var i = 0; i < maxPoints; i++) out.push(coords[Math.floor(i * step)]);
+        out.push(coords[coords.length - 1]);
+        return out;
+    }
+
+    async function restStopsAlongRoute(rt) {
+        // Sample densely enough that consecutive points are closer together than
+        // the search radius — otherwise the corridor has holes the sweep never
+        // looks into, and a longer trip silently misses more of them.
+        var target = Math.ceil(rt.distance / 3000);          // a point every ~3 km
+        var pts = sampleRoute(rt, Math.max(60, Math.min(500, target)));
+
+        // Circles spaced g apart along a line leave no gap once the radius
+        // reaches g/2. On a very long trip the sample cap widens the spacing,
+        // so the radius grows with it and coverage stays continuous by
+        // construction rather than by luck.
+        var maxGap = 0;
+        for (var i = 1; i < pts.length; i++) {
+            maxGap = Math.max(maxGap, haversine(pts[i-1][1], pts[i-1][0], pts[i][1], pts[i][0]));
+        }
+        var radius = Math.round(Math.max(4000, maxGap / 2 + 500));
+
+        var line = pts.map(function (c) {
+            return c[1].toFixed(4) + ',' + c[0].toFixed(4);
+        }).join(',');
+        var q = '[out:json][timeout:60];(' +
+                'node(around:' + radius + ',' + line + ')[highway~"^(services|rest_area)$"];' +
+                'way(around:' + radius + ',' + line + ')[highway~"^(services|rest_area)$"];' +
+                'node(around:' + radius + ',' + line + ')[amenity=fuel][name];' +
+                ');out center 300;';
+        var r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: q });
+        if (!r.ok) throw new Error('overpass');
+        var j = await r.json();
+
+        var stops = [];
+        (j.elements || []).forEach(function (e) {
+            var t = e.tags || {};
+            var lat = e.lat || (e.center && e.center.lat);
+            var lon = e.lon || (e.center && e.center.lon);
+            if (!lat || !lon) return;
+            var isFuel = t.amenity === 'fuel';
+            stops.push({
+                name: t.name || (t.highway === 'rest_area' ? 'Rest area' : 'Service area'),
+                kind: isFuel ? 'fuel' : 'rest',
+                lat: lat, lon: lon,
+                sec: progressAt(rt, pts, lat, lon)
+            });
+        });
+
+        // de-dupe: same name within ~2 km is the same plaza mapped twice
+        stops.sort(function (a, b) { return a.sec - b.sec; });
+        var seen = [];
+        return stops.filter(function (s) {
+            var dup = seen.some(function (o) {
+                return o.name === s.name && haversine(o.lat, o.lon, s.lat, s.lon) < 2000;
+            });
+            if (!dup) seen.push(s);
+            return !dup;
+        });
+    }
+
+    // How far into the drive a point is, by snapping it to the nearest
+    // sampled route point and scaling by total duration.
+    function progressAt(rt, pts, lat, lon) {
+        var best = 0, bestD = Infinity;
+        for (var i = 0; i < pts.length; i++) {
+            var d = haversine(lat, lon, pts[i][1], pts[i][0]);
+            if (d < bestD) { bestD = d; best = i; }
+        }
+        return (best / (pts.length - 1)) * rt.duration;
+    }
+
     async function placesNear(lat, lon, radius) {
         var body = '[out:json][timeout:25];(' +
             GROUPS.map(function (g) {
@@ -382,6 +461,36 @@
             $('stStops').textContent = bps.length;
             $('summary').style.display = 'flex';
 
+            // ---- every rest stop on the road, not just near a break ----
+            say('Sweeping the whole route for rest stops…');
+            var rests = [];
+            try {
+                rests = await restStopsAlongRoute(rt);
+            } catch (e) { /* reported below */ }
+
+            if (rests.length) {
+                var restHtml = '<div class="leg"><div class="leg-head">' +
+                    '<div class="leg-n" style="background:#2563eb">🅿</div><div class="leg-t">' +
+                    '<h3>Rest stops along the whole route</h3>' +
+                    '<p>' + rests.length + ' found within 2½ miles of the road, in the order you\'ll pass them</p>' +
+                    '</div></div><div class="pois"><div class="poi-group"><ul>' +
+                    rests.map(function (s) {
+                        return '<li>' + (s.kind === 'fuel' ? '⛽ ' : '🅿 ') + esc(s.name) +
+                               ' <span style="color:#94a3b8">· ' + hhmm(s.sec) + ' in</span></li>';
+                    }).join('') +
+                    '</ul></div></div></div>';
+                $('legs').innerHTML = restHtml;
+
+                rests.forEach(function (s) {
+                    var c = L.circleMarker([s.lat, s.lon], {
+                        radius: 6, color: '#fff', weight: 1.5,
+                        fillColor: s.kind === 'fuel' ? '#ea580c' : '#2563eb', fillOpacity: .95
+                    }).bindTooltip((s.kind === 'fuel' ? 'Fuel' : 'Rest stop') + ' · ' + s.name +
+                                   ' · ' + hhmm(s.sec) + ' in');
+                    c.addTo(map); layers.push(c);
+                });
+            }
+
             if (!bps.length) {
                 say('That drive is shorter than one break — no stops needed.');
                 btn.disabled = false;
@@ -430,16 +539,18 @@
                 html += out.html; found += out.count;
             }
 
-            $('legs').innerHTML = html;
-            $('stPois').textContent = found;
+            // append — the rest-stop sweep already wrote its own section above
+            $('legs').innerHTML += html;
+            $('stPois').textContent = found + rests.length;
 
-            if (failed === bps.length) {
+            if (failed === bps.length && !rests.length) {
                 say('Found the route, but the places service did not answer. It is free and rate-limited — wait a minute and try again.', true);
             } else if (failed) {
-                say('Planned. ' + failed + ' of ' + bps.length + ' stops came back empty from the places service — try again for those.', false);
+                say('Planned. ' + failed + ' of ' + bps.length + ' breaks came back empty from the places service — try again for those.', false);
             } else {
                 say('Planned: ' + Math.round(miles) + ' miles, ' + hhmm(rt.duration) +
-                    ' driving, ' + bps.length + ' suggested breaks.');
+                    ' driving, ' + rests.length + ' rest stops on the road, ' +
+                    bps.length + ' suggested breaks.');
             }
         } catch (e) {
             say(e.message || 'Something went wrong — try again.', true);
