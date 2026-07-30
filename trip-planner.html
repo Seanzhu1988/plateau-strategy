@@ -80,20 +80,54 @@
         .dayhead .drivetime { font-weight: 700; font-size: 0.72rem; color: #1d4ed8;
             background: #eff6ff; border-radius: 6px; padding: 1px 6px; margin-left: 6px; }
 
-        /* 🤵 Jarvis — the trip-organizer chat panel (replaces the stacked cards) */
-        .card.jarvis h3 { margin-bottom: 0.15rem; }
-        .jarvis-sub { color: #64748b; font-size: 0.78rem; line-height: 1.45; margin-bottom: 0.55rem; }
-        .jarvis-feed { display: flex; flex-direction: column; gap: 0.45rem; max-height: 300px;
-            overflow-y: auto; padding: 0.15rem 0 0.35rem; }
-        .jbub { display: flex; gap: 0.45rem; align-items: flex-start; }
-        .jbub .jav { flex: 0 0 auto; font-size: 1.05rem; }
-        .jbub .jtxt { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px 12px 12px 12px;
-            padding: 0.5rem 0.7rem; font-size: 0.8rem; line-height: 1.55; color: #334155; }
-        .jbub .jtxt b { color: #0f172a; }
-        .jbub .jtxt .warn { color: #b45309; font-weight: 700; }
+        /* 🤵 Jarvis — the day-sheet organizer panel */
+        .card.jarvis h3 { margin-bottom: 0.35rem; }
+        .jarvis-line { font-size: 0.8rem; color: #334155; line-height: 1.5; padding: 0.45rem 0.6rem;
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin: 0.35rem 0 0.55rem; }
+        .jarvis-line.flash { background: #eff6ff; border-color: #bfdbfe; }
+        .jarvis-line b { color: #0f172a; }
+        .jarvis-line .warn { color: #b45309; font-weight: 700; }
+        .jarvis-mast { font-size: 0.78rem; color: #475569; line-height: 1.55; padding: 0.45rem 0;
+            border-bottom: 1px solid #f1f5f9; }
+        .jarvis-mast b { color: #0f172a; }
+        .mast-risk { color: #b45309; font-weight: 700; cursor: pointer; }
         .jarvis-sec { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase;
             color: #94a3b8; margin: 0.75rem 0 0.3rem; border-top: 1px solid #f1f5f9; padding-top: 0.6rem; }
-        .leg { color: #64748b; font-size: 0.72rem; padding: 0.12rem 0 0.12rem 0.9rem; }
+        .itin-head { display: flex; align-items: center; }
+        .itin-tools { margin-left: auto; display: flex; gap: 0.55rem; }
+        .itin-tools button { background: none; border: none; color: #1d4ed8; font-size: 0.7rem;
+            font-weight: 700; cursor: pointer; padding: 0; letter-spacing: normal; text-transform: none; }
+        .jday { display: flex; flex-wrap: wrap; gap: 0.15rem 0.5rem; font-size: 0.72rem; font-weight: 700;
+            color: #1e3a8a; background: #eff6ff; border-radius: 8px; padding: 0.32rem 0.55rem; margin-top: 0.55rem; }
+        .jday .jd-meta { font-weight: 600; color: #475569; }
+        .itin-row { display: grid; grid-template-columns: 52px 1fr; column-gap: 0.5rem;
+            padding: 0.42rem 0; border-top: 1px solid #eef2f7; }
+        .itin-row.tight { border-left: 3px solid #d97706; padding-left: 0.45rem; }
+        .itin-row.risk { border-left: 3px solid #ef4444; padding-left: 0.45rem; background: #fffbeb; }
+        .itin-row.nowrow { border-left: 3px solid #1d4ed8; padding-left: 0.45rem; }
+        .itin-time { text-align: right; color: #0f172a; font-weight: 700; font-size: 0.78rem;
+            font-variant-numeric: tabular-nums; line-height: 1.35; }
+        .itin-time .lv { color: #94a3b8; font-weight: 600; display: block; }
+        .itin-name { font-weight: 700; color: #0f172a; font-size: 0.84rem; display: flex;
+            justify-content: space-between; gap: 0.4rem; }
+        .itin-stars { color: #b45309; font-weight: 700; font-size: 0.72rem; white-space: nowrap; }
+        .itin-leg { font-size: 0.7rem; color: #64748b; margin-top: 0.12rem; display: flex;
+            flex-wrap: wrap; gap: 0.15rem 0.55rem; justify-content: space-between; }
+        .itin-warn { font-size: 0.7rem; font-weight: 700; margin-top: 0.15rem; }
+        .itin-warn.tight { color: #b45309; }
+        .itin-warn.risk { color: #b91c1c; }
+        .itin-tag { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.05em; color: #1d4ed8;
+            background: #eff6ff; border-radius: 6px; padding: 1px 6px; margin-left: 6px; }
+        .jcursor { font-size: 0.72rem; color: #94a3b8; font-style: italic; padding: 0.35rem 0 0 0.3rem; }
+        .sug-row .sug-add { color: #1d4ed8; font-weight: 800; cursor: pointer; margin-right: 0.35rem; }
+        /* 💬 Jarvis asks — one quick community question, one-tap answers */
+        .jask { margin-top: 0.4rem; }
+        .jask .jask-q { font-size: 0.78rem; color: #334155; font-weight: 600; margin-bottom: 0.4rem; }
+        .jask .jask-opts { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+        .jask .jask-opts span { font-size: 0.74rem; font-weight: 600; padding: 0.28rem 0.7rem; border-radius: 999px;
+            border: 1.5px solid #e2e8f0; color: #475569; cursor: pointer; user-select: none; background: #fff; }
+        .jask .jask-opts span:hover { border-color: #93c5fd; color: #1d4ed8; }
+        .jask .jask-skip { color: #94a3b8 !important; border-color: transparent !important; }
         .jarvis-actions { display: none; gap: 0.45rem; flex-wrap: wrap; margin-top: 0.5rem; }
         .jarvis-actions button { border: none; border-radius: 8px; color: #fff; font-weight: 700;
             font-size: 0.76rem; padding: 0.42rem 0.62rem; cursor: pointer; }
@@ -201,6 +235,21 @@
 
         footer.attrib { text-align: center; color: #94a3b8; font-size: 0.75rem; padding: 1.2rem 0 2rem; }
         footer.attrib a { color: #64748b; }
+
+        /* 🖨 print = the day sheet alone, kept in NORMAL FLOW so a multi-day
+           itinerary paginates — absolute positioning would clip it to page 1.
+           Everything that isn't an ancestor of the day sheet is display:none'd
+           outright (that also removes Leaflet's absolutely-positioned tiles). */
+        @media print {
+            header, .page-sub, .wrap > .card:not(.jarvis), .actionbar,
+            .layout > div:not(.side), .side > *:not(.card.jarvis),
+            .wrap > *:not(.page-title):not(.layout), footer.attrib { display: none !important; }
+            .layout { display: block; }
+            .card.jarvis { border: none; box-shadow: none; padding: 0; }
+            .jarvis-line, .itin-tools, .jarvis-actions, .jask,
+            #sugHead, #auto { display: none !important; }
+            .itin-row, .jday { break-inside: avoid; }
+        }
     </style>
 </head>
 <body>
@@ -270,17 +319,25 @@
             <div class="side">
                 <div class="card jarvis">
                     <h3>🤵 Jarvis — your trip organizer</h3>
-                    <p class="jarvis-sub">Add any place — Jarvis lays out distance, drive time, traffic, stars, how long to stay, and closing time, then builds your route.</p>
-                    <div id="jarvisFeed" class="jarvis-feed"></div>
-                    <div class="jarvis-sec">🧭 Your route</div>
-                    <div id="trip"><p class="muted">No stops yet — the route builds here as you add places.</p></div>
+                    <div id="jarvisFeed" class="jarvis-line"></div>
+                    <div id="jarvisMast" class="jarvis-mast" style="display:none;"></div>
+                    <div class="jarvis-sec itin-head">🧭 Itinerary
+                        <span class="itin-tools" id="itinTools" style="display:none;">
+                            <button onclick="copyItinerary()" title="Copy the itinerary as text — send it to anyone">⧉ Copy</button>
+                            <button id="shareBtn" onclick="shareItinerary()" style="display:none;" title="Share the itinerary">📤 Share</button>
+                            <button onclick="printItinerary()" title="Print the day sheet (or save as PDF)">🖨 Print</button>
+                            <button onclick="undoStop()" title="Remove the last stop">↩ Undo</button>
+                        </span>
+                    </div>
+                    <div id="trip"></div>
                     <div class="jarvis-actions" id="jarvisActions">
                         <button class="ja-ride" onclick="doorRide()">🚗 Get a ride</button>
                         <button class="ja-guide" onclick="doorGuide('prefer')">🙋 Drop to a guide</button>
                         <button class="ja-hire" onclick="doorGuide('hire')">🚕 Driver-guide</button>
                     </div>
-                    <div class="jarvis-sec">✨ Jarvis suggests</div>
+                    <div class="jarvis-sec" id="sugHead">✨ Jarvis suggests</div>
                     <div id="auto"><p class="muted">Calculating…</p></div>
+                    <div id="jask" class="jask" style="display:none;"></div>
                 </div>
             </div>
 
@@ -524,6 +581,7 @@
             [].forEach.call($('chips').children, (b, k) => b.classList.toggle('on', st.cats.has(CATS[k][0]))); }
         const f = feasibility(i);
         st.route.push({ i, day: st.day, arr: f.arr, leave: f.arr + p.visit,
+                        est: matrixMode !== 'osrm',   // honesty marker: was this leg real-road timed?
                         prev: { day: st.day, now: st.now, pos: st.pos } });
         st.visited.add(i); st.pos = i; st.now = f.arr + p.visit;
         const n = st.route.length;
@@ -642,7 +700,7 @@
         const est = matrixMode === 'est' ? ' · drive times estimated (routing server unreachable)' : '';
         if (st.route.length || lit + tight + off > 0)
             say('Day ' + st.day + ' · ' + fmt(st.now) + ' · ' + lit + ' lit · ' + tight + ' tight · ' + off + ' out of reach' + est + resumeNote);
-        renderChain(); renderTrip(); renderAuto(); drawRoute(); renderPlaces();
+        renderChain(); renderTrip(); renderAuto(); drawRoute(); renderPlaces(); jarvisStatus();
         if (booted) savePlaces();          // every trip change is persisted (bug 1)
     }
     function renderChain(){                 // the D1 → D2 → D3 strip from the sketch
@@ -655,43 +713,123 @@
     }
     function renderTrip(){
         const el = $('trip'); if (!el) return;
-        const ja = $('jarvisActions');
+        const ja = $('jarvisActions'), tools = $('itinTools'), mast = $('jarvisMast');
         if (!st.route.length) {
-            el.innerHTML = '<p class="muted">No stops yet — the route builds here as you add places.</p>';
+            el.innerHTML = '<p class="muted">🤵 At your service. Add any place — search above or tap a pin — and I\'ll build your day sheet: miles, drive time, arrival, stay and closing time.</p>';
             if (ja) ja.style.display = 'none';
+            if (tools) tools.style.display = 'none';
+            if (mast) mast.style.display = 'none';
             return;
         }
+
+        // Per-day rollups built from the SAME per-leg numbers the rows show, so
+        // dep + driving + visiting = done reconciles by eye — never two totals.
+        const days = {};
+        let riskCount = 0, totalDrive = 0;
+        st.route.forEach(r => {
+            const p = places[r.i]; if (!p) return;
+            const prev = r.prev || { pos: -1, now: r.arr };
+            const legMin = Math.max(0, Math.round(r.arr - prev.now));
+            const d = days[r.day] || (days[r.day] = { drive: 0, visit: 0, dep: null, done: null, stops: 0, est: false });
+            if (d.dep === null) d.dep = prev.now;
+            d.drive += legMin; d.visit += (r.leave - r.arr); d.done = r.leave; d.stops++;
+            if (r.est) d.est = true;
+            totalDrive += legMin;
+        });
+
+        // NOW/NEXT tags only when the plan is dated TODAY — a live day sheet
+        const depVal = ($('departDate') || {}).value || '';
+        const nd = new Date();
+        const todayStr = nd.getFullYear() + '-' + ('0' + (nd.getMonth() + 1)).slice(-2) + '-' + ('0' + nd.getDate()).slice(-2);
+        const live = depVal === todayStr;
+        const nowMin = nd.getHours() * 60 + nd.getMinutes();
+        let nowTagged = false, nextTagged = false;
+
+        const est = st.route.some(r => r.est);   // any leg timed without real-road data
+        const hm = m => { m = Math.round(m); return m >= 60 ? Math.floor(m / 60) + 'h ' + ('0' + (m % 60)).slice(-2) + 'm' : m + 'm'; };
+
         let h = '', lastDay = 0;
         st.route.forEach((r, k) => {
+            const p = places[r.i]; if (!p) return;
             if (r.day !== lastDay) {
-                const mins = dayDrive[r.day];
-                h += '<div class="dayhead">Day ' + r.day
-                   + (mins ? ' <span class="drivetime" title="Real road routing, adjusted by your traffic setting">🛣️ '
-                             + mins + ' min driving · real roads</span>' : '')
-                   + '</div>';
+                const d = days[r.day];
+                h += '<div class="jday">DAY ' + r.day
+                   + ' <span class="jd-meta">· dep ' + fmt(d.dep) + ' → done ' + fmt(d.done)
+                   + ' · ' + d.stops + ' stop' + (d.stops > 1 ? 's' : '')
+                   + ' · 🚗 ' + (d.est ? '~' : '') + hm(d.drive)
+                   + ' · ⏱ ' + hm(d.visit) + ' visiting</span></div>';
                 lastDay = r.day;
             }
-            // point-to-point: distance, drive minutes, and time of arrival for every leg
-            const p = places[r.i];
-            if (p) {
-                const prev = r.prev || { pos: -1, now: r.arr };
-                // belt-and-braces: never dereference a missing previous place
-                const from = (prev.pos === -1 || places[prev.pos]) ? coordOf(prev.pos) : coordOf(-1);
-                const legMin = Math.max(0, Math.round(r.arr - prev.now));
-                h += '<div class="leg">↓ ' + legLabel(from, p) + ' · ' + legMin + ' min drive · arrive ' + fmt(r.arr) + '</div>';
-                h += '<div class="stop"><span>D' + (k + 1) + ' · ' + escj(p.name) + '</span>'
-                   + '<span class="t">' + fmt(r.arr) + '–' + fmt(r.leave) + '</span></div>';
+            const prev = r.prev || { pos: -1, now: r.arr };
+            // belt-and-braces: never dereference a missing previous place
+            const from = (prev.pos === -1 || places[prev.pos]) ? coordOf(prev.pos) : coordOf(-1);
+            const legMin = Math.max(0, Math.round(r.arr - prev.now));
+
+            // Warnings recomputed at RENDER time from the same formula family as
+            // feasibility() (leave = arr + visit), so rows and map pins agree.
+            const spare = Math.min(p.close, DAY_CAP) - r.leave;
+            let rowCls = '', warn = '';
+            if (spare < 0) {
+                rowCls = ' risk'; riskCount++;
+                warn = r.leave > DAY_CAP
+                    ? '<div class="itin-warn risk">⛔ Past the ' + fmt(DAY_CAP) + ' day cap — move it to the next day.</div>'
+                    : '<div class="itin-warn risk">⛔ Won\'t fit — runs ' + Math.round(-spare) + ' min past close (' + fmt(p.close) + '). Reorder or drop it.</div>';
+            } else if (spare < 35) {
+                rowCls = ' tight'; riskCount++;
+                warn = '<div class="itin-warn tight">⚠ Tight — ' + Math.round(spare) + ' min to spare before closing.</div>';
             }
+
+            let tag = '';
+            if (live && r.day === 1) {
+                if (!nowTagged && r.arr <= nowMin && nowMin < r.leave) { tag = '<span class="itin-tag">NOW</span>'; rowCls += ' nowrow'; nowTagged = true; }
+                else if (!nextTagged && r.arr > nowMin) { tag = '<span class="itin-tag">NEXT</span>'; nextTagged = true; }
+            }
+
+            const sb = bookStars[curCity + '|' + (p.name || '').toLowerCase()];
+            const stars = sb ? '<span class="itin-stars" title="' + sb.n + ' community rating' + (sb.n > 1 ? 's' : '') + ' from the Destination Book">★' + sb.stars.toFixed(1) + ' (' + sb.n + ')</span>' : '';
+            const ct = crowdTimes[(p.name || '').toLowerCase()];
+            const src = ct ? (ct.source === 'guide' ? ' <span title="stay time endorsed by a verified tour guide">🎓</span>' : ' <span title="median of what travelers actually stay">👥</span>') : '';
+
+            h += '<div class="itin-row' + rowCls + '">'
+               +   '<div class="itin-time">' + fmt(r.arr) + '<span class="lv">–' + fmt(r.leave) + '</span></div>'
+               +   '<div>'
+               +     '<div class="itin-name"><span>D' + (k + 1) + ' · ' + escj(p.name) + tag + '</span>' + stars + '</div>'
+               +     '<div class="itin-leg"' + (prev.pos === -1 ? ' title="from your start point"' : '') + '>'
+               +       '<span>↓ ' + legLabel(from, p) + ' · ' + legMin + ' min · ' + trafficLabel(prev.now) + '</span>'
+               +       '<span>⏱ ' + Math.round(r.leave - r.arr) + 'm' + src + ' · 🚪 closes ' + fmt(p.close) + '</span>'
+               +     '</div>'
+               +     warn
+               +   '</div>'
+               + '</div>';
         });
+        const lastPlace = places[st.route[st.route.length - 1].i];
+        h += '<div class="jcursor">└ next stop leaves ' + (lastPlace ? escj(lastPlace.name) : 'your start') + ' at ' + fmt(st.now) + ' — the map lights show what still fits</div>';
         el.innerHTML = h;
+
+        if (mast) {
+            const nDays = Math.max.apply(null, st.route.map(r => r.day));
+            mast.innerHTML = '<b>' + escj((CITIES[curCity] || {}).label || curCity) + '</b>'
+                + (depVal ? ' · ' + depVal : '')
+                + ' · ' + st.route.length + ' stop' + (st.route.length > 1 ? 's' : '')
+                + ' · ' + nDays + ' day' + (nDays > 1 ? 's' : '')
+                + ' · 🚗 ' + (est ? '~' : '') + hm(totalDrive) + ' driving'
+                + (est ? ' <span title="drive times estimated — routing server unreachable">~est</span>' : '')
+                + (riskCount ? ' · <span class="mast-risk" onclick="jumpToRisk()">⚠ ' + riskCount + ' at risk</span>' : '');
+            mast.style.display = '';
+        }
         if (ja) ja.style.display = 'flex';
+        if (tools) tools.style.display = 'flex';
         fillLegMiles();
+    }
+    function jumpToRisk(){
+        const el = document.querySelector('.itin-row.risk, .itin-row.tight');
+        if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
     }
     function renderAuto(){
         const avail = new Set(places.map((_, i) => i).filter(i => !st.visited.has(i) && st.cats.has(places[i].cat)));
         let h = '';
         const today = planDay(st.pos, st.now, avail);
-        if (today.length) h += '<div class="dayhead">Rest of today</div>' + today.map(rowA).join('');
+        if (today.length) h += '<div class="dayhead">Rest of today</div>' + today.map(o => rowA(o, true)).join('');
         let d = st.day;
         while (avail.size && d < st.day + 3) {
             d++;
@@ -701,7 +839,9 @@
         }
         if (avail.size) h += '<p class="muted" style="margin-top:0.4rem">' + avail.size + ' place(s) don\'t fit — fewer categories or lighter traffic would help.</p>';
         $('auto').innerHTML = h || '<p class="muted">Everything is planned — enjoy the trip.</p>';
-        function rowA(o){ return '<div class="stop"><span>' + escj(places[o.i].name) + '</span><span class="t">' + fmt(o.arr) + '</span></div>'; }
+        // ＋ only on Rest-of-today rows — a future-day arrival is hypothetical, and
+        // addToRoute() would land the stop TODAY, contradicting the printed time.
+        function rowA(o, addable){ return '<div class="stop sug-row"><span>' + (addable ? '<span class="sug-add" title="Add to route" onclick="addToRoute(' + o.i + ')">＋</span>' : '') + escj(places[o.i].name) + '</span><span class="t">' + fmt(o.arr) + '</span></div>'; }
     }
     // ---------- the drawn route: REAL roads, not straight lines ----------
     // Each day's stops are sent to the routing service in order; it returns the actual
@@ -853,14 +993,32 @@
     const legMilesCache = {};               // legKey -> real road miles (OSRM, cached)
     const legMilesInflight = {};
     function escj(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
+    // Jarvis speaks in ONE replaced line, not a chat feed. An event line "flashes"
+    // for a few seconds; then jarvisStatus() (called from refresh()) takes back
+    // over with a standing sentence derived from state — always current, never a
+    // stale bubble. Guard by timestamp, not setTimeout: timeouts get orphaned
+    // across the constant re-renders.
+    let jarvisFlashUntil = 0;
     function jarvisSay(html){
         const fd = $('jarvisFeed'); if (!fd) return;
-        const d = document.createElement('div');
-        d.className = 'jbub';
-        d.innerHTML = '<span class="jav">🤵</span><div class="jtxt">' + html + '</div>';
-        fd.appendChild(d);
-        while (fd.children.length > 14) fd.removeChild(fd.firstChild);   // feed stays light
-        fd.scrollTop = fd.scrollHeight;
+        fd.innerHTML = '🤵 ' + html;
+        fd.classList.add('flash');
+        jarvisFlashUntil = Date.now() + 6000;
+    }
+    function jarvisStatus(){
+        const fd = $('jarvisFeed'); if (!fd) return;
+        if (Date.now() < jarvisFlashUntil) return;      // never clobber a fresh event line
+        fd.classList.remove('flash');
+        if (!st.route.length) {
+            fd.innerHTML = '🤵 Good day — hand me a place, or tap a pin, and I\'ll organize the route. Day 1 departs ' + fmt(st.now) + ' from your start point.';
+            return;
+        }
+        let risky = 0;
+        st.route.forEach(r => { const p = places[r.i]; if (p && Math.min(p.close, DAY_CAP) - r.leave < 35) risky++; });
+        const nDays = Math.max.apply(null, st.route.map(r => r.day));
+        fd.innerHTML = risky
+            ? '🤵 ' + st.route.length + ' stop' + (st.route.length > 1 ? 's' : '') + ' planned — <span class="warn">' + risky + ' may not fit as ordered; see the marked row' + (risky > 1 ? 's' : '') + '</span>.'
+            : '🤵 ' + st.route.length + ' stop' + (st.route.length > 1 ? 's' : '') + ' over ' + nDays + ' day' + (nDays > 1 ? 's' : '') + ' · everything fits · hand it to a pro below when ready.';
     }
     function trafficLabel(dep){
         const m = trafficMult(dep);
@@ -890,27 +1048,16 @@
             });
         });
     }
-    function jarvisAdded(r){                 // the organizer card for a just-added stop
+    function jarvisAdded(r){                 // one butler sentence — the DETAIL lives in the day-sheet row
         const p = places[r.i]; if (!p) return;
-        const prev = r.prev || { pos: -1, now: r.arr };
-        const from = (prev.pos === -1 || places[prev.pos]) ? coordOf(prev.pos) : coordOf(-1);
-        const fromName = prev.pos === -1 ? 'your start' : (places[prev.pos] ? places[prev.pos].name : 'previous stop');
-        const legMin = Math.max(0, Math.round(r.arr - prev.now));
-        const ct = crowdTimes[(p.name || '').toLowerCase()];
-        const stay = (ct && ct.median)
-            ? ct.median + ' min · ' + (ct.source === 'guide' ? '🎓 guide-endorsed' : '👥 what travelers do')
-            : '~' + p.visit + ' min';
-        const sb = bookStars[curCity + '|' + (p.name || '').toLowerCase()];
-        const stars = sb ? '★'.repeat(Math.max(1, Math.round(sb.stars))) + ' ' + sb.stars.toFixed(1) + (sb.n ? ' (' + sb.n + ')' : '')
-                         : (bookStarsLoaded ? 'no ratings yet — rate it in the book below' : 'ratings loading…');
-        const fits = (r.arr + p.visit) <= Math.min(p.close, DAY_CAP);
-        jarvisSay('<b>D' + st.route.length + ' · ' + escj(p.name) + '</b>'
-            + '<br>📏 ' + legLabel(from, p) + ' from ' + escj(fromName)
-            + ' · 🚗 ' + legMin + ' min (' + trafficLabel(prev.now) + ' traffic)'
-            + '<br>🕒 arrive ' + fmt(r.arr) + ' · ⏱ stay ' + stay
-            + '<br>⭐ ' + stars + ' · 🚪 closes ' + fmt(p.close)
-            + (fits ? '' : '<br><span class="warn">⚠ tight — it may close before you finish; consider an earlier slot</span>'));
-        fillLegMiles();
+        const spare = Math.min(p.close, DAY_CAP) - r.leave;
+        const n = st.route.length;
+        if (spare < 0)
+            jarvisSay('<span class="warn">I\'ve added <b>' + escj(p.name) + '</b> as D' + n + ', but I must flag it — it runs past closing. See the red row.</span>');
+        else if (spare < 35)
+            jarvisSay('<span class="warn">Added <b>' + escj(p.name) + '</b> as D' + n + ' — tight against closing; see the amber row.</span>');
+        else
+            jarvisSay('Very good — <b>' + escj(p.name) + '</b> is D' + n + '. Arrive ' + fmt(r.arr) + ', leave ' + fmt(r.leave) + '.');
     }
 
     // ---------- crowd stay-times ----------
@@ -942,8 +1089,113 @@
             renderPlaces();
             if (applied) { savePlaces(); refresh();
                 say(applied + ' stop' + (applied > 1 ? 's' : '') + ' set to how long travelers actually stay.'); }
+            jarvisAsk();       // crowd data is in — ask one quick question about a place it lacks
         } catch (e) {}
     }
+    // ---------- day-sheet export (copy / share / print) ----------
+    // The handoff artifact: the same numbers as the itinerary rows, as plain text
+    // a traveler can text to a spouse, a driver, or a guide.
+    function itineraryText(){
+        const cityLbl = (CITIES[curCity] || {}).label || curCity;
+        const dateTxt = ($('departDate') || {}).value || '';
+        const dayDriveMin = {}, dayDone = {}, dayDep = {};
+        st.route.forEach(r => {
+            const prev = r.prev || { now: r.arr };
+            dayDriveMin[r.day] = (dayDriveMin[r.day] || 0) + Math.max(0, Math.round(r.arr - prev.now));
+            dayDone[r.day] = r.leave;
+            if (dayDep[r.day] === undefined) dayDep[r.day] = prev.now;
+        });
+        let out = 'Trip — ' + cityLbl + (dateTxt ? ' · ' + dateTxt : '') + '\n';
+        let lastDay = 0;
+        st.route.forEach((r, k) => {
+            const p = places[r.i]; if (!p) return;
+            if (r.day !== lastDay) {
+                out += 'DAY ' + r.day + ' (dep ' + fmt(dayDep[r.day]) + ', done ' + fmt(dayDone[r.day]) + ', ' + dayDriveMin[r.day] + 'm driving)\n';
+                lastDay = r.day;
+            }
+            const prev = r.prev || { pos: -1, now: r.arr };
+            const from = (prev.pos === -1 || places[prev.pos]) ? coordOf(prev.pos) : coordOf(-1);
+            const mi = legMilesCache[legKey(from, p)];
+            const legMin = Math.max(0, Math.round(r.arr - prev.now));
+            out += (k + 1) + '. ' + fmt(r.arr) + '–' + fmt(r.leave) + '  ' + p.name
+                 + '  (' + (mi != null ? mi.toFixed(1) : '~' + (havKm(from, p) * 0.621371 * 1.25).toFixed(1)) + ' mi, ' + (r.est ? '~' : '') + legMin + ' min)'
+                 + '  closes ' + fmt(p.close) + '\n';
+        });
+        out += 'Built free at plateaustrategy.io/trip-planner';
+        return out;
+    }
+    function copyItinerary(){
+        if (!st.route.length) { jarvisSay('Nothing to copy yet — add a stop first.'); return; }
+        const txt = itineraryText();
+        const done = () => jarvisSay('Itinerary copied — paste it anywhere.');
+        if (navigator.clipboard && navigator.clipboard.writeText)
+            navigator.clipboard.writeText(txt).then(done).catch(() => fallbackCopy(txt, done));
+        else fallbackCopy(txt, done);
+    }
+    function fallbackCopy(txt, done){
+        const ta = document.createElement('textarea');
+        ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) {}
+        document.body.removeChild(ta);
+    }
+    function shareItinerary(){
+        if (!st.route.length) { jarvisSay('Nothing to share yet — add a stop first.'); return; }
+        if (navigator.share) navigator.share({ title: 'My trip plan', text: itineraryText() }).catch(function(){});
+    }
+    function printItinerary(){
+        if (!st.route.length) { jarvisSay('Nothing to print yet — add a stop first.'); return; }
+        window.print();
+    }
+
+    // ---------- 💬 Jarvis asks — casual data collection [SEAN's design] ----------
+    // One quick, skippable question per visit; answers feed the SAME community
+    // pipeline the whole site learns from (/api/visit-time). Never more than one
+    // question on screen, never a form — a sentence and some tap-chips. A place
+    // is never asked twice on the same device (localStorage), and places that
+    // already have crowd data aren't asked at all.
+    let _jaskCur = null;         // the place currently being asked about — kept OUT of
+                                 // the markup so apostrophe-names can never break onclick
+    function jarvisAsk(){
+        try {
+            const box = $('jask'); if (!box) return;
+            const asked = JSON.parse(localStorage.getItem('jask_done') || '{}');
+            // candidates: this city's places with NO crowd stay-time yet, not yet asked on this device
+            const cands = places.filter(p => p && p.name
+                && !crowdTimes[p.name.toLowerCase()]
+                && !asked[curCity + '|' + p.name.toLowerCase()]);
+            if (!cands.length) { box.style.display = 'none'; _jaskCur = null; return; }
+            const p = cands[Math.floor(Math.random() * cands.length)];
+            _jaskCur = { name: p.name, city: curCity, key: curCity + '|' + p.name.toLowerCase() };
+            const chip = (m, lbl) => '<span onclick="jarvisAnswer(' + m + ')">' + lbl + '</span>';
+            box.innerHTML = '<div class="jask-q">💬 Quick one — if you\'ve been to <b>' + escj(p.name) + '</b>, how long did you stay?</div>'
+                + '<div class="jask-opts">' + chip(30, '30 min') + chip(60, '1 hour') + chip(120, '2 hours') + chip(240, 'Half day')
+                + '<span class="jask-skip" onclick="jarvisSkipAsk()">Haven\'t been</span></div>';
+            box.style.display = '';
+        } catch (e) {}
+    }
+    function _jaskMark(key){
+        try {
+            const asked = JSON.parse(localStorage.getItem('jask_done') || '{}');
+            asked[key] = 1;
+            localStorage.setItem('jask_done', JSON.stringify(asked));
+        } catch (e) {}
+    }
+    function jarvisAnswer(minutes){
+        if (!_jaskCur) return;
+        const name = _jaskCur.name, askCity = _jaskCur.city;
+        _jaskMark(_jaskCur.key);
+        fetch('/api/visit-time', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name, city: askCity, minutes: minutes }) }).catch(function(){});
+        jarvisSay('Much obliged — that helps every future traveler plan <b>' + escj(name) + '</b>.');
+        jarvisAsk();     // one more, from the remaining unasked places
+    }
+    function jarvisSkipAsk(){
+        if (_jaskCur) _jaskMark(_jaskCur.key);
+        _jaskCur = null;
+        const box = $('jask'); if (box) box.style.display = 'none';   // one skip ends the asking — never nag
+    }
+
     function removePlace(i){
         if (st.visited.has(i)) { say('Remove it from the trip first (Undo).'); return; }
         const gone = places[i].name;
@@ -1003,6 +1255,8 @@
                 } } catch (e) {}
         }
         curCity = city || 'nyc';
+        _jaskCur = null;                                     // a question asked in the OLD city is void
+        const jb = document.getElementById('jask'); if (jb) jb.style.display = 'none';
         const c = CITIES[curCity];
         places = c.places.map(p => Object.assign({}, p));
         savePlaces();
@@ -1394,8 +1648,9 @@
     }
     refresh();
     jarvisSay(resumed
-        ? 'Welcome back — your <b>' + st.route.length + '-stop route</b> is laid out below, with distances, drive times and arrivals. Add more stops, or hand it to a pro when you\'re ready.'
-        : 'I\'m <b>Jarvis</b>, your trip organizer. Add any attraction, place or restaurant — type it above, tap a pin, or browse the book under the map — and I\'ll lay out the <b>distance, drive time, traffic, stars, how long to stay, and closing time</b>, then build your route. When it\'s ready, I can line up a ride, a guide, or a driver-guide.');
+        ? 'Welcome back — your <b>' + st.route.length + '-stop day sheet</b> is laid out below. Add more stops, or hand it to a pro when ready.'
+        : 'I\'m <b>Jarvis</b>. Add any place — search above or tap a pin — and I\'ll build your day sheet.');
+    if (navigator.share && $('shareBtn')) $('shareBtn').style.display = '';
     fetchMatrix();
     mergeCommunity(curCity);           // bug 4: every visit, not just on a sample load
     loadCrowdTimes(true);              // how long people actually stay, learned from everyone
