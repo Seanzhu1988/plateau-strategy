@@ -1428,6 +1428,7 @@
             fetch('/api/destinations/add', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: p.name, lat: p.lat, lon: p.lon, city: curCity,
+                                       city_label: ((CITIES[curCity] || {}).label || curCity),
                                        close: p.close, visit: p.visit, found_via: 'planner',
                                        osm_class: (meta || {}).class, type: (meta || {}).type,
                                        address: (meta || {}).address })

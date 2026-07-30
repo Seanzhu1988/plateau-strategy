@@ -571,6 +571,7 @@ def api_destinations():
         # ride the crowd's real stay times AND star ratings along with each place
         times = _visit_all()
         ratings = _ratings_all()
+        comments = _comments_all()
         for e in data.get("entries", []):
             rec = times.get(_visit_key(e.get("city"), e.get("name")))
             if rec and rec.get("n", 0) >= VISIT_MIN_N:
@@ -580,9 +581,67 @@ def api_destinations():
             if r and r.get("n", 0) >= 1:
                 e["stars"] = r["avg"]           # community average, 1–5
                 e["rating_count"] = r["n"]
+            k = _visit_key(e.get("city"), e.get("name"))
+            e["comment_count"] = len(comments.get(k, []))
+            # a place a traveler discovered in the last 30 days is NEW to the book
+            if e.get("source") == "user" and e.get("added_at"):
+                try:
+                    age = (datetime.datetime.now()
+                           - datetime.datetime.fromisoformat(e["added_at"])).days
+                    e["is_new"] = age <= 30
+                    e["days_old"] = age
+                except Exception:
+                    pass
         return jsonify(data)
     except Exception as e:
         return jsonify({"cities": {}, "entries": [], "error": str(e)}), 500
+
+
+# ---------- 💬 destination comments — the community's own guidebook ----------
+# A place someone DISCOVERED by searching becomes an entry others can talk
+# about: what it's really like, what to know before you go. Keyed city|name
+# like every other community store. Free text, no account — so it is capped,
+# tag-stripped, and visible to the owner in the Archive.
+COMMENTS_PATH = os.path.join(BASE_DIR, "destination_comments.json")
+COMMENT_MAX_PER_PLACE = 200
+
+
+def _comments_all():
+    d = _load(COMMENTS_PATH)
+    return d if isinstance(d, dict) else {}
+
+
+@app.route("/api/destinations/comments")
+def api_destination_comments():
+    """Every comment on one place, oldest first."""
+    key = _visit_key(request.args.get("city"), request.args.get("name"))
+    items = _comments_all().get(key, [])
+    return jsonify({"ok": True, "comments": items, "count": len(items)})
+
+
+@app.route("/api/destinations/comment", methods=["POST"])
+def api_destination_comment_add():
+    d = request.get_json(force=True, silent=True) or {}
+    name = _no_tags((d.get("name") or "").strip())[:80]
+    city = _no_tags((d.get("city") or "").strip().lower())[:40]
+    text = _no_tags((d.get("text") or "").strip())[:400]
+    author = _no_tags((d.get("author") or "").strip())[:40] or "Traveler"
+    if len(name) < 2:
+        return jsonify({"ok": False, "error": "Which place?"}), 400
+    if len(text) < 2:
+        return jsonify({"ok": False, "error": "Write a few words first."}), 400
+    key = _visit_key(city, name)
+    with _LOCK:
+        allc = _comments_all()
+        items = allc.setdefault(key, [])
+        if len(items) >= COMMENT_MAX_PER_PLACE:
+            return jsonify({"ok": False, "error": "This place has plenty of notes already."}), 429
+        items.append({"id": "CMT_%d" % (int(time.time() * 1000) % 10**10),
+                      "text": text, "author": author, "place": name, "city": city,
+                      "at": datetime.datetime.now().isoformat(timespec="seconds")})
+        _save(COMMENTS_PATH, allc)
+        n = len(items)
+    return jsonify({"ok": True, "count": n})
 
 
 # ---------- how long people actually stay (crowd memory) ----------
@@ -813,10 +872,21 @@ def api_destinations_add():
                 d = json.load(f)
         except Exception:
             d = {"cities": {}, "entries": []}
-        city = (data.get("city") or "").strip().lower()
-        if city not in d.get("cities", {}):
+        # THE BOOK GROWS WORLDWIDE. A city we have never seen before is not an
+        # error to be swept into "Other" — it is a new chapter. The first traveler
+        # to search a place there names the city, and it joins the book for good.
+        city = _no_tags((data.get("city") or "").strip().lower())[:40]
+        cities = d.setdefault("cities", {})
+        if not city:
             city = "other"
-            d.setdefault("cities", {}).setdefault("other", "Other")
+            cities.setdefault("other", "Other")
+        elif city not in cities:
+            if len(cities) >= 500:            # bound the chapter list
+                city = "other"
+                cities.setdefault("other", "Other")
+            else:
+                label = _no_tags((data.get("city_label") or "").strip())[:60] or city.title()
+                cities[city] = label
         # dedupe: the site already remembers this place — but a re-search is a chance
         # to FILL IN what's still missing. A blank description gets one; a description
         # someone actually wrote is never touched.
@@ -3576,6 +3646,18 @@ def api_traffic_summary():
                      "destination_book": tool_stats("/destination-book")})
 
 
+def _arch_comments():
+    """Community notes on places — newest first."""
+    out = []
+    for key, items in _comments_all().items():
+        for m in items:
+            out.append({"date": m.get("at", ""), "place": m.get("place", ""),
+                        "city": m.get("city", ""), "author": m.get("author", ""),
+                        "comment": m.get("text", "")})
+    out.sort(key=lambda r: r.get("date", ""), reverse=True)
+    return out
+
+
 def _arch_wishes():
     """What visitors asked us to add — the demand signal behind the book."""
     out = []
@@ -3588,6 +3670,7 @@ def _arch_wishes():
 
 # section key → (label, one-line description, builder)
 ARCHIVE_SECTIONS = [
+    ("comments",   "💬 Place comments", "What travelers wrote about places in the Destination Book.", _arch_comments),
     ("wishes",     "🌟 Traveler wishes", "Places and experiences visitors asked us to add — the demand signal.", _arch_wishes),
     ("traffic",    "📈 Site traffic", "Daily page views, unique visitors, and Trip Planner / Destination Book usage.", _arch_traffic),
     ("bookings",   "🧾 Bookings & invoices", "Every reservation — customer, trip, fare, invoice and status.", _arch_bookings),
