@@ -80,6 +80,26 @@
         .addbtn.added { background: #dcfce7; color: #166534; cursor: default; }
         .openlink { font-size: 0.82rem; font-weight: 700; color: #1d4ed8; text-decoration: none; }
         .empty { text-align: center; color: #94a3b8; padding: 3rem 0; }
+        /* 🌟 wish box — the demand side of the book */
+        .wishbox { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1.1rem 1.2rem; margin-bottom: 1.2rem; }
+        .wishbox h3 { font-size: 1rem; color: #0f172a; margin-bottom: 0.2rem; }
+        .wishbox .sub { color: #64748b; font-size: 0.84rem; margin-bottom: 0.7rem; line-height: 1.5; }
+        .wishrow { display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center; }
+        .wishrow input { flex: 1; min-width: 190px; padding: 0.55rem 0.85rem; border: 1.5px solid #e2e8f0;
+            border-radius: 10px; font-size: 0.92rem; font-family: inherit; background: #f8fafc; }
+        .wishrow input:focus { outline: none; border-color: #3b82f6; background: #fff; }
+        .wishrow select { padding: 0.55rem 0.7rem; border: 1.5px solid #e2e8f0; border-radius: 10px;
+            font-size: 0.88rem; font-family: inherit; background: #f8fafc; color: #475569; }
+        .wishrow button { border: none; border-radius: 10px; background: linear-gradient(135deg,#3b82f6,#2563eb);
+            color: #fff; font-weight: 700; font-size: 0.88rem; padding: 0.55rem 1.1rem; cursor: pointer; }
+        .wishrow button:hover { filter: brightness(1.07); }
+        .wishmsg { font-size: 0.84rem; margin-top: 0.5rem; }
+        .wishmsg.ok { color: #047857; } .wishmsg.err { color: #b91c1c; }
+        .wishtop { margin-top: 0.7rem; font-size: 0.8rem; color: #64748b; line-height: 1.6; }
+        .wishtop b { color: #0f172a; }
+        .wishtag { display: inline-block; background: #eef2f7; border-radius: 999px;
+            padding: 0.15rem 0.6rem; margin: 0.15rem 0.25rem 0 0; font-size: 0.76rem; }
 
         footer.attrib { text-align: center; color: #94a3b8; font-size: 0.75rem; padding: 1.6rem 0 2rem; }
     </style>
@@ -106,6 +126,24 @@
             <div class="frow"><span class="flab">Search</span>
                 <input type="text" id="q" placeholder="Search the book — or type a new place to suggest &amp; add…" oninput="render()"></div>
             <div id="suggest"></div>
+        </div>
+
+        <div class="wishbox">
+            <h3>🌟 What do you wish was in this book?</h3>
+            <p class="sub">Tell us the place you want to see — or the kind of thing you're looking for. Every wish tells us what to add next, and where travelers want a guide. No account, no email needed.</p>
+            <div class="wishrow">
+                <input type="text" id="wishText" maxlength="120" placeholder="e.g. rooftop bar with a skyline view, or Space Needle"
+                       onkeydown="if(event.key==='Enter')sendWish()">
+                <select id="wishKind">
+                    <option value="place">A place</option>
+                    <option value="food">Food</option>
+                    <option value="experience">An experience</option>
+                    <option value="other">Something else</option>
+                </select>
+                <button onclick="sendWish()">Add my wish</button>
+            </div>
+            <div class="wishmsg" id="wishMsg"></div>
+            <div class="wishtop" id="wishTop"></div>
         </div>
 
         <div class="count" id="count"></div>
@@ -307,6 +345,35 @@
         }
     }
 
+    // ---------- 🌟 travel wishes ----------
+    async function sendWish(){
+        const el = document.getElementById('wishText'), msg = document.getElementById('wishMsg');
+        const wish = (el.value || '').trim();
+        msg.className = 'wishmsg';
+        if (wish.length < 2) { msg.className = 'wishmsg err'; msg.textContent = 'Tell us the place or the kind of place.'; return; }
+        try {
+            const j = await (await fetch('/api/travel-wish', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ wish: wish, city: f.city === 'all' ? '' : f.city,
+                                       kind: document.getElementById('wishKind').value }) })).json();
+            if (!j.ok) { msg.className = 'wishmsg err'; msg.textContent = j.error || 'Could not save that — try again.'; return; }
+            msg.className = 'wishmsg ok';
+            msg.textContent = j.count > 1
+                ? '✅ Noted — ' + j.count + ' travelers have asked for this. That moves it up our list.'
+                : '✅ Noted — thank you. Wishes like this decide what we add next.';
+            el.value = '';
+            loadWishTop();
+        } catch (e) { msg.className = 'wishmsg err'; msg.textContent = 'Could not reach the server — try again.'; }
+    }
+    async function loadWishTop(){
+        try {
+            const d = await (await fetch('/api/travel-wishes')).json();
+            const box = document.getElementById('wishTop');
+            if (!d || !d.ok || !d.top || !d.top.length) { box.innerHTML = ''; return; }
+            box.innerHTML = '<b>Most asked for:</b> ' + d.top.slice(0, 8).map(w =>
+                '<span class="wishtag">' + esc(w.wish) + (w.n > 1 ? ' ×' + w.n : '') + '</span>').join('');
+        } catch (e) {}
+    }
+
     (async function boot(){
         try {
             const r = await fetch('/api/destinations');
@@ -318,6 +385,7 @@
         initFilters();
         renderStarFilter();
         render();
+        loadWishTop();
     })();
     </script>
     <script src="/floatback.js"></script>

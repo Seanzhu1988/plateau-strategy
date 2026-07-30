@@ -3058,6 +3058,53 @@ def api_finance_wishlist():
     return jsonify({"wishes": list(reversed(_load(WISHLIST_PATH)))})
 
 
+# ---------- 🌟 travel wishes — what visitors WANT that the book doesn't have yet ----------
+# The demand side of the Destination Book: places people ask for, and the city
+# they want them in. Free-text, no account, no email required — a wish is a
+# signal, and the counts tell us what to add (and where guides are wanted).
+TRAVEL_WISHES_PATH = os.path.join(BASE_DIR, "travel_wishes.json")
+
+
+@app.route("/api/travel-wish", methods=["POST"])
+def api_travel_wish():
+    d = request.get_json(force=True, silent=True) or {}
+    wish = _no_tags((d.get("wish") or "").strip())[:120]
+    if len(wish) < 2:
+        return jsonify({"ok": False, "error": "Tell us the place or the kind of place."}), 400
+    city = _no_tags((d.get("city") or "").strip().lower())[:40]
+    kind = (d.get("kind") or "").strip().lower()
+    if kind not in ("place", "food", "experience", "other"):
+        kind = "other"
+    contact = _no_tags((d.get("contact") or "").strip())[:120]   # optional
+    with _LOCK:
+        items = _load(TRAVEL_WISHES_PATH)
+        if len(items) >= 5000:
+            return jsonify({"ok": False, "error": "Wish list is full for now."}), 429
+        items.append({"id": _next_id(items, "WSH", datestamp=False),
+                      "wish": wish, "city": city, "kind": kind, "contact": contact,
+                      "at": datetime.datetime.now().isoformat(timespec="seconds")})
+        _save(TRAVEL_WISHES_PATH, items)
+        # how many people asked for something similar — the useful public signal
+        w_low = wish.lower()
+        same = sum(1 for x in items if (x.get("wish") or "").lower() == w_low)
+    return jsonify({"ok": True, "count": same, "total": len(items)})
+
+
+@app.route("/api/travel-wishes")
+def api_travel_wishes():
+    """Public, aggregate-only: the most-asked-for wishes. No contact details."""
+    items = _load(TRAVEL_WISHES_PATH)
+    tally = {}
+    for w in items:
+        k = (w.get("wish") or "").strip()
+        if not k:
+            continue
+        rec = tally.setdefault(k.lower(), {"wish": k, "city": w.get("city", ""), "n": 0})
+        rec["n"] += 1
+    top = sorted(tally.values(), key=lambda r: -r["n"])[:12]
+    return jsonify({"ok": True, "total": len(items), "top": top})
+
+
 # ---------- books & taxes ----------
 _books_cache = {"t": 0, "data": None}
 
@@ -3493,8 +3540,19 @@ def api_traffic_summary():
                      "destination_book": tool_stats("/destination-book")})
 
 
+def _arch_wishes():
+    """What visitors asked us to add — the demand signal behind the book."""
+    out = []
+    for w in reversed(_load(TRAVEL_WISHES_PATH)):
+        out.append({"date": w.get("at", ""), "wish": w.get("wish", ""),
+                    "city": w.get("city", ""), "kind": w.get("kind", ""),
+                    "contact": w.get("contact", "")})
+    return out
+
+
 # section key → (label, one-line description, builder)
 ARCHIVE_SECTIONS = [
+    ("wishes",     "🌟 Traveler wishes", "Places and experiences visitors asked us to add — the demand signal.", _arch_wishes),
     ("traffic",    "📈 Site traffic", "Daily page views, unique visitors, and Trip Planner / Destination Book usage.", _arch_traffic),
     ("bookings",   "🧾 Bookings & invoices", "Every reservation — customer, trip, fare, invoice and status.", _arch_bookings),
     ("contacts",   "📇 Contacts (marketing)", "Every captured email & phone across the whole site, de-duped — your advertising list.", _arch_contacts),
