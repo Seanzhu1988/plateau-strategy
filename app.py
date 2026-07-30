@@ -202,6 +202,31 @@ TRAFFIC_MAX_DAYS = 120  # bound file growth; older days are just dropped
 TRAFFIC_TOOL_PATHS = {"/trip-planner": "trip_planner", "/destination-book": "destination_book",
                        "/favorite-place": "favorite_place"}
 
+# ---------- who's actually here RIGHT NOW ----------
+# Deliberately in-memory and ephemeral: presence is a live fact, not a record.
+# It never touches disk, resets on restart, and holds only anonymous cookie ids
+# with a last-seen stamp — nothing identifying, nothing retained.
+_PRESENCE = {}                 # anonymous vid -> last-seen epoch seconds
+_PRESENCE_WINDOW = 300         # "online" = seen in the last 5 minutes
+_PRESENCE_MAX = 5000           # hard bound so a burst can't grow memory unchecked
+
+
+def _presence_touch(vid):
+    if not vid:
+        return
+    now = time.time()
+    _PRESENCE[vid] = now
+    if len(_PRESENCE) > _PRESENCE_MAX:
+        for k in [k for k, t in list(_PRESENCE.items()) if now - t > _PRESENCE_WINDOW]:
+            _PRESENCE.pop(k, None)
+
+
+def _presence_count():
+    now = time.time()
+    for k in [k for k, t in list(_PRESENCE.items()) if now - t > _PRESENCE_WINDOW]:
+        _PRESENCE.pop(k, None)
+    return len(_PRESENCE)
+
 
 def _load_traffic():
     try:
@@ -237,6 +262,7 @@ def _track_traffic(resp):
             set_cookie = not vid
             if set_cookie:
                 vid = secrets.token_hex(16)
+            _presence_touch(vid)
             today = datetime.date.today().isoformat()
             with _LOCK:
                 data = _load_traffic()
@@ -3511,6 +3537,16 @@ def _arch_traffic():
         row["other_views"] = max(0, rec.get("pageviews", 0) - tool_total)
         out.append(row)
     return out
+
+
+@app.route("/api/online")
+def api_online():
+    """How many travelers are on the site right now. The caller's own ping keeps
+    them counted, so an open tab stays 'online' while it polls. Anonymous and
+    ephemeral — no identity, no history, nothing written to disk."""
+    _presence_touch(request.cookies.get("psx_vid"))
+    n = _presence_count()
+    return jsonify({"ok": True, "online": n, "window_minutes": _PRESENCE_WINDOW // 60})
 
 
 @app.route("/api/traffic/summary")

@@ -1954,18 +1954,32 @@
     // ---------- real usage, shown right next to the map ----------
     // Honest by design: shows the biggest true number available (week, else
     // all-time), and stays hidden entirely rather than ever displaying "0".
-    (function loadTrafficNote(){
-        fetch('/api/traffic/summary').then(r => r.json()).then(d => {
-            const el = document.getElementById('trafficNote');
-            if (!el || !d || !d.ok) return;
-            const tp = d.trip_planner || {};
-            let text;
-            if (tp.week > 0) text = '🧳 ' + tp.week + ' traveler' + (tp.week === 1 ? '' : 's') + ' planned a trip here this week';
-            else if (tp.all_time > 0) text = '🧳 ' + tp.all_time + ' traveler' + (tp.all_time === 1 ? '' : 's') + ' have used this planner';
-            else return;   // brand new — say nothing rather than show a zero
+    // ---------- live company: who else is planning right now ----------
+    // Every number here is real. When other travelers are genuinely on the site
+    // we say so live; when you're the only one, we fall back to the true count of
+    // people who planned here recently — never a padded or invented figure.
+    (function travellerNote(){
+        const el = document.getElementById('trafficNote');
+        if (!el) return;
+        let weekCount = 0, allTime = 0;
+        function paint(online){
+            let text = '';
+            if (online >= 2) text = '🟢 ' + online + ' travelers online now';
+            else if (weekCount > 0) text = '🧳 ' + weekCount + ' traveler' + (weekCount === 1 ? '' : 's') + ' planned a trip here this week';
+            else if (allTime > 0) text = '🧳 ' + allTime + ' traveler' + (allTime === 1 ? '' : 's') + ' have used this planner';
+            if (!text) { el.style.display = 'none'; return; }   // brand new — say nothing rather than a zero
             el.textContent = text;
             el.style.display = 'flex';
-        }).catch(function(){});
+        }
+        fetch('/api/traffic/summary').then(r => r.json()).then(d => {
+            if (d && d.ok) { weekCount = (d.trip_planner || {}).week || 0; allTime = (d.trip_planner || {}).all_time || 0; }
+        }).catch(function(){}).then(function(){ ping(); });
+        function ping(){
+            fetch('/api/online').then(r => r.json())
+                .then(d => paint((d && d.ok) ? d.online : 0))
+                .catch(function(){ paint(0); });
+        }
+        setInterval(ping, 60000);      // an open tab keeps itself counted
     })();
     </script>
     <script src="/floatback.js"></script>
