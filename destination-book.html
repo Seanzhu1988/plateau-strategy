@@ -119,6 +119,17 @@
         .cmt-form button { border: none; border-radius: 8px; background: #1d4ed8; color: #fff;
             font-weight: 700; font-size: 0.78rem; padding: 0.42rem 0.8rem; cursor: pointer; }
         .cmt-msg { font-size: 0.76rem; margin-top: 0.3rem; color: #047857; }
+        /* ⏱ the book asks what it displays: how long people actually stay */
+        .stay-crowd { color: #0d9488; font-weight: 700; }
+        .stay-ask { margin-top: 0.35rem; font-size: 0.78rem; }
+        .stay-ask .lead { color: #64748b; cursor: pointer; user-select: none; font-weight: 600; }
+        .stay-ask .lead:hover { color: #1d4ed8; }
+        .stay-opts { display: none; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.35rem; }
+        .stay-opts.on { display: flex; }
+        .stay-opts span { font-size: 0.74rem; font-weight: 600; padding: 0.25rem 0.62rem; border-radius: 999px;
+            border: 1.5px solid #e2e8f0; background: #fff; color: #475569; cursor: pointer; user-select: none; }
+        .stay-opts span:hover { border-color: #5eead4; color: #0d9488; }
+        .stay-done { color: #047857; font-weight: 700; font-size: 0.78rem; margin-top: 0.35rem; }
 
         footer.attrib { text-align: center; color: #94a3b8; font-size: 0.75rem; padding: 1.6rem 0 2rem; }
     </style>
@@ -294,7 +305,19 @@
                 + '</div>'
                 + '<div class="rate-row">' + starWidget(e, i) + '</div>'
                 + '<p class="desc">' + esc(e.desc) + '</p>'
-                + '<p class="meta">Open till ' + fmt(e.close) + ' · ~' + e.visit + ' min visit</p>'
+                + '<p class="meta">Open till ' + fmt(e.close) + ' · '
+                +   (e.typical_visit
+                        ? '<span class="stay-crowd">👥 travelers stay ~' + e.typical_visit + ' min</span>'
+                          + ' <span style="color:#94a3b8">(' + e.visit_n + ')</span>'
+                        : '~' + e.visit + ' min visit')
+                + '</p>'
+                + '<div class="stay-ask" id="stay_' + i + '">'
+                +   '<span class="lead" onclick="openStay(' + i + ')">⏱ Been here? Tell us how long you stayed →</span>'
+                +   '<div class="stay-opts" id="sopt_' + i + '">'
+                +     [30, 60, 120, 240].map(m => '<span onclick="sendStay(' + i + ',' + m + ')">'
+                          + (m >= 60 ? (m / 60) + (m === 60 ? ' hour' : ' hours') : m + ' min') + '</span>').join('')
+                +   '</div>'
+                + '</div>'
                 + (e.tip ? '<p class="tip">💡 ' + esc(e.tip) + '</p>' : '')
                 + '<div class="actions">'
                 +   (added
@@ -368,6 +391,31 @@
                 : ' · 🌱 “' + name + '” added — the book will remember it';
         } else {
             $('count').textContent = (resp && resp.error) || 'Could not add — try again.';
+        }
+    }
+
+    // ---------- ⏱ how long people actually stay ----------
+    // The book already SHOWED a visit length; now it asks for one too, so the
+    // number it prints comes from travelers instead of a guess. Same community
+    // pipeline the planner feeds (/api/visit-time), keyed city|name.
+    function openStay(i){
+        const box = document.getElementById('sopt_' + i);
+        if (box) box.classList.toggle('on');
+    }
+    async function sendStay(i, minutes){
+        const e = DATA.entries[i];
+        const wrap = document.getElementById('stay_' + i);
+        try {
+            const d = await (await fetch('/api/visit-time', { method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: e.name, city: e.city, minutes: minutes }) })).json();
+            if (!d || !d.ok) { wrap.innerHTML = '<div class="stay-done" style="color:#b91c1c">Could not save that.</div>'; return; }
+            wrap.innerHTML = '<div class="stay-done">✅ Thank you — ' + minutes + ' min recorded'
+                + (d.median ? ' · travelers now say ~' + d.median + ' min' : ' · a few more answers and this becomes the published number')
+                + '</div>';
+            if (d.median) { e.typical_visit = d.median; e.visit_n = d.n; }
+        } catch (err) {
+            wrap.innerHTML = '<div class="stay-done" style="color:#b91c1c">Could not reach the server.</div>';
         }
     }
 

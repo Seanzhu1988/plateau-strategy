@@ -158,6 +158,8 @@
         .itin-warn { font-size: 0.7rem; font-weight: 700; margin-top: 0.15rem; }
         .itin-warn.tight { color: #b45309; }
         .itin-warn.risk { color: #b91c1c; }
+        .fixlink { color: #1d4ed8; text-decoration: underline; cursor: pointer; font-weight: 700; }
+        .fixlink:hover { color: #1e40af; }
         .itin-tag { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.05em; color: #1d4ed8;
             background: #eff6ff; border-radius: 6px; padding: 1px 6px; margin-left: 6px; }
         .jcursor { font-size: 0.72rem; color: #94a3b8; font-style: italic; padding: 0.35rem 0 0 0.3rem; }
@@ -750,6 +752,31 @@
         jarvisSay('Removed <b>' + escj(places[last.i] ? places[last.i].name : 'that stop') + '</b> — route updated below.');
         refresh();
     }
+    // "It won't fit today" is only half an answer. This moves the offending stop
+    // (and everything after it) onto a fresh next day and re-times the whole tail,
+    // so the fix is one tap instead of undo-undo-undo-next-day-re-add.
+    function moveStopToNextDay(k){
+        if (k < 0 || k >= st.route.length) return;
+        const moving = st.route.slice(k).map(r => r.i);       // this stop + the rest
+        const movedName = (places[st.route[k].i] || {}).name || 'that stop';
+        st.route = st.route.slice(0, k);                       // keep what already fit
+        // rewind the clock to the end of the last surviving stop
+        if (st.route.length) {
+            const last = st.route[st.route.length - 1];
+            st.day = last.day; st.now = last.leave; st.pos = last.i;
+        } else {
+            st.day = 1; st.now = parseTime($('leaveAt').value) || 570; st.pos = -1;
+        }
+        st.visited = new Set(st.route.map(r => r.i));
+        // open a fresh day and re-add the moved stops in their original order
+        st.day++; st.now = DAY_START; st.pos = -1;
+        moving.forEach(i => { if (places[i]) addToRoute(i); });
+        jarvisSay('Moved <b>' + escj(movedName) + '</b> to <b>Day ' + st.day + '</b>'
+                + (moving.length > 1 ? ' with the ' + (moving.length - 1) + ' stop' + (moving.length > 2 ? 's' : '') + ' after it' : '')
+                + ' — re-timed from a ' + fmt(DAY_START) + ' start.');
+        refresh();
+    }
+
     function nextDay(){
         st.day++; st.now = DAY_START; st.pos = -1;
         say('Day ' + st.day + ' starts ' + fmt(DAY_START) + ' from your start point — board re-lit.');
@@ -900,10 +927,12 @@
                 rowCls = ' risk'; riskCount++;
                 warn = r.leave > DAY_CAP
                     ? '<div class="itin-warn risk">⛔ Past the ' + fmt(DAY_CAP) + ' day cap — move it to the next day.</div>'
-                    : '<div class="itin-warn risk">⛔ Won\'t fit — runs ' + Math.round(-spare) + ' min past close (' + fmt(p.close) + '). Reorder or drop it.</div>';
+                    : '<div class="itin-warn risk">⛔ Won\'t fit — runs ' + Math.round(-spare) + ' min past close (' + fmt(p.close) + '). '
+                      + '<span class="fixlink" onclick="moveStopToNextDay(' + k + ')">Move it to the next day →</span></div>';
             } else if (spare < 35) {
                 rowCls = ' tight'; riskCount++;
-                warn = '<div class="itin-warn tight">⚠ Tight — ' + Math.round(spare) + ' min to spare before closing.</div>';
+                warn = '<div class="itin-warn tight">⚠ Tight — ' + Math.round(spare) + ' min to spare before closing. '
+                     + '<span class="fixlink" onclick="moveStopToNextDay(' + k + ')">Give it its own day →</span></div>';
             }
 
             let tag = '';
@@ -1144,7 +1173,7 @@
         st.route.forEach(r => { const p = places[r.i]; if (p && Math.min(p.close, DAY_CAP) - r.leave < 35) risky++; });
         const nDays = Math.max.apply(null, st.route.map(r => r.day));
         fd.innerHTML = risky
-            ? '🤵 ' + st.route.length + ' stop' + (st.route.length > 1 ? 's' : '') + ' planned — <span class="warn">' + risky + ' may not fit as ordered; see the marked row' + (risky > 1 ? 's' : '') + '</span>.'
+            ? '🤵 ' + st.route.length + ' stop' + (st.route.length > 1 ? 's' : '') + ' planned — <span class="warn">' + risky + ' won\'t fit as ordered</span>. I\'d give ' + (risky > 1 ? 'them' : 'it') + ' another day — see the marked row' + (risky > 1 ? 's' : '') + '.'
             : '🤵 ' + st.route.length + ' stop' + (st.route.length > 1 ? 's' : '') + ' over ' + nDays + ' day' + (nDays > 1 ? 's' : '') + ' · everything fits · hand it to a pro below when ready.';
     }
     function trafficLabel(dep){

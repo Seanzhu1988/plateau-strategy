@@ -573,10 +573,20 @@ def api_destinations():
         ratings = _ratings_all()
         comments = _comments_all()
         for e in data.get("entries", []):
+            # Stay times are stored split by source (public crowd vs verified
+            # guide). This read used to assume the OLD flat shape, so it silently
+            # matched nothing and no book entry ever showed a crowd stay time.
             rec = times.get(_visit_key(e.get("city"), e.get("name")))
-            if rec and rec.get("n", 0) >= VISIT_MIN_N:
-                e["typical_visit"] = rec["median"]
-                e["visit_n"] = rec["n"]
+            if rec:
+                pub, gd = _visit_side(rec, "public"), _visit_side(rec, "guide")
+                if gd.get("n", 0) >= GUIDE_MIN_N and gd.get("median") is not None:
+                    e["typical_visit"] = gd["median"]      # a guide's word outranks the crowd
+                    e["visit_n"] = gd["n"]
+                    e["visit_source"] = "guide"
+                elif pub.get("n", 0) >= VISIT_MIN_N and pub.get("median") is not None:
+                    e["typical_visit"] = pub["median"]
+                    e["visit_n"] = pub["n"]
+                    e["visit_source"] = "public"
             r = ratings.get(_visit_key(e.get("city"), e.get("name")))
             if r and r.get("n", 0) >= 1:
                 e["stars"] = r["avg"]           # community average, 1–5
