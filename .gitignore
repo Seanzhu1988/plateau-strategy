@@ -38,6 +38,7 @@ deflator_waitlist.json
 partners.json
 documents.json
 violations.json
+traffic.json
 app.log
 
 # --- sensitive: bank statements, archives, logs, temp — NEVER commit ---

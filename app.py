@@ -46,6 +46,7 @@ RES_PATH = os.path.join(BASE_DIR, "reservations.json")
 RENTERS_PATH = os.path.join(BASE_DIR, "renters.json")
 AGENTS_PATH = os.path.join(BASE_DIR, "agents.json")
 ARTICLES_PATH = os.path.join(BASE_DIR, "articles.json")
+TRAFFIC_PATH = os.path.join(BASE_DIR, "traffic.json")
 CUSTOMERS_PATH = os.path.join(BASE_DIR, "customers.json")
 FINANCE_PATH = os.path.join(BASE_DIR, "finance_signups.json")
 WISHLIST_PATH = os.path.join(BASE_DIR, "finance_wishlist.json")
@@ -173,6 +174,73 @@ def _save(path, items):
     with open(tmp, "w") as f:
         json.dump(items, f, indent=2)
     os.replace(tmp, path)
+
+
+# ---------- site traffic — self-hosted, no third party ----------
+TRAFFIC_MAX_DAYS = 120  # bound file growth; older days are just dropped
+# Pages tracked individually for the "which tool" breakdown; every other
+# page rolls into a single "other" bucket so the archive table stays short.
+TRAFFIC_TOOL_PATHS = {"/trip-planner": "trip_planner", "/destination-book": "destination_book"}
+
+
+def _load_traffic():
+    try:
+        with open(TRAFFIC_PATH) as f:
+            d = json.load(f)
+        if isinstance(d, dict) and isinstance(d.get("days"), dict):
+            return d
+    except Exception:
+        pass
+    return {"days": {}}
+
+
+def _save_traffic(d):
+    tmp = TRAFFIC_PATH + ".tmp"
+    with open(tmp, "w") as f:
+        json.dump(d, f, indent=2)
+    os.replace(tmp, TRAFFIC_PATH)
+
+
+@app.after_request
+def _track_traffic(resp):
+    """Lightweight, self-hosted page-view counter — no third-party analytics,
+    no ad tracking. Counts real page loads only (GET, 200, text/html); API
+    calls and static assets never touch this. A "unique visitor" is
+    approximated by an anonymous long-lived cookie — nothing identifying —
+    and the raw cookie id is only ever kept for TODAY's still-open day.
+    Once a day finishes it's folded down to a plain count and never grows
+    again, so this file can't turn into a visitor-tracking log over time."""
+    try:
+        if request.method == "GET" and resp.status_code == 200 \
+                and (resp.mimetype or "").startswith("text/html"):
+            vid = request.cookies.get("psx_vid")
+            set_cookie = not vid
+            if set_cookie:
+                vid = secrets.token_hex(16)
+            today = datetime.date.today().isoformat()
+            with _LOCK:
+                data = _load_traffic()
+                days = data["days"]
+                # Finalize any day that isn't today — its ids are spent, strip them.
+                for d, rec in days.items():
+                    if d != today and "visitor_ids" in rec:
+                        rec["unique_visitors"] = len(rec["visitor_ids"])
+                        del rec["visitor_ids"]
+                rec = days.setdefault(today, {"pageviews": 0, "visitor_ids": [], "paths": {}})
+                rec["pageviews"] += 1
+                rec["paths"][request.path] = rec["paths"].get(request.path, 0) + 1
+                if vid not in rec["visitor_ids"]:
+                    rec["visitor_ids"].append(vid)
+                if len(days) > TRAFFIC_MAX_DAYS:
+                    for old in sorted(days.keys())[:len(days) - TRAFFIC_MAX_DAYS]:
+                        del days[old]
+                _save_traffic(data)
+            if set_cookie:
+                resp.set_cookie("psx_vid", vid, max_age=60 * 60 * 24 * 400,
+                                 httponly=True, samesite="Lax")
+    except Exception:
+        pass
+    return resp
 
 
 # ---------- driver contract helpers ----------
@@ -3306,8 +3374,32 @@ def _arch_activity():
     return out
 
 
+def _arch_traffic():
+    """One row per day, newest first — page views, unique visitors, and the
+    two tourist-facing tools (Trip Planner, Destination Book) broken out
+    separately since that's usage, not just traffic."""
+    data = _load_traffic()
+    out = []
+    for date in sorted(data["days"].keys(), reverse=True):
+        rec = data["days"][date]
+        paths = rec.get("paths", {})
+        uniq = rec.get("unique_visitors")
+        if uniq is None:  # today — still open, computed live from the raw ids
+            uniq = len(rec.get("visitor_ids", []))
+        row = {"date": date, "page_views": rec.get("pageviews", 0), "unique_visitors": uniq}
+        tool_total = 0
+        for path, key in TRAFFIC_TOOL_PATHS.items():
+            n = paths.get(path, 0)
+            row[key + "_views"] = n
+            tool_total += n
+        row["other_views"] = max(0, rec.get("pageviews", 0) - tool_total)
+        out.append(row)
+    return out
+
+
 # section key → (label, one-line description, builder)
 ARCHIVE_SECTIONS = [
+    ("traffic",    "📈 Site traffic", "Daily page views, unique visitors, and Trip Planner / Destination Book usage.", _arch_traffic),
     ("bookings",   "🧾 Bookings & invoices", "Every reservation — customer, trip, fare, invoice and status.", _arch_bookings),
     ("contacts",   "📇 Contacts (marketing)", "Every captured email & phone across the whole site, de-duped — your advertising list.", _arch_contacts),
     ("people",     "👤 Accounts", "Agent, driver and customer accounts.", _arch_people),
