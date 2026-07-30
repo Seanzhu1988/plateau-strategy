@@ -488,6 +488,15 @@ def trip_planner_page():
     return send_file(os.path.join(BASE_DIR, "trip-planner.html"))
 
 
+@app.route("/road-trip")
+def road_trip_page():
+    """Free tool: long-haul planner — fuel, food, rest areas and viewpoints found
+    along the actual route and grouped by how many hours into the drive they are.
+    The city planner answers 'what can I reach from here'; this answers
+    'what is on the way'."""
+    return send_file(os.path.join(BASE_DIR, "road-trip.html"))
+
+
 @app.route("/destination-book")
 def destination_book_page():
     """Free tool: curated guidebook of attractions + restaurants; feeds the trip planner."""
