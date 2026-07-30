@@ -611,24 +611,26 @@
     // ---------- rendering ----------
     function pinHtml(i, cls){
         return '<div class="tp-pin ' + cls + '"><div class="tp-dot">' + (i + 1) + '</div>'
-             + '<span class="tp-lbl">' + places[i].name.split(' ').slice(0, 2).join(' ') + '</span></div>';
+             + '<span class="tp-lbl">' + escj(places[i].name.split(' ').slice(0, 2).join(' ')) + '</span></div>';
     }
     function refresh(){
         let lit = 0, tight = 0, off = 0;
         markers.forEach((mk, i) => {
             const p = places[i];
             if (!p) return;
+            // Leaflet renders tooltip strings as HTML — community names must be escaped
+            const nm = escj(p.name);
             let cls, tip;
-            if (st.visited.has(i)) { cls = 'tp-vis'; tip = p.name + ' — in your trip'; }
-            else if (!st.cats.has(p.cat)) { cls = 'tp-catoff'; tip = p.name + ' — category off'; }
+            if (st.visited.has(i)) { cls = 'tp-vis'; tip = nm + ' — in your trip'; }
+            else if (!st.cats.has(p.cat)) { cls = 'tp-catoff'; tip = nm + ' — category off'; }
             else {
                 const f = feasibility(i);
                 if (f.slack < 0) { cls = 'tp-off'; off++;
-                    tip = p.name + ' — out of reach: arrive ' + fmt(f.arr) + ', closes ' + fmt(p.close); }
+                    tip = nm + ' — out of reach: arrive ' + fmt(f.arr) + ', closes ' + fmt(p.close); }
                 else if (f.slack < 35) { cls = 'tp-tight'; tight++;
-                    tip = p.name + ' — tight: ' + Math.round(f.t) + ' min drive, arrive ' + fmt(f.arr) + ', closes ' + fmt(p.close); }
+                    tip = nm + ' — tight: ' + Math.round(f.t) + ' min drive, arrive ' + fmt(f.arr) + ', closes ' + fmt(p.close); }
                 else { cls = 'tp-lit'; lit++;
-                    tip = p.name + ' — ' + Math.round(f.t) + ' min drive, arrive ' + fmt(f.arr) + ', closes ' + fmt(p.close); }
+                    tip = nm + ' — ' + Math.round(f.t) + ' min drive, arrive ' + fmt(f.arr) + ', closes ' + fmt(p.close); }
             }
             mk.setIcon(L.divIcon({ className: '', html: pinHtml(i, cls), iconSize: [90, 46], iconAnchor: [45, 14] }));
             mk.unbindTooltip(); mk.bindTooltip(tip);
@@ -643,8 +645,8 @@
         const el = $('chain'); if (!el) return;
         if (!st.route.length) { el.innerHTML = '<span class="muted">Your route builds here: D1 → D2 → D3 …</span>'; return; }
         el.innerHTML = st.route.map((r, k) =>
-            '<span class="dnode" title="' + places[r.i].name + '">D' + (k + 1) + ' · '
-             + places[r.i].name.split(' ').slice(0, 2).join(' ') + '</span>'
+            '<span class="dnode" title="' + escj(places[r.i].name) + '">D' + (k + 1) + ' · '
+             + escj(places[r.i].name.split(' ').slice(0, 2).join(' ')) + '</span>'
         ).join('<span class="darrow">→</span>');
     }
     function renderTrip(){
@@ -695,7 +697,7 @@
         }
         if (avail.size) h += '<p class="muted" style="margin-top:0.4rem">' + avail.size + ' place(s) don\'t fit — fewer categories or lighter traffic would help.</p>';
         $('auto').innerHTML = h || '<p class="muted">Everything is planned — enjoy the trip.</p>';
-        function rowA(o){ return '<div class="stop"><span>' + places[o.i].name + '</span><span class="t">' + fmt(o.arr) + '</span></div>'; }
+        function rowA(o){ return '<div class="stop"><span>' + escj(places[o.i].name) + '</span><span class="t">' + fmt(o.arr) + '</span></div>'; }
     }
     // ---------- the drawn route: REAL roads, not straight lines ----------
     // Each day's stops are sent to the routing service in order; it returns the actual
@@ -773,7 +775,7 @@
             + (st.visited.has(i)
                 ? '<span class="addbtn done" title="Already in your route">✓</span>'
                 : '<span class="addbtn" title="Add to your route" onclick="addToRoute(' + i + ')">＋</span>')
-            + '<span class="nm">' + (i + 1) + '. ' + p.name + crowdHint(p) + '</span>'
+            + '<span class="nm">' + (i + 1) + '. ' + escj(p.name) + crowdHint(p) + '</span>'
             + '<input type="time" value="' + fmt(p.close).padStart(5, '0') + '" onchange="editPlace(' + i + ',\'close\',this.value)">'
             + '<input type="number" min="10" step="5" value="' + p.visit + '" onchange="editPlace(' + i + ',\'visit\',this.value)">'
             + '<select onchange="editPlace(' + i + ',\'cat\',this.value)" style="width:78px">'

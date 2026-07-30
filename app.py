@@ -646,7 +646,12 @@ def api_destinations_add():
     for every future visitor AND appears in the Destination Book (tagged
     'community'). Deduped by name+city; capped so the book can't be flooded."""
     data = request.get_json(force=True, silent=True) or {}
-    name = (data.get("name") or "").strip()[:80]
+    # Defense-in-depth vs stored XSS: these strings end up in every visitor's
+    # browser, so no angle brackets survive on the way in (the pages escape on
+    # render too — this guard protects any future sink someone forgets).
+    def _no_tags(s):
+        return (s or "").replace("<", "").replace(">", "")
+    name = _no_tags((data.get("name") or "").strip())[:80]
     if len(name) < 2:
         return jsonify({"ok": False, "error": "Name required."}), 400
     try:
@@ -657,7 +662,8 @@ def api_destinations_add():
         return jsonify({"ok": False, "error": "Valid coordinates required."}), 400
     # Describe it from the map's own classification so the book never gains a blank row
     auto_desc, auto_cat, auto_type = _describe_osm(data)
-    given_desc = (data.get("desc") or "").strip()[:300]
+    auto_desc = _no_tags(auto_desc)          # built from client-supplied OSM fields
+    given_desc = _no_tags((data.get("desc") or "").strip())[:300]
     cat = (data.get("cat") or "").strip().lower()
     if cat not in ("history", "culture", "nature", "food", "views"):
         cat = auto_cat

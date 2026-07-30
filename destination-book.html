@@ -155,7 +155,7 @@
 
     const $ = id => document.getElementById(id);
     function fmt(m){ m = Math.round(m); return Math.floor(m/60) + ':' + ('0' + (m % 60)).slice(-2); }
-    function esc(s){ return String(s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])); }
+    function esc(s){ return String(s == null ? '' : s).replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])); }
 
     function plannerNames(){
         try { const s = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
@@ -231,7 +231,7 @@
                 +   '<span class="badge ' + (e.type === 'restaurant' ? 'b-rest' : 'b-attr') + '">'
                 +       (e.type === 'restaurant' ? 'Restaurant' : 'Attraction') + '</span>'
                 +   '<span class="badge b-cat">' + catLabel + '</span>'
-                +   (e.price ? '<span class="badge b-price">' + e.price + '</span>' : '')
+                +   (e.price ? '<span class="badge b-price">' + esc(e.price) + '</span>' : '')
                 +   (e.source === 'user' ? '<span class="badge b-comm">🌱 Community</span>' : '')
                 + '</div>'
                 + '<div class="rate-row">' + starWidget(e, i) + '</div>'
