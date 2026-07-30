@@ -117,6 +117,25 @@ def owner_required(fn):
     return wrapper
 
 
+def _self_or_owner(session_key, url_param):
+    """A driver/agent may only reach their OWN record; the owner may reach any.
+    Without this, any of these URLs could be requested with someone else's id —
+    the routes below used to trust whatever id the browser sent, with nothing
+    checking that the caller had actually logged in as that person."""
+    def deco(fn):
+        @wraps(fn)
+        def wrapper(*a, **k):
+            if session.get("owner") or (session.get(session_key) and session.get(session_key) == k.get(url_param)):
+                return fn(*a, **k)
+            return jsonify({"ok": False, "auth_required": True, "error": "Login required."}), 401
+        return wrapper
+    return deco
+
+
+renter_self_or_owner = _self_or_owner("renter_id", "rid")
+agent_self_or_owner = _self_or_owner("agent_id", "aid")
+
+
 @app.route("/api/owner/status")
 def api_owner_status():
     return jsonify({"ok": True, "configured": _load_owner() is not None,
@@ -1454,6 +1473,7 @@ def api_claim(rid):
 
 
 @app.route("/api/renters/<rid>/refer", methods=["POST"])
+@renter_self_or_owner
 def api_renter_refer(rid):
     """Driver-Agent self-referral. A driver met a customer who needs a ride, refers
     them here, and drives the trip themselves — so they earn BOTH the referral
@@ -1963,15 +1983,18 @@ def api_renter_register():
         }
         renters.append(renter)
         _save(RENTERS_PATH, renters)
+    session["renter_id"] = renter["id"]
     return jsonify({"ok": True, "renter": renter})
 
 
 @app.route("/api/renters")
+@owner_required
 def api_renters():
     return jsonify({"renters": _load(RENTERS_PATH)})
 
 
 @app.route("/api/renters/<rid>")
+@renter_self_or_owner
 def api_renter(rid):
     renter = next((x for x in _load(RENTERS_PATH) if x.get("id") == rid), None)
     if not renter:
@@ -1982,6 +2005,7 @@ def api_renter(rid):
 
 
 @app.route("/api/renters/<rid>/insurance")
+@renter_self_or_owner
 def api_renter_insurance(rid):
     """Current insurance standing for a driver (state + days left)."""
     renter = next((x for x in _load(RENTERS_PATH) if x.get("id") == rid), None)
@@ -1992,6 +2016,7 @@ def api_renter_insurance(rid):
 
 
 @app.route("/api/renters/<rid>/insurance/upload", methods=["POST"])
+@renter_self_or_owner
 def api_renter_insurance_upload(rid):
     """Driver uploads proof of insurance + its expiry date. Rejects an already-expired
     policy so 'covered' always means covered right now."""
@@ -2051,6 +2076,7 @@ def api_renter_insurance_doc(rid):
 
 # ---------- driver compliance / violations ----------
 @app.route("/api/renters/<rid>/violations")
+@renter_self_or_owner
 def api_renter_violations(rid):
     """The driver's own compliance standing: auto-detected issues + logged violations."""
     renter = next((x for x in _load(RENTERS_PATH) if x.get("id") == rid), None)
@@ -2114,6 +2140,7 @@ def api_all_violations():
 
 # ---------- driver paperwork / document archive ----------
 @app.route("/api/renters/<rid>/documents")
+@renter_self_or_owner
 def api_renter_documents(rid):
     """The driver's paper trail: archived uploads + signed-agreement history."""
     renter = next((x for x in _load(RENTERS_PATH) if x.get("id") == rid), None)
@@ -2123,6 +2150,7 @@ def api_renter_documents(rid):
 
 
 @app.route("/api/renters/<rid>/documents/upload", methods=["POST"])
+@renter_self_or_owner
 def api_renter_document_upload(rid):
     """Driver uploads a piece of paperwork. It is ARCHIVED, not overwritten."""
     renter = next((x for x in _load(RENTERS_PATH) if x.get("id") == rid), None)
@@ -2222,6 +2250,7 @@ def _square_invoices():
 
 
 @app.route("/api/renters/<rid>/rto")
+@renter_self_or_owner
 def api_renter_rto(rid):
     """A driver's rent-to-own progress: how many of the (default 144) weekly Square
     payments are done, total paid, remaining, and estimated contract-release date."""
@@ -2382,15 +2411,18 @@ def api_agent_register():
         }
         agents.append(agent)
         _save(AGENTS_PATH, agents)
+    session["agent_id"] = agent["id"]
     return jsonify({"ok": True, "agent": agent})
 
 
 @app.route("/api/agents")
+@owner_required
 def api_agents():
     return jsonify({"agents": _load(AGENTS_PATH)})
 
 
 @app.route("/api/agents/<aid>")
+@agent_self_or_owner
 def api_agent(aid):
     agent = next((x for x in _load(AGENTS_PATH) if x.get("id") == aid), None)
     if not agent:
@@ -2456,6 +2488,7 @@ def _agent_take_paid(aid):
 
 
 @app.route("/api/agents/<aid>/payout-request", methods=["POST"])
+@agent_self_or_owner
 def api_agent_payout_request(aid):
     """Agent requests a payout of their available balance. Owner is alerted."""
     agent = next((x for x in _load(AGENTS_PATH) if x.get("id") == aid), None)
@@ -2525,6 +2558,7 @@ def api_payout_mark_paid(pid):
 
 
 @app.route("/api/agents/<aid>/payout-email", methods=["POST"])
+@agent_self_or_owner
 def api_agent_payout_email(aid):
     """Agent saves where PayPal payouts should go."""
     data = request.get_json(force=True, silent=True) or {}
@@ -2741,8 +2775,15 @@ def api_renter_login():
                 # legacy account with no birthday on file — enroll it now (VIN proves identity)
                 r["dob"] = dob
                 _save(RENTERS_PATH, renters)
+            session["renter_id"] = r["id"]
             return jsonify({"ok": True, "renter": r})
     return jsonify({"ok": False, "error": "No driver found with that VIN."}), 404
+
+
+@app.route("/api/renters/logout", methods=["POST"])
+def api_renter_logout():
+    session.pop("renter_id", None)
+    return jsonify({"ok": True})
 
 
 @app.route("/api/agents/login", methods=["POST"])
@@ -2761,8 +2802,15 @@ def api_agent_login():
         if ac and ac == code and _last_name(a.get("name")) == last:
             if org and (a.get("organization") or "").strip().lower() != org:
                 continue   # organization was provided but doesn't match
+            session["agent_id"] = a["id"]
             return jsonify({"ok": True, "agent": a})
     return jsonify({"ok": False, "error": "No agent matches that code and last name."}), 404
+
+
+@app.route("/api/agents/logout", methods=["POST"])
+def api_agent_logout():
+    session.pop("agent_id", None)
+    return jsonify({"ok": True})
 
 
 # ---------- partner pipeline (organizations to recruit as referral agents) ----------

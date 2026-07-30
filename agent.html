@@ -372,7 +372,7 @@
             t.textContent = msg; t.style.display = 'block';
             clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 2600);
         }
-        function logout() { localStorage.removeItem('agent_id'); location.reload(); }
+        function logout() { fetch('/api/agents/logout', { method: 'POST' }).catch(function(){}); localStorage.removeItem('agent_id'); location.reload(); }
         function val(id) { return document.getElementById(id).value.trim(); }
 
         function setType(t) {

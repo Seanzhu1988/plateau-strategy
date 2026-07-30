@@ -438,7 +438,7 @@
             clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 2600);
         }
 
-        function logout() { localStorage.removeItem('renter_id'); location.reload(); }
+        function logout() { fetch('/api/renters/logout', { method: 'POST' }).catch(function(){}); localStorage.removeItem('renter_id'); location.reload(); }
 
         function showPanel(name) {
             document.querySelectorAll('.content .panel').forEach(p => p.classList.remove('active'));
