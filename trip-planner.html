@@ -266,20 +266,20 @@
             --tp-start:#0f172a;     /* start point      ⌂ */
         }
         .tp-pin { text-align: center; }
-        .tp-dot { position: relative; width: 28px; height: 28px; border-radius: 50%; margin: 0 auto;
+        .tp-dot { position: relative; width: 20px; height: 20px; border-radius: 50%; margin: 0 auto;
             display: flex; align-items: center; justify-content: center;
-            font-size: 12px; font-weight: 700; color: #fff;
+            font-size: 10px; font-weight: 700; color: #fff;
             background: var(--tp-off);
             /* a surface ring keeps overlapping pins readable against each other */
-            border: 2px solid #fff;
-            box-shadow: 0 1px 2px rgba(15,23,42,.28), 0 3px 8px rgba(15,23,42,.18); }
+            border: 1.5px solid #fff;
+            box-shadow: 0 1px 2px rgba(15,23,42,.28), 0 2px 5px rgba(15,23,42,.16); }
         /* status glyph — the secondary encoding */
         .tp-dot::after { content: attr(data-glyph);
-            position: absolute; right: -5px; bottom: -5px;
-            width: 15px; height: 15px; border-radius: 50%;
+            position: absolute; right: -4px; bottom: -4px;
+            width: 11px; height: 11px; border-radius: 50%;
             background: #fff; color: inherit;
-            font-size: 9px; line-height: 15px; font-weight: 800;
-            box-shadow: 0 1px 3px rgba(15,23,42,.3); }
+            font-size: 7px; line-height: 11px; font-weight: 800;
+            box-shadow: 0 1px 2px rgba(15,23,42,.3); }
         .tp-lit   .tp-dot { background: var(--tp-good); }
         .tp-lit   .tp-dot::after { color: var(--tp-good); }
         .tp-tight .tp-dot { background: var(--tp-warn); }
@@ -294,9 +294,13 @@
         .tp-vis   .tp-dot::after { color: var(--tp-pick); }
         .tp-start .tp-dot { background: var(--tp-start); }
         .tp-start .tp-dot::after { color: var(--tp-start); }
-        .tp-lbl { font-size: 10.5px; font-weight: 600; color: #1f2937; white-space: nowrap;
-            background: rgba(255,255,255,.92); border-radius: 6px; padding: 1px 5px; margin-top: 3px;
-            display: inline-block; box-shadow: 0 1px 3px rgba(15,23,42,.14); }
+        /* Labels are the thing that made the map noisy: one under every pin, all
+           the time. They now render ONLY for stops already in the route (and the
+           start point) — every other place still names itself on hover/tap. */
+        .tp-lbl { font-size: 9px; font-weight: 600; color: #334155; white-space: nowrap;
+            background: rgba(255,255,255,.92); border-radius: 5px; padding: 0 4px; margin-top: 2px;
+            display: inline-block; box-shadow: 0 1px 2px rgba(15,23,42,.14);
+            max-width: 84px; overflow: hidden; text-overflow: ellipsis; }
 
         /* ---- Leaflet chrome, matched to the page ---- */
         .leaflet-container { background: #eef1f5; font: inherit; }
@@ -313,6 +317,20 @@
             box-shadow: 0 6px 20px rgba(15,23,42,.3); font-size: 12px; font-weight: 500;
             border-radius: 8px; padding: 6px 10px; }
         .leaflet-tooltip::before { display: none; }
+
+        /* 📖 the book is CLOSED by default — a single tappable spine instead of a
+           wall of rows. It opens only when a traveler actually wants to browse. */
+        .bookcard { padding: 0; overflow: hidden; }
+        .book-head { display: flex; align-items: center; gap: 0.7rem; padding: 0.95rem 1.1rem;
+            cursor: pointer; user-select: none; }
+        .book-head:hover { background: #f8fafc; }
+        .book-ico { font-size: 1.35rem; flex: 0 0 auto; }
+        .book-title { flex: 1; font-weight: 800; color: #0f172a; font-size: 0.98rem; }
+        .book-sub { display: block; font-weight: 500; color: #64748b; font-size: 0.78rem; margin-top: 0.15rem; }
+        .book-chev { color: #94a3b8; font-size: 0.9rem; transition: transform 0.2s; flex: 0 0 auto; }
+        .bookcard.open .book-chev { transform: rotate(180deg); }
+        .book-body { display: none; padding: 0 1.1rem 1.1rem; }
+        .bookcard.open .book-body { display: block; }
 
         footer.attrib { text-align: center; color: #94a3b8; font-size: 0.75rem; padding: 1.2rem 0 2rem; }
         footer.attrib a { color: #64748b; }
@@ -436,9 +454,15 @@
             </div>
         </div>
 
-        <div class="card" style="margin-top:1rem">
-            <h3>📖 Destination Book — <span id="bookCity">this city</span> (<span id="pcount">0</span>)</h3>
-            <p class="muted" style="margin-bottom:0.3rem">Every destination we know here — tap ＋ to drop one into your route. Search adds new places to the book for everyone.</p>
+        <div class="card bookcard" id="bookCard" style="margin-top:1rem">
+            <div class="book-head" onclick="toggleBook()" title="Open the Destination Book">
+                <span class="book-ico">📖</span>
+                <span class="book-title">Destination Book — <span id="bookCity">this city</span>
+                    <span class="book-sub"><span id="pcount">0</span> places here · tap to browse, search, and add to your route</span>
+                </span>
+                <span class="book-chev">▾</span>
+            </div>
+          <div class="book-body">
             <div class="place-row" style="border-top:none">
                 <span style="width:26px"></span>
                 <span class="nm col-lab">Place</span>
@@ -459,6 +483,7 @@
                 <button class="btn ghost" onclick="loadSample(true,'dc')">🏛️ Washington DC sample</button>
                 <button class="btn ghost" onclick="loadSample(true,'seattle')">🌲 Seattle sample</button>
             </div>
+          </div>
         </div>
 
         <footer class="attrib">
@@ -758,9 +783,12 @@
                        'tp-catoff': '✕', 'tp-vis': '★' };
     function pinHtml(i, cls){
         const glyph = TP_GLYPH[cls] || '';
+        // only a chosen stop carries its name on the map; the rest stay compact
+        const lbl = cls === 'tp-vis'
+            ? '<span class="tp-lbl">' + escj(places[i].name.split(' ').slice(0, 2).join(' ')) + '</span>'
+            : '';
         return '<div class="tp-pin ' + cls + '"><div class="tp-dot" data-glyph="' + glyph + '">'
-             + (i + 1) + '</div>'
-             + '<span class="tp-lbl">' + escj(places[i].name.split(' ').slice(0, 2).join(' ')) + '</span></div>';
+             + (i + 1) + '</div>' + lbl + '</div>';
     }
     function refresh(){
         let lit = 0, tight = 0, off = 0;
@@ -781,7 +809,7 @@
                 else { cls = 'tp-lit'; lit++;
                     tip = nm + ' — ' + Math.round(f.t) + ' min drive, arrive ' + fmt(f.arr) + ', closes ' + fmt(p.close); }
             }
-            mk.setIcon(L.divIcon({ className: '', html: pinHtml(i, cls), iconSize: [90, 46], iconAnchor: [45, 14] }));
+            mk.setIcon(L.divIcon({ className: '', html: pinHtml(i, cls), iconSize: [76, 34], iconAnchor: [38, 10] }));
             mk.unbindTooltip(); mk.bindTooltip(tip);
         });
         const est = matrixMode === 'est' ? ' · drive times estimated (routing server unreachable)' : '';
@@ -1458,7 +1486,7 @@
     function rebuildMarkers(){
         markers.forEach(m => map.removeLayer(m)); markers = [];
         places.forEach((p, i) => {
-            const mk = L.marker([p.lat, p.lon], { icon: L.divIcon({ className: '', html: pinHtml(i, 'tp-lit'), iconSize: [90, 46], iconAnchor: [45, 14] }) });
+            const mk = L.marker([p.lat, p.lon], { icon: L.divIcon({ className: '', html: pinHtml(i, 'tp-lit'), iconSize: [76, 34], iconAnchor: [38, 10] }) });
             mk.on('click', () => tap(i));
             mk.addTo(map); markers.push(mk);
         });
@@ -1705,6 +1733,14 @@
             }).catch(() => { $('rt_send').disabled = false; msg.className = 'ho-msg err'; msg.textContent = 'Could not reach the server — please try again.'; });
     }
 
+    // ---------- 📖 book open/closed (remembered per device) ----------
+    function toggleBook(){
+        const card = document.getElementById('bookCard'); if (!card) return;
+        const open = card.classList.toggle('open');
+        try { localStorage.setItem('book_open', open ? '1' : '0'); } catch (e) {}
+        if (open) renderPlaces();          // rows are only worth building when visible
+    }
+
     // ---------- boot ----------
     loadSample(false);
     const BOOT_CITY = CITIES[curCity] || CITIES.nyc;
@@ -1880,11 +1916,14 @@
             Object.keys(AMENITY_CATS).forEach(c => { if (amenityOn[c]) fetchAmenity(c); });
         }, 800);
     });
+    // the book stays as the traveler last left it (closed on a first visit)
+    try { if (localStorage.getItem('book_open') === '1') document.getElementById('bookCard').classList.add('open'); } catch (e) {}
+
     buildLayerControl();                          // the switch lives ON the map
     syncAmenities();                              // restore last visit's choices
     startMarker = L.marker(BOOT_CITY.start, {
         draggable: true,
-        icon: L.divIcon({ className: '', html: '<div class="tp-pin tp-start"><div class="tp-dot" data-glyph="⌂">◉</div><span class="tp-lbl">Start</span></div>', iconSize: [90, 46], iconAnchor: [45, 14] })
+        icon: L.divIcon({ className: '', html: '<div class="tp-pin tp-start"><div class="tp-dot" data-glyph="⌂">◉</div><span class="tp-lbl">Start</span></div>', iconSize: [76, 34], iconAnchor: [38, 10] })
     }).addTo(map).bindTooltip('Your start point — drag me');
     startMarker.on('dragend', () => { resetTrip(); fetchMatrix(); });
     initChips();
