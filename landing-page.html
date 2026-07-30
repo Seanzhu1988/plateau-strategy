@@ -1222,7 +1222,7 @@
       @media(max-width:520px){
         #view-overview .psx-stats{flex-direction:column;padding:1.25rem 2rem;gap:1rem;}
         #view-overview .psx-divider{width:120px;height:1px;}
-        nav .sections-trigger,nav a[href="/articles"],nav a[href="/dispatch"],nav a[href="/board"]{display:none;}
+        nav .sections-trigger,nav #navArticles,nav a[href="/dispatch"],nav a[href="/board"]{display:none;}
       }
     </style>
     <style id="psx-blueprint">
@@ -1429,7 +1429,7 @@
         }
         /* only the primary CTA earns the space down here */
         nav .sections-trigger,
-        nav a[href="/articles"],
+        nav #navArticles,
         nav a[href="/dispatch"],
         nav a[href="/board"]{display:none !important;}
         .nav-back{padding:.42rem .7rem !important;font-size:.8rem !important;}
@@ -1521,6 +1521,65 @@
       .phase-highlights{border-top:1px solid rgba(255,255,255,.08);}
       .phase-highlights li{color:#c3d0e5;font-size:.95rem;}      /* was #555 — unreadable on dark */
       .phase-highlights li:before{color:#7da2ff;}
+
+      /* ---- Reinvestment: business-idea board ---- */
+      .idea-board{margin-top:2.4rem;}
+      .idea-board-head h3{color:#f2f5fa;font-size:1.35rem;font-weight:700;margin-bottom:.5rem;}
+      .idea-board-head p{color:#9aa6bb;font-size:.95rem;line-height:1.65;max-width:760px;}
+      .idea-board-head strong{color:#c3d0e5;}
+
+      .idea-composer{background:var(--psx-card);border:1px solid var(--psx-border);border-radius:16px;margin:1.6rem 0 2rem;overflow:hidden;}
+      .idea-composer-head{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.4rem;cursor:pointer;font-weight:700;color:#eef3fb;}
+      .idea-composer-body{padding:0 1.4rem 1.4rem;display:none;}
+      .idea-composer.open .idea-composer-body{display:block;}
+      .idea-chev{transition:transform .2s;color:#9aa6bb;}
+      .idea-composer.open .idea-chev{transform:rotate(180deg);}
+      .idea-composer input,.idea-composer textarea{
+        width:100%;padding:.8rem 1rem;margin-bottom:.8rem;border-radius:10px;font-size:.98rem;font-family:inherit;
+        background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#eef3fb;
+      }
+      .idea-composer input::placeholder,.idea-composer textarea::placeholder{color:#7d8aa0;}
+      .idea-composer input:focus,.idea-composer textarea:focus{
+        outline:none;background:rgba(255,255,255,.09);border-color:var(--psx-blue);box-shadow:0 0 0 3px rgba(59,130,246,.18);
+      }
+      .idea-composer textarea{min-height:130px;resize:vertical;line-height:1.6;}
+      .idea-publish{border:none;border-radius:10px;padding:.75rem 1.5rem;font-weight:700;font-size:.92rem;cursor:pointer;
+        background:linear-gradient(135deg,var(--psx-blue),var(--psx-indigo));color:#fff;box-shadow:0 10px 22px -8px rgba(59,130,246,.6);}
+      .idea-publish:hover{filter:brightness(1.07);}
+
+      .idea-card{background:var(--psx-card);border:1px solid var(--psx-border);border-radius:16px;padding:1.7rem 1.6rem;margin-bottom:1.4rem;}
+      .idea-card h4{color:#f2f5fa;font-size:1.2rem;font-weight:700;margin-bottom:.25rem;}
+      .idea-stamp{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.76rem;color:#9aa6bb;
+        background:rgba(255,255,255,.06);border:1px solid var(--psx-border);padding:.1rem .5rem;border-radius:6px;margin-left:.4rem;}
+      .idea-meta{color:#8c99ad;font-size:.82rem;margin-bottom:.9rem;}
+      .idea-text{color:#c3d0e5;font-size:.96rem;line-height:1.7;white-space:pre-wrap;margin-bottom:1.1rem;}
+
+      .idea-votes{display:flex;gap:.6rem;margin-bottom:1rem;}
+      .idea-vbtn{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .9rem;border-radius:999px;
+        border:1px solid var(--psx-border);background:rgba(255,255,255,.04);color:#a6b2c8;font-weight:700;font-size:.85rem;cursor:pointer;}
+      .idea-vbtn:hover{border-color:rgba(255,255,255,.25);}
+      .idea-vbtn.like.active{background:rgba(16,185,129,.14);border-color:rgba(16,185,129,.4);color:#6ee7b7;}
+      .idea-vbtn.unlike.active{background:rgba(239,68,68,.14);border-color:rgba(239,68,68,.4);color:#fca5a5;}
+
+      .idea-backing{display:flex;gap:1.2rem;flex-wrap:wrap;padding-top:1rem;border-top:1px solid var(--psx-border);}
+      .idea-back{flex:1 1 220px;min-width:220px;}
+      .idea-back .lbl{display:block;font-size:.85rem;font-weight:700;color:#c3d0e5;margin-bottom:.4rem;}
+      .idea-back-row{display:flex;gap:.5rem;}
+      .idea-back input{flex:1;min-width:0;padding:.55rem .8rem;border-radius:9px;font-size:.88rem;
+        background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#eef3fb;}
+      .idea-back input::placeholder{color:#7d8aa0;}
+      .idea-back button{border:none;border-radius:9px;padding:.55rem 1rem;font-weight:700;font-size:.85rem;cursor:pointer;color:#fff;white-space:nowrap;}
+      .idea-back.invest button{background:#10b981;}
+      .idea-back.launch button{background:#8b5cf6;}
+      .idea-back button:hover{filter:brightness(1.1);}
+      .idea-back .count{font-size:.78rem;color:#8c99ad;margin-top:.35rem;}
+      .idea-back .done{color:#6ee7b7;font-weight:700;font-size:.88rem;}
+
+      .idea-empty{text-align:center;color:#8c99ad;padding:2.4rem 1rem;}
+
+      @media(max-width:640px){
+        .idea-backing{flex-direction:column;}
+      }
 
       /* ---- Finance surfaces ---- */
       .fin-card,.fin-step,.price-card{
@@ -1670,7 +1729,7 @@
             </div>
             <nav>
                 <span class="sections-trigger" id="sectionsTrigger">☰ Sections</span>
-                <a href="/articles">Articles</a>
+                <a href="#" id="navArticles" onclick="showView('reinvestment', event)">Business Ideas</a>
                 <a href="/dispatch">Dispatch</a>
                 <a href="/board">Board of Directors</a>
                 <a href="/book">Book a Ride</a>
@@ -2087,6 +2146,29 @@
                                 </ul>
                             </div>
                         </div>
+
+                        <div class="idea-board">
+                            <div class="idea-board-head">
+                                <h3>💡 Business Ideas</h3>
+                                <p>Anyone can pitch a business idea here — free, no account needed. Readers back an idea one of two ways: register to <strong>invest</strong>, or register to <strong>launch and run it</strong>. This is a connections board, not a transaction — no money or equity changes hands on this page; Plateau Strategy follows up directly with anyone who registers interest.</p>
+                            </div>
+
+                            <div class="idea-composer" id="ideaComposer">
+                                <div class="idea-composer-head" onclick="document.getElementById('ideaComposer').classList.toggle('open')">
+                                    <span>✍️ Pitch a business idea</span>
+                                    <span class="idea-chev">▾</span>
+                                </div>
+                                <div class="idea-composer-body">
+                                    <input id="idea_author" placeholder="Your name">
+                                    <input id="idea_title" placeholder="Business idea — e.g. Mobile EV-detailing fleet for gig drivers">
+                                    <textarea id="idea_body" placeholder="The problem, the business model, how it makes money, and what it needs to launch…"></textarea>
+                                    <button class="idea-publish" onclick="ideaPublish()">Publish idea</button>
+                                </div>
+                            </div>
+
+                            <div id="ideaFeed"></div>
+                            <div class="idea-empty" id="ideaEmpty" style="display:none;">No ideas posted yet — be the first to pitch one.</div>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -2124,8 +2206,8 @@
                                 <div class="service-icon">🧰</div>
                                 <h3>More on the way</h3>
                                 <p class="service-for">The lab keeps building</p>
-                                <p>We're adding more free daily-life tools here. Have an idea for a tool you'd use every day? Tell us through the Articles page.</p>
-                                <a href="/articles" class="book-cta">Suggest a Tool →</a>
+                                <p>We're adding more free daily-life tools here. Have an idea for a tool you'd use every day? Pitch it on the Business Ideas board.</p>
+                                <a href="#" class="book-cta" onclick="showView('reinvestment', event)">Suggest a Tool →</a>
                             </div>
                         </div>
                     </div>
@@ -2215,7 +2297,7 @@
                     <div>
                         <h4>Company</h4>
                         <ul>
-                            <li><a href="/articles">Articles</a></li>
+                            <li><a href="#" onclick="showView('reinvestment', event)">Business Ideas</a></li>
                             <li><a href="/dispatch">Dispatch</a></li>
                             <li><a href="/board">Board of Directors</a></li>
                             <li><a href="#" onclick="showView('security', event)">Security</a></li>
@@ -2698,6 +2780,109 @@
                 };
             }
             document.addEventListener('DOMContentLoaded', markCurrentTab);
+        })();
+    </script>
+    <script>
+        /* ---- Reinvestment USA: business-idea board ----
+           Anyone can pitch an idea; readers register interest to invest or
+           to launch/run it. Lead-capture only — no money or equity moves
+           through this board. Kept in its own script, layered on top like
+           the assistive-tech block above, rather than touching the main one. */
+        (function () {
+            function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
+            function fmtStamp(s) { return s ? String(s).replace('T', ' ') : ''; }
+            function myVote(id) { return localStorage.getItem('idea_vote_' + id) || 'none'; }
+            function invested(id) { return localStorage.getItem('idea_invest_' + id) === '1'; }
+            function launched(id) { return localStorage.getItem('idea_launch_' + id) === '1'; }
+
+            function investBlock(a) {
+                return invested(a.id)
+                    ? '<span class="done">✓ You registered to invest</span><div class="count">' + a.follower_count + ' investor(s) interested</div>'
+                    : '<div class="idea-back-row"><input type="email" id="inv_' + a.id + '" placeholder="your@email.com">' +
+                      '<button onclick="ideaInvest(\'' + a.id + '\')">💰 I want to invest</button></div>' +
+                      '<div class="count">' + a.follower_count + ' investor(s) interested</div>';
+            }
+            function launchBlock(a) {
+                return launched(a.id)
+                    ? '<span class="done">✓ You registered to launch this</span><div class="count">' + a.launcher_count + ' operator(s) interested</div>'
+                    : '<div class="idea-back-row"><input type="email" id="lau_' + a.id + '" placeholder="your@email.com">' +
+                      '<button onclick="ideaLaunch(\'' + a.id + '\')">🚀 I want to launch this</button></div>' +
+                      '<div class="count">' + a.launcher_count + ' operator(s) interested</div>';
+            }
+            function render(a) {
+                var v = myVote(a.id);
+                return '<div class="idea-card" id="idea_' + a.id + '">' +
+                    '<h4>' + esc(a.title) + (a.stamp ? '<span class="idea-stamp" title="Time-proof stamp — pitched ' + fmtStamp(a.created_at) + '">#' + esc(a.stamp) + '</span>' : '') + '</h4>' +
+                    '<div class="idea-meta">By <strong>' + esc(a.author || 'Anonymous') + '</strong> · ' + fmtStamp(a.created_at) + '</div>' +
+                    '<div class="idea-text">' + esc(a.body) + '</div>' +
+                    '<div class="idea-votes">' +
+                        '<button class="idea-vbtn like ' + (v === 'like' ? 'active' : '') + '" onclick="ideaVote(\'' + a.id + '\',\'like\')">👍 <span id="ilk_' + a.id + '">' + a.likes + '</span></button>' +
+                        '<button class="idea-vbtn unlike ' + (v === 'unlike' ? 'active' : '') + '" onclick="ideaVote(\'' + a.id + '\',\'unlike\')">👎 <span id="iul_' + a.id + '">' + a.unlikes + '</span></button>' +
+                    '</div>' +
+                    '<div class="idea-backing">' +
+                        '<div class="idea-back invest" id="ideaInv_' + a.id + '"><span class="lbl">Back it with capital</span>' + investBlock(a) + '</div>' +
+                        '<div class="idea-back launch" id="ideaLau_' + a.id + '"><span class="lbl">Back it by running it</span>' + launchBlock(a) + '</div>' +
+                    '</div>' +
+                '</div>';
+            }
+
+            window.ideaLoad = async function () {
+                var items = [];
+                try { items = ((await (await fetch('/api/articles')).json()).articles) || []; } catch (e) { return; }
+                var empty = document.getElementById('ideaEmpty'), feed = document.getElementById('ideaFeed');
+                if (!feed) return;
+                if (empty) empty.style.display = items.length ? 'none' : 'block';
+                feed.innerHTML = items.map(render).join('');
+            };
+
+            window.ideaPublish = async function () {
+                var a = document.getElementById('idea_author'), t = document.getElementById('idea_title'), b = document.getElementById('idea_body');
+                var author = (a.value || '').trim(), title = (t.value || '').trim(), body = (b.value || '').trim();
+                if (!author) { alert('Add your name'); return; }
+                if (!title || !body) { alert('Add a title and describe the idea'); return; }
+                var j = await (await fetch('/api/articles', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ author: author, title: title, body: body }) })).json();
+                if (!j.ok) { alert(j.error || 'Could not publish'); return; }
+                a.value = ''; t.value = ''; b.value = '';
+                var c = document.getElementById('ideaComposer'); if (c) c.classList.remove('open');
+                window.ideaLoad();
+            };
+
+            window.ideaVote = async function (id, choice) {
+                var prev = myVote(id);
+                var next = (prev === choice) ? 'none' : choice;
+                var j = await (await fetch('/api/articles/' + id + '/vote', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prev: prev, vote: next }) })).json();
+                if (!j.ok) return;
+                localStorage.setItem('idea_vote_' + id, next);
+                var card = document.getElementById('idea_' + id); if (!card) return;
+                document.getElementById('ilk_' + id).textContent = j.likes;
+                document.getElementById('iul_' + id).textContent = j.unlikes;
+                card.querySelector('.idea-vbtn.like').classList.toggle('active', next === 'like');
+                card.querySelector('.idea-vbtn.unlike').classList.toggle('active', next === 'unlike');
+            };
+
+            window.ideaInvest = async function (id) {
+                var input = document.getElementById('inv_' + id);
+                var email = ((input || {}).value || '').trim();
+                if (!email) { alert('Enter your email'); return; }
+                var j = await (await fetch('/api/articles/' + id + '/follow', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }) })).json();
+                if (!j.ok) { alert(j.error || 'Could not register'); return; }
+                localStorage.setItem('idea_invest_' + id, '1');
+                var box = document.getElementById('ideaInv_' + id);
+                if (box) box.innerHTML = '<span class="lbl">Back it with capital</span><span class="done">✓ You registered to invest</span><div class="count">' + j.follower_count + ' investor(s) interested</div>';
+            };
+
+            window.ideaLaunch = async function (id) {
+                var input = document.getElementById('lau_' + id);
+                var email = ((input || {}).value || '').trim();
+                if (!email) { alert('Enter your email'); return; }
+                var j = await (await fetch('/api/articles/' + id + '/launch', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }) })).json();
+                if (!j.ok) { alert(j.error || 'Could not register'); return; }
+                localStorage.setItem('idea_launch_' + id, '1');
+                var box = document.getElementById('ideaLau_' + id);
+                if (box) box.innerHTML = '<span class="lbl">Back it by running it</span><span class="done">✓ You registered to launch this</span><div class="count">' + j.launcher_count + ' operator(s) interested</div>';
+            };
+
+            document.addEventListener('DOMContentLoaded', function () { window.ideaLoad(); });
         })();
     </script>
     <script src="/i18n.js"></script>

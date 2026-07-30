@@ -34,6 +34,13 @@ import square_client
 import notify
 import paypal_client
 
+def _no_tags(s):
+    """Defense-in-depth vs stored XSS: strip angle brackets from any string
+    that ends up rendered in every visitor's browser. Pages escape on render
+    too — this guard protects any future sink someone forgets."""
+    return (s or "").replace("<", "").replace(">", "")
+
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 RES_PATH = os.path.join(BASE_DIR, "reservations.json")
 RENTERS_PATH = os.path.join(BASE_DIR, "renters.json")
@@ -646,11 +653,6 @@ def api_destinations_add():
     for every future visitor AND appears in the Destination Book (tagged
     'community'). Deduped by name+city; capped so the book can't be flooded."""
     data = request.get_json(force=True, silent=True) or {}
-    # Defense-in-depth vs stored XSS: these strings end up in every visitor's
-    # browser, so no angle brackets survive on the way in (the pages escape on
-    # render too — this guard protects any future sink someone forgets).
-    def _no_tags(s):
-        return (s or "").replace("<", "").replace(">", "")
     name = _no_tags((data.get("name") or "").strip())[:80]
     if len(name) < 2:
         return jsonify({"ok": False, "error": "Name required."}), 400
@@ -3034,9 +3036,13 @@ def api_books_export():
                     headers={"Content-Disposition": "attachment; filename=plateau-books.csv"})
 
 
-# ---------- articles / proposals ----------
+# ---------- articles / proposals — the Reinvestment USA business-idea board ----------
+# Open to anyone, no login: pitch a business idea, and readers can register
+# interest to invest in it or to launch/run it themselves. This is a lead
+# board only — no money or equity ever moves through the site; registering
+# interest just leaves contact info for Plateau Strategy to follow up on.
 def _public_article(a):
-    """Public shape — followers' emails are kept private, only the count is shown."""
+    """Public shape — investor/launcher emails are kept private, only counts are shown."""
     return {
         "id": a.get("id"),
         "author": a.get("author", ""),
@@ -3047,6 +3053,7 @@ def _public_article(a):
         "likes": a.get("likes", 0),
         "unlikes": a.get("unlikes", 0),
         "follower_count": len(a.get("followers", [])),
+        "launcher_count": len(a.get("launchers", [])),
     }
 
 
@@ -3059,9 +3066,9 @@ def api_articles():
 @app.route("/api/articles", methods=["POST"])
 def api_article_create():
     data = request.get_json(force=True, silent=True) or {}
-    author = (data.get("author") or "").strip()
-    title = (data.get("title") or "").strip()
-    body = (data.get("body") or "").strip()
+    author = _no_tags((data.get("author") or "").strip())
+    title = _no_tags((data.get("title") or "").strip())
+    body = _no_tags((data.get("body") or "").strip())
     if not author or not title or not body:
         return jsonify({"ok": False, "error": "Your name, a title and body are all required."}), 400
     with _LOCK:
@@ -3077,6 +3084,7 @@ def api_article_create():
             "likes": 0,
             "unlikes": 0,
             "followers": [],
+            "launchers": [],
         }
         items.append(article)
         _save(ARTICLES_PATH, items)
@@ -3105,7 +3113,8 @@ def api_article_vote(aid):
 
 @app.route("/api/articles/<aid>/follow", methods=["POST"])
 def api_article_follow(aid):
-    """Add an email to a proposal's wishlist / follow list."""
+    """Register interest to INVEST in this business idea — an email left here
+    is a lead, not a transaction; Plateau Strategy follows up directly."""
     data = request.get_json(force=True, silent=True) or {}
     email = (data.get("email") or "").strip().lower()
     if "@" not in email or "." not in email.split("@")[-1]:
@@ -3119,6 +3128,27 @@ def api_article_follow(aid):
                     followers.append(email)
                     _save(ARTICLES_PATH, items)
                 return jsonify({"ok": True, "follower_count": len(followers)})
+    return jsonify({"ok": False, "error": "not found"}), 404
+
+
+@app.route("/api/articles/<aid>/launch", methods=["POST"])
+def api_article_launch(aid):
+    """Register interest to LAUNCH/run this business idea — same lead-only
+    contract as /follow, tracked separately so an idea's two audiences
+    (capital vs. operators) don't get mixed together."""
+    data = request.get_json(force=True, silent=True) or {}
+    email = (data.get("email") or "").strip().lower()
+    if "@" not in email or "." not in email.split("@")[-1]:
+        return jsonify({"ok": False, "error": "Please enter a valid email."}), 400
+    with _LOCK:
+        items = _load(ARTICLES_PATH)
+        for a in items:
+            if a.get("id") == aid:
+                launchers = a.setdefault("launchers", [])
+                if email not in launchers:
+                    launchers.append(email)
+                    _save(ARTICLES_PATH, items)
+                return jsonify({"ok": True, "launcher_count": len(launchers)})
     return jsonify({"ok": False, "error": "not found"}), 404
 
 
