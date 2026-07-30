@@ -1480,15 +1480,16 @@
         border-color:rgba(255,255,255,.16);
         box-shadow:0 26px 60px -24px rgba(0,0,0,.85);
       }
-      /* the emoji becomes a tinted chip, cycling accents across the grid */
+      /* a tinted chip holding a single-colour line icon, cycling accents across the grid */
       .service-icon{
         width:54px;height:54px;border-radius:15px;
         display:flex;align-items:center;justify-content:center;
-        font-size:1.55rem;line-height:1;margin-bottom:1.05rem;
+        line-height:1;margin-bottom:1.05rem;color:var(--psx-blue);
         background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.28);
       }
-      .service-card:nth-child(3n+2) .service-icon{background:rgba(139,92,246,.15);border-color:rgba(139,92,246,.28);}
-      .service-card:nth-child(3n+3) .service-icon{background:rgba(20,184,166,.15);border-color:rgba(20,184,166,.28);}
+      .service-icon svg{width:26px;height:26px;}
+      .service-card:nth-child(3n+2) .service-icon{background:rgba(139,92,246,.15);border-color:rgba(139,92,246,.28);color:var(--psx-violet);}
+      .service-card:nth-child(3n+3) .service-icon{background:rgba(20,184,166,.15);border-color:rgba(20,184,166,.28);color:var(--psx-teal);}
       .service-card h3{font-size:1.28rem;font-weight:700;color:#f2f5fa;letter-spacing:-.01em;margin-bottom:.35rem;}
       .service-for{
         color:#7da2ff !important;font-size:.72rem !important;letter-spacing:.14em !important;
@@ -1837,35 +1838,35 @@
 
                         <div class="service-grid">
                             <div class="service-card">
-                                <div class="service-icon">🚗</div>
+                                <div class="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16V11a2 2 0 0 1 2-2h1l1.5-3h7L17 9h1a2 2 0 0 1 2 2v5"/><path d="M4 16h16"/><circle cx="8" cy="17.5" r="1.6"/><circle cx="16" cy="17.5" r="1.6"/></svg></div>
                                 <h3>Ride &amp; Services</h3>
                                 <p class="service-for">For riders &amp; clients</p>
                                 <p>Affordable, reliable Tesla rides — booked online in seconds, with your invoice sent automatically. No app to download, no surge-pricing games.</p>
                                 <a href="/book" class="book-cta">Book a Ride →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🔑</div>
+                                <div class="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="4"/><path d="M11 12h10M17 12v3M20 12v3"/></svg></div>
                                 <h3>Car Rentals</h3>
                                 <p class="service-for">For drivers</p>
                                 <p>Rent a Tesla from us and earn from a shared pool of client rides. Low-cost entry, steady income, and a path to owning the car you drive.</p>
                                 <a href="/renter" class="book-cta">Driver Portal →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🤝</div>
+                                <div class="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M4 19v-1a5 5 0 0 1 5-5 5 5 0 0 1 5 5v1"/><circle cx="17.5" cy="8.5" r="2.4"/><path d="M15.8 13.3A5 5 0 0 1 20 18v1"/></svg></div>
                                 <h3>Agent Program</h3>
                                 <p class="service-for">For partners — organizations or individuals</p>
                                 <p>Refer clients and earn commission on every ride they take. Ideal for hotels, travel agencies, or any individual with a network to tap.</p>
                                 <a href="/agent" class="book-cta">Agent Portal →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🗺️</div>
+                                <div class="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></div>
                                 <h3>Trip Planner</h3>
-                                <p class="service-for">For travelers &amp; tour guides — free</p>
+                                <p class="service-for">For travelers &amp; tour guides — free map planning</p>
                                 <p>Plan a real day on the map: every stop lights up or dims by drive time, traffic and closing hours. Guides build and name their own routes here — no website needed — and travelers who'd rather not drive it themselves can hand the route to a guide.</p>
                                 <a href="/trip-planner" class="book-cta">Open Trip Planner →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">📖</div>
+                                <div class="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5.5S5 4 8 4s5 1.5 5 1.5v13S11 17 8 17s-5 1.5-5 1.5v-13z"/><path d="M21 5.5S19 4 16 4s-5 1.5-5 1.5v13S13 17 16 17s5 1.5 5 1.5v-13z"/></svg></div>
                                 <h3>Destination Book</h3>
                                 <p class="service-for">For everyone — free, and growing</p>
                                 <p>Every attraction and restaurant we know, city by city, with local tips from a licensed guide. It grows on its own: search a place in the planner and it's written into the book for the next traveler. One tap sends anything straight into your trip.</p>

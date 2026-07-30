@@ -48,6 +48,9 @@
 
         #map { height: 62vh; min-height: 380px; border-radius: 16px; border: 1px solid #e2e8f0;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); }
+        .traffic-note { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem;
+            font-weight: 600; color: #1d4ed8; background: #eff6ff; border: 1px solid #dbeafe;
+            border-radius: 10px; padding: 0.55rem 0.9rem; margin-bottom: 0.6rem; }
         .legend { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.8rem; color: #64748b;
             margin-top: 0.6rem; align-items: center; }
         .ldot { width: 12px; height: 12px; border-radius: 50%; display: inline-block;
@@ -282,6 +285,7 @@
             </div>
 
             <div>
+                <div id="trafficNote" class="traffic-note" style="display:none;"></div>
                 <div id="map"></div>
                 <div class="legend">
                     <span><span class="ldot" style="background:#dcfce7;border-color:#16a34a"></span>Lit — enough time</span>
@@ -1395,6 +1399,23 @@
     fetchMatrix();
     mergeCommunity(curCity);           // bug 4: every visit, not just on a sample load
     loadCrowdTimes(true);              // how long people actually stay, learned from everyone
+
+    // ---------- real usage, shown right next to the map ----------
+    // Honest by design: shows the biggest true number available (week, else
+    // all-time), and stays hidden entirely rather than ever displaying "0".
+    (function loadTrafficNote(){
+        fetch('/api/traffic/summary').then(r => r.json()).then(d => {
+            const el = document.getElementById('trafficNote');
+            if (!el || !d || !d.ok) return;
+            const tp = d.trip_planner || {};
+            let text;
+            if (tp.week > 0) text = '🧳 ' + tp.week + ' traveler' + (tp.week === 1 ? '' : 's') + ' planned a trip here this week';
+            else if (tp.all_time > 0) text = '🧳 ' + tp.all_time + ' traveler' + (tp.all_time === 1 ? '' : 's') + ' have used this planner';
+            else return;   // brand new — say nothing rather than show a zero
+            el.textContent = text;
+            el.style.display = 'flex';
+        }).catch(function(){});
+    })();
     </script>
     <script src="/floatback.js"></script>
     <script src="/jarvis-widget.js"></script>

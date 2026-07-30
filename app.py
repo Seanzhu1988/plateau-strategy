@@ -3397,6 +3397,33 @@ def _arch_traffic():
     return out
 
 
+@app.route("/api/traffic/summary")
+def api_traffic_summary():
+    """Public, aggregate-only traffic numbers — no per-visitor detail, no
+    owner login needed. Powers the small usage note next to the Trip
+    Planner map and the Destination Book, so travelers see real numbers
+    without needing the owner-only Archive."""
+    days = _load_traffic()["days"]
+    today_iso = datetime.date.today().isoformat()
+    week_cutoff = (datetime.date.today() - datetime.timedelta(days=6)).isoformat()
+
+    def sum_path(path, cutoff=None):
+        total = 0
+        for date, rec in days.items():
+            if cutoff and date < cutoff:
+                continue
+            total += rec.get("paths", {}).get(path, 0)
+        return total
+
+    def tool_stats(path):
+        return {"today": sum_path(path, today_iso), "week": sum_path(path, week_cutoff),
+                "all_time": sum_path(path)}
+
+    return jsonify({"ok": True,
+                     "trip_planner": tool_stats("/trip-planner"),
+                     "destination_book": tool_stats("/destination-book")})
+
+
 # section key → (label, one-line description, builder)
 ARCHIVE_SECTIONS = [
     ("traffic",    "📈 Site traffic", "Daily page views, unique visitors, and Trip Planner / Destination Book usage.", _arch_traffic),
