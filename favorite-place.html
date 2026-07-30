@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favorite Places — Plateau Strategy Solution Lab</title>
+    <meta name="description" content="Search any place you love, tell us how long you stayed, and it joins the free Destination Book for the next traveler.">
+    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9; color: #1f2937; min-height: 100vh; }
+        header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #fff;
+            padding: 1rem 2rem; display: flex; align-items: center; gap: 0.7rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 100; }
+        header img { height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
+        header .brand { font-weight: 800; font-size: 1.2rem; }
+        header .right { margin-left: auto; display: flex; gap: 1.2rem; }
+        header a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+        header a:hover { color: #fff; }
+
+        .wrap { max-width: 640px; margin: 1.8rem auto; padding: 0 1.2rem 3rem; }
+        .page-title { font-size: 1.9rem; font-weight: 800; color: #0f172a; }
+        .page-sub { color: #64748b; margin: 0.3rem 0 1.1rem; line-height: 1.55; }
+
+        .counter { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;
+            font-weight: 700; color: #1d4ed8; background: #eff6ff; border: 1px solid #dbeafe;
+            border-radius: 999px; padding: 0.5rem 1rem; margin-bottom: 1.3rem; }
+
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1.4rem; }
+
+        .search-box { position: relative; }
+        .search-box input { width: 100%; padding: 0.85rem 1rem; border: 1.5px solid #e2e8f0;
+            border-radius: 12px; font-size: 1rem; font-family: inherit; background: #f8fafc; }
+        .search-box input:focus { outline: none; border-color: #3b82f6; background: #fff;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+        .qres { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #e2e8f0;
+            border-radius: 12px; margin-top: 0.4rem; box-shadow: 0 8px 24px rgba(15,23,42,0.1);
+            max-height: 280px; overflow-y: auto; z-index: 20; display: none; }
+        .qres > div { padding: 0.7rem 1rem; font-size: 0.9rem; cursor: pointer; border-bottom: 1px solid #f1f5f9; }
+        .qres > div:last-child { border-bottom: none; }
+        .qres > div:hover { background: #f8fafc; }
+        .qres .muted { color: #94a3b8; cursor: default; }
+        .qres .muted:hover { background: none; }
+
+        .qform { margin-top: 1.3rem; display: none; }
+        .qform.on { display: block; }
+        .q { margin-bottom: 1.1rem; }
+        .q label { display: block; font-size: 0.85rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem; }
+        .q input[type=text] { width: 100%; padding: 0.7rem 0.9rem; border: 1.5px solid #e2e8f0;
+            border-radius: 10px; font-size: 0.95rem; font-family: inherit; background: #f8fafc; }
+        .q input[type=text]:focus { outline: none; border-color: #3b82f6; background: #fff; }
+        .durations { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .dchip { font-size: 0.85rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 999px;
+            border: 1.5px solid #e2e8f0; color: #475569; cursor: pointer; user-select: none; background: #fff; }
+        .dchip:hover { border-color: #93c5fd; }
+        .dchip.on { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
+        .dchip.skip { margin-left: auto; color: #94a3b8; }
+
+        .submit { margin-top: 1.2rem; width: 100%; padding: 0.85rem; border: none; border-radius: 12px;
+            background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; font-weight: 700;
+            font-size: 0.98rem; cursor: pointer; }
+        .submit:hover { filter: brightness(1.06); }
+        .submit:disabled { opacity: 0.6; cursor: default; }
+
+        .msg { margin-top: 0.9rem; font-size: 0.88rem; text-align: center; }
+        .msg.ok { color: #047857; }
+        .msg.err { color: #b91c1c; }
+
+        .why { margin-top: 1.4rem; font-size: 0.82rem; color: #94a3b8; line-height: 1.6; text-align: center; }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="right">
+            <a href="/">Home</a>
+            <a href="/trip-planner">Trip Planner</a>
+            <a href="/destination-book">Destination Book</a>
+        </div>
+    </header>
+
+    <div class="wrap">
+        <div class="page-title">❤️ Favorite Places</div>
+        <div class="page-sub">Search anywhere and tell us your favorite place — it joins the free Destination Book for the next traveler. The more you share, the smarter our map gets.</div>
+        <div class="counter" id="counter" style="display:none;"></div>
+
+        <div class="card">
+            <div class="search-box">
+                <input id="q" type="text" placeholder="Search a place — anywhere in the world…" oninput="onType()" onkeydown="if(event.key==='Enter'){event.preventDefault();searchPlace();}">
+                <div class="qres" id="qres"></div>
+            </div>
+
+            <div class="qform" id="qform">
+                <div class="q">
+                    <label>What's your favorite place?</label>
+                    <input type="text" id="f_name" maxlength="80">
+                </div>
+                <div class="q">
+                    <label>If you've been there, how long did you stay?</label>
+                    <div class="durations" id="durations">
+                        <span class="dchip" data-m="15">15 min</span>
+                        <span class="dchip" data-m="30">30 min</span>
+                        <span class="dchip" data-m="60">1 hour</span>
+                        <span class="dchip" data-m="120">2 hours</span>
+                        <span class="dchip" data-m="240">Half day</span>
+                        <span class="dchip" data-m="480">Full day</span>
+                        <span class="dchip skip" data-m="">Haven't been yet</span>
+                    </div>
+                </div>
+                <button class="submit" id="submitBtn" onclick="submitPlace()">Add to the map →</button>
+                <div class="msg" id="msg"></div>
+            </div>
+        </div>
+
+        <div class="why">Every place you share is checked against the map for a real location, then written into the Destination Book. No account needed — this takes about 15 seconds.</div>
+    </div>
+
+    <script>
+        const $ = id => document.getElementById(id);
+        const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+        let picked = null;      // { name, lat, lon, meta }
+        let chosenMinutes = null;
+
+        async function loadCounter(){
+            try {
+                const d = await (await fetch('/api/destinations')).json();
+                const n = (d.entries || []).filter(e => e.source === 'user').length;
+                if (n > 0) {
+                    $('counter').style.display = 'inline-flex';
+                    $('counter').textContent = '🗺️ ' + n + ' favorite place' + (n === 1 ? '' : 's') + ' shared by travelers so far';
+                }
+            } catch (e) {}
+        }
+
+        let searchTimer = null;
+        function onType(){
+            clearTimeout(searchTimer);
+            const q = $('q').value.trim();
+            if (q.length < 3) { $('qres').style.display = 'none'; return; }
+            searchTimer = setTimeout(searchPlace, 400);
+        }
+
+        async function searchPlace(){
+            const q = $('q').value.trim();
+            if (!q) return;
+            const box = $('qres');
+            box.style.display = 'block'; box.innerHTML = '<div class="muted">Searching…</div>';
+            try {
+                const url = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=6&q=' + encodeURIComponent(q);
+                const j = await (await fetch(url)).json();
+                if (!j.length) { box.innerHTML = '<div class="muted">No results — try a different spelling.</div>'; return; }
+                box.innerHTML = '';
+                j.forEach(res => {
+                    const d = document.createElement('div');
+                    d.textContent = res.display_name;
+                    d.onclick = () => choose(res);
+                    box.appendChild(d);
+                });
+            } catch (e) { box.innerHTML = '<div class="muted">Search unavailable right now — try again in a moment.</div>'; }
+        }
+        document.addEventListener('click', e => { if (!e.target.closest('.search-box')) $('qres').style.display = 'none'; });
+
+        // The rest of the site (Trip Planner, Destination Book) keys its known
+        // cities by short code — nyc / dc / seattle — not by the raw name a
+        // geocoder returns. Map common variants so a shared place actually
+        // lands in the SAME bucket the planner reads from, instead of a
+        // same-city entry silently splitting into its own "other" pile.
+        const CITY_ALIASES = {
+            'new york': 'nyc', 'new york city': 'nyc', 'manhattan': 'nyc', 'brooklyn': 'nyc',
+            'queens': 'nyc', 'bronx': 'nyc', 'the bronx': 'nyc', 'staten island': 'nyc',
+            'washington': 'dc', 'washington dc': 'dc', 'washington d.c.': 'dc', 'district of columbia': 'dc',
+            'seattle': 'seattle',
+        };
+        function normCity(addr){
+            const raw = (addr.city || addr.town || addr.village || addr.county || '').toLowerCase().trim();
+            return CITY_ALIASES[raw] || raw;
+        }
+
+        function choose(res){
+            const name = res.display_name.split(',')[0].replace(/[<>&"]/g, '').slice(0, 60) || 'My favorite place';
+            picked = { name, lat: +res.lat, lon: +res.lon, meta: res };
+            $('q').value = res.display_name;
+            $('qres').style.display = 'none';
+            $('f_name').value = name;
+            chosenMinutes = null;
+            document.querySelectorAll('.dchip').forEach(c => c.classList.remove('on'));
+            $('qform').classList.add('on');
+            $('msg').textContent = ''; $('msg').className = 'msg';
+        }
+
+        document.querySelectorAll('.dchip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.dchip').forEach(c => c.classList.remove('on'));
+                chip.classList.add('on');
+                chosenMinutes = chip.dataset.m ? parseInt(chip.dataset.m, 10) : null;
+            });
+        });
+
+        async function submitPlace(){
+            const msg = $('msg'); msg.className = 'msg'; msg.textContent = '';
+            const name = $('f_name').value.trim();
+            if (!picked) { msg.className = 'msg err'; msg.textContent = 'Search and pick a place first.'; return; }
+            if (name.length < 2) { msg.className = 'msg err'; msg.textContent = 'Give it a name.'; return; }
+            const addr = (picked.meta.address) || {};
+            const city = normCity(addr);
+            $('submitBtn').disabled = true;
+            try {
+                const r = await fetch('/api/destinations/add', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, lat: picked.lat, lon: picked.lon, city,
+                                           found_via: 'favorite-place', osm_class: picked.meta.class,
+                                           type: picked.meta.type, address: addr })
+                });
+                const d = await r.json();
+                if (!d.ok) { msg.className = 'msg err'; msg.textContent = d.error || 'Could not add this place — try again.'; $('submitBtn').disabled = false; return; }
+                if (chosenMinutes) {
+                    fetch('/api/visit-time', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, city, minutes: chosenMinutes }) }).catch(function(){});
+                }
+                msg.className = 'msg ok';
+                msg.textContent = '🎉 Thanks! “' + name + '” is now in the Destination Book. Add another favorite place below.';
+                $('qform').classList.remove('on');
+                $('q').value = ''; picked = null; chosenMinutes = null;
+                $('submitBtn').disabled = false;
+                loadCounter();
+            } catch (e) {
+                msg.className = 'msg err'; msg.textContent = 'Could not reach the server — please try again.';
+                $('submitBtn').disabled = false;
+            }
+        }
+
+        loadCounter();
+    </script>
+    <script src="/floatback.js"></script>
+    <script src="/jarvis-widget.js"></script>
+    <script src="/i18n.js"></script>
+</body>
+</html>

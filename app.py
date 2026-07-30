@@ -34,11 +34,19 @@ import square_client
 import notify
 import paypal_client
 
+def _no_tags(s):
+    """Defense-in-depth vs stored XSS: strip angle brackets from any string
+    that ends up rendered in every visitor's browser. Pages escape on render
+    too — this guard protects any future sink someone forgets."""
+    return (s or "").replace("<", "").replace(">", "")
+
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 RES_PATH = os.path.join(BASE_DIR, "reservations.json")
 RENTERS_PATH = os.path.join(BASE_DIR, "renters.json")
 AGENTS_PATH = os.path.join(BASE_DIR, "agents.json")
 ARTICLES_PATH = os.path.join(BASE_DIR, "articles.json")
+TRAFFIC_PATH = os.path.join(BASE_DIR, "traffic.json")
 CUSTOMERS_PATH = os.path.join(BASE_DIR, "customers.json")
 FINANCE_PATH = os.path.join(BASE_DIR, "finance_signups.json")
 WISHLIST_PATH = os.path.join(BASE_DIR, "finance_wishlist.json")
@@ -109,6 +117,25 @@ def owner_required(fn):
     return wrapper
 
 
+def _self_or_owner(session_key, url_param):
+    """A driver/agent may only reach their OWN record; the owner may reach any.
+    Without this, any of these URLs could be requested with someone else's id —
+    the routes below used to trust whatever id the browser sent, with nothing
+    checking that the caller had actually logged in as that person."""
+    def deco(fn):
+        @wraps(fn)
+        def wrapper(*a, **k):
+            if session.get("owner") or (session.get(session_key) and session.get(session_key) == k.get(url_param)):
+                return fn(*a, **k)
+            return jsonify({"ok": False, "auth_required": True, "error": "Login required."}), 401
+        return wrapper
+    return deco
+
+
+renter_self_or_owner = _self_or_owner("renter_id", "rid")
+agent_self_or_owner = _self_or_owner("agent_id", "aid")
+
+
 @app.route("/api/owner/status")
 def api_owner_status():
     return jsonify({"ok": True, "configured": _load_owner() is not None,
@@ -166,6 +193,74 @@ def _save(path, items):
     with open(tmp, "w") as f:
         json.dump(items, f, indent=2)
     os.replace(tmp, path)
+
+
+# ---------- site traffic — self-hosted, no third party ----------
+TRAFFIC_MAX_DAYS = 120  # bound file growth; older days are just dropped
+# Pages tracked individually for the "which tool" breakdown; every other
+# page rolls into a single "other" bucket so the archive table stays short.
+TRAFFIC_TOOL_PATHS = {"/trip-planner": "trip_planner", "/destination-book": "destination_book",
+                       "/favorite-place": "favorite_place"}
+
+
+def _load_traffic():
+    try:
+        with open(TRAFFIC_PATH) as f:
+            d = json.load(f)
+        if isinstance(d, dict) and isinstance(d.get("days"), dict):
+            return d
+    except Exception:
+        pass
+    return {"days": {}}
+
+
+def _save_traffic(d):
+    tmp = TRAFFIC_PATH + ".tmp"
+    with open(tmp, "w") as f:
+        json.dump(d, f, indent=2)
+    os.replace(tmp, TRAFFIC_PATH)
+
+
+@app.after_request
+def _track_traffic(resp):
+    """Lightweight, self-hosted page-view counter — no third-party analytics,
+    no ad tracking. Counts real page loads only (GET, 200, text/html); API
+    calls and static assets never touch this. A "unique visitor" is
+    approximated by an anonymous long-lived cookie — nothing identifying —
+    and the raw cookie id is only ever kept for TODAY's still-open day.
+    Once a day finishes it's folded down to a plain count and never grows
+    again, so this file can't turn into a visitor-tracking log over time."""
+    try:
+        if request.method == "GET" and resp.status_code == 200 \
+                and (resp.mimetype or "").startswith("text/html"):
+            vid = request.cookies.get("psx_vid")
+            set_cookie = not vid
+            if set_cookie:
+                vid = secrets.token_hex(16)
+            today = datetime.date.today().isoformat()
+            with _LOCK:
+                data = _load_traffic()
+                days = data["days"]
+                # Finalize any day that isn't today — its ids are spent, strip them.
+                for d, rec in days.items():
+                    if d != today and "visitor_ids" in rec:
+                        rec["unique_visitors"] = len(rec["visitor_ids"])
+                        del rec["visitor_ids"]
+                rec = days.setdefault(today, {"pageviews": 0, "visitor_ids": [], "paths": {}})
+                rec["pageviews"] += 1
+                rec["paths"][request.path] = rec["paths"].get(request.path, 0) + 1
+                if vid not in rec["visitor_ids"]:
+                    rec["visitor_ids"].append(vid)
+                if len(days) > TRAFFIC_MAX_DAYS:
+                    for old in sorted(days.keys())[:len(days) - TRAFFIC_MAX_DAYS]:
+                        del days[old]
+                _save_traffic(data)
+            if set_cookie:
+                resp.set_cookie("psx_vid", vid, max_age=60 * 60 * 24 * 400,
+                                 httponly=True, samesite="Lax")
+    except Exception:
+        pass
+    return resp
 
 
 # ---------- driver contract helpers ----------
@@ -399,6 +494,13 @@ def destination_book_page():
     return send_file(os.path.join(BASE_DIR, "destination-book.html"))
 
 
+@app.route("/favorite-place")
+def favorite_place_page():
+    """Free tool: a 2-question data-collection flow — search a place, say how
+    long you stayed — that feeds the same community pipeline as the planner."""
+    return send_file(os.path.join(BASE_DIR, "favorite-place.html"))
+
+
 @app.route("/factor-clock")
 def factor_clock_page():
     """Free tool: the Factor Clock — an honest prediction engine (free founding beta)."""
@@ -431,13 +533,18 @@ def api_destinations():
     try:
         with open(os.path.join(BASE_DIR, "destinations.json")) as f:
             data = json.load(f)
-        # ride the crowd's real stay times along with each place
+        # ride the crowd's real stay times AND star ratings along with each place
         times = _visit_all()
+        ratings = _ratings_all()
         for e in data.get("entries", []):
             rec = times.get(_visit_key(e.get("city"), e.get("name")))
             if rec and rec.get("n", 0) >= VISIT_MIN_N:
                 e["typical_visit"] = rec["median"]
                 e["visit_n"] = rec["n"]
+            r = ratings.get(_visit_key(e.get("city"), e.get("name")))
+            if r and r.get("n", 0) >= 1:
+                e["stars"] = r["avg"]           # community average, 1–5
+                e["rating_count"] = r["n"]
         return jsonify(data)
     except Exception as e:
         return jsonify({"cities": {}, "entries": [], "error": str(e)}), 500
@@ -491,6 +598,40 @@ def _median(nums):
         return None
     mid = n // 2
     return float(s[mid]) if n % 2 else (s[mid - 1] + s[mid]) / 2.0
+
+
+# ---------- star ratings (real, community-driven) ----------
+# Visitors rate a place 1–5 stars anywhere in the planner; we keep the average and
+# the count. No fabricated stars — a place shows stars only once someone rates it.
+RATINGS_PATH = os.path.join(BASE_DIR, "place_ratings.json")
+
+
+def _ratings_all():
+    d = _load(RATINGS_PATH)
+    return d if isinstance(d, dict) else {}
+
+
+@app.route("/api/rate", methods=["POST"])
+def api_rate():
+    d = request.get_json(silent=True) or {}
+    name = (d.get("name") or "").strip()[:80]
+    city = (d.get("city") or "").strip()[:40]
+    try:
+        stars = int(round(float(d.get("stars"))))
+    except (TypeError, ValueError):
+        return jsonify({"ok": False, "error": "stars required"}), 400
+    if len(name) < 2 or not (1 <= stars <= 5):
+        return jsonify({"ok": False, "error": "need a place and 1–5 stars"}), 400
+    key = _visit_key(city, name)
+    with _LOCK:
+        allr = _ratings_all()
+        rec = allr.get(key) or {"samples": [], "n": 0}
+        rec["samples"] = (rec.get("samples") or [])[-499:] + [stars]   # bounded
+        rec["n"] = len(rec["samples"])
+        rec["avg"] = round(sum(rec["samples"]) / rec["n"], 1)
+        allr[key] = rec
+        _save(RATINGS_PATH, allr)
+    return jsonify({"ok": True, "avg": rec["avg"], "count": rec["n"]})
 
 
 @app.route("/api/visit-times")
@@ -607,7 +748,7 @@ def api_destinations_add():
     for every future visitor AND appears in the Destination Book (tagged
     'community'). Deduped by name+city; capped so the book can't be flooded."""
     data = request.get_json(force=True, silent=True) or {}
-    name = (data.get("name") or "").strip()[:80]
+    name = _no_tags((data.get("name") or "").strip())[:80]
     if len(name) < 2:
         return jsonify({"ok": False, "error": "Name required."}), 400
     try:
@@ -618,7 +759,8 @@ def api_destinations_add():
         return jsonify({"ok": False, "error": "Valid coordinates required."}), 400
     # Describe it from the map's own classification so the book never gains a blank row
     auto_desc, auto_cat, auto_type = _describe_osm(data)
-    given_desc = (data.get("desc") or "").strip()[:300]
+    auto_desc = _no_tags(auto_desc)          # built from client-supplied OSM fields
+    given_desc = _no_tags((data.get("desc") or "").strip())[:300]
     cat = (data.get("cat") or "").strip().lower()
     if cat not in ("history", "culture", "nature", "food", "views"):
         cat = auto_cat
@@ -1339,6 +1481,7 @@ def api_claim(rid):
 
 
 @app.route("/api/renters/<rid>/refer", methods=["POST"])
+@renter_self_or_owner
 def api_renter_refer(rid):
     """Driver-Agent self-referral. A driver met a customer who needs a ride, refers
     them here, and drives the trip themselves — so they earn BOTH the referral
@@ -1848,15 +1991,18 @@ def api_renter_register():
         }
         renters.append(renter)
         _save(RENTERS_PATH, renters)
+    session["renter_id"] = renter["id"]
     return jsonify({"ok": True, "renter": renter})
 
 
 @app.route("/api/renters")
+@owner_required
 def api_renters():
     return jsonify({"renters": _load(RENTERS_PATH)})
 
 
 @app.route("/api/renters/<rid>")
+@renter_self_or_owner
 def api_renter(rid):
     renter = next((x for x in _load(RENTERS_PATH) if x.get("id") == rid), None)
     if not renter:
@@ -1867,6 +2013,7 @@ def api_renter(rid):
 
 
 @app.route("/api/renters/<rid>/insurance")
+@renter_self_or_owner
 def api_renter_insurance(rid):
     """Current insurance standing for a driver (state + days left)."""
     renter = next((x for x in _load(RENTERS_PATH) if x.get("id") == rid), None)
@@ -1877,6 +2024,7 @@ def api_renter_insurance(rid):
 
 
 @app.route("/api/renters/<rid>/insurance/upload", methods=["POST"])
+@renter_self_or_owner
 def api_renter_insurance_upload(rid):
     """Driver uploads proof of insurance + its expiry date. Rejects an already-expired
     policy so 'covered' always means covered right now."""
@@ -1936,6 +2084,7 @@ def api_renter_insurance_doc(rid):
 
 # ---------- driver compliance / violations ----------
 @app.route("/api/renters/<rid>/violations")
+@renter_self_or_owner
 def api_renter_violations(rid):
     """The driver's own compliance standing: auto-detected issues + logged violations."""
     renter = next((x for x in _load(RENTERS_PATH) if x.get("id") == rid), None)
@@ -1999,6 +2148,7 @@ def api_all_violations():
 
 # ---------- driver paperwork / document archive ----------
 @app.route("/api/renters/<rid>/documents")
+@renter_self_or_owner
 def api_renter_documents(rid):
     """The driver's paper trail: archived uploads + signed-agreement history."""
     renter = next((x for x in _load(RENTERS_PATH) if x.get("id") == rid), None)
@@ -2008,6 +2158,7 @@ def api_renter_documents(rid):
 
 
 @app.route("/api/renters/<rid>/documents/upload", methods=["POST"])
+@renter_self_or_owner
 def api_renter_document_upload(rid):
     """Driver uploads a piece of paperwork. It is ARCHIVED, not overwritten."""
     renter = next((x for x in _load(RENTERS_PATH) if x.get("id") == rid), None)
@@ -2107,6 +2258,7 @@ def _square_invoices():
 
 
 @app.route("/api/renters/<rid>/rto")
+@renter_self_or_owner
 def api_renter_rto(rid):
     """A driver's rent-to-own progress: how many of the (default 144) weekly Square
     payments are done, total paid, remaining, and estimated contract-release date."""
@@ -2267,15 +2419,18 @@ def api_agent_register():
         }
         agents.append(agent)
         _save(AGENTS_PATH, agents)
+    session["agent_id"] = agent["id"]
     return jsonify({"ok": True, "agent": agent})
 
 
 @app.route("/api/agents")
+@owner_required
 def api_agents():
     return jsonify({"agents": _load(AGENTS_PATH)})
 
 
 @app.route("/api/agents/<aid>")
+@agent_self_or_owner
 def api_agent(aid):
     agent = next((x for x in _load(AGENTS_PATH) if x.get("id") == aid), None)
     if not agent:
@@ -2341,6 +2496,7 @@ def _agent_take_paid(aid):
 
 
 @app.route("/api/agents/<aid>/payout-request", methods=["POST"])
+@agent_self_or_owner
 def api_agent_payout_request(aid):
     """Agent requests a payout of their available balance. Owner is alerted."""
     agent = next((x for x in _load(AGENTS_PATH) if x.get("id") == aid), None)
@@ -2410,6 +2566,7 @@ def api_payout_mark_paid(pid):
 
 
 @app.route("/api/agents/<aid>/payout-email", methods=["POST"])
+@agent_self_or_owner
 def api_agent_payout_email(aid):
     """Agent saves where PayPal payouts should go."""
     data = request.get_json(force=True, silent=True) or {}
@@ -2626,8 +2783,15 @@ def api_renter_login():
                 # legacy account with no birthday on file — enroll it now (VIN proves identity)
                 r["dob"] = dob
                 _save(RENTERS_PATH, renters)
+            session["renter_id"] = r["id"]
             return jsonify({"ok": True, "renter": r})
     return jsonify({"ok": False, "error": "No driver found with that VIN."}), 404
+
+
+@app.route("/api/renters/logout", methods=["POST"])
+def api_renter_logout():
+    session.pop("renter_id", None)
+    return jsonify({"ok": True})
 
 
 @app.route("/api/agents/login", methods=["POST"])
@@ -2646,8 +2810,15 @@ def api_agent_login():
         if ac and ac == code and _last_name(a.get("name")) == last:
             if org and (a.get("organization") or "").strip().lower() != org:
                 continue   # organization was provided but doesn't match
+            session["agent_id"] = a["id"]
             return jsonify({"ok": True, "agent": a})
     return jsonify({"ok": False, "error": "No agent matches that code and last name."}), 404
+
+
+@app.route("/api/agents/logout", methods=["POST"])
+def api_agent_logout():
+    session.pop("agent_id", None)
+    return jsonify({"ok": True})
 
 
 # ---------- partner pipeline (organizations to recruit as referral agents) ----------
@@ -2655,6 +2826,7 @@ PARTNER_STATUSES = ["to_contact", "contacted", "interested", "signed", "declined
 
 
 @app.route("/api/partners")
+@owner_required
 def api_partners():
     return jsonify({"ok": True, "partners": _load(PARTNERS_PATH), "statuses": PARTNER_STATUSES})
 
@@ -2749,6 +2921,7 @@ def api_pricing_agent_rate():
 
 
 @app.route("/api/partners/add", methods=["POST"])
+@owner_required
 def api_partner_add():
     data = request.get_json(force=True, silent=True) or {}
     name = (data.get("name") or "").strip()
@@ -2775,6 +2948,7 @@ def api_partner_add():
 
 
 @app.route("/api/partners/<pid>/update", methods=["POST"])
+@owner_required
 def api_partner_update(pid):
     data = request.get_json(force=True, silent=True) or {}
     with _LOCK:
@@ -2794,6 +2968,7 @@ def api_partner_update(pid):
 
 
 @app.route("/api/partners/<pid>/delete", methods=["POST"])
+@owner_required
 def api_partner_delete(pid):
     with _LOCK:
         partners = _load(PARTNERS_PATH)
@@ -2989,9 +3164,13 @@ def api_books_export():
                     headers={"Content-Disposition": "attachment; filename=plateau-books.csv"})
 
 
-# ---------- articles / proposals ----------
+# ---------- articles / proposals — the Reinvestment USA business-idea board ----------
+# Open to anyone, no login: pitch a business idea, and readers can register
+# interest to invest in it or to launch/run it themselves. This is a lead
+# board only — no money or equity ever moves through the site; registering
+# interest just leaves contact info for Plateau Strategy to follow up on.
 def _public_article(a):
-    """Public shape — followers' emails are kept private, only the count is shown."""
+    """Public shape — investor/launcher emails are kept private, only counts are shown."""
     return {
         "id": a.get("id"),
         "author": a.get("author", ""),
@@ -3002,6 +3181,7 @@ def _public_article(a):
         "likes": a.get("likes", 0),
         "unlikes": a.get("unlikes", 0),
         "follower_count": len(a.get("followers", [])),
+        "launcher_count": len(a.get("launchers", [])),
     }
 
 
@@ -3014,9 +3194,9 @@ def api_articles():
 @app.route("/api/articles", methods=["POST"])
 def api_article_create():
     data = request.get_json(force=True, silent=True) or {}
-    author = (data.get("author") or "").strip()
-    title = (data.get("title") or "").strip()
-    body = (data.get("body") or "").strip()
+    author = _no_tags((data.get("author") or "").strip())
+    title = _no_tags((data.get("title") or "").strip())
+    body = _no_tags((data.get("body") or "").strip())
     if not author or not title or not body:
         return jsonify({"ok": False, "error": "Your name, a title and body are all required."}), 400
     with _LOCK:
@@ -3032,6 +3212,7 @@ def api_article_create():
             "likes": 0,
             "unlikes": 0,
             "followers": [],
+            "launchers": [],
         }
         items.append(article)
         _save(ARTICLES_PATH, items)
@@ -3060,7 +3241,8 @@ def api_article_vote(aid):
 
 @app.route("/api/articles/<aid>/follow", methods=["POST"])
 def api_article_follow(aid):
-    """Add an email to a proposal's wishlist / follow list."""
+    """Register interest to INVEST in this business idea — an email left here
+    is a lead, not a transaction; Plateau Strategy follows up directly."""
     data = request.get_json(force=True, silent=True) or {}
     email = (data.get("email") or "").strip().lower()
     if "@" not in email or "." not in email.split("@")[-1]:
@@ -3074,6 +3256,27 @@ def api_article_follow(aid):
                     followers.append(email)
                     _save(ARTICLES_PATH, items)
                 return jsonify({"ok": True, "follower_count": len(followers)})
+    return jsonify({"ok": False, "error": "not found"}), 404
+
+
+@app.route("/api/articles/<aid>/launch", methods=["POST"])
+def api_article_launch(aid):
+    """Register interest to LAUNCH/run this business idea — same lead-only
+    contract as /follow, tracked separately so an idea's two audiences
+    (capital vs. operators) don't get mixed together."""
+    data = request.get_json(force=True, silent=True) or {}
+    email = (data.get("email") or "").strip().lower()
+    if "@" not in email or "." not in email.split("@")[-1]:
+        return jsonify({"ok": False, "error": "Please enter a valid email."}), 400
+    with _LOCK:
+        items = _load(ARTICLES_PATH)
+        for a in items:
+            if a.get("id") == aid:
+                launchers = a.setdefault("launchers", [])
+                if email not in launchers:
+                    launchers.append(email)
+                    _save(ARTICLES_PATH, items)
+                return jsonify({"ok": True, "launcher_count": len(launchers)})
     return jsonify({"ok": False, "error": "not found"}), 404
 
 
@@ -3231,8 +3434,59 @@ def _arch_activity():
     return out
 
 
+def _arch_traffic():
+    """One row per day, newest first — page views, unique visitors, and the
+    two tourist-facing tools (Trip Planner, Destination Book) broken out
+    separately since that's usage, not just traffic."""
+    data = _load_traffic()
+    out = []
+    for date in sorted(data["days"].keys(), reverse=True):
+        rec = data["days"][date]
+        paths = rec.get("paths", {})
+        uniq = rec.get("unique_visitors")
+        if uniq is None:  # today — still open, computed live from the raw ids
+            uniq = len(rec.get("visitor_ids", []))
+        row = {"date": date, "page_views": rec.get("pageviews", 0), "unique_visitors": uniq}
+        tool_total = 0
+        for path, key in TRAFFIC_TOOL_PATHS.items():
+            n = paths.get(path, 0)
+            row[key + "_views"] = n
+            tool_total += n
+        row["other_views"] = max(0, rec.get("pageviews", 0) - tool_total)
+        out.append(row)
+    return out
+
+
+@app.route("/api/traffic/summary")
+def api_traffic_summary():
+    """Public, aggregate-only traffic numbers — no per-visitor detail, no
+    owner login needed. Powers the small usage note next to the Trip
+    Planner map and the Destination Book, so travelers see real numbers
+    without needing the owner-only Archive."""
+    days = _load_traffic()["days"]
+    today_iso = datetime.date.today().isoformat()
+    week_cutoff = (datetime.date.today() - datetime.timedelta(days=6)).isoformat()
+
+    def sum_path(path, cutoff=None):
+        total = 0
+        for date, rec in days.items():
+            if cutoff and date < cutoff:
+                continue
+            total += rec.get("paths", {}).get(path, 0)
+        return total
+
+    def tool_stats(path):
+        return {"today": sum_path(path, today_iso), "week": sum_path(path, week_cutoff),
+                "all_time": sum_path(path)}
+
+    return jsonify({"ok": True,
+                     "trip_planner": tool_stats("/trip-planner"),
+                     "destination_book": tool_stats("/destination-book")})
+
+
 # section key → (label, one-line description, builder)
 ARCHIVE_SECTIONS = [
+    ("traffic",    "📈 Site traffic", "Daily page views, unique visitors, and Trip Planner / Destination Book usage.", _arch_traffic),
     ("bookings",   "🧾 Bookings & invoices", "Every reservation — customer, trip, fare, invoice and status.", _arch_bookings),
     ("contacts",   "📇 Contacts (marketing)", "Every captured email & phone across the whole site, de-duped — your advertising list.", _arch_contacts),
     ("people",     "👤 Accounts", "Agent, driver and customer accounts.", _arch_people),
