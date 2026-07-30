@@ -70,6 +70,17 @@
         .achip.on .abox { border-color: #1d4ed8; }
         .amenity-note { display: block; font-size: 0.66rem; color: #94a3b8; line-height: 1.35;
             margin-top: 0.35rem; }
+        /* 🌍 the map announcing that it just grew */
+        .discovery-note { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px;
+            padding: 0.55rem 0.9rem; margin-bottom: 0.6rem; font-size: 0.82rem; color: #065f46; }
+        .discovery-note b { color: #064e3b; }
+        .discovery-note .dn-sub { display: block; color: #047857; font-size: 0.75rem; margin-top: 0.15rem; }
+        .dn-ask { margin-top: 0.45rem; display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; }
+        .dn-ask .q { font-size: 0.76rem; color: #065f46; font-weight: 600; margin-right: 0.2rem; }
+        .dn-ask span.opt { font-size: 0.74rem; font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 999px;
+            border: 1.5px solid #a7f3d0; background: #fff; color: #047857; cursor: pointer; user-select: none; }
+        .dn-ask span.opt:hover { border-color: #34d399; }
+        .dn-rec { font-size: 0.72rem; color: #047857; margin-left: 0.2rem; }
         .am-pin { width: 22px; height: 22px; border-radius: 50%; background: #fff;
             display: flex; align-items: center; justify-content: center; font-size: 12px;
             border: 2px solid #94a3b8; box-shadow: 0 1px 3px rgba(15,23,42,0.3); }
@@ -442,6 +453,7 @@
 
             <div>
                 <div id="trafficNote" class="traffic-note" style="display:none;"></div>
+                <div id="discoveryNote" class="discovery-note" style="display:none;"></div>
                 <div id="map"></div>
                 <div class="legend">
                     <span><span class="ldot" style="background:#0d9488">✓</span>Enough time</span>
@@ -1437,6 +1449,7 @@
                 if (d.entry.cat && d.entry.cat !== p.cat) {     // adopt the derived category
                     p.cat = d.entry.cat; renderPlaces(); refresh(); savePlaces();
                 }
+                discoveryAnnounce(p, !d.already_known, (d.entry || {}).city);   // tell the traveler the map grew
                 if (!d.already_known) say('“' + p.name + '” added to your board — and to the Destination Book for this city.');
             }).catch(function(){});
         } catch (e) {}
@@ -1734,6 +1747,65 @@
             }).catch(() => { $('rt_send').disabled = false; msg.className = 'ho-msg err'; msg.textContent = 'Could not reach the server — please try again.'; });
     }
 
+    // ---------- 🌍 "new destination discovered" ----------
+    // The map tells travelers it is growing: what THEY just put on it, and what
+    // others have been adding lately. Whoever discovers a place is asked how long
+    // they'd stay — with an honest recommendation alongside (real crowd median
+    // when we have one, a category estimate clearly marked as such when we don't).
+    const STAY_HINT = { nature: 120, views: 45, history: 60, culture: 90, food: 60 };
+    let dnCur = null;
+    function discoveryAnnounce(p, isNew, filedCity){
+        const el = $('discoveryNote'); if (!el) return;
+        // file the stay-time answer under the city the SERVER chose for this place
+        // (Mount Rushmore → "keystone"), never the board you happened to be on,
+        // or the crowd data would be orphaned from its own destination.
+        dnCur = { name: p.name, city: filedCity || curCity };
+        const ct = crowdTimes[(p.name || '').toLowerCase()];
+        const rec = ct && ct.median
+            ? '<span class="dn-rec">travelers typically stay ' + ct.median + ' min'
+              + (ct.source === 'guide' ? ' (guide-endorsed)' : '') + '</span>'
+            : '<span class="dn-rec">no stay time recorded yet — about '
+              + (STAY_HINT[p.cat] || 60) + ' min for a place like this</span>';
+        el.innerHTML = (isNew
+                ? '🌍 <b>New destination discovered:</b> ' + escj(p.name)
+                  + '<span class="dn-sub">It just joined the Destination Book for every traveler after you.</span>'
+                : '📍 <b>' + escj(p.name) + '</b> is already in the book'
+                  + '<span class="dn-sub">Added by an earlier traveler.</span>')
+            + '<div class="dn-ask"><span class="q">How long will you stay?</span>'
+            + [30, 60, 120, 240].map(m => '<span class="opt" onclick="discoveryStay(' + m + ')">'
+                + (m >= 60 ? (m / 60) + (m === 60 ? ' hour' : ' hours') : m + ' min') + '</span>').join('')
+            + rec + '</div>';
+        el.style.display = 'block';
+    }
+    function discoveryStay(minutes){
+        if (!dnCur) return;
+        const nm = dnCur.name;
+        fetch('/api/visit-time', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: nm, city: dnCur.city, minutes: minutes }) }).catch(function(){});
+        // apply it to the traveler's own board too — they just told us
+        const i = places.findIndex(p => (p.name || '').toLowerCase() === (nm || '').toLowerCase());
+        if (i >= 0) { places[i].visit = minutes; places[i].visit_mine = true; savePlaces(); refresh(); }
+        const el = $('discoveryNote');
+        if (el) el.innerHTML = '✅ <b>Thank you</b> — ' + minutes + ' min recorded for ' + escj(nm)
+              + '<span class="dn-sub">That helps every traveler who plans this place next.</span>';
+        dnCur = null;
+    }
+    async function loadDiscoveryFeed(){
+        try {
+            const d = await (await fetch('/api/discoveries')).json();
+            const el = $('discoveryNote');
+            if (!el || !d || !d.ok || !d.recent.length || dnCur) return;
+            if (el.style.display === 'block') return;         // never overwrite a live announcement
+            const r = d.recent[0];
+            el.innerHTML = '🌍 <b>Newest discovery:</b> ' + escj(r.name)
+                + ' <span class="dn-rec">in ' + escj(r.city_label || r.city) + '</span>'
+                + '<span class="dn-sub">' + d.total + ' place' + (d.total === 1 ? '' : 's')
+                + ' discovered by travelers across ' + d.city_count + ' cit' + (d.city_count === 1 ? 'y' : 'ies')
+                + ' — every search grows the map.</span>';
+            el.style.display = 'block';
+        } catch (e) {}
+    }
+
     // ---------- 📖 book open/closed (remembered per device) ----------
     function toggleBook(){
         const card = document.getElementById('bookCard'); if (!card) return;
@@ -1982,6 +2054,7 @@
         }
         setInterval(ping, 60000);      // an open tab keeps itself counted
     })();
+    loadDiscoveryFeed();
     </script>
     <script src="/floatback.js"></script>
     <script src="/jarvis-widget.js"></script>

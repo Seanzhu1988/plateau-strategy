@@ -597,6 +597,33 @@ def api_destinations():
         return jsonify({"cities": {}, "entries": [], "error": str(e)}), 500
 
 
+@app.route("/api/discoveries")
+def api_discoveries():
+    """What travelers have been discovering lately, newest first, worldwide —
+    the visible proof that the map grows by itself."""
+    try:
+        with open(os.path.join(BASE_DIR, "destinations.json")) as f:
+            d = json.load(f)
+    except Exception:
+        return jsonify({"ok": True, "recent": [], "by_city": [], "total": 0})
+    cities = d.get("cities", {})
+    found = [e for e in d.get("entries", []) if e.get("source") == "user" and e.get("added_at")]
+    found.sort(key=lambda e: e.get("added_at", ""), reverse=True)
+    tally = {}
+    for e in found:
+        tally[e.get("city", "")] = tally.get(e.get("city", ""), 0) + 1
+    return jsonify({
+        "ok": True,
+        "total": len(found),
+        "city_count": len({e.get("city") for e in found}),
+        "recent": [{"name": e.get("name"), "city": e.get("city"),
+                    "city_label": cities.get(e.get("city"), e.get("city")),
+                    "cat": e.get("cat"), "at": e.get("added_at")} for e in found[:12]],
+        "by_city": sorted(({"city": k, "label": cities.get(k, k), "n": v} for k, v in tally.items()),
+                          key=lambda r: -r["n"])[:12],
+    })
+
+
 # ---------- 💬 destination comments — the community's own guidebook ----------
 # A place someone DISCOVERED by searching becomes an entry others can talk
 # about: what it's really like, what to know before you go. Keyed city|name
@@ -805,6 +832,20 @@ _OSM_TYPE_CAT = {
 }
 
 
+def _derive_city(meta, fallback=""):
+    """Where a place ACTUALLY is, taken from the geocoder's address rather than
+    whichever city board the traveler happened to be looking at. This is what
+    lets the book grow city by city: search Olympic National Park from the
+    Seattle board and it files itself under Port Angeles, opening a new chapter
+    instead of being mis-shelved."""
+    addr = meta.get("address") if isinstance(meta.get("address"), dict) else {}
+    for k in ("city", "town", "village", "municipality", "county"):
+        v = (addr.get(k) or "").strip()
+        if v:
+            return _no_tags(v.lower())[:40], _no_tags(v)[:60]
+    return (_no_tags((fallback or "").strip().lower())[:40], "")
+
+
 def _describe_osm(meta):
     """Write an honest one-line description of a place from the MAP'S OWN data.
 
@@ -875,7 +916,7 @@ def api_destinations_add():
         # THE BOOK GROWS WORLDWIDE. A city we have never seen before is not an
         # error to be swept into "Other" — it is a new chapter. The first traveler
         # to search a place there names the city, and it joins the book for good.
-        city = _no_tags((data.get("city") or "").strip().lower())[:40]
+        city, city_lbl = _derive_city(data, data.get("city"))
         cities = d.setdefault("cities", {})
         if not city:
             city = "other"
@@ -885,7 +926,8 @@ def api_destinations_add():
                 city = "other"
                 cities.setdefault("other", "Other")
             else:
-                label = _no_tags((data.get("city_label") or "").strip())[:60] or city.title()
+                label = (city_lbl or _no_tags((data.get("city_label") or "").strip())[:60]
+                         or city.title())
                 cities[city] = label
         # dedupe: the site already remembers this place — but a re-search is a chance
         # to FILL IN what's still missing. A blank description gets one; a description

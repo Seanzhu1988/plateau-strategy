@@ -220,13 +220,29 @@
 
     // ---------- geocoding ----------
     async function geocode(q) {
-        var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' +
+        var url = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=' +
                   encodeURIComponent(q);
         var r = await fetch(url);
         if (!r.ok) throw new Error('Place search is busy — try again in a moment.');
         var j = await r.json();
         if (!j.length) throw new Error('Could not find “' + q + '”. Try adding the state.');
+        collectDiscovery(j[0]);        // every place anyone enters joins the book
         return { lat: +j[0].lat, lon: +j[0].lon, label: j[0].display_name.split(',').slice(0, 2).join(',') };
+    }
+
+    // Anywhere a traveler types a real place, the map learns it. The server files
+    // it under the city the geocoder reports, so the book grows city by city.
+    function collectDiscovery(res) {
+        try {
+            fetch('/api/destinations/add', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: String(res.display_name || '').split(',')[0].slice(0, 60),
+                    lat: +res.lat, lon: +res.lon,
+                    found_via: 'road-trip', osm_class: res.class, type: res.type, address: res.address
+                })
+            }).catch(function () {});
+        } catch (e) {}
     }
 
     // ---------- route ----------
