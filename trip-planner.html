@@ -51,6 +51,22 @@
         .traffic-note { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem;
             font-weight: 600; color: #1d4ed8; background: #eff6ff; border: 1px solid #dbeafe;
             border-radius: 10px; padding: 0.55rem 0.9rem; margin-bottom: 0.6rem; }
+        /* convenience layers the traveler can toggle — restrooms, food, essentials */
+        .amenity-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem;
+            margin-bottom: 0.6rem; }
+        .amenity-bar .alab { font-size: 0.74rem; font-weight: 800; color: #94a3b8;
+            text-transform: uppercase; letter-spacing: 0.05em; }
+        .achip { font-size: 0.8rem; font-weight: 600; padding: 0.32rem 0.85rem; border-radius: 999px;
+            border: 1.5px solid #e2e8f0; color: #64748b; cursor: pointer; user-select: none; background: #fff; }
+        .achip:hover { border-color: #93c5fd; }
+        .achip.on { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
+        .amenity-note { font-size: 0.74rem; color: #94a3b8; }
+        .am-pin { width: 22px; height: 22px; border-radius: 50%; background: #fff;
+            display: flex; align-items: center; justify-content: center; font-size: 12px;
+            border: 2px solid #94a3b8; box-shadow: 0 1px 3px rgba(15,23,42,0.3); }
+        .am-pop { font-size: 0.82rem; line-height: 1.5; }
+        .am-pop b { color: #0f172a; }
+        .am-pop .d { color: #64748b; font-size: 0.76rem; }
         .legend { display: flex; flex-wrap: wrap; gap: 1.1rem; font-size: 0.8rem; color: #475569;
             margin-top: 0.75rem; align-items: center; }
         .legend > span { display: inline-flex; align-items: center; }
@@ -396,6 +412,13 @@
 
             <div>
                 <div id="trafficNote" class="traffic-note" style="display:none;"></div>
+                <div class="amenity-bar" id="amenityBar">
+                    <span class="alab">Show on the map:</span>
+                    <span class="achip" id="ach_toilets" onclick="toggleAmenity('toilets')">🚻 Restrooms</span>
+                    <span class="achip" id="ach_food" onclick="toggleAmenity('food')">🍽️ Food &amp; coffee</span>
+                    <span class="achip" id="ach_essentials" onclick="toggleAmenity('essentials')">💊 Pharmacy · ATM · Water</span>
+                    <span class="amenity-note" id="amenityNote"></span>
+                </div>
                 <div id="map"></div>
                 <div class="legend">
                     <span><span class="ldot" style="background:#0d9488">✓</span>Enough time</span>
@@ -1689,6 +1712,110 @@
         maxZoom: 20, subdomains: 'abcd',
         attribution: '© OpenStreetMap contributors © CARTO'
     }).addTo(map);
+
+    // ---------- 🚻🍽️💊 convenience layers (traveler's choice, off by default) ----------
+    // Live from OpenStreetMap via the Overpass API — free, worldwide, no key.
+    // Each chip toggles a layer; markers carry whatever detail OSM has (name,
+    // floor/level, fee, hours, wheelchair access). Fetches are viewport-bounded,
+    // zoom-guarded, debounced and cached so the free API is never hammered.
+    const AMENITY_CATS = {
+        toilets:    { emoji: '🚻', color: '#0284c7', min: 14, max: 120,
+                      q: 'nwr["amenity"="toilets"]', fallbackName: 'Public restroom' },
+        food:       { emoji: '🍽️', color: '#d97706', min: 15, max: 150,
+                      q: 'nwr["amenity"~"^(restaurant|cafe|fast_food)$"]', fallbackName: 'Restaurant' },
+        essentials: { emoji: '💊', color: '#7c3aed', min: 14, max: 120,
+                      q: 'nwr["amenity"~"^(pharmacy|atm|drinking_water)$"]', fallbackName: 'Essential' },
+    };
+    const amenityLayers = {}, amenityCache = {}, amenityOn = {};
+    let amenityFetchTimer = null;
+    Object.keys(AMENITY_CATS).forEach(c => { amenityLayers[c] = L.layerGroup(); });
+    try { (JSON.parse(localStorage.getItem('amenity_on') || '[]')).forEach(c => {
+        if (AMENITY_CATS[c]) { amenityOn[c] = true; } }); } catch (e) {}
+
+    function toggleAmenity(cat){
+        amenityOn[cat] = !amenityOn[cat];
+        try { localStorage.setItem('amenity_on', JSON.stringify(Object.keys(amenityOn).filter(c => amenityOn[c]))); } catch (e) {}
+        syncAmenities();
+    }
+    function syncAmenities(){
+        Object.keys(AMENITY_CATS).forEach(cat => {
+            const chip = document.getElementById('ach_' + cat);
+            if (chip) chip.classList.toggle('on', !!amenityOn[cat]);
+            if (amenityOn[cat]) { map.addLayer(amenityLayers[cat]); fetchAmenity(cat); }
+            else { map.removeLayer(amenityLayers[cat]); }
+        });
+        if (!Object.keys(AMENITY_CATS).some(c => amenityOn[c])) {
+            const n = document.getElementById('amenityNote'); if (n) n.textContent = '';
+        }
+    }
+    function amenityPopup(cat, tags){
+        const cfg = AMENITY_CATS[cat];
+        const nm = escj(tags.name || cfg.fallbackName);
+        const bits = [];
+        if (tags.level !== undefined && tags.level !== '') bits.push('Floor/level: ' + escj(String(tags.level)));
+        if (tags.fee === 'yes') bits.push('Fee applies');
+        if (tags.fee === 'no') bits.push('Free');
+        if (tags.wheelchair === 'yes') bits.push('♿ accessible');
+        if (tags.opening_hours) bits.push('Hours: ' + escj(tags.opening_hours));
+        if (tags.cuisine) bits.push(escj(String(tags.cuisine).split(';')[0].replace(/_/g, ' ')));
+        if (tags.amenity && !tags.name) bits.push(escj(tags.amenity.replace(/_/g, ' ')));
+        return '<div class="am-pop"><b>' + cfg.emoji + ' ' + nm + '</b>'
+             + (bits.length ? '<div class="d">' + bits.join(' · ') + '</div>' : '')
+             + '<div class="d">source: OpenStreetMap</div></div>';
+    }
+    async function fetchAmenity(cat){
+        const cfg = AMENITY_CATS[cat];
+        const note = document.getElementById('amenityNote');
+        if (map.getZoom() < cfg.min) {
+            amenityLayers[cat].clearLayers();
+            if (note) note.textContent = 'zoom in closer to load ' + cfg.emoji + ' spots';
+            return;
+        }
+        if (note) note.textContent = '';
+        const b = map.getBounds();
+        // cache key rounds the viewport so small pans reuse the last answer
+        const key = cat + '|' + [b.getSouth(), b.getWest(), b.getNorth(), b.getEast()].map(v => v.toFixed(2)).join(',');
+        let elements = amenityCache[key];
+        if (!elements) {
+            try {
+                const bbox = [b.getSouth(), b.getWest(), b.getNorth(), b.getEast()].map(v => v.toFixed(4)).join(',');
+                const q = '[out:json][timeout:15];(' + cfg.q + '(' + bbox + '););out center ' + cfg.max + ';';
+                const r = await fetch('https://overpass-api.de/api/interpreter', {
+                    method: 'POST', body: 'data=' + encodeURIComponent(q),
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+                const j = await r.json();
+                elements = j.elements || [];
+                // a rate-limited/errored Overpass reply carries a "remark" and an
+                // empty list — that is NOT "nothing here", so never cache it
+                if (!elements.length && j.remark) throw new Error(j.remark);
+                amenityCache[key] = elements;
+            } catch (e) {
+                if (note) note.textContent = 'couldn\'t load ' + cfg.emoji + ' right now — try again shortly';
+                return;
+            }
+        }
+        if (!amenityOn[cat]) return;              // toggled off while the fetch was in flight
+        amenityLayers[cat].clearLayers();
+        elements.forEach(el => {
+            const lat = el.lat !== undefined ? el.lat : (el.center || {}).lat;
+            const lon = el.lon !== undefined ? el.lon : (el.center || {}).lon;
+            if (lat === undefined || lon === undefined) return;
+            const mk = L.marker([lat, lon], {
+                icon: L.divIcon({ className: '', iconSize: [22, 22], iconAnchor: [11, 11],
+                    html: '<div class="am-pin" style="border-color:' + cfg.color + '">' + cfg.emoji + '</div>' })
+            });
+            mk.bindPopup(amenityPopup(cat, el.tags || {}));
+            amenityLayers[cat].addLayer(mk);
+        });
+        if (note && !elements.length) note.textContent = 'no ' + cfg.emoji + ' mapped in this view yet';
+    }
+    map.on('moveend', () => {
+        clearTimeout(amenityFetchTimer);
+        amenityFetchTimer = setTimeout(() => {
+            Object.keys(AMENITY_CATS).forEach(c => { if (amenityOn[c]) fetchAmenity(c); });
+        }, 800);
+    });
+    syncAmenities();                              // restore last visit's choices
     startMarker = L.marker(BOOT_CITY.start, {
         draggable: true,
         icon: L.divIcon({ className: '', html: '<div class="tp-pin tp-start"><div class="tp-dot" data-glyph="⌂">◉</div><span class="tp-lbl">Start</span></div>', iconSize: [90, 46], iconAnchor: [45, 14] })
