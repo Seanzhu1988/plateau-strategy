@@ -199,7 +199,8 @@ def _save(path, items):
 TRAFFIC_MAX_DAYS = 120  # bound file growth; older days are just dropped
 # Pages tracked individually for the "which tool" breakdown; every other
 # page rolls into a single "other" bucket so the archive table stays short.
-TRAFFIC_TOOL_PATHS = {"/trip-planner": "trip_planner", "/destination-book": "destination_book"}
+TRAFFIC_TOOL_PATHS = {"/trip-planner": "trip_planner", "/destination-book": "destination_book",
+                       "/favorite-place": "favorite_place"}
 
 
 def _load_traffic():
@@ -491,6 +492,13 @@ def trip_planner_page():
 def destination_book_page():
     """Free tool: curated guidebook of attractions + restaurants; feeds the trip planner."""
     return send_file(os.path.join(BASE_DIR, "destination-book.html"))
+
+
+@app.route("/favorite-place")
+def favorite_place_page():
+    """Free tool: a 2-question data-collection flow — search a place, say how
+    long you stayed — that feeds the same community pipeline as the planner."""
+    return send_file(os.path.join(BASE_DIR, "favorite-place.html"))
 
 
 @app.route("/factor-clock")

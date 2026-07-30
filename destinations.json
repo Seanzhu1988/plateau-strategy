@@ -2,7 +2,8 @@
  "cities": {
   "nyc": "New York",
   "dc": "Washington DC",
-  "seattle": "Seattle"
+  "seattle": "Seattle",
+  "other": "Other"
  },
  "entries": [
   {
