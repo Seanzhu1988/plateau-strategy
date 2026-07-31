@@ -154,14 +154,21 @@
     <!-- AUTH -->
     <div class="wrap" id="authScreen" style="display:none;">
         <div class="card">
-            <h1>Agent Portal</h1>
-            <p class="sub">Refer customers and earn a commission on every completed ride. Anyone can be an agent — as an individual or an organization.</p>
+            <h1>Agent &amp; Guide Portal</h1>
+            <p class="sub">One code, two ways to earn. <b>Refer</b> customers and take a commission on every
+                completed ride — or <b>guide</b>: write your own in-depth trip and sell it on our
+                <a href="/trips" style="color:#60a5fa">trips page</a>. The same agent code does both.
+                Anyone can join, as an individual or an organization.</p>
 
             <label>I am registering as</label>
             <div class="toggle">
                 <button type="button" id="tIndividual" class="on" onclick="setType('individual')">Individual</button>
                 <button type="button" id="tOrganization" onclick="setType('organization')">Organization</button>
             </div>
+            <p class="sub" style="font-size:0.82rem;margin:-0.35rem 0 0.9rem">
+                Guides register here too — a student running a campus walk, a driver who knows one
+                neighborhood properly. Your code is what proves the trip was written by a real guide.
+            </p>
 
             <label>Your name <span style="color:#f87171">*</span></label>
             <input id="a_name" placeholder="Maria Lopez">
@@ -173,7 +180,7 @@
                 <div><label>Email</label><input id="a_email" type="email" placeholder="maria@email.com"></div>
                 <div><label>Phone</label><input id="a_phone" placeholder="(415) 555-0177"></div>
             </div>
-            <button class="primary" onclick="register()">Register &amp; Get My Agent Code</button>
+            <button class="primary" onclick="register()">Register &amp; Get My Code</button>
 
             <div class="divider">— already an agent? sign in —</div>
             <div class="row">
@@ -197,6 +204,7 @@
                     <button class="navitem" id="nav-referrals" onclick="showPanel('referrals')">My Referrals</button>
                     <button class="navitem" id="nav-rates" onclick="showPanel('rates')">Services &amp; Rates</button>
                     <button class="navitem" id="nav-earnings" onclick="showPanel('earnings')">Earnings &amp; Code</button>
+                    <button class="navitem" id="nav-guide" onclick="showPanel('guide')">Sell My Own Trips</button>
                 </nav>
             </aside>
 
@@ -345,6 +353,28 @@
                         <div class="h" id="commExplain">Keep this safe. You'll use your organization, last name, and this code to sign in.</div>
                     </div>
                 </div>
+
+                <div class="panel" id="panel-guide">
+                    <h2>Sell My Own Trips</h2>
+                    <p class="sub">Referring rides earns a commission. Guiding earns the whole fare — you set
+                        it. Write the trip you already know by heart: your stops, how long you actually
+                        stand at each one, what you say there, and what it costs. It goes on the public
+                        <a href="/trips" style="color:#60a5fa">trips page</a> the moment you list it, and
+                        travellers reach you through us — your contact details are never published.</p>
+
+                    <div class="mycode" style="margin-bottom:1rem">
+                        <div class="kicker">Your code doubles as your guide credential</div>
+                        <div class="v" id="guideCode">AGT-••••</div>
+                        <div class="h">This is what proves a real guide wrote the trip.</div>
+                    </div>
+
+                    <a class="primary" id="studioLink" href="/guide-studio"
+                       style="display:block;text-align:center;text-decoration:none;padding:0.8rem;">
+                        Open Guide Studio →
+                    </a>
+
+                    <div id="myTrips" style="margin-top:1.2rem"></div>
+                </div>
             </main>
         </div>
     </div>
@@ -389,6 +419,30 @@
             const nav = document.getElementById('nav-' + name);
             if (panel) panel.classList.add('active');
             if (nav) nav.classList.add('active');
+            if (name === 'guide') loadMyTrips();
+        }
+
+        // The same code that signs an agent in also identifies them as a guide,
+        // so the studio opens already signed in and their listings show here.
+        async function loadMyTrips() {
+            const code = (document.getElementById('myCode').textContent || '').trim();
+            if (!code || code.indexOf('•') >= 0) return;
+            document.getElementById('guideCode').textContent = code;
+            document.getElementById('studioLink').href = '/guide-studio?code=' + encodeURIComponent(code);
+            try {
+                const r = await fetch('/api/guide-trips?code=' + encodeURIComponent(code));
+                const j = await r.json();
+                const trips = j.trips || [];
+                document.getElementById('myTrips').innerHTML = trips.length
+                    ? '<h2 style="font-size:1rem;margin-bottom:0.6rem">Your listed trips</h2>' +
+                      '<table><thead><tr><th>Trip</th><th>City</th><th>Stops</th><th>Asked about</th></tr></thead><tbody>' +
+                      trips.map(t => '<tr><td><a href="/trips#' + t.id + '" style="color:#60a5fa">' +
+                          String(t.title).replace(/[<>&]/g, '') + '</a></td><td>' +
+                          String(t.city_label || '').replace(/[<>&]/g, '') + '</td><td>' +
+                          (t.stops || []).length + '</td><td>' + (t.interest_count || 0) + '</td></tr>').join('') +
+                      '</tbody></table>'
+                    : '<div class="empty">Nothing listed yet — the studio takes about five minutes.</div>';
+            } catch (e) { /* the studio link still works */ }
         }
 
         async function boot() {
