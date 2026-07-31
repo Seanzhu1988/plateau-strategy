@@ -5,6 +5,42 @@ piece at the top is done, because everything below depends on it.
 
 ---
 
+## The gate: when is the site ready for ads?
+
+Spending before these are true is buying traffic the site cannot measure,
+convert, or keep. Each line is checkable — no judgement calls.
+
+**Measurement — without this, nothing else matters**
+- [ ] Visits counted by source (`utm_source` + referrer)
+- [ ] Conversions counted by source: booking created, agent signup, driver
+      application. Aggregate counters only, keeping the existing no-per-visitor
+      privacy design
+
+**The thing the ad points at has to work**
+- [ ] A stranger can complete a booking end to end and receive an invoice
+- [x] Data survives a deploy — Render starter plan with a mounted disk
+- [ ] `plateaustrategy.io` resolves on both apex and `www`, with a valid
+      certificate. Today `www` is correct and the apex still points at Porkbun
+      parking
+- [ ] The map tools verified working against live data — attractions, hotels,
+      airports, rest stops, the overnight prompt, and the fly-first city-to-city
+      flow. Several were built without ever being seen against live Overpass
+
+**Somewhere for the traffic to land**
+- [ ] Destination pages server-rendered — a crawler currently sees 2 headings on
+      the Destination Book, so paid visitors would arrive at an empty shell for
+      anyone who does not run JavaScript
+
+**Free channels used up first — ads are the expensive option, not the first one**
+- [ ] Google Business Profile claimed (free, highest-intent local traffic)
+- [ ] At least a few hotel or agency partners live in the Agent Program —
+      commission-only distribution, no ad spend, already built
+
+When every box above is ticked, the first spend should be small, local, and
+search-intent based. See channels below.
+
+---
+
 ## 0. Do this first: measurement (the prerequisite)
 
 The site's traffic tracker (`traffic.json`) records pageviews, unique visitors
