@@ -1296,6 +1296,54 @@ def api_guide_offer():
         offers.append(rec)
         _save(GUIDE_OFFERS_PATH, offers)
 
+    # A route offered for sale is a product, so it belongs in the shop window
+    # beside the hand-written ones — not only in the owner's inbox, which is
+    # where every previous listing quietly stopped. The planner already knows
+    # arrival and departure at each stop, so the minutes come out of the route
+    # itself rather than being asked for again.
+    if mode == "sale":
+        guide = _guide_for(guide_code)
+        stops = []
+        for s in (rec["trip"]["stops"] or []):
+            try:
+                mins = int(s.get("leave")) - int(s.get("arr"))
+            except (TypeError, ValueError):
+                mins = 0
+            stops.append({"name": s.get("name") or "", "minutes": max(0, min(mins, 600)),
+                          "note": "", "lat": s.get("lat"), "lon": s.get("lon")})
+        stops = [s for s in stops if s["name"]]
+        if stops:
+            trip_rec = {
+                "id": "", "code": guide_code,
+                "guide_name": _no_tags((guide or {}).get("name", ""))[:60] or rec["name"],
+                "guide_org": _no_tags((guide or {}).get("organization", ""))[:80],
+                "contact": _no_tags(rec.get("contact") or (guide or {}).get("email", ""))[:120],
+                "title": ("Sightseeing in " + (rec["trip"]["cityLabel"] or rec["city"] or "town"))[:90],
+                "kind": "in-depth" if len(stops) > 4 else "neighborhood",
+                "city": rec["city"], "city_label": rec["trip"]["cityLabel"],
+                "summary": (rec.get("note") or
+                            ("A guided version of this route — " + ", ".join(s["name"] for s in stops[:4])
+                             + (" and more." if len(stops) > 4 else ".")))[:900],
+                "stops": stops[:30],
+                "total_minutes": sum(s["minutes"] for s in stops[:30]),
+                "languages": "", "group_max": 8, "price": price, "price_unit": "person",
+                "meeting_point": stops[0]["name"], "includes": "",
+                "status": "LISTED", "interest_count": 0, "from_planner": True,
+                "created_at": rec["created_at"],
+            }
+            with _LOCK:
+                trips = _load(GUIDE_TRIPS_PATH)
+                trip_rec["id"] = _next_id(trips, "TRP")
+                trips.append(trip_rec)
+                _save(GUIDE_TRIPS_PATH, trips)
+            rec["public_trip_id"] = trip_rec["id"]
+            with _LOCK:
+                allo = _load(GUIDE_OFFERS_PATH)
+                for o in allo:
+                    if o.get("id") == rec["id"]:
+                        o["public_trip_id"] = trip_rec["id"]
+                _save(GUIDE_OFFERS_PATH, allo)
+
     # tell the owner a real request came in (reuses the existing alert channel)
     try:
         where = rec["trip"]["cityLabel"] or rec["city"]
@@ -1312,7 +1360,8 @@ def api_guide_offer():
         pass
 
     return jsonify({"ok": True, "mode": mode, "ref": rec["id"], "status": rec["status"],
-                    "platform_fee": rec["platform_fee"]})
+                    "platform_fee": rec["platform_fee"],
+                    "public_trip_id": rec.get("public_trip_id")})
 
 
 ROBOTAXI_PATH = os.path.join(BASE_DIR, "robotaxi_interest.json")

@@ -721,6 +721,20 @@
                 <div id="ho_guidefields" style="display:none">
                     <label class="ho-lab">Your guide code</label>
                     <input id="ho_code" placeholder="AGT-XXXX — proves you're a listed guide">
+                    <!-- Without this, anyone who has not joined the agent programme hits
+                         "a guide code is required" and stops. They can register right here. -->
+                    <p class="ho-msg" id="ho_regline">No code yet?
+                        <span class="fixlink" onclick="showGuideReg()">Register as a guide — takes a minute</span></p>
+                    <div id="ho_regbox" style="display:none">
+                        <label class="ho-lab">Your name</label>
+                        <input id="ho_regname" placeholder="Ana Silva">
+                        <label class="ho-lab">Email</label>
+                        <input id="ho_regemail" type="email" placeholder="ana@email.com">
+                        <label class="ho-lab">Organization (optional)</label>
+                        <input id="ho_regorg" placeholder="Leave blank if it's just you">
+                        <button class="btn ghost" style="width:100%;margin-top:0.5rem" id="ho_regbtn"
+                                onclick="registerGuideInline()">Get my guide code</button>
+                    </div>
                     <label class="ho-lab">Price for this guided trip (USD)</label>
                     <input id="ho_price" type="number" min="0" step="5" placeholder="e.g. 120">
                 </div>
@@ -2276,7 +2290,12 @@
                        name: $('ho_name').value.trim(), contact: $('ho_contact').value.trim(),
                        note: $('ho_note').value.trim(),
                        guide_code: $('ho_code').value.trim(), price: $('ho_price').value };
-        if (handoffMode === 'sale' && !body.guide_code) { msg.className = 'ho-msg err'; msg.textContent = 'A guide code is required to list a trip for sale.'; return; }
+        if (handoffMode === 'sale' && !body.guide_code) {
+            msg.className = 'ho-msg err';
+            msg.textContent = 'A guide code is required to list a trip — register just above and one is issued instantly.';
+            showGuideReg();
+            return;
+        }
         if (handoffMode !== 'sale' && !body.contact) { msg.className = 'ho-msg err'; msg.textContent = 'Add an email or phone so the guide can reach you.'; return; }
         $('ho_send').disabled = true;
         fetch('/api/guide-offer', { method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -2286,14 +2305,58 @@
                 msg.className = 'ho-msg ok';
                 const feeNote = (isFinite(d.platform_fee) && d.platform_fee > 0)
                     ? ' A $' + d.platform_fee + ' platform fee is billed to this trip.' : '';
-                msg.textContent = d.mode === 'sale'
-                    ? '✓ Listed. Reference ' + d.ref + ' — your route is now offered as a guided trip.'
+                msg.innerHTML = d.mode === 'sale'
+                    ? '✓ Listed as a guided trip. '
+                      + (d.public_trip_id
+                         ? '<a class="fixlink" href="/trips#' + d.public_trip_id + '" target="_blank">See it on the trips page →</a> '
+                         : '')
+                      + 'Reference ' + escj(d.ref) + '.'
                     : d.mode === 'hire'
-                    ? '✓ Sent. Reference ' + d.ref + ' — a driver-guide will reach out.' + feeNote
-                    : '✓ Sent. Reference ' + d.ref + ' — a guide will reach out.' + feeNote;
+                    ? '✓ Sent. Reference ' + escj(d.ref) + ' — a driver-guide will reach out.' + feeNote
+                    : '✓ Sent. Reference ' + escj(d.ref) + ' — a guide will reach out.' + feeNote;
                 $('ho_form').querySelectorAll('input,textarea').forEach(i => i.value = '');
             } else { msg.className = 'ho-msg err'; msg.textContent = (d && d.error) || 'Could not send — please try again.'; }
         }).catch(() => { $('ho_send').disabled = false; msg.className = 'ho-msg err'; msg.textContent = 'Could not reach the server — please try again.'; });
+    }
+
+    // Registering is part of the same door: a guide who has never joined can get a
+    // code without leaving the trip they just built.
+    function showGuideReg(){
+        const box = $('ho_regbox'); if (!box) return;
+        box.style.display = 'block';
+        $('ho_regline').style.display = 'none';
+        const n = $('ho_regname');
+        if (n && !n.value) n.value = ($('ho_name').value || '').trim();
+        const e = $('ho_regemail');
+        if (e && !e.value) {
+            const ct = ($('ho_contact').value || '').trim();
+            if (ct.indexOf('@') > 0) e.value = ct;
+        }
+    }
+    function registerGuideInline(){
+        const msg = $('ho_msg'), btn = $('ho_regbtn');
+        const name = ($('ho_regname').value || '').trim();
+        if (!name) { msg.className = 'ho-msg err'; msg.textContent = 'Your name is needed to issue a code.'; return; }
+        const org = ($('ho_regorg').value || '').trim();
+        btn.disabled = true; btn.textContent = 'Registering…';
+        fetch('/api/agents/register', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name, email: ($('ho_regemail').value || '').trim(),
+                                   organization: org,
+                                   agent_type: org ? 'organization' : 'individual' }) })
+            .then(r => r.json()).then(d => {
+                btn.disabled = false; btn.textContent = 'Get my guide code';
+                if (d && d.ok && d.agent && d.agent.code) {
+                    $('ho_code').value = d.agent.code;
+                    $('ho_regbox').style.display = 'none';
+                    msg.className = 'ho-msg ok';
+                    msg.innerHTML = '✓ You are registered — your code is <b>' + escj(d.agent.code)
+                        + '</b>. Keep it: it lists trips and refers rides. Now set a price and send.';
+                } else {
+                    msg.className = 'ho-msg err';
+                    msg.textContent = (d && d.error) || 'Could not register just now.';
+                }
+            }).catch(() => { btn.disabled = false; btn.textContent = 'Get my guide code';
+                             msg.className = 'ho-msg err'; msg.textContent = 'Could not reach the server.'; });
     }
 
     // ---------- robotaxi (under development — captures demand, books nothing) ----------
