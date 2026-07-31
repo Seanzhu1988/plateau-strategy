@@ -53,3 +53,5 @@ travel_wishes.json
 destination_comments.json
 ride_demand.json
 board_auth.json
+guide_trips.json
+guide_interest.json

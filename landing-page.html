@@ -965,6 +965,23 @@
             }
         }
 
+        /* ============ Newest discoveries — the map growing in public ============ */
+        .discovery-strip { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px;
+            padding: 1.1rem 1.3rem; margin: 0 0 2rem; }
+        .ds-head { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.85rem; }
+        .ds-head b { font-size: 1.02rem; color: #0f172a; }
+        .ds-live { font-size: 0.64rem; font-weight: 800; letter-spacing: 0.6px; color: #059669;
+            background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 999px; padding: 0.15rem 0.5rem; }
+        .ds-count { color: #94a3b8; font-size: 0.82rem; margin-left: auto; }
+        .ds-items { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .ds-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 999px;
+            padding: 0.35rem 0.8rem; font-size: 0.84rem; color: #334155; }
+        .ds-item b { color: #0f172a; }
+        .ds-item .ds-where { color: #64748b; }
+        .ds-cta { display: inline-block; margin-top: 0.9rem; font-size: 0.85rem;
+            color: #2563eb; text-decoration: none; font-weight: 600; }
+        .ds-cta:hover { text-decoration: underline; }
+
         /* ============ The Machine — plain split counter framing a center slideshow ============ */
         .nd-stage { position: relative; margin: -0.8rem 0 1.6rem; min-height: 470px; }
         .nd-box { position: absolute; transform: translate(-50%, -50%); z-index: 3;
@@ -2154,7 +2171,27 @@
                         <h2>Free Tools</h2>
                         <p class="view-intro">Practical tools for everyday life — built by our lab, free for everyone. No account, no cost.</p>
 
+                        <!-- The map is not a fixed list. Every place a traveller searches for joins
+                             it, and this is where the public can watch that happen — proof that the
+                             map grows by discovery rather than by us deciding what is worth seeing. -->
+                        <div id="discoveryStrip" class="discovery-strip" style="display:none">
+                            <div class="ds-head">
+                                <span class="ds-live">● LIVE</span>
+                                <b>Newest discoveries</b>
+                                <span class="ds-count" id="dsCount"></span>
+                            </div>
+                            <div class="ds-items" id="dsItems"></div>
+                            <a class="ds-cta" href="/trip-planner">Search any place — if the map does not know it yet, you discover it →</a>
+                        </div>
+
                         <div class="service-grid">
+                            <div class="service-card">
+                                <div class="service-icon">🎫</div>
+                                <h3>Guided Trips</h3>
+                                <p class="service-for">For travellers &amp; the guides who run them</p>
+                                <p>In-depth trips written by the guides themselves — a student's hour in Harvard Yard, a food route through one neighborhood — with every stop and how long you stand there, before you book. Guides list their own for free.</p>
+                                <a href="/trips" class="book-cta">Browse Guided Trips →</a>
+                            </div>
                             <div class="service-card">
                                 <div class="service-icon">🗺️</div>
                                 <h3>Trip Planner</h3>
@@ -2867,6 +2904,36 @@
         })();
     </script>
     <script src="/i18n.js"></script>
+    <script>
+    // Newest discoveries, in public. The strip only appears when there is
+    // something real to show — an empty "live" panel would say the opposite of
+    // what it is for.
+    (function loadDiscoveries(){
+        fetch('/api/discoveries').then(r => r.json()).then(d => {
+            if (!d || !d.ok || !d.total) return;
+            const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g,
+                ch => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[ch]));
+            const ago = r => {
+                if (!r.at_ts) return '';
+                const m = Math.max(0, (Date.now() / 1000 - r.at_ts) / 60);
+                if (m < 2) return 'just now';
+                if (m < 60) return Math.round(m) + 'm ago';
+                if (m < 1440) return Math.round(m / 60) + 'h ago';
+                return Math.round(m / 1440) + 'd ago';
+            };
+            const strip = document.getElementById('discoveryStrip');
+            if (!strip) return;
+            document.getElementById('dsCount').textContent =
+                d.total + ' place' + (d.total === 1 ? '' : 's') + ' found by travellers'
+                + (d.city_count > 1 ? ' in ' + d.city_count + ' cities' : '');
+            document.getElementById('dsItems').innerHTML = (d.recent || []).slice(0, 10).map(r =>
+                '<span class="ds-item"><b>' + esc(r.name) + '</b> '
+                + '<span class="ds-where">' + esc(r.city_label || r.city || '')
+                + (ago(r) ? ' · ' + ago(r) : '') + '</span></span>').join('');
+            strip.style.display = 'block';
+        }).catch(() => {});
+    })();
+    </script>
     <script src="/floatback.js"></script>
     <script src="/jarvis-widget.js"></script>
 </body>

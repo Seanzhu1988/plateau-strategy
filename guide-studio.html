@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide Studio — build a trip to sell</title>
+    <meta name="description" content="Guides: build your own in-depth trip stop by stop, set how long you stand at each one, price it, and list it for travellers to find.">
+    <link rel="canonical" href="https://plateaustrategy.io/guide-studio">
+    <meta name="theme-color" content="#0f172a">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://plateaustrategy.io/guide-studio">
+    <meta property="og:title" content="Guide Studio — build a trip to sell">
+    <meta property="og:description" content="Build your own in-depth trip stop by stop, set how long you stand at each one, price it, and list it for travellers to find.">
+    <meta property="og:image" content="https://plateaustrategy.io/plateau-logo.png">
+    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9; color: #1f2937; min-height: 100vh; }
+        header { background: linear-gradient(135deg,#0f172a,#1e3a8a); color: #fff; padding: 1rem 1.6rem;
+            display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+        header img { height: 40px; width: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
+        header .brand { font-weight: 800; font-size: 1.05rem; }
+        header .right { margin-left: auto; display: flex; gap: 1.1rem; }
+        header a { color: #cbd5e1; text-decoration: none; font-weight: 600; font-size: 0.88rem; }
+        .wrap { max-width: 860px; margin: 1.8rem auto 4rem; padding: 0 1.1rem; }
+        .page-title { font-size: 1.65rem; font-weight: 800; color: #0f172a; }
+        .sub { color: #64748b; margin: 0.35rem 0 1.5rem; line-height: 1.55; font-size: 0.94rem; }
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.3rem; margin-bottom: 1.1rem; }
+        .card h2 { font-size: 1.02rem; color: #0f172a; margin-bottom: 0.25rem; }
+        .card .why { color: #94a3b8; font-size: 0.82rem; margin-bottom: 1rem; line-height: 1.5; }
+        label { display: block; font-size: 0.76rem; font-weight: 700; color: #475569;
+            text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 0.32rem; }
+        input, select, textarea { width: 100%; padding: 0.62rem 0.75rem; border: 1px solid #cbd5e1;
+            border-radius: 9px; font-size: 0.92rem; font-family: inherit; background: #fff; }
+        textarea { resize: vertical; min-height: 78px; line-height: 1.5; }
+        .row { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.9rem; }
+        .row > div { flex: 1; min-width: 150px; }
+        .stop { display: flex; gap: 0.6rem; align-items: flex-start; padding: 0.7rem 0;
+            border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; }
+        .stop .n { width: 26px; height: 26px; border-radius: 50%; background: #1e3a8a; color: #fff;
+            display: flex; align-items: center; justify-content: center; font-size: 0.76rem;
+            font-weight: 800; flex-shrink: 0; margin-top: 0.35rem; }
+        .stop .f { flex: 1; min-width: 180px; }
+        .stop .m { width: 120px; }
+        .stop .x { background: none; border: none; color: #ef4444; font-size: 1.1rem; cursor: pointer;
+            padding: 0.35rem 0.4rem; width: auto; }
+        .stop input { margin-bottom: 0.4rem; }
+        .btn { padding: 0.65rem 1.15rem; border: none; border-radius: 9px; font-weight: 700;
+            font-size: 0.88rem; cursor: pointer; font-family: inherit; }
+        .btn.blue { background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; }
+        .btn.ghost { background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; }
+        .btn.big { width: 100%; padding: 0.9rem; font-size: 0.98rem; }
+        .btn:disabled { opacity: 0.55; cursor: default; }
+        .total { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px;
+            padding: 0.75rem 0.95rem; font-size: 0.88rem; color: #075985; margin-top: 0.9rem; }
+        .result { margin-top: 1rem; padding: 0.85rem 1rem; border-radius: 9px; display: none; font-size: 0.9rem; line-height: 1.5; }
+        .result.ok { display: block; background: #ecfdf5; border: 1px solid #6ee7b7; color: #065f46; }
+        .result.err { display: block; background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; }
+        .note { color: #94a3b8; font-size: 0.8rem; line-height: 1.55; margin-top: 0.7rem; }
+        .note a { color: #2563eb; }
+        .gate { background: #fffbeb; border: 1px solid #fde68a; color: #92400e;
+            border-radius: 10px; padding: 0.8rem 1rem; font-size: 0.86rem; line-height: 1.5; margin-bottom: 1.1rem; }
+        .gate a { color: #b45309; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="right">
+            <a href="/">Home</a>
+            <a href="/trips">Browse trips</a>
+            <a href="/trip-planner">Trip Planner</a>
+        </div>
+    </header>
+
+    <div class="wrap">
+        <div class="page-title">🎫 Guide Studio</div>
+        <p class="sub">
+            The trip planner draws a sightseeing loop. This is for the other kind — the walk you
+            know by heart, where the point is what you say at each stop. Write it out yourself:
+            your stops, your timings, your price. Travellers browse it on the
+            <a href="/trips" style="color:#2563eb">trips page</a>.
+        </p>
+
+        <div class="gate" id="gate">
+            You need a guide code to list a trip — it is how we know a real guide wrote it.
+            <a href="/agents">Register as a guide</a> and you will be given one straight away.
+        </div>
+
+        <div class="card">
+            <h2>Who is running it</h2>
+            <p class="why">Your code identifies you. Travellers see your name, never your contact
+                details — interest comes to you through us, so your listing cannot be harvested for emails.</p>
+            <div class="row">
+                <div>
+                    <label for="code">Your guide code</label>
+                    <input id="code" placeholder="e.g. AGT-XXXX" autocomplete="off">
+                </div>
+                <div>
+                    <label for="contact">Where we reach you</label>
+                    <input id="contact" placeholder="email or phone" autocomplete="off">
+                </div>
+            </div>
+            <div id="who" class="note"></div>
+        </div>
+
+        <div class="card">
+            <h2>What the trip is</h2>
+            <p class="why">Be specific. "Harvard Yard in depth — a student's walk" sells;
+                "Boston tour" does not.</p>
+            <div style="margin-bottom:0.9rem">
+                <label for="title">Title</label>
+                <input id="title" maxlength="90" placeholder="Harvard Yard in depth — a student's walk">
+            </div>
+            <div class="row">
+                <div>
+                    <label for="kind">Type of trip</label>
+                    <select id="kind">
+                        <option value="in-depth">In-depth / deep dive</option>
+                        <option value="campus">Campus / university</option>
+                        <option value="history">History</option>
+                        <option value="food">Food &amp; drink</option>
+                        <option value="architecture">Architecture</option>
+                        <option value="art">Art &amp; museums</option>
+                        <option value="nature">Nature &amp; outdoors</option>
+                        <option value="photography">Photography</option>
+                        <option value="neighborhood">Neighborhood walk</option>
+                        <option value="family">Family friendly</option>
+                        <option value="nightlife">Nightlife</option>
+                        <option value="other">Something else</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="cityLabel">City</label>
+                    <input id="cityLabel" placeholder="Boston" autocomplete="off">
+                </div>
+                <div>
+                    <label for="languages">Languages you run it in</label>
+                    <input id="languages" placeholder="English, Mandarin" autocomplete="off">
+                </div>
+            </div>
+            <div>
+                <label for="summary">What travellers will get out of it</label>
+                <textarea id="summary" maxlength="900" placeholder="Two hours inside the Yard with someone who studies here — the statue that lies three times, why the gates are numbered, what the freshman dorms are actually like, and the reading room most tours never enter."></textarea>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Your stops, in order</h2>
+            <p class="why">This is what makes it an in-depth trip rather than a drive-past: name each
+                stop and say how long you actually stand there. The note is for you to say why it matters.</p>
+            <div id="stops"></div>
+            <button class="btn ghost" style="margin-top:0.9rem" onclick="addStop()">＋ Add a stop</button>
+            <div class="total" id="total">No stops yet.</div>
+        </div>
+
+        <div class="card">
+            <h2>Practical details</h2>
+            <p class="why">The questions every traveller asks before they book.</p>
+            <div class="row">
+                <div>
+                    <label for="price">Price (USD)</label>
+                    <input id="price" type="number" min="0" step="1" placeholder="45">
+                </div>
+                <div>
+                    <label for="priceUnit">Priced</label>
+                    <select id="priceUnit">
+                        <option value="person">per person</option>
+                        <option value="group">per group</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="groupMax">Most people you will take</label>
+                    <input id="groupMax" type="number" min="1" max="200" value="8">
+                </div>
+            </div>
+            <div style="margin-bottom:0.9rem">
+                <label for="meeting">Where you meet them</label>
+                <input id="meeting" maxlength="200" placeholder="Johnston Gate, Massachusetts Ave side">
+            </div>
+            <div>
+                <label for="includes">What is included</label>
+                <input id="includes" maxlength="400" placeholder="Guiding only — museum entry not included">
+            </div>
+        </div>
+
+        <button class="btn blue big" id="publishBtn" onclick="publish()">List this trip</button>
+        <div class="result" id="result"></div>
+        <p class="note">
+            Listing is free. When a traveller asks for your trip we introduce you directly.
+            You can list as many trips as you like — most guides run several versions of the same
+            walk at different lengths.
+        </p>
+
+        <div class="card" id="mineCard" style="display:none; margin-top:1.6rem">
+            <h2>Your listings</h2>
+            <p class="why">Live on the trips page right now.</p>
+            <div id="mine"></div>
+        </div>
+    </div>
+
+<script>
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+    let stops = [];
+
+    function addStop(name, minutes, note) {
+        stops.push({ name: name || '', minutes: minutes == null ? 20 : minutes, note: note || '' });
+        renderStops();
+    }
+    function removeStop(i) { stops.splice(i, 1); renderStops(); }
+    function editStop(i, field, v) {
+        stops[i][field] = field === 'minutes' ? Math.max(0, Math.min(parseInt(v || 0, 10) || 0, 600)) : v;
+        if (field === 'minutes') renderTotal();
+    }
+    function renderStops() {
+        $('stops').innerHTML = stops.map((s, i) =>
+            '<div class="stop">' +
+              '<div class="n">' + (i + 1) + '</div>' +
+              '<div class="f">' +
+                '<input value="' + esc(s.name) + '" placeholder="Stop name — e.g. John Harvard Statue" ' +
+                  'oninput="editStop(' + i + ',\'name\',this.value)">' +
+                '<input value="' + esc(s.note) + '" placeholder="Why this stop matters (optional)" ' +
+                  'oninput="editStop(' + i + ',\'note\',this.value)">' +
+              '</div>' +
+              '<div class="m"><input type="number" min="0" max="600" value="' + (s.minutes || 0) + '" ' +
+                  'oninput="editStop(' + i + ',\'minutes\',this.value)" title="Minutes at this stop"> ' +
+                  '<div style="font-size:0.7rem;color:#94a3b8;margin-top:0.2rem">minutes here</div></div>' +
+              '<button class="x" onclick="removeStop(' + i + ')" title="Remove">✕</button>' +
+            '</div>').join('');
+        renderTotal();
+    }
+    function renderTotal() {
+        if (!stops.length) { $('total').textContent = 'No stops yet.'; return; }
+        const mins = stops.reduce((a, s) => a + (s.minutes || 0), 0);
+        const h = Math.floor(mins / 60), m = mins % 60;
+        $('total').textContent = stops.length + ' stop' + (stops.length === 1 ? '' : 's') +
+            ' · about ' + (h ? h + ' h ' : '') + (m ? m + ' min' : (h ? '' : '0 min')) +
+            ' standing time, before any walking between them.';
+    }
+
+    // Recognise the guide as soon as a working code is typed, so nobody fills in
+    // the whole form only to be told at the end that their code is wrong.
+    let whoTimer = null;
+    $('code').addEventListener('input', () => {
+        clearTimeout(whoTimer);
+        whoTimer = setTimeout(checkCode, 400);
+    });
+    async function checkCode() {
+        const code = ($('code').value || '').trim().toUpperCase();
+        if (!code) { $('who').textContent = ''; $('mineCard').style.display = 'none'; return; }
+        try {
+            const r = await fetch('/api/guide-trips?code=' + encodeURIComponent(code));
+            const j = await r.json();
+            const mine = (j.trips || []);
+            $('gate').style.display = 'none';
+            if (mine.length) {
+                $('who').textContent = 'Signed in as ' + (mine[0].guide_name || code) + '.';
+                $('mineCard').style.display = 'block';
+                $('mine').innerHTML = mine.map(t =>
+                    '<div class="stop"><div class="f"><b>' + esc(t.title) + '</b>' +
+                    '<div style="font-size:0.8rem;color:#64748b">' + esc(t.city_label || '') +
+                    ' · ' + esc(t.kind) + ' · ' + t.stops.length + ' stops' +
+                    (t.interest_count ? ' · <b style="color:#0f766e">' + t.interest_count + ' asked about it</b>' : '') +
+                    '</div></div><a class="btn ghost" href="/trips#' + esc(t.id) + '">View</a></div>').join('');
+            } else {
+                $('who').textContent = 'Nothing listed under this code yet.';
+                $('mineCard').style.display = 'none';
+            }
+        } catch (e) { /* leave the gate note in place */ }
+    }
+
+    async function publish() {
+        const btn = $('publishBtn'), result = $('result');
+        const body = {
+            guide_code: ($('code').value || '').trim(),
+            contact: ($('contact').value || '').trim(),
+            title: ($('title').value || '').trim(),
+            kind: $('kind').value,
+            city_label: ($('cityLabel').value || '').trim(),
+            city: ($('cityLabel').value || '').trim().toLowerCase(),
+            languages: ($('languages').value || '').trim(),
+            summary: ($('summary').value || '').trim(),
+            stops: stops.filter(s => (s.name || '').trim()),
+            price: $('price').value,
+            price_unit: $('priceUnit').value,
+            group_max: $('groupMax').value,
+            meeting_point: ($('meeting').value || '').trim(),
+            includes: ($('includes').value || '').trim()
+        };
+        if (!body.stops.length) {
+            result.className = 'result err';
+            result.textContent = 'Add at least one stop — the stops are the trip.';
+            return;
+        }
+        btn.disabled = true; btn.textContent = 'Listing…';
+        try {
+            const r = await fetch('/api/guide-trips', { method: 'POST',
+                headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+            const j = await r.json();
+            if (j.ok) {
+                result.className = 'result ok';
+                result.innerHTML = '✓ Listed. <a href="/trips#' + esc(j.trip.id) +
+                    '" style="color:#065f46;font-weight:700">See it on the trips page →</a>' +
+                    ' Travellers can find it now.';
+                checkCode();
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            } else {
+                result.className = 'result err';
+                result.textContent = j.error || 'Could not list that.';
+            }
+        } catch (e) {
+            result.className = 'result err';
+            result.textContent = 'Could not reach the server. Please try again.';
+        }
+        btn.disabled = false; btn.textContent = 'List this trip';
+    }
+
+    // Start with a few empty rows so the shape of the thing is obvious.
+    addStop(); addStop(); addStop();
+    // A code carried over from the planner or a bookmark signs you straight in.
+    (function () {
+        const p = new URLSearchParams(location.search).get('code');
+        if (p) { $('code').value = p; checkCode(); }
+    })();
+</script>
+</body>
+</html>

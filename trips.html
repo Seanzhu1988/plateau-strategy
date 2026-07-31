@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guided Trips — in-depth walks from local guides</title>
+    <meta name="description" content="In-depth trips written by the guides who run them — campus walks, food routes, history deep dives. See every stop and how long you spend there before you book.">
+    <link rel="canonical" href="https://plateaustrategy.io/trips">
+    <meta name="theme-color" content="#0f172a">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Plateau Strategy Solution Lab">
+    <meta property="og:url" content="https://plateaustrategy.io/trips">
+    <meta property="og:title" content="Guided Trips — in-depth walks from local guides">
+    <meta property="og:description" content="In-depth trips written by the guides who run them. See every stop and how long you spend there before you book.">
+    <meta property="og:image" content="https://plateaustrategy.io/plateau-logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9; color: #1f2937; min-height: 100vh; }
+        header { background: linear-gradient(135deg,#0f172a,#1e3a8a); color: #fff; padding: 1rem 1.6rem;
+            display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+        header img { height: 40px; width: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
+        header .brand { font-weight: 800; font-size: 1.05rem; }
+        header .right { margin-left: auto; display: flex; gap: 1.1rem; }
+        header a { color: #cbd5e1; text-decoration: none; font-weight: 600; font-size: 0.88rem; }
+        .wrap { max-width: 940px; margin: 1.8rem auto 4rem; padding: 0 1.1rem; }
+        .page-title { font-size: 1.7rem; font-weight: 800; color: #0f172a; }
+        .sub { color: #64748b; margin: 0.35rem 0 1.4rem; line-height: 1.55; font-size: 0.94rem; }
+        .sub a { color: #2563eb; }
+        .filters { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
+        .chip { background: #fff; border: 1px solid #cbd5e1; border-radius: 999px; padding: 0.4rem 0.85rem;
+            font-size: 0.83rem; cursor: pointer; color: #334155; font-weight: 600; }
+        .chip.on { background: #1e3a8a; border-color: #1e3a8a; color: #fff; }
+        .trip { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.25rem 1.35rem; margin-bottom: 1rem; }
+        .trip h2 { font-size: 1.12rem; color: #0f172a; margin-bottom: 0.3rem; line-height: 1.35; }
+        .meta { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 0.7rem; }
+        .tag { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase;
+            background: #eef2ff; color: #3730a3; border-radius: 999px; padding: 0.2rem 0.6rem; }
+        .tag.city { background: #ecfeff; color: #155e75; }
+        .tag.time { background: #f1f5f9; color: #475569; }
+        .tag.price { background: #ecfdf5; color: #065f46; }
+        .summary { color: #475569; font-size: 0.9rem; line-height: 1.6; margin-bottom: 0.85rem; }
+        .by { color: #94a3b8; font-size: 0.82rem; margin-bottom: 0.85rem; }
+        .stops { border-top: 1px solid #f1f5f9; padding-top: 0.8rem; margin-bottom: 0.9rem; display: none; }
+        .stops.open { display: block; }
+        .st { display: flex; gap: 0.65rem; padding: 0.45rem 0; align-items: flex-start; }
+        .st .n { width: 22px; height: 22px; border-radius: 50%; background: #1e3a8a; color: #fff; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 800; }
+        .st .t { flex: 1; font-size: 0.88rem; color: #0f172a; }
+        .st .t small { display: block; color: #64748b; font-size: 0.8rem; line-height: 1.45; margin-top: 0.1rem; }
+        .st .m { color: #64748b; font-size: 0.8rem; white-space: nowrap; }
+        .practical { background: #f8fafc; border-radius: 9px; padding: 0.7rem 0.9rem; font-size: 0.84rem;
+            color: #475569; line-height: 1.6; margin-bottom: 0.9rem; }
+        .acts { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
+        .btn { padding: 0.6rem 1.05rem; border: none; border-radius: 9px; font-weight: 700;
+            font-size: 0.86rem; cursor: pointer; font-family: inherit; }
+        .btn.blue { background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; }
+        .btn.ghost { background: #fff; border: 1px solid #cbd5e1; color: #334155; }
+        .asked { color: #0f766e; font-size: 0.8rem; font-weight: 700; }
+        .empty { background: #fff; border: 1px dashed #cbd5e1; border-radius: 14px; padding: 2.2rem 1.4rem;
+            text-align: center; color: #64748b; line-height: 1.65; }
+        .empty a { color: #2563eb; font-weight: 700; }
+        .form { border-top: 1px solid #f1f5f9; margin-top: 0.9rem; padding-top: 0.9rem; display: none; }
+        .form.open { display: block; }
+        .form .row { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+        .form input, .form textarea { flex: 1; min-width: 150px; padding: 0.58rem 0.75rem;
+            border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; font-family: inherit; }
+        .form textarea { width: 100%; min-height: 62px; resize: vertical; }
+        .msg { font-size: 0.85rem; margin-top: 0.6rem; line-height: 1.5; }
+        .msg.ok { color: #065f46; } .msg.err { color: #b91c1c; }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="right">
+            <a href="/">Home</a>
+            <a href="/trip-planner">Trip Planner</a>
+            <a href="/guide-studio">Guides: list a trip</a>
+        </div>
+    </header>
+
+    <div class="wrap">
+        <div class="page-title">🎫 Guided Trips</div>
+        <p class="sub">
+            Not sightseeing loops — these are written by the guides who run them, stop by stop, with
+            how long you actually stand at each one. A student's hour in Harvard Yard is a different
+            thing from a bus past the gate. <a href="/guide-studio">Guides can list their own →</a>
+        </p>
+
+        <div class="filters" id="filters"></div>
+        <div id="list"></div>
+    </div>
+
+<script>
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+    let all = [], fCity = '', fKind = '';
+
+    function dur(mins) {
+        if (!mins) return '';
+        const h = Math.floor(mins / 60), m = mins % 60;
+        return (h ? h + ' h' : '') + (h && m ? ' ' : '') + (m ? m + ' min' : '');
+    }
+    function priceOf(t) {
+        if (t.price == null) return 'Price on request';
+        if (!t.price) return 'Free';
+        return '$' + t.price + ' ' + (t.price_unit === 'group' ? 'per group' : 'per person');
+    }
+
+    async function load() {
+        try {
+            const r = await fetch('/api/guide-trips');
+            const j = await r.json();
+            all = j.trips || [];
+            renderFilters(j.cities || {}, j.kinds || {});
+            render();
+        } catch (e) {
+            $('list').innerHTML = '<div class="empty">Could not load trips just now. Please refresh.</div>';
+        }
+    }
+
+    function renderFilters(cities, kinds) {
+        const parts = ['<span class="chip' + (fCity || fKind ? '' : ' on') + '" onclick="clearF()">All trips</span>'];
+        Object.keys(cities).forEach(c => parts.push('<span class="chip' + (fCity === c ? ' on' : '') +
+            '" onclick="setCity(\'' + esc(c) + '\')">' + esc(cities[c]) + '</span>'));
+        Object.keys(kinds).forEach(k => parts.push('<span class="chip' + (fKind === k ? ' on' : '') +
+            '" onclick="setKind(\'' + esc(k) + '\')">' + esc(k) + ' (' + kinds[k] + ')</span>'));
+        $('filters').innerHTML = parts.join('');
+    }
+    function clearF() { fCity = ''; fKind = ''; load(); }
+    function setCity(c) { fCity = (fCity === c ? '' : c); render(); }
+    function setKind(k) { fKind = (fKind === k ? '' : k); render(); }
+
+    function render() {
+        const list = all.filter(t => (!fCity || t.city === fCity) && (!fKind || t.kind === fKind));
+        // Reflect the current filter state in the chips without another round trip
+        const cities = {}, kinds = {};
+        all.forEach(t => { if (t.city) cities[t.city] = t.city_label || t.city;
+                           kinds[t.kind] = (kinds[t.kind] || 0) + 1; });
+        renderFilters(cities, kinds);
+        if (!list.length) {
+            $('list').innerHTML = '<div class="empty">' +
+                (all.length ? 'No trips match that filter yet.'
+                            : '<b>No trips listed yet.</b><br>The first ones are being written now. ' +
+                              'If you guide — a student, a driver, a local who knows one street properly — ' +
+                              '<a href="/guide-studio">list yours</a> and it appears here straight away.') +
+                '</div>';
+            return;
+        }
+        $('list').innerHTML = list.map(t => {
+            const stops = (t.stops || []).map((s, i) =>
+                '<div class="st"><div class="n">' + (i + 1) + '</div>' +
+                '<div class="t">' + esc(s.name) + (s.note ? '<small>' + esc(s.note) + '</small>' : '') + '</div>' +
+                '<div class="m">' + (s.minutes ? s.minutes + ' min' : '') + '</div></div>').join('');
+            const practical = [
+                t.meeting_point ? 'Meet at ' + esc(t.meeting_point) : '',
+                t.languages ? 'Run in ' + esc(t.languages) : '',
+                t.group_max ? 'Up to ' + t.group_max + ' people' : '',
+                t.includes ? esc(t.includes) : ''
+            ].filter(Boolean).join(' · ');
+            return '<div class="trip" id="' + esc(t.id) + '">' +
+                '<h2>' + esc(t.title) + '</h2>' +
+                '<div class="meta">' +
+                    '<span class="tag">' + esc(t.kind) + '</span>' +
+                    (t.city_label ? '<span class="tag city">' + esc(t.city_label) + '</span>' : '') +
+                    (t.total_minutes ? '<span class="tag time">' + dur(t.total_minutes) + ' at the stops</span>' : '') +
+                    '<span class="tag price">' + esc(priceOf(t)) + '</span>' +
+                '</div>' +
+                (t.summary ? '<div class="summary">' + esc(t.summary) + '</div>' : '') +
+                '<div class="by">With ' + esc(t.guide_name || 'a local guide') +
+                    (t.guide_org ? ' · ' + esc(t.guide_org) : '') +
+                    ' · ' + (t.stops || []).length + ' stops</div>' +
+                '<div class="stops" id="s_' + esc(t.id) + '">' + stops +
+                    (practical ? '<div class="practical" style="margin-top:0.8rem">' + practical + '</div>' : '') +
+                '</div>' +
+                '<div class="acts">' +
+                    '<button class="btn ghost" onclick="toggleStops(\'' + esc(t.id) + '\')" id="b_' + esc(t.id) + '">See every stop</button>' +
+                    '<button class="btn blue" onclick="toggleForm(\'' + esc(t.id) + '\')">Ask about this trip</button>' +
+                    (t.interest_count ? '<span class="asked">' + t.interest_count + ' already asked</span>' : '') +
+                '</div>' +
+                '<div class="form" id="f_' + esc(t.id) + '">' +
+                    '<div class="row"><input id="n_' + esc(t.id) + '" placeholder="Your name"></div>' +
+                    '<div class="row"><input id="c_' + esc(t.id) + '" placeholder="Email or phone">' +
+                        '<input id="p_' + esc(t.id) + '" placeholder="How many people"></div>' +
+                    '<div class="row"><input id="w_' + esc(t.id) + '" placeholder="Which day works"></div>' +
+                    '<div class="row"><textarea id="q_' + esc(t.id) + '" placeholder="Anything you want to ask the guide"></textarea></div>' +
+                    '<button class="btn blue" onclick="sendInterest(\'' + esc(t.id) + '\')">Send to the guide</button>' +
+                    '<div class="msg" id="m_' + esc(t.id) + '"></div>' +
+                '</div>' +
+            '</div>';
+        }).join('');
+        if (location.hash) {
+            const el = document.getElementById(location.hash.slice(1));
+            if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      el.style.borderColor = '#2563eb'; }
+        }
+    }
+
+    function toggleStops(id) {
+        const s = $('s_' + id), b = $('b_' + id);
+        s.classList.toggle('open');
+        b.textContent = s.classList.contains('open') ? 'Hide the stops' : 'See every stop';
+    }
+    function toggleForm(id) { $('f_' + id).classList.toggle('open'); }
+
+    async function sendInterest(id) {
+        const msg = $('m_' + id);
+        const body = { name: ($('n_' + id).value || '').trim(), contact: ($('c_' + id).value || '').trim(),
+                       people: ($('p_' + id).value || '').trim(), when: ($('w_' + id).value || '').trim(),
+                       note: ($('q_' + id).value || '').trim() };
+        if (!body.name || !body.contact) {
+            msg.className = 'msg err'; msg.textContent = 'Your name and a way to reach you are both needed.'; return;
+        }
+        try {
+            const r = await fetch('/api/guide-trips/' + encodeURIComponent(id) + '/interest',
+                { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+            const j = await r.json();
+            if (j.ok) {
+                msg.className = 'msg ok';
+                msg.textContent = 'Sent. The guide will be introduced to you directly — usually within a day.';
+                $('f_' + id).querySelectorAll('input,textarea').forEach(i => i.value = '');
+            } else { msg.className = 'msg err'; msg.textContent = j.error || 'Could not send that.'; }
+        } catch (e) { msg.className = 'msg err'; msg.textContent = 'Could not reach the server.'; }
+    }
+
+    load();
+</script>
+</body>
+</html>

@@ -658,6 +658,14 @@ def api_destinations():
         return jsonify({"cities": {}, "entries": [], "error": str(e)}), 500
 
 
+def _local_iso_epoch(s):
+    """Seconds since the epoch for a naive local-time ISO string, or None."""
+    try:
+        return int(datetime.datetime.fromisoformat(str(s)).timestamp())
+    except Exception:
+        return None
+
+
 @app.route("/api/discoveries")
 def api_discoveries():
     """What travelers have been discovering lately, newest first, worldwide —
@@ -677,9 +685,13 @@ def api_discoveries():
         "ok": True,
         "total": len(found),
         "city_count": len({e.get("city") for e in found}),
+        # added_at is written in the server's own local time with no zone marker,
+        # which a browser would read as UTC and report hours off. Send a real
+        # epoch alongside it so "3 minutes ago" means three minutes ago.
         "recent": [{"name": e.get("name"), "city": e.get("city"),
                     "city_label": cities.get(e.get("city"), e.get("city")),
-                    "cat": e.get("cat"), "at": e.get("added_at")} for e in found[:12]],
+                    "cat": e.get("cat"), "at": e.get("added_at"),
+                    "at_ts": _local_iso_epoch(e.get("added_at"))} for e in found[:12]],
         "by_city": sorted(({"city": k, "label": cities.get(k, k), "n": v} for k, v in tally.items()),
                           key=lambda r: -r["n"])[:12],
     })
@@ -3888,6 +3900,196 @@ def _save_board_file(data_url):
     with open(os.path.join(BOARD_DIR, fn), "wb") as f:
         f.write(raw)
     return fn, len(raw)
+
+
+# ------------------------------------------------------------- guide trip studio
+# A guide's product is not the sightseeing loop the planner draws — it is their
+# own walk, with their own stops and their own timings. A Harvard student running
+# an hour in the Yard needs to name each stop, say how long they stand there and
+# why, and put a price on it. That is what this stores, and unlike the older
+# "offer this route" inbox — which only ever reached the owner — these listings
+# are meant to be READ BY THE PUBLIC. That is the whole point of selling one.
+#
+# The guide's contact details are never served publicly. A traveller registers
+# interest through the site and the owner introduces them, so a listing cannot be
+# scraped for emails.
+GUIDE_TRIPS_PATH = os.path.join(BASE_DIR, "guide_trips.json")
+GUIDE_INTEREST_PATH = os.path.join(BASE_DIR, "guide_interest.json")
+
+TRIP_KINDS = ("in-depth", "campus", "history", "food", "architecture", "art",
+              "nature", "photography", "family", "neighborhood", "nightlife", "other")
+
+
+def _guide_for(code):
+    code = (code or "").strip().upper()
+    if not code:
+        return None
+    for a in _load(AGENTS_PATH):
+        if (a.get("code") or "").strip().upper() == code:
+            return a
+    return None
+
+
+def _public_trip(t):
+    """Everything a traveller may see. Contact details are deliberately absent."""
+    return {k: t.get(k) for k in (
+        "id", "title", "kind", "city", "city_label", "summary", "stops",
+        "total_minutes", "languages", "group_max", "price", "price_unit",
+        "meeting_point", "includes", "guide_name", "guide_org", "created_at",
+        "interest_count")}
+
+
+@app.route("/api/guide-trips", methods=["POST"])
+def api_guide_trip_create():
+    d = request.get_json(silent=True) or {}
+    guide = _guide_for(d.get("guide_code"))
+    if not guide:
+        return jsonify({"ok": False, "error":
+                        "That guide code was not recognised. Register as a guide to list a trip."}), 403
+    title = _no_tags(str(d.get("title", "")).strip())[:90]
+    if not title:
+        return jsonify({"ok": False, "error": "Give your trip a title."}), 400
+    stops_in = d.get("stops") if isinstance(d.get("stops"), list) else []
+    stops = []
+    for s in stops_in[:30]:
+        nm = _no_tags(str((s or {}).get("name", "")).strip())[:80]
+        if not nm:
+            continue
+        try:
+            mins = int((s or {}).get("minutes") or 0)
+        except (TypeError, ValueError):
+            mins = 0
+        stops.append({"name": nm, "minutes": max(0, min(mins, 600)),
+                      "note": _no_tags(str((s or {}).get("note", "")).strip())[:300],
+                      "lat": (s or {}).get("lat"), "lon": (s or {}).get("lon")})
+    if not stops:
+        return jsonify({"ok": False, "error": "Add at least one stop."}), 400
+    kind = str(d.get("kind", "")).strip().lower()
+    if kind not in TRIP_KINDS:
+        kind = "other"
+    try:
+        price = round(float(d.get("price")), 2) if d.get("price") not in (None, "") else None
+        if price is not None and not (0 <= price <= 100000):
+            price = None
+    except (TypeError, ValueError):
+        price = None
+    try:
+        group_max = max(1, min(int(d.get("group_max") or 8), 200))
+    except (TypeError, ValueError):
+        group_max = 8
+    rec = {
+        "id": "", "code": (guide.get("code") or "").upper(),
+        "guide_name": _no_tags(guide.get("name", ""))[:60],
+        "guide_org": _no_tags(guide.get("organization", ""))[:80],
+        "contact": _no_tags(str(d.get("contact") or guide.get("email") or "").strip())[:120],
+        "title": title, "kind": kind,
+        "city": _no_tags(str(d.get("city", "")).strip().lower())[:40],
+        "city_label": _no_tags(str(d.get("city_label", "")).strip())[:80],
+        "summary": _no_tags(str(d.get("summary", "")).strip())[:900],
+        "stops": stops,
+        "total_minutes": sum(s["minutes"] for s in stops),
+        "languages": _no_tags(str(d.get("languages", "")).strip())[:80],
+        "group_max": group_max,
+        "price": price,
+        "price_unit": "group" if str(d.get("price_unit")) == "group" else "person",
+        "meeting_point": _no_tags(str(d.get("meeting_point", "")).strip())[:200],
+        "includes": _no_tags(str(d.get("includes", "")).strip())[:400],
+        "status": "LISTED", "interest_count": 0,
+        "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
+    }
+    with _LOCK:
+        trips = _load(GUIDE_TRIPS_PATH)
+        rec["id"] = _next_id(trips, "TRP")
+        trips.append(rec)
+        _save(GUIDE_TRIPS_PATH, trips)
+    try:
+        _push_owner_alert("guide_trip", "🎫 %s listed \"%s\" in %s — %s, %d stops."
+                          % (rec["guide_name"], rec["title"],
+                             rec["city_label"] or rec["city"] or "—", rec["kind"], len(stops)))
+    except Exception:
+        pass
+    return jsonify({"ok": True, "trip": _public_trip(rec)})
+
+
+@app.route("/api/guide-trips")
+def api_guide_trips():
+    """Public. This is the shop window — anyone may browse what guides sell."""
+    city = str(request.args.get("city", "")).strip().lower()
+    kind = str(request.args.get("kind", "")).strip().lower()
+    mine = str(request.args.get("code", "")).strip().upper()
+    out = []
+    for t in _load(GUIDE_TRIPS_PATH):
+        if t.get("status") != "LISTED":
+            continue
+        if city and (t.get("city") or "").lower() != city:
+            continue
+        if kind and (t.get("kind") or "") != kind:
+            continue
+        if mine and (t.get("code") or "") != mine:
+            continue
+        out.append(_public_trip(t))
+    out.reverse()
+    cities, kinds = {}, {}
+    for t in out:
+        if t.get("city"):
+            cities[t["city"]] = t.get("city_label") or t["city"]
+        kinds[t.get("kind", "other")] = kinds.get(t.get("kind", "other"), 0) + 1
+    return jsonify({"ok": True, "trips": out, "cities": cities, "kinds": kinds})
+
+
+@app.route("/api/guide-trips/<tid>")
+def api_guide_trip_one(tid):
+    for t in _load(GUIDE_TRIPS_PATH):
+        if t.get("id") == tid and t.get("status") == "LISTED":
+            return jsonify({"ok": True, "trip": _public_trip(t)})
+    return jsonify({"ok": False, "error": "Not found."}), 404
+
+
+@app.route("/api/guide-trips/<tid>/interest", methods=["POST"])
+def api_guide_trip_interest(tid):
+    d = request.get_json(silent=True) or {}
+    name = _no_tags(str(d.get("name", "")).strip())[:60]
+    contact = _no_tags(str(d.get("contact", "")).strip())[:120]
+    if not (name and contact):
+        return jsonify({"ok": False, "error": "Name and a way to reach you are both needed."}), 400
+    with _LOCK:
+        trips = _load(GUIDE_TRIPS_PATH)
+        trip = next((t for t in trips if t.get("id") == tid and t.get("status") == "LISTED"), None)
+        if not trip:
+            return jsonify({"ok": False, "error": "Not found."}), 404
+        trip["interest_count"] = int(trip.get("interest_count") or 0) + 1
+        _save(GUIDE_TRIPS_PATH, trips)
+        items = _load(GUIDE_INTEREST_PATH)
+        items.append({"trip_id": tid, "trip_title": trip.get("title"),
+                      "guide_code": trip.get("code"), "guide_contact": trip.get("contact"),
+                      "name": name, "contact": contact,
+                      "people": _no_tags(str(d.get("people", "")).strip())[:20],
+                      "when": _no_tags(str(d.get("when", "")).strip())[:40],
+                      "note": _no_tags(str(d.get("note", "")).strip())[:400],
+                      "ts": datetime.datetime.now().isoformat(timespec="seconds")})
+        _save(GUIDE_INTEREST_PATH, items[-5000:])
+    try:
+        _push_owner_alert("trip_interest", "🎟️ %s wants \"%s\" — reach them at %s (guide %s)."
+                          % (name, trip.get("title"), contact, trip.get("code")))
+    except Exception:
+        pass
+    return jsonify({"ok": True})
+
+
+@app.route("/api/guide-interest")
+@owner_required
+def api_guide_interest():
+    return jsonify({"ok": True, "items": list(reversed(_load(GUIDE_INTEREST_PATH)))})
+
+
+@app.route("/trips")
+def trips_page():
+    return send_file(os.path.join(BASE_DIR, "trips.html"))
+
+
+@app.route("/guide-studio")
+def guide_studio_page():
+    return send_file(os.path.join(BASE_DIR, "guide-studio.html"))
 
 
 # ------------------------------------------------------- board of directors gate

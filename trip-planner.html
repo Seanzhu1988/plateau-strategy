@@ -564,7 +564,7 @@
             <div class="build-row">
                 <button type="button" class="from loc-btn" id="curLocBtn" onclick="startPointTap()"
                         title="Tap once to type a starting address · tap twice to use your current location">⌂ <span id="curLocLabel">Starting point</span></button>
-                <span class="tap-hint">tap once to type an address · tap twice for your current location</span>
+
                 <span class="to">→</span>
                 <input id="destAdd" placeholder="Type a destination and press Add — or tap a pin on the map"
                        autocomplete="off" onkeydown="if(event.key==='Enter')addDestination()">
@@ -574,7 +574,7 @@
                 <input id="startAddr" placeholder="Type your starting address, hotel or airport…"
                        autocomplete="off" onkeydown="if(event.key==='Enter')applyStartAddress()">
                 <button class="btn add" onclick="applyStartAddress()">Set start</button>
-                <span class="start-hint">or drag the black ⌂ pin on the map · tap ⌂ twice for your current location</span>
+                <span class="start-hint">or drag the ⌂ pin on the map</span>
             </div>
             <div id="curLocInfo" class="loc-info"></div>
             <div id="farNote" class="far-note" style="display:none;"></div>
@@ -587,6 +587,7 @@
             <button class="act guide" onclick="doorGuide('prefer')" title="Hand it off — a local guide reaches out">🙋 Drop to a guide</button>
             <button class="act hire" onclick="doorGuide('hire')" title="One person drives and guides you">🚕 Hire a driver-guide</button>
             <a class="act-link" onclick="doorGuide('sale')">🏷️ Guide? Offer this route for sale →</a>
+            <a class="act-link" href="/guide-studio">🎫 Or write your own in-depth trip and sell it →</a>
         </div>
 
         <div class="layout">
@@ -2116,15 +2117,16 @@
     function markRideCoverage(){
         const b = document.querySelector('.act.ride');
         if (!b) return;
-        const open = rideOpenHere();
-        b.textContent = open ? '🚗 I need a ride' : '🚗 Want a ride here?';
-        b.title = open ? 'Book a ride to your stop'
-                       : 'We do not drive here yet — tell us you want it and we will count you';
-        b.classList.toggle('ride-wanted', !open);
+        // The label never changes — this always books a ride. Coverage only
+        // changes what the booking page tells you once you are there.
+        b.textContent = '🚗 I need a ride';
+        b.title = rideOpenHere() ? 'Book a ride to your stop'
+                                 : 'Request a ride — we drive in Seattle today and confirm other cities';
+        b.classList.toggle('ride-wanted', !rideOpenHere());
     }
     async function doorRide(){
         if (!(await ensureLocation())) { say('Enter a location first — type where you want to go, then choose.'); return; }
-        if (!rideOpenHere()) { rideWanted(); return; }
+        const covered = rideOpenHere();
         // Ride = current location → your destination. Make the pickup ACCURATE: if we
         // don't already have a GPS fix, ask for one now so the reservation gets the
         // customer's real address, not the city's default start point.
@@ -2159,12 +2161,22 @@
             distance_mi, fare,                     // the destination drove this price
             notes: (st.route.length > 1 ? 'Trip Planner route — ' + t.text : 'Via Trip Planner')
         };
+        ride.covered = covered;                // the booking page says so if we do not drive here yet
         try { localStorage.setItem('ps_ride_trip', JSON.stringify(ride)); } catch (e) {}
+        if (!covered) {
+            // Still a real booking request — and also a record of where demand is.
+            const m2 = CITY_META[curCity] || {};
+            try {
+                fetch('/api/ride-demand', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ city: curCity, city_label: t.cityLabel,
+                                           dropoff: drop.name, stops: st.route.length }) });
+            } catch (e) {}
+        }
         location.href = '/book';               // the working reservation flow, now pre-filled
     }
-    // Outside our driving cities the honest move is to say so and count the ask.
-    // Every one of these is evidence for where to open next — and for whether a
-    // city has enough travelers to be worth a shared bus tour rather than a car.
+    // Kept for the map's own "want a ride here" affordance; the main ride button
+    // always books. Every ask is evidence for where to open next — and for
+    // whether a city has enough travelers to be worth a shared bus rather than a car.
     function rideWanted(){
         const label = (CITIES[curCity] || {}).label || curCity;
         const drop = st.route.length ? (places[st.route[st.route.length - 1].i] || {}).name : '';
@@ -3221,11 +3233,17 @@
     startMarker = L.marker(BOOT_CITY.start, {
         draggable: true,
         icon: L.divIcon({ className: '', html: '<div class="tp-pin tp-start"><div class="tp-dot" data-glyph="⌂">◉</div><span class="tp-lbl">Start</span></div>', iconSize: [76, 34], iconAnchor: [38, 10] })
-    }).addTo(map).bindTooltip('Your start point — drag me');
+    }).addTo(map).bindTooltip('Start · tap once to type an address · tap twice for your location · or drag me');
     startMarker.on('dragend', () => {
         const ll = startMarker.getLatLng();
         setOrigin(ll.lat, ll.lng, 'drag', { why: 'start pin moved' });
     });
+    // The pin is the control. Tap it once to type where you are starting from,
+    // twice to use your current location — the same two taps as the toolbar
+    // button, on the thing travellers actually reach for. The instruction rides
+    // on the pin's own tooltip, so it is read exactly where it is needed.
+    startMarker.on('click', () => startPointTap());
+    startMarker.on('dblclick', (e) => { if (e && e.originalEvent) L.DomEvent.stop(e); });
     initChips();
     initStateCity();
     rebuildMarkers();

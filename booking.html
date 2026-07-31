@@ -209,6 +209,17 @@
                     const nt = f.querySelector('[name=notes]');
                     nt.value = nt.value ? (nt.value + ' · ' + ride.notes) : ride.notes;
                 }
+                // Say plainly where we drive today, without turning the request away.
+                if (ride.covered === false) {
+                    const banner = document.createElement('div');
+                    banner.style.cssText = 'background:#fffbeb;border:1px solid #fde68a;color:#92400e;'
+                        + 'border-radius:10px;padding:0.8rem 1rem;font-size:0.87rem;line-height:1.5;margin-bottom:1rem';
+                    banner.innerHTML = 'We drive in <b>Seattle</b> today. Send this request anyway — '
+                        + 'we will confirm quickly whether we can cover your city, and your ask counts '
+                        + 'toward opening it.';
+                    const form = document.getElementById('bookForm');
+                    form.parentNode.insertBefore(banner, form);
+                }
                 const sub = document.querySelector('.sub');
                 if (sub) {
                     if (ride.pickup_accurate) {
