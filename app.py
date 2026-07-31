@@ -14,6 +14,7 @@ Data persists in JSON files: reservations.json, renters.json, agents.json.
 Run:  python3 app.py   ->  http://localhost:5060
 """
 import os
+import re
 import json
 import time
 import hashlib
@@ -291,6 +292,60 @@ def _save_traffic(d):
     os.replace(tmp, TRAFFIC_PATH)
 
 
+def _visit_source():
+    """Where this visit came from, as ONE short label.
+
+    utm_source wins when present, because that is what an ad platform sets.
+    Otherwise the referring host, collapsed to a family — every Google property
+    is 'google', not 'www.google.co.uk' — so a week of ad spend adds up to a
+    single row instead of scattering across forty near-identical strings.
+
+    Deliberately coarse: a label, never a URL and never a full referrer. It is
+    stored as a per-day counter, never against a visitor, so this cannot become
+    a trail of who went where."""
+    utm = (request.args.get("utm_source") or "").strip().lower()[:32]
+    if utm:
+        return re.sub(r"[^a-z0-9_.-]", "", utm) or "other"
+    ref = (request.referrer or "").strip()
+    if not ref:
+        return "direct"
+    try:
+        host = urllib.parse.urlparse(ref).hostname or ""
+    except Exception:
+        return "other"
+    host = host.lower()
+    if host.startswith("www."):
+        host = host[4:]
+    if not host:
+        return "direct"
+    if SITE_HOSTS and any(host == h or host.endswith("." + h) for h in SITE_HOSTS):
+        return "internal"                       # our own pages linking to each other
+    for fam in ("google", "bing", "duckduckgo", "yahoo", "facebook", "instagram",
+                "reddit", "youtube", "tiktok", "linkedin", "chatgpt", "perplexity",
+                "claude", "yelp", "tripadvisor"):
+        if fam in host:
+            return fam
+    parts = host.split(".")
+    return (".".join(parts[-2:]) if len(parts) > 1 else host)[:32]
+
+
+def record_conversion(kind):
+    """Count something that actually mattered, against the source that brought
+    them. Without this an ad test only ever proves that pageviews went up."""
+    try:
+        src = request.cookies.get("psx_src") or "direct"
+        today = datetime.date.today().isoformat()
+        with _LOCK:
+            data = _load_traffic()
+            rec = data["days"].setdefault(today, {"pageviews": 0, "visitor_ids": [], "paths": {}})
+            conv = rec.setdefault("conversions", {})
+            conv.setdefault(kind, {})
+            conv[kind][src] = conv[kind].get(src, 0) + 1
+            _save_traffic(data)
+    except Exception:
+        pass
+
+
 @app.after_request
 def _track_traffic(resp):
     """Lightweight, self-hosted page-view counter — no third-party analytics,
@@ -305,6 +360,7 @@ def _track_traffic(resp):
                 and (resp.mimetype or "").startswith("text/html"):
             vid = request.cookies.get("psx_vid")
             set_cookie = not vid
+            set_src = None
             if set_cookie:
                 vid = secrets.token_hex(16)
             _presence_touch(vid)
@@ -322,6 +378,15 @@ def _track_traffic(resp):
                 rec["paths"][request.path] = rec["paths"].get(request.path, 0) + 1
                 if vid not in rec["visitor_ids"]:
                     rec["visitor_ids"].append(vid)
+                    # First touch only. Counting every pageview would credit the
+                    # source that brought someone here once per page they read,
+                    # which flatters whichever page is stickiest rather than
+                    # whichever source actually worked.
+                    src = _visit_source()
+                    if src != "internal":
+                        rec.setdefault("sources", {})
+                        rec["sources"][src] = rec["sources"].get(src, 0) + 1
+                        set_src = src
                 if len(days) > TRAFFIC_MAX_DAYS:
                     for old in sorted(days.keys())[:len(days) - TRAFFIC_MAX_DAYS]:
                         del days[old]
@@ -329,6 +394,13 @@ def _track_traffic(resp):
             if set_cookie:
                 resp.set_cookie("psx_vid", vid, max_age=60 * 60 * 24 * 400,
                                  httponly=True, samesite="Lax")
+            if set_src:
+                # Carried so a booking made later can be credited to the source
+                # that brought them. Holds a label like "google", never a URL,
+                # and expires in 30 days — an ad click is not owed credit for a
+                # booking made a year later.
+                resp.set_cookie("psx_src", set_src, max_age=60 * 60 * 24 * 30,
+                                httponly=True, samesite="Lax")
     except Exception:
         pass
     return resp
@@ -583,6 +655,8 @@ PUBLIC_PAGES = [
 ]
 OWNER_ONLY_PATHS = ["/dispatch", "/setup", "/archive", "/api/"]
 SITE_ORIGIN = os.environ.get("SITE_ORIGIN", "https://plateaustrategy.io").rstrip("/")
+# Referrers from our own pages are not a traffic source — they are navigation.
+SITE_HOSTS = ("plateaustrategy.io", "plateau-strategy.onrender.com")
 
 
 @app.route("/robots.txt")
@@ -1742,6 +1816,7 @@ def api_book():
     reservation, err = _create_reservation(data, agent=agent)
     if err:
         return jsonify({"ok": False, "error": err}), 400
+    record_conversion("booking")
     return jsonify({"ok": True, "reservation": reservation})
 
 
@@ -2355,6 +2430,7 @@ def api_renter_register():
         renters.append(renter)
         _save(RENTERS_PATH, renters)
     session["renter_id"] = renter["id"]
+    record_conversion("driver_signup")
     return jsonify({"ok": True, "renter": renter})
 
 
@@ -2783,6 +2859,7 @@ def api_agent_register():
         agents.append(agent)
         _save(AGENTS_PATH, agents)
     session["agent_id"] = agent["id"]
+    record_conversion("agent_signup")
     return jsonify({"ok": True, "agent": agent})
 
 
