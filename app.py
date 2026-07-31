@@ -248,6 +248,76 @@ TRAFFIC_MAX_DAYS = 120  # bound file growth; older days are just dropped
 TRAFFIC_TOOL_PATHS = {"/trip-planner": "trip_planner", "/destination-book": "destination_book",
                        "/favorite-place": "favorite_place"}
 
+# ---------- traffic we should not be counting ----------
+# The number beside the map is meant to tell Sean whether strangers are using
+# the tools. Our own laptops and phones, and the browser used to test a build,
+# were being counted the same as a visitor from Ohio — so a quiet day could read
+# as thirty travellers. Three exclusions, cheapest first:
+#   · a device that has opted out (a cookie set once, kept for years)
+#   · an address on the ignore list (Sean's home or office)
+#   · anything that identifies itself as a bot or crawler
+TRAFFIC_OPTOUT_COOKIE = "psx_nocount"
+_BOT_HINTS = ("bot", "crawler", "spider", "slurp", "headless", "curl/", "wget",
+              "python-requests", "monitor", "pingdom", "uptime", "lighthouse",
+              "preview", "scrapy", "facebookexternalhit", "embedly")
+
+
+def _ignored_ips():
+    raw = os.environ.get("TRAFFIC_IGNORE_IPS", "")
+    return {_norm_ip(s) for s in raw.split(",") if s.strip()}
+
+
+def _norm_ip(raw):
+    """Normalise an address so the ignore list matches what actually arrives.
+
+    A local or proxied request often turns up as an IPv4 address wrapped in IPv6
+    form — "::ffff:127.0.0.1" — which never equals the "127.0.0.1" someone wrote
+    in the ignore list. Unwrap it, and drop any :port a proxy appended.
+    """
+    s = (raw or "").strip()
+    if not s:
+        return ""
+    if s.lower().startswith("::ffff:"):
+        s = s[7:]
+    if s.count(":") == 1 and s.count(".") == 3:      # 1.2.3.4:5678
+        s = s.split(":")[0]
+    return s.strip("[]")
+
+
+def _client_ip():
+    fwd = request.headers.get("X-Forwarded-For", "")
+    raw = fwd.split(",")[0] if fwd else (request.remote_addr or "")
+    return _norm_ip(raw)
+
+
+def _skip_traffic():
+    """True when this request should not appear in any visitor number."""
+    if request.cookies.get(TRAFFIC_OPTOUT_COOKIE) == "1":
+        return True
+    if _client_ip() in _ignored_ips():
+        return True
+    ua = (request.headers.get("User-Agent") or "").lower()
+    if not ua:
+        return True                      # no user agent at all is not a person
+    return any(h in ua for h in _BOT_HINTS)
+
+
+@app.route("/api/traffic/optout")
+def api_traffic_optout():
+    """Open this once on a device and it stops being counted — ours, or anyone's
+    who asks. Sets a plain flag cookie; no identity is stored either way."""
+    on = request.args.get("off") != "1"
+    resp = jsonify({"ok": True, "counted": not on,
+                    "message": ("This device is no longer counted as a visitor."
+                                if on else "This device is being counted again.")})
+    if on:
+        resp.set_cookie(TRAFFIC_OPTOUT_COOKIE, "1", max_age=60 * 60 * 24 * 3650,
+                        httponly=True, samesite="Lax")
+    else:
+        resp.delete_cookie(TRAFFIC_OPTOUT_COOKIE)
+    return resp
+
+
 # ---------- who's actually here RIGHT NOW ----------
 # Deliberately in-memory and ephemeral: presence is a live fact, not a record.
 # It never touches disk, resets on restart, and holds only anonymous cookie ids
@@ -357,7 +427,8 @@ def _track_traffic(resp):
     again, so this file can't turn into a visitor-tracking log over time."""
     try:
         if request.method == "GET" and resp.status_code == 200 \
-                and (resp.mimetype or "").startswith("text/html"):
+                and (resp.mimetype or "").startswith("text/html") \
+                and not _skip_traffic():
             vid = request.cookies.get("psx_vid")
             set_cookie = not vid
             set_src = None
@@ -373,6 +444,9 @@ def _track_traffic(resp):
                     if d != today and "visitor_ids" in rec:
                         rec["unique_visitors"] = len(rec["visitor_ids"])
                         del rec["visitor_ids"]
+                    if d != today and "path_ids" in rec:
+                        rec["path_uniques"] = {k: len(v) for k, v in rec["path_ids"].items()}
+                        del rec["path_ids"]
                 rec = days.setdefault(today, {"pageviews": 0, "visitor_ids": [], "paths": {}})
                 rec["pageviews"] += 1
                 rec["paths"][request.path] = rec["paths"].get(request.path, 0) + 1
@@ -387,6 +461,12 @@ def _track_traffic(resp):
                         rec.setdefault("sources", {})
                         rec["sources"][src] = rec["sources"].get(src, 0) + 1
                         set_src = src
+                # Who opened this particular tool, so "N travellers" can mean N
+                # people rather than N page opens. Same lifecycle as visitor_ids:
+                # raw ids only for today, folded to a plain count once the day ends.
+                pv = rec.setdefault("path_ids", {}).setdefault(request.path, [])
+                if vid not in pv:
+                    pv.append(vid)
                 if len(days) > TRAFFIC_MAX_DAYS:
                     for old in sorted(days.keys())[:len(days) - TRAFFIC_MAX_DAYS]:
                         del days[old]
@@ -850,6 +930,41 @@ def _local_iso_epoch(s):
         return None
 
 
+@app.route("/api/geography")
+def api_geography():
+    """State → county → city, built from what has actually been discovered.
+
+    The planner ships with three or four cities hard-coded. Every place a
+    traveller searches for is filed with its state and county, so this returns
+    the real, growing hierarchy — search Mount Rushmore once and South Dakota
+    appears in the picker for everyone after you. Places recorded before this
+    existed have no state and are simply left out rather than guessed at.
+    """
+    try:
+        with open(_data_path("destinations.json")) as f:
+            d = json.load(f)
+    except Exception:
+        return jsonify({"ok": True, "geo": {}, "cities": {}})
+    cities = d.get("cities", {})
+    geo, seen = {}, {}
+    for e in d.get("entries", []):
+        state = (e.get("state") or "").strip()
+        city = (e.get("city") or "").strip()
+        if not (state and city):
+            continue
+        county = (e.get("county") or state).strip()
+        label = (e.get("city_label") or cities.get(city) or city.title()).strip()
+        counties = geo.setdefault(state, {})
+        lst = counties.setdefault(county, [])
+        if city not in seen.setdefault((state, county), set()):
+            seen[(state, county)].add(city)
+            lst.append([city, label])
+    for counties in geo.values():
+        for lst in counties.values():
+            lst.sort(key=lambda p: p[1])
+    return jsonify({"ok": True, "geo": geo, "cities": cities})
+
+
 @app.route("/api/discoveries")
 def api_discoveries():
     """What travelers have been discovering lately, newest first, worldwide —
@@ -938,7 +1053,11 @@ VISITS_PATH = _data_path("visit_times.json")
 VISIT_MIN_N = 3          # below this we have an opinion, not a fact — stay quiet
 GUIDE_MIN_N = 1          # a verified guide's endorsement stands on its own
 VISIT_MAX_SAMPLES = 300  # per place; oldest fall off
-VISIT_MIN_M, VISIT_MAX_M = 5, 600
+# Up to three days: a national park, a festival or a ski trip is a real answer
+# to "how long did you stay", and capping it at ten hours quietly forced anyone
+# who stayed longer to understate it — which then taught the next traveller too
+# short a visit.
+VISIT_MIN_M, VISIT_MAX_M = 5, 4320
 
 
 def _visit_key(city, name):
@@ -1102,6 +1221,73 @@ def _derive_city(meta, fallback=""):
         if v:
             return _no_tags(v.lower())[:40], _no_tags(v)[:60]
     return (_no_tags((fallback or "").strip().lower())[:40], "")
+
+
+def _wiki_describe(name, lat, lon):
+    """A real description for a newly discovered place, from Wikipedia.
+
+    The map's own data can only ever say what KIND of thing something is — "a
+    museum in Boston" — which is true and useless. Wikipedia says what it is and
+    why anyone goes. We look for an article at the same spot and only accept one
+    whose title plainly matches the name searched for, so a place never inherits
+    the description of its neighbour. Returns (description, photo, url) or Nones;
+    every failure is silent, because a thin description is better than a failed
+    search.
+    """
+    try:
+        near = _wiki_get({"action": "query", "list": "geosearch",
+                          "gscoord": "%f|%f" % (lat, lon), "gsradius": 1200, "gslimit": 12})
+        found = (near.get("query") or {}).get("geosearch") or []
+        if not found:
+            return None, None, None
+
+        def key(s):
+            return "".join(ch for ch in str(s).lower() if ch.isalnum())
+
+        want = key(name)
+        if not want:
+            return None, None, None
+        best = None
+        for f in found:
+            t = key(f.get("title"))
+            if t == want or (len(want) > 6 and (want in t or t in want)):
+                best = f
+                break
+        if not best:
+            return None, None, None
+        d = _wiki_get({"action": "query", "pageids": str(best["pageid"]),
+                       "prop": "extracts|pageimages", "exintro": 1, "explaintext": 1,
+                       "exsentences": 2, "piprop": "thumbnail", "pithumbsize": 400})
+        pg = ((d.get("query") or {}).get("pages") or [{}])[0]
+        text = (pg.get("extract") or "").strip()
+        if len(text) < 40:
+            return None, None, None
+        return (text[:600], (pg.get("thumbnail") or {}).get("source"),
+                "https://en.wikipedia.org/?curid=%s" % best["pageid"])
+    except Exception:
+        return None, None, None
+
+
+def _derive_region(meta):
+    """The state and county a discovered place sits in, from the geocoder.
+
+    Without these a new discovery can never reach the planner's State → County →
+    City pickers: the city is recorded, but nothing says where in the world it
+    belongs, so the only way to reach it is to already know it exists.
+    """
+    addr = meta.get("address") if isinstance(meta.get("address"), dict) else {}
+    state = (addr.get("state") or addr.get("province")
+             or addr.get("region") or addr.get("state_district") or "").strip()
+    county = (addr.get("county") or addr.get("district")
+              or addr.get("state_district") or "").strip()
+    country = (addr.get("country") or "").strip()
+    # Outside the US a "state" is often absent; the country is the honest
+    # top level there, and saying so beats filing it under nothing.
+    if not state and country:
+        state = country
+    if not county:
+        county = state
+    return _no_tags(state)[:60], _no_tags(county)[:60], _no_tags(country)[:60]
 
 
 def _describe_osm(meta):
@@ -1268,11 +1454,22 @@ def api_destinations_add():
         for e in d.get("entries", []):
             if e.get("city") == city and (e.get("name") or "").strip().lower() == name.lower():
                 updated = False
-                if not (e.get("desc") or "").strip():
-                    new_desc = given_desc or auto_desc
-                    if new_desc and new_desc != "Place.":
+                thin = (not (e.get("desc") or "").strip()
+                        or (e.get("desc_from") == "map data" and not given_desc))
+                if thin:
+                    w_desc, w_photo, w_url = (None, None, None)
+                    if not given_desc:
+                        w_desc, w_photo, w_url = _wiki_describe(name, lat, lon)
+                    new_desc = given_desc or w_desc or auto_desc
+                    if new_desc and new_desc != "Place." and new_desc != e.get("desc"):
                         e["desc"] = new_desc
                         e["auto_desc"] = not given_desc
+                        e["desc_from"] = ("guide" if given_desc else
+                                          ("wikipedia" if w_desc else "map data"))
+                        if w_photo:
+                            e["photo"] = w_photo
+                        if w_url:
+                            e["source_url"] = w_url
                         updated = True
                 if updated:
                     e["updated_at"] = datetime.datetime.now().isoformat(timespec="seconds")
@@ -1281,11 +1478,24 @@ def api_destinations_add():
                 return jsonify({"ok": True, "entry": e, "already_known": True, "updated": updated})
         if sum(1 for e in d.get("entries", []) if e.get("source") == "user") >= 1000:
             return jsonify({"ok": False, "error": "The community book is full for now."}), 429
+        state, county, country = _derive_region(data)
+        # Ask Wikipedia what this place actually is before falling back to the
+        # map's "a museum in Boston". Marked auto either way, so a person's own
+        # words always outrank it later.
+        wiki_desc, wiki_photo, wiki_url = (None, None, None)
+        if not given_desc:
+            wiki_desc, wiki_photo, wiki_url = _wiki_describe(name, lat, lon)
         rec = {"name": name, "city": city, "type": auto_type, "cat": cat, "price": None,
                "close": close, "visit": visit, "lat": round(lat, 5), "lon": round(lon, 5),
-               "desc": given_desc or auto_desc, "tip": "",
+               "desc": given_desc or wiki_desc or auto_desc, "tip": "",
+               "photo": wiki_photo, "source_url": wiki_url,
                "source": "user", "auto_desc": not given_desc,
+               "desc_from": ("guide" if given_desc else
+                             ("wikipedia" if wiki_desc else "map data")),
                "found_via": (data.get("found_via") or "search")[:20],
+               # where in the world it is, so the planner's pickers can find it
+               "state": state, "county": county, "country": country,
+               "city_label": _no_tags(city_lbl or "")[:60] or cities.get(city, city.title()),
                "added_at": datetime.datetime.now().isoformat(timespec="seconds")}
         d.setdefault("entries", []).append(rec)
         with open(path, "w") as f:
@@ -4113,7 +4323,8 @@ def api_online():
     """How many travelers are on the site right now. The caller's own ping keeps
     them counted, so an open tab stays 'online' while it polls. Anonymous and
     ephemeral — no identity, no history, nothing written to disk."""
-    _presence_touch(request.cookies.get("psx_vid"))
+    if not _skip_traffic():
+        _presence_touch(request.cookies.get("psx_vid"))
     n = _presence_count()
     return jsonify({"ok": True, "online": n, "window_minutes": _PRESENCE_WINDOW // 60})
 
@@ -4129,6 +4340,7 @@ def api_traffic_summary():
     week_cutoff = (datetime.date.today() - datetime.timedelta(days=6)).isoformat()
 
     def sum_path(path, cutoff=None):
+        """Times the page was opened."""
         total = 0
         for date, rec in days.items():
             if cutoff and date < cutoff:
@@ -4136,9 +4348,31 @@ def api_traffic_summary():
             total += rec.get("paths", {}).get(path, 0)
         return total
 
+    def people_path(path, cutoff=None):
+        """People who opened it. Today's ids are still raw, so they can be
+        counted across days without double-counting someone who came back;
+        finished days keep only a per-day total, so those are summed. A visitor
+        returning on two different days is two — the honest reading of "this
+        week" — but one person refreshing thirty times is one, which is the
+        number that used to be wrong."""
+        total = 0
+        for date, rec in days.items():
+            if cutoff and date < cutoff:
+                continue
+            if "path_ids" in rec:
+                total += len(rec["path_ids"].get(path, []))
+            else:
+                total += rec.get("path_uniques", {}).get(path, 0)
+        return total
+
     def tool_stats(path):
-        return {"today": sum_path(path, today_iso), "week": sum_path(path, week_cutoff),
-                "all_time": sum_path(path)}
+        return {"today": people_path(path, today_iso),
+                "week": people_path(path, week_cutoff),
+                "all_time": people_path(path),
+                # kept separately, clearly named — this is what the old numbers were
+                "views_today": sum_path(path, today_iso),
+                "views_week": sum_path(path, week_cutoff),
+                "views_all_time": sum_path(path)}
 
     return jsonify({"ok": True,
                      "trip_planner": tool_stats("/trip-planner"),

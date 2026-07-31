@@ -976,3 +976,26 @@ EXTRA.update({
     "could not reach the attraction lists just now": ["暂时连不上景点资料库", "no se pudo acceder a las listas de atracciones ahora mismo", "지금은 명소 목록에 연결할 수 없습니다", "hiện chưa kết nối được tới danh sách điểm tham quan"],
     "finding the places people travel here to see…": ["正在寻找人们专程来看的地方…", "buscando los lugares por los que la gente viaja hasta aquí…", "사람들이 이곳까지 찾아와 보는 장소를 찾는 중…", "đang tìm những nơi người ta lặn lội tới đây để xem…"],
 })
+
+EXTRA.update({
+    "3 hours": ["3 小时", "3 horas", "3시간", "3 giờ"],
+    "12 hours": ["12 小时", "12 horas", "12시간", "12 giờ"],
+    "A full 24 hours": ["整整 24 小时", "24 horas completas", "꼬박 24시간", "Trọn 24 giờ"],
+    "Two days": ["两天", "Dos días", "이틀", "Hai ngày"],
+    "Three days or more": ["三天或更久", "Tres días o más", "사흘 이상", "Ba ngày trở lên"],
+})
+
+EXTRA.update({
+    "Serving Seattle & Seattle–Tacoma International (SEA)": [
+        "服务西雅图及西雅图-塔科马国际机场（SEA）",
+        "Damos servicio a Seattle y al aeropuerto Seattle–Tacoma (SEA)",
+        "시애틀 및 시애틀–타코마 국제공항(SEA) 운행",
+        "Phục vụ Seattle & sân bay quốc tế Seattle–Tacoma (SEA)"],
+    "Rides available 24/7, by reservation": ["全天 24 小时可预约用车", "Viajes disponibles 24/7, con reserva", "예약제로 24시간 이용 가능", "Có xe 24/7, theo đặt trước"],
+    "Book a ride — $75 flat to SeaTac": ["预约用车——到西雅图机场统一 75 美元", "Reserva un viaje — 75 $ fijos a SeaTac", "차량 예약 — 시택 공항까지 정액 75달러", "Đặt xe — 75 $ trọn gói tới SeaTac"],
+    "Service-area business — we come to you, there's no counter to visit.": [
+        "我们是上门服务的商家——我们到您那里去，没有门店柜台可供到访。",
+        "Negocio con zona de servicio: vamos a donde estés, no hay mostrador que visitar.",
+        "출장 서비스 업체입니다 — 저희가 찾아가며, 방문할 카운터는 없습니다.",
+        "Doanh nghiệp phục vụ tận nơi — chúng tôi đến chỗ bạn, không có quầy để ghé."],
+})

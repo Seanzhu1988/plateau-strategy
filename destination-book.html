@@ -319,15 +319,15 @@
                 + '<p class="desc">' + esc(e.desc) + '</p>'
                 + '<p class="meta">Open till ' + fmt(e.close) + ' · '
                 +   (e.typical_visit
-                        ? '<span class="stay-crowd">👥 travelers stay ~' + e.typical_visit + ' min</span>'
+                        ? '<span class="stay-crowd">👥 travelers stay ~' + stayLabel(e.typical_visit) + '</span>'
                           + ' <span style="color:#94a3b8">(' + e.visit_n + ')</span>'
                         : '~' + e.visit + ' min visit')
                 + '</p>'
                 + '<div class="stay-ask" id="stay_' + i + '">'
                 +   '<span class="lead" onclick="openStay(' + i + ')">⏱ Been here? Tell us how long you stayed →</span>'
                 +   '<div class="stay-opts" id="sopt_' + i + '">'
-                +     [30, 60, 120, 240].map(m => '<span onclick="sendStay(' + i + ',' + m + ')">'
-                          + (m >= 60 ? (m / 60) + (m === 60 ? ' hour' : ' hours') : m + ' min') + '</span>').join('')
+                +     [30, 60, 120, 240, 480, 1440, 2880].map(m => '<span onclick="sendStay(' + i + ',' + m + ')">'
+                          + stayLabel(m) + '</span>').join('')
                 +   '</div>'
                 + '</div>'
                 + (e.tip ? '<p class="tip">💡 ' + esc(e.tip) + '</p>' : '')
@@ -410,6 +410,15 @@
     // The book already SHOWED a visit length; now it asks for one too, so the
     // number it prints comes from travelers instead of a guess. Same community
     // pipeline the planner feeds (/api/visit-time), keyed city|name.
+    // Somewhere you spend three days is not "4 hours". Reading the answer back
+    // in days rather than a large minute count is what makes the long options
+    // usable at all.
+    function stayLabel(m){
+        if (m < 60)   return m + ' min';
+        if (m < 1440) return (m / 60) + (m === 60 ? ' hour' : ' hours');
+        const d = m / 1440;
+        return d + (d === 1 ? ' day' : ' days');
+    }
     function openStay(i){
         const box = document.getElementById('sopt_' + i);
         if (box) box.classList.toggle('on');
