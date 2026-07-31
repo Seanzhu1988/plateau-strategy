@@ -828,7 +828,35 @@
         refresh();
         return true;
     }
-    function tap(i){ addToRoute(i); }
+    // Tap a pin to add it; tap the same pin again to take it out. Removing a stop
+    // from the middle replays the rest so every later arrival re-times — and empty
+    // days collapse rather than leaving a gap.
+    function tap(i){
+        if (st.visited.has(i)) removeStopFromRoute(i);
+        else addToRoute(i);
+    }
+    function removeStopFromRoute(i){
+        const name = places[i] ? places[i].name : 'that stop';
+        const chain = st.route.filter(r => r.i !== i).map(r => ({ i: r.i, day: r.day }));
+        // renumber days so removing the only stop on a day doesn't leave Day 2 empty
+        const days = [...new Set(chain.map(s => s.day))].sort((a, b) => a - b);
+        const dayMap = {}; days.forEach((d, idx) => { dayMap[d] = idx + 1; });
+
+        st.route = []; st.visited = new Set();
+        st.day = 1; st.now = parseTime($('leaveAt').value) || 570; st.pos = -1;
+        let curDay = 1;
+        retiming = true;
+        chain.forEach(s => {
+            if (!places[s.i]) return;
+            const target = dayMap[s.day] || 1;
+            while (curDay < target) { st.day++; st.now = DAY_START; st.pos = -1; curDay = st.day; }
+            addToRoute(s.i);
+        });
+        retiming = false;
+        say('Removed ' + name + ' — the rest of the day re-timed.');
+        jarvisSay('Removed <b>' + escj(name) + '</b> — I\'ve re-timed the rest.');
+        refresh();
+    }
 
     // The sketch's core: type a destination, press Add, it joins the chain (D1→D2→…).
     async function addDestination(){
@@ -974,7 +1002,7 @@
             // Leaflet renders tooltip strings as HTML — community names must be escaped
             const nm = escj(p.name);
             let cls, tip;
-            if (st.visited.has(i)) { cls = 'tp-vis'; tip = nm + ' — in your trip'; }
+            if (st.visited.has(i)) { cls = 'tp-vis'; tip = nm + ' — in your trip · tap again to remove'; }
             else if (!st.cats.has(p.cat)) { cls = 'tp-catoff'; tip = nm + ' — category off'; }
             else {
                 const f = feasibility(i);

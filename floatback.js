@@ -173,9 +173,54 @@
     }
     function wake() { btn.classList.add('shown'); armHold(); }   // also used after collapse()
 
+    // The paint dot must never land on an interactive map — idling over a map is
+    // normal (reading it), and a dot appearing under the cursor there steals the
+    // click. Keep it to the page's own space.
+    function overMap(x, y) {
+        var el = document.elementFromPoint(x, y);
+        while (el && el !== document.body) {
+            if (el.id === 'map' || (el.classList && (el.classList.contains('leaflet-container')
+                || el.classList.contains('map-searchbar') || el.classList.contains('map-layers')
+                || el.classList.contains('map-actions') || el.classList.contains('map-cats')
+                || el.classList.contains('map-legend')))) return true;
+            el = el.parentElement;
+        }
+        return false;
+    }
+
+    // Somewhere clear of the map for the dot to sit. On a full-width map page the
+    // ordinary "beside the cursor" spot is always over the map, so instead of
+    // vanishing the dot PARKS in the nearest margin and waits there.
+    function parkSpot() {
+        var m = document.getElementById('map');
+        var vw = window.innerWidth, vh = window.innerHeight;
+        if (!m) return null;
+        var b = m.getBoundingClientRect();
+        if (b.left > 74) return { x: Math.round(b.left / 2), y: Math.round(vh * 0.7) };      // left margin
+        if (vw - b.right > 74) return { x: Math.round((vw + b.right) / 2), y: Math.round(vh * 0.7) };
+        if (vh - b.bottom > 74) return { x: 46, y: Math.round(b.bottom + (vh - b.bottom) / 2) };
+        if (b.top > 74) return { x: 46, y: Math.round(b.top / 2) };
+        return null;
+    }
+
     function appear() {
-        // beside the cursor, clamped so a full burst always fits on-screen
-        cur = clampCenter(mx + 46, my + 46);
+        // Reading a map is exactly when you idle. The dot never lands on it — it
+        // follows the cursor only in the page's own space, and parks in the margin
+        // whenever the cursor (or its natural spot) is over the map.
+        var spot = null;
+        if (!overMap(mx, my)) {
+            var offsets = [[46, 46], [-46, 46], [46, -46], [-46, -46]];
+            for (var i = 0; i < offsets.length; i++) {
+                var t = clampCenter(mx + offsets[i][0], my + offsets[i][1]);
+                if (!overMap(t.x, t.y)) { spot = t; break; }
+            }
+        }
+        if (!spot) {
+            var p = parkSpot();
+            if (!p || overMap(p.x, p.y)) { btn.classList.remove('shown'); return; }
+            spot = p;
+        }
+        cur = spot;
         btn.style.left = (cur.x - 25) + 'px';
         btn.style.top = (cur.y - 25) + 'px';
         wake();
@@ -186,6 +231,8 @@
         if (expanded) return;                           // the burst is pinned
         clearTimeout(showT);
         if (btn.classList.contains('shown')) {
+            // parked in the margin while the cursor works the map — leave it be
+            if (overMap(mx, my)) { armHold(); return; }
             // reaching for the dot? keep it; real movement elsewhere? it disappears
             if (Math.hypot(mx - cur.x, my - cur.y) < 130) { armHold(); return; }
             btn.classList.remove('shown');
