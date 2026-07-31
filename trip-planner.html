@@ -2667,12 +2667,21 @@
     // floor/level, fee, hours, wheelchair access). Fetches are viewport-bounded,
     // zoom-guarded, debounced and cached so the free API is never hammered.
     const AMENITY_CATS = {
-        // The 📍 "Attractions nearby" layer was removed. The board already draws
-        // every attraction as a numbered pin, so this laid a second set of
-        // attraction pins on top of the first — the same places twice, in two
-        // different shapes. Discovery still works through search and the other
-        // layers, which is where it belongs.
+        // A city board carries 10-12 curated places, which is not a day's worth
+        // of choices — so this layer is what actually fills the map. It was
+        // removed once for laying a second pin on places already on the board;
+        // the fix was to skip those (see the dedupe in fetchAmenity), not to
+        // drop the layer, which left the map emptier than its whole purpose.
         //
+        // Scenic views live here rather than in a chip of their own: a viewpoint
+        // IS an attraction, and every candidate green measured under ΔE 15
+        // against this teal — two layers nobody could tell apart.
+        attractions: { emoji: '📍', color: '#0d9488', min: 12, max: 160, label: 'Attractions & scenic views',
+                      q: 'nwr["tourism"~"^(attraction|museum|gallery|viewpoint|artwork|theme_park|zoo|aquarium)$"]["name"];'
+                       + 'nwr["historic"~"^(monument|memorial|castle|ruins|archaeological_site)$"]["name"];'
+                       + 'nwr["natural"~"^(peak|waterfall|beach|cave_entrance)$"]["name"];'
+                       + 'nwr["leisure"~"^(park|garden|nature_reserve)$"]["name"]',
+                      fallbackName: 'Attraction', addable: true, rateable: true },
         // Where you're staying anchors the whole day, so hotels are both addable
         // and startable: tap one and the day re-times from your hotel door.
         // Pink was measured against the other six layer colours rather than
@@ -2706,8 +2715,8 @@
                       q: 'nwr["amenity"="toilets"]', fallbackName: 'Public restroom' },
         food:       { emoji: '🍽️', color: '#d97706', min: 15, max: 150, label: 'Food & coffee',
                       q: 'nwr["amenity"~"^(restaurant|cafe|fast_food)$"]', fallbackName: 'Restaurant', rateable: true },
-        essentials: { emoji: '💊', color: '#7c3aed', min: 14, max: 120, label: 'Pharmacy · ATM · Water',
-                      q: 'nwr["amenity"~"^(pharmacy|atm|drinking_water)$"]', fallbackName: 'Essential' },
+        essentials: { emoji: '💊', color: '#7c3aed', min: 14, max: 120, label: 'Charging · Pharmacy · ATM · Water',
+                      q: 'nwr["amenity"~"^(pharmacy|atm|drinking_water|charging_station)$"]', fallbackName: 'Essential' },
     };
     const amenityLayers = {}, amenityCache = {}, amenityOn = {}, amenityStar = {};
     // ---------- ⭐ popular here: attractions this board does not know ----------
@@ -3219,10 +3228,23 @@
         amenityLayers[cat].clearLayers();
         const minStar = amenityStar[cat] || 0;
         let hiddenUnrated = 0, shownRated = 0;
+        let hiddenDupes = 0;
         elements.forEach(el => {
             const lat = el.lat !== undefined ? el.lat : (el.center || {}).lat;
             const lon = el.lon !== undefined ? el.lon : (el.center || {}).lon;
             if (lat === undefined || lon === undefined) return;
+            // Anything already on the board is skipped. Showing it again was
+            // what made this layer feel like clutter — the same Times Square as
+            // a numbered board pin AND a map pin. Matched by name, or by being
+            // within ~150m of a board place, since the two datasets rarely agree
+            // on a name exactly ("The Met Museum" vs "Metropolitan Museum of Art").
+            const nmRaw = ((el.tags || {}).name || '').trim().toLowerCase();
+            const dupe = places.some(p => {
+                const pn = (p.name || '').trim().toLowerCase();
+                if (nmRaw && pn && (pn === nmRaw || pn.indexOf(nmRaw) === 0 || nmRaw.indexOf(pn) === 0)) return true;
+                return havKm({ lat: lat, lon: lon }, p) < 0.15;
+            });
+            if (dupe) { hiddenDupes++; return; }
             if (minStar) {
                 // stars are OUR community's, keyed city|name — the map data has none
                 const nm = ((el.tags || {}).name || '').toLowerCase();
@@ -3240,6 +3262,8 @@
         });
         if (note) {
             if (!elements.length) noteFor(cat, 'no ' + cfg.emoji + ' mapped around here yet');
+            else if (hiddenDupes && !minStar) noteFor(cat, cfg.emoji + ' ' + (elements.length - hiddenDupes)
+                + ' more · ' + hiddenDupes + ' already on your board');
             else if (minStar) noteFor(cat, cfg.emoji + ' ' + shownRated + ' rated ' + minStar + '★+'
                 + (hiddenUnrated ? ' · ' + hiddenUnrated + ' unrated — tap a pin to rate' : ''));
             else noteFor(cat, '');
