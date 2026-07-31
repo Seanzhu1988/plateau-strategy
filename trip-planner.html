@@ -21,6 +21,8 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
         .act.ride-wanted { background: #fff7ed; border-color: #fdba74; color: #9a3412; }
+        .am-pin.pop-pin { border-color: #f59e0b; background: #fffbeb; }
+        .pop-photo { width: 100%; height: 96px; object-fit: cover; border-radius: 7px; margin-bottom: 0.4rem; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #f1f5f9; color: #1f2937; min-height: 100vh; }
@@ -2564,6 +2566,91 @@
                       q: 'nwr["amenity"~"^(pharmacy|atm|drinking_water)$"]', fallbackName: 'Essential' },
     };
     const amenityLayers = {}, amenityCache = {}, amenityOn = {}, amenityStar = {};
+    // ---------- ⭐ popular here: attractions this board does not know ----------
+    // The map's own data says where things are; Wikidata and Wikipedia say which
+    // of them people actually travel to see. Anything already on the board is
+    // left out, so this only ever shows places that are NEW to the traveller —
+    // discovery, not a second copy of the pins already on screen.
+    let popularLayer = null, popularOn = false, popularCache = {}, popularSeq = 0;
+    const popularPending = {};
+    function popularKey(){ const c = map.getCenter(); return c.lat.toFixed(2) + ',' + c.lng.toFixed(2); }
+    function onBoard(name){
+        const n = String(name || '').toLowerCase();
+        return places.some(p => {
+            const q = (p.name || '').toLowerCase();
+            return q === n || (q.length > 6 && n.indexOf(q) >= 0) || (n.length > 6 && q.indexOf(n) >= 0);
+        });
+    }
+    async function togglePopular(){
+        popularOn = !popularOn;
+        const b = document.getElementById('popularBtn');
+        if (b) b.classList.toggle('on', popularOn);
+        if (!popularLayer) popularLayer = L.layerGroup();
+        if (!popularOn) { map.removeLayer(popularLayer); noteFor('popular', ''); return; }
+        popularLayer.addTo(map);
+        const key = popularKey();
+        let list = popularCache[key];
+        if (!list) {
+            noteFor('popular', 'finding the places people travel here to see…');
+            try {
+                const ctr = map.getCenter();
+                const r = await fetch('/api/attractions?lat=' + ctr.lat.toFixed(4)
+                        + '&lon=' + ctr.lng.toFixed(4) + '&radius_km=8&limit=40');
+                const j = await r.json();
+                if (!j.ok) throw new Error(j.error || 'unavailable');
+                list = popularCache[key] = j.places || [];
+            } catch (e) {
+                noteFor('popular', 'could not reach the attraction lists just now');
+                return;
+            }
+        }
+        if (!popularOn) return;
+        popularLayer.clearLayers();
+        const fresh = list.filter(p => !onBoard(p.name));
+        fresh.forEach(p => {
+            const tok = 'pop' + (++popularSeq);
+            popularPending[tok] = p;
+            const mk = L.marker([p.lat, p.lon], { icon: L.divIcon({ className: '',
+                iconSize: [24, 24], iconAnchor: [12, 12],
+                html: '<div class="am-pin pop-pin">⭐</div>' }) });
+            mk.bindPopup(popularPopup(tok), { maxWidth: 260 });
+            popularLayer.addLayer(mk);
+        });
+        noteFor('popular', fresh.length
+            ? '⭐ ' + fresh.length + ' more places people come here for — tap one to read about it'
+            : '⭐ your board already has the well-known ones here');
+    }
+    function popularPopup(tok){
+        const p = popularPending[tok];
+        const readers = p.views_per_day >= 100 ? Math.round(p.views_per_day) + ' people look this up every day'
+                      : (p.languages >= 15 ? 'written about in ' + p.languages + ' languages' : '');
+        return '<div class="am-pop">'
+             + (p.photo ? '<img src="' + escj(p.photo) + '" alt="" class="pop-photo">' : '')
+             + '<b>⭐ ' + escj(p.name) + '</b>'
+             + (p.desc ? '<div class="d">' + escj(p.desc) + '</div>' : '')
+             + (readers ? '<div class="d" style="color:#0f766e">' + readers + '</div>' : '')
+             + '<button class="am-add" onclick="addPopular(\'' + tok + '\')">＋ Add to my route</button>'
+             + '<div class="d"><a href="' + escj(p.url) + '" target="_blank" rel="noopener">read more</a>'
+             + ' · source: Wikipedia</div></div>';
+    }
+    function addPopular(tok){
+        const p = popularPending[tok]; if (!p) return;
+        const nm = String(p.name).slice(0, 60);
+        const existing = places.findIndex(q => (q.name || '').toLowerCase() === nm.toLowerCase());
+        map.closePopup();
+        if (existing >= 0) { addToRoute(existing); return; }
+        const np = { name: nm, lat: p.lat, lon: p.lon, close: 1020, visit: 60,
+                     cat: 'culture', hoursKnown: false };
+        places.push(np);
+        rememberPlace(np, { class: 'wikipedia', type: 'attraction' });
+        rebuildMarkers(); renderPlaces(); savePlaces();
+        addToRoute(places.length - 1);
+        fetchMatrix();
+        jarvisSay('Added <b>' + escj(nm) + '</b> — one of the places people travel here for. '
+            + 'Its opening time is a guess until someone confirms it.');
+        togglePopular(); togglePopular();       // redraw without the one just added
+    }
+
     // ---------- live road traffic ----------
     // Real-time traffic is the one map layer that cannot be free and keyless, so
     // it appears only once a key is configured. Red means slow: the colours are
@@ -2580,6 +2667,16 @@
     }).catch(() => {});
     // The traffic chip joins the same icon row as the other layers, so the map
     // keeps one place to turn things on rather than two.
+    function addPopularToggle(){
+        const row = document.querySelector('.map-layers .achip-row');
+        if (!row || document.getElementById('popularBtn')) return;
+        const b = document.createElement('div');
+        b.className = 'achip'; b.id = 'popularBtn';
+        b.title = 'Places people travel here to see, that are not on your board yet';
+        b.textContent = '⭐';
+        b.onclick = togglePopular;
+        row.insertBefore(b, row.firstChild);
+    }
     function addTrafficToggle(){
         const row = document.querySelector('.map-layers .achip-row');
         if (!row || document.getElementById('trafficBtn')) return;
@@ -3091,6 +3188,7 @@
     try { if (localStorage.getItem('book_open') === '1') document.getElementById('bookCard').classList.add('open'); } catch (e) {}
 
     buildLayerControl();                          // the switch lives ON the map
+    addPopularToggle();                           // ⭐ discovery sits first in the row
     syncAmenities();                              // restore last visit's choices
     startMarker = L.marker(BOOT_CITY.start, {
         draggable: true,

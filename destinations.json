@@ -597,6 +597,23 @@
    "price": null,
    "desc": "The 1636 college green across the river, ringed by red brick halls, with Harvard Square's bookshops and cafes at the gate.",
    "tip": "Take the Red Line to Harvard rather than driving — Cambridge parking is genuinely difficult. Student-led tours leave from the visitor center and are free."
+  },
+  {
+   "name": "TD Garden",
+   "city": "boston",
+   "type": "attraction",
+   "cat": "culture",
+   "price": null,
+   "close": 1020,
+   "visit": 60,
+   "lat": 42.36639,
+   "lon": -71.06222,
+   "desc": "Attraction.",
+   "tip": "",
+   "source": "user",
+   "auto_desc": true,
+   "found_via": "planner",
+   "added_at": "2026-07-30T22:49:36"
   }
  ]
 }
