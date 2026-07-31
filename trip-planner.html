@@ -2390,10 +2390,13 @@
         // A cached answer comes back in milliseconds. If it doesn't, our server is
         // out asking the public servers itself, so we start asking them too and
         // keep whichever replies first — the visitor never waits on both in turn.
-        let started = false;
+        let started = false, timer = null;
         const alsoDirect = new Promise((resolve, reject) => {
-            setTimeout(() => { started = true; overpassDirect(q).then(resolve, reject); }, 8000);
+            timer = setTimeout(() => { started = true; overpassDirect(q).then(resolve, reject); }, 8000);
         });
+        // If the cache answers first, cancel the backup so we never trouble the
+        // public servers for something we already had.
+        viaServer.then(() => clearTimeout(timer), () => {});
         return Promise.any([viaServer, alsoDirect])
             .catch(() => started ? Promise.reject(new Error('map data servers are busy')) : overpassDirect(q));
     }
