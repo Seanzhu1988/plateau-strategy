@@ -41,6 +41,43 @@
           "areaServed": { "@type": "Place", "name": "Seattle, Washington, United States" }
         },
         {
+          "_comment": "This is the node Google's local search reads, and what a Google Business Profile gets matched against. Name, phone and service area here must match the Business Profile character for character, or verification gets harder. No streetAddress on purpose: this is a service-area business — the car comes to you, there is no counter to walk into.",
+          "@type": "LocalBusiness",
+          "additionalType": "https://schema.org/TaxiService",
+          "@id": "https://plateaustrategy.io/#localbusiness",
+          "name": "Plateau Strategy Solution Lab",
+          "url": "https://plateaustrategy.io/",
+          "image": "https://plateaustrategy.io/plateau-logo.png",
+          "logo": "https://plateaustrategy.io/plateau-logo.png",
+          "parentOrganization": { "@id": "https://plateaustrategy.io/#org" },
+          "description": "Flat-rate Tesla airport transfers and car service in the Seattle area, including Seattle-Tacoma International Airport.",
+          "priceRange": "$$",
+          "currenciesAccepted": "USD",
+          "areaServed": [
+            { "@type": "City", "name": "Seattle", "containedInPlace": { "@type": "State", "name": "Washington" } },
+            { "@type": "Airport", "name": "Seattle-Tacoma International Airport", "iataCode": "SEA" }
+          ],
+          "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            "opens": "00:00",
+            "closes": "23:59"
+          },
+          "makesOffer": {
+            "@type": "Offer",
+            "name": "Flat-rate SeaTac airport transfer",
+            "price": "75",
+            "priceCurrency": "USD",
+            "url": "https://plateaustrategy.io/book",
+            "itemOffered": { "@type": "Service", "name": "Tesla airport transfer", "serviceType": "Airport shuttle service" }
+          },
+          "potentialAction": {
+            "@type": "ReserveAction",
+            "target": { "@type": "EntryPoint", "urlTemplate": "https://plateaustrategy.io/book" },
+            "result": { "@type": "Reservation", "name": "Ride booking" }
+          }
+        },
+        {
           "@type": "Service",
           "name": "Tesla ride and airport transfer service",
           "provider": { "@id": "https://plateaustrategy.io/#org" },
@@ -1721,6 +1758,30 @@
         -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
       }
       .psx-foot-brand p{color:#8c99ad;font-size:.92rem;line-height:1.62;max-width:34ch;margin:0;}
+
+      /* ---- contact block ----------------------------------------
+         A car service that can't be reached is an ad with nowhere to
+         land. This sits in the brand column rather than a fifth
+         column so it stays first in the footer's reading order and
+         first in the markup a crawler sees.
+         --------------------------------------------------------- */
+      .psx-foot-contact{
+        display:flex;flex-direction:column;gap:.5rem;
+        margin-top:.35rem;padding-top:1rem;
+        border-top:1px solid rgba(255,255,255,.08);
+        max-width:34ch;
+      }
+      .psx-foot-contact a,.psx-foot-contact span{
+        color:#a8b4c8;font-size:.93rem;line-height:1.45;
+        display:flex;align-items:baseline;gap:.55rem;
+      }
+      .psx-foot-contact a{font-weight:600;color:#dbe4f3;}
+      .psx-foot-contact a:hover{color:#fff;}
+      .psx-foot-contact b{
+        flex:0 0 auto;width:1.15em;text-align:center;
+        font-weight:400;opacity:.75;font-size:.95em;
+      }
+      .psx-foot-contact .psx-foot-note{color:#7b8798;font-size:.85rem;}
       .psx-foot h4{
         color:#e7ecf5;font-size:.74rem;font-weight:600;letter-spacing:.14em;
         text-transform:uppercase;margin:0 0 1rem;
@@ -2358,6 +2419,20 @@
                             <span>Plateau Strategy</span>
                         </div>
                         <p>An integrated business ecosystem — transportation, real estate and finance in one closed loop, built so revenue compounds instead of leaking away.</p>
+
+                        <!-- Contact. Whatever goes here must match the Google
+                             Business Profile word for word — same business name,
+                             same phone — or verification gets harder and the two
+                             listings compete instead of reinforcing each other.
+                             The phone and email lines are added once the business
+                             number is chosen; a Seattle number, not a personal
+                             mobile. See ADVERTISING.md. -->
+                        <div class="psx-foot-contact">
+                            <span><b>📍</b>Serving Seattle &amp; Seattle–Tacoma International (SEA)</span>
+                            <span><b>🕑</b>Rides available 24/7, by reservation</span>
+                            <a href="/book"><b>🚘</b>Book a ride — $75 flat to SeaTac</a>
+                            <span class="psx-foot-note">Service-area business — we come to you, there's no counter to visit.</span>
+                        </div>
                     </div>
 
                     <div>

@@ -97,6 +97,164 @@ the booking was Thursday.
 
 ---
 
+## 0.5 The identity the advertising points at
+
+Before any listing or campaign: **the business has to be reachable and it has to
+describe itself the same way everywhere.** Google matches a Business Profile
+against the website. If the name, phone or service area differ, verification gets
+harder and the two work against each other instead of reinforcing.
+
+Where it stood before this section was written: the public site had **no phone
+number and no contact email anywhere a customer could find**. The only real
+contact details in the whole codebase were inside `partners.html` — in a
+copy-paste *sales script* aimed at hotels. Someone who wanted a 5am airport
+pickup had no way to call.
+
+That is a bigger hole than any ad budget. Fixed now:
+
+- **`LocalBusiness` schema** on the landing page — the node Google's local search
+  actually reads. Service area (Seattle + SEA), 24/7 hours, the $75 flat rate as
+  a real `Offer`, and a `ReserveAction` pointing at `/book`. Deliberately **no
+  `streetAddress`**: this is a service-area business, the car comes to you.
+- **Footer contact block** — service area, hours, and the flat rate, in markup a
+  crawler reads on the first page it fetches.
+
+**Still open — needs a decision, not code:**
+
+- [ ] A **business phone number**, published on the site and on the Business
+      Profile. It should be a **Seattle (206/425/253) number**, not a personal
+      mobile and not an out-of-area one. Google treats an area code that doesn't
+      match the service area as a signal worth a second look, and a 917 number on
+      a Seattle listing invites exactly that. A Google Voice 206 number is free
+      and takes ten minutes.
+- [ ] A **business email** — `hello@plateaustrategy.io` or similar on the domain
+      that's already owned. A gmail.com address on a car-service listing costs
+      conversions for no reason, and the domain is already paid for.
+
+Both slots are marked in the footer markup and the `LocalBusiness` node.
+
+### The canonical description — use this everywhere, unchanged
+
+> **Plateau Strategy Solution Lab**
+> Flat-rate Tesla airport transfers and car service in the Seattle area,
+> including Seattle–Tacoma International Airport (SEA). $75 flat to SeaTac.
+> Available 24/7 by reservation.
+
+Same words on the Business Profile, the website, and any directory listing.
+Consistency is most of what "local SEO" actually is.
+
+---
+
+## 0.75 Google Business Profile — the filing, field by field
+
+Free, and the highest-intent traffic this business can get. **Not instant** —
+verification usually takes 5–14 days, so file it today even though the paid test
+runs first. Start at `business.google.com`.
+
+| Field | Value |
+|---|---|
+| Business name | `Plateau Strategy Solution Lab` (exactly — no keywords appended; keyword-stuffed names get listings suspended) |
+| Category (primary) | **Car service** — or `Airport shuttle service` if the intent is mostly SEA runs |
+| Category (secondary) | `Limousine service`, `Car rental agency` |
+| Address | **Hide it.** Choose "I deliver goods and services to my customers" — this is a service-area business |
+| Service area | Seattle, Bellevue, and any city actually served. Do not list cities you would decline |
+| Phone | The new Seattle business number — same digits as the website footer |
+| Website | `https://plateaustrategy.io/?utm_source=google_business` |
+| Hours | Open 24 hours, all 7 days — matches the site's 24/7 claim |
+| Services | `SeaTac airport transfer — $75 flat`, `Tesla rental for rideshare drivers` |
+| Description | The canonical paragraph above |
+| Photos | **The single highest-leverage field.** Real photos of the actual Tesla, interior and exterior, in daylight. Listings with photos get materially more clicks than listings without. Stock images are worse than none |
+
+One warning specific to this business: **transportation listings get suspended
+more than most categories.** Do not append keywords to the name, do not list a
+service area you can't cover, and don't use a virtual-office address. The rules
+are boring and enforcement is automated.
+
+---
+
+## 0.9 The first paid test — ready to paste
+
+$10/day × 7 days ≈ **$70**. The purpose is not profit, it's finding out whether
+the click-to-booking path works at all.
+
+**Campaign type:** Search only. Turn off Display Network and Search Partners —
+Google enables them by default and they'll eat the budget on untargeted
+impressions.
+
+**Location:** Seattle + Bellevue + Tukwila + SeaTac, radius-targeted. Set it to
+*"Presence: people in or regularly in your targeted locations"* — the default
+also includes people merely *searching about* the area, which means paying for
+clicks from other states.
+
+**Keywords** — exact and phrase match only. Broad match will spend the whole
+budget on people shopping for a Tesla to buy:
+
+```
+[seatac airport transfer]
+[seatac airport car service]
+[airport shuttle to seatac]
+"private car to seatac airport"
+"seattle airport transfer service"
+"tesla car service seattle"
+[black car service seattle airport]
+```
+
+**Negative keywords** — add these before launching, not after:
+
+```
+-job -jobs -hiring -driver -career -salary
+-free -cheap -coupon
+-buy -sale -for sale -price of -lease
+-uber -lyft -parking -flight -flights
+-rental car -rent a car -car rental
+```
+
+`-driver` and `-rental car` matter twice over here: the site *also* recruits
+drivers and rents Teslas, so those searches would land on a rider ad and convert
+as nothing.
+
+**Ad copy** — every claim below is already true on the site:
+
+*Headlines (30 char max each):*
+```
+SeaTac Airport Transfer
+$75 Flat Rate to SeaTac
+Tesla Airport Car Service
+Book in Under 2 Minutes
+Available 24/7, Seattle
+No Surge Pricing, Ever
+```
+
+*Descriptions (90 char max each):*
+```
+Flat $75 to SeaTac — the price you're quoted is the price you pay. No surge, no meter.
+Ride to the airport in a Tesla. Reserve 24/7, flat rate, Seattle area. Book online now.
+```
+
+*Final URL:* `https://plateaustrategy.io/?utm_source=google_ads`
+
+**"No surge pricing"** is the strongest line on the list. It's the specific pain
+of the incumbent, and a flat rate is the actual differentiator — lead with it.
+
+**Add a call extension** once the business number exists. At 5am, a phone call
+converts better than a form, and call extensions are free to add.
+
+### What "it worked" looks like after 7 days
+
+Read Archive → 🎯 Where visitors came from, row `google_ads`:
+
+| Result | What it means | What to do |
+|---|---|---|
+| No clicks | Keywords too narrow, or bid too low | Widen geography before widening keywords |
+| Clicks, no bookings | The ad works, the landing page doesn't | Stop. Fix the page. More spend won't help |
+| ≥1 booking | The path works end to end | Compute cost per booking against the $75 fare before scaling |
+
+$70 buys roughly 15–30 clicks in this category. That is enough to tell whether
+the page converts at all, and not enough to measure a rate precisely — don't
+over-read a single week.
+
+---
+
 ## 1. Two different things both called "advertising"
 
 | | What it is | When |
