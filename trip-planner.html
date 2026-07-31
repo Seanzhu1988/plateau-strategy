@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
         .act.ride-wanted { background: #fff7ed; border-color: #fdba74; color: #9a3412; }
+        .tap-hint { font-size: 0.72rem; color: #94a3b8; line-height: 1.25; max-width: 190px; }
         .am-pin.pop-pin { border-color: #f59e0b; background: #fffbeb; }
         .pop-photo { width: 100%; height: 96px; object-fit: cover; border-radius: 7px; margin-bottom: 0.4rem; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -561,8 +562,9 @@
             <div class="chips" id="chips"></div>
 
             <div class="build-row">
-                <button type="button" class="from loc-btn" id="curLocBtn" onclick="detectLocation()" title="Use my exact GPS location">📍 <span id="curLocLabel">Set current location</span></button>
-                <button type="button" class="btn ghost startedit" onclick="toggleStartEntry()" title="Type or change your starting address">✎ Set / change start</button>
+                <button type="button" class="from loc-btn" id="curLocBtn" onclick="startPointTap()"
+                        title="Tap once to type a starting address · tap twice to use your current location">⌂ <span id="curLocLabel">Starting point</span></button>
+                <span class="tap-hint">tap once to type an address · tap twice for your current location</span>
                 <span class="to">→</span>
                 <input id="destAdd" placeholder="Type a destination and press Add — or tap a pin on the map"
                        autocomplete="off" onkeydown="if(event.key==='Enter')addDestination()">
@@ -572,7 +574,7 @@
                 <input id="startAddr" placeholder="Type your starting address, hotel or airport…"
                        autocomplete="off" onkeydown="if(event.key==='Enter')applyStartAddress()">
                 <button class="btn add" onclick="applyStartAddress()">Set start</button>
-                <span class="start-hint">or drag the black ⌂ pin on the map</span>
+                <span class="start-hint">or drag the black ⌂ pin on the map · tap ⌂ twice for your current location</span>
             </div>
             <div id="curLocInfo" class="loc-info"></div>
             <div id="farNote" class="far-note" style="display:none;"></div>
@@ -2006,7 +2008,7 @@
                 fetchMatrix(); refresh();
                 resolve(true);
             }, err => {
-                setLocLabel('Set current location');
+                setLocLabel('Starting point');
                 const denied = err && err.code === 1;
                 setLocInfo(denied
                     ? 'Location permission was blocked — drag the black pin to your spot, or set the pickup on the booking form.'
@@ -2016,6 +2018,35 @@
         });
     }
     const useMyLocation = detectLocation;    // the toolbar button uses the same accurate path
+
+    // ---------- the starting point: one control, two taps ----------
+    // Two separate buttons for "type it" and "use my GPS" made travellers guess
+    // which one they wanted. There is now one starting-point control:
+    //   tap once  → type an address, hotel or airport
+    //   tap twice → use your current location
+    // The single tap waits out the double-tap window before acting, so a quick
+    // second tap always wins. The instruction is printed next to the control and
+    // repeated inside the address box — nobody should have to discover this.
+    const DOUBLE_TAP_MS = 300;
+    let startTapTimer = null;
+    function startPointTap(){
+        if (startTapTimer) {                       // second tap inside the window
+            clearTimeout(startTapTimer); startTapTimer = null;
+            const box = $('startEntry'); if (box) box.style.display = 'none';
+            say('Finding your current location…');
+            useMyLocation();
+            return;
+        }
+        startTapTimer = setTimeout(() => {
+            startTapTimer = null;
+            openStartEntry();
+        }, DOUBLE_TAP_MS);
+    }
+    function openStartEntry(){
+        const box = $('startEntry'); if (!box) return;
+        box.style.display = 'flex';
+        const i = $('startAddr'); if (i) { i.focus(); i.select(); }
+    }
 
     // Best pickup address we can give the reservation, in priority order:
     // a detected GPS address → reverse-geocode of wherever the start pin sits → coords.
@@ -2283,11 +2314,9 @@
     // GPS covers "I'm here now", but a traveler planning from home needs to say
     // where they'll START — a hotel, an airport, a friend's address. Dragging the
     // pin worked; typing it did not, so this fills that gap.
-    function toggleStartEntry(){
+    function toggleStartEntry(){          // kept: the address box also closes itself
         const box = $('startEntry'); if (!box) return;
-        const open = box.style.display === 'none';
-        box.style.display = open ? 'flex' : 'none';
-        if (open) { const i = $('startAddr'); if (i) { i.focus(); i.select(); } }
+        if (box.style.display === 'none') openStartEntry(); else box.style.display = 'none';
     }
     // ONE writer for the trip origin. The black pin is its view — never a second
     // truth — so drag, GPS and typed entry can no longer disagree about where the
@@ -3136,8 +3165,7 @@
             d.innerHTML =
                   '<button onclick="recenterMap()" title="Lost? Fit my whole trip back on screen">⊙</button>'
                 + '<button id="wideMapBtn" onclick="toggleWideMap()" title="Full-width map">⤢</button>'
-                + '<button onclick="useMyLocation()" title="Start from my GPS location">📍</button>'
-                + '<button onclick="toggleStartEntry()" title="Type your starting address">✎</button>'
+                + '<button onclick="startPointTap()" title="Starting point — tap once to type an address, tap twice for your current location">⌂</button>'
                 + '<button onclick="undoStop()" title="Undo the last stop">↩</button>'
                 + '<button onclick="nextDay()" title="Start the next day">➡</button>'
                 + '<button onclick="confirmReset()" title="Clear the trip">⟲</button>';
