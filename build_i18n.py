@@ -7,7 +7,12 @@ PROJ = "/Users/xiaojunzhu/Claude/Projects/Plateau Strategy"
 
 # ---- pages whose visible text we translate (add more here to extend coverage) ----
 COVERED = ["landing-page.html", "booking.html", "renter.html", "agent.html",
-           "dispatch.html", "partners.html", "books.html", "articles.html"]
+           "dispatch.html", "partners.html", "books.html", "articles.html",
+           # second pass: the free tools and everything else a visitor can open
+           "trip-planner.html", "trips.html", "guide-studio.html",
+           "destination-book.html", "road-trip.html", "favorite-place.html",
+           "board.html", "archive.html", "driver.html",
+           "deflator.html", "factor-clock.html"]
 
 class _Extract(HTMLParser):
     def __init__(s):
@@ -424,6 +429,14 @@ TR = {
 "Your standing against the Driver Agreement. The system flags issues automatically, and anything logged by dispatch appears here too. Clear all issues to keep accepting rides.": ["您在《司机协议》下的合规状况。系统会自动标记问题，调度中心记录的任何情况也会显示在此。请解决所有问题，以便继续接单。","Tu situación respecto al Acuerdo del conductor. El sistema detecta los problemas automáticamente, y todo lo que registre la central también aparece aquí. Resuelve todos los problemas para seguir aceptando viajes.","운전자 계약서에 대한 준수 상태입니다. 시스템이 문제를 자동으로 표시하며, 배차에서 기록한 사항도 여기에 표시됩니다. 계속 운행을 수락하려면 모든 문제를 해결하세요.","Tình trạng tuân thủ Thỏa thuận tài xế của bạn. Hệ thống tự động gắn cờ các vấn đề, và mọi ghi nhận từ điều phối cũng hiện ở đây. Hãy xử lý hết các vấn đề để tiếp tục nhận chuyến."],
 }
 
+# Second-pass translations live in their own file so this one stays readable.
+try:
+    from i18n_extra import EXTRA, EXTRA_SKIP
+except ImportError:
+    EXTRA, EXTRA_SKIP = {}, set()
+TR.update(EXTRA)
+SKIP |= EXTRA_SKIP
+
 # ---- coverage report ----
 missing = [s for s in strings if s not in TR and s not in SKIP]
 unknown = [k for k in TR if k not in strings]
@@ -433,11 +446,14 @@ print("skipped        :", len([s for s in strings if s in SKIP]))
 if missing:
     print("\n!! MISSING (%d):" % len(missing))
     for s in missing: print("   ", repr(s))
+# A MISSING key is a defect: a reader sees English where a translation should
+# be. An UNKNOWN key is only an unused entry left behind when page copy changed
+# — harmless, and worth keeping in case the wording comes back. So the build
+# stops for missing and merely mentions unknown.
 if unknown:
-    print("\n!! UNKNOWN KEYS not on page (%d):" % len(unknown))
-    for s in unknown: print("   ", repr(s))
-if missing or unknown:
-    print("\nNOT writing i18n.js until keys match.")
+    print("\n(%d dictionary entries no longer appear on any page — kept, harmless)" % len(unknown))
+if missing:
+    print("\nNOT writing i18n.js until every visible line has a translation.")
     sys.exit(1)
 
 # ---- build DICT + engine ----
