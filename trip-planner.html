@@ -44,10 +44,40 @@
 
         /* Sean's layout: content on the LEFT, the map large on the RIGHT */
         .layout { display: grid; grid-template-columns: 380px minmax(0,1fr); gap: 1rem; align-items: start; }
-        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; }
+            .map-searchbar { left: 10px; right: 10px; max-width: none; top: 54px; } }
 
         #map { height: 62vh; min-height: 380px; border-radius: 16px; border: 1px solid #dde4ed;
             box-shadow: 0 10px 30px -12px rgba(15,23,42,.22); overflow: hidden; }
+        /* ===== everything lives ON the map — one surface, nothing scattered ===== */
+        .map-searchbar { position: absolute; z-index: 900; top: 10px; left: 56px;
+            right: 200px; max-width: 520px; transform: none;
+            background: rgba(255,255,255,0.97); border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(15,23,42,0.25); padding: 0.45rem 0.55rem; }
+        .map-searchbar .build-row { display: flex; gap: 0.4rem; margin: 0; align-items: center; }
+        .map-searchbar .build-row .from, .map-searchbar .build-row .startedit,
+        .map-searchbar .build-row .to { display: none; }   /* those live as map icons now */
+        .map-searchbar .build-row input { flex: 1; min-width: 0; border: 1.5px solid #e2e8f0;
+            border-radius: 9px; padding: 0.5rem 0.75rem; font-size: 0.9rem; font-family: inherit; }
+        .map-searchbar .build-row input:focus { outline: none; border-color: #3b82f6; }
+        .map-searchbar .start-entry { margin-top: 0.4rem; }
+        .map-searchbar .loc-info { margin: 0.3rem 0.2rem 0; font-size: 0.74rem; }
+        .map-actions { display: flex; flex-direction: column; gap: 4px; }
+        .map-actions button { width: 34px; height: 34px; border-radius: 9px; border: none;
+            background: rgba(255,255,255,0.96); box-shadow: 0 2px 8px rgba(15,23,42,0.22);
+            font-size: 15px; cursor: pointer; line-height: 1; padding: 0; }
+        .map-actions button:hover { background: #eff6ff; }
+        .map-cats { background: rgba(255,255,255,0.96); border-radius: 10px;
+            box-shadow: 0 4px 14px rgba(15,23,42,0.22); padding: 0.3rem 0.4rem;
+            display: flex; gap: 0.25rem; max-width: calc(100vw - 40px); overflow-x: auto; }
+        .map-cats .chip { margin: 0; white-space: nowrap; font-size: 0.72rem; padding: 0.22rem 0.6rem; }
+        .map-legend { background: rgba(255,255,255,0.96); border-radius: 10px;
+            box-shadow: 0 4px 14px rgba(15,23,42,0.22); padding: 0.35rem 0.55rem; }
+        .map-legend .legend { display: none; margin: 0.25rem 0 0; gap: 0.35rem 0.8rem; font-size: 0.72rem; }
+        .map-legend.open .legend { display: flex; }
+        .map-legend .lg-toggle { font-size: 0.72rem; font-weight: 700; color: #475569;
+            cursor: pointer; user-select: none; }
+
         .start-entry { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-top: 0.5rem; }
         .start-entry input { flex: 1; min-width: 210px; padding: 0.5rem 0.8rem; border: 1.5px solid #e2e8f0;
             border-radius: 10px; font-size: 0.92rem; font-family: inherit; background: #f8fafc; }
@@ -421,12 +451,6 @@
                     <option value="1.35">Normal</option>
                     <option value="1.9">Heavy</option>
                 </select>
-            </div>
-            <div class="controls">
-                <button class="btn ghost" onclick="useMyLocation()">📍 Start from my location</button>
-                <button class="btn ghost" onclick="undoStop()">↩ Undo</button>
-                <button class="btn ghost" onclick="nextDay()">➡ Start next day</button>
-                <button class="btn ghost" onclick="resetTrip()">⟲ Reset trip</button>
             </div>
             <div class="chips" id="chips"></div>
 
@@ -2228,6 +2252,64 @@
             Object.keys(AMENITY_CATS).forEach(c => { if (amenityOn[c]) fetchAmenity(c); });
         }, 800);
     });
+    // ---------- one surface: every control joins the map ----------
+    // The page had controls scattered above, beside and below the map. They are
+    // MOVED (same DOM nodes, same ids, same handlers) onto the map itself:
+    //   top-centre  — the destination search bar (+ typed start entry)
+    //   top-left    — trip actions under the zoom: GPS start · typed start ·
+    //                 undo · next day · reset
+    //   bottom-left — category chips + a collapsed legend
+    //   top-right   — the amenity layer tabs (already there)
+    (function joinMap(){
+        const mc = map.getContainer();
+
+        // search bar, floating top-centre
+        const bar = document.createElement('div');
+        bar.className = 'map-searchbar';
+        bar.appendChild(document.querySelector('.build-row'));
+        bar.appendChild(document.getElementById('startEntry'));
+        bar.appendChild(document.getElementById('curLocInfo'));
+        mc.appendChild(bar);
+        L.DomEvent.disableClickPropagation(bar);
+        L.DomEvent.disableScrollPropagation(bar);
+        bar.addEventListener('keydown', e => e.stopPropagation());   // typing must never pan the map
+
+        // trip actions, top-left under the zoom control
+        const Actions = L.Control.extend({ options: { position: 'topleft' }, onAdd: function(){
+            const d = L.DomUtil.create('div', 'map-actions');
+            d.innerHTML =
+                  '<button onclick="useMyLocation()" title="Start from my GPS location">📍</button>'
+                + '<button onclick="toggleStartEntry()" title="Type your starting address">✎</button>'
+                + '<button onclick="undoStop()" title="Undo the last stop">↩</button>'
+                + '<button onclick="nextDay()" title="Start the next day">➡</button>'
+                + '<button onclick="resetTrip()" title="Reset the trip">⟲</button>';
+            L.DomEvent.disableClickPropagation(d);
+            return d;
+        }});
+        map.addControl(new Actions());
+
+        // category chips + legend, bottom-left
+        const Cats = L.Control.extend({ options: { position: 'bottomleft' }, onAdd: function(){
+            const d = L.DomUtil.create('div', 'map-cats');
+            d.appendChild(document.getElementById('chips'));
+            L.DomEvent.disableClickPropagation(d);
+            L.DomEvent.disableScrollPropagation(d);
+            return d;
+        }});
+        map.addControl(new Cats());
+        const Legend = L.Control.extend({ options: { position: 'bottomleft' }, onAdd: function(){
+            const d = L.DomUtil.create('div', 'map-legend');
+            const t = document.createElement('span');
+            t.className = 'lg-toggle'; t.textContent = 'ⓘ What the colors mean';
+            t.onclick = () => d.classList.toggle('open');
+            d.appendChild(t);
+            d.appendChild(document.querySelector('.legend'));
+            L.DomEvent.disableClickPropagation(d);
+            return d;
+        }});
+        map.addControl(new Legend());
+    })();
+
     // the book stays as the traveler last left it (closed on a first visit)
     try { if (localStorage.getItem('book_open') === '1') document.getElementById('bookCard').classList.add('open'); } catch (e) {}
 
