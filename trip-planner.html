@@ -2435,12 +2435,12 @@
     // floor/level, fee, hours, wheelchair access). Fetches are viewport-bounded,
     // zoom-guarded, debounced and cached so the free API is never hammered.
     const AMENITY_CATS = {
-        // Attractions come from the SAME live OpenStreetMap data as the rest — a
-        // named tourism/historic/park feature is a confirmed real place, and any
-        // one of them can be added straight into the route from its popup.
-        attractions: { emoji: '📍', color: '#0d9488', min: 13, max: 120, label: 'Attractions nearby',
-                      q: 'nwr["tourism"~"^(attraction|museum|gallery|viewpoint|artwork|theme_park|zoo|aquarium)$"]["name"];nwr["historic"~"^(monument|memorial|castle|ruins|archaeological_site)$"]["name"];nwr["leisure"~"^(park|garden)$"]["name"]',
-                      fallbackName: 'Attraction', addable: true, rateable: true },
+        // The 📍 "Attractions nearby" layer was removed. The board already draws
+        // every attraction as a numbered pin, so this laid a second set of
+        // attraction pins on top of the first — the same places twice, in two
+        // different shapes. Discovery still works through search and the other
+        // layers, which is where it belongs.
+        //
         // Where you're staying anchors the whole day, so hotels are both addable
         // and startable: tap one and the day re-times from your hotel door.
         // Pink was measured against the other six layer colours rather than
