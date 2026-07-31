@@ -159,6 +159,84 @@ chk("geography still lists a state reached via a real place",
 chk("a state known ONLY from a home is not published",
     "Nowhere" not in (g.get("geo") or {}))
 
+
+# ------------------------------------------------------- the boundary itself
+# The point of these two: catch the NEXT feature that reads past the filter,
+# the way /api/geography did, without anyone having to remember.
+print("\nthe boundary holds structurally, not by habit:")
+import re as _re
+src = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "app.py"),
+           encoding="utf-8").read()
+
+opens = [ln.strip() for ln in src.splitlines()
+         if "destinations.json" in ln and not ln.lstrip().startswith("#")]
+# Exactly two are legitimate: the single reader inside _book_raw(), and the
+# path the writer saves to. Anything else is a route reading past the filter.
+chk(f"only the one door opens the book (found {len(opens)} references)",
+    len(opens) == 2)
+chk("the reader lives in _book_raw()",
+    any("with open(_data_path(\"destinations.json\"))" in o for o in opens))
+
+# Every route must go through public_book(). _book_raw() returns withheld
+# records too, so only the writer may touch it — it has to, or saving would
+# drop them. Parsed rather than grepped: splitting the file on "@app.route"
+# runs each body into the next one and blames the wrong function.
+import ast as _ast
+RAW_ALLOWED = {"api_destinations_add"}   # the writer, and nothing else
+
+tree = _ast.parse(src)
+offenders = []
+for node in _ast.walk(tree):
+    if not isinstance(node, (_ast.FunctionDef, _ast.AsyncFunctionDef)):
+        continue
+    if node.name in RAW_ALLOWED or node.name in ("public_book", "_book_raw"):
+        continue
+    calls = {c.func.id for c in _ast.walk(node)
+             if isinstance(c, _ast.Call) and isinstance(c.func, _ast.Name)}
+    if "_book_raw" in calls:
+        offenders.append(f"{node.name}() line {node.lineno}")
+chk(f"only the writer touches the raw store ({offenders or 'none'})", not offenders)
+
+# And the reverse: the writer must NOT use the filtered view, or every save
+# would silently delete the records being withheld.
+writer = next(n for n in _ast.walk(tree)
+              if isinstance(n, _ast.FunctionDef) and n.name == "api_destinations_add")
+wcalls = {c.func.id for c in _ast.walk(writer)
+          if isinstance(c, _ast.Call) and isinstance(c.func, _ast.Name)}
+chk("the writer reads raw, so saving cannot drop withheld records",
+    "_book_raw" in wcalls and "public_book" not in wcalls)
+
+# A record written today must carry its verdict, so reads never have to guess.
+stamped = json.load(open(book)) if os.path.exists(book) else {}
+print("\nnew records carry their verdict:")
+json.dump({"cities": {}, "entries": []}, open(book, "w"))
+c.post("/api/destinations/add", json={
+    "name": "Gas Works Park", "lat": 47.64, "lon": -122.33, "city": "seattle",
+    "osm_class": "leisure", "type": "park", "address": {}})
+e = (json.load(open(book)).get("entries") or [{}])[0]
+chk("stamped visibility=public at write time", e.get("visibility") == "public")
+
+# and the stamp is what reads trust — a record stamped private stays out even
+# if its name looks perfectly innocent.
+json.dump({"cities": {"seattle": "Seattle"}, "entries": [
+    {"name": "The Quiet House", "city": "seattle", "visibility": "private",
+     "lat": 47.6, "lon": -122.3},
+    {"name": "Gas Works Park", "city": "seattle", "visibility": "public",
+     "lat": 47.64, "lon": -122.33},
+]}, open(book, "w"))
+body = c.get("/api/destinations").get_data(as_text=True)
+chk("a stamped-private record is withheld despite an innocent name",
+    "Quiet House" not in body)
+chk("a stamped-public record is served", "Gas Works" in body)
+
+# The writer must never lose withheld records when it saves.
+c.post("/api/destinations/add", json={
+    "name": "Kerry Park", "lat": 47.62, "lon": -122.36, "city": "seattle",
+    "osm_class": "tourism", "type": "viewpoint", "address": {}})
+names = [x.get("name") for x in json.load(open(book)).get("entries", [])]
+chk("saving a new place does not delete withheld ones",
+    "The Quiet House" in names and "Kerry Park" in names)
+
 shutil.rmtree(tmp, ignore_errors=True)
 print("\nPASSED" if not fails else f"\nFAILED: {fails}")
 raise SystemExit(1 if fails else 0)

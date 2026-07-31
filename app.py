@@ -862,27 +862,83 @@ def api_clock_signup():
     return jsonify({"ok": True})
 
 
+# ======================================================================
+#  THE LINE BETWEEN THE TWO BOOKS
+#
+#  Two bodies of place data exist and they must never mix:
+#
+#    PUBLIC  destinations.json — a book anyone can read. Only public places.
+#    PRIVATE reservations.json — where customers are actually driven. Any
+#            address at all, including someone's home, because that is the
+#            service. Reachable only by the owner, or the driver assigned
+#            to that ride.
+#
+#  A customer's right to be driven to a private address, and a stranger's
+#  right not to have their home published, are both absolute. They do not
+#  trade against each other — they live in different files.
+#
+#  Everything below exists so that separation survives the next feature.
+#  It is enforced three ways, deliberately overlapping:
+#
+#    1. CLASSIFY ONCE, AT THE DOOR.  /api/destinations/add decides public or
+#       private while it still has the geocoder's tags, and stamps the verdict
+#       on the record. Reads never re-derive it — by then the tags are gone
+#       and only the name is left, which is a weaker signal.
+#    2. ONE DOOR OUT.  public_book() is the only way a route may read the
+#       book. It drops anything not stamped public, and falls back to the
+#       name test for records written before stamping existed.
+#    3. A TEST THAT FAILS THE NEXT MISTAKE.  test_private_places.py asserts
+#       no route opens the file directly. /api/geography was written after
+#       the filter and read straight past it; that is the failure mode this
+#       catches, without anyone having to remember.
+# ======================================================================
+
+VISIBILITY_PUBLIC = "public"
+
+
+def _book_raw():
+    """The whole file, withheld records included. Writers only.
+
+    Routes must call public_book() instead — this is the raw store and has no
+    idea what may be shown to anyone."""
+    try:
+        with open(_data_path("destinations.json")) as f:
+            d = json.load(f)
+        return d if isinstance(d, dict) else {"cities": {}, "entries": []}
+    except Exception:
+        return {"cities": {}, "entries": []}
+
+
+def _may_publish(entry):
+    """One record's verdict, trusting the stamp made when the tags were known.
+
+    A record stamped at write time is believed. A record written before
+    stamping existed gets the only test its stored fields still support: is
+    the name a street address? Nothing worth visiting is called "412 Maple
+    St", and this fails in the safe direction — at worst a genuine place with
+    a number for a name waits until someone adds it under its real name."""
+    vis = (entry.get("visibility") or "").strip().lower()
+    if vis:
+        return vis == VISIBILITY_PUBLIC
+    return not _ADDRESS_LIKE.match(entry.get("name") or "")
+
+
+def public_book():
+    """The book as the world may see it. The only read path for routes."""
+    d = _book_raw()
+    d["entries"] = [e for e in d.get("entries") or [] if _may_publish(e)]
+    return d
+
+
 def _public_book_entries(entries):
-    """Entries safe to publish.
-
-    The write-side guard only protects places added from now on. Anything a
-    visitor added before it existed is still in the file, and on the live
-    server that file is not something we can hand-edit. Stored entries keep no
-    OpenStreetMap classification — only a name — so the one honest test left is
-    the name itself: nothing worth visiting is called "412 Maple St".
-
-    Cheap, and it fails in the safe direction: at worst a genuine place with a
-    number for a name waits until someone re-adds it under its real name."""
-    return [e for e in entries or []
-            if not _ADDRESS_LIKE.match((e.get("name") or ""))]
+    """Filter a list of entries already in hand. Prefer public_book()."""
+    return [e for e in entries or [] if _may_publish(e)]
 
 
 @app.route("/api/destinations")
 def api_destinations():
     try:
-        with open(_data_path("destinations.json")) as f:
-            data = json.load(f)
-        data["entries"] = _public_book_entries(data.get("entries"))
+        data = public_book()
         # ride the crowd's real stay times AND star ratings along with each place
         times = _visit_all()
         ratings = _ratings_all()
@@ -940,14 +996,10 @@ def api_geography():
     appears in the picker for everyone after you. Places recorded before this
     existed have no state and are simply left out rather than guessed at.
     """
-    try:
-        with open(_data_path("destinations.json")) as f:
-            d = json.load(f)
-    except Exception:
-        return jsonify({"ok": True, "geo": {}, "cities": {}})
+    d = public_book()
     cities = d.get("cities", {})
     geo, seen = {}, {}
-    for e in _public_book_entries(d.get("entries")):
+    for e in d.get("entries", []):
         state = (e.get("state") or "").strip()
         city = (e.get("city") or "").strip()
         if not (state and city):
@@ -969,13 +1021,9 @@ def api_geography():
 def api_discoveries():
     """What travelers have been discovering lately, newest first, worldwide —
     the visible proof that the map grows by itself."""
-    try:
-        with open(_data_path("destinations.json")) as f:
-            d = json.load(f)
-    except Exception:
-        return jsonify({"ok": True, "recent": [], "by_city": [], "total": 0})
+    d = public_book()
     cities = d.get("cities", {})
-    found = [e for e in _public_book_entries(d.get("entries"))
+    found = [e for e in d.get("entries", [])
              if e.get("source") == "user" and e.get("added_at")]
     found.sort(key=lambda e: e.get("added_at", ""), reverse=True)
     tally = {}
@@ -1427,11 +1475,9 @@ def api_destinations_add():
     visit = _clampi(data.get("visit"), 10, 480, 60)
     path = _data_path("destinations.json")
     with _LOCK:
-        try:
-            with open(path) as f:
-                d = json.load(f)
-        except Exception:
-            d = {"cities": {}, "entries": []}
+        # RAW, not public_book(): this rewrites the whole file, and filtering
+        # here would quietly delete every withheld record on the next save.
+        d = _book_raw()
         # THE BOOK GROWS WORLDWIDE. A city we have never seen before is not an
         # error to be swept into "Other" — it is a new chapter. The first traveler
         # to search a place there names the city, and it joins the book for good.
@@ -1489,6 +1535,9 @@ def api_destinations_add():
                "close": close, "visit": visit, "lat": round(lat, 5), "lon": round(lon, 5),
                "desc": given_desc or wiki_desc or auto_desc, "tip": "",
                "photo": wiki_photo, "source_url": wiki_url,
+               # Stamped here, while the geocoder's tags are still in hand. By
+               # read time all that survives is a name, which is a weaker test.
+               "visibility": VISIBILITY_PUBLIC,
                "source": "user", "auto_desc": not given_desc,
                "desc_from": ("guide" if given_desc else
                              ("wikipedia" if wiki_desc else "map data")),
