@@ -11,10 +11,12 @@ Spending before these are true is buying traffic the site cannot measure,
 convert, or keep. Each line is checkable — no judgement calls.
 
 **Measurement — without this, nothing else matters**
-- [ ] Visits counted by source (`utm_source` + referrer)
-- [ ] Conversions counted by source: booking created, agent signup, driver
+- [x] Visits counted by source (`utm_source` + referrer)
+- [x] Conversions counted by source: booking created, agent signup, driver
       application. Aggregate counters only, keeping the existing no-per-visitor
       privacy design
+- [x] Readable without a text editor — Archive → **🎯 Where visitors came from**,
+      one row per day per source, exportable as CSV
 
 **The thing the ad points at has to work**
 - [ ] A stranger can complete a booking end to end and receive an invoice
@@ -41,24 +43,56 @@ search-intent based. See channels below.
 
 ---
 
-## 0. Do this first: measurement (the prerequisite)
+## 0. Measurement — done
 
-The site's traffic tracker (`traffic.json`) records pageviews, unique visitors
-and paths. It deliberately does **not** keep a per-visitor log — visitor ids are
-folded down to counts once a day closes. That privacy stance is worth keeping.
+The traffic tracker used to record pageviews, unique visitors and paths, but not
+**where a visit came from or whether it converted**. So $500 of ads would have
+taught us one thing: pageviews went up. Not which bookings came from it, not what
+a booking cost, not whether to spend more or stop.
 
-What it does not record: **where a visit came from, and whether it converted.**
+Now in place:
 
-So today, $500 of ads would teach us exactly one thing — pageviews went up. Not
-which bookings came from it, not what a booking cost, not whether to spend more
-or stop.
+- **`_visit_source()`** labels each first visit with one short word.
+  `utm_source` wins when present; otherwise the referring host collapsed to a
+  family, so every Google property is `google`, not `www.google.co.uk`. Our own
+  pages are `internal` and never counted as a source.
+- **First touch only.** A source is counted once per new visitor, not once per
+  page they read — otherwise the stickiest page gets the credit instead of the
+  source that actually worked.
+- **`psx_src`**, a 30-day cookie holding that label (never a URL). A booking,
+  agent signup or driver application made later is credited to it. Thirty days
+  because an ad click is not owed credit for a booking made a year later.
+- **Archive → 🎯 Where visitors came from** — one row per day per source:
+  `new_visitors, bookings, agent_signups, driver_signups`. CSV export works.
 
-**The work:** count visits *by source* (referrer + `utm_source`) and count
-*conversions* by source — bookings created, agent signups, driver applications.
-Aggregate counters only, no per-visitor trail, so the existing privacy design
-survives. Roughly an hour.
+Still aggregate day counters, no per-visitor trail, no third-party analytics.
 
-Until that exists, every ad dollar is unattributable.
+### Tagging a campaign
+
+Put `?utm_source=<label>` on any link you place anywhere. The label is what shows
+up in the Archive, so make it specific enough to tell channels apart:
+
+| Where the link lives | URL |
+|---|---|
+| Google Business Profile | `https://plateaustrategy.io/?utm_source=google_business` |
+| A Google Ads campaign | `https://plateaustrategy.io/?utm_source=google_ads` |
+| A Reddit or forum post | `https://plateaustrategy.io/trip-planner?utm_source=reddit_seattle` |
+| A hotel partner's page | `https://plateaustrategy.io/?utm_source=hotel_<name>` |
+
+Untagged links still get attributed by referrer — a tag just makes it exact, and
+is the only way to tell two Google placements apart.
+
+### Reading the result
+
+`new_visitors` alone is not a result. The number that decides whether to keep
+spending is **bookings ÷ new_visitors** for that source, compared against
+`direct`. A source sending traffic that never books is spend that isn't working,
+whichever way the pageview line moved.
+
+One quirk worth knowing: a source can show conversions with **zero visits** on a
+given day. Someone who arrived Monday and booked Thursday appears on Thursday's
+row with `new_visitors: 0, bookings: 1`. That is correct — the visit was Monday,
+the booking was Thursday.
 
 ---
 

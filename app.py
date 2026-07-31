@@ -3944,6 +3944,41 @@ def _arch_traffic():
     return out
 
 
+# What each conversion kind is called in the table, in the order shown.
+CONVERSION_KINDS = [("booking", "bookings"),
+                    ("agent_signup", "agent_signups"),
+                    ("driver_signup", "driver_signups")]
+
+
+def _arch_sources():
+    """One row per day per source — where visitors came from, and what those
+    visits turned into. This is how an ad gets judged: a source with visits and
+    no bookings is spend that isn't working, whichever way the pageview line
+    moved.
+
+    A source can show conversions with zero visits that day — the psx_src
+    cookie lasts 30 days, so someone who arrived on Monday and booked on
+    Thursday is credited to Monday's source on Thursday's row. That is the
+    honest placement: the booking happened Thursday."""
+    data = _load_traffic()
+    out = []
+    for date in sorted(data["days"].keys(), reverse=True):
+        rec = data["days"][date]
+        visits = rec.get("sources", {})
+        conv = rec.get("conversions", {})
+        names = set(visits) | {s for kind in conv.values() for s in kind}
+        rows = []
+        for src in names:
+            row = {"date": date, "source": src, "new_visitors": visits.get(src, 0)}
+            for kind, label in CONVERSION_KINDS:
+                row[label] = conv.get(kind, {}).get(src, 0)
+            rows.append(row)
+        # Busiest source first, so the day reads top-down.
+        rows.sort(key=lambda r: (-r["new_visitors"], r["source"]))
+        out.extend(rows)
+    return out
+
+
 @app.route("/api/online")
 def api_online():
     """How many travelers are on the site right now. The caller's own ping keeps
@@ -4008,6 +4043,7 @@ ARCHIVE_SECTIONS = [
     ("comments",   "💬 Place comments", "What travelers wrote about places in the Destination Book.", _arch_comments),
     ("wishes",     "🌟 Traveler wishes", "Places and experiences visitors asked us to add — the demand signal.", _arch_wishes),
     ("traffic",    "📈 Site traffic", "Daily page views, unique visitors, and Trip Planner / Destination Book usage.", _arch_traffic),
+    ("sources",    "🎯 Where visitors came from", "Visits and bookings by source — Google, Reddit, direct, or a tagged ad. How you tell whether ad spend worked.", _arch_sources),
     ("bookings",   "🧾 Bookings & invoices", "Every reservation — customer, trip, fare, invoice and status.", _arch_bookings),
     ("contacts",   "📇 Contacts (marketing)", "Every captured email & phone across the whole site, de-duped — your advertising list.", _arch_contacts),
     ("people",     "👤 Accounts", "Agent, driver and customer accounts.", _arch_people),
