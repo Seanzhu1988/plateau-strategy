@@ -538,7 +538,19 @@ ENGINE = r'''/* Plateau Strategy Solution Lab -- site-wide line-by-line translat
       "#i18nMenu .i18n-opt{display:block;width:100%;text-align:left;background:none;border:none;color:#e2e8f0;padding:.62rem .95rem;" +
       "font-size:.9rem;cursor:pointer;}" +
       "#i18nMenu .i18n-opt:hover{background:#1e293b;}" +
-      "#i18nMenu .i18n-opt[aria-current='true']{background:#2563eb;color:#fff;}";
+      "#i18nMenu .i18n-opt[aria-current='true']{background:#2563eb;color:#fff;}" +
+      // On a phone the switcher sits exactly where the next form field and the
+      // submit button are. Shrink it to the globe alone — a round 44px target,
+      // which is bigger to hit than the old pill and covers a third as much.
+      "@media (max-width:640px){" +
+        "#i18nSwitch{bottom:calc(12px + env(safe-area-inset-bottom,0px));right:12px;}" +
+        "#i18nBtn{width:44px;height:44px;padding:0;gap:0;border-radius:50%;justify-content:center;font-size:1.05rem;}" +
+        "#i18nBtn>span:not(:first-child){display:none;}" +
+        "#i18nMenu{bottom:54px;}" +
+      "}" +
+      // And while someone is actually typing, get out of the way entirely.
+      "#i18nSwitch{transition:opacity .2s ease,transform .2s ease;}" +
+      "#i18nSwitch.i18n-away{opacity:0;transform:translateY(10px) scale(.92);pointer-events:none;}";
     document.head.appendChild(css);
     var wrap = document.createElement("div");
     wrap.id = "i18nSwitch"; wrap.className = "i18n-skip";
@@ -559,6 +571,22 @@ ENGINE = r'''/* Plateau Strategy Solution Lab -- site-wide line-by-line translat
     });
     document.addEventListener("click", function () {
       var m = document.getElementById("i18nMenu"); if (m) m.style.display = "none";
+    });
+    // Typing wins. On a phone the on-screen keyboard shoves the page up and the
+    // switcher lands on top of whatever field comes next, so it steps aside
+    // while any field has focus and comes back when the form is done with.
+    function typing(el) {
+      return !!el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) &&
+             !/^(submit|button|hidden)$/.test(el.type || "");
+    }
+    document.addEventListener("focusin", function (e) {
+      if (typing(e.target)) wrap.classList.add("i18n-away");
+    });
+    document.addEventListener("focusout", function () {
+      // A tick, so moving between two fields does not flicker it in and out.
+      setTimeout(function () {
+        if (!typing(document.activeElement)) wrap.classList.remove("i18n-away");
+      }, 80);
     });
   }
   function boot() {
