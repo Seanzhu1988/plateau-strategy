@@ -203,7 +203,7 @@ def api_owner_setup():
         json.dump({"username": u, "salt": salt, "hash": h,
                    "created_at": datetime.datetime.now().isoformat(timespec="seconds")}, f, indent=2)
     session["owner"] = u
-    return jsonify({"ok": True, "username": u})
+    return _set_not_counted(jsonify({"ok": True, "username": u}))
 
 
 @app.route("/api/owner/login", methods=["POST"])
@@ -216,7 +216,10 @@ def api_owner_login():
             or not _verify_pw(pw, owner.get("salt", ""), owner.get("hash", "")):
         return jsonify({"ok": False, "error": "Wrong username or password."}), 401
     session["owner"] = owner.get("username")
-    return jsonify({"ok": True, "username": owner.get("username")})
+    # Whoever signs in here is running the business, not visiting it. Mark the
+    # device so it stops inflating the numbers — the session expires, this does
+    # not, so the computer stays uncounted after the login is forgotten.
+    return _set_not_counted(jsonify({"ok": True, "username": owner.get("username")}))
 
 
 @app.route("/api/owner/logout", methods=["POST"])
@@ -294,6 +297,11 @@ def _skip_traffic():
     """True when this request should not appear in any visitor number."""
     if request.cookies.get(TRAFFIC_OPTOUT_COOKIE) == "1":
         return True
+    if request.path == "/not-a-traveler":
+        # The page whose whole purpose is "stop counting me" must not itself
+        # count. The cookie is only set on the way OUT, so without this the
+        # opt-out always cost one phantom visitor before taking effect.
+        return True
     if _client_ip() in _ignored_ips():
         return True
     ua = (request.headers.get("User-Agent") or "").lower()
@@ -302,20 +310,81 @@ def _skip_traffic():
     return any(h in ua for h in _BOT_HINTS)
 
 
+def _set_not_counted(resp, on=True):
+    """Mark (or unmark) this device as one that never appears in visitor numbers."""
+    if on:
+        resp.set_cookie(TRAFFIC_OPTOUT_COOKIE, "1", max_age=60 * 60 * 24 * 3650,
+                        httponly=True, samesite="Lax")
+    else:
+        # Same attributes as when it was set, or some browsers keep it.
+        resp.set_cookie(TRAFFIC_OPTOUT_COOKIE, "", max_age=0,
+                        httponly=True, samesite="Lax")
+    return resp
+
+
 @app.route("/api/traffic/optout")
 def api_traffic_optout():
     """Open this once on a device and it stops being counted — ours, or anyone's
     who asks. Sets a plain flag cookie; no identity is stored either way."""
     on = request.args.get("off") != "1"
-    resp = jsonify({"ok": True, "counted": not on,
-                    "message": ("This device is no longer counted as a visitor."
-                                if on else "This device is being counted again.")})
-    if on:
-        resp.set_cookie(TRAFFIC_OPTOUT_COOKIE, "1", max_age=60 * 60 * 24 * 3650,
-                        httponly=True, samesite="Lax")
+    return _set_not_counted(
+        jsonify({"ok": True, "counted": not on,
+                 "message": ("This device is no longer counted as a visitor."
+                             if on else "This device is being counted again.")}), on)
+
+
+@app.route("/not-a-traveler")
+def not_a_traveler_page():
+    """The human version of the opt-out, for a phone.
+
+    Our own devices inflate every number the business is judged on — and the
+    ones that matter most are the smallest, because a handful of self-visits is
+    invisible in a thousand and decisive in twenty. Open this once per device.
+
+    Deliberately a plain page and not part of the app shell: it has to work on
+    a phone, in one tap, without logging in anywhere."""
+    turn_off = request.args.get("count") == "1"     # ?count=1 puts it back
+    now_counted = not (request.cookies.get(TRAFFIC_OPTOUT_COOKIE) == "1")
+    if turn_off:
+        counted_after = True
+    elif request.args.get("set") == "0" or not request.args:
+        counted_after = False
     else:
-        resp.delete_cookie(TRAFFIC_OPTOUT_COOKIE)
-    return resp
+        counted_after = now_counted
+
+    state = ("This device is <strong>not counted</strong> as a traveler."
+             if not counted_after else
+             "This device <strong>is being counted</strong> as a traveler.")
+    other = ('<a class="b" href="/not-a-traveler?count=1">Count this device again</a>'
+             if not counted_after else
+             '<a class="b" href="/not-a-traveler?set=0">Stop counting this device</a>')
+    html = """<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Not a traveler — Plateau Strategy</title>
+<style>
+ body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+   background:#070b16;color:#e7ecf5;font:16px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:1.5rem;}
+ .c{max-width:30rem;text-align:center;}
+ h1{font-size:1.35rem;margin:0 0 .75rem;}
+ p{color:#9aa6bb;margin:.6rem 0;}
+ strong{color:#e7ecf5;}
+ .b{display:inline-block;margin-top:1.4rem;padding:.85rem 1.3rem;border-radius:999px;
+   background:#2563eb;color:#fff;text-decoration:none;font-weight:600;min-height:44px;}
+ .b:hover{background:#1d4ed8;}
+ .s{display:block;margin-top:1.6rem;color:#6f7c92;font-size:.85rem;}
+ a.h{color:#7da2ff;}
+</style></head><body><div class="c">
+<h1>Visitor counting</h1>
+<p>%s</p>
+<p>It is a single flag stored on this device. No identity, no address, nothing
+recorded about you either way — the only effect is whether page opens from this
+device are added to the visitor totals.</p>
+%s
+<span class="s">Do this once on every device you use to check the site.
+<a class="h" href="/">Back to the site</a></span>
+</div></body></html>""" % (state, other)
+    return _set_not_counted(Response(html, mimetype="text/html"), not counted_after)
 
 
 # ---------- who's actually here RIGHT NOW ----------
