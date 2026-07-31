@@ -2261,8 +2261,11 @@
             + '&to=' + encodeURIComponent(c.label) + '" target="_blank">🛣️ Plan it as a road trip instead →</a>';
         try {
             const around = '(around:60000,' + c.center[0].toFixed(5) + ',' + c.center[1].toFixed(5) + ');';
-            const q = '[out:json][timeout:20];(node["aeroway"="aerodrome"]["iata"]' + around
-                + 'way["aeroway"="aerodrome"]["iata"]' + around + ');out center 12;';
+            // Same fix as the airports layer: an ["iata"] filter on node/way misses
+            // relation-mapped aerodromes and elements without the code.
+            const q = '[out:json][timeout:20];('
+                + 'nwr["aeroway"="aerodrome"]["name"]["aerodrome:type"!~"private"]' + around
+                + ');out center 12;';
             const els = await overpass(q);
             gatewayChoices = els.map(e => ({
                 name: (e.tags || {}).name || 'Airport',
@@ -2438,7 +2441,12 @@
         // city zoom — a traveller landing at JFK needs to see it from the whole map.
         airports:   { emoji: '✈️', color: '#334155', min: 99, max: 25, label: 'Airports',
                       wideRadius: 60000, anchor: 'origin',
-                      q: 'node["aeroway"="aerodrome"]["iata"];way["aeroway"="aerodrome"]["iata"]', fallbackName: 'Airport',
+                      // Demanding an ["iata"] tag on node/way found nothing in most
+                      // places: plenty of aerodromes are mapped as relations, and
+                      // the IATA code often is not on the element that matches. Ask
+                      // for named aerodromes of any element type and drop private
+                      // airfields instead — an absent aerodrome:type still passes.
+                      q: 'nwr["aeroway"="aerodrome"]["name"]["aerodrome:type"!~"private"]', fallbackName: 'Airport',
                       addable: true, startable: true },
         rail:       { emoji: '🚉', color: '#7c2d12', min: 12, max: 60, label: 'Train stations',
                       wideRadius: 12000,
