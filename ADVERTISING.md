@@ -119,19 +119,40 @@ That is a bigger hole than any ad budget. Fixed now:
 - **Footer contact block** — service area, hours, and the flat rate, in markup a
   crawler reads on the first page it fetches.
 
-**Still open — needs a decision, not code:**
+- [x] **Business email — `hello@plateaustrategy.io`.** Live in the footer and in
+      the `LocalBusiness` node. Decided over the personal Gmail: a gmail.com
+      address on a car-service listing costs conversions for no reason, and the
+      domain is already paid for.
 
-- [ ] A **business phone number**, published on the site and on the Business
-      Profile. It should be a **Seattle (206/425/253) number**, not a personal
-      mobile and not an out-of-area one. Google treats an area code that doesn't
-      match the service area as a signal worth a second look, and a 917 number on
-      a Seattle listing invites exactly that. A Google Voice 206 number is free
-      and takes ten minutes.
-- [ ] A **business email** — `hello@plateaustrategy.io` or similar on the domain
-      that's already owned. A gmail.com address on a car-service listing costs
-      conversions for no reason, and the domain is already paid for.
+**Still open — needs an account, not code:**
 
-Both slots are marked in the footer markup and the `LocalBusiness` node.
+- [ ] A **Seattle business phone number** (206/425/253), published on the site
+      and on the Business Profile. Decided against the personal 917 mobile:
+      Google treats an area code that doesn't match the service area as worth a
+      second look, transportation listings already get suspended more than most
+      categories, and a New York number on a Seattle listing invites exactly
+      that scrutiny. It also just reads as out-of-town to the customer.
+
+      The drop-in point is marked in two places — the footer comment in
+      `landing-page.html` and `_todo_telephone` in the `LocalBusiness` node.
+      Same digits in both, and on the Business Profile.
+
+### Setting up the two accounts
+
+**Phone — Google Voice, free, ~10 minutes.** `voice.google.com` → sign in →
+*Get a Google Voice number* → search area code **206** → pick one → link your
+existing mobile. Calls forward to the phone you already carry, so nothing
+changes about how you answer. Worth knowing: Google Voice numbers are sometimes
+rejected for Business Profile verification. If that happens, a $10–15/month
+number from Grasshopper or OpenPhone is the fallback, and both give you a real
+business line with voicemail.
+
+**Email — Porkbun forwarding, free, ~5 minutes.** Porkbun account → the
+`plateaustrategy.io` domain → *Email Forwarding* → forward `hello@` to your
+Gmail. Mail arrives where you already read it; customers see the domain. To
+*reply* as `hello@`, add it in Gmail under Settings → Accounts → *Send mail as*.
+
+Once the number exists, send it over and it goes into both files in one edit.
 
 ### The canonical description — use this everywhere, unchanged
 
@@ -158,7 +179,7 @@ runs first. Start at `business.google.com`.
 | Category (secondary) | `Limousine service`, `Car rental agency` |
 | Address | **Hide it.** Choose "I deliver goods and services to my customers" — this is a service-area business |
 | Service area | Seattle, Bellevue, and any city actually served. Do not list cities you would decline |
-| Phone | The new Seattle business number — same digits as the website footer |
+| Phone | The new Seattle 206 number — same digits as the website footer |
 | Website | `https://plateaustrategy.io/?utm_source=google_business` |
 | Hours | Open 24 hours, all 7 days — matches the site's 24/7 claim |
 | Services | `SeaTac airport transfer — $75 flat`, `Tesla rental for rideshare drivers` |
