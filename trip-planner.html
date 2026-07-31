@@ -2428,7 +2428,7 @@
         // one of them can be added straight into the route from its popup.
         attractions: { emoji: '📍', color: '#0d9488', min: 13, max: 120, label: 'Attractions nearby',
                       q: 'nwr["tourism"~"^(attraction|museum|gallery|viewpoint|artwork|theme_park|zoo|aquarium)$"]["name"];nwr["historic"~"^(monument|memorial|castle|ruins|archaeological_site)$"]["name"];nwr["leisure"~"^(park|garden)$"]["name"]',
-                      fallbackName: 'Attraction', addable: true },
+                      fallbackName: 'Attraction', addable: true, rateable: true },
         // Where you're staying anchors the whole day, so hotels are both addable
         // and startable: tap one and the day re-times from your hotel door.
         // Pink was measured against the other six layer colours rather than
@@ -2455,7 +2455,7 @@
         toilets:    { emoji: '🚻', color: '#0284c7', min: 14, max: 120, label: 'Restrooms',
                       q: 'nwr["amenity"="toilets"]', fallbackName: 'Public restroom' },
         food:       { emoji: '🍽️', color: '#d97706', min: 15, max: 150, label: 'Food & coffee',
-                      q: 'nwr["amenity"~"^(restaurant|cafe|fast_food)$"]', fallbackName: 'Restaurant' },
+                      q: 'nwr["amenity"~"^(restaurant|cafe|fast_food)$"]', fallbackName: 'Restaurant', rateable: true },
         essentials: { emoji: '💊', color: '#7c3aed', min: 14, max: 120, label: 'Pharmacy · ATM · Water',
                       q: 'nwr["amenity"~"^(pharmacy|atm|drinking_water)$"]', fallbackName: 'Essential' },
     };
@@ -2473,7 +2473,8 @@
                 d.innerHTML = '<div class="achip-row">'
                     + Object.keys(AMENITY_CATS).map(cat =>
                         '<div class="achip" id="ach_' + cat + '" title="' + AMENITY_CATS[cat].label
-                        + ' — tap again to filter by stars" onclick="toggleAmenity(\'' + cat + '\')">'
+                        + (AMENITY_CATS[cat].rateable ? ' — tap again to filter by stars' : '')
+                        + '" onclick="toggleAmenity(\'' + cat + '\')">'
                         + AMENITY_CATS[cat].emoji + '</div>').join('')
                     + '</div><span class="amenity-note" id="amenityNote"></span>';
                 L.DomEvent.disableClickPropagation(d);   // clicking the panel must not pan the map
@@ -2488,10 +2489,23 @@
     try { (JSON.parse(localStorage.getItem('amenity_on') || '[]')).forEach(c => {
         if (AMENITY_CATS[c]) { amenityOn[c] = true; } }); } catch (e) {}
     try { const s = JSON.parse(localStorage.getItem('amenity_star') || '{}');
-          Object.keys(s).forEach(k => { if (AMENITY_CATS[k]) amenityStar[k] = s[k]; }); } catch (e) {}
+          // Drop stars saved against a layer that is no longer rateable, or a
+          // returning traveller keeps a ★ badge on their restroom chip forever
+          // with no way left to cycle it off.
+          Object.keys(s).forEach(k => {
+              if (AMENITY_CATS[k] && AMENITY_CATS[k].rateable) amenityStar[k] = s[k];
+          }); } catch (e) {}
 
+    // Only some layers are worth rating. A restroom or a train station has no
+    // star opinion attached to it, so putting those chips through the seven-tap
+    // star cycle just made them tedious to switch off. Rateable layers keep the
+    // cycle; everything else is a plain on/off.
     function toggleAmenity(cat){
-        if (!amenityOn[cat]) { amenityOn[cat] = true; amenityStar[cat] = null; }   // on, unfiltered
+        const rateable = !!(AMENITY_CATS[cat] || {}).rateable;
+        if (!rateable) {
+            amenityOn[cat] = !amenityOn[cat];
+            amenityStar[cat] = null;
+        } else if (!amenityOn[cat]) { amenityOn[cat] = true; amenityStar[cat] = null; }   // on, unfiltered
         else {
             const i = STAR_CYCLE.indexOf(amenityStar[cat] === undefined ? null : amenityStar[cat]);
             if (i >= STAR_CYCLE.length - 1) { amenityOn[cat] = false; amenityStar[cat] = null; }  // past ★1 → off
