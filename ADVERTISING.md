@@ -21,9 +21,10 @@ convert, or keep. Each line is checkable — no judgement calls.
 **The thing the ad points at has to work**
 - [ ] A stranger can complete a booking end to end and receive an invoice
 - [x] Data survives a deploy — Render starter plan with a mounted disk
-- [ ] `plateaustrategy.io` resolves on both apex and `www`, with a valid
-      certificate. Today `www` is correct and the apex still points at Porkbun
-      parking
+- [~] `plateaustrategy.io` resolves on both apex and `www`, with a valid
+      certificate. DNS is now right — both point at Render (216.24.57.x), the
+      Porkbun parking record is gone. The certificate still needs an eyes-on
+      check: open both in a browser and confirm the padlock, no warning
 - [ ] The map tools verified working against live data — attractions, hotels,
       airports, rest stops, the overnight prompt, and the fly-first city-to-city
       flow. Several were built without ever being seen against live Overpass
