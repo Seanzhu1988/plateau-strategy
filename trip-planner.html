@@ -2271,6 +2271,14 @@
         attractions: { emoji: '📍', color: '#0d9488', min: 13, max: 120, label: 'Attractions nearby',
                       q: 'nwr["tourism"~"^(attraction|museum|gallery|viewpoint|artwork|theme_park|zoo|aquarium)$"]["name"];nwr["historic"~"^(monument|memorial|castle|ruins|archaeological_site)$"]["name"];nwr["leisure"~"^(park|garden)$"]["name"]',
                       fallbackName: 'Attraction', addable: true },
+        // Where you're staying anchors the whole day, so hotels are both addable
+        // and startable: tap one and the day re-times from your hotel door.
+        // Pink was measured against the other six layer colours rather than
+        // picked — indigo sat at ΔE 1.3 from the violet essentials chip under
+        // protanopia, which would have made the two layers indistinguishable.
+        hotels:     { emoji: '🏨', color: '#db2777', min: 13, max: 120, label: 'Hotels & places to stay',
+                      q: 'nwr["tourism"~"^(hotel|motel|guest_house|hostel)$"]["name"]',
+                      fallbackName: 'Hotel', addable: true, startable: true },
         // Airports are sparse, so they search a wide radius and stay visible at
         // city zoom — a traveller landing at JFK needs to see it from the whole map.
         airports:   { emoji: '✈️', color: '#334155', min: 99, max: 25, label: 'Airports',
