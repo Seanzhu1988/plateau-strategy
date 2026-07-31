@@ -247,6 +247,76 @@ TRAFFIC_MAX_DAYS = 120  # bound file growth; older days are just dropped
 TRAFFIC_TOOL_PATHS = {"/trip-planner": "trip_planner", "/destination-book": "destination_book",
                        "/favorite-place": "favorite_place"}
 
+# ---------- traffic we should not be counting ----------
+# The number beside the map is meant to tell Sean whether strangers are using
+# the tools. Our own laptops and phones, and the browser used to test a build,
+# were being counted the same as a visitor from Ohio — so a quiet day could read
+# as thirty travellers. Three exclusions, cheapest first:
+#   · a device that has opted out (a cookie set once, kept for years)
+#   · an address on the ignore list (Sean's home or office)
+#   · anything that identifies itself as a bot or crawler
+TRAFFIC_OPTOUT_COOKIE = "psx_nocount"
+_BOT_HINTS = ("bot", "crawler", "spider", "slurp", "headless", "curl/", "wget",
+              "python-requests", "monitor", "pingdom", "uptime", "lighthouse",
+              "preview", "scrapy", "facebookexternalhit", "embedly")
+
+
+def _ignored_ips():
+    raw = os.environ.get("TRAFFIC_IGNORE_IPS", "")
+    return {_norm_ip(s) for s in raw.split(",") if s.strip()}
+
+
+def _norm_ip(raw):
+    """Normalise an address so the ignore list matches what actually arrives.
+
+    A local or proxied request often turns up as an IPv4 address wrapped in IPv6
+    form — "::ffff:127.0.0.1" — which never equals the "127.0.0.1" someone wrote
+    in the ignore list. Unwrap it, and drop any :port a proxy appended.
+    """
+    s = (raw or "").strip()
+    if not s:
+        return ""
+    if s.lower().startswith("::ffff:"):
+        s = s[7:]
+    if s.count(":") == 1 and s.count(".") == 3:      # 1.2.3.4:5678
+        s = s.split(":")[0]
+    return s.strip("[]")
+
+
+def _client_ip():
+    fwd = request.headers.get("X-Forwarded-For", "")
+    raw = fwd.split(",")[0] if fwd else (request.remote_addr or "")
+    return _norm_ip(raw)
+
+
+def _skip_traffic():
+    """True when this request should not appear in any visitor number."""
+    if request.cookies.get(TRAFFIC_OPTOUT_COOKIE) == "1":
+        return True
+    if _client_ip() in _ignored_ips():
+        return True
+    ua = (request.headers.get("User-Agent") or "").lower()
+    if not ua:
+        return True                      # no user agent at all is not a person
+    return any(h in ua for h in _BOT_HINTS)
+
+
+@app.route("/api/traffic/optout")
+def api_traffic_optout():
+    """Open this once on a device and it stops being counted — ours, or anyone's
+    who asks. Sets a plain flag cookie; no identity is stored either way."""
+    on = request.args.get("off") != "1"
+    resp = jsonify({"ok": True, "counted": not on,
+                    "message": ("This device is no longer counted as a visitor."
+                                if on else "This device is being counted again.")})
+    if on:
+        resp.set_cookie(TRAFFIC_OPTOUT_COOKIE, "1", max_age=60 * 60 * 24 * 3650,
+                        httponly=True, samesite="Lax")
+    else:
+        resp.delete_cookie(TRAFFIC_OPTOUT_COOKIE)
+    return resp
+
+
 # ---------- who's actually here RIGHT NOW ----------
 # Deliberately in-memory and ephemeral: presence is a live fact, not a record.
 # It never touches disk, resets on restart, and holds only anonymous cookie ids
@@ -302,7 +372,8 @@ def _track_traffic(resp):
     again, so this file can't turn into a visitor-tracking log over time."""
     try:
         if request.method == "GET" and resp.status_code == 200 \
-                and (resp.mimetype or "").startswith("text/html"):
+                and (resp.mimetype or "").startswith("text/html") \
+                and not _skip_traffic():
             vid = request.cookies.get("psx_vid")
             set_cookie = not vid
             if set_cookie:
@@ -317,11 +388,20 @@ def _track_traffic(resp):
                     if d != today and "visitor_ids" in rec:
                         rec["unique_visitors"] = len(rec["visitor_ids"])
                         del rec["visitor_ids"]
+                    if d != today and "path_ids" in rec:
+                        rec["path_uniques"] = {k: len(v) for k, v in rec["path_ids"].items()}
+                        del rec["path_ids"]
                 rec = days.setdefault(today, {"pageviews": 0, "visitor_ids": [], "paths": {}})
                 rec["pageviews"] += 1
                 rec["paths"][request.path] = rec["paths"].get(request.path, 0) + 1
                 if vid not in rec["visitor_ids"]:
                     rec["visitor_ids"].append(vid)
+                # Who opened this particular tool, so "N travellers" can mean N
+                # people rather than N page opens. Same lifecycle as visitor_ids:
+                # raw ids only for today, folded to a plain count once the day ends.
+                pv = rec.setdefault("path_ids", {}).setdefault(request.path, [])
+                if vid not in pv:
+                    pv.append(vid)
                 if len(days) > TRAFFIC_MAX_DAYS:
                     for old in sorted(days.keys())[:len(days) - TRAFFIC_MAX_DAYS]:
                         del days[old]
@@ -3822,7 +3902,8 @@ def api_online():
     """How many travelers are on the site right now. The caller's own ping keeps
     them counted, so an open tab stays 'online' while it polls. Anonymous and
     ephemeral — no identity, no history, nothing written to disk."""
-    _presence_touch(request.cookies.get("psx_vid"))
+    if not _skip_traffic():
+        _presence_touch(request.cookies.get("psx_vid"))
     n = _presence_count()
     return jsonify({"ok": True, "online": n, "window_minutes": _PRESENCE_WINDOW // 60})
 
@@ -3838,6 +3919,7 @@ def api_traffic_summary():
     week_cutoff = (datetime.date.today() - datetime.timedelta(days=6)).isoformat()
 
     def sum_path(path, cutoff=None):
+        """Times the page was opened."""
         total = 0
         for date, rec in days.items():
             if cutoff and date < cutoff:
@@ -3845,9 +3927,31 @@ def api_traffic_summary():
             total += rec.get("paths", {}).get(path, 0)
         return total
 
+    def people_path(path, cutoff=None):
+        """People who opened it. Today's ids are still raw, so they can be
+        counted across days without double-counting someone who came back;
+        finished days keep only a per-day total, so those are summed. A visitor
+        returning on two different days is two — the honest reading of "this
+        week" — but one person refreshing thirty times is one, which is the
+        number that used to be wrong."""
+        total = 0
+        for date, rec in days.items():
+            if cutoff and date < cutoff:
+                continue
+            if "path_ids" in rec:
+                total += len(rec["path_ids"].get(path, []))
+            else:
+                total += rec.get("path_uniques", {}).get(path, 0)
+        return total
+
     def tool_stats(path):
-        return {"today": sum_path(path, today_iso), "week": sum_path(path, week_cutoff),
-                "all_time": sum_path(path)}
+        return {"today": people_path(path, today_iso),
+                "week": people_path(path, week_cutoff),
+                "all_time": people_path(path),
+                # kept separately, clearly named — this is what the old numbers were
+                "views_today": sum_path(path, today_iso),
+                "views_week": sum_path(path, week_cutoff),
+                "views_all_time": sum_path(path)}
 
     return jsonify({"ok": True,
                      "trip_planner": tool_stats("/trip-planner"),
