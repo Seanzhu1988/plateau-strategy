@@ -579,6 +579,15 @@
     ['fromInput', 'toInput'].forEach(function (id) {
         $(id).addEventListener('keydown', function (e) { if (e.key === 'Enter') plan(); });
     });
+
+    // Arrive prefilled from the trip planner: /road-trip?from=…&to=…[&go=1]
+    (function () {
+        var p = new URLSearchParams(location.search);
+        var f = (p.get('from') || '').slice(0, 120), t = (p.get('to') || '').slice(0, 120);
+        if (f) $('fromInput').value = f;
+        if (t) $('toInput').value = t;
+        if (f && t && p.get('go') === '1') setTimeout(plan, 250);
+    })();
 })();
 </script>
 </body>

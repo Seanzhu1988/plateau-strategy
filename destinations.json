@@ -3,7 +3,8 @@
   "nyc": "New York",
   "dc": "Washington DC",
   "seattle": "Seattle",
-  "other": "Other"
+  "other": "Other",
+  "boston": "Boston"
  },
  "entries": [
   {
@@ -492,6 +493,110 @@
    "lon": -122.3282,
    "desc": "The mothership on Capitol Hill — a working roastery where beans ride copper pipes overhead and the menu goes far beyond any normal Starbucks.",
    "tip": "Order a flight from the experience bar and watch the roaster run — skip the regular latte you can get anywhere."
+  },
+  {
+   "city": "boston",
+   "name": "Freedom Trail (start)",
+   "lat": 42.3564,
+   "lon": -71.0629,
+   "cat": "history",
+   "type": "attraction",
+   "close": 1380,
+   "visit": 120,
+   "price": null,
+   "desc": "A 2.5-mile red brick line through sixteen Revolutionary sites, from Boston Common to the Bunker Hill Monument — the whole founding story laid out as a walk.",
+   "tip": "Walk it north-to-south in the afternoon so the sun is behind you, and treat the posted 90 minutes as walking time only — stopping inside sites doubles it."
+  },
+  {
+   "city": "boston",
+   "name": "Faneuil Hall Marketplace",
+   "lat": 42.36,
+   "lon": -71.0568,
+   "cat": "food",
+   "type": "attraction",
+   "close": 1260,
+   "visit": 75,
+   "price": null,
+   "desc": "Three granite halls of food stalls and street performers beside the 1742 meeting house where colonists argued their way toward revolution.",
+   "tip": "Quincy Market's food hall is packed at noon; eat at 11 or after 2 and take it out to the benches by the hall's east door."
+  },
+  {
+   "city": "boston",
+   "name": "Fenway Park",
+   "lat": 42.3467,
+   "lon": -71.0972,
+   "cat": "culture",
+   "type": "attraction",
+   "close": 1140,
+   "visit": 90,
+   "price": "$$",
+   "desc": "The oldest ballpark in the majors, opened 1912, with the 37-foot Green Monster still standing in left field.",
+   "tip": "On non-game days the hour-long tour walks you onto the Monster seats — book it, they sell out, and it's the only way in without a ticket."
+  },
+  {
+   "city": "boston",
+   "name": "Museum of Fine Arts",
+   "lat": 42.3394,
+   "lon": -71.094,
+   "cat": "culture",
+   "type": "attraction",
+   "close": 1020,
+   "visit": 120,
+   "price": "$$",
+   "desc": "Half a million works across an encyclopedic collection, strongest in Impressionists, Egyptian art and American painting.",
+   "tip": "Wednesday through Friday evenings are the quietest hours, and the Art of the Americas wing alone is worth the full two hours."
+  },
+  {
+   "city": "boston",
+   "name": "New England Aquarium",
+   "lat": 42.3592,
+   "lon": -71.0498,
+   "cat": "nature",
+   "type": "attraction",
+   "close": 1020,
+   "visit": 90,
+   "price": "$$",
+   "desc": "A four-story Giant Ocean Tank spirals through a Caribbean reef with sea turtles, sharks and rays, right on the harbor.",
+   "tip": "Go at opening or in the last 90 minutes — the ramp around the tank is a single-file crush midday."
+  },
+  {
+   "city": "boston",
+   "name": "USS Constitution",
+   "lat": 42.3724,
+   "lon": -71.0563,
+   "cat": "history",
+   "type": "attraction",
+   "close": 1020,
+   "visit": 60,
+   "price": null,
+   "desc": "'Old Ironsides', launched 1797 and still a commissioned Navy ship — the oldest warship afloat anywhere in the world.",
+   "tip": "Free, but adults need photo ID to board. The museum next door is separate and worth the extra half hour."
+  },
+  {
+   "city": "boston",
+   "name": "Boston Common & Public Garden",
+   "lat": 42.355,
+   "lon": -71.0656,
+   "cat": "nature",
+   "type": "attraction",
+   "close": 1380,
+   "visit": 45,
+   "price": null,
+   "desc": "America's oldest public park, 1634, running into the Public Garden with its swan boats and weeping willows.",
+   "tip": "Swan boats run mid-April to Labor Day only. The Common is the natural place to start any Boston day — three subway lines meet underneath it."
+  },
+  {
+   "city": "boston",
+   "name": "Harvard Yard, Cambridge",
+   "lat": 42.3744,
+   "lon": -71.1169,
+   "cat": "culture",
+   "type": "attraction",
+   "close": 1380,
+   "visit": 60,
+   "price": null,
+   "desc": "The 1636 college green across the river, ringed by red brick halls, with Harvard Square's bookshops and cafes at the gate.",
+   "tip": "Take the Red Line to Harvard rather than driving — Cambridge parking is genuinely difficult. Student-led tours leave from the visitor center and are free."
   }
  ]
 }

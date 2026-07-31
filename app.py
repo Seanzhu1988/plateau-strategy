@@ -4018,6 +4018,59 @@ def _reservation_reminder_scan(send=True):
     return len(to_send)
 
 
+# ---------------------------------------------------------------- map data proxy
+# The free OpenStreetMap query servers are slow and rate-limit by IP, so every
+# visitor asking them directly meant 30-45s waits and empty layers. The server
+# asks once, holds the answer for an hour, and every later visitor gets it
+# instantly — one polite request on behalf of everyone instead of one each.
+_OVERPASS_MIRRORS = ["https://overpass.kumi.systems/api/interpreter",
+                     "https://overpass.private.coffee/api/interpreter",
+                     "https://overpass-api.de/api/interpreter"]
+_OVERPASS_CACHE = {}          # query hash -> {"ts": float, "data": [...]}
+_OVERPASS_TTL = 3600
+_OVERPASS_MAX = 400           # keep the cache from growing without bound
+
+
+@app.route("/api/mapdata", methods=["POST"])
+def api_mapdata():
+    q = (request.get_json(silent=True) or {}).get("q", "")
+    if not isinstance(q, str) or not q.strip() or len(q) > 4000:
+        return jsonify({"ok": False, "error": "bad query"}), 400
+    key = hashlib.sha256(q.encode("utf-8")).hexdigest()
+    now = time.time()
+    hit = _OVERPASS_CACHE.get(key)
+    if hit and (now - hit["ts"] < _OVERPASS_TTL):
+        return jsonify({"ok": True, "elements": hit["data"], "cached": True})
+    import requests
+    last = ""
+    for url in _OVERPASS_MIRRORS:
+        try:
+            r = requests.post(url, data={"data": q}, timeout=(5, 60),
+                              headers={"User-Agent": "PlateauStrategy/1.0 (trip planner)"})
+            if r.status_code != 200:
+                last = "HTTP %s" % r.status_code
+                continue
+            j = r.json()
+            els = j.get("elements") or []
+            # a throttled reply carries a "remark" with an empty list — that is
+            # not "nothing here", so move on to the next mirror
+            if not els and j.get("remark"):
+                last = j["remark"][:120]
+                continue
+            with _LOCK:
+                if len(_OVERPASS_CACHE) > _OVERPASS_MAX:
+                    for k in sorted(_OVERPASS_CACHE, key=lambda k: _OVERPASS_CACHE[k]["ts"])[:_OVERPASS_MAX // 2]:
+                        _OVERPASS_CACHE.pop(k, None)
+                _OVERPASS_CACHE[key] = {"ts": now, "data": els}
+            return jsonify({"ok": True, "elements": els, "cached": False})
+        except Exception as e:
+            last = str(e)[:120]
+    # everything failed — hand back a stale answer rather than nothing
+    if hit:
+        return jsonify({"ok": True, "elements": hit["data"], "cached": True, "stale": True})
+    return jsonify({"ok": False, "error": last or "map servers busy"}), 503
+
+
 @app.route("/api/dispatch/uncovered")
 @owner_required
 def api_dispatch_uncovered():
