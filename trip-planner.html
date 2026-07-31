@@ -50,6 +50,31 @@
             box-shadow: 0 10px 30px rgba(15,23,42,0.26); border-radius: 14px; }
         .layout .side .card.jarvis { margin: 0; border-radius: 14px;
             background: rgba(255,255,255,0.97); }
+
+        /* MINI is the default: Jarvis is a small chat bubble, not a panel. He keeps
+           talking and stays one tap from the full day sheet, but the map keeps its
+           room until the traveler actually wants the detail. */
+        .layout.jarvis-mini .side { width: 268px; max-height: none; overflow: visible; }
+        .layout.jarvis-mini .card.jarvis { padding: 0.55rem 0.7rem; }
+        .layout.jarvis-mini .card.jarvis h3 { font-size: 0.85rem; margin-bottom: 0.3rem; }
+        .layout.jarvis-mini .jarvis-line { font-size: 0.76rem; padding: 0.4rem 0.5rem; margin: 0 0 0.35rem; }
+        .layout.jarvis-mini .jarvis-line .j-tip { font-size: 0.72rem; }
+        .layout.jarvis-mini .jarvis-mast { font-size: 0.72rem; padding: 0.25rem 0; border-bottom: none; }
+        /* everything heavy folds away in mini */
+        .layout.jarvis-mini .itin-head,
+        .layout.jarvis-mini #trip,
+        .layout.jarvis-mini .jarvis-actions,
+        .layout.jarvis-mini #sugHead,
+        .layout.jarvis-mini #auto,
+        .layout.jarvis-mini #jask { display: none !important; }
+        .jarvis-expand { display: none; width: 100%; margin-top: 0.4rem; border: none;
+            background: #eff6ff; color: #1d4ed8; font-weight: 700; font-size: 0.75rem;
+            border-radius: 8px; padding: 0.38rem 0.5rem; cursor: pointer; font-family: inherit; }
+        .layout.jarvis-mini .jarvis-expand { display: block; }
+        .jarvis-shrink { display: block; width: 100%; margin-top: 0.5rem; border: none;
+            background: #f1f5f9; color: #475569; font-weight: 700; font-size: 0.75rem;
+            border-radius: 8px; padding: 0.38rem 0.5rem; cursor: pointer; font-family: inherit; }
+        .layout.jarvis-mini .jarvis-shrink { display: none; }
         .layout.jarvis-hidden .side { display: none; }
         #jarvisDock { position: absolute; z-index: 951; top: 118px; left: 58px;
             width: 38px; height: 38px; border-radius: 10px; border: none; cursor: pointer;
@@ -528,6 +553,8 @@
                     <div class="jarvis-sec" id="sugHead">✨ Jarvis suggests</div>
                     <div id="auto"><p class="muted">Calculating…</p></div>
                     <div id="jask" class="jask" style="display:none;"></div>
+                    <button class="jarvis-expand" onclick="jarvisSize(false)">🧭 Show my day sheet</button>
+                    <button class="jarvis-shrink" onclick="jarvisSize(true)">▴ Smaller — just keep me posted</button>
                 </div>
             </div>
 
@@ -1945,6 +1972,13 @@
     }
     // Jarvis floats over the map instead of shrinking it — tuck him away for a clear
     // view, tap the 🤵 dock to bring the conversation back. The map never resizes.
+    // Jarvis has two sizes: a chat bubble (default — map keeps its room) and the
+    // full day sheet. He talks in both.
+    function jarvisSize(mini){
+        const l = document.querySelector('.layout'); if (!l) return;
+        l.classList.toggle('jarvis-mini', !!mini);
+        try { localStorage.setItem('jarvis_mini', mini ? '1' : '0'); } catch (e) {}
+    }
     function toggleWideMap(){
         const l = document.querySelector('.layout'); if (!l) return;
         const hidden = l.classList.toggle('jarvis-hidden');
@@ -2445,6 +2479,7 @@
         map.addControl(new Legend());
     })();
 
+    try { if (localStorage.getItem('jarvis_mini') !== '0') document.querySelector('.layout').classList.add('jarvis-mini'); } catch (e) {}
     try { if (localStorage.getItem('jarvis_hidden') === '1') {
         document.querySelector('.layout').classList.add('jarvis-hidden');
         setTimeout(() => { const b = $('wideMapBtn'); if (b) b.textContent = '🤵'; }, 300);
