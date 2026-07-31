@@ -161,7 +161,18 @@
             border: 1.5px solid #fde68a; border-radius: 999px; padding: 0.2rem 0.6rem;
             margin: 0 0.25rem 0.25rem 0; cursor: pointer; color: #92400e; }
         .fg-opt:hover { border-color: #f59e0b; }
-        .fg-decline { margin-top: 0.2rem; font-size: 0.72rem; }
+        .fg-decline { margin-top: 0.35rem; font-size: 0.72rem; }
+        /* City to city is a flight, so the recommended airport is the button —
+           not one chip among several. Driving stays one tap away underneath. */
+        .fg-primary { display: block; width: 100%; text-align: left; cursor: pointer;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: none;
+            border-radius: 9px; padding: 0.5rem 0.7rem; font-family: inherit; font-size: 0.78rem;
+            font-weight: 700; margin-bottom: 0.35rem; box-shadow: 0 6px 14px -6px rgba(37,99,235,.8); }
+        .fg-primary:hover { filter: brightness(1.07); }
+        .fg-primary .sub { display: block; font-weight: 500; font-size: 0.68rem;
+            color: #cfe0ff; margin-top: 1px; }
+        .fg-more { font-size: 0.68rem; color: #78350f; margin: 0.2rem 0 0.1rem; }
+        .far-alts { margin-top: 0.45rem; font-size: 0.68rem; opacity: .85; }
         .far-note { margin-top: 0.3rem; font-size: 0.75rem; line-height: 1.45; color: #92400e;
             background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 0.4rem 0.6rem; }
         .start-entry { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-top: 0.5rem; }
@@ -2253,12 +2264,18 @@
             if (!best || d < best.d) best = { k: k, d: d };
         });
         const mi = Math.round(dKm * 0.621371);
-        box.innerHTML = '⚠ Your start is <b>' + mi + ' mi</b> from the ' + escj(c.label) + ' board — drive times here will be huge. '
+        // City to city is a flight, not a drive. Lead with that instead of
+        // warning about the drive time, and let the traveller decline into the
+        // road-trip planner if they would rather drive it.
+        box.innerHTML = '✈️ You\'re <b>' + mi + ' mi</b> from ' + escj(c.label)
+            + ' — that\'s a flight, not a drive.'
+            + '<div id="farGateways" class="far-gateways">Looking for airports near ' + escj(c.label) + '…</div>'
+            + '<div class="far-alts">'
             + (best && best.d <= CITY_FAR_KM && best.k !== curCity
-                ? '<span class="fixlink" onclick="switchBoardKeepStart(\'' + best.k + '\')">Switch to ' + escj(CITIES[best.k].label) + ' →</span> · '
+                ? '<span class="fixlink" onclick="switchBoardKeepStart(\'' + best.k + '\')">Plan ' + escj(CITIES[best.k].label) + ' instead →</span> · '
                 : '')
             + '<span class="fixlink" onclick="restoreCityStart()">Move start back to ' + escj(c.label) + '</span>'
-            + '<div id="farGateways" class="far-gateways">Looking for airports near ' + escj(c.label) + '…</div>';
+            + '</div>';
         box.style.display = 'block';
         suggestGateways(c);
     }
@@ -2270,7 +2287,7 @@
     async function suggestGateways(c){
         const el = $('farGateways'); if (!el) return;
         const roadLink = '<a class="fixlink" href="/road-trip?from=' + encodeURIComponent(currentLoc.address || (currentLoc.lat.toFixed(4) + ',' + currentLoc.lon.toFixed(4)))
-            + '&to=' + encodeURIComponent(c.label) + '" target="_blank">🛣️ Plan it as a road trip instead →</a>';
+            + '&to=' + encodeURIComponent(c.label) + '" target="_blank">🛣️ No — I\'d rather drive it, plan the road trip →</a>';
         try {
             const around = '(around:60000,' + c.center[0].toFixed(5) + ',' + c.center[1].toFixed(5) + ');';
             // Same fix as the airports layer: an ["iata"] filter on node/way misses
@@ -2284,12 +2301,29 @@
                 iata: (e.tags || {}).iata || '',
                 lat: e.lat !== undefined ? e.lat : (e.center || {}).lat,
                 lon: e.lon !== undefined ? e.lon : (e.center || {}).lon
-            })).filter(g => g.lat !== undefined && g.name).slice(0, 6);
+            })).filter(g => g.lat !== undefined && g.name);
+            // Closest to the city centre first, and prefer one with an IATA code —
+            // that is the airport a traveller actually flies into, rather than
+            // whichever airfield Overpass happened to return first.
+            gatewayChoices.forEach(g => { g.km = havKm({ lat: g.lat, lon: g.lon },
+                                                       { lat: c.center[0], lon: c.center[1] }); });
+            gatewayChoices.sort((a, b) => (b.iata ? 1 : 0) - (a.iata ? 1 : 0) || a.km - b.km);
+            gatewayChoices = gatewayChoices.slice(0, 6);
             if (!gatewayChoices.length) { el.innerHTML = roadLink; return; }
-            el.innerHTML = '<div class="fg-lead">✈️ Flying in? Start from ' + escj(c.label) + '\'s airport'
-                + (gatewayChoices.length > 1 ? 's — pick one:' : ':') + '</div>'
-                + gatewayChoices.map((g, i) => '<span class="fg-opt" onclick="startFromGateway(' + i + ')">'
-                    + (g.iata ? '<b>' + escj(g.iata) + '</b> ' : '') + escj(g.name.replace(/ International Airport$/, '')) + '</span>').join('')
+
+            const top = gatewayChoices[0];
+            const tidy = n => n.replace(/ International Airport$/, '').replace(/ Airport$/, '');
+            const rest = gatewayChoices.slice(1);
+            el.innerHTML =
+                '<button class="fg-primary" onclick="startFromGateway(0)">'
+                + '✈️ Fly into ' + (top.iata ? escj(top.iata) + ' — ' : '') + escj(tidy(top.name))
+                + '<span class="sub">Start your ' + escj(c.label) + ' trip here · '
+                + Math.round(top.km * 0.621371) + ' mi from the centre</span></button>'
+                + (rest.length
+                    ? '<div class="fg-more">or another airport:</div>'
+                      + rest.map((g, i) => '<span class="fg-opt" onclick="startFromGateway(' + (i + 1) + ')">'
+                          + (g.iata ? '<b>' + escj(g.iata) + '</b> ' : '') + escj(tidy(g.name)) + '</span>').join('')
+                    : '')
                 + '<div class="fg-decline">' + roadLink + '</div>';
         } catch (e) { el.innerHTML = roadLink; }
     }
