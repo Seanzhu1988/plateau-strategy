@@ -782,11 +782,27 @@ def api_clock_signup():
     return jsonify({"ok": True})
 
 
+def _public_book_entries(entries):
+    """Entries safe to publish.
+
+    The write-side guard only protects places added from now on. Anything a
+    visitor added before it existed is still in the file, and on the live
+    server that file is not something we can hand-edit. Stored entries keep no
+    OpenStreetMap classification — only a name — so the one honest test left is
+    the name itself: nothing worth visiting is called "412 Maple St".
+
+    Cheap, and it fails in the safe direction: at worst a genuine place with a
+    number for a name waits until someone re-adds it under its real name."""
+    return [e for e in entries or []
+            if not _ADDRESS_LIKE.match((e.get("name") or ""))]
+
+
 @app.route("/api/destinations")
 def api_destinations():
     try:
         with open(_data_path("destinations.json")) as f:
             data = json.load(f)
+        data["entries"] = _public_book_entries(data.get("entries"))
         # ride the crowd's real stay times AND star ratings along with each place
         times = _visit_all()
         ratings = _ratings_all()
@@ -844,7 +860,8 @@ def api_discoveries():
     except Exception:
         return jsonify({"ok": True, "recent": [], "by_city": [], "total": 0})
     cities = d.get("cities", {})
-    found = [e for e in d.get("entries", []) if e.get("source") == "user" and e.get("added_at")]
+    found = [e for e in _public_book_entries(d.get("entries"))
+             if e.get("source") == "user" and e.get("added_at")]
     found.sort(key=lambda e: e.get("added_at", ""), reverse=True)
     tally = {}
     for e in found:
@@ -1117,16 +1134,91 @@ def _describe_osm(meta):
     return desc[:300], cat, book_type
 
 
+# Somebody's home is not a destination. These are OpenStreetMap's own words for
+# residential buildings and plots — if the map says a point is one of these, it
+# does not go in a public book, no matter who searched for it.
+_RESIDENTIAL_TYPES = {
+    "house", "houses", "residential", "apartments", "apartment", "detached",
+    "semidetached_house", "semi_detached_house", "terrace", "terraced_house",
+    "bungalow", "dormitory", "farmhouse", "static_caravan", "houseboat",
+    "cabin", "hut", "trailer", "mobile_home", "annexe", "ger",
+}
+# A point classified under one of these is a public thing — a park, a museum, a
+# shop, a station. Anything with no such classification has not earned a page.
+_PUBLIC_CLASSES = {
+    "tourism", "historic", "leisure", "natural", "amenity", "shop", "man_made",
+    "aeroway", "railway", "waterway", "aerialway", "military", "emergency",
+    "office", "craft", "healthcare", "public_transport", "attraction",
+}
+_ADDRESS_LIKE = re.compile(r"^\s*\d+[a-z]?[\s,-]", re.I)
+
+
+def _is_private_residence(meta, name=""):
+    """Does this point look like somewhere a person lives?
+
+    Returns (True, reason) when a place must be kept out of the public
+    Destination Book. It is deliberately cautious: the cost of wrongly
+    publishing a home is somebody's address on the open internet forever,
+    and the cost of wrongly withholding a cafe is that the book misses one
+    row until the next visitor searches it with better tags.
+
+    This never affects where a customer can be driven. It only decides what
+    becomes a public page.
+    """
+    meta = meta or {}
+    cls = (meta.get("osm_class") or meta.get("class") or "").strip().lower()
+    typ = (meta.get("osm_type_name") or meta.get("type") or "").strip().lower()
+    addrtype = (meta.get("addresstype") or "").strip().lower()
+    addr = meta.get("address") if isinstance(meta.get("address"), dict) else {}
+
+    if typ in _RESIDENTIAL_TYPES or addrtype in _RESIDENTIAL_TYPES:
+        return True, "residential building"
+    if cls == "place" and typ in ("house", "houses", "farm", "isolated_dwelling"):
+        return True, "dwelling"
+    if cls == "building" and typ not in ("public", "civic", "commercial",
+                                         "retail", "industrial", "church",
+                                         "cathedral", "temple", "mosque",
+                                         "synagogue", "train_station", "hotel",
+                                         "stadium", "museum"):
+        return True, "unclassified building"
+    if cls == "landuse" and typ == "residential":
+        return True, "residential land"
+
+    # No public classification at all, and the name is a street address rather
+    # than the name of anything — "412 Maple St" is where someone lives, not a
+    # place to visit. A named landmark ("Pike Place Market") never matches this,
+    # and a real landmark that happens to sit at a number is normally tagged
+    # tourism/historic, so it is caught by the class check above.
+    if cls not in _PUBLIC_CLASSES:
+        if _ADDRESS_LIKE.match(name or "") and (addr.get("house_number") or "").strip():
+            return True, "street address, not a named place"
+
+    return False, ""
+
+
 @app.route("/api/destinations/add", methods=["POST"])
 def api_destinations_add():
     """COMMUNITY MEMORY for the free tools: a place anyone adds in the Trip
     Planner search is remembered by the site — it joins the city's planner list
     for every future visitor AND appears in the Destination Book (tagged
-    'community'). Deduped by name+city; capped so the book can't be flooded."""
+    'community'). Deduped by name+city; capped so the book can't be flooded.
+
+    Private homes are refused. Anyone can type any address into the planner and
+    be driven there — that is the whole service — but a place only becomes a
+    public page if it is a public place. Otherwise searching for where someone
+    lives would publish their address, with coordinates, to every future
+    visitor. The traveler keeps it on their own board either way."""
     data = request.get_json(force=True, silent=True) or {}
     name = _no_tags((data.get("name") or "").strip())[:80]
     if len(name) < 2:
         return jsonify({"ok": False, "error": "Name required."}), 400
+    private, _why = _is_private_residence(data, name)
+    if private:
+        # 200, not an error: the traveler did nothing wrong and their trip is
+        # unaffected. Nothing about the address is written down, including here.
+        return jsonify({"ok": False, "private": True,
+                        "error": "Homes and private addresses aren't added to the "
+                                 "public Destination Book. Your trip is unaffected."}), 200
     try:
         lat = float(data.get("lat")); lon = float(data.get("lon"))
         if not (-90 <= lat <= 90 and -180 <= lon <= 180):

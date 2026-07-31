@@ -1924,6 +1924,14 @@
                                        osm_class: (meta || {}).class, type: (meta || {}).type,
                                        address: (meta || {}).address })
             }).then(r => r.json()).then(d => {
+                if (d && d.private) {
+                    // Refused on purpose — it looks like somewhere a person lives.
+                    // Say so, so the missing "added to the book" line isn't a mystery,
+                    // and make clear the trip itself is untouched.
+                    say('“' + p.name + '” is on your board and we can drive you there. '
+                        + 'Private addresses aren’t added to the public Destination Book.');
+                    return;
+                }
                 if (!d || !d.ok || !d.entry) return;
                 if (d.entry.cat && d.entry.cat !== p.cat) {     // adopt the derived category
                     p.cat = d.entry.cat; renderPlaces(); refresh(); savePlaces();
