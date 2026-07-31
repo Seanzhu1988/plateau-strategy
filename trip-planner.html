@@ -120,6 +120,26 @@
             box-shadow: 0 4px 14px rgba(15,23,42,0.22); padding: 0.35rem 0.55rem; }
         .map-legend .legend { display: none; margin: 0.25rem 0 0; gap: 0.35rem 0.8rem; font-size: 0.72rem; }
         .map-legend.open .legend { display: flex; }
+
+        /* ---- overnight prompt ---- */
+        .ov-choice { margin-top: 1rem; padding-top: .9rem; border-top: 1px solid #eef2f7; }
+        .ov-choice:first-of-type { border-top: none; padding-top: 0; }
+        .ov-row { display: flex; gap: .5rem; flex-wrap: wrap; }
+        .ov-row input { flex: 1; min-width: 190px; padding: .6rem .8rem;
+            border: 1px solid #cbd5e1; border-radius: 8px; font-size: .95rem; font-family: inherit; }
+        .ov-row input:focus { outline: none; border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,.14); }
+        .ov-find { width: 100%; text-align: left; }
+        .ov-list { display: flex; flex-direction: column; gap: .35rem; margin-top: .6rem;
+            max-height: 210px; overflow-y: auto; }
+        .ov-hotel { display: flex; justify-content: space-between; align-items: center; gap: .6rem;
+            width: 100%; text-align: left; background: #fff; border: 1px solid #e2e8f0;
+            border-radius: 9px; padding: .55rem .75rem; font-size: .9rem; font-family: inherit;
+            color: #1f2937; cursor: pointer; }
+        .ov-hotel:hover { border-color: #db2777; background: #fff5fa; }
+        .ov-hotel span { color: #94a3b8; font-size: .8rem; white-space: nowrap; }
+        .ov-msg { font-size: .86rem; color: #475569; margin-top: .7rem; min-height: 1.2em; }
+        .ov-skip { width: 100%; margin-top: .9rem; }
         .map-legend .lg-toggle { font-size: 0.72rem; font-weight: 700; color: #475569;
             cursor: pointer; user-select: none; }
 
@@ -624,6 +644,39 @@
         </footer>
     </div>
 
+    <!-- The night between two days: you wake up where you slept, not where you started. -->
+    <div class="modal-back" id="overnight">
+        <div class="modal">
+            <button class="modal-x" onclick="closeOvernight()">✕</button>
+            <h3>Night after Day <span id="ovDay">1</span></h3>
+            <p class="muted">Day <span id="ovNext">2</span> should start from wherever you sleep —
+               otherwise it plans your morning from your original start point.
+               Have you already got somewhere?</p>
+
+            <div class="ov-choice">
+                <label class="ho-lab">Yes — I've booked somewhere</label>
+                <div class="ov-row">
+                    <input id="ovAddr" placeholder="Hotel name or address…"
+                           onkeydown="if(event.key==='Enter')overnightBooked()">
+                    <button class="btn add" onclick="overnightBooked()">Use this</button>
+                </div>
+            </div>
+
+            <div class="ov-choice">
+                <label class="ho-lab">Not yet — near where Day <span id="ovDayB">1</span> ends</label>
+                <button class="btn ghost ov-find" onclick="overnightFind()">
+                    🏨 Find places to stay near <span id="ovWhere">my last stop</span>
+                </button>
+                <div id="ovList" class="ov-list"></div>
+            </div>
+
+            <p class="ov-msg" id="ovMsg"></p>
+            <button class="btn ghost ov-skip" onclick="overnightBackToStart()">
+                I'm heading back to my start point →
+            </button>
+        </div>
+    </div>
+
     <div class="modal-back" id="handoff">
         <div class="modal">
             <button class="modal-x" onclick="closeHandoff()">✕</button>
@@ -770,10 +823,19 @@
         const s = Math.sin(dLa/2)**2 + Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLo/2)**2;
         return 2*R*Math.asin(Math.sqrt(s));
     }
-    function coordOf(idx){                             // idx -1 = start marker
+    // idx -1 = start marker · idx -2 = where you slept last night
+    function coordOf(idx){
+        if (idx === -2) {
+            const s = stayFor(st.day);
+            if (s) return { lat: s.lat, lon: s.lon };
+            idx = -1;                                  // no lodging recorded — fall back
+        }
         if (idx === -1) { const ll = startMarker.getLatLng(); return { lat: ll.lat, lon: ll.lng }; }
         return places[idx];
     }
+    // Where the traveller is staying the night BEFORE the given day, so day 2
+    // starts from the hotel rather than teleporting back to the original start.
+    function stayFor(day){ return (st.stays || {})[day] || null; }
     function travelMin(fromIdx, toIdx, depMin){
         let base;
         if (matrix && matrixMode === 'osrm') {
@@ -947,12 +1009,105 @@
         refresh();
     }
 
+    // Ending a day used to drop you back at your original start point the next
+    // morning, which is wrong the moment a trip runs overnight — you wake up
+    // wherever you slept. So the day boundary asks first.
     function nextDay(){
-        st.day++; st.now = DAY_START; st.pos = -1;
-        say('Day ' + st.day + ' starts ' + fmt(DAY_START) + ' from your start point — board re-lit.');
-        jarvisSay('Starting <b>Day ' + st.day + '</b> at ' + fmt(DAY_START) + ' from your start point.');
+        if (!st.route.length) { advanceDay(-1); return; }   // nothing planned yet, nothing to ask
+        openOvernight();
+    }
+
+    // origin: -1 = back to the original start point · -2 = the recorded lodging
+    function advanceDay(origin){
+        st.day++; st.now = DAY_START; st.pos = (origin === -2) ? -2 : -1;
+        const s = (origin === -2) ? stayFor(st.day) : null;
+        const from = s ? s.name : 'your start point';
+        say('Day ' + st.day + ' starts ' + fmt(DAY_START) + ' from ' + from + ' — board re-lit.');
+        jarvisSay('Starting <b>Day ' + st.day + '</b> at ' + fmt(DAY_START) +
+                  ' from <b>' + escj(from) + '</b>.');
         refresh();
     }
+
+    // ---------- overnight: where are you staying? ----------
+    function lastStopOfDay(){
+        for (let k = st.route.length - 1; k >= 0; k--) {
+            if (st.route[k].day === st.day) return places[st.route[k].i] || null;
+        }
+        return null;
+    }
+    function openOvernight(){
+        const last = lastStopOfDay();
+        $('ovDay').textContent = st.day;
+        $('ovDayB').textContent = st.day;
+        $('ovNext').textContent = st.day + 1;
+        $('ovWhere').textContent = last ? last.name : 'your last stop';
+        $('ovList').innerHTML = '';
+        $('ovAddr').value = '';
+        $('ovMsg').textContent = '';
+        $('overnight').classList.add('on');
+    }
+    function closeOvernight(){ $('overnight').classList.remove('on'); }
+
+    function saveStay(lat, lon, name, booked){
+        st.stays = st.stays || {};
+        st.stays[st.day + 1] = { lat: lat, lon: lon, name: name, booked: !!booked };
+        closeOvernight();
+        advanceDay(-2);
+    }
+
+    // "I've already booked somewhere" — type it, we geocode it.
+    async function overnightBooked(){
+        const q = ($('ovAddr').value || '').trim();
+        if (!q) { $('ovMsg').textContent = 'Type the hotel name or address first.'; return; }
+        $('ovMsg').textContent = 'Finding it…';
+        try {
+            const r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' +
+                                  encodeURIComponent(q));
+            const j = await r.json();
+            if (!j.length) { $('ovMsg').textContent = 'Could not find that — try adding the city.'; return; }
+            saveStay(+j[0].lat, +j[0].lon, j[0].display_name.split(',').slice(0, 2).join(','), true);
+        } catch (e) {
+            $('ovMsg').textContent = 'Search is busy — try again in a moment.';
+        }
+    }
+
+    // "Not yet" — look for somewhere near where the day actually ends, because
+    // that is the only place a hotel is convenient.
+    async function overnightFind(){
+        const last = lastStopOfDay();
+        const c = last || coordOf(st.pos);
+        $('ovMsg').textContent = 'Looking for places to stay near ' + (last ? last.name : 'your last stop') + '…';
+        try {
+            const q = '[out:json][timeout:25];(' +
+                'nwr(around:6000,' + c.lat.toFixed(5) + ',' + c.lon.toFixed(5) +
+                ')["tourism"~"^(hotel|motel|guest_house|hostel)$"]["name"];);out center 40;';
+            const r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: q });
+            const j = await r.json();
+            const seen = {}, out = [];
+            (j.elements || []).forEach(e => {
+                const t = e.tags || {}, la = e.lat || (e.center && e.center.lat),
+                      lo = e.lon || (e.center && e.center.lon);
+                if (!t.name || !la || !lo || seen[t.name]) return;
+                seen[t.name] = 1;
+                out.push({ name: t.name, lat: la, lon: lo,
+                           km: havKm({ lat: la, lon: lo }, c) });
+            });
+            out.sort((a, b) => a.km - b.km);
+            if (!out.length) {
+                $('ovMsg').textContent = 'Nothing mapped nearby. Type where you are staying instead.';
+                return;
+            }
+            $('ovMsg').textContent = out.length + ' found near ' + (last ? last.name : 'your last stop') + ':';
+            $('ovList').innerHTML = out.slice(0, 12).map(h =>
+                '<button class="ov-hotel" onclick="pickStay(' + h.lat + ',' + h.lon + ',&quot;' +
+                escj(h.name).replace(/"/g, '&quot;') + '&quot;)">🏨 ' + escj(h.name) +
+                ' <span>' + h.km.toFixed(1) + ' km</span></button>').join('');
+        } catch (e) {
+            $('ovMsg').textContent = 'The places service is busy — type where you are staying instead.';
+        }
+    }
+    function pickStay(lat, lon, name){ saveStay(lat, lon, name, false); }
+    function overnightBackToStart(){ closeOvernight(); advanceDay(-1); }
     function resetTrip(){
         st.day = 1; st.now = parseTime($('leaveAt').value) || 570; st.pos = -1;
         st.route = []; st.visited = new Set();
@@ -2282,7 +2437,7 @@
         // Airports are sparse, so they search a wide radius and stay visible at
         // city zoom — a traveller landing at JFK needs to see it from the whole map.
         airports:   { emoji: '✈️', color: '#334155', min: 99, max: 25, label: 'Airports',
-                      wideRadius: 60000,
+                      wideRadius: 60000, anchor: 'origin',
                       q: 'node["aeroway"="aerodrome"]["iata"];way["aeroway"="aerodrome"]["iata"]', fallbackName: 'Airport',
                       addable: true, startable: true },
         rail:       { emoji: '🚉', color: '#7c2d12', min: 12, max: 60, label: 'Train stations',
@@ -2551,7 +2706,16 @@
         // broken. So we search a bounded radius around the middle of the map
         // instead: something useful always appears, and zooming in fills it out.
         const wide = map.getZoom() < cfg.min;
-        const ctr = map.getCenter();
+        // Some layers belong to WHERE YOU ARE, not where the map happens to be
+        // pointing. Airports are the clear case: pan across the state to look at
+        // something and you still want the airport for the city you're actually
+        // in, not one 200 miles away that drifted under the centre of the screen.
+        let ctr = map.getCenter();
+        if (cfg.anchor === 'origin') {
+            const o = coordOf(st.pos);
+            if (o && isFinite(o.lat) && isFinite(o.lon)) ctr = L.latLng(o.lat, o.lon);
+            else if (CITIES[curCity]) ctr = L.latLng(CITIES[curCity].center[0], CITIES[curCity].center[1]);
+        }
         const b = map.getBounds();
         const key = cat + '|' + (wide
             ? 'c' + (cfg.wideRadius || 4000) + ':' + ctr.lat.toFixed(2) + ',' + ctr.lng.toFixed(2)
