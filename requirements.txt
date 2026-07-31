@@ -1,4 +1,7 @@
 flask>=3.0
 requests>=2.31
+# Verifies Google sign-in tokens against Google's signing keys, server-side.
+# Pure-Python wheels, nothing to compile.
+google-auth>=2.30
 python-dotenv>=1.0
 gunicorn>=21.0

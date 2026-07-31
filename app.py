@@ -228,6 +228,61 @@ def api_owner_logout():
     return jsonify({"ok": True})
 
 
+# ---------- "Continue with Google" on the booking form ----------
+# Optional, and never a gate. A stranger booking a 5am airport run wants a car,
+# not an account — requiring a sign-in before a first booking costs bookings.
+# All this does is fill in the name and email so the form is two taps shorter.
+#
+# The client id is configuration, not a secret: it is public by design and
+# appears in the page. It lives in the environment anyway so the repo stays
+# clean and the feature simply stays off until it is set.
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "").strip()
+
+
+@app.route("/api/auth/google/config")
+def api_google_config():
+    """Whether the button should be drawn at all, and with which client id."""
+    return jsonify({"ok": True, "enabled": bool(GOOGLE_CLIENT_ID),
+                    "client_id": GOOGLE_CLIENT_ID})
+
+
+@app.route("/api/auth/google", methods=["POST"])
+def api_auth_google():
+    """Turn a Google credential into a name and an email we can believe.
+
+    The token is verified on the SERVER, against Google's own signing keys.
+    That is the entire security of this endpoint: the browser hands us a
+    signed assertion, and a browser can say anything. Decoding the token
+    client-side and trusting what it says would let anyone book as anyone —
+    so the claims used below come only from a token whose signature,
+    audience and expiry Google's library has checked.
+
+    Nothing is stored. The reply is used to fill two form fields."""
+    if not GOOGLE_CLIENT_ID:
+        return jsonify({"ok": False, "error": "Google sign-in isn't configured."}), 503
+    token = ((request.get_json(force=True, silent=True) or {}).get("credential") or "").strip()
+    if not token:
+        return jsonify({"ok": False, "error": "No credential."}), 400
+    try:
+        from google.oauth2 import id_token as g_id_token
+        from google.auth.transport import requests as g_requests
+        claims = g_id_token.verify_oauth2_token(
+            token, g_requests.Request(), GOOGLE_CLIENT_ID)
+    except Exception:
+        # Bad signature, wrong audience, expired, or Google unreachable. We
+        # cannot tell a forgery from an outage here, and must not guess.
+        return jsonify({"ok": False, "error": "Could not verify that sign-in."}), 401
+    if claims.get("iss") not in ("accounts.google.com", "https://accounts.google.com"):
+        return jsonify({"ok": False, "error": "Could not verify that sign-in."}), 401
+    if not claims.get("email_verified"):
+        # An unverified address would let someone prefill a booking under
+        # somebody else's email, and that is where the invoice goes.
+        return jsonify({"ok": False, "error": "That Google account has no verified email."}), 401
+    return jsonify({"ok": True,
+                    "name": (claims.get("name") or "").strip()[:80],
+                    "email": (claims.get("email") or "").strip()[:120]})
+
+
 # ---------- storage helpers ----------
 def _load(path):
     try:
