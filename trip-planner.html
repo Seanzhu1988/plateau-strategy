@@ -4,7 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trip Planner — Plateau Strategy Solution Lab</title>
-    <meta name="description" content="Free point-to-point trip planner: see which attractions you can still reach in time — traffic, closing hours and drive time all checked — and build a day-by-day plan.">
+    <meta name="description" content="Pick your stops and see which ones you can still reach before they close — real drive times, traffic and opening hours, checked as you build the day. Free, no account.">
+    <link rel="canonical" href="https://plateaustrategy.io/trip-planner">
+    <meta name="theme-color" content="#0f172a">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Plateau Strategy Solution Lab">
+    <meta property="og:url" content="https://plateaustrategy.io/trip-planner">
+    <meta property="og:title" content="Free Trip Planner — see what you can still reach today">
+    <meta property="og:description" content="Pick your stops and see which ones you can still reach before they close — real drive times, traffic and opening hours, checked as you build the day. Free, no account.">
+    <meta property="og:image" content="https://plateaustrategy.io/plateau-logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Free Trip Planner — see what you can still reach today">
+    <meta name="twitter:description" content="Pick your stops and see which ones you can still reach before they close — real drive times, traffic and opening hours, checked as you build the day. Free, no account.">
+    <meta name="twitter:image" content="https://plateaustrategy.io/plateau-logo.png">
     <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
@@ -121,6 +133,26 @@
             box-shadow: 0 4px 14px rgba(15,23,42,0.22); padding: 0.35rem 0.55rem; }
         .map-legend .legend { display: none; margin: 0.25rem 0 0; gap: 0.35rem 0.8rem; font-size: 0.72rem; }
         .map-legend.open .legend { display: flex; }
+
+        /* ---- overnight prompt ---- */
+        .ov-choice { margin-top: 1rem; padding-top: .9rem; border-top: 1px solid #eef2f7; }
+        .ov-choice:first-of-type { border-top: none; padding-top: 0; }
+        .ov-row { display: flex; gap: .5rem; flex-wrap: wrap; }
+        .ov-row input { flex: 1; min-width: 190px; padding: .6rem .8rem;
+            border: 1px solid #cbd5e1; border-radius: 8px; font-size: .95rem; font-family: inherit; }
+        .ov-row input:focus { outline: none; border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,.14); }
+        .ov-find { width: 100%; text-align: left; }
+        .ov-list { display: flex; flex-direction: column; gap: .35rem; margin-top: .6rem;
+            max-height: 210px; overflow-y: auto; }
+        .ov-hotel { display: flex; justify-content: space-between; align-items: center; gap: .6rem;
+            width: 100%; text-align: left; background: #fff; border: 1px solid #e2e8f0;
+            border-radius: 9px; padding: .55rem .75rem; font-size: .9rem; font-family: inherit;
+            color: #1f2937; cursor: pointer; }
+        .ov-hotel:hover { border-color: #db2777; background: #fff5fa; }
+        .ov-hotel span { color: #94a3b8; font-size: .8rem; white-space: nowrap; }
+        .ov-msg { font-size: .86rem; color: #475569; margin-top: .7rem; min-height: 1.2em; }
+        .ov-skip { width: 100%; margin-top: .9rem; }
         .map-legend .lg-toggle { font-size: 0.72rem; font-weight: 700; color: #475569;
             cursor: pointer; user-select: none; }
 
@@ -130,7 +162,18 @@
             border: 1.5px solid #fde68a; border-radius: 999px; padding: 0.2rem 0.6rem;
             margin: 0 0.25rem 0.25rem 0; cursor: pointer; color: #92400e; }
         .fg-opt:hover { border-color: #f59e0b; }
-        .fg-decline { margin-top: 0.2rem; font-size: 0.72rem; }
+        .fg-decline { margin-top: 0.35rem; font-size: 0.72rem; }
+        /* City to city is a flight, so the recommended airport is the button —
+           not one chip among several. Driving stays one tap away underneath. */
+        .fg-primary { display: block; width: 100%; text-align: left; cursor: pointer;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: none;
+            border-radius: 9px; padding: 0.5rem 0.7rem; font-family: inherit; font-size: 0.78rem;
+            font-weight: 700; margin-bottom: 0.35rem; box-shadow: 0 6px 14px -6px rgba(37,99,235,.8); }
+        .fg-primary:hover { filter: brightness(1.07); }
+        .fg-primary .sub { display: block; font-weight: 500; font-size: 0.68rem;
+            color: #cfe0ff; margin-top: 1px; }
+        .fg-more { font-size: 0.68rem; color: #78350f; margin: 0.2rem 0 0.1rem; }
+        .far-alts { margin-top: 0.45rem; font-size: 0.68rem; opacity: .85; }
         .far-note { margin-top: 0.3rem; font-size: 0.75rem; line-height: 1.45; color: #92400e;
             background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 0.4rem 0.6rem; }
         .start-entry { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-top: 0.5rem; }
@@ -625,6 +668,39 @@
         </footer>
     </div>
 
+    <!-- The night between two days: you wake up where you slept, not where you started. -->
+    <div class="modal-back" id="overnight">
+        <div class="modal">
+            <button class="modal-x" onclick="closeOvernight()">✕</button>
+            <h3>Night after Day <span id="ovDay">1</span></h3>
+            <p class="muted">Day <span id="ovNext">2</span> should start from wherever you sleep —
+               otherwise it plans your morning from your original start point.
+               Have you already got somewhere?</p>
+
+            <div class="ov-choice">
+                <label class="ho-lab">Yes — I've booked somewhere</label>
+                <div class="ov-row">
+                    <input id="ovAddr" placeholder="Hotel name or address…"
+                           onkeydown="if(event.key==='Enter')overnightBooked()">
+                    <button class="btn add" onclick="overnightBooked()">Use this</button>
+                </div>
+            </div>
+
+            <div class="ov-choice">
+                <label class="ho-lab">Not yet — near where Day <span id="ovDayB">1</span> ends</label>
+                <button class="btn ghost ov-find" onclick="overnightFind()">
+                    🏨 Find places to stay near <span id="ovWhere">my last stop</span>
+                </button>
+                <div id="ovList" class="ov-list"></div>
+            </div>
+
+            <p class="ov-msg" id="ovMsg"></p>
+            <button class="btn ghost ov-skip" onclick="overnightBackToStart()">
+                I'm heading back to my start point →
+            </button>
+        </div>
+    </div>
+
     <div class="modal-back" id="handoff">
         <div class="modal">
             <button class="modal-x" onclick="closeHandoff()">✕</button>
@@ -771,10 +847,19 @@
         const s = Math.sin(dLa/2)**2 + Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLo/2)**2;
         return 2*R*Math.asin(Math.sqrt(s));
     }
-    function coordOf(idx){                             // idx -1 = start marker
+    // idx -1 = start marker · idx -2 = where you slept last night
+    function coordOf(idx){
+        if (idx === -2) {
+            const s = stayFor(st.day);
+            if (s) return { lat: s.lat, lon: s.lon };
+            idx = -1;                                  // no lodging recorded — fall back
+        }
         if (idx === -1) { const ll = startMarker.getLatLng(); return { lat: ll.lat, lon: ll.lng }; }
         return places[idx];
     }
+    // Where the traveller is staying the night BEFORE the given day, so day 2
+    // starts from the hotel rather than teleporting back to the original start.
+    function stayFor(day){ return (st.stays || {})[day] || null; }
     function travelMin(fromIdx, toIdx, depMin){
         let base;
         if (matrix && matrixMode === 'osrm') {
@@ -948,12 +1033,105 @@
         refresh();
     }
 
+    // Ending a day used to drop you back at your original start point the next
+    // morning, which is wrong the moment a trip runs overnight — you wake up
+    // wherever you slept. So the day boundary asks first.
     function nextDay(){
-        st.day++; st.now = DAY_START; st.pos = -1;
-        say('Day ' + st.day + ' starts ' + fmt(DAY_START) + ' from your start point — board re-lit.');
-        jarvisSay('Starting <b>Day ' + st.day + '</b> at ' + fmt(DAY_START) + ' from your start point.');
+        if (!st.route.length) { advanceDay(-1); return; }   // nothing planned yet, nothing to ask
+        openOvernight();
+    }
+
+    // origin: -1 = back to the original start point · -2 = the recorded lodging
+    function advanceDay(origin){
+        st.day++; st.now = DAY_START; st.pos = (origin === -2) ? -2 : -1;
+        const s = (origin === -2) ? stayFor(st.day) : null;
+        const from = s ? s.name : 'your start point';
+        say('Day ' + st.day + ' starts ' + fmt(DAY_START) + ' from ' + from + ' — board re-lit.');
+        jarvisSay('Starting <b>Day ' + st.day + '</b> at ' + fmt(DAY_START) +
+                  ' from <b>' + escj(from) + '</b>.');
         refresh();
     }
+
+    // ---------- overnight: where are you staying? ----------
+    function lastStopOfDay(){
+        for (let k = st.route.length - 1; k >= 0; k--) {
+            if (st.route[k].day === st.day) return places[st.route[k].i] || null;
+        }
+        return null;
+    }
+    function openOvernight(){
+        const last = lastStopOfDay();
+        $('ovDay').textContent = st.day;
+        $('ovDayB').textContent = st.day;
+        $('ovNext').textContent = st.day + 1;
+        $('ovWhere').textContent = last ? last.name : 'your last stop';
+        $('ovList').innerHTML = '';
+        $('ovAddr').value = '';
+        $('ovMsg').textContent = '';
+        $('overnight').classList.add('on');
+    }
+    function closeOvernight(){ $('overnight').classList.remove('on'); }
+
+    function saveStay(lat, lon, name, booked){
+        st.stays = st.stays || {};
+        st.stays[st.day + 1] = { lat: lat, lon: lon, name: name, booked: !!booked };
+        closeOvernight();
+        advanceDay(-2);
+    }
+
+    // "I've already booked somewhere" — type it, we geocode it.
+    async function overnightBooked(){
+        const q = ($('ovAddr').value || '').trim();
+        if (!q) { $('ovMsg').textContent = 'Type the hotel name or address first.'; return; }
+        $('ovMsg').textContent = 'Finding it…';
+        try {
+            const r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' +
+                                  encodeURIComponent(q));
+            const j = await r.json();
+            if (!j.length) { $('ovMsg').textContent = 'Could not find that — try adding the city.'; return; }
+            saveStay(+j[0].lat, +j[0].lon, j[0].display_name.split(',').slice(0, 2).join(','), true);
+        } catch (e) {
+            $('ovMsg').textContent = 'Search is busy — try again in a moment.';
+        }
+    }
+
+    // "Not yet" — look for somewhere near where the day actually ends, because
+    // that is the only place a hotel is convenient.
+    async function overnightFind(){
+        const last = lastStopOfDay();
+        const c = last || coordOf(st.pos);
+        $('ovMsg').textContent = 'Looking for places to stay near ' + (last ? last.name : 'your last stop') + '…';
+        try {
+            const q = '[out:json][timeout:25];(' +
+                'nwr(around:6000,' + c.lat.toFixed(5) + ',' + c.lon.toFixed(5) +
+                ')["tourism"~"^(hotel|motel|guest_house|hostel)$"]["name"];);out center 40;';
+            const r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: q });
+            const j = await r.json();
+            const seen = {}, out = [];
+            (j.elements || []).forEach(e => {
+                const t = e.tags || {}, la = e.lat || (e.center && e.center.lat),
+                      lo = e.lon || (e.center && e.center.lon);
+                if (!t.name || !la || !lo || seen[t.name]) return;
+                seen[t.name] = 1;
+                out.push({ name: t.name, lat: la, lon: lo,
+                           km: havKm({ lat: la, lon: lo }, c) });
+            });
+            out.sort((a, b) => a.km - b.km);
+            if (!out.length) {
+                $('ovMsg').textContent = 'Nothing mapped nearby. Type where you are staying instead.';
+                return;
+            }
+            $('ovMsg').textContent = out.length + ' found near ' + (last ? last.name : 'your last stop') + ':';
+            $('ovList').innerHTML = out.slice(0, 12).map(h =>
+                '<button class="ov-hotel" onclick="pickStay(' + h.lat + ',' + h.lon + ',&quot;' +
+                escj(h.name).replace(/"/g, '&quot;') + '&quot;)">🏨 ' + escj(h.name) +
+                ' <span>' + h.km.toFixed(1) + ' km</span></button>').join('');
+        } catch (e) {
+            $('ovMsg').textContent = 'The places service is busy — type where you are staying instead.';
+        }
+    }
+    function pickStay(lat, lon, name){ saveStay(lat, lon, name, false); }
+    function overnightBackToStart(){ closeOvernight(); advanceDay(-1); }
     function resetTrip(){
         st.day = 1; st.now = parseTime($('leaveAt').value) || 570; st.pos = -1;
         st.route = []; st.visited = new Set();
@@ -2138,12 +2316,18 @@
             if (!best || d < best.d) best = { k: k, d: d };
         });
         const mi = Math.round(dKm * 0.621371);
-        box.innerHTML = '⚠ Your start is <b>' + mi + ' mi</b> from the ' + escj(c.label) + ' board — drive times here will be huge. '
+        // City to city is a flight, not a drive. Lead with that instead of
+        // warning about the drive time, and let the traveller decline into the
+        // road-trip planner if they would rather drive it.
+        box.innerHTML = '✈️ You\'re <b>' + mi + ' mi</b> from ' + escj(c.label)
+            + ' — that\'s a flight, not a drive.'
+            + '<div id="farGateways" class="far-gateways">Looking for airports near ' + escj(c.label) + '…</div>'
+            + '<div class="far-alts">'
             + (best && best.d <= CITY_FAR_KM && best.k !== curCity
-                ? '<span class="fixlink" onclick="switchBoardKeepStart(\'' + best.k + '\')">Switch to ' + escj(CITIES[best.k].label) + ' →</span> · '
+                ? '<span class="fixlink" onclick="switchBoardKeepStart(\'' + best.k + '\')">Plan ' + escj(CITIES[best.k].label) + ' instead →</span> · '
                 : '')
             + '<span class="fixlink" onclick="restoreCityStart()">Move start back to ' + escj(c.label) + '</span>'
-            + '<div id="farGateways" class="far-gateways">Looking for airports near ' + escj(c.label) + '…</div>';
+            + '</div>';
         box.style.display = 'block';
         suggestGateways(c);
     }
@@ -2155,23 +2339,43 @@
     async function suggestGateways(c){
         const el = $('farGateways'); if (!el) return;
         const roadLink = '<a class="fixlink" href="/road-trip?from=' + encodeURIComponent(currentLoc.address || (currentLoc.lat.toFixed(4) + ',' + currentLoc.lon.toFixed(4)))
-            + '&to=' + encodeURIComponent(c.label) + '" target="_blank">🛣️ Plan it as a road trip instead →</a>';
+            + '&to=' + encodeURIComponent(c.label) + '" target="_blank">🛣️ No — I\'d rather drive it, plan the road trip →</a>';
         try {
             const around = '(around:60000,' + c.center[0].toFixed(5) + ',' + c.center[1].toFixed(5) + ');';
-            const q = '[out:json][timeout:20];(node["aeroway"="aerodrome"]["iata"]' + around
-                + 'way["aeroway"="aerodrome"]["iata"]' + around + ');out center 12;';
+            // Same fix as the airports layer: an ["iata"] filter on node/way misses
+            // relation-mapped aerodromes and elements without the code.
+            const q = '[out:json][timeout:20];('
+                + 'nwr["aeroway"="aerodrome"]["name"]["aerodrome:type"!~"private"]' + around
+                + ');out center 12;';
             const els = await overpass(q);
             gatewayChoices = els.map(e => ({
                 name: (e.tags || {}).name || 'Airport',
                 iata: (e.tags || {}).iata || '',
                 lat: e.lat !== undefined ? e.lat : (e.center || {}).lat,
                 lon: e.lon !== undefined ? e.lon : (e.center || {}).lon
-            })).filter(g => g.lat !== undefined && g.name).slice(0, 6);
+            })).filter(g => g.lat !== undefined && g.name);
+            // Closest to the city centre first, and prefer one with an IATA code —
+            // that is the airport a traveller actually flies into, rather than
+            // whichever airfield Overpass happened to return first.
+            gatewayChoices.forEach(g => { g.km = havKm({ lat: g.lat, lon: g.lon },
+                                                       { lat: c.center[0], lon: c.center[1] }); });
+            gatewayChoices.sort((a, b) => (b.iata ? 1 : 0) - (a.iata ? 1 : 0) || a.km - b.km);
+            gatewayChoices = gatewayChoices.slice(0, 6);
             if (!gatewayChoices.length) { el.innerHTML = roadLink; return; }
-            el.innerHTML = '<div class="fg-lead">✈️ Flying in? Start from ' + escj(c.label) + '\'s airport'
-                + (gatewayChoices.length > 1 ? 's — pick one:' : ':') + '</div>'
-                + gatewayChoices.map((g, i) => '<span class="fg-opt" onclick="startFromGateway(' + i + ')">'
-                    + (g.iata ? '<b>' + escj(g.iata) + '</b> ' : '') + escj(g.name.replace(/ International Airport$/, '')) + '</span>').join('')
+
+            const top = gatewayChoices[0];
+            const tidy = n => n.replace(/ International Airport$/, '').replace(/ Airport$/, '');
+            const rest = gatewayChoices.slice(1);
+            el.innerHTML =
+                '<button class="fg-primary" onclick="startFromGateway(0)">'
+                + '✈️ Fly into ' + (top.iata ? escj(top.iata) + ' — ' : '') + escj(tidy(top.name))
+                + '<span class="sub">Start your ' + escj(c.label) + ' trip here · '
+                + Math.round(top.km * 0.621371) + ' mi from the centre</span></button>'
+                + (rest.length
+                    ? '<div class="fg-more">or another airport:</div>'
+                      + rest.map((g, i) => '<span class="fg-opt" onclick="startFromGateway(' + (i + 1) + ')">'
+                          + (g.iata ? '<b>' + escj(g.iata) + '</b> ' : '') + escj(tidy(g.name)) + '</span>').join('')
+                    : '')
                 + '<div class="fg-decline">' + roadLink + '</div>';
         } catch (e) { el.innerHTML = roadLink; }
     }
@@ -2317,17 +2521,30 @@
     // floor/level, fee, hours, wheelchair access). Fetches are viewport-bounded,
     // zoom-guarded, debounced and cached so the free API is never hammered.
     const AMENITY_CATS = {
-        // Attractions come from the SAME live OpenStreetMap data as the rest — a
-        // named tourism/historic/park feature is a confirmed real place, and any
-        // one of them can be added straight into the route from its popup.
-        attractions: { emoji: '📍', color: '#0d9488', min: 13, max: 120, label: 'Attractions nearby',
-                      q: 'nwr["tourism"~"^(attraction|museum|gallery|viewpoint|artwork|theme_park|zoo|aquarium)$"]["name"];nwr["historic"~"^(monument|memorial|castle|ruins|archaeological_site)$"]["name"];nwr["leisure"~"^(park|garden)$"]["name"]',
-                      fallbackName: 'Attraction', addable: true },
+        // The 📍 "Attractions nearby" layer was removed. The board already draws
+        // every attraction as a numbered pin, so this laid a second set of
+        // attraction pins on top of the first — the same places twice, in two
+        // different shapes. Discovery still works through search and the other
+        // layers, which is where it belongs.
+        //
+        // Where you're staying anchors the whole day, so hotels are both addable
+        // and startable: tap one and the day re-times from your hotel door.
+        // Pink was measured against the other six layer colours rather than
+        // picked — indigo sat at ΔE 1.3 from the violet essentials chip under
+        // protanopia, which would have made the two layers indistinguishable.
+        hotels:     { emoji: '🏨', color: '#db2777', min: 13, max: 120, label: 'Hotels & places to stay',
+                      q: 'nwr["tourism"~"^(hotel|motel|guest_house|hostel)$"]["name"]',
+                      fallbackName: 'Hotel', addable: true, startable: true },
         // Airports are sparse, so they search a wide radius and stay visible at
         // city zoom — a traveller landing at JFK needs to see it from the whole map.
         airports:   { emoji: '✈️', color: '#334155', min: 99, max: 25, label: 'Airports',
-                      wideRadius: 60000,
-                      q: 'node["aeroway"="aerodrome"]["iata"];way["aeroway"="aerodrome"]["iata"]', fallbackName: 'Airport',
+                      wideRadius: 60000, anchor: 'origin',
+                      // Demanding an ["iata"] tag on node/way found nothing in most
+                      // places: plenty of aerodromes are mapped as relations, and
+                      // the IATA code often is not on the element that matches. Ask
+                      // for named aerodromes of any element type and drop private
+                      // airfields instead — an absent aerodrome:type still passes.
+                      q: 'nwr["aeroway"="aerodrome"]["name"]["aerodrome:type"!~"private"]', fallbackName: 'Airport',
                       addable: true, startable: true },
         rail:       { emoji: '🚉', color: '#7c2d12', min: 12, max: 60, label: 'Train stations',
                       wideRadius: 12000,
@@ -2342,7 +2559,7 @@
         toilets:    { emoji: '🚻', color: '#0284c7', min: 14, max: 120, label: 'Restrooms',
                       q: 'nwr["amenity"="toilets"]', fallbackName: 'Public restroom' },
         food:       { emoji: '🍽️', color: '#d97706', min: 15, max: 150, label: 'Food & coffee',
-                      q: 'nwr["amenity"~"^(restaurant|cafe|fast_food)$"]', fallbackName: 'Restaurant' },
+                      q: 'nwr["amenity"~"^(restaurant|cafe|fast_food)$"]', fallbackName: 'Restaurant', rateable: true },
         essentials: { emoji: '💊', color: '#7c3aed', min: 14, max: 120, label: 'Pharmacy · ATM · Water',
                       q: 'nwr["amenity"~"^(pharmacy|atm|drinking_water)$"]', fallbackName: 'Essential' },
     };
@@ -2393,7 +2610,8 @@
                 d.innerHTML = '<div class="achip-row">'
                     + Object.keys(AMENITY_CATS).map(cat =>
                         '<div class="achip" id="ach_' + cat + '" title="' + AMENITY_CATS[cat].label
-                        + ' — tap again to filter by stars" onclick="toggleAmenity(\'' + cat + '\')">'
+                        + (AMENITY_CATS[cat].rateable ? ' — tap again to filter by stars' : '')
+                        + '" onclick="toggleAmenity(\'' + cat + '\')">'
                         + AMENITY_CATS[cat].emoji + '</div>').join('')
                     + '</div><span class="amenity-note" id="amenityNote"></span>';
                 L.DomEvent.disableClickPropagation(d);   // clicking the panel must not pan the map
@@ -2408,10 +2626,23 @@
     try { (JSON.parse(localStorage.getItem('amenity_on') || '[]')).forEach(c => {
         if (AMENITY_CATS[c]) { amenityOn[c] = true; } }); } catch (e) {}
     try { const s = JSON.parse(localStorage.getItem('amenity_star') || '{}');
-          Object.keys(s).forEach(k => { if (AMENITY_CATS[k]) amenityStar[k] = s[k]; }); } catch (e) {}
+          // Drop stars saved against a layer that is no longer rateable, or a
+          // returning traveller keeps a ★ badge on their restroom chip forever
+          // with no way left to cycle it off.
+          Object.keys(s).forEach(k => {
+              if (AMENITY_CATS[k] && AMENITY_CATS[k].rateable) amenityStar[k] = s[k];
+          }); } catch (e) {}
 
+    // Only some layers are worth rating. A restroom or a train station has no
+    // star opinion attached to it, so putting those chips through the seven-tap
+    // star cycle just made them tedious to switch off. Rateable layers keep the
+    // cycle; everything else is a plain on/off.
     function toggleAmenity(cat){
-        if (!amenityOn[cat]) { amenityOn[cat] = true; amenityStar[cat] = null; }   // on, unfiltered
+        const rateable = !!(AMENITY_CATS[cat] || {}).rateable;
+        if (!rateable) {
+            amenityOn[cat] = !amenityOn[cat];
+            amenityStar[cat] = null;
+        } else if (!amenityOn[cat]) { amenityOn[cat] = true; amenityStar[cat] = null; }   // on, unfiltered
         else {
             const i = STAR_CYCLE.indexOf(amenityStar[cat] === undefined ? null : amenityStar[cat]);
             if (i >= STAR_CYCLE.length - 1) { amenityOn[cat] = false; amenityStar[cat] = null; }  // past ★1 → off
@@ -2600,6 +2831,77 @@
     // A traveler taps an OSM attraction → it becomes a real stop on the board AND
     // is remembered in the Destination Book for the next visitor (same community
     // pipeline the search box already feeds).
+    // ---------- real hours and visit lengths from the map data ----------
+    // Every place added off the map used to get the same invented 5pm closing
+    // time and 60-minute visit. This planner's whole job is telling you what you
+    // can still reach before it shuts, so inventing that number quietly wrecks
+    // the answer. OpenStreetMap already carries opening_hours on most museums,
+    // parks and galleries — read it.
+    //
+    // The opening_hours spec is enormous. This handles the shapes that actually
+    // occur, and returns null when it is not sure rather than guessing a time a
+    // traveller would then plan their afternoon around.
+    const OH_DAYS = { su:0, mo:1, tu:2, we:3, th:4, fr:5, sa:6 };
+    function closingFromOsm(oh){
+        if (!oh) return null;
+        const s = String(oh).trim().toLowerCase();
+        if (s === '24/7') return 1439;
+        const today = new Date().getDay();                  // 0 = Sunday
+        let best = null;
+        s.split(';').forEach(rule => {
+            rule = rule.trim();
+            if (!rule) return;
+            // A day can hold several spans — "10:00-13:00,14:00-18:00" is a
+            // lunch break, not a 1pm closing time. Match them all and keep the
+            // latest, or the board tells people to skip a place still open.
+            const times = rule.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/g);
+            const closed = /\b(off|closed)\b/.test(rule);
+            // which days does this rule name? no day token means every day
+            const dayPart = rule.split(/\d{1,2}:\d{2}/)[0];
+            let days = null;
+            const spec = dayPart.match(/(su|mo|tu|we|th|fr|sa)(\s*-\s*(su|mo|tu|we|th|fr|sa))?/g);
+            if (spec && spec.length) {
+                days = new Set();
+                spec.forEach(tok => {
+                    const range = tok.split('-').map(x => x.trim());
+                    if (range.length === 2) {
+                        let a = OH_DAYS[range[0]], b = OH_DAYS[range[1]];
+                        if (a === undefined || b === undefined) return;
+                        for (let d = a; ; d = (d + 1) % 7) { days.add(d); if (d === b) break; }
+                    } else if (OH_DAYS[range[0]] !== undefined) {
+                        days.add(OH_DAYS[range[0]]);
+                    }
+                });
+            }
+            if (days && !days.has(today)) return;           // rule is about another day
+            if (closed && !times) { best = 'closed'; return; }
+            if (!times) return;
+            let close = null;
+            times.forEach(span => {
+                const m = span.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
+                const c = (+m[3]) * 60 + (+m[4]);
+                if (close == null || c > close) close = c;
+            });
+            if (best === 'closed') best = null;
+            if (best == null || close > best) best = close;
+        });
+        if (best === 'closed') return 0;                    // shut today
+        return (typeof best === 'number') ? best : null;
+    }
+
+    // How long people actually spend, by what the place is. Still an estimate,
+    // but a zoo and a viewpoint are not the same hour.
+    const VISIT_BY_TYPE = {
+        museum: 90, gallery: 60, zoo: 150, aquarium: 120, theme_park: 180,
+        attraction: 45, artwork: 15, viewpoint: 20,
+        monument: 20, memorial: 25, castle: 75, ruins: 45, archaeological_site: 45,
+        park: 45, garden: 45
+    };
+    function visitFor(t){
+        return VISIT_BY_TYPE[t.tourism] || VISIT_BY_TYPE[t.historic] ||
+               VISIT_BY_TYPE[t.leisure] || 60;
+    }
+
     function addOsmPlace(tok){
         const o = osmPending[tok]; if (!o) return;
         const nm = String(o.name).slice(0, 60);
@@ -2609,7 +2911,12 @@
         const cat = t.leisure ? 'nature'
                   : (t.historic ? 'history'
                   : (t.tourism === 'viewpoint' ? 'views' : 'culture'));
-        const np = { name: nm, lat: o.lat, lon: o.lon, close: 1020, visit: 60, cat: cat };
+        const realClose = closingFromOsm(t.opening_hours);
+        const np = { name: nm, lat: o.lat, lon: o.lon,
+                     close: (realClose == null ? 1020 : realClose),
+                     visit: visitFor(t), cat: cat,
+                     // so the board can be honest about which times are guesses
+                     hoursKnown: realClose != null };
         places.push(np);
         rememberPlace(np, { class: t.tourism ? 'tourism' : (t.historic ? 'historic' : 'leisure'),
                             type: t.tourism || t.historic || t.leisure });
@@ -2634,7 +2941,16 @@
         // broken. So we search a bounded radius around the middle of the map
         // instead: something useful always appears, and zooming in fills it out.
         const wide = map.getZoom() < cfg.min;
-        const ctr = map.getCenter();
+        // Some layers belong to WHERE YOU ARE, not where the map happens to be
+        // pointing. Airports are the clear case: pan across the state to look at
+        // something and you still want the airport for the city you're actually
+        // in, not one 200 miles away that drifted under the centre of the screen.
+        let ctr = map.getCenter();
+        if (cfg.anchor === 'origin') {
+            const o = coordOf(st.pos);
+            if (o && isFinite(o.lat) && isFinite(o.lon)) ctr = L.latLng(o.lat, o.lon);
+            else if (CITIES[curCity]) ctr = L.latLng(CITIES[curCity].center[0], CITIES[curCity].center[1]);
+        }
         const b = map.getBounds();
         const key = cat + '|' + (wide
             ? 'c' + (cfg.wideRadius || 4000) + ':' + ctr.lat.toFixed(2) + ',' + ctr.lng.toFixed(2)

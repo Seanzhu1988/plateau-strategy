@@ -74,9 +74,80 @@
             try { sessionStorage.setItem('jv_history', JSON.stringify(history)); } catch (e) {}
         }
 
+        // ---- drag Jarvis anywhere ----
+        // He sat in the bottom-left corner on every page, on top of whatever was
+        // there. Now he can be put wherever suits the page, and he stays put
+        // between visits. The panel follows the button rather than being dragged
+        // separately, so there is only ever one thing to move.
+        var POS_KEY = 'jv_pos', BTN = 56, GAP = 12, EDGE = 12;
+        function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+        function placePanel() {
+            var b = btn.getBoundingClientRect();
+            var pw = panel.offsetWidth || 360, ph = panel.offsetHeight || 420;
+            // above the button when it fits, otherwise below — so the panel is
+            // never half off-screen when Jarvis is parked near an edge
+            var top = (b.top - GAP - ph >= EDGE) ? (b.top - GAP - ph) : (b.bottom + GAP);
+            panel.style.top = clamp(top, EDGE, Math.max(EDGE, window.innerHeight - ph - EDGE)) + 'px';
+            panel.style.left = clamp(b.left, EDGE, Math.max(EDGE, window.innerWidth - pw - EDGE)) + 'px';
+            panel.style.right = 'auto';
+            panel.style.bottom = 'auto';
+        }
+        function placeBtn(left, top) {
+            left = clamp(left, EDGE, Math.max(EDGE, window.innerWidth - BTN - EDGE));
+            top = clamp(top, EDGE, Math.max(EDGE, window.innerHeight - BTN - EDGE));
+            btn.style.left = left + 'px';
+            btn.style.top = top + 'px';
+            btn.style.right = 'auto';
+            btn.style.bottom = 'auto';
+            placePanel();
+            return { left: left, top: top };
+        }
+        function savePos(p) { try { localStorage.setItem(POS_KEY, JSON.stringify(p)); } catch (e) {} }
+
+        var saved = null;
+        try { saved = JSON.parse(localStorage.getItem(POS_KEY) || 'null'); } catch (e) {}
+        if (saved && isFinite(saved.left) && isFinite(saved.top)) placeBtn(saved.left, saved.top);
+        else placeBtn(18, window.innerHeight - BTN - 18);          // the old corner, as the default
+
+        // A window that got smaller must not strand him off-screen.
+        window.addEventListener('resize', function () {
+            var b = btn.getBoundingClientRect();
+            savePos(placeBtn(b.left, b.top));
+        });
+
+        var drag = null, moved = false;
+        btn.style.touchAction = 'none';                             // dragging must not scroll the page
+        btn.addEventListener('pointerdown', function (e) {
+            if (e.button != null && e.button > 0) return;
+            var b = btn.getBoundingClientRect();
+            drag = { dx: e.clientX - b.left, dy: e.clientY - b.top, sx: e.clientX, sy: e.clientY };
+            moved = false;
+            btn.style.transition = 'none';
+            try { btn.setPointerCapture(e.pointerId); } catch (err) {}
+        });
+        btn.addEventListener('pointermove', function (e) {
+            if (!drag) return;
+            // a few pixels of slack, so a tap still opens the panel
+            if (!moved && Math.abs(e.clientX - drag.sx) + Math.abs(e.clientY - drag.sy) < 5) return;
+            moved = true;
+            e.preventDefault();
+            savePos(placeBtn(e.clientX - drag.dx, e.clientY - drag.dy));
+        });
+        function endDrag(e) {
+            if (!drag) return;
+            drag = null;
+            btn.style.transition = '';
+            try { btn.releasePointerCapture(e.pointerId); } catch (err) {}
+        }
+        btn.addEventListener('pointerup', endDrag);
+        btn.addEventListener('pointercancel', endDrag);
+
+        btn.title = 'Jarvis — drag to move';
         btn.addEventListener('click', function () {
+            if (moved) { moved = false; return; }    // that was a drag, not a tap
             panel.classList.toggle('open');
-            if (panel.classList.contains('open')) input.focus();
+            if (panel.classList.contains('open')) { placePanel(); input.focus(); }
         });
         panel.querySelector('#jvClose').addEventListener('click', function () { panel.classList.remove('open'); });
 

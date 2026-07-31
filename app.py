@@ -23,7 +23,7 @@ import subprocess
 import datetime
 import urllib.parse
 from functools import wraps
-from flask import Flask, request, jsonify, send_file, session
+from flask import Flask, request, jsonify, send_file, session, Response
 
 try:
     from dotenv import load_dotenv
@@ -513,6 +513,56 @@ def articles_page():
 def trip_planner_page():
     """Free tool: point-to-point trip planner (drive time + traffic + closing hours)."""
     return send_file(os.path.join(BASE_DIR, "trip-planner.html"))
+
+
+# ---------------------------------------------------------------------------
+# Search engines
+#
+# The free tools are the top of the funnel — they only pay for themselves if
+# people can find them. Nothing here was crawlable: no robots.txt, no sitemap,
+# and the tool pages carried no canonical URL. Owner surfaces stay out of the
+# sitemap and are disallowed outright, so dispatch and setup never get indexed.
+# ---------------------------------------------------------------------------
+PUBLIC_PAGES = [
+    ("/", "1.0", "daily"),
+    ("/trip-planner", "0.9", "weekly"),
+    ("/destination-book", "0.9", "daily"),
+    ("/road-trip", "0.9", "weekly"),
+    ("/factor-clock", "0.8", "weekly"),
+    ("/book", "0.8", "monthly"),
+    ("/articles", "0.7", "weekly"),
+    ("/partners", "0.6", "monthly"),
+    ("/agent", "0.6", "monthly"),
+    ("/renter", "0.6", "monthly"),
+    ("/deflator", "0.5", "monthly"),
+    ("/board", "0.4", "monthly"),
+]
+OWNER_ONLY_PATHS = ["/dispatch", "/setup", "/archive", "/api/"]
+SITE_ORIGIN = os.environ.get("SITE_ORIGIN", "https://plateaustrategy.io").rstrip("/")
+
+
+@app.route("/robots.txt")
+def robots_txt():
+    lines = ["User-agent: *"]
+    lines += ["Disallow: " + p for p in OWNER_ONLY_PATHS]
+    lines += ["Allow: /", "", "Sitemap: " + SITE_ORIGIN + "/sitemap.xml", ""]
+    return Response("\n".join(lines), mimetype="text/plain")
+
+
+@app.route("/sitemap.xml")
+def sitemap_xml():
+    today = datetime.date.today().isoformat()
+    out = ['<?xml version="1.0" encoding="UTF-8"?>',
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for path, priority, freq in PUBLIC_PAGES:
+        out += ["  <url>",
+                "    <loc>%s%s</loc>" % (SITE_ORIGIN, path),
+                "    <lastmod>%s</lastmod>" % today,
+                "    <changefreq>%s</changefreq>" % freq,
+                "    <priority>%s</priority>" % priority,
+                "  </url>"]
+    out.append("</urlset>")
+    return Response("\n".join(out), mimetype="application/xml")
 
 
 @app.route("/road-trip")
