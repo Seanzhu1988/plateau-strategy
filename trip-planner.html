@@ -2672,6 +2672,77 @@
     // A traveler taps an OSM attraction → it becomes a real stop on the board AND
     // is remembered in the Destination Book for the next visitor (same community
     // pipeline the search box already feeds).
+    // ---------- real hours and visit lengths from the map data ----------
+    // Every place added off the map used to get the same invented 5pm closing
+    // time and 60-minute visit. This planner's whole job is telling you what you
+    // can still reach before it shuts, so inventing that number quietly wrecks
+    // the answer. OpenStreetMap already carries opening_hours on most museums,
+    // parks and galleries — read it.
+    //
+    // The opening_hours spec is enormous. This handles the shapes that actually
+    // occur, and returns null when it is not sure rather than guessing a time a
+    // traveller would then plan their afternoon around.
+    const OH_DAYS = { su:0, mo:1, tu:2, we:3, th:4, fr:5, sa:6 };
+    function closingFromOsm(oh){
+        if (!oh) return null;
+        const s = String(oh).trim().toLowerCase();
+        if (s === '24/7') return 1439;
+        const today = new Date().getDay();                  // 0 = Sunday
+        let best = null;
+        s.split(';').forEach(rule => {
+            rule = rule.trim();
+            if (!rule) return;
+            // A day can hold several spans — "10:00-13:00,14:00-18:00" is a
+            // lunch break, not a 1pm closing time. Match them all and keep the
+            // latest, or the board tells people to skip a place still open.
+            const times = rule.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/g);
+            const closed = /\b(off|closed)\b/.test(rule);
+            // which days does this rule name? no day token means every day
+            const dayPart = rule.split(/\d{1,2}:\d{2}/)[0];
+            let days = null;
+            const spec = dayPart.match(/(su|mo|tu|we|th|fr|sa)(\s*-\s*(su|mo|tu|we|th|fr|sa))?/g);
+            if (spec && spec.length) {
+                days = new Set();
+                spec.forEach(tok => {
+                    const range = tok.split('-').map(x => x.trim());
+                    if (range.length === 2) {
+                        let a = OH_DAYS[range[0]], b = OH_DAYS[range[1]];
+                        if (a === undefined || b === undefined) return;
+                        for (let d = a; ; d = (d + 1) % 7) { days.add(d); if (d === b) break; }
+                    } else if (OH_DAYS[range[0]] !== undefined) {
+                        days.add(OH_DAYS[range[0]]);
+                    }
+                });
+            }
+            if (days && !days.has(today)) return;           // rule is about another day
+            if (closed && !times) { best = 'closed'; return; }
+            if (!times) return;
+            let close = null;
+            times.forEach(span => {
+                const m = span.match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/);
+                const c = (+m[3]) * 60 + (+m[4]);
+                if (close == null || c > close) close = c;
+            });
+            if (best === 'closed') best = null;
+            if (best == null || close > best) best = close;
+        });
+        if (best === 'closed') return 0;                    // shut today
+        return (typeof best === 'number') ? best : null;
+    }
+
+    // How long people actually spend, by what the place is. Still an estimate,
+    // but a zoo and a viewpoint are not the same hour.
+    const VISIT_BY_TYPE = {
+        museum: 90, gallery: 60, zoo: 150, aquarium: 120, theme_park: 180,
+        attraction: 45, artwork: 15, viewpoint: 20,
+        monument: 20, memorial: 25, castle: 75, ruins: 45, archaeological_site: 45,
+        park: 45, garden: 45
+    };
+    function visitFor(t){
+        return VISIT_BY_TYPE[t.tourism] || VISIT_BY_TYPE[t.historic] ||
+               VISIT_BY_TYPE[t.leisure] || 60;
+    }
+
     function addOsmPlace(tok){
         const o = osmPending[tok]; if (!o) return;
         const nm = String(o.name).slice(0, 60);
@@ -2681,7 +2752,12 @@
         const cat = t.leisure ? 'nature'
                   : (t.historic ? 'history'
                   : (t.tourism === 'viewpoint' ? 'views' : 'culture'));
-        const np = { name: nm, lat: o.lat, lon: o.lon, close: 1020, visit: 60, cat: cat };
+        const realClose = closingFromOsm(t.opening_hours);
+        const np = { name: nm, lat: o.lat, lon: o.lon,
+                     close: (realClose == null ? 1020 : realClose),
+                     visit: visitFor(t), cat: cat,
+                     // so the board can be honest about which times are guesses
+                     hoursKnown: realClose != null };
         places.push(np);
         rememberPlace(np, { class: t.tourism ? 'tourism' : (t.historic ? 'historic' : 'leisure'),
                             type: t.tourism || t.historic || t.leisure });
