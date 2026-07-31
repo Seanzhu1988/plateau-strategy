@@ -119,10 +119,17 @@ That is a bigger hole than any ad budget. Fixed now:
 - **Footer contact block** — service area, hours, and the flat rate, in markup a
   crawler reads on the first page it fetches.
 
-- [x] **Business email — `hello@plateaustrategy.io`.** Live in the footer and in
-      the `LocalBusiness` node. Decided over the personal Gmail: a gmail.com
-      address on a car-service listing costs conversions for no reason, and the
-      domain is already paid for.
+- [~] **Business email — `hello@plateaustrategy.io`.** Decided over the personal
+      Gmail: a gmail.com address on a car-service listing costs conversions for
+      no reason, and the domain is already paid for.
+
+      **Published, then pulled back the same day.** A direct DNS query showed
+      `plateaustrategy.io` has no MX records at all, so mail to that address
+      bounces — the address went live before mail routing existed, which is the
+      wrong order. It goes back the moment Porkbun forwarding is on; the exact
+      line is kept in a comment in the footer and in `_todo_email` on the schema
+      node. Lesson worth keeping: check that an address receives mail *before*
+      advertising it.
 
 **Still open — needs an account, not code:**
 
