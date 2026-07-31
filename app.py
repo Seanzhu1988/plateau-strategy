@@ -22,6 +22,7 @@ import threading
 import subprocess
 import datetime
 import urllib.parse
+import shutil
 from functools import wraps
 from flask import Flask, request, jsonify, send_file, session, Response
 
@@ -43,20 +44,63 @@ def _no_tags(s):
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-RES_PATH = os.path.join(BASE_DIR, "reservations.json")
-RENTERS_PATH = os.path.join(BASE_DIR, "renters.json")
-AGENTS_PATH = os.path.join(BASE_DIR, "agents.json")
-ARTICLES_PATH = os.path.join(BASE_DIR, "articles.json")
-TRAFFIC_PATH = os.path.join(BASE_DIR, "traffic.json")
-CUSTOMERS_PATH = os.path.join(BASE_DIR, "customers.json")
-FINANCE_PATH = os.path.join(BASE_DIR, "finance_signups.json")
-WISHLIST_PATH = os.path.join(BASE_DIR, "finance_wishlist.json")
-PARTNERS_PATH = os.path.join(BASE_DIR, "partners.json")
-PRICING_PATH = os.path.join(BASE_DIR, "pricing.json")
-OWNER_AUTH_PATH = os.path.join(BASE_DIR, "owner_auth.json")
-SECRET_PATH = os.path.join(BASE_DIR, ".flask_secret")
-CONTRACT_PATH = os.path.join(BASE_DIR, "contract.json")
-SIGNATURES_PATH = os.path.join(BASE_DIR, "contract_signatures.json")
+
+# ---------------------------------------------------------------- where data lives
+# The code ships in BASE_DIR; everything the site SAVES lives in DATA_DIR. On a
+# host whose filesystem is reset on each deploy — which is what free Render does
+# — those being the same directory means every reservation, agent code and guide
+# listing is destroyed the next time anyone pushes. Pointing DATA_DIR at a
+# mounted disk keeps them.
+#
+# Unset, DATA_DIR is BASE_DIR, so local development and the existing deployment
+# behave exactly as before. Set, any file the repository ships (the seeded
+# destinations book, pricing) is copied across once on first boot, so switching
+# it on never starts the site with an empty book.
+DATA_DIR = os.environ.get("DATA_DIR", "").strip() or BASE_DIR
+_SEEDED = set()
+
+
+def _data_dir(name):
+    """A directory of uploaded files, kept beside the data rather than the code."""
+    d = os.path.join(DATA_DIR, name)
+    try:
+        os.makedirs(d, exist_ok=True)
+    except Exception:
+        pass
+    return d
+
+
+def _data_path(name):
+    """Path to a file the site writes, seeding it from the repo copy just once."""
+    if DATA_DIR == BASE_DIR:
+        return os.path.join(BASE_DIR, name)
+    target = os.path.join(DATA_DIR, name)
+    if name not in _SEEDED:
+        _SEEDED.add(name)
+        try:
+            os.makedirs(DATA_DIR, exist_ok=True)
+            shipped = os.path.join(BASE_DIR, name)
+            if not os.path.exists(target) and os.path.exists(shipped):
+                shutil.copy2(shipped, target)
+        except Exception:
+            pass
+    return target
+
+
+RES_PATH = _data_path("reservations.json")
+RENTERS_PATH = _data_path("renters.json")
+AGENTS_PATH = _data_path("agents.json")
+ARTICLES_PATH = _data_path("articles.json")
+TRAFFIC_PATH = _data_path("traffic.json")
+CUSTOMERS_PATH = _data_path("customers.json")
+FINANCE_PATH = _data_path("finance_signups.json")
+WISHLIST_PATH = _data_path("finance_wishlist.json")
+PARTNERS_PATH = _data_path("partners.json")
+PRICING_PATH = _data_path("pricing.json")
+OWNER_AUTH_PATH = _data_path("owner_auth.json")
+SECRET_PATH = _data_path(".flask_secret")
+CONTRACT_PATH = _data_path("contract.json")
+SIGNATURES_PATH = _data_path("contract_signatures.json")
 _LOCK = threading.Lock()
 
 
@@ -600,7 +644,7 @@ def api_clock_signup():
     email = (data.get("email") or "").strip()
     if not email or "@" not in email:
         return jsonify({"ok": False, "error": "Please enter a valid email."}), 400
-    path = os.path.join(BASE_DIR, "clock_signups.json")
+    path = _data_path("clock_signups.json")
     with _LOCK:
         signups = _load(path)
         if any((s.get("email") or "").lower() == email.lower() for s in signups):
@@ -617,7 +661,7 @@ def api_clock_signup():
 @app.route("/api/destinations")
 def api_destinations():
     try:
-        with open(os.path.join(BASE_DIR, "destinations.json")) as f:
+        with open(_data_path("destinations.json")) as f:
             data = json.load(f)
         # ride the crowd's real stay times AND star ratings along with each place
         times = _visit_all()
@@ -671,7 +715,7 @@ def api_discoveries():
     """What travelers have been discovering lately, newest first, worldwide —
     the visible proof that the map grows by itself."""
     try:
-        with open(os.path.join(BASE_DIR, "destinations.json")) as f:
+        with open(_data_path("destinations.json")) as f:
             d = json.load(f)
     except Exception:
         return jsonify({"ok": True, "recent": [], "by_city": [], "total": 0})
@@ -702,7 +746,7 @@ def api_discoveries():
 # about: what it's really like, what to know before you go. Keyed city|name
 # like every other community store. Free text, no account — so it is capped,
 # tag-stripped, and visible to the owner in the Archive.
-COMMENTS_PATH = os.path.join(BASE_DIR, "destination_comments.json")
+COMMENTS_PATH = _data_path("destination_comments.json")
 COMMENT_MAX_PER_PLACE = 200
 
 
@@ -749,7 +793,7 @@ def api_destination_comment_add():
 # We keep the MEDIAN, never the average — one person typing 999 must not move the
 # recommendation — and we refuse to recommend anything until enough people have
 # said it. No identities are stored: this is a list of durations, nothing else.
-VISITS_PATH = os.path.join(BASE_DIR, "visit_times.json")
+VISITS_PATH = _data_path("visit_times.json")
 VISIT_MIN_N = 3          # below this we have an opinion, not a fact — stay quiet
 GUIDE_MIN_N = 1          # a verified guide's endorsement stands on its own
 VISIT_MAX_SAMPLES = 300  # per place; oldest fall off
@@ -797,7 +841,7 @@ def _median(nums):
 # ---------- star ratings (real, community-driven) ----------
 # Visitors rate a place 1–5 stars anywhere in the planner; we keep the average and
 # the count. No fabricated stars — a place shows stars only once someone rates it.
-RATINGS_PATH = os.path.join(BASE_DIR, "place_ratings.json")
+RATINGS_PATH = _data_path("place_ratings.json")
 
 
 def _ratings_all():
@@ -979,7 +1023,7 @@ def api_destinations_add():
             return dflt
     close = _clampi(data.get("close"), 0, 1440, 1020)
     visit = _clampi(data.get("visit"), 10, 480, 60)
-    path = os.path.join(BASE_DIR, "destinations.json")
+    path = _data_path("destinations.json")
     with _LOCK:
         try:
             with open(path) as f:
@@ -1047,7 +1091,7 @@ def api_deflator_waitlist():
     email = str(data.get("email", "")).strip().lower()
     if not email or "@" not in email or "." not in email.split("@")[-1] or len(email) > 254:
         return jsonify({"success": False, "error": "Please enter a valid email."}), 400
-    path = os.path.join(BASE_DIR, "deflator_waitlist.json")
+    path = _data_path("deflator_waitlist.json")
     with _LOCK:
         items = _load(path)
         if any(str(i.get("email", "")).lower() == email for i in items):
@@ -1170,7 +1214,7 @@ def api_national_debt():
 # Fiscal Service). This ledger only COUNTS what people tell us they gave, so the
 # green zero on the Finance tab can move. It is self-reported by design — the
 # honest alternative to pretending we can verify a payment we deliberately never see.
-GIVEBACK_PATH = os.path.join(BASE_DIR, "give_back.json")
+GIVEBACK_PATH = _data_path("give_back.json")
 TREASURY_PAYGOV = "https://www.pay.gov/public/form/start/23779454"
 TREASURY_MAIL = ("Attn Dept G, Bureau of the Fiscal Service, "
                  "P.O. Box 2188, Parkersburg, WV 26106-2188")
@@ -1234,7 +1278,7 @@ def api_give_back_log():
 # "for sale", the request lands here. This is the OFFER object — the first slice of
 # the ding handshake. It captures the plan + who to reach; the accept/decline/expire
 # loop (routed to a specific guide) is the next build. No money moves here.
-GUIDE_OFFERS_PATH = os.path.join(BASE_DIR, "guide_offers.json")
+GUIDE_OFFERS_PATH = _data_path("guide_offers.json")
 
 
 def _platform_fee():
@@ -1364,7 +1408,7 @@ def api_guide_offer():
                     "public_trip_id": rec.get("public_trip_id")})
 
 
-ROBOTAXI_PATH = os.path.join(BASE_DIR, "robotaxi_interest.json")
+ROBOTAXI_PATH = _data_path("robotaxi_interest.json")
 
 
 @app.route("/api/robotaxi-interest", methods=["POST"])
@@ -1450,7 +1494,7 @@ def _ensure_driver_agent(renter):
 
 def _push_owner_alert(kind, message):
     """Append an alert to the owner's dashboard log and SMS them if configured."""
-    alerts_path = os.path.join(BASE_DIR, "owner_alerts.json")
+    alerts_path = _data_path("owner_alerts.json")
     with _LOCK:
         alerts = _load(alerts_path)
         alerts.append({"at": datetime.datetime.now().isoformat(timespec="seconds"),
@@ -1894,7 +1938,7 @@ def api_giveup(rid):
              "Ride is back in the open pool." % (
                  rid, driver_name, trip.get("pickup", ""), trip.get("dropoff", ""),
                  trip.get("date", ""), trip.get("time", "")))
-    alerts_path = os.path.join(BASE_DIR, "owner_alerts.json")
+    alerts_path = _data_path("owner_alerts.json")
     alerts = _load(alerts_path)
     alerts.append({"at": datetime.datetime.now().isoformat(timespec="seconds"),
                    "type": "GIVEUP", "message": alert})
@@ -1906,7 +1950,7 @@ def api_giveup(rid):
 
 @app.route("/api/alerts")
 def api_alerts():
-    return jsonify({"alerts": list(reversed(_load(os.path.join(BASE_DIR, "owner_alerts.json"))))[:50]})
+    return jsonify({"alerts": list(reversed(_load(_data_path("owner_alerts.json"))))[:50]})
 
 
 @app.route("/api/reservations/<rid>/cancel", methods=["POST"])
@@ -2019,7 +2063,7 @@ def api_dispatch_cancel():
 
 
 # ---------- renters (drivers) ----------
-INSURANCE_DIR = os.path.join(BASE_DIR, "insurance_uploads")
+INSURANCE_DIR = _data_dir("insurance_uploads")
 INSURANCE_WARN_DAYS = int(os.environ.get("INSURANCE_WARN_DAYS", "30"))
 INSURANCE_REQUIRED = os.environ.get("INSURANCE_REQUIRED", "true").lower() != "false"
 
@@ -2089,11 +2133,11 @@ def _save_insurance_file(rid, data_url):
     return fn
 
 
-VIOLATIONS_PATH = os.path.join(BASE_DIR, "violations.json")
+VIOLATIONS_PATH = _data_path("violations.json")
 VIOLATION_ABANDON_GRACE_H = float(os.environ.get("VIOLATION_ABANDON_GRACE_H", "2"))
 
-DOCUMENTS_PATH = os.path.join(BASE_DIR, "documents.json")
-DOCUMENTS_DIR = os.path.join(BASE_DIR, "documents")
+DOCUMENTS_PATH = _data_path("documents.json")
+DOCUMENTS_DIR = _data_dir("documents")
 DOC_TYPES = ["Driver's License", "Vehicle Registration", "Proof of Insurance",
              "W-9 Tax Form", "Background Check", "Vehicle Inspection",
              "Rental Agreement", "Other"]
@@ -2747,7 +2791,7 @@ def api_agent(aid):
 # marks it paid once sent (Zelle/cash/check — the site never moves money).
 # payouts.json is an append-only ledger: REQUESTED → PAID / DECLINED.
 # ======================================================================
-PAYOUTS_PATH = os.path.join(BASE_DIR, "payouts.json")
+PAYOUTS_PATH = _data_path("payouts.json")
 
 
 def _agent_take_paid(aid):
@@ -3322,7 +3366,7 @@ def api_finance_wishlist():
 # The demand side of the Destination Book: places people ask for, and the city
 # they want them in. Free-text, no account, no email required — a wish is a
 # signal, and the counts tell us what to add (and where guides are wanted).
-TRAVEL_WISHES_PATH = os.path.join(BASE_DIR, "travel_wishes.json")
+TRAVEL_WISHES_PATH = _data_path("travel_wishes.json")
 
 
 @app.route("/api/travel-wish", methods=["POST"])
@@ -3653,7 +3697,7 @@ def _arch_contacts():
             s.get("ts") or s.get("created_at"))
     for s in _load(WISHLIST_PATH):
         add(s.get("name"), s.get("email"), s.get("phone"), "Finance wishlist", "", s.get("ts"))
-    for s in _load(os.path.join(BASE_DIR, "deflator_waitlist.json")):
+    for s in _load(_data_path("deflator_waitlist.json")):
         add(s.get("name"), s.get("email"), s.get("phone"), "Deflator waitlist", "", s.get("ts"))
     for p in _load(PARTNERS_PATH):
         add(p.get("sales_contact") or p.get("name"), p.get("email"), p.get("phone"),
@@ -3706,7 +3750,7 @@ def _arch_leads():
     for s in reversed(_load(WISHLIST_PATH)):
         out.append({"source": "Finance wishlist", "name": s.get("name", ""), "email": s.get("email", ""),
                     "detail": "", "date": s.get("ts", "")})
-    for s in reversed(_load(os.path.join(BASE_DIR, "deflator_waitlist.json"))):
+    for s in reversed(_load(_data_path("deflator_waitlist.json"))):
         out.append({"source": "Deflator waitlist", "name": s.get("name", ""), "email": s.get("email", ""),
                     "detail": s.get("source", ""), "date": s.get("ts", "")})
     return out
@@ -3745,7 +3789,7 @@ def _arch_payouts():
 
 def _arch_activity():
     out = []
-    for a in reversed(_load(os.path.join(BASE_DIR, "owner_alerts.json"))):
+    for a in reversed(_load(_data_path("owner_alerts.json"))):
         out.append({"at": a.get("at", ""), "type": a.get("type", ""), "message": a.get("message", "")})
     return out
 
@@ -3917,9 +3961,9 @@ def api_archive_export():
 # a registry of the managing members. Owner-gated, append-only — nothing is
 # ever overwritten, so it's a true corporate paper trail.
 # ======================================================================
-BOARD_DIR = os.path.join(BASE_DIR, "board_docs")
-BOARD_DOCS_PATH = os.path.join(BASE_DIR, "board_docs.json")
-BOARD_MEMBERS_PATH = os.path.join(BASE_DIR, "board_members.json")
+BOARD_DIR = _data_dir("board_docs")
+BOARD_DOCS_PATH = _data_path("board_docs.json")
+BOARD_MEMBERS_PATH = _data_path("board_members.json")
 BOARD_DOC_TYPES = ["Bylaws", "Operating Agreement", "Shareholder Agreement",
                    "Articles of Formation", "Board Resolution", "Meeting Minutes",
                    "Contract", "Cap Table", "Tax / EIN", "Other"]
@@ -3962,8 +4006,8 @@ def _save_board_file(data_url):
 # The guide's contact details are never served publicly. A traveller registers
 # interest through the site and the owner introduces them, so a listing cannot be
 # scraped for emails.
-GUIDE_TRIPS_PATH = os.path.join(BASE_DIR, "guide_trips.json")
-GUIDE_INTEREST_PATH = os.path.join(BASE_DIR, "guide_interest.json")
+GUIDE_TRIPS_PATH = _data_path("guide_trips.json")
+GUIDE_INTEREST_PATH = _data_path("guide_interest.json")
 
 TRIP_KINDS = ("in-depth", "campus", "history", "food", "architecture", "art",
               "nature", "photography", "family", "neighborhood", "nightlife", "other")
@@ -4187,7 +4231,7 @@ def guide_studio_page():
 # names on the roll may enter, so a leaked password alone is not a way in.
 # The password lives hashed in board_auth.json (gitignored) or in BOARD_PASSWORD;
 # it is never written into the repository.
-BOARD_AUTH_PATH = os.path.join(BASE_DIR, "board_auth.json")
+BOARD_AUTH_PATH = _data_path("board_auth.json")
 
 
 def _board_auth():
@@ -4468,7 +4512,7 @@ def api_traffic_key():
 # ask is worth more as evidence than as a promise: we record which city wanted a
 # ride and where they were headed, so opening a new city is a decision made on
 # real demand rather than a guess. Sean opens a city by adding it to RIDE_CITIES.
-RIDE_DEMAND_PATH = os.path.join(BASE_DIR, "ride_demand.json")
+RIDE_DEMAND_PATH = _data_path("ride_demand.json")
 
 
 def _ride_cities():

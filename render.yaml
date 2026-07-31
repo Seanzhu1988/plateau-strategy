@@ -2,7 +2,14 @@ services:
   - type: web
     name: plateau-strategy
     runtime: python
-    plan: free
+    # Starter, not free: a free instance's filesystem is wiped on every deploy
+    # and every sleep, which destroyed reservations, agent codes and guide
+    # listings. A paid instance can mount a disk that survives both.
+    plan: starter
+    disk:
+      name: plateau-data
+      mountPath: /var/data
+      sizeGB: 1
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 8 --timeout 120
     # Custom domains are claimed when the service is created from this
@@ -15,6 +22,8 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.11.9"
+      - key: DATA_DIR
+        value: /var/data         # everything the site saves lives on the disk
       - key: FLASK_SECRET
         generateValue: true      # Render makes a strong random value
       # All other secrets (Square, Twilio, etc.) are set by hand in the Render
