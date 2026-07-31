@@ -8,6 +8,7 @@
     <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
+        .act.ride-wanted { background: #fff7ed; border-color: #fdba74; color: #9a3412; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #f1f5f9; color: #1f2937; min-height: 100vh; }
@@ -1329,9 +1330,22 @@
         if (key && key !== curCity) loadSample(true, key);
     }
     function onDepartChange(){ savePlaces(); }
-    function tripWhen(){          // the "when" of the trip, for the reservation
-        return { date: ($('departDate') || {}).value || '', leaveBy: ($('leaveAt') || {}).value || '' };
+    function todayISO(){
+        const d = new Date();
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0')
+             + '-' + String(d.getDate()).padStart(2, '0');
     }
+    function tripWhen(){          // the "when" of the trip, for the reservation
+        // Never hand a booking an empty date — the reservation form requires one,
+        // and a blank required field makes the request button look broken.
+        return { date: ($('departDate') || {}).value || todayISO(),
+                 leaveBy: ($('leaveAt') || {}).value || '09:30' };
+    }
+    // Start the planner on today rather than blank, so the day is always answered.
+    (function seedDepartDate(){
+        const d = $('departDate');
+        if (d && !d.value) d.value = todayISO();
+    })();
 
     // ---------- 🤵 Jarvis — the free trip organizer ----------
     // Not a paid chatbot: Jarvis narrates the REAL numbers the planner already
@@ -1660,6 +1674,7 @@
                    map.setView(c.center, c.zoom);
                    resetTrip(); fetchMatrix(); }
             say(c.label + ' sample loaded — ' + places.length + ' places, ready to plan.');
+            markRideCoverage();                 // the ride door differs city to city
             const ss = $('selState'), m = CITY_META[curCity];  // keep all three pickers in sync
             if (ss && m) { ss.value = m.state; fillCounties(m.state); $('selCounty').value = m.county;
                            fillCities(m.state, m.county); $('selCity').value = curCity; }
@@ -1880,8 +1895,25 @@
         if (!st.route.length && ($('destAdd').value || '').trim()) await addDestination();
         return st.route.length > 0;
     }
+    // Which cities actually have drivers. Asked once; until the answer arrives we
+    // assume the button works, because wrongly telling someone "not available"
+    // costs a real booking.
+    let rideCities = null;
+    fetch('/api/ride-coverage').then(r => r.json())
+        .then(j => { if (j && j.ok) { rideCities = j.cities || []; markRideCoverage(); } }).catch(() => {});
+    function rideOpenHere(){ return !rideCities || rideCities.indexOf(curCity) >= 0; }
+    function markRideCoverage(){
+        const b = document.querySelector('.act.ride');
+        if (!b) return;
+        const open = rideOpenHere();
+        b.textContent = open ? '🚗 I need a ride' : '🚗 Want a ride here?';
+        b.title = open ? 'Book a ride to your stop'
+                       : 'We do not drive here yet — tell us you want it and we will count you';
+        b.classList.toggle('ride-wanted', !open);
+    }
     async function doorRide(){
         if (!(await ensureLocation())) { say('Enter a location first — type where you want to go, then choose.'); return; }
+        if (!rideOpenHere()) { rideWanted(); return; }
         // Ride = current location → your destination. Make the pickup ACCURATE: if we
         // don't already have a GPS fix, ask for one now so the reservation gets the
         // customer's real address, not the city's default start point.
@@ -1918,6 +1950,26 @@
         };
         try { localStorage.setItem('ps_ride_trip', JSON.stringify(ride)); } catch (e) {}
         location.href = '/book';               // the working reservation flow, now pre-filled
+    }
+    // Outside our driving cities the honest move is to say so and count the ask.
+    // Every one of these is evidence for where to open next — and for whether a
+    // city has enough travelers to be worth a shared bus tour rather than a car.
+    function rideWanted(){
+        const label = (CITIES[curCity] || {}).label || curCity;
+        const drop = st.route.length ? (places[st.route[st.route.length - 1].i] || {}).name : '';
+        const email = (prompt('We do not have drivers in ' + label + ' yet.\n\n'
+            + 'Leave your email and we will tell you the day we do — or just press OK to be '
+            + 'counted anonymously. Every ask helps decide which city opens next.') || '').trim();
+        fetch('/api/ride-demand', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ city: curCity, city_label: label, dropoff: drop,
+                                   stops: st.route.length, email: email.slice(0, 120) }) })
+            .then(() => {
+                say('Counted — thank you. Rides run in Seattle today; ' + label + ' opens when enough people ask.');
+                jarvisSay('Noted your ask for a ride in <b>' + escj(label) + '</b>. We drive in Seattle today, '
+                    + 'and every ask here counts toward opening this city next.'
+                    + (drop ? ' Your stop, <b>' + escj(drop) + '</b>, is recorded too.' : ''));
+            })
+            .catch(() => say('Could not record that just now — please try again in a moment.'));
     }
     let handoffMode = 'prefer';
     const HANDOFF_COPY = {
@@ -2281,6 +2333,12 @@
                       wideRadius: 12000,
                       q: 'node["railway"="station"]["name"];way["railway"="station"]["name"]', fallbackName: 'Station',
                       addable: true, startable: true },
+        // Rest areas matter on the drive between cities, not inside one, so they
+        // search wide and stay visible when the map is pulled back.
+        rest:       { emoji: '🅿️', color: '#15803d', min: 8, max: 60, label: 'Rest areas',
+                      wideRadius: 40000,
+                      q: 'nwr["highway"="rest_area"];nwr["highway"="services"];nwr["amenity"="parking"]["toilets"="yes"]',
+                      fallbackName: 'Rest area', addable: true },
         toilets:    { emoji: '🚻', color: '#0284c7', min: 14, max: 120, label: 'Restrooms',
                       q: 'nwr["amenity"="toilets"]', fallbackName: 'Public restroom' },
         food:       { emoji: '🍽️', color: '#d97706', min: 15, max: 150, label: 'Food & coffee',
@@ -2289,6 +2347,39 @@
                       q: 'nwr["amenity"~"^(pharmacy|atm|drinking_water)$"]', fallbackName: 'Essential' },
     };
     const amenityLayers = {}, amenityCache = {}, amenityOn = {}, amenityStar = {};
+    // ---------- live road traffic ----------
+    // Real-time traffic is the one map layer that cannot be free and keyless, so
+    // it appears only once a key is configured. Red means slow: the colours are
+    // speed relative to the road's own free-flow speed, which is what a driver
+    // actually cares about — a 25 mph street at 25 is green, a highway at 25 is not.
+    let trafficLayer = null, trafficOn = false;
+    fetch('/api/traffic-key').then(r => r.json()).then(j => {
+        if (!j || !j.enabled || !j.key) return;
+        trafficLayer = L.tileLayer(
+            'https://api.tomtom.com/traffic/map/4/tile/flow/relative0/{z}/{x}/{y}.png?key='
+            + encodeURIComponent(j.key) + '&tileSize=256',
+            { maxZoom: 22, opacity: 0.75, attribution: j.attribution || 'Traffic © TomTom' });
+        addTrafficToggle();
+    }).catch(() => {});
+    // The traffic chip joins the same icon row as the other layers, so the map
+    // keeps one place to turn things on rather than two.
+    function addTrafficToggle(){
+        const row = document.querySelector('.map-layers .achip-row');
+        if (!row || document.getElementById('trafficBtn')) return;
+        const b = document.createElement('div');
+        b.className = 'achip'; b.id = 'trafficBtn'; b.title = 'Show live traffic';
+        b.textContent = '🚦';
+        b.onclick = toggleTraffic;
+        row.appendChild(b);
+    }
+    function toggleTraffic(){
+        if (!trafficLayer) return;
+        trafficOn = !trafficOn;
+        if (trafficOn) trafficLayer.addTo(map); else map.removeLayer(trafficLayer);
+        const b = document.getElementById('trafficBtn');
+        if (b) { b.classList.toggle('on', trafficOn); b.title = trafficOn ? 'Hide live traffic' : 'Show live traffic'; }
+        noteFor('traffic', trafficOn ? 'live traffic on — red is slow for that road' : '');
+    }
     // Tapping a layer icon walks it through: off → all → ★5 → ★4 → ★3 → ★2 → ★1 → off.
     // Stars come from THIS site's community ratings — the free map data carries no
     // restaurant ratings at all — so filtering shows only places travelers have

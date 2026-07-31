@@ -196,7 +196,14 @@
                 const f = document.getElementById('bookForm');
                 if (ride.pickup) f.querySelector('[name=pickup]').value = ride.pickup;
                 if (ride.dropoff) f.querySelector('[name=dropoff]').value = ride.dropoff;
-                if (ride.date) { const dt = f.querySelector('[name=date]'); if (dt) dt.value = ride.date; }
+                const dt = f.querySelector('[name=date]');
+                if (dt && !dt.value) {
+                    // Fall back to today rather than leaving the required field blank —
+                    // a blank date silently blocks the request button.
+                    const n = new Date();
+                    dt.value = ride.date || (n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0')
+                                             + '-' + String(n.getDate()).padStart(2, '0'));
+                }
                 if (ride.time) { const tm = f.querySelector('[name=time]'); if (tm) { tm.value = ride.time; tm.dispatchEvent(new Event('change')); } }
                 if (ride.notes) {
                     const nt = f.querySelector('[name=notes]');
@@ -269,6 +276,24 @@
             }
             sel.innerHTML = html;
         }).catch(() => {});
+
+        // A required field left blank stops the browser before the submit event
+        // ever fires, and the native warning is easy to miss on a phone — which
+        // reads as a button that does nothing. Say it in the page instead.
+        document.getElementById('bookForm').addEventListener('invalid', function (e) {
+            const field = e.target;
+            // Say the field's own label ("your email"), not its placeholder —
+            // "please fill in jane@email.com" reads like nonsense.
+            let label = '';
+            const lab = field.closest('label') || document.querySelector('label[for="' + field.id + '"]');
+            if (lab) label = (lab.textContent || '').replace(/\s+/g, ' ').trim().replace(/[:*]$/, '');
+            label = (label || field.name || 'that field').toLowerCase();
+            const result = document.getElementById('result');
+            result.className = 'result show err';
+            result.textContent = 'Almost there — please fill in ' + label + ' first.';
+            field.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            field.focus({ preventScroll: true });
+        }, true);
 
         document.getElementById('bookForm').addEventListener('submit', async function (e) {
             e.preventDefault();

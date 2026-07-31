@@ -105,17 +105,48 @@
         async function boot() {
             let res, d;
             try { res = await fetch('/api/board/members'); d = await res.json(); } catch (e) { return; }
-            if (res.status === 401 || (d && d.auth_required)) {
-                document.getElementById('gate').innerHTML =
-                    '<div class="card" style="text-align:center; max-width:520px; margin:2rem auto;">' +
-                    '<h1 style="margin-bottom:0.6rem;">🔒 Private — board only</h1>' +
-                    '<p class="sub" style="margin-bottom:1.3rem;">The governance vault holds the company\'s bylaws, agreements and contracts. Sign in through Dispatch to open it.</p>' +
-                    '<a class="btn blue" href="/dispatch">Go to Dispatch login →</a></div>';
-                return;
-            }
+            if (res.status === 401 || (d && d.auth_required)) { showGate(); return; }
             document.getElementById('content').style.display = 'block';
             renderMembers(d.members || []);
             loadDocs();
+        }
+
+        // Two boxes and nothing else: your name, and the board password. Only names
+        // on the roll can sign in, so the password alone opens nothing.
+        function showGate(msg) {
+            document.getElementById('gate').innerHTML =
+                '<div class="card" style="max-width:440px; margin:2.5rem auto;">' +
+                '<h1 style="margin-bottom:0.5rem; text-align:center;">🔒 Private — board only</h1>' +
+                '<p class="sub" style="text-align:center; margin-bottom:1.4rem;">' +
+                'The governance vault holds the bylaws, agreements and contracts.</p>' +
+                '<input id="bd_name" placeholder="Your name" autocomplete="name" ' +
+                'style="width:100%; padding:0.75rem 0.9rem; border:1px solid #cbd5e1; border-radius:9px; font-size:0.95rem; margin-bottom:0.7rem;">' +
+                '<input id="bd_pw" type="password" placeholder="Board password" autocomplete="current-password" ' +
+                'style="width:100%; padding:0.75rem 0.9rem; border:1px solid #cbd5e1; border-radius:9px; font-size:0.95rem;">' +
+                '<button class="btn blue" id="bd_go" style="width:100%; margin-top:1rem;">Enter</button>' +
+                '<div id="bd_msg" style="margin-top:0.8rem; font-size:0.85rem; color:#b91c1c; text-align:center;">' +
+                (msg ? esc(msg) : '') + '</div>' +
+                '<p class="note" style="text-align:center; margin-top:1rem;">Owner? ' +
+                '<a href="/dispatch" style="color:#2563eb;">Sign in through Dispatch</a>.</p></div>';
+            const go = document.getElementById('bd_go');
+            const submit = async () => {
+                const name = val('bd_name'), pw = val('bd_pw');
+                if (!name || !pw) { document.getElementById('bd_msg').textContent = 'Please fill in both boxes.'; return; }
+                go.disabled = true; go.textContent = 'Checking…';
+                try {
+                    const r = await fetch('/api/board/login', { method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, password: pw }) });
+                    const j = await r.json();
+                    if (j && j.ok) { document.getElementById('gate').innerHTML = ''; boot(); return; }
+                    document.getElementById('bd_msg').textContent = (j && j.error) || 'Sign-in failed.';
+                } catch (e) { document.getElementById('bd_msg').textContent = 'Could not reach the server.'; }
+                go.disabled = false; go.textContent = 'Enter';
+            };
+            go.onclick = submit;
+            ['bd_name', 'bd_pw'].forEach(id => document.getElementById(id)
+                .addEventListener('keydown', e => { if (e.key === 'Enter') submit(); }));
+            document.getElementById('bd_name').focus();
         }
 
         function renderMembers(list) {

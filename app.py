@@ -21,6 +21,7 @@ import secrets
 import threading
 import subprocess
 import datetime
+import urllib.parse
 from functools import wraps
 from flask import Flask, request, jsonify, send_file, session
 
@@ -3839,13 +3840,90 @@ def _save_board_file(data_url):
     return fn, len(raw)
 
 
+# ------------------------------------------------------- board of directors gate
+# The board area is private, and its members are not site owners — they need a
+# door of their own. Two boxes: your name, and the shared board password. Only
+# names on the roll may enter, so a leaked password alone is not a way in.
+# The password lives hashed in board_auth.json (gitignored) or in BOARD_PASSWORD;
+# it is never written into the repository.
+BOARD_AUTH_PATH = os.path.join(BASE_DIR, "board_auth.json")
+
+
+def _board_auth():
+    try:
+        with open(BOARD_AUTH_PATH) as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _board_roll():
+    """Names allowed in: the roll file, plus anyone added as a board member."""
+    names = {_norm_name(n) for n in (_board_auth().get("allow") or [])}
+    for m in _load(BOARD_MEMBERS_PATH):
+        n = _norm_name(m.get("name", ""))
+        if n:
+            names.add(n)
+    return names
+
+
+def _norm_name(s):
+    return " ".join(str(s or "").strip().lower().split())
+
+
+def board_required(fn):
+    @wraps(fn)
+    def wrapper(*a, **k):
+        if session.get("owner") or session.get("board"):
+            return fn(*a, **k)
+        return jsonify({"ok": False, "auth_required": True, "board": True,
+                        "error": "Board sign-in required."}), 401
+    return wrapper
+
+
+@app.route("/api/board/login", methods=["POST"])
+def api_board_login():
+    d = request.get_json(silent=True) or {}
+    name = _norm_name(d.get("name"))
+    pw = str(d.get("password") or "")
+    auth = _board_auth()
+    env_pw = os.environ.get("BOARD_PASSWORD", "").strip()
+    if env_pw:
+        ok_pw = (pw == env_pw)
+    elif auth.get("hash"):
+        ok_pw = _verify_pw(pw, auth.get("salt", ""), auth.get("hash", ""))
+    else:
+        return jsonify({"ok": False, "error": "The board password has not been set yet."}), 403
+    roll = _board_roll()
+    if not (ok_pw and name and name in roll):
+        # One message for both failures — never reveal which half was right.
+        return jsonify({"ok": False, "error": "That name and password do not match our board roll."}), 401
+    session["board"] = name
+    session.permanent = True
+    return jsonify({"ok": True, "name": name})
+
+
+@app.route("/api/board/logout", methods=["POST"])
+def api_board_logout():
+    session.pop("board", None)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/board/me")
+def api_board_me():
+    who = session.get("board")
+    return jsonify({"ok": True, "signed_in": bool(who or session.get("owner")),
+                    "name": who or ("owner" if session.get("owner") else None),
+                    "owner": bool(session.get("owner"))})
+
+
 @app.route("/board")
 def board_page():
     return send_file(os.path.join(BASE_DIR, "board.html"))
 
 
 @app.route("/api/board/members")
-@owner_required
+@board_required
 def api_board_members():
     return jsonify({"ok": True, "members": _load(BOARD_MEMBERS_PATH)})
 
@@ -3880,7 +3958,7 @@ def api_board_member_remove(mid):
 
 
 @app.route("/api/board/documents")
-@owner_required
+@board_required
 def api_board_documents():
     docs = sorted(_load(BOARD_DOCS_PATH), key=lambda d: d.get("uploaded_at", ""), reverse=True)
     return jsonify({"ok": True, "types": BOARD_DOC_TYPES, "documents": docs})
@@ -3911,7 +3989,7 @@ def api_board_document_upload():
 
 
 @app.route("/api/board/documents/<docid>/file")
-@owner_required
+@board_required
 def api_board_document_file(docid):
     """Managing-member only: open an archived governance document."""
     d = next((x for x in _load(BOARD_DOCS_PATH) if x.get("id") == docid), None)
@@ -4029,6 +4107,235 @@ _OVERPASS_MIRRORS = ["https://overpass.kumi.systems/api/interpreter",
 _OVERPASS_CACHE = {}          # query hash -> {"ts": float, "data": [...]}
 _OVERPASS_TTL = 3600
 _OVERPASS_MAX = 400           # keep the cache from growing without bound
+
+
+# ----------------------------------------------------------- live road traffic
+# Nobody gives real-time traffic away without a key — it is measured from fleet
+# data, not volunteered like map geometry. TomTom's free tier is the one that
+# fits: 50,000 tiles a day, no credit card, commercial use allowed. The map
+# stays perfectly usable without it; the layer simply does not offer itself
+# until a key exists, so the site never shows a broken checkbox.
+@app.route("/api/traffic-key")
+def api_traffic_key():
+    k = os.environ.get("TOMTOM_KEY", "").strip()
+    return jsonify({"ok": True, "enabled": bool(k), "key": k,
+                    "attribution": "Traffic \u00a9 TomTom"})
+
+
+# ------------------------------------------------------------- ride coverage
+# Rides are only offered where there are actually drivers. Everywhere else the
+# ask is worth more as evidence than as a promise: we record which city wanted a
+# ride and where they were headed, so opening a new city is a decision made on
+# real demand rather than a guess. Sean opens a city by adding it to RIDE_CITIES.
+RIDE_DEMAND_PATH = os.path.join(BASE_DIR, "ride_demand.json")
+
+
+def _ride_cities():
+    raw = os.environ.get("RIDE_CITIES", "seattle")
+    return [s.strip().lower() for s in raw.split(",") if s.strip()]
+
+
+@app.route("/api/ride-coverage")
+def api_ride_coverage():
+    return jsonify({"ok": True, "cities": _ride_cities()})
+
+
+@app.route("/api/ride-demand", methods=["POST"])
+def api_ride_demand():
+    d = request.get_json(silent=True) or {}
+    city = _no_tags(str(d.get("city", ""))[:40]).strip().lower()
+    if not city:
+        return jsonify({"ok": False, "error": "city required"}), 400
+    rec = {
+        "city": city,
+        "city_label": _no_tags(str(d.get("city_label", ""))[:80]),
+        "dropoff": _no_tags(str(d.get("dropoff", ""))[:120]),
+        "stops": int(d.get("stops") or 0),
+        "email": _no_tags(str(d.get("email", ""))[:120]),
+        "ts": datetime.datetime.utcnow().isoformat(timespec="seconds") + "Z",
+    }
+    with _LOCK:
+        items = _load(RIDE_DEMAND_PATH)
+        items.append(rec)
+        _save(RIDE_DEMAND_PATH, items[-5000:])
+    return jsonify({"ok": True})
+
+
+@app.route("/api/ride-demand")
+@owner_required
+def api_ride_demand_list():
+    items = _load(RIDE_DEMAND_PATH)
+    by_city = {}
+    for r in items:
+        c = by_city.setdefault(r.get("city", "?"), {
+            "city": r.get("city"), "label": r.get("city_label") or r.get("city"),
+            "asks": 0, "with_email": 0, "top_stops": {}})
+        c["asks"] += 1
+        if r.get("email"):
+            c["with_email"] += 1
+        if r.get("dropoff"):
+            c["top_stops"][r["dropoff"]] = c["top_stops"].get(r["dropoff"], 0) + 1
+    out = []
+    for c in by_city.values():
+        c["top_stops"] = sorted(c["top_stops"].items(), key=lambda kv: -kv[1])[:5]
+        out.append(c)
+    out.sort(key=lambda c: -c["asks"])
+    return jsonify({"ok": True, "cities": out, "total": len(items),
+                    "open_cities": _ride_cities()})
+
+
+# --------------------------------------------------------- attractions lookup
+# OpenStreetMap knows where things ARE. It rarely says what they are or why
+# anyone would go, and searching it by distance in a dense city returns office
+# blocks. Two other free, keyless public sources answer that better together:
+#
+#   Wikidata  — asks by KIND ("museums, parks, monuments, castles near here"),
+#               so the candidate list is attractions rather than whatever is
+#               closest, and it answers in about a second.
+#   Wikipedia — says what each one is, supplies a photo, and reports how many
+#               people look it up, which is the closest honest measure of
+#               "worth seeing" that exists for free.
+#
+# Wikidata proposes, Wikipedia ranks. A neighborhood playground and the Museum
+# of Fine Arts both come back from the first; only one of them survives the
+# second. Answers are kept for a day — landmarks do not move.
+_WIKI_CACHE = {}
+_WIKI_TTL = 86400
+_WIKI_MAX = 300
+_UA = "PlateauStrategy/1.0 (trip planner; plateaustrategy.io)"
+
+# museum · park · tourist attraction · monument · memorial · World Heritage site
+# zoo · botanical garden · castle · cathedral · stadium · theatre · archaeological
+# site · beach · art museum · protected area · aquarium · library · observatory
+_WD_TYPES = ("wd:Q570116 wd:Q33506 wd:Q22698 wd:Q4989906 wd:Q5003624 wd:Q9259 "
+             "wd:Q43501 wd:Q167346 wd:Q23413 wd:Q2977 wd:Q483110 wd:Q24354 "
+             "wd:Q839954 wd:Q40080 wd:Q207694 wd:Q473972 wd:Q2281788 wd:Q7075 "
+             "wd:Q62832 wd:Q12518 wd:Q41176 wd:Q16970 wd:Q44613 wd:Q19844914 "
+             "wd:Q1497364 wd:Q811979 wd:Q1802963 wd:Q35112127 wd:Q2087181")
+
+
+def _wiki_get(params):
+    """One polite call to Wikipedia. It answers a burst of requests with a 429,
+    so we back off and try again rather than dropping the city's data."""
+    import requests
+    params = dict(params, format="json", formatversion=2)
+    last = None
+    for attempt in range(3):
+        r = requests.get("https://en.wikipedia.org/w/api.php", params=params,
+                         timeout=(5, 25), headers={"User-Agent": _UA})
+        if r.status_code == 429:
+            last = r
+            time.sleep(1.5 * (attempt + 1))
+            continue
+        r.raise_for_status()
+        return r.json()
+    last.raise_for_status()
+
+
+def _wikidata_nearby(lat, lon, radius_km):
+    """Attraction-shaped places near a point that also have an English Wikipedia
+    article — the article requirement is itself a first notability filter."""
+    import requests
+    # Ordering by how many languages write about a place is what makes this
+    # useful: without it the query returns an arbitrary 250 of whatever is
+    # nearby, and a neighborhood playground crowds out the Louvre.
+    q = ('SELECT DISTINCT ?itemLabel ?lat ?lon ?article ?sl WHERE {'
+         ' SERVICE wikibase:around { ?item wdt:P625 ?loc.'
+         ' bd:serviceParam wikibase:center "Point(%f %f)"^^geo:wktLiteral.'
+         ' bd:serviceParam wikibase:radius "%s". }'
+         ' ?item wikibase:sitelinks ?sl. FILTER(?sl >= 4)'
+         ' ?item wdt:P31 ?type. VALUES ?type { %s }'
+         ' ?item p:P625/psv:P625 ?cn. ?cn wikibase:geoLatitude ?lat; wikibase:geoLongitude ?lon.'
+         ' ?article schema:about ?item; schema:isPartOf <https://en.wikipedia.org/>.'
+         ' SERVICE wikibase:label { bd:serviceParam wikibase:language "en". } }'
+         ' ORDER BY DESC(?sl) LIMIT 150'
+         ) % (lon, lat, radius_km, _WD_TYPES)
+    r = requests.get("https://query.wikidata.org/sparql", params={"query": q}, timeout=(5, 30),
+                     headers={"Accept": "application/sparql-results+json", "User-Agent": _UA})
+    r.raise_for_status()
+    out, seen = [], set()
+    for b in r.json()["results"]["bindings"]:
+        title = b["article"]["value"].rsplit("/", 1)[-1].replace("_", " ")
+        try:
+            title = urllib.parse.unquote(title)
+        except Exception:
+            pass
+        if title in seen:
+            continue
+        seen.add(title)
+        out.append({"title": title, "lat": float(b["lat"]["value"]),
+                    "lon": float(b["lon"]["value"]), "langs": int(b["sl"]["value"])})
+    return out
+
+
+@app.route("/api/attractions")
+def api_attractions():
+    try:
+        lat = float(request.args.get("lat", ""))
+        lon = float(request.args.get("lon", ""))
+    except (TypeError, ValueError):
+        return jsonify({"ok": False, "error": "need lat and lon"}), 400
+    radius_km = max(1, min(int(request.args.get("radius_km", 8) or 8), 40))
+    limit = max(5, min(int(request.args.get("limit", 40) or 40), 60))
+    key = "%.2f,%.2f,%d" % (lat, lon, radius_km)
+    now = time.time()
+    hit = _WIKI_CACHE.get(key)
+    if hit and (now - hit["ts"] < _WIKI_TTL):
+        return jsonify({"ok": True, "places": hit["data"][:limit], "cached": True})
+    try:
+        cands = _wikidata_nearby(lat, lon, radius_km)
+        if not cands:
+            return jsonify({"ok": True, "places": [], "cached": False})
+        # Wikidata already ordered these by how widely they are written about, so
+        # only the top of that list is worth the enrichment calls.
+        cands = cands[:40]
+
+        def _merge(d, store):
+            for pg in ((d.get("query") or {}).get("pages") or []):
+                store.setdefault(pg.get("title", ""), {}).update(pg)
+            for r in ((d.get("query") or {}).get("redirects") or []):
+                # a redirect answers under its target's name; file it under both
+                store.setdefault(r.get("from", ""), {}).update(store.get(r.get("to", ""), {}))
+
+        by_title = {}
+        for i in range(0, len(cands), 20):
+            _merge(_wiki_get({"action": "query", "redirects": 1,
+                              "titles": "|".join(c["title"] for c in cands[i:i + 20]),
+                              "prop": "extracts|pageimages", "exintro": 1, "explaintext": 1,
+                              "exsentences": 2, "piprop": "thumbnail", "pithumbsize": 400}), by_title)
+            time.sleep(0.25)
+        # Wikipedia computes readership for only ten pages per request, so this
+        # one is asked in tens rather than being silently half-answered.
+        for i in range(0, len(cands), 10):
+            _merge(_wiki_get({"action": "query", "redirects": 1,
+                              "titles": "|".join(c["title"] for c in cands[i:i + 10]),
+                              "prop": "pageviews", "pvipdays": 14}), by_title)
+            time.sleep(0.25)
+        places = []
+        for cand in cands:
+            pg = by_title.get(cand["title"]) or {}
+            views = [v for v in (pg.get("pageviews") or {}).values() if v]
+            desc = (pg.get("extract") or "").strip()
+            places.append({
+                "name": cand["title"], "lat": cand["lat"], "lon": cand["lon"],
+                "desc": desc, "photo": (pg.get("thumbnail") or {}).get("source"),
+                "views_per_day": round(sum(views) / len(views)) if views else 0,
+                "languages": cand.get("langs", 0),
+                "url": "https://en.wikipedia.org/wiki/" + cand["title"].replace(" ", "_"),
+                "source": "wikipedia",
+            })
+        places = [p for p in places if p["views_per_day"] >= 5 or p["languages"] >= 10]
+        places.sort(key=lambda p: -(p["views_per_day"] + p["languages"] * 4))
+        with _LOCK:
+            if len(_WIKI_CACHE) > _WIKI_MAX:
+                for k in sorted(_WIKI_CACHE, key=lambda k: _WIKI_CACHE[k]["ts"])[:_WIKI_MAX // 2]:
+                    _WIKI_CACHE.pop(k, None)
+            _WIKI_CACHE[key] = {"ts": now, "data": places}
+        return jsonify({"ok": True, "places": places[:limit], "cached": False})
+    except Exception as e:
+        if hit:
+            return jsonify({"ok": True, "places": hit["data"][:limit], "cached": True, "stale": True})
+        return jsonify({"ok": False, "error": str(e)[:140]}), 503
 
 
 @app.route("/api/mapdata", methods=["POST"])
