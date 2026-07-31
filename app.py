@@ -3979,6 +3979,34 @@ def _guide_for(code):
     return None
 
 
+def _trip_email_body(t):
+    """The whole listing as plain text, so the email is a complete copy of it."""
+    lines = ["A guide listed a trip for sale.", "",
+             "TRIP", "  " + str(t.get("title", "")),
+             "  %s · %s" % (t.get("city_label") or t.get("city") or "—", t.get("kind") or "—"),
+             "  price: %s %s" % (t.get("price") if t.get("price") is not None else "on request",
+                                 "per " + str(t.get("price_unit", "person"))),
+             "  up to %s people · %s" % (t.get("group_max"), t.get("languages") or "language not given"),
+             "  meet at: %s" % (t.get("meeting_point") or "—"),
+             "  includes: %s" % (t.get("includes") or "—"), ""]
+    if t.get("summary"):
+        lines += ["WHAT THEY PROMISE", "  " + str(t["summary"]), ""]
+    lines += ["STOPS (%s min in total)" % t.get("total_minutes", 0)]
+    for i, s in enumerate(t.get("stops") or [], 1):
+        lines.append("  %d. %s — %s min%s"
+                     % (i, s.get("name", ""), s.get("minutes", 0),
+                        ("  · " + s["note"]) if s.get("note") else ""))
+    lines += ["", "GUIDE",
+              "  %s%s" % (t.get("guide_name") or "—",
+                          (" · " + t["guide_org"]) if t.get("guide_org") else ""),
+              "  code:    %s" % (t.get("code") or "—"),
+              "  contact: %s" % (t.get("contact") or "—"),
+              "", "Listed %s · id %s" % (t.get("created_at", ""), t.get("id", "")),
+              "", "Keep this email. The live site's storage is reset on every deploy,",
+              "so this copy may outlast the listing itself."]
+    return "\n".join(lines)
+
+
 def _public_trip(t):
     """Everything a traveller may see. Contact details are deliberately absent."""
     return {k: t.get(k) for k in (
@@ -4055,6 +4083,9 @@ def api_guide_trip_create():
         _push_owner_alert("guide_trip", "🎫 %s listed \"%s\" in %s — %s, %d stops."
                           % (rec["guide_name"], rec["title"],
                              rec["city_label"] or rec["city"] or "—", rec["kind"], len(stops)))
+        notify.email_owner(
+            "🎫 New guided trip listed: %s" % rec["title"],
+            _trip_email_body(rec))
     except Exception:
         pass
     return jsonify({"ok": True, "trip": _public_trip(rec)})
@@ -4120,6 +4151,15 @@ def api_guide_trip_interest(tid):
     try:
         _push_owner_alert("trip_interest", "🎟️ %s wants \"%s\" — reach them at %s (guide %s)."
                           % (name, trip.get("title"), contact, trip.get("code")))
+        notify.email_owner(
+            "🎟️ %s wants the trip: %s" % (name, trip.get("title")),
+            "A traveller asked about a guided trip.\n\n"
+            "TRAVELLER\n  name:    %s\n  contact: %s\n  people:  %s\n  when:    %s\n  note:    %s\n\n"
+            "TRIP\n  %s (%s)\n  guide %s — reach the guide at %s\n\n"
+            "Introduce them to each other."
+            % (name, contact, d.get("people") or "—", d.get("when") or "—",
+               d.get("note") or "—", trip.get("title"), tid,
+               trip.get("code"), trip.get("contact") or "no contact on file"))
     except Exception:
         pass
     return jsonify({"ok": True})

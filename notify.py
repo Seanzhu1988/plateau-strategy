@@ -166,3 +166,30 @@ def notify_driver(reservation, invoice, renters=None):
             channels["sms"] = result
 
     return channels
+
+
+def email_owner(subject, body):
+    """Send the owner a plain-text record of something that just happened.
+
+    This exists because the live server's disk does not survive a deploy or a
+    restart: anything written at runtime — a guide's listing, a traveller's
+    request — can vanish before it is ever read. An email is the one copy that
+    cannot be wiped by a redeploy, so every record worth keeping is mailed out
+    at the moment it is created. Fails silently; it must never break the
+    request that triggered it.
+    """
+    api_key = os.environ.get("RESEND_API_KEY", "").strip()
+    to = (os.environ.get("OWNER_EMAIL", "").strip()
+          or os.environ.get("DRIVER_EMAIL", "").strip())
+    if not (api_key and to):
+        return "not_configured"
+    from_email = os.environ.get(
+        "NOTIFY_FROM_EMAIL", "Plateau Strategy Solution Lab <onboarding@resend.dev>").strip()
+    try:
+        r = requests.post(
+            "https://api.resend.com/emails", timeout=15,
+            headers={"Authorization": "Bearer " + api_key, "Content-Type": "application/json"},
+            json={"from": from_email, "to": [to], "subject": subject, "text": body})
+        return "sent" if r.status_code < 300 else ("error: %s" % r.text[:200])
+    except Exception as e:
+        return "error: %s" % e
