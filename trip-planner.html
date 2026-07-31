@@ -48,31 +48,48 @@
 
         #map { height: 62vh; min-height: 380px; border-radius: 16px; border: 1px solid #dde4ed;
             box-shadow: 0 10px 30px -12px rgba(15,23,42,.22); overflow: hidden; }
+        .start-entry { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-top: 0.5rem; }
+        .start-entry input { flex: 1; min-width: 210px; padding: 0.5rem 0.8rem; border: 1.5px solid #e2e8f0;
+            border-radius: 10px; font-size: 0.92rem; font-family: inherit; background: #f8fafc; }
+        .start-entry input:focus { outline: none; border-color: #3b82f6; background: #fff; }
+        .start-hint { font-size: 0.74rem; color: #94a3b8; }
         .traffic-note { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem;
             font-weight: 600; color: #1d4ed8; background: #eff6ff; border: 1px solid #dbeafe;
             border-radius: 10px; padding: 0.55rem 0.9rem; margin-bottom: 0.6rem; }
         /* 🗺️ ON-MAP layer switch — every available resource is toggled here, on the
            map itself, so a traveler never hunts for the control somewhere else. */
-        .map-layers { background: rgba(255,255,255,0.96); border-radius: 12px;
-            box-shadow: 0 4px 14px rgba(15,23,42,0.22); padding: 0.5rem 0.6rem;
-            font-family: inherit; max-width: 208px; }
-        .map-layers .alab { display: block; font-size: 0.62rem; font-weight: 800; color: #94a3b8;
-            text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.35rem; }
-        .achip { display: flex; align-items: center; gap: 0.4rem; font-size: 0.76rem; font-weight: 600;
-            padding: 0.3rem 0.5rem; border-radius: 8px; border: 1.5px solid #e2e8f0; color: #475569;
-            cursor: pointer; user-select: none; background: #fff; margin-bottom: 0.25rem; }
-        .achip:last-of-type { margin-bottom: 0; }
+        /* compact: one small icon button per layer, not full-width rows */
+        .map-layers { background: rgba(255,255,255,0.96); border-radius: 10px;
+            box-shadow: 0 4px 14px rgba(15,23,42,0.22); padding: 0.32rem 0.38rem;
+            font-family: inherit; }
+        .map-layers .alab { display: none; }
+        .achip-row { display: flex; gap: 0.22rem; }
+        .achip { position: relative; width: 30px; height: 30px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; font-size: 14px;
+            border: 1.5px solid #e2e8f0; background: #fff; cursor: pointer; user-select: none;
+            line-height: 1; }
         .achip:hover { border-color: #93c5fd; }
-        .achip.on { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
-        .achip .abox { width: 13px; height: 13px; border-radius: 3px; border: 1.5px solid #cbd5e1;
-            background: #fff; flex: 0 0 auto; font-size: 10px; line-height: 11px; text-align: center;
-            color: #1d4ed8; font-weight: 800; }
-        .achip.on .abox { border-color: #1d4ed8; }
-        .amenity-note { display: block; font-size: 0.66rem; color: #94a3b8; line-height: 1.35;
-            margin-top: 0.35rem; }
+        .achip.on { background: #dbeafe; border-color: #1d4ed8; }
+        .achip .star-badge { position: absolute; right: -3px; bottom: -3px; background: #f59e0b;
+            color: #fff; font-size: 8px; font-weight: 800; line-height: 12px; min-width: 12px;
+            height: 12px; border-radius: 6px; text-align: center; padding: 0 2px;
+            box-shadow: 0 1px 2px rgba(15,23,42,.35); }
+        .amenity-note { display: block; font-size: 0.62rem; color: #64748b; line-height: 1.3;
+            margin-top: 0.28rem; max-width: 150px; }
         /* 🌍 the map announcing that it just grew */
         .discovery-note { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px;
             padding: 0.55rem 0.9rem; margin-bottom: 0.6rem; font-size: 0.82rem; color: #065f46; }
+        /* When a traveler discovers something, the news must reach THEM — the inline
+           banner sits beside the map, thousands of pixels below the search box they
+           just used. So the announcement also floats into view. */
+        .discovery-note.floating { position: fixed; z-index: 1200; left: 50%; top: 14px;
+            transform: translateX(-50%); width: min(560px, calc(100vw - 24px));
+            margin: 0; box-shadow: 0 12px 34px rgba(6,95,70,.28);
+            border-color: #6ee7b7; animation: dropIn .28s ease-out; }
+        @keyframes dropIn { from { opacity: 0; transform: translate(-50%, -12px); }
+                            to   { opacity: 1; transform: translate(-50%, 0); } }
+        .discovery-note .dn-close { float: right; cursor: pointer; color: #047857; font-weight: 800;
+            font-size: 1rem; line-height: 1; padding: 0 0 0 .6rem; }
         .discovery-note b { color: #064e3b; }
         .discovery-note .dn-sub { display: block; color: #047857; font-size: 0.75rem; margin-top: 0.15rem; }
         .dn-ask { margin-top: 0.45rem; display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; }
@@ -87,6 +104,9 @@
         .am-pop { font-size: 0.82rem; line-height: 1.5; }
         .am-pop b { color: #0f172a; }
         .am-pop .d { color: #64748b; font-size: 0.76rem; }
+        .am-rate { margin-top: 0.35rem; font-size: 0.8rem; color: #334155; }
+        .am-rate .rs { color: #d1d5db; cursor: pointer; font-size: 0.95rem; }
+        .am-rate .rs:hover { color: #f59e0b; }
         .am-add { margin-top: 0.4rem; border: none; border-radius: 8px; background: #1d4ed8; color: #fff;
             font-weight: 700; font-size: 0.75rem; padding: 0.35rem 0.7rem; cursor: pointer; font-family: inherit; }
         .am-add:hover { filter: brightness(1.1); }
@@ -129,6 +149,8 @@
         .jarvis-line.flash { background: #eff6ff; border-color: #bfdbfe; }
         .jarvis-line b { color: #0f172a; }
         .jarvis-line .warn { color: #b45309; font-weight: 700; }
+        .jarvis-line .j-tip { display: block; margin-top: 0.3rem; padding-top: 0.3rem;
+            border-top: 1px solid #e2e8f0; color: #475569; font-size: 0.78rem; line-height: 1.5; }
         .jarvis-mast { font-size: 0.78rem; color: #475569; line-height: 1.55; padding: 0.45rem 0;
             border-bottom: 1px solid #f1f5f9; }
         .jarvis-mast b { color: #0f172a; }
@@ -410,10 +432,17 @@
 
             <div class="build-row">
                 <button type="button" class="from loc-btn" id="curLocBtn" onclick="detectLocation()" title="Use my exact GPS location">📍 <span id="curLocLabel">Set current location</span></button>
+                <button type="button" class="btn ghost startedit" onclick="toggleStartEntry()" title="Type or change your starting address">✎ Set / change start</button>
                 <span class="to">→</span>
                 <input id="destAdd" placeholder="Type a destination and press Add — or tap a pin on the map"
                        autocomplete="off" onkeydown="if(event.key==='Enter')addDestination()">
                 <button class="btn add" onclick="addDestination()">＋ Add</button>
+            </div>
+            <div id="startEntry" class="start-entry" style="display:none;">
+                <input id="startAddr" placeholder="Type your starting address, hotel or airport…"
+                       autocomplete="off" onkeydown="if(event.key==='Enter')applyStartAddress()">
+                <button class="btn add" onclick="applyStartAddress()">Set start</button>
+                <span class="start-hint">or drag the black ⌂ pin on the map</span>
             </div>
             <div id="curLocInfo" class="loc-info"></div>
             <div id="chain" class="chain"></div>
@@ -1172,9 +1201,52 @@
         let risky = 0;
         st.route.forEach(r => { const p = places[r.i]; if (p && Math.min(p.close, DAY_CAP) - r.leave < 35) risky++; });
         const nDays = Math.max.apply(null, st.route.map(r => r.day));
-        fd.innerHTML = risky
+        const head = risky
             ? '🤵 ' + st.route.length + ' stop' + (st.route.length > 1 ? 's' : '') + ' planned — <span class="warn">' + risky + ' won\'t fit as ordered</span>. I\'d give ' + (risky > 1 ? 'them' : 'it') + ' another day — see the marked row' + (risky > 1 ? 's' : '') + '.'
-            : '🤵 ' + st.route.length + ' stop' + (st.route.length > 1 ? 's' : '') + ' over ' + nDays + ' day' + (nDays > 1 ? 's' : '') + ' · everything fits · hand it to a pro below when ready.';
+            : '🤵 ' + st.route.length + ' stop' + (st.route.length > 1 ? 's' : '') + ' over ' + nDays + ' day' + (nDays > 1 ? 's' : '') + ' · everything fits.';
+        const tip = jarvisAdvice(risky);
+        fd.innerHTML = head + (tip ? '<span class="j-tip">' + tip + '</span>' : '');
+    }
+    // What a good organizer would actually SAY next. Each line is earned from the
+    // real plan — never filler — and offers the action, not just an observation.
+    function jarvisAdvice(risky){
+        if (!st.route.length) return '';
+        const n = st.route.length;
+        const last = st.route[n - 1];
+        const first = st.route[0];
+        const dayOf = {}; st.route.forEach(r => { dayOf[r.day] = (dayOf[r.day] || 0) + 1; });
+        const todayStops = dayOf[st.route[n - 1].day] || 0;
+        let drive = 0, visit = 0;
+        st.route.forEach(r => { const prev = r.prev || { now: r.arr };
+            drive += Math.max(0, Math.round(r.arr - prev.now)); visit += (r.leave - r.arr); });
+
+        // 1. the day is over-long — the most useful thing to flag
+        if (last.leave > 1200 && !risky)
+            return 'That last stop ends at ' + fmt(last.leave) + '. If you\'d rather not finish in the dark, '
+                 + '<span class="fixlink" onclick="moveStopToNextDay(' + (n - 1) + ')">move it to the next day →</span>';
+
+        // 2. more driving than sightseeing — a real planning smell
+        if (drive > visit && n >= 3)
+            return 'You\'re driving ' + Math.round(drive) + ' min to see ' + Math.round(visit) + ' min of places. '
+                 + 'Tightening the order, or dropping the farthest stop, buys back real time.';
+
+        // 3. a packed single day
+        if (todayStops >= 5 && !risky)
+            return todayStops + ' stops in one day is a brisk pace — plan a real meal break, or split it across two days.';
+
+        // 4. nothing to eat on a long day
+        if (visit + drive > 300 && !places.some((p, i) => st.visited.has(i) && p.cat === 'food'))
+            return 'Nothing to eat on a ' + Math.round((visit + drive) / 60) + '-hour day — '
+                 + 'tick 🍽️ on the map to drop a meal in.';
+
+        // 5. an early finish leaves room for more
+        if (!risky && last.leave < 900 && n >= 2)
+            return 'You\'re done by ' + fmt(last.leave) + ' — there\'s room for another stop if you want one; my suggestions are below.';
+
+        // 6. ready to hand off
+        if (!risky && n >= 3)
+            return 'This is a solid day. When you want someone else to drive it, the three buttons below hand it to a pro.';
+        return '';
     }
     function trafficLabel(dep){
         const m = trafficMult(dep);
@@ -1776,6 +1848,39 @@
             }).catch(() => { $('rt_send').disabled = false; msg.className = 'ho-msg err'; msg.textContent = 'Could not reach the server — please try again.'; });
     }
 
+    // ---------- ✎ set the start point by typing it ----------
+    // GPS covers "I'm here now", but a traveler planning from home needs to say
+    // where they'll START — a hotel, an airport, a friend's address. Dragging the
+    // pin worked; typing it did not, so this fills that gap.
+    function toggleStartEntry(){
+        const box = $('startEntry'); if (!box) return;
+        const open = box.style.display === 'none';
+        box.style.display = open ? 'flex' : 'none';
+        if (open) { const i = $('startAddr'); if (i) { i.focus(); i.select(); } }
+    }
+    async function applyStartAddress(){
+        const q = ($('startAddr').value || '').trim();
+        if (!q) return;
+        setLocInfo('Finding “' + q + '”…');
+        try {
+            const b = map.getBounds();
+            const vb = '&viewbox=' + [b.getWest(), b.getNorth(), b.getEast(), b.getSouth()].map(n => n.toFixed(4)).join(',');
+            const base = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=' + encodeURIComponent(q);
+            let j = await (await fetch(base + vb)).json();          // nearby first
+            if (!j.length) j = await (await fetch(base)).json();     // then anywhere
+            if (!j.length) { setLocInfo('Couldn\'t find “' + q + '” — try adding the city.', true); return; }
+            const r = j[0], lat = +r.lat, lon = +r.lon;
+            startMarker.setLatLng([lat, lon]);                       // move the start pin
+            currentLoc = { lat: lat, lon: lon, address: r.display_name, accuracy: null };
+            map.setView([lat, lon], Math.max(map.getZoom(), 13));
+            resetTrip(); fetchMatrix();                              // re-time everything from here
+            setLocLabel('Start set');
+            setLocInfo('Starting from ' + r.display_name.split(',').slice(0, 3).join(','));
+            $('startEntry').style.display = 'none';
+            jarvisSay('Starting from <b>' + escj(r.display_name.split(',')[0]) + '</b> — I\'ve re-timed the day from there.');
+        } catch (e) { setLocInfo('Address lookup unavailable right now — drag the black pin instead.', true); }
+    }
+
     // ---------- 🌍 "new destination discovered" ----------
     // The map tells travelers it is growing: what THEY just put on it, and what
     // others have been adding lately. Whoever discovers a place is asked how long
@@ -1805,6 +1910,15 @@
                 + (m >= 60 ? (m / 60) + (m === 60 ? ' hour' : ' hours') : m + ' min') + '</span>').join('')
             + rec + '</div>';
         el.style.display = 'block';
+        // float it where the traveler is actually looking, then settle back inline
+        el.classList.add('floating');
+        el.insertAdjacentHTML('afterbegin', '<span class="dn-close" onclick="dismissDiscovery()">×</span>');
+        clearTimeout(el._dnTimer);
+        el._dnTimer = setTimeout(() => el.classList.remove('floating'), 15000);
+    }
+    function dismissDiscovery(){
+        const el = $('discoveryNote'); if (!el) return;
+        el.classList.remove('floating');
     }
     function discoveryStay(minutes){
         if (!dnCur) return;
@@ -1815,8 +1929,13 @@
         const i = places.findIndex(p => (p.name || '').toLowerCase() === (nm || '').toLowerCase());
         if (i >= 0) { places[i].visit = minutes; places[i].visit_mine = true; savePlaces(); refresh(); }
         const el = $('discoveryNote');
-        if (el) el.innerHTML = '✅ <b>Thank you</b> — ' + minutes + ' min recorded for ' + escj(nm)
-              + '<span class="dn-sub">That helps every traveler who plans this place next.</span>';
+        if (el) {
+            el.innerHTML = '<span class="dn-close" onclick="dismissDiscovery()">×</span>'
+                + '✅ <b>Thank you</b> — ' + minutes + ' min recorded for ' + escj(nm)
+                + '<span class="dn-sub">That helps every traveler who plans this place next.</span>';
+            clearTimeout(el._dnTimer);
+            el._dnTimer = setTimeout(() => el.classList.remove('floating'), 6000);
+        }
         dnCur = null;
     }
     async function loadDiscoveryFeed(){
@@ -1826,6 +1945,7 @@
             if (!el || !d || !d.ok || !d.recent.length || dnCur) return;
             if (el.style.display === 'block') return;         // never overwrite a live announcement
             const r = d.recent[0];
+            el.classList.remove('floating');
             el.innerHTML = '🌍 <b>Newest discovery:</b> ' + escj(r.name)
                 + ' <span class="dn-rec">in ' + escj(r.city_label || r.city) + '</span>'
                 + '<span class="dn-sub">' + d.total + ' place' + (d.total === 1 ? '' : 's')
@@ -1875,18 +1995,23 @@
         essentials: { emoji: '💊', color: '#7c3aed', min: 14, max: 120, label: 'Pharmacy · ATM · Water',
                       q: 'nwr["amenity"~"^(pharmacy|atm|drinking_water)$"]', fallbackName: 'Essential' },
     };
-    const amenityLayers = {}, amenityCache = {}, amenityOn = {};
+    const amenityLayers = {}, amenityCache = {}, amenityOn = {}, amenityStar = {};
+    // Tapping a layer icon walks it through: off → all → ★5 → ★4 → ★3 → ★2 → ★1 → off.
+    // Stars come from THIS site's community ratings — the free map data carries no
+    // restaurant ratings at all — so filtering shows only places travelers have
+    // rated, and says plainly how many are still unrated.
+    const STAR_CYCLE = [null, 5, 4, 3, 2, 1];
     function buildLayerControl(){
         const Ctl = L.Control.extend({
             options: { position: 'topright' },
             onAdd: function(){
                 const d = L.DomUtil.create('div', 'map-layers');
-                d.innerHTML = '<span class="alab">Show on map</span>'
+                d.innerHTML = '<div class="achip-row">'
                     + Object.keys(AMENITY_CATS).map(cat =>
-                        '<div class="achip" id="ach_' + cat + '" onclick="toggleAmenity(\'' + cat + '\')">'
-                        + '<span class="abox"></span>' + AMENITY_CATS[cat].emoji + ' ' + AMENITY_CATS[cat].label
-                        + '</div>').join('')
-                    + '<span class="amenity-note" id="amenityNote"></span>';
+                        '<div class="achip" id="ach_' + cat + '" title="' + AMENITY_CATS[cat].label
+                        + ' — tap again to filter by stars" onclick="toggleAmenity(\'' + cat + '\')">'
+                        + AMENITY_CATS[cat].emoji + '</div>').join('')
+                    + '</div><span class="amenity-note" id="amenityNote"></span>';
                 L.DomEvent.disableClickPropagation(d);   // clicking the panel must not pan the map
                 L.DomEvent.disableScrollPropagation(d);
                 return d;
@@ -1898,10 +2023,20 @@
     Object.keys(AMENITY_CATS).forEach(c => { amenityLayers[c] = L.layerGroup(); });
     try { (JSON.parse(localStorage.getItem('amenity_on') || '[]')).forEach(c => {
         if (AMENITY_CATS[c]) { amenityOn[c] = true; } }); } catch (e) {}
+    try { const s = JSON.parse(localStorage.getItem('amenity_star') || '{}');
+          Object.keys(s).forEach(k => { if (AMENITY_CATS[k]) amenityStar[k] = s[k]; }); } catch (e) {}
 
     function toggleAmenity(cat){
-        amenityOn[cat] = !amenityOn[cat];
-        try { localStorage.setItem('amenity_on', JSON.stringify(Object.keys(amenityOn).filter(c => amenityOn[c]))); } catch (e) {}
+        if (!amenityOn[cat]) { amenityOn[cat] = true; amenityStar[cat] = null; }   // on, unfiltered
+        else {
+            const i = STAR_CYCLE.indexOf(amenityStar[cat] === undefined ? null : amenityStar[cat]);
+            if (i >= STAR_CYCLE.length - 1) { amenityOn[cat] = false; amenityStar[cat] = null; }  // past ★1 → off
+            else amenityStar[cat] = STAR_CYCLE[i + 1];
+        }
+        try {
+            localStorage.setItem('amenity_on', JSON.stringify(Object.keys(amenityOn).filter(c => amenityOn[c])));
+            localStorage.setItem('amenity_star', JSON.stringify(amenityStar));
+        } catch (e) {}
         syncAmenities();
     }
     function syncAmenities(){
@@ -1909,8 +2044,12 @@
             const chip = document.getElementById('ach_' + cat);
             if (chip) {
                 chip.classList.toggle('on', !!amenityOn[cat]);
-                const box = chip.querySelector('.abox');
-                if (box) box.textContent = amenityOn[cat] ? '✓' : '';
+                const badge = chip.querySelector('.star-badge');
+                if (amenityOn[cat] && amenityStar[cat]) {
+                    if (badge) badge.textContent = amenityStar[cat] + '★';
+                    else { const s = document.createElement('span'); s.className = 'star-badge';
+                           s.textContent = amenityStar[cat] + '★'; chip.appendChild(s); }
+                } else if (badge) { badge.remove(); }
             }
             if (amenityOn[cat]) { map.addLayer(amenityLayers[cat]); fetchAmenity(cat); }
             else { map.removeLayer(amenityLayers[cat]); }
@@ -1959,6 +2098,16 @@
         if (tags.opening_hours) bits.push('Hours: ' + escj(tags.opening_hours));
         if (tags.cuisine) bits.push(escj(String(tags.cuisine).split(';')[0].replace(/_/g, ' ')));
         if (tags.amenity && !tags.name) bits.push(escj(tags.amenity.replace(/_/g, ' ')));
+        let rateRow = '';
+        if (tags.name) {
+            const rtok = 'rt' + (++osmSeq);
+            osmPending[rtok] = { name: tags.name, lat: lat, lon: lon, tags: tags };
+            const sb = bookStars[curCity + '|' + String(tags.name).toLowerCase()];
+            rateRow = '<div class="am-rate">'
+                + (sb ? '<b>★ ' + sb.stars.toFixed(1) + '</b> <span class="d">(' + sb.n + ')</span> · ' : '<span class="d">not rated yet · </span>')
+                + [1,2,3,4,5].map(n => '<span class="rs" onclick="rateOsmPlace(\'' + rtok + '\',' + n + ')">★</span>').join('')
+                + '</div>';
+        }
         let addBtn = '';
         if (cfg.addable && tags.name) {
             const tok = 'osm' + (++osmSeq);
@@ -1967,8 +2116,31 @@
         }
         return '<div class="am-pop"><b>' + cfg.emoji + ' ' + nm + '</b>'
              + (bits.length ? '<div class="d">' + bits.join(' · ') + '</div>' : '')
+             + rateRow
              + '<div class="d">source: OpenStreetMap</div>' + addBtn + '</div>';
     }
+    // Rating a place from the map. The star filter runs on these ratings, so this
+    // is what makes filtering possible at all — the free map data has none.
+    async function rateOsmPlace(tok, stars){
+        const o = osmPending[tok]; if (!o) return;
+        try {
+            const t = o.tags || {};
+            // make sure the place exists in the book, so the rating has a home
+            await fetch('/api/destinations/add', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: o.name, lat: o.lat, lon: o.lon, city: curCity,
+                                       found_via: 'map-rate', osm_class: t.tourism ? 'tourism' : (t.amenity ? 'amenity' : ''),
+                                       type: t.amenity || t.tourism || '', address: t.address }) }).catch(function(){});
+            const d = await (await fetch('/api/rate', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: o.name, city: curCity, stars: stars }) })).json();
+            if (d && d.ok) {
+                bookStars[curCity + '|' + String(o.name).toLowerCase()] = { stars: d.avg, n: d.count };
+                map.closePopup();
+                Object.keys(AMENITY_CATS).forEach(cat => { if (amenityOn[cat] && amenityStar[cat]) fetchAmenity(cat); });
+                say('Thanks — ' + o.name + ' rated ' + stars + '★ (community average ' + d.avg.toFixed(1) + ').');
+            }
+        } catch (e) {}
+    }
+
     // A traveler taps an OSM attraction → it becomes a real stop on the board AND
     // is remembered in the Destination Book for the next visitor (same community
     // pipeline the search box already feeds).
@@ -2023,10 +2195,20 @@
         }
         if (!amenityOn[cat]) return;              // toggled off while the fetch was in flight
         amenityLayers[cat].clearLayers();
+        const minStar = amenityStar[cat] || 0;
+        let hiddenUnrated = 0, shownRated = 0;
         elements.forEach(el => {
             const lat = el.lat !== undefined ? el.lat : (el.center || {}).lat;
             const lon = el.lon !== undefined ? el.lon : (el.center || {}).lon;
             if (lat === undefined || lon === undefined) return;
+            if (minStar) {
+                // stars are OUR community's, keyed city|name — the map data has none
+                const nm = ((el.tags || {}).name || '').toLowerCase();
+                const sb = nm ? bookStars[curCity + '|' + nm] : null;
+                if (!sb) { hiddenUnrated++; return; }
+                if (sb.stars < minStar) return;
+                shownRated++;
+            }
             const mk = L.marker([lat, lon], {
                 icon: L.divIcon({ className: '', iconSize: [22, 22], iconAnchor: [11, 11],
                     html: '<div class="am-pin" style="border-color:' + cfg.color + '">' + cfg.emoji + '</div>' })
@@ -2034,7 +2216,11 @@
             mk.bindPopup(amenityPopup(cat, el.tags || {}, lat, lon));
             amenityLayers[cat].addLayer(mk);
         });
-        if (note && !elements.length) note.textContent = 'no ' + cfg.emoji + ' mapped around here yet';
+        if (note) {
+            if (!elements.length) note.textContent = 'no ' + cfg.emoji + ' mapped around here yet';
+            else if (minStar) note.textContent = shownRated + ' rated ' + minStar + '★+'
+                + (hiddenUnrated ? ' · ' + hiddenUnrated + ' not rated yet — tap a pin to rate' : '');
+        }
     }
     map.on('moveend', () => {
         clearTimeout(amenityFetchTimer);
