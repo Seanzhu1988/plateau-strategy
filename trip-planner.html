@@ -1988,13 +1988,40 @@
             setLocLabel('Locating…'); setLocInfo('Getting your exact location…');
             navigator.geolocation.getCurrentPosition(async pos => {
                 const lat = pos.coords.latitude, lon = pos.coords.longitude, acc = Math.round(pos.coords.accuracy || 0);
-                map.setView([lat, lon], acc <= 60 ? 16 : 14);
+                // Someone in Washington planning Boston still wants to SEE Boston.
+                // Only follow the fix with the map when it is near the trip being
+                // planned; otherwise the whole plan gets yanked across the country
+                // and they have to find their way back to it.
+                const cityNow = CITIES[curCity];
+                const farAway = cityNow && havKm({ lat: lat, lon: lon },
+                    { lat: cityNow.center[0], lon: cityNow.center[1] }) > CITY_FAR_KM;
+                if (!farAway) map.setView([lat, lon], acc <= 60 ? 16 : 14);
                 let address = '';
                 try {
                     const r = await fetch('https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1&lat=' + lat + '&lon=' + lon);
                     const j = await r.json();
                     address = (j && j.display_name) ? j.display_name : '';
                 } catch (e) {}
+                if (farAway) {
+                    // Do not quietly make a Washington address the start of a Boston
+                    // day — every drive time would be nonsense. Say where they are,
+                    // keep the trip intact, and offer the two sensible answers.
+                    homeLoc = { lat: lat, lon: lon, address: address, accuracy: acc };
+                    const mi = Math.round(havKm({ lat: lat, lon: lon },
+                        { lat: cityNow.center[0], lon: cityNow.center[1] }) * 0.621371);
+                    setLocInfo('📍 You are in ' + (shortAddr(address) || 'your current location')
+                        + ' — about ' + mi + ' mi from ' + cityNow.label
+                        + '. Your ' + cityNow.label + ' plan is untouched.', false);
+                    say('Found you ' + mi + ' mi from ' + cityNow.label + ' — plan kept as it is.');
+                    jarvisSay('You are in <b>' + escj(shortAddr(address) || 'another state')
+                        + '</b>, about <b>' + mi + ' mi</b> from ' + escj(cityNow.label)
+                        + '. I have left your plan where it is. '
+                        + '<span class="fixlink" onclick="startHereAnyway()">Start the trip from where I am</span>'
+                        + ' · <span class="fixlink" onclick="loadSample(true,\'' + curCity + '\')">stay in '
+                        + escj(cityNow.label) + '</span>');
+                    resolve(true);
+                    return;
+                }
                 setOrigin(lat, lon, 'gps', { address: address, accuracy: acc, why: 'starting from your location' });
                 $('curLocBtn').classList.add('located');
                 setLocLabel(address ? shortAddr(address) : 'My location');
@@ -2017,6 +2044,19 @@
                 resolve(false);
             }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
         });
+    }
+    // Where the traveller actually is, remembered even when we decline to make it
+    // the trip's start — so "start from where I am" is one tap, not another GPS ask.
+    let homeLoc = null;
+    function startHereAnyway(){
+        if (!homeLoc) { detectLocation(); return; }
+        setOrigin(homeLoc.lat, homeLoc.lon, 'gps',
+                  { address: homeLoc.address, accuracy: homeLoc.accuracy, why: 'starting from your location' });
+        $('curLocBtn').classList.add('located');
+        setLocLabel(homeLoc.address ? shortAddr(homeLoc.address) : 'My location');
+        map.setView([homeLoc.lat, homeLoc.lon], 11);
+        fetchMatrix(); refresh();
+        say('Start moved to where you are — the far-distance options are below the map.');
     }
     const useMyLocation = detectLocation;    // the toolbar button uses the same accurate path
 
