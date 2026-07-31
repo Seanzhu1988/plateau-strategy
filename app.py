@@ -947,7 +947,7 @@ def api_geography():
         return jsonify({"ok": True, "geo": {}, "cities": {}})
     cities = d.get("cities", {})
     geo, seen = {}, {}
-    for e in d.get("entries", []):
+    for e in _public_book_entries(d.get("entries")):
         state = (e.get("state") or "").strip()
         city = (e.get("city") or "").strip()
         if not (state and city):

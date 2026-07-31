@@ -142,6 +142,23 @@ body = c.get("/api/discoveries").get_data(as_text=True)
 chk("the discovery feed hides them too", "Maple" not in body and "Elm" not in body)
 chk("and still shows genuine finds", "Kerry Park" in body)
 
+# The geography picker reads the same file and would otherwise put a home's
+# neighbourhood into the State -> County -> City list for everyone.
+json.dump({"cities": {"seattle": "Seattle"},
+           "entries": [
+               {"name": "412 Maple St", "city": "seattle", "city_label": "Seattle",
+                "state": "Washington", "county": "King", "lat": 47.61, "lon": -122.33},
+               {"name": "Kerry Park", "city": "seattle", "city_label": "Seattle",
+                "state": "Washington", "county": "King", "lat": 47.62, "lon": -122.36},
+               {"name": "88 Elm Ave", "city": "hometown", "city_label": "Hometown",
+                "state": "Nowhere", "county": "Quiet", "lat": 47.0, "lon": -122.0},
+           ]}, open(book, "w"))
+g = c.get("/api/geography").get_json()
+chk("geography still lists a state reached via a real place",
+    "Washington" in (g.get("geo") or {}))
+chk("a state known ONLY from a home is not published",
+    "Nowhere" not in (g.get("geo") or {}))
+
 shutil.rmtree(tmp, ignore_errors=True)
 print("\nPASSED" if not fails else f"\nFAILED: {fails}")
 raise SystemExit(1 if fails else 0)
