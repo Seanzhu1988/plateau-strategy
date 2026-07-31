@@ -1860,7 +1860,11 @@ def api_reservations():
     Anyone else -> the open board only, contact details withheld.
 
     This endpoint used to return every reservation — customer names, phones
-    and addresses — to anyone who requested it."""
+    and addresses — to anyone who requested it. The first fix redacted the
+    open board but still took the driver's identity from ?renter_id=, which
+    is not a secret: ids are handed out in sequence (RTR_0001, RTR_0002, ...),
+    so counting up from one walked out every customer's name, email, phone and
+    address. Identity now comes from the signed-in session only."""
     items = list(reversed(_load(RES_PATH)))
     status = (request.args.get("status") or "").upper()
     if status == "OPEN":
@@ -1871,9 +1875,12 @@ def api_reservations():
     if session.get("owner"):
         return jsonify({"reservations": items})
 
-    renter_id = (request.args.get("renter_id") or "").strip()
-    is_renter = bool(renter_id) and any(
-        (x.get("id") == renter_id) for x in _load(RENTERS_PATH))
+    # Session, never the query string. ?renter_id= is still accepted by the
+    # driver portal's URL but is now ignored for access — a driver who is not
+    # signed in gets the same redacted board as everyone else and is asked to
+    # log in, which is the safe failure.
+    renter_id = (session.get("renter_id") or "").strip()
+    is_renter = bool(renter_id)
 
     visible = []
     for r in items:
@@ -1886,9 +1893,18 @@ def api_reservations():
 
 @app.route("/api/reservations/<rid>/claim", methods=["POST"])
 def api_claim(rid):
-    """A renter picks an open reservation. First claim wins (atomic)."""
+    """A renter picks an open reservation. First claim wins (atomic).
+
+    The driver is whoever is signed in, not whoever the request says it is.
+    This used to take renter_id from the body, and a successful claim returns
+    the reservation in full — so anyone who guessed a driver id (they run
+    RTR_0001, RTR_0002, ...) could claim someone else's ride and read the
+    customer's name, email, phone and address out of the response."""
     data = request.get_json(force=True, silent=True) or {}
-    renter_id = (data.get("renter_id") or "").strip()
+    renter_id = (session.get("renter_id") or "").strip()
+    if not renter_id:
+        return jsonify({"ok": False, "auth_required": True,
+                        "error": "Please sign in before accepting rides."}), 401
     renter = next((x for x in _load(RENTERS_PATH) if x.get("id") == renter_id), None)
     if not renter:
         return jsonify({"ok": False, "error": "Unknown renter — please register first."}), 400
@@ -2025,9 +2041,15 @@ def sms_reply():
 @app.route("/api/reservations/<rid>/giveup", methods=["POST"])
 def api_giveup(rid):
     """Assigned driver can't make it: release the ride back to the pool.
-    Only allowed 12+ hours before scheduled pickup [SEAN rule]. Owner is notified."""
+    Only allowed 12+ hours before scheduled pickup [SEAN rule]. Owner is notified.
+
+    Identity comes from the session: with a guessable id in the body, anyone
+    could release another driver's booked rides back into the pool."""
     data = request.get_json(force=True, silent=True) or {}
-    renter_id = (data.get("renter_id") or "").strip()
+    renter_id = (session.get("renter_id") or "").strip()
+    if not renter_id:
+        return jsonify({"ok": False, "auth_required": True,
+                        "error": "Please sign in first."}), 401
     with _LOCK:
         items = _load(RES_PATH)
         r = next((x for x in items if x.get("id") == rid), None)
@@ -2748,18 +2770,33 @@ def api_contract():
 
 @app.route("/api/contract/status")
 def api_contract_status():
-    rid = (request.args.get("renter_id") or "").strip()
+    """A driver's own contract status. The owner may ask about any driver;
+    everyone else only ever gets their own, so this can't be used to probe
+    which sequential driver ids exist."""
+    if session.get("owner"):
+        rid = (request.args.get("renter_id") or "").strip()
+    else:
+        rid = (session.get("renter_id") or "").strip()
     if not rid:
-        return jsonify({"ok": False, "error": "renter_id required"}), 400
+        return jsonify({"ok": False, "auth_required": True,
+                        "error": "Please sign in."}), 401
     return jsonify({"ok": True, **_contract_status(rid)})
 
 
 @app.route("/api/contract/sign", methods=["POST"])
 def api_contract_sign():
     """A driver signs the current contract version: typed full name + drawn
-    signature + explicit agreement. Server stamps time, IP and version."""
+    signature + explicit agreement. Server stamps time, IP and version.
+
+    The signer is taken from the session. This record is the binding proof
+    that a specific driver accepted the agreement, so accepting an id from
+    the request body meant anyone could file a signature in another driver's
+    name — and that signature is what unlocks accepting rides."""
     data = request.get_json(force=True, silent=True) or {}
-    rid = (data.get("renter_id") or "").strip()
+    rid = (session.get("renter_id") or "").strip()
+    if not rid:
+        return jsonify({"ok": False, "auth_required": True,
+                        "error": "Please sign in before signing the agreement."}), 401
     typed = (data.get("typed_name") or "").strip()
     sig_img = (data.get("signature") or "").strip()
     agree = bool(data.get("agree"))
