@@ -21,6 +21,112 @@
     <meta name="twitter:title" content="Plateau Strategy Solution Lab — Integrated Business Ecosystem">
     <meta name="twitter:description" content="Integrated wealth, built through connected ecosystems. Transportation, real estate, and finance in one closed loop.">
     <meta name="twitter:image" content="https://plateaustrategy.io/plateau-logo.png">
+
+    <!-- Structured data. An AI assistant answering "who does airport runs in
+         Seattle" or "free trip planner" reads this, not the rendered page.
+         Everything here is a fact about what the site offers — no prices or
+         hours are asserted, because those change and a stale number quoted by
+         an assistant is worse than no number. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://plateaustrategy.io/#org",
+          "name": "Plateau Strategy Solution Lab",
+          "url": "https://plateaustrategy.io/",
+          "logo": "https://plateaustrategy.io/plateau-logo.png",
+          "description": "An integrated business ecosystem across transportation, real estate and finance, offering Tesla rides and rentals in the Seattle area plus free travel-planning tools.",
+          "areaServed": { "@type": "Place", "name": "Seattle, Washington, United States" }
+        },
+        {
+          "_comment": "This is the node Google's local search reads, and what a Google Business Profile gets matched against. Name, phone and service area here must match the Business Profile character for character, or verification gets harder. No streetAddress on purpose: this is a service-area business — the car comes to you, there is no counter to walk into.",
+          "@type": "LocalBusiness",
+          "additionalType": "https://schema.org/TaxiService",
+          "@id": "https://plateaustrategy.io/#localbusiness",
+          "name": "Plateau Strategy Solution Lab",
+          "url": "https://plateaustrategy.io/",
+          "image": "https://plateaustrategy.io/plateau-logo.png",
+          "logo": "https://plateaustrategy.io/plateau-logo.png",
+          "parentOrganization": { "@id": "https://plateaustrategy.io/#org" },
+          "description": "Flat-rate Tesla airport transfers and car service in the Seattle area, including Seattle-Tacoma International Airport.",
+          "_todo_email": "Add \"email\": \"hello@plateaustrategy.io\" here once Porkbun forwarding is live. Held back because the domain has no MX records today — publishing an address that bounces is worse than publishing none.",
+          "_todo_telephone": "Add \"telephone\": \"+1-206-XXX-XXXX\" here once the Seattle business line exists, and the matching tel: link in the footer. Same digits in both places and on the Google Business Profile — a mismatch makes verification harder.",
+          "priceRange": "$$",
+          "currenciesAccepted": "USD",
+          "areaServed": [
+            { "@type": "City", "name": "Seattle", "containedInPlace": { "@type": "State", "name": "Washington" } },
+            { "@type": "Airport", "name": "Seattle-Tacoma International Airport", "iataCode": "SEA" }
+          ],
+          "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            "opens": "00:00",
+            "closes": "23:59"
+          },
+          "makesOffer": {
+            "@type": "Offer",
+            "name": "Flat-rate SeaTac airport transfer",
+            "price": "75",
+            "priceCurrency": "USD",
+            "url": "https://plateaustrategy.io/book",
+            "itemOffered": { "@type": "Service", "name": "Tesla airport transfer", "serviceType": "Airport shuttle service" }
+          },
+          "potentialAction": {
+            "@type": "ReserveAction",
+            "target": { "@type": "EntryPoint", "urlTemplate": "https://plateaustrategy.io/book" },
+            "result": { "@type": "Reservation", "name": "Ride booking" }
+          }
+        },
+        {
+          "@type": "Service",
+          "name": "Tesla ride and airport transfer service",
+          "provider": { "@id": "https://plateaustrategy.io/#org" },
+          "serviceType": "Car service",
+          "areaServed": { "@type": "Place", "name": "Seattle, Washington, United States" },
+          "url": "https://plateaustrategy.io/book"
+        },
+        {
+          "@type": "Service",
+          "name": "Tesla rental for rideshare drivers",
+          "provider": { "@id": "https://plateaustrategy.io/#org" },
+          "serviceType": "Vehicle rental",
+          "url": "https://plateaustrategy.io/renter"
+        },
+        {
+          "@type": "WebApplication",
+          "name": "Trip Planner",
+          "url": "https://plateaustrategy.io/trip-planner",
+          "applicationCategory": "TravelApplication",
+          "operatingSystem": "Any web browser",
+          "description": "Pick attractions and see which ones you can still reach before they close, using real drive times, current traffic and each place's opening hours.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "publisher": { "@id": "https://plateaustrategy.io/#org" }
+        },
+        {
+          "@type": "WebApplication",
+          "name": "Road Trip Planner",
+          "url": "https://plateaustrategy.io/road-trip",
+          "applicationCategory": "TravelApplication",
+          "operatingSystem": "Any web browser",
+          "description": "Finds fuel, food, rest stops and viewpoints along a long drive, grouped by how many hours into the journey they are.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "publisher": { "@id": "https://plateaustrategy.io/#org" }
+        },
+        {
+          "@type": "WebApplication",
+          "name": "Destination Book",
+          "url": "https://plateaustrategy.io/destination-book",
+          "applicationCategory": "TravelApplication",
+          "operatingSystem": "Any web browser",
+          "description": "A growing guidebook of attractions and restaurants with local tips from a licensed guide.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "publisher": { "@id": "https://plateaustrategy.io/#org" }
+        }
+      ]
+    }
+    </script>
     <style>
         * {
             margin: 0;
@@ -1654,6 +1760,30 @@
         -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
       }
       .psx-foot-brand p{color:#8c99ad;font-size:.92rem;line-height:1.62;max-width:34ch;margin:0;}
+
+      /* ---- contact block ----------------------------------------
+         A car service that can't be reached is an ad with nowhere to
+         land. This sits in the brand column rather than a fifth
+         column so it stays first in the footer's reading order and
+         first in the markup a crawler sees.
+         --------------------------------------------------------- */
+      .psx-foot-contact{
+        display:flex;flex-direction:column;gap:.5rem;
+        margin-top:.35rem;padding-top:1rem;
+        border-top:1px solid rgba(255,255,255,.08);
+        max-width:34ch;
+      }
+      .psx-foot-contact a,.psx-foot-contact span{
+        color:#a8b4c8;font-size:.93rem;line-height:1.45;
+        display:flex;align-items:baseline;gap:.55rem;
+      }
+      .psx-foot-contact a{font-weight:600;color:#dbe4f3;}
+      .psx-foot-contact a:hover{color:#fff;}
+      .psx-foot-contact b{
+        flex:0 0 auto;width:1.15em;text-align:center;
+        font-weight:400;opacity:.75;font-size:.95em;
+      }
+      .psx-foot-contact .psx-foot-note{color:#7b8798;font-size:.85rem;}
       .psx-foot h4{
         color:#e7ecf5;font-size:.74rem;font-weight:600;letter-spacing:.14em;
         text-transform:uppercase;margin:0 0 1rem;
@@ -2291,6 +2421,29 @@
                             <span>Plateau Strategy</span>
                         </div>
                         <p>An integrated business ecosystem — transportation, real estate and finance in one closed loop, built so revenue compounds instead of leaking away.</p>
+
+                        <!-- Contact. Whatever goes here must match the Google
+                             Business Profile word for word — same business name,
+                             same phone — or verification gets harder and the two
+                             listings compete instead of reinforcing each other.
+
+                             PHONE GOES HERE once the Seattle 206 line exists:
+                               <a href="tel:+1206XXXXXXX"><b>📞</b>(206) XXX-XXXX</a>
+                             directly above the email line. Put the same digits in
+                             the LocalBusiness node at the top of this file and on
+                             the Business Profile. See ADVERTISING.md § 0.5. -->
+                        <div class="psx-foot-contact">
+                            <span><b>📍</b>Serving Seattle &amp; Seattle–Tacoma International (SEA)</span>
+                            <span><b>🕑</b>Rides available 24/7, by reservation</span>
+                            <!-- EMAIL GOES BACK HERE the moment Porkbun forwarding
+                                 is live (hello@ -> the owner's Gmail). Pulled for
+                                 now because the domain has no MX records, so mail
+                                 to this address bounces. A contact address that
+                                 bounces is worse than no address at all.
+                                   <a href="mailto:hello@plateaustrategy.io"><b>✉️</b>hello@plateaustrategy.io</a> -->
+                            <a href="/book"><b>🚘</b>Book a ride — $75 flat to SeaTac</a>
+                            <span class="psx-foot-note">Service-area business — we come to you, there's no counter to visit.</span>
+                        </div>
                     </div>
 
                     <div>

@@ -14,6 +14,7 @@ Data persists in JSON files: reservations.json, renters.json, agents.json.
 Run:  python3 app.py   ->  http://localhost:5060
 """
 import os
+import re
 import json
 import time
 import hashlib
@@ -361,6 +362,60 @@ def _save_traffic(d):
     os.replace(tmp, TRAFFIC_PATH)
 
 
+def _visit_source():
+    """Where this visit came from, as ONE short label.
+
+    utm_source wins when present, because that is what an ad platform sets.
+    Otherwise the referring host, collapsed to a family — every Google property
+    is 'google', not 'www.google.co.uk' — so a week of ad spend adds up to a
+    single row instead of scattering across forty near-identical strings.
+
+    Deliberately coarse: a label, never a URL and never a full referrer. It is
+    stored as a per-day counter, never against a visitor, so this cannot become
+    a trail of who went where."""
+    utm = (request.args.get("utm_source") or "").strip().lower()[:32]
+    if utm:
+        return re.sub(r"[^a-z0-9_.-]", "", utm) or "other"
+    ref = (request.referrer or "").strip()
+    if not ref:
+        return "direct"
+    try:
+        host = urllib.parse.urlparse(ref).hostname or ""
+    except Exception:
+        return "other"
+    host = host.lower()
+    if host.startswith("www."):
+        host = host[4:]
+    if not host:
+        return "direct"
+    if SITE_HOSTS and any(host == h or host.endswith("." + h) for h in SITE_HOSTS):
+        return "internal"                       # our own pages linking to each other
+    for fam in ("google", "bing", "duckduckgo", "yahoo", "facebook", "instagram",
+                "reddit", "youtube", "tiktok", "linkedin", "chatgpt", "perplexity",
+                "claude", "yelp", "tripadvisor"):
+        if fam in host:
+            return fam
+    parts = host.split(".")
+    return (".".join(parts[-2:]) if len(parts) > 1 else host)[:32]
+
+
+def record_conversion(kind):
+    """Count something that actually mattered, against the source that brought
+    them. Without this an ad test only ever proves that pageviews went up."""
+    try:
+        src = request.cookies.get("psx_src") or "direct"
+        today = datetime.date.today().isoformat()
+        with _LOCK:
+            data = _load_traffic()
+            rec = data["days"].setdefault(today, {"pageviews": 0, "visitor_ids": [], "paths": {}})
+            conv = rec.setdefault("conversions", {})
+            conv.setdefault(kind, {})
+            conv[kind][src] = conv[kind].get(src, 0) + 1
+            _save_traffic(data)
+    except Exception:
+        pass
+
+
 @app.after_request
 def _track_traffic(resp):
     """Lightweight, self-hosted page-view counter — no third-party analytics,
@@ -376,6 +431,7 @@ def _track_traffic(resp):
                 and not _skip_traffic():
             vid = request.cookies.get("psx_vid")
             set_cookie = not vid
+            set_src = None
             if set_cookie:
                 vid = secrets.token_hex(16)
             _presence_touch(vid)
@@ -396,6 +452,15 @@ def _track_traffic(resp):
                 rec["paths"][request.path] = rec["paths"].get(request.path, 0) + 1
                 if vid not in rec["visitor_ids"]:
                     rec["visitor_ids"].append(vid)
+                    # First touch only. Counting every pageview would credit the
+                    # source that brought someone here once per page they read,
+                    # which flatters whichever page is stickiest rather than
+                    # whichever source actually worked.
+                    src = _visit_source()
+                    if src != "internal":
+                        rec.setdefault("sources", {})
+                        rec["sources"][src] = rec["sources"].get(src, 0) + 1
+                        set_src = src
                 # Who opened this particular tool, so "N travellers" can mean N
                 # people rather than N page opens. Same lifecycle as visitor_ids:
                 # raw ids only for today, folded to a plain count once the day ends.
@@ -409,6 +474,13 @@ def _track_traffic(resp):
             if set_cookie:
                 resp.set_cookie("psx_vid", vid, max_age=60 * 60 * 24 * 400,
                                  httponly=True, samesite="Lax")
+            if set_src:
+                # Carried so a booking made later can be credited to the source
+                # that brought them. Holds a label like "google", never a URL,
+                # and expires in 30 days — an ad click is not owed credit for a
+                # booking made a year later.
+                resp.set_cookie("psx_src", set_src, max_age=60 * 60 * 24 * 30,
+                                httponly=True, samesite="Lax")
     except Exception:
         pass
     return resp
@@ -663,6 +735,8 @@ PUBLIC_PAGES = [
 ]
 OWNER_ONLY_PATHS = ["/dispatch", "/setup", "/archive", "/api/"]
 SITE_ORIGIN = os.environ.get("SITE_ORIGIN", "https://plateaustrategy.io").rstrip("/")
+# Referrers from our own pages are not a traffic source — they are navigation.
+SITE_HOSTS = ("plateaustrategy.io", "plateau-strategy.onrender.com")
 
 
 @app.route("/robots.txt")
@@ -671,6 +745,56 @@ def robots_txt():
     lines += ["Disallow: " + p for p in OWNER_ONLY_PATHS]
     lines += ["Allow: /", "", "Sitemap: " + SITE_ORIGIN + "/sitemap.xml", ""]
     return Response("\n".join(lines), mimetype="text/plain")
+
+
+@app.route("/llms.txt")
+def llms_txt():
+    """A plain-language map of the site for AI assistants.
+
+    An assistant answering "what can I do in Seattle tomorrow" reads pages, not
+    JavaScript. This states what exists, what it does and where it lives, so an
+    assistant can describe and link the tools accurately instead of guessing
+    from an app shell."""
+    body = """# Plateau Strategy Solution Lab
+
+> An integrated business ecosystem in the Seattle area: affordable Tesla rides
+> and rentals, plus free travel-planning tools that anyone can use without an
+> account.
+
+## Free tools (no account, no cost)
+
+- [Trip Planner](%(o)s/trip-planner): Pick attractions and see which ones you can
+  still reach before they close. Uses real drive times, current traffic and each
+  place's opening hours. Plans multiple days and asks where you're staying
+  overnight so the next morning starts from your hotel.
+- [Road Trip Planner](%(o)s/road-trip): For long drives. Give it two points and it
+  finds the fuel, food, rest stops and viewpoints near your actual route,
+  grouped by how many hours into the drive they are.
+- [Destination Book](%(o)s/destination-book): A growing guidebook of attractions
+  and restaurants with local tips from a licensed guide.
+- [The Factor Clock](%(o)s/factor-clock): A prediction clock scored against what
+  actually happened, and honest about when it does not know.
+
+## Services
+
+- [Book a Ride](%(o)s/book): Flat-rate Tesla rides, booked online, invoice sent
+  automatically. Seattle area, including SeaTac airport transfers.
+- [Driver Portal](%(o)s/renter): Rent a Tesla and earn from a shared pool of
+  client rides.
+- [Agent Program](%(o)s/agent): Refer clients and earn commission per completed
+  ride. Suited to hotels, travel agencies and individuals with a network.
+- [Partners](%(o)s/partners): Partnership information.
+
+## Notes for assistants
+
+- The planning tools are free and need no sign-up; link people straight to them.
+- Attraction opening hours come from OpenStreetMap and can be incomplete. The
+  planner marks a time it could not confirm rather than presenting a guess.
+- Drive times come from live routing, not straight-line estimates.
+- Ride prices and availability change; point people to the booking page rather
+  than quoting a figure.
+""" % {"o": SITE_ORIGIN}
+    return Response(body, mimetype="text/plain")
 
 
 @app.route("/sitemap.xml")
@@ -1772,6 +1896,7 @@ def api_book():
     reservation, err = _create_reservation(data, agent=agent)
     if err:
         return jsonify({"ok": False, "error": err}), 400
+    record_conversion("booking")
     return jsonify({"ok": True, "reservation": reservation})
 
 
@@ -1815,7 +1940,11 @@ def api_reservations():
     Anyone else -> the open board only, contact details withheld.
 
     This endpoint used to return every reservation — customer names, phones
-    and addresses — to anyone who requested it."""
+    and addresses — to anyone who requested it. The first fix redacted the
+    open board but still took the driver's identity from ?renter_id=, which
+    is not a secret: ids are handed out in sequence (RTR_0001, RTR_0002, ...),
+    so counting up from one walked out every customer's name, email, phone and
+    address. Identity now comes from the signed-in session only."""
     items = list(reversed(_load(RES_PATH)))
     status = (request.args.get("status") or "").upper()
     if status == "OPEN":
@@ -1826,9 +1955,12 @@ def api_reservations():
     if session.get("owner"):
         return jsonify({"reservations": items})
 
-    renter_id = (request.args.get("renter_id") or "").strip()
-    is_renter = bool(renter_id) and any(
-        (x.get("id") == renter_id) for x in _load(RENTERS_PATH))
+    # Session, never the query string. ?renter_id= is still accepted by the
+    # driver portal's URL but is now ignored for access — a driver who is not
+    # signed in gets the same redacted board as everyone else and is asked to
+    # log in, which is the safe failure.
+    renter_id = (session.get("renter_id") or "").strip()
+    is_renter = bool(renter_id)
 
     visible = []
     for r in items:
@@ -1841,9 +1973,18 @@ def api_reservations():
 
 @app.route("/api/reservations/<rid>/claim", methods=["POST"])
 def api_claim(rid):
-    """A renter picks an open reservation. First claim wins (atomic)."""
+    """A renter picks an open reservation. First claim wins (atomic).
+
+    The driver is whoever is signed in, not whoever the request says it is.
+    This used to take renter_id from the body, and a successful claim returns
+    the reservation in full — so anyone who guessed a driver id (they run
+    RTR_0001, RTR_0002, ...) could claim someone else's ride and read the
+    customer's name, email, phone and address out of the response."""
     data = request.get_json(force=True, silent=True) or {}
-    renter_id = (data.get("renter_id") or "").strip()
+    renter_id = (session.get("renter_id") or "").strip()
+    if not renter_id:
+        return jsonify({"ok": False, "auth_required": True,
+                        "error": "Please sign in before accepting rides."}), 401
     renter = next((x for x in _load(RENTERS_PATH) if x.get("id") == renter_id), None)
     if not renter:
         return jsonify({"ok": False, "error": "Unknown renter — please register first."}), 400
@@ -1980,9 +2121,15 @@ def sms_reply():
 @app.route("/api/reservations/<rid>/giveup", methods=["POST"])
 def api_giveup(rid):
     """Assigned driver can't make it: release the ride back to the pool.
-    Only allowed 12+ hours before scheduled pickup [SEAN rule]. Owner is notified."""
+    Only allowed 12+ hours before scheduled pickup [SEAN rule]. Owner is notified.
+
+    Identity comes from the session: with a guessable id in the body, anyone
+    could release another driver's booked rides back into the pool."""
     data = request.get_json(force=True, silent=True) or {}
-    renter_id = (data.get("renter_id") or "").strip()
+    renter_id = (session.get("renter_id") or "").strip()
+    if not renter_id:
+        return jsonify({"ok": False, "auth_required": True,
+                        "error": "Please sign in first."}), 401
     with _LOCK:
         items = _load(RES_PATH)
         r = next((x for x in items if x.get("id") == rid), None)
@@ -2385,6 +2532,7 @@ def api_renter_register():
         renters.append(renter)
         _save(RENTERS_PATH, renters)
     session["renter_id"] = renter["id"]
+    record_conversion("driver_signup")
     return jsonify({"ok": True, "renter": renter})
 
 
@@ -2702,18 +2850,33 @@ def api_contract():
 
 @app.route("/api/contract/status")
 def api_contract_status():
-    rid = (request.args.get("renter_id") or "").strip()
+    """A driver's own contract status. The owner may ask about any driver;
+    everyone else only ever gets their own, so this can't be used to probe
+    which sequential driver ids exist."""
+    if session.get("owner"):
+        rid = (request.args.get("renter_id") or "").strip()
+    else:
+        rid = (session.get("renter_id") or "").strip()
     if not rid:
-        return jsonify({"ok": False, "error": "renter_id required"}), 400
+        return jsonify({"ok": False, "auth_required": True,
+                        "error": "Please sign in."}), 401
     return jsonify({"ok": True, **_contract_status(rid)})
 
 
 @app.route("/api/contract/sign", methods=["POST"])
 def api_contract_sign():
     """A driver signs the current contract version: typed full name + drawn
-    signature + explicit agreement. Server stamps time, IP and version."""
+    signature + explicit agreement. Server stamps time, IP and version.
+
+    The signer is taken from the session. This record is the binding proof
+    that a specific driver accepted the agreement, so accepting an id from
+    the request body meant anyone could file a signature in another driver's
+    name — and that signature is what unlocks accepting rides."""
     data = request.get_json(force=True, silent=True) or {}
-    rid = (data.get("renter_id") or "").strip()
+    rid = (session.get("renter_id") or "").strip()
+    if not rid:
+        return jsonify({"ok": False, "auth_required": True,
+                        "error": "Please sign in before signing the agreement."}), 401
     typed = (data.get("typed_name") or "").strip()
     sig_img = (data.get("signature") or "").strip()
     agree = bool(data.get("agree"))
@@ -2813,6 +2976,7 @@ def api_agent_register():
         agents.append(agent)
         _save(AGENTS_PATH, agents)
     session["agent_id"] = agent["id"]
+    record_conversion("agent_signup")
     return jsonify({"ok": True, "agent": agent})
 
 
@@ -3897,6 +4061,41 @@ def _arch_traffic():
     return out
 
 
+# What each conversion kind is called in the table, in the order shown.
+CONVERSION_KINDS = [("booking", "bookings"),
+                    ("agent_signup", "agent_signups"),
+                    ("driver_signup", "driver_signups")]
+
+
+def _arch_sources():
+    """One row per day per source — where visitors came from, and what those
+    visits turned into. This is how an ad gets judged: a source with visits and
+    no bookings is spend that isn't working, whichever way the pageview line
+    moved.
+
+    A source can show conversions with zero visits that day — the psx_src
+    cookie lasts 30 days, so someone who arrived on Monday and booked on
+    Thursday is credited to Monday's source on Thursday's row. That is the
+    honest placement: the booking happened Thursday."""
+    data = _load_traffic()
+    out = []
+    for date in sorted(data["days"].keys(), reverse=True):
+        rec = data["days"][date]
+        visits = rec.get("sources", {})
+        conv = rec.get("conversions", {})
+        names = set(visits) | {s for kind in conv.values() for s in kind}
+        rows = []
+        for src in names:
+            row = {"date": date, "source": src, "new_visitors": visits.get(src, 0)}
+            for kind, label in CONVERSION_KINDS:
+                row[label] = conv.get(kind, {}).get(src, 0)
+            rows.append(row)
+        # Busiest source first, so the day reads top-down.
+        rows.sort(key=lambda r: (-r["new_visitors"], r["source"]))
+        out.extend(rows)
+    return out
+
+
 @app.route("/api/online")
 def api_online():
     """How many travelers are on the site right now. The caller's own ping keeps
@@ -3985,6 +4184,7 @@ ARCHIVE_SECTIONS = [
     ("comments",   "💬 Place comments", "What travelers wrote about places in the Destination Book.", _arch_comments),
     ("wishes",     "🌟 Traveler wishes", "Places and experiences visitors asked us to add — the demand signal.", _arch_wishes),
     ("traffic",    "📈 Site traffic", "Daily page views, unique visitors, and Trip Planner / Destination Book usage.", _arch_traffic),
+    ("sources",    "🎯 Where visitors came from", "Visits and bookings by source — Google, Reddit, direct, or a tagged ad. How you tell whether ad spend worked.", _arch_sources),
     ("bookings",   "🧾 Bookings & invoices", "Every reservation — customer, trip, fare, invoice and status.", _arch_bookings),
     ("contacts",   "📇 Contacts (marketing)", "Every captured email & phone across the whole site, de-duped — your advertising list.", _arch_contacts),
     ("people",     "👤 Accounts", "Agent, driver and customer accounts.", _arch_people),
