@@ -43,14 +43,34 @@
         .chip.on { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
 
         /* Sean's layout: content on the LEFT, the map large on the RIGHT */
-        .layout { display: grid; grid-template-columns: 380px minmax(0,1fr); gap: 1rem; align-items: start; }
+        /* The map is the tool; everything else floats over it or tucks away. */
+        .layout { display: block; position: relative; }
+        .layout .side { position: absolute; z-index: 950; top: 118px; left: 58px;
+            width: 320px; max-height: calc(78vh - 140px); overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(15,23,42,0.26); border-radius: 14px; }
+        .layout .side .card.jarvis { margin: 0; border-radius: 14px;
+            background: rgba(255,255,255,0.97); }
+        .layout.jarvis-hidden .side { display: none; }
+        #jarvisDock { position: absolute; z-index: 951; top: 118px; left: 58px;
+            width: 38px; height: 38px; border-radius: 10px; border: none; cursor: pointer;
+            background: rgba(255,255,255,0.97); box-shadow: 0 4px 14px rgba(15,23,42,0.24);
+            font-size: 17px; line-height: 1; display: none; }
+        .layout.jarvis-hidden #jarvisDock { display: block; }
+        .jarvis-close { float: right; cursor: pointer; color: #94a3b8; font-weight: 800;
+            font-size: 1rem; line-height: 1; padding: 0 0 0 .5rem; }
+        @media (max-width: 900px) {
+            .layout .side { position: static; width: auto; max-height: none; margin-top: 0.7rem;
+                box-shadow: none; }
+            .layout.jarvis-hidden .side { display: block; }
+            #jarvisDock { display: none !important; }
+        }
         @media (max-width: 900px) { .layout { grid-template-columns: 1fr; }
             .map-searchbar { left: 10px; right: 10px; max-width: none; top: 54px; } }
 
-        #map { height: 62vh; min-height: 380px; border-radius: 16px; border: 1px solid #dde4ed;
+        #map { height: 78vh; min-height: 460px; border-radius: 16px; border: 1px solid #dde4ed;
             box-shadow: 0 10px 30px -12px rgba(15,23,42,.22); overflow: hidden; }
         /* ===== everything lives ON the map — one surface, nothing scattered ===== */
-        .map-searchbar { position: absolute; z-index: 900; top: 10px; left: 56px;
+        .map-searchbar { position: absolute; z-index: 960; top: 10px; left: 58px;
             right: 200px; max-width: 520px; transform: none;
             background: rgba(255,255,255,0.97); border-radius: 12px;
             box-shadow: 0 6px 20px rgba(15,23,42,0.25); padding: 0.45rem 0.55rem; }
@@ -78,6 +98,8 @@
         .map-legend .lg-toggle { font-size: 0.72rem; font-weight: 700; color: #475569;
             cursor: pointer; user-select: none; }
 
+        .far-note { margin-top: 0.3rem; font-size: 0.75rem; line-height: 1.45; color: #92400e;
+            background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 0.4rem 0.6rem; }
         .start-entry { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-top: 0.5rem; }
         .start-entry input { flex: 1; min-width: 210px; padding: 0.5rem 0.8rem; border: 1.5px solid #e2e8f0;
             border-radius: 10px; font-size: 0.92rem; font-family: inherit; background: #f8fafc; }
@@ -174,6 +196,8 @@
 
         /* 🤵 Jarvis — the day-sheet organizer panel */
         .card.jarvis h3 { margin-bottom: 0.35rem; }
+        #trip { max-height: 34vh; overflow-y: auto; }
+        #auto { max-height: 22vh; overflow-y: auto; }
         .jarvis-line { font-size: 0.8rem; color: #334155; line-height: 1.5; padding: 0.45rem 0.6rem;
             background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin: 0.35rem 0 0.55rem; }
         .jarvis-line.flash { background: #eff6ff; border-color: #bfdbfe; }
@@ -443,7 +467,7 @@
                 <label>Date of departure</label>
                 <input type="date" id="departDate" onchange="onDepartChange()">
                 <label>Leave by</label>
-                <input type="time" id="leaveAt" value="09:30" onchange="resetTrip()">
+                <input type="time" id="leaveAt" value="09:30" onchange="retimeRoute('new departure time')">
                 <label>Traffic</label>
                 <select id="traffic" onchange="trafficChanged()">
                     <option value="auto" selected>Auto (by time of day)</option>
@@ -469,6 +493,7 @@
                 <span class="start-hint">or drag the black ⌂ pin on the map</span>
             </div>
             <div id="curLocInfo" class="loc-info"></div>
+            <div id="farNote" class="far-note" style="display:none;"></div>
             <div id="chain" class="chain"></div>
         </div>
 
@@ -730,9 +755,16 @@
             } catch (e) {
                 matrix = null; matrixMode = 'est';
             }
-            refresh();
+            // The matrix arrives AFTER any re-time that triggered this fetch, so arrivals
+            // computed a moment ago used the OLD travel times. Re-time once more now that
+            // the real numbers are here — otherwise the day sheet quietly lies.
+            if (pendingOriginRetime && st.route.length) {
+                pendingOriginRetime = false;
+                retimeRoute('');
+            } else { refresh(); }
         }, 350);
     }
+    let pendingOriginRetime = false;
 
     // ---------- trip engine (the factor base) ----------
     function feasibility(i){
@@ -758,12 +790,14 @@
                         prev: { day: st.day, now: st.now, pos: st.pos } });
         st.visited.add(i); st.pos = i; st.now = f.arr + p.visit;
         const n = st.route.length;
-        if (f.slack < 0)
-            say('⚠ Added ' + p.name + ' as D' + n + ' — but it may not fit: arrive ' + fmt(f.arr)
-                + ', closes ' + fmt(p.close) + '. It\'s in your route — reorder, shorten, or drop it.');
-        else
-            say('✓ Added ' + p.name + ' as D' + n + ' — arrive ' + fmt(f.arr) + ', leave ' + fmt(st.now) + '.');
-        jarvisAdded(st.route[st.route.length - 1]);   // Jarvis organizes the new stop
+        if (!retiming) {
+            if (f.slack < 0)
+                say('⚠ Added ' + p.name + ' as D' + n + ' — but it may not fit: arrive ' + fmt(f.arr)
+                    + ', closes ' + fmt(p.close) + '. It\'s in your route — reorder, shorten, or drop it.');
+            else
+                say('✓ Added ' + p.name + ' as D' + n + ' — arrive ' + fmt(f.arr) + ', leave ' + fmt(st.now) + '.');
+            jarvisAdded(st.route[st.route.length - 1]);   // Jarvis organizes the new stop
+        }
         refresh();
         return true;
     }
@@ -842,7 +876,30 @@
         say('Fresh start at ' + fmt(st.now) + '.');
         refresh();
     }
-    function trafficChanged(){ resetTrip(); say('Traffic changed — trip re-planned from the start.'); }
+    // Setting where you START must never delete where you're GOING. This replays the
+    // existing chain (order AND day breaks preserved) against the new origin/time/
+    // traffic, so every arrival re-computes. Stops that no longer fit stay visible
+    // with their one-tap "move to the next day" fix rather than vanishing.
+    let retiming = false;
+    function retimeRoute(why){
+        if (!st.route.length) { resetTrip(); return; }
+        const chain = st.route.map(r => ({ i: r.i, day: r.day }));
+        st.route = []; st.visited = new Set();
+        st.day = 1; st.now = parseTime($('leaveAt').value) || 570; st.pos = -1;
+        let curDay = 1;
+        retiming = true;                       // silence per-stop chatter during replay
+        chain.forEach(s => {
+            if (!places[s.i]) return;
+            while (curDay < s.day) { st.day++; st.now = DAY_START; st.pos = -1; curDay = st.day; }
+            addToRoute(s.i);
+        });
+        retiming = false;
+        say('Re-timed your ' + st.route.length + '-stop trip' + (why ? ' — ' + why : '') + '.');
+        jarvisSay('Re-timed your <b>' + st.route.length + '-stop trip</b>' + (why ? ' — ' + escj(why) : '')
+                + '. Nothing was lost.');
+        refresh();
+    }
+    function trafficChanged(){ retimeRoute('traffic changed'); }
 
     function planDay(startPos, startT, avail){
         // Pick the next stop by URGENCY vs DISTANCE, not by closing time alone.
@@ -1514,9 +1571,11 @@
         savePlaces();
         if (force) {
             rebuildMarkers(); renderPlaces();
-            startMarker.setLatLng(c.start);
-            map.setView(c.center, c.zoom);
-            resetTrip(); fetchMatrix();
+            if (keepStartOnLoad) { keepStartOnLoad = false; fetchMatrix(); }   // keep the start the traveler chose
+            else { startMarker.setLatLng(c.start);
+                   currentLoc = { lat: c.start[0], lon: c.start[1], address: c.label, accuracy: null, source: 'default' };
+                   map.setView(c.center, c.zoom);
+                   resetTrip(); fetchMatrix(); }
             say(c.label + ' sample loaded — ' + places.length + ' places, ready to plan.');
             const ss = $('selState'), m = CITY_META[curCity];  // keep all three pickers in sync
             if (ss && m) { ss.value = m.state; fillCounties(m.state); $('selCounty').value = m.county;
@@ -1648,7 +1707,6 @@
             setLocLabel('Locating…'); setLocInfo('Getting your exact location…');
             navigator.geolocation.getCurrentPosition(async pos => {
                 const lat = pos.coords.latitude, lon = pos.coords.longitude, acc = Math.round(pos.coords.accuracy || 0);
-                startMarker.setLatLng([lat, lon]);
                 map.setView([lat, lon], acc <= 60 ? 16 : 14);
                 let address = '';
                 try {
@@ -1656,7 +1714,7 @@
                     const j = await r.json();
                     address = (j && j.display_name) ? j.display_name : '';
                 } catch (e) {}
-                currentLoc = { lat, lon, address, accuracy: acc };
+                setOrigin(lat, lon, 'gps', { address: address, accuracy: acc, why: 'starting from your location' });
                 $('curLocBtn').classList.add('located');
                 setLocLabel(address ? shortAddr(address) : 'My location');
                 const weak = acc > 150;
@@ -1872,6 +1930,33 @@
             }).catch(() => { $('rt_send').disabled = false; msg.className = 'ho-msg err'; msg.textContent = 'Could not reach the server — please try again.'; });
     }
 
+    // ---------- getting un-lost ----------
+    // Panning away and hunting your way back was costing real time. One tap fits the
+    // start pin and every stop back on screen; if nothing is planned yet it returns
+    // to the city view.
+    function recenterMap(){
+        const pts = [];
+        if (startMarker) { const s = startMarker.getLatLng(); pts.push([s.lat, s.lng]); }
+        st.route.forEach(r => { const p = places[r.i]; if (p) pts.push([p.lat, p.lon]); });
+        if (pts.length > 1) map.fitBounds(L.latLngBounds(pts).pad(0.18));
+        else if (pts.length === 1) map.setView(pts[0], 14);
+        else { const c = CITIES[curCity]; if (c) map.setView(c.center, c.zoom); }
+        say(st.route.length ? 'Map re-centred on your trip.' : 'Map re-centred.');
+    }
+    // Jarvis floats over the map instead of shrinking it — tuck him away for a clear
+    // view, tap the 🤵 dock to bring the conversation back. The map never resizes.
+    function toggleWideMap(){
+        const l = document.querySelector('.layout'); if (!l) return;
+        const hidden = l.classList.toggle('jarvis-hidden');
+        try { localStorage.setItem('jarvis_hidden', hidden ? '1' : '0'); } catch (e) {}
+        const b = $('wideMapBtn'); if (b) { b.textContent = hidden ? '🤵' : '⤡';
+            b.title = hidden ? 'Show Jarvis and the itinerary' : 'Hide Jarvis for a clear map'; }
+    }
+    function confirmReset(){
+        if (st.route.length >= 2 && !confirm('Clear all ' + st.route.length + ' stops? This cannot be undone.')) return;
+        resetTrip();
+    }
+
     // ---------- ✎ set the start point by typing it ----------
     // GPS covers "I'm here now", but a traveler planning from home needs to say
     // where they'll START — a hotel, an airport, a friend's address. Dragging the
@@ -1882,6 +1967,55 @@
         box.style.display = open ? 'flex' : 'none';
         if (open) { const i = $('startAddr'); if (i) { i.focus(); i.select(); } }
     }
+    // ONE writer for the trip origin. The black pin is its view — never a second
+    // truth — so drag, GPS and typed entry can no longer disagree about where the
+    // day begins, and none of them destroy the plan.
+    function setOrigin(lat, lon, source, meta){
+        meta = meta || {};
+        startMarker.setLatLng([lat, lon]);
+        currentLoc = { lat: lat, lon: lon, address: meta.address || '',
+                       accuracy: (source === 'gps' ? meta.accuracy : null), source: source };
+        farFromBoardCheck();
+        retimeRoute(meta.why || 'new starting point');
+        pendingOriginRetime = true;      // re-time again when the real drive times land
+        fetchMatrix();
+        savePlaces();
+    }
+    // A start 60+ km from the board being planned makes every drive time nonsense.
+    // Say so, and offer both escapes — neither of which throws work away.
+    const CITY_FAR_KM = 60;
+    function farFromBoardCheck(){
+        const box = $('farNote'); if (!box || !currentLoc) return;
+        const c = CITIES[curCity];
+        if (!c) { box.style.display = 'none'; return; }
+        const dKm = havKm(currentLoc, { lat: c.center[0], lon: c.center[1] });
+        if (dKm <= CITY_FAR_KM) { box.style.display = 'none'; return; }
+        let best = null;
+        Object.keys(CITIES).forEach(k => {
+            const d = havKm(currentLoc, { lat: CITIES[k].center[0], lon: CITIES[k].center[1] });
+            if (!best || d < best.d) best = { k: k, d: d };
+        });
+        const mi = Math.round(dKm * 0.621371);
+        box.innerHTML = '⚠ Your start is <b>' + mi + ' mi</b> from the ' + escj(c.label) + ' board — drive times here will be huge. '
+            + (best && best.d <= CITY_FAR_KM && best.k !== curCity
+                ? '<span class="fixlink" onclick="switchBoardKeepStart(\'' + best.k + '\')">Switch to ' + escj(CITIES[best.k].label) + ' →</span> · '
+                : '')
+            + '<span class="fixlink" onclick="restoreCityStart()">Move start back to ' + escj(c.label) + '</span>';
+        box.style.display = 'block';
+    }
+    function restoreCityStart(){
+        const c = CITIES[curCity]; if (!c) return;
+        setOrigin(c.start[0], c.start[1], 'default', { address: c.label, why: 'start moved back to ' + c.label });
+        setLocInfo('Start moved back to ' + c.label + '.');
+    }
+    function switchBoardKeepStart(key){
+        keepStartOnLoad = true;                 // the whole point is to keep the start we just set
+        loadSample(true, key);
+        map.setView([currentLoc.lat, currentLoc.lon], Math.max(map.getZoom(), 12));
+        farFromBoardCheck();
+    }
+    let keepStartOnLoad = false;
+
     async function applyStartAddress(){
         const q = ($('startAddr').value || '').trim();
         if (!q) return;
@@ -1894,10 +2028,8 @@
             if (!j.length) j = await (await fetch(base)).json();     // then anywhere
             if (!j.length) { setLocInfo('Couldn\'t find “' + q + '” — try adding the city.', true); return; }
             const r = j[0], lat = +r.lat, lon = +r.lon;
-            startMarker.setLatLng([lat, lon]);                       // move the start pin
-            currentLoc = { lat: lat, lon: lon, address: r.display_name, accuracy: null };
             map.setView([lat, lon], Math.max(map.getZoom(), 13));
-            resetTrip(); fetchMatrix();                              // re-time everything from here
+            setOrigin(lat, lon, 'typed', { address: r.display_name, why: 'starting from ' + r.display_name.split(',')[0] });
             setLocLabel('Start set');
             setLocInfo('Starting from ' + r.display_name.split(',').slice(0, 3).join(','));
             $('startEntry').style.display = 'none';
@@ -2269,6 +2401,7 @@
         bar.appendChild(document.querySelector('.build-row'));
         bar.appendChild(document.getElementById('startEntry'));
         bar.appendChild(document.getElementById('curLocInfo'));
+        bar.appendChild(document.getElementById('farNote'));
         mc.appendChild(bar);
         L.DomEvent.disableClickPropagation(bar);
         L.DomEvent.disableScrollPropagation(bar);
@@ -2278,11 +2411,13 @@
         const Actions = L.Control.extend({ options: { position: 'topleft' }, onAdd: function(){
             const d = L.DomUtil.create('div', 'map-actions');
             d.innerHTML =
-                  '<button onclick="useMyLocation()" title="Start from my GPS location">📍</button>'
+                  '<button onclick="recenterMap()" title="Lost? Fit my whole trip back on screen">⊙</button>'
+                + '<button id="wideMapBtn" onclick="toggleWideMap()" title="Full-width map">⤢</button>'
+                + '<button onclick="useMyLocation()" title="Start from my GPS location">📍</button>'
                 + '<button onclick="toggleStartEntry()" title="Type your starting address">✎</button>'
                 + '<button onclick="undoStop()" title="Undo the last stop">↩</button>'
                 + '<button onclick="nextDay()" title="Start the next day">➡</button>'
-                + '<button onclick="resetTrip()" title="Reset the trip">⟲</button>';
+                + '<button onclick="confirmReset()" title="Clear the trip">⟲</button>';
             L.DomEvent.disableClickPropagation(d);
             return d;
         }});
@@ -2310,6 +2445,21 @@
         map.addControl(new Legend());
     })();
 
+    try { if (localStorage.getItem('jarvis_hidden') === '1') {
+        document.querySelector('.layout').classList.add('jarvis-hidden');
+        setTimeout(() => { const b = $('wideMapBtn'); if (b) b.textContent = '🤵'; }, 300);
+    } } catch (e) {}
+    // a always-available dock button to bring Jarvis back
+    (function(){
+        const l = document.querySelector('.layout'); if (!l) return;
+        const b = document.createElement('button');
+        b.id = 'jarvisDock'; b.textContent = '🤵'; b.title = 'Open Jarvis';
+        b.onclick = toggleWideMap;
+        l.appendChild(b);
+        const h = document.querySelector('.card.jarvis h3');
+        if (h) h.insertAdjacentHTML('afterbegin', '<span class="jarvis-close" title="Tuck Jarvis away" onclick="toggleWideMap()">×</span>');
+    })();
+
     // the book stays as the traveler last left it (closed on a first visit)
     try { if (localStorage.getItem('book_open') === '1') document.getElementById('bookCard').classList.add('open'); } catch (e) {}
 
@@ -2319,7 +2469,10 @@
         draggable: true,
         icon: L.divIcon({ className: '', html: '<div class="tp-pin tp-start"><div class="tp-dot" data-glyph="⌂">◉</div><span class="tp-lbl">Start</span></div>', iconSize: [76, 34], iconAnchor: [38, 10] })
     }).addTo(map).bindTooltip('Your start point — drag me');
-    startMarker.on('dragend', () => { resetTrip(); fetchMatrix(); });
+    startMarker.on('dragend', () => {
+        const ll = startMarker.getLatLng();
+        setOrigin(ll.lat, ll.lng, 'drag', { why: 'start pin moved' });
+    });
     initChips();
     initStateCity();
     rebuildMarkers();
