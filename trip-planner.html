@@ -1919,6 +1919,33 @@
             const n = document.getElementById('amenityNote'); if (n) n.textContent = '';
         }
     }
+    // The public Overpass servers are free and therefore busy — one of them
+    // rate-limiting is normal, not an error worth showing a traveler. Try the
+    // mirrors in turn before admitting defeat.
+    const OVERPASS = ['https://overpass-api.de/api/interpreter',
+                      'https://overpass.kumi.systems/api/interpreter',
+                      'https://overpass.osm.ch/api/interpreter'];
+    let overpassIdx = 0;
+    async function overpass(q){
+        let lastErr = null;
+        for (let n = 0; n < OVERPASS.length; n++) {
+            const url = OVERPASS[(overpassIdx + n) % OVERPASS.length];
+            try {
+                const r = await fetch(url, { method: 'POST', body: 'data=' + encodeURIComponent(q),
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const j = await r.json();
+                const els = j.elements || [];
+                // a throttled reply carries a "remark" and an empty list — that is
+                // NOT "nothing here", so treat it as a failure and try the next mirror
+                if (!els.length && j.remark) throw new Error(j.remark);
+                overpassIdx = (overpassIdx + n) % OVERPASS.length;   // stick with the one that worked
+                return els;
+            } catch (e) { lastErr = e; }
+        }
+        throw lastErr || new Error('overpass unavailable');
+    }
+
     let osmPending = {};                  // token -> {name, lat, lon, cat} for popup add-buttons
     let osmSeq = 0;
     function amenityPopup(cat, tags, lat, lon){
@@ -1966,31 +1993,28 @@
     async function fetchAmenity(cat){
         const cfg = AMENITY_CATS[cat];
         const note = document.getElementById('amenityNote');
-        if (map.getZoom() < cfg.min) {
-            amenityLayers[cat].clearLayers();
-            if (note) note.textContent = 'zoom in closer to load ' + cfg.emoji + ' spots';
-            return;
-        }
-        if (note) note.textContent = '';
+        // Zoomed out, a whole-viewport search would be enormous — but refusing to
+        // load left travelers ticking a box and seeing nothing, which reads as
+        // broken. So we search a bounded radius around the middle of the map
+        // instead: something useful always appears, and zooming in fills it out.
+        const wide = map.getZoom() < cfg.min;
+        const ctr = map.getCenter();
         const b = map.getBounds();
-        // cache key rounds the viewport so small pans reuse the last answer
-        const key = cat + '|' + [b.getSouth(), b.getWest(), b.getNorth(), b.getEast()].map(v => v.toFixed(2)).join(',');
+        const key = cat + '|' + (wide
+            ? 'c' + ctr.lat.toFixed(2) + ',' + ctr.lng.toFixed(2)
+            : [b.getSouth(), b.getWest(), b.getNorth(), b.getEast()].map(v => v.toFixed(2)).join(','));
+        if (note) note.textContent = wide ? 'showing ' + cfg.emoji + ' near the middle — zoom in for more' : '';
         let elements = amenityCache[key];
         if (!elements) {
             try {
-                const bbox = [b.getSouth(), b.getWest(), b.getNorth(), b.getEast()].map(v => v.toFixed(4)).join(',');
-                // cfg.q may hold several clauses separated by ';' — bbox-scope each one
+                const scope = wide
+                    ? '(around:4000,' + ctr.lat.toFixed(5) + ',' + ctr.lng.toFixed(5) + ');'
+                    : '(' + [b.getSouth(), b.getWest(), b.getNorth(), b.getEast()].map(v => v.toFixed(4)).join(',') + ');';
+                // cfg.q may hold several clauses separated by ';' — scope each one
                 const clauses = cfg.q.split(';').filter(s => s.trim())
-                                     .map(s => s.trim() + '(' + bbox + ');').join('');
-                const q = '[out:json][timeout:20];(' + clauses + ');out center ' + cfg.max + ';';
-                const r = await fetch('https://overpass-api.de/api/interpreter', {
-                    method: 'POST', body: 'data=' + encodeURIComponent(q),
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
-                const j = await r.json();
-                elements = j.elements || [];
-                // a rate-limited/errored Overpass reply carries a "remark" and an
-                // empty list — that is NOT "nothing here", so never cache it
-                if (!elements.length && j.remark) throw new Error(j.remark);
+                                     .map(s => s.trim() + scope).join('');
+                const q = '[out:json][timeout:20];(' + clauses + ');out center ' + (wide ? 60 : cfg.max) + ';';
+                elements = await overpass(q);
                 amenityCache[key] = elements;
             } catch (e) {
                 if (note) note.textContent = 'couldn\'t load ' + cfg.emoji + ' right now — try again shortly';
@@ -2010,7 +2034,7 @@
             mk.bindPopup(amenityPopup(cat, el.tags || {}, lat, lon));
             amenityLayers[cat].addLayer(mk);
         });
-        if (note && !elements.length) note.textContent = 'no ' + cfg.emoji + ' mapped in this view yet';
+        if (note && !elements.length) note.textContent = 'no ' + cfg.emoji + ' mapped around here yet';
     }
     map.on('moveend', () => {
         clearTimeout(amenityFetchTimer);
