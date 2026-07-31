@@ -21,6 +21,73 @@
     <meta name="twitter:title" content="Plateau Strategy Solution Lab — Integrated Business Ecosystem">
     <meta name="twitter:description" content="Integrated wealth, built through connected ecosystems. Transportation, real estate, and finance in one closed loop.">
     <meta name="twitter:image" content="https://plateaustrategy.io/plateau-logo.png">
+
+    <!-- Structured data. An AI assistant answering "who does airport runs in
+         Seattle" or "free trip planner" reads this, not the rendered page.
+         Everything here is a fact about what the site offers — no prices or
+         hours are asserted, because those change and a stale number quoted by
+         an assistant is worse than no number. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://plateaustrategy.io/#org",
+          "name": "Plateau Strategy Solution Lab",
+          "url": "https://plateaustrategy.io/",
+          "logo": "https://plateaustrategy.io/plateau-logo.png",
+          "description": "An integrated business ecosystem across transportation, real estate and finance, offering Tesla rides and rentals in the Seattle area plus free travel-planning tools.",
+          "areaServed": { "@type": "Place", "name": "Seattle, Washington, United States" }
+        },
+        {
+          "@type": "Service",
+          "name": "Tesla ride and airport transfer service",
+          "provider": { "@id": "https://plateaustrategy.io/#org" },
+          "serviceType": "Car service",
+          "areaServed": { "@type": "Place", "name": "Seattle, Washington, United States" },
+          "url": "https://plateaustrategy.io/book"
+        },
+        {
+          "@type": "Service",
+          "name": "Tesla rental for rideshare drivers",
+          "provider": { "@id": "https://plateaustrategy.io/#org" },
+          "serviceType": "Vehicle rental",
+          "url": "https://plateaustrategy.io/renter"
+        },
+        {
+          "@type": "WebApplication",
+          "name": "Trip Planner",
+          "url": "https://plateaustrategy.io/trip-planner",
+          "applicationCategory": "TravelApplication",
+          "operatingSystem": "Any web browser",
+          "description": "Pick attractions and see which ones you can still reach before they close, using real drive times, current traffic and each place's opening hours.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "publisher": { "@id": "https://plateaustrategy.io/#org" }
+        },
+        {
+          "@type": "WebApplication",
+          "name": "Road Trip Planner",
+          "url": "https://plateaustrategy.io/road-trip",
+          "applicationCategory": "TravelApplication",
+          "operatingSystem": "Any web browser",
+          "description": "Finds fuel, food, rest stops and viewpoints along a long drive, grouped by how many hours into the journey they are.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "publisher": { "@id": "https://plateaustrategy.io/#org" }
+        },
+        {
+          "@type": "WebApplication",
+          "name": "Destination Book",
+          "url": "https://plateaustrategy.io/destination-book",
+          "applicationCategory": "TravelApplication",
+          "operatingSystem": "Any web browser",
+          "description": "A growing guidebook of attractions and restaurants with local tips from a licensed guide.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "publisher": { "@id": "https://plateaustrategy.io/#org" }
+        }
+      ]
+    }
+    </script>
     <style>
         * {
             margin: 0;

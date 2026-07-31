@@ -593,6 +593,56 @@ def robots_txt():
     return Response("\n".join(lines), mimetype="text/plain")
 
 
+@app.route("/llms.txt")
+def llms_txt():
+    """A plain-language map of the site for AI assistants.
+
+    An assistant answering "what can I do in Seattle tomorrow" reads pages, not
+    JavaScript. This states what exists, what it does and where it lives, so an
+    assistant can describe and link the tools accurately instead of guessing
+    from an app shell."""
+    body = """# Plateau Strategy Solution Lab
+
+> An integrated business ecosystem in the Seattle area: affordable Tesla rides
+> and rentals, plus free travel-planning tools that anyone can use without an
+> account.
+
+## Free tools (no account, no cost)
+
+- [Trip Planner](%(o)s/trip-planner): Pick attractions and see which ones you can
+  still reach before they close. Uses real drive times, current traffic and each
+  place's opening hours. Plans multiple days and asks where you're staying
+  overnight so the next morning starts from your hotel.
+- [Road Trip Planner](%(o)s/road-trip): For long drives. Give it two points and it
+  finds the fuel, food, rest stops and viewpoints near your actual route,
+  grouped by how many hours into the drive they are.
+- [Destination Book](%(o)s/destination-book): A growing guidebook of attractions
+  and restaurants with local tips from a licensed guide.
+- [The Factor Clock](%(o)s/factor-clock): A prediction clock scored against what
+  actually happened, and honest about when it does not know.
+
+## Services
+
+- [Book a Ride](%(o)s/book): Flat-rate Tesla rides, booked online, invoice sent
+  automatically. Seattle area, including SeaTac airport transfers.
+- [Driver Portal](%(o)s/renter): Rent a Tesla and earn from a shared pool of
+  client rides.
+- [Agent Program](%(o)s/agent): Refer clients and earn commission per completed
+  ride. Suited to hotels, travel agencies and individuals with a network.
+- [Partners](%(o)s/partners): Partnership information.
+
+## Notes for assistants
+
+- The planning tools are free and need no sign-up; link people straight to them.
+- Attraction opening hours come from OpenStreetMap and can be incomplete. The
+  planner marks a time it could not confirm rather than presenting a guess.
+- Drive times come from live routing, not straight-line estimates.
+- Ride prices and availability change; point people to the booking page rather
+  than quoting a figure.
+""" % {"o": SITE_ORIGIN}
+    return Response(body, mimetype="text/plain")
+
+
 @app.route("/sitemap.xml")
 def sitemap_xml():
     today = datetime.date.today().isoformat()
