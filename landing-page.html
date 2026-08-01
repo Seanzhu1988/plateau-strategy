@@ -1849,264 +1849,121 @@
       .wish-form input:focus-visible,
       .gb-form input:focus-visible{outline-offset:0;}
     </style>
-    <style id="psx-paper">
-      /* ============================================================
-         PAPER — the last layer, and the one that decides how this reads.
-
-         A friend called the old site an AI-generated scam, and they were
-         right. The tells were not subtle: a navy-to-violet gradient behind
-         glowing headline text, an "INTEGRATED BUSINESS ECOSYSTEM" pill,
-         invented statistics ("100% value chain owned"), and three cards
-         reading Capital Efficient / Vertically Integrated / Compounding
-         Growth. That is the house style of every fake company on the
-         internet, and no amount of polish rescues it — the look itself is
-         the problem.
-
-         So: ink on paper. Warm white, near-black text, a book serif for
-         anything large, hairline rules instead of glowing borders, and
-         no gradient anywhere. Restraint reads as real; glow reads as sold.
-
-         This layer only re-declares colour, type and edges. It does not
-         touch layout, so nothing below it moves.
-         ============================================================ */
-
-      :root{
-        /* Paper, not white — #fff under a headline looks like a login form.
-           A little warmth reads as stock. */
-        --psx-bg:#faf8f4; --psx-hero:#f5f1e8; --psx-connect:#faf8f4;
-        --psx-card:#ffffff; --psx-node:#ffffff;
-        --psx-text:#14110c; --psx-text2:#4a453d; --psx-muted:#6b655b;
-        --psx-border:rgba(20,17,12,.13);
-        --psx-rule:rgba(20,17,12,.10);
-        --psx-blue:#1b4d8f; --psx-indigo:#1b4d8f; --psx-violet:#1b4d8f; --psx-teal:#1b6b5a;
-        --psx-ink:#14110c;
-
-        /* One variable decides the display face. Point it at Carna here if
-           the licence is bought — @font-face above, then swap this line.
-           Until then: real book faces that ship with macOS and Windows, so
-           the page renders instantly with nothing fetched from anyone. */
-        --psx-display:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",
-                      "Hoefler Text",Georgia,"Times New Roman",serif;
-        --psx-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-      }
-
-      body{
-        background:var(--psx-bg) !important;
-        color:var(--psx-text) !important;
-        font-family:var(--psx-sans);
-        -webkit-font-smoothing:antialiased;
-      }
-
-      /* ---------- header: a masthead, not a nav bar ---------- */
-      header{
-        background:var(--psx-bg) !important;
-        border-bottom:1px solid var(--psx-rule) !important;
-        box-shadow:none !important;
-        color:var(--psx-ink) !important;
-      }
-      .logo-text{
-        font-family:var(--psx-display);
-        font-weight:600 !important;
-        letter-spacing:-.005em !important;
-        background-image:none !important;
-        -webkit-text-fill-color:var(--psx-ink) !important;
-        color:var(--psx-ink) !important;
-      }
-      .logo-img{box-shadow:none !important;border:1px solid var(--psx-rule) !important;}
-      nav a{color:var(--psx-text2) !important;font-weight:400 !important;}
-      nav a:hover{color:var(--psx-ink) !important;}
-      nav a[href="/book"],.psx-btn-primary,.book-cta{
-        background:var(--psx-ink) !important;background-image:none !important;
-        color:#fff !important;box-shadow:none !important;border:1px solid var(--psx-ink) !important;
-      }
-      nav a[href="/book"]:hover,.psx-btn-primary:hover{background:#000 !important;}
-
-      /* ---------- hero: no glow, no gradient, no pill-with-a-dot ---------- */
-      .psx-glow,.psx-glow-1,.psx-glow-2,.psx-dot{display:none !important;}
-      #view-overview .psx-hero{
-        background:var(--psx-hero) !important;
-        border-bottom:1px solid var(--psx-rule);
-      }
-      #view-overview .psx-hero::before,#view-overview .psx-hero::after{display:none !important;}
-      .psx-eyebrow-pill{
-        background:transparent !important;border:none !important;
-        color:var(--psx-muted) !important;font-family:var(--psx-sans);
-        font-size:.78rem !important;font-weight:500 !important;
-        letter-spacing:.16em !important;text-transform:uppercase;
-        padding:0 !important;box-shadow:none !important;
-      }
-      .psx-h1,.psx-h2,.psx-h3,h1,h2,h3,.section-title,.hero h1{
-        font-family:var(--psx-display) !important;
-        font-weight:600 !important;
-        letter-spacing:-.012em !important;
-        color:var(--psx-ink) !important;
-        text-shadow:none !important;
-      }
-      .psx-h1{line-height:1.08 !important;}
-      /* The accent was a violet gradient. A real underline says the same thing
-         without pretending to be lit from behind — and unlike a box-shadow
-         highlight it follows the text across a line break instead of leaving
-         a grey slab hanging off the end of each line. */
-      .psx-accent{
-        background:none !important;background-image:none !important;
-        -webkit-text-fill-color:var(--psx-ink) !important;color:var(--psx-ink) !important;
-        box-shadow:none !important;
-        text-decoration:underline !important;
-        text-decoration-color:rgba(27,77,143,.42) !important;
-        text-decoration-thickness:.055em !important;
-        text-underline-offset:.14em !important;
-      }
-      /* Long display lines break better with a measure than without one:
-         two balanced lines instead of three ragged ones. */
-      .psx-h1{max-width:26ch;margin-left:auto;margin-right:auto;}
-      .psx-h2{max-width:22ch;margin-left:auto;margin-right:auto;}
-      .psx-sub,.psx-section-sub{max-width:56ch;margin-left:auto;margin-right:auto;}
-      @supports (text-wrap:balance){
-        .psx-h1,.psx-h2{text-wrap:balance;}
-      }
-      .psx-sub,.psx-section-sub,p{color:var(--psx-text2) !important;}
-      .psx-eyebrow{color:var(--psx-muted) !important;font-weight:500 !important;}
-
-      /* ---------- stats: rules, not a floating glass slab ---------- */
-      #view-overview .psx-stats{
-        background:transparent !important;border:none !important;
-        border-top:1px solid var(--psx-rule) !important;
-        border-radius:0 !important;box-shadow:none !important;
-        backdrop-filter:none !important;
-      }
-      .psx-stat-val{
-        font-family:var(--psx-display);font-weight:600 !important;
-        color:var(--psx-ink) !important;
-      }
-      .psx-stat-label{color:var(--psx-muted) !important;}
-      .psx-divider{background:var(--psx-rule) !important;}
-
-      /* ---------- cards: paper on paper ---------- */
-      .psx-card,.service-card,.fin-card,.phase-card,.price-card,.psx-node,.card{
-        background:var(--psx-card) !important;
-        border:1px solid var(--psx-border) !important;
-        box-shadow:0 1px 2px rgba(20,17,12,.04) !important;
-        color:var(--psx-text) !important;
-      }
-      .psx-card:hover,.service-card:hover,.fin-card:hover{
-        transform:none !important;
-        box-shadow:0 2px 10px rgba(20,17,12,.07) !important;
-        border-color:rgba(20,17,12,.22) !important;
-      }
-      .psx-card h3,.service-card h3,.fin-card h3{color:var(--psx-ink) !important;}
-      .psx-card p,.service-card p,.fin-card > p{color:var(--psx-text2) !important;}
-      /* the gradient icon tiles were the loudest "template" signal on the page */
-      .psx-chip,.psx-chip-blue,.psx-chip-violet,.psx-chip-teal{
-        background:transparent !important;background-image:none !important;
-        color:var(--psx-blue) !important;
-        border:1px solid var(--psx-border) !important;
-        box-shadow:none !important;border-radius:4px !important;
-      }
-
-      /* ---------- ghost button ---------- */
-      .psx-btn-ghost{
-        background:transparent !important;color:var(--psx-ink) !important;
-        border:1px solid rgba(20,17,12,.28) !important;box-shadow:none !important;
-      }
-      .psx-btn-ghost:hover{background:rgba(20,17,12,.04) !important;}
-      .psx-btn{border-radius:3px !important;font-weight:500 !important;}
-
-      /* ---------- footer: same paper, one rule ---------- */
-      footer{
-        background:var(--psx-hero) !important;
-        border-top:1px solid var(--psx-rule) !important;
-        color:var(--psx-text2) !important;
-      }
-      .psx-foot-mark span{
-        font-family:var(--psx-display);
-        background-image:none !important;
-        -webkit-text-fill-color:var(--psx-ink) !important;color:var(--psx-ink) !important;
-      }
-      .psx-foot h4{color:var(--psx-ink) !important;}
-      .psx-foot a,.psx-foot-brand p,.psx-foot-bottom{color:var(--psx-muted) !important;}
-      .psx-foot a:hover{color:var(--psx-ink) !important;}
-      .psx-foot-contact a{color:var(--psx-ink) !important;}
-      .psx-foot-contact{border-top-color:var(--psx-rule) !important;}
-      .psx-foot-mark img{border:1px solid var(--psx-rule);}
-
-      /* ---------- sections and general surfaces ---------- */
-      .psx-section,.view,main,.phases,#view-overview{background:var(--psx-bg) !important;}
-      .psx-connect{background:var(--psx-connect) !important;}
-
-      /* ---------- stage labels ----------
-         The most persuasive thing on the page, because they are the only
-         claims a reader can check and the only ones that admit a limit.
-         Set as small caps in ink, not coloured badges — a badge decorates,
-         a label states. Four cards need a tighter grid than three. */
-      .psx-cards{gap:1.1rem !important;}
-      @media (min-width:1000px){
-        .psx-cards{grid-template-columns:repeat(4,1fr) !important;}
-      }
-      .psx-stage{
-        /* align-self, because the card is a flex column and would otherwise
-           stretch the label to the full card width — a banner, not a label. */
-        display:inline-block;align-self:flex-start;margin-bottom:.85rem;
-        font-family:var(--psx-sans);
-        font-size:.66rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
-        padding:.3rem .55rem;border-radius:2px;border:1px solid;
-      }
-      .psx-stage-live{color:#1b5e43;border-color:rgba(27,94,67,.34);background:rgba(27,94,67,.06);}
-      .psx-stage-dev{color:#8a5a12;border-color:rgba(138,90,18,.34);background:rgba(138,90,18,.06);}
-      .psx-stage-research{color:var(--psx-muted);border-color:var(--psx-border);background:rgba(20,17,12,.03);}
-      .psx-card-link{
-        display:inline-block;margin-top:1rem;
-        color:var(--psx-blue) !important;text-decoration:none;
-        font-size:.9rem;font-weight:500;
-      }
-      .psx-card-link:hover{text-decoration:underline;}
-      .psx-card{display:flex;flex-direction:column;}
-      .psx-card .psx-card-link{margin-top:auto;padding-top:1rem;}
-
-      /* ---------- section tabs: a contents strip, not a toolbar ---------- */
-      .phase-tabs{
-        background:var(--psx-bg) !important;
-        border-bottom:1px solid var(--psx-rule) !important;
-        box-shadow:none !important;backdrop-filter:none !important;
-      }
-      .phase-tab{
-        color:var(--psx-text2) !important;
-        border-radius:0 !important;
-        border-bottom:2px solid transparent !important;
-      }
-      .phase-tab:hover{
-        color:var(--psx-ink) !important;background:transparent !important;
-        border-bottom-color:var(--psx-rule) !important;
-      }
-      /* The current section is marked by a rule under it, the way a printed
-         contents page marks a place — not by a blue gradient lozenge. */
-      .phase-tab.active,.phase-tab.active:hover{
-        color:var(--psx-ink) !important;
-        background:none !important;background-image:none !important;
-        font-weight:600 !important;
-        border-bottom:2px solid var(--psx-ink) !important;
-        box-shadow:none !important;
-      }
-      .sections-trigger,.nav-back{
-        background:transparent !important;
-        color:var(--psx-text2) !important;
-        border:1px solid var(--psx-border) !important;
-      }
-      .sections-trigger:hover,.nav-back:hover{
-        background:rgba(20,17,12,.04) !important;color:var(--psx-ink) !important;
-      }
-
-      /* ---------- the language switcher, in ink ---------- */
-      #i18nBtn{
-        background:var(--psx-ink) !important;
-        border-color:rgba(255,255,255,.15) !important;
-      }
-
-      @media (prefers-reduced-motion:reduce){
-        .psx-card,.service-card,.fin-card{transition:none !important;}
-      }
-    </style>
+    <link rel="stylesheet" href="/paper.css">
 </head>
 <body>
+    <!-- ============================================================
+         ICONS — one drawn set for the whole page.
+
+         There were three systems before this: hand-inlined SVG in
+         Transportation, emoji in Finance and Free Tools, and nothing on the
+         tabs. Emoji are the giveaway — they render as someone else's artwork
+         in someone else's colours, they change shape per platform, and next
+         to a book serif on paper they look pasted on.
+
+         All of these are drawn on the same terms: 24-unit box, stroke only,
+         1.6 weight, round caps, currentColor. That last one matters — they
+         inherit ink from whatever they sit in, so nothing needs recolouring.
+         Defined once, referenced by <use>, so a fix happens in one place.
+         ============================================================ -->
+    <svg width="0" height="0" aria-hidden="true" focusable="false"
+         style="position:absolute" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <g id="ico-base" fill="none" stroke="currentColor" stroke-width="1.6"
+           stroke-linecap="round" stroke-linejoin="round"></g>
+      </defs>
+      <symbol id="i-overview" viewBox="0 0 24 24">
+        <rect x="3.5" y="3.5" width="7" height="7" rx="1.2"/>
+        <rect x="13.5" y="3.5" width="7" height="7" rx="1.2"/>
+        <rect x="3.5" y="13.5" width="7" height="7" rx="1.2"/>
+        <rect x="13.5" y="13.5" width="7" height="7" rx="1.2"/>
+      </symbol>
+      <symbol id="i-car" viewBox="0 0 24 24">
+        <path d="M4 16V11a2 2 0 0 1 2-2h1l1.5-3h7L17 9h1a2 2 0 0 1 2 2v5"/>
+        <path d="M4 16h16"/><circle cx="8" cy="17.5" r="1.5"/><circle cx="16" cy="17.5" r="1.5"/>
+      </symbol>
+      <symbol id="i-key" viewBox="0 0 24 24">
+        <circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12H21M17 12v3M20 12v2.5"/>
+      </symbol>
+      <symbol id="i-people" viewBox="0 0 24 24">
+        <circle cx="9" cy="8" r="3"/><path d="M4 19v-1a5 5 0 0 1 10 0v1"/>
+        <circle cx="17.5" cy="8.5" r="2.3"/><path d="M15.8 13.3A5 5 0 0 1 20 18v1"/>
+      </symbol>
+      <symbol id="i-operations" viewBox="0 0 24 24">
+        <path d="M4 7h16M4 12h16M4 17h16"/>
+        <circle cx="9.5" cy="7" r="1.9"/><circle cx="15" cy="12" r="1.9"/><circle cx="7.5" cy="17" r="1.9"/>
+      </symbol>
+      <symbol id="i-building" viewBox="0 0 24 24">
+        <path d="M3 21h18"/><rect x="4.5" y="9" width="6.5" height="12"/>
+        <rect x="13" y="4" width="6.5" height="17"/>
+        <path d="M7 12.5v.01M7 16v.01M15.5 7.5v.01M17 7.5v.01M15.5 11v.01M17 11v.01M15.5 14.5v.01M17 14.5v.01"/>
+      </symbol>
+      <symbol id="i-chart" viewBox="0 0 24 24">
+        <path d="M4 4v16h16"/><path d="M7.5 15l3.5-3.8 3 2.8L19 8"/><path d="M15.6 8H19v3.3"/>
+      </symbol>
+      <symbol id="i-vault" viewBox="0 0 24 24">
+        <rect x="3" y="4.5" width="18" height="15" rx="2"/><circle cx="12" cy="12" r="3.8"/>
+        <path d="M12 6.4V8M12 16v1.6M6.4 12H8M16 12h1.6"/>
+      </symbol>
+      <symbol id="i-cycle" viewBox="0 0 24 24">
+        <path d="M4.5 12a7.5 7.5 0 0 1 12.9-5.2L19.5 9"/><path d="M19.5 4.5V9H15"/>
+        <path d="M19.5 12a7.5 7.5 0 0 1-12.9 5.2L4.5 15"/><path d="M4.5 19.5V15H9"/>
+      </symbol>
+      <symbol id="i-compass" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.5"/><path d="M15.6 8.4l-2.2 5-5 2.2 2.2-5z"/>
+      </symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24">
+        <path d="M12 3l7.5 3v5.2c0 4.5-3.1 8.6-7.5 10.3-4.4-1.7-7.5-5.8-7.5-10.3V6z"/>
+        <path d="M9.2 12l2 2 3.6-3.8"/>
+      </symbol>
+      <symbol id="i-ticket" viewBox="0 0 24 24">
+        <path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h13A1.5 1.5 0 0 1 20 8.5a2.2 2.2 0 0 0 0 7A1.5 1.5 0 0 1 18.5 17h-13A1.5 1.5 0 0 1 4 15.5a2.2 2.2 0 0 0 0-7z"/>
+        <path d="M14 7.5v1.6M14 11.2v1.6M14 14.9v1.6"/>
+      </symbol>
+      <symbol id="i-map" viewBox="0 0 24 24">
+        <path d="M9 4.5L3.5 6.6v13.3L9 17.8l6 2.1 5.5-2.1V4.4L15 6.5z"/>
+        <path d="M9 4.5v13.3M15 6.5v13.4"/>
+      </symbol>
+      <symbol id="i-road" viewBox="0 0 24 24">
+        <path d="M8.5 3.5L5.5 20.5M15.5 3.5l3 17"/>
+        <path d="M12 4.5v2.8M12 10.6v2.8M12 16.7v2.8"/>
+      </symbol>
+      <symbol id="i-book" viewBox="0 0 24 24">
+        <path d="M3.5 5.5S5.5 4 8.5 4s4.5 1.5 4.5 1.5v13S11 17 8.5 17s-5 1.5-5 1.5z"/>
+        <path d="M20.5 5.5S18.5 4 15.5 4 11 5.5 11 5.5v13S13 17 15.5 17s5 1.5 5 1.5z"/>
+      </symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.5"/><path d="M12 6.8V12l3.4 2"/>
+      </symbol>
+      <symbol id="i-toolbox" viewBox="0 0 24 24">
+        <rect x="3" y="8" width="18" height="12" rx="1.8"/>
+        <path d="M9 8V6.2A2.2 2.2 0 0 1 11.2 4h1.6A2.2 2.2 0 0 1 15 6.2V8"/>
+        <path d="M3 13h18M10.5 11.5v3M13.5 11.5v3"/>
+      </symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24">
+        <path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.3"/>
+      </symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24">
+        <rect x="4.5" y="10" width="15" height="10.5" rx="2"/>
+        <path d="M8 10V7.2a4 4 0 0 1 8 0V10"/><path d="M12 14v2.5"/>
+      </symbol>
+      <symbol id="i-keyhole" viewBox="0 0 24 24">
+        <circle cx="9" cy="9" r="4.5"/><path d="M12.2 12.2L20 20"/><path d="M16.5 16.5l2-2M18.8 18.8l1.7-1.7"/>
+      </symbol>
+      <symbol id="i-card" viewBox="0 0 24 24">
+        <rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M6.5 14.5h4"/>
+      </symbol>
+      <symbol id="i-receipt" viewBox="0 0 24 24">
+        <path d="M5.5 3h13v18l-2.2-1.6-2.2 1.6-2.1-1.6L9.9 21l-2.2-1.6L5.5 21z"/>
+        <path d="M9 8h6M9 12h6"/>
+      </symbol>
+      <symbol id="i-person" viewBox="0 0 24 24">
+        <circle cx="12" cy="7.5" r="3.5"/><path d="M6 20.5v-1.2a6 6 0 0 1 12 0v1.2"/>
+      </symbol>
+      <symbol id="i-flag" viewBox="0 0 24 24">
+        <path d="M5.5 21V3.8"/><path d="M5.5 4.5h13l-2.4 4 2.4 4h-13"/>
+      </symbol>
+    </svg>
     <a class="psx-skip" href="#main-content">Skip to content</a>
     <header>
         <div class="header-top">
@@ -2129,14 +1986,14 @@
 
     <main id="main-content">
         <div class="phase-tabs" role="tablist" aria-label="Sections">
-            <a class="phase-tab active" href="#" onclick="showView('overview', event)">Overview</a>
-            <a class="phase-tab" href="#" onclick="showView('transportation', event)">Transportation</a>
-            <a class="phase-tab" href="#" onclick="showView('operations', event)">Operations</a>
-            <a class="phase-tab" href="#" onclick="showView('realestate', event)">Real Estate</a>
-            <a class="phase-tab" href="#" onclick="showView('finance', event)">Finance</a>
-            <a class="phase-tab" href="#" onclick="showView('reinvestment', event)">Reinvestment</a>
-            <a class="phase-tab" href="#" onclick="showView('tools', event)">Free Tools</a>
-            <a class="phase-tab" href="#" onclick="showView('security', event)">Security Parameter</a>
+            <a class="phase-tab active" href="#" onclick="showView('overview', event)"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-overview"/></svg>Overview</a>
+            <a class="phase-tab" href="#" onclick="showView('transportation', event)"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-car"/></svg>Transportation</a>
+            <a class="phase-tab" href="#" onclick="showView('operations', event)"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-operations"/></svg>Operations</a>
+            <a class="phase-tab" href="#" onclick="showView('realestate', event)"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-building"/></svg>Real Estate</a>
+            <a class="phase-tab" href="#" onclick="showView('finance', event)"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-chart"/></svg>Finance</a>
+            <a class="phase-tab" href="#" onclick="showView('reinvestment', event)"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-cycle"/></svg>Reinvestment</a>
+            <a class="phase-tab" href="#" onclick="showView('tools', event)"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-compass"/></svg>Free Tools</a>
+            <a class="phase-tab" href="#" onclick="showView('security', event)"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-shield"/></svg>Security Parameter</a>
         </div>
 
         <div>
@@ -2252,35 +2109,35 @@
 
                         <div class="service-grid">
                             <div class="service-card">
-                                <div class="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16V11a2 2 0 0 1 2-2h1l1.5-3h7L17 9h1a2 2 0 0 1 2 2v5"/><path d="M4 16h16"/><circle cx="8" cy="17.5" r="1.6"/><circle cx="16" cy="17.5" r="1.6"/></svg></div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-car"/></svg></div>
                                 <h3>Ride &amp; Services</h3>
                                 <p class="service-for">For riders &amp; clients</p>
                                 <p>Affordable, reliable Tesla rides — booked online in seconds, with your invoice sent automatically. No app to download, no surge-pricing games.</p>
                                 <a href="/book" class="book-cta">Book a Ride →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="4"/><path d="M11 12h10M17 12v3M20 12v3"/></svg></div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-key"/></svg></div>
                                 <h3>Car Rentals</h3>
                                 <p class="service-for">For drivers</p>
                                 <p>Rent a Tesla from us and earn from a shared pool of client rides. Low-cost entry, steady income, and a path to owning the car you drive.</p>
                                 <a href="/renter" class="book-cta">Driver Portal →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M4 19v-1a5 5 0 0 1 5-5 5 5 0 0 1 5 5v1"/><circle cx="17.5" cy="8.5" r="2.4"/><path d="M15.8 13.3A5 5 0 0 1 20 18v1"/></svg></div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-people"/></svg></div>
                                 <h3>Agent Program</h3>
                                 <p class="service-for">For partners — organizations or individuals</p>
                                 <p>Refer clients and earn commission on every ride they take. Ideal for hotels, travel agencies, or any individual with a network to tap.</p>
                                 <a href="/agent" class="book-cta">Agent Portal →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-pin"/></svg></div>
                                 <h3>Trip Planner</h3>
                                 <p class="service-for">For travelers &amp; tour guides — free map planning</p>
                                 <p>Plan a real day on the map: every stop lights up or dims by drive time, traffic and closing hours. Guides build and name their own routes here — no website needed — and travelers who'd rather not drive it themselves can hand the route to a guide.</p>
                                 <a href="/trip-planner" class="book-cta">Open Trip Planner →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5.5S5 4 8 4s5 1.5 5 1.5v13S11 17 8 17s-5 1.5-5 1.5v-13z"/><path d="M21 5.5S19 4 16 4s-5 1.5-5 1.5v13S13 17 16 17s5 1.5 5 1.5v-13z"/></svg></div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-book"/></svg></div>
                                 <h3>Destination Book</h3>
                                 <p class="service-for">For everyone — free, and growing</p>
                                 <p>Every attraction and restaurant we know, city by city, with local tips from a licensed guide. It grows on its own: search a place in the planner and it's written into the book for the next traveler. One tap sends anything straight into your trip.</p>
@@ -2417,14 +2274,14 @@
                         <div class="fin-menu" id="finMenu">
                             <p class="view-intro" style="grid-column: 1 / -1;">Our financial products — choose one to explore.</p>
                             <div class="fin-card" onclick="window.location.href='/deflator'">
-                                <div class="fin-card-icon">📈</div>
+                                <div class="fin-card-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-chart"/></svg></div>
                                 <h3>Plateau Deflator <span style="font-size:.68rem;background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:10px;vertical-align:middle">RESEARCH</span></h3>
                                 <p>Our automated crypto-trading research project — in private verification, building an audited track record. Nothing for sale yet; follow the results.</p>
                                 <span class="fin-card-link">Follow the research →</span>
                             </div>
                             <!-- Add more finance product cards here (same pattern):
                             <div class="fin-card" onclick="openFinProduct('savings')">
-                                <div class="fin-card-icon">🏦</div><h3>Savings Vault</h3>
+                                <div class="fin-card-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-vault"/></svg></div><h3>Savings Vault</h3>
                                 <p>…</p><span class="fin-card-link">Open →</span>
                             </div> -->
                         </div>
@@ -2597,42 +2454,42 @@
 
                         <div class="service-grid">
                             <div class="service-card">
-                                <div class="service-icon">🎫</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-ticket"/></svg></div>
                                 <h3>Guided Trips</h3>
                                 <p class="service-for">For travellers &amp; the guides who run them</p>
                                 <p>In-depth trips written by the guides themselves — a student's hour in Harvard Yard, a food route through one neighborhood — with every stop and how long you stand there, before you book. Guides list their own for free.</p>
                                 <a href="/trips" class="book-cta">Browse Guided Trips →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🗺️</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-map"/></svg></div>
                                 <h3>Trip Planner</h3>
                                 <p class="service-for">For drivers, tour guides &amp; tourists</p>
                                 <p>Pick your attractions and see which ones you can still reach in time — drive time, traffic and closing hours all checked. Every tap builds your day-one, day-two plan. Designed with a professionally licensed tour guide.</p>
                                 <a href="/trip-planner" class="book-cta">Open Trip Planner →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🛣️</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-road"/></svg></div>
                                 <h3>Road Trip Planner</h3>
                                 <p class="service-for">For the long hauls — free</p>
                                 <p>Staten Island to Niagara Falls, or any long drive. Give it two points and it finds the fuel, food, rest areas and viewpoints near your actual road — grouped by how many hours in you'll be, so you can plan real breaks instead of scrolling a map.</p>
                                 <a href="/road-trip" class="book-cta">Plan a road trip →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">📖</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-book"/></svg></div>
                                 <h3>Destination Book</h3>
                                 <p class="service-for">For tourists &amp; trip planning</p>
                                 <p>A curated guidebook of attractions and restaurants — every type of destination, organized by category, with descriptions and local tips. One tap sends any place into the Trip Planner.</p>
                                 <a href="/destination-book" class="book-cta">Open the Book →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🕐</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-clock"/></svg></div>
                                 <h3>The Factor Clock</h3>
                                 <p class="service-for">For anyone who wants an honest forecast</p>
                                 <p>A prediction clock that never lies to you — weather, markets, your own patterns, every forecast scored against what actually happened. It tells you when it doesn't know. Free while it earns its record ($10/year value).</p>
                                 <a href="/factor-clock" class="book-cta">Open the Factor Clock →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🧰</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-toolbox"/></svg></div>
                                 <h3>More on the way</h3>
                                 <p class="service-for">The lab keeps building</p>
                                 <p>We're adding more free daily-life tools here. Have an idea for a tool you'd use every day? Pitch it on the Business Ideas board.</p>
@@ -2652,37 +2509,37 @@
 
                         <div class="service-grid">
                             <div class="service-card">
-                                <div class="service-icon">🔐</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-lock"/></svg></div>
                                 <h3>Owner-only vaults</h3>
                                 <p class="service-for">Financials · customer records · board documents</p>
                                 <p>The money records, customer information and governance documents are locked behind a private owner login. No one reaches them without those credentials.</p>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🗝️</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-keyhole"/></svg></div>
                                 <h3>Secrets stay secret</h3>
                                 <p class="service-for">Keys, tokens &amp; passwords</p>
                                 <p>API keys, tokens and passwords live in encrypted server configuration — never in your browser, never shown on a page, never committed to our code.</p>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">💳</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-card"/></svg></div>
                                 <h3>Payment safety</h3>
                                 <p class="service-for">Every checkout</p>
                                 <p>Payments run through Square's PCI-compliant system. We never see or store your full card number — the sensitive part never touches our servers.</p>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🧾</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-receipt"/></svg></div>
                                 <h3>We never hold your money</h3>
                                 <p class="service-for">Bookings · guide &amp; driver payouts</p>
                                 <p>We invoice for our own service and never hold a customer's funds in escrow. Every payout to a driver or guide takes an explicit owner approval — money never moves on its own.</p>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🧍</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-person"/></svg></div>
                                 <h3>Your data stays yours</h3>
                                 <p class="service-for">The free tools</p>
                                 <p>The Trip Planner and Destination Book store only place names and typical visit times — no personal tracking. Your planned trip stays on your own device until you choose to book.</p>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🇺🇸</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-flag"/></svg></div>
                                 <h3>Give-back goes straight to Treasury</h3>
                                 <p class="service-for">The national-debt donation</p>
                                 <p>Any gift to reduce the national debt goes directly to the U.S. Treasury's own program. We never touch a cent — the button leaves our site for the government's payment page.</p>

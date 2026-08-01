@@ -1,0 +1,349 @@
+      /* ============================================================
+         PAPER — the last layer, and the one that decides how this reads.
+
+         A friend called the old site an AI-generated scam, and they were
+         right. The tells were not subtle: a navy-to-violet gradient behind
+         glowing headline text, an "INTEGRATED BUSINESS ECOSYSTEM" pill,
+         invented statistics ("100% value chain owned"), and three cards
+         reading Capital Efficient / Vertically Integrated / Compounding
+         Growth. That is the house style of every fake company on the
+         internet, and no amount of polish rescues it — the look itself is
+         the problem.
+
+         So: ink on paper. Warm white, near-black text, a book serif for
+         anything large, hairline rules instead of glowing borders, and
+         no gradient anywhere. Restraint reads as real; glow reads as sold.
+
+         This layer only re-declares colour, type and edges. It does not
+         touch layout, so nothing below it moves.
+         ============================================================ */
+
+      :root{
+        /* Paper, not white — #fff under a headline looks like a login form.
+           A little warmth reads as stock. */
+        --psx-bg:#faf8f4; --psx-hero:#f5f1e8; --psx-connect:#faf8f4;
+        --psx-card:#ffffff; --psx-node:#ffffff;
+        --psx-text:#14110c; --psx-text2:#4a453d; --psx-muted:#6b655b;
+        --psx-border:rgba(20,17,12,.13);
+        --psx-rule:rgba(20,17,12,.10);
+        --psx-blue:#1b4d8f; --psx-indigo:#1b4d8f; --psx-violet:#1b4d8f; --psx-teal:#1b6b5a;
+        --psx-ink:#14110c;
+
+        /* One variable decides the display face. Point it at Carna here if
+           the licence is bought — @font-face above, then swap this line.
+           Until then: real book faces that ship with macOS and Windows, so
+           the page renders instantly with nothing fetched from anyone. */
+        --psx-display:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",
+                      "Hoefler Text",Georgia,"Times New Roman",serif;
+        --psx-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      }
+
+      body{
+        background:var(--psx-bg) !important;
+        color:var(--psx-text) !important;
+        font-family:var(--psx-sans);
+        -webkit-font-smoothing:antialiased;
+      }
+
+      /* ---------- header: a masthead, not a nav bar ---------- */
+      header{
+        background:var(--psx-bg) !important;
+        border-bottom:1px solid var(--psx-rule) !important;
+        box-shadow:none !important;
+        color:var(--psx-ink) !important;
+      }
+      .logo-text{
+        font-family:var(--psx-display);
+        font-weight:600 !important;
+        letter-spacing:-.005em !important;
+        background-image:none !important;
+        -webkit-text-fill-color:var(--psx-ink) !important;
+        color:var(--psx-ink) !important;
+      }
+      .logo-img{box-shadow:none !important;border:1px solid var(--psx-rule) !important;}
+      nav a{color:var(--psx-text2) !important;font-weight:400 !important;}
+      nav a:hover{color:var(--psx-ink) !important;}
+      nav a[href="/book"],.psx-btn-primary,.book-cta{
+        background:var(--psx-ink) !important;background-image:none !important;
+        color:#fff !important;box-shadow:none !important;border:1px solid var(--psx-ink) !important;
+      }
+      nav a[href="/book"]:hover,.psx-btn-primary:hover{background:#000 !important;}
+
+      /* ---------- hero: no glow, no gradient, no pill-with-a-dot ---------- */
+      .psx-glow,.psx-glow-1,.psx-glow-2,.psx-dot{display:none !important;}
+      #view-overview .psx-hero{
+        background:var(--psx-hero) !important;
+        border-bottom:1px solid var(--psx-rule);
+      }
+      #view-overview .psx-hero::before,#view-overview .psx-hero::after{display:none !important;}
+      .psx-eyebrow-pill{
+        background:transparent !important;border:none !important;
+        color:var(--psx-muted) !important;font-family:var(--psx-sans);
+        font-size:.78rem !important;font-weight:500 !important;
+        letter-spacing:.16em !important;text-transform:uppercase;
+        padding:0 !important;box-shadow:none !important;
+      }
+      .psx-h1,.psx-h2,.psx-h3,h1,h2,h3,.section-title,.hero h1{
+        font-family:var(--psx-display) !important;
+        font-weight:600 !important;
+        letter-spacing:-.012em !important;
+        color:var(--psx-ink) !important;
+        text-shadow:none !important;
+      }
+      .psx-h1{line-height:1.08 !important;}
+      /* The accent was a violet gradient. A real underline says the same thing
+         without pretending to be lit from behind — and unlike a box-shadow
+         highlight it follows the text across a line break instead of leaving
+         a grey slab hanging off the end of each line. */
+      .psx-accent{
+        background:none !important;background-image:none !important;
+        -webkit-text-fill-color:var(--psx-ink) !important;color:var(--psx-ink) !important;
+        box-shadow:none !important;
+        text-decoration:underline !important;
+        text-decoration-color:rgba(27,77,143,.42) !important;
+        text-decoration-thickness:.055em !important;
+        text-underline-offset:.14em !important;
+      }
+      /* Long display lines break better with a measure than without one:
+         two balanced lines instead of three ragged ones. */
+      .psx-h1{max-width:26ch;margin-left:auto;margin-right:auto;}
+      .psx-h2{max-width:22ch;margin-left:auto;margin-right:auto;}
+      .psx-sub,.psx-section-sub{max-width:56ch;margin-left:auto;margin-right:auto;}
+      @supports (text-wrap:balance){
+        .psx-h1,.psx-h2{text-wrap:balance;}
+      }
+      .psx-sub,.psx-section-sub,p{color:var(--psx-text2) !important;}
+      .psx-eyebrow{color:var(--psx-muted) !important;font-weight:500 !important;}
+
+      /* ---------- stats: rules, not a floating glass slab ---------- */
+      #view-overview .psx-stats{
+        background:transparent !important;border:none !important;
+        border-top:1px solid var(--psx-rule) !important;
+        border-radius:0 !important;box-shadow:none !important;
+        backdrop-filter:none !important;
+      }
+      .psx-stat-val{
+        font-family:var(--psx-display);font-weight:600 !important;
+        color:var(--psx-ink) !important;
+      }
+      .psx-stat-label{color:var(--psx-muted) !important;}
+      .psx-divider{background:var(--psx-rule) !important;}
+
+      /* ---------- cards: paper on paper ---------- */
+      .psx-card,.service-card,.fin-card,.phase-card,.price-card,.psx-node,.card{
+        background:var(--psx-card) !important;
+        border:1px solid var(--psx-border) !important;
+        box-shadow:0 1px 2px rgba(20,17,12,.04) !important;
+        color:var(--psx-text) !important;
+      }
+      .psx-card:hover,.service-card:hover,.fin-card:hover{
+        transform:none !important;
+        box-shadow:0 2px 10px rgba(20,17,12,.07) !important;
+        border-color:rgba(20,17,12,.22) !important;
+      }
+      .psx-card h3,.service-card h3,.fin-card h3{color:var(--psx-ink) !important;}
+      .psx-card p,.service-card p,.fin-card > p{color:var(--psx-text2) !important;}
+      /* the gradient icon tiles were the loudest "template" signal on the page */
+      .psx-chip,.psx-chip-blue,.psx-chip-violet,.psx-chip-teal{
+        background:transparent !important;background-image:none !important;
+        color:var(--psx-blue) !important;
+        border:1px solid var(--psx-border) !important;
+        box-shadow:none !important;border-radius:4px !important;
+      }
+
+      /* ---------- ghost button ---------- */
+      .psx-btn-ghost{
+        background:transparent !important;color:var(--psx-ink) !important;
+        border:1px solid rgba(20,17,12,.28) !important;box-shadow:none !important;
+      }
+      .psx-btn-ghost:hover{background:rgba(20,17,12,.04) !important;}
+      .psx-btn{border-radius:3px !important;font-weight:500 !important;}
+
+      /* ---------- footer: same paper, one rule ---------- */
+      footer{
+        background:var(--psx-hero) !important;
+        border-top:1px solid var(--psx-rule) !important;
+        color:var(--psx-text2) !important;
+      }
+      .psx-foot-mark span{
+        font-family:var(--psx-display);
+        background-image:none !important;
+        -webkit-text-fill-color:var(--psx-ink) !important;color:var(--psx-ink) !important;
+      }
+      .psx-foot h4{color:var(--psx-ink) !important;}
+      .psx-foot a,.psx-foot-brand p,.psx-foot-bottom{color:var(--psx-muted) !important;}
+      .psx-foot a:hover{color:var(--psx-ink) !important;}
+      .psx-foot-contact a{color:var(--psx-ink) !important;}
+      .psx-foot-contact{border-top-color:var(--psx-rule) !important;}
+      .psx-foot-mark img{border:1px solid var(--psx-rule);}
+
+      /* ---------- sections and general surfaces ---------- */
+      .psx-section,.view,main,.phases,#view-overview{background:var(--psx-bg) !important;}
+      .psx-connect{background:var(--psx-connect) !important;}
+
+      /* ---------- stage labels ----------
+         The most persuasive thing on the page, because they are the only
+         claims a reader can check and the only ones that admit a limit.
+         Set as small caps in ink, not coloured badges — a badge decorates,
+         a label states. Four cards need a tighter grid than three. */
+      .psx-cards{gap:1.1rem !important;}
+      @media (min-width:1000px){
+        .psx-cards{grid-template-columns:repeat(4,1fr) !important;}
+      }
+      .psx-stage{
+        /* align-self, because the card is a flex column and would otherwise
+           stretch the label to the full card width — a banner, not a label. */
+        display:inline-block;align-self:flex-start;margin-bottom:.85rem;
+        font-family:var(--psx-sans);
+        font-size:.66rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+        padding:.3rem .55rem;border-radius:2px;border:1px solid;
+      }
+      .psx-stage-live{color:#1b5e43;border-color:rgba(27,94,67,.34);background:rgba(27,94,67,.06);}
+      .psx-stage-dev{color:#8a5a12;border-color:rgba(138,90,18,.34);background:rgba(138,90,18,.06);}
+      .psx-stage-research{color:var(--psx-muted);border-color:var(--psx-border);background:rgba(20,17,12,.03);}
+      .psx-card-link{
+        display:inline-block;margin-top:1rem;
+        color:var(--psx-blue) !important;text-decoration:none;
+        font-size:.9rem;font-weight:500;
+      }
+      .psx-card-link:hover{text-decoration:underline;}
+      .psx-card{display:flex;flex-direction:column;}
+      .psx-card .psx-card-link{margin-top:auto;padding-top:1rem;}
+
+      /* ---------- section tabs: a contents strip, not a toolbar ---------- */
+      .phase-tabs{
+        background:var(--psx-bg) !important;
+        border-bottom:1px solid var(--psx-rule) !important;
+        box-shadow:none !important;backdrop-filter:none !important;
+      }
+      .phase-tab{
+        color:var(--psx-text2) !important;
+        border-radius:0 !important;
+        border-bottom:2px solid transparent !important;
+      }
+      .phase-tab:hover{
+        color:var(--psx-ink) !important;background:transparent !important;
+        border-bottom-color:var(--psx-rule) !important;
+      }
+      /* The current section is marked by a rule under it, the way a printed
+         contents page marks a place — not by a blue gradient lozenge. */
+      .phase-tab.active,.phase-tab.active:hover{
+        color:var(--psx-ink) !important;
+        background:none !important;background-image:none !important;
+        font-weight:600 !important;
+        border-bottom:2px solid var(--psx-ink) !important;
+        box-shadow:none !important;
+      }
+      .sections-trigger,.nav-back{
+        background:transparent !important;
+        color:var(--psx-text2) !important;
+        border:1px solid var(--psx-border) !important;
+      }
+      .sections-trigger:hover,.nav-back:hover{
+        background:rgba(20,17,12,.04) !important;color:var(--psx-ink) !important;
+      }
+
+      /* ---------- the language switcher, in ink ---------- */
+      #i18nBtn{
+        background:var(--psx-ink) !important;
+        border-color:rgba(255,255,255,.15) !important;
+      }
+
+      @media (prefers-reduced-motion:reduce){
+        .psx-card,.service-card,.fin-card{transition:none !important;}
+      }
+
+      /* ============================================================
+         ICONS — drawn, not pasted.
+
+         The tiles used to be pastel-filled rounded squares in three
+         rotating hues, which is the same decorative instinct as the
+         gradient headline: colour standing in for meaning. On paper a
+         mark reads better as a mark. Hairline square, ink stroke, and
+         the icon inherits colour from its card.
+         ============================================================ */
+      .service-icon,.fin-card-icon{
+        width:44px !important;height:44px !important;
+        border-radius:3px !important;
+        display:flex !important;align-items:center;justify-content:center;
+        background:transparent !important;
+        border:1px solid var(--psx-border) !important;
+        color:var(--psx-blue) !important;
+        margin-bottom:1.05rem !important;
+        font-size:0 !important;            /* kills stray whitespace nodes */
+      }
+      /* the hue rotation went with the pastel tiles */
+      .service-card:nth-child(3n+2) .service-icon,
+      .service-card:nth-child(3n+3) .service-icon{
+        background:transparent !important;border-color:var(--psx-border) !important;
+        color:var(--psx-blue) !important;
+      }
+      .ico{width:22px;height:22px;display:block;}
+      .service-card:hover .service-icon,.fin-card:hover .fin-card-icon{
+        border-color:rgba(27,77,143,.4) !important;
+      }
+
+      /* ---------- tab icons ----------
+         Small enough to be a bullet rather than a picture — they help the
+         eye find a place in a strip that scrolls on a phone, and stop
+         short of turning a contents list into a toolbar. */
+      .tab-ico{
+        width:15px;height:15px;margin-right:.45rem;
+        vertical-align:-2px;opacity:.62;flex:0 0 auto;
+      }
+      .phase-tab{display:inline-flex !important;align-items:center;}
+      .phase-tab:hover .tab-ico{opacity:.85;}
+      .phase-tab.active .tab-ico{opacity:1;}
+
+      /* ============================================================
+         THE REST OF THE SITE
+         Booking, the planner, the book and the portals were each built
+         with their own navy header and blue gradient buttons. Same paper
+         treatment, so moving between pages doesn't feel like moving
+         between sites. Owner tools — dispatch, archive, board — are
+         deliberately left alone; they are instruments, not shopfront.
+         ============================================================ */
+      body{background:var(--psx-bg) !important;color:var(--psx-text) !important;}
+      header .brand,header .logo-text{font-family:var(--psx-display);color:var(--psx-ink) !important;}
+      header a{color:var(--psx-text2) !important;}
+      header a:hover{color:var(--psx-ink) !important;}
+      header img{border:1px solid var(--psx-rule) !important;}
+
+      h1,h2,h3,h4{font-family:var(--psx-display) !important;color:var(--psx-ink) !important;}
+      .card,.panel,.box{
+        background:#fff !important;
+        border:1px solid var(--psx-border) !important;
+        border-radius:4px !important;
+        box-shadow:0 1px 2px rgba(20,17,12,.04) !important;
+      }
+
+      /* Buttons: ink, square-ish, no lift on hover. A button that jumps
+         when you point at it reads as a landing page, not a booking form. */
+      /* The Pollock bubbles are <button> too, and a blanket button rule
+         painted every one of them ink and squared off their hand-drawn
+         edges. They carry their own paper styling in floatback.js. */
+      button:not(.i18n-opt):not(#i18nBtn):not(.cancel-btn):not(.pk-bubble):not(#pollock),
+      .btn,.book-cta{
+        background:var(--psx-ink) !important;background-image:none !important;
+        color:#fff !important;border:1px solid var(--psx-ink) !important;
+        border-radius:3px !important;box-shadow:none !important;
+        font-weight:600 !important;
+      }
+      button:not(.i18n-opt):not(#i18nBtn):not(.pk-bubble):not(#pollock):hover:not(:disabled){
+        background:#000 !important;transform:none !important;box-shadow:none !important;
+      }
+      input,textarea,select{
+        background:#fff !important;
+        border:1px solid var(--psx-border) !important;
+        border-radius:3px !important;
+        color:var(--psx-text) !important;
+        font-family:var(--psx-sans);
+      }
+      input:focus,textarea:focus,select:focus{
+        border-color:var(--psx-blue) !important;
+        box-shadow:0 0 0 3px rgba(27,77,143,.13) !important;
+        background:#fff !important;
+      }
+      label{color:var(--psx-text2) !important;}
+      /* The map must keep its own colours — it is data, not decoration. */
+      .leaflet-container,.leaflet-container *{font-family:var(--psx-sans);}

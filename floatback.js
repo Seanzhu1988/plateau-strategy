@@ -33,26 +33,42 @@
     var TILT = [-6, 5, -4, 7, -5, 6, -7, 4, -5];
     function blob(i) { return BLOBS[i % BLOBS.length]; }
 
+    // Ink on paper, like the rest of the site. The splat keeps its shape —
+    // that is the idea, and it is the one playful thing here — but it is drawn
+    // rather than lit: paper discs, hairline ink edges, thin stems. Neon
+    // bubbles floating over a cream page looked like a different website.
     var css =
-        '#pollock{position:fixed;z-index:640;left:0;top:0;width:50px;height:50px;background:#0f172a;' +
-        'border:2px solid rgba(230,197,106,.65);border-radius:47% 53% 50% 50%/52% 48% 54% 46%;cursor:pointer;' +
-        'box-shadow:0 10px 28px rgba(0,0,0,.45);opacity:0;pointer-events:none;display:flex;align-items:center;justify-content:center;' +
-        'transform:scale(.7);transition:opacity .18s ease;}' +
+        '#pollock{position:fixed;z-index:640;left:0;top:0;width:50px;height:50px;background:#fffdf9;' +
+        'border:1px solid rgba(20,17,12,.30);border-radius:47% 53% 50% 50%/52% 48% 54% 46%;cursor:pointer;' +
+        'box-shadow:0 3px 12px rgba(20,17,12,.14);opacity:0;pointer-events:none;display:flex;align-items:center;justify-content:center;' +
+        'transform:scale(.7);transition:opacity .18s ease,left .22s ease,top .22s ease;}' +
         '#pollock.shown{opacity:1;pointer-events:auto;transform:scale(1);}' +
-        '#pollock:hover{transform:scale(1.1);}' +
-        '#pollock.expanded{transform:scale(1);background:#1e293b;}' +
+        '#pollock:hover{border-color:rgba(20,17,12,.5);}' +
+        '#pollock.expanded{transform:scale(1);background:#14110c;border-color:#14110c;}' +
         '#pollock svg{display:block;pointer-events:none;}' +
-        '.pk-stem{position:fixed;z-index:638;height:2px;transform-origin:0 50%;pointer-events:none;' +
-        'transform:scaleX(0);transition:transform .28s cubic-bezier(.3,1.2,.4,1);border-radius:2px;}' +
-        '.pk-bubble{position:fixed;z-index:639;width:56px;height:56px;margin:-28px 0 0 -28px;cursor:pointer;' +
-        'display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:1.25rem;' +
-        'box-shadow:0 10px 24px rgba(0,0,0,.45);opacity:0;transform:scale(.15);pointer-events:none;' +
+        '.pk-stem{position:fixed;z-index:638;height:1px;transform-origin:0 50%;pointer-events:none;' +
+        'transform:scaleX(0);transition:transform .28s cubic-bezier(.3,1.2,.4,1);}' +
+        '.pk-bubble{position:fixed;z-index:639;width:58px;height:58px;margin:-29px 0 0 -29px;cursor:pointer;' +
+        'display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:1.15rem;' +
+        'background:#fffdf9;color:#14110c;border:1px solid rgba(20,17,12,.22);' +
+        'box-shadow:0 3px 14px rgba(20,17,12,.13);opacity:0;transform:scale(.15);pointer-events:none;' +
         'transition:transform .34s cubic-bezier(.2,1.55,.4,1),opacity .16s ease;}' +
         '.pk-bubble.on{pointer-events:auto;}' +
-        '.pk-bubble .pk-lbl{font-size:.56rem;font-weight:800;letter-spacing:.4px;text-transform:uppercase;line-height:1;margin-top:2px;' +
+        '.pk-bubble .pk-lbl{font-size:.54rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;line-height:1;margin-top:3px;color:#4a453d;' +
         'font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}' +
-        '.pk-bubble:hover{filter:brightness(1.12);}' +
-        '@media (hover:none){#pollock{display:none;}}';
+        '.pk-bubble:hover{border-color:rgba(20,17,12,.45);box-shadow:0 5px 18px rgba(20,17,12,.18);}' +
+        // A paper wash behind the burst. Without it the bubbles float over
+        // the headline and neither is readable — worst on a phone, where
+        // the splat covers most of the screen.
+        '.pk-scrim{position:fixed;inset:0;z-index:637;background:rgba(250,248,244,.86);' +
+        'opacity:0;pointer-events:none;transition:opacity .22s ease;}' +
+        '.pk-scrim.on{opacity:1;pointer-events:auto;}' +
+        // On a touch screen there is no cursor to follow and no idle to detect,
+        // so it stopped existing entirely — which is why it went missing on the
+        // phone. It anchors in the bottom-left instead and simply stays there.
+        // Bottom-RIGHT is the language switcher's, and they must not stack.
+        '@media (hover:none){#pollock{opacity:1;pointer-events:auto;transform:scale(1);' +
+        'width:52px;height:52px;}}';
     var style = document.createElement('style');
     style.textContent = css;
     document.head.appendChild(style);
@@ -66,27 +82,29 @@
         ACTIONS.slice(0, 5).map(function (a, i) {
             var ang = (-90 + i * 72) * Math.PI / 180;
             var x = (13 + Math.cos(ang) * 8.6).toFixed(2), y = (13 + Math.sin(ang) * 8.6).toFixed(2);
-            return '<line x1="13" y1="13" x2="' + x + '" y2="' + y + '" stroke="rgba(255,255,255,.5)" stroke-width="1"/>' +
-                   '<circle cx="' + x + '" cy="' + y + '" r="3.1" fill="' + a.color + '"/>';
+            return '<line x1="13" y1="13" x2="' + x + '" y2="' + y + '" stroke="rgba(20,17,12,.3)" stroke-width="1"/>' +
+                   '<circle cx="' + x + '" cy="' + y + '" r="3" fill="' + (i === 0 ? '#1b4d8f' : '#14110c') + '"/>';
         }).join('') +
-        '<circle cx="13" cy="13" r="1.6" fill="#e6c56a"/></svg>';
+        '<circle cx="13" cy="13" r="1.7" fill="#1b4d8f"/></svg>';
     document.body.appendChild(btn);
+
+    var scrim = document.createElement('div');
+    scrim.className = 'pk-scrim';
+    scrim.addEventListener('click', function () { collapse(); });
+    document.body.appendChild(scrim);
 
     // build bubbles + stems once, positioned on demand
     var bubbles = [], stems = [];
     ACTIONS.forEach(function (a, i) {
         var s = document.createElement('div');
         s.className = 'pk-stem';
-        s.style.background = a.color;
-        s.style.opacity = '.55';
+        s.style.background = 'rgba(20,17,12,.28)';
         document.body.appendChild(s);
         stems.push(s);
         var b = document.createElement('button');
         b.className = 'pk-bubble';
-        b.style.background = a.color;
-        b.style.color = a.ink;
         b.style.borderRadius = blob(i);
-        b.style.border = 'none';
+        b.style.borderColor = a.color;          // a hint of its own colour, not a fill
         b.innerHTML = '<span>' + a.icon + '</span><span class="pk-lbl">' + a.label + '</span>';
         b.addEventListener('click', function (e) {
             e.stopPropagation();
@@ -109,6 +127,7 @@
     function expand() {
         expanded = true;
         btn.classList.add('expanded');
+        scrim.classList.add('on');
         clearTimeout(holdT);
         shownAt = clampCenter(cur.x, cur.y);
         cur = { x: shownAt.x, y: shownAt.y };          // pin the dot at the burst center
@@ -138,6 +157,7 @@
     function collapse() {
         expanded = false;
         btn.classList.remove('expanded');
+        scrim.classList.remove('on');
         bubbles.forEach(function (b) {
             b.style.transitionDelay = '0ms';
             b.style.opacity = '0';
@@ -224,6 +244,33 @@
         btn.style.left = (cur.x - 25) + 'px';
         btn.style.top = (cur.y - 25) + 'px';
         wake();
+    }
+
+    // ---- TOUCH: anchored, always there --------------------------------
+    // Everything below this point is cursor logic — idle detection, reaching
+    // for the dot, parking beside a map. None of it means anything without a
+    // pointer, so on a touch screen the button simply sits in the bottom-left
+    // corner and waits. That corner is chosen because the language switcher
+    // owns the bottom-right; two round buttons stacked on each other was the
+    // exact complaint about things blocking each other.
+    var TOUCH = window.matchMedia && window.matchMedia('(hover:none)').matches;
+    if (TOUCH) {
+        var place = function () {
+            if (expanded) return;
+            var inset = 16;
+            cur = { x: inset + 26, y: window.innerHeight - inset - 26 };
+            btn.style.left = (cur.x - 26) + 'px';
+            btn.style.top = (cur.y - 26) + 'px';
+            btn.classList.add('shown');
+        };
+        place();
+        window.addEventListener('resize', place);
+        window.addEventListener('orientationchange', function () { setTimeout(place, 200); });
+        // collapse() calls wake(), which arms a 3-second fade meant for a mouse.
+        // Anchored, it should stay put — so put it back after every collapse.
+        var _collapse = collapse;
+        collapse = function () { _collapse(); clearTimeout(holdT); place(); };
+        return;                                   // no cursor listeners at all
     }
 
     document.addEventListener('mousemove', function (e) {

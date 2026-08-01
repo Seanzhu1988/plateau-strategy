@@ -792,6 +792,16 @@ def admin_terminal_css():
     return send_file(os.path.join(BASE_DIR, "admin-terminal.css"))
 
 
+@app.route("/paper.css")
+def paper_css():
+    """The paper theme, shared by every page.
+
+    It was written inline on the landing page. Carrying it to the rest of the
+    site by copy-and-paste would guarantee eight versions that drift, so it
+    lives in one file that every page links."""
+    return send_file(os.path.join(BASE_DIR, "paper.css"))
+
+
 @app.route("/media/<path:filename>")
 def media_file(filename):
     from flask import send_from_directory
