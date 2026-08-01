@@ -140,6 +140,7 @@
     </style>
     <script src="/session.js"></script>
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
 </head>
 <body data-arm="transportation">
     <header>
@@ -450,7 +451,7 @@
             const id = localStorage.getItem('agent_id');
             if (id) {
                 try {
-                    const j = await (await fetch('/api/agents/' + id)).json();
+                    const j = await psxJSON('/api/agents/' + id);
                     if (j.ok) { AGENT = j.agent; return enterPortal(); }
                 } catch (e) {}
                 localStorage.removeItem('agent_id');
@@ -466,7 +467,7 @@
                 organization: (REG_TYPE === 'organization') ? val('a_org') : '',
                 email: val('a_email'), phone: val('a_phone')
             };
-            const j = await (await fetch('/api/agents/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })).json();
+            const j = await psxJSON('/api/agents/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
             if (!j.ok) { const r = document.getElementById('authResult'); r.className = 'result err'; r.textContent = j.error || 'Could not register'; return; }
             AGENT = j.agent;
             localStorage.setItem('agent_id', AGENT.id);
@@ -485,8 +486,8 @@
             const code = val('l_code'), last = val('l_last'), org = val('l_org');
             const r = document.getElementById('authResult');
             if (!code || !last) { r.className = 'result err'; r.textContent = 'Agent code and last name are required.'; return; }
-            const j = await (await fetch('/api/agents/login', { method:'POST', headers:{'Content-Type':'application/json'},
-                body: JSON.stringify({ code, last_name: last, organization: org }) })).json();
+            const j = await psxJSON('/api/agents/login', { method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ code, last_name: last, organization: org }) });
             if (!j.ok) { r.className = 'result err'; r.textContent = j.error || 'Sign in failed'; return; }
             AGENT = j.agent; localStorage.setItem('agent_id', AGENT.id); enterPortal();
         }
@@ -513,7 +514,7 @@
 
         let PRESETS = [], AGENT_COMM = '', GLOBAL_COMM = 15;
         async function loadPricing() {
-            try { PRESETS = ((await (await fetch('/api/pricing')).json()).presets) || []; } catch (e) { return; }
+            try { PRESETS = ((await psxJSON('/api/pricing')).presets) || []; } catch (e) { return; }
             const sel = document.getElementById('c_service');
             if (sel) {
                 sel.innerHTML = PRESETS.map(p => '<option value="' + p.price + '" data-comm="' + (p.commission != null ? p.commission : '') + '">'
@@ -596,7 +597,7 @@
             } else if (TRIP_TYPE === 'custom') {
                 body.title = val('f_title'); body.description = val('f_desc'); body.duration_hours = val('f_hours2');
             }
-            const j = await (await fetch('/api/agent/book-trip', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })).json();
+            const j = await psxJSON('/api/agent/book-trip', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
             if (!j.ok) { result.className = 'result err'; result.textContent = j.error || 'Failed'; return; }
             const r = j.reservation, comm = (r.agent && r.agent.commission_usd) || 0;
             result.className = 'result ok';
@@ -613,7 +614,7 @@
         async function refresh() {
             if (!AGENT) return;
             let j;
-            try { j = await (await fetch('/api/agents/' + AGENT.id)).json(); } catch (e) { return; }
+            try { j = await psxJSON('/api/agents/' + AGENT.id); } catch (e) { return; }
             if (!j.ok) return;
             document.getElementById('s_count').textContent = j.referral_count;
             document.getElementById('s_earned').textContent = '$' + j.earned_commission;
@@ -656,9 +657,9 @@
             const out = document.getElementById('payoutResult');
             let j;
             try {
-                j = await (await fetch('/api/agents/' + AGENT.id + '/payout-email', {
+                j = await psxJSON('/api/agents/' + AGENT.id + '/payout-email', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ payout_email: email }) })).json();
+                    body: JSON.stringify({ payout_email: email }) });
             } catch (e) { out.className = 'result err'; out.textContent = 'Connection problem — try again.'; return; }
             if (!j.ok) { out.className = 'result err'; out.textContent = j.error || 'Could not save.'; return; }
             out.className = 'result ok';
@@ -672,9 +673,9 @@
             btn.disabled = true; const old = btn.textContent; btn.textContent = 'Sending request…';
             let j;
             try {
-                j = await (await fetch('/api/agents/' + AGENT.id + '/payout-request', {
+                j = await psxJSON('/api/agents/' + AGENT.id + '/payout-request', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ method: val('p_method') }) })).json();
+                    body: JSON.stringify({ method: val('p_method') }) });
             } catch (e) {
                 btn.disabled = false; btn.textContent = old;
                 out.className = 'result err'; out.textContent = 'Connection problem — try again.'; return;

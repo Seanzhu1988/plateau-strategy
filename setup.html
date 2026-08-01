@@ -39,6 +39,7 @@
         .steps b { color: #14110c; }
     </style>
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
 </head>
 <body data-arm="operations">
     <header>
@@ -116,17 +117,17 @@
             }
             btn.disabled = true; btn.textContent = 'Connecting…';
             try {
-                const j = await (await fetch('/api/setup/twilio', {
+                const j = await psxJSON('/api/setup/twilio', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(body)
-                })).json();
+                });
                 if (!j.ok) throw new Error(j.error || 'Failed');
                 document.getElementById('tw_tok').value = '';
                 result.className = 'result ok';
                 result.innerHTML = '✅ Twilio saved (' + j.from_number + '). Sending you a test text…';
-                const t = await (await fetch('/api/setup/twilio/test', {
+                const t = await psxJSON('/api/setup/twilio/test', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({})
-                })).json();
+                });
                 result.innerHTML = t.ok
                     ? '✅ <b>Twilio connected!</b> Test text sent to ' + t.to + ' — check your phone. Drivers will now get ride texts.'
                     : '⚠️ Keys saved, but the test text failed: ' + (t.result || '') + '<br>Double-check the number format and that your Twilio number can send SMS.';
@@ -144,10 +145,10 @@
             if (!token) { result.className = 'result err'; result.textContent = 'Please paste your Access Token first.'; return; }
             btn.disabled = true; btn.textContent = 'Connecting…';
             try {
-                const j = await (await fetch('/api/setup/square', {
+                const j = await psxJSON('/api/setup/square', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ access_token: token })
-                })).json();
+                });
                 if (!j.ok) throw new Error(j.error || 'Failed');
                 document.getElementById('token').value = '';
                 result.className = 'result ok';

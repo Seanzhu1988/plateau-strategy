@@ -43,6 +43,7 @@
     </style>
     <link rel="stylesheet" href="/admin-terminal.css">
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
 </head>
 <body data-arm="company">
     <header>
@@ -164,22 +165,22 @@
             const name = val('m_name');
             if (!name) { alert('Enter a member name.'); return; }
             const body = { name, role: val('m_role'), ownership_pct: val('m_own'), email: val('m_email'), since: val('m_since') };
-            const j = await (await fetch('/api/board/members', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })).json();
+            const j = await psxJSON('/api/board/members', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
             if (!j.ok) { alert(j.error || 'Could not add member'); return; }
             ['m_name','m_role','m_own','m_email','m_since'].forEach(i => document.getElementById(i).value = '');
-            const r = await (await fetch('/api/board/members')).json();
+            const r = await psxJSON('/api/board/members');
             renderMembers(r.members || []);
         }
 
         async function removeMember(id) {
             if (!confirm('Remove this member from the registry?')) return;
             await fetch('/api/board/members/' + id + '/remove', { method:'POST' });
-            const r = await (await fetch('/api/board/members')).json();
+            const r = await psxJSON('/api/board/members');
             renderMembers(r.members || []);
         }
 
         async function loadDocs() {
-            const j = await (await fetch('/api/board/documents')).json();
+            const j = await psxJSON('/api/board/documents');
             if (!j.ok) return;
             TYPES = j.types || [];
             const sel = document.getElementById('d_type');
@@ -211,8 +212,8 @@
             let j;
             try {
                 const dataUrl = await fileToDataURL(f);
-                j = await (await fetch('/api/board/documents', { method:'POST', headers:{'Content-Type':'application/json'},
-                    body: JSON.stringify({ file: dataUrl, doc_type: val('d_type'), title: val('d_title'), original_name: f.name, notes: val('d_notes') }) })).json();
+                j = await psxJSON('/api/board/documents', { method:'POST', headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify({ file: dataUrl, doc_type: val('d_type'), title: val('d_title'), original_name: f.name, notes: val('d_notes') }) });
             } catch (e) { btn.disabled = false; btn.textContent = '⬆ Upload'; out.className = 'result err'; out.textContent = 'Upload failed — try again.'; return; }
             btn.disabled = false; btn.textContent = '⬆ Upload';
             if (!j.ok) { out.className = 'result err'; out.textContent = j.error || 'Upload failed'; return; }

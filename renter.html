@@ -202,6 +202,7 @@
     </style>
     <script src="/session.js"></script>
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
 </head>
 <body data-arm="transportation">
     <header>
@@ -494,7 +495,7 @@
             if (!vin) { msg.textContent = 'Enter your renting VIN.'; return; }
             if (dob.length !== 8) { msg.textContent = 'Enter your birthday as DDMMYYYY (8 digits).'; return; }
             let j;
-            try { j = await (await fetch('/api/renters/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ vin, dob }) })).json(); }
+            try { j = await psxJSON('/api/renters/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ vin, dob }) }); }
             catch (e) { msg.textContent = 'Connection problem — try again.'; return; }
             if (!j.ok) { msg.textContent = j.error || 'Sign in failed.'; return; }
             RENTER = j.renter; localStorage.setItem('renter_id', RENTER.id); enterPortal();
@@ -526,7 +527,7 @@
 
         async function loadInsurance() {
             if (!RENTER) return;
-            try { INSURANCE = (await (await fetch('/api/renters/' + RENTER.id + '/insurance')).json()).insurance; }
+            try { INSURANCE = (await psxJSON('/api/renters/' + RENTER.id + '/insurance')).insurance; }
             catch (e) { return; }
             renderInsurance();
         }
@@ -576,7 +577,7 @@
             }
             const body = { provider: val('ins_provider'), policy_number: val('ins_policy'), expires, file: fileData };
             let j;
-            try { j = await (await fetch('/api/renters/' + RENTER.id + '/insurance/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json(); }
+            try { j = await psxJSON('/api/renters/' + RENTER.id + '/insurance/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
             catch (e) { msg.style.color = '#a4161a'; msg.textContent = 'Connection problem — try again.'; return; }
             if (!j.ok) { msg.style.color = '#a4161a'; msg.textContent = j.error || 'Upload failed.'; return; }
             msg.style.color = '#1b6b5a'; msg.textContent = 'Saved — your insurance is on file. You can now accept rides.';
@@ -589,7 +590,7 @@
         function fmtSize(n) { n = +n || 0; return n < 1024 ? n + ' B' : n < 1048576 ? (n / 1024).toFixed(0) + ' KB' : (n / 1048576).toFixed(1) + ' MB'; }
         async function loadDocuments() {
             if (!RENTER) return;
-            try { DOCS = await (await fetch('/api/renters/' + RENTER.id + '/documents')).json(); }
+            try { DOCS = await psxJSON('/api/renters/' + RENTER.id + '/documents'); }
             catch (e) { return; }
             const sel = document.getElementById('doc_type');
             if (sel && !sel.options.length) sel.innerHTML = (DOCS.types || []).map(t => '<option>' + esc(t) + '</option>').join('');
@@ -603,7 +604,7 @@
             const fileData = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(fileEl.files[0]); });
             const body = { doc_type: document.getElementById('doc_type').value, original_name: fileEl.files[0].name, notes: val('doc_note'), file: fileData };
             let j;
-            try { j = await (await fetch('/api/renters/' + RENTER.id + '/documents/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json(); }
+            try { j = await psxJSON('/api/renters/' + RENTER.id + '/documents/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
             catch (e) { msg.style.color = '#a4161a'; msg.textContent = 'Connection problem — try again.'; return; }
             if (!j.ok) { msg.style.color = '#a4161a'; msg.textContent = j.error || 'Upload failed.'; return; }
             msg.style.color = '#1b6b5a'; msg.textContent = 'Archived — kept on file permanently.';
@@ -635,7 +636,7 @@
         let VIOLATIONS = null;
         async function loadViolations() {
             if (!RENTER) return;
-            try { VIOLATIONS = await (await fetch('/api/renters/' + RENTER.id + '/violations')).json(); }
+            try { VIOLATIONS = await psxJSON('/api/renters/' + RENTER.id + '/violations'); }
             catch (e) { return; }
             renderViolations();
         }
@@ -677,7 +678,7 @@
             const nav = document.getElementById('nav-payments');
             if (!RENTER.rto) { if (nav) nav.style.display = 'none'; return; }   // not rent-to-own — skip the Square call
             let d;
-            try { d = await (await fetch('/api/renters/' + RENTER.id + '/rto')).json(); } catch (e) { return; }
+            try { d = await psxJSON('/api/renters/' + RENTER.id + '/rto'); } catch (e) { return; }
             if (!d || !d.ok || !d.enrolled) { if (nav) nav.style.display = 'none'; return; }
             if (nav) nav.style.display = '';
             const usd = n => '$' + Math.round(n).toLocaleString('en-US');
@@ -746,7 +747,7 @@
                 fare: parseFloat(document.getElementById('rf_fare').value) || 75
             };
             let j;
-            try { j = await (await fetch('/api/renters/' + RENTER.id + '/refer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json(); }
+            try { j = await psxJSON('/api/renters/' + RENTER.id + '/refer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
             catch (e) { msg.style.color = '#a4161a'; msg.textContent = 'Connection problem — try again.'; return; }
             if (j.contract_required) { msg.style.color = '#a4161a'; msg.textContent = j.error; openSign(); return; }
             if (j.insurance_required) { msg.style.color = '#a4161a'; msg.textContent = j.error; loadInsurance(); showPanel('insurance'); return; }
@@ -762,7 +763,7 @@
             let all = [];
             // identify ourselves so the server releases our own rides in full;
             // the open pool comes back with the customer's contact withheld
-            try { all = ((await (await fetch('/api/reservations?renter_id=' + encodeURIComponent(RENTER.id))).json()).reservations) || []; } catch (e) { return; }
+            try { all = ((await psxJSON('/api/reservations?renter_id=' + encodeURIComponent(RENTER.id))).reservations) || []; } catch (e) { return; }
             const pool = all.filter(r => r.status === 'NEW');
             const mine = all.filter(r => r.renter_id === RENTER.id);
             document.getElementById('poolGrid').innerHTML = pool.map(r => resCard(r, false)).join('');

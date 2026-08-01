@@ -79,6 +79,7 @@
             background: #14110c; color: #fff; padding: 0.8rem 1.3rem; border-radius: 10px; display: none; z-index: 50; }
     </style>
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
 </head>
 <body data-arm="company">
     <header>
@@ -123,7 +124,7 @@
 
         async function load() {
             let items = [];
-            try { items = ((await (await fetch('/api/articles')).json()).articles) || []; } catch(e){ return; }
+            try { items = ((await psxJSON('/api/articles')).articles) || []; } catch(e){ return; }
             document.getElementById('empty').style.display = items.length ? 'none' : 'block';
             document.getElementById('feed').innerHTML = items.map(render).join('');
         }
@@ -157,7 +158,7 @@
             const body = document.getElementById('t_body').value.trim();
             if (!author) { showToast('Add your name'); return; }
             if (!title || !body) { showToast('Add a title and some text'); return; }
-            const j = await (await fetch('/api/articles', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({author, title, body}) })).json();
+            const j = await psxJSON('/api/articles', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({author, title, body}) });
             if (!j.ok) { showToast(j.error || 'Could not publish'); return; }
             document.getElementById('t_author').value = ''; document.getElementById('t_title').value = ''; document.getElementById('t_body').value = '';
             document.getElementById('composer').classList.remove('open');
@@ -167,7 +168,7 @@
         async function vote(id, choice) {
             const prev = myVote(id);
             const next = (prev === choice) ? 'none' : choice;
-            const j = await (await fetch('/api/articles/' + id + '/vote', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({prev, vote: next}) })).json();
+            const j = await psxJSON('/api/articles/' + id + '/vote', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({prev, vote: next}) });
             if (!j.ok) return;
             localStorage.setItem('article_vote_' + id, next);
             document.getElementById('lk_' + id).textContent = j.likes;
@@ -180,7 +181,7 @@
         async function follow(id) {
             const email = (document.getElementById('em_' + id).value || '').trim();
             if (!email) { showToast('Enter your email'); return; }
-            const j = await (await fetch('/api/articles/' + id + '/follow', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email}) })).json();
+            const j = await psxJSON('/api/articles/' + id + '/follow', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email}) });
             if (!j.ok) { showToast(j.error || 'Could not follow'); return; }
             localStorage.setItem('article_follow_' + id, '1');
             const fl = document.getElementById('fl_' + id);

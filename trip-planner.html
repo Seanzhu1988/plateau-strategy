@@ -548,6 +548,7 @@
         }
     </style>
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
 </head>
 <body data-arm="operations">
     <header>
@@ -1026,8 +1027,8 @@
             const b = map.getBounds();
             const vb = '&viewbox=' + [b.getWest(), b.getNorth(), b.getEast(), b.getSouth()].map(n => n.toFixed(4)).join(',');
             const base = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=' + encodeURIComponent(q);
-            let j = await (await fetch(base + vb + '&bounded=1')).json();
-            if (!j.length) j = await (await fetch(base + vb)).json();      // nearby if not in view
+            let j = await psxJSON(base + vb + '&bounded=1');
+            if (!j.length) j = await psxJSON(base + vb);      // nearby if not in view
             if (!j.length) { say('Couldn\'t find “' + q + '” — try adding the city name.'); return; }
             const res = j[0];
             const nm = res.display_name.split(',')[0].replace(/[<>&"]/g, '').slice(0, 60) || q;
@@ -1463,7 +1464,7 @@
             const url = 'https://router.project-osrm.org/route/v1/driving/'
                 + pts.map(p => p.lon.toFixed(6) + ',' + p.lat.toFixed(6)).join(';')
                 + '?overview=full&geometries=geojson';
-            const j = await (await fetch(url)).json();
+            const j = await psxJSON(url);
             const rt = j && j.code === 'Ok' && j.routes && j.routes[0];
             if (!rt) return;
             geoCache[sig] = rt.geometry.coordinates.map(c => [c[1], c[0]]);   // lon,lat -> lat,lng
@@ -1766,7 +1767,7 @@
     }
     async function loadCrowdTimes(applyDefaults){
         try {
-            const d = await (await fetch('/api/visit-times?city=' + encodeURIComponent(curCity))).json();
+            const d = await psxJSON('/api/visit-times?city=' + encodeURIComponent(curCity));
             if (!d || !d.ok) return;
             crowdTimes = d.places || {}; crowdMinN = d.min_n || 3;
             let applied = 0;
@@ -2043,9 +2044,9 @@
             const vb = '&viewbox=' + [b.getWest(), b.getNorth(), b.getEast(), b.getSouth()].map(n => n.toFixed(4)).join(',');
             const base = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=' + encodeURIComponent(q);
             let hint = '';
-            let j = await (await fetch(base + vb + '&bounded=1')).json();
+            let j = await psxJSON(base + vb + '&bounded=1');
             if (!j.length) {
-                j = await (await fetch(base + vb)).json();      // nearby-first, not bounded
+                j = await psxJSON(base + vb);      // nearby-first, not bounded
                 if (j.length) hint = '<div class="muted">Nothing in view — closest matches:</div>';
             }
             if (!j.length) { box.innerHTML = '<div class="muted">No results — try adding the city name.</div>'; return; }
@@ -2241,7 +2242,7 @@
             const url = 'https://router.project-osrm.org/route/v1/driving/'
                 + from.lon.toFixed(6) + ',' + from.lat.toFixed(6) + ';'
                 + to.lon.toFixed(6) + ',' + to.lat.toFixed(6) + '?overview=false';
-            const j = await (await fetch(url)).json();
+            const j = await psxJSON(url);
             const rt = j && j.code === 'Ok' && j.routes && j.routes[0];
             if (rt && isFinite(rt.distance)) return { mi: rt.distance / 1609.344, road: true };
         } catch (e) {}
@@ -2315,7 +2316,7 @@
                               : (function(){ const ll = startMarker.getLatLng(); return { lat: ll.lat, lon: ll.lng }; })();
         const miles = (await driveMiles(pk, { lat: drop.lat, lon: drop.lon })).mi;
         let base = 15, perMile = 2.5;
-        try { const p = await (await fetch('/api/pricing')).json();
+        try { const p = await psxJSON('/api/pricing');
               if (p) { if (isFinite(p.base_fare)) base = p.base_fare; if (isFinite(p.per_mile)) perMile = p.per_mile; } } catch (e) {}
         const distance_mi = Math.round(miles * 100) / 100;
         const fare = Math.round((base + perMile * miles) * 100) / 100;
@@ -2695,8 +2696,8 @@
             const b = map.getBounds();
             const vb = '&viewbox=' + [b.getWest(), b.getNorth(), b.getEast(), b.getSouth()].map(n => n.toFixed(4)).join(',');
             const base = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=' + encodeURIComponent(q);
-            let j = await (await fetch(base + vb)).json();          // nearby first
-            if (!j.length) j = await (await fetch(base)).json();     // then anywhere
+            let j = await psxJSON(base + vb);          // nearby first
+            if (!j.length) j = await psxJSON(base);     // then anywhere
             if (!j.length) { setLocInfo('Couldn\'t find “' + q + '” — try adding the city.', true); return; }
             const r = j[0], lat = +r.lat, lon = +r.lon;
             setOrigin(lat, lon, 'typed', { address: r.display_name, why: 'starting from ' + r.display_name.split(',')[0] });
@@ -2766,7 +2767,7 @@
     }
     async function loadDiscoveryFeed(){
         try {
-            const d = await (await fetch('/api/discoveries')).json();
+            const d = await psxJSON('/api/discoveries');
             const el = $('discoveryNote');
             if (!el || !d || !d.ok || !d.recent.length || dnCur) return;
             if (el.style.display === 'block') return;         // never overwrite a live announcement
@@ -3207,8 +3208,8 @@
                 body: JSON.stringify({ name: o.name, lat: o.lat, lon: o.lon, city: curCity,
                                        found_via: 'map-rate', osm_class: t.tourism ? 'tourism' : (t.amenity ? 'amenity' : ''),
                                        type: t.amenity || t.tourism || '', address: t.address }) }).catch(function(){});
-            const d = await (await fetch('/api/rate', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: o.name, city: curCity, stars: stars }) })).json();
+            const d = await psxJSON('/api/rate', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: o.name, city: curCity, stars: stars }) });
             if (d && d.ok) {
                 bookStars[curCity + '|' + String(o.name).toLowerCase()] = { stars: d.avg, n: d.count };
                 map.closePopup();

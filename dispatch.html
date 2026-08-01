@@ -119,6 +119,7 @@
     </style>
     <link rel="stylesheet" href="/admin-terminal.css">
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
 </head>
 <body data-arm="operations">
     <header>
@@ -232,7 +233,7 @@
 
         async function loadPayouts(){
             let j;
-            try { j = await (await fetch('/api/payouts')).json(); } catch(e){ return; }
+            try { j = await psxJSON('/api/payouts'); } catch(e){ return; }
             if (!j || !j.ok) return;
             const pp = j.paypal || {};
             const emailByAgent = {};
@@ -267,8 +268,8 @@
 
         async function payPaypal(pid){
             if (!confirm('Send this payout via PayPal now? The money leaves your PayPal balance immediately.')) return;
-            const j = await (await fetch('/api/payouts/' + pid + '/pay-paypal', { method:'POST',
-                headers:{'Content-Type':'application/json'}, body: '{}' })).json();
+            const j = await psxJSON('/api/payouts/' + pid + '/pay-paypal', { method:'POST',
+                headers:{'Content-Type':'application/json'}, body: '{}' });
             if (!j.ok) { showToast(j.error || 'PayPal payout failed'); loadPayouts(); return; }
             showToast('Paid via PayPal — batch ' + (j.paypal && j.paypal.batch_id || 'ok'));
             loadPayouts();
@@ -276,23 +277,23 @@
 
         async function markPaid(pid){
             const method = prompt('How did you send it? (Zelle / cash / check + reference — optional)') || '';
-            const j = await (await fetch('/api/payouts/' + pid + '/mark-paid', { method:'POST',
-                headers:{'Content-Type':'application/json'}, body: JSON.stringify({ method }) })).json();
+            const j = await psxJSON('/api/payouts/' + pid + '/mark-paid', { method:'POST',
+                headers:{'Content-Type':'application/json'}, body: JSON.stringify({ method }) });
             if (!j.ok) { showToast(j.error || 'Failed'); return; }
             showToast('Marked paid — the agent sees it instantly'); loadPayouts();
         }
 
         async function declinePayout(pid){
             const reason = prompt('Reason (the agent will see their request declined):') || '';
-            const j = await (await fetch('/api/payouts/' + pid + '/decline', { method:'POST',
-                headers:{'Content-Type':'application/json'}, body: JSON.stringify({ reason }) })).json();
+            const j = await psxJSON('/api/payouts/' + pid + '/decline', { method:'POST',
+                headers:{'Content-Type':'application/json'}, body: JSON.stringify({ reason }) });
             if (!j.ok) { showToast(j.error || 'Failed'); return; }
             showToast('Request declined'); loadPayouts();
         }
 
         async function loadAttention(){
             let j;
-            try { j = await (await fetch('/api/dispatch/uncovered')).json(); } catch(e){ return; }
+            try { j = await psxJSON('/api/dispatch/uncovered'); } catch(e){ return; }
             if (!j || !j.ok) return;
             const el = document.getElementById('attention');
             const list = j.uncovered || [];
@@ -373,7 +374,7 @@
 
         async function assign(rid, renter_id){
             if(!renter_id) return;
-            const j = await (await fetch('/api/dispatch/assign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reservation_id:rid,renter_id})})).json();
+            const j = await psxJSON('/api/dispatch/assign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reservation_id:rid,renter_id})});
             if(!j.ok){ showToast(j.error||'Could not assign'); return; }
             showToast('Assigned to '+j.reservation.driver); loadAll();
         }
@@ -416,7 +417,7 @@
             const price = document.getElementById('pr_price').value.trim();
             const commission = document.getElementById('pr_comm').value.trim();
             if(!name || price===''){ showToast('Name and price required'); return; }
-            const j = await (await fetch('/api/pricing/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name, price, commission})})).json();
+            const j = await psxJSON('/api/pricing/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name, price, commission})});
             if(!j.ok){ showToast(j.error||'Could not add'); return; }
             document.getElementById('pr_name').value=''; document.getElementById('pr_price').value=''; document.getElementById('pr_comm').value='';
             showToast('Service added'); loadPricing();
@@ -435,7 +436,7 @@
         let AUTH_MODE = 'login', _started = false;
         async function checkAuth(){
             let s;
-            try { s = await (await fetch('/api/owner/status')).json(); } catch(e){ return; }
+            try { s = await psxJSON('/api/owner/status'); } catch(e){ return; }
             if (s.logged_in){ startApp(); return; }
             AUTH_MODE = s.configured ? 'login' : 'setup';
             const setup = AUTH_MODE === 'setup';
@@ -455,7 +456,7 @@
             if(!u || !p){ msg.textContent = 'Enter a username and password.'; return; }
             const url = AUTH_MODE === 'setup' ? '/api/owner/setup' : '/api/owner/login';
             let j;
-            try { j = await (await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})})).json(); }
+            try { j = await psxJSON(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}); }
             catch(e){ msg.textContent = 'Connection problem — try again.'; return; }
             if(!j.ok){ msg.textContent = j.error || 'Failed'; return; }
             document.getElementById('authOverlay').classList.add('hidden');
@@ -503,7 +504,7 @@
         }
         async function loadPaperwork(){
             let d;
-            try { d = await (await fetch('/api/documents')).json(); } catch(e){ return; }
+            try { d = await psxJSON('/api/documents'); } catch(e){ return; }
             const box = document.getElementById('paperworkList');
             if(!box) return;
             if(!d || !d.ok){ box.innerHTML='<div class="small">Could not load paperwork.</div>'; return; }

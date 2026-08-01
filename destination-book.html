@@ -150,6 +150,7 @@
         footer.attrib { text-align: center; color: #6b655b; font-size: 0.75rem; padding: 1.6rem 0 2rem; }
     </style>
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
 </head>
 <body data-arm="operations">
     <header>
@@ -407,15 +408,15 @@
         const city = f.city !== 'all' ? f.city : 'other';
         let resp = null;
         try {
-            resp = await (await fetch('/api/destinations/add', {
+            resp = await psxJSON('/api/destinations/add', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: name, lat: +m.lat, lon: +m.lon, city: city,
                                        found_via: 'book', osm_class: m.class, type: m.type,
-                                       address: m.address }) })).json();
+                                       address: m.address }) });
         } catch (e) {}
         $('suggest').innerHTML = ''; $('suggest').dataset.q = '';
         if (resp && resp.ok) {
-            try { DATA = await (await fetch('/api/destinations')).json(); } catch (e) {}
+            try { DATA = await psxJSON('/api/destinations'); } catch (e) {}
             $('q').value = name;
             render();
             $('count').textContent += resp.already_known
@@ -447,9 +448,9 @@
         const e = DATA.entries[i];
         const wrap = document.getElementById('stay_' + i);
         try {
-            const d = await (await fetch('/api/visit-time', { method: 'POST',
+            const d = await psxJSON('/api/visit-time', { method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: e.name, city: e.city, minutes: minutes }) })).json();
+                body: JSON.stringify({ name: e.name, city: e.city, minutes: minutes }) });
             if (!d || !d.ok) { wrap.innerHTML = '<div class="stay-done" style="color:#b91c1c">Could not save that.</div>'; return; }
             wrap.innerHTML = '<div class="stay-done">✅ Thank you — ' + minutes + ' min recorded'
                 + (d.median ? ' · travelers now say ~' + d.median + ' min' : ' · a few more answers and this becomes the published number')
@@ -471,8 +472,8 @@
         box.innerHTML = '<div class="cmt" style="color:#6b655b">Loading notes…</div>';
         const e = DATA.entries[i];
         try {
-            const d = await (await fetch('/api/destinations/comments?city=' + encodeURIComponent(e.city || '')
-                                         + '&name=' + encodeURIComponent(e.name || ''))).json();
+            const d = await psxJSON('/api/destinations/comments?city=' + encodeURIComponent(e.city || '')
+                                         + '&name=' + encodeURIComponent(e.name || ''));
             const list = (d.comments || []).map(m =>
                 '<div class="cmt"><span class="who">' + esc(m.author) + '</span> '
                 + '<span class="when">' + esc(String(m.at || '').slice(0, 10)) + '</span><br>' + esc(m.text) + '</div>'
@@ -492,9 +493,9 @@
         const msg = document.getElementById('cm_' + i);
         if (txt.length < 2) { msg.style.color = '#b91c1c'; msg.textContent = 'Write a few words first.'; return; }
         try {
-            const d = await (await fetch('/api/destinations/comment', { method: 'POST',
+            const d = await psxJSON('/api/destinations/comment', { method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: e.name, city: e.city, text: txt, author: who }) })).json();
+                body: JSON.stringify({ name: e.name, city: e.city, text: txt, author: who }) });
             if (!d.ok) { msg.style.color = '#b91c1c'; msg.textContent = d.error || 'Could not post.'; return; }
             e.comment_count = d.count;
             document.getElementById('cmt_' + i).classList.remove('on');
@@ -510,9 +511,9 @@
         msg.className = 'wishmsg';
         if (wish.length < 2) { msg.className = 'wishmsg err'; msg.textContent = 'Tell us the place or the kind of place.'; return; }
         try {
-            const j = await (await fetch('/api/travel-wish', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            const j = await psxJSON('/api/travel-wish', { method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ wish: wish, city: f.city === 'all' ? '' : f.city,
-                                       kind: document.getElementById('wishKind').value }) })).json();
+                                       kind: document.getElementById('wishKind').value }) });
             if (!j.ok) { msg.className = 'wishmsg err'; msg.textContent = j.error || 'Could not save that — try again.'; return; }
             msg.className = 'wishmsg ok';
             msg.textContent = j.count > 1
@@ -524,7 +525,7 @@
     }
     async function loadWishTop(){
         try {
-            const d = await (await fetch('/api/travel-wishes')).json();
+            const d = await psxJSON('/api/travel-wishes');
             const box = document.getElementById('wishTop');
             if (!d || !d.ok || !d.top || !d.top.length) { box.innerHTML = ''; return; }
             box.innerHTML = '<b>Most asked for:</b> ' + d.top.slice(0, 8).map(w =>

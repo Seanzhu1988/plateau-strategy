@@ -122,6 +122,7 @@
     </style>
     <script src="/session.js"></script>
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
 </head>
 <body data-arm="transportation">
     <header>
@@ -480,7 +481,7 @@
             if (!box) return;
             var cfg;
             try {
-                cfg = await (await fetch('/api/auth/google/config')).json();
+                cfg = await psxJSON('/api/auth/google/config');
             } catch (e) { return; }
             if (!cfg || !cfg.enabled || !cfg.client_id) return;   // stays hidden
 

@@ -82,6 +82,7 @@
             border: 1px solid #4a453d; color: #e6e2da; padding: 0.8rem 1.4rem; border-radius: 6px; display: none; z-index: 50; font-size: 0.9rem; }
     </style>
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
 </head>
 <body data-arm="transportation">
     <header>
@@ -156,7 +157,7 @@ Plateau Strategy Solution Lab
         function copyPitch(){ navigator.clipboard.writeText(document.getElementById('pitchText').textContent).then(()=>showToast('Pitch copied')).catch(()=>{}); }
 
         async function load(){
-            const j = await (await fetch('/api/partners')).json();
+            const j = await psxJSON('/api/partners');
             PARTNERS = j.partners || []; STATUSES = j.statuses || [];
             render();
         }
@@ -217,7 +218,7 @@ Plateau Strategy Solution Lab
             const name = val('p_name');
             if(!name){ showToast('Enter an organization name'); return; }
             const body = { name, type: val('p_type'), phone: val('p_phone'), email: val('p_email'), website: val('p_website') };
-            const j = await (await fetch('/api/partners/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})).json();
+            const j = await psxJSON('/api/partners/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
             if(!j.ok){ showToast(j.error||'Could not add'); return; }
             ['p_name','p_phone','p_email','p_website'].forEach(i=>document.getElementById(i).value='');
             showToast('Added'); load();

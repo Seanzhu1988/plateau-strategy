@@ -71,6 +71,7 @@
         .why { margin-top: 1.4rem; font-size: 0.82rem; color: #6b655b; line-height: 1.6; text-align: center; }
     </style>
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
 </head>
 <body data-arm="operations">
     <header>
@@ -132,7 +133,7 @@
 
         async function loadCounter(){
             try {
-                const d = await (await fetch('/api/destinations')).json();
+                const d = await psxJSON('/api/destinations');
                 const n = (d.entries || []).filter(e => e.source === 'user').length;
                 if (n > 0) {
                     $('counter').style.display = 'inline-flex';
@@ -156,7 +157,7 @@
             box.style.display = 'block'; box.innerHTML = '<div class="muted">Searching…</div>';
             try {
                 const url = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=6&q=' + encodeURIComponent(q);
-                const j = await (await fetch(url)).json();
+                const j = await psxJSON(url);
                 if (!j.length) { box.innerHTML = '<div class="muted">No results — try a different spelling.</div>'; return; }
                 box.innerHTML = '';
                 j.forEach(res => {
