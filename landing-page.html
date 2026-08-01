@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plateau Strategy Solution Lab — Integrated Business Ecosystem</title>
-    <meta name="description" content="Integrated wealth, built through connected ecosystems. Affordable Tesla rentals turn everyday drivers into earners and riders into owners — the first loop in a closed system where revenue compounds instead of leaking away.">
+    <meta name="description" content="Flat-rate Tesla airport transfers in Seattle — $75 to Sea–Tac, quoted before you book and unchanged after. Reserve any hour. Free trip-planning tools, no account needed.">
     <link rel="canonical" href="https://plateaustrategy.io/">
     <meta name="theme-color" content="#070b16">
     <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
@@ -15,11 +15,11 @@
     <meta property="og:site_name" content="Plateau Strategy Solution Lab">
     <meta property="og:url" content="https://plateaustrategy.io/">
     <meta property="og:title" content="Plateau Strategy Solution Lab — Integrated Business Ecosystem">
-    <meta property="og:description" content="Integrated wealth, built through connected ecosystems. Transportation, real estate, and finance in one closed loop where revenue compounds instead of leaking away.">
+    <meta property="og:description" content="Flat-rate Tesla airport transfers in Seattle — $75 to Sea–Tac. Reserve any hour, no surge pricing.">
     <meta property="og:image" content="https://plateaustrategy.io/plateau-logo.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Plateau Strategy Solution Lab — Integrated Business Ecosystem">
-    <meta name="twitter:description" content="Integrated wealth, built through connected ecosystems. Transportation, real estate, and finance in one closed loop.">
+    <meta name="twitter:description" content="Flat-rate Tesla airport transfers in Seattle — $75 to Sea–Tac. Reserve any hour.">
     <meta name="twitter:image" content="https://plateaustrategy.io/plateau-logo.png">
 
     <!-- Structured data. An AI assistant answering "who does airport runs in
@@ -1849,6 +1849,233 @@
       .wish-form input:focus-visible,
       .gb-form input:focus-visible{outline-offset:0;}
     </style>
+    <style id="psx-paper">
+      /* ============================================================
+         PAPER — the last layer, and the one that decides how this reads.
+
+         A friend called the old site an AI-generated scam, and they were
+         right. The tells were not subtle: a navy-to-violet gradient behind
+         glowing headline text, an "INTEGRATED BUSINESS ECOSYSTEM" pill,
+         invented statistics ("100% value chain owned"), and three cards
+         reading Capital Efficient / Vertically Integrated / Compounding
+         Growth. That is the house style of every fake company on the
+         internet, and no amount of polish rescues it — the look itself is
+         the problem.
+
+         So: ink on paper. Warm white, near-black text, a book serif for
+         anything large, hairline rules instead of glowing borders, and
+         no gradient anywhere. Restraint reads as real; glow reads as sold.
+
+         This layer only re-declares colour, type and edges. It does not
+         touch layout, so nothing below it moves.
+         ============================================================ */
+
+      :root{
+        /* Paper, not white — #fff under a headline looks like a login form.
+           A little warmth reads as stock. */
+        --psx-bg:#faf8f4; --psx-hero:#f5f1e8; --psx-connect:#faf8f4;
+        --psx-card:#ffffff; --psx-node:#ffffff;
+        --psx-text:#14110c; --psx-text2:#4a453d; --psx-muted:#6b655b;
+        --psx-border:rgba(20,17,12,.13);
+        --psx-rule:rgba(20,17,12,.10);
+        --psx-blue:#1b4d8f; --psx-indigo:#1b4d8f; --psx-violet:#1b4d8f; --psx-teal:#1b6b5a;
+        --psx-ink:#14110c;
+
+        /* One variable decides the display face. Point it at Carna here if
+           the licence is bought — @font-face above, then swap this line.
+           Until then: real book faces that ship with macOS and Windows, so
+           the page renders instantly with nothing fetched from anyone. */
+        --psx-display:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",
+                      "Hoefler Text",Georgia,"Times New Roman",serif;
+        --psx-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      }
+
+      body{
+        background:var(--psx-bg) !important;
+        color:var(--psx-text) !important;
+        font-family:var(--psx-sans);
+        -webkit-font-smoothing:antialiased;
+      }
+
+      /* ---------- header: a masthead, not a nav bar ---------- */
+      header{
+        background:var(--psx-bg) !important;
+        border-bottom:1px solid var(--psx-rule) !important;
+        box-shadow:none !important;
+        color:var(--psx-ink) !important;
+      }
+      .logo-text{
+        font-family:var(--psx-display);
+        font-weight:600 !important;
+        letter-spacing:-.005em !important;
+        background-image:none !important;
+        -webkit-text-fill-color:var(--psx-ink) !important;
+        color:var(--psx-ink) !important;
+      }
+      .logo-img{box-shadow:none !important;border:1px solid var(--psx-rule) !important;}
+      nav a{color:var(--psx-text2) !important;font-weight:400 !important;}
+      nav a:hover{color:var(--psx-ink) !important;}
+      nav a[href="/book"],.psx-btn-primary,.book-cta{
+        background:var(--psx-ink) !important;background-image:none !important;
+        color:#fff !important;box-shadow:none !important;border:1px solid var(--psx-ink) !important;
+      }
+      nav a[href="/book"]:hover,.psx-btn-primary:hover{background:#000 !important;}
+
+      /* ---------- hero: no glow, no gradient, no pill-with-a-dot ---------- */
+      .psx-glow,.psx-glow-1,.psx-glow-2,.psx-dot{display:none !important;}
+      #view-overview .psx-hero{
+        background:var(--psx-hero) !important;
+        border-bottom:1px solid var(--psx-rule);
+      }
+      #view-overview .psx-hero::before,#view-overview .psx-hero::after{display:none !important;}
+      .psx-eyebrow-pill{
+        background:transparent !important;border:none !important;
+        color:var(--psx-muted) !important;font-family:var(--psx-sans);
+        font-size:.78rem !important;font-weight:500 !important;
+        letter-spacing:.16em !important;text-transform:uppercase;
+        padding:0 !important;box-shadow:none !important;
+      }
+      .psx-h1,.psx-h2,.psx-h3,h1,h2,h3,.section-title,.hero h1{
+        font-family:var(--psx-display) !important;
+        font-weight:600 !important;
+        letter-spacing:-.012em !important;
+        color:var(--psx-ink) !important;
+        text-shadow:none !important;
+      }
+      .psx-h1{line-height:1.08 !important;}
+      /* The accent was a violet gradient. A real underline says the same thing
+         without pretending to be lit from behind — and unlike a box-shadow
+         highlight it follows the text across a line break instead of leaving
+         a grey slab hanging off the end of each line. */
+      .psx-accent{
+        background:none !important;background-image:none !important;
+        -webkit-text-fill-color:var(--psx-ink) !important;color:var(--psx-ink) !important;
+        box-shadow:none !important;
+        text-decoration:underline !important;
+        text-decoration-color:rgba(27,77,143,.42) !important;
+        text-decoration-thickness:.055em !important;
+        text-underline-offset:.14em !important;
+      }
+      /* Long display lines break better with a measure than without one:
+         two balanced lines instead of three ragged ones. */
+      .psx-h1{max-width:16ch;margin-left:auto;margin-right:auto;}
+      .psx-h2{max-width:22ch;margin-left:auto;margin-right:auto;}
+      .psx-sub,.psx-section-sub{max-width:56ch;margin-left:auto;margin-right:auto;}
+      @supports (text-wrap:balance){
+        .psx-h1,.psx-h2{text-wrap:balance;}
+      }
+      .psx-sub,.psx-section-sub,p{color:var(--psx-text2) !important;}
+      .psx-eyebrow{color:var(--psx-muted) !important;font-weight:500 !important;}
+
+      /* ---------- stats: rules, not a floating glass slab ---------- */
+      #view-overview .psx-stats{
+        background:transparent !important;border:none !important;
+        border-top:1px solid var(--psx-rule) !important;
+        border-radius:0 !important;box-shadow:none !important;
+        backdrop-filter:none !important;
+      }
+      .psx-stat-val{
+        font-family:var(--psx-display);font-weight:600 !important;
+        color:var(--psx-ink) !important;
+      }
+      .psx-stat-label{color:var(--psx-muted) !important;}
+      .psx-divider{background:var(--psx-rule) !important;}
+
+      /* ---------- cards: paper on paper ---------- */
+      .psx-card,.service-card,.fin-card,.phase-card,.price-card,.psx-node,.card{
+        background:var(--psx-card) !important;
+        border:1px solid var(--psx-border) !important;
+        box-shadow:0 1px 2px rgba(20,17,12,.04) !important;
+        color:var(--psx-text) !important;
+      }
+      .psx-card:hover,.service-card:hover,.fin-card:hover{
+        transform:none !important;
+        box-shadow:0 2px 10px rgba(20,17,12,.07) !important;
+        border-color:rgba(20,17,12,.22) !important;
+      }
+      .psx-card h3,.service-card h3,.fin-card h3{color:var(--psx-ink) !important;}
+      .psx-card p,.service-card p,.fin-card > p{color:var(--psx-text2) !important;}
+      /* the gradient icon tiles were the loudest "template" signal on the page */
+      .psx-chip,.psx-chip-blue,.psx-chip-violet,.psx-chip-teal{
+        background:transparent !important;background-image:none !important;
+        color:var(--psx-blue) !important;
+        border:1px solid var(--psx-border) !important;
+        box-shadow:none !important;border-radius:4px !important;
+      }
+
+      /* ---------- ghost button ---------- */
+      .psx-btn-ghost{
+        background:transparent !important;color:var(--psx-ink) !important;
+        border:1px solid rgba(20,17,12,.28) !important;box-shadow:none !important;
+      }
+      .psx-btn-ghost:hover{background:rgba(20,17,12,.04) !important;}
+      .psx-btn{border-radius:3px !important;font-weight:500 !important;}
+
+      /* ---------- footer: same paper, one rule ---------- */
+      footer{
+        background:var(--psx-hero) !important;
+        border-top:1px solid var(--psx-rule) !important;
+        color:var(--psx-text2) !important;
+      }
+      .psx-foot-mark span{
+        font-family:var(--psx-display);
+        background-image:none !important;
+        -webkit-text-fill-color:var(--psx-ink) !important;color:var(--psx-ink) !important;
+      }
+      .psx-foot h4{color:var(--psx-ink) !important;}
+      .psx-foot a,.psx-foot-brand p,.psx-foot-bottom{color:var(--psx-muted) !important;}
+      .psx-foot a:hover{color:var(--psx-ink) !important;}
+      .psx-foot-contact a{color:var(--psx-ink) !important;}
+      .psx-foot-contact{border-top-color:var(--psx-rule) !important;}
+      .psx-foot-mark img{border:1px solid var(--psx-rule);}
+
+      /* ---------- sections and general surfaces ---------- */
+      .psx-section,.view,main,.phases,#view-overview{background:var(--psx-bg) !important;}
+      .psx-connect{background:var(--psx-connect) !important;}
+
+      /* ---------- section tabs: a contents strip, not a toolbar ---------- */
+      .phase-tabs{
+        background:var(--psx-bg) !important;
+        border-bottom:1px solid var(--psx-rule) !important;
+        box-shadow:none !important;backdrop-filter:none !important;
+      }
+      .phase-tab{
+        color:var(--psx-text2) !important;
+        border-radius:0 !important;
+        border-bottom:2px solid transparent !important;
+      }
+      .phase-tab:hover{
+        color:var(--psx-ink) !important;background:transparent !important;
+        border-bottom-color:var(--psx-rule) !important;
+      }
+      /* The current section is marked by a rule under it, the way a printed
+         contents page marks a place — not by a blue gradient lozenge. */
+      .phase-tab.active,.phase-tab.active:hover{
+        color:var(--psx-ink) !important;
+        background:none !important;background-image:none !important;
+        font-weight:600 !important;
+        border-bottom:2px solid var(--psx-ink) !important;
+        box-shadow:none !important;
+      }
+      .sections-trigger,.nav-back{
+        background:transparent !important;
+        color:var(--psx-text2) !important;
+        border:1px solid var(--psx-border) !important;
+      }
+      .sections-trigger:hover,.nav-back:hover{
+        background:rgba(20,17,12,.04) !important;color:var(--psx-ink) !important;
+      }
+
+      /* ---------- the language switcher, in ink ---------- */
+      #i18nBtn{
+        background:var(--psx-ink) !important;
+        border-color:rgba(255,255,255,.15) !important;
+      }
+
+      @media (prefers-reduced-motion:reduce){
+        .psx-card,.service-card,.fin-card{transition:none !important;}
+      }
+    </style>
 </head>
 <body>
     <a class="psx-skip" href="#main-content">Skip to content</a>
@@ -1887,48 +2114,57 @@
 
             <!-- ============ OVERVIEW (the introduction) ============ -->
             <div class="view active" id="view-overview">
+                <!-- The first screen has one job: say what this is, where it
+                     operates, and what it costs. The previous version led with
+                     "Integrated wealth, built through connected ecosystems",
+                     which describes no service a person can buy and reads the
+                     way every fake company on the internet reads. Numbers here
+                     are the real ones — the $75 fare, the airport, the hours —
+                     not invented metrics like "100% value chain owned". -->
                 <section class="psx-hero">
-                    <div class="psx-glow psx-glow-1"></div>
-                    <div class="psx-glow psx-glow-2"></div>
                     <div class="psx-hero-inner">
-                        <span class="psx-eyebrow-pill"><span class="psx-dot"></span>INTEGRATED BUSINESS ECOSYSTEM</span>
-                        <h1 class="psx-h1">Integrated wealth, built through <span class="psx-accent">connected ecosystems</span></h1>
-                        <p class="psx-sub">Affordable Tesla rentals turn everyday drivers into earners and riders into owners — the first loop in a closed system where revenue compounds instead of leaking away.</p>
+                        <span class="psx-eyebrow-pill">Seattle &amp; Sea–Tac Airport</span>
+                        <h1 class="psx-h1">A Tesla to the airport for <span class="psx-accent">a flat $75</span></h1>
+                        <p class="psx-sub">Book a car for a fixed price — the fare you're quoted is the fare you pay. No surge, no meter, no guessing at 5 in the morning. Reserve any time, day or night.</p>
                         <div class="psx-cta-row">
-                            <a href="/book" class="psx-btn psx-btn-primary">Book a Ride <span aria-hidden="true">→</span></a>
-                            <a href="#psx-model" class="psx-btn psx-btn-ghost" onclick="event.preventDefault();document.getElementById('psx-model').scrollIntoView({behavior:'smooth'});">Explore the model</a>
+                            <a href="/book" class="psx-btn psx-btn-primary">Book a ride</a>
+                            <a href="/trip-planner" class="psx-btn psx-btn-ghost">Plan a trip — free</a>
                         </div>
                         <div class="psx-stats">
-                            <div class="psx-stat"><span class="psx-stat-val">3</span><span class="psx-stat-label">Business verticals</span></div>
+                            <div class="psx-stat"><span class="psx-stat-val">$75</span><span class="psx-stat-label">Flat fare to Sea–Tac</span></div>
                             <div class="psx-divider"></div>
-                            <div class="psx-stat"><span class="psx-stat-val">100%</span><span class="psx-stat-label">Value chain owned</span></div>
+                            <div class="psx-stat"><span class="psx-stat-val">24/7</span><span class="psx-stat-label">Book any hour</span></div>
                             <div class="psx-divider"></div>
-                            <div class="psx-stat"><span class="psx-stat-val">24/7</span><span class="psx-stat-label">Ride availability</span></div>
+                            <div class="psx-stat"><span class="psx-stat-val">Tesla</span><span class="psx-stat-label">Every ride</span></div>
                         </div>
                     </div>
                 </section>
 
                 <section class="psx-section" id="psx-model">
+                    <!-- Was "Capital Efficient / Vertically Integrated /
+                         Compounding Growth" — an investor deck a customer
+                         cannot use. Three things a visitor can actually do
+                         instead, each linking somewhere real. -->
                     <div class="psx-head">
-                        <span class="psx-eyebrow">THE MODEL</span>
-                        <h2 class="psx-h2">One ecosystem. Every part funds the next.</h2>
-                        <p class="psx-section-sub">We control the full value chain and share the upside with drivers and partners — so revenue compounds across transportation, real estate, and finance instead of leaking away.</p>
+                        <span class="psx-eyebrow">WHAT WE DO</span>
+                        <h2 class="psx-h2">Three ways to use this</h2>
+                        <p class="psx-section-sub">A ride at a price agreed in advance, a car to earn with, and trip-planning tools that cost nothing and require no account.</p>
                     </div>
                     <div class="psx-cards">
                         <div class="psx-card">
-                            <div class="psx-chip psx-chip-blue">◆</div>
-                            <h3 class="psx-card-title">Capital Efficient</h3>
-                            <p class="psx-card-desc">Each part funds the next through shared cash flow and operational leverage — capital works harder across the whole system.</p>
+                            <div class="psx-chip psx-chip-blue">1</div>
+                            <h3 class="psx-card-title">Ride to the airport</h3>
+                            <p class="psx-card-desc">$75 flat to Sea–Tac, quoted before you book and unchanged after. Reserve at any hour; your driver arrives fifteen minutes early.</p>
                         </div>
                         <div class="psx-card">
-                            <div class="psx-chip psx-chip-violet">≡</div>
-                            <h3 class="psx-card-title">Vertically Integrated</h3>
-                            <p class="psx-card-desc">Full control over the supply chain, client experience, and margin capture, end to end — no middlemen skimming value.</p>
+                            <div class="psx-chip psx-chip-violet">2</div>
+                            <h3 class="psx-card-title">Rent a Tesla and drive</h3>
+                            <p class="psx-card-desc">Rent one of our cars, take rides from the board, keep the fare. Insurance and paperwork are handled in the driver portal.</p>
                         </div>
                         <div class="psx-card">
-                            <div class="psx-chip psx-chip-teal">↗</div>
-                            <h3 class="psx-card-title">Compounding Growth</h3>
-                            <p class="psx-card-desc">Revenue synergies accelerate expansion across every business line, so growth continuously reinvests into more growth.</p>
+                            <div class="psx-chip psx-chip-teal">3</div>
+                            <h3 class="psx-card-title">Plan a trip, free</h3>
+                            <p class="psx-card-desc">See which places you can still reach before they close, using real drive times and opening hours. No sign-up, nothing to pay.</p>
                         </div>
                     </div>
                 </section>
@@ -2420,7 +2656,7 @@
                             <img src="plateau-logo.svg" alt="">
                             <span>Plateau Strategy</span>
                         </div>
-                        <p>An integrated business ecosystem — transportation, real estate and finance in one closed loop, built so revenue compounds instead of leaking away.</p>
+                        <p>A Seattle car service: flat-rate Tesla rides to Sea–Tac and around the city, plus trip-planning tools that are free to use.</p>
 
                         <!-- Contact. Whatever goes here must match the Google
                              Business Profile word for word — same business name,
@@ -2433,15 +2669,15 @@
                              the LocalBusiness node at the top of this file and on
                              the Business Profile. See ADVERTISING.md § 0.5. -->
                         <div class="psx-foot-contact">
-                            <span><b>📍</b>Serving Seattle &amp; Seattle–Tacoma International (SEA)</span>
-                            <span><b>🕑</b>Rides available 24/7, by reservation</span>
+                            <span>Serving Seattle &amp; Seattle–Tacoma International (SEA)</span>
+                            <span>Rides available 24/7, by reservation</span>
                             <!-- EMAIL GOES BACK HERE the moment Porkbun forwarding
                                  is live (hello@ -> the owner's Gmail). Pulled for
                                  now because the domain has no MX records, so mail
                                  to this address bounces. A contact address that
                                  bounces is worse than no address at all.
                                    <a href="mailto:hello@plateaustrategy.io"><b>✉️</b>hello@plateaustrategy.io</a> -->
-                            <a href="/book"><b>🚘</b>Book a ride — $75 flat to SeaTac</a>
+                            <a href="/book">Book a ride — $75 flat to SeaTac</a>
                             <span class="psx-foot-note">Service-area business — we come to you, there's no counter to visit.</span>
                         </div>
                     </div>
@@ -2478,7 +2714,7 @@
 
                 <div class="psx-foot-bottom">
                     <p>&copy; 2026 Plateau Strategy Solution Lab</p>
-                    <p>Building integrated wealth through connected ecosystems.</p>
+                    <p>Flat-rate Tesla rides, Seattle and Sea–Tac.</p>
                 </div>
             </footer>
         </div>
