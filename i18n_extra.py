@@ -1642,3 +1642,40 @@ EXTRA.update({
         "Các quy tắc bảo vệ bạn khi dùng trang này — dữ liệu, tiền và đơn đặt của bạn. Dưới đây là những biện pháp đã được áp dụng, trình bày bằng ngôn ngữ giản dị."
     ]
 })
+
+
+# Found by check_i18n.py, not by anyone complaining — which is the point of
+# having it. Two live strings still in spoken register, plus the superseded
+# front-page paragraph, brought into 书面语 so nothing in the dictionary
+# contradicts the standard.
+EXTRA.update({
+    "Our model is simple: control the full value chain, share the upside with our drivers and partners, and reinvest profits back into the community. Whether you need a ride, want to earn behind the wheel, or want to refer clients and earn commission — there's a place for you here.": [
+        "我们的思路很简单：自主掌握完整价值链，与司机及合作伙伴共享收益，并将利润再投入社区。无论您是需要用车、希望以驾驶获得收入，还是有意推荐客户并获取佣金，这里都有适合您的位置。",
+        "Nuestro modelo es sencillo: controlar toda la cadena de valor, compartir los beneficios con conductores y socios, y reinvertir en la comunidad. Tanto si necesita un trayecto, como si desea obtener ingresos al volante o recomendar clientes y cobrar comisión, aquí tiene un lugar.",
+        "저희의 모델은 단순합니다. 가치사슬 전체를 직접 운영하고, 그 성과를 기사 및 파트너와 나누며, 이익을 지역사회에 재투자합니다. 차량이 필요하시든, 운전으로 수익을 얻고자 하시든, 고객을 소개하고 수수료를 받고자 하시든 이곳에 자리가 있습니다.",
+        "Mô hình của chúng tôi rất đơn giản: tự vận hành toàn bộ chuỗi giá trị, chia sẻ lợi ích với tài xế và đối tác, và tái đầu tư lợi nhuận vào cộng đồng. Dù bạn cần một chuyến xe, muốn có thu nhập từ việc lái xe, hay muốn giới thiệu khách và nhận hoa hồng — ở đây đều có chỗ cho bạn."],
+
+    "Register as a guide — takes a minute": [
+        "注册成为导游——约需一分钟",
+        "Regístrese como guía: le llevará un minuto",
+        "가이드로 등록하기 — 1분이면 됩니다",
+        "Đăng ký làm hướng dẫn viên — chỉ mất một phút"],
+
+    "Transportation is the one that runs today: flat-rate Tesla rides across Seattle, cars rented to drivers who earn with them, and trip-planning tools anyone can use free. It pays for what comes next. Every other arm is listed below with the stage it is honestly at — including the ones not finished.": [
+        "出行业务目前已投入运营，并为后续业务提供资金：覆盖西雅图全城的特斯拉固定价格接送、面向司机的车辆租赁，以及任何人均可免费使用的行程规划工具。以下逐项列明各业务实际所处的阶段，包括尚未完成的部分。",
+        "El transporte es lo que ya opera y financia lo que viene después: traslados en Tesla con tarifa fija por todo Seattle, vehículos alquilados a conductores y herramientas de planificación gratuitas para cualquiera. Cada uno de los demás negocios figura debajo con la etapa que ha alcanzado realmente, incluidos los que no están terminados.",
+        "현재 운영 중인 사업은 교통 부문입니다. 시애틀 전역의 테슬라 정액 운송, 운전자를 위한 차량 대여, 그리고 누구나 무료로 이용할 수 있는 여정 계획 도구가 이에 해당하며, 이 사업이 이후 사업의 자금을 조달합니다. 나머지 사업은 아직 완료되지 않은 것을 포함하여 실제 도달한 단계와 함께 아래에 정리하였습니다.",
+        "Mảng đang vận hành hiện nay là vận tải: dịch vụ Tesla giá cố định trên toàn Seattle, cho tài xế thuê xe, và công cụ lập kế hoạch hành trình miễn phí cho mọi người. Mảng này cấp vốn cho các mảng tiếp theo. Từng mảng còn lại được liệt kê bên dưới kèm giai đoạn thực tế đã đạt được, kể cả những mảng chưa hoàn thiện."],
+})
+
+# Three strings are meant to read identically in every language: a quoted US
+# Treasury phrase, a product name, and a back-link carrying the company name.
+EXTRA_SKIP |= {
+    "“gift to reduce the debt held by the public”",
+    "← Plateau Strategy",
+    "Plateau Strategy Deflator",
+}
+
+# The company name plus its city reads the same in Spanish and Vietnamese —
+# identical output there is correct, not a missed translation.
+EXTRA_SKIP |= {"Plateau Strategy Solution Lab · Seattle"}
