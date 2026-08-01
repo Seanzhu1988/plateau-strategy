@@ -25,6 +25,36 @@ with sync_playwright() as p:
         pg.goto(B + route, wait_until="domcontentloaded")
         pg.wait_for_timeout(700)
         has = pg.evaluate("typeof window.psxJSON === 'function'")
+
+        # Markup nesting. Editing HTML with a regex is how a stray </div>
+        # gets left behind: removing a block by matching its opening tag and
+        # a lazy .*?</div> stops at the first inner close and abandons the
+        # outer one. The browser then silently re-parents everything after
+        # it, so #view-overview ended one section early and every
+        # "#view-overview .psx-*" rule quietly stopped matching. Nothing
+        # errors, nothing 404s, and the page just looks wrong. Compare the
+        # tags the file contains against the tree the browser actually
+        # built.
+        nesting = pg.evaluate("""() => {
+            const bad = [];
+            // A stray close tag shows up as an element the parser had to
+            // move: a <section> whose parent is <main> when the source put
+            // it inside a .view, for instance. Rather than re-parse, check
+            // the invariants this site relies on.
+            const views = document.querySelectorAll('.view').length;
+            document.querySelectorAll('section[id], .psx-cards, .psx-hero').forEach(el => {
+                if (!el.closest('.view') && document.querySelector('.view'))
+                    bad.push((el.id || el.className).toString().slice(0, 40) + ' is outside every .view');
+            });
+            return { views, bad };
+        }""")
+        if nesting["bad"]:
+            bad += 1
+            print(f"FAIL {route:20} broken nesting")
+            for n in nesting["bad"][:4]:
+                print("        ", n)
+            pg.close()
+            continue
         # Leaflet is loaded from unpkg. Where that CDN is unreachable — this
         # container blocks it — the map pages raise "L is not defined" with
         # nothing wrong in our code. Reported, never counted as a failure.
