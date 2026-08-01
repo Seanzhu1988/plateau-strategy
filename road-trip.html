@@ -6,7 +6,7 @@
 <title>Road Trip Planner — Plateau Strategy Solution Lab</title>
     <meta name="description" content="Give it two points and see the fuel, food, rest stops and viewpoints near your actual road, grouped by how many hours into the drive you'll be. Free.">
     <link rel="canonical" href="https://plateaustrategy.io/road-trip">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#14110c">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Plateau Strategy Solution Lab">
     <meta property="og:url" content="https://plateaustrategy.io/road-trip">
@@ -22,8 +22,8 @@
 <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-        background:#f1f5f9;color:#1f2937;line-height:1.6}
-    header{background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 100%);color:#fff;
+        background:#faf8f4;color:#14110c;line-height:1.6}
+    header{background:linear-gradient(135deg,#14110c 0%,#14110c 100%);color:#fff;
         padding:1rem 2rem;display:flex;align-items:center;gap:.7rem;
         box-shadow:0 4px 20px rgba(0,0,0,.15);position:sticky;top:0;z-index:1100}
     header img{height:42px;width:42px;border-radius:50%;border:2px solid rgba(255,255,255,.2)}
@@ -35,47 +35,47 @@
 
     .wrap{max-width:1180px;margin:0 auto;padding:26px 20px 60px}
     h1{font-size:1.75rem;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
-    .sub{color:#475569;margin-bottom:22px;max-width:64ch}
+    .sub{color:#4a453d;margin-bottom:22px;max-width:64ch}
 
-    .form{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:18px;
+    .form{background:#fff;border:1px solid #e6e2da;border-radius:14px;padding:18px;
         box-shadow:0 4px 16px rgba(15,23,42,.05);margin-bottom:18px}
     .fields{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end}
     .field label{display:block;font-size:.74rem;font-weight:700;letter-spacing:.1em;
         text-transform:uppercase;color:#6b655b;margin-bottom:6px}
-    .field input{width:100%;padding:11px 13px;border:1px solid #cbd5e1;border-radius:9px;
+    .field input{width:100%;padding:11px 13px;border:1px solid #ddd8cd;border-radius:9px;
         font-size:1rem;font-family:inherit}
-    .field input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.14)}
-    .go{background:#2563eb;color:#fff;border:none;border-radius:9px;padding:12px 22px;
+    .field input:focus{outline:none;border-color:#1b4d8f;box-shadow:0 0 0 3px rgba(37,99,235,.14)}
+    .go{background:#1b4d8f;color:#fff;border:none;border-radius:9px;padding:12px 22px;
         font-size:1rem;font-weight:700;cursor:pointer;white-space:nowrap}
-    .go:hover{background:#1d4ed8}
-    .go:disabled{background:#94a3b8;cursor:not-allowed}
-    .opts{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:.86rem;color:#475569;align-items:center}
+    .go:hover{background:#1b4d8f}
+    .go:disabled{background:#8a8377;cursor:not-allowed}
+    .opts{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:.86rem;color:#4a453d;align-items:center}
     .opts label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
 
-    #status{font-size:.9rem;color:#475569;margin:14px 0;min-height:1.3em}
+    #status{font-size:.9rem;color:#4a453d;margin:14px 0;min-height:1.3em}
     #status.err{color:#b91c1c;font-weight:600}
 
     .summary{display:none;gap:14px;flex-wrap:wrap;margin-bottom:16px}
-    .stat{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;flex:1;min-width:140px}
+    .stat{background:#fff;border:1px solid #e6e2da;border-radius:12px;padding:14px 18px;flex:1;min-width:140px}
     .stat .k{font-size:.72rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#6b655b}
-    .stat .v{font-size:1.5rem;font-weight:800;color:#0f172a;font-variant-numeric:tabular-nums;line-height:1.25}
+    .stat .v{font-size:1.5rem;font-weight:800;color:#14110c;font-variant-numeric:tabular-nums;line-height:1.25}
 
     #map{height:52vh;min-height:340px;border-radius:16px;border:1px solid #dde4ed;
         box-shadow:0 10px 30px -12px rgba(15,23,42,.22);overflow:hidden;margin-bottom:10px}
-    .legend{display:flex;flex-wrap:wrap;gap:1.1rem;font-size:.8rem;color:#475569;
+    .legend{display:flex;flex-wrap:wrap;gap:1.1rem;font-size:.8rem;color:#4a453d;
         margin-bottom:22px;align-items:center}
     .legend>span{display:inline-flex;align-items:center}
     .ldot{width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;
         justify-content:center;color:#fff;font-size:9px;font-weight:800;margin-right:6px;flex:0 0 auto}
 
     .legs{display:flex;flex-direction:column;gap:14px}
-    .leg{background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;
+    .leg{background:#fff;border:1px solid #e6e2da;border-radius:14px;overflow:hidden;
         box-shadow:0 4px 16px rgba(15,23,42,.05)}
     .leg-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid #eef2f7;
         background:#fbfdff}
-    .leg-n{width:30px;height:30px;border-radius:50%;background:#2563eb;color:#fff;flex:0 0 auto;
+    .leg-n{width:30px;height:30px;border-radius:50%;background:#1b4d8f;color:#fff;flex:0 0 auto;
         display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem}
-    .leg-t h3{font-size:1.02rem;font-weight:700;color:#0f172a}
+    .leg-t h3{font-size:1.02rem;font-weight:700;color:#14110c}
     .leg-t p{font-size:.82rem;color:#6b655b}
     .pois{padding:8px 18px 16px}
     .poi-group{margin-top:12px}
@@ -85,28 +85,28 @@
         border-radius:50%;color:#fff;font-size:9px;font-weight:800}
     .poi-group ul{list-style:none;display:flex;flex-wrap:wrap;gap:7px}
     .poi-group li{background:#f6f9fc;border:1px solid #e6edf5;border-radius:8px;
-        padding:5px 10px;font-size:.86rem;color:#334155}
+        padding:5px 10px;font-size:.86rem;color:#4a453d}
     .none{color:#6b655b;font-size:.85rem;font-style:italic}
 
     .tp-stop{text-align:center}
     .tp-dot{position:relative;width:28px;height:28px;border-radius:50%;margin:0 auto;
         display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
-        color:#fff;background:#2563eb;border:2px solid #fff;
+        color:#fff;background:#1b4d8f;border:2px solid #fff;
         box-shadow:0 1px 2px rgba(15,23,42,.28),0 3px 8px rgba(15,23,42,.18)}
-    .tp-lbl{font-size:10.5px;font-weight:600;color:#1f2937;white-space:nowrap;
+    .tp-lbl{font-size:10.5px;font-weight:600;color:#14110c;white-space:nowrap;
         background:rgba(255,255,255,.92);border-radius:6px;padding:1px 5px;margin-top:3px;
         display:inline-block;box-shadow:0 1px 3px rgba(15,23,42,.14)}
-    .ep-a .tp-dot{background:#0f172a}
-    .ep-b .tp-dot{background:#0d9488}
+    .ep-a .tp-dot{background:#14110c}
+    .ep-b .tp-dot{background:#0f6d5c}
 
-    .leaflet-container{background:#eef1f5;font:inherit}
+    .leaflet-container{background:#f5f1e8;font:inherit}
     .leaflet-bar{border:none!important;border-radius:10px!important;overflow:hidden;
         box-shadow:0 2px 10px rgba(15,23,42,.16)!important}
-    .leaflet-bar a{background:#fff!important;color:#334155!important;
+    .leaflet-bar a{background:#fff!important;color:#4a453d!important;
         border-bottom:1px solid #e8edf3!important}
-    .leaflet-control-attribution{background:rgba(255,255,255,.86)!important;color:#7c8798!important;
+    .leaflet-control-attribution{background:rgba(255,255,255,.86)!important;color:#6b655b!important;
         font-size:10.5px!important}
-    .leaflet-tooltip{background:#0f172a;color:#eef3fb;border:none;border-radius:8px;
+    .leaflet-tooltip{background:#14110c;color:#eef3fb;border:none;border-radius:8px;
         padding:6px 10px;font-size:12px;box-shadow:0 6px 20px rgba(15,23,42,.3)}
     .leaflet-tooltip::before{display:none}
 
@@ -118,7 +118,7 @@
 </style>
     <link rel="stylesheet" href="/paper.css">
 </head>
-<body>
+<body data-arm="operations">
 <header>
     <img src="plateau-logo.svg" alt="">
     <div class="brand">Road Trip Planner</div>
@@ -165,12 +165,12 @@
 
     <div id="map"></div>
     <div class="legend">
-        <span><span class="ldot" style="background:#0f172a">A</span>Start</span>
-        <span><span class="ldot" style="background:#0d9488">B</span>Destination</span>
-        <span><span class="ldot" style="background:#2563eb">1</span>Suggested break</span>
-        <span><span class="ldot" style="background:#ea580c">⛽</span>Fuel</span>
-        <span><span class="ldot" style="background:#7c3aed">🍽</span>Food</span>
-        <span><span class="ldot" style="background:#0891b2">👁</span>Scenic</span>
+        <span><span class="ldot" style="background:#14110c">A</span>Start</span>
+        <span><span class="ldot" style="background:#0f6d5c">B</span>Destination</span>
+        <span><span class="ldot" style="background:#1b4d8f">1</span>Suggested break</span>
+        <span><span class="ldot" style="background:#a85a08">⛽</span>Fuel</span>
+        <span><span class="ldot" style="background:#6b2fbe">🍽</span>Food</span>
+        <span><span class="ldot" style="background:#0b6480">👁</span>Scenic</span>
     </div>
 
     <div class="legs" id="legs"></div>
@@ -309,14 +309,14 @@
     // One Overpass call per break point, radius in metres. Kept deliberately
     // small: a driver wants somewhere just off this road, not the whole county.
     var GROUPS = [
-        { key: 'fuel',    label: 'Fuel',        glyph: '⛽', color: '#ea580c',
+        { key: 'fuel',    label: 'Fuel',        glyph: '⛽', color: '#a85a08',
           q: 'node(around:{R},{LAT},{LON})[amenity=fuel];' },
-        { key: 'food',    label: 'Food',        glyph: '🍽', color: '#7c3aed',
+        { key: 'food',    label: 'Food',        glyph: '🍽', color: '#6b2fbe',
           q: 'node(around:{R},{LAT},{LON})[amenity~"^(restaurant|cafe|fast_food)$"];' },
-        { key: 'rest',    label: 'Rest & services', glyph: '🅿', color: '#2563eb',
+        { key: 'rest',    label: 'Rest & services', glyph: '🅿', color: '#1b4d8f',
           q: 'node(around:{R},{LAT},{LON})[highway~"^(services|rest_area)$"];' +
              'way(around:{R},{LAT},{LON})[highway~"^(services|rest_area)$"];' },
-        { key: 'scenic',  label: 'Scenic',      glyph: '👁', color: '#0891b2',
+        { key: 'scenic',  label: 'Scenic',      glyph: '👁', color: '#0b6480',
           q: 'node(around:{R},{LAT},{LON})[tourism~"^(viewpoint|picnic_site)$"];' }
     ];
 
@@ -477,7 +477,7 @@
 
             // draw route + endpoints
             var line = L.polyline(rt.geometry.coordinates.map(function (c) { return [c[1], c[0]]; }),
-                { color: '#2563eb', weight: 5, opacity: .85 }).addTo(map);
+                { color: '#1b4d8f', weight: 5, opacity: .85 }).addTo(map);
             layers.push(line);
             pin(a.lat, a.lon, 'ep-a', 'A', 'Start', a.label);
             pin(b.lat, b.lon, 'ep-b', 'B', 'End', b.label);
@@ -500,7 +500,7 @@
 
             if (rests.length) {
                 var restHtml = '<div class="leg"><div class="leg-head">' +
-                    '<div class="leg-n" style="background:#2563eb">🅿</div><div class="leg-t">' +
+                    '<div class="leg-n" style="background:#1b4d8f">🅿</div><div class="leg-t">' +
                     '<h3>Rest stops along the whole route</h3>' +
                     '<p>' + rests.length + ' found within 2½ miles of the road, in the order you\'ll pass them</p>' +
                     '</div></div><div class="pois"><div class="poi-group"><ul>' +
@@ -514,7 +514,7 @@
                 rests.forEach(function (s) {
                     var c = L.circleMarker([s.lat, s.lon], {
                         radius: 6, color: '#fff', weight: 1.5,
-                        fillColor: s.kind === 'fuel' ? '#ea580c' : '#2563eb', fillOpacity: .95
+                        fillColor: s.kind === 'fuel' ? '#a85a08' : '#1b4d8f', fillOpacity: .95
                     }).bindTooltip((s.kind === 'fuel' ? 'Fuel' : 'Rest stop') + ' · ' + s.name +
                                    ' · ' + hhmm(s.sec) + ' in');
                     c.addTo(map); layers.push(c);

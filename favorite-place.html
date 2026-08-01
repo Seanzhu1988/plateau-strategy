@@ -9,8 +9,8 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f1f5f9; color: #1f2937; min-height: 100vh; }
-        header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #fff;
+            background: #faf8f4; color: #14110c; min-height: 100vh; }
+        header { background: linear-gradient(135deg, #14110c 0%, #14110c 100%); color: #fff;
             padding: 1rem 2rem; display: flex; align-items: center; gap: 0.7rem;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 100; }
         header img { height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
@@ -20,46 +20,46 @@
         header a:hover { color: #fff; }
 
         .wrap { max-width: 640px; margin: 1.8rem auto; padding: 0 1.2rem 3rem; }
-        .page-title { font-size: 1.9rem; font-weight: 800; color: #0f172a; }
+        .page-title { font-size: 1.9rem; font-weight: 800; color: #14110c; }
         .page-sub { color: #6b655b; margin: 0.3rem 0 1.1rem; line-height: 1.55; }
 
         .counter { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;
-            font-weight: 700; color: #1d4ed8; background: #eff6ff; border: 1px solid #dbeafe;
+            font-weight: 700; color: #1b4d8f; background: #eff6ff; border: 1px solid #dbeafe;
             border-radius: 999px; padding: 0.5rem 1rem; margin-bottom: 1.3rem; }
 
-        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+        .card { background: #fff; border: 1px solid #e6e2da; border-radius: 16px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1.4rem; }
 
         .search-box { position: relative; }
-        .search-box input { width: 100%; padding: 0.85rem 1rem; border: 1.5px solid #e2e8f0;
-            border-radius: 12px; font-size: 1rem; font-family: inherit; background: #f8fafc; }
-        .search-box input:focus { outline: none; border-color: #3b82f6; background: #fff;
+        .search-box input { width: 100%; padding: 0.85rem 1rem; border: 1.5px solid #e6e2da;
+            border-radius: 12px; font-size: 1rem; font-family: inherit; background: #faf8f4; }
+        .search-box input:focus { outline: none; border-color: #1b4d8f; background: #fff;
             box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
-        .qres { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #e2e8f0;
+        .qres { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #e6e2da;
             border-radius: 12px; margin-top: 0.4rem; box-shadow: 0 8px 24px rgba(15,23,42,0.1);
             max-height: 280px; overflow-y: auto; z-index: 20; display: none; }
-        .qres > div { padding: 0.7rem 1rem; font-size: 0.9rem; cursor: pointer; border-bottom: 1px solid #f1f5f9; }
+        .qres > div { padding: 0.7rem 1rem; font-size: 0.9rem; cursor: pointer; border-bottom: 1px solid #faf8f4; }
         .qres > div:last-child { border-bottom: none; }
-        .qres > div:hover { background: #f8fafc; }
+        .qres > div:hover { background: #faf8f4; }
         .qres .muted { color: #6b655b; cursor: default; }
         .qres .muted:hover { background: none; }
 
         .qform { margin-top: 1.3rem; display: none; }
         .qform.on { display: block; }
         .q { margin-bottom: 1.1rem; }
-        .q label { display: block; font-size: 0.85rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem; }
-        .q input[type=text] { width: 100%; padding: 0.7rem 0.9rem; border: 1.5px solid #e2e8f0;
-            border-radius: 10px; font-size: 0.95rem; font-family: inherit; background: #f8fafc; }
-        .q input[type=text]:focus { outline: none; border-color: #3b82f6; background: #fff; }
+        .q label { display: block; font-size: 0.85rem; font-weight: 700; color: #2a251d; margin-bottom: 0.5rem; }
+        .q input[type=text] { width: 100%; padding: 0.7rem 0.9rem; border: 1.5px solid #e6e2da;
+            border-radius: 10px; font-size: 0.95rem; font-family: inherit; background: #faf8f4; }
+        .q input[type=text]:focus { outline: none; border-color: #1b4d8f; background: #fff; }
         .durations { display: flex; flex-wrap: wrap; gap: 0.5rem; }
         .dchip { font-size: 0.85rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 999px;
-            border: 1.5px solid #e2e8f0; color: #475569; cursor: pointer; user-select: none; background: #fff; }
-        .dchip:hover { border-color: #93c5fd; }
-        .dchip.on { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
+            border: 1.5px solid #e6e2da; color: #4a453d; cursor: pointer; user-select: none; background: #fff; }
+        .dchip:hover { border-color: #1b4d8f; }
+        .dchip.on { background: #dbeafe; border-color: #1b4d8f; color: #1b4d8f; }
         .dchip.skip { margin-left: auto; color: #6b655b; }
 
         .submit { margin-top: 1.2rem; width: 100%; padding: 0.85rem; border: none; border-radius: 12px;
-            background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; font-weight: 700;
+            background: linear-gradient(135deg,#1b4d8f,#1b4d8f); color: #fff; font-weight: 700;
             font-size: 0.98rem; cursor: pointer; }
         .submit:hover { filter: brightness(1.06); }
         .submit:disabled { opacity: 0.6; cursor: default; }
@@ -72,7 +72,7 @@
     </style>
     <link rel="stylesheet" href="/paper.css">
 </head>
-<body>
+<body data-arm="operations">
     <header>
         <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
         <span class="brand">Plateau Strategy Solution Lab</span>

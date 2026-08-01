@@ -241,31 +241,70 @@ budget on people shopping for a Tesla to buy:
 drivers and rents Teslas, so those searches would land on a rider ad and convert
 as nothing.
 
-**Ad copy** — every claim below is already true on the site:
+**Ad copy.** Fifteen headlines and four descriptions per language, which is
+what a Responsive Search Ad wants — Google rotates them and learns which
+combinations work, so a set of three starves the test.
 
-*Headlines (30 char max each):*
+Every claim is checkable on the site. The earlier draft carried "Book in Under
+2 Minutes", which nobody had timed; it is gone. Run `python3 check_ads.py`
+before uploading — it enforces the real limits, and Google **counts a
+double-width character as two**, so a Chinese headline gets 15 characters, not
+30. Copy written in English and then translated is rejected at upload, which is
+the ordinary way a multilingual campaign fails before it starts. One English
+description came back at 91 against a 90 limit on the first run.
+
+*English headlines (≤30):*
 ```
-SeaTac Airport Transfer
-$75 Flat Rate to SeaTac
-Tesla Airport Car Service
-Book in Under 2 Minutes
-Available 24/7, Seattle
-No Surge Pricing, Ever
+Flat $75 to Sea-Tac              Seattle to Sea-Tac, $75
+Seattle Airport Car Service      Price Agreed Before Booking
+Tesla Airport Transfer           Book Your Sea-Tac Ride
+The Quote Is the Fare            Service in Five Languages
+No Surge, No Meter               Ride to Sea-Tac in a Tesla
+Reserve Any Hour, 24/7           Airport Transfer, Flat Rate
+Driver Arrives 15 Min Early      Quoted Once. That's the Fare.
+Fixed-Price Airport Rides
 ```
 
-*Descriptions (90 char max each):*
+*English descriptions (≤90):*
 ```
-Flat $75 to SeaTac — the price you're quoted is the price you pay. No surge, no meter.
-Ride to the airport in a Tesla. Reserve 24/7, flat rate, Seattle area. Book online now.
+Flat $75 to Sea-Tac. The fare you are quoted is the fare you pay. No surge, no meter.
+Reserve any hour of the day. Your driver arrives fifteen minutes early, in a Tesla.
+Seattle airport transfers at a price agreed before you book. Pay exactly what was quoted.
+Book in English, Chinese, Korean, Vietnamese or Spanish. A Seattle service, not an app.
 ```
 
-*Final URL:* `https://plateaustrategy.io/?utm_source=google_ads`
+Chinese, Spanish, Korean and Vietnamese sets are in `check_ads.py`, written to
+the same standard and length-checked. They are not translations of the English
+— an ad has to be written in the language, because "No Surge, No Meter" has no
+literal equivalent worth running. 不加价 不计表 says it in six characters.
 
-**"No surge pricing"** is the strongest line on the list. It's the specific pain
-of the incumbent, and a flat rate is the actual differentiator — lead with it.
+---
 
-**Add a call extension** once the business number exists. At 5am, a phone call
-converts better than a form, and call extensions are free to add.
+### The angle worth more than the budget
+
+The site now works in five languages, and **Seattle has one of the largest
+Chinese, Korean and Vietnamese speaking populations in the country.** Somebody
+landing at Sea-Tac who would rather arrange a car in their own language is
+poorly served by every incumbent — the apps are English-first and a phone call
+means explaining an address in a second language at five in the morning.
+
+That is a real edge, cheaply defended, and it is the reason the translation
+work is a marketing asset rather than a nicety:
+
+- Non-English keywords are far cheaper. Almost nobody bids on 西雅图机场接送
+  or 시애틀 공항 픽업 against the flood on "seatac airport transfer".
+- Intent is higher. Someone searching in Chinese for an airport car has already
+  decided not to use the app.
+- **Run them as separate campaigns, not one campaign with translated ads.**
+  Google targets language and location separately; mixing them spends the
+  English budget on impressions nobody clicks.
+- Point each at the site with the language pre-selected and its own source tag,
+  so the Archive shows which language actually converts:
+  `https://plateaustrategy.io/?lang=zh&utm_source=google_zh`
+
+Budget the first test in English only. Add one non-English campaign once the
+booking flow is proven end to end — a language you cannot support on the phone
+is a booking you cannot complete.
 
 ### What "it worked" looks like after 7 days
 

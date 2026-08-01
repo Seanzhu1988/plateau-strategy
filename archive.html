@@ -8,46 +8,46 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f1f5f9; color: #1f2937; min-height: 100vh; }
-        header { background: linear-gradient(135deg,#0f172a,#1e3a8a); color: #fff; padding: 1rem 2rem;
+            background: #faf8f4; color: #14110c; min-height: 100vh; }
+        header { background: linear-gradient(135deg,#14110c,#14110c); color: #fff; padding: 1rem 2rem;
             display: flex; align-items: center; gap: 0.7rem; }
         header img { height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
         header .brand { font-weight: 800; font-size: 1.2rem; }
         header .links { margin-left: auto; display: flex; gap: 1.3rem; }
         header a { color: #6b655b; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
         .wrap { max-width: 1080px; margin: 2rem auto; padding: 0 1.2rem; }
-        h1 { font-size: 1.7rem; color: #0f172a; font-weight: 800; }
+        h1 { font-size: 1.7rem; color: #14110c; font-weight: 800; }
         .sub { color: #6b655b; margin: 0.2rem 0 1.6rem; }
 
         .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
-        .tile { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.3rem; cursor: pointer;
+        .tile { background: #fff; border: 1px solid #e6e2da; border-radius: 14px; padding: 1.3rem; cursor: pointer;
             transition: box-shadow .15s, transform .15s, border-color .15s; }
-        .tile:hover { box-shadow: 0 8px 24px rgba(15,23,42,0.10); transform: translateY(-2px); border-color: #c7d2fe; }
-        .tile .lbl { font-size: 1.02rem; font-weight: 800; color: #0f172a; }
-        .tile .n { font-size: 1.9rem; font-weight: 800; color: #1e3a8a; margin: 0.35rem 0 0.1rem; }
+        .tile:hover { box-shadow: 0 8px 24px rgba(15,23,42,0.10); transform: translateY(-2px); border-color: #4a453d; }
+        .tile .lbl { font-size: 1.02rem; font-weight: 800; color: #14110c; }
+        .tile .n { font-size: 1.9rem; font-weight: 800; color: #14110c; margin: 0.35rem 0 0.1rem; }
         .tile .d { color: #6b655b; font-size: 0.82rem; line-height: 1.45; margin-top: 0.35rem; }
         .tile .last { color: #6b655b; font-size: 0.72rem; margin-top: 0.5rem; }
-        .tile.hot { border-color: #6ee7b7; background: linear-gradient(180deg,#ffffff,#f0fdf9); }
+        .tile.hot { border-color: #1b5e43; background: linear-gradient(180deg,#ffffff,#f0fdf9); }
         .tile.hot .n { color: #047857; }
 
-        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.4rem; margin-top: 1.2rem; }
+        .card { background: #fff; border: 1px solid #e6e2da; border-radius: 14px; padding: 1.4rem; margin-top: 1.2rem; }
         .backbar { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
-        .back { background: none; border: none; color: #2563eb; font-weight: 700; cursor: pointer; font-size: 0.9rem; padding: 0; }
-        h2 { font-size: 1.25rem; color: #0f172a; }
+        .back { background: none; border: none; color: #1b4d8f; font-weight: 700; cursor: pointer; font-size: 0.9rem; padding: 0; }
+        h2 { font-size: 1.25rem; color: #14110c; }
         .toolbar { display: flex; gap: 0.7rem; align-items: center; margin: 0.9rem 0 0.4rem; flex-wrap: wrap; }
-        .toolbar input { flex: 1; min-width: 180px; padding: 0.6rem 0.9rem; border: 1px solid #cbd5e1; border-radius: 9px; font-size: 0.9rem; }
+        .toolbar input { flex: 1; min-width: 180px; padding: 0.6rem 0.9rem; border: 1px solid #ddd8cd; border-radius: 9px; font-size: 0.9rem; }
         .btn { padding: 0.62rem 1.1rem; border: none; border-radius: 10px; font-weight: 700; font-size: 0.86rem;
             cursor: pointer; text-decoration: none; display: inline-block; }
-        .btn.blue { background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; }
-        .btn.dark { background: #0f172a; color: #fff; }
+        .btn.blue { background: linear-gradient(135deg,#1b4d8f,#1b4d8f); color: #fff; }
+        .btn.dark { background: #14110c; color: #fff; }
         .count { color: #6b655b; font-size: 0.82rem; font-weight: 600; }
         .tbl-scroll { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { text-align: left; padding: 0.5rem 0.6rem; font-size: 0.84rem; border-bottom: 1px solid #f1f5f9; white-space: nowrap; }
+        th, td { text-align: left; padding: 0.5rem 0.6rem; font-size: 0.84rem; border-bottom: 1px solid #faf8f4; white-space: nowrap; }
         th { color: #6b655b; font-weight: 700; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; background: #fff; }
         td.amt { text-align: right; font-weight: 700; }
-        td a { color: #2563eb; }
-        .badge { font-size: 0.66rem; font-weight: 800; padding: 0.16rem 0.5rem; border-radius: 999px; background: #e2e8f0; color: #475569; }
+        td a { color: #1b4d8f; }
+        .badge { font-size: 0.66rem; font-weight: 800; padding: 0.16rem 0.5rem; border-radius: 999px; background: #e6e2da; color: #4a453d; }
         .badge.NEW, .badge.QUOTE { background: #fef3c7; color: #92400e; }
         .badge.COMPLETED, .badge.PAID { background: #dcfce7; color: #166534; }
         .badge.ASSIGNED { background: #dbeafe; color: #1e40af; }
@@ -58,8 +58,9 @@
             font-size: 0.85rem; color: #065f46; margin-top: 0.9rem; line-height: 1.5; display: none; }
     </style>
     <link rel="stylesheet" href="/admin-terminal.css">
+    <link rel="stylesheet" href="/paper.css">
 </head>
-<body>
+<body data-arm="company">
     <header>
         <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab">
         <span class="brand">Plateau Strategy Solution Lab</span>

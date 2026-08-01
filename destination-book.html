@@ -6,7 +6,7 @@
     <title>Destination Book — Plateau Strategy Solution Lab</title>
     <meta name="description" content="A growing guidebook of attractions and restaurants with local tips from a licensed guide. One tap sends any place into your trip. Free, no account.">
     <link rel="canonical" href="https://plateaustrategy.io/destination-book">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#14110c">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Plateau Strategy Solution Lab">
     <meta property="og:url" content="https://plateaustrategy.io/destination-book">
@@ -21,8 +21,8 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f1f5f9; color: #1f2937; min-height: 100vh; }
-        header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #fff;
+            background: #faf8f4; color: #14110c; min-height: 100vh; }
+        header { background: linear-gradient(135deg, #14110c 0%, #14110c 100%); color: #fff;
             padding: 1rem 2rem; display: flex; align-items: center; gap: 0.7rem;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 100; }
         header img { height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
@@ -32,114 +32,118 @@
         header a:hover { color: #fff; }
 
         .wrap { max-width: 1100px; margin: 1.6rem auto; padding: 0 1.2rem; }
-        .page-title { font-size: 1.9rem; font-weight: 800; color: #0f172a; }
+        .page-title { font-size: 1.9rem; font-weight: 800; color: #14110c; }
         .page-sub { color: #6b655b; margin: 0.2rem 0 1.2rem; }
 
-        .filters { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+        .filters { background: #fff; border: 1px solid #e6e2da; border-radius: 16px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1rem 1.2rem; margin-bottom: 1.2rem; }
         .frow { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 0.6rem; }
         .frow:last-child { margin-bottom: 0; }
         .flab { font-size: 0.72rem; font-weight: 800; color: #6b655b; text-transform: uppercase;
             letter-spacing: 0.05em; width: 76px; }
         .chip { font-size: 0.82rem; font-weight: 600; padding: 0.32rem 0.9rem; border-radius: 999px;
-            border: 1.5px solid #e2e8f0; color: #6b655b; cursor: pointer; user-select: none; background: #fff; }
-        .chip.on { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
-        .filters input[type=text] { flex: 1; min-width: 180px; padding: 0.45rem 0.8rem; border: 1.5px solid #e2e8f0;
-            border-radius: 10px; font-size: 0.9rem; font-family: inherit; background: #f8fafc; }
+            border: 1.5px solid #e6e2da; color: #6b655b; cursor: pointer; user-select: none; background: #fff; }
+        .chip.on { background: #14110c; border-color: #14110c; color: #fff; }
+        .chip:hover { border-color: #ddd8cd; }
+        .chip.on:hover { border-color: #14110c; }
+        .filters input[type=text] { flex: 1; min-width: 180px; padding: 0.45rem 0.8rem; border: 1.5px solid #e6e2da;
+            border-radius: 3px; font-size: 0.9rem; font-family: inherit; background: #fff; }
         .count { font-size: 0.82rem; color: #6b655b; margin: 0 0 0.8rem 0.2rem; }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
-        .entry { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+        .entry { background: #fff; border: 1px solid #e6e2da; border-radius: 4px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1.1rem 1.2rem;
             display: flex; flex-direction: column; gap: 0.5rem; }
-        .entry h3 { font-size: 1.05rem; color: #0f172a; }
+        .entry h3 { font-size: 1.05rem; color: #14110c; }
         .badges { display: flex; flex-wrap: wrap; gap: 0.35rem; }
         .badge { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
             padding: 0.18rem 0.55rem; border-radius: 6px; }
-        .b-city { background: #eef2f7; color: #475569; }
-        .b-comm { background: #ecfdf5; color: #047857; }
+        .b-city { background: #f0ede5; color: #4a453d; }
+        .b-comm { background: #e8f2ec; color: #14513a; }
         .rate-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.3rem 0 0.5rem; }
         .stars { font-size: 1.15rem; letter-spacing: 1px; cursor: pointer; }
-        .stars .star { color: #d1d5db; transition: color 0.1s; }
-        .stars .star.on { color: #f59e0b; }
-        .stars .star:hover { color: #fbbf24; }
+        .stars .star { color: #6b655b; transition: color 0.1s; }
+        .stars .star.on { color: #8a5a12; }
+        .stars .star:hover { color: #8a5a12; }
         .rate-meta { font-size: 0.74rem; color: #6b655b; font-weight: 600; }
         .star-chip { cursor: pointer; user-select: none; }
-        .star-chip.on { background: #fef3c7; border-color: #fcd34d; color: #92400e; }
+        .star-chip.on { background: #fef3c7; border-color: #8a5a12; color: #92400e; }
         .star-hint { font-size: 0.72rem; color: #6b655b; margin-left: 0.4rem; }
         .sugbtn { margin: 0.5rem 0 0 0; background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857;
             border-radius: 9px; padding: 0.55rem 0.9rem; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
         .sugbtn:hover { background: #d1fae5; }
-        .sugitem { padding: 0.5rem 0.7rem; border: 1px solid #e2e8f0; border-top: none; font-size: 0.82rem;
-            cursor: pointer; background: #fff; color: #334155; }
-        .sugitem:first-of-type { border-top: 1px solid #e2e8f0; border-radius: 8px 8px 0 0; margin-top: 0.4rem; }
+        .sugitem { padding: 0.5rem 0.7rem; border: 1px solid #e6e2da; border-top: none; font-size: 0.82rem;
+            cursor: pointer; background: #fff; color: #4a453d; }
+        .sugitem:first-of-type { border-top: 1px solid #e6e2da; border-radius: 8px 8px 0 0; margin-top: 0.4rem; }
         .sugitem:last-of-type { border-radius: 0 0 8px 8px; }
         .sugitem:hover { background: #f0f9ff; }
         .sugmuted { color: #6b655b; font-size: 0.8rem; padding: 0.4rem 0.2rem; }
-        .b-attr { background: #dbeafe; color: #1d4ed8; }
-        .b-rest { background: #ffedd5; color: #c2410c; }
-        .b-cat  { background: #f1f5f9; color: #6b655b; border: 1px solid #e2e8f0; }
-        .b-price{ background: #dcfce7; color: #166534; }
-        .entry .desc { font-size: 0.9rem; color: #334155; line-height: 1.55; }
+        .b-attr { background: #e8eef6; color: #17436f; }
+        .b-rest { background: #f7efe0; color: #7a4e0f; }
+        .b-cat  { background: #faf8f4; color: #6b655b; border: 1px solid #e6e2da; }
+        .b-price{ background: #e8f2ec; color: #14513a; }
+        .entry .desc { font-size: 0.9rem; color: #4a453d; line-height: 1.55; }
         .entry .meta { font-size: 0.8rem; color: #6b655b; }
-        .entry .tip { font-size: 0.84rem; color: #92400e; background: #fffbeb; border: 1px solid #fde68a;
-            border-radius: 8px; padding: 0.45rem 0.7rem; line-height: 1.45; }
+        .entry .tip { font-size: 0.86rem; color: #4a453d; background: none; border: none;
+            border-left: 2px solid #ddd8cd; border-radius: 0;
+            padding: 0.1rem 0 0.1rem 0.75rem; margin-left: 0.1rem; line-height: 1.5;
+            font-style: italic; }
         .entry .actions { margin-top: auto; display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
         .addbtn { padding: 0.45rem 0.9rem; border: none; border-radius: 8px; cursor: pointer;
             font-weight: 700; font-size: 0.82rem; font-family: inherit;
-            background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; }
+            background: linear-gradient(135deg,#1b4d8f,#1b4d8f); color: #fff; }
         .addbtn:hover { filter: brightness(1.07); }
         .addbtn.added { background: #dcfce7; color: #166534; cursor: default; }
-        .openlink { font-size: 0.82rem; font-weight: 700; color: #1d4ed8; text-decoration: none; }
+        .openlink { font-size: 0.82rem; font-weight: 700; color: #1b4d8f; text-decoration: none; }
         .empty { text-align: center; color: #6b655b; padding: 3rem 0; }
         /* 🌟 wish box — the demand side of the book */
-        .wishbox { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+        .wishbox { background: #fff; border: 1px solid #e6e2da; border-radius: 16px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1.1rem 1.2rem; margin-bottom: 1.2rem; }
-        .wishbox h3 { font-size: 1rem; color: #0f172a; margin-bottom: 0.2rem; }
+        .wishbox h3 { font-size: 1rem; color: #14110c; margin-bottom: 0.2rem; }
         .wishbox .sub { color: #6b655b; font-size: 0.84rem; margin-bottom: 0.7rem; line-height: 1.5; }
         .wishrow { display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center; }
-        .wishrow input { flex: 1; min-width: 190px; padding: 0.55rem 0.85rem; border: 1.5px solid #e2e8f0;
-            border-radius: 10px; font-size: 0.92rem; font-family: inherit; background: #f8fafc; }
-        .wishrow input:focus { outline: none; border-color: #3b82f6; background: #fff; }
-        .wishrow select { padding: 0.55rem 0.7rem; border: 1.5px solid #e2e8f0; border-radius: 10px;
-            font-size: 0.88rem; font-family: inherit; background: #f8fafc; color: #475569; }
-        .wishrow button { border: none; border-radius: 10px; background: linear-gradient(135deg,#3b82f6,#2563eb);
+        .wishrow input { flex: 1; min-width: 190px; padding: 0.55rem 0.85rem; border: 1.5px solid #e6e2da;
+            border-radius: 10px; font-size: 0.92rem; font-family: inherit; background: #faf8f4; }
+        .wishrow input:focus { outline: none; border-color: #1b4d8f; background: #fff; }
+        .wishrow select { padding: 0.55rem 0.7rem; border: 1.5px solid #e6e2da; border-radius: 10px;
+            font-size: 0.88rem; font-family: inherit; background: #faf8f4; color: #4a453d; }
+        .wishrow button { border: none; border-radius: 10px; background: linear-gradient(135deg,#1b4d8f,#1b4d8f);
             color: #fff; font-weight: 700; font-size: 0.88rem; padding: 0.55rem 1.1rem; cursor: pointer; }
         .wishrow button:hover { filter: brightness(1.07); }
         .wishmsg { font-size: 0.84rem; margin-top: 0.5rem; }
         .wishmsg.ok { color: #047857; } .wishmsg.err { color: #b91c1c; }
         .wishtop { margin-top: 0.7rem; font-size: 0.8rem; color: #6b655b; line-height: 1.6; }
-        .wishtop b { color: #0f172a; }
+        .wishtop b { color: #14110c; }
         .wishtag { display: inline-block; background: #eef2f7; border-radius: 999px;
             padding: 0.15rem 0.6rem; margin: 0.15rem 0.25rem 0 0; font-size: 0.76rem; }
         /* 🆕 discovered by a traveler + 💬 their notes */
-        .b-new { background: #fef3c7; color: #92400e; }
-        .cmt-wrap { border-top: 1px solid #f1f5f9; margin-top: 0.5rem; padding-top: 0.5rem; }
-        .cmt-toggle { font-size: 0.78rem; font-weight: 700; color: #1d4ed8; cursor: pointer;
+        .b-new { background: #f7efe0; color: #7a4e0f; }
+        .cmt-wrap { border-top: 1px solid #faf8f4; margin-top: 0.5rem; padding-top: 0.5rem; }
+        .cmt-toggle { font-size: 0.78rem; font-weight: 700; color: #1b4d8f; cursor: pointer;
             user-select: none; }
         .cmt-body { display: none; margin-top: 0.5rem; }
         .cmt-body.on { display: block; }
-        .cmt { font-size: 0.8rem; color: #334155; line-height: 1.5; padding: 0.4rem 0;
-            border-bottom: 1px solid #f8fafc; }
-        .cmt .who { font-weight: 700; color: #0f172a; }
+        .cmt { font-size: 0.8rem; color: #4a453d; line-height: 1.5; padding: 0.4rem 0;
+            border-bottom: 1px solid #faf8f4; }
+        .cmt .who { font-weight: 700; color: #14110c; }
         .cmt .when { color: #6b655b; font-size: 0.72rem; }
         .cmt-form { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
-        .cmt-form input { padding: 0.42rem 0.6rem; border: 1.5px solid #e2e8f0; border-radius: 8px;
-            font-size: 0.82rem; font-family: inherit; background: #f8fafc; }
+        .cmt-form input { padding: 0.42rem 0.6rem; border: 1.5px solid #e6e2da; border-radius: 8px;
+            font-size: 0.82rem; font-family: inherit; background: #faf8f4; }
         .cmt-form input.who-in { width: 108px; }
         .cmt-form input.txt-in { flex: 1; min-width: 150px; }
-        .cmt-form button { border: none; border-radius: 8px; background: #1d4ed8; color: #fff;
+        .cmt-form button { border: none; border-radius: 8px; background: #1b4d8f; color: #fff;
             font-weight: 700; font-size: 0.78rem; padding: 0.42rem 0.8rem; cursor: pointer; }
         .cmt-msg { font-size: 0.76rem; margin-top: 0.3rem; color: #047857; }
         /* ⏱ the book asks what it displays: how long people actually stay */
         .stay-crowd { color: #0d9488; font-weight: 700; }
         .stay-ask { margin-top: 0.35rem; font-size: 0.78rem; }
         .stay-ask .lead { color: #6b655b; cursor: pointer; user-select: none; font-weight: 600; }
-        .stay-ask .lead:hover { color: #1d4ed8; }
+        .stay-ask .lead:hover { color: #1b4d8f; }
         .stay-opts { display: none; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.35rem; }
         .stay-opts.on { display: flex; }
         .stay-opts span { font-size: 0.74rem; font-weight: 600; padding: 0.25rem 0.62rem; border-radius: 999px;
-            border: 1.5px solid #e2e8f0; background: #fff; color: #475569; cursor: pointer; user-select: none; }
+            border: 1.5px solid #e6e2da; background: #fff; color: #4a453d; cursor: pointer; user-select: none; }
         .stay-opts span:hover { border-color: #5eead4; color: #0d9488; }
         .stay-done { color: #047857; font-weight: 700; font-size: 0.78rem; margin-top: 0.35rem; }
 
@@ -147,7 +151,7 @@
     </style>
     <link rel="stylesheet" href="/paper.css">
 </head>
-<body>
+<body data-arm="operations">
     <header>
         <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
         <span class="brand">Plateau Strategy Solution Lab</span>
@@ -209,7 +213,7 @@
         const avg = e.stars || 0, cnt = e.rating_count || 0;
         let s = '<span class="stars" title="Tap a star to rate this place">';
         for (let n = 1; n <= 5; n++)
-            s += '<span class="star' + (n <= Math.round(avg) ? ' on' : '') + '" onclick="ratePlace(' + i + ',' + n + ')">★</span>';
+            s += '<span class="star' + (n <= Math.round(avg) ? ' on' : '') + '" onclick="ratePlace(' + i + ',' + n + ')">' + (n <= Math.round(avg) ? '★' : '☆') + '</span>';
         s += '</span><span class="rate-meta">' +
              (cnt ? (avg.toFixed(1) + ' · ' + cnt + (cnt > 1 ? ' ratings' : ' rating')) : 'tap to rate') + '</span>';
         return s;
@@ -236,6 +240,17 @@
 
     const $ = id => document.getElementById(id);
     function fmt(m){ m = Math.round(m); return Math.floor(m/60) + ':' + ('0' + (m % 60)).slice(-2); }
+    // Strings this page assembles itself go through the shared formatter when
+    // i18n.js is present, and fall straight through to English when it is not.
+    function T(pattern, vals) {
+        if (window.psxFmt) return window.psxFmt(pattern, vals);
+        return pattern.replace(/\{(\w+)\}/g, (m, k) =>
+            (vals && vals[k] !== undefined) ? vals[k] : m);
+    }
+    // apply() re-walks text nodes, but an assembled string is already one baked
+    // node — the only way to change it is to build it again.
+    document.addEventListener('psx:lang', function () { try { render(); } catch (e) {} });
+
     function esc(s){ return String(s == null ? '' : s).replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])); }
 
     function plannerNames(){
@@ -318,11 +333,14 @@
                 + '</div>'
                 + '<div class="rate-row">' + starWidget(e, i) + '</div>'
                 + '<p class="desc">' + esc(e.desc) + '</p>'
-                + '<p class="meta">Open till ' + fmt(e.close) + ' · '
+                + '<p class="meta">'
                 +   (e.typical_visit
-                        ? '<span class="stay-crowd">👥 travelers stay ~' + stayLabel(e.typical_visit) + '</span>'
-                          + ' <span style="color:#6b655b">(' + e.visit_n + ')</span>'
-                        : '~' + e.visit + ' min visit')
+                        ? T('Open till {time} · ', { time: fmt(e.close) })
+                          + '<span class="stay-crowd">'
+                          + T('👥 travelers stay ~{stay}', { stay: stayLabel(e.typical_visit) })
+                          + '</span> <span style="color:#6b655b">(' + e.visit_n + ')</span>'
+                        : T('Open till {time} · ~{mins} min visit',
+                            { time: fmt(e.close), mins: e.visit }))
                 + '</p>'
                 + '<div class="stay-ask" id="stay_' + i + '">'
                 +   '<span class="lead" onclick="openStay(' + i + ')">⏱ Been here? Tell us how long you stayed →</span>'
@@ -331,7 +349,8 @@
                           + stayLabel(m) + '</span>').join('')
                 +   '</div>'
                 + '</div>'
-                + (e.tip ? '<p class="tip">💡 ' + esc(e.tip) + '</p>' : '')
+                + (e.tip ? '<p class="tip"><span aria-hidden="true">💡</span> '
+                           + '<span>' + esc(e.tip) + '</span></p>' : '')
                 + '<div class="actions">'
                 +   (added
                         ? '<button class="addbtn added">✓ In your planner</button><a class="openlink" href="/trip-planner">Open Trip Planner →</a>'

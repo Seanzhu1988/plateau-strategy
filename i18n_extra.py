@@ -1067,6 +1067,619 @@ EXTRA.update({
 })
 EXTRA_SKIP |= {"1200 Pine St, Seattle", "e.g. AS 1234 (optional)"}
 
+
+# ---------------------------------------------------------------------------
+# Coverage pass: strings a visitor navigates by that were still English.
+# Found by rendering every page, collecting visible text, and subtracting what
+# the dictionary already held — 73% covered, so roughly one line in four came
+# back in English mid-sentence. That is what makes a translated page feel
+# broken: not bad wording, but wording that stops.
+#
+# Place names are deliberately NOT here. "Katz's Delicatessen" and "Pike Place
+# Market" are what the signs outside say, and a traveller looking for them
+# needs the name on the sign.
+# ---------------------------------------------------------------------------
+EXTRA.update({
+    # --- trip planner / destination book chrome ---
+    "+ Add to Trip Planner": ["+ 加入行程规划", "+ Añadir al planificador", "+ 여행 플래너에 추가", "+ Thêm vào lịch trình"],
+    "✓ In your planner": ["✓ 已在您的行程中", "✓ En tu planificador", "✓ 플래너에 있음", "✓ Đã có trong lịch trình"],
+    "All cities": ["所有城市", "Todas las ciudades", "모든 도시", "Tất cả thành phố"],
+    "All types": ["所有类型", "Todos los tipos", "모든 유형", "Tất cả loại"],
+    "Any rating ⟳": ["不限评分 ⟳", "Cualquier valoración ⟳", "모든 평점 ⟳", "Mọi đánh giá ⟳"],
+    "Attraction": ["景点", "Atracción", "명소", "Điểm tham quan"],
+    "Attractions": ["景点", "Atracciones", "명소", "Điểm tham quan"],
+    "Restaurant": ["餐厅", "Restaurante", "식당", "Nhà hàng"],
+    "Restaurants & food": ["餐饮美食", "Restaurantes y comida", "식당 및 음식", "Nhà hàng & ẩm thực"],
+    "tap to rate": ["点击评分", "toca para valorar", "탭하여 평가", "chạm để đánh giá"],
+    "💬 Add the first note": ["💬 写下第一条留言", "💬 Escribe la primera nota", "💬 첫 메모 남기기", "💬 Viết ghi chú đầu tiên"],
+    "⏱ Been here? Tell us how long you stayed →": [
+        "⏱ 来过这里？告诉我们您待了多久 →",
+        "⏱ ¿Has estado aquí? Cuéntanos cuánto tiempo te quedaste →",
+        "⏱ 가보셨나요? 얼마나 머무셨는지 알려주세요 →",
+        "⏱ Bạn từng đến đây? Cho chúng tôi biết bạn ở lại bao lâu →"],
+    "46 of 46 destinations": ["46 个目的地，共 46 个", "46 de 46 destinos", "목적지 46개 중 46개", "46 trên 46 điểm đến"],
+
+    # --- durations offered when logging a visit ---
+    "4 hours": ["4 小时", "4 horas", "4시간", "4 giờ"],
+    "8 hours": ["8 小时", "8 horas", "8시간", "8 giờ"],
+    "1 day": ["1 天", "1 día", "1일", "1 ngày"],
+    "2 days": ["2 天", "2 días", "2일", "2 ngày"],
+
+    # --- fares, as the booking form lists them ---
+    "Airport Pickup (flat) — $75": ["机场接送（一口价）— $75", "Recogida en aeropuerto (fija) — $75", "공항 픽업(정액) — $75", "Đón sân bay (giá cố định) — 75 $"],
+    "Downtown Transfer — $45": ["市区接送 — $45", "Traslado al centro — $45", "다운타운 이동 — $45", "Đưa đón trung tâm — 45 $"],
+    "Hourly (per hour) — $65": ["按小时计（每小时）— $65", "Por hora — $65", "시간제(시간당) — $65", "Theo giờ — 65 $"],
+
+    # --- reinvestment / proposals ---
+    "Back it by running it": ["以运营方式支持", "Apóyalo operándolo", "직접 운영하며 지원", "Ủng hộ bằng cách vận hành"],
+    "Back it with capital": ["以资金方式支持", "Apóyalo con capital", "자본으로 지원", "Ủng hộ bằng vốn"],
+    "Follow this proposal:": ["关注这个提案：", "Sigue esta propuesta:", "이 제안 팔로우:", "Theo dõi đề xuất này:"],
+    "💰 I want to invest": ["💰 我想投资", "💰 Quiero invertir", "💰 투자하고 싶습니다", "💰 Tôi muốn đầu tư"],
+    "🚀 I want to launch this": ["🚀 我想把它做起来", "🚀 Quiero lanzarlo", "🚀 제가 실행하고 싶습니다", "🚀 Tôi muốn triển khai"],
+    "0 investor(s) interested": ["0 位投资人关注", "0 inversor(es) interesados", "관심 투자자 0명", "0 nhà đầu tư quan tâm"],
+    "0 operator(s) interested": ["0 位运营者关注", "0 operador(es) interesados", "관심 운영자 0명", "0 nhà vận hành quan tâm"],
+    "· 0 following": ["· 0 人关注", "· 0 siguiendo", "· 팔로워 0", "· 0 người theo dõi"],
+
+    # --- treasury give-back ---
+    "Nobody has reported a gift yet — the zero is honest.": [
+        "目前还没有人报告捐赠——这个零是真实的。",
+        "Nadie ha reportado una donación todavía; el cero es honesto.",
+        "아직 기부를 알려온 분이 없습니다 — 이 0은 정직한 숫자입니다.",
+        "Chưa có ai báo về khoản đóng góp nào — số 0 này là thật."],
+    "🇺🇸 Give at the U.S. Treasury (Pay.gov) →": [
+        "🇺🇸 通过美国财政部捐赠（Pay.gov）→",
+        "🇺🇸 Donar en el Tesoro de EE. UU. (Pay.gov) →",
+        "🇺🇸 미국 재무부에 기부하기 (Pay.gov) →",
+        "🇺🇸 Đóng góp tại Kho bạc Hoa Kỳ (Pay.gov) →"],
+
+    # --- real-estate blueprint sheet ---
+    "PROJECT · PLATEAU STRATEGY": ["项目 · PLATEAU STRATEGY", "PROYECTO · PLATEAU STRATEGY", "프로젝트 · PLATEAU STRATEGY", "DỰ ÁN · PLATEAU STRATEGY"],
+    "Mixed-use development · Sheet RE-01": ["综合开发项目 · 图纸 RE-01", "Desarrollo de uso mixto · Plano RE-01", "복합 개발 · 도면 RE-01", "Phát triển đa chức năng · Bản vẽ RE-01"],
+    "FIG 1 — MIXED-USE HUB · FRONT ELEVATION (NTS)": [
+        "图 1 — 综合体 · 正立面（无比例）",
+        "FIG 1 — CENTRO DE USO MIXTO · ALZADO FRONTAL (SIN ESCALA)",
+        "그림 1 — 복합 허브 · 정면도 (축척 없음)",
+        "HÌNH 1 — TỔ HỢP ĐA CHỨC NĂNG · MẶT ĐỨNG (KHÔNG TỶ LỆ)"],
+    "SCALE · NTS": ["比例 · 无比例", "ESCALA · SIN ESCALA", "축척 · 없음", "TỶ LỆ · KHÔNG"],
+    "SHEET · RE-01": ["图纸 · RE-01", "PLANO · RE-01", "도면 · RE-01", "BẢN VẼ · RE-01"],
+    "REV · A": ["版本 · A", "REV · A", "개정 · A", "PHIÊN BẢN · A"],
+
+    # --- cities: these are translated, unlike venue names ---
+    "New York": ["纽约", "Nueva York", "뉴욕", "New York"],
+    "Boston": ["波士顿", "Boston", "보스턴", "Boston"],
+    "Seattle": ["西雅图", "Seattle", "시애틀", "Seattle"],
+    "Washington DC": ["华盛顿特区", "Washington D. C.", "워싱턴 D.C.", "Washington D.C."],
+})
+
+# Venue names stay in English: a traveller looking for the place needs the name
+# that is written on the door.
+EXTRA_SKIP |= {
+    "9/11 Memorial & Museum", "Air & Space Museum", "Arlington National Cemetery",
+    "Ben's Chili Bowl", "Boston Common & Public Garden", "Brooklyn Bridge",
+    "Central Park", "Chelsea Market", "Chihuly Garden and Glass",
+    "Empire State Building", "Faneuil Hall Marketplace", "Fenway Park",
+    "Founding Farmers", "Freedom Trail (start)", "Gas Works Park",
+    "Georgetown Waterfront", "Grand Central Oyster Bar", "Grand Central Terminal",
+    "Harvard Yard, Cambridge", "Jefferson Memorial", "Joe's Pizza",
+    "Katz's Delicatessen", "Kerry Park viewpoint", "Levain Bakery",
+    "Lincoln Memorial", "Museum of American History", "Museum of Fine Arts",
+    "Museum of Pop Culture", "National Gallery of Art", "New England Aquarium",
+    "Old Ebbitt Grill", "Pike Place Market", "Seattle Aquarium", "Space Needle",
+    "Starbucks Reserve Roastery", "Statue of Liberty ferry", "Stone Street",
+    "The High Line", "The Met Museum", "The Wharf", "Times Square",
+    "US Capitol Visitor Center", "USS Constitution", "Union Market",
+    "Washington Monument", "White House (Lafayette Sq)", "Tesla", "Sean Zhu",
+    "English", "Español", "Tiếng Việt",
+}
+
+
+# ---------------------------------------------------------------------------
+# REGISTER PASS — corrections, not new strings.
+#
+# The first translations were fluent but wrong in tone. The English here is
+# deliberately plain, and plain English was rendered as colloquial Chinese —
+# 一门生意 (market-stall talk for a line of trade), 一口价 (haggling vocabulary),
+# 靠车挣钱 ("make money off the car"), 它养着 (feeds, as one feeds an animal),
+# 四块业务 (a colloquial measure word). In Chinese business writing that register
+# reads as unserious, which is precisely the opposite of what the English was
+# rewritten to achieve.
+#
+# Plain and colloquial are not the same thing. Chinese reaches "plain and
+# honest" by being concise and measured, not by being chatty. These are rewritten
+# as a company would write about itself: 业务 not 生意, 固定价格 not 一口价,
+# 为…提供资金 not 养着.
+# ---------------------------------------------------------------------------
+EXTRA.update({
+    "We build one business at a time": [
+        "我们一次只做一项业务",
+        "Construimos un negocio a la vez",
+        "한 번에 하나의 사업만 만듭니다",
+        "Chúng tôi xây dựng từng mảng kinh doanh một"],
+
+    "Transportation is the one that runs today: flat-rate Tesla rides across Seattle, cars rented to drivers who earn with them, and trip-planning tools anyone can use free. It pays for what comes next. Every other arm is listed below with the stage it is honestly at — including the ones not finished.": [
+        "目前真正在运营的是出行业务：覆盖西雅图全城的特斯拉固定价格接送、面向司机的车辆租赁，以及所有人都可免费使用的行程规划工具。它为后续业务提供资金。下方列出的每一项业务都如实标注了所处阶段——包括尚未完成的部分。",
+        "El transporte es lo que está en marcha hoy: traslados en Tesla con tarifa fija por todo Seattle, vehículos alquilados a conductores que ganan con ellos y herramientas de planificación de viajes que cualquiera puede usar gratis. Financia lo que viene después. Cada una de las demás áreas aparece abajo con la etapa en la que realmente está, incluidas las que no están terminadas.",
+        "지금 실제로 운영 중인 것은 교통 사업입니다. 시애틀 전역의 정액 요금 테슬라 이동, 기사에게 대여하는 차량, 그리고 누구나 무료로 쓸 수 있는 여행 계획 도구입니다. 이 사업이 다음 단계의 자금을 댑니다. 나머지 사업은 아래에 각자 실제로 놓인 단계와 함께 정리해 두었습니다 — 아직 끝나지 않은 것들까지 포함해서.",
+        "Mảng thực sự đang vận hành hôm nay là vận tải: các chuyến Tesla giá cố định khắp Seattle, xe cho tài xế thuê để kiếm thu nhập, và công cụ lập kế hoạch chuyến đi ai cũng dùng được miễn phí. Nó cấp vốn cho những gì đến sau. Mỗi mảng còn lại được liệt kê bên dưới kèm giai đoạn thực tế của nó — kể cả những mảng chưa hoàn thành."],
+
+    "Four arms, at four different stages": [
+        "四项业务，四个不同阶段",
+        "Cuatro áreas, en cuatro etapas distintas",
+        "네 개의 사업, 각기 다른 네 단계",
+        "Bốn mảng, ở bốn giai đoạn khác nhau"],
+
+    "One business pays for the next. That only means something if we say plainly which ones are earning today and which are still being built — so we do.": [
+        "一项业务为下一项提供资金。但这句话只有在我们如实说明哪些业务今天已在盈利、哪些仍在建设，才有意义——所以我们如实说明。",
+        "Un negocio financia al siguiente. Eso solo significa algo si decimos con claridad cuáles generan ingresos hoy y cuáles siguen en construcción — así que lo decimos.",
+        "하나의 사업이 다음 사업의 자금을 댑니다. 그 말은 오늘 수익을 내는 사업과 아직 만드는 중인 사업을 분명히 밝혀야만 의미가 있습니다 — 그래서 밝힙니다.",
+        "Mảng này cấp vốn cho mảng kế tiếp. Điều đó chỉ có ý nghĩa nếu chúng tôi nói rõ mảng nào đang tạo doanh thu hôm nay và mảng nào vẫn đang xây dựng — nên chúng tôi nói rõ."],
+
+    "Flat-rate Tesla rides in Seattle at $75 to Sea–Tac, cars rented to drivers who keep the fare, and a commission programme for hotels and agents. This is the business that earns.": [
+        "西雅图的特斯拉固定价格接送，至机场 75 美元；车辆租赁给司机，车费归司机所有；并设有面向酒店与代理商的佣金计划。这是目前真正产生收入的业务。",
+        "Traslados en Tesla con tarifa fija en Seattle, 75 $ al aeropuerto; vehículos alquilados a conductores que se quedan con la tarifa; y un programa de comisiones para hoteles y agentes. Este es el negocio que genera ingresos.",
+        "시애틀에서 공항까지 75달러 정액 요금의 테슬라 이동, 요금을 기사가 갖는 차량 대여, 그리고 호텔·에이전트를 위한 수수료 프로그램. 실제로 수익을 내는 사업입니다.",
+        "Các chuyến Tesla giá cố định tại Seattle, 75 $ tới sân bay; xe cho tài xế thuê và tài xế giữ toàn bộ cước; cùng chương trình hoa hồng cho khách sạn và đại lý. Đây là mảng thực sự tạo doanh thu."],
+
+    # --- status labels: 已上线 was software-launch jargon and did not match
+    #     the others; 研究 alone is a noun, not a stage.
+    "Running":  ["运行中", "En marcha", "가동 중", "Đang chạy"],
+    "Research": ["研究阶段", "En investigación", "연구 단계", "Giai đoạn nghiên cứu"],
+
+    # --- 一口价 is what a market trader says. A car service quotes 固定价格.
+    "Flat fare to Sea–Tac": ["至西雅图机场固定价格", "Tarifa fija al aeropuerto", "공항까지 정액 요금", "Giá cố định tới sân bay"],
+    "Book any hour": ["全天候可预约", "Reserva a cualquier hora", "언제든 예약 가능", "Đặt xe bất kỳ giờ nào"],
+    # --- sits under the word "Tesla"; 每一辆车 on its own says nothing.
+    "Every vehicle": ["全部车辆", "Toda la flota", "전 차량", "Toàn bộ xe"],
+
+    "Operations platform": ["运营平台", "Plataforma de operaciones", "운영 플랫폼", "Nền tảng vận hành"],
+    "Dispatch, invoicing, driver paperwork and the trip-planning tools — built in-house rather than rented, so the customer relationship and the data stay with us.": [
+        "调度、开票、司机资料与行程规划工具，均为自研而非外购，因此客户关系与数据都留在我们自己手中。",
+        "Despacho, facturación, documentación de conductores y las herramientas de planificación — desarrollados en casa y no alquilados, así la relación con el cliente y los datos se quedan con nosotros.",
+        "배차, 청구, 기사 서류, 여행 계획 도구까지 임대가 아니라 자체 개발했습니다. 그래서 고객 관계와 데이터가 우리에게 남습니다.",
+        "Điều phối, xuất hóa đơn, hồ sơ tài xế và công cụ lập kế hoạch — tự xây dựng thay vì đi thuê, nên quan hệ khách hàng và dữ liệu vẫn thuộc về chúng tôi."],
+
+    "Mixed-use development, at drawing stage. Nothing built, nothing leased, nothing offered — the plans are published as they stand.": [
+        "综合开发项目，目前处于图纸阶段。尚未动工、尚未招租、尚未对外发售——图纸按现状公开。",
+        "Desarrollo de uso mixto, en fase de planos. Nada construido, nada arrendado, nada ofrecido — los planos se publican tal como están.",
+        "복합 개발 사업으로, 현재 도면 단계입니다. 지은 것도, 임대한 것도, 판매하는 것도 없습니다 — 도면은 있는 그대로 공개합니다.",
+        "Dự án phát triển đa chức năng, đang ở giai đoạn bản vẽ. Chưa xây, chưa cho thuê, chưa chào bán — bản vẽ được công bố đúng hiện trạng."],
+
+    "An automated trading research project in private verification, building an audited record. Nothing is for sale and no money is accepted — you can follow the results.": [
+        "一个自动交易研究项目，目前处于内部验证阶段，正在积累可审计的记录。不对外销售，也不接受任何资金——您可以关注结果。",
+        "Un proyecto de investigación de trading automatizado en verificación privada, construyendo un historial auditado. No hay nada a la venta ni se acepta dinero — puedes seguir los resultados.",
+        "비공개 검증 단계의 자동 매매 연구 프로젝트로, 감사 가능한 기록을 쌓는 중입니다. 판매하는 것도 없고 자금도 받지 않습니다 — 결과만 지켜보실 수 있습니다.",
+        "Một dự án nghiên cứu giao dịch tự động đang trong giai đoạn kiểm chứng nội bộ, tích lũy hồ sơ có thể kiểm toán. Không bán gì và không nhận tiền — bạn có thể theo dõi kết quả."],
+
+    "A Seattle car service: flat-rate Tesla rides to Sea–Tac and around the city, plus trip-planning tools that are free to use.": [
+        "西雅图的用车服务：特斯拉固定价格接送，往返机场及市区，另有免费使用的行程规划工具。",
+        "Un servicio de coche en Seattle: traslados en Tesla con tarifa fija al aeropuerto y por la ciudad, más herramientas de planificación de viajes gratuitas.",
+        "시애틀의 차량 서비스입니다. 공항과 시내를 오가는 정액 요금 테슬라 이동, 그리고 무료로 쓰는 여행 계획 도구.",
+        "Dịch vụ xe tại Seattle: các chuyến Tesla giá cố định tới sân bay và quanh thành phố, cùng công cụ lập kế hoạch chuyến đi miễn phí."],
+
+    "Flat-rate Tesla rides, Seattle and Sea–Tac.": [
+        "特斯拉固定价格接送，覆盖西雅图与机场。",
+        "Traslados en Tesla con tarifa fija, Seattle y el aeropuerto.",
+        "정액 요금 테슬라 이동 — 시애틀과 공항.",
+        "Chuyến Tesla giá cố định, Seattle và sân bay."],
+})
+
+# Two the register pass missed on the first sweep.
+EXTRA.update({
+    "Airport Pickup (flat) — $75": [
+        "机场接送（固定价格）— $75", "Recogida en aeropuerto (tarifa fija) — $75",
+        "공항 픽업(정액) — $75", "Đón sân bay (giá cố định) — 75 $"],
+
+    # 输血/加力/滚雪球 is three metaphors in one sentence, and 每一块业务 again.
+    # The English is a plain claim; the Chinese was written like ad copy.
+    "We started with transportation: affordable Tesla rentals that turn everyday drivers into earners and everyday riders into loyal clients. From there, each part of our business funds and strengthens the next — operations, real estate, finance, and reinvestment — a closed loop where revenue compounds instead of leaking away.": [
+        "我们从出行业务起步：以可负担的特斯拉租赁，让普通司机获得收入，也让乘客愿意再次乘坐。在此基础上，每一项业务为下一项提供资金——出行、房地产、金融、再投资——形成一个闭环，收入在其中不断累积，而不是外流。",
+        "Empezamos por el transporte: alquileres de Tesla asequibles que convierten a conductores corrientes en personas que ganan y a cada pasajero en cliente recurrente. A partir de ahí, cada negocio financia al siguiente — transporte, inmobiliario, finanzas, reinversión — formando un circuito cerrado donde los ingresos se acumulan en lugar de escaparse.",
+        "우리는 교통에서 시작했습니다. 합리적인 가격의 테슬라 대여로 평범한 기사가 수입을 얻고, 승객은 다시 찾게 됩니다. 그 위에서 각 사업이 다음 사업의 자금을 댑니다 — 교통, 부동산, 금융, 재투자 — 수익이 빠져나가지 않고 쌓이는 닫힌 순환을 이룹니다.",
+        "Chúng tôi khởi đầu từ vận tải: cho thuê Tesla với giá hợp lý để tài xế bình thường có thu nhập và hành khách quay lại. Từ đó, mỗi mảng cấp vốn cho mảng kế tiếp — vận tải, bất động sản, tài chính, tái đầu tư — tạo thành vòng khép kín nơi doanh thu tích lũy thay vì thất thoát."],
+})
+
+
+# ---------------------------------------------------------------------------
+# VOICE PASS.
+#
+# The register pass fixed the wrong words and left the wrong shape. Every
+# sentence still had English bones — subject, verb, object, in English order,
+# with Chinese vocabulary laid over the top. Accurate, professional, and with
+# nothing alive in it. A reader can feel that even when nothing is wrong.
+#
+# Chinese carries voice in rhythm and balance rather than in word choice: short
+# clauses that answer each other, a comma placed to make a beat, a sentence that
+# lands on its weight instead of trailing off in qualifiers. The English here is
+# calm, concrete and slightly dry — confident enough not to sell. That voice
+# exists in Chinese; it just cannot be reached by translating in order.
+#
+# So these are rewritten from the meaning, not from the sentence.
+#   一次只做好一项业务 — 好 is the whole point: not one at a time, one done properly
+#   眼下真正在运转的     — 眼下 is how a person says "right now" with dignity
+#   都是自己写的，不是租来的 — plain, proud, and unmistakably not a translation
+#   图纸是什么样，就公开什么样 — the parallel is the promise
+#   不收一分钱           — "a single cent", which 不接受任何资金 was too polite to say
+#
+# Spanish redone on the same principle. Korean and Vietnamese are improved but
+# NOT verified — I can reason about their register, not hear their voice, and
+# they need a reader who can.
+# ---------------------------------------------------------------------------
+EXTRA.update({
+    "We build one business at a time": [
+        "一次只做好一项业务",
+        "Un negocio a la vez, hecho bien",
+        "한 번에 하나의 사업을, 제대로",
+        "Mỗi lần chỉ làm tốt một mảng"],
+
+    "Transportation is the one that runs today: flat-rate Tesla rides across Seattle, cars rented to drivers who earn with them, and trip-planning tools anyone can use free. It pays for what comes next. Every other arm is listed below with the stage it is honestly at — including the ones not finished.": [
+        "眼下真正在运转的只有出行一项：西雅图全城的特斯拉固定价格接送、租给司机的车，以及一套谁都能免费用的行程规划工具。它挣来的钱，投向后面几项。下面每一项业务都写明了所处的阶段——没做完的，也一并写明。",
+        "Hoy solo hay una parte en marcha: el transporte. Traslados en Tesla con tarifa fija por todo Seattle, coches alquilados a conductores que viven de ellos, y herramientas de planificación que cualquiera usa gratis. Lo que gana paga lo que viene después. Cada una de las demás aparece abajo con la etapa en la que está de verdad — también las que no están terminadas.",
+        "지금 실제로 돌아가는 건 교통 하나입니다. 시애틀 전역을 다니는 정액 요금 테슬라, 기사에게 빌려주는 차, 그리고 누구나 공짜로 쓰는 여행 계획 도구. 여기서 번 돈이 다음 사업으로 갑니다. 나머지는 아래에 지금 서 있는 자리를 그대로 적어 두었습니다 — 아직 끝나지 않은 것까지.",
+        "Hiện chỉ có một mảng thực sự chạy: vận tải. Những chuyến Tesla giá cố định khắp Seattle, xe cho tài xế thuê để sống bằng nghề, và bộ công cụ lập kế hoạch ai cũng dùng miễn phí. Tiền nó kiếm được đổ vào những mảng sau. Mỗi mảng còn lại đều ghi rõ đang ở đâu — kể cả mảng chưa xong."],
+
+    "Four arms, at four different stages": [
+        "四项业务，四个阶段",
+        "Cuatro áreas, cuatro etapas",
+        "네 개의 사업, 네 개의 단계",
+        "Bốn mảng, bốn giai đoạn"],
+
+    "One business pays for the next. That only means something if we say plainly which ones are earning today and which are still being built — so we do.": [
+        "一项撑起下一项。这话要站得住，就得说明白：哪几项今天在挣钱，哪几项还在建。所以我们说明白。",
+        "Un negocio sostiene al siguiente. Para que eso signifique algo hay que decir cuál gana hoy y cuál sigue en obras. Así que lo decimos.",
+        "하나가 다음 하나를 받칩니다. 그 말이 서려면 어느 것이 오늘 벌고 어느 것이 아직 짓는 중인지 밝혀야 합니다. 그래서 밝힙니다.",
+        "Mảng này đỡ mảng kia. Muốn câu đó đứng vững thì phải nói rõ: mảng nào hôm nay kiếm ra tiền, mảng nào còn đang dựng. Nên chúng tôi nói rõ."],
+
+    "Flat-rate Tesla rides in Seattle at $75 to Sea–Tac, cars rented to drivers who keep the fare, and a commission programme for hotels and agents. This is the business that earns.": [
+        "西雅图的特斯拉接送，到机场固定 75 美元；车租给司机，车费全归他们；酒店和代理商荐客，按单拿佣金。这一项，是眼下真正在挣钱的。",
+        "Traslados en Tesla en Seattle, 75 $ fijos al aeropuerto; coches alquilados a conductores que se quedan la tarifa; hoteles y agentes cobran comisión por cada cliente. Esta es la parte que gana dinero.",
+        "시애틀의 테슬라 이동, 공항까지 75달러 정액. 차는 기사에게 빌려주고 요금은 기사가 다 가집니다. 호텔과 에이전트는 손님을 보내고 건당 수수료를 받습니다. 지금 돈을 버는 건 이 사업입니다.",
+        "Chuyến Tesla ở Seattle, cố định 75 $ tới sân bay; xe cho tài xế thuê, cước tài xế giữ hết; khách sạn và đại lý giới thiệu khách, ăn hoa hồng theo chuyến. Đây là mảng đang thực sự kiếm ra tiền."],
+
+    "Dispatch, invoicing, driver paperwork and the trip-planning tools — built in-house rather than rented, so the customer relationship and the data stay with us.": [
+        "调度、开票、司机资料、行程规划工具，都是自己写的，不是租来的。所以客户和数据，都留在自己手里。",
+        "Despacho, facturación, papeleo de conductores, herramientas de planificación: escritos por nosotros, no alquilados. Por eso el cliente y los datos se quedan aquí.",
+        "배차, 청구, 기사 서류, 여행 계획 도구 — 빌린 게 아니라 직접 만들었습니다. 그래서 고객도 데이터도 우리에게 남습니다.",
+        "Điều phối, hóa đơn, giấy tờ tài xế, công cụ lập kế hoạch — tự viết, không đi thuê. Nhờ vậy khách hàng và dữ liệu vẫn ở lại với chúng tôi."],
+
+    "Mixed-use development, at drawing stage. Nothing built, nothing leased, nothing offered — the plans are published as they stand.": [
+        "综合开发项目，还在图纸上。没有动工，没有招租，没有对外发售——图纸是什么样，就公开什么样。",
+        "Desarrollo de uso mixto, todavía sobre el plano. Nada construido, nada arrendado, nada a la venta — los planos se publican tal cual están.",
+        "복합 개발 사업, 아직 도면 위에 있습니다. 지은 것 없고, 임대한 것 없고, 파는 것 없습니다 — 도면은 있는 그대로 공개합니다.",
+        "Dự án đa chức năng, còn nằm trên bản vẽ. Chưa xây, chưa cho thuê, chưa bán — bản vẽ thế nào thì công bố thế ấy."],
+
+    "An automated trading research project in private verification, building an audited record. Nothing is for sale and no money is accepted — you can follow the results.": [
+        "一个自动交易的研究项目，还在内部验证，正把成绩记成一本可审计的账。不卖任何东西，也不收一分钱——结果公开，您看着就是。",
+        "Un proyecto de investigación en trading automatizado, aún en verificación privada, levantando un historial auditable. No se vende nada y no se acepta dinero — los resultados están a la vista.",
+        "자동 매매 연구 프로젝트입니다. 아직 내부 검증 중이고, 감사받을 수 있는 기록을 쌓는 중입니다. 파는 것도 없고 돈도 받지 않습니다 — 결과만 공개합니다.",
+        "Một dự án nghiên cứu giao dịch tự động, còn trong kiểm chứng nội bộ, đang ghi thành tích thành một sổ có thể kiểm toán. Không bán gì, không nhận một đồng nào — kết quả công khai, bạn cứ nhìn."],
+
+    "A Seattle car service: flat-rate Tesla rides to Sea–Tac and around the city, plus trip-planning tools that are free to use.": [
+        "西雅图的用车服务：特斯拉接送，往返机场与市区，价格固定；另有一套免费的行程规划工具。",
+        "Un servicio de coche en Seattle: traslados en Tesla al aeropuerto y por la ciudad, con tarifa fija, más herramientas de planificación gratuitas.",
+        "시애틀의 차량 서비스입니다. 공항과 시내를 오가는 정액 요금 테슬라, 그리고 무료로 쓰는 여행 계획 도구.",
+        "Dịch vụ xe tại Seattle: chuyến Tesla giá cố định tới sân bay và quanh thành phố, kèm bộ công cụ lập kế hoạch miễn phí."],
+
+    "The quote is the fare — no surge": [
+        "报价就是车费，不加价",
+        "El precio que ves es el que pagas — sin recargos",
+        "견적이 곧 요금 — 할증 없음",
+        "Báo giá là giá đi — không phụ thu"],
+    "flat to Sea–Tac": ["到机场，固定价", "fijos al aeropuerto", "공항까지 정액", "cố định tới sân bay"],
+    "Driver arrives 15 min early": [
+        "司机提前 15 分钟到",
+        "El conductor llega 15 min antes",
+        "기사가 15분 일찍 도착합니다",
+        "Tài xế đến sớm 15 phút"],
+    "No charge until the ride is confirmed.": [
+        "确认之前，不收费。",
+        "No se cobra nada hasta confirmar el viaje.",
+        "예약이 확정되기 전에는 청구되지 않습니다.",
+        "Chưa xác nhận thì chưa thu tiền."],
+    "Who's travelling": ["乘车人", "Quién viaja", "탑승자", "Ai đi"],
+    "The trip": ["行程", "El trayecto", "여정", "Chuyến đi"],
+    "Anything else": ["其他", "Algo más", "그 밖에", "Còn gì nữa"],
+    "Book a ride": ["预约用车", "Reservar un viaje", "차량 예약", "Đặt xe"],
+    "Request this ride": ["提交这次预约", "Solicitar este viaje", "이 예약 요청하기", "Gửi yêu cầu chuyến này"],
+})
+
+
+# ---------------------------------------------------------------------------
+# Destination Book content. The page was Chinese chrome around 85 English
+# paragraphs — every description, every tip. Translations live in
+# i18n_places.py keyed by PLACE NAME, and the English keys are read straight
+# out of destinations.json here, so a retyped paragraph can never drift out of
+# match and silently do nothing.
+# ---------------------------------------------------------------------------
+def _load_place_translations():
+    import json as _json, os as _os
+    try:
+        from i18n_places import PLACES
+    except Exception:
+        return {}, []
+    here = _os.path.dirname(_os.path.abspath(__file__))
+    try:
+        with open(_os.path.join(here, "destinations.json"), encoding="utf-8") as f:
+            book = _json.load(f)
+    except Exception:
+        return {}, []
+    out, unmatched = {}, []
+    for e in book.get("entries", []):
+        tr = PLACES.get(e.get("name"))
+        if not tr:
+            if e.get("desc"):
+                unmatched.append(e.get("name"))
+            continue
+        if e.get("desc") and tr.get("desc"):
+            out[e["desc"]] = tr["desc"]
+        if e.get("tip") and tr.get("tip"):
+            out[e["tip"]] = tr["tip"]
+    return out, unmatched
+
+
+_PLACE_TR, _PLACE_MISSING = _load_place_translations()
+EXTRA.update(_PLACE_TR)
+if _PLACE_MISSING:
+    print(f"  i18n_places: no translation for {len(_PLACE_MISSING)} place(s): "
+          f"{', '.join(_PLACE_MISSING[:6])}")
+
+
+# ---------------------------------------------------------------------------
+# PATTERNS. Strings a page builds itself, translated as a shape rather than as
+# a finished sentence. "Open till 17:00 · ~60 min visit" could never be looked
+# up whole — the dictionary would need one entry per time-and-duration pair,
+# which is thousands. The placeholders are named, not positional, because word
+# order moves: Chinese puts the duration before the noun, English after.
+# ---------------------------------------------------------------------------
+EXTRA.update({
+    "Open till {time} · ~{mins} min visit": [
+        "开放至 {time} · 建议游览约 {mins} 分钟",
+        "Abierto hasta las {time} · visita de ~{mins} min",
+        "{time}까지 · 관람 약 {mins}분",
+        "Mở tới {time} · tham quan khoảng {mins} phút"],
+    "Open till {time} · ": [
+        "开放至 {time} · ", "Abierto hasta las {time} · ",
+        "{time}까지 · ", "Mở tới {time} · "],
+    "👥 travelers stay ~{stay}": [
+        "👥 旅客平均待约 {stay}",
+        "👥 los viajeros se quedan ~{stay}",
+        "👥 여행자 평균 체류 {stay}",
+        "👥 khách thường ở lại ~{stay}"],
+})
+
+
+# ---------------------------------------------------------------------------
+# DeepL, for the two languages I could not check.
+#
+# I said plainly that the Korean and Vietnamese here were written on principle
+# and not verified — I can reason about a language's register without being
+# able to hear whether a sentence lands. Rather than leave that standing, these
+# went through DeepL and its output is what ships.
+#
+# Chinese and Spanish keep the hand-tuned versions: those were shaped against
+# the owner's own reading, twice, and DeepL's are accurate but flatter — which
+# is the exact fault ("no soul") that took two passes to fix.
+#
+# So this is not "machine translation is better". It is: use the professional
+# engine where nobody here can judge the result, and keep the human pass where
+# somebody could.
+# ---------------------------------------------------------------------------
+EXTRA.update({
+    "We build one business at a time": [
+        "一次只做好一项业务",
+        "Un negocio a la vez, hecho bien",
+        "우리는 한 번에 하나의 사업을 구축합니다.",
+        "Chúng tôi phát triển từng mảng kinh doanh một"
+    ],
+    "Transportation is the one that runs today: flat-rate Tesla rides across Seattle, cars rented to drivers who earn with them, and trip-planning tools anyone can use free. It pays for what comes next. Every other arm is listed below with the stage it is honestly at — including the ones not finished.": [
+        "眼下真正在运转的只有出行一项：西雅图全城的特斯拉固定价格接送、租给司机的车，以及一套谁都能免费用的行程规划工具。它挣来的钱，投向后面几项。下面每一项业务都写明了所处的阶段——没做完的，也一并写明。",
+        "Hoy solo hay una parte en marcha: el transporte. Traslados en Tesla con tarifa fija por todo Seattle, coches alquilados a conductores que viven de ellos, y herramientas de planificación que cualquiera usa gratis. Lo que gana paga lo que viene después. Cada una de las demás aparece abajo con la etapa en la que está de verdad — también las que no están terminadas.",
+        "현재 운영 중인 사업은 '교통' 부문입니다. 시애틀 전역에서 정액제로 운영되는 테슬라 차량, 이를 통해 수익을 창출하는 운전자들에게 대여되는 차량, 그리고 누구나 무료로 이용할 수 있는 경로 계획 도구 등이 이에 해당합니다. 이 사업에서 창출된 수익은 향후 사업을 위한 자금으로 사용됩니다. 그 외의 모든 사업 부문은 아래에 현재 단계와 함께 솔직하게 나열되어 있습니다. 아직 완성되지 않은 사업도 포함됩니다.",
+        "Mảng vận tải là mảng đang hoạt động hiện nay: dịch vụ đi xe Tesla với giá cố định trên khắp Seattle, cho thuê xe cho các tài xế để họ kiếm thu nhập từ đó, và các công cụ lập kế hoạch hành trình mà ai cũng có thể sử dụng miễn phí. Mảng này tạo ra nguồn thu để tài trợ cho những dự án tiếp theo. Tất cả các mảng kinh doanh khác được liệt kê dưới đây kèm theo giai đoạn phát triển thực tế của từng mảng — bao gồm cả những mảng chưa hoàn thiện."
+    ],
+    "Four arms, at four different stages": [
+        "四项业务，四个阶段",
+        "Cuatro áreas, cuatro etapas",
+        "네 가지 사업 분야, 네 가지 서로 다른 단계",
+        "Bốn mảng kinh doanh, ở bốn giai đoạn khác nhau"
+    ],
+    "One business pays for the next. That only means something if we say plainly which ones are earning today and which are still being built — so we do.": [
+        "一项撑起下一项。这话要站得住，就得说明白：哪几项今天在挣钱，哪几项还在建。所以我们说明白。",
+        "Un negocio sostiene al siguiente. Para que eso signifique algo hay que decir cuál gana hoy y cuál sigue en obras. Así que lo decimos.",
+        "한 사업이 다음 사업을 뒷받침합니다. 이는 현재 수익을 창출하는 사업과 아직 구축 중인 사업을 명확히 밝힐 때만 의미가 있으므로, 우리는 그렇게 합니다.",
+        "Một mảng kinh doanh tài trợ cho mảng tiếp theo. Điều này chỉ có ý nghĩa nếu chúng tôi nêu rõ mảng nào đang sinh lời ngay hôm nay và mảng nào vẫn đang được phát triển — vì vậy chúng tôi làm như vậy."
+    ],
+    "Flat-rate Tesla rides in Seattle at $75 to Sea–Tac, cars rented to drivers who keep the fare, and a commission programme for hotels and agents. This is the business that earns.": [
+        "西雅图的特斯拉接送，到机场固定 75 美元；车租给司机，车费全归他们；酒店和代理商荐客，按单拿佣金。这一项，是眼下真正在挣钱的。",
+        "Traslados en Tesla en Seattle, 75 $ fijos al aeropuerto; coches alquilados a conductores que se quedan la tarifa; hoteles y agentes cobran comisión por cada cliente. Esta es la parte que gana dinero.",
+        "시애틀에서 시애틀-타코마(Sea-Tac) 공항까지 75달러의 정액 요금으로 운행되는 테슬라 차량, 운임 전액을 가져가는 운전자에게 대여되는 차량, 그리고 호텔 및 여행사를 위한 수수료 프로그램. 이것이 수익을 창출하는 사업입니다.",
+        "Dịch vụ đi xe Tesla với giá cố định tại Seattle (75 USD đến sân bay Sea-Tac), cho thuê xe cho các tài xế được giữ toàn bộ tiền cước, và chương trình hoa hồng dành cho khách sạn và đại lý. Đây là mảng kinh doanh đang sinh lời."
+    ],
+    "Dispatch, invoicing, driver paperwork and the trip-planning tools — built in-house rather than rented, so the customer relationship and the data stay with us.": [
+        "调度、开票、司机资料、行程规划工具，都是自己写的，不是租来的。所以客户和数据，都留在自己手里。",
+        "Despacho, facturación, papeleo de conductores, herramientas de planificación: escritos por nosotros, no alquilados. Por eso el cliente y los datos se quedan aquí.",
+        "배차, 청구서 발행, 운전자 서류 처리 및 경로 계획 도구 — 외부에서 임대하는 대신 자체적으로 개발하여 고객 관계와 데이터는 우리 손에 남아 있습니다.",
+        "Hệ thống điều phối, lập hóa đơn, thủ tục giấy tờ cho tài xế và các công cụ lập kế hoạch hành trình — được phát triển nội bộ thay vì thuê ngoài, do đó mối quan hệ với khách hàng và dữ liệu vẫn thuộc về chúng tôi."
+    ],
+    "Mixed-use development, at drawing stage. Nothing built, nothing leased, nothing offered — the plans are published as they stand.": [
+        "综合开发项目，还在图纸上。没有动工，没有招租，没有对外发售——图纸是什么样，就公开什么样。",
+        "Desarrollo de uso mixto, todavía sobre el plano. Nada construido, nada arrendado, nada a la venta — los planos se publican tal cual están.",
+        "복합 용도 개발 프로젝트는 설계 단계에 있습니다. 아직 건설된 것도, 임대된 것도, 제공된 것도 없습니다 — 계획은 현재 상태 그대로 공개됩니다.",
+        "Dự án phát triển đa chức năng, đang ở giai đoạn thiết kế. Chưa có công trình nào được xây dựng, chưa có tài sản nào được cho thuê, chưa có sản phẩm nào được chào bán — các bản thiết kế được công bố theo hiện trạng."
+    ],
+    "An automated trading research project in private verification, building an audited record. Nothing is for sale and no money is accepted — you can follow the results.": [
+        "一个自动交易的研究项目，还在内部验证，正把成绩记成一本可审计的账。不卖任何东西，也不收一分钱——结果公开，您看着就是。",
+        "Un proyecto de investigación en trading automatizado, aún en verificación privada, levantando un historial auditable. No se vende nada y no se acepta dinero — los resultados están a la vista.",
+        "비공개 검증 단계에 있는 자동화된 거래 연구 프로젝트로, 감사된 기록을 구축 중입니다. 판매되는 것은 없으며 자금도 받지 않습니다 — 결과를 지켜보실 수 있습니다.",
+        "Dự án nghiên cứu giao dịch tự động đang trong giai đoạn kiểm chứng nội bộ, xây dựng hồ sơ đã được kiểm toán. Không có sản phẩm nào được bán và không nhận tiền — bạn có thể theo dõi kết quả."
+    ]
+})
+
+
+# ---------------------------------------------------------------------------
+# REGISTER, CORRECTED AT THE ROOT.
+#
+# Two faults, and the first was mine before any translation happened.
+#
+# 1. "We build one business at a time" reads in English as discipline. In
+#    Chinese, 一次只做好一项业务 says we can only manage one thing at once — a
+#    small operator with limited capacity. It made a company with four arms
+#    sound like a stall. The English headline is now "One company, four
+#    businesses": plural, and it claims no limit.
+#
+# 2. Chasing "voice" I pushed the Chinese toward 口语 — 眼下, 挣来的钱,
+#    没做完的, 谁都能免费用. In English, plain speech reads as confident.
+#    In Chinese business writing colloquial reads as UNEDUCATED, which is the
+#    opposite of what plain English achieves. That is why it was irritating to
+#    read: not wrong, but beneath the company.
+#
+#    The educated Chinese register here is 书面语 — formal, concise, measured.
+#    Not bureaucratic, not chatty. 目前 not 眼下. 收入 not 挣来的钱. 尚未完成
+#    not 没做完的. 任何人均可免费使用 not 谁都能免费用.
+#
+# Korean and Vietnamese follow the same correction, from DeepL.
+# ---------------------------------------------------------------------------
+EXTRA.update({
+    "One company, four businesses": [
+        "一家公司，四项业务",
+        "Una empresa, cuatro negocios",
+        "하나의 회사, 네 개의 사업",
+        "Một công ty, bốn mảng kinh doanh"],
+
+    "Transportation operates today and funds what follows: flat-rate Tesla service across Seattle, a vehicle rental programme for drivers, and trip-planning tools available free to anyone. The property development is at drawing stage and the trading research is in private verification. Each business is set out below with the stage it has actually reached.": [
+        "出行业务目前已投入运营，并为后续业务提供资金：覆盖西雅图全城的特斯拉固定价格接送服务、面向司机的车辆租赁计划，以及任何人均可免费使用的行程规划工具。地产开发尚处图纸阶段，交易研究仍在内部验证之中。以下逐项列明各业务实际所处的阶段。",
+        "El transporte ya opera y financia lo que viene después: servicio Tesla con tarifa fija en todo Seattle, un programa de alquiler de vehículos para conductores y herramientas de planificación de viajes gratuitas para cualquiera. El desarrollo inmobiliario está en fase de proyecto y la investigación en trading, en verificación privada. Cada negocio figura debajo con la etapa que ha alcanzado realmente.",
+        "교통 사업은 현재 운영 중이며 이후 사업의 자금을 조달합니다. 시애틀 전역의 테슬라 정액 운송 서비스, 운전자를 위한 차량 대여 프로그램, 그리고 누구나 무료로 이용할 수 있는 여정 계획 도구가 이에 해당합니다. 부동산 개발은 설계 단계에 있으며, 거래 연구는 비공개 검증 단계에 있습니다. 각 사업이 실제로 도달한 단계를 아래에 정리하였습니다.",
+        "Mảng vận tải hiện đã đi vào hoạt động và cấp vốn cho các mảng tiếp theo: dịch vụ Tesla giá cố định trên toàn Seattle, chương trình cho tài xế thuê xe, và các công cụ lập kế hoạch hành trình miễn phí cho mọi người. Dự án bất động sản đang ở giai đoạn thiết kế, còn nghiên cứu giao dịch đang trong quá trình kiểm chứng nội bộ. Từng mảng được trình bày dưới đây kèm giai đoạn thực tế đã đạt được."],
+
+    "Four arms, at four different stages": [
+        "四项业务，各处不同阶段",
+        "Cuatro negocios, en cuatro etapas distintas",
+        "네 개의 사업, 각기 다른 단계",
+        "Bốn mảng kinh doanh, ở bốn giai đoạn khác nhau"],
+
+    "One business pays for the next. That only means something if we say plainly which ones are earning today and which are still being built — so we do.": [
+        "一项业务为下一项提供资金。此话唯有在明确说明哪些业务已在盈利、哪些仍在建设之后方才成立，故一并列明。",
+        "Un negocio financia al siguiente. Esa afirmación solo se sostiene si indicamos con claridad cuáles generan ingresos hoy y cuáles siguen en construcción; por eso lo indicamos.",
+        "한 사업이 다음 사업의 자금을 댑니다. 이는 어느 사업이 현재 수익을 내고 어느 사업이 아직 구축 중인지 분명히 밝힐 때에만 성립하므로, 아래에 함께 밝힙니다.",
+        "Mảng này cấp vốn cho mảng kế tiếp. Điều đó chỉ đứng vững khi nêu rõ mảng nào đang sinh lời và mảng nào còn đang xây dựng, nên chúng tôi nêu rõ."],
+
+    "Flat-rate Tesla rides in Seattle at $75 to Sea–Tac, cars rented to drivers who keep the fare, and a commission programme for hotels and agents. This is the business that earns.": [
+        "西雅图的特斯拉固定价格接送服务，至机场统一收费 75 美元；车辆租赁予司机，车费全额归司机所有；并设有面向酒店与代理机构的佣金计划。此为目前产生收入的业务。",
+        "Servicio Tesla con tarifa fija en Seattle, 75 $ al aeropuerto; vehículos alquilados a conductores que conservan íntegra la tarifa; y un programa de comisiones para hoteles y agencias. Este es el negocio que genera ingresos.",
+        "시애틀에서 공항까지 75달러 정액 요금의 테슬라 운송 서비스, 운임 전액을 운전자가 갖는 차량 대여, 그리고 호텔 및 여행사를 위한 수수료 프로그램. 현재 수익을 내는 사업입니다.",
+        "Dịch vụ Tesla giá cố định tại Seattle, 75 USD tới sân bay; cho tài xế thuê xe và giữ trọn tiền cước; cùng chương trình hoa hồng dành cho khách sạn và đại lý. Đây là mảng đang tạo ra doanh thu."],
+
+    "Dispatch, invoicing, driver paperwork and the trip-planning tools — built in-house rather than rented, so the customer relationship and the data stay with us.": [
+        "调度、开票、司机资料管理与行程规划工具，均为自主开发而非外部租用，客户关系与数据因此留存于内部。",
+        "Despacho, facturación, documentación de conductores y herramientas de planificación: desarrollados internamente en lugar de alquilados, de modo que la relación con el cliente y los datos permanecen con nosotros.",
+        "배차, 청구, 운전자 서류 관리, 여정 계획 도구를 외부 임대가 아닌 자체 개발로 구축하였으며, 그 결과 고객 관계와 데이터가 내부에 남습니다.",
+        "Điều phối, lập hóa đơn, hồ sơ tài xế và công cụ lập kế hoạch hành trình đều do nội bộ phát triển thay vì thuê ngoài, nhờ đó quan hệ khách hàng và dữ liệu được giữ lại."],
+
+    "Mixed-use development, at drawing stage. Nothing built, nothing leased, nothing offered — the plans are published as they stand.": [
+        "综合体开发项目，目前处于图纸阶段。尚未动工，尚未招租，亦未对外发售；图纸按现状公开。",
+        "Desarrollo de uso mixto, en fase de proyecto. Nada construido, nada arrendado, nada ofrecido; los planos se publican en su estado actual.",
+        "복합 용도 개발 사업으로 현재 설계 단계에 있습니다. 착공, 임대, 분양 모두 이루어지지 않았으며, 도면은 현재 상태 그대로 공개합니다.",
+        "Dự án phát triển đa chức năng, hiện ở giai đoạn thiết kế. Chưa khởi công, chưa cho thuê, chưa chào bán; bản vẽ được công bố theo hiện trạng."],
+
+    "An automated trading research project in private verification, building an audited record. Nothing is for sale and no money is accepted — you can follow the results.": [
+        "自动化交易研究项目，目前处于内部验证阶段，正在建立可审计的业绩记录。不对外销售任何产品，亦不接受任何资金；结果公开，可持续关注。",
+        "Proyecto de investigación en trading automatizado, en verificación privada, construyendo un historial auditable. No se vende nada ni se acepta dinero; los resultados son públicos.",
+        "비공개 검증 단계의 자동화 거래 연구 프로젝트로, 감사 가능한 기록을 축적하고 있습니다. 판매하는 상품은 없으며 자금도 받지 않습니다. 결과는 공개됩니다.",
+        "Dự án nghiên cứu giao dịch tự động đang trong giai đoạn kiểm chứng nội bộ, xây dựng hồ sơ có thể kiểm toán. Không bán sản phẩm nào và không nhận tiền; kết quả được công bố."],
+
+    "A Seattle car service: flat-rate Tesla rides to Sea–Tac and around the city, plus trip-planning tools that are free to use.": [
+        "西雅图的用车服务：特斯拉固定价格接送，往返机场及市区；另提供免费使用的行程规划工具。",
+        "Servicio de vehículos en Seattle: traslados Tesla con tarifa fija al aeropuerto y por la ciudad, y herramientas de planificación de viajes de uso gratuito.",
+        "시애틀의 차량 서비스입니다. 공항과 시내를 오가는 테슬라 정액 운송, 그리고 무료로 이용하는 여정 계획 도구를 제공합니다.",
+        "Dịch vụ xe tại Seattle: đưa đón bằng Tesla với giá cố định tới sân bay và trong thành phố, kèm công cụ lập kế hoạch hành trình miễn phí."],
+
+    "Flat-rate Tesla rides, Seattle and Sea–Tac.": [
+        "特斯拉固定价格接送服务，覆盖西雅图市区与机场。",
+        "Traslados Tesla con tarifa fija, Seattle y el aeropuerto.",
+        "테슬라 정액 운송 서비스 — 시애틀 시내와 공항.",
+        "Dịch vụ Tesla giá cố định, Seattle và sân bay."],
+})
+
+
+# The same fault, found on the pages the front-page fix did not reach.
+# 摸得门儿清 is Beijing street slang, sitting on a business sign-up page.
+# 两件事都能办 and 大白话 are spoken register. 把那天讲完 is loose for a
+# memorial. All rewritten as 书面语.
+EXTRA.update({
+    ". The same agent code does both. Anyone can join, as an individual or an organization.": [
+        "上出售。同一代理编号即可兼顾两者。个人与机构均可加入。",
+        ". El mismo código de agente sirve para ambas cosas. Puede unirse cualquiera, como particular o como organización.",
+        ". 동일한 에이전트 코드로 두 가지 모두 가능합니다. 개인이든 기관이든 누구나 참여할 수 있습니다.",
+        ". Cùng một mã đại lý dùng được cho cả hai. Cá nhân hay tổ chức đều có thể tham gia."],
+
+    "Guides register here too — a student running a campus walk, a driver who knows one neighborhood properly. Your code is what proves the trip was written by a real guide.": [
+        "导游亦在此注册——带领校园徒步的学生、熟悉某一街区的司机均可。您的编号即为该行程出自真实导游之手的凭证。",
+        "Los guías también se registran aquí: un estudiante que lleva un paseo por el campus, un conductor que conoce a fondo un barrio. Su código acredita que el itinerario lo escribió un guía real.",
+        "가이드도 이곳에서 등록합니다. 캠퍼스 투어를 이끄는 학생, 특정 동네를 잘 아는 기사 모두 해당합니다. 발급된 코드가 해당 일정이 실제 가이드의 손에서 나왔음을 증명합니다.",
+        "Hướng dẫn viên cũng đăng ký tại đây — sinh viên dẫn tour trong khuôn viên, tài xế thông thuộc một khu phố. Mã của bạn là bằng chứng hành trình do một hướng dẫn viên thật soạn ra."],
+
+    "Every morning, one plain-language read of your day — and it clearly labels a guess a guess, and an earned answer earned.": [
+        "每日清晨，以平实的语言为您通读当日情况；属于推测的明确标注为推测，经验证得出的结论亦如实标明。",
+        "Cada mañana, una lectura de su día en lenguaje llano, que señala con claridad lo que es una conjetura y lo que es una respuesta ganada.",
+        "매일 아침, 하루를 평이한 언어로 정리해 드립니다. 추측은 추측이라고, 검증을 거친 답은 그렇다고 분명히 표시합니다.",
+        "Mỗi sáng, một bản đọc ngắn về ngày của bạn bằng ngôn ngữ giản dị — phần nào là phỏng đoán thì ghi rõ là phỏng đoán, phần nào đã được kiểm chứng thì ghi rõ như vậy."],
+
+    "Twin reflecting pools in the footprints of the towers; the museum below tells the story with artifacts and voices.": [
+        "两座反射池坐落于原双塔基址之上；地下博物馆以遗物与幸存者的声音记述那一天。",
+        "Dos estanques reflectantes sobre las huellas de las torres; el museo subterráneo narra aquel día con objetos y voces.",
+        "쌍둥이 빌딩이 서 있던 자리에 놓인 두 개의 반사 연못. 지하 박물관이 유품과 증언으로 그날을 기록합니다.",
+        "Hai hồ nước phản chiếu nằm đúng nền hai tòa tháp; bảo tàng bên dưới kể lại ngày hôm ấy bằng hiện vật và tiếng nói người trong cuộc."],
+})
+
+# 大白话 is 'plain speech' said colloquially — the sentence was about
+# clarity and undercut itself by being casual. 平实语言 says the same
+# thing in the register the claim requires.
+EXTRA.update({
+    "The rules that protect you when you use this site — your data, your money, and your bookings. These are the safeguards that are already in place, in plain language.": [
+        "您使用本站时受到保护的各项规则——数据、款项与订单。以下为已经落实的保障措施，以平实语言逐条说明。",
+        "Las normas que le protegen al usar este sitio: sus datos, su dinero y sus reservas. Estas son las salvaguardas ya implantadas, explicadas en lenguaje llano.",
+        "이 사이트를 이용하실 때 적용되는 보호 규칙 — 데이터, 금전, 예약에 관한 것입니다. 이미 시행 중인 보호 조치를 평이한 언어로 정리하였습니다.",
+        "Các quy tắc bảo vệ bạn khi dùng trang này — dữ liệu, tiền và đơn đặt của bạn. Dưới đây là những biện pháp đã được áp dụng, trình bày bằng ngôn ngữ giản dị."
+    ]
+})
+
+
+# Found by check_i18n.py, not by anyone complaining — which is the point of
+# having it. Two live strings still in spoken register, plus the superseded
+# front-page paragraph, brought into 书面语 so nothing in the dictionary
+# contradicts the standard.
+EXTRA.update({
+    "Our model is simple: control the full value chain, share the upside with our drivers and partners, and reinvest profits back into the community. Whether you need a ride, want to earn behind the wheel, or want to refer clients and earn commission — there's a place for you here.": [
+        "我们的思路很简单：自主掌握完整价值链，与司机及合作伙伴共享收益，并将利润再投入社区。无论您是需要用车、希望以驾驶获得收入，还是有意推荐客户并获取佣金，这里都有适合您的位置。",
+        "Nuestro modelo es sencillo: controlar toda la cadena de valor, compartir los beneficios con conductores y socios, y reinvertir en la comunidad. Tanto si necesita un trayecto, como si desea obtener ingresos al volante o recomendar clientes y cobrar comisión, aquí tiene un lugar.",
+        "저희의 모델은 단순합니다. 가치사슬 전체를 직접 운영하고, 그 성과를 기사 및 파트너와 나누며, 이익을 지역사회에 재투자합니다. 차량이 필요하시든, 운전으로 수익을 얻고자 하시든, 고객을 소개하고 수수료를 받고자 하시든 이곳에 자리가 있습니다.",
+        "Mô hình của chúng tôi rất đơn giản: tự vận hành toàn bộ chuỗi giá trị, chia sẻ lợi ích với tài xế và đối tác, và tái đầu tư lợi nhuận vào cộng đồng. Dù bạn cần một chuyến xe, muốn có thu nhập từ việc lái xe, hay muốn giới thiệu khách và nhận hoa hồng — ở đây đều có chỗ cho bạn."],
+
+    "Register as a guide — takes a minute": [
+        "注册成为导游——约需一分钟",
+        "Regístrese como guía: le llevará un minuto",
+        "가이드로 등록하기 — 1분이면 됩니다",
+        "Đăng ký làm hướng dẫn viên — chỉ mất một phút"],
+
+    "Transportation is the one that runs today: flat-rate Tesla rides across Seattle, cars rented to drivers who earn with them, and trip-planning tools anyone can use free. It pays for what comes next. Every other arm is listed below with the stage it is honestly at — including the ones not finished.": [
+        "出行业务目前已投入运营，并为后续业务提供资金：覆盖西雅图全城的特斯拉固定价格接送、面向司机的车辆租赁，以及任何人均可免费使用的行程规划工具。以下逐项列明各业务实际所处的阶段，包括尚未完成的部分。",
+        "El transporte es lo que ya opera y financia lo que viene después: traslados en Tesla con tarifa fija por todo Seattle, vehículos alquilados a conductores y herramientas de planificación gratuitas para cualquiera. Cada uno de los demás negocios figura debajo con la etapa que ha alcanzado realmente, incluidos los que no están terminados.",
+        "현재 운영 중인 사업은 교통 부문입니다. 시애틀 전역의 테슬라 정액 운송, 운전자를 위한 차량 대여, 그리고 누구나 무료로 이용할 수 있는 여정 계획 도구가 이에 해당하며, 이 사업이 이후 사업의 자금을 조달합니다. 나머지 사업은 아직 완료되지 않은 것을 포함하여 실제 도달한 단계와 함께 아래에 정리하였습니다.",
+        "Mảng đang vận hành hiện nay là vận tải: dịch vụ Tesla giá cố định trên toàn Seattle, cho tài xế thuê xe, và công cụ lập kế hoạch hành trình miễn phí cho mọi người. Mảng này cấp vốn cho các mảng tiếp theo. Từng mảng còn lại được liệt kê bên dưới kèm giai đoạn thực tế đã đạt được, kể cả những mảng chưa hoàn thiện."],
+})
+
+# Three strings are meant to read identically in every language: a quoted US
+# Treasury phrase, a product name, and a back-link carrying the company name.
+EXTRA_SKIP |= {
+    "“gift to reduce the debt held by the public”",
+    "← Plateau Strategy",
+    "Plateau Strategy Deflator",
+}
+
+# The company name plus its city reads the same in Spanish and Vietnamese —
+# identical output there is correct, not a missed translation.
+EXTRA_SKIP |= {"Plateau Strategy Solution Lab · Seattle"}
+
 # The Pollock companion's new option.
 EXTRA.update({
     "Stay": ["留住", "Quédate", "머무르기", "Ở lại"],

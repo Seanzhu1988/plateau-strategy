@@ -3,7 +3,12 @@ import json, os, sys, re
 from html.parser import HTMLParser
 
 SCRATCH = os.path.dirname(os.path.abspath(__file__))
-PROJ = "/Users/xiaojunzhu/Claude/Projects/Plateau Strategy"
+# The project this reads pages from and writes i18n.js back into.
+# Was hardcoded to one laptop, so the generator could not be run anywhere
+# else — including from the repo itself. Falls back to the directory this
+# file sits in, which is the repo in every case that matters.
+_MAC = "/Users/xiaojunzhu/Claude/Projects/Plateau Strategy"
+PROJ = os.environ.get("PROJ_DIR") or (_MAC if os.path.isdir(_MAC) else SCRATCH)
 
 # ---- pages whose visible text we translate (add more here to extend coverage) ----
 COVERED = ["landing-page.html", "booking.html", "renter.html", "agent.html",
@@ -469,9 +474,42 @@ ENGINE = r'''/* Plateau Strategy Solution Lab -- site-wide line-by-line translat
   var DICT = __DICT__;
   var LANGS = [["en", "English"], ["zh", "中文"], ["es", "Español"], ["ko", "한국어"], ["vi", "Tiếng Việt"]];
   var KEY = "ps_lang";
-  var cur = localStorage.getItem(KEY) || "en";
+  // ?lang=zh wins over the stored choice, and is then stored, so a
+  // language-targeted ad lands on the page already in that language instead of
+  // in English with a switcher the visitor has to find. Only a language we
+  // actually ship is accepted — anything else falls through to the stored
+  // preference, so a stray query string cannot blank the page.
+  var cur = (function () {
+    var m = /[?&]lang=([a-zA-Z-]{2,5})/.exec(location.search);
+    var want = m ? m[1].toLowerCase() : null;
+    if (want && LANGS.some(function (l) { return l[0] === want; })) {
+      try { localStorage.setItem(KEY, want); } catch (e) {}
+      return want;
+    }
+    return localStorage.getItem(KEY) || "en";
+  })();
   function norm(s) { return s.replace(/\s+/g, " ").trim(); }
   function tr(k) { var e = DICT[k]; return (e && e[cur]) ? e[cur] : null; }
+
+  // Strings a page builds itself — "Open till 17:00 · ~60 min visit" — can never
+  // be looked up whole: the dictionary would need an entry for every possible
+  // time and duration. So the PATTERN is what gets translated, and the values
+  // are dropped in afterwards. Word order differs between languages, which is
+  // exactly why the placeholders are named rather than positional.
+  //
+  //   psxFmt("Open till {time} · ~{mins} min visit", {time: "17:00", mins: 60})
+  //
+  // Falls back to the English pattern when there is no translation, so a
+  // missing entry shows English rather than "{time}".
+  function fmt(pattern, vals) {
+    var s = tr(pattern) || pattern;
+    return s.replace(/\{(\w+)\}/g, function (m, k) {
+      return (vals && vals[k] !== undefined) ? vals[k] : m;
+    });
+  }
+  window.psxT = tr;
+  window.psxFmt = fmt;
+  window.psxLang = function () { return cur; };
   function doText(node) {
     var raw = node.nodeValue; if (!norm(raw)) return;
     if (node.__en === undefined) node.__en = raw;
@@ -525,6 +563,11 @@ ENGINE = r'''/* Plateau Strategy Solution Lab -- site-wide line-by-line translat
   function setLang(l) {
     cur = l; localStorage.setItem(KEY, l); apply();
     var m = document.getElementById("i18nMenu"); if (m) m.style.display = "none";
+    // Text nodes are re-walked by apply(). Anything a page ASSEMBLED with
+    // psxFmt is already baked into the DOM as one string and cannot be
+    // re-walked, so the page has to rebuild it — this is how it finds out.
+    try { document.dispatchEvent(new CustomEvent("psx:lang", { detail: l })); }
+    catch (e) {}
   }
   function buildSwitcher() {
     var css = document.createElement("style");
