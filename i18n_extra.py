@@ -1381,3 +1381,67 @@ EXTRA.update({
     "Book a ride": ["预约用车", "Reservar un viaje", "차량 예약", "Đặt xe"],
     "Request this ride": ["提交这次预约", "Solicitar este viaje", "이 예약 요청하기", "Gửi yêu cầu chuyến này"],
 })
+
+
+# ---------------------------------------------------------------------------
+# Destination Book content. The page was Chinese chrome around 85 English
+# paragraphs — every description, every tip. Translations live in
+# i18n_places.py keyed by PLACE NAME, and the English keys are read straight
+# out of destinations.json here, so a retyped paragraph can never drift out of
+# match and silently do nothing.
+# ---------------------------------------------------------------------------
+def _load_place_translations():
+    import json as _json, os as _os
+    try:
+        from i18n_places import PLACES
+    except Exception:
+        return {}, []
+    here = _os.path.dirname(_os.path.abspath(__file__))
+    try:
+        with open(_os.path.join(here, "destinations.json"), encoding="utf-8") as f:
+            book = _json.load(f)
+    except Exception:
+        return {}, []
+    out, unmatched = {}, []
+    for e in book.get("entries", []):
+        tr = PLACES.get(e.get("name"))
+        if not tr:
+            if e.get("desc"):
+                unmatched.append(e.get("name"))
+            continue
+        if e.get("desc") and tr.get("desc"):
+            out[e["desc"]] = tr["desc"]
+        if e.get("tip") and tr.get("tip"):
+            out[e["tip"]] = tr["tip"]
+    return out, unmatched
+
+
+_PLACE_TR, _PLACE_MISSING = _load_place_translations()
+EXTRA.update(_PLACE_TR)
+if _PLACE_MISSING:
+    print(f"  i18n_places: no translation for {len(_PLACE_MISSING)} place(s): "
+          f"{', '.join(_PLACE_MISSING[:6])}")
+
+
+# ---------------------------------------------------------------------------
+# PATTERNS. Strings a page builds itself, translated as a shape rather than as
+# a finished sentence. "Open till 17:00 · ~60 min visit" could never be looked
+# up whole — the dictionary would need one entry per time-and-duration pair,
+# which is thousands. The placeholders are named, not positional, because word
+# order moves: Chinese puts the duration before the noun, English after.
+# ---------------------------------------------------------------------------
+EXTRA.update({
+    "Open till {time} · ~{mins} min visit": [
+        "开放至 {time} · 建议游览约 {mins} 分钟",
+        "Abierto hasta las {time} · visita de ~{mins} min",
+        "{time}까지 · 관람 약 {mins}분",
+        "Mở tới {time} · tham quan khoảng {mins} phút"],
+    "Open till {time} · ": [
+        "开放至 {time} · ", "Abierto hasta las {time} · ",
+        "{time}까지 · ", "Mở tới {time} · "],
+    "👥 travelers stay ~{stay}": [
+        "👥 旅客平均待约 {stay}",
+        "👥 los viajeros se quedan ~{stay}",
+        "👥 여행자 평균 체류 {stay}",
+        "👥 khách thường ở lại ~{stay}"],
+})

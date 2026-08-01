@@ -240,6 +240,17 @@
 
     const $ = id => document.getElementById(id);
     function fmt(m){ m = Math.round(m); return Math.floor(m/60) + ':' + ('0' + (m % 60)).slice(-2); }
+    // Strings this page assembles itself go through the shared formatter when
+    // i18n.js is present, and fall straight through to English when it is not.
+    function T(pattern, vals) {
+        if (window.psxFmt) return window.psxFmt(pattern, vals);
+        return pattern.replace(/\{(\w+)\}/g, (m, k) =>
+            (vals && vals[k] !== undefined) ? vals[k] : m);
+    }
+    // apply() re-walks text nodes, but an assembled string is already one baked
+    // node — the only way to change it is to build it again.
+    document.addEventListener('psx:lang', function () { try { render(); } catch (e) {} });
+
     function esc(s){ return String(s == null ? '' : s).replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])); }
 
     function plannerNames(){
@@ -322,11 +333,14 @@
                 + '</div>'
                 + '<div class="rate-row">' + starWidget(e, i) + '</div>'
                 + '<p class="desc">' + esc(e.desc) + '</p>'
-                + '<p class="meta">Open till ' + fmt(e.close) + ' · '
+                + '<p class="meta">'
                 +   (e.typical_visit
-                        ? '<span class="stay-crowd">👥 travelers stay ~' + stayLabel(e.typical_visit) + '</span>'
-                          + ' <span style="color:#6b655b">(' + e.visit_n + ')</span>'
-                        : '~' + e.visit + ' min visit')
+                        ? T('Open till {time} · ', { time: fmt(e.close) })
+                          + '<span class="stay-crowd">'
+                          + T('👥 travelers stay ~{stay}', { stay: stayLabel(e.typical_visit) })
+                          + '</span> <span style="color:#6b655b">(' + e.visit_n + ')</span>'
+                        : T('Open till {time} · ~{mins} min visit',
+                            { time: fmt(e.close), mins: e.visit }))
                 + '</p>'
                 + '<div class="stay-ask" id="stay_' + i + '">'
                 +   '<span class="lead" onclick="openStay(' + i + ')">⏱ Been here? Tell us how long you stayed →</span>'
@@ -335,7 +349,8 @@
                           + stayLabel(m) + '</span>').join('')
                 +   '</div>'
                 + '</div>'
-                + (e.tip ? '<p class="tip">💡 ' + esc(e.tip) + '</p>' : '')
+                + (e.tip ? '<p class="tip"><span aria-hidden="true">💡</span> '
+                           + '<span>' + esc(e.tip) + '</span></p>' : '')
                 + '<div class="actions">'
                 +   (added
                         ? '<button class="addbtn added">✓ In your planner</button><a class="openlink" href="/trip-planner">Open Trip Planner →</a>'
