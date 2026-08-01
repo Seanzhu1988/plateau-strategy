@@ -28,6 +28,14 @@
         --psx-rule:rgba(20,17,12,.10);
         --psx-blue:#1b4d8f; --psx-indigo:#1b4d8f; --psx-violet:#1b4d8f; --psx-teal:#1b6b5a;
         --psx-ink:#14110c;
+        /* Three inks, and each one means something. Black is what the page SAYS,
+           blue is what you can DO, and red is what NEEDS you — an error, a live
+           signal, a field still waiting. Red is the second ink of printed pages
+           for exactly this reason: it only works while it stays rare. Anything
+           that is merely important is not red; it is bold black.
+           Deep and slightly warm, so it belongs on cream rather than glaring
+           off it the way a screen red does. */
+        --psx-red:#a4161a; --psx-red-soft:#c1121f; --psx-red-wash:#fbeceb;
 
         /* One variable decides the display face. Point it at Carna here if
            the licence is bought — @font-face above, then swap this line.
@@ -322,16 +330,32 @@
       /* The Pollock bubbles are <button> too, and a blanket button rule
          painted every one of them ink and squared off their hand-drawn
          edges. They carry their own paper styling in floatback.js. */
-      button:not(.i18n-opt):not(#i18nBtn):not(.cancel-btn):not(.pk-bubble):not(#pollock),
+      /* The starting-point control is not a call to action — it is the map's
+         black pin, sitting beside the address bar so the two read as one thing.
+         Painted ink like every other button, its pin went black-on-black and
+         the waiting state had nothing left to say. It styles itself. */
+      button:not(.i18n-opt):not(#i18nBtn):not(.cancel-btn):not(.pk-bubble):not(#pollock):not(.loc-btn),
       .btn,.book-cta{
         background:var(--psx-ink) !important;background-image:none !important;
         color:#fff !important;border:1px solid var(--psx-ink) !important;
         border-radius:3px !important;box-shadow:none !important;
         font-weight:600 !important;
       }
-      button:not(.i18n-opt):not(#i18nBtn):not(.pk-bubble):not(#pollock):hover:not(:disabled){
+      button:not(.i18n-opt):not(#i18nBtn):not(.pk-bubble):not(#pollock):not(.loc-btn):hover:not(:disabled){
         background:#000 !important;transform:none !important;box-shadow:none !important;
       }
+      /* On paper: a cream face, an ink pin, and red only while it waits. */
+      .loc-btn{
+        background:var(--psx-card) !important; color:var(--psx-text) !important;
+        border:1px solid var(--psx-border) !important; border-radius:3px !important;
+        font-weight:600 !important;
+      }
+      .loc-btn .pin-badge{ background:var(--psx-ink) !important; color:#fff !important; }
+      .loc-btn.located{ border-color:var(--psx-teal) !important; color:var(--psx-teal) !important; }
+      .loc-btn.located .pin-badge{ background:var(--psx-teal) !important; }
+      .loc-btn.needs-start{ border-color:var(--psx-red-soft) !important; color:var(--psx-red) !important; }
+      .loc-btn.needs-start .pin-badge{ background:var(--psx-red) !important; }
+
       input,textarea,select{
         background:#fff !important;
         border:1px solid var(--psx-border) !important;
@@ -416,3 +440,11 @@
         box-shadow:none !important;border-radius:3px !important;
       }
       .cta:hover{background:#000 !important;}
+
+/* ---- map attribution ----
+   Leaflet ships its credit line in a grey that measures 3.6:1 on its own
+   backdrop. The licence requires the credit to be shown; showing it faintly
+   is not showing it. */
+.leaflet-control-attribution,
+.leaflet-control-attribution a { color: #4a453d !important; }
+.leaflet-control-attribution { background: rgba(255,255,255,.94) !important; }

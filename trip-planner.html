@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
         .act.ride-wanted { background: #fff7ed; border-color: #fdba74; color: #9a3412; }
-        .tap-hint { font-size: 0.72rem; color: #94a3b8; line-height: 1.25; max-width: 190px; }
+        .tap-hint { font-size: 0.72rem; color: #6b655b; line-height: 1.25; max-width: 190px; }
         .am-pin.pop-pin { border-color: #f59e0b; background: #fffbeb; }
         .pop-photo { width: 100%; height: 96px; object-fit: cover; border-radius: 7px; margin-bottom: 0.4rem; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -33,18 +33,18 @@
         header img { height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
         header .brand { font-weight: 800; font-size: 1.2rem; }
         header .right { margin-left: auto; display: flex; gap: 1.2rem; }
-        header a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+        header a { color: #6b655b; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
         header a:hover { color: #fff; }
 
         .wrap { max-width: 1180px; margin: 1.6rem auto; padding: 0 1.2rem; }
         .page-title { font-size: 1.9rem; font-weight: 800; color: #0f172a; }
-        .page-sub { color: #64748b; margin: 0.2rem 0 1.2rem; }
+        .page-sub { color: #6b655b; margin: 0.2rem 0 1.2rem; }
 
         .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1rem 1.2rem; margin-bottom: 1rem; }
 
         .controls { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center; font-size: 0.9rem; }
-        .controls label { color: #64748b; font-weight: 600; }
+        .controls label { color: #6b655b; font-weight: 600; }
         .controls input[type=time], .controls select { padding: 0.4rem 0.6rem; border: 1.5px solid #e2e8f0;
             border-radius: 8px; font-size: 0.9rem; font-family: inherit; background: #f8fafc; }
         .btn { padding: 0.45rem 0.9rem; border: none; border-radius: 8px; cursor: pointer;
@@ -55,7 +55,7 @@
 
         .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.7rem; }
         .chip { font-size: 0.8rem; font-weight: 600; padding: 0.3rem 0.85rem; border-radius: 999px;
-            border: 1.5px solid #e2e8f0; color: #64748b; cursor: pointer; user-select: none; background: #fff; }
+            border: 1.5px solid #e2e8f0; color: #6b655b; cursor: pointer; user-select: none; background: #fff; }
         .chip.on { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
 
         /* Sean's layout: content on the LEFT, the map large on the RIGHT */
@@ -97,7 +97,7 @@
             background: rgba(255,255,255,0.97); box-shadow: 0 4px 14px rgba(15,23,42,0.24);
             font-size: 17px; line-height: 1; display: none; }
         .layout.jarvis-hidden #jarvisDock { display: block; }
-        .jarvis-close { float: right; cursor: pointer; color: #94a3b8; font-weight: 800;
+        .jarvis-close { float: right; cursor: pointer; color: #6b655b; font-weight: 800;
             font-size: 1rem; line-height: 1; padding: 0 0 0 .5rem; }
         @media (max-width: 900px) {
             .layout .side { position: static; width: auto; max-height: none; margin-top: 0.7rem;
@@ -153,7 +153,7 @@
             border-radius: 9px; padding: .55rem .75rem; font-size: .9rem; font-family: inherit;
             color: #1f2937; cursor: pointer; }
         .ov-hotel:hover { border-color: #db2777; background: #fff5fa; }
-        .ov-hotel span { color: #94a3b8; font-size: .8rem; white-space: nowrap; }
+        .ov-hotel span { color: #6b655b; font-size: .8rem; white-space: nowrap; }
         .ov-msg { font-size: .86rem; color: #475569; margin-top: .7rem; min-height: 1.2em; }
         .ov-skip { width: 100%; margin-top: .9rem; }
         .map-legend .lg-toggle { font-size: 0.72rem; font-weight: 700; color: #475569;
@@ -183,7 +183,7 @@
         .start-entry input { flex: 1; min-width: 210px; padding: 0.5rem 0.8rem; border: 1.5px solid #e2e8f0;
             border-radius: 10px; font-size: 0.92rem; font-family: inherit; background: #f8fafc; }
         .start-entry input:focus { outline: none; border-color: #3b82f6; background: #fff; }
-        .start-hint { font-size: 0.74rem; color: #94a3b8; }
+        .start-hint { font-size: 0.74rem; color: #6b655b; }
         .traffic-note { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem;
             font-weight: 600; color: #1d4ed8; background: #eff6ff; border: 1px solid #dbeafe;
             border-radius: 10px; padding: 0.55rem 0.9rem; margin-bottom: 0.6rem; }
@@ -205,7 +205,7 @@
             color: #fff; font-size: 8px; font-weight: 800; line-height: 12px; min-width: 12px;
             height: 12px; border-radius: 6px; text-align: center; padding: 0 2px;
             box-shadow: 0 1px 2px rgba(15,23,42,.35); }
-        .amenity-note { display: block; font-size: 0.62rem; color: #64748b; line-height: 1.3;
+        .amenity-note { display: block; font-size: 0.62rem; color: #6b655b; line-height: 1.3;
             margin-top: 0.28rem; max-width: 150px; }
         /* 🌍 the map announcing that it just grew */
         .discovery-note { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px;
@@ -234,7 +234,7 @@
             border: 2px solid #94a3b8; box-shadow: 0 1px 3px rgba(15,23,42,0.3); }
         .am-pop { font-size: 0.82rem; line-height: 1.5; }
         .am-pop b { color: #0f172a; }
-        .am-pop .d { color: #64748b; font-size: 0.76rem; }
+        .am-pop .d { color: #6b655b; font-size: 0.76rem; }
         .am-rate { margin-top: 0.35rem; font-size: 0.8rem; color: #334155; }
         .am-rate .rs { color: #d1d5db; cursor: pointer; font-size: 0.95rem; }
         .am-rate .rs:hover { color: #f59e0b; }
@@ -258,10 +258,10 @@
             align-items: center; gap: 0.4rem; }
         .stop { display: flex; justify-content: space-between; gap: 0.6rem; font-size: 0.86rem;
             padding: 0.42rem 0; border-top: 1px solid #eef2f7; }
-        .stop .t { color: #94a3b8; white-space: nowrap; }
+        .stop .t { color: #6b655b; white-space: nowrap; }
         .dayhead { font-weight: 800; font-size: 0.8rem; color: #1e3a8a; text-transform: uppercase;
             letter-spacing: 0.04em; margin-top: 0.6rem; }
-        .muted { color: #94a3b8; font-size: 0.84rem; }
+        .muted { color: #6b655b; font-size: 0.84rem; }
 
         .place-row { display: flex; align-items: center; gap: 0.45rem; padding: 0.4rem 0;
             border-top: 1px solid #eef2f7; font-size: 0.84rem; flex-wrap: wrap; }
@@ -270,7 +270,7 @@
         .place-row input[type=number] { width: 58px; }
         .place-row input, .place-row select { padding: 0.22rem 0.35rem; border: 1px solid #e2e8f0;
             border-radius: 6px; font-size: 0.8rem; font-family: inherit; background: #f8fafc; }
-        .place-row .rm { color: #ef4444; cursor: pointer; font-weight: 800; padding: 0 0.3rem; }
+        .place-row .rm { color: var(--psx-red); cursor: pointer; font-weight: 800; padding: 0 0.3rem; }
         .place-row .crowd { font-style: normal; font-weight: 700; font-size: 0.72rem; color: #0d9488;
             background: #ecfdf5; border-radius: 6px; padding: 1px 5px; margin-left: 4px; white-space: nowrap; }
         .place-row .crowd.guided { color: #7c2d12; background: #fef3c7; }
@@ -293,7 +293,7 @@
         .jarvis-mast b { color: #0f172a; }
         .mast-risk { color: #b45309; font-weight: 700; cursor: pointer; }
         .jarvis-sec { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase;
-            color: #94a3b8; margin: 0.75rem 0 0.3rem; border-top: 1px solid #f1f5f9; padding-top: 0.6rem; }
+            color: #6b655b; margin: 0.75rem 0 0.3rem; border-top: 1px solid #f1f5f9; padding-top: 0.6rem; }
         .itin-head { display: flex; align-items: center; }
         .itin-tools { margin-left: auto; display: flex; gap: 0.55rem; }
         .itin-tools button { background: none; border: none; color: #1d4ed8; font-size: 0.7rem;
@@ -304,24 +304,24 @@
         .itin-row { display: grid; grid-template-columns: 52px 1fr; column-gap: 0.5rem;
             padding: 0.42rem 0; border-top: 1px solid #eef2f7; }
         .itin-row.tight { border-left: 3px solid #d97706; padding-left: 0.45rem; }
-        .itin-row.risk { border-left: 3px solid #ef4444; padding-left: 0.45rem; background: #fffbeb; }
+        .itin-row.risk { border-left: 3px solid var(--psx-red); padding-left: 0.45rem; background: #fffbeb; }
         .itin-row.nowrow { border-left: 3px solid #1d4ed8; padding-left: 0.45rem; }
         .itin-time { text-align: right; color: #0f172a; font-weight: 700; font-size: 0.78rem;
             font-variant-numeric: tabular-nums; line-height: 1.35; }
-        .itin-time .lv { color: #94a3b8; font-weight: 600; display: block; }
+        .itin-time .lv { color: #6b655b; font-weight: 600; display: block; }
         .itin-name { font-weight: 700; color: #0f172a; font-size: 0.84rem; display: flex;
             justify-content: space-between; gap: 0.4rem; }
         .itin-stars { color: #b45309; font-weight: 700; font-size: 0.72rem; white-space: nowrap; }
-        .itin-leg { font-size: 0.7rem; color: #64748b; margin-top: 0.12rem; display: flex;
+        .itin-leg { font-size: 0.7rem; color: #6b655b; margin-top: 0.12rem; display: flex;
             flex-wrap: wrap; gap: 0.15rem 0.55rem; justify-content: space-between; }
         .itin-warn { font-size: 0.7rem; font-weight: 700; margin-top: 0.15rem; }
         .itin-warn.tight { color: #b45309; }
-        .itin-warn.risk { color: #b91c1c; }
+        .itin-warn.risk { color: var(--psx-red); }
         .fixlink { color: #1d4ed8; text-decoration: underline; cursor: pointer; font-weight: 700; }
         .fixlink:hover { color: #1e40af; }
         .itin-tag { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.05em; color: #1d4ed8;
             background: #eff6ff; border-radius: 6px; padding: 1px 6px; margin-left: 6px; }
-        .jcursor { font-size: 0.72rem; color: #94a3b8; font-style: italic; padding: 0.35rem 0 0 0.3rem; }
+        .jcursor { font-size: 0.72rem; color: #6b655b; font-style: italic; padding: 0.35rem 0 0 0.3rem; }
         .sug-row .sug-add { color: #1d4ed8; font-weight: 800; cursor: pointer; margin-right: 0.35rem; }
         /* 💬 Jarvis asks — one quick community question, one-tap answers */
         .jask { margin-top: 0.4rem; }
@@ -330,7 +330,7 @@
         .jask .jask-opts span { font-size: 0.74rem; font-weight: 600; padding: 0.28rem 0.7rem; border-radius: 999px;
             border: 1.5px solid #e2e8f0; color: #475569; cursor: pointer; user-select: none; background: #fff; }
         .jask .jask-opts span:hover { border-color: #93c5fd; color: #1d4ed8; }
-        .jask .jask-skip { color: #94a3b8 !important; border-color: transparent !important; }
+        .jask .jask-skip { color: #6b655b !important; border-color: transparent !important; }
         .jarvis-actions { display: none; gap: 0.45rem; flex-wrap: wrap; margin-top: 0.5rem; }
         .jarvis-actions button { border: none; border-radius: 8px; color: #fff; font-weight: 700;
             font-size: 0.76rem; padding: 0.42rem 0.62rem; cursor: pointer; }
@@ -346,9 +346,34 @@
             padding: 0.5rem 0.7rem; font-weight: 700; color: #0f172a; font-size: 0.85rem; white-space: nowrap; }
         .build-row .loc-btn:hover { border-color: #2563eb; color: #1d4ed8; }
         .build-row .loc-btn.located { border-color: #0d9488; color: #0f766e; background: #f0fdfa; }
+        /* The control wears the same black marker the map drops, so nobody has to
+           be told that this button and that pin are the same thing. */
+        .pin-badge { width: 20px; height: 20px; border-radius: 50%; flex: 0 0 auto;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: #0f172a; color: #fff; font-size: 11px; line-height: 1;
+            border: 1.5px solid #fff; margin-right: 0.4rem;
+            box-shadow: 0 1px 2px rgba(15,23,42,.3), 0 2px 5px rgba(15,23,42,.16); }
+        .build-row .loc-btn { display: inline-flex; align-items: center; }
+        .build-row .loc-btn.located .pin-badge { background: #0f766e; }
+        /* Until a start is set, the pin breathes — a traveller should not have to
+           work out that the day begins somewhere. It stops the moment it is set. */
+        @keyframes pinWaiting {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(164,22,26,.42), 0 1px 2px rgba(20,17,12,.3); }
+            50%      { box-shadow: 0 0 0 6px rgba(164,22,26,0), 0 1px 2px rgba(20,17,12,.3); }
+        }
+        .build-row .loc-btn.needs-start .pin-badge { animation: pinWaiting 1.9s ease-out infinite; }
+        .build-row .loc-btn.needs-start { border-color: var(--psx-red-soft); color: var(--psx-red); }
+        @media (prefers-reduced-motion: reduce) { .build-row .loc-btn.needs-start .pin-badge { animation: none; } }
+        /* and when it lands, the map marker takes the eye for a moment */
+        @keyframes pinLanding {
+            0%   { transform: translateY(-26px) scale(.75); opacity: .25; }
+            65%  { transform: translateY(0) scale(1.18); opacity: 1; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .tp-pin.landing { animation: pinLanding .55s cubic-bezier(.2,.9,.3,1.2); }
         .loc-info { font-size: 0.8rem; color: #0f766e; margin-top: 0.35rem; line-height: 1.4; }
         .loc-info.warn { color: #b45309; }
-        .build-row .to { color: #94a3b8; font-weight: 800; }
+        .build-row .to { color: #6b655b; font-weight: 800; }
         .build-row #destAdd { flex: 1; min-width: 200px; border: 1px solid #cbd5e1; border-radius: 9px;
             padding: 0.55rem 0.8rem; font-size: 0.92rem; }
         .btn.add { background: linear-gradient(135deg,#2563eb,#1d4ed8); color: #fff; border: none;
@@ -357,7 +382,7 @@
         .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-top: 0.6rem; }
         .chain .dnode { background: #eef4ff; border: 1px solid #c7d7f5; color: #1d4ed8; font-weight: 700;
             font-size: 0.8rem; border-radius: 999px; padding: 2px 10px; }
-        .chain .darrow { color: #94a3b8; font-weight: 800; }
+        .chain .darrow { color: #6b655b; font-weight: 800; }
         .place-row .addbtn { width: 26px; text-align: center; cursor: pointer; color: #2563eb; font-weight: 900;
             font-size: 1.05rem; user-select: none; }
         .place-row .addbtn:hover { color: #1d4ed8; }
@@ -397,7 +422,7 @@
             position: relative; max-height: 92vh; overflow-y: auto; }
         .modal h3 { color: #0f172a; font-size: 1.2rem; margin-bottom: 0.25rem; }
         .modal-x { position: absolute; top: 0.7rem; right: 0.8rem; border: none; background: none;
-            font-size: 1.2rem; color: #64748b; cursor: pointer; }
+            font-size: 1.2rem; color: #6b655b; cursor: pointer; }
         .ho-summary { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.7rem 0.9rem;
             font-size: 0.85rem; color: #334155; margin: 0.7rem 0; line-height: 1.5; }
         .ho-fee { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; border-radius: 10px;
@@ -407,7 +432,7 @@
             padding: 0.55rem 0.7rem; font-size: 0.9rem; font-family: inherit; }
         .ho-msg { font-size: 0.86rem; font-weight: 700; margin-top: 0.6rem; min-height: 1.1em; }
         .ho-msg.ok { color: #0f766e; } .ho-msg.err { color: #dc2626; }
-        .col-lab { font-size: 0.68rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em; }
+        .col-lab { font-size: 0.68rem; color: #6b655b; text-transform: uppercase; letter-spacing: 0.04em; }
 
         .search-box { position: relative; margin-top: 0.6rem; }
         .search-box input { width: 100%; padding: 0.55rem 0.8rem; border: 1.5px solid #e2e8f0;
@@ -498,14 +523,14 @@
         .book-head:hover { background: #f8fafc; }
         .book-ico { font-size: 1.35rem; flex: 0 0 auto; }
         .book-title { flex: 1; font-weight: 800; color: #0f172a; font-size: 0.98rem; }
-        .book-sub { display: block; font-weight: 500; color: #64748b; font-size: 0.78rem; margin-top: 0.15rem; }
-        .book-chev { color: #94a3b8; font-size: 0.9rem; transition: transform 0.2s; flex: 0 0 auto; }
+        .book-sub { display: block; font-weight: 500; color: #6b655b; font-size: 0.78rem; margin-top: 0.15rem; }
+        .book-chev { color: #6b655b; font-size: 0.9rem; transition: transform 0.2s; flex: 0 0 auto; }
         .bookcard.open .book-chev { transform: rotate(180deg); }
         .book-body { display: none; padding: 0 1.1rem 1.1rem; }
         .bookcard.open .book-body { display: block; }
 
-        footer.attrib { text-align: center; color: #94a3b8; font-size: 0.75rem; padding: 1.2rem 0 2rem; }
-        footer.attrib a { color: #64748b; }
+        footer.attrib { text-align: center; color: #6b655b; font-size: 0.75rem; padding: 1.2rem 0 2rem; }
+        footer.attrib a { color: #6b655b; }
 
         /* 🖨 print = the day sheet alone, kept in NORMAL FLOW so a multi-day
            itinerary paginates — absolute positioning would clip it to page 1.
@@ -564,7 +589,7 @@
 
             <div class="build-row">
                 <button type="button" class="from loc-btn" id="curLocBtn" onclick="startPointTap()"
-                        title="Tap once to type a starting address · tap twice to use your current location">⌂ <span id="curLocLabel">Starting point</span></button>
+                        title="Tap once to type a starting address · tap twice to use your current location"><span class="pin-badge" aria-hidden="true">⌂</span><span id="curLocLabel">Starting point</span></button>
 
                 <span class="to">→</span>
                 <input id="destAdd" placeholder="Type a destination and press Add — or tap a pin on the map"
@@ -1496,6 +1521,65 @@
         const list = (GEO[state] || {})[county] || [];
         $('selCity').innerHTML = list.map(c => '<option value="' + c[0] + '">' + c[1] + '</option>').join('');
     }
+    // ---------- the pickers grow with the map ----------
+    // GEO ships with the handful of cities we wrote by hand. Every place a
+    // traveller searches for is filed with its state and county, so the server
+    // can hand back the real hierarchy — search Mount Rushmore once and South
+    // Dakota is in the State list for everyone after. Merged, never replaced:
+    // a discovered city joins the built-in ones rather than displacing them.
+    function mergeGeography(g, cities){
+        Object.keys(g || {}).forEach(state => {
+            const counties = GEO[state] || (GEO[state] = {});
+            Object.keys(g[state]).forEach(county => {
+                const have = counties[county] || (counties[county] = []);
+                g[state][county].forEach(pair => {
+                    if (!have.some(p => p[0] === pair[0])) have.push(pair);
+                    if (!CITY_META[pair[0]]) CITY_META[pair[0]] = { state: state, county: county };
+                });
+            });
+        });
+        Object.keys(cities || {}).forEach(k => { if (!CITY_LABELS[k]) CITY_LABELS[k] = cities[k]; });
+    }
+    const CITY_LABELS = {};
+    function loadGeography(){
+        return fetch('/api/geography').then(r => r.json()).then(j => {
+            if (!j || !j.ok) return;
+            mergeGeography(j.geo, j.cities);
+            initStateCity();                                 // redraw with the new states in place
+        }).catch(() => {});
+    }
+
+    // A discovered city's board IS the book's entries for it — the places
+    // travellers actually found there.
+    function loadDiscoveredCity(key){
+        say('Opening ' + (CITY_LABELS[key] || key) + '…');
+        fetch('/api/destinations?city=' + encodeURIComponent(key)).then(r => r.json()).then(d => {
+            const rows = (d.entries || []).filter(e => (e.city || '') === key && e.lat && e.lon);
+            if (!rows.length) {
+                say('Nothing in the book for ' + (CITY_LABELS[key] || key)
+                    + ' yet — search a place and it starts the city off.');
+                return;
+            }
+            places = rows.map(e => ({ name: e.name, lat: e.lat, lon: e.lon,
+                                      close: e.close || 1020,
+                                      visit: e.typical_visit || e.visit || 60,
+                                      cat: e.cat || 'culture',
+                                      hoursKnown: !!e.close }));
+            savePlaces();
+            const lat = places.reduce((a, p) => a + p.lat, 0) / places.length;
+            const lon = places.reduce((a, p) => a + p.lon, 0) / places.length;
+            rebuildMarkers(); renderPlaces();
+            startMarker.setLatLng([lat, lon]);
+            currentLoc = { lat: lat, lon: lon, address: CITY_LABELS[key] || key,
+                           accuracy: null, source: 'default' };
+            map.setView([lat, lon], 12);
+            resetTrip(); fetchMatrix();
+            markRideCoverage();
+            say((CITY_LABELS[key] || key) + ' — ' + places.length
+                + ' place' + (places.length === 1 ? '' : 's') + ' travellers have found here.');
+        }).catch(() => say('Could not open that city just now.'));
+    }
+
     function initStateCity(){        // sync all three pickers to the loaded city
         const ss = $('selState');
         ss.innerHTML = Object.keys(GEO).sort().map(s => '<option value="' + s + '">' + s + '</option>').join('');
@@ -1862,6 +1946,7 @@
         _jaskCur = null;                                     // a question asked in the OLD city is void
         const jb = document.getElementById('jask'); if (jb) jb.style.display = 'none';
         const c = CITIES[curCity];
+        if (!c) { loadDiscoveredCity(curCity); return; }      // a city someone found, not one we shipped
         places = c.places.map(p => Object.assign({}, p));
         savePlaces();
         if (force) {
@@ -1873,6 +1958,7 @@
                    resetTrip(); fetchMatrix(); }
             say(c.label + ' sample loaded — ' + places.length + ' places, ready to plan.');
             markRideCoverage();                 // the ride door differs city to city
+            signalStartNeeded();                // a fresh city means a guessed start again
             const ss = $('selState'), m = CITY_META[curCity];  // keep all three pickers in sync
             if (ss && m) { ss.value = m.state; fillCounties(m.state); $('selCounty').value = m.county;
                            fillCities(m.state, m.county); $('selCity').value = curCity; }
@@ -1999,6 +2085,27 @@
     // street address, and show the accuracy so they know whether to fine-tune.
     let currentLoc = null;      // { lat, lon, address, accuracy } once detected
     function setLocLabel(t){ const el = $('curLocLabel'); if (el) el.textContent = t; }
+
+    // The pin asks for attention only while the start is still a guess — the
+    // city's default drop point, not anywhere the traveller has actually said.
+    // Once they set one it stops asking; that is the whole signal.
+    function signalStartNeeded(){
+        const b = $('curLocBtn'); if (!b) return;
+        const guessed = !currentLoc || currentLoc.source === 'default' || !currentLoc.address;
+        b.classList.toggle('needs-start', !!guessed);
+    }
+    // ...and when a start IS set, the map's own marker drops into place, so the
+    // control and the map read as one act rather than two separate screens.
+    function landStartPin(){
+        const el = startMarker && startMarker.getElement && startMarker.getElement();
+        const pin = el && el.querySelector('.tp-pin');
+        if (!pin) return;
+        pin.classList.remove('landing');
+        void pin.offsetWidth;                     // restart it if one is mid-flight
+        pin.classList.add('landing');
+        setTimeout(() => pin.classList.remove('landing'), 700);
+    }
+    window.signalStartNeeded = signalStartNeeded;
     function setLocInfo(t, warn){ const el = $('curLocInfo'); if (!el) return; el.textContent = t; el.className = 'loc-info' + (warn ? ' warn' : ''); }
     function shortAddr(a){ return a ? a.split(',').slice(0, 3).join(',') : ''; }
 
@@ -2448,9 +2555,11 @@
     function setOrigin(lat, lon, source, meta){
         meta = meta || {};
         startMarker.setLatLng([lat, lon]);
+        if (source !== 'default') landStartPin();     // it visibly lands where you said
         currentLoc = { lat: lat, lon: lon, address: meta.address || '',
                        accuracy: (source === 'gps' ? meta.accuracy : null), source: source };
         farFromBoardCheck();
+        signalStartNeeded();             // set now — the pin stops asking
         retimeRoute(meta.why || 'new starting point');
         pendingOriginRetime = true;      // re-time again when the real drive times land
         fetchMatrix();
@@ -3382,6 +3491,8 @@
     startMarker.on('dblclick', (e) => { if (e && e.originalEvent) L.DomEvent.stop(e); });
     initChips();
     initStateCity();
+    signalStartNeeded();                           // ask for a start if we are only guessing
+    loadGeography();                              // then fold in every state travellers have found
     rebuildMarkers();
     renderPlaces();
     if (places.length) {
