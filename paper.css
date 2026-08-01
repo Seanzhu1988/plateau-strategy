@@ -347,3 +347,72 @@
       label{color:var(--psx-text2) !important;}
       /* The map must keep its own colours — it is data, not decoration. */
       .leaflet-container,.leaflet-container *{font-family:var(--psx-sans);}
+
+      /* ============================================================
+         LEFTOVERS
+         Found by walking every route and flagging any sizeable visible
+         block still painted dark or still carrying a gradient. Body
+         background alone was not enough of a test — these all sat on
+         pages whose <body> had already turned to paper.
+         ============================================================ */
+      html{background:var(--psx-bg) !important;}
+
+      /* login panels on the driver and dispatch pages */
+      .auth,.auth-box{
+        background:#fff !important;
+        border:1px solid var(--psx-border) !important;
+        color:var(--psx-text) !important;
+        border-radius:4px !important;box-shadow:0 1px 2px rgba(20,17,12,.05) !important;
+      }
+      .auth-overlay{background:rgba(250,248,244,.95) !important;}
+      .auth *,.auth-box *{color:inherit !important;}
+      .auth h1,.auth h2,.auth-box h1,.auth-box h2{color:var(--psx-ink) !important;}
+
+      /* Deflator panels, Factor Clock readouts, dispatch tiles, partner stats */
+      .status,.conv,.wait,.fine,.big,.pricebox,.stat,.tool,.card-dark,.panel-dark{
+        background:#fff !important;
+        border:1px solid var(--psx-border) !important;
+        color:var(--psx-text) !important;
+        border-radius:4px !important;
+        box-shadow:0 1px 2px rgba(20,17,12,.04) !important;
+      }
+      .status *,.conv *,.wait *,.fine *,.big *,.pricebox *,.stat *,.tool *{
+        color:inherit !important;
+      }
+      .big strong,.pricebox strong,.stat strong,.tool strong,
+      .big b,.stat b{color:var(--psx-ink) !important;}
+      a.tool:hover{border-color:rgba(20,17,12,.28) !important;background:#fffdf9 !important;}
+
+      /* the last gradient buttons on the site */
+      .btn.blue,.btn-blue,a.btn.blue{
+        background:var(--psx-ink) !important;background-image:none !important;
+        color:#fff !important;border:1px solid var(--psx-ink) !important;
+        box-shadow:none !important;
+      }
+
+      /* the final two: a gradient CTA panel on the front page, and the
+         dispatch table's dark header row */
+      .psx-cta-panel{
+        background:var(--psx-hero) !important;background-image:none !important;
+        border:1px solid var(--psx-border) !important;border-radius:4px !important;
+        box-shadow:none !important;
+      }
+      .psx-cta-glow{display:none !important;}
+      .board{background:#fff !important;border:1px solid var(--psx-border) !important;}
+      table th{
+        background:var(--psx-hero) !important;
+        color:var(--psx-ink) !important;
+        border-bottom:1px solid var(--psx-border) !important;
+      }
+      table td{border-bottom:1px solid var(--psx-rule) !important;color:var(--psx-text) !important;}
+
+      /* Factor Clock's sky-blue call to action — the last off-palette fill.
+         Caught only after widening the sweep from "dark or gradient" to
+         "any solid fill that is not one of ours"; a light colour passed the
+         first test while still belonging to the old scheme. */
+      .cta{
+        background:var(--psx-ink) !important;background-image:none !important;
+        color:#fff !important;border:1px solid var(--psx-ink) !important;
+        box-shadow:none !important;border-radius:3px !important;
+      }
+      .cta:hover{background:#000 !important;}
