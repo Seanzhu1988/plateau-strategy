@@ -999,3 +999,70 @@ EXTRA.update({
         "출장 서비스 업체입니다 — 저희가 찾아가며, 방문할 카운터는 없습니다.",
         "Doanh nghiệp phục vụ tận nơi — chúng tôi đến chỗ bạn, không có quầy để ghé."],
 })
+
+# ---------------- the front page, rewritten as ink-on-paper ----------------
+EXTRA.update({
+    "Plateau Strategy Solution Lab · Seattle": ["Plateau Strategy Solution Lab · 西雅图", "Plateau Strategy Solution Lab · Seattle", "Plateau Strategy Solution Lab · 시애틀", "Plateau Strategy Solution Lab · Seattle"],
+    "We build one business at a time": ["我们一次只做一门生意", "Construimos un negocio a la vez", "한 번에 하나의 사업을 세웁니다", "Chúng tôi xây từng doanh nghiệp một"],
+    "Transportation is the one that runs today: flat-rate Tesla rides across Seattle, cars rented to drivers who earn with them, and trip-planning tools anyone can use free. It pays for what comes next. Every other arm is listed below with the stage it is honestly at — including the ones not finished.": [
+        "今天真正在运转的是出行：西雅图全城的特斯拉一口价接送、租给司机让他们靠车挣钱，以及任何人都能免费使用的行程规划工具。它养着接下来要做的事。下面列出的每一块业务都如实标明所处阶段——包括那些还没做完的。",
+        "El transporte es el que funciona hoy: viajes en Tesla a tarifa fija por Seattle, coches alquilados a conductores que ganan con ellos, y herramientas de planificación de viajes que cualquiera puede usar gratis. Paga lo que viene después. Cada una de las demás ramas aparece abajo con la etapa en la que honestamente está — incluidas las que no están terminadas.",
+        "오늘 실제로 돌아가는 것은 교통입니다: 시애틀 전역의 정액 테슬라 운행, 그것으로 수입을 올리는 기사들에게 빌려주는 차량, 그리고 누구나 무료로 쓰는 여행 계획 도구. 이것이 다음에 올 것들을 먹여 살립니다. 나머지 각 부문은 아래에 지금 있는 단계 그대로 — 아직 끝나지 않은 것까지 포함해 — 적어 두었습니다.",
+        "Vận tải là mảng đang thực sự chạy hôm nay: những chuyến Tesla giá trọn gói khắp Seattle, xe cho tài xế thuê để họ kiếm sống, và các công cụ lập kế hoạch chuyến đi ai cũng dùng miễn phí. Nó nuôi những gì đến sau. Mọi nhánh khác đều được liệt kê bên dưới kèm đúng giai đoạn thật của nó — kể cả những nhánh chưa xong."],
+    "Book a ride": ["预约用车", "Reservar un viaje", "차량 예약", "Đặt xe"],
+    "Partner with us": ["与我们合作", "Colabora con nosotros", "함께 협력하기", "Hợp tác với chúng tôi"],
+    "Flat fare to Sea–Tac": ["到西雅图机场一口价", "Tarifa fija a Sea–Tac", "시택 공항까지 정액 요금", "Giá trọn gói tới Sea–Tac"],
+    "Book any hour": ["任何时段都能预约", "Reserva a cualquier hora", "언제든 예약 가능", "Đặt bất kỳ giờ nào"],
+    "Every vehicle": ["每一辆车", "Todos los vehículos", "모든 차량", "Mọi xe"],
+    "THE COMPANY": ["公司", "LA EMPRESA", "회사", "CÔNG TY"],
+    "Four arms, at four different stages": ["四块业务，四个不同阶段", "Cuatro ramas, en cuatro etapas distintas", "네 개의 부문, 네 개의 서로 다른 단계", "Bốn nhánh, ở bốn giai đoạn khác nhau"],
+    "One business pays for the next. That only means something if we say plainly which ones are earning today and which are still being built — so we do.": [
+        "一门生意养下一门。但这句话只有在我们如实说出哪些今天在赚钱、哪些还在搭建时才有意义——所以我们照实说。",
+        "Un negocio paga el siguiente. Eso solo significa algo si decimos con claridad cuáles ganan hoy y cuáles se están construyendo todavía — así que lo decimos.",
+        "하나의 사업이 다음 사업을 먹여 살립니다. 그 말은 어느 것이 오늘 벌고 있고 어느 것이 아직 만들어지는 중인지 분명히 말할 때에만 의미가 있습니다 — 그래서 그렇게 합니다.",
+        "Doanh nghiệp này nuôi doanh nghiệp kia. Điều đó chỉ có ý nghĩa nếu chúng tôi nói rõ mảng nào đang kiếm được tiền hôm nay và mảng nào còn đang xây — nên chúng tôi nói thẳng."],
+    "Operating": ["运营中", "En operación", "운영 중", "Đang vận hành"],
+    "Flat-rate Tesla rides in Seattle at $75 to Sea–Tac, cars rented to drivers who keep the fare, and a commission programme for hotels and agents. This is the business that earns.": [
+        "西雅图的特斯拉一口价接送，到机场 75 美元；把车租给司机，车费归他们；另有面向酒店和代理人的佣金计划。这是真正在赚钱的那门生意。",
+        "Viajes en Tesla a tarifa fija en Seattle, 75 $ a Sea–Tac, coches alquilados a conductores que se quedan la tarifa, y un programa de comisiones para hoteles y agentes. Este es el negocio que gana dinero.",
+        "시애틀에서 시택 공항까지 75달러 정액 테슬라 운행, 요금을 그대로 가져가는 기사에게 빌려주는 차량, 그리고 호텔·에이전트를 위한 수수료 프로그램. 실제로 돈을 버는 사업입니다.",
+        "Những chuyến Tesla giá trọn gói ở Seattle, 75 $ tới Sea–Tac, xe cho tài xế thuê và họ giữ trọn tiền cước, cùng chương trình hoa hồng cho khách sạn và đại lý. Đây là mảng đang thực sự kiếm ra tiền."],
+    "See how it works →": ["看它如何运作 →", "Ver cómo funciona →", "작동 방식 보기 →", "Xem cách hoạt động →"],
+    "Running": ["已上线", "En marcha", "가동 중", "Đang chạy"],
+    "Operations platform": ["运营平台", "Plataforma de operaciones", "운영 플랫폼", "Nền tảng vận hành"],
+    "Dispatch, invoicing, driver paperwork and the trip-planning tools — built in-house rather than rented, so the customer relationship and the data stay with us.": [
+        "调度、开票、司机文件和行程规划工具——都是自己做的，不是租来的，所以客户关系和数据都留在我们手里。",
+        "Central, facturación, papeleo de conductores y las herramientas de planificación — construidos en casa en vez de alquilados, de modo que la relación con el cliente y los datos se quedan con nosotros.",
+        "배차, 청구, 기사 서류, 여행 계획 도구 — 빌려 쓰지 않고 직접 만들었기에 고객 관계와 데이터가 우리에게 남습니다.",
+        "Điều phối, xuất hóa đơn, giấy tờ tài xế và các công cụ lập kế hoạch — tự làm chứ không đi thuê, nên quan hệ khách hàng và dữ liệu ở lại với chúng tôi."],
+    "See the platform →": ["查看平台 →", "Ver la plataforma →", "플랫폼 보기 →", "Xem nền tảng →"],
+    "In development": ["开发中", "En desarrollo", "개발 중", "Đang phát triển"],
+    "Real estate": ["房地产", "Bienes raíces", "부동산", "Bất động sản"],
+    "Mixed-use development, at drawing stage. Nothing built, nothing leased, nothing offered — the plans are published as they stand.": [
+        "综合开发项目，目前处于图纸阶段。没有建成，没有出租，也没有对外发售——图纸就按现状公开。",
+        "Desarrollo de uso mixto, en fase de planos. Nada construido, nada arrendado, nada ofrecido: los planos se publican tal como están.",
+        "복합 용도 개발, 아직 도면 단계입니다. 지은 것도, 임대한 것도, 내놓은 것도 없습니다 — 계획은 있는 그대로 공개합니다.",
+        "Dự án phức hợp, đang ở giai đoạn bản vẽ. Chưa xây, chưa cho thuê, chưa chào bán — bản vẽ được công bố đúng như hiện trạng."],
+    "See the drawings →": ["查看图纸 →", "Ver los planos →", "도면 보기 →", "Xem bản vẽ →"],
+    "Research": ["研究", "Investigación", "연구", "Nghiên cứu"],
+    "An automated trading research project in private verification, building an audited record. Nothing is for sale and no money is accepted — you can follow the results.": [
+        "一个处于私下验证阶段的自动化交易研究项目，正在积累可审计的记录。不出售任何东西，也不接受任何资金——您可以关注结果。",
+        "Un proyecto de investigación de trading automatizado en verificación privada, construyendo un historial auditado. No se vende nada y no se acepta dinero: puedes seguir los resultados.",
+        "비공개 검증 단계에 있는 자동 매매 연구 프로젝트로, 감사 가능한 기록을 쌓고 있습니다. 판매하는 것도, 받는 돈도 없습니다 — 결과를 지켜보실 수 있습니다.",
+        "Một dự án nghiên cứu giao dịch tự động đang trong giai đoạn xác minh riêng tư, xây dựng hồ sơ có thể kiểm toán. Không bán gì và không nhận tiền — bạn có thể theo dõi kết quả."],
+    "More financial products coming soon.": ["更多金融产品即将推出。", "Próximamente más productos financieros.", "더 많은 금융 상품이 곧 나옵니다.", "Sắp có thêm các sản phẩm tài chính."],
+    "A Seattle car service: flat-rate Tesla rides to Sea–Tac and around the city, plus trip-planning tools that are free to use.": [
+        "西雅图的一家用车服务：到机场及市内各处的特斯拉一口价接送，外加可免费使用的行程规划工具。",
+        "Un servicio de coches en Seattle: viajes en Tesla a tarifa fija a Sea–Tac y por la ciudad, más herramientas de planificación gratuitas.",
+        "시애틀의 차량 서비스입니다: 시택 공항과 시내를 오가는 정액 테슬라 운행, 그리고 무료로 쓰는 여행 계획 도구.",
+        "Một dịch vụ xe tại Seattle: những chuyến Tesla giá trọn gói tới Sea–Tac và quanh thành phố, cùng các công cụ lập kế hoạch miễn phí."],
+    "Flat-rate Tesla rides, Seattle and Sea–Tac.": ["特斯拉一口价接送，西雅图市内及机场。", "Viajes en Tesla a tarifa fija, Seattle y Sea–Tac.", "정액 테슬라 운행, 시애틀과 시택 공항.", "Chuyến Tesla giá trọn gói, Seattle và Sea–Tac."],
+    "Optional — fills your name and email. You can just type them instead.": [
+        "可选——会自动填入您的姓名和邮箱。您也可以直接手动输入。",
+        "Opcional: rellena tu nombre y correo. También puedes escribirlos tú.",
+        "선택 사항 — 이름과 이메일이 자동으로 채워집니다. 직접 입력하셔도 됩니다.",
+        "Tùy chọn — tự điền tên và email của bạn. Bạn cũng có thể tự gõ."],
+    "or enter your details": ["或手动填写您的信息", "o introduce tus datos", "또는 직접 정보 입력", "hoặc tự nhập thông tin của bạn"],
+    "Seattle–Tacoma International Airport (SEA)": ["西雅图-塔科马国际机场（SEA）", "Aeropuerto Internacional Seattle–Tacoma (SEA)", "시애틀–타코마 국제공항(SEA)", "Sân bay quốc tế Seattle–Tacoma (SEA)"],
+})
+EXTRA_SKIP |= {"1200 Pine St, Seattle", "e.g. AS 1234 (optional)"}

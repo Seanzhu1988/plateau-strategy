@@ -867,7 +867,7 @@ PUBLIC_PAGES = [
     ("/deflator", "0.5", "monthly"),
     ("/board", "0.4", "monthly"),
 ]
-OWNER_ONLY_PATHS = ["/dispatch", "/setup", "/archive", "/api/"]
+OWNER_ONLY_PATHS = ["/dispatch", "/setup", "/archive", "/api/", "/deflator"]
 SITE_ORIGIN = os.environ.get("SITE_ORIGIN", "https://plateaustrategy.io").rstrip("/")
 # Referrers from our own pages are not a traffic source — they are navigation.
 SITE_HOSTS = ("plateaustrategy.io", "plateau-strategy.onrender.com")
@@ -1688,14 +1688,28 @@ def api_destinations_add():
 
 @app.route("/deflator")
 def deflator_page():
-    """Plateau Strategy Deflator — research-project page + notify list (no offering)."""
+    """Plateau Strategy Deflator — PRIVATE (owner-only) until Sean opens it.
+
+    The product is not ready and is legally gated (lawyer review pending), so the
+    page must not be reachable by the public. To anyone not logged in as the owner
+    this returns 404 — not 401 — so the page's very existence stays unadvertised.
+    Re-open it publicly by deleting these two lines (and restoring the homepage card).
+    """
+    if not session.get("owner"):
+        return Response("Not Found", status=404, mimetype="text/plain")
     return send_file(os.path.join(BASE_DIR, "deflator.html"))
 
 
 @app.route("/api/deflator/waitlist", methods=["POST"])
 def api_deflator_waitlist():
     """Notify-only list stored locally in deflator_waitlist.json — emails get one
-    update when verified results publish. No product, no funds, no claims."""
+    update when verified results publish. No product, no funds, no claims.
+
+    CLOSED while the Deflator is private: the page is owner-only, so this endpoint
+    must not keep accepting signups from anyone who kept the URL. Existing stored
+    emails are untouched. Re-open together with the page."""
+    if not session.get("owner"):
+        return Response("Not Found", status=404, mimetype="text/plain")
     data  = request.get_json(force=True, silent=True) or {}
     email = str(data.get("email", "")).strip().lower()
     if not email or "@" not in email or "." not in email.split("@")[-1] or len(email) > 254:

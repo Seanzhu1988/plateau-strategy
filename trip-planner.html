@@ -270,7 +270,7 @@
         .place-row input[type=number] { width: 58px; }
         .place-row input, .place-row select { padding: 0.22rem 0.35rem; border: 1px solid #e2e8f0;
             border-radius: 6px; font-size: 0.8rem; font-family: inherit; background: #f8fafc; }
-        .place-row .rm { color: #ef4444; cursor: pointer; font-weight: 800; padding: 0 0.3rem; }
+        .place-row .rm { color: var(--psx-red); cursor: pointer; font-weight: 800; padding: 0 0.3rem; }
         .place-row .crowd { font-style: normal; font-weight: 700; font-size: 0.72rem; color: #0d9488;
             background: #ecfdf5; border-radius: 6px; padding: 1px 5px; margin-left: 4px; white-space: nowrap; }
         .place-row .crowd.guided { color: #7c2d12; background: #fef3c7; }
@@ -304,7 +304,7 @@
         .itin-row { display: grid; grid-template-columns: 52px 1fr; column-gap: 0.5rem;
             padding: 0.42rem 0; border-top: 1px solid #eef2f7; }
         .itin-row.tight { border-left: 3px solid #d97706; padding-left: 0.45rem; }
-        .itin-row.risk { border-left: 3px solid #ef4444; padding-left: 0.45rem; background: #fffbeb; }
+        .itin-row.risk { border-left: 3px solid var(--psx-red); padding-left: 0.45rem; background: #fffbeb; }
         .itin-row.nowrow { border-left: 3px solid #1d4ed8; padding-left: 0.45rem; }
         .itin-time { text-align: right; color: #0f172a; font-weight: 700; font-size: 0.78rem;
             font-variant-numeric: tabular-nums; line-height: 1.35; }
@@ -316,7 +316,7 @@
             flex-wrap: wrap; gap: 0.15rem 0.55rem; justify-content: space-between; }
         .itin-warn { font-size: 0.7rem; font-weight: 700; margin-top: 0.15rem; }
         .itin-warn.tight { color: #b45309; }
-        .itin-warn.risk { color: #b91c1c; }
+        .itin-warn.risk { color: var(--psx-red); }
         .fixlink { color: #1d4ed8; text-decoration: underline; cursor: pointer; font-weight: 700; }
         .fixlink:hover { color: #1e40af; }
         .itin-tag { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.05em; color: #1d4ed8;
@@ -346,6 +346,31 @@
             padding: 0.5rem 0.7rem; font-weight: 700; color: #0f172a; font-size: 0.85rem; white-space: nowrap; }
         .build-row .loc-btn:hover { border-color: #2563eb; color: #1d4ed8; }
         .build-row .loc-btn.located { border-color: #0d9488; color: #0f766e; background: #f0fdfa; }
+        /* The control wears the same black marker the map drops, so nobody has to
+           be told that this button and that pin are the same thing. */
+        .pin-badge { width: 20px; height: 20px; border-radius: 50%; flex: 0 0 auto;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: #0f172a; color: #fff; font-size: 11px; line-height: 1;
+            border: 1.5px solid #fff; margin-right: 0.4rem;
+            box-shadow: 0 1px 2px rgba(15,23,42,.3), 0 2px 5px rgba(15,23,42,.16); }
+        .build-row .loc-btn { display: inline-flex; align-items: center; }
+        .build-row .loc-btn.located .pin-badge { background: #0f766e; }
+        /* Until a start is set, the pin breathes — a traveller should not have to
+           work out that the day begins somewhere. It stops the moment it is set. */
+        @keyframes pinWaiting {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(164,22,26,.42), 0 1px 2px rgba(20,17,12,.3); }
+            50%      { box-shadow: 0 0 0 6px rgba(164,22,26,0), 0 1px 2px rgba(20,17,12,.3); }
+        }
+        .build-row .loc-btn.needs-start .pin-badge { animation: pinWaiting 1.9s ease-out infinite; }
+        .build-row .loc-btn.needs-start { border-color: var(--psx-red-soft); color: var(--psx-red); }
+        @media (prefers-reduced-motion: reduce) { .build-row .loc-btn.needs-start .pin-badge { animation: none; } }
+        /* and when it lands, the map marker takes the eye for a moment */
+        @keyframes pinLanding {
+            0%   { transform: translateY(-26px) scale(.75); opacity: .25; }
+            65%  { transform: translateY(0) scale(1.18); opacity: 1; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .tp-pin.landing { animation: pinLanding .55s cubic-bezier(.2,.9,.3,1.2); }
         .loc-info { font-size: 0.8rem; color: #0f766e; margin-top: 0.35rem; line-height: 1.4; }
         .loc-info.warn { color: #b45309; }
         .build-row .to { color: #94a3b8; font-weight: 800; }
@@ -564,7 +589,7 @@
 
             <div class="build-row">
                 <button type="button" class="from loc-btn" id="curLocBtn" onclick="startPointTap()"
-                        title="Tap once to type a starting address · tap twice to use your current location">⌂ <span id="curLocLabel">Starting point</span></button>
+                        title="Tap once to type a starting address · tap twice to use your current location"><span class="pin-badge" aria-hidden="true">⌂</span><span id="curLocLabel">Starting point</span></button>
 
                 <span class="to">→</span>
                 <input id="destAdd" placeholder="Type a destination and press Add — or tap a pin on the map"
@@ -1933,6 +1958,7 @@
                    resetTrip(); fetchMatrix(); }
             say(c.label + ' sample loaded — ' + places.length + ' places, ready to plan.');
             markRideCoverage();                 // the ride door differs city to city
+            signalStartNeeded();                // a fresh city means a guessed start again
             const ss = $('selState'), m = CITY_META[curCity];  // keep all three pickers in sync
             if (ss && m) { ss.value = m.state; fillCounties(m.state); $('selCounty').value = m.county;
                            fillCities(m.state, m.county); $('selCity').value = curCity; }
@@ -2059,6 +2085,27 @@
     // street address, and show the accuracy so they know whether to fine-tune.
     let currentLoc = null;      // { lat, lon, address, accuracy } once detected
     function setLocLabel(t){ const el = $('curLocLabel'); if (el) el.textContent = t; }
+
+    // The pin asks for attention only while the start is still a guess — the
+    // city's default drop point, not anywhere the traveller has actually said.
+    // Once they set one it stops asking; that is the whole signal.
+    function signalStartNeeded(){
+        const b = $('curLocBtn'); if (!b) return;
+        const guessed = !currentLoc || currentLoc.source === 'default' || !currentLoc.address;
+        b.classList.toggle('needs-start', !!guessed);
+    }
+    // ...and when a start IS set, the map's own marker drops into place, so the
+    // control and the map read as one act rather than two separate screens.
+    function landStartPin(){
+        const el = startMarker && startMarker.getElement && startMarker.getElement();
+        const pin = el && el.querySelector('.tp-pin');
+        if (!pin) return;
+        pin.classList.remove('landing');
+        void pin.offsetWidth;                     // restart it if one is mid-flight
+        pin.classList.add('landing');
+        setTimeout(() => pin.classList.remove('landing'), 700);
+    }
+    window.signalStartNeeded = signalStartNeeded;
     function setLocInfo(t, warn){ const el = $('curLocInfo'); if (!el) return; el.textContent = t; el.className = 'loc-info' + (warn ? ' warn' : ''); }
     function shortAddr(a){ return a ? a.split(',').slice(0, 3).join(',') : ''; }
 
@@ -2508,9 +2555,11 @@
     function setOrigin(lat, lon, source, meta){
         meta = meta || {};
         startMarker.setLatLng([lat, lon]);
+        if (source !== 'default') landStartPin();     // it visibly lands where you said
         currentLoc = { lat: lat, lon: lon, address: meta.address || '',
                        accuracy: (source === 'gps' ? meta.accuracy : null), source: source };
         farFromBoardCheck();
+        signalStartNeeded();             // set now — the pin stops asking
         retimeRoute(meta.why || 'new starting point');
         pendingOriginRetime = true;      // re-time again when the real drive times land
         fetchMatrix();
@@ -3442,6 +3491,7 @@
     startMarker.on('dblclick', (e) => { if (e && e.originalEvent) L.DomEvent.stop(e); });
     initChips();
     initStateCity();
+    signalStartNeeded();                           // ask for a start if we are only guessing
     loadGeography();                              // then fold in every state travellers have found
     rebuildMarkers();
     renderPlaces();

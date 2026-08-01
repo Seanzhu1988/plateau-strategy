@@ -627,7 +627,7 @@
         .giveback {
             margin-top: 3.2rem; padding: 2.2rem 1.8rem 1.8rem; border-radius: 18px;
             background: linear-gradient(180deg, #16233d 0%, #121f38 100%);
-            border: 1px solid #26395c; border-top: 3px solid #b91c1c; position: relative;
+            border: 1px solid #26395c; border-top: 3px solid var(--psx-red); position: relative;
         }
         .gb-eyebrow { color: #7d9bd6; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.22em; text-align: center; margin-bottom: 0.9rem; }
         .giveback h3 { color: #eef3fb; font-size: clamp(1.35rem, 3vw, 1.9rem); font-weight: 800; text-align: center; margin-bottom: 0.7rem; }
@@ -641,7 +641,7 @@
         .gb-n { flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%; background: #1e3a8a;
             color: #cfe2ff; font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
         .gb-cta { display: block; width: fit-content; margin: 0 auto; padding: 0.95rem 1.9rem;
-            background: linear-gradient(135deg, #1d4ed8, #b91c1c); color: #fff; font-weight: 800; font-size: 1.02rem;
+            background: linear-gradient(135deg, var(--psx-blue), var(--psx-red)); color: #fff; font-weight: 800; font-size: 1.02rem;
             border-radius: 12px; text-decoration: none; box-shadow: 0 6px 18px rgba(29,78,216,0.28); }
         .gb-cta:hover { filter: brightness(1.09); }
         .gb-mail { color: #5d7195; font-size: 0.82rem; line-height: 1.6; text-align: center; margin: 1.1rem auto 0; max-width: 60ch; }
@@ -762,7 +762,7 @@
         .rm-primary { width: 100%; margin-top: 1.3rem; padding: 0.9rem; background: linear-gradient(135deg,#3b82f6,#2563eb);
             color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; }
         .rm-primary:hover { filter: brightness(1.08); }
-        .rm-msg { color: #dc2626; font-size: 0.85rem; margin-top: 0.8rem; min-height: 1rem; }
+        .rm-msg { color: var(--psx-red); font-size: 0.85rem; margin-top: 0.8rem; min-height: 1rem; }
         .rm-alt { text-align: center; margin-top: 1rem; font-size: 0.85rem; color: #94a6c6; }
         .rm-alt a { color: #2563eb; font-weight: 700; text-decoration: none; }
 
@@ -2273,12 +2273,18 @@
 
                         <div class="fin-menu" id="finMenu">
                             <p class="view-intro" style="grid-column: 1 / -1;">Our financial products — choose one to explore.</p>
+                            <!-- Deflator card HIDDEN 2026-07-31 [SEAN: "the deflator is not ready"] —
+                                 the page itself is now owner-only (404 to the public) in app.py, so this
+                                 card would have led visitors to a dead link. Restore this block verbatim
+                                 when the Deflator is ready to be shown publicly again.
                             <div class="fin-card" onclick="window.location.href='/deflator'">
                                 <div class="fin-card-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-chart"/></svg></div>
                                 <h3>Plateau Deflator <span style="font-size:.68rem;background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:10px;vertical-align:middle">RESEARCH</span></h3>
                                 <p>Our automated crypto-trading research project — in private verification, building an audited track record. Nothing for sale yet; follow the results.</p>
                                 <span class="fin-card-link">Follow the research →</span>
                             </div>
+                            -->
+                            <p class="view-intro" style="grid-column:1/-1;opacity:.7">More financial products coming soon.</p>
                             <!-- Add more finance product cards here (same pattern):
                             <div class="fin-card" onclick="openFinProduct('savings')">
                                 <div class="fin-card-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-vault"/></svg></div><h3>Savings Vault</h3>
