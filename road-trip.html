@@ -97,7 +97,7 @@
         background:rgba(255,255,255,.92);border-radius:6px;padding:1px 5px;margin-top:3px;
         display:inline-block;box-shadow:0 1px 3px rgba(15,23,42,.14)}
     .ep-a .tp-dot{background:#14110c}
-    .ep-b .tp-dot{background:#0d9488}
+    .ep-b .tp-dot{background:#0f6d5c}
 
     .leaflet-container{background:#f5f1e8;font:inherit}
     .leaflet-bar{border:none!important;border-radius:10px!important;overflow:hidden;
@@ -118,7 +118,7 @@
 </style>
     <link rel="stylesheet" href="/paper.css">
 </head>
-<body>
+<body data-arm="operations">
 <header>
     <img src="plateau-logo.svg" alt="">
     <div class="brand">Road Trip Planner</div>
@@ -166,11 +166,11 @@
     <div id="map"></div>
     <div class="legend">
         <span><span class="ldot" style="background:#14110c">A</span>Start</span>
-        <span><span class="ldot" style="background:#0d9488">B</span>Destination</span>
+        <span><span class="ldot" style="background:#0f6d5c">B</span>Destination</span>
         <span><span class="ldot" style="background:#1b4d8f">1</span>Suggested break</span>
-        <span><span class="ldot" style="background:#ea580c">⛽</span>Fuel</span>
-        <span><span class="ldot" style="background:#7c3aed">🍽</span>Food</span>
-        <span><span class="ldot" style="background:#0891b2">👁</span>Scenic</span>
+        <span><span class="ldot" style="background:#a85a08">⛽</span>Fuel</span>
+        <span><span class="ldot" style="background:#6b2fbe">🍽</span>Food</span>
+        <span><span class="ldot" style="background:#0b6480">👁</span>Scenic</span>
     </div>
 
     <div class="legs" id="legs"></div>
@@ -309,14 +309,14 @@
     // One Overpass call per break point, radius in metres. Kept deliberately
     // small: a driver wants somewhere just off this road, not the whole county.
     var GROUPS = [
-        { key: 'fuel',    label: 'Fuel',        glyph: '⛽', color: '#ea580c',
+        { key: 'fuel',    label: 'Fuel',        glyph: '⛽', color: '#a85a08',
           q: 'node(around:{R},{LAT},{LON})[amenity=fuel];' },
-        { key: 'food',    label: 'Food',        glyph: '🍽', color: '#7c3aed',
+        { key: 'food',    label: 'Food',        glyph: '🍽', color: '#6b2fbe',
           q: 'node(around:{R},{LAT},{LON})[amenity~"^(restaurant|cafe|fast_food)$"];' },
         { key: 'rest',    label: 'Rest & services', glyph: '🅿', color: '#1b4d8f',
           q: 'node(around:{R},{LAT},{LON})[highway~"^(services|rest_area)$"];' +
              'way(around:{R},{LAT},{LON})[highway~"^(services|rest_area)$"];' },
-        { key: 'scenic',  label: 'Scenic',      glyph: '👁', color: '#0891b2',
+        { key: 'scenic',  label: 'Scenic',      glyph: '👁', color: '#0b6480',
           q: 'node(around:{R},{LAT},{LON})[tourism~"^(viewpoint|picnic_site)$"];' }
     ];
 
@@ -514,7 +514,7 @@
                 rests.forEach(function (s) {
                     var c = L.circleMarker([s.lat, s.lon], {
                         radius: 6, color: '#fff', weight: 1.5,
-                        fillColor: s.kind === 'fuel' ? '#ea580c' : '#1b4d8f', fillOpacity: .95
+                        fillColor: s.kind === 'fuel' ? '#a85a08' : '#1b4d8f', fillOpacity: .95
                     }).bindTooltip((s.kind === 'fuel' ? 'Fuel' : 'Rest stop') + ' · ' + s.name +
                                    ' · ' + hhmm(s.sec) + ' in');
                     c.addTo(map); layers.push(c);

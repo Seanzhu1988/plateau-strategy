@@ -271,7 +271,7 @@
         .place-row input, .place-row select { padding: 0.22rem 0.35rem; border: 1px solid #e6e2da;
             border-radius: 6px; font-size: 0.8rem; font-family: inherit; background: #faf8f4; }
         .place-row .rm { color: var(--psx-red); cursor: pointer; font-weight: 800; padding: 0 0.3rem; }
-        .place-row .crowd { font-style: normal; font-weight: 700; font-size: 0.72rem; color: #0d9488;
+        .place-row .crowd { font-style: normal; font-weight: 700; font-size: 0.72rem; color: #0f6d5c;
             background: #ecfdf5; border-radius: 6px; padding: 1px 5px; margin-left: 4px; white-space: nowrap; }
         .place-row .crowd.guided { color: #7c2d12; background: #fef3c7; }
         .dayhead .drivetime { font-weight: 700; font-size: 0.72rem; color: #1b4d8f;
@@ -303,7 +303,7 @@
         .jday .jd-meta { font-weight: 600; color: #4a453d; }
         .itin-row { display: grid; grid-template-columns: 52px 1fr; column-gap: 0.5rem;
             padding: 0.42rem 0; border-top: 1px solid #eef2f7; }
-        .itin-row.tight { border-left: 3px solid #d97706; padding-left: 0.45rem; }
+        .itin-row.tight { border-left: 3px solid #9a5b06; padding-left: 0.45rem; }
         .itin-row.risk { border-left: 3px solid var(--psx-red); padding-left: 0.45rem; background: #fffbeb; }
         .itin-row.nowrow { border-left: 3px solid #1b4d8f; padding-left: 0.45rem; }
         .itin-time { text-align: right; color: #14110c; font-weight: 700; font-size: 0.78rem;
@@ -336,8 +336,8 @@
             font-size: 0.76rem; padding: 0.42rem 0.62rem; cursor: pointer; }
         .jarvis-actions button:hover { filter: brightness(1.1); }
         .jarvis-actions .ja-ride { background: #1b4d8f; }
-        .jarvis-actions .ja-guide { background: #0f766e; }
-        .jarvis-actions .ja-hire { background: #6d28d9; }
+        .jarvis-actions .ja-guide { background: #0f6d5c; }
+        .jarvis-actions .ja-hire { background: #6b2fbe; }
 
         /* Sean's sketch: Current location → Destination + Add → D1 → D2 → … */
         .build-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
@@ -345,7 +345,7 @@
         .build-row .loc-btn { cursor: pointer; border: 1px solid #ddd8cd; background: #fff; border-radius: 9px;
             padding: 0.5rem 0.7rem; font-weight: 700; color: #14110c; font-size: 0.85rem; white-space: nowrap; }
         .build-row .loc-btn:hover { border-color: #1b4d8f; color: #1b4d8f; }
-        .build-row .loc-btn.located { border-color: #0d9488; color: #0f766e; background: #f0fdfa; }
+        .build-row .loc-btn.located { border-color: #0f6d5c; color: #0f6d5c; background: #f0fdfa; }
         /* The control wears the same black marker the map drops, so nobody has to
            be told that this button and that pin are the same thing. */
         .pin-badge { width: 20px; height: 20px; border-radius: 50%; flex: 0 0 auto;
@@ -354,7 +354,7 @@
             border: 1.5px solid #fff; margin-right: 0.4rem;
             box-shadow: 0 1px 2px rgba(15,23,42,.3), 0 2px 5px rgba(15,23,42,.16); }
         .build-row .loc-btn { display: inline-flex; align-items: center; }
-        .build-row .loc-btn.located .pin-badge { background: #0f766e; }
+        .build-row .loc-btn.located .pin-badge { background: #0f6d5c; }
         /* Until a start is set, the pin breathes — a traveller should not have to
            work out that the day begins somewhere. It stops the moment it is set. */
         @keyframes pinWaiting {
@@ -371,7 +371,7 @@
             100% { transform: translateY(0) scale(1); opacity: 1; }
         }
         .tp-pin.landing { animation: pinLanding .55s cubic-bezier(.2,.9,.3,1.2); }
-        .loc-info { font-size: 0.8rem; color: #0f766e; margin-top: 0.35rem; line-height: 1.4; }
+        .loc-info { font-size: 0.8rem; color: #0f6d5c; margin-top: 0.35rem; line-height: 1.4; }
         .loc-info.warn { color: #b45309; }
         .build-row .to { color: #6b655b; font-weight: 800; }
         .build-row #destAdd { flex: 1; min-width: 200px; border: 1px solid #ddd8cd; border-radius: 9px;
@@ -403,9 +403,9 @@
             white-space: nowrap; }
         .actionbar.flat .act-link { flex-basis: 100%; text-align: center; margin-top: 0.1rem; }
         .act.ride  { background: linear-gradient(135deg,#1b4d8f,#1b4d8f); }
-        .act.guide { background: linear-gradient(135deg,#0d9488,#0f766e); }
-        .act.hire  { background: linear-gradient(135deg,#7c3aed,#6d28d9); }
-        .act.sale  { background: linear-gradient(135deg,#d97706,#b45309); }
+        .act.guide { background: #0f6d5c; }
+        .act.hire  { background: #6b2fbe; }
+        .act.sale  { background: linear-gradient(135deg,#9a5b06,#b45309); }
         .act.robotaxi { background: #2a251d; border: 2px dashed #6b655b; opacity: 0.55; }
         .act.robotaxi:hover { opacity: 0.85; }
         .soon-badge { font-size: 0.58rem; font-weight: 800; background: #f7efe0; color: #7a4e0f;
@@ -431,7 +431,7 @@
         .modal input, .modal textarea { width: 100%; border: 1px solid #ddd8cd; border-radius: 8px;
             padding: 0.55rem 0.7rem; font-size: 0.9rem; font-family: inherit; }
         .ho-msg { font-size: 0.86rem; font-weight: 700; margin-top: 0.6rem; min-height: 1.1em; }
-        .ho-msg.ok { color: #0f766e; } .ho-msg.err { color: #dc2626; }
+        .ho-msg.ok { color: #0f6d5c; } .ho-msg.err { color: #dc2626; }
         .col-lab { font-size: 0.68rem; color: #6b655b; text-transform: uppercase; letter-spacing: 0.04em; }
 
         .search-box { position: relative; margin-top: 0.6rem; }
@@ -448,7 +448,7 @@
 
            The pin colours are a status encoding, so they are picked to
            survive colour-blindness rather than by eye. The previous green
-           (#16a34a) and amber (#d97706) sat at ΔE 3.3–6.2 under protanopia
+           (#16a34a) and amber (#9a5b06) sat at ΔE 3.3–6.2 under protanopia
            — the two states a planner most needs to tell apart were nearly
            identical. Teal vs orange measures ΔE 13.8 on the same test.
 
@@ -456,8 +456,8 @@
            glyph as well, so the state survives greyscale and print.
            ============================================================ */
         :root{
-            --tp-good:#0d9488;      /* enough time      ✓ */
-            --tp-warn:#ea580c;      /* tight            ! */
+            --tp-good:#0f6d5c;      /* enough time      ✓ */
+            --tp-warn:#a85a08;      /* tight            ! */
             --tp-off:#6b655b;       /* can't make it    ✕ */
             --tp-pick:#1b4d8f;      /* in your trip     ★ */
             --tp-start:#14110c;     /* start point      ⌂ */
@@ -549,7 +549,7 @@
     </style>
     <link rel="stylesheet" href="/paper.css">
 </head>
-<body>
+<body data-arm="operations">
     <header>
         <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
         <span class="brand">Plateau Strategy Solution Lab</span>
@@ -649,8 +649,8 @@
                 <div id="discoveryNote" class="discovery-note" style="display:none;"></div>
                 <div id="map"></div>
                 <div class="legend">
-                    <span><span class="ldot" style="background:#0d9488">✓</span>Enough time</span>
-                    <span><span class="ldot" style="background:#ea580c">!</span>Tight</span>
+                    <span><span class="ldot" style="background:#0f6d5c">✓</span>Enough time</span>
+                    <span><span class="ldot" style="background:#a85a08">!</span>Tight</span>
                     <span><span class="ldot" style="background:#6b655b">✕</span>Can't make it</span>
                     <span><span class="ldot" style="background:#1b4d8f">★</span>In your trip</span>
                     <span><span class="ldot" style="background:#14110c">⌂</span>Start point (drag it)</span>
@@ -1420,7 +1420,7 @@
     // Each day's stops are sent to the routing service in order; it returns the actual
     // driving geometry and per-leg durations. Straight dashes are only the fallback,
     // and when that happens the status line says so rather than pretending.
-    const DAY_COLORS = ['#1b4d8f', '#7c3aed', '#0d9488', '#d97706'];
+    const DAY_COLORS = ['#1b4d8f', '#6b2fbe', '#0f6d5c', '#9a5b06'];
     let geoCache = {}, dayDrive = {};
     function daySequences(){
         const days = {};
@@ -2817,7 +2817,7 @@
         // Scenic views live here rather than in a chip of their own: a viewpoint
         // IS an attraction, and every candidate green measured under ΔE 15
         // against this teal — two layers nobody could tell apart.
-        attractions: { emoji: '📍', color: '#0d9488', min: 12, max: 160, label: 'Attractions & scenic views',
+        attractions: { emoji: '📍', color: '#0f6d5c', min: 12, max: 160, label: 'Attractions & scenic views',
                       q: 'nwr["tourism"~"^(attraction|museum|gallery|viewpoint|artwork|theme_park|zoo|aquarium)$"]["name"];'
                        + 'nwr["historic"~"^(monument|memorial|castle|ruins|archaeological_site)$"]["name"];'
                        + 'nwr["natural"~"^(peak|waterfall|beach|cave_entrance)$"]["name"];'
@@ -2854,9 +2854,9 @@
                       fallbackName: 'Rest area', addable: true },
         toilets:    { emoji: '🚻', color: '#0284c7', min: 14, max: 120, label: 'Restrooms',
                       q: 'nwr["amenity"="toilets"]', fallbackName: 'Public restroom' },
-        food:       { emoji: '🍽️', color: '#d97706', min: 15, max: 150, label: 'Food & coffee',
+        food:       { emoji: '🍽️', color: '#9a5b06', min: 15, max: 150, label: 'Food & coffee',
                       q: 'nwr["amenity"~"^(restaurant|cafe|fast_food)$"]', fallbackName: 'Restaurant', rateable: true },
-        essentials: { emoji: '💊', color: '#7c3aed', min: 14, max: 120, label: 'Charging · Pharmacy · ATM · Water',
+        essentials: { emoji: '💊', color: '#6b2fbe', min: 14, max: 120, label: 'Charging · Pharmacy · ATM · Water',
                       q: 'nwr["amenity"~"^(pharmacy|atm|drinking_water|charging_station)$"]', fallbackName: 'Essential' },
     };
     const amenityLayers = {}, amenityCache = {}, amenityOn = {}, amenityStar = {};
@@ -2922,7 +2922,7 @@
              + (p.photo ? '<img src="' + escj(p.photo) + '" alt="" class="pop-photo">' : '')
              + '<b>⭐ ' + escj(p.name) + '</b>'
              + (p.desc ? '<div class="d">' + escj(p.desc) + '</div>' : '')
-             + (readers ? '<div class="d" style="color:#0f766e">' + readers + '</div>' : '')
+             + (readers ? '<div class="d" style="color:#0f6d5c">' + readers + '</div>' : '')
              + '<button class="am-add" onclick="addPopular(\'' + tok + '\')">＋ Add to my route</button>'
              + '<div class="d"><a href="' + escj(p.url) + '" target="_blank" rel="noopener">read more</a>'
              + ' · source: Wikipedia</div></div>';

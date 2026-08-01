@@ -62,7 +62,7 @@
         .b-comm { background: #e8f2ec; color: #14513a; }
         .rate-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.3rem 0 0.5rem; }
         .stars { font-size: 1.15rem; letter-spacing: 1px; cursor: pointer; }
-        .stars .star { color: #ddd8cd; transition: color 0.1s; }
+        .stars .star { color: #6b655b; transition: color 0.1s; }
         .stars .star.on { color: #8a5a12; }
         .stars .star:hover { color: #8a5a12; }
         .rate-meta { font-size: 0.74rem; color: #6b655b; font-weight: 600; }
@@ -151,7 +151,7 @@
     </style>
     <link rel="stylesheet" href="/paper.css">
 </head>
-<body>
+<body data-arm="operations">
     <header>
         <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
         <span class="brand">Plateau Strategy Solution Lab</span>
@@ -213,7 +213,7 @@
         const avg = e.stars || 0, cnt = e.rating_count || 0;
         let s = '<span class="stars" title="Tap a star to rate this place">';
         for (let n = 1; n <= 5; n++)
-            s += '<span class="star' + (n <= Math.round(avg) ? ' on' : '') + '" onclick="ratePlace(' + i + ',' + n + ')">★</span>';
+            s += '<span class="star' + (n <= Math.round(avg) ? ' on' : '') + '" onclick="ratePlace(' + i + ',' + n + ')">' + (n <= Math.round(avg) ? '★' : '☆') + '</span>';
         s += '</span><span class="rate-meta">' +
              (cnt ? (avg.toFixed(1) + ' · ' + cnt + (cnt > 1 ? ' ratings' : ' rating')) : 'tap to rate') + '</span>';
         return s;

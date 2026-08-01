@@ -26,7 +26,36 @@
         --psx-text:#14110c; --psx-text2:#4a453d; --psx-muted:#6b655b;
         --psx-border:rgba(20,17,12,.13);
         --psx-rule:rgba(20,17,12,.10);
-        --psx-blue:#1b4d8f; --psx-indigo:#1b4d8f; --psx-violet:#1b4d8f; --psx-teal:#1b6b5a;
+        /* ---- the four arms ----
+           Four hues, one per business, because the company has four
+           businesses and a reader needs to know which one they are in.
+           This is not the old four-colour rotation: that gave card 2 a
+           different hue from card 1 for no reason a reader could name.
+           Here the hue IS the name. Oxblood on a page means real estate
+           and nothing else, on every page, forever.
+
+           They are held apart from the status colours on purpose. Nothing
+           in an arm hue is ever a filled badge or an alert, because
+           oxblood and sienna sit near the error red and a reader must
+           never have to work out whether brown-red means "property" or
+           "something went wrong". Arm hues mark WHERE YOU ARE; status
+           colours mark WHAT HAPPENED. Different jobs, different places. */
+        --psx-blue:#1b4d8f;      /* Transportation — and the company itself */
+        --psx-slate:#1d4c4f;     /* Operations platform, and the free tools */
+        --psx-oxblood:#7b2d26;   /* Real estate */
+        --psx-sienna:#9c4221;    /* Finance — research */
+
+        /* The live accent. Every rule below points at this, and only the
+           [data-arm] blocks near the end of this file ever change it, so
+           painting a new section is one attribute in the markup. */
+        --psx-accent:var(--psx-blue);
+        --psx-accent-rgb:27,77,143;   /* same colour, for rgba() tints */
+        --psx-accent-dark:#16406f;    /* hover/pressed */
+
+        /* Kept so the old markup class names still resolve. They were three
+           decorative hues; they are now all the section's own accent. */
+        --psx-indigo:var(--psx-accent); --psx-violet:var(--psx-accent);
+        --psx-teal:var(--psx-accent);
         --psx-ink:#14110c;
         /* Three inks, and each one means something. Black is what the page SAYS,
            blue is what you can DO, and red is what NEEDS you — an error, a live
@@ -105,6 +134,15 @@
         text-shadow:none !important;
       }
       .psx-h1{line-height:1.08 !important;}
+      /* Except on the Real Estate sheet. That view is an architect's
+         drawing — dark ground, pale linework, monospace title block — and
+         it is deliberate, not a leftover. Ink type on it is ink on navy:
+         #14110c against #0a2450, which is 1.3:1 and simply not there. The
+         sheet keeps its own colours, the way the map does. */
+      #view-realestate .bp-sheet h1,#view-realestate .bp-sheet h2,
+      #view-realestate .bp-sheet h3,#view-realestate .bp-title h2{
+        color:#eaf4ff !important;font-family:inherit !important;
+      }
       /* The accent was a violet gradient. A real underline says the same thing
          without pretending to be lit from behind — and unlike a box-shadow
          highlight it follows the text across a line break instead of leaving
@@ -114,7 +152,7 @@
         -webkit-text-fill-color:var(--psx-ink) !important;color:var(--psx-ink) !important;
         box-shadow:none !important;
         text-decoration:underline !important;
-        text-decoration-color:rgba(27,77,143,.42) !important;
+        text-decoration-color:rgba(var(--psx-accent-rgb),.42) !important;
         text-decoration-thickness:.055em !important;
         text-underline-offset:.14em !important;
       }
@@ -160,7 +198,7 @@
       /* the gradient icon tiles were the loudest "template" signal on the page */
       .psx-chip,.psx-chip-blue,.psx-chip-violet,.psx-chip-teal{
         background:transparent !important;background-image:none !important;
-        color:var(--psx-blue) !important;
+        color:var(--psx-accent) !important;
         border:1px solid var(--psx-border) !important;
         box-shadow:none !important;border-radius:4px !important;
       }
@@ -217,7 +255,7 @@
       .psx-stage-research{color:var(--psx-text2);border-color:var(--psx-border);background:rgba(20,17,12,.03);}
       .psx-card-link{
         display:inline-block;margin-top:1rem;
-        color:var(--psx-blue) !important;text-decoration:none;
+        color:var(--psx-accent) !important;text-decoration:none;
         font-size:.9rem;font-weight:500;
       }
       .psx-card-link:hover{text-decoration:underline;}
@@ -282,7 +320,7 @@
         display:flex !important;align-items:center;justify-content:center;
         background:transparent !important;
         border:1px solid var(--psx-border) !important;
-        color:var(--psx-blue) !important;
+        color:var(--psx-accent) !important;
         margin-bottom:1.05rem !important;
         font-size:0 !important;            /* kills stray whitespace nodes */
       }
@@ -290,11 +328,11 @@
       .service-card:nth-child(3n+2) .service-icon,
       .service-card:nth-child(3n+3) .service-icon{
         background:transparent !important;border-color:var(--psx-border) !important;
-        color:var(--psx-blue) !important;
+        color:var(--psx-accent) !important;
       }
       .ico{width:22px;height:22px;display:block;}
       .service-card:hover .service-icon,.fin-card:hover .fin-card-icon{
-        border-color:rgba(27,77,143,.4) !important;
+        border-color:rgba(var(--psx-accent-rgb),.4) !important;
       }
 
       /* ---------- tab icons ----------
@@ -370,8 +408,8 @@
         font-family:var(--psx-sans);
       }
       input:focus,textarea:focus,select:focus{
-        border-color:var(--psx-blue) !important;
-        box-shadow:0 0 0 3px rgba(27,77,143,.13) !important;
+        border-color:var(--psx-accent) !important;
+        box-shadow:0 0 0 3px rgba(var(--psx-accent-rgb),.13) !important;
         background:#fff !important;
       }
       label{color:var(--psx-text2) !important;}
@@ -469,30 +507,181 @@
          something in it is blue on purpose.
          ============================================================ */
 
-      /* The primary action is the accent, not black. A black button is
-         quiet to the point of invisible next to black text. */
+      /* Named primary actions take the accent; a plain <button> stays ink.
+
+         That split is not what this comment used to claim — it said the
+         accent applies to every button — and the stylesheet has been doing
+         the opposite the whole time. The ink rule further up carries one
+         extra :not(), which outranks this one no matter that it comes
+         first, so a bare <button> renders black. Measured, not read.
+
+         Leaving it that way, because it is the better hierarchy: one
+         accent call-to-action per view and ink for every form submit
+         under it. Two sienna buttons stacked in the same panel was what
+         made the mismatch visible in the first place. */
       .psx-btn-primary,
       nav a[href="/book"],
       .book-cta,
       button:not(.i18n-opt):not(#i18nBtn):not(.cancel-btn):not(.pk-bubble):not(#pollock),
       .btn.blue,.btn-blue,.cta{
-        background:var(--psx-blue) !important;background-image:none !important;
-        border-color:var(--psx-blue) !important;color:#fff !important;
+        background:var(--psx-accent) !important;background-image:none !important;
+        border-color:var(--psx-accent) !important;color:#fff !important;
       }
       .psx-btn-primary:hover,nav a[href="/book"]:hover,.cta:hover,
       button:not(.i18n-opt):not(#i18nBtn):not(.pk-bubble):not(#pollock):hover:not(:disabled){
-        background:#16406f !important;border-color:#16406f !important;
+        background:var(--psx-accent-dark) !important;border-color:var(--psx-accent-dark) !important;
       }
 
       /* Figures carry the accent — the number is the thing being read. */
-      .psx-stat-val,.tile .n{color:var(--psx-blue) !important;}
+      .psx-stat-val,.tile .n{color:var(--psx-accent) !important;}
 
       /* Section labels: the accent at small size, where it reads as a
          marker rather than as decoration. */
-      .psx-eyebrow,.psx-eyebrow-pill,.fs{color:var(--psx-blue) !important;}
+      .psx-eyebrow,.psx-eyebrow-pill,.fs{color:var(--psx-accent) !important;}
 
       /* And the wordmark, so the masthead is not pure black either. */
+      .logo-text,.psx-foot-mark span{
+        -webkit-text-fill-color:var(--psx-accent) !important;
+        color:var(--psx-accent) !important;
+      }
+
+      /* ============================================================
+         THE FOUR ARMS — colour as an index, not as decoration.
+
+         The company has four businesses and the site has one page per
+         business plus a stack of tool pages hanging off them. Until now
+         every one of those looked identical, so a reader who clicked
+         three levels deep had no idea which business they were inside.
+         That is the actual job colour is good at, and the only job it
+         gets here.
+
+         Blue      Transportation — and the company itself, because
+                   transportation is what the company currently is.
+         Slate     Operations platform, and every free tool it runs.
+         Oxblood   Real estate.
+         Sienna    Finance, in research.
+
+         One attribute paints a page: data-arm on the <body> of a
+         standalone page, or on a .view / .psx-card inside the landing
+         page. Everything below inherits through --psx-accent.
+
+         The rule that keeps this from becoming the old decoration: a
+         reader must be able to say what a colour MEANS. Four hues that
+         name four businesses pass that test. Four hues rotating across
+         cards for variety do not, which is why they were removed.
+         ============================================================ */
+
+      [data-arm="transportation"]{
+        --psx-accent:var(--psx-blue);   --psx-accent-rgb:27,77,143;   --psx-accent-dark:#16406f;
+      }
+      [data-arm="operations"]{
+        --psx-accent:var(--psx-slate);  --psx-accent-rgb:29,76,79;    --psx-accent-dark:#163a3c;
+      }
+      [data-arm="realestate"]{
+        --psx-accent:var(--psx-oxblood);--psx-accent-rgb:123,45,38;   --psx-accent-dark:#63241e;
+      }
+      [data-arm="finance"]{
+        --psx-accent:var(--psx-sienna); --psx-accent-rgb:156,66,33;   --psx-accent-dark:#7d351a;
+      }
+      /* The company itself, for pages that belong to no single arm —
+         the overview, the security page, setup. */
+      [data-arm="company"]{
+        --psx-accent:var(--psx-blue);   --psx-accent-rgb:27,77,143;   --psx-accent-dark:#16406f;
+      }
+
+      /* ---------- two things never take an arm colour ----------
+
+         The wordmark and the Book a ride button belong to the company,
+         not to whichever page they happen to be sitting on. A masthead
+         that changes colour as you browse is not a masthead, and a
+         primary action that is blue on one page and rust on the next
+         stops being recognisable as the same button — which is the one
+         thing a conversion button cannot afford. Both are pinned. */
       .logo-text,.psx-foot-mark span{
         -webkit-text-fill-color:var(--psx-blue) !important;
         color:var(--psx-blue) !important;
       }
+      nav a[href="/book"],nav a[href="/book"]:hover{
+        background:var(--psx-blue) !important;border-color:var(--psx-blue) !important;
+        color:#fff !important;
+      }
+      nav a[href="/book"]:hover{background:#16406f !important;border-color:#16406f !important;}
+
+      /* ---------- and neither does anything that means something ----------
+         "Located" is a success state, not a section. It was reading the
+         arm colour through the old --psx-teal alias, which would have
+         made a found address rust-coloured on the finance pages. */
+      .loc-btn.located{ border-color:#1b5e43 !important; color:#1b5e43 !important; }
+      .loc-btn.located .pin-badge{ background:#1b5e43 !important; }
+
+      /* ---------- where the colour actually shows ----------
+
+         The four business cards on the front page are where a reader
+         learns the code, so this is the one place the hue is a block of
+         colour rather than a line of text: a rule across the top of the
+         card, the way a printed index tabs its sections. Everything
+         after that — the tab you clicked, the page you land on — repeats
+         the colour you were just taught. */
+      .psx-cards .psx-card[data-arm]{
+        border-top:3px solid var(--psx-accent) !important;
+        border-radius:0 3px 3px 3px !important;
+      }
+      .psx-cards .psx-card[data-arm]:hover{
+        border-color:rgba(20,17,12,.22) !important;
+        border-top-color:var(--psx-accent) !important;
+      }
+
+      /* The contents strip: the current section is marked in its own
+         colour, so the tab and the page underneath agree. */
+      .phase-tab[data-arm].active,.phase-tab[data-arm].active:hover{
+        color:var(--psx-accent) !important;
+        border-bottom:2px solid var(--psx-accent) !important;
+      }
+      .phase-tab[data-arm].active .tab-ico{color:var(--psx-accent) !important;}
+
+      /* The loop diagram names three of the four arms, so it uses their
+         colours rather than three shades of the same one. */
+      .psx-flow .psx-node[data-arm] .psx-badge{
+        background:transparent !important;background-image:none !important;
+        color:var(--psx-accent) !important;
+        border:1px solid var(--psx-accent) !important;
+        box-shadow:none !important;
+      }
+      .psx-flow .psx-node[data-arm]{border-top:2px solid var(--psx-accent) !important;}
+
+      /* A section heading on an arm page gets a short rule in its
+         colour — enough to place the page, not enough to shout. */
+      .view[data-arm] .psx-head .psx-eyebrow::after,
+      .view[data-arm]:not(#view-realestate) > .phases h2::after{
+        content:"";display:block;width:34px;height:2px;
+        background:var(--psx-accent);margin-top:.55rem;
+      }
+
+      /* ============================================================
+         NO GRADIENTS — enforced here rather than asserted in a doc.
+
+         PALETTE.md has said twice that gradients are "verified absent on
+         every route". Both times that was written, not measured, and both
+         times it was false: a radial blue glow under the front-page CTA,
+         amber gradient badges on the pricing and finance cards, a dark
+         gradient on the agent code panel, and a blue-to-teal bar on the
+         Deflator. A gradient is the single most recognisable tell of a
+         generated site, which is the whole reason the rule exists, so it
+         is now a rule the stylesheet keeps rather than a claim.
+
+         Two exemptions, both deliberate and both drawn rather than
+         decorative: the Real Estate blueprint sheet, whose grid IS a
+         gradient, and the hatch on a zero-value Deflator track, which
+         encodes "no data" rather than dressing up a fill.
+         ============================================================ */
+      .psx-cta-glow{display:none !important;}
+      .fin-num,.price-badge,.mycode,.conv-fill,.car,.psx-cta-glow,
+      a.primary,.btn-grad,.badge-grad{
+        background-image:none !important;
+      }
+      a.primary{background-color:var(--psx-accent) !important;color:#fff !important;}
+      .fin-num,.price-badge{background-color:#8a5a12 !important;color:#fff !important;}
+      .mycode{background-color:var(--psx-ink) !important;color:#fff !important;}
+      .conv-fill{background-color:var(--psx-accent) !important;}
+      .conv-fill.neutral{background-color:var(--psx-muted) !important;}
+      .car{background-color:var(--psx-card) !important;}
