@@ -2033,6 +2033,35 @@
       .psx-section,.view,main,.phases,#view-overview{background:var(--psx-bg) !important;}
       .psx-connect{background:var(--psx-connect) !important;}
 
+      /* ---------- stage labels ----------
+         The most persuasive thing on the page, because they are the only
+         claims a reader can check and the only ones that admit a limit.
+         Set as small caps in ink, not coloured badges — a badge decorates,
+         a label states. Four cards need a tighter grid than three. */
+      .psx-cards{gap:1.1rem !important;}
+      @media (min-width:1000px){
+        .psx-cards{grid-template-columns:repeat(4,1fr) !important;}
+      }
+      .psx-stage{
+        /* align-self, because the card is a flex column and would otherwise
+           stretch the label to the full card width — a banner, not a label. */
+        display:inline-block;align-self:flex-start;margin-bottom:.85rem;
+        font-family:var(--psx-sans);
+        font-size:.66rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+        padding:.3rem .55rem;border-radius:2px;border:1px solid;
+      }
+      .psx-stage-live{color:#1b5e43;border-color:rgba(27,94,67,.34);background:rgba(27,94,67,.06);}
+      .psx-stage-dev{color:#8a5a12;border-color:rgba(138,90,18,.34);background:rgba(138,90,18,.06);}
+      .psx-stage-research{color:var(--psx-muted);border-color:var(--psx-border);background:rgba(20,17,12,.03);}
+      .psx-card-link{
+        display:inline-block;margin-top:1rem;
+        color:var(--psx-blue) !important;text-decoration:none;
+        font-size:.9rem;font-weight:500;
+      }
+      .psx-card-link:hover{text-decoration:underline;}
+      .psx-card{display:flex;flex-direction:column;}
+      .psx-card .psx-card-link{margin-top:auto;padding-top:1rem;}
+
       /* ---------- section tabs: a contents strip, not a toolbar ---------- */
       .phase-tabs{
         background:var(--psx-bg) !important;
@@ -2123,9 +2152,9 @@
                      not invented metrics like "100% value chain owned". -->
                 <section class="psx-hero">
                     <div class="psx-hero-inner">
-                        <span class="psx-eyebrow-pill">Seattle, Washington</span>
-                        <h1 class="psx-h1">A Seattle transportation company</h1>
-                        <p class="psx-sub">We run a flat-rate Tesla car service to Sea–Tac and across the city, rent vehicles to drivers who want to earn with them, and publish trip-planning tools that anyone can use for free.</p>
+                        <span class="psx-eyebrow-pill">Plateau Strategy Solution Lab · Seattle</span>
+                        <h1 class="psx-h1">We build one business at a time</h1>
+                        <p class="psx-sub">Transportation is the one that runs today: flat-rate Tesla rides across Seattle, cars rented to drivers who earn with them, and trip-planning tools anyone can use free. It pays for what comes next. Every other arm is listed below with the stage it is honestly at — including the ones not finished.</p>
                         <div class="psx-cta-row">
                             <a href="/book" class="psx-btn psx-btn-primary">Book a ride</a>
                             <a href="/agent" class="psx-btn psx-btn-ghost">Partner with us</a>
@@ -2145,26 +2174,42 @@
                          Compounding Growth" — an investor deck a customer
                          cannot use. Three things a visitor can actually do
                          instead, each linking somewhere real. -->
+                    <!-- The strategy, told by stage. A holding company reads as
+                         real when it says which arms are running and which are
+                         not; it reads as fake when it implies all of them are.
+                         The old version claimed "3 business verticals" and
+                         "100% value chain owned" with nothing behind either.
+                         Every label below is checkable against the section it
+                         links to. -->
                     <div class="psx-head">
-                        <span class="psx-eyebrow">WHAT WE DO</span>
-                        <h2 class="psx-h2">Three ways to use this</h2>
-                        <p class="psx-section-sub">A ride at a price agreed in advance, a car to earn with, and trip-planning tools that cost nothing and require no account.</p>
+                        <span class="psx-eyebrow">THE COMPANY</span>
+                        <h2 class="psx-h2">Four arms, at four different stages</h2>
+                        <p class="psx-section-sub">One business pays for the next. That only means something if we say plainly which ones are earning today and which are still being built — so we do.</p>
                     </div>
                     <div class="psx-cards">
                         <div class="psx-card">
-                            <div class="psx-chip psx-chip-blue">1</div>
-                            <h3 class="psx-card-title">Ride to the airport</h3>
-                            <p class="psx-card-desc">$75 flat to Sea–Tac, quoted before you book and unchanged after. Reserve at any hour; your driver arrives fifteen minutes early.</p>
+                            <span class="psx-stage psx-stage-live">Operating</span>
+                            <h3 class="psx-card-title">Transportation</h3>
+                            <p class="psx-card-desc">Flat-rate Tesla rides in Seattle at $75 to Sea–Tac, cars rented to drivers who keep the fare, and a commission programme for hotels and agents. This is the business that earns.</p>
+                            <a class="psx-card-link" href="#" onclick="event.preventDefault();showView('transportation');">See how it works →</a>
                         </div>
                         <div class="psx-card">
-                            <div class="psx-chip psx-chip-violet">2</div>
-                            <h3 class="psx-card-title">Rent a Tesla and drive</h3>
-                            <p class="psx-card-desc">Rent one of our cars, take rides from the board, keep the fare. Insurance and paperwork are handled in the driver portal.</p>
+                            <span class="psx-stage psx-stage-live">Running</span>
+                            <h3 class="psx-card-title">Operations platform</h3>
+                            <p class="psx-card-desc">Dispatch, invoicing, driver paperwork and the trip-planning tools — built in-house rather than rented, so the customer relationship and the data stay with us.</p>
+                            <a class="psx-card-link" href="#" onclick="event.preventDefault();showView('operations');">See the platform →</a>
                         </div>
                         <div class="psx-card">
-                            <div class="psx-chip psx-chip-teal">3</div>
-                            <h3 class="psx-card-title">Plan a trip, free</h3>
-                            <p class="psx-card-desc">See which places you can still reach before they close, using real drive times and opening hours. No sign-up, nothing to pay.</p>
+                            <span class="psx-stage psx-stage-dev">In development</span>
+                            <h3 class="psx-card-title">Real estate</h3>
+                            <p class="psx-card-desc">Mixed-use development, at drawing stage. Nothing built, nothing leased, nothing offered — the plans are published as they stand.</p>
+                            <a class="psx-card-link" href="#" onclick="event.preventDefault();showView('realestate');">See the drawings →</a>
+                        </div>
+                        <div class="psx-card">
+                            <span class="psx-stage psx-stage-research">Research</span>
+                            <h3 class="psx-card-title">Finance</h3>
+                            <p class="psx-card-desc">An automated trading research project in private verification, building an audited record. Nothing is for sale and no money is accepted — you can follow the results.</p>
+                            <a class="psx-card-link" href="#" onclick="event.preventDefault();showView('finance');">Follow the research →</a>
                         </div>
                     </div>
                 </section>
