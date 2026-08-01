@@ -474,7 +474,20 @@ ENGINE = r'''/* Plateau Strategy Solution Lab -- site-wide line-by-line translat
   var DICT = __DICT__;
   var LANGS = [["en", "English"], ["zh", "中文"], ["es", "Español"], ["ko", "한국어"], ["vi", "Tiếng Việt"]];
   var KEY = "ps_lang";
-  var cur = localStorage.getItem(KEY) || "en";
+  // ?lang=zh wins over the stored choice, and is then stored, so a
+  // language-targeted ad lands on the page already in that language instead of
+  // in English with a switcher the visitor has to find. Only a language we
+  // actually ship is accepted — anything else falls through to the stored
+  // preference, so a stray query string cannot blank the page.
+  var cur = (function () {
+    var m = /[?&]lang=([a-zA-Z-]{2,5})/.exec(location.search);
+    var want = m ? m[1].toLowerCase() : null;
+    if (want && LANGS.some(function (l) { return l[0] === want; })) {
+      try { localStorage.setItem(KEY, want); } catch (e) {}
+      return want;
+    }
+    return localStorage.getItem(KEY) || "en";
+  })();
   function norm(s) { return s.replace(/\s+/g, " ").trim(); }
   function tr(k) { var e = DICT[k]; return (e && e[cur]) ? e[cur] : null; }
 
