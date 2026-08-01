@@ -1495,6 +1495,65 @@
         const list = (GEO[state] || {})[county] || [];
         $('selCity').innerHTML = list.map(c => '<option value="' + c[0] + '">' + c[1] + '</option>').join('');
     }
+    // ---------- the pickers grow with the map ----------
+    // GEO ships with the handful of cities we wrote by hand. Every place a
+    // traveller searches for is filed with its state and county, so the server
+    // can hand back the real hierarchy — search Mount Rushmore once and South
+    // Dakota is in the State list for everyone after. Merged, never replaced:
+    // a discovered city joins the built-in ones rather than displacing them.
+    function mergeGeography(g, cities){
+        Object.keys(g || {}).forEach(state => {
+            const counties = GEO[state] || (GEO[state] = {});
+            Object.keys(g[state]).forEach(county => {
+                const have = counties[county] || (counties[county] = []);
+                g[state][county].forEach(pair => {
+                    if (!have.some(p => p[0] === pair[0])) have.push(pair);
+                    if (!CITY_META[pair[0]]) CITY_META[pair[0]] = { state: state, county: county };
+                });
+            });
+        });
+        Object.keys(cities || {}).forEach(k => { if (!CITY_LABELS[k]) CITY_LABELS[k] = cities[k]; });
+    }
+    const CITY_LABELS = {};
+    function loadGeography(){
+        return fetch('/api/geography').then(r => r.json()).then(j => {
+            if (!j || !j.ok) return;
+            mergeGeography(j.geo, j.cities);
+            initStateCity();                                 // redraw with the new states in place
+        }).catch(() => {});
+    }
+
+    // A discovered city's board IS the book's entries for it — the places
+    // travellers actually found there.
+    function loadDiscoveredCity(key){
+        say('Opening ' + (CITY_LABELS[key] || key) + '…');
+        fetch('/api/destinations?city=' + encodeURIComponent(key)).then(r => r.json()).then(d => {
+            const rows = (d.entries || []).filter(e => (e.city || '') === key && e.lat && e.lon);
+            if (!rows.length) {
+                say('Nothing in the book for ' + (CITY_LABELS[key] || key)
+                    + ' yet — search a place and it starts the city off.');
+                return;
+            }
+            places = rows.map(e => ({ name: e.name, lat: e.lat, lon: e.lon,
+                                      close: e.close || 1020,
+                                      visit: e.typical_visit || e.visit || 60,
+                                      cat: e.cat || 'culture',
+                                      hoursKnown: !!e.close }));
+            savePlaces();
+            const lat = places.reduce((a, p) => a + p.lat, 0) / places.length;
+            const lon = places.reduce((a, p) => a + p.lon, 0) / places.length;
+            rebuildMarkers(); renderPlaces();
+            startMarker.setLatLng([lat, lon]);
+            currentLoc = { lat: lat, lon: lon, address: CITY_LABELS[key] || key,
+                           accuracy: null, source: 'default' };
+            map.setView([lat, lon], 12);
+            resetTrip(); fetchMatrix();
+            markRideCoverage();
+            say((CITY_LABELS[key] || key) + ' — ' + places.length
+                + ' place' + (places.length === 1 ? '' : 's') + ' travellers have found here.');
+        }).catch(() => say('Could not open that city just now.'));
+    }
+
     function initStateCity(){        // sync all three pickers to the loaded city
         const ss = $('selState');
         ss.innerHTML = Object.keys(GEO).sort().map(s => '<option value="' + s + '">' + s + '</option>').join('');
@@ -1861,6 +1920,7 @@
         _jaskCur = null;                                     // a question asked in the OLD city is void
         const jb = document.getElementById('jask'); if (jb) jb.style.display = 'none';
         const c = CITIES[curCity];
+        if (!c) { loadDiscoveredCity(curCity); return; }      // a city someone found, not one we shipped
         places = c.places.map(p => Object.assign({}, p));
         savePlaces();
         if (force) {
@@ -3373,6 +3433,7 @@
     startMarker.on('dblclick', (e) => { if (e && e.originalEvent) L.DomEvent.stop(e); });
     initChips();
     initStateCity();
+    loadGeography();                              // then fold in every state travellers have found
     rebuildMarkers();
     renderPlaces();
     if (places.length) {
