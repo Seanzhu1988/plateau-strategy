@@ -1513,3 +1513,132 @@ EXTRA.update({
         "Dự án nghiên cứu giao dịch tự động đang trong giai đoạn kiểm chứng nội bộ, xây dựng hồ sơ đã được kiểm toán. Không có sản phẩm nào được bán và không nhận tiền — bạn có thể theo dõi kết quả."
     ]
 })
+
+
+# ---------------------------------------------------------------------------
+# REGISTER, CORRECTED AT THE ROOT.
+#
+# Two faults, and the first was mine before any translation happened.
+#
+# 1. "We build one business at a time" reads in English as discipline. In
+#    Chinese, 一次只做好一项业务 says we can only manage one thing at once — a
+#    small operator with limited capacity. It made a company with four arms
+#    sound like a stall. The English headline is now "One company, four
+#    businesses": plural, and it claims no limit.
+#
+# 2. Chasing "voice" I pushed the Chinese toward 口语 — 眼下, 挣来的钱,
+#    没做完的, 谁都能免费用. In English, plain speech reads as confident.
+#    In Chinese business writing colloquial reads as UNEDUCATED, which is the
+#    opposite of what plain English achieves. That is why it was irritating to
+#    read: not wrong, but beneath the company.
+#
+#    The educated Chinese register here is 书面语 — formal, concise, measured.
+#    Not bureaucratic, not chatty. 目前 not 眼下. 收入 not 挣来的钱. 尚未完成
+#    not 没做完的. 任何人均可免费使用 not 谁都能免费用.
+#
+# Korean and Vietnamese follow the same correction, from DeepL.
+# ---------------------------------------------------------------------------
+EXTRA.update({
+    "One company, four businesses": [
+        "一家公司，四项业务",
+        "Una empresa, cuatro negocios",
+        "하나의 회사, 네 개의 사업",
+        "Một công ty, bốn mảng kinh doanh"],
+
+    "Transportation operates today and funds what follows: flat-rate Tesla service across Seattle, a vehicle rental programme for drivers, and trip-planning tools available free to anyone. The property development is at drawing stage and the trading research is in private verification. Each business is set out below with the stage it has actually reached.": [
+        "出行业务目前已投入运营，并为后续业务提供资金：覆盖西雅图全城的特斯拉固定价格接送服务、面向司机的车辆租赁计划，以及任何人均可免费使用的行程规划工具。地产开发尚处图纸阶段，交易研究仍在内部验证之中。以下逐项列明各业务实际所处的阶段。",
+        "El transporte ya opera y financia lo que viene después: servicio Tesla con tarifa fija en todo Seattle, un programa de alquiler de vehículos para conductores y herramientas de planificación de viajes gratuitas para cualquiera. El desarrollo inmobiliario está en fase de proyecto y la investigación en trading, en verificación privada. Cada negocio figura debajo con la etapa que ha alcanzado realmente.",
+        "교통 사업은 현재 운영 중이며 이후 사업의 자금을 조달합니다. 시애틀 전역의 테슬라 정액 운송 서비스, 운전자를 위한 차량 대여 프로그램, 그리고 누구나 무료로 이용할 수 있는 여정 계획 도구가 이에 해당합니다. 부동산 개발은 설계 단계에 있으며, 거래 연구는 비공개 검증 단계에 있습니다. 각 사업이 실제로 도달한 단계를 아래에 정리하였습니다.",
+        "Mảng vận tải hiện đã đi vào hoạt động và cấp vốn cho các mảng tiếp theo: dịch vụ Tesla giá cố định trên toàn Seattle, chương trình cho tài xế thuê xe, và các công cụ lập kế hoạch hành trình miễn phí cho mọi người. Dự án bất động sản đang ở giai đoạn thiết kế, còn nghiên cứu giao dịch đang trong quá trình kiểm chứng nội bộ. Từng mảng được trình bày dưới đây kèm giai đoạn thực tế đã đạt được."],
+
+    "Four arms, at four different stages": [
+        "四项业务，各处不同阶段",
+        "Cuatro negocios, en cuatro etapas distintas",
+        "네 개의 사업, 각기 다른 단계",
+        "Bốn mảng kinh doanh, ở bốn giai đoạn khác nhau"],
+
+    "One business pays for the next. That only means something if we say plainly which ones are earning today and which are still being built — so we do.": [
+        "一项业务为下一项提供资金。此话唯有在明确说明哪些业务已在盈利、哪些仍在建设之后方才成立，故一并列明。",
+        "Un negocio financia al siguiente. Esa afirmación solo se sostiene si indicamos con claridad cuáles generan ingresos hoy y cuáles siguen en construcción; por eso lo indicamos.",
+        "한 사업이 다음 사업의 자금을 댑니다. 이는 어느 사업이 현재 수익을 내고 어느 사업이 아직 구축 중인지 분명히 밝힐 때에만 성립하므로, 아래에 함께 밝힙니다.",
+        "Mảng này cấp vốn cho mảng kế tiếp. Điều đó chỉ đứng vững khi nêu rõ mảng nào đang sinh lời và mảng nào còn đang xây dựng, nên chúng tôi nêu rõ."],
+
+    "Flat-rate Tesla rides in Seattle at $75 to Sea–Tac, cars rented to drivers who keep the fare, and a commission programme for hotels and agents. This is the business that earns.": [
+        "西雅图的特斯拉固定价格接送服务，至机场统一收费 75 美元；车辆租赁予司机，车费全额归司机所有；并设有面向酒店与代理机构的佣金计划。此为目前产生收入的业务。",
+        "Servicio Tesla con tarifa fija en Seattle, 75 $ al aeropuerto; vehículos alquilados a conductores que conservan íntegra la tarifa; y un programa de comisiones para hoteles y agencias. Este es el negocio que genera ingresos.",
+        "시애틀에서 공항까지 75달러 정액 요금의 테슬라 운송 서비스, 운임 전액을 운전자가 갖는 차량 대여, 그리고 호텔 및 여행사를 위한 수수료 프로그램. 현재 수익을 내는 사업입니다.",
+        "Dịch vụ Tesla giá cố định tại Seattle, 75 USD tới sân bay; cho tài xế thuê xe và giữ trọn tiền cước; cùng chương trình hoa hồng dành cho khách sạn và đại lý. Đây là mảng đang tạo ra doanh thu."],
+
+    "Dispatch, invoicing, driver paperwork and the trip-planning tools — built in-house rather than rented, so the customer relationship and the data stay with us.": [
+        "调度、开票、司机资料管理与行程规划工具，均为自主开发而非外部租用，客户关系与数据因此留存于内部。",
+        "Despacho, facturación, documentación de conductores y herramientas de planificación: desarrollados internamente en lugar de alquilados, de modo que la relación con el cliente y los datos permanecen con nosotros.",
+        "배차, 청구, 운전자 서류 관리, 여정 계획 도구를 외부 임대가 아닌 자체 개발로 구축하였으며, 그 결과 고객 관계와 데이터가 내부에 남습니다.",
+        "Điều phối, lập hóa đơn, hồ sơ tài xế và công cụ lập kế hoạch hành trình đều do nội bộ phát triển thay vì thuê ngoài, nhờ đó quan hệ khách hàng và dữ liệu được giữ lại."],
+
+    "Mixed-use development, at drawing stage. Nothing built, nothing leased, nothing offered — the plans are published as they stand.": [
+        "综合体开发项目，目前处于图纸阶段。尚未动工，尚未招租，亦未对外发售；图纸按现状公开。",
+        "Desarrollo de uso mixto, en fase de proyecto. Nada construido, nada arrendado, nada ofrecido; los planos se publican en su estado actual.",
+        "복합 용도 개발 사업으로 현재 설계 단계에 있습니다. 착공, 임대, 분양 모두 이루어지지 않았으며, 도면은 현재 상태 그대로 공개합니다.",
+        "Dự án phát triển đa chức năng, hiện ở giai đoạn thiết kế. Chưa khởi công, chưa cho thuê, chưa chào bán; bản vẽ được công bố theo hiện trạng."],
+
+    "An automated trading research project in private verification, building an audited record. Nothing is for sale and no money is accepted — you can follow the results.": [
+        "自动化交易研究项目，目前处于内部验证阶段，正在建立可审计的业绩记录。不对外销售任何产品，亦不接受任何资金；结果公开，可持续关注。",
+        "Proyecto de investigación en trading automatizado, en verificación privada, construyendo un historial auditable. No se vende nada ni se acepta dinero; los resultados son públicos.",
+        "비공개 검증 단계의 자동화 거래 연구 프로젝트로, 감사 가능한 기록을 축적하고 있습니다. 판매하는 상품은 없으며 자금도 받지 않습니다. 결과는 공개됩니다.",
+        "Dự án nghiên cứu giao dịch tự động đang trong giai đoạn kiểm chứng nội bộ, xây dựng hồ sơ có thể kiểm toán. Không bán sản phẩm nào và không nhận tiền; kết quả được công bố."],
+
+    "A Seattle car service: flat-rate Tesla rides to Sea–Tac and around the city, plus trip-planning tools that are free to use.": [
+        "西雅图的用车服务：特斯拉固定价格接送，往返机场及市区；另提供免费使用的行程规划工具。",
+        "Servicio de vehículos en Seattle: traslados Tesla con tarifa fija al aeropuerto y por la ciudad, y herramientas de planificación de viajes de uso gratuito.",
+        "시애틀의 차량 서비스입니다. 공항과 시내를 오가는 테슬라 정액 운송, 그리고 무료로 이용하는 여정 계획 도구를 제공합니다.",
+        "Dịch vụ xe tại Seattle: đưa đón bằng Tesla với giá cố định tới sân bay và trong thành phố, kèm công cụ lập kế hoạch hành trình miễn phí."],
+
+    "Flat-rate Tesla rides, Seattle and Sea–Tac.": [
+        "特斯拉固定价格接送服务，覆盖西雅图市区与机场。",
+        "Traslados Tesla con tarifa fija, Seattle y el aeropuerto.",
+        "테슬라 정액 운송 서비스 — 시애틀 시내와 공항.",
+        "Dịch vụ Tesla giá cố định, Seattle và sân bay."],
+})
+
+
+# The same fault, found on the pages the front-page fix did not reach.
+# 摸得门儿清 is Beijing street slang, sitting on a business sign-up page.
+# 两件事都能办 and 大白话 are spoken register. 把那天讲完 is loose for a
+# memorial. All rewritten as 书面语.
+EXTRA.update({
+    ". The same agent code does both. Anyone can join, as an individual or an organization.": [
+        "上出售。同一代理编号即可兼顾两者。个人与机构均可加入。",
+        ". El mismo código de agente sirve para ambas cosas. Puede unirse cualquiera, como particular o como organización.",
+        ". 동일한 에이전트 코드로 두 가지 모두 가능합니다. 개인이든 기관이든 누구나 참여할 수 있습니다.",
+        ". Cùng một mã đại lý dùng được cho cả hai. Cá nhân hay tổ chức đều có thể tham gia."],
+
+    "Guides register here too — a student running a campus walk, a driver who knows one neighborhood properly. Your code is what proves the trip was written by a real guide.": [
+        "导游亦在此注册——带领校园徒步的学生、熟悉某一街区的司机均可。您的编号即为该行程出自真实导游之手的凭证。",
+        "Los guías también se registran aquí: un estudiante que lleva un paseo por el campus, un conductor que conoce a fondo un barrio. Su código acredita que el itinerario lo escribió un guía real.",
+        "가이드도 이곳에서 등록합니다. 캠퍼스 투어를 이끄는 학생, 특정 동네를 잘 아는 기사 모두 해당합니다. 발급된 코드가 해당 일정이 실제 가이드의 손에서 나왔음을 증명합니다.",
+        "Hướng dẫn viên cũng đăng ký tại đây — sinh viên dẫn tour trong khuôn viên, tài xế thông thuộc một khu phố. Mã của bạn là bằng chứng hành trình do một hướng dẫn viên thật soạn ra."],
+
+    "Every morning, one plain-language read of your day — and it clearly labels a guess a guess, and an earned answer earned.": [
+        "每日清晨，以平实的语言为您通读当日情况；属于推测的明确标注为推测，经验证得出的结论亦如实标明。",
+        "Cada mañana, una lectura de su día en lenguaje llano, que señala con claridad lo que es una conjetura y lo que es una respuesta ganada.",
+        "매일 아침, 하루를 평이한 언어로 정리해 드립니다. 추측은 추측이라고, 검증을 거친 답은 그렇다고 분명히 표시합니다.",
+        "Mỗi sáng, một bản đọc ngắn về ngày của bạn bằng ngôn ngữ giản dị — phần nào là phỏng đoán thì ghi rõ là phỏng đoán, phần nào đã được kiểm chứng thì ghi rõ như vậy."],
+
+    "Twin reflecting pools in the footprints of the towers; the museum below tells the story with artifacts and voices.": [
+        "两座反射池坐落于原双塔基址之上；地下博物馆以遗物与幸存者的声音记述那一天。",
+        "Dos estanques reflectantes sobre las huellas de las torres; el museo subterráneo narra aquel día con objetos y voces.",
+        "쌍둥이 빌딩이 서 있던 자리에 놓인 두 개의 반사 연못. 지하 박물관이 유품과 증언으로 그날을 기록합니다.",
+        "Hai hồ nước phản chiếu nằm đúng nền hai tòa tháp; bảo tàng bên dưới kể lại ngày hôm ấy bằng hiện vật và tiếng nói người trong cuộc."],
+})
+
+# 大白话 is 'plain speech' said colloquially — the sentence was about
+# clarity and undercut itself by being casual. 平实语言 says the same
+# thing in the register the claim requires.
+EXTRA.update({
+    "The rules that protect you when you use this site — your data, your money, and your bookings. These are the safeguards that are already in place, in plain language.": [
+        "您使用本站时受到保护的各项规则——数据、款项与订单。以下为已经落实的保障措施，以平实语言逐条说明。",
+        "Las normas que le protegen al usar este sitio: sus datos, su dinero y sus reservas. Estas son las salvaguardas ya implantadas, explicadas en lenguaje llano.",
+        "이 사이트를 이용하실 때 적용되는 보호 규칙 — 데이터, 금전, 예약에 관한 것입니다. 이미 시행 중인 보호 조치를 평이한 언어로 정리하였습니다.",
+        "Các quy tắc bảo vệ bạn khi dùng trang này — dữ liệu, tiền và đơn đặt của bạn. Dưới đây là những biện pháp đã được áp dụng, trình bày bằng ngôn ngữ giản dị."
+    ]
+})
