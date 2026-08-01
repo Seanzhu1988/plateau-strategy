@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """The design gate. Renders every page and measures what a reader actually sees.
 
-Three checks, one browser pass:
+Four checks, one browser pass:
 
   1. **Contrast** — every element that renders its own text, against what is
      really behind it, at both desktop and phone width.
@@ -9,6 +9,12 @@ Three checks, one browser pass:
      and the thing the paper redesign exists to remove.
   3. **Arm assignment** — which of the four business hues each page resolved
      to, because a page tagged with the wrong arm is a bug no ratio can see.
+  4. **Off-palette colour** — text that is perfectly legible and still not a
+     colour anyone chose. Passing contrast is not the same as belonging: a
+     Tailwind amber on a Trip Planner link clears AA and is still a leftover,
+     and the Destination Book had a link with no styling at all, rendering in
+     the 1994 browser-default blue. This is the check that separates a page
+     that is accessible from a page that looks designed.
 
 Why this is a rendering check and not a grep over the stylesheets — every one
 of these was a real mistake made on this repo:
@@ -54,6 +60,38 @@ VIEWS = ["overview", "transportation", "operations", "realestate",
 
 # Chromium ships with the container; do not download another one.
 CHROME = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
+
+# Every colour a glyph is allowed to be. Anything else is a leftover — it
+# does not matter that it is legible. Kept as rendered rgb() strings so this
+# compares against what the browser actually resolved, tokens and all.
+PALETTE = [
+    "rgb(20, 17, 12)", "rgb(74, 69, 61)", "rgb(107, 101, 91)", "rgb(255, 255, 255)",
+    "rgb(27, 77, 143)", "rgb(29, 76, 79)", "rgb(123, 45, 38)", "rgb(156, 66, 33)",
+    "rgb(22, 64, 111)", "rgb(22, 58, 60)", "rgb(99, 36, 30)", "rgb(125, 53, 26)",
+    "rgb(27, 94, 67)", "rgb(138, 90, 18)", "rgb(163, 48, 42)",
+    "rgb(164, 22, 26)", "rgb(193, 18, 31)",
+    # map categories — data, so they stay distinguishable from each other
+    "rgb(15, 109, 92)", "rgb(168, 90, 8)", "rgb(107, 47, 190)", "rgb(11, 100, 128)",
+    "rgb(154, 91, 6)",
+    # the Real Estate blueprint sheet, which keeps its own linework colours
+    "rgb(234, 244, 255)", "rgb(207, 227, 255)", "rgb(143, 180, 232)", "rgb(255, 206, 107)",
+]
+
+STRAY_JS = r"""(palette) => {
+  const out = [];
+  for (const el of document.querySelectorAll("*")) {
+    const own = [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
+    if (!own) continue;
+    if (!el.getClientRects().length) continue;
+    if (el.closest(".leaflet-container")) continue;   // the map draws its own labels
+    const c = getComputedStyle(el).color;
+    if (palette.includes(c)) continue;
+    out.push({ c, sel: el.tagName.toLowerCase() + (typeof el.className === "string" && el.className
+               ? "." + el.className.trim().split(/\s+/).slice(0,2).join(".") : ""),
+               t: el.textContent.trim().slice(0, 34) });
+  }
+  return out;
+}"""
 
 CONTRAST_JS = r"""() => {
   const px = c => {                       // "rgba(r, g, b, a)" -> [r,g,b,a]
@@ -156,7 +194,7 @@ def main():
                     help="exit non-zero on any failure, so this can gate a commit")
     args = ap.parse_args()
 
-    contrast_fails, gradient_fails, untagged = 0, 0, []
+    contrast_fails, gradient_fails, stray_fails, untagged = 0, 0, 0, []
 
     with sync_playwright() as p:
         browser = p.chromium.launch(executable_path=CHROME)
@@ -179,6 +217,7 @@ def main():
                     res = page.evaluate(CONTRAST_JS)
                     bad = res["fails"]
                     grads = page.evaluate(GRADIENT_JS) if tag == "desktop" else []
+                    strays = page.evaluate(STRAY_JS, PALETTE) if tag == "desktop" else []
 
                     if view:
                         scope = f"document.querySelector('#view-{view}')"
@@ -193,8 +232,9 @@ def main():
                         untagged.append(label)
                     contrast_fails += len(bad)
                     gradient_fails += len(grads)
+                    stray_fails += len(strays)
 
-                    mark = "ok  " if not (bad or grads or not arm) else "FAIL"
+                    mark = "ok  " if not (bad or grads or strays or not arm) else "FAIL"
                     print(f"{mark} {tag:8} {label:20} arm={str(arm):15} accent={accent}")
                     for f in bad[:6]:
                         print(f"       contrast {f['got']}:1 (needs {f['need']}) {f['sel']}"
@@ -203,6 +243,13 @@ def main():
                         print(f"       ... and {len(bad)-6} more on this page")
                     for h in grads:
                         print(f"       gradient {h['sel']}  {h['prop']}: {h['v']}")
+                    seen_stray = set()
+                    for h in strays:
+                        key = (h["c"], h["sel"])
+                        if key in seen_stray:
+                            continue
+                        seen_stray.add(key)
+                        print(f"       off-palette {h['c']} {h['sel']}  {h['t']!r}")
             page.close()
         browser.close()
 
@@ -216,6 +263,10 @@ def main():
         print(f"FAIL  {gradient_fails} gradient(s) outside the two exemptions"); ok = False
     else:
         print("ok    gradients: none outside the blueprint sheet and the no-data hatch")
+    if stray_fails:
+        print(f"FAIL  {stray_fails} element(s) in a colour outside the palette"); ok = False
+    else:
+        print("ok    every text colour on the site is one somebody chose")
     if untagged:
         print(f"FAIL  {len(untagged)} page(s) with no data-arm: {', '.join(untagged)}"); ok = False
     else:

@@ -685,3 +685,41 @@
       .conv-fill{background-color:var(--psx-accent) !important;}
       .conv-fill.neutral{background-color:var(--psx-muted) !important;}
       .car{background-color:var(--psx-card) !important;}
+
+      /* ============================================================
+         STRAGGLERS — legible, but not chosen.
+
+         Passing contrast is not the same as belonging to the palette. A
+         sweep for text colours outside the token set turned up eleven
+         that all clear AA and none of which anyone picked: two Tailwind
+         ambers, a Tailwind red on the required-field asterisk, three
+         badge colours a shade off the status colours they were imitating,
+         a slate-blue arrow, and — on the Destination Book — a link with
+         no styling at all, rendering in the 1994 browser default blue.
+
+         This is the difference between a page that is accessible and a
+         page that looks designed. Snapped to the tokens.
+         ============================================================ */
+
+      /* A link with nothing else claiming it is still a link. The bare
+         rule goes last so any styled link above keeps its own colour. */
+      a:not([class]):not([id]){color:var(--psx-accent);}
+
+      /* Destination Book category badges — a taxonomy, so they keep three
+         distinguishable hues; they were just a shade off the ones the rest
+         of the site already uses. */
+      .b-attr{color:var(--psx-blue) !important;}
+      .b-price{color:#1b5e43 !important;}
+      .b-rest,.soon-badge{color:#8a5a12 !important;}
+
+      /* Red means a field still needs you — that is what --psx-red is for. */
+      .req{color:var(--psx-red) !important;}
+
+      /* The loop arrows are punctuation between nodes, not content. */
+      .psx-arrow{color:var(--psx-muted) !important;}
+
+      /* Selling a route is a link, so it takes the section's accent like
+         every other link rather than a leftover amber. */
+      .act-link{color:var(--psx-accent) !important;}
+      .gate{color:var(--psx-text2) !important;}
+      .total{color:var(--psx-accent) !important;}
