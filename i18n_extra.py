@@ -1171,3 +1171,109 @@ EXTRA_SKIP |= {
     "Washington Monument", "White House (Lafayette Sq)", "Tesla", "Sean Zhu",
     "English", "Español", "Tiếng Việt",
 }
+
+
+# ---------------------------------------------------------------------------
+# REGISTER PASS — corrections, not new strings.
+#
+# The first translations were fluent but wrong in tone. The English here is
+# deliberately plain, and plain English was rendered as colloquial Chinese —
+# 一门生意 (market-stall talk for a line of trade), 一口价 (haggling vocabulary),
+# 靠车挣钱 ("make money off the car"), 它养着 (feeds, as one feeds an animal),
+# 四块业务 (a colloquial measure word). In Chinese business writing that register
+# reads as unserious, which is precisely the opposite of what the English was
+# rewritten to achieve.
+#
+# Plain and colloquial are not the same thing. Chinese reaches "plain and
+# honest" by being concise and measured, not by being chatty. These are rewritten
+# as a company would write about itself: 业务 not 生意, 固定价格 not 一口价,
+# 为…提供资金 not 养着.
+# ---------------------------------------------------------------------------
+EXTRA.update({
+    "We build one business at a time": [
+        "我们一次只做一项业务",
+        "Construimos un negocio a la vez",
+        "한 번에 하나의 사업만 만듭니다",
+        "Chúng tôi xây dựng từng mảng kinh doanh một"],
+
+    "Transportation is the one that runs today: flat-rate Tesla rides across Seattle, cars rented to drivers who earn with them, and trip-planning tools anyone can use free. It pays for what comes next. Every other arm is listed below with the stage it is honestly at — including the ones not finished.": [
+        "目前真正在运营的是出行业务：覆盖西雅图全城的特斯拉固定价格接送、面向司机的车辆租赁，以及所有人都可免费使用的行程规划工具。它为后续业务提供资金。下方列出的每一项业务都如实标注了所处阶段——包括尚未完成的部分。",
+        "El transporte es lo que está en marcha hoy: traslados en Tesla con tarifa fija por todo Seattle, vehículos alquilados a conductores que ganan con ellos y herramientas de planificación de viajes que cualquiera puede usar gratis. Financia lo que viene después. Cada una de las demás áreas aparece abajo con la etapa en la que realmente está, incluidas las que no están terminadas.",
+        "지금 실제로 운영 중인 것은 교통 사업입니다. 시애틀 전역의 정액 요금 테슬라 이동, 기사에게 대여하는 차량, 그리고 누구나 무료로 쓸 수 있는 여행 계획 도구입니다. 이 사업이 다음 단계의 자금을 댑니다. 나머지 사업은 아래에 각자 실제로 놓인 단계와 함께 정리해 두었습니다 — 아직 끝나지 않은 것들까지 포함해서.",
+        "Mảng thực sự đang vận hành hôm nay là vận tải: các chuyến Tesla giá cố định khắp Seattle, xe cho tài xế thuê để kiếm thu nhập, và công cụ lập kế hoạch chuyến đi ai cũng dùng được miễn phí. Nó cấp vốn cho những gì đến sau. Mỗi mảng còn lại được liệt kê bên dưới kèm giai đoạn thực tế của nó — kể cả những mảng chưa hoàn thành."],
+
+    "Four arms, at four different stages": [
+        "四项业务，四个不同阶段",
+        "Cuatro áreas, en cuatro etapas distintas",
+        "네 개의 사업, 각기 다른 네 단계",
+        "Bốn mảng, ở bốn giai đoạn khác nhau"],
+
+    "One business pays for the next. That only means something if we say plainly which ones are earning today and which are still being built — so we do.": [
+        "一项业务为下一项提供资金。但这句话只有在我们如实说明哪些业务今天已在盈利、哪些仍在建设，才有意义——所以我们如实说明。",
+        "Un negocio financia al siguiente. Eso solo significa algo si decimos con claridad cuáles generan ingresos hoy y cuáles siguen en construcción — así que lo decimos.",
+        "하나의 사업이 다음 사업의 자금을 댑니다. 그 말은 오늘 수익을 내는 사업과 아직 만드는 중인 사업을 분명히 밝혀야만 의미가 있습니다 — 그래서 밝힙니다.",
+        "Mảng này cấp vốn cho mảng kế tiếp. Điều đó chỉ có ý nghĩa nếu chúng tôi nói rõ mảng nào đang tạo doanh thu hôm nay và mảng nào vẫn đang xây dựng — nên chúng tôi nói rõ."],
+
+    "Flat-rate Tesla rides in Seattle at $75 to Sea–Tac, cars rented to drivers who keep the fare, and a commission programme for hotels and agents. This is the business that earns.": [
+        "西雅图的特斯拉固定价格接送，至机场 75 美元；车辆租赁给司机，车费归司机所有；并设有面向酒店与代理商的佣金计划。这是目前真正产生收入的业务。",
+        "Traslados en Tesla con tarifa fija en Seattle, 75 $ al aeropuerto; vehículos alquilados a conductores que se quedan con la tarifa; y un programa de comisiones para hoteles y agentes. Este es el negocio que genera ingresos.",
+        "시애틀에서 공항까지 75달러 정액 요금의 테슬라 이동, 요금을 기사가 갖는 차량 대여, 그리고 호텔·에이전트를 위한 수수료 프로그램. 실제로 수익을 내는 사업입니다.",
+        "Các chuyến Tesla giá cố định tại Seattle, 75 $ tới sân bay; xe cho tài xế thuê và tài xế giữ toàn bộ cước; cùng chương trình hoa hồng cho khách sạn và đại lý. Đây là mảng thực sự tạo doanh thu."],
+
+    # --- status labels: 已上线 was software-launch jargon and did not match
+    #     the others; 研究 alone is a noun, not a stage.
+    "Running":  ["运行中", "En marcha", "가동 중", "Đang chạy"],
+    "Research": ["研究阶段", "En investigación", "연구 단계", "Giai đoạn nghiên cứu"],
+
+    # --- 一口价 is what a market trader says. A car service quotes 固定价格.
+    "Flat fare to Sea–Tac": ["至西雅图机场固定价格", "Tarifa fija al aeropuerto", "공항까지 정액 요금", "Giá cố định tới sân bay"],
+    "Book any hour": ["全天候可预约", "Reserva a cualquier hora", "언제든 예약 가능", "Đặt xe bất kỳ giờ nào"],
+    # --- sits under the word "Tesla"; 每一辆车 on its own says nothing.
+    "Every vehicle": ["全部车辆", "Toda la flota", "전 차량", "Toàn bộ xe"],
+
+    "Operations platform": ["运营平台", "Plataforma de operaciones", "운영 플랫폼", "Nền tảng vận hành"],
+    "Dispatch, invoicing, driver paperwork and the trip-planning tools — built in-house rather than rented, so the customer relationship and the data stay with us.": [
+        "调度、开票、司机资料与行程规划工具，均为自研而非外购，因此客户关系与数据都留在我们自己手中。",
+        "Despacho, facturación, documentación de conductores y las herramientas de planificación — desarrollados en casa y no alquilados, así la relación con el cliente y los datos se quedan con nosotros.",
+        "배차, 청구, 기사 서류, 여행 계획 도구까지 임대가 아니라 자체 개발했습니다. 그래서 고객 관계와 데이터가 우리에게 남습니다.",
+        "Điều phối, xuất hóa đơn, hồ sơ tài xế và công cụ lập kế hoạch — tự xây dựng thay vì đi thuê, nên quan hệ khách hàng và dữ liệu vẫn thuộc về chúng tôi."],
+
+    "Mixed-use development, at drawing stage. Nothing built, nothing leased, nothing offered — the plans are published as they stand.": [
+        "综合开发项目，目前处于图纸阶段。尚未动工、尚未招租、尚未对外发售——图纸按现状公开。",
+        "Desarrollo de uso mixto, en fase de planos. Nada construido, nada arrendado, nada ofrecido — los planos se publican tal como están.",
+        "복합 개발 사업으로, 현재 도면 단계입니다. 지은 것도, 임대한 것도, 판매하는 것도 없습니다 — 도면은 있는 그대로 공개합니다.",
+        "Dự án phát triển đa chức năng, đang ở giai đoạn bản vẽ. Chưa xây, chưa cho thuê, chưa chào bán — bản vẽ được công bố đúng hiện trạng."],
+
+    "An automated trading research project in private verification, building an audited record. Nothing is for sale and no money is accepted — you can follow the results.": [
+        "一个自动交易研究项目，目前处于内部验证阶段，正在积累可审计的记录。不对外销售，也不接受任何资金——您可以关注结果。",
+        "Un proyecto de investigación de trading automatizado en verificación privada, construyendo un historial auditado. No hay nada a la venta ni se acepta dinero — puedes seguir los resultados.",
+        "비공개 검증 단계의 자동 매매 연구 프로젝트로, 감사 가능한 기록을 쌓는 중입니다. 판매하는 것도 없고 자금도 받지 않습니다 — 결과만 지켜보실 수 있습니다.",
+        "Một dự án nghiên cứu giao dịch tự động đang trong giai đoạn kiểm chứng nội bộ, tích lũy hồ sơ có thể kiểm toán. Không bán gì và không nhận tiền — bạn có thể theo dõi kết quả."],
+
+    "A Seattle car service: flat-rate Tesla rides to Sea–Tac and around the city, plus trip-planning tools that are free to use.": [
+        "西雅图的用车服务：特斯拉固定价格接送，往返机场及市区，另有免费使用的行程规划工具。",
+        "Un servicio de coche en Seattle: traslados en Tesla con tarifa fija al aeropuerto y por la ciudad, más herramientas de planificación de viajes gratuitas.",
+        "시애틀의 차량 서비스입니다. 공항과 시내를 오가는 정액 요금 테슬라 이동, 그리고 무료로 쓰는 여행 계획 도구.",
+        "Dịch vụ xe tại Seattle: các chuyến Tesla giá cố định tới sân bay và quanh thành phố, cùng công cụ lập kế hoạch chuyến đi miễn phí."],
+
+    "Flat-rate Tesla rides, Seattle and Sea–Tac.": [
+        "特斯拉固定价格接送，覆盖西雅图与机场。",
+        "Traslados en Tesla con tarifa fija, Seattle y el aeropuerto.",
+        "정액 요금 테슬라 이동 — 시애틀과 공항.",
+        "Chuyến Tesla giá cố định, Seattle và sân bay."],
+})
+
+# Two the register pass missed on the first sweep.
+EXTRA.update({
+    "Airport Pickup (flat) — $75": [
+        "机场接送（固定价格）— $75", "Recogida en aeropuerto (tarifa fija) — $75",
+        "공항 픽업(정액) — $75", "Đón sân bay (giá cố định) — 75 $"],
+
+    # 输血/加力/滚雪球 is three metaphors in one sentence, and 每一块业务 again.
+    # The English is a plain claim; the Chinese was written like ad copy.
+    "We started with transportation: affordable Tesla rentals that turn everyday drivers into earners and everyday riders into loyal clients. From there, each part of our business funds and strengthens the next — operations, real estate, finance, and reinvestment — a closed loop where revenue compounds instead of leaking away.": [
+        "我们从出行业务起步：以可负担的特斯拉租赁，让普通司机获得收入，也让乘客愿意再次乘坐。在此基础上，每一项业务为下一项提供资金——出行、房地产、金融、再投资——形成一个闭环，收入在其中不断累积，而不是外流。",
+        "Empezamos por el transporte: alquileres de Tesla asequibles que convierten a conductores corrientes en personas que ganan y a cada pasajero en cliente recurrente. A partir de ahí, cada negocio financia al siguiente — transporte, inmobiliario, finanzas, reinversión — formando un circuito cerrado donde los ingresos se acumulan en lugar de escaparse.",
+        "우리는 교통에서 시작했습니다. 합리적인 가격의 테슬라 대여로 평범한 기사가 수입을 얻고, 승객은 다시 찾게 됩니다. 그 위에서 각 사업이 다음 사업의 자금을 댑니다 — 교통, 부동산, 금융, 재투자 — 수익이 빠져나가지 않고 쌓이는 닫힌 순환을 이룹니다.",
+        "Chúng tôi khởi đầu từ vận tải: cho thuê Tesla với giá hợp lý để tài xế bình thường có thu nhập và hành khách quay lại. Từ đó, mỗi mảng cấp vốn cho mảng kế tiếp — vận tải, bất động sản, tài chính, tái đầu tư — tạo thành vòng khép kín nơi doanh thu tích lũy thay vì thất thoát."],
+})
