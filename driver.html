@@ -9,10 +9,10 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0f172a; color: #e2e8f0; min-height: 100vh;
+            background: #14110c; color: #e6e2da; min-height: 100vh;
         }
         header {
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            background: linear-gradient(135deg, #14110c 0%, #14110c 100%);
             color: #fff; padding: 1rem 2rem; display: flex; align-items: center;
             gap: 0.7rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             position: sticky; top: 0; z-index: 10;
@@ -21,7 +21,7 @@
             border: 2px solid rgba(255,255,255,0.2); }
         header .brand { font-weight: 800; font-size: 1.2rem; }
         header .right { margin-left: auto; display: flex; align-items: center; gap: 1rem; }
-        header a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+        header a { color: #ddd8cd; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
         header a:hover { color: #fff; }
         .dot { width: 9px; height: 9px; border-radius: 50%; background: #22c55e;
             display: inline-block; animation: pulse 1.6s infinite; }
@@ -31,16 +31,16 @@
         .toolbar { display: flex; align-items: center; justify-content: space-between;
             margin-bottom: 1.4rem; }
         .toolbar h1 { font-size: 1.5rem; font-weight: 800; color: #fff; }
-        .counts { font-size: 0.85rem; color: #94a3b8; }
-        .counts b { color: #60a5fa; }
+        .counts { font-size: 0.85rem; color: #8a8377; }
+        .counts b { color: #3f6ea8; }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.2rem; }
         .res {
-            background: #1e293b; border: 1px solid #334155; border-radius: 14px;
-            padding: 1.3rem; border-left: 4px solid #3b82f6;
+            background: #2a251d; border: 1px solid #4a453d; border-radius: 14px;
+            padding: 1.3rem; border-left: 4px solid #1b4d8f;
         }
         .res.NEW { border-left-color: #f59e0b; }
-        .res.ASSIGNED { border-left-color: #3b82f6; }
+        .res.ASSIGNED { border-left-color: #1b4d8f; }
         .res.COMPLETED { border-left-color: #22c55e; opacity: 0.75; }
         .res .top { display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 0.7rem; }
@@ -48,26 +48,26 @@
         .badge { font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.6rem;
             border-radius: 999px; text-transform: uppercase; letter-spacing: 0.5px; }
         .badge.NEW { background: #78350f; color: #fcd34d; }
-        .badge.ASSIGNED { background: #1e3a8a; color: #93c5fd; }
+        .badge.ASSIGNED { background: #14110c; color: #93c5fd; }
         .badge.COMPLETED { background: #14532d; color: #86efac; }
-        .route { font-size: 1.05rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.5rem; }
-        .route .arrow { color: #60a5fa; margin: 0 0.3rem; }
-        .meta { font-size: 0.85rem; color: #94a3b8; margin: 0.2rem 0; }
-        .meta b { color: #cbd5e1; font-weight: 600; }
+        .route { font-size: 1.05rem; font-weight: 700; color: #faf8f4; margin-bottom: 0.5rem; }
+        .route .arrow { color: #3f6ea8; margin: 0 0.3rem; }
+        .meta { font-size: 0.85rem; color: #8a8377; margin: 0.2rem 0; }
+        .meta b { color: #ddd8cd; font-weight: 600; }
         .fare { font-size: 1.2rem; font-weight: 800; color: #4ade80; margin: 0.5rem 0; }
         .inv { font-size: 0.8rem; }
-        .inv a { color: #60a5fa; }
+        .inv a { color: #3f6ea8; }
         .actions { display: flex; gap: 0.6rem; margin-top: 1rem; }
         .actions button {
             flex: 1; padding: 0.6rem; border: none; border-radius: 8px;
             font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
         }
-        .accept { background: #3b82f6; color: #fff; }
-        .accept:hover { background: #2563eb; }
-        .done { background: #334155; color: #cbd5e1; }
-        .done:hover { background: #475569; }
+        .accept { background: #1b4d8f; color: #fff; }
+        .accept:hover { background: #1b4d8f; }
+        .done { background: #4a453d; color: #ddd8cd; }
+        .done:hover { background: #4a453d; }
         .empty { text-align: center; color: #6b655b; padding: 4rem 1rem; }
-        .empty a { color: #60a5fa; }
+        .empty a { color: #3f6ea8; }
     </style>
     <link rel="stylesheet" href="/paper.css">
 </head>

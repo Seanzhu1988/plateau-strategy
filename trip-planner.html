@@ -6,7 +6,7 @@
     <title>Trip Planner — Plateau Strategy Solution Lab</title>
     <meta name="description" content="Pick your stops and see which ones you can still reach before they close — real drive times, traffic and opening hours, checked as you build the day. Free, no account.">
     <link rel="canonical" href="https://plateaustrategy.io/trip-planner">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#14110c">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Plateau Strategy Solution Lab">
     <meta property="og:url" content="https://plateaustrategy.io/trip-planner">
@@ -26,8 +26,8 @@
         .pop-photo { width: 100%; height: 96px; object-fit: cover; border-radius: 7px; margin-bottom: 0.4rem; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f1f5f9; color: #1f2937; min-height: 100vh; }
-        header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #fff;
+            background: #faf8f4; color: #14110c; min-height: 100vh; }
+        header { background: linear-gradient(135deg, #14110c 0%, #14110c 100%); color: #fff;
             padding: 1rem 2rem; display: flex; align-items: center; gap: 0.7rem;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 1100; }
         header img { height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
@@ -37,26 +37,26 @@
         header a:hover { color: #fff; }
 
         .wrap { max-width: 1180px; margin: 1.6rem auto; padding: 0 1.2rem; }
-        .page-title { font-size: 1.9rem; font-weight: 800; color: #0f172a; }
+        .page-title { font-size: 1.9rem; font-weight: 800; color: #14110c; }
         .page-sub { color: #6b655b; margin: 0.2rem 0 1.2rem; }
 
-        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+        .card { background: #fff; border: 1px solid #e6e2da; border-radius: 16px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1rem 1.2rem; margin-bottom: 1rem; }
 
         .controls { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center; font-size: 0.9rem; }
         .controls label { color: #6b655b; font-weight: 600; }
-        .controls input[type=time], .controls select { padding: 0.4rem 0.6rem; border: 1.5px solid #e2e8f0;
-            border-radius: 8px; font-size: 0.9rem; font-family: inherit; background: #f8fafc; }
+        .controls input[type=time], .controls select { padding: 0.4rem 0.6rem; border: 1.5px solid #e6e2da;
+            border-radius: 8px; font-size: 0.9rem; font-family: inherit; background: #faf8f4; }
         .btn { padding: 0.45rem 0.9rem; border: none; border-radius: 8px; cursor: pointer;
             font-weight: 700; font-size: 0.85rem; font-family: inherit;
-            background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; }
-        .btn.ghost { background: #eef2f7; color: #1e3a8a; }
+            background: linear-gradient(135deg,#1b4d8f,#1b4d8f); color: #fff; }
+        .btn.ghost { background: #eef2f7; color: #14110c; }
         .btn:hover { filter: brightness(1.07); }
 
         .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.7rem; }
         .chip { font-size: 0.8rem; font-weight: 600; padding: 0.3rem 0.85rem; border-radius: 999px;
-            border: 1.5px solid #e2e8f0; color: #6b655b; cursor: pointer; user-select: none; background: #fff; }
-        .chip.on { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
+            border: 1.5px solid #e6e2da; color: #6b655b; cursor: pointer; user-select: none; background: #fff; }
+        .chip.on { background: #dbeafe; border-color: #1b4d8f; color: #1b4d8f; }
 
         /* Sean's layout: content on the LEFT, the map large on the RIGHT */
         /* The map is the tool; everything else floats over it or tucks away. */
@@ -84,11 +84,11 @@
         .layout.jarvis-mini #auto,
         .layout.jarvis-mini #jask { display: none !important; }
         .jarvis-expand { display: none; width: 100%; margin-top: 0.4rem; border: none;
-            background: #eff6ff; color: #1d4ed8; font-weight: 700; font-size: 0.75rem;
+            background: #eff6ff; color: #1b4d8f; font-weight: 700; font-size: 0.75rem;
             border-radius: 8px; padding: 0.38rem 0.5rem; cursor: pointer; font-family: inherit; }
         .layout.jarvis-mini .jarvis-expand { display: block; }
         .jarvis-shrink { display: block; width: 100%; margin-top: 0.5rem; border: none;
-            background: #f1f5f9; color: #475569; font-weight: 700; font-size: 0.75rem;
+            background: #faf8f4; color: #4a453d; font-weight: 700; font-size: 0.75rem;
             border-radius: 8px; padding: 0.38rem 0.5rem; cursor: pointer; font-family: inherit; }
         .layout.jarvis-mini .jarvis-shrink { display: none; }
         .layout.jarvis-hidden .side { display: none; }
@@ -118,9 +118,9 @@
         .map-searchbar .build-row { display: flex; gap: 0.4rem; margin: 0; align-items: center; }
         .map-searchbar .build-row .from, .map-searchbar .build-row .startedit,
         .map-searchbar .build-row .to { display: none; }   /* those live as map icons now */
-        .map-searchbar .build-row input { flex: 1; min-width: 0; border: 1.5px solid #e2e8f0;
+        .map-searchbar .build-row input { flex: 1; min-width: 0; border: 1.5px solid #e6e2da;
             border-radius: 9px; padding: 0.5rem 0.75rem; font-size: 0.9rem; font-family: inherit; }
-        .map-searchbar .build-row input:focus { outline: none; border-color: #3b82f6; }
+        .map-searchbar .build-row input:focus { outline: none; border-color: #1b4d8f; }
         .map-searchbar .start-entry { margin-top: 0.4rem; }
         .map-searchbar .loc-info { margin: 0.3rem 0.2rem 0; font-size: 0.74rem; }
         .map-actions { display: flex; flex-direction: column; gap: 4px; }
@@ -142,34 +142,34 @@
         .ov-choice:first-of-type { border-top: none; padding-top: 0; }
         .ov-row { display: flex; gap: .5rem; flex-wrap: wrap; }
         .ov-row input { flex: 1; min-width: 190px; padding: .6rem .8rem;
-            border: 1px solid #cbd5e1; border-radius: 8px; font-size: .95rem; font-family: inherit; }
-        .ov-row input:focus { outline: none; border-color: #2563eb;
+            border: 1px solid #ddd8cd; border-radius: 8px; font-size: .95rem; font-family: inherit; }
+        .ov-row input:focus { outline: none; border-color: #1b4d8f;
             box-shadow: 0 0 0 3px rgba(37,99,235,.14); }
         .ov-find { width: 100%; text-align: left; }
         .ov-list { display: flex; flex-direction: column; gap: .35rem; margin-top: .6rem;
             max-height: 210px; overflow-y: auto; }
         .ov-hotel { display: flex; justify-content: space-between; align-items: center; gap: .6rem;
-            width: 100%; text-align: left; background: #fff; border: 1px solid #e2e8f0;
+            width: 100%; text-align: left; background: #fff; border: 1px solid #e6e2da;
             border-radius: 9px; padding: .55rem .75rem; font-size: .9rem; font-family: inherit;
-            color: #1f2937; cursor: pointer; }
+            color: #14110c; cursor: pointer; }
         .ov-hotel:hover { border-color: #db2777; background: #fff5fa; }
         .ov-hotel span { color: #6b655b; font-size: .8rem; white-space: nowrap; }
-        .ov-msg { font-size: .86rem; color: #475569; margin-top: .7rem; min-height: 1.2em; }
+        .ov-msg { font-size: .86rem; color: #4a453d; margin-top: .7rem; min-height: 1.2em; }
         .ov-skip { width: 100%; margin-top: .9rem; }
-        .map-legend .lg-toggle { font-size: 0.72rem; font-weight: 700; color: #475569;
+        .map-legend .lg-toggle { font-size: 0.72rem; font-weight: 700; color: #4a453d;
             cursor: pointer; user-select: none; }
 
         .far-gateways { margin-top: 0.4rem; }
         .fg-lead { font-size: 0.72rem; font-weight: 700; color: #78350f; margin-bottom: 0.25rem; }
         .fg-opt { display: inline-block; font-size: 0.72rem; font-weight: 600; background: #fff;
-            border: 1.5px solid #fde68a; border-radius: 999px; padding: 0.2rem 0.6rem;
+            border: 1.5px solid #8a5a12; border-radius: 999px; padding: 0.2rem 0.6rem;
             margin: 0 0.25rem 0.25rem 0; cursor: pointer; color: #92400e; }
         .fg-opt:hover { border-color: #f59e0b; }
         .fg-decline { margin-top: 0.35rem; font-size: 0.72rem; }
         /* City to city is a flight, so the recommended airport is the button —
            not one chip among several. Driving stays one tap away underneath. */
         .fg-primary { display: block; width: 100%; text-align: left; cursor: pointer;
-            background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: none;
+            background: linear-gradient(135deg, #1b4d8f, #1b4d8f); color: #fff; border: none;
             border-radius: 9px; padding: 0.5rem 0.7rem; font-family: inherit; font-size: 0.78rem;
             font-weight: 700; margin-bottom: 0.35rem; box-shadow: 0 6px 14px -6px rgba(37,99,235,.8); }
         .fg-primary:hover { filter: brightness(1.07); }
@@ -178,14 +178,14 @@
         .fg-more { font-size: 0.68rem; color: #78350f; margin: 0.2rem 0 0.1rem; }
         .far-alts { margin-top: 0.45rem; font-size: 0.68rem; opacity: .85; }
         .far-note { margin-top: 0.3rem; font-size: 0.75rem; line-height: 1.45; color: #92400e;
-            background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 0.4rem 0.6rem; }
+            background: #fffbeb; border: 1px solid #8a5a12; border-radius: 8px; padding: 0.4rem 0.6rem; }
         .start-entry { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-top: 0.5rem; }
-        .start-entry input { flex: 1; min-width: 210px; padding: 0.5rem 0.8rem; border: 1.5px solid #e2e8f0;
-            border-radius: 10px; font-size: 0.92rem; font-family: inherit; background: #f8fafc; }
-        .start-entry input:focus { outline: none; border-color: #3b82f6; background: #fff; }
+        .start-entry input { flex: 1; min-width: 210px; padding: 0.5rem 0.8rem; border: 1.5px solid #e6e2da;
+            border-radius: 10px; font-size: 0.92rem; font-family: inherit; background: #faf8f4; }
+        .start-entry input:focus { outline: none; border-color: #1b4d8f; background: #fff; }
         .start-hint { font-size: 0.74rem; color: #6b655b; }
         .traffic-note { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem;
-            font-weight: 600; color: #1d4ed8; background: #eff6ff; border: 1px solid #dbeafe;
+            font-weight: 600; color: #1b4d8f; background: #eff6ff; border: 1px solid #dbeafe;
             border-radius: 10px; padding: 0.55rem 0.9rem; margin-bottom: 0.6rem; }
         /* 🗺️ ON-MAP layer switch — every available resource is toggled here, on the
            map itself, so a traveler never hunts for the control somewhere else. */
@@ -197,10 +197,10 @@
         .achip-row { display: flex; gap: 0.22rem; }
         .achip { position: relative; width: 30px; height: 30px; border-radius: 8px;
             display: flex; align-items: center; justify-content: center; font-size: 14px;
-            border: 1.5px solid #e2e8f0; background: #fff; cursor: pointer; user-select: none;
+            border: 1.5px solid #e6e2da; background: #fff; cursor: pointer; user-select: none;
             line-height: 1; }
-        .achip:hover { border-color: #93c5fd; }
-        .achip.on { background: #dbeafe; border-color: #1d4ed8; }
+        .achip:hover { border-color: #1b4d8f; }
+        .achip.on { background: #dbeafe; border-color: #1b4d8f; }
         .achip .star-badge { position: absolute; right: -3px; bottom: -3px; background: #f59e0b;
             color: #fff; font-size: 8px; font-weight: 800; line-height: 12px; min-width: 12px;
             height: 12px; border-radius: 6px; text-align: center; padding: 0 2px;
@@ -216,7 +216,7 @@
         .discovery-note.floating { position: fixed; z-index: 1200; left: 50%; top: 14px;
             transform: translateX(-50%); width: min(560px, calc(100vw - 24px));
             margin: 0; box-shadow: 0 12px 34px rgba(6,95,70,.28);
-            border-color: #6ee7b7; animation: dropIn .28s ease-out; }
+            border-color: #1b5e43; animation: dropIn .28s ease-out; }
         @keyframes dropIn { from { opacity: 0; transform: translate(-50%, -12px); }
                             to   { opacity: 1; transform: translate(-50%, 0); } }
         .discovery-note .dn-close { float: right; cursor: pointer; color: #047857; font-weight: 800;
@@ -227,89 +227,89 @@
         .dn-ask .q { font-size: 0.76rem; color: #065f46; font-weight: 600; margin-right: 0.2rem; }
         .dn-ask span.opt { font-size: 0.74rem; font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 999px;
             border: 1.5px solid #a7f3d0; background: #fff; color: #047857; cursor: pointer; user-select: none; }
-        .dn-ask span.opt:hover { border-color: #34d399; }
+        .dn-ask span.opt:hover { border-color: #1b5e43; }
         .dn-rec { font-size: 0.72rem; color: #047857; margin-left: 0.2rem; }
         .am-pin { width: 22px; height: 22px; border-radius: 50%; background: #fff;
             display: flex; align-items: center; justify-content: center; font-size: 12px;
-            border: 2px solid #94a3b8; box-shadow: 0 1px 3px rgba(15,23,42,0.3); }
+            border: 2px solid #8a8377; box-shadow: 0 1px 3px rgba(15,23,42,0.3); }
         .am-pop { font-size: 0.82rem; line-height: 1.5; }
-        .am-pop b { color: #0f172a; }
+        .am-pop b { color: #14110c; }
         .am-pop .d { color: #6b655b; font-size: 0.76rem; }
-        .am-rate { margin-top: 0.35rem; font-size: 0.8rem; color: #334155; }
-        .am-rate .rs { color: #d1d5db; cursor: pointer; font-size: 0.95rem; }
+        .am-rate { margin-top: 0.35rem; font-size: 0.8rem; color: #4a453d; }
+        .am-rate .rs { color: #ddd8cd; cursor: pointer; font-size: 0.95rem; }
         .am-rate .rs:hover { color: #f59e0b; }
         .am-start { margin-top: 0.4rem; margin-right: 0.35rem; border: none; border-radius: 8px;
-            background: #0f172a; color: #fff; font-weight: 700; font-size: 0.75rem;
+            background: #14110c; color: #fff; font-weight: 700; font-size: 0.75rem;
             padding: 0.35rem 0.7rem; cursor: pointer; font-family: inherit; }
         .am-start:hover { filter: brightness(1.25); }
-        .am-add { margin-top: 0.4rem; border: none; border-radius: 8px; background: #1d4ed8; color: #fff;
+        .am-add { margin-top: 0.4rem; border: none; border-radius: 8px; background: #1b4d8f; color: #fff;
             font-weight: 700; font-size: 0.75rem; padding: 0.35rem 0.7rem; cursor: pointer; font-family: inherit; }
         .am-add:hover { filter: brightness(1.1); }
-        .legend { display: flex; flex-wrap: wrap; gap: 1.1rem; font-size: 0.8rem; color: #475569;
+        .legend { display: flex; flex-wrap: wrap; gap: 1.1rem; font-size: 0.8rem; color: #4a453d;
             margin-top: 0.75rem; align-items: center; }
         .legend > span { display: inline-flex; align-items: center; }
         .ldot { width: 16px; height: 16px; border-radius: 50%; display: inline-flex;
             align-items: center; justify-content: center;
             color: #fff; font-size: 9px; font-weight: 800; line-height: 1;
             margin-right: 6px; flex: 0 0 auto; }
-        #status { font-size: 0.88rem; color: #334155; margin-top: 0.6rem; min-height: 1.2em; }
+        #status { font-size: 0.88rem; color: #4a453d; margin-top: 0.6rem; min-height: 1.2em; }
 
-        .side h3 { font-size: 1rem; color: #0f172a; margin-bottom: 0.4rem; display: flex;
+        .side h3 { font-size: 1rem; color: #14110c; margin-bottom: 0.4rem; display: flex;
             align-items: center; gap: 0.4rem; }
         .stop { display: flex; justify-content: space-between; gap: 0.6rem; font-size: 0.86rem;
             padding: 0.42rem 0; border-top: 1px solid #eef2f7; }
         .stop .t { color: #6b655b; white-space: nowrap; }
-        .dayhead { font-weight: 800; font-size: 0.8rem; color: #1e3a8a; text-transform: uppercase;
+        .dayhead { font-weight: 800; font-size: 0.8rem; color: #14110c; text-transform: uppercase;
             letter-spacing: 0.04em; margin-top: 0.6rem; }
         .muted { color: #6b655b; font-size: 0.84rem; }
 
         .place-row { display: flex; align-items: center; gap: 0.45rem; padding: 0.4rem 0;
             border-top: 1px solid #eef2f7; font-size: 0.84rem; flex-wrap: wrap; }
-        .place-row .nm { flex: 1 1 120px; font-weight: 600; color: #334155; min-width: 110px; }
+        .place-row .nm { flex: 1 1 120px; font-weight: 600; color: #4a453d; min-width: 110px; }
         .place-row input[type=time] { width: 88px; }
         .place-row input[type=number] { width: 58px; }
-        .place-row input, .place-row select { padding: 0.22rem 0.35rem; border: 1px solid #e2e8f0;
-            border-radius: 6px; font-size: 0.8rem; font-family: inherit; background: #f8fafc; }
+        .place-row input, .place-row select { padding: 0.22rem 0.35rem; border: 1px solid #e6e2da;
+            border-radius: 6px; font-size: 0.8rem; font-family: inherit; background: #faf8f4; }
         .place-row .rm { color: var(--psx-red); cursor: pointer; font-weight: 800; padding: 0 0.3rem; }
         .place-row .crowd { font-style: normal; font-weight: 700; font-size: 0.72rem; color: #0d9488;
             background: #ecfdf5; border-radius: 6px; padding: 1px 5px; margin-left: 4px; white-space: nowrap; }
         .place-row .crowd.guided { color: #7c2d12; background: #fef3c7; }
-        .dayhead .drivetime { font-weight: 700; font-size: 0.72rem; color: #1d4ed8;
+        .dayhead .drivetime { font-weight: 700; font-size: 0.72rem; color: #1b4d8f;
             background: #eff6ff; border-radius: 6px; padding: 1px 6px; margin-left: 6px; }
 
         /* 🤵 Jarvis — the day-sheet organizer panel */
         .card.jarvis h3 { margin-bottom: 0.35rem; }
         #trip { max-height: 34vh; overflow-y: auto; }
         #auto { max-height: 22vh; overflow-y: auto; }
-        .jarvis-line { font-size: 0.8rem; color: #334155; line-height: 1.5; padding: 0.45rem 0.6rem;
-            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin: 0.35rem 0 0.55rem; }
-        .jarvis-line.flash { background: #eff6ff; border-color: #bfdbfe; }
-        .jarvis-line b { color: #0f172a; }
+        .jarvis-line { font-size: 0.8rem; color: #4a453d; line-height: 1.5; padding: 0.45rem 0.6rem;
+            background: #faf8f4; border: 1px solid #e6e2da; border-radius: 8px; margin: 0.35rem 0 0.55rem; }
+        .jarvis-line.flash { background: #eff6ff; border-color: #4a453d; }
+        .jarvis-line b { color: #14110c; }
         .jarvis-line .warn { color: #b45309; font-weight: 700; }
         .jarvis-line .j-tip { display: block; margin-top: 0.3rem; padding-top: 0.3rem;
-            border-top: 1px solid #e2e8f0; color: #475569; font-size: 0.78rem; line-height: 1.5; }
-        .jarvis-mast { font-size: 0.78rem; color: #475569; line-height: 1.55; padding: 0.45rem 0;
-            border-bottom: 1px solid #f1f5f9; }
-        .jarvis-mast b { color: #0f172a; }
+            border-top: 1px solid #e6e2da; color: #4a453d; font-size: 0.78rem; line-height: 1.5; }
+        .jarvis-mast { font-size: 0.78rem; color: #4a453d; line-height: 1.55; padding: 0.45rem 0;
+            border-bottom: 1px solid #faf8f4; }
+        .jarvis-mast b { color: #14110c; }
         .mast-risk { color: #b45309; font-weight: 700; cursor: pointer; }
         .jarvis-sec { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase;
-            color: #6b655b; margin: 0.75rem 0 0.3rem; border-top: 1px solid #f1f5f9; padding-top: 0.6rem; }
+            color: #6b655b; margin: 0.75rem 0 0.3rem; border-top: 1px solid #faf8f4; padding-top: 0.6rem; }
         .itin-head { display: flex; align-items: center; }
         .itin-tools { margin-left: auto; display: flex; gap: 0.55rem; }
-        .itin-tools button { background: none; border: none; color: #1d4ed8; font-size: 0.7rem;
+        .itin-tools button { background: none; border: none; color: #1b4d8f; font-size: 0.7rem;
             font-weight: 700; cursor: pointer; padding: 0; letter-spacing: normal; text-transform: none; }
         .jday { display: flex; flex-wrap: wrap; gap: 0.15rem 0.5rem; font-size: 0.72rem; font-weight: 700;
-            color: #1e3a8a; background: #eff6ff; border-radius: 8px; padding: 0.32rem 0.55rem; margin-top: 0.55rem; }
-        .jday .jd-meta { font-weight: 600; color: #475569; }
+            color: #14110c; background: #eff6ff; border-radius: 8px; padding: 0.32rem 0.55rem; margin-top: 0.55rem; }
+        .jday .jd-meta { font-weight: 600; color: #4a453d; }
         .itin-row { display: grid; grid-template-columns: 52px 1fr; column-gap: 0.5rem;
             padding: 0.42rem 0; border-top: 1px solid #eef2f7; }
         .itin-row.tight { border-left: 3px solid #d97706; padding-left: 0.45rem; }
         .itin-row.risk { border-left: 3px solid var(--psx-red); padding-left: 0.45rem; background: #fffbeb; }
-        .itin-row.nowrow { border-left: 3px solid #1d4ed8; padding-left: 0.45rem; }
-        .itin-time { text-align: right; color: #0f172a; font-weight: 700; font-size: 0.78rem;
+        .itin-row.nowrow { border-left: 3px solid #1b4d8f; padding-left: 0.45rem; }
+        .itin-time { text-align: right; color: #14110c; font-weight: 700; font-size: 0.78rem;
             font-variant-numeric: tabular-nums; line-height: 1.35; }
         .itin-time .lv { color: #6b655b; font-weight: 600; display: block; }
-        .itin-name { font-weight: 700; color: #0f172a; font-size: 0.84rem; display: flex;
+        .itin-name { font-weight: 700; color: #14110c; font-size: 0.84rem; display: flex;
             justify-content: space-between; gap: 0.4rem; }
         .itin-stars { color: #b45309; font-weight: 700; font-size: 0.72rem; white-space: nowrap; }
         .itin-leg { font-size: 0.7rem; color: #6b655b; margin-top: 0.12rem; display: flex;
@@ -317,40 +317,40 @@
         .itin-warn { font-size: 0.7rem; font-weight: 700; margin-top: 0.15rem; }
         .itin-warn.tight { color: #b45309; }
         .itin-warn.risk { color: var(--psx-red); }
-        .fixlink { color: #1d4ed8; text-decoration: underline; cursor: pointer; font-weight: 700; }
+        .fixlink { color: #1b4d8f; text-decoration: underline; cursor: pointer; font-weight: 700; }
         .fixlink:hover { color: #1e40af; }
-        .itin-tag { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.05em; color: #1d4ed8;
+        .itin-tag { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.05em; color: #1b4d8f;
             background: #eff6ff; border-radius: 6px; padding: 1px 6px; margin-left: 6px; }
         .jcursor { font-size: 0.72rem; color: #6b655b; font-style: italic; padding: 0.35rem 0 0 0.3rem; }
-        .sug-row .sug-add { color: #1d4ed8; font-weight: 800; cursor: pointer; margin-right: 0.35rem; }
+        .sug-row .sug-add { color: #1b4d8f; font-weight: 800; cursor: pointer; margin-right: 0.35rem; }
         /* 💬 Jarvis asks — one quick community question, one-tap answers */
         .jask { margin-top: 0.4rem; }
-        .jask .jask-q { font-size: 0.78rem; color: #334155; font-weight: 600; margin-bottom: 0.4rem; }
+        .jask .jask-q { font-size: 0.78rem; color: #4a453d; font-weight: 600; margin-bottom: 0.4rem; }
         .jask .jask-opts { display: flex; flex-wrap: wrap; gap: 0.35rem; }
         .jask .jask-opts span { font-size: 0.74rem; font-weight: 600; padding: 0.28rem 0.7rem; border-radius: 999px;
-            border: 1.5px solid #e2e8f0; color: #475569; cursor: pointer; user-select: none; background: #fff; }
-        .jask .jask-opts span:hover { border-color: #93c5fd; color: #1d4ed8; }
+            border: 1.5px solid #e6e2da; color: #4a453d; cursor: pointer; user-select: none; background: #fff; }
+        .jask .jask-opts span:hover { border-color: #1b4d8f; color: #1b4d8f; }
         .jask .jask-skip { color: #6b655b !important; border-color: transparent !important; }
         .jarvis-actions { display: none; gap: 0.45rem; flex-wrap: wrap; margin-top: 0.5rem; }
         .jarvis-actions button { border: none; border-radius: 8px; color: #fff; font-weight: 700;
             font-size: 0.76rem; padding: 0.42rem 0.62rem; cursor: pointer; }
         .jarvis-actions button:hover { filter: brightness(1.1); }
-        .jarvis-actions .ja-ride { background: #1d4ed8; }
+        .jarvis-actions .ja-ride { background: #1b4d8f; }
         .jarvis-actions .ja-guide { background: #0f766e; }
         .jarvis-actions .ja-hire { background: #6d28d9; }
 
         /* Sean's sketch: Current location → Destination + Add → D1 → D2 → … */
         .build-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
-        .build-row .from { font-weight: 700; color: #0f172a; font-size: 0.9rem; white-space: nowrap; }
-        .build-row .loc-btn { cursor: pointer; border: 1px solid #cbd5e1; background: #fff; border-radius: 9px;
-            padding: 0.5rem 0.7rem; font-weight: 700; color: #0f172a; font-size: 0.85rem; white-space: nowrap; }
-        .build-row .loc-btn:hover { border-color: #2563eb; color: #1d4ed8; }
+        .build-row .from { font-weight: 700; color: #14110c; font-size: 0.9rem; white-space: nowrap; }
+        .build-row .loc-btn { cursor: pointer; border: 1px solid #ddd8cd; background: #fff; border-radius: 9px;
+            padding: 0.5rem 0.7rem; font-weight: 700; color: #14110c; font-size: 0.85rem; white-space: nowrap; }
+        .build-row .loc-btn:hover { border-color: #1b4d8f; color: #1b4d8f; }
         .build-row .loc-btn.located { border-color: #0d9488; color: #0f766e; background: #f0fdfa; }
         /* The control wears the same black marker the map drops, so nobody has to
            be told that this button and that pin are the same thing. */
         .pin-badge { width: 20px; height: 20px; border-radius: 50%; flex: 0 0 auto;
             display: inline-flex; align-items: center; justify-content: center;
-            background: #0f172a; color: #fff; font-size: 11px; line-height: 1;
+            background: #14110c; color: #fff; font-size: 11px; line-height: 1;
             border: 1.5px solid #fff; margin-right: 0.4rem;
             box-shadow: 0 1px 2px rgba(15,23,42,.3), 0 2px 5px rgba(15,23,42,.16); }
         .build-row .loc-btn { display: inline-flex; align-items: center; }
@@ -374,24 +374,24 @@
         .loc-info { font-size: 0.8rem; color: #0f766e; margin-top: 0.35rem; line-height: 1.4; }
         .loc-info.warn { color: #b45309; }
         .build-row .to { color: #6b655b; font-weight: 800; }
-        .build-row #destAdd { flex: 1; min-width: 200px; border: 1px solid #cbd5e1; border-radius: 9px;
+        .build-row #destAdd { flex: 1; min-width: 200px; border: 1px solid #ddd8cd; border-radius: 9px;
             padding: 0.55rem 0.8rem; font-size: 0.92rem; }
-        .btn.add { background: linear-gradient(135deg,#2563eb,#1d4ed8); color: #fff; border: none;
+        .btn.add { background: linear-gradient(135deg,#1b4d8f,#1b4d8f); color: #fff; border: none;
             border-radius: 9px; padding: 0.55rem 1rem; font-weight: 800; cursor: pointer; white-space: nowrap; }
         .btn.add:hover { filter: brightness(1.08); }
         .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-top: 0.6rem; }
-        .chain .dnode { background: #eef4ff; border: 1px solid #c7d7f5; color: #1d4ed8; font-weight: 700;
+        .chain .dnode { background: #eef4ff; border: 1px solid #c7d7f5; color: #1b4d8f; font-weight: 700;
             font-size: 0.8rem; border-radius: 999px; padding: 2px 10px; }
         .chain .darrow { color: #6b655b; font-weight: 800; }
-        .place-row .addbtn { width: 26px; text-align: center; cursor: pointer; color: #2563eb; font-weight: 900;
+        .place-row .addbtn { width: 26px; text-align: center; cursor: pointer; color: #1b4d8f; font-weight: 900;
             font-size: 1.05rem; user-select: none; }
-        .place-row .addbtn:hover { color: #1d4ed8; }
+        .place-row .addbtn:hover { color: #1b4d8f; }
         .place-row .addbtn.done { color: #16a34a; cursor: default; }
         .place-row.in-route { background: #f0fdf4; }
 
         /* the three doors */
         .actionbar { display: flex; flex-wrap: wrap; gap: 0.7rem; align-items: stretch; margin-top: 1.2rem; }
-        .actionbar .act-lead { flex-basis: 100%; font-weight: 700; color: #334155; margin-bottom: 0.1rem; }
+        .actionbar .act-lead { flex-basis: 100%; font-weight: 700; color: #4a453d; margin-bottom: 0.1rem; }
         .act { flex: 1 1 210px; text-align: left; border: none; border-radius: 14px; padding: 0.85rem 1.05rem;
             font-size: 1rem; font-weight: 800; color: #fff; cursor: pointer; line-height: 1.25;
             display: flex; flex-direction: column; gap: 0.15rem; }
@@ -402,13 +402,13 @@
             gap: 0.35rem; padding: 0.6rem 0.7rem; font-size: 0.9rem; border-radius: 11px; text-align: center;
             white-space: nowrap; }
         .actionbar.flat .act-link { flex-basis: 100%; text-align: center; margin-top: 0.1rem; }
-        .act.ride  { background: linear-gradient(135deg,#2563eb,#1d4ed8); }
+        .act.ride  { background: linear-gradient(135deg,#1b4d8f,#1b4d8f); }
         .act.guide { background: linear-gradient(135deg,#0d9488,#0f766e); }
         .act.hire  { background: linear-gradient(135deg,#7c3aed,#6d28d9); }
         .act.sale  { background: linear-gradient(135deg,#d97706,#b45309); }
-        .act.robotaxi { background: #1e293b; border: 2px dashed #64748b; opacity: 0.55; }
+        .act.robotaxi { background: #2a251d; border: 2px dashed #6b655b; opacity: 0.55; }
         .act.robotaxi:hover { opacity: 0.85; }
-        .soon-badge { font-size: 0.58rem; font-weight: 800; background: #fbbf24; color: #713f12;
+        .soon-badge { font-size: 0.58rem; font-weight: 800; background: #f7efe0; color: #7a4e0f;
             border-radius: 6px; padding: 1px 6px; margin-left: 6px; vertical-align: middle; letter-spacing: 0.04em; }
         .act:hover { filter: brightness(1.08); }
         .act-link { flex-basis: 100%; text-align: center; color: #b45309; font-weight: 700;
@@ -420,25 +420,25 @@
         .modal-back.on { display: flex; }
         .modal { background: #fff; border-radius: 16px; padding: 1.4rem; width: 100%; max-width: 460px;
             position: relative; max-height: 92vh; overflow-y: auto; }
-        .modal h3 { color: #0f172a; font-size: 1.2rem; margin-bottom: 0.25rem; }
+        .modal h3 { color: #14110c; font-size: 1.2rem; margin-bottom: 0.25rem; }
         .modal-x { position: absolute; top: 0.7rem; right: 0.8rem; border: none; background: none;
             font-size: 1.2rem; color: #6b655b; cursor: pointer; }
-        .ho-summary { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.7rem 0.9rem;
-            font-size: 0.85rem; color: #334155; margin: 0.7rem 0; line-height: 1.5; }
-        .ho-fee { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; border-radius: 10px;
+        .ho-summary { background: #faf8f4; border: 1px solid #e6e2da; border-radius: 10px; padding: 0.7rem 0.9rem;
+            font-size: 0.85rem; color: #4a453d; margin: 0.7rem 0; line-height: 1.5; }
+        .ho-fee { background: #eff6ff; border: 1px solid #4a453d; color: #1e40af; border-radius: 10px;
             padding: 0.6rem 0.85rem; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.4rem; line-height: 1.45; }
-        .ho-lab { display: block; font-size: 0.78rem; font-weight: 700; color: #475569; margin: 0.6rem 0 0.2rem; }
-        .modal input, .modal textarea { width: 100%; border: 1px solid #cbd5e1; border-radius: 8px;
+        .ho-lab { display: block; font-size: 0.78rem; font-weight: 700; color: #4a453d; margin: 0.6rem 0 0.2rem; }
+        .modal input, .modal textarea { width: 100%; border: 1px solid #ddd8cd; border-radius: 8px;
             padding: 0.55rem 0.7rem; font-size: 0.9rem; font-family: inherit; }
         .ho-msg { font-size: 0.86rem; font-weight: 700; margin-top: 0.6rem; min-height: 1.1em; }
         .ho-msg.ok { color: #0f766e; } .ho-msg.err { color: #dc2626; }
         .col-lab { font-size: 0.68rem; color: #6b655b; text-transform: uppercase; letter-spacing: 0.04em; }
 
         .search-box { position: relative; margin-top: 0.6rem; }
-        .search-box input { width: 100%; padding: 0.55rem 0.8rem; border: 1.5px solid #e2e8f0;
-            border-radius: 10px; font-size: 0.9rem; font-family: inherit; background: #f8fafc; }
+        .search-box input { width: 100%; padding: 0.55rem 0.8rem; border: 1.5px solid #e6e2da;
+            border-radius: 10px; font-size: 0.9rem; font-family: inherit; background: #faf8f4; }
         .search-res { position: absolute; left: 0; right: 0; top: 100%; background: #fff; z-index: 1000;
-            border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 8px 24px rgba(15,23,42,0.12);
+            border: 1px solid #e6e2da; border-radius: 10px; box-shadow: 0 8px 24px rgba(15,23,42,0.12);
             max-height: 220px; overflow-y: auto; display: none; }
         .search-res div { padding: 0.5rem 0.8rem; font-size: 0.84rem; cursor: pointer; }
         .search-res div:hover { background: #eff6ff; }
@@ -458,9 +458,9 @@
         :root{
             --tp-good:#0d9488;      /* enough time      ✓ */
             --tp-warn:#ea580c;      /* tight            ! */
-            --tp-off:#64748b;       /* can't make it    ✕ */
-            --tp-pick:#2563eb;      /* in your trip     ★ */
-            --tp-start:#0f172a;     /* start point      ⌂ */
+            --tp-off:#6b655b;       /* can't make it    ✕ */
+            --tp-pick:#1b4d8f;      /* in your trip     ★ */
+            --tp-start:#14110c;     /* start point      ⌂ */
         }
         .tp-pin { text-align: center; }
         .tp-dot { position: relative; width: 20px; height: 20px; border-radius: 50%; margin: 0 auto;
@@ -494,23 +494,23 @@
         /* Labels are the thing that made the map noisy: one under every pin, all
            the time. They now render ONLY for stops already in the route (and the
            start point) — every other place still names itself on hover/tap. */
-        .tp-lbl { font-size: 9px; font-weight: 600; color: #334155; white-space: nowrap;
+        .tp-lbl { font-size: 9px; font-weight: 600; color: #4a453d; white-space: nowrap;
             background: rgba(255,255,255,.92); border-radius: 5px; padding: 0 4px; margin-top: 2px;
             display: inline-block; box-shadow: 0 1px 2px rgba(15,23,42,.14);
             max-width: 84px; overflow: hidden; text-overflow: ellipsis; }
 
         /* ---- Leaflet chrome, matched to the page ---- */
-        .leaflet-container { background: #eef1f5; font: inherit; }
+        .leaflet-container { background: #f5f1e8; font: inherit; }
         .leaflet-bar { border: none !important; box-shadow: 0 2px 10px rgba(15,23,42,.16) !important;
             border-radius: 10px !important; overflow: hidden; }
-        .leaflet-bar a { background: #fff !important; color: #334155 !important;
+        .leaflet-bar a { background: #fff !important; color: #4a453d !important;
             border-bottom: 1px solid #e8edf3 !important; width: 32px !important; height: 32px !important;
             line-height: 32px !important; }
-        .leaflet-bar a:hover { background: #f5f8fc !important; color: #0f172a !important; }
+        .leaflet-bar a:hover { background: #f5f8fc !important; color: #14110c !important; }
         .leaflet-control-attribution { background: rgba(255,255,255,.86) !important;
-            color: #7c8798 !important; font-size: 10.5px !important; border-radius: 8px 0 0 0; }
+            color: #6b655b !important; font-size: 10.5px !important; border-radius: 8px 0 0 0; }
         .leaflet-control-attribution a { color: #5b6779 !important; }
-        .leaflet-tooltip { background: #0f172a; color: #eef3fb; border: none;
+        .leaflet-tooltip { background: #14110c; color: #eef3fb; border: none;
             box-shadow: 0 6px 20px rgba(15,23,42,.3); font-size: 12px; font-weight: 500;
             border-radius: 8px; padding: 6px 10px; }
         .leaflet-tooltip::before { display: none; }
@@ -520,9 +520,9 @@
         .bookcard { padding: 0; overflow: hidden; }
         .book-head { display: flex; align-items: center; gap: 0.7rem; padding: 0.95rem 1.1rem;
             cursor: pointer; user-select: none; }
-        .book-head:hover { background: #f8fafc; }
+        .book-head:hover { background: #faf8f4; }
         .book-ico { font-size: 1.35rem; flex: 0 0 auto; }
-        .book-title { flex: 1; font-weight: 800; color: #0f172a; font-size: 0.98rem; }
+        .book-title { flex: 1; font-weight: 800; color: #14110c; font-size: 0.98rem; }
         .book-sub { display: block; font-weight: 500; color: #6b655b; font-size: 0.78rem; margin-top: 0.15rem; }
         .book-chev { color: #6b655b; font-size: 0.9rem; transition: transform 0.2s; flex: 0 0 auto; }
         .bookcard.open .book-chev { transform: rotate(180deg); }
@@ -651,9 +651,9 @@
                 <div class="legend">
                     <span><span class="ldot" style="background:#0d9488">✓</span>Enough time</span>
                     <span><span class="ldot" style="background:#ea580c">!</span>Tight</span>
-                    <span><span class="ldot" style="background:#64748b">✕</span>Can't make it</span>
-                    <span><span class="ldot" style="background:#2563eb">★</span>In your trip</span>
-                    <span><span class="ldot" style="background:#0f172a">⌂</span>Start point (drag it)</span>
+                    <span><span class="ldot" style="background:#6b655b">✕</span>Can't make it</span>
+                    <span><span class="ldot" style="background:#1b4d8f">★</span>In your trip</span>
+                    <span><span class="ldot" style="background:#14110c">⌂</span>Start point (drag it)</span>
                 </div>
                 <div id="status">Loading drive times…</div>
             </div>
@@ -1420,7 +1420,7 @@
     // Each day's stops are sent to the routing service in order; it returns the actual
     // driving geometry and per-leg durations. Straight dashes are only the fallback,
     // and when that happens the status line says so rather than pretending.
-    const DAY_COLORS = ['#2563eb', '#7c3aed', '#0d9488', '#d97706'];
+    const DAY_COLORS = ['#1b4d8f', '#7c3aed', '#0d9488', '#d97706'];
     let geoCache = {}, dayDrive = {};
     function daySequences(){
         const days = {};
@@ -2833,7 +2833,7 @@
                       fallbackName: 'Hotel', addable: true, startable: true },
         // Airports are sparse, so they search a wide radius and stay visible at
         // city zoom — a traveller landing at JFK needs to see it from the whole map.
-        airports:   { emoji: '✈️', color: '#334155', min: 99, max: 25, label: 'Airports',
+        airports:   { emoji: '✈️', color: '#4a453d', min: 99, max: 25, label: 'Airports',
                       wideRadius: 60000, anchor: 'origin',
                       // Demanding an ["iata"] tag on node/way found nothing in most
                       // places: plenty of aerodromes are mapped as relations, and

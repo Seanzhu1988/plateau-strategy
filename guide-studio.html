@@ -6,7 +6,7 @@
     <title>Guide Studio — build a trip to sell</title>
     <meta name="description" content="Guides: build your own in-depth trip stop by stop, set how long you stand at each one, price it, and list it for travellers to find.">
     <link rel="canonical" href="https://plateaustrategy.io/guide-studio">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#14110c">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://plateaustrategy.io/guide-studio">
     <meta property="og:title" content="Guide Studio — build a trip to sell">
@@ -16,29 +16,29 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f1f5f9; color: #1f2937; min-height: 100vh; }
-        header { background: linear-gradient(135deg,#0f172a,#1e3a8a); color: #fff; padding: 1rem 1.6rem;
+            background: #faf8f4; color: #14110c; min-height: 100vh; }
+        header { background: linear-gradient(135deg,#14110c,#14110c); color: #fff; padding: 1rem 1.6rem;
             display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
         header img { height: 40px; width: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
         header .brand { font-weight: 800; font-size: 1.05rem; }
         header .right { margin-left: auto; display: flex; gap: 1.1rem; }
         header a { color: #6b655b; text-decoration: none; font-weight: 600; font-size: 0.88rem; }
         .wrap { max-width: 860px; margin: 1.8rem auto 4rem; padding: 0 1.1rem; }
-        .page-title { font-size: 1.65rem; font-weight: 800; color: #0f172a; }
+        .page-title { font-size: 1.65rem; font-weight: 800; color: #14110c; }
         .sub { color: #6b655b; margin: 0.35rem 0 1.5rem; line-height: 1.55; font-size: 0.94rem; }
-        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.3rem; margin-bottom: 1.1rem; }
-        .card h2 { font-size: 1.02rem; color: #0f172a; margin-bottom: 0.25rem; }
+        .card { background: #fff; border: 1px solid #e6e2da; border-radius: 14px; padding: 1.3rem; margin-bottom: 1.1rem; }
+        .card h2 { font-size: 1.02rem; color: #14110c; margin-bottom: 0.25rem; }
         .card .why { color: #6b655b; font-size: 0.82rem; margin-bottom: 1rem; line-height: 1.5; }
-        label { display: block; font-size: 0.76rem; font-weight: 700; color: #475569;
+        label { display: block; font-size: 0.76rem; font-weight: 700; color: #4a453d;
             text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 0.32rem; }
-        input, select, textarea { width: 100%; padding: 0.62rem 0.75rem; border: 1px solid #cbd5e1;
+        input, select, textarea { width: 100%; padding: 0.62rem 0.75rem; border: 1px solid #ddd8cd;
             border-radius: 9px; font-size: 0.92rem; font-family: inherit; background: #fff; }
         textarea { resize: vertical; min-height: 78px; line-height: 1.5; }
         .row { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.9rem; }
         .row > div { flex: 1; min-width: 150px; }
         .stop { display: flex; gap: 0.6rem; align-items: flex-start; padding: 0.7rem 0;
-            border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; }
-        .stop .n { width: 26px; height: 26px; border-radius: 50%; background: #1e3a8a; color: #fff;
+            border-bottom: 1px solid #faf8f4; flex-wrap: wrap; }
+        .stop .n { width: 26px; height: 26px; border-radius: 50%; background: #14110c; color: #fff;
             display: flex; align-items: center; justify-content: center; font-size: 0.76rem;
             font-weight: 800; flex-shrink: 0; margin-top: 0.35rem; }
         .stop .f { flex: 1; min-width: 180px; }
@@ -48,18 +48,18 @@
         .stop input { margin-bottom: 0.4rem; }
         .btn { padding: 0.65rem 1.15rem; border: none; border-radius: 9px; font-weight: 700;
             font-size: 0.88rem; cursor: pointer; font-family: inherit; }
-        .btn.blue { background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; }
-        .btn.ghost { background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; }
+        .btn.blue { background: linear-gradient(135deg,#1b4d8f,#1b4d8f); color: #fff; }
+        .btn.ghost { background: #faf8f4; border: 1px solid #ddd8cd; color: #4a453d; }
         .btn.big { width: 100%; padding: 0.9rem; font-size: 0.98rem; }
         .btn:disabled { opacity: 0.55; cursor: default; }
         .total { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px;
             padding: 0.75rem 0.95rem; font-size: 0.88rem; color: #075985; margin-top: 0.9rem; }
         .result { margin-top: 1rem; padding: 0.85rem 1rem; border-radius: 9px; display: none; font-size: 0.9rem; line-height: 1.5; }
-        .result.ok { display: block; background: #ecfdf5; border: 1px solid #6ee7b7; color: #065f46; }
-        .result.err { display: block; background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; }
+        .result.ok { display: block; background: #ecfdf5; border: 1px solid #1b5e43; color: #065f46; }
+        .result.err { display: block; background: #fef2f2; border: 1px solid #a3302a; color: #991b1b; }
         .note { color: #6b655b; font-size: 0.8rem; line-height: 1.55; margin-top: 0.7rem; }
-        .note a { color: #2563eb; }
-        .gate { background: #fffbeb; border: 1px solid #fde68a; color: #92400e;
+        .note a { color: #1b4d8f; }
+        .gate { background: #fffbeb; border: 1px solid #8a5a12; color: #92400e;
             border-radius: 10px; padding: 0.8rem 1rem; font-size: 0.86rem; line-height: 1.5; margin-bottom: 1.1rem; }
         .gate a { color: #b45309; font-weight: 700; }
     </style>
@@ -82,8 +82,8 @@
             The trip planner draws a sightseeing loop. This is for the other kind — the walk you
             know by heart, where the point is what you say at each stop. Write it out yourself:
             your stops, your timings, your price. Travellers browse it on the
-            <a href="/trips" style="color:#2563eb">trips page</a>.
-            Guiding is part of the <a href="/agent" style="color:#2563eb">agent programme</a> — one code
+            <a href="/trips" style="color:#1b4d8f">trips page</a>.
+            Guiding is part of the <a href="/agent" style="color:#1b4d8f">agent programme</a> — one code
             refers rides and sells trips.
         </p>
 

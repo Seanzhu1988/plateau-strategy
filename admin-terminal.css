@@ -1,53 +1,62 @@
 /* ============================================================
-   Admin "Terminal" theme — shared dark-navy dashboard styling.
-   Link this in any owner/admin page to match the trading dashboard:
+   Admin "Terminal" theme — shared owner-dashboard styling.
+   Link this in any owner/admin page:
        <link rel="stylesheet" href="/admin-terminal.css">
-   Palette:  bg #0d1526 · panel #121f38 · card #182845 · border #26395c
-             text #dfe8f7 · dim #94a6c6 · muted #5d7195 · accent #4da6ff
-   Green/red are reserved for money & status; blue is the one accent.
+
+   This was a dark-navy dashboard, and it is paper now like the rest of the
+   site. Not a cosmetic change: paper.css had already turned these pages to
+   paper, but every rule in this file carries !important and kept its dark
+   TEXT colours — so pale blue-grey landed on cream at 2.3:1 and the
+   archive's own description became barely readable.
+
+   Palette:  paper #faf8f4 · panel #f5f1e8 · card #fff · border #e6e2da
+             ink #14110c · text #4a453d · muted #6b655b · accent #1b4d8f
+   Green, amber and red stay reserved for money and status — darkened so
+   they read as ink on paper instead of glowing on navy.
    ============================================================ */
 
-body { background: #0d1526 !important; color: #dfe8f7 !important; }
-h1 { color: #f8fafc !important; }
-h2, h3 { color: #dfe8f7 !important; }
-.sub, .note, .empty, .count, .l { color: #94a6c6 !important; }
+body { background: #faf8f4 !important; color: #14110c !important; }
+h1 { color: #14110c !important; }
+h2, h3 { color: #14110c !important; }
+.sub, .note, .empty, .count, .l { color: #4a453d !important; }
 
 /* panels / tiles / cards */
-.card, .tile, .p-card, .board { background: #121f38 !important; border-color: #26395c !important; }
-.tile:hover { border-color: #4da6ff !important; box-shadow: 0 8px 24px rgba(0,0,0,.45) !important; }
-.tile .lbl { color: #dfe8f7 !important; }
-.tile .n { color: #4da6ff !important; }
-.tile .d, .tile .last { color: #94a6c6 !important; }
-.tile.green .n { color: #4ade80 !important; }
-.tile.amber .n { color: #fbbf24 !important; }
-.tile.red .n { color: #f87171 !important; }
-.tile.hot { background: #14251f !important; border-color: #2f6f5a !important; }
-.tile.hot .n { color: #4ade80 !important; }
+.card, .tile, .p-card, .board { background: #fff !important; border-color: #e6e2da !important; }
+.tile:hover { border-color: #1b4d8f !important; box-shadow: 0 2px 10px rgba(20,17,12,.08) !important; }
+.tile .lbl { color: #4a453d !important; }
+.tile .n { color: #1b4d8f !important; }
+.tile .d, .tile .last { color: #6b655b !important; }
+.tile.green .n { color: #1b5e43 !important; }
+.tile.amber .n { color: #8a5a12 !important; }
+.tile.red .n { color: #a3302a !important; }
+.tile.hot { background: #f1f7f4 !important; border-color: #b9d4c7 !important; }
+.tile.hot .n { color: #1b5e43 !important; }
 
 /* tables */
-table th { color: #7d9bd6 !important; background: #121f38 !important; border-bottom-color: #26395c !important; }
-table td { color: #dfe8f7 !important; border-bottom-color: #26395c !important; }
-td.amt { color: #dfe8f7 !important; }
-td a, .back { color: #4da6ff !important; }
+table th { color: #14110c !important; background: #f5f1e8 !important; border-bottom-color: #e6e2da !important; }
+table td { color: #14110c !important; border-bottom-color: #efece4 !important; }
+td.amt { color: #14110c !important; }
+td a, .back { color: #1b4d8f !important; }
 
 /* inputs */
-input, select, textarea { background: #1c2e4f !important; border-color: #26395c !important; color: #dfe8f7 !important; }
-input::placeholder, textarea::placeholder { color: #5d7195 !important; }
+input, select, textarea { background: #fff !important; border-color: #e6e2da !important; color: #14110c !important; }
+input::placeholder, textarea::placeholder { color: #8a8377 !important; }
 
 /* buttons */
-.btn.blue { background: linear-gradient(135deg,#3b82f6,#2563eb) !important; }
-.btn.dark { background: #1c2e4f !important; border: 1px solid #3a4f7a !important; color: #dfe8f7 !important; }
+.btn.blue { background: #14110c !important; background-image: none !important; color: #fff !important; }
+.btn.dark { background: #fff !important; border: 1px solid #ddd8cd !important; color: #14110c !important; }
 
-/* badges */
-.badge { background: #24324a !important; color: #cbd5e1 !important; }
-.badge.PAID, .badge.COMPLETED { background: #14532d !important; color: #86efac !important; }
-.badge.UNPAID, .badge.PUBLISHED, .badge.SCHEDULED, .badge.PARTIALLY_PAID, .badge.NEW, .badge.QUOTE { background: #78350f !important; color: #fcd34d !important; }
-.badge.ASSIGNED { background: #1e3a8a !important; color: #93c5fd !important; }
-.badge.CANCELED { background: #7f1d1d !important; color: #fecaca !important; }
-.badge.SIMULATED, .badge.UNKNOWN { background: #24324a !important; color: #94a6c6 !important; }
+/* badges — tinted paper with dark ink. Each keeps its own hue so a status
+   is still findable at a glance, but the text carries the meaning. */
+.badge { background: #f0ede5 !important; color: #4a453d !important; }
+.badge.PAID, .badge.COMPLETED { background: #e8f2ec !important; color: #14513a !important; }
+.badge.UNPAID, .badge.PUBLISHED, .badge.SCHEDULED, .badge.PARTIALLY_PAID, .badge.NEW, .badge.QUOTE { background: #f7efe0 !important; color: #7a4e0f !important; }
+.badge.ASSIGNED { background: #e8eef6 !important; color: #17436f !important; }
+.badge.CANCELED { background: #f7e9e8 !important; color: #8f2822 !important; }
+.badge.SIMULATED, .badge.UNKNOWN { background: #f0ede5 !important; color: #6b655b !important; }
 
 /* callout notes (marketing list / tax help) — money-green */
-.mkt-note { background: #10261f !important; border-color: #2f6f5a !important; color: #86efac !important; }
-.mkt-note b { color: #d1fae5 !important; }
-.qb { background: #10261f !important; border-color: #2f6f5a !important; color: #a7f3d0 !important; }
-.qb b { color: #d1fae5 !important; }
+.mkt-note { background: #eef5f1 !important; border-color: #b9d4c7 !important; color: #14513a !important; }
+.mkt-note b { color: #0f3c2b !important; }
+.qb { background: #eef5f1 !important; border-color: #b9d4c7 !important; color: #14513a !important; }
+.qb b { color: #0f3c2b !important; }

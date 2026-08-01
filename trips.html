@@ -6,7 +6,7 @@
     <title>Guided Trips — in-depth walks from local guides</title>
     <meta name="description" content="In-depth trips written by the guides who run them — campus walks, food routes, history deep dives. See every stop and how long you spend there before you book.">
     <link rel="canonical" href="https://plateaustrategy.io/trips">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#14110c">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Plateau Strategy Solution Lab">
     <meta property="og:url" content="https://plateaustrategy.io/trips">
@@ -18,55 +18,55 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f1f5f9; color: #1f2937; min-height: 100vh; }
-        header { background: linear-gradient(135deg,#0f172a,#1e3a8a); color: #fff; padding: 1rem 1.6rem;
+            background: #faf8f4; color: #14110c; min-height: 100vh; }
+        header { background: linear-gradient(135deg,#14110c,#14110c); color: #fff; padding: 1rem 1.6rem;
             display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
         header img { height: 40px; width: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
         header .brand { font-weight: 800; font-size: 1.05rem; }
         header .right { margin-left: auto; display: flex; gap: 1.1rem; }
         header a { color: #6b655b; text-decoration: none; font-weight: 600; font-size: 0.88rem; }
         .wrap { max-width: 940px; margin: 1.8rem auto 4rem; padding: 0 1.1rem; }
-        .page-title { font-size: 1.7rem; font-weight: 800; color: #0f172a; }
+        .page-title { font-size: 1.7rem; font-weight: 800; color: #14110c; }
         .sub { color: #6b655b; margin: 0.35rem 0 1.4rem; line-height: 1.55; font-size: 0.94rem; }
-        .sub a { color: #2563eb; }
+        .sub a { color: #1b4d8f; }
         .filters { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
-        .chip { background: #fff; border: 1px solid #cbd5e1; border-radius: 999px; padding: 0.4rem 0.85rem;
-            font-size: 0.83rem; cursor: pointer; color: #334155; font-weight: 600; }
-        .chip.on { background: #1e3a8a; border-color: #1e3a8a; color: #fff; }
-        .trip { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.25rem 1.35rem; margin-bottom: 1rem; }
-        .trip h2 { font-size: 1.12rem; color: #0f172a; margin-bottom: 0.3rem; line-height: 1.35; }
+        .chip { background: #fff; border: 1px solid #ddd8cd; border-radius: 999px; padding: 0.4rem 0.85rem;
+            font-size: 0.83rem; cursor: pointer; color: #4a453d; font-weight: 600; }
+        .chip.on { background: #14110c; border-color: #14110c; color: #fff; }
+        .trip { background: #fff; border: 1px solid #e6e2da; border-radius: 14px; padding: 1.25rem 1.35rem; margin-bottom: 1rem; }
+        .trip h2 { font-size: 1.12rem; color: #14110c; margin-bottom: 0.3rem; line-height: 1.35; }
         .meta { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 0.7rem; }
         .tag { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase;
             background: #eef2ff; color: #3730a3; border-radius: 999px; padding: 0.2rem 0.6rem; }
         .tag.city { background: #ecfeff; color: #155e75; }
-        .tag.time { background: #f1f5f9; color: #475569; }
+        .tag.time { background: #faf8f4; color: #4a453d; }
         .tag.price { background: #ecfdf5; color: #065f46; }
-        .summary { color: #475569; font-size: 0.9rem; line-height: 1.6; margin-bottom: 0.85rem; }
+        .summary { color: #4a453d; font-size: 0.9rem; line-height: 1.6; margin-bottom: 0.85rem; }
         .by { color: #6b655b; font-size: 0.82rem; margin-bottom: 0.85rem; }
-        .stops { border-top: 1px solid #f1f5f9; padding-top: 0.8rem; margin-bottom: 0.9rem; display: none; }
+        .stops { border-top: 1px solid #faf8f4; padding-top: 0.8rem; margin-bottom: 0.9rem; display: none; }
         .stops.open { display: block; }
         .st { display: flex; gap: 0.65rem; padding: 0.45rem 0; align-items: flex-start; }
-        .st .n { width: 22px; height: 22px; border-radius: 50%; background: #1e3a8a; color: #fff; flex-shrink: 0;
+        .st .n { width: 22px; height: 22px; border-radius: 50%; background: #14110c; color: #fff; flex-shrink: 0;
             display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 800; }
-        .st .t { flex: 1; font-size: 0.88rem; color: #0f172a; }
+        .st .t { flex: 1; font-size: 0.88rem; color: #14110c; }
         .st .t small { display: block; color: #6b655b; font-size: 0.8rem; line-height: 1.45; margin-top: 0.1rem; }
         .st .m { color: #6b655b; font-size: 0.8rem; white-space: nowrap; }
-        .practical { background: #f8fafc; border-radius: 9px; padding: 0.7rem 0.9rem; font-size: 0.84rem;
-            color: #475569; line-height: 1.6; margin-bottom: 0.9rem; }
+        .practical { background: #faf8f4; border-radius: 9px; padding: 0.7rem 0.9rem; font-size: 0.84rem;
+            color: #4a453d; line-height: 1.6; margin-bottom: 0.9rem; }
         .acts { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
         .btn { padding: 0.6rem 1.05rem; border: none; border-radius: 9px; font-weight: 700;
             font-size: 0.86rem; cursor: pointer; font-family: inherit; }
-        .btn.blue { background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; }
-        .btn.ghost { background: #fff; border: 1px solid #cbd5e1; color: #334155; }
+        .btn.blue { background: linear-gradient(135deg,#1b4d8f,#1b4d8f); color: #fff; }
+        .btn.ghost { background: #fff; border: 1px solid #ddd8cd; color: #4a453d; }
         .asked { color: #0f766e; font-size: 0.8rem; font-weight: 700; }
-        .empty { background: #fff; border: 1px dashed #cbd5e1; border-radius: 14px; padding: 2.2rem 1.4rem;
+        .empty { background: #fff; border: 1px dashed #ddd8cd; border-radius: 14px; padding: 2.2rem 1.4rem;
             text-align: center; color: #6b655b; line-height: 1.65; }
-        .empty a { color: #2563eb; font-weight: 700; }
-        .form { border-top: 1px solid #f1f5f9; margin-top: 0.9rem; padding-top: 0.9rem; display: none; }
+        .empty a { color: #1b4d8f; font-weight: 700; }
+        .form { border-top: 1px solid #faf8f4; margin-top: 0.9rem; padding-top: 0.9rem; display: none; }
         .form.open { display: block; }
         .form .row { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
         .form input, .form textarea { flex: 1; min-width: 150px; padding: 0.58rem 0.75rem;
-            border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; font-family: inherit; }
+            border: 1px solid #ddd8cd; border-radius: 8px; font-size: 0.88rem; font-family: inherit; }
         .form textarea { width: 100%; min-height: 62px; resize: vertical; }
         .msg { font-size: 0.85rem; margin-top: 0.6rem; line-height: 1.5; }
         .msg.ok { color: #065f46; } .msg.err { color: #b91c1c; }
@@ -198,7 +198,7 @@
         if (location.hash) {
             const el = document.getElementById(location.hash.slice(1));
             if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                      el.style.borderColor = '#2563eb'; }
+                      el.style.borderColor = '#1b4d8f'; }
         }
     }
 

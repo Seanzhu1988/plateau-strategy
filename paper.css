@@ -208,7 +208,7 @@
       }
       .psx-stage-live{color:#1b5e43;border-color:rgba(27,94,67,.34);background:rgba(27,94,67,.06);}
       .psx-stage-dev{color:#8a5a12;border-color:rgba(138,90,18,.34);background:rgba(138,90,18,.06);}
-      .psx-stage-research{color:var(--psx-muted);border-color:var(--psx-border);background:rgba(20,17,12,.03);}
+      .psx-stage-research{color:var(--psx-text2);border-color:var(--psx-border);background:rgba(20,17,12,.03);}
       .psx-card-link{
         display:inline-block;margin-top:1rem;
         color:var(--psx-blue) !important;text-decoration:none;

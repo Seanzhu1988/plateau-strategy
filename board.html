@@ -8,36 +8,36 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f1f5f9; color: #1f2937; min-height: 100vh; }
-        header { background: linear-gradient(135deg,#0f172a,#1e3a8a); color: #fff; padding: 1rem 2rem;
+            background: #faf8f4; color: #14110c; min-height: 100vh; }
+        header { background: linear-gradient(135deg,#14110c,#14110c); color: #fff; padding: 1rem 2rem;
             display: flex; align-items: center; gap: 0.7rem; }
         header img { height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
         header .brand { font-weight: 800; font-size: 1.2rem; }
         header .links { margin-left: auto; display: flex; gap: 1.3rem; }
-        header a { color: #cbd5e1; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+        header a { color: #ddd8cd; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
         .wrap { max-width: 1080px; margin: 2rem auto; padding: 0 1.2rem; }
-        h1 { font-size: 1.7rem; color: #0f172a; font-weight: 800; }
+        h1 { font-size: 1.7rem; color: #14110c; font-weight: 800; }
         .sub { color: #6b655b; margin: 0.2rem 0 1.6rem; }
-        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.4rem; margin-top: 1.2rem; }
-        h2 { font-size: 1.2rem; color: #0f172a; margin-bottom: 0.9rem; }
+        .card { background: #fff; border: 1px solid #e6e2da; border-radius: 14px; padding: 1.4rem; margin-top: 1.2rem; }
+        h2 { font-size: 1.2rem; color: #14110c; margin-bottom: 0.9rem; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { text-align: left; padding: 0.55rem 0.6rem; font-size: 0.86rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-        th { color: #94a3b8; font-weight: 700; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px; }
-        td a { color: #2563eb; }
+        th, td { text-align: left; padding: 0.55rem 0.6rem; font-size: 0.86rem; border-bottom: 1px solid #faf8f4; vertical-align: middle; }
+        th { color: #8a8377; font-weight: 700; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        td a { color: #1b4d8f; }
         .addrow { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; margin-top: 1rem; }
-        .addrow input, .addrow select { flex: 1; min-width: 140px; padding: 0.6rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; }
+        .addrow input, .addrow select { flex: 1; min-width: 140px; padding: 0.6rem 0.8rem; border: 1px solid #ddd8cd; border-radius: 8px; font-size: 0.88rem; }
         .btn { padding: 0.62rem 1.1rem; border: none; border-radius: 9px; font-weight: 700; font-size: 0.86rem; cursor: pointer; text-decoration: none; display: inline-block; white-space: nowrap; }
-        .btn.blue { background: linear-gradient(135deg,#3b82f6,#2563eb); color: #fff; }
+        .btn.blue { background: linear-gradient(135deg,#1b4d8f,#1b4d8f); color: #fff; }
         .btn.mini { padding: 0.3rem 0.6rem; font-size: 0.74rem; background: #ef4444; color: #fff; }
         .badge { font-size: 0.66rem; font-weight: 800; padding: 0.16rem 0.55rem; border-radius: 999px; background: #e0e7ff; color: #3730a3; }
-        .empty { color: #94a3b8; text-align: center; padding: 1.4rem; }
-        .note { color: #94a3b8; font-size: 0.8rem; margin-top: 1.2rem; line-height: 1.5; }
+        .empty { color: #8a8377; text-align: center; padding: 1.4rem; }
+        .note { color: #8a8377; font-size: 0.8rem; margin-top: 1.2rem; line-height: 1.5; }
         .result { margin-top: 0.9rem; padding: 0.8rem 1rem; border-radius: 8px; display: none; font-size: 0.86rem; }
-        .result.ok { display: block; background: #052e16; border: 1px solid #166534; color: #86efac; }
-        .result.err { display: block; background: #450a0a; border: 1px solid #991b1b; color: #fca5a5; }
-        .doc-item { display: flex; align-items: center; gap: 0.7rem; padding: 0.7rem 0; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; }
+        .result.ok { display: block; background: #052e16; border: 1px solid #166534; color: #1b5e43; }
+        .result.err { display: block; background: #450a0a; border: 1px solid #991b1b; color: #a3302a; }
+        .doc-item { display: flex; align-items: center; gap: 0.7rem; padding: 0.7rem 0; border-bottom: 1px solid #faf8f4; flex-wrap: wrap; }
         .doc-item .meta { flex: 1; min-width: 220px; }
-        .doc-item .t { font-weight: 700; color: #0f172a; font-size: 0.92rem; }
+        .doc-item .t { font-weight: 700; color: #14110c; font-size: 0.92rem; }
         .doc-item .d { color: #6b655b; font-size: 0.78rem; margin-top: 0.1rem; }
         .lock { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 0.9rem 1.1rem; font-size: 0.85rem; color: #065f46; margin-bottom: 1rem; line-height: 1.5; }
     </style>
@@ -121,14 +121,14 @@
                 '<p class="sub" style="text-align:center; margin-bottom:1.4rem;">' +
                 'The governance vault holds the bylaws, agreements and contracts.</p>' +
                 '<input id="bd_name" placeholder="Your name" autocomplete="name" ' +
-                'style="width:100%; padding:0.75rem 0.9rem; border:1px solid #cbd5e1; border-radius:9px; font-size:0.95rem; margin-bottom:0.7rem;">' +
+                'style="width:100%; padding:0.75rem 0.9rem; border:1px solid #ddd8cd; border-radius:9px; font-size:0.95rem; margin-bottom:0.7rem;">' +
                 '<input id="bd_pw" type="password" placeholder="Board password" autocomplete="current-password" ' +
-                'style="width:100%; padding:0.75rem 0.9rem; border:1px solid #cbd5e1; border-radius:9px; font-size:0.95rem;">' +
+                'style="width:100%; padding:0.75rem 0.9rem; border:1px solid #ddd8cd; border-radius:9px; font-size:0.95rem;">' +
                 '<button class="btn blue" id="bd_go" style="width:100%; margin-top:1rem;">Enter</button>' +
                 '<div id="bd_msg" style="margin-top:0.8rem; font-size:0.85rem; color:#b91c1c; text-align:center;">' +
                 (msg ? esc(msg) : '') + '</div>' +
                 '<p class="note" style="text-align:center; margin-top:1rem;">Owner? ' +
-                '<a href="/dispatch" style="color:#93c5fd;">Sign in through Dispatch</a>.</p></div>';
+                '<a href="/dispatch" style="color:#1b4d8f;">Sign in through Dispatch</a>.</p></div>';
             const go = document.getElementById('bd_go');
             const submit = async () => {
                 const name = val('bd_name'), pw = val('bd_pw');

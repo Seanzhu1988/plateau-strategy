@@ -9,22 +9,22 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --bg: #faf8f4; --panel: #ffffff; --line: rgba(20,17,12,.14);
-            --text: #14110c; --head: #f8fafc; --muted: #4a453d; --muted2: #6b655b;
+            --text: #14110c; --head: #faf8f4; --muted: #4a453d; --muted2: #6b655b;
             --accent: #1b4d8f; --accent2: #1b4d8f;
             --serif: Georgia, 'Times New Roman', serif;
             --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
         }
         body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
 
-        header { background: linear-gradient(135deg, #faf8f4 0%, #1e3a8a 100%); color: #fff; padding: 1rem 2rem;
+        header { background: linear-gradient(135deg, #faf8f4 0%, #14110c 100%); color: #fff; padding: 1rem 2rem;
             display: flex; align-items: center; gap: 0.85rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); position: sticky; top: 0; z-index: 10; }
         header img { height: 38px; width: 38px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.18); }
         header .brand { font-family: var(--serif); font-weight: 700; font-size: 1.25rem; letter-spacing: 0.3px; }
         header .right { margin-left: auto; display: flex; align-items: center; gap: 1.3rem; font-size: 0.9rem; }
         header a { color: #4a453d; text-decoration: none; font-weight: 600; }
         header a:hover { color: #fff; }
-        .who { color: #93c5fd; font-weight: 600; }
-        .linkbtn { background: none; border: none; color: #f87171; cursor: pointer; font: inherit; font-weight: 600; }
+        .who { color: #1b4d8f; font-weight: 600; }
+        .linkbtn { background: none; border: none; color: #a3302a; cursor: pointer; font: inherit; font-weight: 600; }
         .linkbtn:hover { color: #a4161a; }
 
         .wrap { max-width: 1040px; margin: 2rem auto; padding: 0 1.3rem; }
@@ -45,29 +45,29 @@
         /* Reservation card */
         .res { padding: 1.3rem 1.4rem; border-left: 3px solid #f59e0b; }
         .res.ASSIGNED { border-left-color: var(--accent); }
-        .res.COMPLETED { border-left-color: #22c55e; opacity: 0.85; }
+        .res.COMPLETED { border-left-color: #1b5e43; opacity: 0.85; }
         .res.CANCELED { border-left-color: #ef4444; opacity: 0.6; }
         .res .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; }
         .res .id { font-size: 0.72rem; letter-spacing: 0.5px; color: var(--muted2); font-weight: 700; }
         .badge { font-size: 0.65rem; font-weight: 700; padding: 0.24rem 0.7rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.8px; }
         .badge.NEW { background: #fdf3e3; color: #a4161a; }
-        .badge.ASSIGNED { background: #1e3a8a; color: #93c5fd; }
+        .badge.ASSIGNED { background: #14110c; color: #1b4d8f; }
         .badge.COMPLETED { background: #1b6b5a; color: #1b6b5a; }
-        .badge.CANCELED { background: #a4161a; color: #fecaca; }
+        .badge.CANCELED { background: #a4161a; color: #a3302a; }
         .route { font-size: 1.02rem; font-weight: 700; color: #14110c; margin-bottom: 0.55rem; }
         .route .arrow { color: #1b4d8f; margin: 0 0.4rem; }
         .meta { font-size: 0.85rem; color: var(--muted); margin: 0.22rem 0; }
         .meta b { color: #4a453d; font-weight: 600; }
-        .agent-tag { display: inline-block; font-size: 0.7rem; background: #312e81; color: #c7d2fe;
+        .agent-tag { display: inline-block; font-size: 0.7rem; background: #312e81; color: #4a453d;
             padding: 0.18rem 0.55rem; border-radius: 4px; margin-top: 0.35rem; }
         .fare { font-family: var(--serif); font-size: 1.25rem; font-weight: 700; color: #1b6b5a; margin: 0.6rem 0; }
         .res button { width: 100%; margin-top: 0.6rem; padding: 0.7rem; border: none; border-radius: 6px;
             font-weight: 700; font-size: 0.86rem; cursor: pointer; font-family: var(--sans); }
-        .pick { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
+        .pick { background: linear-gradient(135deg, #1b5e43, #16a34a); color: #fff; }
         .pick:hover { filter: brightness(1.08); }
         .done { background: rgba(20,17,12,.14); color: #4a453d; }
         .done:hover { background: #6b655b; }
-        .giveup { background: transparent; color: #f87171; border: 1px solid #a4161a !important; }
+        .giveup { background: transparent; color: #a3302a; border: 1px solid #a4161a !important; }
         .giveup:hover { background: rgba(127,29,29,0.25); }
         .giveup:disabled { opacity: 0.55; cursor: not-allowed; }
 
@@ -100,7 +100,7 @@
         .taken-overlay.open, .sig-overlay.open { display: flex; }
         .taken-box { background: #ffffff; border: 1px solid #6b655b; border-top: 3px solid #1b4d8f; border-radius: 10px;
             padding: 2rem; max-width: 410px; width: 100%; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.6); }
-        .taken-box .big { font-family: var(--serif); font-size: 2.3rem; line-height: 1; margin-bottom: 0.6rem; color: #93c5fd; }
+        .taken-box .big { font-family: var(--serif); font-size: 2.3rem; line-height: 1; margin-bottom: 0.6rem; color: #1b4d8f; }
         .taken-box h3 { font-family: var(--serif); color: #fff; font-size: 1.25rem; margin-bottom: 0.5rem; }
         .taken-box p { color: var(--muted); font-size: 0.92rem; line-height: 1.55; margin-bottom: 1.4rem; }
         .taken-box button { width: 100%; padding: 0.85rem; border: none; border-radius: 6px;
@@ -113,7 +113,7 @@
         .banner.show { display: flex; }
         .banner .b-text { flex: 1; min-width: 220px; }
         .banner .b-text b { color: #a4161a; display: block; font-size: 0.98rem; font-family: var(--serif); }
-        .banner .b-text span { color: #fde68a; font-size: 0.85rem; }
+        .banner .b-text span { color: #8a5a12; font-size: 0.85rem; }
         .banner button { background: linear-gradient(135deg,#1b4d8f,#1b4d8f); color: #fff; border: none;
             border-radius: 6px; padding: 0.7rem 1.4rem; font-weight: 700; font-size: 0.88rem; cursor: pointer; }
         .banner button:hover { filter: brightness(1.08); }
@@ -140,7 +140,7 @@
         .contract-text { background: #faf8f4; border: 1px solid rgba(20,17,12,.14); border-radius: 6px; padding: 1.1rem 1.2rem;
             max-height: 240px; overflow-y: auto; white-space: pre-wrap; color: #4a453d; font-family: var(--serif);
             font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.2rem; }
-        .contract-text .fill { color: #93c5fd; font-weight: 600; padding: 0 3px;
+        .contract-text .fill { color: #1b4d8f; font-weight: 600; padding: 0 3px;
             border-bottom: 1px solid rgba(147,197,253,.55); border-radius: 2px; background: rgba(59,130,246,.08); }
         .sig-pad-wrap { position: relative; }
         .sig-pad { width: 100%; height: 160px; background: #fff; border: 1px solid #6b655b; border-radius: 6px;
@@ -148,13 +148,13 @@
         .sig-hint { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%);
             text-align: center; color: #4a453d; font-size: 0.85rem; pointer-events: none; }
         .sig-row { display: flex; justify-content: space-between; align-items: center; margin: 0.4rem 0 1rem; }
-        .sig-row .clear { background: none; border: none; color: #f87171; cursor: pointer; font-weight: 600; font-size: 0.82rem; }
+        .sig-row .clear { background: none; border: none; color: #a3302a; cursor: pointer; font-weight: 600; font-size: 0.82rem; }
         .chk { display: flex; align-items: flex-start; gap: 0.6rem; margin: 0.6rem 0 1.2rem; color: #4a453d; font-size: 0.9rem; }
         .chk input { width: auto; margin-top: 0.2rem; }
         .sig-actions { display: flex; gap: 0.8rem; }
         .sig-actions button { flex: 1; padding: 0.85rem; border-radius: 6px; border: none; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
         .sig-actions .cancel { background: rgba(20,17,12,.14); color: #4a453d; }
-        .sig-actions .submit { background: linear-gradient(135deg,#22c55e,#16a34a); color: #fff; }
+        .sig-actions .submit { background: linear-gradient(135deg,#1b5e43,#16a34a); color: #fff; }
         .sig-actions .submit:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* Dashboard shell: left sidebar nav + content */
@@ -166,7 +166,7 @@
             font-family: var(--sans); font-size: 0.92rem; font-weight: 600; padding: 0.72rem 0.9rem; border-radius: 7px;
             cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; width: 100%; }
         .navitem:hover { background: rgba(255,255,255,0.05); color: #fff; }
-        .navitem.active { background: linear-gradient(135deg,#1e3a8a,#1b4d8f); color: #fff; }
+        .navitem.active { background: linear-gradient(135deg,#14110c,#1b4d8f); color: #fff; }
         .navitem .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; display: none; flex: 0 0 auto; }
         .navitem.alert .nav-dot { display: inline-block; }
         .content { flex: 1; min-width: 0; }
@@ -183,10 +183,10 @@
 
         /* Rent-to-own payments (Square) */
         .rto-hero { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 1.5rem 1.6rem; margin-bottom: 1.1rem; }
-        .rto-big { font-family: var(--serif); font-size: 1.9rem; font-weight: 700; color: #f8fafc; }
+        .rto-big { font-family: var(--serif); font-size: 1.9rem; font-weight: 700; color: #faf8f4; }
         .rto-big small { font-size: 1rem; color: var(--muted); font-weight: 400; }
         .rto-bar { height: 12px; background: #faf8f4; border: 1px solid rgba(20,17,12,.14); border-radius: 999px; overflow: hidden; margin: 0.9rem 0 0.4rem; }
-        .rto-bar > i { display: block; height: 100%; background: linear-gradient(90deg,#22c55e,#16a34a); }
+        .rto-bar > i { display: block; height: 100%; background: linear-gradient(90deg,#1b5e43,#16a34a); }
         .rto-barnote { color: var(--muted); font-size: 0.8rem; }
         .rto-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.2rem; }
         .rto-stat { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 1.1rem 1.2rem; }
@@ -220,16 +220,16 @@
             <h1>Driver Portal</h1>
             <p class="sub">For drivers operating vehicles with Plateau Strategy Solution Lab. Register your vehicle to view and claim client reservations.</p>
 
-            <label>Renting VIN <span style="color:#f87171">*</span></label>
+            <label>Renting VIN <span style="color:#a3302a">*</span></label>
             <input id="li_vin" placeholder="5YJ3E1EA7PF000000">
-            <label>Birthday <span style="color:#f87171">*</span> <span style="color:#4a453d;font-weight:400;text-transform:none;letter-spacing:0;">DDMMYYYY — your login pass</span></label>
+            <label>Birthday <span style="color:#a3302a">*</span> <span style="color:#4a453d;font-weight:400;text-transform:none;letter-spacing:0;">DDMMYYYY — your login pass</span></label>
             <input id="li_dob" inputmode="numeric" placeholder="07031990" maxlength="10" onkeydown="if(event.key==='Enter')loginExisting()">
             <button class="primary" onclick="loginExisting()">Sign in</button>
             <div id="li_msg" style="margin-top:0.8rem;font-size:0.85rem;color:#a4161a;"></div>
 
             <div class="divider">or register a new vehicle</div>
 
-            <label>Your name <span style="color:#f87171">*</span></label>
+            <label>Your name <span style="color:#a3302a">*</span></label>
             <input id="r_name" placeholder="Carlos Diaz">
             <div class="row">
                 <div><label>Email</label><input id="r_email" type="email" placeholder="carlos@email.com"></div>
@@ -244,9 +244,9 @@
                 <div><label>Color</label><input id="r_color" placeholder="White"></div>
                 <div><label>Plate</label><input id="r_plate" placeholder="8ABC123"></div>
             </div>
-            <label>Vehicle VIN <span style="color:#f87171">*</span> <span style="color:#4a453d;font-weight:400;text-transform:none;letter-spacing:0;">(used to sign in)</span></label>
+            <label>Vehicle VIN <span style="color:#a3302a">*</span> <span style="color:#4a453d;font-weight:400;text-transform:none;letter-spacing:0;">(used to sign in)</span></label>
             <input id="r_vin" placeholder="5YJ3E1EA7PF000000">
-            <label>Birthday <span style="color:#f87171">*</span> <span style="color:#4a453d;font-weight:400;text-transform:none;letter-spacing:0;">DDMMYYYY — this becomes your login pass</span></label>
+            <label>Birthday <span style="color:#a3302a">*</span> <span style="color:#4a453d;font-weight:400;text-transform:none;letter-spacing:0;">DDMMYYYY — this becomes your login pass</span></label>
             <input id="r_dob" inputmode="numeric" placeholder="07031990" maxlength="10">
             <button class="primary" onclick="register()">Register &amp; Enter Portal</button>
         </div>
@@ -309,7 +309,7 @@
                             <div style="margin-top:0.4rem;">Normally about $15 of a $75 fare goes to a separate referring agent — but since you referred and drove it, that stays with you. You keep the full fare.</div>
                             <div style="margin-top:0.55rem; color:#1b6b5a; font-size:0.78rem;">Tax note: the full fare is your income (referral + trip) and is reportable on your 1099. The customer is charged once.</div>
                         </div>
-                        <label>Customer name <span style="color:#f87171">*</span></label>
+                        <label>Customer name <span style="color:#a3302a">*</span></label>
                         <input id="rf_name" placeholder="Airport customer">
                         <div class="row">
                             <div><label>Customer email</label><input id="rf_email" type="email" placeholder="customer@email.com"></div>
@@ -345,7 +345,7 @@
                         <input id="ins_provider" placeholder="e.g. GEICO, State Farm">
                         <div class="row">
                             <div><label>Policy number</label><input id="ins_policy" placeholder="Policy #"></div>
-                            <div><label>Expiry date <span style="color:#f87171">*</span></label><input id="ins_expires" type="date"></div>
+                            <div><label>Expiry date <span style="color:#a3302a">*</span></label><input id="ins_expires" type="date"></div>
                         </div>
                         <label>Proof of insurance <span style="color:#4a453d;font-weight:400;text-transform:none;letter-spacing:0;">— photo or PDF</span></label>
                         <input id="ins_file" type="file" accept="image/*,application/pdf" style="padding:0.55rem 0.6rem;">
@@ -392,12 +392,12 @@
             <h3 id="sigTitle">Driver Agreement</h3>
             <div class="ver" id="sigVer"></div>
             <div class="contract-text" id="sigText"></div>
-            <a href="/media/vehicle_rental_agreement.docx" target="_blank" style="display:inline-block;margin:0.5rem 0 0.2rem;font-size:0.82rem;color:#93c5fd;text-decoration:none;">⬇ Download the official copy (Word)</a>
+            <a href="/media/vehicle_rental_agreement.docx" target="_blank" style="display:inline-block;margin:0.5rem 0 0.2rem;font-size:0.82rem;color:#1b4d8f;text-decoration:none;">⬇ Download the official copy (Word)</a>
 
-            <label>Type your full legal name <span style="color:#f87171">*</span></label>
+            <label>Type your full legal name <span style="color:#a3302a">*</span></label>
             <input id="sigName" placeholder="Xiaojun Zhu" autocomplete="off">
 
-            <label style="margin-top:0.9rem;">Draw your signature <span style="color:#f87171">*</span></label>
+            <label style="margin-top:0.9rem;">Draw your signature <span style="color:#a3302a">*</span></label>
             <div class="sig-pad-wrap">
                 <canvas class="sig-pad" id="sigPad"></canvas>
                 <div class="sig-hint" id="sigHint">Sign here with your mouse or finger</div>
@@ -540,7 +540,7 @@
         function renderInsurance() {
             const s = INSURANCE || { state: 'MISSING' };
             const ok = insOk();
-            const accent = s.state === 'VALID' ? '#22c55e' : (s.state === 'EXPIRING' ? '#f59e0b' : '#ef4444');
+            const accent = s.state === 'VALID' ? '#1b5e43' : (s.state === 'EXPIRING' ? '#f59e0b' : '#ef4444');
             let c = '<div class="car" style="max-width:620px; border-left:3px solid ' + accent + ';">';
             c += '<div style="display:flex;justify-content:space-between;align-items:center;"><b>Insurance status</b>' + insBadge(s.state) + '</div>';
             if (s.state === 'MISSING') {
@@ -624,7 +624,7 @@
             }).join('');
             if (ags.length) {
                 html += '<div style="' + hd + 'margin-top:1.3rem;">Signed Driver Agreements</div>' + ags.map(function (a) {
-                    return '<div style="background:var(--panel);border:1px solid var(--line);border-left:3px solid #22c55e;border-radius:8px;padding:.7rem 1rem;margin-bottom:.6rem;">' +
+                    return '<div style="background:var(--panel);border:1px solid var(--line);border-left:3px solid #1b5e43;border-radius:8px;padding:.7rem 1rem;margin-bottom:.6rem;">' +
                         '<b style="color:#14110c;">Driver Agreement v' + esc(a.version) + '</b>' +
                         '<div style="color:var(--muted);font-size:.8rem;margin-top:.2rem;">Signed by ' + esc(a.typed_name || '') + ' · ' + esc(fmtDate(a.signed_at)) + '</div></div>';
                 }).join('');
@@ -659,7 +659,7 @@
             const nav = document.getElementById('nav-compliance');
             if (nav) nav.classList.toggle('alert', (d.active_count || 0) > 0);
             if (d.in_good_standing) {
-                box.innerHTML = '<div class="car" style="max-width:580px;border-left:3px solid #22c55e;">' +
+                box.innerHTML = '<div class="car" style="max-width:580px;border-left:3px solid #1b5e43;">' +
                     '<div style="font-size:1.15rem;color:#1b6b5a;font-weight:700;">✓ In good standing</div>' +
                     '<div class="section-note" style="margin-top:.35rem;">No agreement, insurance, or ride-completion issues detected. Keep it up.</div></div>';
                 return;
