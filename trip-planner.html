@@ -1038,7 +1038,7 @@
                 i = places.length; places.push(np);
                 rememberPlace(np, res);
                 rebuildMarkers(); renderPlaces(); savePlaces(); fetchMatrix();
-                map.setView([+res.lat, +res.lon], Math.max(map.getZoom(), 12));
+                flyToPlace(+res.lat, +res.lon);   // fly, don't cut — the traveller has to see it move
             }
             $('destAdd').value = '';
             addToRoute(i);                                   // append to the chain (feasibility-checked)
@@ -2061,7 +2061,7 @@
                     rememberPlace(np, res);  // the site + the book remember it for everyone
                     box.style.display = 'none'; $('q').value = '';
                     rebuildMarkers(); renderPlaces(); savePlaces(); refresh(); fetchMatrix();
-                    map.setView([+res.lat, +res.lon], Math.max(map.getZoom(), 12));
+                    flyToPlace(+res.lat, +res.lon);   // fly, don't cut — the traveller has to see it move
                     say('Added ' + nm + ' — saved to the site, so it\'s here for the next visitor too.');
                 };
                 box.appendChild(d);
@@ -2125,7 +2125,7 @@
                 const cityNow = CITIES[curCity];
                 const farAway = cityNow && havKm({ lat: lat, lon: lon },
                     { lat: cityNow.center[0], lon: cityNow.center[1] }) > CITY_FAR_KM;
-                if (!farAway) map.setView([lat, lon], acc <= 60 ? 16 : 14);
+                if (!farAway) flyToPlace(lat, lon, acc <= 60 ? 16 : 14);
                 let address = '';
                 try {
                     const r = await fetch('https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1&lat=' + lat + '&lon=' + lon);
@@ -2152,7 +2152,9 @@
                     resolve(true);
                     return;
                 }
-                setOrigin(lat, lon, 'gps', { address: address, accuracy: acc, why: 'starting from your location' });
+                setOrigin(lat, lon, 'gps', { address: address, accuracy: acc,
+                                             noFly: farAway,   // already handled, or deliberately not
+                                             why: 'starting from your location' });
                 $('curLocBtn').classList.add('located');
                 setLocLabel(address ? shortAddr(address) : 'My location');
                 const weak = acc > 150;
@@ -2552,9 +2554,32 @@
     // ONE writer for the trip origin. The black pin is its view — never a second
     // truth — so drag, GPS and typed entry can no longer disagree about where the
     // day begins, and none of them destroy the plan.
+    // Every address entry ends here. An instant setView is a cut — the map is
+    // simply somewhere else and the traveller has to work out where. A short
+    // flight is the signal: they watch it travel, so they know the thing they
+    // typed is the thing now under the pin.
+    function flyToPlace(lat, lon, minZoom){
+        if (typeof map === 'undefined' || !map) return;
+        var z = Math.max(map.getZoom() || 0, minZoom || 13);
+        if (map.flyTo) map.flyTo([lat, lon], z, { duration: 0.7 });
+        else map.setView([lat, lon], z);
+    }
+
     function setOrigin(lat, lon, source, meta){
         meta = meta || {};
         startMarker.setLatLng([lat, lon]);
+        // GO THERE. A start you cannot see is a start you cannot check, and the
+        // pin landing only means something if the traveller watches it arrive.
+        // This lives here rather than at each call site because three of the
+        // five callers panned and two did not — using your own GPS location
+        // left the map wherever it happened to be. Anything that sets a start
+        // now moves the map, including whatever calls this next.
+        // Dragging is the exception: you are already looking at the spot, and
+        // yanking the view out from under a drag is disorienting.
+        // meta.noFly is how a caller keeps the view where it is. The GPS path
+        // uses it: if you are far from the city being planned, flying to your
+        // own location abandons the board you were working on.
+        if (source !== 'drag' && !meta.noFly) flyToPlace(lat, lon);
         if (source !== 'default') landStartPin();     // it visibly lands where you said
         currentLoc = { lat: lat, lon: lon, address: meta.address || '',
                        accuracy: (source === 'gps' ? meta.accuracy : null), source: source };
@@ -2645,7 +2670,6 @@
     }
     function startFromGateway(i){
         const g = gatewayChoices[i]; if (!g) return;
-        map.setView([g.lat, g.lon], 12);
         setOrigin(g.lat, g.lon, 'typed', { address: g.name, why: 'starting from ' + g.name });
         setLocInfo('Starting from ' + g.name + (g.iata ? ' (' + g.iata + ')' : '') + '.');
     }
@@ -2675,7 +2699,6 @@
             if (!j.length) j = await (await fetch(base)).json();     // then anywhere
             if (!j.length) { setLocInfo('Couldn\'t find “' + q + '” — try adding the city.', true); return; }
             const r = j[0], lat = +r.lat, lon = +r.lon;
-            map.setView([lat, lon], Math.max(map.getZoom(), 13));
             setOrigin(lat, lon, 'typed', { address: r.display_name, why: 'starting from ' + r.display_name.split(',')[0] });
             setLocLabel('Start set');
             setLocInfo('Starting from ' + r.display_name.split(',').slice(0, 3).join(','));
@@ -3169,7 +3192,6 @@
     function startFromOsm(tok){
         const o = osmPending[tok]; if (!o) return;
         map.closePopup();
-        map.setView([o.lat, o.lon], Math.max(map.getZoom(), 12));
         setOrigin(o.lat, o.lon, 'typed', { address: o.name, why: 'starting from ' + o.name });
         setLocInfo('Starting from ' + o.name + '.');
     }
