@@ -1445,3 +1445,71 @@ EXTRA.update({
         "👥 여행자 평균 체류 {stay}",
         "👥 khách thường ở lại ~{stay}"],
 })
+
+
+# ---------------------------------------------------------------------------
+# DeepL, for the two languages I could not check.
+#
+# I said plainly that the Korean and Vietnamese here were written on principle
+# and not verified — I can reason about a language's register without being
+# able to hear whether a sentence lands. Rather than leave that standing, these
+# went through DeepL and its output is what ships.
+#
+# Chinese and Spanish keep the hand-tuned versions: those were shaped against
+# the owner's own reading, twice, and DeepL's are accurate but flatter — which
+# is the exact fault ("no soul") that took two passes to fix.
+#
+# So this is not "machine translation is better". It is: use the professional
+# engine where nobody here can judge the result, and keep the human pass where
+# somebody could.
+# ---------------------------------------------------------------------------
+EXTRA.update({
+    "We build one business at a time": [
+        "一次只做好一项业务",
+        "Un negocio a la vez, hecho bien",
+        "우리는 한 번에 하나의 사업을 구축합니다.",
+        "Chúng tôi phát triển từng mảng kinh doanh một"
+    ],
+    "Transportation is the one that runs today: flat-rate Tesla rides across Seattle, cars rented to drivers who earn with them, and trip-planning tools anyone can use free. It pays for what comes next. Every other arm is listed below with the stage it is honestly at — including the ones not finished.": [
+        "眼下真正在运转的只有出行一项：西雅图全城的特斯拉固定价格接送、租给司机的车，以及一套谁都能免费用的行程规划工具。它挣来的钱，投向后面几项。下面每一项业务都写明了所处的阶段——没做完的，也一并写明。",
+        "Hoy solo hay una parte en marcha: el transporte. Traslados en Tesla con tarifa fija por todo Seattle, coches alquilados a conductores que viven de ellos, y herramientas de planificación que cualquiera usa gratis. Lo que gana paga lo que viene después. Cada una de las demás aparece abajo con la etapa en la que está de verdad — también las que no están terminadas.",
+        "현재 운영 중인 사업은 '교통' 부문입니다. 시애틀 전역에서 정액제로 운영되는 테슬라 차량, 이를 통해 수익을 창출하는 운전자들에게 대여되는 차량, 그리고 누구나 무료로 이용할 수 있는 경로 계획 도구 등이 이에 해당합니다. 이 사업에서 창출된 수익은 향후 사업을 위한 자금으로 사용됩니다. 그 외의 모든 사업 부문은 아래에 현재 단계와 함께 솔직하게 나열되어 있습니다. 아직 완성되지 않은 사업도 포함됩니다.",
+        "Mảng vận tải là mảng đang hoạt động hiện nay: dịch vụ đi xe Tesla với giá cố định trên khắp Seattle, cho thuê xe cho các tài xế để họ kiếm thu nhập từ đó, và các công cụ lập kế hoạch hành trình mà ai cũng có thể sử dụng miễn phí. Mảng này tạo ra nguồn thu để tài trợ cho những dự án tiếp theo. Tất cả các mảng kinh doanh khác được liệt kê dưới đây kèm theo giai đoạn phát triển thực tế của từng mảng — bao gồm cả những mảng chưa hoàn thiện."
+    ],
+    "Four arms, at four different stages": [
+        "四项业务，四个阶段",
+        "Cuatro áreas, cuatro etapas",
+        "네 가지 사업 분야, 네 가지 서로 다른 단계",
+        "Bốn mảng kinh doanh, ở bốn giai đoạn khác nhau"
+    ],
+    "One business pays for the next. That only means something if we say plainly which ones are earning today and which are still being built — so we do.": [
+        "一项撑起下一项。这话要站得住，就得说明白：哪几项今天在挣钱，哪几项还在建。所以我们说明白。",
+        "Un negocio sostiene al siguiente. Para que eso signifique algo hay que decir cuál gana hoy y cuál sigue en obras. Así que lo decimos.",
+        "한 사업이 다음 사업을 뒷받침합니다. 이는 현재 수익을 창출하는 사업과 아직 구축 중인 사업을 명확히 밝힐 때만 의미가 있으므로, 우리는 그렇게 합니다.",
+        "Một mảng kinh doanh tài trợ cho mảng tiếp theo. Điều này chỉ có ý nghĩa nếu chúng tôi nêu rõ mảng nào đang sinh lời ngay hôm nay và mảng nào vẫn đang được phát triển — vì vậy chúng tôi làm như vậy."
+    ],
+    "Flat-rate Tesla rides in Seattle at $75 to Sea–Tac, cars rented to drivers who keep the fare, and a commission programme for hotels and agents. This is the business that earns.": [
+        "西雅图的特斯拉接送，到机场固定 75 美元；车租给司机，车费全归他们；酒店和代理商荐客，按单拿佣金。这一项，是眼下真正在挣钱的。",
+        "Traslados en Tesla en Seattle, 75 $ fijos al aeropuerto; coches alquilados a conductores que se quedan la tarifa; hoteles y agentes cobran comisión por cada cliente. Esta es la parte que gana dinero.",
+        "시애틀에서 시애틀-타코마(Sea-Tac) 공항까지 75달러의 정액 요금으로 운행되는 테슬라 차량, 운임 전액을 가져가는 운전자에게 대여되는 차량, 그리고 호텔 및 여행사를 위한 수수료 프로그램. 이것이 수익을 창출하는 사업입니다.",
+        "Dịch vụ đi xe Tesla với giá cố định tại Seattle (75 USD đến sân bay Sea-Tac), cho thuê xe cho các tài xế được giữ toàn bộ tiền cước, và chương trình hoa hồng dành cho khách sạn và đại lý. Đây là mảng kinh doanh đang sinh lời."
+    ],
+    "Dispatch, invoicing, driver paperwork and the trip-planning tools — built in-house rather than rented, so the customer relationship and the data stay with us.": [
+        "调度、开票、司机资料、行程规划工具，都是自己写的，不是租来的。所以客户和数据，都留在自己手里。",
+        "Despacho, facturación, papeleo de conductores, herramientas de planificación: escritos por nosotros, no alquilados. Por eso el cliente y los datos se quedan aquí.",
+        "배차, 청구서 발행, 운전자 서류 처리 및 경로 계획 도구 — 외부에서 임대하는 대신 자체적으로 개발하여 고객 관계와 데이터는 우리 손에 남아 있습니다.",
+        "Hệ thống điều phối, lập hóa đơn, thủ tục giấy tờ cho tài xế và các công cụ lập kế hoạch hành trình — được phát triển nội bộ thay vì thuê ngoài, do đó mối quan hệ với khách hàng và dữ liệu vẫn thuộc về chúng tôi."
+    ],
+    "Mixed-use development, at drawing stage. Nothing built, nothing leased, nothing offered — the plans are published as they stand.": [
+        "综合开发项目，还在图纸上。没有动工，没有招租，没有对外发售——图纸是什么样，就公开什么样。",
+        "Desarrollo de uso mixto, todavía sobre el plano. Nada construido, nada arrendado, nada a la venta — los planos se publican tal cual están.",
+        "복합 용도 개발 프로젝트는 설계 단계에 있습니다. 아직 건설된 것도, 임대된 것도, 제공된 것도 없습니다 — 계획은 현재 상태 그대로 공개됩니다.",
+        "Dự án phát triển đa chức năng, đang ở giai đoạn thiết kế. Chưa có công trình nào được xây dựng, chưa có tài sản nào được cho thuê, chưa có sản phẩm nào được chào bán — các bản thiết kế được công bố theo hiện trạng."
+    ],
+    "An automated trading research project in private verification, building an audited record. Nothing is for sale and no money is accepted — you can follow the results.": [
+        "一个自动交易的研究项目，还在内部验证，正把成绩记成一本可审计的账。不卖任何东西，也不收一分钱——结果公开，您看着就是。",
+        "Un proyecto de investigación en trading automatizado, aún en verificación privada, levantando un historial auditable. No se vende nada y no se acepta dinero — los resultados están a la vista.",
+        "비공개 검증 단계에 있는 자동화된 거래 연구 프로젝트로, 감사된 기록을 구축 중입니다. 판매되는 것은 없으며 자금도 받지 않습니다 — 결과를 지켜보실 수 있습니다.",
+        "Dự án nghiên cứu giao dịch tự động đang trong giai đoạn kiểm chứng nội bộ, xây dựng hồ sơ đã được kiểm toán. Không có sản phẩm nào được bán và không nhận tiền — bạn có thể theo dõi kết quả."
+    ]
+})
