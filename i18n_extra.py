@@ -1066,3 +1066,9 @@ EXTRA.update({
     "Seattle–Tacoma International Airport (SEA)": ["西雅图-塔科马国际机场（SEA）", "Aeropuerto Internacional Seattle–Tacoma (SEA)", "시애틀–타코마 국제공항(SEA)", "Sân bay quốc tế Seattle–Tacoma (SEA)"],
 })
 EXTRA_SKIP |= {"1200 Pine St, Seattle", "e.g. AS 1234 (optional)"}
+
+# The Pollock companion's new option.
+EXTRA.update({
+    "Stay": ["留住", "Quédate", "머무르기", "Ở lại"],
+    "Let go": ["放开", "Suéltalo", "놓아주기", "Thả ra"],
+})

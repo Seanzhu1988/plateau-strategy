@@ -846,16 +846,22 @@
         ]}
     };
     // State → County → cities. Seeded from what we have; grows as travelers add cities.
+    // The district is named as every geocoder names it. It was listed as a state
+    // called "Washington DC" whose county was "District of Columbia" — the same
+    // place twice, one line apart, and sitting next to the actual state of
+    // Washington. Worse, a DC place someone searched came back from the
+    // geocoder as "District of Columbia" and opened a THIRD entry beside them.
+    // One name, so discovered places merge into it instead of multiplying.
     const GEO = {
-        'New York':      { 'New York County':        [['nyc','New York']] },
-        'Washington DC': { 'District of Columbia':   [['dc','Washington']] },
-        'Washington':    { 'King County':            [['seattle','Seattle']] },
-        'Massachusetts': { 'Suffolk County':         [['boston','Boston']] }
+        'New York':             { 'New York County':  [['nyc','New York']] },
+        'District of Columbia': { 'Washington':       [['dc','Washington']] },
+        'Washington':           { 'King County':      [['seattle','Seattle']] },
+        'Massachusetts':        { 'Suffolk County':   [['boston','Boston']] }
     };
     // city key → its place in the hierarchy, for syncing the pickers to the loaded city
     const CITY_META = {
         nyc:     { state:'New York',      county:'New York County' },
-        dc:      { state:'Washington DC', county:'District of Columbia' },
+        dc:      { state:'District of Columbia', county:'Washington' },
         seattle: { state:'Washington',    county:'King County' },
         boston:  { state:'Massachusetts', county:'Suffolk County' }
     };
@@ -1533,7 +1539,14 @@
             Object.keys(g[state]).forEach(county => {
                 const have = counties[county] || (counties[county] = []);
                 g[state][county].forEach(pair => {
-                    if (!have.some(p => p[0] === pair[0])) have.push(pair);
+                    // The built-in board calls the district's city "dc"; a place
+                    // searched there files under "washington". Same city, two
+                    // keys, and the picker listed Washington twice. Match on
+                    // what the traveller reads, not on our internal key.
+                    const label = String(pair[1] || '').trim().toLowerCase();
+                    if (have.some(p => p[0] === pair[0]
+                                    || String(p[1] || '').trim().toLowerCase() === label)) return;
+                    have.push(pair);
                     if (!CITY_META[pair[0]]) CITY_META[pair[0]] = { state: state, county: county };
                 });
             });

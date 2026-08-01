@@ -1146,11 +1146,16 @@ def api_geography():
     cities = d.get("cities", {})
     geo, seen = {}, {}
     for e in d.get("entries", []):
-        state = (e.get("state") or "").strip()
+        state = _canon_region(e.get("state"))
         city = (e.get("city") or "").strip()
         if not (state and city):
             continue
-        county = (e.get("county") or state).strip()
+        county = _canon_region(e.get("county")) or state
+        # A district that is its own county would read "District of Columbia ›
+        # District of Columbia". Name the city there instead — it is the same
+        # ground, and saying it twice helps nobody.
+        if county.lower() == state.lower():
+            county = (e.get("city_label") or city).title()
         label = (e.get("city_label") or cities.get(city) or city.title()).strip()
         counties = geo.setdefault(state, {})
         lst = counties.setdefault(county, [])
@@ -1462,6 +1467,25 @@ def _wiki_describe(name, lat, lon):
         return None, None, None
 
 
+# One place, one name. Geocoders and people spell the district several ways,
+# and each spelling would otherwise open its own entry in the pickers — the
+# duplicate everyone notices, sitting next to the actual state of Washington.
+_REGION_ALIASES = {
+    "washington dc": "District of Columbia",
+    "washington d.c.": "District of Columbia",
+    "washington, d.c.": "District of Columbia",
+    "washington, dc": "District of Columbia",
+    "d.c.": "District of Columbia",
+    "dc": "District of Columbia",
+    "district of columbia": "District of Columbia",
+}
+
+
+def _canon_region(name):
+    n = " ".join(str(name or "").strip().split())
+    return _REGION_ALIASES.get(n.lower(), n)
+
+
 def _derive_region(meta):
     """The state and county a discovered place sits in, from the geocoder.
 
@@ -1475,6 +1499,7 @@ def _derive_region(meta):
     county = (addr.get("county") or addr.get("district")
               or addr.get("state_district") or "").strip()
     country = (addr.get("country") or "").strip()
+    state, county = _canon_region(state), _canon_region(county)
     # Outside the US a "state" is often absent; the country is the honest
     # top level there, and saying so beats filing it under nothing.
     if not state and country:
