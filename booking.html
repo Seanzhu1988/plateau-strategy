@@ -41,8 +41,25 @@
                   color: #8a8377; font-size: 0.8rem; text-transform: uppercase;
                   letter-spacing: 0.06em; }
         .gsi-or::before, .gsi-or::after { content: ""; flex: 1; height: 1px; background: #e6e2da; }
-        .time-note { color: #4a453d; font-size: 0.85rem; margin: 0.1rem 0 0.2rem;
-            background: #f0f9ff; border: 1px solid #e0f2fe; border-radius: 8px; padding: 0.6rem 0.9rem; }
+        .time-note { color: #6b655b; font-size: 0.85rem; margin: 0.5rem 0 0.2rem;
+            background: none; border: none; border-left: 2px solid #ddd8cd;
+            border-radius: 0; padding: 0.1rem 0 0.1rem 0.75rem; }
+
+        /* the three facts, as a printed line rather than a badge row */
+        .assure { list-style: none; display: flex; flex-wrap: wrap; gap: 0 1.4rem;
+            margin: -0.9rem 0 1.9rem; padding: 0.9rem 0 0; border-top: 1px solid #efece4;
+            font-size: 0.88rem; color: #4a453d; }
+        .assure li { position: relative; padding-left: 0.95rem; }
+        .assure li::before { content: ""; position: absolute; left: 0; top: 0.62em;
+            width: 5px; height: 5px; border-radius: 50%; background: #1b4d8f; }
+        .assure b { color: #14110c; font-weight: 700; }
+
+        /* section headings inside the form — small caps, hairline above */
+        .fs { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em;
+            text-transform: uppercase; color: #6b655b;
+            margin: 2rem 0 0.2rem; padding-top: 0.9rem;
+            border-top: 1px solid #efece4; }
+        .fs:first-of-type { margin-top: 1.2rem; }
         .mode-pill {
             display: inline-block; font-size: 0.72rem; font-weight: 700;
             padding: 0.2rem 0.7rem; border-radius: 999px; margin-left: 0.5rem;
@@ -90,6 +107,7 @@
         }
         .cancel-btn:hover:not(:disabled) { background: #fef2f2; transform: none; box-shadow: none; }
 
+        .afterbtn { text-align: center; font-size: 0.82rem; color: #6b655b; margin: 0.7rem 0 0; }
         .manage { margin-top: 1.6rem; text-align: center; }
         .manage-toggle { color: #6b655b; font-size: 0.88rem; font-weight: 600;
             cursor: pointer; text-decoration: underline; }
@@ -114,8 +132,18 @@
 
     <div class="wrap">
         <div class="card">
-            <h1>Book a Reservation Ride</h1>
+            <h1>Book a ride</h1>
             <p class="sub">Tell us where you're going — we'll take care of the rest.</p>
+
+            <!-- The three things a stranger wants to know before typing anything:
+                 what it costs, that the number will not move, and that someone
+                 will actually come. Stated once, at the top, so the form below
+                 is filling in details rather than negotiating. -->
+            <ul class="assure">
+                <li><b>$75</b> flat to Sea–Tac</li>
+                <li>The quote is the fare — no surge</li>
+                <li>Driver arrives 15 min early</li>
+            </ul>
 
             <!-- Optional shortcut, never a gate. Hidden entirely unless a
                  GOOGLE_CLIENT_ID is configured, and the form below works
@@ -133,6 +161,7 @@
                  so it works on iOS, Android and desktop with nothing to sign up
                  for and nothing sent to a third party. -->
             <form id="bookForm">
+                <p class="fs">Who's travelling</p>
                 <label>Full name <span class="req">*</span></label>
                 <input name="name" required placeholder="Jane Smith"
                        autocomplete="name" autocapitalize="words" enterkeyhint="next">
@@ -153,6 +182,7 @@
                     </div>
                 </div>
 
+                <p class="fs">The trip</p>
                 <label>Pickup location <span class="req">*</span></label>
                 <input name="pickup" required placeholder="1200 Pine St, Seattle"
                        autocomplete="street-address" autocapitalize="words">
@@ -184,6 +214,7 @@
                     </div>
                 </div>
 
+                <p class="fs">Anything else</p>
                 <label>If this is a trip to the airport, what is the flight number?</label>
                 <input name="flight" placeholder="e.g. AS 1234 (optional)"
                        autocapitalize="characters" autocorrect="off" spellcheck="false">
@@ -191,7 +222,8 @@
                 <label>Notes for the driver</label>
                 <textarea name="notes" rows="2" placeholder="Two suitcases, call on arrival…"></textarea>
 
-                <button type="submit" id="submitBtn">Request a ride and Pay</button>
+                <button type="submit" id="submitBtn">Request this ride</button>
+                <p class="afterbtn">No charge until the ride is confirmed.</p>
             </form>
 
             <div class="result" id="result"></div>

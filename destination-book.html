@@ -43,25 +43,27 @@
             letter-spacing: 0.05em; width: 76px; }
         .chip { font-size: 0.82rem; font-weight: 600; padding: 0.32rem 0.9rem; border-radius: 999px;
             border: 1.5px solid #e6e2da; color: #6b655b; cursor: pointer; user-select: none; background: #fff; }
-        .chip.on { background: #dbeafe; border-color: #1b4d8f; color: #1b4d8f; }
+        .chip.on { background: #14110c; border-color: #14110c; color: #fff; }
+        .chip:hover { border-color: #ddd8cd; }
+        .chip.on:hover { border-color: #14110c; }
         .filters input[type=text] { flex: 1; min-width: 180px; padding: 0.45rem 0.8rem; border: 1.5px solid #e6e2da;
-            border-radius: 10px; font-size: 0.9rem; font-family: inherit; background: #faf8f4; }
+            border-radius: 3px; font-size: 0.9rem; font-family: inherit; background: #fff; }
         .count { font-size: 0.82rem; color: #6b655b; margin: 0 0 0.8rem 0.2rem; }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
-        .entry { background: #fff; border: 1px solid #e6e2da; border-radius: 16px;
+        .entry { background: #fff; border: 1px solid #e6e2da; border-radius: 4px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1.1rem 1.2rem;
             display: flex; flex-direction: column; gap: 0.5rem; }
         .entry h3 { font-size: 1.05rem; color: #14110c; }
         .badges { display: flex; flex-wrap: wrap; gap: 0.35rem; }
         .badge { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
             padding: 0.18rem 0.55rem; border-radius: 6px; }
-        .b-city { background: #eef2f7; color: #4a453d; }
-        .b-comm { background: #ecfdf5; color: #047857; }
+        .b-city { background: #f0ede5; color: #4a453d; }
+        .b-comm { background: #e8f2ec; color: #14513a; }
         .rate-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.3rem 0 0.5rem; }
         .stars { font-size: 1.15rem; letter-spacing: 1px; cursor: pointer; }
         .stars .star { color: #ddd8cd; transition: color 0.1s; }
-        .stars .star.on { color: #f59e0b; }
+        .stars .star.on { color: #8a5a12; }
         .stars .star:hover { color: #8a5a12; }
         .rate-meta { font-size: 0.74rem; color: #6b655b; font-weight: 600; }
         .star-chip { cursor: pointer; user-select: none; }
@@ -76,14 +78,16 @@
         .sugitem:last-of-type { border-radius: 0 0 8px 8px; }
         .sugitem:hover { background: #f0f9ff; }
         .sugmuted { color: #6b655b; font-size: 0.8rem; padding: 0.4rem 0.2rem; }
-        .b-attr { background: #dbeafe; color: #1b4d8f; }
-        .b-rest { background: #ffedd5; color: #c2410c; }
+        .b-attr { background: #e8eef6; color: #17436f; }
+        .b-rest { background: #f7efe0; color: #7a4e0f; }
         .b-cat  { background: #faf8f4; color: #6b655b; border: 1px solid #e6e2da; }
-        .b-price{ background: #dcfce7; color: #166534; }
+        .b-price{ background: #e8f2ec; color: #14513a; }
         .entry .desc { font-size: 0.9rem; color: #4a453d; line-height: 1.55; }
         .entry .meta { font-size: 0.8rem; color: #6b655b; }
-        .entry .tip { font-size: 0.84rem; color: #92400e; background: #fffbeb; border: 1px solid #8a5a12;
-            border-radius: 8px; padding: 0.45rem 0.7rem; line-height: 1.45; }
+        .entry .tip { font-size: 0.86rem; color: #4a453d; background: none; border: none;
+            border-left: 2px solid #ddd8cd; border-radius: 0;
+            padding: 0.1rem 0 0.1rem 0.75rem; margin-left: 0.1rem; line-height: 1.5;
+            font-style: italic; }
         .entry .actions { margin-top: auto; display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
         .addbtn { padding: 0.45rem 0.9rem; border: none; border-radius: 8px; cursor: pointer;
             font-weight: 700; font-size: 0.82rem; font-family: inherit;
@@ -113,7 +117,7 @@
         .wishtag { display: inline-block; background: #eef2f7; border-radius: 999px;
             padding: 0.15rem 0.6rem; margin: 0.15rem 0.25rem 0 0; font-size: 0.76rem; }
         /* 🆕 discovered by a traveler + 💬 their notes */
-        .b-new { background: #fef3c7; color: #92400e; }
+        .b-new { background: #f7efe0; color: #7a4e0f; }
         .cmt-wrap { border-top: 1px solid #faf8f4; margin-top: 0.5rem; padding-top: 0.5rem; }
         .cmt-toggle { font-size: 0.78rem; font-weight: 700; color: #1b4d8f; cursor: pointer;
             user-select: none; }
