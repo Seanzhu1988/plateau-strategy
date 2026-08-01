@@ -454,3 +454,45 @@
 .leaflet-control-attribution,
 .leaflet-control-attribution a { color: #4a453d !important; }
 .leaflet-control-attribution { background: rgba(255,255,255,.94) !important; }
+
+      /* ============================================================
+         COLOUR, FORWARD.
+
+         The paper pass left the accent doing almost nothing — 4% of the
+         page, and all of it on small parts: icon strokes, a link, a focus
+         ring. Correct by the numbers and monochrome to look at. Restraint
+         became absence.
+
+         The accent moves onto the parts a reader actually looks at: the
+         primary action, the figures, and the section labels. Ink still
+         carries the type, so the page is still ink on paper — but now
+         something in it is blue on purpose.
+         ============================================================ */
+
+      /* The primary action is the accent, not black. A black button is
+         quiet to the point of invisible next to black text. */
+      .psx-btn-primary,
+      nav a[href="/book"],
+      .book-cta,
+      button:not(.i18n-opt):not(#i18nBtn):not(.cancel-btn):not(.pk-bubble):not(#pollock),
+      .btn.blue,.btn-blue,.cta{
+        background:var(--psx-blue) !important;background-image:none !important;
+        border-color:var(--psx-blue) !important;color:#fff !important;
+      }
+      .psx-btn-primary:hover,nav a[href="/book"]:hover,.cta:hover,
+      button:not(.i18n-opt):not(#i18nBtn):not(.pk-bubble):not(#pollock):hover:not(:disabled){
+        background:#16406f !important;border-color:#16406f !important;
+      }
+
+      /* Figures carry the accent — the number is the thing being read. */
+      .psx-stat-val,.tile .n{color:var(--psx-blue) !important;}
+
+      /* Section labels: the accent at small size, where it reads as a
+         marker rather than as decoration. */
+      .psx-eyebrow,.psx-eyebrow-pill,.fs{color:var(--psx-blue) !important;}
+
+      /* And the wordmark, so the masthead is not pure black either. */
+      .logo-text,.psx-foot-mark span{
+        -webkit-text-fill-color:var(--psx-blue) !important;
+        color:var(--psx-blue) !important;
+      }
