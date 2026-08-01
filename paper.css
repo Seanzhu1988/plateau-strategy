@@ -41,8 +41,14 @@
            the licence is bought — @font-face above, then swap this line.
            Until then: real book faces that ship with macOS and Windows, so
            the page renders instantly with nothing fetched from anyone. */
+        /* Latin book faces first, then a CJK serif — otherwise a Chinese or
+           Korean headline falls back to a heavy system sans and the page
+           stops looking like the same page. Songti/Ming/Batang are the
+           printed-book faces on macOS and Windows respectively. */
         --psx-display:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",
-                      "Hoefler Text",Georgia,"Times New Roman",serif;
+                      "Hoefler Text",Georgia,"Times New Roman",
+                      "Songti SC","Songti TC","STSong",SimSun,"Noto Serif CJK SC",
+                      "Apple SD Gothic Neo","Batang","Noto Serif KR",serif;
         --psx-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
       }
 

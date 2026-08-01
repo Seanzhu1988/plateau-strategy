@@ -1066,3 +1066,108 @@ EXTRA.update({
     "Seattle–Tacoma International Airport (SEA)": ["西雅图-塔科马国际机场（SEA）", "Aeropuerto Internacional Seattle–Tacoma (SEA)", "시애틀–타코마 국제공항(SEA)", "Sân bay quốc tế Seattle–Tacoma (SEA)"],
 })
 EXTRA_SKIP |= {"1200 Pine St, Seattle", "e.g. AS 1234 (optional)"}
+
+
+# ---------------------------------------------------------------------------
+# Coverage pass: strings a visitor navigates by that were still English.
+# Found by rendering every page, collecting visible text, and subtracting what
+# the dictionary already held — 73% covered, so roughly one line in four came
+# back in English mid-sentence. That is what makes a translated page feel
+# broken: not bad wording, but wording that stops.
+#
+# Place names are deliberately NOT here. "Katz's Delicatessen" and "Pike Place
+# Market" are what the signs outside say, and a traveller looking for them
+# needs the name on the sign.
+# ---------------------------------------------------------------------------
+EXTRA.update({
+    # --- trip planner / destination book chrome ---
+    "+ Add to Trip Planner": ["+ 加入行程规划", "+ Añadir al planificador", "+ 여행 플래너에 추가", "+ Thêm vào lịch trình"],
+    "✓ In your planner": ["✓ 已在您的行程中", "✓ En tu planificador", "✓ 플래너에 있음", "✓ Đã có trong lịch trình"],
+    "All cities": ["所有城市", "Todas las ciudades", "모든 도시", "Tất cả thành phố"],
+    "All types": ["所有类型", "Todos los tipos", "모든 유형", "Tất cả loại"],
+    "Any rating ⟳": ["不限评分 ⟳", "Cualquier valoración ⟳", "모든 평점 ⟳", "Mọi đánh giá ⟳"],
+    "Attraction": ["景点", "Atracción", "명소", "Điểm tham quan"],
+    "Attractions": ["景点", "Atracciones", "명소", "Điểm tham quan"],
+    "Restaurant": ["餐厅", "Restaurante", "식당", "Nhà hàng"],
+    "Restaurants & food": ["餐饮美食", "Restaurantes y comida", "식당 및 음식", "Nhà hàng & ẩm thực"],
+    "tap to rate": ["点击评分", "toca para valorar", "탭하여 평가", "chạm để đánh giá"],
+    "💬 Add the first note": ["💬 写下第一条留言", "💬 Escribe la primera nota", "💬 첫 메모 남기기", "💬 Viết ghi chú đầu tiên"],
+    "⏱ Been here? Tell us how long you stayed →": [
+        "⏱ 来过这里？告诉我们您待了多久 →",
+        "⏱ ¿Has estado aquí? Cuéntanos cuánto tiempo te quedaste →",
+        "⏱ 가보셨나요? 얼마나 머무셨는지 알려주세요 →",
+        "⏱ Bạn từng đến đây? Cho chúng tôi biết bạn ở lại bao lâu →"],
+    "46 of 46 destinations": ["46 个目的地，共 46 个", "46 de 46 destinos", "목적지 46개 중 46개", "46 trên 46 điểm đến"],
+
+    # --- durations offered when logging a visit ---
+    "4 hours": ["4 小时", "4 horas", "4시간", "4 giờ"],
+    "8 hours": ["8 小时", "8 horas", "8시간", "8 giờ"],
+    "1 day": ["1 天", "1 día", "1일", "1 ngày"],
+    "2 days": ["2 天", "2 días", "2일", "2 ngày"],
+
+    # --- fares, as the booking form lists them ---
+    "Airport Pickup (flat) — $75": ["机场接送（一口价）— $75", "Recogida en aeropuerto (fija) — $75", "공항 픽업(정액) — $75", "Đón sân bay (giá cố định) — 75 $"],
+    "Downtown Transfer — $45": ["市区接送 — $45", "Traslado al centro — $45", "다운타운 이동 — $45", "Đưa đón trung tâm — 45 $"],
+    "Hourly (per hour) — $65": ["按小时计（每小时）— $65", "Por hora — $65", "시간제(시간당) — $65", "Theo giờ — 65 $"],
+
+    # --- reinvestment / proposals ---
+    "Back it by running it": ["以运营方式支持", "Apóyalo operándolo", "직접 운영하며 지원", "Ủng hộ bằng cách vận hành"],
+    "Back it with capital": ["以资金方式支持", "Apóyalo con capital", "자본으로 지원", "Ủng hộ bằng vốn"],
+    "Follow this proposal:": ["关注这个提案：", "Sigue esta propuesta:", "이 제안 팔로우:", "Theo dõi đề xuất này:"],
+    "💰 I want to invest": ["💰 我想投资", "💰 Quiero invertir", "💰 투자하고 싶습니다", "💰 Tôi muốn đầu tư"],
+    "🚀 I want to launch this": ["🚀 我想把它做起来", "🚀 Quiero lanzarlo", "🚀 제가 실행하고 싶습니다", "🚀 Tôi muốn triển khai"],
+    "0 investor(s) interested": ["0 位投资人关注", "0 inversor(es) interesados", "관심 투자자 0명", "0 nhà đầu tư quan tâm"],
+    "0 operator(s) interested": ["0 位运营者关注", "0 operador(es) interesados", "관심 운영자 0명", "0 nhà vận hành quan tâm"],
+    "· 0 following": ["· 0 人关注", "· 0 siguiendo", "· 팔로워 0", "· 0 người theo dõi"],
+
+    # --- treasury give-back ---
+    "Nobody has reported a gift yet — the zero is honest.": [
+        "目前还没有人报告捐赠——这个零是真实的。",
+        "Nadie ha reportado una donación todavía; el cero es honesto.",
+        "아직 기부를 알려온 분이 없습니다 — 이 0은 정직한 숫자입니다.",
+        "Chưa có ai báo về khoản đóng góp nào — số 0 này là thật."],
+    "🇺🇸 Give at the U.S. Treasury (Pay.gov) →": [
+        "🇺🇸 通过美国财政部捐赠（Pay.gov）→",
+        "🇺🇸 Donar en el Tesoro de EE. UU. (Pay.gov) →",
+        "🇺🇸 미국 재무부에 기부하기 (Pay.gov) →",
+        "🇺🇸 Đóng góp tại Kho bạc Hoa Kỳ (Pay.gov) →"],
+
+    # --- real-estate blueprint sheet ---
+    "PROJECT · PLATEAU STRATEGY": ["项目 · PLATEAU STRATEGY", "PROYECTO · PLATEAU STRATEGY", "프로젝트 · PLATEAU STRATEGY", "DỰ ÁN · PLATEAU STRATEGY"],
+    "Mixed-use development · Sheet RE-01": ["综合开发项目 · 图纸 RE-01", "Desarrollo de uso mixto · Plano RE-01", "복합 개발 · 도면 RE-01", "Phát triển đa chức năng · Bản vẽ RE-01"],
+    "FIG 1 — MIXED-USE HUB · FRONT ELEVATION (NTS)": [
+        "图 1 — 综合体 · 正立面（无比例）",
+        "FIG 1 — CENTRO DE USO MIXTO · ALZADO FRONTAL (SIN ESCALA)",
+        "그림 1 — 복합 허브 · 정면도 (축척 없음)",
+        "HÌNH 1 — TỔ HỢP ĐA CHỨC NĂNG · MẶT ĐỨNG (KHÔNG TỶ LỆ)"],
+    "SCALE · NTS": ["比例 · 无比例", "ESCALA · SIN ESCALA", "축척 · 없음", "TỶ LỆ · KHÔNG"],
+    "SHEET · RE-01": ["图纸 · RE-01", "PLANO · RE-01", "도면 · RE-01", "BẢN VẼ · RE-01"],
+    "REV · A": ["版本 · A", "REV · A", "개정 · A", "PHIÊN BẢN · A"],
+
+    # --- cities: these are translated, unlike venue names ---
+    "New York": ["纽约", "Nueva York", "뉴욕", "New York"],
+    "Boston": ["波士顿", "Boston", "보스턴", "Boston"],
+    "Seattle": ["西雅图", "Seattle", "시애틀", "Seattle"],
+    "Washington DC": ["华盛顿特区", "Washington D. C.", "워싱턴 D.C.", "Washington D.C."],
+})
+
+# Venue names stay in English: a traveller looking for the place needs the name
+# that is written on the door.
+EXTRA_SKIP |= {
+    "9/11 Memorial & Museum", "Air & Space Museum", "Arlington National Cemetery",
+    "Ben's Chili Bowl", "Boston Common & Public Garden", "Brooklyn Bridge",
+    "Central Park", "Chelsea Market", "Chihuly Garden and Glass",
+    "Empire State Building", "Faneuil Hall Marketplace", "Fenway Park",
+    "Founding Farmers", "Freedom Trail (start)", "Gas Works Park",
+    "Georgetown Waterfront", "Grand Central Oyster Bar", "Grand Central Terminal",
+    "Harvard Yard, Cambridge", "Jefferson Memorial", "Joe's Pizza",
+    "Katz's Delicatessen", "Kerry Park viewpoint", "Levain Bakery",
+    "Lincoln Memorial", "Museum of American History", "Museum of Fine Arts",
+    "Museum of Pop Culture", "National Gallery of Art", "New England Aquarium",
+    "Old Ebbitt Grill", "Pike Place Market", "Seattle Aquarium", "Space Needle",
+    "Starbucks Reserve Roastery", "Statue of Liberty ferry", "Stone Street",
+    "The High Line", "The Met Museum", "The Wharf", "Times Square",
+    "US Capitol Visitor Center", "USS Constitution", "Union Market",
+    "Washington Monument", "White House (Lafayette Sq)", "Tesla", "Sean Zhu",
+    "English", "Español", "Tiếng Việt",
+}

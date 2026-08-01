@@ -3,7 +3,12 @@ import json, os, sys, re
 from html.parser import HTMLParser
 
 SCRATCH = os.path.dirname(os.path.abspath(__file__))
-PROJ = "/Users/xiaojunzhu/Claude/Projects/Plateau Strategy"
+# The project this reads pages from and writes i18n.js back into.
+# Was hardcoded to one laptop, so the generator could not be run anywhere
+# else — including from the repo itself. Falls back to the directory this
+# file sits in, which is the repo in every case that matters.
+_MAC = "/Users/xiaojunzhu/Claude/Projects/Plateau Strategy"
+PROJ = os.environ.get("PROJ_DIR") or (_MAC if os.path.isdir(_MAC) else SCRATCH)
 
 # ---- pages whose visible text we translate (add more here to extend coverage) ----
 COVERED = ["landing-page.html", "booking.html", "renter.html", "agent.html",
