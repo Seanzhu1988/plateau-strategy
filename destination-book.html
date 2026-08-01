@@ -50,7 +50,17 @@
             border-radius: 3px; font-size: 0.9rem; font-family: inherit; background: #fff; }
         .count { font-size: 0.82rem; color: #6b655b; margin: 0 0 0.8rem 0.2rem; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+        /* #grid is now just the container; each city section carries the
+           columns, so a heading spans the band instead of becoming a card. */
+        .grid { display: block; }
+        .city-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+        .city-band { font-family: var(--psx-display, Georgia, serif); font-size: 1.15rem;
+            font-weight: 600; color: var(--psx-text, #14110c); margin: 2rem 0 .85rem;
+            padding-bottom: .45rem; border-bottom: 1px solid var(--psx-rule, rgba(20,17,12,.1));
+            display: flex; align-items: baseline; gap: .6rem; }
+        .city-band:first-child { margin-top: .2rem; }
+        .city-band span { font-family: var(--psx-sans, sans-serif); font-size: .74rem;
+            font-weight: 600; letter-spacing: .1em; color: var(--psx-muted, #6b655b); }
         .entry { background: #fff; border: 1px solid #e6e2da; border-radius: 4px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1.1rem 1.2rem;
             display: flex; flex-direction: column; gap: 0.5rem; }
@@ -59,7 +69,7 @@
         .badge { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
             padding: 0.18rem 0.55rem; border-radius: 6px; }
         .b-city { background: #f0ede5; color: #4a453d; }
-        .b-comm { background: #e8f2ec; color: #14513a; }
+        .b-comm { background: #e8f2ec; color: #1b5e43; }
         .rate-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.3rem 0 0.5rem; }
         .stars { font-size: 1.15rem; letter-spacing: 1px; cursor: pointer; }
         .stars .star { color: #6b655b; transition: color 0.1s; }
@@ -117,7 +127,7 @@
         .wishtag { display: inline-block; background: #eef2f7; border-radius: 999px;
             padding: 0.15rem 0.6rem; margin: 0.15rem 0.25rem 0 0; font-size: 0.76rem; }
         /* 🆕 discovered by a traveler + 💬 their notes */
-        .b-new { background: #f7efe0; color: #7a4e0f; }
+        .b-new { background: #f7efe0; color: #8a5a12; }
         .cmt-wrap { border-top: 1px solid #faf8f4; margin-top: 0.5rem; padding-top: 0.5rem; }
         .cmt-toggle { font-size: 0.78rem; font-weight: 700; color: #1b4d8f; cursor: pointer;
             user-select: none; }
@@ -164,7 +174,7 @@
 
     <div class="wrap">
         <div class="page-title">📖 Destination Book</div>
-        <p class="page-sub">A curated guidebook of attractions and restaurants — every type of destination, organized by category, with descriptions and local tips from a professionally licensed tour guide. One tap sends any place into the <a href="/trip-planner">Trip Planner</a>. Hours shown are typical — check before you go.</p>
+        <p class="page-sub">A guidebook of attractions and restaurants, city by city, with descriptions and local tips from a licensed tour guide. One tap sends any place into the <a href="/trip-planner">Trip Planner</a>. Hours shown are typical — check before you go.</p>
 
         <div class="filters">
             <div class="frow"><span class="flab">City</span><span id="cityChips"></span></div>
@@ -175,6 +185,14 @@
                 <input type="text" id="q" placeholder="Search the book — or type a new place to suggest &amp; add…" oninput="render()"></div>
             <div id="suggest"></div>
         </div>
+        <div class="count" id="count"></div>
+        <div class="grid" id="grid"></div>
+
+        <!-- Asking "what do you wish was here?" made sense; asking it before
+             the reader has seen a single destination did not. It sat between
+             the filters and the results, so 47 places were pushed below a
+             form for the thing that is missing. Moved to where the question
+             is actually earned: after you have looked and not found it. -->
 
         <div class="wishbox">
             <h3>🌟 What do you wish was in this book?</h3>
@@ -193,9 +211,6 @@
             <div class="wishmsg" id="wishMsg"></div>
             <div class="wishtop" id="wishTop"></div>
         </div>
-
-        <div class="count" id="count"></div>
-        <div class="grid" id="grid"></div>
         <div class="empty" id="empty" style="display:none">Nothing matches these filters — loosen one and the book fills back up.</div>
 
         <footer class="attrib">A free tool by Plateau Strategy Solution Lab · descriptions curated with a professionally licensed tour guide</footer>
@@ -207,7 +222,8 @@
     const CATS = [ ['history','History'], ['culture','Culture'], ['nature','Nature'], ['food','Food'], ['views','Views'] ];
     const TYPES = [ ['attraction','Attractions'], ['restaurant','Restaurants & food'] ];
     let DATA = { cities: {}, entries: [] };
-    const f = { city: 'all', type: 'all', cats: new Set(CATS.map(c => c[0])), minStars: 0 };
+    const f = { city: 'all', type: 'all', cats: new Set(CATS.map(c => c[0])),
+                allCats: true, minStars: 0 };
 
     // ---------- star ratings (real, community) ----------
     function starWidget(e, i){
@@ -282,7 +298,12 @@
     }
     function initFilters(){
         const cc = $('cityChips');
-        [['all','All cities']].concat(Object.entries(DATA.cities)).forEach(([k, label]) => {
+        // Alphabetical, except "Other" which is a bucket rather than a place
+        // and belongs at the end of the row instead of between New York and
+        // Seattle, where it read as a city nobody had heard of.
+        const cityList = Object.entries(DATA.cities).sort((x, y) =>
+            x[0] === 'other' ? 1 : y[0] === 'other' ? -1 : x[1].localeCompare(y[1]));
+        [['all','All cities']].concat(cityList).forEach(([k, label]) => {
             cc.appendChild(makeChip(label, f.city === k, b => {
                 f.city = k;
                 Array.from(cc.children).forEach(x => x.classList.remove('on'));
@@ -297,20 +318,51 @@
                 b.classList.add('on'); render();
             }));
         });
+        // Category used a different idiom from the two rows above it: five
+        // multi-select chips, all switched on by default. Functionally that
+        // means "no filter", but it renders as five solid black chips
+        // shouting for attention next to a City row where exactly one chip is
+        // lit. Same row, same grammar — an "All" chip that is on until you
+        // pick something. Multi-select survives: picking a second category
+        // adds it rather than replacing.
         const kc = $('catChips');
-        CATS.forEach(([k, label]) => {
-            kc.appendChild(makeChip(label, true, b => {
-                if (f.cats.has(k)) { f.cats.delete(k); b.classList.remove('on'); }
-                else { f.cats.add(k); b.classList.add('on'); }
-                render();
-            }));
+        const paintCats = () => {
+            Array.from(kc.children).forEach(ch => {
+                const k = ch.getAttribute('data-cat');
+                ch.classList.toggle('on', k === 'all' ? f.allCats : (!f.allCats && f.cats.has(k)));
+            });
+        };
+        const allChip = makeChip('All categories', true, () => {
+            f.allCats = true; f.cats = new Set(CATS.map(c => c[0]));
+            paintCats(); render();
         });
+        allChip.setAttribute('data-cat', 'all');
+        kc.appendChild(allChip);
+        CATS.forEach(([k, label]) => {
+            const ch = makeChip(label, false, () => {
+                if (f.allCats) { f.allCats = false; f.cats = new Set([k]); }
+                else if (f.cats.has(k)) {
+                    f.cats.delete(k);
+                    // Unpicking the last one means "no filter", not "nothing".
+                    if (!f.cats.size) { f.allCats = true; f.cats = new Set(CATS.map(c => c[0])); }
+                } else { f.cats.add(k); }
+                paintCats(); render();
+            });
+            ch.setAttribute('data-cat', k);
+            kc.appendChild(ch);
+        });
+        paintCats();
     }
 
     function render(){
         const q = $('q').value.trim().toLowerCase();
         const inPlanner = plannerNames();
-        const rows = [];
+        // The lede promises a book "organized by category" and the page
+        // delivered 47 cards in one flat grid — which is the thing that made
+        // it read as a pile rather than a book. Grouped by city, because that
+        // is the question a traveller actually arrives with: they are going
+        // to one place, not browsing a category.
+        const groups = new Map();
         let shown = 0;
         DATA.entries.forEach((e, i) => {
             if (f.city !== 'all' && e.city !== f.city) return;
@@ -321,7 +373,9 @@
             shown++;
             const catLabel = (CATS.find(c => c[0] === e.cat) || ['',''])[1];
             const added = inPlanner.has(e.name);
-            rows.push('<div class="entry">'
+            const gk = e.city || 'other';
+            if (!groups.has(gk)) groups.set(gk, []);
+            groups.get(gk).push('<div class="entry">'
                 + '<h3>' + esc(e.name) + '</h3>'
                 + '<div class="badges">'
                 +   '<span class="badge b-city">' + esc(DATA.cities[e.city] || e.city) + '</span>'
@@ -365,7 +419,25 @@
                 + '</div>'
                 + '</div>');
         });
-        $('grid').innerHTML = rows.join('');
+        // One city per section, largest first, "Other" always last so the
+        // bucket does not sit between two real places.
+        const order = Array.from(groups.keys()).sort((x, y) => {
+            if (x === 'other') return 1;
+            if (y === 'other') return -1;
+            const d = groups.get(y).length - groups.get(x).length;
+            return d || (DATA.cities[x] || x).localeCompare(DATA.cities[y] || y);
+        });
+        // A heading above a single group is a label for the whole page and
+        // adds nothing — only band the list when there is more than one city
+        // in it, which is exactly when a reader needs to know where they are.
+        $('grid').innerHTML = order.length > 1
+            ? order.map(k => {
+                const list = groups.get(k);
+                return '<h2 class="city-band">' + esc(DATA.cities[k] || k)
+                     + ' <span>' + list.length + '</span></h2>'
+                     + '<div class="city-grid">' + list.join('') + '</div>';
+              }).join('')
+            : order.map(k => '<div class="city-grid">' + groups.get(k).join('') + '</div>').join('');
         $('empty').style.display = shown ? 'none' : 'block';
         $('count').textContent = shown + ' of ' + DATA.entries.length + ' destinations'
             + (f.minStars ? ' · showing ' + '★'.repeat(f.minStars) + ' & up' : '');

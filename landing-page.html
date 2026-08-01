@@ -711,7 +711,7 @@
         }
         .price-btn:hover { filter: brightness(1.06); }
         .price-btn.ghost { background: #14110c; }
-        .fin-fineprint { text-align: center; color: #8a8377; font-size: 0.82rem; max-width: 620px; margin: 1.8rem auto 0; line-height: 1.5; }
+        .fin-fineprint { text-align: center; color: #6b655b; font-size: 0.82rem; max-width: 620px; margin: 1.8rem auto 0; line-height: 1.5; }
 
         /* "I wish that to be happening" interest capture */
         .wish-box { text-align: center; margin-top: 2.2rem; }
@@ -751,7 +751,7 @@
         .role-modal-card { background: #121f38; border-radius: 18px; padding: 2rem; width: 100%;
             max-width: 440px; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
         .role-close { position: absolute; top: 0.9rem; right: 1.2rem; background: none; border: none;
-            font-size: 1.7rem; color: #8a8377; cursor: pointer; line-height: 1; }
+            font-size: 1.7rem; color: #6b655b; cursor: pointer; line-height: 1; }
         .role-form h2 { color: #eef3fb; font-size: 1.5rem; margin-bottom: 0.3rem; }
         .rm-sub { color: #4a453d; font-size: 0.9rem; margin-bottom: 1.2rem; }
         .role-form label { display: block; font-weight: 600; font-size: 0.82rem; color: #4a453d; margin: 0.8rem 0 0.3rem; }
@@ -823,7 +823,7 @@
         }
 
         .phase-card:nth-child(3) .phase-number {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: #1b5e43;
         }
 
         .phase-card:nth-child(4) .phase-number {
@@ -1076,9 +1076,9 @@
             padding: 1.1rem 1.3rem; margin: 0 0 2rem; }
         .ds-head { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.85rem; }
         .ds-head b { font-size: 1.02rem; color: #14110c; }
-        .ds-live { font-size: 0.64rem; font-weight: 800; letter-spacing: 0.6px; color: #059669;
+        .ds-live { font-size: 0.64rem; font-weight: 800; letter-spacing: 0.6px; color: #1b5e43;
             background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 999px; padding: 0.15rem 0.5rem; }
-        .ds-count { color: #8a8377; font-size: 0.82rem; margin-left: auto; }
+        .ds-count { color: #6b655b; font-size: 0.82rem; margin-left: auto; }
         .ds-items { display: flex; flex-wrap: wrap; gap: 0.5rem; }
         .ds-item { background: #faf8f4; border: 1px solid #e6e2da; border-radius: 999px;
             padding: 0.35rem 0.8rem; font-size: 0.84rem; color: #4a453d; }
@@ -1131,7 +1131,7 @@
             11% { opacity: 1; transform: scale(1); } 14% { opacity: 0; } 100% { opacity: 0; } }
         .nf-yr { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-spacing: 3px;
             color: #faf8f4; font-size: clamp(1.6rem, 6vw, 2.8rem); }
-        .nf-txt { color: #8a8377; font-size: clamp(0.72rem, 2.2vw, 1rem); margin-top: 0.5rem;
+        .nf-txt { color: #6b655b; font-size: clamp(0.72rem, 2.2vw, 1rem); margin-top: 0.5rem;
             max-width: 84%; line-height: 1.45; }
         .nf-stripes { position: absolute; inset: 0; opacity: 0.13;
             background: repeating-linear-gradient(0deg, #7f1d1d 0 9%, transparent 9% 18%); }
@@ -2732,7 +2732,7 @@
             const inv = j.signup.invoice || {};
             const invLine = inv.url ? '<a href="' + inv.url + '" target="_blank">View your invoice →</a>' : 'Your invoice will be emailed to you.';
             const res = document.getElementById('fin_result');
-            res.style.display = 'block'; res.style.color = '#047857';
+            res.style.display = 'block'; res.style.color = '#1b5e43';
             res.innerHTML = "✅ You're enrolled on the " + j.signup.plan + ' plan (' + j.signup.billing + ').<br>' + invLine;
         }
 
@@ -2749,7 +2749,7 @@
             const j = await psxJSON('/api/finance/wish', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
             if (!j.ok) { msg.style.color = '#dc2626'; msg.textContent = j.error || 'Could not save.'; return; }
             document.getElementById('wishForm').style.display = 'none';
-            msg.style.color = '#047857';
+            msg.style.color = '#1b5e43';
             msg.textContent = "✅ Saved! We'll let you know the moment it's live.";
         }
 
