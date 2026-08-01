@@ -18,7 +18,7 @@
     <meta name="twitter:description" content="Pick your stops and see which ones you can still reach before they close — real drive times, traffic and opening hours, checked as you build the day. Free, no account.">
     <meta name="twitter:image" content="https://plateaustrategy.io/plateau-logo.png">
     <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
     <style>
         .act.ride-wanted { background: #fff7ed; border-color: #fdba74; color: #9a3412; }
         .tap-hint { font-size: 0.72rem; color: #6b655b; line-height: 1.25; max-width: 190px; }
@@ -116,8 +116,27 @@
             background: rgba(255,255,255,0.97); border-radius: 12px;
             box-shadow: 0 6px 20px rgba(15,23,42,0.25); padding: 0.45rem 0.55rem; }
         .map-searchbar .build-row { display: flex; gap: 0.4rem; margin: 0; align-items: center; }
-        .map-searchbar .build-row .from, .map-searchbar .build-row .startedit,
-        .map-searchbar .build-row .to { display: none; }   /* those live as map icons now */
+        /* The starting-point pin stands beside the address box.
+           It used to be hidden here and offered instead as a separate icon in
+           the map's control stack — "those live as map icons now". That is the
+           thing the request was against, asked for three times: a traveller
+           opening the planner should see where the day starts sitting right
+           next to where they type where it goes, not have to hunt a floating
+           button for it. The markup always had it in the right place; only
+           this rule took it away. */
+        .map-searchbar .build-row .from { display: inline-flex; }
+        .map-searchbar .build-row .to   { display: inline; opacity: .5; }
+        .map-searchbar .build-row .startedit { display: none; }
+        .map-searchbar .build-row .loc-btn {
+            flex: 0 0 auto; white-space: nowrap; border-radius: 9px;
+            padding: 0.5rem 0.66rem; font-size: 0.84rem;
+        }
+        /* On a phone the words cost more room than they earn — the pin badge
+           and the arrow still say "the day starts here". */
+        @media (max-width: 640px) {
+            .map-searchbar .build-row .loc-btn #curLocLabel { display: none; }
+            .map-searchbar .build-row .loc-btn { padding: 0.5rem 0.55rem; }
+        }
         .map-searchbar .build-row input { flex: 1; min-width: 0; border: 1.5px solid #e6e2da;
             border-radius: 9px; padding: 0.5rem 0.75rem; font-size: 0.9rem; font-family: inherit; }
         .map-searchbar .build-row input:focus { outline: none; border-color: #1b4d8f; }
@@ -789,7 +808,7 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/vendor/leaflet/leaflet.js"></script>
     <script>
     'use strict';
     // ---------- data ----------
@@ -1027,8 +1046,12 @@
             const b = map.getBounds();
             const vb = '&viewbox=' + [b.getWest(), b.getNorth(), b.getEast(), b.getSouth()].map(n => n.toFixed(4)).join(',');
             const base = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=' + encodeURIComponent(q);
+            // psxJSON hands back the array on success and {ok:false} when the
+            // geocoder could not be reached, so ask what it actually is rather
+            // than trusting .length on either.
             let j = await psxJSON(base + vb + '&bounded=1');
-            if (!j.length) j = await psxJSON(base + vb);      // nearby if not in view
+            if (!Array.isArray(j) || !j.length) j = await psxJSON(base + vb);   // nearby if not in view
+            if (!Array.isArray(j)) { say('Search is unavailable right now — try again in a moment.'); return; }
             if (!j.length) { say('Couldn\'t find “' + q + '” — try adding the city name.'); return; }
             const res = j[0];
             const nm = res.display_name.split(',')[0].replace(/[<>&"]/g, '').slice(0, 60) || q;
@@ -1039,8 +1062,15 @@
                 i = places.length; places.push(np);
                 rememberPlace(np, res);
                 rebuildMarkers(); renderPlaces(); savePlaces(); fetchMatrix();
-                flyToPlace(+res.lat, +res.lon);   // fly, don't cut — the traveller has to see it move
             }
+            // OUTSIDE the if. This was the bug, and it survived three reports
+            // because it only shows up on the second half of the journey: type
+            // an address the board has never seen and the map flies, so it
+            // looks fixed. Type one it already knows — the usual case once a
+            // day is part-built — and nothing moves at all. "Any address" in
+            // the request meant any, so the flight belongs to the entry, not
+            // to the place being new.
+            flyToPlace(+res.lat, +res.lon);
             $('destAdd').value = '';
             addToRoute(i);                                   // append to the chain (feasibility-checked)
         } catch (e) { say('Search unavailable right now — try again.'); }
@@ -2045,10 +2075,11 @@
             const base = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=' + encodeURIComponent(q);
             let hint = '';
             let j = await psxJSON(base + vb + '&bounded=1');
-            if (!j.length) {
+            if (!Array.isArray(j) || !j.length) {
                 j = await psxJSON(base + vb);      // nearby-first, not bounded
-                if (j.length) hint = '<div class="muted">Nothing in view — closest matches:</div>';
+                if (Array.isArray(j) && j.length) hint = '<div class="muted">Nothing in view — closest matches:</div>';
             }
+            if (!Array.isArray(j)) { box.innerHTML = '<div class="muted">Search is unavailable right now.</div>'; return; }
             if (!j.length) { box.innerHTML = '<div class="muted">No results — try adding the city name.</div>'; return; }
             box.innerHTML = hint;
             j.forEach(res => {

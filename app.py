@@ -782,6 +782,20 @@ def i18n_js():
     return send_file(os.path.join(BASE_DIR, "i18n.js"))
 
 
+@app.route("/vendor/leaflet/<path:filename>")
+def leaflet_vendor(filename):
+    """Leaflet, served from here rather than unpkg.
+
+    The map pages loaded it from a CDN, which means the map is only as
+    available as somebody else's edge network. unpkg is routinely blocked or
+    throttled in mainland China — and this site is translated into Chinese
+    precisely to reach travelers from there, so the map was most likely dead
+    for the readers the translation was written for. It is 160 KB. We serve
+    it."""
+    from flask import send_from_directory
+    return send_from_directory(os.path.join(BASE_DIR, "vendor", "leaflet"), filename)
+
+
 @app.route("/psx-net.js")
 def psx_net_js():
     """One network helper, shared by every page.
