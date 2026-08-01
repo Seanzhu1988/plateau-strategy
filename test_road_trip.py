@@ -109,6 +109,56 @@ with sync_playwright() as p:
         fails.append("page errors: " + "; ".join(e[:70] for e in errs[:3]))
     br.close()
 
+
+# ---- and the whole thing again in Chinese -----------------------------
+# The reason this page did not translate is that i18n.js swaps text NODES,
+# and every result here is a string built in JavaScript afterwards — the
+# walker never sees it. A Chinese reader got a Chinese page with an entirely
+# English answer inside it. Guarded, because nothing about the English tests
+# above would ever notice it coming back.
+import re as _re
+with sync_playwright() as p:
+    br = p.chromium.launch(executable_path="/opt/pw-browsers/chromium-1194/chrome-linux/chrome")
+    pg = br.new_page(viewport={"width": 1300, "height": 1000})
+    pg.route("**/router.project-osrm.org/**", lambda r: r.fulfill(
+        status=200, content_type="application/json", body=json.dumps(OSRM)))
+    pg.route("**/nominatim.openstreetmap.org/**", lambda r: r.fulfill(
+        status=200, content_type="application/json", body=json.dumps(NOMINATIM)))
+    pg.route("**/overpass-api.de/**", lambda r: r.fulfill(
+        status=200, content_type="application/json", body=json.dumps(OVERPASS)))
+    pg.goto(B + "/road-trip?lang=zh", wait_until="domcontentloaded")
+    pg.wait_for_timeout(1800)
+    pg.fill("#fromInput", "Seattle"); pg.fill("#toInput", "Portland")
+    pg.click("#goBtn"); pg.wait_for_timeout(4000)
+
+    legs = pg.evaluate("(document.getElementById('legs')||{}).innerText||''")
+    pick = pg.evaluate("[...document.querySelectorAll('#routePick button')].map(b=>b.textContent).join(' ')")
+    br.close()
+
+# Things that are correctly NOT translated: glyphs, bare numbers, and real
+# place names out of OpenStreetMap — TRANSLATION.md keeps venue names in the
+# language of the sign outside.
+# Derived from the stub rather than listed by hand — hardcoding it is how
+# two of the three names got left out and the test failed on its own data.
+KEEP = tuple(e["tags"]["name"] for e in OVERPASS["elements"] if e["tags"].get("name"))
+lines = [l.strip() for l in legs.split("\n") if l.strip()]
+english = [l for l in lines
+           if not _re.search(r"[\u4e00-\u9fff]", l)
+           and not all(ch in "🅿⛽🍽👁 0123456789·" for ch in l)
+           and not any(k in l for k in KEEP)]
+print(f"  zh: {len(lines)-len(english)}/{len(lines)} generated lines translated")
+if english:
+    for l in english[:5]:
+        print("       still English: " + l[:70])
+    fails.append(f"{len(english)} generated line(s) stayed English under ?lang=zh")
+for word in ("fastest", "shortest", "min"):
+    if word in pick and word != "min":
+        fails.append(f"route chooser still says '{word}' in Chinese")
+if not _re.search(r"[\u4e00-\u9fff]", pick):
+    fails.append("route chooser is entirely untranslated")
+else:
+    print(f"  zh: route chooser translated — {pick[:46]}")
+
 print("\n" + "=" * 68)
 if fails:
     for f in fails: print("FAIL " + f)

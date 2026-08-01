@@ -622,6 +622,31 @@
    "country": "",
    "city_label": "Other",
    "added_at": "2026-08-01T17:17:14"
+  },
+  {
+   "name": "Seattle",
+   "city": "seattle",
+   "type": "attraction",
+   "cat": "culture",
+   "price": null,
+   "close": 1020,
+   "visit": 60,
+   "lat": 47.6062,
+   "lon": -122.3321,
+   "desc": "Place in Seattle, Washington.",
+   "tip": "",
+   "photo": null,
+   "source_url": null,
+   "visibility": "public",
+   "source": "user",
+   "auto_desc": true,
+   "desc_from": "map data",
+   "found_via": "road-trip",
+   "state": "Washington",
+   "county": "Washington",
+   "country": "",
+   "city_label": "Seattle",
+   "added_at": "2026-08-01T17:28:32"
   }
  ]
 }

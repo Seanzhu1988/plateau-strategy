@@ -208,15 +208,35 @@
             return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
         });
     }
+    // Strings this page assembles itself go through the shared formatter when
+    // i18n.js is present, and fall straight through to English when it is not.
+    //
+    // This is why the road trip planner did not translate. i18n.js walks the
+    // page's text nodes and swaps them, which handles everything written in
+    // the HTML — the heading, the labels, the button — and can do nothing
+    // about a string built in JavaScript afterwards. Every result on this
+    // page is built that way, so a Chinese reader got a Chinese page with an
+    // entirely English answer in the middle of it.
+    function T(pattern, vals) {
+        if (window.psxFmt) return window.psxFmt(pattern, vals);
+        return String(pattern).replace(/\{(\w+)\}/g, function (m, k) {
+            return (vals && vals[k] !== undefined) ? vals[k] : m;
+        });
+    }
+
     function say(msg, isErr) {
         var el = $('status');
         el.textContent = msg;
         el.className = isErr ? 'err' : '';
     }
+    // "3 h 12 m" is assembled from numbers, so it is invisible to the text
+    // walker and stayed English on every translated page — the last of the
+    // results to do so. The unit words are patterns like anything else.
     function hhmm(sec) {
         var h = Math.floor(sec / 3600), m = Math.round((sec % 3600) / 60);
         if (m === 60) { h += 1; m = 0; }
-        return h ? h + ' h ' + (m ? m + ' m' : '') : m + ' m';
+        if (!h) return T('{m} min', { m: m });
+        return m ? T('{h} hr {m} min', { h: h, m: m }) : T('{h} hr', { h: h });
     }
 
     // ---------- map ----------
@@ -408,7 +428,7 @@
             if (!lat || !lon) return;
             var isFuel = t.amenity === 'fuel';
             stops.push({
-                name: t.name || (t.highway === 'services' ? 'Service area' : 'Rest area'),
+                name: t.name || (t.highway === 'services' ? T('Service area') : T('Rest area')),
                 kind: isFuel ? 'fuel' : 'rest',
                 lat: lat, lon: lon,
                 sec: progressAt(rt, pts, lat, lon)
@@ -460,7 +480,7 @@
                     : (t.tourism === 'viewpoint' || t.tourism === 'picnic_site') ? 'scenic'
                     : (t.amenity ? 'food' : null);
             if (!key || !buckets[key]) return;
-            var name = t.name || (key === 'rest' ? 'Rest area' :
+            var name = t.name || (key === 'rest' ? T('Rest area') :
                        key === 'scenic' ? 'Viewpoint' : null);
             if (!name) return;                                   // skip unnamed clutter
             if (buckets[key].some(function (p) { return p.name === name; })) return;
@@ -481,7 +501,7 @@
             total += list.length;
             if (!list.length) return '';
             return '<div class="poi-group"><h4><span class="chip" style="background:' + g.color +
-                   '">' + g.glyph + '</span>' + g.label + '</h4><ul>' +
+                   '">' + g.glyph + '</span>' + T(g.label) + '</h4><ul>' +
                    list.slice(0, 12).map(function (p) {
                        return '<li>' + esc(p.name) + '</li>';
                    }).join('') + '</ul></div>';
@@ -490,7 +510,7 @@
         return {
             html: '<div class="leg"><div class="leg-head"><div class="leg-n">' + (i + 1) + '</div>' +
                   '<div class="leg-t"><h3>' + esc(label) + '</h3>' +
-                  '<p>About ' + hhmm(bp.sec) + ' in</p></div></div>' +
+                  '<p>' + T('About {time} in', { time: hhmm(bp.sec) }) + '</p></div></div>' +
                   '<div class="pois">' + (groupsHtml ||
                     '<p class="none">Nothing mapped close to the road here — plan to push on to the next stop.</p>') +
                   '</div></div>',
@@ -507,11 +527,11 @@
 
         try {
             var gap = +document.querySelector('input[name=gap]:checked').value;
-            say('Finding those two places…');
+            say(T('Finding those two places…'));
             var a = await geocode($('fromInput').value.trim());
             var b = await geocode($('toInput').value.trim());
 
-            say('Working out the drive…');
+            say(T('Working out the drive…'));
             var alts = await routes(a, b);
 
             // Offer the choice before doing the expensive part. Sweeping a
@@ -519,11 +539,12 @@
             // free and rate-limited, so it runs for the road actually chosen
             // rather than for all three up front.
             buildRoutePicker(alts, a, b);
+            selectedIdx = 0;
             await renderRoute(alts[0], a, b);
             btn.disabled = false;
             return;
         } catch (e) {
-            say(e.message || 'Something went wrong — try again.', true);
+            say(e.message || T('Something went wrong — try again.'), true);
             btn.disabled = false;
             return;
         }
@@ -531,7 +552,7 @@
 
     // Which of the alternatives is drawn. Kept so re-picking can redraw
     // without geocoding again.
-    var lastAlts = [], lastA = null, lastB = null;
+    var lastAlts = [], lastA = null, lastB = null, selectedIdx = 0;
 
     function buildRoutePicker(alts, a, b) {
         lastAlts = alts; lastA = a; lastB = b;
@@ -539,14 +560,14 @@
         if (alts.length < 2) { box.style.display = 'none'; box.innerHTML = ''; return; }
         var fastest = alts[0].duration, shortest = Math.min.apply(null, alts.map(function (r) { return r.distance; }));
         box.innerHTML = alts.map(function (rt, i) {
-            var mi = Math.round(rt.distance / 1609.34);
+            var mi = Math.round(rt.distance / 1609.34);   // miles stay miles; this is a US road planner
             var tags = [];
-            if (rt.duration === fastest) tags.push('fastest');
-            if (rt.distance === shortest && alts.length > 1) tags.push('shortest');
+            if (rt.duration === fastest) tags.push(T('fastest'));
+            if (rt.distance === shortest && alts.length > 1) tags.push(T('shortest'));
             var extra = Math.round((rt.duration - fastest) / 60);
-            if (!tags.length) tags.push('+' + extra + ' min');
+            if (!tags.length) tags.push(T('+{n} min', { n: extra }));
             return '<button type="button" aria-pressed="' + (i === 0) + '" data-i="' + i + '">' +
-                   '<span class="rp-t">' + hhmm(rt.duration) + ' · ' + mi + ' mi</span>' +
+                   '<span class="rp-t">' + hhmm(rt.duration) + ' · ' + T('{n} mi', { n: mi }) + '</span>' +
                    '<span class="rp-s">' + tags.join(' · ') + '</span></button>';
         }).join('');
         box.style.display = 'flex';
@@ -556,6 +577,7 @@
                 box.querySelectorAll('button').forEach(function (o) {
                     o.setAttribute('aria-pressed', o === btn);
                 });
+                selectedIdx = i;
                 renderRoute(lastAlts[i], lastA, lastB);
             });
         });
@@ -597,7 +619,7 @@
             $('summary').style.display = 'flex';
 
             // ---- every rest stop on the road, not just near a break ----
-            say('Sweeping the whole route for rest stops…');
+            say(T('Sweeping the whole route for rest stops…'));
             var rests = [];
             try {
                 rests = await restStopsAlongRoute(rt);
@@ -606,12 +628,12 @@
             if (rests.length) {
                 var restHtml = '<div class="leg"><div class="leg-head">' +
                     '<div class="leg-n" style="background:#1b4d8f">🅿</div><div class="leg-t">' +
-                    '<h3>Rest stops along the whole route</h3>' +
-                    '<p>' + rests.length + ' found within 2½ miles of the road, in the order you\'ll pass them</p>' +
+                    '<h3>' + T('Rest stops along the whole route') + '</h3>' +
+                    '<p>' + T('{n} found within 2½ miles of the road, in the order you\u2019ll pass them', { n: rests.length }) + '</p>' +
                     '</div></div><div class="pois"><div class="poi-group"><ul>' +
                     rests.map(function (s) {
                         return '<li>' + (s.kind === 'fuel' ? '⛽ ' : '🅿 ') + esc(s.name) +
-                               ' <span style="color:#6b655b">· ' + hhmm(s.sec) + ' in</span></li>';
+                               ' <span style="color:#6b655b">· ' + T('{time} in', { time: hhmm(s.sec) }) + '</span></li>';
                     }).join('') +
                     '</ul></div></div></div>';
                 $('legs').innerHTML = restHtml;
@@ -621,13 +643,13 @@
                         radius: 6, color: '#fff', weight: 1.5,
                         fillColor: s.kind === 'fuel' ? '#a85a08' : '#1b4d8f', fillOpacity: .95
                     }).bindTooltip((s.kind === 'fuel' ? 'Fuel' : 'Rest stop') + ' · ' + s.name +
-                                   ' · ' + hhmm(s.sec) + ' in');
+                                   ' · ' + T('{time} in', { time: hhmm(s.sec) }));
                     c.addTo(map); layers.push(c);
                 });
             }
 
             if (!bps.length) {
-                say('That drive is shorter than one break — no stops needed.');
+                say(T('That drive is shorter than one break — no stops needed.'));
                 btn.disabled = false;
                 return;
             }
@@ -638,13 +660,13 @@
             var html = '', found = 0, failed = 0;
 
             for (var i = 0; i < bps.length; i++) {
-                say('Looking for stops around break ' + (i + 1) + ' of ' + bps.length + '…');
+                say(T('Looking for stops around break {i} of {n}…', { i: i + 1, n: bps.length }));
                 var bp = bps[i], buckets = null;
                 try {
                     buckets = await placesNear(bp.lat, bp.lon, radius);
                 } catch (e) { failed++; }
 
-                var where = 'Break ' + (i + 1);
+                var where = T('Break {i}', { i: i + 1 });
                 try {
                     var rev = await fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' +
                                           bp.lat + '&lon=' + bp.lon);
@@ -664,7 +686,7 @@
                             var c = L.circleMarker([p.lat, p.lon], {
                                 radius: 5, color: '#fff', weight: 1.5,
                                 fillColor: g.color, fillOpacity: .95
-                            }).bindTooltip(g.label + ' · ' + p.name);
+                            }).bindTooltip(T(g.label) + ' · ' + p.name);
                             c.addTo(map); layers.push(c);
                         });
                     });
@@ -679,20 +701,29 @@
             $('stPois').textContent = found + rests.length;
 
             if (failed === bps.length && !rests.length) {
-                say('Found the route, but the places service did not answer. It is free and rate-limited — wait a minute and try again.', true);
+                say(T('Found the route, but the places service did not answer. It is free and rate-limited — wait a minute and try again.'), true);
             } else if (failed) {
-                say('Planned. ' + failed + ' of ' + bps.length + ' breaks came back empty from the places service — try again for those.', false);
+                say(T('Planned. {failed} of {n} breaks came back empty from the places service — try again for those.', { failed: failed, n: bps.length }), false);
             } else {
-                say('Planned: ' + Math.round(miles) + ' miles, ' + hhmm(rt.duration) +
-                    ' driving, ' + rests.length + ' rest stops on the road, ' +
-                    bps.length + ' suggested breaks.');
+                say(T('Planned: {miles} miles, {time} driving, {rests} rest stops on the road, {breaks} suggested breaks.',
+                      { miles: Math.round(miles), time: hhmm(rt.duration),
+                        rests: rests.length, breaks: bps.length }));
             }
         } catch (e) {
-            say(e.message || 'Something went wrong — try again.', true);
+            say(e.message || T('Something went wrong — try again.'), true);
         } finally {
             btn.disabled = false;
         }
     }
+
+    // apply() re-walks text nodes, but an assembled string is one baked
+    // node — the only way to change it is to build it again. Redraw the
+    // chosen route so the results follow the switcher like the rest of the
+    // page does.
+    document.addEventListener('psx:lang', function () {
+        try { if (lastAlts.length) renderRoute(lastAlts[selectedIdx] || lastAlts[0], lastA, lastB); }
+        catch (e) {}
+    });
 
     $('goBtn').addEventListener('click', plan);
     ['fromInput', 'toInput'].forEach(function (id) {

@@ -91,6 +91,26 @@ or renames one.
 Assembled strings cannot be re-walked when the language changes, so the switcher
 fires `psx:lang` and the page rebuilds itself.
 
+**This is the one that hides best.** The Road Trip Planner looked translated —
+heading, labels, buttons, all Chinese — and every word of the actual answer was
+English: the rest stop list, the break names, the route chooser, the status
+line, and the durations, because "3 h 12 m" is assembled from two numbers.
+i18n.js swaps text *nodes*, so it handles everything written in the HTML and
+can do nothing about a string built in JavaScript afterwards. A reader got a
+Chinese page with an English answer in the middle of it.
+
+Nothing caught it because nothing was looking: the page's English tests all
+passed, and `check_i18n.py` checks the dictionary, not the JavaScript. So the
+guard is a test that plans a trip under `?lang=zh` and asserts every generated
+line is translated, with place names exempted — and the exemption list is
+derived from the fixture rather than typed out, because hardcoding it is how
+two of three names got left out and the test failed on its own data.
+
+**When you add a page that builds its results in JS, it needs three things:** a
+local `T()` that forwards to `psxFmt`, a `psx:lang` listener that re-renders,
+and a test in a non-English language. Two of the three are not enough — the
+listener without the wrapping just rebuilds the same English.
+
 ## The routine
 
 ```bash
