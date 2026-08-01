@@ -32,6 +32,15 @@
         }
         h1 { font-size: 1.8rem; color: #0f172a; font-weight: 800; margin-bottom: 0.3rem; }
         .sub { color: #64748b; margin-bottom: 1.8rem; font-size: 0.95rem; }
+        /* Google sign-in: a shortcut sitting above the form, visibly optional.
+           The divider is what stops it reading as a required first step. */
+        #gsiBox { margin: -0.6rem 0 1.5rem; }
+        #gsiBtn { display: flex; justify-content: center; min-height: 44px; }
+        .gsi-note { color: #94a3b8; font-size: 0.82rem; text-align: center; margin: 0.6rem 0 0; }
+        .gsi-or { display: flex; align-items: center; gap: 0.9rem; margin: 1.3rem 0 0.2rem;
+                  color: #94a3b8; font-size: 0.8rem; text-transform: uppercase;
+                  letter-spacing: 0.06em; }
+        .gsi-or::before, .gsi-or::after { content: ""; flex: 1; height: 1px; background: #e2e8f0; }
         .time-note { color: #475569; font-size: 0.85rem; margin: 0.1rem 0 0.2rem;
             background: #f0f9ff; border: 1px solid #e0f2fe; border-radius: 8px; padding: 0.6rem 0.9rem; }
         .mode-pill {
@@ -94,6 +103,7 @@
         .manage-msg { font-size: 0.88rem; font-weight: 600; margin-top: 0.7rem; }
     </style>
     <script src="/session.js"></script>
+    <link rel="stylesheet" href="/paper.css">
 </head>
 <body>
     <header>
@@ -107,26 +117,49 @@
             <h1>Book a Reservation Ride</h1>
             <p class="sub">Tell us where you're going — we'll take care of the rest.</p>
 
+            <!-- Optional shortcut, never a gate. Hidden entirely unless a
+                 GOOGLE_CLIENT_ID is configured, and the form below works
+                 exactly the same whether it is used or ignored. -->
+            <div id="gsiBox" hidden>
+                <div id="gsiBtn"></div>
+                <p class="gsi-note">Optional — fills your name and email. You can just type them instead.</p>
+                <div class="gsi-or"><span>or enter your details</span></div>
+            </div>
+
+            <!-- autocomplete / inputmode on every field: on a phone this is the
+                 difference between typing a name, an email and a number by hand
+                 at 5am and filling the whole block from the keychain in one tap.
+                 The values are the standard tokens browsers already understand,
+                 so it works on iOS, Android and desktop with nothing to sign up
+                 for and nothing sent to a third party. -->
             <form id="bookForm">
                 <label>Full name <span class="req">*</span></label>
-                <input name="name" required placeholder="Jane Smith">
+                <input name="name" required placeholder="Jane Smith"
+                       autocomplete="name" autocapitalize="words" enterkeyhint="next">
 
                 <div class="row">
                     <div>
                         <label>Email <span class="req">*</span></label>
-                        <input name="email" type="email" required placeholder="jane@email.com">
+                        <input name="email" type="email" required placeholder="jane@email.com"
+                               autocomplete="email" inputmode="email"
+                               autocapitalize="off" autocorrect="off" spellcheck="false">
                     </div>
                     <div>
                         <label>Phone</label>
-                        <input name="phone" placeholder="(415) 555-0199">
+                        <!-- type=tel, so the phone shows a number pad instead of a
+                             full keyboard, and the keychain offers the saved number -->
+                        <input name="phone" type="tel" placeholder="(206) 555-0142"
+                               autocomplete="tel" inputmode="tel">
                     </div>
                 </div>
 
                 <label>Pickup location <span class="req">*</span></label>
-                <input name="pickup" required placeholder="123 Market St, San Francisco">
+                <input name="pickup" required placeholder="1200 Pine St, Seattle"
+                       autocomplete="street-address" autocapitalize="words">
 
                 <label>Drop-off location <span class="req">*</span></label>
-                <input name="dropoff" required placeholder="SFO International Airport">
+                <input name="dropoff" required placeholder="Seattle–Tacoma International Airport (SEA)"
+                       autocapitalize="words">
 
                 <label>Service</label>
                 <select name="fare" id="b_service"></select>
@@ -146,12 +179,14 @@
                 <div class="row">
                     <div>
                         <label>Passengers</label>
-                        <input name="passengers" type="number" min="1" max="7" value="1">
+                        <input name="passengers" type="number" min="1" max="7" value="1"
+                               inputmode="numeric">
                     </div>
                 </div>
 
                 <label>If this is a trip to the airport, what is the flight number?</label>
-                <input name="flight" placeholder="e.g. UA 1234 (optional)">
+                <input name="flight" placeholder="e.g. AS 1234 (optional)"
+                       autocapitalize="characters" autocorrect="off" spellcheck="false">
 
                 <label>Notes for the driver</label>
                 <textarea name="notes" rows="2" placeholder="Two suitcases, call on arrival…"></textarea>
@@ -165,9 +200,12 @@
                 <span class="manage-toggle" onclick="document.getElementById('manageBox').classList.toggle('open')">Need to cancel a reservation?</span>
                 <div class="manage-box" id="manageBox">
                     <label>Confirmation number</label>
-                    <input id="m_conf" placeholder="RES_20260701_001">
+                    <input id="m_conf" placeholder="RES_20260701_001"
+                           autocapitalize="characters" autocorrect="off" spellcheck="false">
                     <label>Email used for the booking</label>
-                    <input id="m_email" type="email" placeholder="you@email.com">
+                    <input id="m_email" type="email" placeholder="you@email.com"
+                           autocomplete="email" inputmode="email"
+                           autocapitalize="off" autocorrect="off" spellcheck="false">
                     <button type="button" onclick="cancelByConf()">Cancel my reservation</button>
                     <div class="manage-msg" id="m_msg"></div>
                 </div>
@@ -399,6 +437,56 @@
                 msg.style.color = '#b91c1c'; msg.textContent = err.message;
             }
         }
+        /* ---------- Continue with Google (optional) ----------
+           Loads nothing from Google unless a client id is configured, so a
+           site without one sends no request to anyone and shows no button.
+           The credential is NOT decoded here — a browser can say anything.
+           It goes to the server, which checks the signature against Google's
+           keys, and we only use what comes back. */
+        (async function initGoogle() {
+            var box = document.getElementById('gsiBox');
+            if (!box) return;
+            var cfg;
+            try {
+                cfg = await (await fetch('/api/auth/google/config')).json();
+            } catch (e) { return; }
+            if (!cfg || !cfg.enabled || !cfg.client_id) return;   // stays hidden
+
+            await new Promise(function (done) {
+                var s = document.createElement('script');
+                s.src = 'https://accounts.google.com/gsi/client';
+                s.async = true; s.defer = true;
+                s.onload = done;
+                s.onerror = function () { done('failed'); };
+                document.head.appendChild(s);
+            });
+            if (!window.google || !google.accounts || !google.accounts.id) return;
+
+            google.accounts.id.initialize({
+                client_id: cfg.client_id,
+                callback: async function (resp) {
+                    try {
+                        const r = await fetch('/api/auth/google', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ credential: resp.credential })
+                        });
+                        const d = await r.json();
+                        if (!d || !d.ok) return;             // silent: they can still type
+                        var f = document.getElementById('bookForm');
+                        if (d.name && !f.name.value) f.name.value = d.name;
+                        if (d.email && !f.email.value) f.email.value = d.email;
+                        box.querySelector('.gsi-note').textContent =
+                            'Signed in as ' + d.email + ' — check the rest and send it.';
+                        (f.phone || f.pickup).focus();
+                    } catch (e) { /* typing still works */ }
+                }
+            });
+            google.accounts.id.renderButton(document.getElementById('gsiBtn'),
+                { theme: 'outline', size: 'large', text: 'continue_with',
+                  shape: 'pill', width: 280 });
+            box.hidden = false;
+        })();
     </script>
     <script src="/floatback.js"></script>
     <script src="/jarvis-widget.js"></script>

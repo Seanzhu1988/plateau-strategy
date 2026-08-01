@@ -203,7 +203,7 @@ def api_owner_setup():
         json.dump({"username": u, "salt": salt, "hash": h,
                    "created_at": datetime.datetime.now().isoformat(timespec="seconds")}, f, indent=2)
     session["owner"] = u
-    return jsonify({"ok": True, "username": u})
+    return _set_not_counted(jsonify({"ok": True, "username": u}))
 
 
 @app.route("/api/owner/login", methods=["POST"])
@@ -216,13 +216,71 @@ def api_owner_login():
             or not _verify_pw(pw, owner.get("salt", ""), owner.get("hash", "")):
         return jsonify({"ok": False, "error": "Wrong username or password."}), 401
     session["owner"] = owner.get("username")
-    return jsonify({"ok": True, "username": owner.get("username")})
+    # Whoever signs in here is running the business, not visiting it. Mark the
+    # device so it stops inflating the numbers — the session expires, this does
+    # not, so the computer stays uncounted after the login is forgotten.
+    return _set_not_counted(jsonify({"ok": True, "username": owner.get("username")}))
 
 
 @app.route("/api/owner/logout", methods=["POST"])
 def api_owner_logout():
     session.pop("owner", None)
     return jsonify({"ok": True})
+
+
+# ---------- "Continue with Google" on the booking form ----------
+# Optional, and never a gate. A stranger booking a 5am airport run wants a car,
+# not an account — requiring a sign-in before a first booking costs bookings.
+# All this does is fill in the name and email so the form is two taps shorter.
+#
+# The client id is configuration, not a secret: it is public by design and
+# appears in the page. It lives in the environment anyway so the repo stays
+# clean and the feature simply stays off until it is set.
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "").strip()
+
+
+@app.route("/api/auth/google/config")
+def api_google_config():
+    """Whether the button should be drawn at all, and with which client id."""
+    return jsonify({"ok": True, "enabled": bool(GOOGLE_CLIENT_ID),
+                    "client_id": GOOGLE_CLIENT_ID})
+
+
+@app.route("/api/auth/google", methods=["POST"])
+def api_auth_google():
+    """Turn a Google credential into a name and an email we can believe.
+
+    The token is verified on the SERVER, against Google's own signing keys.
+    That is the entire security of this endpoint: the browser hands us a
+    signed assertion, and a browser can say anything. Decoding the token
+    client-side and trusting what it says would let anyone book as anyone —
+    so the claims used below come only from a token whose signature,
+    audience and expiry Google's library has checked.
+
+    Nothing is stored. The reply is used to fill two form fields."""
+    if not GOOGLE_CLIENT_ID:
+        return jsonify({"ok": False, "error": "Google sign-in isn't configured."}), 503
+    token = ((request.get_json(force=True, silent=True) or {}).get("credential") or "").strip()
+    if not token:
+        return jsonify({"ok": False, "error": "No credential."}), 400
+    try:
+        from google.oauth2 import id_token as g_id_token
+        from google.auth.transport import requests as g_requests
+        claims = g_id_token.verify_oauth2_token(
+            token, g_requests.Request(), GOOGLE_CLIENT_ID)
+    except Exception:
+        # Bad signature, wrong audience, expired, or Google unreachable. We
+        # cannot tell a forgery from an outage here, and must not guess.
+        return jsonify({"ok": False, "error": "Could not verify that sign-in."}), 401
+    if claims.get("iss") not in ("accounts.google.com", "https://accounts.google.com"):
+        return jsonify({"ok": False, "error": "Could not verify that sign-in."}), 401
+    if not claims.get("email_verified"):
+        # An unverified address would let someone prefill a booking under
+        # somebody else's email, and that is where the invoice goes.
+        return jsonify({"ok": False, "error": "That Google account has no verified email."}), 401
+    return jsonify({"ok": True,
+                    "name": (claims.get("name") or "").strip()[:80],
+                    "email": (claims.get("email") or "").strip()[:120]})
 
 
 # ---------- storage helpers ----------
@@ -294,6 +352,11 @@ def _skip_traffic():
     """True when this request should not appear in any visitor number."""
     if request.cookies.get(TRAFFIC_OPTOUT_COOKIE) == "1":
         return True
+    if request.path == "/not-a-traveler":
+        # The page whose whole purpose is "stop counting me" must not itself
+        # count. The cookie is only set on the way OUT, so without this the
+        # opt-out always cost one phantom visitor before taking effect.
+        return True
     if _client_ip() in _ignored_ips():
         return True
     ua = (request.headers.get("User-Agent") or "").lower()
@@ -302,20 +365,81 @@ def _skip_traffic():
     return any(h in ua for h in _BOT_HINTS)
 
 
+def _set_not_counted(resp, on=True):
+    """Mark (or unmark) this device as one that never appears in visitor numbers."""
+    if on:
+        resp.set_cookie(TRAFFIC_OPTOUT_COOKIE, "1", max_age=60 * 60 * 24 * 3650,
+                        httponly=True, samesite="Lax")
+    else:
+        # Same attributes as when it was set, or some browsers keep it.
+        resp.set_cookie(TRAFFIC_OPTOUT_COOKIE, "", max_age=0,
+                        httponly=True, samesite="Lax")
+    return resp
+
+
 @app.route("/api/traffic/optout")
 def api_traffic_optout():
     """Open this once on a device and it stops being counted — ours, or anyone's
     who asks. Sets a plain flag cookie; no identity is stored either way."""
     on = request.args.get("off") != "1"
-    resp = jsonify({"ok": True, "counted": not on,
-                    "message": ("This device is no longer counted as a visitor."
-                                if on else "This device is being counted again.")})
-    if on:
-        resp.set_cookie(TRAFFIC_OPTOUT_COOKIE, "1", max_age=60 * 60 * 24 * 3650,
-                        httponly=True, samesite="Lax")
+    return _set_not_counted(
+        jsonify({"ok": True, "counted": not on,
+                 "message": ("This device is no longer counted as a visitor."
+                             if on else "This device is being counted again.")}), on)
+
+
+@app.route("/not-a-traveler")
+def not_a_traveler_page():
+    """The human version of the opt-out, for a phone.
+
+    Our own devices inflate every number the business is judged on — and the
+    ones that matter most are the smallest, because a handful of self-visits is
+    invisible in a thousand and decisive in twenty. Open this once per device.
+
+    Deliberately a plain page and not part of the app shell: it has to work on
+    a phone, in one tap, without logging in anywhere."""
+    turn_off = request.args.get("count") == "1"     # ?count=1 puts it back
+    now_counted = not (request.cookies.get(TRAFFIC_OPTOUT_COOKIE) == "1")
+    if turn_off:
+        counted_after = True
+    elif request.args.get("set") == "0" or not request.args:
+        counted_after = False
     else:
-        resp.delete_cookie(TRAFFIC_OPTOUT_COOKIE)
-    return resp
+        counted_after = now_counted
+
+    state = ("This device is <strong>not counted</strong> as a traveler."
+             if not counted_after else
+             "This device <strong>is being counted</strong> as a traveler.")
+    other = ('<a class="b" href="/not-a-traveler?count=1">Count this device again</a>'
+             if not counted_after else
+             '<a class="b" href="/not-a-traveler?set=0">Stop counting this device</a>')
+    html = """<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Not a traveler — Plateau Strategy</title>
+<style>
+ body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+   background:#070b16;color:#e7ecf5;font:16px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:1.5rem;}
+ .c{max-width:30rem;text-align:center;}
+ h1{font-size:1.35rem;margin:0 0 .75rem;}
+ p{color:#9aa6bb;margin:.6rem 0;}
+ strong{color:#e7ecf5;}
+ .b{display:inline-block;margin-top:1.4rem;padding:.85rem 1.3rem;border-radius:999px;
+   background:#2563eb;color:#fff;text-decoration:none;font-weight:600;min-height:44px;}
+ .b:hover{background:#1d4ed8;}
+ .s{display:block;margin-top:1.6rem;color:#6f7c92;font-size:.85rem;}
+ a.h{color:#7da2ff;}
+</style></head><body><div class="c">
+<h1>Visitor counting</h1>
+<p>%s</p>
+<p>It is a single flag stored on this device. No identity, no address, nothing
+recorded about you either way — the only effect is whether page opens from this
+device are added to the visitor totals.</p>
+%s
+<span class="s">Do this once on every device you use to check the site.
+<a class="h" href="/">Back to the site</a></span>
+</div></body></html>""" % (state, other)
+    return _set_not_counted(Response(html, mimetype="text/html"), not counted_after)
 
 
 # ---------- who's actually here RIGHT NOW ----------
@@ -668,6 +792,16 @@ def admin_terminal_css():
     return send_file(os.path.join(BASE_DIR, "admin-terminal.css"))
 
 
+@app.route("/paper.css")
+def paper_css():
+    """The paper theme, shared by every page.
+
+    It was written inline on the landing page. Carrying it to the rest of the
+    site by copy-and-paste would guarantee eight versions that drift, so it
+    lives in one file that every page links."""
+    return send_file(os.path.join(BASE_DIR, "paper.css"))
+
+
 @app.route("/media/<path:filename>")
 def media_file(filename):
     from flask import send_from_directory
@@ -862,11 +996,83 @@ def api_clock_signup():
     return jsonify({"ok": True})
 
 
+# ======================================================================
+#  THE LINE BETWEEN THE TWO BOOKS
+#
+#  Two bodies of place data exist and they must never mix:
+#
+#    PUBLIC  destinations.json — a book anyone can read. Only public places.
+#    PRIVATE reservations.json — where customers are actually driven. Any
+#            address at all, including someone's home, because that is the
+#            service. Reachable only by the owner, or the driver assigned
+#            to that ride.
+#
+#  A customer's right to be driven to a private address, and a stranger's
+#  right not to have their home published, are both absolute. They do not
+#  trade against each other — they live in different files.
+#
+#  Everything below exists so that separation survives the next feature.
+#  It is enforced three ways, deliberately overlapping:
+#
+#    1. CLASSIFY ONCE, AT THE DOOR.  /api/destinations/add decides public or
+#       private while it still has the geocoder's tags, and stamps the verdict
+#       on the record. Reads never re-derive it — by then the tags are gone
+#       and only the name is left, which is a weaker signal.
+#    2. ONE DOOR OUT.  public_book() is the only way a route may read the
+#       book. It drops anything not stamped public, and falls back to the
+#       name test for records written before stamping existed.
+#    3. A TEST THAT FAILS THE NEXT MISTAKE.  test_private_places.py asserts
+#       no route opens the file directly. /api/geography was written after
+#       the filter and read straight past it; that is the failure mode this
+#       catches, without anyone having to remember.
+# ======================================================================
+
+VISIBILITY_PUBLIC = "public"
+
+
+def _book_raw():
+    """The whole file, withheld records included. Writers only.
+
+    Routes must call public_book() instead — this is the raw store and has no
+    idea what may be shown to anyone."""
+    try:
+        with open(_data_path("destinations.json")) as f:
+            d = json.load(f)
+        return d if isinstance(d, dict) else {"cities": {}, "entries": []}
+    except Exception:
+        return {"cities": {}, "entries": []}
+
+
+def _may_publish(entry):
+    """One record's verdict, trusting the stamp made when the tags were known.
+
+    A record stamped at write time is believed. A record written before
+    stamping existed gets the only test its stored fields still support: is
+    the name a street address? Nothing worth visiting is called "412 Maple
+    St", and this fails in the safe direction — at worst a genuine place with
+    a number for a name waits until someone adds it under its real name."""
+    vis = (entry.get("visibility") or "").strip().lower()
+    if vis:
+        return vis == VISIBILITY_PUBLIC
+    return not _ADDRESS_LIKE.match(entry.get("name") or "")
+
+
+def public_book():
+    """The book as the world may see it. The only read path for routes."""
+    d = _book_raw()
+    d["entries"] = [e for e in d.get("entries") or [] if _may_publish(e)]
+    return d
+
+
+def _public_book_entries(entries):
+    """Filter a list of entries already in hand. Prefer public_book()."""
+    return [e for e in entries or [] if _may_publish(e)]
+
+
 @app.route("/api/destinations")
 def api_destinations():
     try:
-        with open(_data_path("destinations.json")) as f:
-            data = json.load(f)
+        data = public_book()
         # ride the crowd's real stay times AND star ratings along with each place
         times = _visit_all()
         ratings = _ratings_all()
@@ -924,11 +1130,7 @@ def api_geography():
     appears in the picker for everyone after you. Places recorded before this
     existed have no state and are simply left out rather than guessed at.
     """
-    try:
-        with open(_data_path("destinations.json")) as f:
-            d = json.load(f)
-    except Exception:
-        return jsonify({"ok": True, "geo": {}, "cities": {}})
+    d = public_book()
     cities = d.get("cities", {})
     geo, seen = {}, {}
     for e in d.get("entries", []):
@@ -953,13 +1155,10 @@ def api_geography():
 def api_discoveries():
     """What travelers have been discovering lately, newest first, worldwide —
     the visible proof that the map grows by itself."""
-    try:
-        with open(_data_path("destinations.json")) as f:
-            d = json.load(f)
-    except Exception:
-        return jsonify({"ok": True, "recent": [], "by_city": [], "total": 0})
+    d = public_book()
     cities = d.get("cities", {})
-    found = [e for e in d.get("entries", []) if e.get("source") == "user" and e.get("added_at")]
+    found = [e for e in d.get("entries", [])
+             if e.get("source") == "user" and e.get("added_at")]
     found.sort(key=lambda e: e.get("added_at", ""), reverse=True)
     tally = {}
     for e in found:
@@ -1303,16 +1502,91 @@ def _describe_osm(meta):
     return desc[:300], cat, book_type
 
 
+# Somebody's home is not a destination. These are OpenStreetMap's own words for
+# residential buildings and plots — if the map says a point is one of these, it
+# does not go in a public book, no matter who searched for it.
+_RESIDENTIAL_TYPES = {
+    "house", "houses", "residential", "apartments", "apartment", "detached",
+    "semidetached_house", "semi_detached_house", "terrace", "terraced_house",
+    "bungalow", "dormitory", "farmhouse", "static_caravan", "houseboat",
+    "cabin", "hut", "trailer", "mobile_home", "annexe", "ger",
+}
+# A point classified under one of these is a public thing — a park, a museum, a
+# shop, a station. Anything with no such classification has not earned a page.
+_PUBLIC_CLASSES = {
+    "tourism", "historic", "leisure", "natural", "amenity", "shop", "man_made",
+    "aeroway", "railway", "waterway", "aerialway", "military", "emergency",
+    "office", "craft", "healthcare", "public_transport", "attraction",
+}
+_ADDRESS_LIKE = re.compile(r"^\s*\d+[a-z]?[\s,-]", re.I)
+
+
+def _is_private_residence(meta, name=""):
+    """Does this point look like somewhere a person lives?
+
+    Returns (True, reason) when a place must be kept out of the public
+    Destination Book. It is deliberately cautious: the cost of wrongly
+    publishing a home is somebody's address on the open internet forever,
+    and the cost of wrongly withholding a cafe is that the book misses one
+    row until the next visitor searches it with better tags.
+
+    This never affects where a customer can be driven. It only decides what
+    becomes a public page.
+    """
+    meta = meta or {}
+    cls = (meta.get("osm_class") or meta.get("class") or "").strip().lower()
+    typ = (meta.get("osm_type_name") or meta.get("type") or "").strip().lower()
+    addrtype = (meta.get("addresstype") or "").strip().lower()
+    addr = meta.get("address") if isinstance(meta.get("address"), dict) else {}
+
+    if typ in _RESIDENTIAL_TYPES or addrtype in _RESIDENTIAL_TYPES:
+        return True, "residential building"
+    if cls == "place" and typ in ("house", "houses", "farm", "isolated_dwelling"):
+        return True, "dwelling"
+    if cls == "building" and typ not in ("public", "civic", "commercial",
+                                         "retail", "industrial", "church",
+                                         "cathedral", "temple", "mosque",
+                                         "synagogue", "train_station", "hotel",
+                                         "stadium", "museum"):
+        return True, "unclassified building"
+    if cls == "landuse" and typ == "residential":
+        return True, "residential land"
+
+    # No public classification at all, and the name is a street address rather
+    # than the name of anything — "412 Maple St" is where someone lives, not a
+    # place to visit. A named landmark ("Pike Place Market") never matches this,
+    # and a real landmark that happens to sit at a number is normally tagged
+    # tourism/historic, so it is caught by the class check above.
+    if cls not in _PUBLIC_CLASSES:
+        if _ADDRESS_LIKE.match(name or "") and (addr.get("house_number") or "").strip():
+            return True, "street address, not a named place"
+
+    return False, ""
+
+
 @app.route("/api/destinations/add", methods=["POST"])
 def api_destinations_add():
     """COMMUNITY MEMORY for the free tools: a place anyone adds in the Trip
     Planner search is remembered by the site — it joins the city's planner list
     for every future visitor AND appears in the Destination Book (tagged
-    'community'). Deduped by name+city; capped so the book can't be flooded."""
+    'community'). Deduped by name+city; capped so the book can't be flooded.
+
+    Private homes are refused. Anyone can type any address into the planner and
+    be driven there — that is the whole service — but a place only becomes a
+    public page if it is a public place. Otherwise searching for where someone
+    lives would publish their address, with coordinates, to every future
+    visitor. The traveler keeps it on their own board either way."""
     data = request.get_json(force=True, silent=True) or {}
     name = _no_tags((data.get("name") or "").strip())[:80]
     if len(name) < 2:
         return jsonify({"ok": False, "error": "Name required."}), 400
+    private, _why = _is_private_residence(data, name)
+    if private:
+        # 200, not an error: the traveler did nothing wrong and their trip is
+        # unaffected. Nothing about the address is written down, including here.
+        return jsonify({"ok": False, "private": True,
+                        "error": "Homes and private addresses aren't added to the "
+                                 "public Destination Book. Your trip is unaffected."}), 200
     try:
         lat = float(data.get("lat")); lon = float(data.get("lon"))
         if not (-90 <= lat <= 90 and -180 <= lon <= 180):
@@ -1335,11 +1609,9 @@ def api_destinations_add():
     visit = _clampi(data.get("visit"), 10, 480, 60)
     path = _data_path("destinations.json")
     with _LOCK:
-        try:
-            with open(path) as f:
-                d = json.load(f)
-        except Exception:
-            d = {"cities": {}, "entries": []}
+        # RAW, not public_book(): this rewrites the whole file, and filtering
+        # here would quietly delete every withheld record on the next save.
+        d = _book_raw()
         # THE BOOK GROWS WORLDWIDE. A city we have never seen before is not an
         # error to be swept into "Other" — it is a new chapter. The first traveler
         # to search a place there names the city, and it joins the book for good.
@@ -1397,6 +1669,9 @@ def api_destinations_add():
                "close": close, "visit": visit, "lat": round(lat, 5), "lon": round(lon, 5),
                "desc": given_desc or wiki_desc or auto_desc, "tip": "",
                "photo": wiki_photo, "source_url": wiki_url,
+               # Stamped here, while the geocoder's tags are still in hand. By
+               # read time all that survives is a name, which is a weaker test.
+               "visibility": VISIBILITY_PUBLIC,
                "source": "user", "auto_desc": not given_desc,
                "desc_from": ("guide" if given_desc else
                              ("wikipedia" if wiki_desc else "map data")),

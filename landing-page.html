@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plateau Strategy Solution Lab — Integrated Business Ecosystem</title>
-    <meta name="description" content="Integrated wealth, built through connected ecosystems. Affordable Tesla rentals turn everyday drivers into earners and riders into owners — the first loop in a closed system where revenue compounds instead of leaking away.">
+    <meta name="description" content="Flat-rate Tesla airport transfers in Seattle — $75 to Sea–Tac, quoted before you book and unchanged after. Reserve any hour. Free trip-planning tools, no account needed.">
     <link rel="canonical" href="https://plateaustrategy.io/">
     <meta name="theme-color" content="#070b16">
     <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
@@ -15,11 +15,11 @@
     <meta property="og:site_name" content="Plateau Strategy Solution Lab">
     <meta property="og:url" content="https://plateaustrategy.io/">
     <meta property="og:title" content="Plateau Strategy Solution Lab — Integrated Business Ecosystem">
-    <meta property="og:description" content="Integrated wealth, built through connected ecosystems. Transportation, real estate, and finance in one closed loop where revenue compounds instead of leaking away.">
+    <meta property="og:description" content="Flat-rate Tesla airport transfers in Seattle — $75 to Sea–Tac. Reserve any hour, no surge pricing.">
     <meta property="og:image" content="https://plateaustrategy.io/plateau-logo.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Plateau Strategy Solution Lab — Integrated Business Ecosystem">
-    <meta name="twitter:description" content="Integrated wealth, built through connected ecosystems. Transportation, real estate, and finance in one closed loop.">
+    <meta name="twitter:description" content="Flat-rate Tesla airport transfers in Seattle — $75 to Sea–Tac. Reserve any hour.">
     <meta name="twitter:image" content="https://plateaustrategy.io/plateau-logo.png">
 
     <!-- Structured data. An AI assistant answering "who does airport runs in
@@ -1849,8 +1849,121 @@
       .wish-form input:focus-visible,
       .gb-form input:focus-visible{outline-offset:0;}
     </style>
+    <link rel="stylesheet" href="/paper.css">
 </head>
 <body>
+    <!-- ============================================================
+         ICONS — one drawn set for the whole page.
+
+         There were three systems before this: hand-inlined SVG in
+         Transportation, emoji in Finance and Free Tools, and nothing on the
+         tabs. Emoji are the giveaway — they render as someone else's artwork
+         in someone else's colours, they change shape per platform, and next
+         to a book serif on paper they look pasted on.
+
+         All of these are drawn on the same terms: 24-unit box, stroke only,
+         1.6 weight, round caps, currentColor. That last one matters — they
+         inherit ink from whatever they sit in, so nothing needs recolouring.
+         Defined once, referenced by <use>, so a fix happens in one place.
+         ============================================================ -->
+    <svg width="0" height="0" aria-hidden="true" focusable="false"
+         style="position:absolute" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <g id="ico-base" fill="none" stroke="currentColor" stroke-width="1.6"
+           stroke-linecap="round" stroke-linejoin="round"></g>
+      </defs>
+      <symbol id="i-overview" viewBox="0 0 24 24">
+        <rect x="3.5" y="3.5" width="7" height="7" rx="1.2"/>
+        <rect x="13.5" y="3.5" width="7" height="7" rx="1.2"/>
+        <rect x="3.5" y="13.5" width="7" height="7" rx="1.2"/>
+        <rect x="13.5" y="13.5" width="7" height="7" rx="1.2"/>
+      </symbol>
+      <symbol id="i-car" viewBox="0 0 24 24">
+        <path d="M4 16V11a2 2 0 0 1 2-2h1l1.5-3h7L17 9h1a2 2 0 0 1 2 2v5"/>
+        <path d="M4 16h16"/><circle cx="8" cy="17.5" r="1.5"/><circle cx="16" cy="17.5" r="1.5"/>
+      </symbol>
+      <symbol id="i-key" viewBox="0 0 24 24">
+        <circle cx="7.5" cy="12" r="3.8"/><path d="M11.3 12H21M17 12v3M20 12v2.5"/>
+      </symbol>
+      <symbol id="i-people" viewBox="0 0 24 24">
+        <circle cx="9" cy="8" r="3"/><path d="M4 19v-1a5 5 0 0 1 10 0v1"/>
+        <circle cx="17.5" cy="8.5" r="2.3"/><path d="M15.8 13.3A5 5 0 0 1 20 18v1"/>
+      </symbol>
+      <symbol id="i-operations" viewBox="0 0 24 24">
+        <path d="M4 7h16M4 12h16M4 17h16"/>
+        <circle cx="9.5" cy="7" r="1.9"/><circle cx="15" cy="12" r="1.9"/><circle cx="7.5" cy="17" r="1.9"/>
+      </symbol>
+      <symbol id="i-building" viewBox="0 0 24 24">
+        <path d="M3 21h18"/><rect x="4.5" y="9" width="6.5" height="12"/>
+        <rect x="13" y="4" width="6.5" height="17"/>
+        <path d="M7 12.5v.01M7 16v.01M15.5 7.5v.01M17 7.5v.01M15.5 11v.01M17 11v.01M15.5 14.5v.01M17 14.5v.01"/>
+      </symbol>
+      <symbol id="i-chart" viewBox="0 0 24 24">
+        <path d="M4 4v16h16"/><path d="M7.5 15l3.5-3.8 3 2.8L19 8"/><path d="M15.6 8H19v3.3"/>
+      </symbol>
+      <symbol id="i-vault" viewBox="0 0 24 24">
+        <rect x="3" y="4.5" width="18" height="15" rx="2"/><circle cx="12" cy="12" r="3.8"/>
+        <path d="M12 6.4V8M12 16v1.6M6.4 12H8M16 12h1.6"/>
+      </symbol>
+      <symbol id="i-cycle" viewBox="0 0 24 24">
+        <path d="M4.5 12a7.5 7.5 0 0 1 12.9-5.2L19.5 9"/><path d="M19.5 4.5V9H15"/>
+        <path d="M19.5 12a7.5 7.5 0 0 1-12.9 5.2L4.5 15"/><path d="M4.5 19.5V15H9"/>
+      </symbol>
+      <symbol id="i-compass" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.5"/><path d="M15.6 8.4l-2.2 5-5 2.2 2.2-5z"/>
+      </symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24">
+        <path d="M12 3l7.5 3v5.2c0 4.5-3.1 8.6-7.5 10.3-4.4-1.7-7.5-5.8-7.5-10.3V6z"/>
+        <path d="M9.2 12l2 2 3.6-3.8"/>
+      </symbol>
+      <symbol id="i-ticket" viewBox="0 0 24 24">
+        <path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h13A1.5 1.5 0 0 1 20 8.5a2.2 2.2 0 0 0 0 7A1.5 1.5 0 0 1 18.5 17h-13A1.5 1.5 0 0 1 4 15.5a2.2 2.2 0 0 0 0-7z"/>
+        <path d="M14 7.5v1.6M14 11.2v1.6M14 14.9v1.6"/>
+      </symbol>
+      <symbol id="i-map" viewBox="0 0 24 24">
+        <path d="M9 4.5L3.5 6.6v13.3L9 17.8l6 2.1 5.5-2.1V4.4L15 6.5z"/>
+        <path d="M9 4.5v13.3M15 6.5v13.4"/>
+      </symbol>
+      <symbol id="i-road" viewBox="0 0 24 24">
+        <path d="M8.5 3.5L5.5 20.5M15.5 3.5l3 17"/>
+        <path d="M12 4.5v2.8M12 10.6v2.8M12 16.7v2.8"/>
+      </symbol>
+      <symbol id="i-book" viewBox="0 0 24 24">
+        <path d="M3.5 5.5S5.5 4 8.5 4s4.5 1.5 4.5 1.5v13S11 17 8.5 17s-5 1.5-5 1.5z"/>
+        <path d="M20.5 5.5S18.5 4 15.5 4 11 5.5 11 5.5v13S13 17 15.5 17s5 1.5 5 1.5z"/>
+      </symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.5"/><path d="M12 6.8V12l3.4 2"/>
+      </symbol>
+      <symbol id="i-toolbox" viewBox="0 0 24 24">
+        <rect x="3" y="8" width="18" height="12" rx="1.8"/>
+        <path d="M9 8V6.2A2.2 2.2 0 0 1 11.2 4h1.6A2.2 2.2 0 0 1 15 6.2V8"/>
+        <path d="M3 13h18M10.5 11.5v3M13.5 11.5v3"/>
+      </symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24">
+        <path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.3"/>
+      </symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24">
+        <rect x="4.5" y="10" width="15" height="10.5" rx="2"/>
+        <path d="M8 10V7.2a4 4 0 0 1 8 0V10"/><path d="M12 14v2.5"/>
+      </symbol>
+      <symbol id="i-keyhole" viewBox="0 0 24 24">
+        <circle cx="9" cy="9" r="4.5"/><path d="M12.2 12.2L20 20"/><path d="M16.5 16.5l2-2M18.8 18.8l1.7-1.7"/>
+      </symbol>
+      <symbol id="i-card" viewBox="0 0 24 24">
+        <rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M6.5 14.5h4"/>
+      </symbol>
+      <symbol id="i-receipt" viewBox="0 0 24 24">
+        <path d="M5.5 3h13v18l-2.2-1.6-2.2 1.6-2.1-1.6L9.9 21l-2.2-1.6L5.5 21z"/>
+        <path d="M9 8h6M9 12h6"/>
+      </symbol>
+      <symbol id="i-person" viewBox="0 0 24 24">
+        <circle cx="12" cy="7.5" r="3.5"/><path d="M6 20.5v-1.2a6 6 0 0 1 12 0v1.2"/>
+      </symbol>
+      <symbol id="i-flag" viewBox="0 0 24 24">
+        <path d="M5.5 21V3.8"/><path d="M5.5 4.5h13l-2.4 4 2.4 4h-13"/>
+      </symbol>
+    </svg>
     <a class="psx-skip" href="#main-content">Skip to content</a>
     <header>
         <div class="header-top">
@@ -1873,62 +1986,87 @@
 
     <main id="main-content">
         <div class="phase-tabs" role="tablist" aria-label="Sections">
-            <a class="phase-tab active" href="#" onclick="showView('overview', event)">Overview</a>
-            <a class="phase-tab" href="#" onclick="showView('transportation', event)">Transportation</a>
-            <a class="phase-tab" href="#" onclick="showView('operations', event)">Operations</a>
-            <a class="phase-tab" href="#" onclick="showView('realestate', event)">Real Estate</a>
-            <a class="phase-tab" href="#" onclick="showView('finance', event)">Finance</a>
-            <a class="phase-tab" href="#" onclick="showView('reinvestment', event)">Reinvestment</a>
-            <a class="phase-tab" href="#" onclick="showView('tools', event)">Free Tools</a>
-            <a class="phase-tab" href="#" onclick="showView('security', event)">Security Parameter</a>
+            <a class="phase-tab active" href="#" onclick="showView('overview', event)"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-overview"/></svg>Overview</a>
+            <a class="phase-tab" href="#" onclick="showView('transportation', event)"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-car"/></svg>Transportation</a>
+            <a class="phase-tab" href="#" onclick="showView('operations', event)"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-operations"/></svg>Operations</a>
+            <a class="phase-tab" href="#" onclick="showView('realestate', event)"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-building"/></svg>Real Estate</a>
+            <a class="phase-tab" href="#" onclick="showView('finance', event)"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-chart"/></svg>Finance</a>
+            <a class="phase-tab" href="#" onclick="showView('reinvestment', event)"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-cycle"/></svg>Reinvestment</a>
+            <a class="phase-tab" href="#" onclick="showView('tools', event)"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-compass"/></svg>Free Tools</a>
+            <a class="phase-tab" href="#" onclick="showView('security', event)"><svg class="tab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-shield"/></svg>Security Parameter</a>
         </div>
 
         <div>
 
             <!-- ============ OVERVIEW (the introduction) ============ -->
             <div class="view active" id="view-overview">
+                <!-- The first screen has one job: say what this is, where it
+                     operates, and what it costs. The previous version led with
+                     "Integrated wealth, built through connected ecosystems",
+                     which describes no service a person can buy and reads the
+                     way every fake company on the internet reads. Numbers here
+                     are the real ones — the $75 fare, the airport, the hours —
+                     not invented metrics like "100% value chain owned". -->
                 <section class="psx-hero">
-                    <div class="psx-glow psx-glow-1"></div>
-                    <div class="psx-glow psx-glow-2"></div>
                     <div class="psx-hero-inner">
-                        <span class="psx-eyebrow-pill"><span class="psx-dot"></span>INTEGRATED BUSINESS ECOSYSTEM</span>
-                        <h1 class="psx-h1">Integrated wealth, built through <span class="psx-accent">connected ecosystems</span></h1>
-                        <p class="psx-sub">Affordable Tesla rentals turn everyday drivers into earners and riders into owners — the first loop in a closed system where revenue compounds instead of leaking away.</p>
+                        <span class="psx-eyebrow-pill">Plateau Strategy Solution Lab · Seattle</span>
+                        <h1 class="psx-h1">We build one business at a time</h1>
+                        <p class="psx-sub">Transportation is the one that runs today: flat-rate Tesla rides across Seattle, cars rented to drivers who earn with them, and trip-planning tools anyone can use free. It pays for what comes next. Every other arm is listed below with the stage it is honestly at — including the ones not finished.</p>
                         <div class="psx-cta-row">
-                            <a href="/book" class="psx-btn psx-btn-primary">Book a Ride <span aria-hidden="true">→</span></a>
-                            <a href="#psx-model" class="psx-btn psx-btn-ghost" onclick="event.preventDefault();document.getElementById('psx-model').scrollIntoView({behavior:'smooth'});">Explore the model</a>
+                            <a href="/book" class="psx-btn psx-btn-primary">Book a ride</a>
+                            <a href="/agent" class="psx-btn psx-btn-ghost">Partner with us</a>
                         </div>
                         <div class="psx-stats">
-                            <div class="psx-stat"><span class="psx-stat-val">3</span><span class="psx-stat-label">Business verticals</span></div>
+                            <div class="psx-stat"><span class="psx-stat-val">$75</span><span class="psx-stat-label">Flat fare to Sea–Tac</span></div>
                             <div class="psx-divider"></div>
-                            <div class="psx-stat"><span class="psx-stat-val">100%</span><span class="psx-stat-label">Value chain owned</span></div>
+                            <div class="psx-stat"><span class="psx-stat-val">24/7</span><span class="psx-stat-label">Book any hour</span></div>
                             <div class="psx-divider"></div>
-                            <div class="psx-stat"><span class="psx-stat-val">24/7</span><span class="psx-stat-label">Ride availability</span></div>
+                            <div class="psx-stat"><span class="psx-stat-val">Tesla</span><span class="psx-stat-label">Every vehicle</span></div>
                         </div>
                     </div>
                 </section>
 
                 <section class="psx-section" id="psx-model">
+                    <!-- Was "Capital Efficient / Vertically Integrated /
+                         Compounding Growth" — an investor deck a customer
+                         cannot use. Three things a visitor can actually do
+                         instead, each linking somewhere real. -->
+                    <!-- The strategy, told by stage. A holding company reads as
+                         real when it says which arms are running and which are
+                         not; it reads as fake when it implies all of them are.
+                         The old version claimed "3 business verticals" and
+                         "100% value chain owned" with nothing behind either.
+                         Every label below is checkable against the section it
+                         links to. -->
                     <div class="psx-head">
-                        <span class="psx-eyebrow">THE MODEL</span>
-                        <h2 class="psx-h2">One ecosystem. Every part funds the next.</h2>
-                        <p class="psx-section-sub">We control the full value chain and share the upside with drivers and partners — so revenue compounds across transportation, real estate, and finance instead of leaking away.</p>
+                        <span class="psx-eyebrow">THE COMPANY</span>
+                        <h2 class="psx-h2">Four arms, at four different stages</h2>
+                        <p class="psx-section-sub">One business pays for the next. That only means something if we say plainly which ones are earning today and which are still being built — so we do.</p>
                     </div>
                     <div class="psx-cards">
                         <div class="psx-card">
-                            <div class="psx-chip psx-chip-blue">◆</div>
-                            <h3 class="psx-card-title">Capital Efficient</h3>
-                            <p class="psx-card-desc">Each part funds the next through shared cash flow and operational leverage — capital works harder across the whole system.</p>
+                            <span class="psx-stage psx-stage-live">Operating</span>
+                            <h3 class="psx-card-title">Transportation</h3>
+                            <p class="psx-card-desc">Flat-rate Tesla rides in Seattle at $75 to Sea–Tac, cars rented to drivers who keep the fare, and a commission programme for hotels and agents. This is the business that earns.</p>
+                            <a class="psx-card-link" href="#" onclick="event.preventDefault();showView('transportation');">See how it works →</a>
                         </div>
                         <div class="psx-card">
-                            <div class="psx-chip psx-chip-violet">≡</div>
-                            <h3 class="psx-card-title">Vertically Integrated</h3>
-                            <p class="psx-card-desc">Full control over the supply chain, client experience, and margin capture, end to end — no middlemen skimming value.</p>
+                            <span class="psx-stage psx-stage-live">Running</span>
+                            <h3 class="psx-card-title">Operations platform</h3>
+                            <p class="psx-card-desc">Dispatch, invoicing, driver paperwork and the trip-planning tools — built in-house rather than rented, so the customer relationship and the data stay with us.</p>
+                            <a class="psx-card-link" href="#" onclick="event.preventDefault();showView('operations');">See the platform →</a>
                         </div>
                         <div class="psx-card">
-                            <div class="psx-chip psx-chip-teal">↗</div>
-                            <h3 class="psx-card-title">Compounding Growth</h3>
-                            <p class="psx-card-desc">Revenue synergies accelerate expansion across every business line, so growth continuously reinvests into more growth.</p>
+                            <span class="psx-stage psx-stage-dev">In development</span>
+                            <h3 class="psx-card-title">Real estate</h3>
+                            <p class="psx-card-desc">Mixed-use development, at drawing stage. Nothing built, nothing leased, nothing offered — the plans are published as they stand.</p>
+                            <a class="psx-card-link" href="#" onclick="event.preventDefault();showView('realestate');">See the drawings →</a>
+                        </div>
+                        <div class="psx-card">
+                            <span class="psx-stage psx-stage-research">Research</span>
+                            <h3 class="psx-card-title">Finance</h3>
+                            <p class="psx-card-desc">An automated trading research project in private verification, building an audited record. Nothing is for sale and no money is accepted — you can follow the results.</p>
+                            <a class="psx-card-link" href="#" onclick="event.preventDefault();showView('finance');">Follow the research →</a>
                         </div>
                     </div>
                 </section>
@@ -1971,35 +2109,35 @@
 
                         <div class="service-grid">
                             <div class="service-card">
-                                <div class="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16V11a2 2 0 0 1 2-2h1l1.5-3h7L17 9h1a2 2 0 0 1 2 2v5"/><path d="M4 16h16"/><circle cx="8" cy="17.5" r="1.6"/><circle cx="16" cy="17.5" r="1.6"/></svg></div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-car"/></svg></div>
                                 <h3>Ride &amp; Services</h3>
                                 <p class="service-for">For riders &amp; clients</p>
                                 <p>Affordable, reliable Tesla rides — booked online in seconds, with your invoice sent automatically. No app to download, no surge-pricing games.</p>
                                 <a href="/book" class="book-cta">Book a Ride →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="12" r="4"/><path d="M11 12h10M17 12v3M20 12v3"/></svg></div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-key"/></svg></div>
                                 <h3>Car Rentals</h3>
                                 <p class="service-for">For drivers</p>
                                 <p>Rent a Tesla from us and earn from a shared pool of client rides. Low-cost entry, steady income, and a path to owning the car you drive.</p>
                                 <a href="/renter" class="book-cta">Driver Portal →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M4 19v-1a5 5 0 0 1 5-5 5 5 0 0 1 5 5v1"/><circle cx="17.5" cy="8.5" r="2.4"/><path d="M15.8 13.3A5 5 0 0 1 20 18v1"/></svg></div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-people"/></svg></div>
                                 <h3>Agent Program</h3>
                                 <p class="service-for">For partners — organizations or individuals</p>
                                 <p>Refer clients and earn commission on every ride they take. Ideal for hotels, travel agencies, or any individual with a network to tap.</p>
                                 <a href="/agent" class="book-cta">Agent Portal →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-pin"/></svg></div>
                                 <h3>Trip Planner</h3>
                                 <p class="service-for">For travelers &amp; tour guides — free map planning</p>
                                 <p>Plan a real day on the map: every stop lights up or dims by drive time, traffic and closing hours. Guides build and name their own routes here — no website needed — and travelers who'd rather not drive it themselves can hand the route to a guide.</p>
                                 <a href="/trip-planner" class="book-cta">Open Trip Planner →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5.5S5 4 8 4s5 1.5 5 1.5v13S11 17 8 17s-5 1.5-5 1.5v-13z"/><path d="M21 5.5S19 4 16 4s-5 1.5-5 1.5v13S13 17 16 17s5 1.5 5 1.5v-13z"/></svg></div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-book"/></svg></div>
                                 <h3>Destination Book</h3>
                                 <p class="service-for">For everyone — free, and growing</p>
                                 <p>Every attraction and restaurant we know, city by city, with local tips from a licensed guide. It grows on its own: search a place in the planner and it's written into the book for the next traveler. One tap sends anything straight into your trip.</p>
@@ -2136,14 +2274,14 @@
                         <div class="fin-menu" id="finMenu">
                             <p class="view-intro" style="grid-column: 1 / -1;">Our financial products — choose one to explore.</p>
                             <div class="fin-card" onclick="window.location.href='/deflator'">
-                                <div class="fin-card-icon">📈</div>
+                                <div class="fin-card-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-chart"/></svg></div>
                                 <h3>Plateau Deflator <span style="font-size:.68rem;background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:10px;vertical-align:middle">RESEARCH</span></h3>
                                 <p>Our automated crypto-trading research project — in private verification, building an audited track record. Nothing for sale yet; follow the results.</p>
                                 <span class="fin-card-link">Follow the research →</span>
                             </div>
                             <!-- Add more finance product cards here (same pattern):
                             <div class="fin-card" onclick="openFinProduct('savings')">
-                                <div class="fin-card-icon">🏦</div><h3>Savings Vault</h3>
+                                <div class="fin-card-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-vault"/></svg></div><h3>Savings Vault</h3>
                                 <p>…</p><span class="fin-card-link">Open →</span>
                             </div> -->
                         </div>
@@ -2316,42 +2454,42 @@
 
                         <div class="service-grid">
                             <div class="service-card">
-                                <div class="service-icon">🎫</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-ticket"/></svg></div>
                                 <h3>Guided Trips</h3>
                                 <p class="service-for">For travellers &amp; the guides who run them</p>
                                 <p>In-depth trips written by the guides themselves — a student's hour in Harvard Yard, a food route through one neighborhood — with every stop and how long you stand there, before you book. Guides list their own for free.</p>
                                 <a href="/trips" class="book-cta">Browse Guided Trips →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🗺️</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-map"/></svg></div>
                                 <h3>Trip Planner</h3>
                                 <p class="service-for">For drivers, tour guides &amp; tourists</p>
                                 <p>Pick your attractions and see which ones you can still reach in time — drive time, traffic and closing hours all checked. Every tap builds your day-one, day-two plan. Designed with a professionally licensed tour guide.</p>
                                 <a href="/trip-planner" class="book-cta">Open Trip Planner →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🛣️</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-road"/></svg></div>
                                 <h3>Road Trip Planner</h3>
                                 <p class="service-for">For the long hauls — free</p>
                                 <p>Staten Island to Niagara Falls, or any long drive. Give it two points and it finds the fuel, food, rest areas and viewpoints near your actual road — grouped by how many hours in you'll be, so you can plan real breaks instead of scrolling a map.</p>
                                 <a href="/road-trip" class="book-cta">Plan a road trip →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">📖</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-book"/></svg></div>
                                 <h3>Destination Book</h3>
                                 <p class="service-for">For tourists &amp; trip planning</p>
                                 <p>A curated guidebook of attractions and restaurants — every type of destination, organized by category, with descriptions and local tips. One tap sends any place into the Trip Planner.</p>
                                 <a href="/destination-book" class="book-cta">Open the Book →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🕐</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-clock"/></svg></div>
                                 <h3>The Factor Clock</h3>
                                 <p class="service-for">For anyone who wants an honest forecast</p>
                                 <p>A prediction clock that never lies to you — weather, markets, your own patterns, every forecast scored against what actually happened. It tells you when it doesn't know. Free while it earns its record ($10/year value).</p>
                                 <a href="/factor-clock" class="book-cta">Open the Factor Clock →</a>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🧰</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-toolbox"/></svg></div>
                                 <h3>More on the way</h3>
                                 <p class="service-for">The lab keeps building</p>
                                 <p>We're adding more free daily-life tools here. Have an idea for a tool you'd use every day? Pitch it on the Business Ideas board.</p>
@@ -2371,37 +2509,37 @@
 
                         <div class="service-grid">
                             <div class="service-card">
-                                <div class="service-icon">🔐</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-lock"/></svg></div>
                                 <h3>Owner-only vaults</h3>
                                 <p class="service-for">Financials · customer records · board documents</p>
                                 <p>The money records, customer information and governance documents are locked behind a private owner login. No one reaches them without those credentials.</p>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🗝️</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-keyhole"/></svg></div>
                                 <h3>Secrets stay secret</h3>
                                 <p class="service-for">Keys, tokens &amp; passwords</p>
                                 <p>API keys, tokens and passwords live in encrypted server configuration — never in your browser, never shown on a page, never committed to our code.</p>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">💳</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-card"/></svg></div>
                                 <h3>Payment safety</h3>
                                 <p class="service-for">Every checkout</p>
                                 <p>Payments run through Square's PCI-compliant system. We never see or store your full card number — the sensitive part never touches our servers.</p>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🧾</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-receipt"/></svg></div>
                                 <h3>We never hold your money</h3>
                                 <p class="service-for">Bookings · guide &amp; driver payouts</p>
                                 <p>We invoice for our own service and never hold a customer's funds in escrow. Every payout to a driver or guide takes an explicit owner approval — money never moves on its own.</p>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🧍</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-person"/></svg></div>
                                 <h3>Your data stays yours</h3>
                                 <p class="service-for">The free tools</p>
                                 <p>The Trip Planner and Destination Book store only place names and typical visit times — no personal tracking. Your planned trip stays on your own device until you choose to book.</p>
                             </div>
                             <div class="service-card">
-                                <div class="service-icon">🇺🇸</div>
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-flag"/></svg></div>
                                 <h3>Give-back goes straight to Treasury</h3>
                                 <p class="service-for">The national-debt donation</p>
                                 <p>Any gift to reduce the national debt goes directly to the U.S. Treasury's own program. We never touch a cent — the button leaves our site for the government's payment page.</p>
@@ -2420,7 +2558,7 @@
                             <img src="plateau-logo.svg" alt="">
                             <span>Plateau Strategy</span>
                         </div>
-                        <p>An integrated business ecosystem — transportation, real estate and finance in one closed loop, built so revenue compounds instead of leaking away.</p>
+                        <p>A Seattle car service: flat-rate Tesla rides to Sea–Tac and around the city, plus trip-planning tools that are free to use.</p>
 
                         <!-- Contact. Whatever goes here must match the Google
                              Business Profile word for word — same business name,
@@ -2433,15 +2571,15 @@
                              the LocalBusiness node at the top of this file and on
                              the Business Profile. See ADVERTISING.md § 0.5. -->
                         <div class="psx-foot-contact">
-                            <span><b>📍</b>Serving Seattle &amp; Seattle–Tacoma International (SEA)</span>
-                            <span><b>🕑</b>Rides available 24/7, by reservation</span>
+                            <span>Serving Seattle &amp; Seattle–Tacoma International (SEA)</span>
+                            <span>Rides available 24/7, by reservation</span>
                             <!-- EMAIL GOES BACK HERE the moment Porkbun forwarding
                                  is live (hello@ -> the owner's Gmail). Pulled for
                                  now because the domain has no MX records, so mail
                                  to this address bounces. A contact address that
                                  bounces is worse than no address at all.
                                    <a href="mailto:hello@plateaustrategy.io"><b>✉️</b>hello@plateaustrategy.io</a> -->
-                            <a href="/book"><b>🚘</b>Book a ride — $75 flat to SeaTac</a>
+                            <a href="/book">Book a ride — $75 flat to SeaTac</a>
                             <span class="psx-foot-note">Service-area business — we come to you, there's no counter to visit.</span>
                         </div>
                     </div>
@@ -2452,7 +2590,7 @@
                             <li><a href="/book">Book a Ride</a></li>
                             <li><a href="/renter">Driver Portal</a></li>
                             <li><a href="/agent">Agent Program</a></li>
-                            <li><a href="/partners">Partners</a></li>
+                            <li><a href="/agent">Partner with us</a></li>
                         </ul>
                     </div>
 
@@ -2478,7 +2616,7 @@
 
                 <div class="psx-foot-bottom">
                     <p>&copy; 2026 Plateau Strategy Solution Lab</p>
-                    <p>Building integrated wealth through connected ecosystems.</p>
+                    <p>Flat-rate Tesla rides, Seattle and Sea–Tac.</p>
                 </div>
             </footer>
         </div>
