@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contrast audit — every page, measured</title>
+    <meta name="robots" content="noindex">
+    <style>
+        body { font-family: ui-monospace, Menlo, monospace; background: #faf8f4; color: #14110c;
+               margin: 0; padding: 1.5rem; line-height: 1.5; }
+        h1 { font-size: 1.1rem; margin: 0 0 0.3rem; }
+        p.note { color: #6b655b; font-size: 0.82rem; max-width: 60rem; margin: 0 0 1.2rem; }
+        table { border-collapse: collapse; width: 100%; font-size: 0.78rem; }
+        th, td { text-align: left; padding: 0.3rem 0.5rem; border-bottom: 1px solid rgba(20,17,12,.1); vertical-align: top; }
+        th { color: #6b655b; font-weight: 600; }
+        .bad { color: #a4161a; font-weight: 700; }
+        .ok  { color: #1b6b5a; }
+        .swatch { display: inline-block; width: 11px; height: 11px; border: 1px solid rgba(20,17,12,.3);
+                  vertical-align: -1px; margin-right: 3px; }
+        iframe { width: 1100px; height: 900px; border: 0; position: absolute; left: -3000px; }
+        #sum { margin: 1rem 0; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <h1>Contrast audit</h1>
+    <p class="note">
+        Every page is loaded and every piece of visible text measured against the background it
+        actually sits on, following WCAG AA — 4.5:1 for body text, 3:1 for large or bold headings.
+        This exists because a stylesheet can set a page's text to near-black while that page keeps
+        its own dark panels, and nothing errors: the words are simply gone. Only real failures are
+        listed; a page absent from the table passed.
+    </p>
+    <div id="sum">Loading…</div>
+    <table><thead><tr>
+        <th>Page</th><th>Ratio</th><th>Needs</th><th>Text</th><th>Ink / ground</th><th>Element</th>
+    </tr></thead><tbody id="rows"></tbody></table>
+    <div id="frames"></div>
+
+<script>
+const PAGES = ['/', '/trip-planner', '/destination-book', '/trips', '/guide-studio', '/road-trip',
+               '/favorite-place', '/deflator', '/factor-clock', '/agent', '/renter', '/driver',
+               '/board', '/archive', '/articles', '/partners', '/books', '/dispatch', '/book', '/setup'];
+
+function auditDoc(doc, win) {
+    function lum(c) {
+        const m = String(c).match(/[\d.]+/g); if (!m) return null;
+        const a = m.slice(0, 3).map(v => { v = v / 255;
+            return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); });
+        return .2126 * a[0] + .7152 * a[1] + .0722 * a[2];
+    }
+    // A gradient lives in background-image, not background-color. Reading only
+    // the colour made a white-on-blue button look like white-on-white — so a
+    // painted background counts as opaque, and because a gradient's luminance
+    // cannot honestly be reduced to one number, that element is skipped rather
+    // than guessed at.
+    const PAINTED = Symbol('painted');
+    function groundOf(el) {
+        let n = el;
+        while (n && n !== doc.documentElement) {
+            const cs = win.getComputedStyle(n);
+            if (cs.backgroundImage && cs.backgroundImage !== 'none') return PAINTED;
+            const b = cs.backgroundColor;
+            const m = b.match(/[\d.]+/g);
+            if (m && (m.length < 4 || parseFloat(m[3]) > 0.5)) return b;
+            n = n.parentElement;
+        }
+        return 'rgb(255,255,255)';
+    }
+    const out = [], seen = {};
+    doc.querySelectorAll('*').forEach(el => {
+        if (!el.offsetParent || (el.closest && el.closest('.i18n-skip'))) return;
+        // only elements that print their OWN words — otherwise a wrapper is
+        // blamed for the colour of the text inside it
+        if (!Array.from(el.childNodes).some(n => n.nodeType === 3 && n.nodeValue.trim().length > 2)) return;
+        const cs = win.getComputedStyle(el);
+        if (cs.visibility === 'hidden' || parseFloat(cs.opacity) < 0.4) return;
+        const ground = groundOf(el);
+        if (ground === PAINTED) return;          // measured by eye, not by maths
+        const lf = lum(cs.color), lb = lum(ground);
+        if (lf === null || lb === null) return;
+        const r = (Math.max(lf, lb) + .05) / (Math.min(lf, lb) + .05);
+        const size = parseFloat(cs.fontSize), bold = parseInt(cs.fontWeight) >= 700;
+        const need = (size >= 24 || (size >= 18.66 && bold)) ? 3 : 4.5;
+        if (r >= need) return;
+        const key = el.tagName + String(el.className) + cs.color;
+        if (seen[key]) return;
+        seen[key] = 1;
+        out.push({ text: (el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 46),
+                   ratio: +r.toFixed(2), need,
+                   fg: cs.color, bg: ground,
+                   sel: el.tagName.toLowerCase() + (el.className ? '.' + String(el.className).split(' ')[0] : '') });
+    });
+    return out.sort((a, b) => a.ratio - b.ratio);
+}
+
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
+
+(async function run() {
+    let failures = 0, done = 0;
+    const rows = document.getElementById('rows');
+    for (const path of PAGES) {
+        const fr = document.createElement('iframe');
+        document.getElementById('frames').appendChild(fr);
+        await new Promise(res => {
+            fr.onload = () => setTimeout(res, 900);   // let each page's own script paint
+            fr.onerror = res;
+            fr.src = path;
+        });
+        let found = [];
+        try { found = auditDoc(fr.contentDocument, fr.contentWindow); } catch (e) {}
+        found.forEach(f => {
+            failures++;
+            rows.insertAdjacentHTML('beforeend',
+                '<tr><td>' + esc(path) + '</td>' +
+                '<td class="bad">' + f.ratio + '</td><td>' + f.need + '</td>' +
+                '<td>' + esc(f.text) + '</td>' +
+                '<td><span class="swatch" style="background:' + f.fg + '"></span>' +
+                '<span class="swatch" style="background:' + f.bg + '"></span>' + esc(f.fg) + ' on ' + esc(f.bg) + '</td>' +
+                '<td>' + esc(f.sel) + '</td></tr>');
+        });
+        fr.remove();
+        done++;
+        document.getElementById('sum').textContent =
+            done + ' of ' + PAGES.length + ' pages checked · ' + failures + ' unreadable so far';
+    }
+    document.getElementById('sum').innerHTML = failures
+        ? '<span class="bad">' + failures + ' pieces of text fail AA across ' + PAGES.length + ' pages.</span>'
+        : '<span class="ok">All ' + PAGES.length + ' pages pass AA.</span>';
+})();
+</script>
+</body>
+</html>

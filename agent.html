@@ -158,7 +158,7 @@
             <h1>Agent &amp; Guide Portal</h1>
             <p class="sub">One code, two ways to earn. <b>Refer</b> customers and take a commission on every
                 completed ride — or <b>guide</b>: write your own in-depth trip and sell it on our
-                <a href="/trips" style="color:#60a5fa">trips page</a>. The same agent code does both.
+                <a href="/trips" style="color:#1b4d8f">trips page</a>. The same agent code does both.
                 Anyone can join, as an individual or an organization.</p>
 
             <label>I am registering as</label>
@@ -360,7 +360,7 @@
                     <p class="sub">Referring rides earns a commission. Guiding earns the whole fare — you set
                         it. Write the trip you already know by heart: your stops, how long you actually
                         stand at each one, what you say there, and what it costs. It goes on the public
-                        <a href="/trips" style="color:#60a5fa">trips page</a> the moment you list it, and
+                        <a href="/trips" style="color:#1b4d8f">trips page</a> the moment you list it, and
                         travellers reach you through us — your contact details are never published.</p>
 
                     <div class="mycode" style="margin-bottom:1rem">
@@ -437,7 +437,7 @@
                 document.getElementById('myTrips').innerHTML = trips.length
                     ? '<h2 style="font-size:1rem;margin-bottom:0.6rem">Your listed trips</h2>' +
                       '<table><thead><tr><th>Trip</th><th>City</th><th>Stops</th><th>Asked about</th></tr></thead><tbody>' +
-                      trips.map(t => '<tr><td><a href="/trips#' + t.id + '" style="color:#60a5fa">' +
+                      trips.map(t => '<tr><td><a href="/trips#' + t.id + '" style="color:#1b4d8f">' +
                           String(t.title).replace(/[<>&]/g, '') + '</a></td><td>' +
                           String(t.city_label || '').replace(/[<>&]/g, '') + '</td><td>' +
                           (t.stops || []).length + '</td><td>' + (t.interest_count || 0) + '</td></tr>').join('') +

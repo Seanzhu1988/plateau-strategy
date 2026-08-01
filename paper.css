@@ -371,3 +371,12 @@
       label{color:var(--psx-text2) !important;}
       /* The map must keep its own colours — it is data, not decoration. */
       .leaflet-container,.leaflet-container *{font-family:var(--psx-sans);}
+
+
+/* ---- map attribution ----
+   Leaflet ships its credit line in a grey that measures 3.6:1 on its own
+   backdrop. The licence requires the credit to be shown; showing it faintly
+   is not showing it. */
+.leaflet-control-attribution,
+.leaflet-control-attribution a { color: #4a453d !important; }
+.leaflet-control-attribution { background: rgba(255,255,255,.94) !important; }

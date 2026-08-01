@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
         .act.ride-wanted { background: #fff7ed; border-color: #fdba74; color: #9a3412; }
-        .tap-hint { font-size: 0.72rem; color: #94a3b8; line-height: 1.25; max-width: 190px; }
+        .tap-hint { font-size: 0.72rem; color: #6b655b; line-height: 1.25; max-width: 190px; }
         .am-pin.pop-pin { border-color: #f59e0b; background: #fffbeb; }
         .pop-photo { width: 100%; height: 96px; object-fit: cover; border-radius: 7px; margin-bottom: 0.4rem; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -33,18 +33,18 @@
         header img { height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
         header .brand { font-weight: 800; font-size: 1.2rem; }
         header .right { margin-left: auto; display: flex; gap: 1.2rem; }
-        header a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+        header a { color: #6b655b; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
         header a:hover { color: #fff; }
 
         .wrap { max-width: 1180px; margin: 1.6rem auto; padding: 0 1.2rem; }
         .page-title { font-size: 1.9rem; font-weight: 800; color: #0f172a; }
-        .page-sub { color: #64748b; margin: 0.2rem 0 1.2rem; }
+        .page-sub { color: #6b655b; margin: 0.2rem 0 1.2rem; }
 
         .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1rem 1.2rem; margin-bottom: 1rem; }
 
         .controls { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center; font-size: 0.9rem; }
-        .controls label { color: #64748b; font-weight: 600; }
+        .controls label { color: #6b655b; font-weight: 600; }
         .controls input[type=time], .controls select { padding: 0.4rem 0.6rem; border: 1.5px solid #e2e8f0;
             border-radius: 8px; font-size: 0.9rem; font-family: inherit; background: #f8fafc; }
         .btn { padding: 0.45rem 0.9rem; border: none; border-radius: 8px; cursor: pointer;
@@ -55,7 +55,7 @@
 
         .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.7rem; }
         .chip { font-size: 0.8rem; font-weight: 600; padding: 0.3rem 0.85rem; border-radius: 999px;
-            border: 1.5px solid #e2e8f0; color: #64748b; cursor: pointer; user-select: none; background: #fff; }
+            border: 1.5px solid #e2e8f0; color: #6b655b; cursor: pointer; user-select: none; background: #fff; }
         .chip.on { background: #dbeafe; border-color: #93c5fd; color: #1d4ed8; }
 
         /* Sean's layout: content on the LEFT, the map large on the RIGHT */
@@ -97,7 +97,7 @@
             background: rgba(255,255,255,0.97); box-shadow: 0 4px 14px rgba(15,23,42,0.24);
             font-size: 17px; line-height: 1; display: none; }
         .layout.jarvis-hidden #jarvisDock { display: block; }
-        .jarvis-close { float: right; cursor: pointer; color: #94a3b8; font-weight: 800;
+        .jarvis-close { float: right; cursor: pointer; color: #6b655b; font-weight: 800;
             font-size: 1rem; line-height: 1; padding: 0 0 0 .5rem; }
         @media (max-width: 900px) {
             .layout .side { position: static; width: auto; max-height: none; margin-top: 0.7rem;
@@ -153,7 +153,7 @@
             border-radius: 9px; padding: .55rem .75rem; font-size: .9rem; font-family: inherit;
             color: #1f2937; cursor: pointer; }
         .ov-hotel:hover { border-color: #db2777; background: #fff5fa; }
-        .ov-hotel span { color: #94a3b8; font-size: .8rem; white-space: nowrap; }
+        .ov-hotel span { color: #6b655b; font-size: .8rem; white-space: nowrap; }
         .ov-msg { font-size: .86rem; color: #475569; margin-top: .7rem; min-height: 1.2em; }
         .ov-skip { width: 100%; margin-top: .9rem; }
         .map-legend .lg-toggle { font-size: 0.72rem; font-weight: 700; color: #475569;
@@ -183,7 +183,7 @@
         .start-entry input { flex: 1; min-width: 210px; padding: 0.5rem 0.8rem; border: 1.5px solid #e2e8f0;
             border-radius: 10px; font-size: 0.92rem; font-family: inherit; background: #f8fafc; }
         .start-entry input:focus { outline: none; border-color: #3b82f6; background: #fff; }
-        .start-hint { font-size: 0.74rem; color: #94a3b8; }
+        .start-hint { font-size: 0.74rem; color: #6b655b; }
         .traffic-note { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem;
             font-weight: 600; color: #1d4ed8; background: #eff6ff; border: 1px solid #dbeafe;
             border-radius: 10px; padding: 0.55rem 0.9rem; margin-bottom: 0.6rem; }
@@ -205,7 +205,7 @@
             color: #fff; font-size: 8px; font-weight: 800; line-height: 12px; min-width: 12px;
             height: 12px; border-radius: 6px; text-align: center; padding: 0 2px;
             box-shadow: 0 1px 2px rgba(15,23,42,.35); }
-        .amenity-note { display: block; font-size: 0.62rem; color: #64748b; line-height: 1.3;
+        .amenity-note { display: block; font-size: 0.62rem; color: #6b655b; line-height: 1.3;
             margin-top: 0.28rem; max-width: 150px; }
         /* 🌍 the map announcing that it just grew */
         .discovery-note { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px;
@@ -234,7 +234,7 @@
             border: 2px solid #94a3b8; box-shadow: 0 1px 3px rgba(15,23,42,0.3); }
         .am-pop { font-size: 0.82rem; line-height: 1.5; }
         .am-pop b { color: #0f172a; }
-        .am-pop .d { color: #64748b; font-size: 0.76rem; }
+        .am-pop .d { color: #6b655b; font-size: 0.76rem; }
         .am-rate { margin-top: 0.35rem; font-size: 0.8rem; color: #334155; }
         .am-rate .rs { color: #d1d5db; cursor: pointer; font-size: 0.95rem; }
         .am-rate .rs:hover { color: #f59e0b; }
@@ -258,10 +258,10 @@
             align-items: center; gap: 0.4rem; }
         .stop { display: flex; justify-content: space-between; gap: 0.6rem; font-size: 0.86rem;
             padding: 0.42rem 0; border-top: 1px solid #eef2f7; }
-        .stop .t { color: #94a3b8; white-space: nowrap; }
+        .stop .t { color: #6b655b; white-space: nowrap; }
         .dayhead { font-weight: 800; font-size: 0.8rem; color: #1e3a8a; text-transform: uppercase;
             letter-spacing: 0.04em; margin-top: 0.6rem; }
-        .muted { color: #94a3b8; font-size: 0.84rem; }
+        .muted { color: #6b655b; font-size: 0.84rem; }
 
         .place-row { display: flex; align-items: center; gap: 0.45rem; padding: 0.4rem 0;
             border-top: 1px solid #eef2f7; font-size: 0.84rem; flex-wrap: wrap; }
@@ -293,7 +293,7 @@
         .jarvis-mast b { color: #0f172a; }
         .mast-risk { color: #b45309; font-weight: 700; cursor: pointer; }
         .jarvis-sec { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase;
-            color: #94a3b8; margin: 0.75rem 0 0.3rem; border-top: 1px solid #f1f5f9; padding-top: 0.6rem; }
+            color: #6b655b; margin: 0.75rem 0 0.3rem; border-top: 1px solid #f1f5f9; padding-top: 0.6rem; }
         .itin-head { display: flex; align-items: center; }
         .itin-tools { margin-left: auto; display: flex; gap: 0.55rem; }
         .itin-tools button { background: none; border: none; color: #1d4ed8; font-size: 0.7rem;
@@ -308,11 +308,11 @@
         .itin-row.nowrow { border-left: 3px solid #1d4ed8; padding-left: 0.45rem; }
         .itin-time { text-align: right; color: #0f172a; font-weight: 700; font-size: 0.78rem;
             font-variant-numeric: tabular-nums; line-height: 1.35; }
-        .itin-time .lv { color: #94a3b8; font-weight: 600; display: block; }
+        .itin-time .lv { color: #6b655b; font-weight: 600; display: block; }
         .itin-name { font-weight: 700; color: #0f172a; font-size: 0.84rem; display: flex;
             justify-content: space-between; gap: 0.4rem; }
         .itin-stars { color: #b45309; font-weight: 700; font-size: 0.72rem; white-space: nowrap; }
-        .itin-leg { font-size: 0.7rem; color: #64748b; margin-top: 0.12rem; display: flex;
+        .itin-leg { font-size: 0.7rem; color: #6b655b; margin-top: 0.12rem; display: flex;
             flex-wrap: wrap; gap: 0.15rem 0.55rem; justify-content: space-between; }
         .itin-warn { font-size: 0.7rem; font-weight: 700; margin-top: 0.15rem; }
         .itin-warn.tight { color: #b45309; }
@@ -321,7 +321,7 @@
         .fixlink:hover { color: #1e40af; }
         .itin-tag { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.05em; color: #1d4ed8;
             background: #eff6ff; border-radius: 6px; padding: 1px 6px; margin-left: 6px; }
-        .jcursor { font-size: 0.72rem; color: #94a3b8; font-style: italic; padding: 0.35rem 0 0 0.3rem; }
+        .jcursor { font-size: 0.72rem; color: #6b655b; font-style: italic; padding: 0.35rem 0 0 0.3rem; }
         .sug-row .sug-add { color: #1d4ed8; font-weight: 800; cursor: pointer; margin-right: 0.35rem; }
         /* 💬 Jarvis asks — one quick community question, one-tap answers */
         .jask { margin-top: 0.4rem; }
@@ -330,7 +330,7 @@
         .jask .jask-opts span { font-size: 0.74rem; font-weight: 600; padding: 0.28rem 0.7rem; border-radius: 999px;
             border: 1.5px solid #e2e8f0; color: #475569; cursor: pointer; user-select: none; background: #fff; }
         .jask .jask-opts span:hover { border-color: #93c5fd; color: #1d4ed8; }
-        .jask .jask-skip { color: #94a3b8 !important; border-color: transparent !important; }
+        .jask .jask-skip { color: #6b655b !important; border-color: transparent !important; }
         .jarvis-actions { display: none; gap: 0.45rem; flex-wrap: wrap; margin-top: 0.5rem; }
         .jarvis-actions button { border: none; border-radius: 8px; color: #fff; font-weight: 700;
             font-size: 0.76rem; padding: 0.42rem 0.62rem; cursor: pointer; }
@@ -373,7 +373,7 @@
         .tp-pin.landing { animation: pinLanding .55s cubic-bezier(.2,.9,.3,1.2); }
         .loc-info { font-size: 0.8rem; color: #0f766e; margin-top: 0.35rem; line-height: 1.4; }
         .loc-info.warn { color: #b45309; }
-        .build-row .to { color: #94a3b8; font-weight: 800; }
+        .build-row .to { color: #6b655b; font-weight: 800; }
         .build-row #destAdd { flex: 1; min-width: 200px; border: 1px solid #cbd5e1; border-radius: 9px;
             padding: 0.55rem 0.8rem; font-size: 0.92rem; }
         .btn.add { background: linear-gradient(135deg,#2563eb,#1d4ed8); color: #fff; border: none;
@@ -382,7 +382,7 @@
         .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-top: 0.6rem; }
         .chain .dnode { background: #eef4ff; border: 1px solid #c7d7f5; color: #1d4ed8; font-weight: 700;
             font-size: 0.8rem; border-radius: 999px; padding: 2px 10px; }
-        .chain .darrow { color: #94a3b8; font-weight: 800; }
+        .chain .darrow { color: #6b655b; font-weight: 800; }
         .place-row .addbtn { width: 26px; text-align: center; cursor: pointer; color: #2563eb; font-weight: 900;
             font-size: 1.05rem; user-select: none; }
         .place-row .addbtn:hover { color: #1d4ed8; }
@@ -422,7 +422,7 @@
             position: relative; max-height: 92vh; overflow-y: auto; }
         .modal h3 { color: #0f172a; font-size: 1.2rem; margin-bottom: 0.25rem; }
         .modal-x { position: absolute; top: 0.7rem; right: 0.8rem; border: none; background: none;
-            font-size: 1.2rem; color: #64748b; cursor: pointer; }
+            font-size: 1.2rem; color: #6b655b; cursor: pointer; }
         .ho-summary { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.7rem 0.9rem;
             font-size: 0.85rem; color: #334155; margin: 0.7rem 0; line-height: 1.5; }
         .ho-fee { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; border-radius: 10px;
@@ -432,7 +432,7 @@
             padding: 0.55rem 0.7rem; font-size: 0.9rem; font-family: inherit; }
         .ho-msg { font-size: 0.86rem; font-weight: 700; margin-top: 0.6rem; min-height: 1.1em; }
         .ho-msg.ok { color: #0f766e; } .ho-msg.err { color: #dc2626; }
-        .col-lab { font-size: 0.68rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em; }
+        .col-lab { font-size: 0.68rem; color: #6b655b; text-transform: uppercase; letter-spacing: 0.04em; }
 
         .search-box { position: relative; margin-top: 0.6rem; }
         .search-box input { width: 100%; padding: 0.55rem 0.8rem; border: 1.5px solid #e2e8f0;
@@ -523,14 +523,14 @@
         .book-head:hover { background: #f8fafc; }
         .book-ico { font-size: 1.35rem; flex: 0 0 auto; }
         .book-title { flex: 1; font-weight: 800; color: #0f172a; font-size: 0.98rem; }
-        .book-sub { display: block; font-weight: 500; color: #64748b; font-size: 0.78rem; margin-top: 0.15rem; }
-        .book-chev { color: #94a3b8; font-size: 0.9rem; transition: transform 0.2s; flex: 0 0 auto; }
+        .book-sub { display: block; font-weight: 500; color: #6b655b; font-size: 0.78rem; margin-top: 0.15rem; }
+        .book-chev { color: #6b655b; font-size: 0.9rem; transition: transform 0.2s; flex: 0 0 auto; }
         .bookcard.open .book-chev { transform: rotate(180deg); }
         .book-body { display: none; padding: 0 1.1rem 1.1rem; }
         .bookcard.open .book-body { display: block; }
 
-        footer.attrib { text-align: center; color: #94a3b8; font-size: 0.75rem; padding: 1.2rem 0 2rem; }
-        footer.attrib a { color: #64748b; }
+        footer.attrib { text-align: center; color: #6b655b; font-size: 0.75rem; padding: 1.2rem 0 2rem; }
+        footer.attrib a { color: #6b655b; }
 
         /* 🖨 print = the day sheet alone, kept in NORMAL FLOW so a multi-day
            itinerary paginates — absolute positioning would clip it to page 1.

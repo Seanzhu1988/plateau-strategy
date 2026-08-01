@@ -1120,6 +1120,18 @@ def _local_iso_epoch(s):
         return None
 
 
+@app.route("/contrast-audit")
+@owner_required
+def contrast_audit_page():
+    """Owner-only: loads every page and measures whether its text can be read.
+
+    A stylesheet can set the site's ink to near-black while a page keeps its own
+    dark panels, and nothing errors — the words are simply invisible. Only a
+    rendered measurement catches that, so this renders them.
+    """
+    return send_file(os.path.join(BASE_DIR, "contrast-audit.html"))
+
+
 @app.route("/api/geography")
 def api_geography():
     """State → county → city, built from what has actually been discovered.
@@ -1688,15 +1700,7 @@ def api_destinations_add():
 
 @app.route("/deflator")
 def deflator_page():
-    """Plateau Strategy Deflator — PRIVATE (owner-only) until Sean opens it.
-
-    The product is not ready and is legally gated (lawyer review pending), so the
-    page must not be reachable by the public. To anyone not logged in as the owner
-    this returns 404 — not 401 — so the page's very existence stays unadvertised.
-    Re-open it publicly by deleting these two lines (and restoring the homepage card).
-    """
-    if not session.get("owner"):
-        return Response("Not Found", status=404, mimetype="text/plain")
+    """Plateau Strategy Deflator — research-project page + notify list (no offering)."""
     return send_file(os.path.join(BASE_DIR, "deflator.html"))
 
 
