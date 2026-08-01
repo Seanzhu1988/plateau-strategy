@@ -597,6 +597,31 @@
    "price": null,
    "desc": "The 1636 college green across the river, ringed by red brick halls, with Harvard Square's bookshops and cafes at the gate.",
    "tip": "Take the Red Line to Harvard rather than driving — Cambridge parking is genuinely difficult. Student-led tours leave from the visitor center and are free."
+  },
+  {
+   "name": "Seattle",
+   "city": "other",
+   "type": "attraction",
+   "cat": "culture",
+   "price": null,
+   "close": 1020,
+   "visit": 60,
+   "lat": 47.6062,
+   "lon": -122.3321,
+   "desc": "Place in Washington.",
+   "tip": "",
+   "photo": null,
+   "source_url": null,
+   "visibility": "public",
+   "source": "user",
+   "auto_desc": true,
+   "desc_from": "map data",
+   "found_via": "road-trip",
+   "state": "Washington",
+   "county": "Washington",
+   "country": "",
+   "city_label": "Other",
+   "added_at": "2026-08-01T17:17:14"
   }
  ]
 }
