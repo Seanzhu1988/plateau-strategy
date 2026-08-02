@@ -2295,6 +2295,58 @@ def _distance_fare(miles):
     return round(_ride_base_fare() + _ride_per_mile() * m, 2)
 
 
+# The flat airport fare, and the radius it holds inside. Stated on the site
+# as "$75 flat to Sea-Tac" with no distance attached, which is a promise the
+# fare cannot keep from ninety miles out — so the boundary is written down
+# here, in the one place that prices anything, rather than implied.
+AIRPORT_FLAT_USD = 75.0
+AIRPORT_FLAT_RADIUS_MI = 30.0
+
+
+def _airport_or_distance_fare(miles, to_airport):
+    """What a ride costs, and why.
+
+    Returns (fare, basis) so a caller can say which rule applied rather than
+    just showing a number — a rider who is told 75 dollars flat and then
+    charged 112 has been surprised, and this whole business is built on the
+    quote being the fare."""
+    try:
+        m = max(0.0, float(miles))
+    except (TypeError, ValueError):
+        return (None, None)
+    if to_airport and m <= AIRPORT_FLAT_RADIUS_MI:
+        return (AIRPORT_FLAT_USD, "airport_flat")
+    return (_distance_fare(m), "distance")
+
+
+@app.route("/api/quote")
+def api_quote():
+    """Price a trip before anyone commits to it.
+
+    The booking page used to ask for pickup and drop-off and say nothing
+    about cost until a human answered. Same constants as a real booking,
+    deliberately: a calculator that computes its own answer is a second
+    price, and two prices is exactly what "the quote is the fare" promises
+    not to do."""
+    try:
+        miles = float(request.args.get("miles", ""))
+    except (TypeError, ValueError):
+        return jsonify({"ok": False, "error": "miles required"}), 400
+    if miles < 0 or miles > 3000:
+        return jsonify({"ok": False, "error": "miles out of range"}), 400
+    to_airport = (request.args.get("airport") or "").lower() in ("1", "true", "yes")
+    fare, basis = _airport_or_distance_fare(miles, to_airport)
+    if fare is None:
+        return jsonify({"ok": False, "error": "could not price that"}), 400
+    return jsonify({
+        "ok": True, "fare": fare, "basis": basis,
+        "miles": round(miles, 1),
+        "flat_radius_mi": AIRPORT_FLAT_RADIUS_MI,
+        "flat_usd": AIRPORT_FLAT_USD,
+        "base_fare": _ride_base_fare(), "per_mile": _ride_per_mile(),
+    })
+
+
 def _create_reservation(data, agent=None, self_driver=None):
     """Build, invoice, persist and notify a reservation. Returns the record.
     If self_driver is set, this is a Driver-Agent self-referral: the driver both

@@ -133,6 +133,12 @@
         .pick-note.err { color: var(--psx-red, #a4161a); }
         @media (max-width: 520px) { .pick-row { flex-wrap: wrap; }
             .pick-row .gp-chip { width: 100%; flex: 1 0 100%; padding: .6rem .8rem; } }
+        .quote { margin: .7rem 0 0; padding: .8rem 1rem; border: 1px solid var(--psx-border, rgba(20,17,12,.13));
+            border-left: 3px solid var(--psx-accent, #1b4d8f); border-radius: 3px; background: #fff; }
+        .quote-fare { font-family: var(--psx-display, Georgia, serif); font-size: 1.6rem;
+            font-weight: 600; color: var(--psx-accent, #1b4d8f); line-height: 1.1; }
+        .quote-why { font-size: .84rem; color: var(--psx-text2, #4a453d); margin-top: .25rem; line-height: 1.5; }
+        .quote.working .quote-fare { color: var(--psx-muted, #6b655b); }
 </style>
     <script src="/session.js"></script>
     <link rel="stylesheet" href="/paper.css">
@@ -155,7 +161,7 @@
                  will actually come. Stated once, at the top, so the form below
                  is filling in details rather than negotiating. -->
             <ul class="assure">
-                <li><b>$75</b> flat to Sea–Tac</li>
+                <li><b>$75</b> flat to Sea–Tac, from anywhere within 30 miles</li>
                 <li>The quote is the fare — no surge</li>
                 <li>Driver arrives 15 min early</li>
             </ul>
@@ -214,6 +220,13 @@
                 <label>Drop-off location <span class="req">*</span></label>
                 <input name="dropoff" required placeholder="Seattle–Tacoma International Airport (SEA)"
                        autocapitalize="words">
+                <!-- The form asked where you are going and said nothing about
+                     cost until a human answered. A rider deciding whether to
+                     book should not have to guess. -->
+                <div class="quote" id="quoteBox" hidden>
+                    <div class="quote-fare"><span id="quoteAmt">—</span></div>
+                    <div class="quote-why" id="quoteWhy"></div>
+                </div>
 
                 <label>Service</label>
                 <select name="fare" id="b_service"></select>
@@ -603,6 +616,86 @@
                     ? T('Location permission was declined. Please type the pickup address.')
                     : T('Could not get a location right now. Please type the pickup address.'), true);
             }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+        });
+    })();
+    </script>
+    <script>
+    // ---- fare estimate, from the same numbers the real quote uses ----
+    //
+    // Geocode both ends, drive between them, ask the server what that costs.
+    // The arithmetic deliberately lives on the server: a calculator that
+    // works the price out for itself is a second price, and two prices is
+    // the one thing "the quote is the fare" promises not to do.
+    (function () {
+        var pick = document.querySelector('[name=pickup]');
+        var drop = document.querySelector('[name=dropoff]');
+        var box  = document.getElementById('quoteBox');
+        var amt  = document.getElementById('quoteAmt');
+        var why  = document.getElementById('quoteWhy');
+        if (!pick || !drop || !box) return;
+
+        function T(p, v) {
+            if (window.psxFmt) return window.psxFmt(p, v);
+            return String(p).replace(/\{(\w+)\}/g, function (m, k) {
+                return (v && v[k] !== undefined) ? v[k] : m; });
+        }
+        var AIRPORT = /\b(sea[-\s]?tac|seattle[-\s]?tacoma|\bSEA\b|airport|机场|공항|aeropuerto|sân bay)\b/i;
+
+        var cache = {};
+        async function geo(q) {
+            if (cache[q]) return cache[q];
+            var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q='
+                    + encodeURIComponent(q);
+            var j = window.psxJSON ? await psxJSON(url)
+                                   : await fetch(url).then(function (r) { return r.json(); });
+            if (!Array.isArray(j) || !j.length) return null;
+            cache[q] = { lat: +j[0].lat, lon: +j[0].lon };
+            return cache[q];
+        }
+
+        var timer = null, lastKey = '';
+        async function estimate() {
+            var a = (pick.value || '').trim(), b = (drop.value || '').trim();
+            if (a.length < 4 || b.length < 4) { box.hidden = true; return; }
+            var key = a + '|' + b;
+            if (key === lastKey) return;
+            lastKey = key;
+
+            box.hidden = false; box.classList.add('working');
+            amt.textContent = '…';
+            why.textContent = T('Working out the distance…');
+            try {
+                var A = await geo(a), Bp = await geo(b);
+                if (!A || !Bp) throw new Error('geo');
+                var r = 'https://router.project-osrm.org/route/v1/driving/'
+                      + A.lon + ',' + A.lat + ';' + Bp.lon + ',' + Bp.lat + '?overview=false';
+                var rj = window.psxJSON ? await psxJSON(r)
+                                        : await fetch(r).then(function (x) { return x.json(); });
+                if (!rj || !rj.routes || !rj.routes.length) throw new Error('route');
+                var miles = rj.routes[0].distance / 1609.34;
+                var toAir = AIRPORT.test(b);
+                var q = await psxJSON('/api/quote?miles=' + miles.toFixed(2) + (toAir ? '&airport=1' : ''));
+                if (!q || !q.ok) throw new Error('quote');
+
+                box.classList.remove('working');
+                amt.textContent = '$' + q.fare.toFixed(0);
+                why.textContent = q.basis === 'airport_flat'
+                    ? T('Flat airport fare — {miles} miles, inside the {radius}-mile flat-rate area. This is the price; it does not move.',
+                        { miles: q.miles, radius: q.flat_radius_mi })
+                    : T('About {miles} miles. Estimated from the road distance — we confirm the exact fare before you pay, and it does not change after that.',
+                        { miles: q.miles });
+            } catch (e) {
+                box.classList.remove('working');
+                amt.textContent = '—';
+                // Never guess a number here. A wrong estimate is worse than none
+                // on a page whose whole promise is that the quote is the fare.
+                why.textContent = T('Could not measure that route automatically — send the request and we will quote it before you pay.');
+            }
+        }
+        function schedule() { clearTimeout(timer); timer = setTimeout(estimate, 700); }
+        [pick, drop].forEach(function (el) {
+            el.addEventListener('change', schedule);
+            el.addEventListener('input', schedule);
         });
     })();
     </script>

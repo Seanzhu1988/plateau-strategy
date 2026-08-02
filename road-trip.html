@@ -112,14 +112,19 @@
     .grouppick .gp-chip{background:#fff;border:1px solid var(--psx-border,rgba(20,17,12,.13));
         border-radius:999px;padding:.34rem .7rem;font:inherit;font-size:.84rem;
         cursor:pointer;color:#4a453d;line-height:1.2;}
-    .grouppick .gp-chip[aria-pressed="true"]{background:#14110c;border-color:#14110c;color:#fff;}
+    /* A switched-on category is the page's own colour, not ink. Ink here
+       put a black slab on top of a slate page — two colour systems stacked,
+       which is what reads as "blackened tabs". */
+    .grouppick .gp-chip[aria-pressed="true"]{background:var(--psx-accent,#14110c);
+        border-color:var(--psx-accent,#14110c);color:#fff;}
     .routepick{display:flex;gap:.5rem;flex-wrap:wrap;margin:0 0 .9rem;}
     .routepick .gp-chip{flex:1 1 190px;text-align:left;background:#fff;
         border:1px solid var(--psx-border,rgba(20,17,12,.13));border-radius:4px;
         padding:.6rem .75rem;cursor:pointer;font:inherit;color:inherit;}
     .routepick .gp-chip .rp-t{display:block;font-weight:700;font-size:.94rem;}
     .routepick .gp-chip .rp-s{display:block;font-size:.78rem;color:#6b655b;margin-top:.15rem;}
-    .routepick .gp-chip[aria-pressed="true"]{border-color:#1b4d8f;box-shadow:inset 0 0 0 1px #1b4d8f;}
+    .routepick .gp-chip[aria-pressed="true"]{border-color:var(--psx-accent,#1b4d8f);
+        box-shadow:inset 0 0 0 1px var(--psx-accent,#1b4d8f);}
 
     .leaflet-container{background:#f5f1e8;font:inherit}
     .leaflet-bar{border:none!important;border-radius:10px!important;overflow:hidden;

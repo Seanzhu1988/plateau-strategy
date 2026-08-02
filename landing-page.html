@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plateau Strategy Solution Lab — Integrated Business Ecosystem</title>
-    <meta name="description" content="Flat-rate Tesla airport transfers in Seattle — $75 to Sea–Tac, quoted before you book and unchanged after. Reserve any hour. Free trip-planning tools, no account needed.">
+    <meta name="description" content="Flat-rate Tesla airport transfers in Seattle — $75 to Sea–Tac from within 30 miles, quoted before you book and unchanged after. Reserve any hour. Free trip-planning tools, no account needed.">
     <link rel="canonical" href="https://plateaustrategy.io/">
     <meta name="theme-color" content="#070b16">
     <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
@@ -15,11 +15,11 @@
     <meta property="og:site_name" content="Plateau Strategy Solution Lab">
     <meta property="og:url" content="https://plateaustrategy.io/">
     <meta property="og:title" content="Plateau Strategy Solution Lab — Integrated Business Ecosystem">
-    <meta property="og:description" content="Flat-rate Tesla airport transfers in Seattle — $75 to Sea–Tac. Reserve any hour, no surge pricing.">
+    <meta property="og:description" content="Flat-rate Tesla airport transfers in Seattle — $75 to Sea–Tac from within 30 miles. Reserve any hour, no surge pricing.">
     <meta property="og:image" content="https://plateaustrategy.io/plateau-logo.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Plateau Strategy Solution Lab — Integrated Business Ecosystem">
-    <meta name="twitter:description" content="Flat-rate Tesla airport transfers in Seattle — $75 to Sea–Tac. Reserve any hour.">
+    <meta name="twitter:description" content="Flat-rate Tesla airport transfers in Seattle — $75 to Sea–Tac from within 30 miles. Reserve any hour.">
     <meta name="twitter:image" content="https://plateaustrategy.io/plateau-logo.png">
 
     <!-- Structured data. An AI assistant answering "who does airport runs in
@@ -2012,7 +2012,7 @@
                     <div class="psx-hero-inner">
                         <span class="psx-eyebrow-pill">Plateau Strategy Solution Lab · Seattle</span>
                         <h1 class="psx-h1">A Seattle car service that funds what comes next</h1>
-                        <p class="psx-sub">$75 to Sea–Tac, quoted before you book. Drivers rent our cars and keep the fare, hotels and agents earn commission for sending riders, and the trip-planning tools are free to anyone. Below: the three businesses that income is building, and where each one stands today.</p>
+                        <p class="psx-sub">$75 to Sea–Tac from anywhere within 30 miles, quoted before you book. Drivers rent our cars and keep the fare, hotels and agents earn commission for sending riders, and the trip-planning tools are free to anyone. Below: the three businesses that income is building, and where each one stands today.</p>
                         <div class="psx-cta-row">
                             <a href="/book" class="psx-btn psx-btn-primary">Book a ride</a>
                             <a href="/agent" class="psx-btn psx-btn-ghost">Partner with us</a>
@@ -2041,7 +2041,7 @@
                         <div class="psx-card" data-arm="transportation">
                             <span class="psx-stage psx-stage-live">Operating</span>
                             <h3 class="psx-card-title">Transportation</h3>
-                            <p class="psx-card-desc">Fixed-price Tesla rides at $75 to Sea–Tac, cars rented to drivers who keep the fare, and commission for hotels and agents who send us riders. This is where the money comes from.</p>
+                            <p class="psx-card-desc">Fixed-price Tesla rides at $75 to Sea–Tac from within 30 miles, cars rented to drivers who keep the fare, and commission for hotels and agents who send us riders. This is where the money comes from.</p>
                             <a class="psx-card-link" href="#" onclick="event.preventDefault();showView('transportation');">See how it works →</a>
                         </div>
                         <div class="psx-card" data-arm="operations">
@@ -2181,13 +2181,43 @@
     sheet. Levels are metric to three decimals because that is how they
     are written on a real drawing.
   -->
-  <g fill="none" stroke="#cfe3ff" stroke-width="1.4" stroke-linecap="square" font-family="ui-monospace, Menlo, monospace">
-    <g stroke="#7ea9e0" stroke-width="0.9" stroke-dasharray="7 4 2 4">
-      <line x1="200" y1="96" x2="200" y2="556"/>
-      <line x1="365" y1="96" x2="365" y2="556"/>
-      <line x1="530" y1="96" x2="530" y2="556"/>
-      <line x1="695" y1="96" x2="695" y2="556"/>
-      <line x1="860" y1="96" x2="860" y2="556"/>
+  <defs>
+    <!-- Graphite, not wobble.
+         The first version shook every line with a turbulence displacement,
+         which is what made it look like a child drew it: real pencil drafting
+         is straight, it just is not uniform. What varies is the DEPOSIT — the
+         line is darker where the lead bites and thinner where it skips, and
+         it overshoots slightly at a corner because the hand keeps going.
+         So: a fine grain over the stroke, and construction lines that run
+         past their intersections. Precision kept, printer's ink dropped. -->
+    <filter id="graphite" x="-4%" y="-4%" width="108%" height="108%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.42" numOctaves="4" seed="11" result="grain"/>
+      <feColorMatrix in="grain" type="matrix" result="soft"
+        values="0 0 0 0 0.40  0 0 0 0 0.55  0 0 0 0 0.78  0 0 0 1.1 -0.15"/>
+      <feComposite in="soft" in2="SourceAlpha" operator="in" result="tex"/>
+      <feBlend in="SourceGraphic" in2="tex" mode="multiply"/>
+    </filter>
+    <!-- the tooth of the paper, very faint, so flat areas are not dead -->
+    <filter id="tooth" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" seed="3"/>
+      <feColorMatrix type="matrix"
+        values="0 0 0 0 0.62  0 0 0 0 0.78  0 0 0 0 0.96  0 0 0 0.05 0"/>
+    </filter>
+  </defs>
+
+  <rect x="0" y="0" width="1120" height="640" filter="url(#tooth)" opacity="0.5"/>
+
+  <!-- Never fully opaque. A pencil line lets the sheet through; a printed
+       one does not, and that difference is most of what the eye reads as
+       "drawn" rather than "plotted". -->
+  <g fill="none" stroke="#cfe3ff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"
+     opacity="0.88" filter="url(#graphite)" font-family="ui-monospace, Menlo, monospace">
+    <g stroke="#7ea9e0" stroke-width="0.85" stroke-dasharray="9 5 2 5">
+      <line x1="200" y1="92" x2="200" y2="596"/>
+      <line x1="365" y1="92" x2="365" y2="596"/>
+      <line x1="530" y1="92" x2="530" y2="600"/>
+      <line x1="695" y1="92" x2="695" y2="596"/>
+      <line x1="860" y1="92" x2="860" y2="596"/>
     </g>
     <g stroke="#8fb4e8" stroke-width="1.1">
       <circle cx="200" cy="84" r="13"/>
@@ -2236,7 +2266,7 @@
       <path d="M88 520 l8 -6 l8 6 l-8 6 z" fill="#0c2c5f"/>
     </g>
     <!-- shell: five storeys, the top one set back to a terrace -->
-    <g stroke="#eaf4ff" stroke-width="2">
+    <g stroke="#eaf4ff" stroke-width="2.2">
       <path d="M200 520 L200 142 L260 142 L260 70 L800 70 L800 142 L860 142 L860 520 Z"/>
     </g>
     <!-- parapet coping -->
@@ -2254,7 +2284,7 @@
       <line x1="200" y1="430" x2="860" y2="430"/>
     </g>
     <!-- curtain wall: bay per structural grid, mullions at 1/3 points -->
-    <g stroke="#9fc7f5" stroke-width="1">
+    <g stroke="#9fc7f5" stroke-width="0.9" opacity="0.9">
       <rect x="214" y="154" width="137" height="46"/>
       <line x1="259.7" y1="154" x2="259.7" y2="200"/>
       <line x1="305.3" y1="154" x2="305.3" y2="200"/>
@@ -2305,7 +2335,7 @@
       <line x1="800.3" y1="370" x2="800.3" y2="416"/>
     </g>
     <!-- spandrel shading at each slab edge -->
-    <g stroke="#5f86bd" stroke-width="0.8">
+    <g stroke="#5f86bd" stroke-width="0.7" opacity="0.75">
       <line x1="214" y1="154" x2="220" y2="148"/>
       <line x1="223" y1="154" x2="229" y2="148"/>
       <line x1="232" y1="154" x2="238" y2="148"/>
@@ -2564,7 +2594,7 @@
       <line x1="844" y1="370" x2="850" y2="364"/>
     </g>
     <!-- top-floor terrace balustrade -->
-    <g stroke="#9fc7f5" stroke-width="1">
+    <g stroke="#9fc7f5" stroke-width="0.9" opacity="0.9">
       <line x1="200" y1="128" x2="256" y2="128"/>
       <line x1="804" y1="128" x2="860" y2="128"/>
       <line x1="208" y1="128" x2="208" y2="142"/>
@@ -2577,7 +2607,7 @@
       <line x1="844" y1="128" x2="844" y2="142"/>
       <line x1="856" y1="128" x2="856" y2="142"/>
     </g>
-    <g stroke="#9fc7f5" stroke-width="1">
+    <g stroke="#9fc7f5" stroke-width="0.9" opacity="0.9">
       <rect x="286" y="84" width="228" height="44"/>
       <rect x="546" y="84" width="228" height="44"/>
       <line x1="400" y1="84" x2="400" y2="128"/>
@@ -2598,7 +2628,7 @@
       <line x1="468" y1="470" x2="586" y2="470"/>
     </g>
     <!-- entrance canopy -->
-    <g stroke="#eaf4ff" stroke-width="2">
+    <g stroke="#eaf4ff" stroke-width="2.2">
       <path d="M452 426 L602 426 L602 418 L452 418 Z"/>
     </g>
     <g stroke="#eaf4ff" stroke-width="2.6">
@@ -3067,7 +3097,7 @@
                                  to this address bounces. A contact address that
                                  bounces is worse than no address at all.
                                    <a href="mailto:hello@plateaustrategy.io"><b>✉️</b>hello@plateaustrategy.io</a> -->
-                            <a href="/book">Book a ride — $75 flat to SeaTac</a>
+                            <a href="/book">Book a ride — $75 flat to Sea–Tac within 30 mi</a>
                             <span class="psx-foot-note">Service-area business — we come to you, there's no counter to visit.</span>
                         </div>
                     </div>

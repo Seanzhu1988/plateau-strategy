@@ -124,6 +124,13 @@
            next to where they type where it goes, not have to hunt a floating
            button for it. The markup always had it in the right place; only
            this rule took it away. */
+        .loc-here{
+            flex:0 0 auto; width:38px; height:38px; padding:0; line-height:1;
+            font-size:1.05rem; cursor:pointer; border-radius:9px;
+            background:#fff; border:1.5px solid var(--psx-border,rgba(20,17,12,.13));
+        }
+        .loc-here:hover{ background:#f5f1e8; }
+        .loc-here.located{ border-color:#1b5e43; }
         .map-searchbar .build-row .from { display: inline-flex; }
         .map-searchbar .build-row .to   { display: inline; opacity: .5; }
         .map-searchbar .build-row .startedit { display: none; }
@@ -611,6 +618,12 @@
                 <button type="button" class="from loc-btn" id="curLocBtn" onclick="startPointTap()"
                         title="Tap once to type a starting address · tap twice to use your current location"><span class="pin-badge" aria-hidden="true">⌂</span><span id="curLocLabel">Starting point</span></button>
 
+                <!-- Using your own location was hidden behind a double tap on
+                     the pin, which nobody discovers and nothing on screen
+                     announces. Its own button, one tap, next to the pin it
+                     belongs to. -->
+                <button type="button" class="from loc-here gp-chip" id="hereBtn" onclick="useMyLocation()"
+                        title="Start from where I am now" aria-label="Start from where I am now">📍</button>
                 <span class="to">→</span>
                 <input id="destAdd" placeholder="Type a destination and press Add — or tap a pin on the map"
                        autocomplete="off" onkeydown="if(event.key==='Enter')addDestination()">
@@ -2188,6 +2201,7 @@
                                              noFly: farAway,   // already handled, or deliberately not
                                              why: 'starting from your location' });
                 $('curLocBtn').classList.add('located');
+        { const h = $('hereBtn'); if (h) h.classList.add('located'); }
                 setLocLabel(address ? shortAddr(address) : 'My location');
                 const weak = acc > 150;
                 setLocInfo('📍 ' + (address || (lat.toFixed(5) + ', ' + lon.toFixed(5)))
@@ -2217,6 +2231,7 @@
         setOrigin(homeLoc.lat, homeLoc.lon, 'gps',
                   { address: homeLoc.address, accuracy: homeLoc.accuracy, why: 'starting from your location' });
         $('curLocBtn').classList.add('located');
+        { const h = $('hereBtn'); if (h) h.classList.add('located'); }
         setLocLabel(homeLoc.address ? shortAddr(homeLoc.address) : 'My location');
         map.setView([homeLoc.lat, homeLoc.lon], 11);
         fetchMatrix(); refresh();

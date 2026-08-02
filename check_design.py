@@ -212,7 +212,12 @@ def main():
                 for view in steps:
                     if view:
                         page.evaluate(f"showView('{view}')")
-                        page.wait_for_timeout(260)
+                        # The view fade is 350ms. Sampling inside it composites
+                        # every colour against what is underneath at 0.9-something
+                        # opacity, and reports tokens one unit off — rgb(75,69,61)
+                        # for body text that is rgb(74,69,61). Two false failures
+                        # that look exactly like real ones.
+                        page.wait_for_timeout(500)
 
                     res = page.evaluate(CONTRAST_JS)
                     bad = res["fails"]
