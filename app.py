@@ -792,6 +792,17 @@ def admin_terminal_css():
     return send_file(os.path.join(BASE_DIR, "admin-terminal.css"))
 
 
+@app.route("/modern.css")
+def modern_css():
+    """The current surface: white ground, big type, colour only in solid things.
+
+    Loaded after paper.css and overriding it, in its own file on purpose — the
+    look is one <link> to remove. Two earlier attempts at this were wrong in
+    opposite directions and both had to be unpicked out of a shared stylesheet.
+    """
+    return send_file(os.path.join(BASE_DIR, "modern.css"), mimetype="text/css")
+
+
 @app.route("/paper.css")
 def paper_css():
     """The paper theme, shared by every page.

@@ -384,14 +384,22 @@
          black pin, sitting beside the address bar so the two read as one thing.
          Painted ink like every other button, its pin went black-on-black and
          the waiting state had nothing left to say. It styles itself. */
-      button:not(.i18n-opt):not(#i18nBtn):not(.cancel-btn):not(.pk-bubble):not(#pollock):not(.loc-btn),
+      /* The two ids in the :not() chains below are written as attribute
+         selectors on purpose. An id inside :not() scores as an id, which
+         lifted these blanket button rules above anything a later stylesheet
+         could say without resorting to tricks — they outranked the surface
+         layer's own button colours and painted every call to action ink.
+         Written this way they match exactly the same buttons and behave
+         identically on their own; they simply no longer outrank the layer
+         that is meant to sit on top of them. */
+      button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn),
       .btn,.book-cta{
         background:var(--psx-ink) !important;background-image:none !important;
         color:#fff !important;border:1px solid var(--psx-ink) !important;
         border-radius:3px !important;box-shadow:none !important;
         font-weight:600 !important;
       }
-      button:not(.i18n-opt):not(#i18nBtn):not(.pk-bubble):not(#pollock):not(.loc-btn):hover:not(:disabled){
+      button:not(.i18n-opt):not([id="i18nBtn"]):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):hover:not(:disabled){
         background:#000 !important;transform:none !important;box-shadow:none !important;
       }
       /* On paper: a cream face, an ink pin, and red only while it waits. */
@@ -528,13 +536,13 @@
       .psx-btn-primary,
       nav a[href="/book"],
       .book-cta,
-      button:not(.i18n-opt):not(#i18nBtn):not(.cancel-btn):not(.pk-bubble):not(#pollock),
+      button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]),
       .btn.blue,.btn-blue,.cta{
         background:var(--psx-accent) !important;background-image:none !important;
         border-color:var(--psx-accent) !important;color:#fff !important;
       }
       .psx-btn-primary:hover,nav a[href="/book"]:hover,.cta:hover,
-      button:not(.i18n-opt):not(#i18nBtn):not(.pk-bubble):not(#pollock):hover:not(:disabled){
+      button:not(.i18n-opt):not([id="i18nBtn"]):not(.pk-bubble):not([id="pollock"]):hover:not(:disabled){
         background:var(--psx-accent-dark) !important;border-color:var(--psx-accent-dark) !important;
       }
 
