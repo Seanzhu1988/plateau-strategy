@@ -126,7 +126,13 @@
         letter-spacing:.16em !important;text-transform:uppercase;
         padding:0 !important;box-shadow:none !important;
       }
-      .psx-h1,.psx-h2,.psx-h3,h1,h2,h3,.section-title,.hero h1{
+      /* .page-title is a div, not an h1, on six pages — the trip planner, the
+         Destination Book, Guided Trips, Guide Studio, Favourite Places and
+         Articles. Every one of them is the page's headline and every one was
+         rendering in the system sans while the other twelve pages carried the
+         serif, so the tools plainly did not belong to the same site as the
+         front page. It is the page's headline; it takes the headline face. */
+      .psx-h1,.psx-h2,.psx-h3,h1,h2,h3,.section-title,.hero h1,.page-title{
         font-family:var(--psx-display) !important;
         font-weight:600 !important;
         letter-spacing:-.012em !important;
@@ -723,3 +729,75 @@
       .act-link{color:var(--psx-accent) !important;}
       .gate{color:var(--psx-text2) !important;}
       .total{color:var(--psx-accent) !important;}
+
+
+/* ---- the masthead on a phone ----
+   At 375px the header was 113px tall before a word of content: the wordmark
+   broke across three lines and "Book a Ride" was squeezed into a 35px column
+   reading "Book / a / Ride" down the screen. Nothing was overflowing, so
+   nothing looked broken — it was simply eating a third of the screen.
+
+   Three changes, no markup: the links stop wrapping and scroll sideways if
+   they must, the wordmark takes a size that fits, and the row is allowed to
+   be a row. */
+@media (max-width: 560px) {
+  header {
+    padding: 0.7rem 0.9rem !important;
+    gap: 0.55rem !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+  }
+  header img, header .logo, header .psx-logo {
+    height: 30px !important; width: 30px !important; flex: 0 0 auto;
+  }
+  header .brand, header .logo-text {
+    font-size: 0.92rem !important;
+    line-height: 1.15 !important;
+    min-width: 0;                      /* shrink and reflow rather than push the nav out */
+  }
+  @media (max-width: 400px) {
+    header .brand, header .logo-text { font-size: 0.84rem !important; }
+  }
+  /* The nav gets its width first. Sharing the row proportionally left it 21px
+     short and "Book a Ride" was clipped to "Book a R" — a cut-off call to
+     action being worse than a wordmark that takes an extra line. */
+  header .right, header .links, header nav {
+    margin-left: auto;
+    display: flex !important;
+    gap: 0.75rem !important;
+    flex: 0 0 auto !important;
+    flex-wrap: nowrap !important;
+  }
+  header .right a, header .links a, header nav a {
+    white-space: nowrap !important;    /* "Book a Ride" is three words, not three lines */
+    font-size: 0.82rem !important;
+  }
+}
+
+
+/* ---- nothing slides the page sideways ----
+   Three pages did, each for its own reason: a chip row that would not wrap, a
+   partner table wider than the screen, and a form row eight pixels over. The
+   symptom is the same and so is the rule — wide content scrolls inside its own
+   box, the page itself never does. */
+@media (max-width: 560px) {
+  html, body { overflow-x: hidden; }
+
+  /* A table is genuinely wide; let it scroll in place rather than shrink its
+     columns into unreadable slivers. */
+  .card table, .p-card table, table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Rows of chips, filters and form fields wrap instead of running off. */
+  .chips, .filters, .row, .addrow, .build-row, .durations, .stay-opts {
+    flex-wrap: wrap !important;
+  }
+
+  /* An input with a fixed width is the usual last eight pixels. */
+  input, select, textarea { max-width: 100%; }
+}
