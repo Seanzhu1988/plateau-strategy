@@ -26,9 +26,28 @@ EXTRA_SKIP = {
     "Mixed-use development · Sheet RE-01",
     "© 2026 Plateau Strategy Solution Lab",
     '"Connect to Square"',
+
+    "C",
+    "D",
+    "E",
+    "30 000 OVERALL",
+    "10 m",
+    "SCALE · 1:200 @ A3",
 }
 
 EXTRA = {
+    # ------- Real Estate: the drawing sheet -------
+    "WORK IN PROGRESS · REV A": ["进行中 · 版本 A", "EN CURSO · REV A", "작업 중 · REV A", "ĐANG THỰC HIỆN · REV A"],
+    "PARAPET": ["女儿墙", "PRETIL", "파라펫", "TƯỜNG CHẮN MÁI"],
+    "LEVEL 5": ["五层", "NIVEL 5", "5층", "TẦNG 5"],
+    "LEVEL 4": ["四层", "NIVEL 4", "4층", "TẦNG 4"],
+    "LEVEL 3": ["三层", "NIVEL 3", "3층", "TẦNG 3"],
+    "LEVEL 2": ["二层", "NIVEL 2", "2층", "TẦNG 2"],
+    "LEVEL 1": ["一层", "NIVEL 1", "1층", "TẦNG 1"],
+    "GROUND": ["首层", "PLANTA BAJA", "지상층", "TẦNG TRỆT"],
+    "PRELIMINARY": ["初步方案", "PRELIMINAR", "예비안", "SƠ BỘ"],
+    "FRONT ELEVATION · 1:200 @ A3 · NOT FOR CONSTRUCTION": ["正立面 · 1:200 @ A3 · 不作施工依据", "ALZADO FRONTAL · 1:200 @ A3 · NO APTO PARA CONSTRUCCIÓN", "정면도 · 1:200 @ A3 · 시공용 아님", "MẶT ĐỨNG CHÍNH · 1:200 @ A3 · KHÔNG DÙNG ĐỂ THI CÔNG"],
+    "FIG 1 — MIXED-USE HUB · FRONT ELEVATION": ["图 1 — 综合用途大楼 · 正立面", "FIG 1 — CENTRO DE USO MIXTO · ALZADO FRONTAL", "그림 1 — 복합용도 건물 · 정면도", "HÌNH 1 — TÒA NHÀ ĐA CHỨC NĂNG · MẶT ĐỨNG CHÍNH"],
     "One stretch with nowhere to pull in": ["有一段路程没有可停靠的地点", "Un tramo sin dónde parar", "정차할 곳이 없는 구간 한 곳", "Một đoạn không có chỗ dừng"],
     "From the start to {to} in — {len} with no mapped stop": ["自出发至行驶 {to} — 该 {len} 路段无已知停靠点", "desde la salida hasta {to} de trayecto — {len} sin ninguna parada registrada", "출발부터 {to} 지점까지 — {len} 동안 등록된 정차 지점 없음", "từ lúc khởi hành đến {to} — {len} không có điểm dừng nào được ghi nhận"],
     # ------- road trip: stretches with nowhere to stop -------

@@ -451,10 +451,15 @@
       .big b,.stat b{color:var(--psx-ink) !important;}
       a.tool:hover{border-color:rgba(20,17,12,.28) !important;background:#fffdf9 !important;}
 
-      /* the last gradient buttons on the site */
+      /* These carried gradients once, and this rule pinned them to ink to
+         kill the gradient. The gradients are gone from the pages themselves
+         now, and the pin outlived its reason: a.btn.blue is more specific
+         than the accent rule's .btn.blue, so "Go to Dispatch login" rendered
+         black on two slate pages while every other primary action on the
+         site took its arm colour. Only the gradient is refused here; the
+         colour is the accent rule's business. */
       .btn.blue,.btn-blue,a.btn.blue{
-        background:var(--psx-ink) !important;background-image:none !important;
-        color:#fff !important;border:1px solid var(--psx-ink) !important;
+        background-image:none !important;
         box-shadow:none !important;
       }
 

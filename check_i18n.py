@@ -79,11 +79,26 @@ LANGS = ["zh", "es", "ko", "vi"]
 
 
 def load_dict():
-    src = open(os.path.join(HERE, "i18n.js"), encoding="utf-8").read()
-    m = re.search(r"var DICT = (\{.*?\});\n", src, re.S)
-    if not m:
-        raise SystemExit("could not find DICT in i18n.js — was it built?")
-    return json.loads(m.group(1))
+    """Rebuild the {english: {lang: translation}} shape from the packs.
+
+    It used to be parsed straight out of i18n.js, which held all four
+    languages. The dictionary now ships as one file per language so that an
+    English reader does not download 265 KB of Chinese, Spanish, Korean and
+    Vietnamese to read a page in English — so this reads the packs and puts
+    the shape back together. The checks below are unchanged; only where the
+    strings live has moved."""
+    D = {}
+    for lang in LANGS:
+        path = os.path.join(HERE, "i18n.%s.js" % lang)
+        if not os.path.exists(path):
+            raise SystemExit("missing %s — run build_i18n.py first" % os.path.basename(path))
+        src = open(path, encoding="utf-8").read()
+        m = re.search(r'window\.psxPack\(".*?",\s*(\{.*\})\);', src, re.S)
+        if not m:
+            raise SystemExit("could not find the pack body in %s" % os.path.basename(path))
+        for k, v in json.loads(m.group(1)).items():
+            D.setdefault(k, {})[lang] = v
+    return D
 
 
 def main():

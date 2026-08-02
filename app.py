@@ -860,6 +860,24 @@ def i18n_js():
     return send_file(os.path.join(BASE_DIR, "i18n.js"))
 
 
+@app.route("/i18n.<lang>.js")
+def i18n_pack(lang):
+    """One language, fetched only by someone reading it.
+
+    The dictionary used to live inside i18n.js — 1123 entries times four
+    languages, 265 KB on every page of the site. An English reader, which is
+    most of them, downloaded Chinese, Spanish, Korean and Vietnamese and used
+    none of it. The engine is 11 KB now and asks for the single pack it
+    needs; English asks for nothing, because English is the text already on
+    the page."""
+    if lang not in ("zh", "es", "ko", "vi"):
+        return ("", 404)
+    path = os.path.join(BASE_DIR, "i18n.%s.js" % lang)
+    if not os.path.exists(path):
+        return ("", 404)
+    return send_file(path, mimetype="text/javascript")
+
+
 @app.route("/vendor/leaflet/<path:filename>")
 def leaflet_vendor(filename):
     """Leaflet, served from here rather than unpkg.
