@@ -1688,3 +1688,39 @@ EXTRA.update({
     "Stay": ["留住", "Quédate", "머무르기", "Ở lại"],
     "Let go": ["放开", "Suéltalo", "놓아주기", "Thả ra"],
 })
+
+# ---------------- location: the strings the new flow speaks ----------------
+# Register note: Korean uses no second-person pronoun here, per the correction
+# pass — 고객님 where the person must be named, otherwise nothing.
+EXTRA.update({
+    "Follow my position as I move": [
+        "移动时持续跟随我的位置", "Seguir mi posición mientras me muevo",
+        "이동하는 동안 위치 따라가기", "Theo dõi vị trí khi tôi di chuyển"],
+    "Stop following your position": [
+        "停止跟随位置", "Dejar de seguir tu posición",
+        "위치 따라가기 중지", "Dừng theo dõi vị trí"],
+    "Getting your location…": ["正在获取您的位置…", "Obteniendo tu ubicación…", "위치를 가져오는 중…", "Đang lấy vị trí của bạn…"],
+    "This browser cannot share location.": [
+        "此浏览器无法共享位置。", "Este navegador no puede compartir la ubicación.",
+        "이 브라우저는 위치를 공유할 수 없습니다.", "Trình duyệt này không chia sẻ được vị trí."],
+    "Following your position. Drive times update from where you are.": [
+        "正在跟随您的位置，车程将按您所在的地方实时更新。",
+        "Siguiendo tu posición. Los tiempos de viaje se calculan desde donde estás.",
+        "위치를 따라갑니다. 이동 시간은 현재 계신 곳을 기준으로 갱신됩니다.",
+        "Đang theo vị trí của bạn. Thời gian di chuyển được tính lại từ nơi bạn đang đứng."],
+    "Click the lock or ⓘ icon beside the address bar → Location → Allow.": [
+        "点击地址栏旁的锁形或 ⓘ 图标 → 位置 → 允许。",
+        "Haz clic en el candado o el icono ⓘ junto a la barra de direcciones → Ubicación → Permitir.",
+        "주소창 옆의 자물쇠 또는 ⓘ 아이콘 → 위치 → 허용을 선택하세요.",
+        "Nhấn vào biểu tượng ổ khóa hoặc ⓘ cạnh thanh địa chỉ → Vị trí → Cho phép."],
+    "Settings → Safari → Location, or the ⓘ in the address bar.": [
+        "设置 → Safari → 位置，或点击地址栏中的 ⓘ。",
+        "Ajustes → Safari → Ubicación, o el ⓘ de la barra de direcciones.",
+        "설정 → Safari → 위치, 또는 주소창의 ⓘ를 누르세요.",
+        "Cài đặt → Safari → Vị trí, hoặc biểu tượng ⓘ trên thanh địa chỉ."],
+    "Tap the lock icon beside the address bar → Permissions → Location.": [
+        "点击地址栏旁的锁形图标 → 权限 → 位置。",
+        "Toca el candado junto a la barra de direcciones → Permisos → Ubicación.",
+        "주소창 옆 자물쇠 아이콘 → 권한 → 위치를 누르세요.",
+        "Chạm biểu tượng ổ khóa cạnh thanh địa chỉ → Quyền → Vị trí."],
+})

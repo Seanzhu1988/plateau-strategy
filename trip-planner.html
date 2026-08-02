@@ -21,6 +21,8 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
         .act.ride-wanted { background: #fff7ed; border-color: #fdba74; color: #9a3412; }
+        /* Following is a state, not a press — it stays lit for as long as it runs. */
+        .map-actions button#followBtn.on { background: #1b4d8f; color: #fff; }
         .tap-hint { font-size: 0.72rem; color: #6b655b; line-height: 1.25; max-width: 190px; }
         .am-pin.pop-pin { border-color: #f59e0b; background: #fffbeb; }
         .pop-photo { width: 100%; height: 96px; object-fit: cover; border-radius: 7px; margin-bottom: 0.4rem; }
@@ -2122,13 +2124,78 @@
     function setLocInfo(t, warn){ const el = $('curLocInfo'); if (!el) return; el.textContent = t; el.className = 'loc-info' + (warn ? ' warn' : ''); }
     function shortAddr(a){ return a ? a.split(',').slice(0, 3).join(',') : ''; }
 
+    // ---------- location, the way map apps actually do it ----------
+    // Three things every mature map app does that this did not:
+    //
+    //  1. It asks the browser whether permission was ALREADY refused. A second
+    //     getCurrentPosition() after a refusal does nothing at all — no prompt,
+    //     no error for several seconds — so the button simply appeared broken.
+    //     Knowing beforehand means we can say what happened and how to undo it.
+    //  2. It takes a fast, coarse fix first and refines it. Asking for high
+    //     accuracy with no cached position allowed is the slowest possible
+    //     request: up to twelve seconds of "Locating…" before anything moves.
+    //     A cached fix inside two minutes is good enough to move the map now,
+    //     and the precise one lands a moment later.
+    //  3. It draws the accuracy circle. "±25 m" as text tells you nothing;
+    //     the halo is how a person judges whether to trust the dot.
+    let accuracyRing = null;
+    function showAccuracy(lat, lon, metres) {
+        if (!map || !metres) return;
+        if (accuracyRing) { map.removeLayer(accuracyRing); accuracyRing = null; }
+        if (metres > 2000) return;              // too vague to draw honestly
+        accuracyRing = L.circle([lat, lon], {
+            radius: metres, weight: 1, color: '#1b4d8f',
+            fillColor: '#1b4d8f', fillOpacity: 0.08, interactive: false
+        }).addTo(map);
+    }
+    function clearAccuracy() {
+        if (accuracyRing) { map.removeLayer(accuracyRing); accuracyRing = null; }
+    }
+
+    // What the browser will do before we ask it — 'granted', 'denied', 'prompt'
+    // or null when the browser cannot say.
+    async function locationPermission() {
+        try {
+            if (!navigator.permissions || !navigator.permissions.query) return null;
+            const s = await navigator.permissions.query({ name: 'geolocation' });
+            return s.state;
+        } catch (e) { return null; }
+    }
+
+    function blockedHelp() {
+        const ua = navigator.userAgent;
+        if (/iPhone|iPad|iPod/.test(ua))
+            return 'Settings → Safari → Location, or the ⓘ in the address bar.';
+        if (/Android/.test(ua))
+            return 'Tap the lock icon beside the address bar → Permissions → Location.';
+        return 'Click the lock or ⓘ icon beside the address bar → Location → Allow.';
+    }
+
     function detectLocation(){
-        return new Promise(resolve => {
+        return new Promise(async resolve => {
             if (!navigator.geolocation) {
                 setLocInfo('This browser can’t share location — drag the black pin or type your pickup on the booking form.', true);
                 resolve(false); return;
             }
-            setLocLabel('Locating…'); setLocInfo('Getting your exact location…');
+            // Refused before? Asking again does nothing — say so instead of
+            // spinning, and say where to change it.
+            if (await locationPermission() === 'denied') {
+                setLocLabel('Starting point');
+                setLocInfo('Location is blocked for this site, so the browser will not ask again. ' + blockedHelp()
+                         + ' Or type your starting address — tap the ⌂ pin once.', true);
+                jarvisSay('Your browser is blocking location for this site, so I cannot look it up. '
+                        + escj(blockedHelp()) + ' Or <span class="fixlink" onclick="openStartEntry()">type where you are</span> — just as good.');
+                resolve(false); return;
+            }
+            setLocLabel('Locating…'); setLocInfo('Getting your location…');
+            // A fix from the last two minutes is plenty to move the map now.
+            navigator.geolocation.getCurrentPosition(function (quick) {
+                if (currentLoc && currentLoc.source === 'gps') return;   // the precise one already landed
+                const qa = Math.round(quick.coords.accuracy || 0);
+                setLocInfo('📍 Found you to about ±' + qa + ' m — sharpening…');
+                showAccuracy(quick.coords.latitude, quick.coords.longitude, qa);
+            }, function () {}, { enableHighAccuracy: false, timeout: 4000, maximumAge: 120000 });
+
             navigator.geolocation.getCurrentPosition(async pos => {
                 const lat = pos.coords.latitude, lon = pos.coords.longitude, acc = Math.round(pos.coords.accuracy || 0);
                 // Someone in Washington planning Boston still wants to SEE Boston.
@@ -2165,6 +2232,7 @@
                     resolve(true);
                     return;
                 }
+                showAccuracy(lat, lon, acc);
                 setOrigin(lat, lon, 'gps', { address: address, accuracy: acc,
                                              noFly: farAway,   // already handled, or deliberately not
                                              why: 'starting from your location' });
@@ -2182,14 +2250,70 @@
                 resolve(true);
             }, err => {
                 setLocLabel('Starting point');
-                const denied = err && err.code === 1;
-                setLocInfo(denied
-                    ? 'Location permission was blocked — drag the black pin to your spot, or set the pickup on the booking form.'
-                    : 'Couldn’t get a location fix — drag the black pin, or set the pickup on the booking form.', true);
+                clearAccuracy();
+                const code = err && err.code;
+                setLocInfo(
+                    code === 1 ? 'You declined to share your location. ' + blockedHelp()
+                               + ' Or tap the ⌂ pin once and type where you are.'
+                  : code === 3 ? 'Your device did not answer in time — indoors this is common. '
+                               + 'Try again, or tap the ⌂ pin once and type where you are.'
+                               : 'Could not get a location fix. Tap the ⌂ pin once and type where you are, '
+                               + 'or drag it on the map.', true);
                 resolve(false);
-            }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
+            }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
         });
     }
+    // ---------- follow me ----------
+    // The one location feature a walking traveller actually wants and this did
+    // not have: keep the dot with them as they move. Every map app has it, and
+    // it is the difference between a map you consult and a map you walk with.
+    // It is off by default and it says when it is on, because a page quietly
+    // watching your position is not something to switch on for somebody.
+    let followId = null;
+    function following(){ return followId !== null; }
+    async function toggleFollow(){
+        if (following()) { stopFollow('you turned it off'); return; }
+        if (!navigator.geolocation) { say('This browser cannot share location.'); return; }
+        if (await locationPermission() === 'denied') {
+            setLocInfo('Location is blocked for this site, so following is not possible. ' + blockedHelp(), true);
+            return;
+        }
+        followId = navigator.geolocation.watchPosition(function (pos) {
+            const lat = pos.coords.latitude, lon = pos.coords.longitude;
+            const acc = Math.round(pos.coords.accuracy || 0);
+            showAccuracy(lat, lon, acc);
+            startMarker.setLatLng([lat, lon]);
+            currentLoc = { lat: lat, lon: lon, address: (currentLoc && currentLoc.address) || '',
+                           accuracy: acc, source: 'gps' };
+            // Keep the traveller in view without fighting them: only recentre
+            // once they have walked off the screen, never on every reading.
+            if (!map.getBounds().pad(-0.25).contains([lat, lon])) map.panTo([lat, lon]);
+            setLocInfo('🛰 Following you · ±' + acc + ' m — tap again to stop.');
+        }, function (err) {
+            stopFollow(err && err.code === 1 ? 'permission was withdrawn' : 'the signal dropped');
+        }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+        markFollow();
+        say('Following your position. Drive times update from where you are.');
+    }
+    function stopFollow(why){
+        if (followId !== null) { navigator.geolocation.clearWatch(followId); followId = null; }
+        markFollow();
+        // A route timed from a moving start is stale the moment following stops,
+        // so re-time it once against where they actually ended up.
+        if (st.route.length) retimeRoute('you stopped moving');
+        setLocInfo('Stopped following — ' + (why || 'off') + '.');
+    }
+    function markFollow(){
+        const b = document.getElementById('followBtn');
+        if (b) { b.classList.toggle('on', following());
+                 b.title = following() ? 'Stop following your position' : 'Follow my position as I move'; }
+    }
+    // Nobody should be tracked by a page they have wandered away from.
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden && following()) stopFollow('the page went to the background');
+    });
+    window.addEventListener('pagehide', function () { if (following()) stopFollow('you left the page'); });
+
     // Where the traveller actually is, remembered even when we decline to make it
     // the trip's start — so "start from where I am" is one tap, not another GPS ask.
     let homeLoc = null;
@@ -3458,6 +3582,7 @@
                   '<button onclick="recenterMap()" title="Lost? Fit my whole trip back on screen">⊙</button>'
                 + '<button id="wideMapBtn" onclick="toggleWideMap()" title="Full-width map">⤢</button>'
                 + '<button onclick="startPointTap()" title="Starting point — tap once to type an address, tap twice for your current location">⌂</button>'
+                + '<button id="followBtn" onclick="toggleFollow()" title="Follow my position as I move">🛰</button>'
                 + '<button onclick="undoStop()" title="Undo the last stop">↩</button>'
                 + '<button onclick="nextDay()" title="Start the next day">➡</button>'
                 + '<button onclick="confirmReset()" title="Clear the trip">⟲</button>';
