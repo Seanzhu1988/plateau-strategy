@@ -98,6 +98,11 @@
         display:inline-block;box-shadow:0 1px 3px rgba(15,23,42,.14)}
     .ep-a .tp-dot{background:#14110c}
     .ep-b .tp-dot{background:#0f6d5c}
+    .chg-meta{color:#6b655b;font-size:.86em}
+    .chg-near{color:#0f6d5c;font-size:.86em;font-weight:600}
+    .chg-bare{color:#6b655b;font-size:.86em}
+    .chg-fit{background:#e8f2ec;color:#1b5e43;font-size:.72em;font-weight:700;
+        border-radius:3px;padding:.05rem .35rem;margin-left:.25rem;white-space:nowrap}
     .routepick{display:flex;gap:.5rem;flex-wrap:wrap;margin:0 0 .9rem;}
     .routepick button{flex:1 1 190px;text-align:left;background:#fff;
         border:1px solid var(--psx-border,rgba(20,17,12,.13));border-radius:4px;
@@ -447,6 +452,134 @@
         });
     }
 
+    // ---------- EV charging ----------
+    //
+    // Every EV route planner will tell you where the chargers are. A Better
+    // Route Planner models the charge curve; PlugShare knows the stall and
+    // who complained about it; the car's own nav routes between its own
+    // network. None of them answer the question a driver actually has once
+    // the cable is in: I am here for twenty-five minutes, is there a toilet.
+    //
+    // A charger is a place you are stuck at, not a place you pass. So the
+    // chargers get swept like the rest stops, and then a SECOND query asks
+    // what is within a short walk of each one, and the two are joined. That
+    // join is the thing nobody else ships, and it costs one extra Overpass
+    // call.
+    var WALK_M = 400;          // ~5 minutes, and the far side of a big lot
+
+    async function chargersAlongRoute(rt) {
+        var target = Math.ceil(rt.distance / 3000);
+        var pts = sampleRoute(rt, Math.max(60, Math.min(500, target)));
+        var maxGap = 0;
+        for (var i = 1; i < pts.length; i++) {
+            maxGap = Math.max(maxGap, haversine(pts[i-1][1], pts[i-1][0], pts[i][1], pts[i][0]));
+        }
+        var radius = Math.round(Math.max(4000, maxGap / 2 + 500));
+        var line = pts.map(function (c) { return c[1].toFixed(4) + ',' + c[0].toFixed(4); }).join(',');
+
+        var q = '[out:json][timeout:90];(' +
+                'node(around:' + radius + ',' + line + ')[amenity=charging_station];' +
+                'way(around:' + radius + ',' + line + ')[amenity=charging_station];' +
+                ');out center 300;';
+        var r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: q });
+        if (!r.ok) throw new Error('overpass');
+        var j = await r.json();
+
+        var out = [];
+        (j.elements || []).forEach(function (e) {
+            var t = e.tags || {};
+            var lat = e.lat || (e.center && e.center.lat);
+            var lon = e.lon || (e.center && e.center.lon);
+            if (!lat || !lon) return;
+            // Access matters more than anything else here: a charger behind a
+            // gate at a dealership is not a charger you can use.
+            if (t.access && /private|no|customers/.test(t.access)) return;
+            out.push({
+                name: t.name || t.operator || T('Charging station'),
+                operator: t.operator || '',
+                lat: lat, lon: lon,
+                plugs: plugsOf(t),
+                stalls: parseInt(t.capacity, 10) || null,
+                kw: maxKw(t),
+                fee: t.fee === 'no' ? 'free' : (t.fee === 'yes' ? 'paid' : ''),
+                sec: progressAt(rt, pts, lat, lon),
+                near: []
+            });
+        });
+        out.sort(function (a, b) { return a.sec - b.sec; });
+
+        // Drop duplicates the way the rest-stop sweep does — one site is
+        // often mapped as several nodes.
+        var seen = [];
+        out = out.filter(function (c) {
+            var dup = seen.some(function (o) { return haversine(o.lat, o.lon, c.lat, c.lon) < 250; });
+            if (!dup) seen.push(c);
+            return !dup;
+        });
+        if (!out.length) return out;
+
+        // ---- the join: what is within a walk of each charger ----
+        var top = out.slice(0, 60);        // one query, bounded
+        var around = top.map(function (c) { return c.lat.toFixed(5) + ',' + c.lon.toFixed(5); }).join(',');
+        var q2 = '[out:json][timeout:60];(' +
+                 'node(around:' + WALK_M + ',' + around + ')[amenity~"^(toilets|cafe|restaurant|fast_food)$"];' +
+                 'node(around:' + WALK_M + ',' + around + ')[shop~"^(convenience|supermarket)$"];' +
+                 ');out center 400;';
+        try {
+            var r2 = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: q2 });
+            if (r2.ok) {
+                var j2 = await r2.json();
+                (j2.elements || []).forEach(function (e) {
+                    var t = e.tags || {};
+                    var lat = e.lat || (e.center && e.center.lat);
+                    var lon = e.lon || (e.center && e.center.lon);
+                    if (!lat || !lon) return;
+                    var kind = t.amenity === 'toilets' ? 'toilets'
+                             : t.amenity === 'cafe' ? 'cafe'
+                             : (t.amenity === 'restaurant' || t.amenity === 'fast_food') ? 'food'
+                             : 'shop';
+                    // Attach to the nearest charger, and only if it is really
+                    // within a walk of that one.
+                    var best = null, bestD = Infinity;
+                    top.forEach(function (c) {
+                        var d = haversine(c.lat, c.lon, lat, lon);
+                        if (d < bestD) { bestD = d; best = c; }
+                    });
+                    if (best && bestD <= WALK_M && best.near.indexOf(kind) < 0) best.near.push(kind);
+                });
+            }
+        } catch (e) { /* the charger list is still worth showing without this */ }
+        return out;
+    }
+
+    // OSM records one socket:* key per connector type. Only the ones a driver
+    // in North America has to care about are surfaced — the rest is noise on a
+    // page whose job is "can I plug in here".
+    function plugsOf(t) {
+        var p = [];
+        if (t['socket:tesla_supercharger'] || t['socket:tesla_supercharger_ccs'] ||
+            /tesla/i.test(t.operator || '') || /tesla/i.test(t.brand || '')) p.push('Tesla');
+        if (t['socket:type2_combo'] || t['socket:ccs'] || t['socket:type2_css']) p.push('CCS');
+        if (t['socket:type1_combo']) p.push('CCS');
+        if (t['socket:chademo']) p.push('CHAdeMO');
+        if (t['socket:type2'] || t['socket:type2_cable']) p.push('J1772/Type 2');
+        if (t['socket:nacs']) p.push('NACS');
+        return p;
+    }
+
+    // The fastest output any socket on the site advertises.
+    function maxKw(t) {
+        var best = 0;
+        Object.keys(t).forEach(function (k) {
+            if (k.indexOf('socket:') !== 0 || k.indexOf(':output') < 0) return;
+            var v = parseFloat(String(t[k]).replace(/[^\d.]/g, ''));
+            if (v > best) best = v;
+        });
+        if (!best && t['charging_station:output'])
+            best = parseFloat(String(t['charging_station:output']).replace(/[^\d.]/g, '')) || 0;
+        return best || null;
+    }
+
     // How far into the drive a point is, by snapping it to the nearest
     // sampled route point and scaling by total duration.
     function progressAt(rt, pts, lat, lon) {
@@ -645,6 +778,54 @@
                     }).bindTooltip((s.kind === 'fuel' ? 'Fuel' : 'Rest stop') + ' · ' + s.name +
                                    ' · ' + T('{time} in', { time: hhmm(s.sec) }));
                     c.addTo(map); layers.push(c);
+                });
+            }
+
+            // ---- charging, and what is within a walk of each stall ----
+            say(T('Finding charging stations along the route…'));
+            var chargers = [];
+            try { chargers = await chargersAlongRoute(rt); } catch (e) { /* shown below */ }
+
+            if (chargers.length) {
+                // A charge you were going to stop for anyway is free. Anything
+                // within twenty minutes of a planned break is flagged, because
+                // that is the stop to aim for rather than a separate one.
+                chargers.forEach(function (c) {
+                    c.atBreak = bps.some(function (b) { return Math.abs(b.sec - c.sec) < 20 * 60; });
+                });
+                var NEAR_LABEL = { toilets: '🚻 ' + T('toilets'), cafe: '☕ ' + T('coffee'),
+                                   food: '🍽 ' + T('food'), shop: '🛒 ' + T('shop') };
+                var withAmenity = chargers.filter(function (c) { return c.near.length; }).length;
+
+                $('legs').innerHTML += '<div class="leg"><div class="leg-head">' +
+                    '<div class="leg-n" style="background:#0f6d5c">⚡</div><div class="leg-t">' +
+                    '<h3>' + T('Charging along the route') + '</h3>' +
+                    '<p>' + T('{n} stations · {w} have food, coffee or a toilet within a 5-minute walk',
+                              { n: chargers.length, w: withAmenity }) + '</p>' +
+                    '</div></div><div class="pois"><div class="poi-group"><ul>' +
+                    chargers.map(function (c) {
+                        var bits = [];
+                        if (c.plugs.length) bits.push(c.plugs.join(' · '));
+                        if (c.kw) bits.push(Math.round(c.kw) + ' kW');
+                        if (c.stalls) bits.push(T('{n} stalls', { n: c.stalls }));
+                        if (c.fee === 'free') bits.push(T('free'));
+                        var walk = c.near.length
+                            ? '<span class="chg-near">' + c.near.map(function (k) { return NEAR_LABEL[k]; }).join(' · ') + '</span>'
+                            : '<span class="chg-bare">' + T('nothing within a walk') + '</span>';
+                        return '<li>⚡ ' + esc(c.name) +
+                               (c.atBreak ? ' <span class="chg-fit">' + T('lines up with a break') + '</span>' : '') +
+                               '<span class="chg-meta"> · ' + T('{time} in', { time: hhmm(c.sec) }) +
+                               (bits.length ? ' · ' + esc(bits.join(' · ')) : '') + '</span><br>' + walk + '</li>';
+                    }).join('') +
+                    '</ul></div></div></div>';
+
+                chargers.forEach(function (c) {
+                    var m = L.circleMarker([c.lat, c.lon], {
+                        radius: c.near.length ? 7 : 5, color: '#fff', weight: 1.5,
+                        fillColor: '#0f6d5c', fillOpacity: .95
+                    }).bindTooltip('⚡ ' + c.name + ' · ' + T('{time} in', { time: hhmm(c.sec) }) +
+                                   (c.near.length ? ' · ' + c.near.map(function (k) { return NEAR_LABEL[k]; }).join(' · ') : ''));
+                    m.addTo(map); layers.push(m);
                 });
             }
 

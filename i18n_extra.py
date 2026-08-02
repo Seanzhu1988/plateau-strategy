@@ -29,6 +29,18 @@ EXTRA_SKIP = {
 }
 
 EXTRA = {
+    # ------- EV charging on the road trip planner -------
+    "Finding charging stations along the route…": ["正在沿途查找充电站…", "Buscando estaciones de carga en la ruta…", "경로를 따라 충전소를 찾는 중…", "Đang tìm trạm sạc dọc tuyến đường…"],
+    "Charging along the route": ["沿途充电", "Carga en la ruta", "경로상 충전", "Trạm sạc dọc tuyến"],
+    "{n} stations · {w} have food, coffee or a toilet within a 5-minute walk": ["共 {n} 处充电站，其中 {w} 处步行 5 分钟内有餐饮、咖啡或洗手间", "{n} estaciones · {w} tienen comida, café o aseo a menos de 5 minutos a pie", "충전소 {n}곳 · 그중 {w}곳은 도보 5분 이내에 식사, 커피 또는 화장실이 있습니다", "{n} trạm · {w} trạm có đồ ăn, cà phê hoặc nhà vệ sinh trong 5 phút đi bộ"],
+    "Charging station": ["充电站", "Estación de carga", "충전소", "Trạm sạc"],
+    "lines up with a break": ["与休息点重合", "coincide con una pausa", "휴식 지점과 겹침", "trùng với chặng nghỉ"],
+    "nothing within a walk": ["步行范围内无配套设施", "nada a poca distancia a pie", "도보 거리에 편의시설 없음", "không có tiện ích trong tầm đi bộ"],
+    "{n} stalls": ["{n} 个车位", "{n} plazas", "{n}대", "{n} chỗ"],
+    "free": ["免费", "gratis", "무료", "miễn phí"],
+    "toilets": ["洗手间", "aseos", "화장실", "nhà vệ sinh"],
+    "coffee": ["咖啡", "café", "커피", "cà phê"],
+    "shop": ["便利店", "tienda", "상점", "cửa hàng"],
     # ------- durations assembled from numbers -------
     "{h} hr {m} min": ["{h} 小时 {m} 分", "{h} h {m} min", "{h}시간 {m}분", "{h} giờ {m} phút"],
     "{h} hr": ["{h} 小时", "{h} h", "{h}시간", "{h} giờ"],

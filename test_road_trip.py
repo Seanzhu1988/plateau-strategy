@@ -26,6 +26,32 @@ OSRM = {"code": "Ok", "routes": [
 NOMINATIM = [{"display_name": "Seattle, Washington, United States",
               "lat": "47.6062", "lon": "-122.3321", "address": {"state": "Washington"}}]
 # one of each tagging style, including the amenity=parking one the old query missed
+# Chargers, and the amenities that sit near them. Two of the three chargers
+# have something within a walk; the third is a bare lot, which is the case the
+# feature exists to make visible.
+CHARGERS = {"elements": [
+    {"type": "node", "id": 90, "lat": 47.05, "lon": -122.50,
+     "tags": {"amenity": "charging_station", "name": "Centralia Supercharger",
+              "operator": "Tesla", "capacity": "12",
+              "socket:tesla_supercharger": "12", "socket:tesla_supercharger:output": "250 kW"}},
+    {"type": "way", "id": 91, "center": {"lat": 46.40, "lon": -122.88},
+     "tags": {"amenity": "charging_station", "name": "Kelso Fast Charge",
+              "socket:type2_combo": "4", "socket:chademo": "2",
+              "socket:type2_combo:output": "150 kW", "capacity": "6", "fee": "no"}},
+    {"type": "node", "id": 92, "lat": 45.80, "lon": -122.75,
+     "tags": {"amenity": "charging_station", "name": "Ridgefield Lot", "socket:type2": "2"}},
+    # behind a gate at a dealership — must never be offered
+    {"type": "node", "id": 93, "lat": 45.70, "lon": -122.70,
+     "tags": {"amenity": "charging_station", "name": "Dealer Only", "access": "private"}},
+]}
+NEARBY = {"elements": [
+    {"type": "node", "id": 80, "lat": 47.0503, "lon": -122.5002, "tags": {"amenity": "toilets"}},
+    {"type": "node", "id": 81, "lat": 47.0510, "lon": -122.4995, "tags": {"amenity": "cafe", "name": "Bean"}},
+    {"type": "node", "id": 82, "lat": 46.4008, "lon": -122.8805, "tags": {"amenity": "restaurant", "name": "Diner"}},
+    # 30 km from any charger — must not be attached to one
+    {"type": "node", "id": 83, "lat": 46.10, "lon": -122.60, "tags": {"amenity": "toilets"}},
+]}
+
 OVERPASS = {"elements": [
     {"type": "node", "id": 1, "lat": 47.10, "lon": -122.55,
      "tags": {"highway": "rest_area", "name": "Gee Creek Rest Area"}},
@@ -46,8 +72,17 @@ with sync_playwright() as p:
     seen_queries = []
 
     def overpass(route):
-        seen_queries.append(route.request.post_data or "")
-        route.fulfill(status=200, content_type="application/json", body=json.dumps(OVERPASS))
+        q = route.request.post_data or ""
+        seen_queries.append(q)
+        # Three different sweeps hit the same endpoint; answer each with the
+        # fixture it is actually asking for.
+        if "charging_station" in q:
+            body = CHARGERS
+        elif "toilets" in q and "around:400" in q:
+            body = NEARBY
+        else:
+            body = OVERPASS
+        route.fulfill(status=200, content_type="application/json", body=json.dumps(body))
 
     pg.route("**/router.project-osrm.org/**", lambda r: r.fulfill(
         status=200, content_type="application/json", body=json.dumps(OSRM)))
@@ -98,7 +133,40 @@ with sync_playwright() as p:
             fails.append(f"rest stop missing from the list: {name}")
     print(f"  rest stops listed: {[n for n in ('Gee Creek Rest Area','Toutle River Plaza','Silver Lake Rest Area') if n in rest_txt]}")
 
+    # ---- charging: the part other planners do not do ----
+    legs_txt = pg.evaluate("document.getElementById('legs').textContent")
+    if "Centralia Supercharger" not in legs_txt:
+        fails.append("charging section missing the Tesla site")
+    if "Dealer Only" in legs_txt:
+        fails.append("a private, gated charger was offered to the driver")
+    for want in ("Tesla", "CCS", "CHAdeMO", "250 kW", "12 stalls"):
+        if want not in legs_txt:
+            fails.append(f"charger detail missing: {want}")
+    # the join — amenities within a walk, attached to the right charger
+    near = pg.evaluate("""() => {
+        const out = {};
+        document.querySelectorAll('#legs li').forEach(li => {
+            const t = li.textContent;
+            if (!t.includes('⚡')) return;
+            const name = t.split('·')[0].replace('⚡','').replace(/lines up.*/,'').trim();
+            out[name] = { walk: /toilets|coffee|food|shop|洗手间|咖啡/.test(t),
+                          bare: /nothing within a walk/.test(t) };
+        });
+        return out;
+    }""")
+    print(f"  chargers: {near}")
+    hits = [k for k, v in near.items() if v["walk"]]
+    bare = [k for k, v in near.items() if v["bare"]]
+    if len(hits) != 2:
+        fails.append(f"expected 2 chargers with amenities within a walk, got {len(hits)}: {hits}")
+    if not any("Ridgefield" in b for b in bare):
+        fails.append("the bare lot was not reported as having nothing within a walk")
+
     q = " ".join(seen_queries)
+    if "amenity=charging_station" not in q:
+        fails.append("no charging station query was ever sent")
+    if "around:400" not in q:
+        fails.append("the walking-distance join query was never sent")
     if "parking=rest_area" not in q:
         fails.append("the Overpass query never asks for amenity=parking + parking=rest_area")
     else:
@@ -144,7 +212,7 @@ KEEP = tuple(e["tags"]["name"] for e in OVERPASS["elements"] if e["tags"].get("n
 lines = [l.strip() for l in legs.split("\n") if l.strip()]
 english = [l for l in lines
            if not _re.search(r"[\u4e00-\u9fff]", l)
-           and not all(ch in "🅿⛽🍽👁 0123456789·" for ch in l)
+           and not all(ch in "🅿⛽🍽👁⚡🚻☕🛒 0123456789·" for ch in l)
            and not any(k in l for k in KEEP)]
 print(f"  zh: {len(lines)-len(english)}/{len(lines)} generated lines translated")
 if english:
