@@ -119,7 +119,21 @@
             background: #b91c1c; box-shadow: none; }
         .manage-box button:hover:not(:disabled) { background: #991b1b; transform: none; box-shadow: none; }
         .manage-msg { font-size: 0.88rem; font-weight: 600; margin-top: 0.7rem; }
-    </style>
+            .pick-row { display: flex; gap: .5rem; align-items: stretch; }
+        .pick-row input { flex: 1 1 auto; width: auto; min-width: 0; margin: 0; }
+        /* The form's own rule puts width:100% on every button, which crushed
+           the address field to 34px and stretched this one across the row. */
+        .pick-row .gp-chip { flex: 0 0 auto; width: auto; white-space: nowrap; background: #fff;
+            border: 1px solid var(--psx-border, rgba(20,17,12,.13)); border-radius: 3px;
+            padding: 0 .8rem; font: inherit; font-size: .88rem; cursor: pointer;
+            color: var(--psx-text, #14110c); }
+        .pick-row .gp-chip:hover { background: #f5f1e8; }
+        .pick-row .gp-chip[disabled] { opacity: .55; cursor: default; }
+        .pick-note { font-size: .8rem; color: var(--psx-muted, #6b655b); margin: .3rem 0 0; }
+        .pick-note.err { color: var(--psx-red, #a4161a); }
+        @media (max-width: 520px) { .pick-row { flex-wrap: wrap; }
+            .pick-row .gp-chip { width: 100%; flex: 1 0 100%; padding: .6rem .8rem; } }
+</style>
     <script src="/session.js"></script>
     <link rel="stylesheet" href="/paper.css">
     <script src="/psx-net.js"></script>
@@ -185,8 +199,17 @@
 
                 <p class="fs">The trip</p>
                 <label>Pickup location <span class="req">*</span></label>
-                <input name="pickup" required placeholder="1200 Pine St, Seattle"
-                       autocomplete="street-address" autocapitalize="words">
+                <!-- Most people booking a car are standing where they want to be
+                     collected from. Typing your own address while holding a
+                     suitcase is the worst moment to ask for it, and getting it
+                     slightly wrong is how a driver ends up on the wrong side of
+                     a hotel. One tap and the phone already knows. -->
+                <div class="pick-row">
+                    <input name="pickup" required placeholder="1200 Pine St, Seattle"
+                           autocomplete="street-address" autocapitalize="words">
+                    <button type="button" id="useLoc" class="gp-chip">📍 Use my location</button>
+                </div>
+                <p class="pick-note" id="locNote"></p>
 
                 <label>Drop-off location <span class="req">*</span></label>
                 <input name="dropoff" required placeholder="Seattle–Tacoma International Airport (SEA)"
@@ -522,6 +545,67 @@
         })();
     </script>
     <script src="/floatback.js"></script>
+    <script>
+    // ---- "Use my location" on the pickup field ----
+    //
+    // Reverse-geocodes to a real street address rather than dropping raw
+    // coordinates in the box: a driver needs somewhere to go, and
+    // "47.60621, -122.33207" is not an instruction. If the lookup fails the
+    // coordinates go in anyway with a note saying so — a dispatcher can work
+    // with a pin, and losing the fix entirely would be worse.
+    (function () {
+        var btn  = document.getElementById('useLoc');
+        var note = document.getElementById('locNote');
+        var box  = document.querySelector('[name=pickup]');
+        if (!btn || !box) return;
+
+        function T(p, v) {
+            if (window.psxFmt) return window.psxFmt(p, v);
+            return String(p).replace(/\{(\w+)\}/g, function (m, k) {
+                return (v && v[k] !== undefined) ? v[k] : m; });
+        }
+        function say(msg, isErr) {
+            note.textContent = msg || '';
+            note.className = 'pick-note' + (isErr ? ' err' : '');
+        }
+
+        btn.addEventListener('click', function () {
+            if (!navigator.geolocation) {
+                say(T('This browser cannot share a location. Please type the address.'), true);
+                return;
+            }
+            btn.disabled = true;
+            say(T('Finding you…'));
+            navigator.geolocation.getCurrentPosition(async function (pos) {
+                var la = pos.coords.latitude, lo = pos.coords.longitude;
+                var acc = Math.round(pos.coords.accuracy || 0);
+                var addr = '';
+                try {
+                    var j = await (window.psxJSON
+                        ? psxJSON('https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1&lat=' + la + '&lon=' + lo)
+                        : fetch('https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1&lat=' + la + '&lon=' + lo).then(function (r) { return r.json(); }));
+                    if (j && j.display_name) addr = j.display_name.split(',').slice(0, 4).join(',').trim();
+                } catch (e) { /* fall through to coordinates */ }
+
+                if (addr) {
+                    box.value = addr;
+                    say(acc ? T('Located to about {n} m. Edit it if the door is round the back.', { n: acc })
+                            : T('Located. Edit it if the door is round the back.'));
+                } else {
+                    box.value = la.toFixed(5) + ', ' + lo.toFixed(5);
+                    say(T('Got your position but not a street address — the coordinates are in the box, and your driver can navigate to them.'));
+                }
+                box.dispatchEvent(new Event('input', { bubbles: true }));
+                btn.disabled = false;
+            }, function (err) {
+                btn.disabled = false;
+                say(err && err.code === 1
+                    ? T('Location permission was declined. Please type the pickup address.')
+                    : T('Could not get a location right now. Please type the pickup address.'), true);
+            }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+        });
+    })();
+    </script>
     <script src="/jarvis-widget.js"></script>
     <script src="/i18n.js"></script>
 </body>

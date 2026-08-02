@@ -98,6 +98,9 @@
         display:inline-block;box-shadow:0 1px 3px rgba(15,23,42,.14)}
     .ep-a .tp-dot{background:#14110c}
     .ep-b .tp-dot{background:#0f6d5c}
+    .gapwarn{margin:.7rem 0 0;padding:.7rem .9rem;border:1px solid rgba(164,22,26,.28);
+        border-left:3px solid #a4161a;border-radius:3px;background:#fbeceb;font-size:.9rem;color:#14110c}
+    .gapnote{color:#4a453d;font-size:.86em}
     .chg-meta{color:#6b655b;font-size:.86em}
     .chg-near{color:#0f6d5c;font-size:.86em;font-weight:600}
     .chg-bare{color:#6b655b;font-size:.86em}
@@ -561,13 +564,88 @@
         // de-dupe: same name within ~2 km is the same plaza mapped twice
         stops.sort(function (a, b) { return a.sec - b.sec; });
         var seen = [];
-        return stops.filter(function (s) {
+        stops = stops.filter(function (s) {
             var dup = seen.some(function (o) {
                 return o.name === s.name && haversine(o.lat, o.lon, s.lat, s.lon) < 2000;
             });
             if (!dup) seen.push(s);
             return !dup;
         });
+
+        // ---- no more than 30 minutes without somewhere to pull in ----
+        //
+        // The sweep finds what is mapped near the road. That is not the same
+        // as covering the drive: a wide-radius pass can still leave two hours
+        // with nothing in it, and a driver only discovers that at the point
+        // it matters.
+        //
+        // So: measure the gaps, and go back for the long ones with a wider
+        // net before giving up on them. What cannot be filled is not hidden.
+        // No planner can invent a rest stop on a road that has none — but it
+        // can say "the next 90 minutes has nothing", which is the piece of
+        // information that actually changes what a driver does.
+        stops = await fillGaps(rt, pts, stops, 30 * 60, radius);
+        return stops;
+    }
+
+    var MAX_GAP_SEC = 30 * 60;
+
+    // Where the drive goes longer than `maxGap` without a stop. Includes the
+    // run from the start to the first one and from the last to the finish —
+    // an empty first two hours is still an empty two hours.
+    function gapsIn(stops, duration, maxGap) {
+        var marks = [0].concat(stops.map(function (s) { return s.sec; })).concat([duration]);
+        marks.sort(function (a, b) { return a - b; });
+        var out = [];
+        for (var i = 1; i < marks.length; i++) {
+            if (marks[i] - marks[i - 1] > maxGap) out.push({ from: marks[i - 1], to: marks[i] });
+        }
+        return out;
+    }
+
+    async function fillGaps(rt, pts, stops, maxGap, radius) {
+        var gaps = gapsIn(stops, rt.duration, maxGap);
+        if (!gaps.length) return stops;
+
+        // One query for every gap at once, at three times the radius. Three
+        // separate round trips would be three chances to be rate-limited.
+        var probes = [];
+        gaps.forEach(function (g) {
+            var mid = (g.from + g.to) / 2;
+            var idx = Math.round((mid / rt.duration) * (pts.length - 1));
+            var c = pts[Math.max(0, Math.min(pts.length - 1, idx))];
+            probes.push(c[1].toFixed(4) + ',' + c[0].toFixed(4));
+        });
+        var wide = Math.round(radius * 3);
+        var q = '[out:json][timeout:60];(' +
+                'node(around:' + wide + ',' + probes.join(',') + ')[highway~"^(services|rest_area)$"];' +
+                'way(around:' + wide + ',' + probes.join(',') + ')[highway~"^(services|rest_area)$"];' +
+                'node(around:' + wide + ',' + probes.join(',') + ')[amenity=parking][parking=rest_area];' +
+                'node(around:' + wide + ',' + probes.join(',') + ')[amenity=toilets];' +
+                'node(around:' + wide + ',' + probes.join(',') + ')[amenity=fuel][name];' +
+                ');out center 200;';
+        try {
+            var r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: q });
+            if (!r.ok) return stops;
+            var j = await r.json();
+            var have = stops.slice();
+            (j.elements || []).forEach(function (e) {
+                var t = e.tags || {};
+                var lat = e.lat || (e.center && e.center.lat);
+                var lon = e.lon || (e.center && e.center.lon);
+                if (!lat || !lon) return;
+                if (have.some(function (o) { return haversine(o.lat, o.lon, lat, lon) < 2000; })) return;
+                have.push({
+                    name: t.name || (t.amenity === 'toilets' ? T('Toilets') :
+                                     t.amenity === 'fuel' ? T('Fuel') : T('Rest area')),
+                    kind: t.amenity === 'fuel' ? 'fuel' : 'rest',
+                    lat: lat, lon: lon, wide: true,
+                    sec: progressAt(rt, pts, lat, lon)
+                });
+            });
+            have.sort(function (a, b) { return a.sec - b.sec; });
+            return have;
+        } catch (e) { return stops; }
     }
 
     // ---------- EV charging ----------
@@ -906,6 +984,30 @@
                                ' <span style="color:#6b655b">· ' + T('{time} in', { time: hhmm(s.sec) }) + '</span></li>';
                     }).join('') +
                     '</ul></div></div></div>';
+                // The gaps that survived the second, wider pass. This is the
+                // most useful line on the page and the one a planner that
+                // only lists what it found can never print: telling someone
+                // the next ninety minutes has nowhere to stop changes what
+                // they do before they set off.
+                var left = gapsIn(rests, rt.duration, MAX_GAP_SEC);
+                if (left.length) {
+                    restHtml += '<div class="gapwarn"><b>' +
+                        (left.length === 1
+                            ? T('One stretch with nowhere to pull in')
+                            : T('{n} stretches with nowhere to pull in', { n: left.length })) + '</b><br>' +
+                        left.map(function (g) {
+                            // "0 min to 5 hr in" is a clumsy way to say the
+                            // road is empty from the moment you leave.
+                            return g.from < 60
+                                ? T('From the start to {to} in — {len} with no mapped stop',
+                                    { to: hhmm(g.to), len: hhmm(g.to - g.from) })
+                                : T('{from} to {to} in — {len} with no mapped stop',
+                                    { from: hhmm(g.from), to: hhmm(g.to), len: hhmm(g.to - g.from) });
+                        }).join('<br>') +
+                        '<br><span class="gapnote">' +
+                        T('Searched again wider and found nothing. Fill up and stop before these.') +
+                        '</span></div>';
+                }
                 $('legs').innerHTML = restHtml;
 
                 rests.forEach(function (s) {

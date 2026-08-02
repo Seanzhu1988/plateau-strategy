@@ -507,28 +507,33 @@
          something in it is blue on purpose.
          ============================================================ */
 
-      /* Named primary actions take the accent; a plain <button> stays ink.
+      /* The primary action takes the accent. All of it.
 
-         That split is not what this comment used to claim — it said the
-         accent applies to every button — and the stylesheet has been doing
-         the opposite the whole time. The ink rule further up carries one
-         extra :not(), which outranks this one no matter that it comes
-         first, so a bare <button> renders black. Measured, not read.
+         I got this wrong once already. Having found that the ink rule above
+         outranks this one by a single extra :not(), I left it and rewrote
+         the comment to match — "ink for form submits" sounded like a
+         defensible hierarchy.
 
-         Leaving it that way, because it is the better hierarchy: one
-         accent call-to-action per view and ink for every form submit
-         under it. Two sienna buttons stacked in the same panel was what
-         made the mismatch visible in the first place. */
+         It was not a hierarchy, it was a bug with a story attached. The
+         consequence, seen six pages side by side: every button on the site
+         is black, so the four business colours are invisible. The Trip
+         Planner and the Destination Book are meant to be slate and show no
+         slate at all. The owner picked four colours and could not find them
+         — three separate times.
+
+         An accent that never appears is not restraint. Matched to the ink
+         rule's specificity so this one wins by coming after it, which is
+         how the cascade is supposed to decide. */
       .psx-btn-primary,
       nav a[href="/book"],
       .book-cta,
-      button:not(.i18n-opt):not(#i18nBtn):not(.cancel-btn):not(.pk-bubble):not(#pollock):not(.gp-chip),
+      button:not(.i18n-opt):not(#i18nBtn):not(.cancel-btn):not(.pk-bubble):not(#pollock):not(.loc-btn):not(.gp-chip),
       .btn.blue,.btn-blue,.cta{
         background:var(--psx-accent) !important;background-image:none !important;
         border-color:var(--psx-accent) !important;color:#fff !important;
       }
       .psx-btn-primary:hover,nav a[href="/book"]:hover,.cta:hover,
-      button:not(.i18n-opt):not(#i18nBtn):not(.pk-bubble):not(#pollock):not(.gp-chip):hover:not(:disabled){
+      button:not(.i18n-opt):not(#i18nBtn):not(.pk-bubble):not(#pollock):not(.loc-btn):not(.gp-chip):hover:not(:disabled){
         background:var(--psx-accent-dark) !important;border-color:var(--psx-accent-dark) !important;
       }
 

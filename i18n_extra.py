@@ -29,6 +29,21 @@ EXTRA_SKIP = {
 }
 
 EXTRA = {
+    "One stretch with nowhere to pull in": ["有一段路程没有可停靠的地点", "Un tramo sin dónde parar", "정차할 곳이 없는 구간 한 곳", "Một đoạn không có chỗ dừng"],
+    "From the start to {to} in — {len} with no mapped stop": ["自出发至行驶 {to} — 该 {len} 路段无已知停靠点", "desde la salida hasta {to} de trayecto — {len} sin ninguna parada registrada", "출발부터 {to} 지점까지 — {len} 동안 등록된 정차 지점 없음", "từ lúc khởi hành đến {to} — {len} không có điểm dừng nào được ghi nhận"],
+    # ------- road trip: stretches with nowhere to stop -------
+    "{n} stretches with nowhere to pull in": ["有 {n} 段路程没有可停靠的地点", "{n} tramos sin dónde parar", "정차할 곳이 없는 구간 {n}곳", "{n} đoạn không có chỗ dừng"],
+    "{from} to {to} in — {len} with no mapped stop": ["行驶 {from} 至 {to} — 该 {len} 路段无已知停靠点", "de {from} a {to} de trayecto — {len} sin ninguna parada registrada", "{from}부터 {to} 지점까지 — {len} 동안 등록된 정차 지점 없음", "từ {from} đến {to} — {len} không có điểm dừng nào được ghi nhận"],
+    "Searched again wider and found nothing. Fill up and stop before these.": ["已扩大范围再次搜索，仍无结果。请在进入这些路段前加油并休息。", "Se buscó de nuevo en un radio mayor sin resultados. Reposte y descanse antes de estos tramos.", "범위를 넓혀 다시 검색했으나 결과가 없습니다. 해당 구간에 진입하기 전에 주유하고 휴식하십시오.", "Đã tìm lại với phạm vi rộng hơn nhưng không có kết quả. Hãy đổ xăng và nghỉ trước các đoạn này."],
+    # ------- booking: use my location -------
+    "Finding you…": ["正在定位…", "Localizándole…", "위치를 확인하는 중…", "Đang xác định vị trí…"],
+    "Located to about {n} m. Edit it if the door is round the back.": ["定位精度约 {n} 米。若上车点在建筑后侧，请自行修改。", "Localizado con unos {n} m de precisión. Corríjalo si la entrada está detrás.", "약 {n} m 정확도로 확인되었습니다. 출입구가 뒤편이라면 수정해 주십시오.", "Đã xác định trong khoảng {n} m. Vui lòng sửa nếu lối vào ở phía sau."],
+    "Located. Edit it if the door is round the back.": ["已定位。若上车点在建筑后侧，请自行修改。", "Localizado. Corríjalo si la entrada está detrás.", "위치가 확인되었습니다. 출입구가 뒤편이라면 수정해 주십시오.", "Đã xác định vị trí. Vui lòng sửa nếu lối vào ở phía sau."],
+    "Got your position but not a street address — the coordinates are in the box, and your driver can navigate to them.": ["已获取您的位置，但未能解析出街道地址。坐标已填入，司机可据此导航。", "Tenemos su posición pero no una dirección — las coordenadas están en el campo y su conductor puede navegar hasta ellas.", "위치는 확인했으나 도로명 주소를 찾지 못했습니다. 좌표가 입력되었으며 기사가 해당 좌표로 이동할 수 있습니다.", "Đã có vị trí của bạn nhưng chưa có địa chỉ đường phố — tọa độ đã được điền và tài xế có thể dẫn đường tới đó."],
+    "Location permission was declined. Please type the pickup address.": ["定位权限被拒绝，请手动输入上车地址。", "Se denegó el permiso de ubicación. Escriba la dirección de recogida.", "위치 권한이 거부되었습니다. 픽업 주소를 입력해 주십시오.", "Quyền truy cập vị trí đã bị từ chối. Vui lòng nhập địa chỉ đón."],
+    "Could not get a location right now. Please type the pickup address.": ["暂时无法获取位置，请手动输入上车地址。", "No se pudo obtener la ubicación ahora. Escriba la dirección de recogida.", "지금은 위치를 가져올 수 없습니다. 픽업 주소를 입력해 주십시오.", "Hiện chưa lấy được vị trí. Vui lòng nhập địa chỉ đón."],
+    "This browser cannot share a location. Please type the address.": ["此浏览器不支持共享位置，请手动输入地址。", "Este navegador no puede compartir la ubicación. Escriba la dirección.", "이 브라우저는 위치를 공유할 수 없습니다. 주소를 입력해 주십시오.", "Trình duyệt này không chia sẻ được vị trí. Vui lòng nhập địa chỉ."],
+    "📍 Use my location": ["📍 使用我的位置", "📍 Usar mi ubicación", "📍 현재 위치 사용", "📍 Dùng vị trí của tôi"],
     # ------- road trip: what to look for along the road -------
     "Look for": ["查找", "Buscar", "찾기", "Tìm"],
     "EV charging": ["充电桩", "Carga eléctrica", "전기차 충전", "Trạm sạc điện"],
