@@ -3402,7 +3402,14 @@
             if (btn) btn.style.display = _viewHistory.length ? 'inline-flex' : 'none';
         }
 
-        // Section tabs reveal when the mouse goes to the top of the screen, then tuck away.
+        // The section rail slides out of the LEFT edge, so the left edge is
+        // what opens it. It used to drop from the top and was opened by the
+        // top; keeping the old trigger after moving the panel would mean
+        // sweeping one edge of the screen to make something appear at
+        // another. The header is excluded — the logo and "← Back" sit in
+        // that corner, and brushing them should not open the rail.
+        // The ☰ Sections button in the header still opens it too, and stays
+        // the deliberate way in; the edge is the shortcut.
         let _navTimer;
         function showNav() { const n = document.querySelector('.phase-tabs'); if (n) n.classList.add('shown'); clearTimeout(_navTimer); }
         function hideNav() { const n = document.querySelector('.phase-tabs'); if (n) n.classList.remove('shown'); }
@@ -3410,7 +3417,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             const nav = document.querySelector('.phase-tabs');
             document.addEventListener('mousemove', function (e) {
-                if (e.clientY < 96) showNav();
+                if (e.clientX < 40 && e.clientY > 100) showNav();
                 else if (nav && !nav.matches(':hover')) scheduleHideNav();
             });
             if (nav) {

@@ -733,3 +733,86 @@
       .act-link{color:var(--psx-accent) !important;}
       .gate{color:var(--psx-text2) !important;}
       .total{color:var(--psx-accent) !important;}
+
+      /* ============================================================
+         THE SECTION RAIL — the contents list stood on its side.
+
+         The eight sections were a horizontal strip that dropped from
+         the top of the window. Horizontal was always the wrong axis
+         for it: eight labels of uneven length, one of them "Security
+         Parameter", laid end to end run past the width of the window
+         and start scrolling sideways — which is why the strip carried
+         an overflow-x and a hidden scrollbar. A list of eight named
+         places is a column. It reads down, like a contents page, and
+         every label starts at the same left edge instead of landing
+         wherever the one before it happened to end.
+
+         So: a rail on the left, vertically centred, hidden until the
+         mouse comes to that edge — the same reveal it always had, just
+         moved to the side the panel now lives on. The mark for the
+         current section moves with it, from a rule underneath to a
+         rule down the left, still in that section's own colour.
+
+         This block sits at the end of the file on purpose. The strip's
+         geometry is set in the page's own <style id="psx-tabs">, and
+         its accent rule is `.phase-tab[data-arm].active` further up —
+         (0,3,0). Selectors here match that weight so the rail wins on
+         source order rather than by another layer of !important.
+
+         Desktop only. On a phone the bar is docked, static and
+         horizontal above the content, and a 200px rail down the side
+         of a 390px screen would eat half the page.
+         ============================================================ */
+      @media (min-width:769px){
+        .phase-tabs{
+          flex-direction:column !important;
+          align-items:stretch !important;
+          justify-content:flex-start !important;
+          top:50% !important;
+          left:0 !important;
+          right:auto !important;
+          width:max-content !important;
+          max-width:min(260px,42vw) !important;
+          max-height:min(78vh,640px) !important;
+          gap:1px !important;
+          padding:.55rem .45rem !important;
+          overflow-x:hidden !important;
+          overflow-y:auto !important;
+          background:var(--psx-bg) !important;
+          border:1px solid var(--psx-rule) !important;
+          border-left:none !important;
+          border-radius:0 4px 4px 0 !important;
+          box-shadow:0 2px 26px rgba(20,17,12,.10) !important;
+          transform:translate(-102%,-50%) !important;
+          transition:transform .28s cubic-bezier(.22,1,.36,1),
+                     opacity .2s ease,visibility .2s !important;
+        }
+        .phase-tabs.shown{transform:translate(0,-50%) !important;}
+
+        /* Left-aligned, because a column of centred labels has no edge
+           for the eye to run down. */
+        .phase-tab{
+          justify-content:flex-start !important;
+          text-align:left !important;
+          padding:.5rem .95rem .5rem .7rem !important;
+          border-bottom:none !important;
+          border-left:2px solid transparent !important;
+          border-radius:0 !important;
+        }
+        .phase-tab:hover{
+          border-bottom-color:transparent !important;
+          border-left-color:var(--psx-rule) !important;
+        }
+        .phase-tab.active,.phase-tab.active:hover,
+        .phase-tab[data-arm].active,.phase-tab[data-arm].active:hover{
+          border-bottom:none !important;
+          border-left:2px solid var(--psx-ink) !important;
+        }
+        .phase-tab[data-arm].active,.phase-tab[data-arm].active:hover{
+          border-left-color:var(--psx-accent) !important;
+        }
+      }
+
+      @media (min-width:769px) and (prefers-reduced-motion:reduce){
+        .phase-tabs{transition:opacity .01ms,visibility .01ms !important;}
+      }

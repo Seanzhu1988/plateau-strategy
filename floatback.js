@@ -193,16 +193,27 @@
     }
     function wake() { btn.classList.add('shown'); armHold(); }   // also used after collapse()
 
-    // The paint dot must never land on an interactive map — idling over a map is
-    // normal (reading it), and a dot appearing under the cursor there steals the
-    // click. Keep it to the page's own space.
-    function overMap(x, y) {
+    // The paint dot must never land on something you are in the middle of using.
+    // Two of those:
+    //
+    //   * An interactive map. Idling over a map is normal — you are reading it —
+    //     and a dot appearing under the cursor there steals the click.
+    //
+    //   * The section rail. It opens when the cursor rests at the left edge, so
+    //     resting at the left edge is now a deliberate act, and the dot's usual
+    //     "appear beside the cursor after 450ms" would put it straight on top of
+    //     the list you just asked for. Same rule, same reason.
+    //
+    // Hidden, the rail is visibility:hidden and pointer-events:none, so
+    // elementFromPoint never returns it — no need to test for .shown, and the
+    // docked horizontal bar on a narrow window is covered by the same check.
+    function keepOut(x, y) {
         var el = document.elementFromPoint(x, y);
         while (el && el !== document.body) {
             if (el.id === 'map' || (el.classList && (el.classList.contains('leaflet-container')
                 || el.classList.contains('map-searchbar') || el.classList.contains('map-layers')
                 || el.classList.contains('map-actions') || el.classList.contains('map-cats')
-                || el.classList.contains('map-legend')))) return true;
+                || el.classList.contains('map-legend') || el.classList.contains('phase-tabs')))) return true;
             el = el.parentElement;
         }
         return false;
@@ -228,16 +239,16 @@
         // follows the cursor only in the page's own space, and parks in the margin
         // whenever the cursor (or its natural spot) is over the map.
         var spot = null;
-        if (!overMap(mx, my)) {
+        if (!keepOut(mx, my)) {
             var offsets = [[46, 46], [-46, 46], [46, -46], [-46, -46]];
             for (var i = 0; i < offsets.length; i++) {
                 var t = clampCenter(mx + offsets[i][0], my + offsets[i][1]);
-                if (!overMap(t.x, t.y)) { spot = t; break; }
+                if (!keepOut(t.x, t.y)) { spot = t; break; }
             }
         }
         if (!spot) {
             var p = parkSpot();
-            if (!p || overMap(p.x, p.y)) { btn.classList.remove('shown'); return; }
+            if (!p || keepOut(p.x, p.y)) { btn.classList.remove('shown'); return; }
             spot = p;
         }
         cur = spot;
@@ -279,7 +290,7 @@
         clearTimeout(showT);
         if (btn.classList.contains('shown')) {
             // parked in the margin while the cursor works the map — leave it be
-            if (overMap(mx, my)) { armHold(); return; }
+            if (keepOut(mx, my)) { armHold(); return; }
             // reaching for the dot? keep it; real movement elsewhere? it disappears
             if (Math.hypot(mx - cur.x, my - cur.y) < 130) { armHold(); return; }
             btn.classList.remove('shown');

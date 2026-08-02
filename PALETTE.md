@@ -72,9 +72,15 @@ of `paper.css` are the only place the accent is ever reassigned.
 
 ### What the accent is allowed to touch
 
-Section labels, links, figures, icon strokes, focus rings, the active tab
-underline, the rule across the top of a business card, and the one named
+Section labels, links, figures, icon strokes, focus rings, the mark on the
+active section, the rule across the top of a business card, and the one named
 call-to-action per view. Nothing else.
+
+That mark is a 2px rule, and which edge it sits on follows the shape of the
+list. On a desktop the sections are a rail down the left, so the rule runs
+down the left of the label. On a phone the same list is a horizontal bar above
+the content, so it goes back to an underline. Same 2px, same arm colour,
+whichever edge faces the reader.
 
 ### What never takes an arm colour
 
