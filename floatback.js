@@ -224,8 +224,13 @@
     // The paint dot must never land on an interactive map — idling over a map is
     // normal (reading it), and a dot appearing under the cursor there steals the
     // click. Keep it to the page's own space.
+    // Nor on anything a person is about to use. It avoided the map, and then
+    // parked itself squarely on the Traffic menu instead — the dot only has to
+    // be somewhere clear, and a form control is not clear.
+    var HANDS_OFF = 'input,select,textarea,button,a,label,[role=button],[contenteditable]';
     function overMap(x, y) {
         var el = document.elementFromPoint(x, y);
+        if (el && el.closest && el.closest(HANDS_OFF)) return true;
         while (el && el !== document.body) {
             if (el.id === 'map' || (el.classList && (el.classList.contains('leaflet-container')
                 || el.classList.contains('map-searchbar') || el.classList.contains('map-layers')

@@ -801,3 +801,17 @@
   /* An input with a fixed width is the usual last eight pixels. */
   input, select, textarea { max-width: 100%; }
 }
+
+
+/* ---- any row of chips is a row ----
+   Chips injected by script land in a bare container, inherit block layout and
+   the default line-height, and a 29px chip on a 19px line overlaps the row
+   beneath it. It is not visible in the markup and it is not visible until the
+   second row appears, which is why it shipped. Stated once, for every such row. */
+.chips, .filters, .frow, [id$="Chips"], [id$="chips"], #starFilter, .durations, .stay-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  line-height: 1.3;
+}

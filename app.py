@@ -3993,7 +3993,16 @@ FINANCE_PLANS = {
 
 @app.route("/api/finance/enroll", methods=["POST"])
 def api_finance_enroll():
-    """Enroll a customer in the AI Debt Eliminator and send their Square charge."""
+    """Enroll a customer in the AI Debt Eliminator and send their Square charge.
+
+    🔒 CLOSED 2026-08-01 [40-agent council finding, unanimous]: this was a LIVE,
+    UNAUTHENTICATED endpoint firing a real production Square charge whose
+    description guarantees "Principal always protected" for a product that does
+    not exist yet — FTC/consumer-protection exposure + anyone could trigger
+    charges. Owner-only until the product is real and lawyer-reviewed.
+    Re-open by deleting the two lines below (and see the landing-page modal)."""
+    if not session.get("owner"):
+        return Response("Not Found", status=404, mimetype="text/plain")
     data = request.get_json(force=True, silent=True) or {}
     name = (data.get("name") or "").strip()
     email = (data.get("email") or "").strip()

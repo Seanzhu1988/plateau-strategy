@@ -39,6 +39,13 @@
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1rem 1.2rem; margin-bottom: 1.2rem; }
         .frow { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 0.6rem; }
         .frow:last-child { margin-bottom: 0; }
+        /* The chips are injected into bare spans, so they flowed as inline text
+           at the default line-height — and a 29px chip on a ~19px line sits on
+           top of the row below it. They overlapped each other on the live page.
+           A chip row is a row: lay it out as one. */
+        #cityChips, #typeChips, #catChips, #starFilter {
+            display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center;
+        }
         .flab { font-size: 0.72rem; font-weight: 800; color: #6b655b; text-transform: uppercase;
             letter-spacing: 0.05em; width: 76px; }
         .chip { font-size: 0.82rem; font-weight: 600; padding: 0.32rem 0.9rem; border-radius: 999px;

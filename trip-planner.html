@@ -47,6 +47,16 @@
 
         .controls { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center; font-size: 0.9rem; }
         .controls label { color: #6b655b; font-weight: 600; }
+        /* A label and the control it names travel together and wrap together. */
+        .controls .field { display: inline-flex; align-items: center; gap: 0.45rem; }
+        @media (max-width: 640px) {
+            /* On a phone there is not room for label-beside-field three across,
+               so each pair stacks and the row becomes two clean columns. */
+            .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 0.7rem; }
+            .controls .field { flex-direction: column; align-items: stretch; gap: 0.2rem; }
+            .controls .field label { font-size: 0.78rem; }
+            .controls .field select, .controls .field input { width: 100%; }
+        }
         .controls input[type=time], .controls select { padding: 0.4rem 0.6rem; border: 1.5px solid #e6e2da;
             border-radius: 8px; font-size: 0.9rem; font-family: inherit; background: #faf8f4; }
         .btn { padding: 0.45rem 0.9rem; border: none; border-radius: 8px; cursor: pointer;
@@ -107,8 +117,7 @@
             .layout.jarvis-hidden .side { display: block; }
             #jarvisDock { display: none !important; }
         }
-        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; }
-            .map-searchbar { left: 10px; right: 10px; max-width: none; top: 54px; } }
+        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
 
         #map { height: 78vh; min-height: 460px; border-radius: 16px; border: 1px solid #dde4ed;
             box-shadow: 0 10px 30px -12px rgba(15,23,42,.22); overflow: hidden; }
@@ -118,8 +127,26 @@
             background: rgba(255,255,255,0.97); border-radius: 12px;
             box-shadow: 0 6px 20px rgba(15,23,42,0.25); padding: 0.45rem 0.55rem; }
         .map-searchbar .build-row { display: flex; gap: 0.4rem; margin: 0; align-items: center; }
-        .map-searchbar .build-row .from, .map-searchbar .build-row .startedit,
-        .map-searchbar .build-row .to { display: none; }   /* those live as map icons now */
+        .map-searchbar .build-row .startedit,
+        .map-searchbar .build-row .to { display: none; }
+        /* The ⌂ start control belongs beside the address bar — that is the whole
+           point of it — so it is NOT hidden here. It keeps its pin and its
+           waiting state; only its label collapses when there is no room. */
+        .map-searchbar .build-row .from { flex: 0 0 auto; padding: 0.4rem 0.5rem; }
+        .map-searchbar .build-row .from .pin-badge { margin-right: 0.3rem; }
+        @media (max-width: 640px) {
+            .map-searchbar .build-row .from #curLocLabel { display: none; }
+            .map-searchbar .build-row .from { padding: 0.4rem; }
+        }
+
+        /* The bar was positioned for a desktop map — left:58px, right:200px —
+           which on a 390px phone leaves 74px for a search field and collapses
+           everything in it. The phone rule existed but was written above the
+           base rule, so at equal specificity the base rule won at every width.
+           It sits below it now, where it can do its job. */
+        @media (max-width: 900px) {
+            .map-searchbar { left: 10px; right: 10px; max-width: none; top: 54px; }
+        }
         .map-searchbar .build-row input { flex: 1; min-width: 0; border: 1.5px solid #e6e2da;
             border-radius: 9px; padding: 0.5rem 0.75rem; font-size: 0.9rem; font-family: inherit; }
         .map-searchbar .build-row input:focus { outline: none; border-color: #1b4d8f; }
@@ -566,26 +593,30 @@
         <p class="page-sub">Free for everyone — drivers, tour guides, tourists. Tap where you are, and every attraction lights up or dims based on drive time, traffic and closing hours. Your taps build the plan, day by day.</p>
 
         <div class="card">
+            <!-- Each label is bound to its own control. As a flat row of
+                 alternating labels and selects, a wrap could end a line with
+                 "County" and begin the next with the State's own menu — every
+                 label reading against the wrong field. -->
             <div class="controls" style="margin-bottom:0.55rem">
-                <label>State</label>
-                <select id="selState" onchange="onStateChange()"></select>
-                <label>County</label>
-                <select id="selCounty" onchange="onCountyChange()"></select>
-                <label>City</label>
-                <select id="selCity" onchange="onCityChange()"></select>
+                <span class="field"><label for="selState">State</label>
+                    <select id="selState" onchange="onStateChange()"></select></span>
+                <span class="field"><label for="selCounty">County</label>
+                    <select id="selCounty" onchange="onCountyChange()"></select></span>
+                <span class="field"><label for="selCity">City</label>
+                    <select id="selCity" onchange="onCityChange()"></select></span>
             </div>
             <div class="controls" style="margin-bottom:0.55rem">
-                <label>Date of departure</label>
-                <input type="date" id="departDate" onchange="onDepartChange()">
-                <label>Leave by</label>
-                <input type="time" id="leaveAt" value="09:30" onchange="retimeRoute('new departure time')">
-                <label>Traffic</label>
+                <span class="field"><label for="departDate">Date of departure</label>
+                    <input type="date" id="departDate" onchange="onDepartChange()"></span>
+                <span class="field"><label for="leaveAt">Leave by</label>
+                    <input type="time" id="leaveAt" value="09:30" onchange="retimeRoute('new departure time')"></span>
+                <span class="field"><label for="traffic">Traffic</label>
                 <select id="traffic" onchange="trafficChanged()">
                     <option value="auto" selected>Auto (by time of day)</option>
                     <option value="1">Light</option>
                     <option value="1.35">Normal</option>
                     <option value="1.9">Heavy</option>
-                </select>
+                </select></span>
             </div>
             <div class="chips" id="chips"></div>
 
@@ -3581,7 +3612,6 @@
             d.innerHTML =
                   '<button onclick="recenterMap()" title="Lost? Fit my whole trip back on screen">⊙</button>'
                 + '<button id="wideMapBtn" onclick="toggleWideMap()" title="Full-width map">⤢</button>'
-                + '<button onclick="startPointTap()" title="Starting point — tap once to type an address, tap twice for your current location">⌂</button>'
                 + '<button id="followBtn" onclick="toggleFollow()" title="Follow my position as I move">🛰</button>'
                 + '<button onclick="undoStop()" title="Undo the last stop">↩</button>'
                 + '<button onclick="nextDay()" title="Start the next day">➡</button>'
