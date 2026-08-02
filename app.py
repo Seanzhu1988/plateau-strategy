@@ -1723,6 +1723,41 @@ def api_destinations_add():
     return jsonify({"ok": True, "entry": rec})
 
 
+@app.route("/rent-a-tesla")
+def rent_a_tesla_page():
+    """P1 driver-rental landing page (ADVERTISING_SPRINT C3). Serves DARK for now:
+    the page itself carries <meta noindex> and is linked from nowhere until the
+    S10 (compliance) + S11 (insurer) gates clear — then remove the meta and link it."""
+    return send_file(os.path.join(BASE_DIR, "rent-a-tesla.html"))
+
+
+@app.route("/api/rental-lead", methods=["POST"])
+def api_rental_lead():
+    """Rental inquiry from /rent-a-tesla — stored locally, counted per-source,
+    owner alerted. No payment, no charge: a lead is a name and a phone number."""
+    data = request.get_json(force=True, silent=True) or {}
+    name = (data.get("name") or "").strip()[:80]
+    phone = (data.get("phone") or "").strip()[:30]
+    tnc = (data.get("tnc_status") or "").strip()[:30]
+    note = (data.get("note") or "").strip()[:400]
+    if not name or not phone:
+        return jsonify({"ok": False, "error": "Name and phone are required."}), 400
+    path = _data_path("rental_leads.json")
+    with _LOCK:
+        leads = _load(path)
+        leads.append({
+            "id": "LEAD_%s_%03d" % (datetime.date.today().strftime("%Y%m%d"), len(leads) + 1),
+            "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
+            "name": name, "phone": phone, "tnc_status": tnc, "note": note,
+            "src": request.cookies.get("psx_src") or "direct",
+        })
+        _save(path, leads)
+    record_conversion("rental_lead")
+    _push_owner_alert("RENTAL LEAD", "%s (%s) — TNC: %s%s" % (
+        name, phone, tnc or "?", (" — " + note) if note else ""))
+    return jsonify({"ok": True})
+
+
 @app.route("/deflator")
 def deflator_page():
     """Plateau Strategy Deflator — research-project page + notify list (no offering)."""
@@ -4521,7 +4556,9 @@ def _arch_traffic():
 # What each conversion kind is called in the table, in the order shown.
 CONVERSION_KINDS = [("booking", "bookings"),
                     ("agent_signup", "agent_signups"),
-                    ("driver_signup", "driver_signups")]
+                    ("driver_signup", "driver_signups"),
+                    ("rental_lead", "rental_leads"),      # /rent-a-tesla inquiries (P1)
+                    ("tour_lead", "tour_leads")]          # /tours inquiries (P2)
 
 
 def _arch_sources():

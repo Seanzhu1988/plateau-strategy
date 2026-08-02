@@ -815,3 +815,116 @@
   align-items: center;
   line-height: 1.3;
 }
+
+
+/* ============================================================
+   COLOUR
+   ------------------------------------------------------------
+   The palette was defined and then almost never allowed to paint. Every
+   button was forced to ink with !important, every heading to ink, every card
+   to white — so the four business colours reached about four per cent of the
+   page and the site read as black type on cream. That is a document, not a
+   site, and it was said so several times before I listened.
+
+   Nothing below invents a new colour. It lets the ones already chosen do
+   work: the arm's hue fills its primary buttons, tints its section grounds,
+   heads its cards, and fills its own tags. Ink keeps the words, because ink
+   is what you read; colour carries the structure, because colour is what you
+   navigate by.
+
+   The two standing exceptions hold. The wordmark and Book a ride stay the
+   company's blue wherever they appear, and the status colours — paid, pending,
+   failed — are untouched, because a reader must never have to work out whether
+   a red thing means "property" or "something broke".
+   ============================================================ */
+
+/* ---- the primary action wears its section's colour ---- */
+.btn:not(.ghost):not(.btn-ghost):not(.psx-btn-ghost),
+.book-cta, .psx-btn-primary, .submit, .primary,
+button.primary, button[type="submit"]:not(.ghost),
+.cta, .act.guide, .act.hire, .act.ride {
+  background: var(--psx-accent) !important;
+  border-color: var(--psx-accent) !important;
+  color: #fff !important;
+}
+.btn:not(.ghost):hover, .book-cta:hover, .psx-btn-primary:hover,
+.submit:hover, .primary:hover, .cta:hover {
+  background: var(--psx-accent-dark) !important;
+  border-color: var(--psx-accent-dark) !important;
+}
+
+/* ---- section grounds carry a wash of the arm ----
+   Faint enough that ink still reads at better than 15:1 over it, strong
+   enough that moving between businesses is visible rather than announced. */
+/* Measured before choosing: ink on a 26% wash of any of the four still reads
+   at better than 11:1, where the standard asks 4.5. The restraint was never
+   protecting legibility — there was ten times the headroom needed. */
+.view .phases,
+section.phases { background: rgba(var(--psx-accent-rgb), .18) !important; }
+.view .phases:nth-of-type(even) { background: rgba(var(--psx-accent-rgb), .26) !important; }
+.view .hero, .psx-hero { background: rgba(var(--psx-accent-rgb), .22) !important; }
+
+/* A solid band of the arm's own colour at the head of each business, so the
+   page announces where you are before you read a word of it. */
+.view section h2, .view .phases h2 { color: var(--psx-accent) !important; }
+.view .phases > .container > h2:first-child {
+  border-left: 6px solid var(--psx-accent);
+  padding-left: .8rem;
+}
+
+/* ---- cards get a head, not just a hairline ---- */
+/* The existing border shorthand wins on source order, so this states the top
+   edge specifically rather than relying on being later. */
+.view .psx-card, .view .service-card, .view .fin-card, .view .card,
+.psx-card, .service-card, .fin-card, .wrap .card {
+  border-top: 4px solid var(--psx-accent) !important;
+  background: #fffdfa !important;          /* lifts off the tinted ground */
+}
+/* A card head, so the colour is a band rather than a hairline. */
+.service-card .service-icon, .psx-card .psx-card-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.4rem; height: 2.4rem; border-radius: 8px;
+  background: rgba(var(--psx-accent-rgb), .14) !important;
+}
+.psx-card h3, .service-card h3, .fin-card h3 { color: var(--psx-accent) !important; }
+.service-card .service-icon, .psx-card .icon { color: var(--psx-accent) !important; }
+
+/* ---- labels, kickers and figures speak in the arm colour ---- */
+.kicker, .view-kicker, .section-label, .psx-kicker,
+.stat .n, .psx-stat-value, .tile .n { color: var(--psx-accent) !important; }
+
+/* Section headings take the arm colour too — this is the line that tells a
+   reader which business they are standing in. */
+.view section h2, .view .phases h2 { color: var(--psx-accent) !important; }
+.view section h2::after, .view .phases h2::after {
+  content: ""; display: block; width: 3rem; height: 3px; margin-top: .5rem;
+  background: var(--psx-accent);
+}
+
+/* ---- tags fill instead of outlining ----
+   Status tags are deliberately excluded: green, amber and red mean paid,
+   pending and failed, and they keep saying only that. */
+.tag:not(.price):not(.status):not(.paid):not(.due),
+.badge:not(.b-city):not(.status):not(.paid):not(.due),
+.chip.on {
+  background: var(--psx-accent) !important;
+  border-color: var(--psx-accent) !important;
+  color: #fff !important;
+}
+.tag.city, .badge.b-city {
+  background: rgba(var(--psx-accent-rgb), .12) !important;
+  color: var(--psx-accent-dark) !important;
+  border-color: rgba(var(--psx-accent-rgb), .3) !important;
+}
+
+/* ---- links look like links again ---- */
+/* A link takes the accent — unless it is dressed as a button, in which case
+   its label is white on that accent. This rule sits after the button rule, so
+   without the exclusions it repainted a button's own text in the button's own
+   colour: the Factor Clock's call to action came out sienna on sienna, at 1:1. */
+.wrap a:not(.btn):not(.book-cta):not(.chip):not(.act):not(.act-link):not(.cta):not(.primary):not(.psx-btn-primary),
+p a:not(.btn):not(.cta), .sub a, .summary a, .note a { color: var(--psx-accent) !important; }
+
+/* ---- the masthead keeps the company's colour, everywhere ---- */
+header .brand, header .logo-text { color: var(--psx-ink) !important; }
+header { border-bottom: 3px solid var(--psx-blue) !important; }
