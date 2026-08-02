@@ -108,11 +108,30 @@ sentence that was complained about is what produced four rounds of this.
 
 ## Honest limits
 
-- **Korean and Vietnamese are not verified by anyone in the loop.** The
-  front-page strings went through DeepL, which is more reliable than reasoning
-  about a language you cannot hear. The rest is hand-written and unchecked. The
-  `COLLOQUIAL` list for those languages is nearly empty — not because they are
-  clean, but because nobody has read them.
+- **Korean and Vietnamese have now been read.** They were the honest gap: the
+  front-page strings went through DeepL and the rest was hand-written and
+  unchecked, so an empty `COLLOQUIAL` list meant nobody had looked, not that
+  there was nothing to find. Reading them turned up three faults running right
+  through the Korean:
+
+  - **당신** — 27 occurrences. It is the dictionary word for "you" and it is not
+    how Korean commercial writing addresses a reader; it lands somewhere between
+    intimate and confrontational, and mostly just reads as translated-from-
+    English. Korean drops the pronoun, or names the person: 고객님, 회원님, 여러분.
+  - **우리 against 저희** — split almost exactly down the middle, 16 to 17. Both
+    mean "we"; 저희 is the humble form a company uses to a customer. Alternating
+    between them means the company introduces itself two different ways on the
+    same site.
+  - **여정 계획 도구 against 여행 플래너** — the Trip Planner named two ways, which
+    makes it two products.
+
+  Plus 리드 for "lead" where the term is 잠재 고객, and 곳바로 for 곧바로 — a plain
+  misspelling that four passes had walked past. Vietnamese was in better shape;
+  it needed three fixes, all spoken register in written copy.
+
+  Every one of those is now in `COLLOQUIAL`, so the gate refuses them. What is
+  still true: nobody has read the Korean and Vietnamese *aloud*, and register
+  is a matter of ear as much as rule.
 - **DeepL's `context` and `formality` parameters are rejected on the free plan.**
   Those are the two levers that steer register directly. A paid plan would let
   register be specified per language rather than corrected after the fact.
