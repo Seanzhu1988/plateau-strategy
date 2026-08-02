@@ -29,6 +29,20 @@ EXTRA_SKIP = {
 }
 
 EXTRA = {
+    # ------- road trip: what to look for along the road -------
+    "Look for": ["查找", "Buscar", "찾기", "Tìm"],
+    "EV charging": ["充电桩", "Carga eléctrica", "전기차 충전", "Trạm sạc điện"],
+    "Coffee": ["咖啡", "Café", "커피", "Cà phê"],
+    "Toilets": ["洗手间", "Aseos", "화장실", "Nhà vệ sinh"],
+    "Shops": ["商店", "Tiendas", "상점", "Cửa hàng"],
+    "Somewhere to sleep": ["住宿", "Dónde dormir", "숙박", "Chỗ nghỉ"],
+    "Pharmacy & urgent care": ["药房与急诊", "Farmacia y urgencias", "약국 및 응급진료", "Nhà thuốc & cấp cứu"],
+    "Car repair & tyres": ["汽车维修与轮胎", "Taller y neumáticos", "자동차 정비 및 타이어", "Sửa xe & lốp"],
+    "ATM & bank": ["取款机与银行", "Cajero y banco", "ATM 및 은행", "ATM & ngân hàng"],
+    "Dog walk": ["遛狗区", "Zona para perros", "반려견 산책", "Chỗ dắt chó"],
+    "Playground": ["儿童游乐场", "Parque infantil", "놀이터", "Sân chơi trẻ em"],
+    "Picnic area": ["野餐区", "Área de picnic", "피크닉 구역", "Khu dã ngoại"],
+    "Drinking water": ["饮用水", "Agua potable", "식수", "Nước uống"],
     # ------- EV charging on the road trip planner -------
     "Finding charging stations along the route…": ["正在沿途查找充电站…", "Buscando estaciones de carga en la ruta…", "경로를 따라 충전소를 찾는 중…", "Đang tìm trạm sạc dọc tuyến đường…"],
     "Charging along the route": ["沿途充电", "Carga en la ruta", "경로상 충전", "Trạm sạc dọc tuyến"],

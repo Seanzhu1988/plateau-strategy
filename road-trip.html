@@ -103,13 +103,20 @@
     .chg-bare{color:#6b655b;font-size:.86em}
     .chg-fit{background:#e8f2ec;color:#1b5e43;font-size:.72em;font-weight:700;
         border-radius:3px;padding:.05rem .35rem;margin-left:.25rem;white-space:nowrap}
+    .grouppick{display:flex;gap:.4rem;flex-wrap:wrap;margin:0 0 .9rem;align-items:center;}
+    .grouppick .gp-lab{font-size:.74rem;font-weight:700;letter-spacing:.1em;
+        text-transform:uppercase;color:#6b655b;margin-right:.3rem;}
+    .grouppick .gp-chip{background:#fff;border:1px solid var(--psx-border,rgba(20,17,12,.13));
+        border-radius:999px;padding:.34rem .7rem;font:inherit;font-size:.84rem;
+        cursor:pointer;color:#4a453d;line-height:1.2;}
+    .grouppick .gp-chip[aria-pressed="true"]{background:#14110c;border-color:#14110c;color:#fff;}
     .routepick{display:flex;gap:.5rem;flex-wrap:wrap;margin:0 0 .9rem;}
-    .routepick button{flex:1 1 190px;text-align:left;background:#fff;
+    .routepick .gp-chip{flex:1 1 190px;text-align:left;background:#fff;
         border:1px solid var(--psx-border,rgba(20,17,12,.13));border-radius:4px;
         padding:.6rem .75rem;cursor:pointer;font:inherit;color:inherit;}
-    .routepick button .rp-t{display:block;font-weight:700;font-size:.94rem;}
-    .routepick button .rp-s{display:block;font-size:.78rem;color:#6b655b;margin-top:.15rem;}
-    .routepick button[aria-pressed="true"]{border-color:#1b4d8f;box-shadow:inset 0 0 0 1px #1b4d8f;}
+    .routepick .gp-chip .rp-t{display:block;font-weight:700;font-size:.94rem;}
+    .routepick .gp-chip .rp-s{display:block;font-size:.78rem;color:#6b655b;margin-top:.15rem;}
+    .routepick .gp-chip[aria-pressed="true"]{border-color:#1b4d8f;box-shadow:inset 0 0 0 1px #1b4d8f;}
 
     .leaflet-container{background:#f5f1e8;font:inherit}
     .leaflet-bar{border:none!important;border-radius:10px!important;overflow:hidden;
@@ -171,6 +178,11 @@
 
     <!-- Which road. Hidden until there is more than one worth choosing
          between: a chooser with a single option in it is furniture. -->
+    <!-- What to look for. Thirteen categories at once is an unreadable page
+         and a heavy Overpass query, so this decides both: switching one off
+         makes the search cheaper as well as quieter. -->
+    <div class="grouppick" id="groupPick"></div>
+
     <div class="routepick" id="routePick" style="display:none"></div>
 
     <div class="summary" id="summary">
@@ -362,24 +374,109 @@
     // ---------- places along the way ----------
     // One Overpass call per break point, radius in metres. Kept deliberately
     // small: a driver wants somewhere just off this road, not the whole county.
+    // What a driver can look for along the road.
+    //
+    // Four categories was a demo. A real road trip has more questions than
+    // fuel-food-rest-view, and the ones missing were the ones people
+    // actually stop for: a toilet on its own, a pharmacy, somewhere to sleep,
+    // a tyre place when something goes wrong. Twelve now, each one a real
+    // OpenStreetMap tag rather than a guess.
+    //
+    // `on` is the default set. All twelve at once is both an unreadable page
+    // and a heavy Overpass query — the toggles below the map decide what gets
+    // asked for, so turning things off makes the search cheaper as well as
+    // quieter.
     var GROUPS = [
-        { key: 'fuel',    label: 'Fuel',        glyph: '⛽', color: '#a85a08',
+        { key: 'fuel',    label: 'Fuel',       glyph: '⛽', color: '#a85a08', on: true,
           q: 'node(around:{R},{LAT},{LON})[amenity=fuel];' },
-        { key: 'food',    label: 'Food',        glyph: '🍽', color: '#6b2fbe',
-          q: 'node(around:{R},{LAT},{LON})[amenity~"^(restaurant|cafe|fast_food)$"];' },
-        // highway=rest_area / services is the tag the query was written
-        // against, and on its own it misses most American rest stops.
-        // State DOT imports overwhelmingly tag them amenity=parking with
-        // parking=rest_area, and the big interstate plazas are often mapped
-        // as an area rather than a point — so ways matter as much as nodes.
-        { key: 'rest',    label: 'Rest & services', glyph: '🅿', color: '#1b4d8f',
+
+        // access= is filtered in the query, not afterwards. The corridor
+        // sweep drops gated chargers in JS, and adding this category to the
+        // per-break search quietly routed around that check and started
+        // offering a dealership's private stall again. Filtering where the
+        // data is asked for means every path gets it.
+        { key: 'charge',  label: 'EV charging', glyph: '⚡', color: '#0f6d5c', on: true,
+          q: 'node(around:{R},{LAT},{LON})[amenity=charging_station][access!~"^(private|no|customers)$"];' +
+             'way(around:{R},{LAT},{LON})[amenity=charging_station][access!~"^(private|no|customers)$"];' },
+
+        { key: 'food',    label: 'Food',       glyph: '🍽', color: '#6b2fbe', on: true,
+          q: 'node(around:{R},{LAT},{LON})[amenity~"^(restaurant|fast_food)$"];' },
+
+        // Separate from food on purpose. At 3pm on a long drive, coffee is
+        // not a meal — it is the reason you are stopping at all.
+        { key: 'coffee',  label: 'Coffee',     glyph: '☕', color: '#7b2d26', on: false,
+          q: 'node(around:{R},{LAT},{LON})[amenity=cafe];' +
+             'node(around:{R},{LAT},{LON})[cuisine=coffee_shop];' },
+
+        // highway=rest_area / services is the tag this was written against,
+        // and on its own it misses most American rest stops: state DOT
+        // imports overwhelmingly use amenity=parking + parking=rest_area, and
+        // the big interstate plazas are mapped as areas, so ways matter as
+        // much as nodes. Picnic sites and drinking water belong here too —
+        // they are what a rest stop IS, not scenery.
+        { key: 'rest',    label: 'Rest & services', glyph: '🅿', color: '#1b4d8f', on: true,
           q: 'node(around:{R},{LAT},{LON})[highway~"^(services|rest_area)$"];' +
              'way(around:{R},{LAT},{LON})[highway~"^(services|rest_area)$"];' +
              'node(around:{R},{LAT},{LON})[amenity=parking][parking=rest_area];' +
-             'way(around:{R},{LAT},{LON})[amenity=parking][parking=rest_area];' },
-        { key: 'scenic',  label: 'Scenic',      glyph: '👁', color: '#0b6480',
-          q: 'node(around:{R},{LAT},{LON})[tourism~"^(viewpoint|picnic_site)$"];' }
+             'way(around:{R},{LAT},{LON})[amenity=parking][parking=rest_area];' +
+             'node(around:{R},{LAT},{LON})[tourism=picnic_site];' +
+             'node(around:{R},{LAT},{LON})[amenity=drinking_water];' },
+
+        // On its own, because it is the most common reason to pull over and
+        // the one thing every other planner buries inside "services".
+        { key: 'toilets', label: 'Toilets',    glyph: '🚻', color: '#1d4c4f', on: true,
+          q: 'node(around:{R},{LAT},{LON})[amenity=toilets];' },
+
+        { key: 'shop',    label: 'Shops',      glyph: '🛒', color: '#4a453d', on: false,
+          q: 'node(around:{R},{LAT},{LON})[shop~"^(convenience|supermarket)$"];' },
+
+        { key: 'sleep',   label: 'Somewhere to sleep', glyph: '🛏', color: '#16406f', on: false,
+          q: 'node(around:{R},{LAT},{LON})[tourism~"^(hotel|motel|camp_site|caravan_site)$"];' +
+             'way(around:{R},{LAT},{LON})[tourism~"^(hotel|motel|camp_site|caravan_site)$"];' },
+
+        // Not decoration. On a long drive these are the searches that happen
+        // in a hurry, and hunting for them on a phone at the roadside is
+        // exactly when a planner should already have the answer.
+        { key: 'health',  label: 'Pharmacy & urgent care', glyph: '⚕', color: '#a3302a', on: false,
+          q: 'node(around:{R},{LAT},{LON})[amenity~"^(pharmacy|hospital|clinic|doctors)$"];' +
+             'way(around:{R},{LAT},{LON})[amenity~"^(hospital|clinic)$"];' },
+
+        { key: 'repair',  label: 'Car repair & tyres', glyph: '🔧', color: '#8a5a12', on: false,
+          q: 'node(around:{R},{LAT},{LON})[shop~"^(car_repair|tyres)$"];' },
+
+        { key: 'money',   label: 'ATM & bank', glyph: '🏧', color: '#6b655b', on: false,
+          q: 'node(around:{R},{LAT},{LON})[amenity~"^(atm|bank)$"];' },
+
+        // Two travellers who never get planned for: the dog, and the kids.
+        { key: 'dog',     label: 'Dog walk',   glyph: '🐕', color: '#9c4221', on: false,
+          q: 'node(around:{R},{LAT},{LON})[leisure=dog_park];' +
+             'way(around:{R},{LAT},{LON})[leisure=dog_park];' +
+             'node(around:{R},{LAT},{LON})[amenity=dog_toilet];' },
+
+        { key: 'kids',    label: 'Playground', glyph: '🛝', color: '#0b6480', on: false,
+          q: 'node(around:{R},{LAT},{LON})[leisure=playground];' +
+             'way(around:{R},{LAT},{LON})[leisure=playground];' },
+
+        { key: 'scenic',  label: 'Scenic',     glyph: '👁', color: '#0b6480', on: true,
+          q: 'node(around:{R},{LAT},{LON})[tourism=viewpoint];' +
+             'node(around:{R},{LAT},{LON})[natural=peak];' +
+             'node(around:{R},{LAT},{LON})[historic~"^(memorial|monument|ruins)$"];' }
     ];
+
+    // Which categories are being asked for. Persisted, because a driver who
+    // travels with a dog travels with it every time.
+    var groupOn = (function () {
+        var d = {};
+        GROUPS.forEach(function (g) { d[g.key] = g.on; });
+        try {
+            var saved = JSON.parse(localStorage.getItem('psx_rt_groups') || 'null');
+            if (saved) GROUPS.forEach(function (g) {
+                if (typeof saved[g.key] === 'boolean') d[g.key] = saved[g.key];
+            });
+        } catch (e) {}
+        return d;
+    })();
+    function activeGroups() { return GROUPS.filter(function (g) { return groupOn[g.key]; }); }
 
     // Service plazas sit 30-40 miles apart, so checking a small circle at each
     // break misses nearly all of them. Overpass accepts a whole linestring in
@@ -413,14 +510,26 @@
         var line = pts.map(function (c) {
             return c[1].toFixed(4) + ',' + c[0].toFixed(4);
         }).join(',');
+        // The corridor sweep is the one query that covers the WHOLE road
+        // rather than a circle around a planned break, so it is where a
+        // missing tag costs the most. Six shapes of the same thing:
+        //   highway=rest_area / services   the tag everyone writes first
+        //   amenity=parking + rest_area    what US state DOT imports use
+        //   tourism=picnic_site            a rest stop with tables
+        //   amenity=toilets                on its own, which is often all
+        //                                  there is and all you need
+        //   amenity=drinking_water         the other reason to pull in
+        // plus named fuel, which doubles as a rest stop everywhere rural.
         var q = '[out:json][timeout:90];(' +
                 'node(around:' + radius + ',' + line + ')[highway~"^(services|rest_area)$"];' +
                 'way(around:' + radius + ',' + line + ')[highway~"^(services|rest_area)$"];' +
-                // the American tagging the original query missed entirely
                 'node(around:' + radius + ',' + line + ')[amenity=parking][parking=rest_area];' +
                 'way(around:' + radius + ',' + line + ')[amenity=parking][parking=rest_area];' +
+                'node(around:' + radius + ',' + line + ')[tourism=picnic_site];' +
+                'node(around:' + radius + ',' + line + ')[amenity=toilets];' +
+                'node(around:' + radius + ',' + line + ')[amenity=drinking_water];' +
                 'node(around:' + radius + ',' + line + ')[amenity=fuel][name];' +
-                ');out center 400;';
+                ');out center 600;';
         var r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: q });
         if (!r.ok) throw new Error('overpass');
         var j = await r.json();
@@ -432,8 +541,17 @@
             var lon = e.lon || (e.center && e.center.lon);
             if (!lat || !lon) return;
             var isFuel = t.amenity === 'fuel';
+            // Say which kind it is. "Rest area" for a toilet block in a
+            // lay-by promises a building that is not there, and a driver who
+            // needs a toilet and a driver who needs a picnic table are not
+            // looking for the same stop.
+            var kindName = t.highway === 'services' ? T('Service area')
+                         : t.amenity === 'toilets' ? T('Toilets')
+                         : t.tourism === 'picnic_site' ? T('Picnic area')
+                         : t.amenity === 'drinking_water' ? T('Drinking water')
+                         : T('Rest area');
             stops.push({
-                name: t.name || (t.highway === 'services' ? T('Service area') : T('Rest area')),
+                name: t.name || kindName,
                 kind: isFuel ? 'fuel' : 'rest',
                 lat: lat, lon: lon,
                 sec: progressAt(rt, pts, lat, lon)
@@ -478,8 +596,8 @@
         var line = pts.map(function (c) { return c[1].toFixed(4) + ',' + c[0].toFixed(4); }).join(',');
 
         var q = '[out:json][timeout:90];(' +
-                'node(around:' + radius + ',' + line + ')[amenity=charging_station];' +
-                'way(around:' + radius + ',' + line + ')[amenity=charging_station];' +
+                'node(around:' + radius + ',' + line + ')[amenity=charging_station][access!~"^(private|no|customers)$"];' +
+                'way(around:' + radius + ',' + line + ')[amenity=charging_station][access!~"^(private|no|customers)$"];' +
                 ');out center 300;';
         var r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: q });
         if (!r.ok) throw new Error('overpass');
@@ -592,26 +710,45 @@
     }
 
     async function placesNear(lat, lon, radius) {
-        var body = '[out:json][timeout:25];(' +
-            GROUPS.map(function (g) {
+        var groups = activeGroups();
+        if (!groups.length) return {};
+        var body = '[out:json][timeout:40];(' +
+            groups.map(function (g) {
                 return g.q.replace(/\{R\}/g, radius)
                           .replace(/\{LAT\}/g, lat.toFixed(5))
                           .replace(/\{LON\}/g, lon.toFixed(5));
             }).join('') +
-            ');out center 60;';
+            ');out center 120;';
         var r = await fetch('https://overpass-api.de/api/interpreter', {
             method: 'POST', body: body
         });
         if (!r.ok) throw new Error('overpass');
         var j = await r.json();
         var buckets = {};
-        GROUPS.forEach(function (g) { buckets[g.key] = []; });
+        activeGroups().forEach(function (g) { buckets[g.key] = []; });
         (j.elements || []).forEach(function (e) {
             var t = e.tags || {};
-            var key = t.amenity === 'fuel' ? 'fuel'
-                    : (t.highway === 'services' || t.highway === 'rest_area') ? 'rest'
-                    : (t.tourism === 'viewpoint' || t.tourism === 'picnic_site') ? 'scenic'
-                    : (t.amenity ? 'food' : null);
+            // One classifier for thirteen categories, most specific first —
+            // a hotel is tourism=hotel and a viewpoint is tourism=viewpoint,
+            // so testing the key alone would put them in the same bucket.
+            var key =
+                  t.amenity === 'fuel' ? 'fuel'
+                : t.amenity === 'charging_station' ? 'charge'
+                : t.amenity === 'toilets' ? 'toilets'
+                : t.amenity === 'cafe' || t.cuisine === 'coffee_shop' ? 'coffee'
+                : /^(pharmacy|hospital|clinic|doctors)$/.test(t.amenity || '') ? 'health'
+                : /^(atm|bank)$/.test(t.amenity || '') ? 'money'
+                : t.amenity === 'dog_toilet' || t.leisure === 'dog_park' ? 'dog'
+                : t.leisure === 'playground' ? 'kids'
+                : /^(car_repair|tyres)$/.test(t.shop || '') ? 'repair'
+                : /^(convenience|supermarket)$/.test(t.shop || '') ? 'shop'
+                : /^(hotel|motel|camp_site|caravan_site)$/.test(t.tourism || '') ? 'sleep'
+                : (t.highway === 'services' || t.highway === 'rest_area' ||
+                   t.parking === 'rest_area' || t.tourism === 'picnic_site' ||
+                   t.amenity === 'drinking_water') ? 'rest'
+                : (t.tourism === 'viewpoint' || t.natural === 'peak' || t.historic) ? 'scenic'
+                : /^(restaurant|fast_food)$/.test(t.amenity || '') ? 'food'
+                : null;
             if (!key || !buckets[key]) return;
             var name = t.name || (key === 'rest' ? T('Rest area') :
                        key === 'scenic' ? 'Viewpoint' : null);
@@ -699,7 +836,7 @@
             if (rt.distance === shortest && alts.length > 1) tags.push(T('shortest'));
             var extra = Math.round((rt.duration - fastest) / 60);
             if (!tags.length) tags.push(T('+{n} min', { n: extra }));
-            return '<button type="button" aria-pressed="' + (i === 0) + '" data-i="' + i + '">' +
+            return '<button type="button" class="gp-chip" aria-pressed="' + (i === 0) + '" data-i="' + i + '">' +
                    '<span class="rp-t">' + hhmm(rt.duration) + ' · ' + T('{n} mi', { n: mi }) + '</span>' +
                    '<span class="rp-s">' + tags.join(' · ') + '</span></button>';
         }).join('');
@@ -861,7 +998,7 @@
 
                 // drop the individual places on the map too, small and quiet
                 if (buckets) {
-                    GROUPS.forEach(function (g) {
+                    activeGroups().forEach(function (g) {
                         (buckets[g.key] || []).slice(0, 12).forEach(function (p) {
                             if (!p.lat || !p.lon) return;
                             var c = L.circleMarker([p.lat, p.lon], {
@@ -905,6 +1042,31 @@
         try { if (lastAlts.length) renderRoute(lastAlts[selectedIdx] || lastAlts[0], lastA, lastB); }
         catch (e) {}
     });
+
+    // The toggles. Painted from groupOn so a reload restores the driver's
+    // own set, not the defaults.
+    function buildGroupPicker() {
+        var box = $('groupPick');
+        box.innerHTML = '<span class="gp-lab">' + T('Look for') + '</span>' +
+            GROUPS.map(function (g) {
+                return '<button type="button" class="gp-chip" data-g="' + g.key + '" aria-pressed="' +
+                       (groupOn[g.key] ? 'true' : 'false') + '">' +
+                       g.glyph + ' ' + T(g.label) + '</button>';
+            }).join('');
+        box.querySelectorAll('button').forEach(function (b) {
+            b.addEventListener('click', function () {
+                var k = b.getAttribute('data-g');
+                groupOn[k] = !groupOn[k];
+                b.setAttribute('aria-pressed', groupOn[k] ? 'true' : 'false');
+                try { localStorage.setItem('psx_rt_groups', JSON.stringify(groupOn)); } catch (e) {}
+                // Changing what to look for only means something if the search
+                // is run again, and re-running is cheap once the route is known.
+                if (lastAlts.length) renderRoute(lastAlts[selectedIdx] || lastAlts[0], lastA, lastB);
+            });
+        });
+    }
+    buildGroupPicker();
+    document.addEventListener('psx:lang', buildGroupPicker);
 
     $('goBtn').addEventListener('click', plan);
     ['fromInput', 'toInput'].forEach(function (id) {

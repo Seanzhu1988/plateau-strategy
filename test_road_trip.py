@@ -5,7 +5,7 @@ OSRM, Nominatim and Overpass are all third parties, all rate-limited, and all
 blocked from this container. Stubbed — which is also the only way to assert on
 an exact route count and an exact set of rest stops.
 """
-import json, sys
+import json, re, sys
 from playwright.sync_api import sync_playwright
 
 B = "http://127.0.0.1:5055"
@@ -78,6 +78,12 @@ with sync_playwright() as p:
         # fixture it is actually asking for.
         if "charging_station" in q:
             body = CHARGERS
+            # Overpass would apply [access!~...] server-side; the stub has to
+            # as well, or a query-level fix looks identical to no fix at all.
+            if "access!~" in q:
+                body = {"elements": [e for e in CHARGERS["elements"]
+                                     if not re.match(r"private|no|customers",
+                                                     e["tags"].get("access", ""))]}
         elif "toilets" in q and "around:400" in q:
             body = NEARBY
         else:
@@ -161,6 +167,33 @@ with sync_playwright() as p:
         fails.append(f"expected 2 chargers with amenities within a walk, got {len(hits)}: {hits}")
     if not any("Ridgefield" in b for b in bare):
         fails.append("the bare lot was not reported as having nothing within a walk")
+
+    # ---- the toggles decide what is asked for, not just what is shown ----
+    toggles = pg.evaluate("""() => {
+        const b = [...document.querySelectorAll('#groupPick button')];
+        return { n: b.length,
+                 on: b.filter(x => x.getAttribute('aria-pressed') === 'true').length,
+                 keys: b.map(x => x.getAttribute('data-g')) };
+    }""")
+    print(f"  categories: {toggles['n']} offered, {toggles['on']} on by default")
+    if toggles["n"] < 12:
+        fails.append(f"expected at least 12 categories to choose from, got {toggles['n']}")
+    for need in ("toilets", "charge", "health", "sleep", "dog"):
+        if need not in toggles["keys"]:
+            fails.append(f"category missing: {need}")
+
+    # switching one off must remove it from the QUERY, not merely hide it —
+    # that is what makes a narrower search a cheaper one
+    before_q = len(seen_queries)
+    pg.click("#groupPick button[data-g='scenic'][aria-pressed='true']")
+    pg.wait_for_timeout(3500)
+    after = " ".join(seen_queries[before_q:])
+    if after and "tourism=viewpoint" in after:
+        fails.append("a switched-off category is still being queried")
+    elif not after:
+        fails.append("switching a category did not re-run the search")
+    else:
+        print("  switching Scenic off removed it from the query")
 
     q = " ".join(seen_queries)
     if "amenity=charging_station" not in q:
