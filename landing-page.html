@@ -1350,53 +1350,62 @@
     </style>
     <style id="psx-blueprint">
       /* ============================================================
-         Real Estate — blueprint / "under development" treatment
+         Real Estate — the drawing, on paper
+
+         It was a blueprint: white lines on deep blue, which read as a
+         different website sitting inside this one. A blueprint was never the
+         drawing anyway — it was the cyanotype REPRODUCTION of it. The drawing
+         itself was always ink on paper, so this is the truer object as well as
+         the one that belongs here: ruled vellum, ink linework, a red stamp.
+         The drawing is untouched; only what it is drawn WITH has changed.
          ============================================================ */
-      #view-realestate{background:#08183a;}
+      #view-realestate{background:var(--psx-bg,#faf8f4);}
       #view-realestate section{padding:2.5rem 1rem;}
       #view-realestate .bp{max-width:1120px;margin:0 auto;}
       #view-realestate .bp-sheet{
-        position:relative;overflow:hidden;border:1.5px solid rgba(126,197,255,.5);border-radius:8px;
-        color:#cfe3ff;font-family:ui-monospace,'SFMono-Regular',Menlo,'Courier New',monospace;
-        box-shadow:0 34px 80px -34px rgba(0,0,0,.85);
+        position:relative;overflow:hidden;border:1px solid rgba(20,17,12,.22);border-radius:3px;
+        color:var(--psx-text,#14110c);font-family:ui-monospace,'SFMono-Regular',Menlo,'Courier New',monospace;
+        /* a drawing sheet: faint ruling, a heavier line every fifth, and the
+           slight warmth of paper rather than the glow of a screen */
+        box-shadow:0 18px 40px -28px rgba(20,17,12,.45);
         background:
-          linear-gradient(rgba(126,197,255,.06) 1px,transparent 1px) 0 0/26px 26px,
-          linear-gradient(90deg,rgba(126,197,255,.06) 1px,transparent 1px) 0 0/26px 26px,
-          linear-gradient(rgba(126,197,255,.13) 1px,transparent 1px) 0 0/130px 130px,
-          linear-gradient(90deg,rgba(126,197,255,.13) 1px,transparent 1px) 0 0/130px 130px,
-          radial-gradient(130% 120% at 50% -10%,#124079 0%,#0c2c5f 45%,#081d40 100%);
-        background-color:#0a2450;
+          linear-gradient(rgba(20,17,12,.045) 1px,transparent 1px) 0 0/26px 26px,
+          linear-gradient(90deg,rgba(20,17,12,.045) 1px,transparent 1px) 0 0/26px 26px,
+          linear-gradient(rgba(20,17,12,.10) 1px,transparent 1px) 0 0/130px 130px,
+          linear-gradient(90deg,rgba(20,17,12,.10) 1px,transparent 1px) 0 0/130px 130px,
+          #fffdf8;
       }
       #view-realestate .bp-titlebar{
         display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;
-        padding:1.1rem 1.5rem;border-bottom:1.5px solid rgba(126,197,255,.4);background:rgba(8,26,60,.45);
+        padding:1.1rem 1.5rem;border-bottom:1px solid rgba(20,17,12,.22);background:rgba(20,17,12,.03);
       }
       #view-realestate .bp-title{display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap;}
       #view-realestate .bp-title h2{
-        margin:0;text-align:left;border:none;color:#eaf4ff;font-family:inherit;
+        margin:0;text-align:left;border:none;color:var(--psx-ink,#14110c);font-family:inherit;
         font-size:1.9rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
       }
-      #view-realestate .bp-sub{color:#8fb4e8;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;}
+      #view-realestate .bp-sub{color:var(--psx-muted,#6b655b);font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;}
+      /* The stamp a drawing office actually puts on an unfinished sheet is red,
+         and red on this site means the one thing: this needs your attention. */
       #view-realestate .bp-stamp{
         display:inline-flex;align-items:center;gap:.45rem;transform:rotate(-4deg);
-        padding:.5rem .95rem;border:2px dashed #ffce6b;border-radius:8px;
-        background:rgba(255,206,107,.07);color:#ffce6b;
+        padding:.5rem .95rem;border:2px solid var(--psx-red,#a4161a);border-radius:2px;
+        background:transparent;color:var(--psx-red,#a4161a);
         font-weight:700;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;
-        box-shadow:0 0 0 4px rgba(255,206,107,.05);
       }
       #view-realestate .bp-body{display:flex;justify-content:center;padding:1.9rem 1.6rem;}
       #view-realestate .bp-draw{
-        max-width:440px;width:100%;border:1px dashed rgba(126,197,255,.4);border-radius:6px;padding:1rem;
-        display:flex;flex-direction:column;gap:.6rem;background:rgba(9,30,66,.25);
+        max-width:440px;width:100%;border:1px dashed rgba(20,17,12,.28);border-radius:2px;padding:1rem;
+        display:flex;flex-direction:column;gap:.6rem;background:transparent;
       }
       #view-realestate .bp-svg{width:100%;height:auto;display:block;}
-      #view-realestate .bp-caption{text-align:center;color:#8fb4e8;font-size:.72rem;letter-spacing:.14em;}
+      #view-realestate .bp-caption{text-align:center;color:var(--psx-muted,#6b655b);font-size:.72rem;letter-spacing:.14em;}
       #view-realestate .bp-footer{
         display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;
-        padding:.85rem 1.5rem;border-top:1.5px solid rgba(126,197,255,.4);background:rgba(8,26,60,.45);
-        color:#8fb4e8;font-size:.68rem;letter-spacing:.16em;
+        padding:.85rem 1.5rem;border-top:1px solid rgba(20,17,12,.22);background:rgba(20,17,12,.03);
+        color:var(--psx-muted,#6b655b);font-size:.68rem;letter-spacing:.16em;
       }
-      #view-realestate .bp-footer .wip{color:#ffce6b;}
+      #view-realestate .bp-footer .wip{color:var(--psx-red,#a4161a);font-weight:700;}
       @media(max-width:820px){
         #view-realestate .bp-title h2{font-size:1.5rem;}
       }
@@ -1556,12 +1565,13 @@
          Finance, Reinvestment, Free Tools, Security) restyled onto the
          same design system as the front page. These views share a small
          set of building blocks, so styling the blocks covers every tab.
-         Real Estate keeps its blueprint treatment.
+         Real Estate is drawn on the same paper as everything else.
          ============================================================ */
 
       /* ---- section ground + headings ---- */
       .view .phases{background:var(--psx-bg);padding:4.5rem 2rem 5.5rem;}
-      #view-realestate .phases{background:#08183a;}   /* blueprint keeps its own ground */
+      /* The drawing sheet used to carve its own dark-blue ground out of the
+         page. It reads on paper now, so it needs no exception. */
 
       .view section h2{
         font-size:clamp(1.9rem,3.6vw,2.6rem);
@@ -2192,10 +2202,10 @@
                                       <feDisplacementMap in="SourceGraphic" in2="n" scale="2.4" xChannelSelector="R" yChannelSelector="G"/>
                                     </filter>
                                   </defs>
-                                  <g filter="url(#bpPencil)" fill="none" stroke="#bcdcff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                                  <g filter="url(#bpPencil)" fill="none" stroke="#14110c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                                     <!-- ground -->
                                     <line x1="22" y1="242" x2="316" y2="242" stroke-width="2.2"/>
-                                    <g stroke="#7ea9e0" stroke-width="1">
+                                    <g stroke="#4a453d" stroke-width="1">
                                       <line x1="40" y1="242" x2="32" y2="252"/><line x1="66" y1="242" x2="58" y2="252"/>
                                       <line x1="92" y1="242" x2="84" y2="252"/><line x1="118" y1="242" x2="110" y2="252"/>
                                       <line x1="200" y1="242" x2="192" y2="252"/><line x1="226" y1="242" x2="218" y2="252"/>
@@ -2219,18 +2229,18 @@
                                     <!-- tree -->
                                     <g><line x1="290" y1="242" x2="290" y2="218"/><circle cx="290" cy="210" r="13"/></g>
                                     <!-- north arrow -->
-                                    <g><circle cx="326" cy="40" r="15"/><line x1="326" y1="53" x2="326" y2="29"/><path d="M326 25 l5 10 l-10 0 z" fill="#bcdcff" stroke="none"/></g>
+                                    <g><circle cx="326" cy="40" r="15"/><line x1="326" y1="53" x2="326" y2="29"/><path d="M326 25 l5 10 l-10 0 z" fill="#14110c" stroke="none"/></g>
                                     <!-- dimension lines -->
-                                    <g stroke="#8fb8ee" stroke-width="1.2">
+                                    <g stroke="#1b4d8f" stroke-width="1.2">
                                       <line x1="46" y1="66" x2="46" y2="242"/>
-                                      <path d="M42 72 l4 -8 l4 8 z" fill="#8fb8ee" stroke="none"/>
-                                      <path d="M42 236 l4 8 l4 -8 z" fill="#8fb8ee" stroke="none"/>
+                                      <path d="M42 72 l4 -8 l4 8 z" fill="#1b4d8f" stroke="none"/>
+                                      <path d="M42 236 l4 8 l4 -8 z" fill="#1b4d8f" stroke="none"/>
                                       <line x1="70" y1="266" x2="250" y2="266"/>
-                                      <path d="M76 262 l-8 4 l8 4 z" fill="#8fb8ee" stroke="none"/>
-                                      <path d="M244 262 l8 4 l-8 4 z" fill="#8fb8ee" stroke="none"/>
+                                      <path d="M76 262 l-8 4 l8 4 z" fill="#1b4d8f" stroke="none"/>
+                                      <path d="M244 262 l8 4 l-8 4 z" fill="#1b4d8f" stroke="none"/>
                                     </g>
                                   </g>
-                                  <g fill="#9cc7ff" font-family="ui-monospace,monospace" font-size="11" letter-spacing="1">
+                                  <g fill="#4a453d" font-family="ui-monospace,monospace" font-size="11" letter-spacing="1">
                                     <text x="326" y="63" text-anchor="middle">N</text>
                                     <text x="30" y="158" text-anchor="middle" transform="rotate(-90 30 158)">45&#8242;-0&#8243;</text>
                                     <text x="160" y="282" text-anchor="middle">60&#8242;-0&#8243;</text>

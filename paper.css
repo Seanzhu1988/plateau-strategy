@@ -134,14 +134,14 @@
         text-shadow:none !important;
       }
       .psx-h1{line-height:1.08 !important;}
-      /* Except on the Real Estate sheet. That view is an architect's
-         drawing — dark ground, pale linework, monospace title block — and
-         it is deliberate, not a leftover. Ink type on it is ink on navy:
-         #14110c against #0a2450, which is 1.3:1 and simply not there. The
-         sheet keeps its own colours, the way the map does. */
+      /* The Real Estate sheet used to be an architect's blueprint — dark ground,
+         pale linework — so its title block was held at #eaf4ff to stay legible
+         on navy. The sheet is drawn on paper now, and that same pale title on
+         cream measures 1.1:1, which is to say invisible. It takes the ink like
+         every other heading; only the monospace title-block face is kept. */
       #view-realestate .bp-sheet h1,#view-realestate .bp-sheet h2,
       #view-realestate .bp-sheet h3,#view-realestate .bp-title h2{
-        color:#eaf4ff !important;font-family:inherit !important;
+        color:var(--psx-ink) !important;font-family:inherit !important;
       }
       /* The accent was a violet gradient. A real underline says the same thing
          without pretending to be lit from behind — and unlike a box-shadow
