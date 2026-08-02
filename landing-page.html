@@ -1399,6 +1399,24 @@
         display:flex;flex-direction:column;gap:.6rem;background:transparent;
       }
       #view-realestate .bp-svg{width:100%;height:auto;display:block;}
+
+      /* ---- the sheet draws itself ----
+         Each line is dashed by exactly its own length and offset out of sight,
+         then the offset runs to nothing — so the pen travels the path instead
+         of the shape fading up. The nine layers go down in the order a drawing
+         is actually built: ground, shell, slabs, floors, street, figures,
+         furniture, dimensions, site plan. Lettering is written, not drawn, so
+         it appears rather than unspooling letter by letter.
+
+         The line length is measured per path in script, because a single
+         guessed dasharray makes short lines snap and long ones crawl. */
+      /* Nothing in this stylesheet hides the drawing. The reveal is applied
+         from script, per line, and the un-drawn state exists only inside a
+         running animation — so if animations are unavailable, suppressed, or
+         the page's timeline is frozen, the drawing is simply there. A
+         stylesheet that hides the ink and waits to be revealed leaves a blank
+         sheet in exactly those cases, which is far worse than not animating. */
+      }
       #view-realestate .bp-caption{text-align:center;color:var(--psx-muted,#6b655b);font-size:.72rem;letter-spacing:.14em;}
       #view-realestate .bp-footer{
         display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;
@@ -2195,55 +2213,165 @@
 
                             <div class="bp-body">
                               <div class="bp-draw">
-                                <svg class="bp-svg" viewBox="0 0 360 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Blueprint elevation of a mixed-use building, under development">
+                                <svg class="bp-svg" viewBox="0 0 520 360" xmlns="http://www.w3.org/2000/svg"
+                                     role="img" aria-label="Architectural elevation and site plan of a mixed-use building, drawn on paper, still at design stage">
                                   <defs>
-                                    <filter id="bpPencil" x="-6%" y="-6%" width="112%" height="112%">
-                                      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="7" result="n"/>
-                                      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.4" xChannelSelector="R" yChannelSelector="G"/>
-                                    </filter>
+                                    <!-- the slight unsteadiness of a hand and a pen -->
+                                    <!-- There was a pencil-wobble filter here. A displacement map works on
+                                         the rasterised graphic, and this sheet draws at roughly 210px wide,
+                                         so displacing by a unit erased 1.4-unit strokes outright — the
+                                         linework vanished and only the fills survived. Widening the filter
+                                         region did not help, because the cause is the render scale, not the
+                                         region. A texture that rubs out the drawing is not worth having, so
+                                         the lines are drawn straight. The irregularity now comes from the
+                                         geometry itself, which cannot be erased by a filter.
+                                         Do not reintroduce it without checking the strokes still paint. -->
+                                    <pattern id="bpHatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                                      <line x1="0" y1="0" x2="0" y2="6" stroke="#14110c" stroke-width="0.5" opacity=".45"/>
+                                    </pattern>
+                                    <pattern id="bpGlass" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
+                                      <line x1="0" y1="0" x2="0" y2="5" stroke="#1b4d8f" stroke-width="0.4" opacity=".35"/>
+                                    </pattern>
                                   </defs>
-                                  <g filter="url(#bpPencil)" fill="none" stroke="#14110c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                                    <!-- ground -->
-                                    <line x1="22" y1="242" x2="316" y2="242" stroke-width="2.2"/>
-                                    <g stroke="#4a453d" stroke-width="1">
-                                      <line x1="40" y1="242" x2="32" y2="252"/><line x1="66" y1="242" x2="58" y2="252"/>
-                                      <line x1="92" y1="242" x2="84" y2="252"/><line x1="118" y1="242" x2="110" y2="252"/>
-                                      <line x1="200" y1="242" x2="192" y2="252"/><line x1="226" y1="242" x2="218" y2="252"/>
-                                      <line x1="252" y1="242" x2="244" y2="252"/><line x1="278" y1="242" x2="270" y2="252"/>
+
+                                  <g fill="none" stroke="#14110c"
+                                     stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+
+                                    <!-- ============ 1 · ground and setting ============ -->
+                                    <g class="ink" data-step="1">
+                                      <line x1="24" y1="264" x2="366" y2="264" stroke-width="2"/>
+                                      <g stroke-width=".8" opacity=".7">
+                                        <line x1="34" y1="264" x2="26" y2="274"/><line x1="58" y1="264" x2="50" y2="274"/>
+                                        <line x1="82" y1="264" x2="74" y2="274"/><line x1="106" y1="264" x2="98" y2="274"/>
+                                        <line x1="286" y1="264" x2="278" y2="274"/><line x1="310" y1="264" x2="302" y2="274"/>
+                                        <line x1="334" y1="264" x2="326" y2="274"/><line x1="358" y1="264" x2="350" y2="274"/>
+                                      </g>
                                     </g>
-                                    <!-- building shell -->
-                                    <rect x="70" y="66" width="180" height="176"/>
-                                    <line x1="62" y1="66" x2="258" y2="66" stroke-width="2.6"/>
-                                    <!-- floor slabs -->
-                                    <line x1="70" y1="110" x2="250" y2="110"/>
-                                    <line x1="70" y1="154" x2="250" y2="154"/>
-                                    <line x1="70" y1="198" x2="250" y2="198"/>
-                                    <!-- windows: 3 upper floors x 3 -->
-                                    <rect x="94" y="78" width="24" height="24"/><rect x="148" y="78" width="24" height="24"/><rect x="202" y="78" width="24" height="24"/>
-                                    <rect x="94" y="122" width="24" height="24"/><rect x="148" y="122" width="24" height="24"/><rect x="202" y="122" width="24" height="24"/>
-                                    <rect x="94" y="166" width="24" height="24"/><rect x="148" y="166" width="24" height="24"/><rect x="202" y="166" width="24" height="24"/>
-                                    <!-- ground floor: shopfronts + entrance -->
-                                    <rect x="90" y="210" width="30" height="32"/><rect x="200" y="210" width="30" height="32"/>
-                                    <rect x="146" y="206" width="28" height="36"/>
-                                    <line x1="146" y1="224" x2="174" y2="224"/>
-                                    <!-- tree -->
-                                    <g><line x1="290" y1="242" x2="290" y2="218"/><circle cx="290" cy="210" r="13"/></g>
-                                    <!-- north arrow -->
-                                    <g><circle cx="326" cy="40" r="15"/><line x1="326" y1="53" x2="326" y2="29"/><path d="M326 25 l5 10 l-10 0 z" fill="#14110c" stroke="none"/></g>
-                                    <!-- dimension lines -->
-                                    <g stroke="#1b4d8f" stroke-width="1.2">
-                                      <line x1="46" y1="66" x2="46" y2="242"/>
-                                      <path d="M42 72 l4 -8 l4 8 z" fill="#1b4d8f" stroke="none"/>
-                                      <path d="M42 236 l4 8 l4 -8 z" fill="#1b4d8f" stroke="none"/>
-                                      <line x1="70" y1="266" x2="250" y2="266"/>
-                                      <path d="M76 262 l-8 4 l8 4 z" fill="#1b4d8f" stroke="none"/>
-                                      <path d="M244 262 l8 4 l-8 4 z" fill="#1b4d8f" stroke="none"/>
+
+                                    <!-- ============ 2 · the shell ============ -->
+                                    <g class="ink" data-step="2">
+                                      <path d="M108 264 L108 96 L282 96 L282 264"/>
+                                      <line x1="100" y1="96" x2="290" y2="96" stroke-width="2.2"/>
+                                      <path d="M100 96 L100 86 L290 86 L290 96"/>          <!-- parapet -->
+                                      <rect x="176" y="62" width="44" height="24"/>          <!-- rooftop plant -->
+                                      <line x1="176" y1="70" x2="220" y2="70" stroke-width=".7" opacity=".6"/>
+                                      <line x1="190" y1="62" x2="190" y2="86" stroke-width=".7" opacity=".6"/>
+                                      <line x1="206" y1="62" x2="206" y2="86" stroke-width=".7" opacity=".6"/>
+                                    </g>
+
+                                    <!-- ============ 3 · floor slabs ============ -->
+                                    <g class="ink" data-step="3">
+                                      <line x1="108" y1="130" x2="282" y2="130"/>
+                                      <line x1="108" y1="164" x2="282" y2="164"/>
+                                      <line x1="108" y1="198" x2="282" y2="198"/>
+                                      <line x1="108" y1="228" x2="282" y2="228" stroke-width="1.7"/>
+                                    </g>
+
+                                    <!-- ============ 4 · the residential floors ============ -->
+                                    <g class="ink" data-step="4">
+                                      <g fill="url(#bpGlass)">
+                                        <rect x="120" y="104" width="30" height="20"/><rect x="160" y="104" width="30" height="20"/>
+                                        <rect x="200" y="104" width="30" height="20"/><rect x="240" y="104" width="30" height="20"/>
+                                        <rect x="120" y="138" width="30" height="20"/><rect x="160" y="138" width="30" height="20"/>
+                                        <rect x="200" y="138" width="30" height="20"/><rect x="240" y="138" width="30" height="20"/>
+                                        <rect x="120" y="172" width="30" height="20"/><rect x="160" y="172" width="30" height="20"/>
+                                        <rect x="200" y="172" width="30" height="20"/><rect x="240" y="172" width="30" height="20"/>
+                                      </g>
+                                      <g stroke-width=".6" opacity=".65">
+                                        <line x1="135" y1="104" x2="135" y2="124"/><line x1="175" y1="104" x2="175" y2="124"/>
+                                        <line x1="215" y1="104" x2="215" y2="124"/><line x1="255" y1="104" x2="255" y2="124"/>
+                                        <line x1="135" y1="138" x2="135" y2="158"/><line x1="175" y1="138" x2="175" y2="158"/>
+                                        <line x1="215" y1="138" x2="215" y2="158"/><line x1="255" y1="138" x2="255" y2="158"/>
+                                        <line x1="135" y1="172" x2="135" y2="192"/><line x1="175" y1="172" x2="175" y2="192"/>
+                                        <line x1="215" y1="172" x2="215" y2="192"/><line x1="255" y1="172" x2="255" y2="192"/>
+                                      </g>
+                                      <!-- balconies on the middle floor -->
+                                      <g stroke-width=".9">
+                                        <path d="M118 158 L152 158 L152 152 M118 158 L118 152"/>
+                                        <path d="M238 158 L272 158 L272 152 M238 158 L238 152"/>
+                                      </g>
+                                    </g>
+
+                                    <!-- ============ 5 · the street ============ -->
+                                    <g class="ink" data-step="5">
+                                      <path d="M108 228 L282 228 L282 264 L108 264 Z" stroke-width="1.2"/>
+                                      <rect x="118" y="236" width="42" height="28" fill="url(#bpGlass)"/>
+                                      <rect x="230" y="236" width="42" height="28" fill="url(#bpGlass)"/>
+                                      <path d="M180 232 L210 232 L210 264 L180 264 Z"/>       <!-- entrance -->
+                                      <line x1="195" y1="232" x2="195" y2="264" stroke-width=".7"/>
+                                      <path d="M170 226 L220 226 L226 218 L164 218 Z" stroke-width="1.1"/>  <!-- canopy -->
+                                      <line x1="164" y1="264" x2="226" y2="264" stroke-width="1.6"/>
+                                      <path d="M158 264 L164 258 L226 258 L232 264" stroke-width=".8" opacity=".7"/>
+                                    </g>
+
+                                    <!-- ============ 6 · people, for scale ============ -->
+                                    <g class="ink" data-step="6" stroke-width="1.1">
+                                      <g><circle cx="96" cy="246" r="3.2"/><path d="M96 249 L96 258 M96 252 L91 256 M96 252 L101 256 M96 258 L92 264 M96 258 L100 264"/></g>
+                                      <g><circle cx="300" cy="247" r="3"/><path d="M300 250 L300 258 M300 253 L296 257 M300 253 L304 257 M300 258 L297 264 M300 258 L303 264"/></g>
+                                      <g><circle cx="312" cy="248" r="2.6"/><path d="M312 251 L312 258 M312 254 L309 257 M312 254 L315 257 M312 258 L310 264 M312 258 L314 264"/></g>
+                                    </g>
+
+                                    <!-- ============ 7 · street furniture ============ -->
+                                    <g class="ink" data-step="7">
+                                      <g><line x1="60" y1="264" x2="60" y2="240"/><circle cx="60" cy="230" r="13"/>
+                                         <path d="M52 224 L60 216 L68 224" stroke-width=".7" opacity=".6"/></g>
+                                      <g><line x1="340" y1="264" x2="340" y2="242"/><circle cx="340" cy="233" r="11"/></g>
+                                      <g stroke-width="1"><line x1="80" y1="264" x2="80" y2="238"/>
+                                         <path d="M74 238 L86 238 L86 232 L74 232 Z"/></g>
+                                      <!-- a car, for street scale -->
+                                      <g stroke-width="1">
+                                        <path d="M-0 0" />
+                                        <path d="M382 264 L382 252 L392 244 L416 244 L424 252 L430 252 L430 264 Z" transform="translate(-60,0)"/>
+                                        <circle cx="333" cy="264" r="4.5"/><circle cx="360" cy="264" r="4.5"/>
+                                      </g>
+                                    </g>
+
+                                    <!-- ============ 8 · dimensions and notes ============ -->
+                                    <g class="ink" data-step="8" stroke="#1b4d8f" stroke-width="1">
+                                      <line x1="86" y1="86" x2="86" y2="264"/>
+                                      <path d="M82 92 l4 -8 l4 8 z" fill="#1b4d8f" stroke="none"/>
+                                      <path d="M82 258 l4 8 l4 -8 z" fill="#1b4d8f" stroke="none"/>
+                                      <line x1="108" y1="288" x2="282" y2="288"/>
+                                      <path d="M114 284 l-8 4 l8 4 z" fill="#1b4d8f" stroke="none"/>
+                                      <path d="M276 284 l8 4 l-8 4 z" fill="#1b4d8f" stroke="none"/>
+                                      <g stroke-width=".7" opacity=".8">
+                                        <line x1="292" y1="96" x2="308" y2="96"/><line x1="292" y1="130" x2="308" y2="130"/>
+                                        <line x1="292" y1="164" x2="308" y2="164"/><line x1="292" y1="198" x2="308" y2="198"/>
+                                        <line x1="292" y1="228" x2="308" y2="228"/><line x1="292" y1="264" x2="308" y2="264"/>
+                                        <line x1="300" y1="96" x2="300" y2="264"/>
+                                      </g>
+                                      <circle cx="404" cy="46" r="15" stroke="#14110c"/>
+                                      <line x1="404" y1="59" x2="404" y2="35" stroke="#14110c"/>
+                                      <path d="M404 31 l5 10 l-10 0 z" fill="#14110c" stroke="none"/>
+                                    </g>
+
+                                    <!-- ============ 9 · site plan, inset ============ -->
+                                    <g class="ink" data-step="9" stroke-width="1">
+                                      <rect x="392" y="150" width="104" height="120" stroke-dasharray="4 3" opacity=".8"/>
+                                      <rect x="410" y="176" width="52" height="62" fill="url(#bpHatch)"/>
+                                      <path d="M392 262 L496 262" stroke-width="1.4"/>
+                                      <path d="M404 150 L404 270" stroke-width=".7" opacity=".55"/>
+                                      <g stroke-width=".7" opacity=".65">
+                                        <line x1="470" y1="176" x2="488" y2="176"/><line x1="470" y1="192" x2="488" y2="192"/>
+                                        <line x1="470" y1="208" x2="488" y2="208"/><line x1="470" y1="224" x2="488" y2="224"/>
+                                      </g>
+                                      <circle cx="424" cy="250" r="6"/><circle cx="448" cy="250" r="6"/>
                                     </g>
                                   </g>
-                                  <g fill="#4a453d" font-family="ui-monospace,monospace" font-size="11" letter-spacing="1">
-                                    <text x="326" y="63" text-anchor="middle">N</text>
-                                    <text x="30" y="158" text-anchor="middle" transform="rotate(-90 30 158)">45&#8242;-0&#8243;</text>
-                                    <text x="160" y="282" text-anchor="middle">60&#8242;-0&#8243;</text>
+
+                                  <!-- lettering is written, not drawn — it appears rather than unspooling -->
+                                  <g class="bp-text" fill="#4a453d" font-family="ui-monospace,monospace" font-size="10" letter-spacing="1">
+                                    <text x="404" y="70" text-anchor="middle" fill="#14110c">N</text>
+                                    <text x="72" y="178" text-anchor="middle" transform="rotate(-90 72 178)">62&#8242;-0&#8243;</text>
+                                    <text x="195" y="303" text-anchor="middle">78&#8242;-0&#8243;</text>
+                                    <text x="316" y="100" font-size="8.5">L4 · RESIDENTIAL</text>
+                                    <text x="316" y="134" font-size="8.5">L3 · RESIDENTIAL</text>
+                                    <text x="316" y="168" font-size="8.5">L2 · RESIDENTIAL</text>
+                                    <text x="316" y="202" font-size="8.5">L1 · OFFICE</text>
+                                    <text x="316" y="232" font-size="8.5">GF · RETAIL</text>
+                                    <text x="444" y="144" text-anchor="middle" font-size="8.5">SITE PLAN · 1:500</text>
+                                    <text x="436" y="196" font-size="7.5" fill="#6b655b">FOOTPRINT</text>
+                                    <text x="392" y="284" font-size="7.5" fill="#6b655b">ST. — 40&#8242; R.O.W.</text>
                                   </g>
                                 </svg>
                                 <div class="bp-caption">FIG 1 — MIXED-USE HUB · FRONT ELEVATION (NTS)</div>
@@ -3239,6 +3367,70 @@
                 + (ago(r) ? ' · ' + ago(r) : '') + '</span></span>').join('');
             strip.style.display = 'block';
         }).catch(() => {});
+    })();
+    </script>
+    <script>
+    // Measure every line so it can draw at its own speed, then let the sheet
+    // draw itself when the reader actually arrives at it — and again if they
+    // come back, because a drawing appearing is the point of it.
+    (function drawTheSheet(){
+        const sheet = document.querySelector('#view-realestate .bp-sheet');
+        const svg = sheet && sheet.querySelector('.bp-svg');
+        if (!sheet || !svg) return;
+
+        if (!('animate' in Element.prototype)) return;          // leave the drawing be
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const STEP = 340;                        // ms between layers
+        const plan = [];
+        Array.from(svg.querySelectorAll('.ink')).forEach(function (layer) {
+            const step = parseInt(layer.getAttribute('data-step'), 10) || 1;
+            layer.querySelectorAll('path,line,rect,circle,polyline,polygon').forEach(function (el, i) {
+                let len = 0;
+                try { len = el.getTotalLength ? el.getTotalLength() : 0; } catch (e) {}
+                if (!len || !isFinite(len) || len < 2) return;
+                // a small stagger inside a layer, so a wall of lines does not
+                // arrive as one block
+                plan.push({ el: el, len: Math.ceil(len),
+                            delay: (step - 1) * STEP + Math.min(i, 12) * 35 });
+            });
+        });
+        if (!plan.length) return;
+
+        let running = [];
+        function play(){
+            running.forEach(function (a) { try { a.cancel(); } catch (e) {} });
+            running = plan.map(function (s) {
+                // The dash pattern lives only inside the animation, so cancelling
+                // it — for any reason at all — restores a solid line.
+                return s.el.animate(
+                    [{ strokeDasharray: s.len + ' ' + s.len, strokeDashoffset: s.len },
+                     { strokeDasharray: s.len + ' ' + s.len, strokeDashoffset: 0 }],
+                    { duration: 900, delay: s.delay, easing: 'cubic-bezier(.55,.1,.3,1)' });
+            });
+            // The lettering waits for the last line to be down, then is written.
+            // It is hung off the drawing FINISHING rather than a fixed delay, and
+            // it is only ever hidden from inside a running animation — the same
+            // rule as the lines, for the same reason: a caption held invisible by
+            // an animation that never ran is a caption nobody reads.
+            const text = svg.querySelector('.bp-text');
+            const last = running[running.length - 1];
+            if (text && last && last.finished) {
+                const write = text.animate([{ opacity: 0 }, { opacity: 1 }],
+                                           { duration: 500, fill: 'backwards' });
+                write.pause();
+                running.push(write);
+                last.finished.then(function () { write.play(); }).catch(function () { write.cancel(); });
+                // and if the drawing never finishes, the words are not held hostage
+                setTimeout(function () { if (write.playState === 'paused') write.cancel(); }, 6000);
+            }
+        }
+
+        if (!('IntersectionObserver' in window)) { play(); return; }
+        const io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) { if (e.isIntersecting) play(); });
+        }, { threshold: 0.25 });
+        io.observe(sheet);
     })();
     </script>
     <script src="/floatback.js"></script>

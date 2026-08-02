@@ -1724,3 +1724,17 @@ EXTRA.update({
         "주소창 옆 자물쇠 아이콘 → 권한 → 위치를 누르세요.",
         "Chạm biểu tượng ổ khóa cạnh thanh địa chỉ → Quyền → Vị trí."],
 })
+
+# ---- the drawing sheet's own lettering ----
+# Level markers and sheet notes are drafting shorthand; they are translated
+# because a reader of the drawing should be able to read the drawing.
+EXTRA.update({
+    "L4 · RESIDENTIAL": ["4层 · 住宅", "N4 · RESIDENCIAL", "4층 · 주거", "T4 · NHÀ Ở"],
+    "L3 · RESIDENTIAL": ["3层 · 住宅", "N3 · RESIDENCIAL", "3층 · 주거", "T3 · NHÀ Ở"],
+    "L2 · RESIDENTIAL": ["2层 · 住宅", "N2 · RESIDENCIAL", "2층 · 주거", "T2 · NHÀ Ở"],
+    "L1 · OFFICE": ["1层 · 办公", "N1 · OFICINAS", "1층 · 사무", "T1 · VĂN PHÒNG"],
+    "GF · RETAIL": ["首层 · 商铺", "PB · COMERCIO", "1층 · 상가", "TT · BÁN LẺ"],
+    "SITE PLAN · 1:500": ["总平面图 · 1:500", "PLANO DE SITIO · 1:500", "배치도 · 1:500", "MẶT BẰNG · 1:500"],
+    "FOOTPRINT": ["建筑占地", "HUELLA", "건물 외곽", "DIỆN TÍCH XÂY DỰNG"],
+})
+EXTRA_SKIP |= {"ST. — 40′ R.O.W.", "62′-0″", "78′-0″", "N"}
