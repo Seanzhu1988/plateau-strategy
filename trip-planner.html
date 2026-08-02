@@ -1320,7 +1320,7 @@
     }
     function renderChain(){                 // the D1 → D2 → D3 strip from the sketch
         const el = $('chain'); if (!el) return;
-        if (!st.route.length) { el.innerHTML = '<span class="muted">Your route builds here: D1 → D2 → D3 …</span>'; return; }
+        if (!st.route.length) { el.innerHTML = '<span class="muted">' + T('Your route builds here: D1 → D2 → D3 …') + '</span>'; return; }
         el.innerHTML = st.route.map((r, k) =>
             '<span class="dnode" title="' + escj(places[r.i].name) + '">D' + (k + 1) + ' · '
              + escj(places[r.i].name.split(' ').slice(0, 2).join(' ')) + '</span>'
@@ -1330,7 +1330,7 @@
         const el = $('trip'); if (!el) return;
         const ja = $('jarvisActions'), tools = $('itinTools'), mast = $('jarvisMast');
         if (!st.route.length) {
-            el.innerHTML = '<p class="muted">🤵 At your service. Add any place — search above or tap a pin — and I\'ll build your day sheet: miles, drive time, arrival, stay and closing time.</p>';
+            el.innerHTML = '<p class="muted">🤵 ' + T('At your service. Add any place — search above or tap a pin — and I\u2019ll build your day sheet: miles, drive time, arrival, stay and closing time.') + '</p>';
             if (ja) ja.style.display = 'none';
             if (tools) tools.style.display = 'none';
             if (mast) mast.style.display = 'none';
@@ -2605,6 +2605,18 @@
     // simply somewhere else and the traveller has to work out where. A short
     // flight is the signal: they watch it travel, so they know the thing they
     // typed is the thing now under the pin.
+    // Strings this page assembles itself go through the shared formatter when
+    // i18n.js is present, and fall straight through to English when it is not.
+    // Without this the page can be fully translated in the dictionary and
+    // still show English, because the text walker only sees what the HTML
+    // contained — never what JavaScript wrote afterwards.
+    function T(pattern, vals) {
+        if (window.psxFmt) return window.psxFmt(pattern, vals);
+        return String(pattern).replace(/\{(\w+)\}/g, function (m, k) {
+            return (vals && vals[k] !== undefined) ? vals[k] : m;
+        });
+    }
+
     function flyToPlace(lat, lon, minZoom){
         if (typeof map === 'undefined' || !map) return;
         var z = Math.max(map.getZoom() || 0, minZoom || 13);
@@ -2819,7 +2831,7 @@
             if (el.style.display === 'block') return;         // never overwrite a live announcement
             const r = d.recent[0];
             el.classList.remove('floating');
-            el.innerHTML = '🌍 <b>Newest discovery:</b> ' + escj(r.name)
+            el.innerHTML = '🌍 <b>' + T('Newest discovery:') + '</b> ' + escj(r.name)
                 + ' <span class="dn-rec">in ' + escj(r.city_label || r.city) + '</span>'
                 + '<span class="dn-sub">' + d.total + ' place' + (d.total === 1 ? '' : 's')
                 + ' discovered by travelers across ' + d.city_count + ' cit' + (d.city_count === 1 ? 'y' : 'ies')
@@ -3579,7 +3591,7 @@
     refresh();
     jarvisSay(resumed
         ? 'Welcome back — your <b>' + st.route.length + '-stop day sheet</b> is laid out below. Add more stops, or hand it to a pro when ready.'
-        : 'I\'m <b>Jarvis</b>. Add any place — search above or tap a pin — and I\'ll build your day sheet.');
+        : T('I\u2019m <b>Jarvis</b>. Add any place — search above or tap a pin — and I\u2019ll build your day sheet.'));
     if (navigator.share && $('shareBtn')) $('shareBtn').style.display = '';
     fetchMatrix();
     mergeCommunity(curCity);           // bug 4: every visit, not just on a sample load
@@ -3599,7 +3611,13 @@
         function paint(online){
             let text = '';
             if (online >= 2) text = '🟢 ' + online + ' travelers online now';
-            else if (weekCount > 0) text = '🧳 ' + weekCount + ' traveler' + (weekCount === 1 ? '' : 's') + ' planned a trip here this week';
+            // English pluralises by gluing an 's' on; Chinese, Korean and
+            // Vietnamese do not pluralise at all. Two whole patterns, so each
+            // language writes its own sentence rather than inheriting an
+            // English grammar rule that does not apply to it.
+            else if (weekCount > 0) text = '🧳 ' + (weekCount === 1
+                ? T('One traveler planned a trip here this week')
+                : T('{n} travelers planned a trip here this week', { n: weekCount }));
             else if (allTime > 0) text = '🧳 ' + allTime + ' traveler' + (allTime === 1 ? '' : 's') + ' have used this planner';
             if (!text) { el.style.display = 'none'; return; }   // brand new — say nothing rather than a zero
             el.textContent = text;

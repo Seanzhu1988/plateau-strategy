@@ -126,6 +126,47 @@ exits non-zero, so it can gate a commit.
 kept, and the phrase can never come back anywhere on the site. Fixing only the
 sentence that was complained about is what produced four rounds of this.
 
+## Stop rewriting. Measure first.
+
+Five reports of "extremely low level", five rounds of rewriting strings. The
+sixth time, the strings were checked against DeepL and mostly held — where the
+two differed, the hand-written one was usually the more formal choice
+(`公司收入来源于此` against DeepL's spoken `这就是资金的来源`; `图纸阶段` for
+"still on paper" against `规划阶段`). The front page was not the problem and
+had not been for some time.
+
+`check_zh_coverage.py` asked the other question — how much English is a Chinese
+reader still looking at — and found **491 words**, in three places, none of
+them a register fault:
+
+| Surface | English words |
+|---|---|
+| Destination Book | 135 |
+| Partner outreach | 95 |
+| Trip Planner | 56 |
+
+All of it the same mechanism: **i18n.js swaps text nodes, so anything JavaScript
+writes afterwards never reaches the dictionary.** A page can be perfectly
+translated and still show English, and no amount of polishing the translated
+part touches it. The filter chips, the result count, Jarvis's greeting, the
+discovery banner — all assembled, all invisible to a check that reads
+`i18n_extra.py`, and invisible to `build_i18n.py` too, which scans HTML text
+nodes and cannot see inside a script.
+
+**Before rewriting anything, run the coverage check.** If a surface is a third
+English, that is the bug. Register work on the other two thirds is wasted.
+
+Two things it taught that are worth keeping:
+
+- **Plurals are an English grammar rule.** `count + ' traveler' + (n===1?'':'s')`
+  bakes English into every language. Chinese, Korean and Vietnamese do not
+  pluralise; each needs its own whole sentence, so singular and plural are two
+  patterns, not one with a suffix.
+- **Exempt venue names from the data, never by hand.** Counting "Brooklyn
+  Bridge" as untranslated buried the real gaps under 130 false ones, and a
+  typed-out exemption list is how two of three names got missed in the road
+  trip test. Read them from `destinations.json`.
+
 ## Honest limits
 
 - **Korean and Vietnamese are not verified by anyone in the loop.** The

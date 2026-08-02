@@ -303,16 +303,16 @@
         // Seattle, where it read as a city nobody had heard of.
         const cityList = Object.entries(DATA.cities).sort((x, y) =>
             x[0] === 'other' ? 1 : y[0] === 'other' ? -1 : x[1].localeCompare(y[1]));
-        [['all','All cities']].concat(cityList).forEach(([k, label]) => {
-            cc.appendChild(makeChip(label, f.city === k, b => {
+        [['all', T('All cities')]].concat(cityList).forEach(([k, label]) => {
+            cc.appendChild(makeChip(T(label), f.city === k, b => {
                 f.city = k;
                 Array.from(cc.children).forEach(x => x.classList.remove('on'));
                 b.classList.add('on'); render();
             }));
         });
         const tc = $('typeChips');
-        [['all','All types']].concat(TYPES).forEach(([k, label]) => {
-            tc.appendChild(makeChip(label, f.type === k, b => {
+        [['all', T('All types')]].concat(TYPES).forEach(([k, label]) => {
+            tc.appendChild(makeChip(T(label), f.type === k, b => {
                 f.type = k;
                 Array.from(tc.children).forEach(x => x.classList.remove('on'));
                 b.classList.add('on'); render();
@@ -332,14 +332,14 @@
                 ch.classList.toggle('on', k === 'all' ? f.allCats : (!f.allCats && f.cats.has(k)));
             });
         };
-        const allChip = makeChip('All categories', true, () => {
+        const allChip = makeChip(T('All categories'), true, () => {
             f.allCats = true; f.cats = new Set(CATS.map(c => c[0]));
             paintCats(); render();
         });
         allChip.setAttribute('data-cat', 'all');
         kc.appendChild(allChip);
         CATS.forEach(([k, label]) => {
-            const ch = makeChip(label, false, () => {
+            const ch = makeChip(T(label), false, () => {
                 if (f.allCats) { f.allCats = false; f.cats = new Set([k]); }
                 else if (f.cats.has(k)) {
                     f.cats.delete(k);
@@ -378,10 +378,10 @@
             groups.get(gk).push('<div class="entry">'
                 + '<h3>' + esc(e.name) + '</h3>'
                 + '<div class="badges">'
-                +   '<span class="badge b-city">' + esc(DATA.cities[e.city] || e.city) + '</span>'
+                +   '<span class="badge b-city">' + esc(T(DATA.cities[e.city] || e.city)) + '</span>'
                 +   '<span class="badge ' + (e.type === 'restaurant' ? 'b-rest' : 'b-attr') + '">'
-                +       (e.type === 'restaurant' ? 'Restaurant' : 'Attraction') + '</span>'
-                +   '<span class="badge b-cat">' + catLabel + '</span>'
+                +       T(e.type === 'restaurant' ? 'Restaurant' : 'Attraction') + '</span>'
+                +   '<span class="badge b-cat">' + T(catLabel) + '</span>'
                 +   (e.price ? '<span class="badge b-price">' + esc(e.price) + '</span>' : '')
                 +   (e.source === 'user' ? '<span class="badge b-comm">🌱 Community</span>' : '')
                 +   (e.is_new ? '<span class="badge b-new">🆕 Just discovered</span>' : '')
@@ -433,13 +433,13 @@
         $('grid').innerHTML = order.length > 1
             ? order.map(k => {
                 const list = groups.get(k);
-                return '<h2 class="city-band">' + esc(DATA.cities[k] || k)
+                return '<h2 class="city-band">' + esc(T(DATA.cities[k] || k))
                      + ' <span>' + list.length + '</span></h2>'
                      + '<div class="city-grid">' + list.join('') + '</div>';
               }).join('')
             : order.map(k => '<div class="city-grid">' + groups.get(k).join('') + '</div>').join('');
         $('empty').style.display = shown ? 'none' : 'block';
-        $('count').textContent = shown + ' of ' + DATA.entries.length + ' destinations'
+        $('count').textContent = T('{shown} of {total} destinations', { shown: shown, total: DATA.entries.length })
             + (f.minStars ? ' · showing ' + '★'.repeat(f.minStars) + ' & up' : '');
         renderSuggest(q, shown);
     }
