@@ -2244,7 +2244,13 @@
                             <div class="nd-box" style="left:26%;top:74%"><span class="nd-val" data-seg="3">000</span></div>
                             <div class="nd-box" style="left:68%;top:78%"><span class="nd-val" data-seg="4">000</span></div>
                             <div class="nd-screen" id="ndSlide">
-                                <video class="nd-video" id="ndVideo" src="/media/eagle_finance.mp4" poster="/media/eagle_finance_poster.png" muted playsinline preload="auto"></video>
+                                <!-- Neither the poster nor the 6 MB video belongs on a first visit. This
+                                     sits inside the Finance view, which is display:none until
+                                     someone clicks the tab, and the browser fetches a poster
+                                     eagerly regardless — so every visitor to the home page was
+                                     paying 1.2 MB for an eagle most of them never saw. It was
+                                     85% of the page. Both are attached when the view opens. -->
+                                <video class="nd-video" id="ndVideo" data-src="/media/eagle_finance.mp4" data-poster="/media/eagle_finance_poster.jpg" muted playsinline preload="none"></video>
                                 <img class="nd-emblem" id="ndEmblem" src="/media/eagle_emblem.svg" alt="Duty Honor Country eagle emblem">
                                 <div class="nd-dots" id="ndDots"></div>
                             </div>
@@ -2811,6 +2817,18 @@
         let _viewHistory = [];
         function showView(name, evt, isBack) {
             if (evt && evt.preventDefault) evt.preventDefault();
+
+            // Attach the Finance media the first time that view is opened.
+            // Held back because a poster is fetched eagerly even inside a
+            // hidden element, and it was 85% of what a first visit weighed.
+            if (name === 'finance') {
+                var v = document.getElementById('ndVideo');
+                if (v && v.dataset.poster) {
+                    v.poster = v.dataset.poster; delete v.dataset.poster;
+                    v.src = v.dataset.src || ''; delete v.dataset.src;
+                    v.preload = 'metadata';
+                }
+            }
 
             // Remember where we came from so "← Back" returns to the previous page
             const cur = document.querySelector('.view.active');

@@ -18,6 +18,7 @@ import re
 import json
 import time
 import hashlib
+import gzip
 import secrets
 import threading
 import subprocess
@@ -538,6 +539,74 @@ def record_conversion(kind):
             _save_traffic(data)
     except Exception:
         pass
+
+
+@app.after_request
+def _compress_and_cache(resp):
+    """Two things nothing else was doing: squeeze the bytes, and let the
+    browser keep them.
+
+    Measured before this existed — a cold load of the home page pulled
+    1.8 MB across 17 requests with Content-Encoding empty on every one of
+    them. Locally that is 214 ms and looks fine. On a phone on mobile data
+    it is closer to ten seconds, and that is the number that matters,
+    because the people this site is translated for are reading it on a
+    phone.
+
+    gzip, not brotli: brotli needs a package that is not a dependency here,
+    and gzip on text is most of the win for none of the risk.
+
+    Caching is the other half. Every asset answered Cache-Control:no-cache,
+    which does not mean "do not cache" — it means "ask me every single
+    time". Seventeen conditional requests per navigation, each one a round
+    trip, all to be told nothing changed. Static files now hold for ten
+    minutes, which is short enough that a deploy reaches everyone quickly
+    and long enough that moving between pages costs nothing. HTML keeps
+    revalidating, because a stale page is a stale price."""
+    try:
+        path = request.path or ""
+        is_static = path.endswith((".css", ".js", ".png", ".svg", ".jpg", ".jpeg",
+                                   ".webp", ".ico", ".woff", ".woff2", ".mp4"))
+        if is_static:
+            resp.headers["Cache-Control"] = "public, max-age=600"
+        elif (resp.mimetype or "").startswith("text/html"):
+            resp.headers["Cache-Control"] = "no-cache"
+
+        # Compress text that is worth compressing. Below ~1 KB the header
+        # overhead and the CPU are not repaid.
+        if (resp.status_code < 200 or resp.status_code >= 300
+                or "Content-Encoding" in resp.headers):
+            return resp
+        ctype = (resp.mimetype or "")
+        if not (ctype.startswith("text/") or ctype in
+                ("application/json", "application/javascript", "text/javascript",
+                 "application/xml", "image/svg+xml")):
+            return resp
+        if "gzip" not in (request.headers.get("Accept-Encoding") or "").lower():
+            return resp
+        # send_file streams the file and sets direct_passthrough, and the
+        # first version of this bailed out on that flag — skipping every
+        # static file, which is to say every file worth compressing. The
+        # 354 KB dictionary went out uncompressed while the check reported
+        # itself working. Read it in instead; the cap keeps a stray video
+        # out of memory.
+        if resp.direct_passthrough:
+            if (resp.content_length or 0) > 4_000_000:
+                return resp
+            resp.direct_passthrough = False
+        data = resp.get_data()
+        if len(data) < 1024:
+            return resp
+        packed = gzip.compress(data, 6)
+        if len(packed) >= len(data):
+            return resp
+        resp.set_data(packed)
+        resp.headers["Content-Encoding"] = "gzip"
+        resp.headers["Content-Length"] = str(len(packed))
+        resp.headers.add("Vary", "Accept-Encoding")
+    except Exception:
+        pass          # a failed optimisation must never fail the response
+    return resp
 
 
 @app.after_request
