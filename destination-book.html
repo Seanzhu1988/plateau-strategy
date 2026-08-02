@@ -35,19 +35,19 @@
         .page-title { font-size: 1.9rem; font-weight: 800; color: #14110c; }
         .page-sub { color: #6b655b; margin: 0.2rem 0 1.2rem; }
 
-        .filters { background: #fff; border: 1px solid #e6e2da; border-radius: 16px;
+        .filters { background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da; border-radius: 16px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1rem 1.2rem; margin-bottom: 1.2rem; }
         .frow { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 0.6rem; }
         .frow:last-child { margin-bottom: 0; }
         .flab { font-size: 0.72rem; font-weight: 800; color: #6b655b; text-transform: uppercase;
             letter-spacing: 0.05em; width: 76px; }
         .chip { font-size: 0.82rem; font-weight: 600; padding: 0.32rem 0.9rem; border-radius: 999px;
-            border: 1.5px solid #e6e2da; color: #6b655b; cursor: pointer; user-select: none; background: #fff; }
+            border: 1.5px solid #e6e2da; color: #6b655b; cursor: pointer; user-select: none; background: var(--psx-card,#fffdf9); }
         .chip.on { background: var(--psx-accent, #14110c); border-color: var(--psx-accent, #14110c); color: #fff; }
         .chip:hover { border-color: #ddd8cd; }
         .chip.on:hover { border-color: #14110c; }
         .filters input[type=text] { flex: 1; min-width: 180px; padding: 0.45rem 0.8rem; border: 1.5px solid #e6e2da;
-            border-radius: 3px; font-size: 0.9rem; font-family: inherit; background: #fff; }
+            border-radius: 3px; font-size: 0.9rem; font-family: inherit; background: var(--psx-card,#fffdf9); }
         .count { font-size: 0.82rem; color: #6b655b; margin: 0 0 0.8rem 0.2rem; }
 
         /* #grid is now just the container; each city section carries the
@@ -61,15 +61,15 @@
         .city-band:first-child { margin-top: .2rem; }
         .city-band span { font-family: var(--psx-sans, sans-serif); font-size: .74rem;
             font-weight: 600; letter-spacing: .1em; color: var(--psx-muted, #6b655b); }
-        .entry { background: #fff; border: 1px solid #e6e2da; border-radius: 4px;
+        .entry { background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da; border-radius: 4px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1.1rem 1.2rem;
             display: flex; flex-direction: column; gap: 0.5rem; }
         .entry h3 { font-size: 1.05rem; color: #14110c; }
         .badges { display: flex; flex-wrap: wrap; gap: 0.35rem; }
         .badge { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
             padding: 0.18rem 0.55rem; border-radius: 6px; }
-        .b-city { background: #f0ede5; color: #4a453d; }
-        .b-comm { background: #e8f2ec; color: #1b5e43; }
+        .b-city { background: #f5f1e8; color: #4a453d; }
+        .b-comm { background: var(--psx-wash-good,#e1f8ec); color: #1b5e43; }
         .rate-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.3rem 0 0.5rem; }
         .stars { font-size: 1.15rem; letter-spacing: 1px; cursor: pointer; }
         .stars .star { color: #6b655b; transition: color 0.1s; }
@@ -79,19 +79,19 @@
         .star-chip { cursor: pointer; user-select: none; }
         .star-chip.on { background: #fef3c7; border-color: #8a5a12; color: #92400e; }
         .star-hint { font-size: 0.72rem; color: #6b655b; margin-left: 0.4rem; }
-        .sugbtn { margin: 0.5rem 0 0 0; background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857;
+        .sugbtn { margin: 0.5rem 0 0 0; background: var(--psx-wash-good,#e1f8ec); border: 1px solid var(--psx-wash-good-on,#cef2df); color: #047857;
             border-radius: 9px; padding: 0.55rem 0.9rem; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
         .sugbtn:hover { background: #d1fae5; }
         .sugitem { padding: 0.5rem 0.7rem; border: 1px solid #e6e2da; border-top: none; font-size: 0.82rem;
-            cursor: pointer; background: #fff; color: #4a453d; }
+            cursor: pointer; background: var(--psx-card,#fffdf9); color: #4a453d; }
         .sugitem:first-of-type { border-top: 1px solid #e6e2da; border-radius: 8px 8px 0 0; margin-top: 0.4rem; }
         .sugitem:last-of-type { border-radius: 0 0 8px 8px; }
-        .sugitem:hover { background: #f0f9ff; }
+        .sugitem:hover { background: var(--psx-wash-info,#e5f3ff); }
         .sugmuted { color: #6b655b; font-size: 0.8rem; padding: 0.4rem 0.2rem; }
-        .b-attr { background: #e8eef6; color: #17436f; }
-        .b-rest { background: #f7efe0; color: #7a4e0f; }
+        .b-attr { background: var(--psx-wash-info,#e5f3ff); color: #17436f; }
+        .b-rest { background: #f5f1e8; color: #7a4e0f; }
         .b-cat  { background: #faf8f4; color: #6b655b; border: 1px solid #e6e2da; }
-        .b-price{ background: #e8f2ec; color: #14513a; }
+        .b-price{ background: var(--psx-wash-good,#e1f8ec); color: #14513a; }
         .entry .desc { font-size: 0.9rem; color: #4a453d; line-height: 1.55; }
         .entry .meta { font-size: 0.8rem; color: #6b655b; }
         .entry .tip { font-size: 0.86rem; color: #4a453d; background: none; border: none;
@@ -107,14 +107,14 @@
         .openlink { font-size: 0.82rem; font-weight: 700; color: #1b4d8f; text-decoration: none; }
         .empty { text-align: center; color: #6b655b; padding: 3rem 0; }
         /* 🌟 wish box — the demand side of the book */
-        .wishbox { background: #fff; border: 1px solid #e6e2da; border-radius: 16px;
+        .wishbox { background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da; border-radius: 16px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1.1rem 1.2rem; margin-bottom: 1.2rem; }
         .wishbox h3 { font-size: 1rem; color: #14110c; margin-bottom: 0.2rem; }
         .wishbox .sub { color: #6b655b; font-size: 0.84rem; margin-bottom: 0.7rem; line-height: 1.5; }
         .wishrow { display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center; }
         .wishrow input { flex: 1; min-width: 190px; padding: 0.55rem 0.85rem; border: 1.5px solid #e6e2da;
             border-radius: 10px; font-size: 0.92rem; font-family: inherit; background: #faf8f4; }
-        .wishrow input:focus { outline: none; border-color: #1b4d8f; background: #fff; }
+        .wishrow input:focus { outline: none; border-color: #1b4d8f; background: var(--psx-card,#fffdf9); }
         .wishrow select { padding: 0.55rem 0.7rem; border: 1.5px solid #e6e2da; border-radius: 10px;
             font-size: 0.88rem; font-family: inherit; background: #faf8f4; color: #4a453d; }
         .wishrow button { border: none; border-radius: 10px; background: linear-gradient(135deg,#1b4d8f,#1b4d8f);
@@ -124,10 +124,10 @@
         .wishmsg.ok { color: #047857; } .wishmsg.err { color: #b91c1c; }
         .wishtop { margin-top: 0.7rem; font-size: 0.8rem; color: #6b655b; line-height: 1.6; }
         .wishtop b { color: #14110c; }
-        .wishtag { display: inline-block; background: #eef2f7; border-radius: 999px;
+        .wishtag { display: inline-block; background: var(--psx-wash-info,#e5f3ff); border-radius: 999px;
             padding: 0.15rem 0.6rem; margin: 0.15rem 0.25rem 0 0; font-size: 0.76rem; }
         /* 🆕 discovered by a traveler + 💬 their notes */
-        .b-new { background: #f7efe0; color: #8a5a12; }
+        .b-new { background: #f5f1e8; color: #8a5a12; }
         .cmt-wrap { border-top: 1px solid #faf8f4; margin-top: 0.5rem; padding-top: 0.5rem; }
         .cmt-toggle { font-size: 0.78rem; font-weight: 700; color: #1b4d8f; cursor: pointer;
             user-select: none; }
@@ -153,7 +153,7 @@
         .stay-opts { display: none; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.35rem; }
         .stay-opts.on { display: flex; }
         .stay-opts span { font-size: 0.74rem; font-weight: 600; padding: 0.25rem 0.62rem; border-radius: 999px;
-            border: 1.5px solid #e6e2da; background: #fff; color: #4a453d; cursor: pointer; user-select: none; }
+            border: 1.5px solid #e6e2da; background: var(--psx-card,#fffdf9); color: #4a453d; cursor: pointer; user-select: none; }
         .stay-opts span:hover { border-color: #5eead4; color: #0d9488; }
         .stay-done { color: #047857; font-weight: 700; font-size: 0.78rem; margin-top: 0.35rem; }
 

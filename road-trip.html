@@ -37,7 +37,7 @@
     h1{font-size:1.75rem;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
     .sub{color:#4a453d;margin-bottom:22px;max-width:64ch}
 
-    .form{background:#fff;border:1px solid #e6e2da;border-radius:14px;padding:18px;
+    .form{background:var(--psx-card,#fffdf9);border:1px solid #e6e2da;border-radius:14px;padding:18px;
         box-shadow:0 4px 16px rgba(15,23,42,.05);margin-bottom:18px}
     .fields{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end}
     .field label{display:block;font-size:.74rem;font-weight:700;letter-spacing:.1em;
@@ -56,7 +56,7 @@
     #status.err{color:#b91c1c;font-weight:600}
 
     .summary{display:none;gap:14px;flex-wrap:wrap;margin-bottom:16px}
-    .stat{background:#fff;border:1px solid #e6e2da;border-radius:12px;padding:14px 18px;flex:1;min-width:140px}
+    .stat{background:var(--psx-card,#fffdf9);border:1px solid #e6e2da;border-radius:12px;padding:14px 18px;flex:1;min-width:140px}
     .stat .k{font-size:.72rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#6b655b}
     .stat .v{font-size:1.5rem;font-weight:800;color:#14110c;font-variant-numeric:tabular-nums;line-height:1.25}
 
@@ -69,9 +69,9 @@
         justify-content:center;color:#fff;font-size:9px;font-weight:800;margin-right:6px;flex:0 0 auto}
 
     .legs{display:flex;flex-direction:column;gap:14px}
-    .leg{background:#fff;border:1px solid #e6e2da;border-radius:14px;overflow:hidden;
+    .leg{background:var(--psx-card,#fffdf9);border:1px solid #e6e2da;border-radius:14px;overflow:hidden;
         box-shadow:0 4px 16px rgba(15,23,42,.05)}
-    .leg-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid #eef2f7;
+    .leg-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--psx-wash-info,#e5f3ff);
         background:#fbfdff}
     .leg-n{width:30px;height:30px;border-radius:50%;background:#1b4d8f;color:#fff;flex:0 0 auto;
         display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem}
@@ -97,19 +97,19 @@
         background:rgba(255,255,255,.92);border-radius:6px;padding:1px 5px;margin-top:3px;
         display:inline-block;box-shadow:0 1px 3px rgba(15,23,42,.14)}
     .ep-a .tp-dot{background:#14110c}
-    .ep-b .tp-dot{background:#0f6d5c}
+    .ep-b .tp-dot{background:#1d4c4f}
     .gapwarn{margin:.7rem 0 0;padding:.7rem .9rem;border:1px solid rgba(164,22,26,.28);
-        border-left:3px solid #a4161a;border-radius:3px;background:#fbeceb;font-size:.9rem;color:#14110c}
+        border-left:3px solid #a4161a;border-radius:3px;background:var(--psx-wash-bad,#ffeae7);font-size:.9rem;color:#14110c}
     .gapnote{color:#4a453d;font-size:.86em}
     .chg-meta{color:#6b655b;font-size:.86em}
-    .chg-near{color:#0f6d5c;font-size:.86em;font-weight:600}
+    .chg-near{color:#1d4c4f;font-size:.86em;font-weight:600}
     .chg-bare{color:#6b655b;font-size:.86em}
-    .chg-fit{background:#e8f2ec;color:#1b5e43;font-size:.72em;font-weight:700;
+    .chg-fit{background:var(--psx-wash-good,#e1f8ec);color:#1b5e43;font-size:.72em;font-weight:700;
         border-radius:3px;padding:.05rem .35rem;margin-left:.25rem;white-space:nowrap}
     .grouppick{display:flex;gap:.4rem;flex-wrap:wrap;margin:0 0 .9rem;align-items:center;}
     .grouppick .gp-lab{font-size:.74rem;font-weight:700;letter-spacing:.1em;
         text-transform:uppercase;color:#6b655b;margin-right:.3rem;}
-    .grouppick .gp-chip{background:#fff;border:1px solid var(--psx-border,rgba(20,17,12,.13));
+    .grouppick .gp-chip{background:var(--psx-card,#fffdf9);border:1px solid var(--psx-border,rgba(20,17,12,.13));
         border-radius:999px;padding:.34rem .7rem;font:inherit;font-size:.84rem;
         cursor:pointer;color:#4a453d;line-height:1.2;}
     /* A switched-on category is the page's own colour, not ink. Ink here
@@ -118,7 +118,7 @@
     .grouppick .gp-chip[aria-pressed="true"]{background:var(--psx-accent,#14110c);
         border-color:var(--psx-accent,#14110c);color:#fff;}
     .routepick{display:flex;gap:.5rem;flex-wrap:wrap;margin:0 0 .9rem;}
-    .routepick .gp-chip{flex:1 1 190px;text-align:left;background:#fff;
+    .routepick .gp-chip{flex:1 1 190px;text-align:left;background:var(--psx-card,#fffdf9);
         border:1px solid var(--psx-border,rgba(20,17,12,.13));border-radius:4px;
         padding:.6rem .75rem;cursor:pointer;font:inherit;color:inherit;}
     .routepick .gp-chip .rp-t{display:block;font-weight:700;font-size:.94rem;}
@@ -129,7 +129,7 @@
     .leaflet-container{background:#f5f1e8;font:inherit}
     .leaflet-bar{border:none!important;border-radius:10px!important;overflow:hidden;
         box-shadow:0 2px 10px rgba(15,23,42,.16)!important}
-    .leaflet-bar a{background:#fff!important;color:#4a453d!important;
+    .leaflet-bar a{background:var(--psx-card,#fffdf9)!important;color:#4a453d!important;
         border-bottom:1px solid #e8edf3!important}
     .leaflet-control-attribution{background:rgba(255,255,255,.86)!important;color:#6b655b!important;
         font-size:10.5px!important}
@@ -203,11 +203,11 @@
     <div id="map"></div>
     <div class="legend">
         <span><span class="ldot" style="background:#14110c">A</span>Start</span>
-        <span><span class="ldot" style="background:#0f6d5c">B</span>Destination</span>
+        <span><span class="ldot" style="background:#1d4c4f">B</span>Destination</span>
         <span><span class="ldot" style="background:#1b4d8f">1</span>Suggested break</span>
-        <span><span class="ldot" style="background:#a85a08">⛽</span>Fuel</span>
-        <span><span class="ldot" style="background:#6b2fbe">🍽</span>Food</span>
-        <span><span class="ldot" style="background:#0b6480">👁</span>Scenic</span>
+        <span><span class="ldot" style="background:#893703">⛽</span>Fuel</span>
+        <span><span class="ldot" style="background:#0c7d48">🍽</span>Food</span>
+        <span><span class="ldot" style="background:#993793">👁</span>Scenic</span>
     </div>
 
     <div class="legs" id="legs"></div>
@@ -395,7 +395,7 @@
     // asked for, so turning things off makes the search cheaper as well as
     // quieter.
     var GROUPS = [
-        { key: 'fuel',    label: 'Fuel',       glyph: '⛽', color: '#a85a08', on: true,
+        { key: 'fuel',    label: 'Fuel',       glyph: '⛽', color: '#893703', on: true,
           q: 'node(around:{R},{LAT},{LON})[amenity=fuel];' },
 
         // access= is filtered in the query, not afterwards. The corridor
@@ -403,16 +403,16 @@
         // per-break search quietly routed around that check and started
         // offering a dealership's private stall again. Filtering where the
         // data is asked for means every path gets it.
-        { key: 'charge',  label: 'EV charging', glyph: '⚡', color: '#0f6d5c', on: true,
+        { key: 'charge',  label: 'EV charging', glyph: '⚡', color: '#893703', on: true,
           q: 'node(around:{R},{LAT},{LON})[amenity=charging_station][access!~"^(private|no|customers)$"];' +
              'way(around:{R},{LAT},{LON})[amenity=charging_station][access!~"^(private|no|customers)$"];' },
 
-        { key: 'food',    label: 'Food',       glyph: '🍽', color: '#6b2fbe', on: true,
+        { key: 'food',    label: 'Food',       glyph: '🍽', color: '#0c7d48', on: true,
           q: 'node(around:{R},{LAT},{LON})[amenity~"^(restaurant|fast_food)$"];' },
 
         // Separate from food on purpose. At 3pm on a long drive, coffee is
         // not a meal — it is the reason you are stopping at all.
-        { key: 'coffee',  label: 'Coffee',     glyph: '☕', color: '#7b2d26', on: false,
+        { key: 'coffee',  label: 'Coffee',     glyph: '☕', color: '#0c7d48', on: false,
           q: 'node(around:{R},{LAT},{LON})[amenity=cafe];' +
              'node(around:{R},{LAT},{LON})[cuisine=coffee_shop];' },
 
@@ -422,7 +422,7 @@
         // the big interstate plazas are mapped as areas, so ways matter as
         // much as nodes. Picnic sites and drinking water belong here too —
         // they are what a rest stop IS, not scenery.
-        { key: 'rest',    label: 'Rest & services', glyph: '🅿', color: '#1b4d8f', on: true,
+        { key: 'rest',    label: 'Rest & services', glyph: '🅿', color: '#0267c7', on: true,
           q: 'node(around:{R},{LAT},{LON})[highway~"^(services|rest_area)$"];' +
              'way(around:{R},{LAT},{LON})[highway~"^(services|rest_area)$"];' +
              'node(around:{R},{LAT},{LON})[amenity=parking][parking=rest_area];' +
@@ -432,40 +432,40 @@
 
         // On its own, because it is the most common reason to pull over and
         // the one thing every other planner buries inside "services".
-        { key: 'toilets', label: 'Toilets',    glyph: '🚻', color: '#1d4c4f', on: true,
+        { key: 'toilets', label: 'Toilets',    glyph: '🚻', color: '#0267c7', on: true,
           q: 'node(around:{R},{LAT},{LON})[amenity=toilets];' },
 
-        { key: 'shop',    label: 'Shops',      glyph: '🛒', color: '#4a453d', on: false,
+        { key: 'shop',    label: 'Shops',      glyph: '🛒', color: '#993793', on: false,
           q: 'node(around:{R},{LAT},{LON})[shop~"^(convenience|supermarket)$"];' },
 
-        { key: 'sleep',   label: 'Somewhere to sleep', glyph: '🛏', color: '#16406f', on: false,
+        { key: 'sleep',   label: 'Somewhere to sleep', glyph: '🛏', color: '#0267c7', on: false,
           q: 'node(around:{R},{LAT},{LON})[tourism~"^(hotel|motel|camp_site|caravan_site)$"];' +
              'way(around:{R},{LAT},{LON})[tourism~"^(hotel|motel|camp_site|caravan_site)$"];' },
 
         // Not decoration. On a long drive these are the searches that happen
         // in a hurry, and hunting for them on a phone at the roadside is
         // exactly when a planner should already have the answer.
-        { key: 'health',  label: 'Pharmacy & urgent care', glyph: '⚕', color: '#a3302a', on: false,
+        { key: 'health',  label: 'Pharmacy & urgent care', glyph: '⚕', color: '#993793', on: false,
           q: 'node(around:{R},{LAT},{LON})[amenity~"^(pharmacy|hospital|clinic|doctors)$"];' +
              'way(around:{R},{LAT},{LON})[amenity~"^(hospital|clinic)$"];' },
 
-        { key: 'repair',  label: 'Car repair & tyres', glyph: '🔧', color: '#8a5a12', on: false,
+        { key: 'repair',  label: 'Car repair & tyres', glyph: '🔧', color: '#893703', on: false,
           q: 'node(around:{R},{LAT},{LON})[shop~"^(car_repair|tyres)$"];' },
 
-        { key: 'money',   label: 'ATM & bank', glyph: '🏧', color: '#6b655b', on: false,
+        { key: 'money',   label: 'ATM & bank', glyph: '🏧', color: '#993793', on: false,
           q: 'node(around:{R},{LAT},{LON})[amenity~"^(atm|bank)$"];' },
 
         // Two travellers who never get planned for: the dog, and the kids.
-        { key: 'dog',     label: 'Dog walk',   glyph: '🐕', color: '#9c4221', on: false,
+        { key: 'dog',     label: 'Dog walk',   glyph: '🐕', color: '#993793', on: false,
           q: 'node(around:{R},{LAT},{LON})[leisure=dog_park];' +
              'way(around:{R},{LAT},{LON})[leisure=dog_park];' +
              'node(around:{R},{LAT},{LON})[amenity=dog_toilet];' },
 
-        { key: 'kids',    label: 'Playground', glyph: '🛝', color: '#0b6480', on: false,
+        { key: 'kids',    label: 'Playground', glyph: '🛝', color: '#993793', on: false,
           q: 'node(around:{R},{LAT},{LON})[leisure=playground];' +
              'way(around:{R},{LAT},{LON})[leisure=playground];' },
 
-        { key: 'scenic',  label: 'Scenic',     glyph: '👁', color: '#0b6480', on: true,
+        { key: 'scenic',  label: 'Scenic',     glyph: '👁', color: '#993793', on: true,
           q: 'node(around:{R},{LAT},{LON})[tourism=viewpoint];' +
              'node(around:{R},{LAT},{LON})[natural=peak];' +
              'node(around:{R},{LAT},{LON})[historic~"^(memorial|monument|ruins)$"];' }

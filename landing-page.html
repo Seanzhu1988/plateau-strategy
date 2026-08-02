@@ -289,7 +289,7 @@
 
         .sub-tab:hover {
             border-color: #4a453d;
-            background: #f0f9ff;
+            background: var(--psx-wash-info,#e5f3ff);
             transform: translateY(-1px);
         }
 
@@ -652,7 +652,7 @@
         .gb-log h4 { color: var(--psx-text); font-size: 1.05rem; font-weight: 800; margin-bottom: 0.3rem; }
         .gb-sub { color: var(--psx-muted); font-size: 0.82rem; line-height: 1.55; margin-bottom: 1rem; }
         .gb-form { display: flex; gap: 0.6rem; flex-wrap: wrap; }
-        .gb-form input { flex: 1; min-width: 150px; background: #fff; border: 1px solid var(--psx-border); color: var(--psx-text);
+        .gb-form input { flex: 1; min-width: 150px; background: var(--psx-card,#fffdf9); border: 1px solid var(--psx-border); color: var(--psx-text);
             border-radius: 3px; padding: 0.7rem 0.9rem; font-size: 0.92rem; }
         .gb-form input:focus { outline: 2px solid var(--psx-accent); outline-offset: 1px; }
         .gb-btn { background: var(--psx-ink); color: #fff; border: none; border-radius: 3px;
@@ -1072,12 +1072,12 @@
         }
 
         /* ============ Newest discoveries — the map growing in public ============ */
-        .discovery-strip { background: #fff; border: 1px solid #e6e2da; border-radius: 14px;
+        .discovery-strip { background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da; border-radius: 14px;
             padding: 1.1rem 1.3rem; margin: 0 0 2rem; }
         .ds-head { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.85rem; }
         .ds-head b { font-size: 1.02rem; color: #14110c; }
         .ds-live { font-size: 0.64rem; font-weight: 800; letter-spacing: 0.6px; color: #1b5e43;
-            background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 999px; padding: 0.15rem 0.5rem; }
+            background: var(--psx-wash-good,#e1f8ec); border: 1px solid var(--psx-wash-good-on,#cef2df); border-radius: 999px; padding: 0.15rem 0.5rem; }
         .ds-count { color: #6b655b; font-size: 0.82rem; margin-left: auto; }
         .ds-items { display: flex; flex-wrap: wrap; gap: 0.5rem; }
         .ds-item { background: #faf8f4; border: 1px solid #e6e2da; border-radius: 999px;

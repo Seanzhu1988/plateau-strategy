@@ -23,7 +23,7 @@
         .page-sub { color: #6b655b; margin-bottom: 1.6rem; }
 
         /* composer */
-        .composer { background: #fff; border: 1px solid #e6e2da; border-radius: 16px;
+        .composer { background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da; border-radius: 16px;
             box-shadow: 0 8px 24px rgba(15,23,42,0.06); margin-bottom: 2rem; overflow: hidden; }
         .composer .head { display: flex; align-items: center; justify-content: space-between;
             padding: 1rem 1.4rem; cursor: pointer; font-weight: 700; color: #14110c; }
@@ -33,7 +33,7 @@
         .composer.open .head .chev { transform: rotate(180deg); }
         input, textarea { width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #e6e2da;
             border-radius: 10px; font-size: 1rem; font-family: inherit; background: #faf8f4; }
-        input:focus, textarea:focus { outline: none; border-color: #1b4d8f; background: #fff;
+        input:focus, textarea:focus { outline: none; border-color: #1b4d8f; background: var(--psx-card,#fffdf9);
             box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
         .composer input { margin-bottom: 0.8rem; }
         .composer textarea { min-height: 150px; resize: vertical; line-height: 1.6; }
@@ -43,26 +43,26 @@
         .publish:hover { filter: brightness(1.08); }
 
         /* article card */
-        .article { background: #fff; border: 1px solid #e6e2da; border-radius: 16px;
+        .article { background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da; border-radius: 16px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1.8rem; margin-bottom: 1.6rem; }
         .article h2 { font-size: 1.5rem; color: #14110c; font-weight: 800; margin-bottom: 0.3rem; }
         .article h2 .stamp {
             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
             font-size: 0.82rem; color: #6b655b; font-weight: 700;
-            background: #eef2f7; border: 1px solid #e6e2da;
+            background: var(--psx-wash-info,#e5f3ff); border: 1px solid #e6e2da;
             padding: 0.15rem 0.55rem; border-radius: 6px;
             vertical-align: middle; white-space: nowrap; margin-left: 0.4rem;
         }
         .article .date { color: #6b655b; font-size: 0.82rem; margin-bottom: 1rem; }
         .article .text { color: #4a453d; font-size: 1rem; line-height: 1.75; white-space: pre-wrap; }
 
-        .actions { margin-top: 1.6rem; padding-top: 1.2rem; border-top: 1px solid #eef2f7; }
+        .actions { margin-top: 1.6rem; padding-top: 1.2rem; border-top: 1px solid var(--psx-wash-info,#e5f3ff); }
         .votes { display: flex; gap: 0.7rem; align-items: center; margin-bottom: 1rem; }
         .vbtn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem;
             border: 1.5px solid #e6e2da; background: #faf8f4; border-radius: 999px; cursor: pointer;
             font-weight: 700; font-size: 0.9rem; color: #4a453d; transition: all 0.18s; }
         .vbtn:hover { border-color: #6b655b; }
-        .vbtn.like.active { background: #ecfdf5; border-color: #1b5e43; color: #047857; }
+        .vbtn.like.active { background: var(--psx-wash-good,#e1f8ec); border-color: #1b5e43; color: #047857; }
         .vbtn.unlike.active { background: #fef2f2; border-color: #a3302a; color: #b91c1c; }
 
         .follow { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }

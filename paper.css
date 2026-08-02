@@ -20,9 +20,24 @@
 
       :root{
         /* Paper, not white — #fff under a headline looks like a login form.
-           A little warmth reads as stock. */
+           A little warmth reads as stock.
+
+           That principle was written here and then broken on the next line:
+           the card face was #ffffff. Measured, that was 243 elements and 8.9%
+           of every painted pixel on the site — the second-largest surface
+           after the page itself, and the one a reader's eye lands on, because
+           cards are where the content is. Pure white has chroma exactly 0.000
+           in a system whose whole idea is warmth, so every card read as a
+           rectangle cut from a different, colder stock and pasted on. Four
+           rounds of "the colour looks strange" went to text and accents and
+           never touched it, because the audit only ever checked text.
+
+           #fffdf9 is the paper's own hue (84.6) at the paper's own chroma
+           (0.0057), one step lighter. Same stock, brighter sheet. It is not a
+           new colour — floatback.js has drawn the paint dot in it since the
+           day it was written; it just was never a token. */
         --psx-bg:#faf8f4; --psx-hero:#f5f1e8; --psx-connect:#faf8f4;
-        --psx-card:#ffffff; --psx-node:#ffffff;
+        --psx-card:#fffdf9; --psx-node:#fffdf9;
         --psx-text:#14110c; --psx-text2:#4a453d; --psx-muted:#6b655b;
         --psx-border:rgba(20,17,12,.13);
         --psx-rule:rgba(20,17,12,.10);
@@ -64,7 +79,33 @@
            that is merely important is not red; it is bold black.
            Deep and slightly warm, so it belongs on cream rather than glaring
            off it the way a screen red does. */
-        --psx-red:#a4161a; --psx-red-soft:#c1121f; --psx-red-wash:#fbeceb;
+        --psx-red:#a4161a; --psx-red-soft:#c1121f; --psx-red-wash:#ffeae7;
+
+        /* ---- the wash ladder ----
+           A wash is a panel that means something: this one is fine, this one
+           needs you, this one is selected. There were eight of them and they
+           came from Tailwind's default scales, so measured against the site
+           they landed on eight lightness rungs nobody had chosen — 0.932,
+           0.947, 0.952, 0.960, 0.970, 0.977, 0.979, 0.987 — scattered through
+           a page whose neutrals are a deliberate three-step ladder: card
+           0.994, page 0.980, panel 0.959. Two of them — Tailwind's emerald-50
+           and sky-50 — sat within 0.003 of the page itself, so a "highlighted"
+           panel was the
+           same brightness as the thing it was supposed to stand out from.
+
+           That is what makes a palette feel wrong while every colour in it
+           can be defended: not the hues, the absence of a ladder.
+
+           So each wash is re-cut on the panel rung, L=0.959 — the same step
+           as #f5f1e8 — at C=0.030, and takes its hue from the site's own ink
+           for that meaning. A wash is now a diluted version of the colour
+           whose job it shares, sitting on a rung the page already uses. The
+           strong pair is one rung down at L=0.930 for selected states, which
+           is the only place a wash needs to beat a neutral panel. */
+        --psx-wash-info:#e5f3ff;   --psx-wash-info-on:#d5eaff;
+        --psx-wash-good:#e1f8ec;   --psx-wash-good-on:#cef2df;
+        --psx-wash-warn:#ffefdc;   --psx-wash-warn-on:#fce4c8;
+        --psx-wash-bad:#ffeae7;    --psx-wash-bad-on:#ffddd8;
 
         /* One variable decides the display face. Point it at Carna here if
            the licence is bought — @font-face above, then swap this line.
@@ -363,7 +404,7 @@
 
       h1,h2,h3,h4{font-family:var(--psx-display) !important;color:var(--psx-ink) !important;}
       .card,.panel,.box{
-        background:#fff !important;
+        background:var(--psx-card,#fffdf9) !important;
         border:1px solid var(--psx-border) !important;
         border-radius:4px !important;
         box-shadow:0 1px 2px rgba(20,17,12,.04) !important;
@@ -401,7 +442,7 @@
       .loc-btn.needs-start .pin-badge{ background:var(--psx-red) !important; }
 
       input,textarea,select{
-        background:#fff !important;
+        background:var(--psx-card,#fffdf9) !important;
         border:1px solid var(--psx-border) !important;
         border-radius:3px !important;
         color:var(--psx-text) !important;
@@ -410,7 +451,7 @@
       input:focus,textarea:focus,select:focus{
         border-color:var(--psx-accent) !important;
         box-shadow:0 0 0 3px rgba(var(--psx-accent-rgb),.13) !important;
-        background:#fff !important;
+        background:var(--psx-card,#fffdf9) !important;
       }
       label{color:var(--psx-text2) !important;}
       /* The map must keep its own colours — it is data, not decoration. */
@@ -427,7 +468,7 @@
 
       /* login panels on the driver and dispatch pages */
       .auth,.auth-box{
-        background:#fff !important;
+        background:var(--psx-card,#fffdf9) !important;
         border:1px solid var(--psx-border) !important;
         color:var(--psx-text) !important;
         border-radius:4px !important;box-shadow:0 1px 2px rgba(20,17,12,.05) !important;
@@ -438,7 +479,7 @@
 
       /* Deflator panels, Factor Clock readouts, dispatch tiles, partner stats */
       .status,.conv,.wait,.fine,.big,.pricebox,.stat,.tool,.card-dark,.panel-dark{
-        background:#fff !important;
+        background:var(--psx-card,#fffdf9) !important;
         border:1px solid var(--psx-border) !important;
         color:var(--psx-text) !important;
         border-radius:4px !important;
@@ -471,7 +512,7 @@
         box-shadow:none !important;
       }
       .psx-cta-glow{display:none !important;}
-      .board{background:#fff !important;border:1px solid var(--psx-border) !important;}
+      .board{background:var(--psx-card,#fffdf9) !important;border:1px solid var(--psx-border) !important;}
       table th{
         background:var(--psx-hero) !important;
         color:var(--psx-ink) !important;

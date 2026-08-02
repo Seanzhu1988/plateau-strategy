@@ -25,13 +25,13 @@
         h1 { font-size: 2rem; font-weight: 800; margin-bottom: 6px; }
         .sub { color: #4a453d; font-size: 1.05rem; margin-bottom: 26px; }
         .status {
-            background: var(--psx-red-wash, #fbeceb); border: 1px solid #a4161a55; border-left: 5px solid #a4161a;
+            background: var(--psx-red-wash, var(--psx-wash-bad,#ffeae7)); border: 1px solid #a4161a55; border-left: 5px solid #a4161a;
             border-radius: 10px; padding: 14px 18px; margin-bottom: 30px; font-size: .95rem;
         }
         .status b { color: #a4161a; }
         .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 36px; }
         .card {
-            background: #ffffff; border-radius: 12px; padding: 22px;
+            background: var(--psx-card,#fffdf9); border-radius: 12px; padding: 22px;
             box-shadow: 0 1px 3px rgba(15,23,42,.08); border-top: 4px solid #1b4d8f;
         }
         .card h3 { font-size: 1.02rem; margin-bottom: 8px; }
@@ -39,7 +39,7 @@
         .card:nth-child(2) { border-top-color: #1b6b5a; }
         .card:nth-child(3) { border-top-color: #a4161a; }
         .wait {
-            background: #ffffff; border-radius: 12px; padding: 26px;
+            background: var(--psx-card,#fffdf9); border-radius: 12px; padding: 26px;
             box-shadow: 0 1px 3px rgba(15,23,42,.08); margin-bottom: 30px;
         }
         .wait h2 { font-size: 1.2rem; margin-bottom: 6px; }
@@ -47,7 +47,7 @@
         .row { display: flex; gap: 10px; flex-wrap: wrap; }
         .row input {
             flex: 1; min-width: 220px; padding: 12px 14px; border: 1px solid #4a453d;
-            border-radius: 8px; font-size: 1rem; font-family: inherit; background: #ffffff;
+            border-radius: 8px; font-size: 1rem; font-family: inherit; background: var(--psx-card,#fffdf9);
         }
         .row button {
             background: #1b4d8f; color: #fff; border: none; border-radius: 8px;
@@ -56,7 +56,7 @@
         .row button:hover { background: #1b4d8f; }
         #wlMsg { margin-top: 12px; font-size: .92rem; font-weight: 600; }
         .fine {
-            font-size: .78rem; color: #4a453d; background: #ffffff; border-radius: 10px;
+            font-size: .78rem; color: #4a453d; background: var(--psx-card,#fffdf9); border-radius: 10px;
             padding: 16px 18px; box-shadow: 0 1px 3px rgba(15,23,42,.06);
         }
         .fine b { color: #14110c; }
@@ -71,7 +71,7 @@
 
         /* ---- conviction meter ---- */
         .conv {
-            background: #ffffff; border: 1px solid rgba(20,17,12,.14); border-radius: 14px;
+            background: var(--psx-card,#fffdf9); border: 1px solid rgba(20,17,12,.14); border-radius: 14px;
             padding: 22px 24px; margin-bottom: 30px;
         }
         .conv-head {

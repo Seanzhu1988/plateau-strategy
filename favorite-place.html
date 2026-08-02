@@ -24,18 +24,18 @@
         .page-sub { color: #6b655b; margin: 0.3rem 0 1.1rem; line-height: 1.55; }
 
         .counter { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;
-            font-weight: 700; color: #1b4d8f; background: #eff6ff; border: 1px solid #dbeafe;
+            font-weight: 700; color: #1b4d8f; background: var(--psx-wash-info,#e5f3ff); border: 1px solid var(--psx-wash-info-on,#d5eaff);
             border-radius: 999px; padding: 0.5rem 1rem; margin-bottom: 1.3rem; }
 
-        .card { background: #fff; border: 1px solid #e6e2da; border-radius: 16px;
+        .card { background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da; border-radius: 16px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1.4rem; }
 
         .search-box { position: relative; }
         .search-box input { width: 100%; padding: 0.85rem 1rem; border: 1.5px solid #e6e2da;
             border-radius: 12px; font-size: 1rem; font-family: inherit; background: #faf8f4; }
-        .search-box input:focus { outline: none; border-color: #1b4d8f; background: #fff;
+        .search-box input:focus { outline: none; border-color: #1b4d8f; background: var(--psx-card,#fffdf9);
             box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
-        .qres { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #e6e2da;
+        .qres { position: absolute; top: 100%; left: 0; right: 0; background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da;
             border-radius: 12px; margin-top: 0.4rem; box-shadow: 0 8px 24px rgba(15,23,42,0.1);
             max-height: 280px; overflow-y: auto; z-index: 20; display: none; }
         .qres > div { padding: 0.7rem 1rem; font-size: 0.9rem; cursor: pointer; border-bottom: 1px solid #faf8f4; }
@@ -50,12 +50,12 @@
         .q label { display: block; font-size: 0.85rem; font-weight: 700; color: #2a251d; margin-bottom: 0.5rem; }
         .q input[type=text] { width: 100%; padding: 0.7rem 0.9rem; border: 1.5px solid #e6e2da;
             border-radius: 10px; font-size: 0.95rem; font-family: inherit; background: #faf8f4; }
-        .q input[type=text]:focus { outline: none; border-color: #1b4d8f; background: #fff; }
+        .q input[type=text]:focus { outline: none; border-color: #1b4d8f; background: var(--psx-card,#fffdf9); }
         .durations { display: flex; flex-wrap: wrap; gap: 0.5rem; }
         .dchip { font-size: 0.85rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 999px;
-            border: 1.5px solid #e6e2da; color: #4a453d; cursor: pointer; user-select: none; background: #fff; }
+            border: 1.5px solid #e6e2da; color: #4a453d; cursor: pointer; user-select: none; background: var(--psx-card,#fffdf9); }
         .dchip:hover { border-color: #1b4d8f; }
-        .dchip.on { background: #dbeafe; border-color: #1b4d8f; color: #1b4d8f; }
+        .dchip.on { background: var(--psx-wash-info-on,#d5eaff); border-color: #1b4d8f; color: #1b4d8f; }
         .dchip.skip { margin-left: auto; color: #6b655b; }
 
         .submit { margin-top: 1.2rem; width: 100%; padding: 0.85rem; border: none; border-radius: 12px;
