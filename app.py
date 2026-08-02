@@ -836,6 +836,15 @@ def logo():
     return send_file(os.path.join(BASE_DIR, "plateau-logo.png"))
 
 
+@app.route("/favicon.ico")
+def favicon():
+    """Browsers ask for this whether or not the page links to it, and a 404
+    is what leaves a tab blank. Answered with the SVG mark, which every
+    browser that asks for a favicon can render."""
+    return send_file(os.path.join(BASE_DIR, "plateau-logo.svg"),
+                     mimetype="image/svg+xml")
+
+
 @app.route("/plateau-logo.svg")
 def logo_svg():
     return send_file(os.path.join(BASE_DIR, "plateau-logo.svg"))

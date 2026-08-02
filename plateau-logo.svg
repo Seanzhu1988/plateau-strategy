@@ -1,18 +1,29 @@
-<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Plateau Strategy Solution Lab logo">
-  <defs>
-    <linearGradient id="psl-bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#3b82f6"/>
-      <stop offset="1" stop-color="#1e3a8a"/>
-    </linearGradient>
-  </defs>
-  <!-- badge -->
-  <circle cx="32" cy="32" r="32" fill="url(#psl-bg)"/>
-  <!-- distant plateau (depth) -->
-  <path d="M13 46 L21 33 L31 33 L39 46 Z" fill="#ffffff" opacity="0.35"/>
-  <!-- main flat-topped plateau (mesa) -->
-  <path d="M22 47 L30 28 L43 28 L51 47 Z" fill="#ffffff"/>
-  <!-- flat-top ridge accent -->
-  <rect x="30" y="28" width="13" height="2.4" rx="1.2" fill="#1e3a8a" opacity="0.30"/>
-  <!-- summit marker: the goal reached -->
-  <circle cx="36.5" cy="21" r="3.2" fill="#93c5fd"/>
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Plateau Strategy Solution Lab">
+  <!--
+    The browser tab mark.
+
+    This was a blue-to-navy gradient badge — the one thing the whole paper
+    redesign exists to remove, sitting in the most-seen 16 pixels on the
+    site. It also outranked the PNG: browsers prefer an SVG icon, so the
+    real logo never appeared in a tab at all.
+
+    Flat ink blue on paper now, from the palette rather than beside it. A
+    mesa is the right mark for a company called Plateau and it survives
+    being 16 px across, which a wordmark does not — the PNG is the wordmark
+    and belongs at sizes where it can be read.
+
+    No gradient, no glow, no opacity tricks: at 16 px they turn to mud.
+    Two solid shapes and one hairline is all that resolves.
+  -->
+  <circle cx="32" cy="32" r="32" fill="#faf8f4"/>
+  <circle cx="32" cy="32" r="31" fill="none" stroke="#1b4d8f" stroke-width="2"/>
+
+  <!-- the far mesa, set back -->
+  <path d="M12 47 L20 34 L30 34 L38 47 Z" fill="#1b4d8f" opacity="0.32"/>
+
+  <!-- the near, flat-topped one — the plateau itself -->
+  <path d="M21 48 L29 27 L44 27 L52 48 Z" fill="#1b4d8f"/>
+
+  <!-- the flat top, stated rather than implied -->
+  <rect x="28" y="26" width="17" height="2.6" rx="1.3" fill="#14110c"/>
 </svg>
