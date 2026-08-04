@@ -392,14 +392,14 @@
          Written this way they match exactly the same buttons and behave
          identically on their own; they simply no longer outrank the layer
          that is meant to sit on top of them. */
-      button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn),
+      button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.here-btn),
       .btn,.book-cta{
         background:var(--psx-ink) !important;background-image:none !important;
         color:#fff !important;border:1px solid var(--psx-ink) !important;
         border-radius:3px !important;box-shadow:none !important;
         font-weight:600 !important;
       }
-      button:not(.i18n-opt):not([id="i18nBtn"]):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):hover:not(:disabled){
+      button:not(.i18n-opt):not([id="i18nBtn"]):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.here-btn):hover:not(:disabled){
         background:#000 !important;transform:none !important;box-shadow:none !important;
       }
       /* On paper: a cream face, an ink pin, and red only while it waits. */
@@ -536,13 +536,13 @@
       .psx-btn-primary,
       nav a[href="/book"],
       .book-cta,
-      button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]),
+      button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.here-btn),
       .btn.blue,.btn-blue,.cta{
         background:var(--psx-accent) !important;background-image:none !important;
         border-color:var(--psx-accent) !important;color:#fff !important;
       }
       .psx-btn-primary:hover,nav a[href="/book"]:hover,.cta:hover,
-      button:not(.i18n-opt):not([id="i18nBtn"]):not(.pk-bubble):not([id="pollock"]):hover:not(:disabled){
+      button:not(.i18n-opt):not([id="i18nBtn"]):not(.pk-bubble):not([id="pollock"]):not(.here-btn):hover:not(:disabled){
         background:var(--psx-accent-dark) !important;border-color:var(--psx-accent-dark) !important;
       }
 
@@ -645,13 +645,23 @@
         border-top-color:var(--psx-accent) !important;
       }
 
-      /* The contents strip: the current section is marked in its own
-         colour, so the tab and the page underneath agree. */
+      /* The contents strip: the current section is marked in its own colour,
+         so the tab and the page underneath agree.
+
+         The TEXT colour used to be set here too, and it was doing real damage.
+         modern.css marks the current section as an ink pill with white text —
+         `.phase-tab.active`, specificity (0,2,0). This rule is (0,3,0), so it
+         won, and the live site drew the arm's blue on modern's near-black
+         pill: 2.94:1 against a 4.5 floor, on every section tab, on the front
+         page. Eight failures, and the fix that would have been reached for is
+         a louder rule here — which is how nine stylesheets happened.
+
+         So the old declaration comes out instead. The mark stays a rule in the
+         arm's colour, which is what it was for; whoever owns the tab's fill
+         owns the text that sits on it. */
       .phase-tab[data-arm].active,.phase-tab[data-arm].active:hover{
-        color:var(--psx-accent) !important;
         border-bottom:2px solid var(--psx-accent) !important;
       }
-      .phase-tab[data-arm].active .tab-ico{color:var(--psx-accent) !important;}
 
       /* The loop diagram names three of the four arms, so it uses their
          colours rather than three shades of the same one. */

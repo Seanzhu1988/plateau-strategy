@@ -66,19 +66,40 @@ with sync_playwright() as p:
         pg.evaluate("map.setView([%f, %f], 12)" % SEATTLE)
         pg.wait_for_timeout(300)
 
-    # and the start pin still sits beside the address box
+    # The start control: one box that does both jobs.
+    #
+    # This used to assert only that a pin sat beside the destination field,
+    # because the pin kept being hidden and offered as a floating map icon
+    # instead. It is a stronger check now, because the ask got more specific:
+    # the control has to CONTAIN a place to type an address and a one-click
+    # current-location button. A visible pin that hides its address entry
+    # behind a tap — which is what it did — would have passed the old test.
     box = pg.evaluate("""() => {
-        const b = document.querySelector('#destAdd')?.getBoundingClientRect();
-        const btn = document.querySelector('#destAdd')?.closest('.build-row')?.querySelector('.loc-btn');
-        const p = btn && btn.getBoundingClientRect();
-        if (p && !p.width) return { sameRow: false, gap: -1, hidden: true };
-        if (!b || !p) return null;
+        const dest = document.querySelector('#destAdd');
+        const sb   = document.querySelector('.startbox');
+        if (!dest || !sb) return null;
+        const b = dest.getBoundingClientRect(), p = sb.getBoundingClientRect();
+        const vis = el => !!(el && el.getClientRects().length &&
+                             getComputedStyle(el).visibility !== 'hidden');
+        const addr = sb.querySelector('input');
+        const here = sb.querySelector('#hereBtn');
         return { sameRow: Math.abs((b.top+b.height/2)-(p.top+p.height/2)) < 26,
-                 gap: Math.round(b.left - p.right) };
+                 gap: Math.round(b.left - p.right),
+                 typeable: vis(addr), here: vis(here),
+                 pin: !!sb.querySelector('.pin-badge') };
     }""")
-    print(f"  start pin beside the address box: {box}")
-    if not box or not box["sameRow"] or not (0 <= box["gap"] < 90):
-        fails.append("start pin is not beside the address box")
+    print(f"  start control: {box}")
+    if not box:
+        fails.append("no start control beside the destination box")
+    else:
+        if not box["sameRow"] or not (0 <= box["gap"] < 90):
+            fails.append("start control is not beside the address box")
+        if not box["typeable"]:
+            fails.append("start control has no visible field to type an address into")
+        if not box["here"]:
+            fails.append("start control has no one-click current-location button")
+        if not box["pin"]:
+            fails.append("start control lost its pin")
 
     errs = [e for e in errs if "L is not defined" not in e]
     if errs:

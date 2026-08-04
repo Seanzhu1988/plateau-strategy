@@ -238,7 +238,7 @@ p, li, .sub, .summary, .view-intro, .psx-lede {
    themselves: the language pill, the Pollock bubbles, the map's pin, a
    cancel, a chip. */
 .btn, .book-cta, .psx-btn-primary, .primary, .submit, .cta,
-button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip) {
+button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip):not(.here-btn) {
   background: var(--m-ink) !important;
   color: #fff !important;
   border: 1px solid var(--m-ink) !important;

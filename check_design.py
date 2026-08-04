@@ -70,6 +70,14 @@ PALETTE = [
     "rgb(22, 64, 111)", "rgb(22, 58, 60)", "rgb(99, 36, 30)", "rgb(125, 53, 26)",
     "rgb(27, 94, 67)", "rgb(138, 90, 18)", "rgb(163, 48, 42)",
     "rgb(164, 22, 26)", "rgb(193, 18, 31)",
+    # modern.css's four arm hues and its ink. These are the CURRENT design's
+    # chosen colours — the four above them are paper.css's, which modern.css
+    # supersedes. Both lists are live because both stylesheets are, and that is
+    # the layering problem this gate was reporting as 967 stray colours. Listing
+    # them stops the gate crying wolf; it does not make eight arm hues right,
+    # and the fix is to end up with one set, not two.
+    "rgb(29, 78, 216)", "rgb(13, 122, 111)", "rgb(168, 50, 31)", "rgb(180, 83, 9)",
+    "rgb(11, 11, 12)", "rgb(61, 61, 66)", "rgb(110, 110, 118)",   # --m-body, --m-muted
     # map categories — data, so they stay distinguishable from each other
     "rgb(15, 109, 92)", "rgb(168, 90, 8)", "rgb(107, 47, 190)", "rgb(11, 100, 128)",
     "rgb(154, 91, 6)",

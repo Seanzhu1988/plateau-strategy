@@ -110,7 +110,7 @@
             font-weight: 700; font-size: 0.82rem; font-family: inherit;
             background: linear-gradient(135deg,#1b4d8f,#1b4d8f); color: #fff; }
         .addbtn:hover { filter: brightness(1.07); }
-        .addbtn.added { background: #dcfce7; color: #166534; cursor: default; }
+        .addbtn.added { background: #dcfce7; color: #166534; cursor: pointer; }
         .openlink { font-size: 0.82rem; font-weight: 700; color: #1b4d8f; text-decoration: none; }
         .empty { text-align: center; color: #6b655b; padding: 3rem 0; }
         /* 🌟 wish box — the demand side of the book */
@@ -283,18 +283,33 @@
               return new Set((s && s.places || []).map(p => p.name)); }
         catch (e) { return new Set(); }
     }
+    // Adding was one-way. A mis-tap put a place in the planner and the only
+    // way back out was to open the planner and remove it there — so the second
+    // click on the same button, which every reader tries first, did nothing at
+    // all. Same button, both directions.
     function addToPlanner(i, btn){
         const e = DATA.entries[i];
         let s = null;
         try { s = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (err) {}
         if (!s || !s.places) s = { city: e.city, places: [] };
-        if (!s.places.some(p => p.name === e.name)) {
-            s.places.push({ name: e.name, lat: e.lat, lon: e.lon, close: e.close, visit: e.visit, cat: e.cat });
+        const at = s.places.findIndex(p => p.name === e.name);
+        const link = btn.nextElementSibling;
+        if (at >= 0) {
+            s.places.splice(at, 1);
             try { localStorage.setItem(LS_KEY, JSON.stringify(s)); } catch (err) {}
+            btn.textContent = T('+ Add to Trip Planner');
+            btn.classList.remove('added');
+            if (link && link.classList.contains('openlink')) link.remove();
+            return;
         }
-        btn.textContent = '✓ In your planner';
+        s.places.push({ name: e.name, lat: e.lat, lon: e.lon, close: e.close, visit: e.visit, cat: e.cat });
+        try { localStorage.setItem(LS_KEY, JSON.stringify(s)); } catch (err) {}
+        btn.textContent = T('✓ In your planner');
         btn.classList.add('added');
-        btn.insertAdjacentHTML('afterend', '<a class="openlink" href="/trip-planner">Open Trip Planner →</a>');
+        if (!(link && link.classList.contains('openlink'))) {
+            btn.insertAdjacentHTML('afterend',
+                '<a class="openlink" href="/trip-planner">' + T('Open Trip Planner →') + '</a>');
+        }
     }
 
     function makeChip(label, on, fn){
@@ -311,20 +326,29 @@
         // Seattle, where it read as a city nobody had heard of.
         const cityList = Object.entries(DATA.cities).sort((x, y) =>
             x[0] === 'other' ? 1 : y[0] === 'other' ? -1 : x[1].localeCompare(y[1]));
+        // Clicking the chip that is ALREADY lit clears the filter instead of
+        // re-applying it. Category below has always worked this way; City and
+        // Type did not, so a reader who tapped Seattle had no way back to
+        // every city except noticing the "All cities" chip and clicking that
+        // instead — a second control to undo the first. A filter you cannot
+        // unpick by tapping it again reads as stuck, which is exactly what it
+        // was reported as.
+        const clearable = (row, key, k, b) => {
+            f[key] = (f[key] === k && k !== 'all') ? 'all' : k;
+            Array.from(row.children).forEach(x => x.classList.remove('on'));
+            // kept the pick → light this chip; cleared it → light "All", which
+            // is always the first chip in the row
+            (f[key] === k ? b : row.children[0]).classList.add('on');
+            render();
+        };
         [['all', T('All cities')]].concat(cityList).forEach(([k, label]) => {
-            cc.appendChild(makeChip(T(label), f.city === k, b => {
-                f.city = k;
-                Array.from(cc.children).forEach(x => x.classList.remove('on'));
-                b.classList.add('on'); render();
-            }));
+            cc.appendChild(makeChip(T(label), f.city === k,
+                                    b => clearable(cc, 'city', k, b)));
         });
         const tc = $('typeChips');
         [['all', T('All types')]].concat(TYPES).forEach(([k, label]) => {
-            tc.appendChild(makeChip(T(label), f.type === k, b => {
-                f.type = k;
-                Array.from(tc.children).forEach(x => x.classList.remove('on'));
-                b.classList.add('on'); render();
-            }));
+            tc.appendChild(makeChip(T(label), f.type === k,
+                                    b => clearable(tc, 'type', k, b)));
         });
         // Category used a different idiom from the two rows above it: five
         // multi-select chips, all switched on by default. Functionally that
@@ -416,7 +440,7 @@
                            + '<span>' + esc(e.tip) + '</span></p>' : '')
                 + '<div class="actions">'
                 +   (added
-                        ? '<button class="addbtn added">✓ In your planner</button><a class="openlink" href="/trip-planner">Open Trip Planner →</a>'
+                        ? '<button class="addbtn added" onclick="addToPlanner(' + i + ', this)">✓ In your planner</button><a class="openlink" href="/trip-planner">Open Trip Planner →</a>'
                         : '<button class="addbtn" onclick="addToPlanner(' + i + ', this)">+ Add to Trip Planner</button>')
                 + '</div>'
                 + '<div class="cmt-wrap">'
