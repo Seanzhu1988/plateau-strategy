@@ -119,6 +119,57 @@ before = counted_today()
 bot.get("/", headers={"User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1)"})
 chk("a crawler is not a traveler", counted_today() == before)
 
+
+# ---- and the same must hold for CONVERSIONS ------------------------------
+#
+# It did not. record_conversion() checked none of the exclusions above, so a
+# device excluded from pageviews still added a booking. The live file showed
+# exactly that: a day reading 0 pageviews and 1 booking, and an earlier day
+# with 17 bookings against 59 visitors.
+#
+# This is the more damaging half. A pageview that should not be there inflates
+# a number nobody acts on; a booking that should not be there is the number the
+# whole site is judged by.
+print("\nand a conversion follows the same rules as a view:")
+
+def conversions_today():
+    try:
+        d = json.load(open(A.TRAFFIC_PATH))
+    except Exception:
+        return {}
+    if not d.get("days"):
+        return {}
+    return d["days"][sorted(d["days"])[-1]].get("conversions", {})
+
+def booking_count():
+    return sum(conversions_today().get("booking", {}).values())
+
+with A.app.test_request_context("/", headers={"User-Agent": PHONE}):
+    before = booking_count()
+    A.record_conversion("booking")
+    chk(f"a real traveler's booking is counted ({before} -> {booking_count()})",
+        booking_count() == before + 1)
+
+with A.app.test_request_context("/", headers={"User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1)"}):
+    before = booking_count()
+    A.record_conversion("booking")
+    chk(f"a crawler's booking is not ({before} -> {booking_count()})",
+        booking_count() == before)
+
+with A.app.test_request_context(
+        "/", headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) HeadlessChrome/141.0 Safari/537.36"}):
+    before = booking_count()
+    A.record_conversion("booking")
+    chk(f"a headless test browser's booking is not ({before} -> {booking_count()})",
+        booking_count() == before)
+
+with A.app.test_request_context("/", headers={"User-Agent": PHONE},
+                                environ_base={"HTTP_COOKIE": A.TRAFFIC_OPTOUT_COOKIE + "=1"}):
+    before = booking_count()
+    A.record_conversion("booking")
+    chk(f"an opted-out device's booking is not ({before} -> {booking_count()})",
+        booking_count() == before)
+
 shutil.rmtree(tmp, ignore_errors=True)
 print("\nPASSED" if not fails else f"\nFAILED: {fails}")
 raise SystemExit(1 if fails else 0)

@@ -526,8 +526,22 @@ def _visit_source():
 
 def record_conversion(kind):
     """Count something that actually mattered, against the source that brought
-    them. Without this an ad test only ever proves that pageviews went up."""
+    them. Without this an ad test only ever proves that pageviews went up.
+
+    The same exclusions as a pageview, and for a stronger reason. This did not
+    check them, so every guard built for _track_traffic — the opt-out cookie,
+    the ignore-list addresses, the bot and headless-browser hints — applied to
+    views and not to bookings. A test run on this machine left a day reading
+    "0 pageviews, 1 booking", which is not a number anyone should have to
+    interpret, and 17 bookings against 59 visitors on an earlier day.
+
+    Conversions are the numbers most likely to be believed and hardest to sanity
+    check, because a booking looks like a real thing happening. A device that is
+    not a traveller for the purpose of counting visits is not a traveller for the
+    purpose of counting bookings either."""
     try:
+        if _skip_traffic():
+            return
         src = request.cookies.get("psx_src") or "direct"
         today = datetime.date.today().isoformat()
         with _LOCK:
