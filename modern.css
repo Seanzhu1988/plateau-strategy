@@ -1,0 +1,386 @@
+/* ============================================================
+   MODERN — the site's surface layer
+
+   Loaded after paper.css and overrides it. Kept as its own file so the
+   whole look is one <link> to remove, which matters: the last two
+   attempts at this were wrong in opposite directions and both had to be
+   unpicked out of a shared stylesheet.
+
+   The brief, in the owner's words: bold and modern, and the pale washed
+   backgrounds looked cheap. So:
+
+     · The ground is white. Not cream, not tinted — white, with air.
+     · Colour appears ONLY in solid things: a filled button, a filled
+       badge, an icon tile, a rule. Never as a wash behind text. A 15%
+       tint of a colour is not that colour; it is a stain, and that is
+       what read as cheap.
+     · Type does the heavy lifting. Large, tight, high contrast between
+       the headline and everything under it.
+     · Separation comes from space and hairlines, not from bands of
+       colour.
+   ============================================================ */
+
+:root {
+  --m-bg:        #ffffff;
+  --m-surface:   #ffffff;
+  --m-raised:    #fafafa;   /* the ONLY off-white, and only under a card */
+  --m-ink:       #0b0b0c;
+  --m-body:      #3d3d42;
+  --m-muted:     #6e6e76;
+  --m-line:      #e6e6ea;
+  --m-line-firm: #d3d3da;
+
+  /* The four businesses, taken up to full strength. They were chosen dark
+     and desaturated so they could survive being used as pale washes. Used
+     solid, they can be themselves. */
+  --m-transport: #1d4ed8;
+  --m-operations:#0d7a6f;
+  --m-realestate:#a8321f;
+  --m-finance:   #b45309;
+  --m-accent:    var(--m-transport);
+  --m-accent-ink:#ffffff;
+
+  --m-radius:    10px;
+  --m-radius-sm: 7px;
+  --m-shadow:    0 1px 2px rgba(11,11,12,.05), 0 8px 24px -12px rgba(11,11,12,.14);
+
+  --m-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto,
+            Helvetica, Arial, sans-serif;
+}
+
+[data-arm="transportation"] { --m-accent: var(--m-transport); }
+[data-arm="operations"]     { --m-accent: var(--m-operations); }
+[data-arm="realestate"]     { --m-accent: var(--m-realestate); }
+[data-arm="finance"]        { --m-accent: var(--m-finance); }
+[data-arm="company"]        { --m-accent: var(--m-transport); }
+
+/* ---------- the paper layer's own variables, repointed ----------
+
+   This is the real fix, and it is worth saying why, because I first went
+   hunting selector by selector and kept missing sections.
+
+   The cream was never written as a colour on a section. It was written
+   once, as --psx-bg, and then read by dozens of rules across paper.css and
+   inside each page's own <style> block — including rules I had no way to
+   enumerate from the outside. Overriding the sections was whack-a-mole:
+   every page had one more I hadn't named.
+
+   Repointing the variables changes the ground everywhere at once, in rules
+   that don't exist yet as much as in the ones that do. The paper layer
+   keeps its structure; only what it means by "paper" changes. */
+:root{
+  --psx-bg:      #ffffff;
+  --psx-hero:    #ffffff;
+  --psx-connect: #ffffff;
+  --psx-card:    #ffffff;
+  --psx-node:    #ffffff;
+
+  --psx-text:  var(--m-ink);
+  --psx-text2: var(--m-body);
+  --psx-muted: var(--m-muted);
+  --psx-ink:   var(--m-ink);
+
+  --psx-border: var(--m-line);
+  --psx-rule:   var(--m-line);
+
+  /* The four arms at full strength. They were mixed dark and dull so they
+     could survive being spread thin behind text; used as solid marks they
+     no longer have to apologise for themselves. */
+  --psx-blue:    var(--m-transport);
+  --psx-slate:   var(--m-operations);
+  --psx-oxblood: var(--m-realestate);
+  --psx-sienna:  var(--m-finance);
+  --psx-accent:  var(--m-accent);
+  --psx-accent-rgb: 29,78,216;
+  --psx-accent-dark: #1741ad;
+}
+[data-arm="operations"] { --psx-accent: var(--m-operations); --psx-accent-rgb: 13,122,111; }
+[data-arm="realestate"] { --psx-accent: var(--m-realestate); --psx-accent-rgb: 168,50,31; }
+[data-arm="finance"]    { --psx-accent: var(--m-finance);    --psx-accent-rgb: 180,83,9; }
+
+/* ---------- ground ---------- */
+html, body { background: var(--m-bg) !important; color: var(--m-body) !important; }
+body { font-family: var(--m-sans) !important; -webkit-font-smoothing: antialiased; }
+
+/* Every cream and every pale band the old layer painted is removed. This is
+   the change the owner actually asked for: no washes. Named by what the
+   markup really uses rather than by what I assumed it used. */
+main, .view,
+.view .phases, section.phases, .view .hero, .psx-hero,
+.psx-section, .psx-connects, .psx-cta, .psx-cta-panel,
+.phases, .hero, .band, .psx-band, footer, .psx-foot {
+  background: var(--m-bg) !important;
+}
+
+/* One panel may sit on the faintest grey so a call to action has an edge —
+   this is the single exception, and it is grey, not a tinted colour. */
+.psx-cta-panel {
+  background: var(--m-raised) !important;
+  border: 1px solid var(--m-line) !important;
+  border-radius: var(--m-radius) !important;
+}
+footer, .psx-foot { border-top: 1px solid var(--m-line) !important; }
+
+/* The last four cream grounds, found by sweeping every page for a painted
+   background that isn't white or neutral. Each is written into one page's
+   own <style>, which is why the variables above didn't reach them. */
+
+/* The map's own backdrop — what shows in the gaps while tiles load. Cream
+   there reads as a stain on a white page; neutral reads as "loading". */
+.leaflet-container { background: #ececef !important; }
+
+/* A notice, not a wash: white ground, solid amber edge, amber words. */
+.gate {
+  background: var(--m-surface) !important;
+  border: 1px solid var(--m-line) !important;
+  border-left: 3px solid #b45309 !important;
+  border-radius: var(--m-radius-sm) !important;
+}
+.steps {
+  background: var(--m-surface) !important;
+  border: 1px solid var(--m-line) !important;
+}
+
+/* ---------- type ---------- */
+h1, .psx-h1, .page-title, .hero h1 {
+  font-family: var(--m-sans) !important;
+  font-weight: 800 !important;
+  letter-spacing: -.033em !important;
+  line-height: 1.04 !important;
+  color: var(--m-ink) !important;
+}
+h1, .hero h1, .psx-h1 { font-size: clamp(2.5rem, 6.2vw, 4.6rem) !important; }
+.page-title { font-size: clamp(1.9rem, 4vw, 2.6rem) !important; }
+
+h2, .psx-h2 {
+  font-family: var(--m-sans) !important;
+  font-weight: 750 !important;
+  letter-spacing: -.024em !important;
+  line-height: 1.12 !important;
+  font-size: clamp(1.7rem, 3.4vw, 2.5rem) !important;
+  color: var(--m-ink) !important;
+}
+h3, .psx-h3 {
+  font-family: var(--m-sans) !important;
+  font-weight: 700 !important; letter-spacing: -.014em !important;
+  color: var(--m-ink) !important;
+}
+p, li, .sub, .summary, .view-intro, .psx-lede {
+  color: var(--m-body) !important;
+  line-height: 1.62 !important;
+}
+.view-intro, .psx-lede, .hero p {
+  font-size: clamp(1.05rem, 1.6vw, 1.28rem) !important;
+  max-width: 62ch;
+}
+.muted, .note, .fine, .by, .caption { color: var(--m-muted) !important; }
+
+/* The section label above a heading — small, solid, in the arm's colour.
+   This is colour as a mark, not as a background. */
+.kicker, .view-kicker, .section-label, .psx-kicker {
+  color: var(--m-accent) !important;
+  font-weight: 700 !important;
+  font-size: .74rem !important;
+  letter-spacing: .11em !important;
+  text-transform: uppercase;
+}
+
+/* The figures were set in the paper layer's book face. Next to a tight sans
+   headline that reads as two designs sharing a page, and the number is the
+   thing being read — so it gets the same voice, one size louder. */
+.psx-stat-val, .tile .n, .stat-val, .figure-n {
+  font-family: var(--m-sans) !important;
+  font-weight: 800 !important;
+  letter-spacing: -.03em !important;
+  color: var(--m-accent) !important;
+}
+
+/* ---------- space ---------- */
+.view section, .phases, section.phases { padding: clamp(3.5rem, 7vw, 6.5rem) 1.25rem !important; }
+.container, .wrap { max-width: 1120px; margin-inline: auto; }
+
+/* ---------- separation by rule, not by band ---------- */
+.view section + section, .phases + .phases { border-top: 1px solid var(--m-line) !important; }
+
+/* ---------- cards ---------- */
+.psx-card, .service-card, .fin-card, .card, .trip, .p-card {
+  background: var(--m-surface) !important;
+  border: 1px solid var(--m-line) !important;
+  border-top: 1px solid var(--m-line) !important;   /* the coloured top rule goes */
+  border-radius: var(--m-radius) !important;
+  padding: clamp(1.4rem, 2.4vw, 2rem) !important;
+  box-shadow: none !important;
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+.psx-card:hover, .service-card:hover, .card:hover, .trip:hover {
+  border-color: var(--m-line-firm) !important;
+  box-shadow: var(--m-shadow) !important;
+}
+.psx-card h3, .service-card h3, .fin-card h3, .card h2 { color: var(--m-ink) !important; }
+
+/* The icon is where a card carries its colour — a solid tile, not a tint
+   behind the whole card. */
+.service-card .service-icon, .psx-card .psx-card-icon, .card .icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.75rem; height: 2.75rem; border-radius: var(--m-radius-sm);
+  background: var(--m-accent) !important;
+  color: #fff !important;
+  font-size: 1.3rem; margin-bottom: .9rem;
+}
+
+/* ---------- buttons: solid, high contrast ---------- */
+/* The :not() chain below is deliberately the same shape as the one in
+   paper.css, plus one more exclusion. Specificity is the whole reason: the
+   paper layer paints every button ink through a chain of that size, so a
+   short, tidy selector here loses to it silently and every call to action
+   comes out black. Matching its weight and arriving later wins the tie
+   honestly, without an id hack. The buttons excluded are the ones that draw
+   themselves: the language pill, the Pollock bubbles, the map's pin, a
+   cancel, a chip. */
+.btn, .book-cta, .psx-btn-primary, .primary, .submit, .cta,
+button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip) {
+  background: var(--m-ink) !important;
+  color: #fff !important;
+  border: 1px solid var(--m-ink) !important;
+  border-radius: var(--m-radius-sm) !important;
+  font-family: var(--m-sans) !important;
+  font-weight: 650 !important;
+  letter-spacing: -.005em !important;
+  padding: .72rem 1.15rem !important;
+  box-shadow: none !important;
+  transition: background .15s ease, border-color .15s ease;
+}
+.btn:hover, .book-cta:hover, .psx-btn-primary:hover, .primary:hover, .cta:hover {
+  background: #26262c !important; border-color: #26262c !important;
+}
+
+/* The one call to action per view wears the business's colour, solid. */
+button.ride:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+button.cta:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+.book-cta, .psx-btn-primary, .cta, .btn.blue {
+  background: var(--m-accent) !important;
+  border-color: var(--m-accent) !important;
+  color: var(--m-accent-ink) !important;
+}
+.book-cta:hover, .psx-btn-primary:hover, .cta:hover, .btn.blue:hover, .act.ride:hover {
+  filter: brightness(.92);
+}
+
+/* A row of four identical black bars gives a reader nothing to aim at. One
+   is the thing most people came to do; the rest are alternatives, so they
+   step back to outlines and the eye lands where it should.
+
+   Scoped to the action bar deliberately. The same .act classes are reused on
+   the Send button inside a panel, where the button IS the action and must
+   stay solid — one of them even carries an inline white label, which on a
+   white outline would have vanished completely. */
+.actionbar button.act:not(.ride):not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip) {
+  background: var(--m-surface) !important;
+  color: var(--m-ink) !important;
+  border: 1px solid var(--m-line-firm) !important;
+}
+.actionbar button.act:not(.ride):not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip):hover { background: var(--m-raised) !important; border-color: var(--m-ink) !important; }
+
+/* The research button was held at 55% opacity, which read as "not yet" on a
+   solid ink bar. On a white outline the same 55% just makes the words hard
+   to read, so it says "not yet" in words and full-strength muted ink
+   instead — a label a reader can actually finish. */
+.actionbar .act.robotaxi { opacity: 1 !important; color: var(--m-muted) !important; border-style: dashed !important; }
+.actionbar .act.robotaxi:hover { color: var(--m-ink) !important; }
+
+/* A live count of other people is a note, not a panel. White ground, one
+   solid rule in the accent — the wash it used to sit on was the cheap look. */
+.traffic-note {
+  background: var(--m-surface) !important;
+  border: 1px solid var(--m-line) !important;
+  border-left: 3px solid var(--m-accent) !important;
+  border-radius: var(--m-radius-sm) !important;
+}
+
+.btn.ghost, .psx-btn-ghost, .btn-ghost {
+  background: var(--m-surface) !important;
+  color: var(--m-ink) !important;
+  border: 1px solid var(--m-line-firm) !important;
+}
+.btn.ghost:hover { background: var(--m-raised) !important; }
+
+/* ---------- links ---------- */
+a { color: var(--m-accent); }
+p a, .sub a, .summary a, .note a {
+  color: var(--m-accent) !important;
+  text-underline-offset: 3px; text-decoration-thickness: 1px;
+}
+
+/* ---------- tags, chips, badges: solid or outlined, never washed ---------- */
+.tag, .badge {
+  border-radius: 999px !important;
+  font-weight: 700 !important; font-size: .69rem !important;
+  letter-spacing: .04em; text-transform: uppercase;
+  padding: .24rem .6rem !important;
+  background: var(--m-ink) !important; color: #fff !important; border: 0 !important;
+}
+.chip {
+  border-radius: 999px !important;
+  border: 1px solid var(--m-line-firm) !important;
+  background: var(--m-surface) !important;
+  color: var(--m-body) !important;
+  font-weight: 600 !important;
+  padding: .42rem .85rem !important;
+}
+.chip.on { background: var(--m-ink) !important; border-color: var(--m-ink) !important; color: #fff !important; }
+
+/* Status keeps its own meaning and its own colours — untouched by any of
+   the above, because a reader must never decode whether red means
+   "property" or "something failed". */
+.tag.paid, .badge.paid, .status.paid       { background: #0f7b53 !important; }
+.tag.due, .badge.due, .status.pending      { background: #b45309 !important; }
+.tag.failed, .badge.failed, .status.failed { background: #b3261e !important; }
+
+/* ---------- header ---------- */
+header {
+  background: var(--m-surface) !important;
+  border-bottom: 1px solid var(--m-line) !important;
+  padding: .95rem 1.25rem !important;
+}
+header .brand, header .logo-text {
+  font-family: var(--m-sans) !important;
+  font-weight: 800 !important; letter-spacing: -.02em !important;
+  color: var(--m-ink) !important;
+}
+header a { color: var(--m-body) !important; font-weight: 600 !important; }
+header a:hover { color: var(--m-ink) !important; }
+
+/* ---------- forms ---------- */
+input, select, textarea {
+  background: var(--m-surface) !important;
+  border: 1px solid var(--m-line-firm) !important;
+  border-radius: var(--m-radius-sm) !important;
+  color: var(--m-ink) !important;
+  font-family: var(--m-sans) !important;
+  padding: .62rem .8rem !important;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none !important;
+  border-color: var(--m-accent) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--m-accent) 18%, transparent) !important;
+}
+label { color: var(--m-muted) !important; font-weight: 600 !important; }
+
+/* ---------- tables ---------- */
+th {
+  background: var(--m-raised) !important;
+  color: var(--m-muted) !important;
+  font-weight: 700 !important; font-size: .72rem !important;
+  letter-spacing: .06em; text-transform: uppercase;
+  border-bottom: 1px solid var(--m-line) !important;
+}
+td { border-bottom: 1px solid var(--m-line) !important; color: var(--m-body) !important; }
+
+/* ---------- tabs ---------- */
+.phase-tabs { background: var(--m-surface) !important; border: 1px solid var(--m-line) !important;
+              border-radius: var(--m-radius) !important; box-shadow: var(--m-shadow) !important; }
+.phase-tab, .phase-tabs button { background: transparent !important; color: var(--m-muted) !important;
+                                 border: 0 !important; font-weight: 650 !important; }
+.phase-tab.active, .phase-tabs button.active {
+  background: var(--m-ink) !important; color: #fff !important; border-radius: var(--m-radius-sm) !important;
+}

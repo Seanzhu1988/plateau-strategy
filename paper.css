@@ -20,24 +20,9 @@
 
       :root{
         /* Paper, not white — #fff under a headline looks like a login form.
-           A little warmth reads as stock.
-
-           That principle was written here and then broken on the next line:
-           the card face was #ffffff. Measured, that was 243 elements and 8.9%
-           of every painted pixel on the site — the second-largest surface
-           after the page itself, and the one a reader's eye lands on, because
-           cards are where the content is. Pure white has chroma exactly 0.000
-           in a system whose whole idea is warmth, so every card read as a
-           rectangle cut from a different, colder stock and pasted on. Four
-           rounds of "the colour looks strange" went to text and accents and
-           never touched it, because the audit only ever checked text.
-
-           #fffdf9 is the paper's own hue (84.6) at the paper's own chroma
-           (0.0057), one step lighter. Same stock, brighter sheet. It is not a
-           new colour — floatback.js has drawn the paint dot in it since the
-           day it was written; it just was never a token. */
+           A little warmth reads as stock. */
         --psx-bg:#faf8f4; --psx-hero:#f5f1e8; --psx-connect:#faf8f4;
-        --psx-card:#fffdf9; --psx-node:#fffdf9;
+        --psx-card:#ffffff; --psx-node:#ffffff;
         --psx-text:#14110c; --psx-text2:#4a453d; --psx-muted:#6b655b;
         --psx-border:rgba(20,17,12,.13);
         --psx-rule:rgba(20,17,12,.10);
@@ -79,33 +64,7 @@
            that is merely important is not red; it is bold black.
            Deep and slightly warm, so it belongs on cream rather than glaring
            off it the way a screen red does. */
-        --psx-red:#a4161a; --psx-red-soft:#c1121f; --psx-red-wash:#ffeae7;
-
-        /* ---- the wash ladder ----
-           A wash is a panel that means something: this one is fine, this one
-           needs you, this one is selected. There were eight of them and they
-           came from Tailwind's default scales, so measured against the site
-           they landed on eight lightness rungs nobody had chosen — 0.932,
-           0.947, 0.952, 0.960, 0.970, 0.977, 0.979, 0.987 — scattered through
-           a page whose neutrals are a deliberate three-step ladder: card
-           0.994, page 0.980, panel 0.959. Two of them — Tailwind's emerald-50
-           and sky-50 — sat within 0.003 of the page itself, so a "highlighted"
-           panel was the
-           same brightness as the thing it was supposed to stand out from.
-
-           That is what makes a palette feel wrong while every colour in it
-           can be defended: not the hues, the absence of a ladder.
-
-           So each wash is re-cut on the panel rung, L=0.959 — the same step
-           as #f5f1e8 — at C=0.030, and takes its hue from the site's own ink
-           for that meaning. A wash is now a diluted version of the colour
-           whose job it shares, sitting on a rung the page already uses. The
-           strong pair is one rung down at L=0.930 for selected states, which
-           is the only place a wash needs to beat a neutral panel. */
-        --psx-wash-info:#e5f3ff;   --psx-wash-info-on:#d5eaff;
-        --psx-wash-good:#e1f8ec;   --psx-wash-good-on:#cef2df;
-        --psx-wash-warn:#ffefdc;   --psx-wash-warn-on:#fce4c8;
-        --psx-wash-bad:#ffeae7;    --psx-wash-bad-on:#ffddd8;
+        --psx-red:#a4161a; --psx-red-soft:#c1121f; --psx-red-wash:#fbeceb;
 
         /* One variable decides the display face. Point it at Carna here if
            the licence is bought — @font-face above, then swap this line.
@@ -167,7 +126,13 @@
         letter-spacing:.16em !important;text-transform:uppercase;
         padding:0 !important;box-shadow:none !important;
       }
-      .psx-h1,.psx-h2,.psx-h3,h1,h2,h3,.section-title,.hero h1{
+      /* .page-title is a div, not an h1, on six pages — the trip planner, the
+         Destination Book, Guided Trips, Guide Studio, Favourite Places and
+         Articles. Every one of them is the page's headline and every one was
+         rendering in the system sans while the other twelve pages carried the
+         serif, so the tools plainly did not belong to the same site as the
+         front page. It is the page's headline; it takes the headline face. */
+      .psx-h1,.psx-h2,.psx-h3,h1,h2,h3,.section-title,.hero h1,.page-title{
         font-family:var(--psx-display) !important;
         font-weight:600 !important;
         letter-spacing:-.012em !important;
@@ -175,14 +140,14 @@
         text-shadow:none !important;
       }
       .psx-h1{line-height:1.08 !important;}
-      /* Except on the Real Estate sheet. That view is an architect's
-         drawing — dark ground, pale linework, monospace title block — and
-         it is deliberate, not a leftover. Ink type on it is ink on navy:
-         #14110c against #0a2450, which is 1.3:1 and simply not there. The
-         sheet keeps its own colours, the way the map does. */
+      /* The Real Estate sheet used to be an architect's blueprint — dark ground,
+         pale linework — so its title block was held at #eaf4ff to stay legible
+         on navy. The sheet is drawn on paper now, and that same pale title on
+         cream measures 1.1:1, which is to say invisible. It takes the ink like
+         every other heading; only the monospace title-block face is kept. */
       #view-realestate .bp-sheet h1,#view-realestate .bp-sheet h2,
       #view-realestate .bp-sheet h3,#view-realestate .bp-title h2{
-        color:#eaf4ff !important;font-family:inherit !important;
+        color:var(--psx-ink) !important;font-family:inherit !important;
       }
       /* The accent was a violet gradient. A real underline says the same thing
          without pretending to be lit from behind — and unlike a box-shadow
@@ -404,7 +369,7 @@
 
       h1,h2,h3,h4{font-family:var(--psx-display) !important;color:var(--psx-ink) !important;}
       .card,.panel,.box{
-        background:var(--psx-card,#fffdf9) !important;
+        background:#fff !important;
         border:1px solid var(--psx-border) !important;
         border-radius:4px !important;
         box-shadow:0 1px 2px rgba(20,17,12,.04) !important;
@@ -419,14 +384,22 @@
          black pin, sitting beside the address bar so the two read as one thing.
          Painted ink like every other button, its pin went black-on-black and
          the waiting state had nothing left to say. It styles itself. */
-      button:not(.i18n-opt):not(#i18nBtn):not(.cancel-btn):not(.pk-bubble):not(#pollock):not(.loc-btn):not(.gp-chip),
+      /* The two ids in the :not() chains below are written as attribute
+         selectors on purpose. An id inside :not() scores as an id, which
+         lifted these blanket button rules above anything a later stylesheet
+         could say without resorting to tricks — they outranked the surface
+         layer's own button colours and painted every call to action ink.
+         Written this way they match exactly the same buttons and behave
+         identically on their own; they simply no longer outrank the layer
+         that is meant to sit on top of them. */
+      button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn),
       .btn,.book-cta{
         background:var(--psx-ink) !important;background-image:none !important;
         color:#fff !important;border:1px solid var(--psx-ink) !important;
         border-radius:3px !important;box-shadow:none !important;
         font-weight:600 !important;
       }
-      button:not(.i18n-opt):not(#i18nBtn):not(.pk-bubble):not(#pollock):not(.loc-btn):not(.gp-chip):hover:not(:disabled){
+      button:not(.i18n-opt):not([id="i18nBtn"]):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):hover:not(:disabled){
         background:#000 !important;transform:none !important;box-shadow:none !important;
       }
       /* On paper: a cream face, an ink pin, and red only while it waits. */
@@ -442,7 +415,7 @@
       .loc-btn.needs-start .pin-badge{ background:var(--psx-red) !important; }
 
       input,textarea,select{
-        background:var(--psx-card,#fffdf9) !important;
+        background:#fff !important;
         border:1px solid var(--psx-border) !important;
         border-radius:3px !important;
         color:var(--psx-text) !important;
@@ -451,7 +424,7 @@
       input:focus,textarea:focus,select:focus{
         border-color:var(--psx-accent) !important;
         box-shadow:0 0 0 3px rgba(var(--psx-accent-rgb),.13) !important;
-        background:var(--psx-card,#fffdf9) !important;
+        background:#fff !important;
       }
       label{color:var(--psx-text2) !important;}
       /* The map must keep its own colours — it is data, not decoration. */
@@ -468,7 +441,7 @@
 
       /* login panels on the driver and dispatch pages */
       .auth,.auth-box{
-        background:var(--psx-card,#fffdf9) !important;
+        background:#fff !important;
         border:1px solid var(--psx-border) !important;
         color:var(--psx-text) !important;
         border-radius:4px !important;box-shadow:0 1px 2px rgba(20,17,12,.05) !important;
@@ -479,7 +452,7 @@
 
       /* Deflator panels, Factor Clock readouts, dispatch tiles, partner stats */
       .status,.conv,.wait,.fine,.big,.pricebox,.stat,.tool,.card-dark,.panel-dark{
-        background:var(--psx-card,#fffdf9) !important;
+        background:#fff !important;
         border:1px solid var(--psx-border) !important;
         color:var(--psx-text) !important;
         border-radius:4px !important;
@@ -492,15 +465,10 @@
       .big b,.stat b{color:var(--psx-ink) !important;}
       a.tool:hover{border-color:rgba(20,17,12,.28) !important;background:#fffdf9 !important;}
 
-      /* These carried gradients once, and this rule pinned them to ink to
-         kill the gradient. The gradients are gone from the pages themselves
-         now, and the pin outlived its reason: a.btn.blue is more specific
-         than the accent rule's .btn.blue, so "Go to Dispatch login" rendered
-         black on two slate pages while every other primary action on the
-         site took its arm colour. Only the gradient is refused here; the
-         colour is the accent rule's business. */
+      /* the last gradient buttons on the site */
       .btn.blue,.btn-blue,a.btn.blue{
-        background-image:none !important;
+        background:var(--psx-ink) !important;background-image:none !important;
+        color:#fff !important;border:1px solid var(--psx-ink) !important;
         box-shadow:none !important;
       }
 
@@ -512,7 +480,7 @@
         box-shadow:none !important;
       }
       .psx-cta-glow{display:none !important;}
-      .board{background:var(--psx-card,#fffdf9) !important;border:1px solid var(--psx-border) !important;}
+      .board{background:#fff !important;border:1px solid var(--psx-border) !important;}
       table th{
         background:var(--psx-hero) !important;
         color:var(--psx-ink) !important;
@@ -553,33 +521,28 @@
          something in it is blue on purpose.
          ============================================================ */
 
-      /* The primary action takes the accent. All of it.
+      /* Named primary actions take the accent; a plain <button> stays ink.
 
-         I got this wrong once already. Having found that the ink rule above
-         outranks this one by a single extra :not(), I left it and rewrote
-         the comment to match — "ink for form submits" sounded like a
-         defensible hierarchy.
+         That split is not what this comment used to claim — it said the
+         accent applies to every button — and the stylesheet has been doing
+         the opposite the whole time. The ink rule further up carries one
+         extra :not(), which outranks this one no matter that it comes
+         first, so a bare <button> renders black. Measured, not read.
 
-         It was not a hierarchy, it was a bug with a story attached. The
-         consequence, seen six pages side by side: every button on the site
-         is black, so the four business colours are invisible. The Trip
-         Planner and the Destination Book are meant to be slate and show no
-         slate at all. The owner picked four colours and could not find them
-         — three separate times.
-
-         An accent that never appears is not restraint. Matched to the ink
-         rule's specificity so this one wins by coming after it, which is
-         how the cascade is supposed to decide. */
+         Leaving it that way, because it is the better hierarchy: one
+         accent call-to-action per view and ink for every form submit
+         under it. Two sienna buttons stacked in the same panel was what
+         made the mismatch visible in the first place. */
       .psx-btn-primary,
       nav a[href="/book"],
       .book-cta,
-      button:not(.i18n-opt):not(#i18nBtn):not(.cancel-btn):not(.pk-bubble):not(#pollock):not(.loc-btn):not(.gp-chip),
+      button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]),
       .btn.blue,.btn-blue,.cta{
         background:var(--psx-accent) !important;background-image:none !important;
         border-color:var(--psx-accent) !important;color:#fff !important;
       }
       .psx-btn-primary:hover,nav a[href="/book"]:hover,.cta:hover,
-      button:not(.i18n-opt):not(#i18nBtn):not(.pk-bubble):not(#pollock):not(.loc-btn):not(.gp-chip):hover:not(:disabled){
+      button:not(.i18n-opt):not([id="i18nBtn"]):not(.pk-bubble):not([id="pollock"]):hover:not(:disabled){
         background:var(--psx-accent-dark) !important;border-color:var(--psx-accent-dark) !important;
       }
 
@@ -775,8 +738,94 @@
       .gate{color:var(--psx-text2) !important;}
       .total{color:var(--psx-accent) !important;}
 
+
+/* ---- the masthead on a phone ----
+   At 375px the header was 113px tall before a word of content: the wordmark
+   broke across three lines and "Book a Ride" was squeezed into a 35px column
+   reading "Book / a / Ride" down the screen. Nothing was overflowing, so
+   nothing looked broken — it was simply eating a third of the screen.
+
+   Three changes, no markup: the links stop wrapping and scroll sideways if
+   they must, the wordmark takes a size that fits, and the row is allowed to
+   be a row. */
+@media (max-width: 560px) {
+  header {
+    padding: 0.7rem 0.9rem !important;
+    gap: 0.55rem !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+  }
+  header img, header .logo, header .psx-logo {
+    height: 30px !important; width: 30px !important; flex: 0 0 auto;
+  }
+  header .brand, header .logo-text {
+    font-size: 0.92rem !important;
+    line-height: 1.15 !important;
+    min-width: 0;                      /* shrink and reflow rather than push the nav out */
+  }
+  @media (max-width: 400px) {
+    header .brand, header .logo-text { font-size: 0.84rem !important; }
+  }
+  /* The nav gets its width first. Sharing the row proportionally left it 21px
+     short and "Book a Ride" was clipped to "Book a R" — a cut-off call to
+     action being worse than a wordmark that takes an extra line. */
+  header .right, header .links, header nav {
+    margin-left: auto;
+    display: flex !important;
+    gap: 0.75rem !important;
+    flex: 0 0 auto !important;
+    flex-wrap: nowrap !important;
+  }
+  header .right a, header .links a, header nav a {
+    white-space: nowrap !important;    /* "Book a Ride" is three words, not three lines */
+    font-size: 0.82rem !important;
+  }
+}
+
+
+/* ---- nothing slides the page sideways ----
+   Three pages did, each for its own reason: a chip row that would not wrap, a
+   partner table wider than the screen, and a form row eight pixels over. The
+   symptom is the same and so is the rule — wide content scrolls inside its own
+   box, the page itself never does. */
+@media (max-width: 560px) {
+  html, body { overflow-x: hidden; }
+
+  /* A table is genuinely wide; let it scroll in place rather than shrink its
+     columns into unreadable slivers. */
+  .card table, .p-card table, table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Rows of chips, filters and form fields wrap instead of running off. */
+  .chips, .filters, .row, .addrow, .build-row, .durations, .stay-opts {
+    flex-wrap: wrap !important;
+  }
+
+  /* An input with a fixed width is the usual last eight pixels. */
+  input, select, textarea { max-width: 100%; }
+}
+
+
+/* ---- any row of chips is a row ----
+   Chips injected by script land in a bare container, inherit block layout and
+   the default line-height, and a 29px chip on a 19px line overlaps the row
+   beneath it. It is not visible in the markup and it is not visible until the
+   second row appears, which is why it shipped. Stated once, for every such row. */
+.chips, .filters, .frow, [id$="Chips"], [id$="chips"], #starFilter, .durations, .stay-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  line-height: 1.3;
+}
+
       /* ============================================================
-         THE SECTION RAIL — the contents list stood on its side.
+                  THE SECTION RAIL — the contents list stood on its side.
 
          The eight sections were a horizontal strip that dropped from
          the top of the window. Horizontal was always the wrong axis

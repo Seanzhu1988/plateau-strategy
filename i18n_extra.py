@@ -178,7 +178,7 @@ EXTRA = {
     "🚕 Hire a driver-guide": ["🚕 雇一位司机兼导游", "🚕 Contratar un chófer-guía", "🚕 기사 겸 가이드 고용", "🚕 Thuê tài xế kiêm hướng dẫn"],
     "🏷️ Guide? Offer this route for sale →": ["🏷️ 您是导游？把这条路线挂出来出售 →", "🏷️ ¿Eres guía? Pon esta ruta a la venta →", "🏷️ 가이드이신가요? 이 코스를 판매해 보세요 →", "🏷️ Bạn là hướng dẫn viên? Rao bán tuyến này →"],
     "🎫 Or write your own in-depth trip and sell it →": ["🎫 或者自己写一条深度行程来出售 →", "🎫 O escribe tu propio viaje a fondo y véndelo →", "🎫 또는 나만의 심층 여행을 직접 써서 판매하기 →", "🎫 Hoặc tự viết một hành trình chuyên sâu và bán nó →"],
-    "🤵 Jarvis — your trip organizer": ["🤵 Jarvis——您的行程管家", "🤵 Jarvis — tu organizador de viaje", "🤵 자비스 — 당신의 여행 도우미", "🤵 Jarvis — người sắp xếp chuyến đi của bạn"],
+    "🤵 Jarvis — your trip organizer": ["🤵 Jarvis——您的行程管家", "🤵 Jarvis — tu organizador de viaje", "🤵 자비스 — 여행 도우미", "🤵 Jarvis — người sắp xếp chuyến đi của bạn"],
     "🧭 Itinerary": ["🧭 行程表", "🧭 Itinerario", "🧭 일정표", "🧭 Lịch trình"],
     "⧉ Copy": ["⧉ 复制", "⧉ Copiar", "⧉ 복사", "⧉ Sao chép"],
     "📤 Share": ["📤 分享", "📤 Compartir", "📤 공유", "📤 Chia sẻ"],
@@ -301,7 +301,7 @@ EXTRA.update({
     "The trip planner draws a sightseeing loop. This is for the other kind — the walk you know by heart, where the point is what you say at each stop. Write it out yourself: your stops, your timings, your price. Travellers browse it on the": [
         "行程规划工具画的是一条观光环线。这里是另一种——您烂熟于心的那条路，重点在于您在每一站讲些什么。自己把它写出来：您的站点、您的时间、您的价格。旅客可在",
         "El planificador dibuja un circuito turístico. Esto es para el otro tipo: el paseo que te sabes de memoria, donde lo importante es lo que cuentas en cada parada. Escríbelo tú: tus paradas, tus tiempos, tu precio. Los viajeros lo verán en la",
-        "여행 플래너는 관광 코스를 그립니다. 이곳은 다른 종류를 위한 곳입니다 — 훤히 아는 그 길, 각 지점에서 무엇을 이야기하느냐가 핵심인 코스. 직접 써 보세요: 당신의 지점, 당신의 시간, 당신의 가격. 여행자는",
+        "여행 플래너는 관광 코스를 그립니다. 이곳은 다른 종류를 위한 곳입니다 — 훤히 아는 그 길, 각 지점에서 무엇을 이야기하느냐가 핵심인 코스. 직접 써 보세요: 직접 고른 지점, 직접 정한 시간, 직접 매긴 가격. 여행자는",
         "Công cụ lập kế hoạch vẽ ra một vòng tham quan. Đây dành cho loại khác — con đường bạn thuộc nằm lòng, nơi điều quan trọng là những gì bạn kể ở mỗi điểm dừng. Hãy tự viết ra: điểm dừng của bạn, thời gian của bạn, giá của bạn. Du khách xem nó tại"],
     "trips page": ["行程页面", "página de viajes", "여행 페이지", "trang các chuyến"],
     ". Guiding is part of the": ["查看。带团导览隶属于", ". Guiar forma parte del", "에서 봅니다. 가이드 활동은", ". Việc hướng dẫn thuộc"],
@@ -321,7 +321,7 @@ EXTRA.update({
     "Your code identifies you. Travellers see your name, never your contact details — interest comes to you through us, so your listing cannot be harvested for emails.": [
         "编号用于识别您的身份。旅客只看到您的名字，绝不会看到您的联系方式——有人感兴趣时由我们转达，所以您的行程页不会被用来抓取邮箱。",
         "Tu código te identifica. Los viajeros ven tu nombre, nunca tus datos de contacto: el interés te llega a través de nosotros, así que tu anuncio no puede usarse para recolectar correos.",
-        "코드가 당신을 식별합니다. 여행자에게는 이름만 보이고 연락처는 절대 보이지 않습니다 — 문의는 저희를 통해 전달되므로, 등록 정보가 이메일 수집에 쓰일 수 없습니다.",
+        "코드가 본인임을 확인해 줍니다. 여행자에게는 이름만 보이고 연락처는 절대 보이지 않습니다 — 문의는 저희를 통해 전달되므로, 등록 정보가 이메일 수집에 쓰일 수 없습니다.",
         "Mã nhận diện bạn. Du khách thấy tên bạn, không bao giờ thấy thông tin liên hệ — mọi quan tâm đến với bạn qua chúng tôi, nên tin đăng của bạn không thể bị thu thập email."],
     "Where we reach you": ["我们如何联系您", "Cómo te contactamos", "연락받을 곳", "Nơi chúng tôi liên hệ bạn"],
     "What the trip is": ["这是什么样的行程", "En qué consiste el viaje", "어떤 여행인가요", "Chuyến đi là gì"],
@@ -503,14 +503,14 @@ EXTRA.update({
     "One place that keeps every paper trail the site produces — bookings, your customer contact list, signed agreements, uploaded paperwork, leads, partners and more. Private, owner only.": [
         "一个地方保存网站产生的全部纸面记录——订单、客户联系名单、已签协议、上传的文件、潜在客户、合作方等等。私密，仅限所有者查看。",
         "Un solo lugar que guarda todo el rastro documental del sitio: reservas, tu lista de contactos de clientes, acuerdos firmados, documentación subida, prospectos, socios y más. Privado, solo para el propietario.",
-        "사이트가 만들어내는 모든 서류 기록을 한곳에 보관합니다 — 예약, 고객 연락처 목록, 서명된 계약, 업로드된 문서, 리드, 파트너 등. 비공개이며 소유자만 볼 수 있습니다.",
+        "사이트가 만들어내는 모든 서류 기록을 한곳에 보관합니다 — 예약, 고객 연락처 목록, 서명된 계약, 업로드된 문서, 잠재 고객, 파트너 등. 비공개이며 소유자만 볼 수 있습니다.",
         "Một nơi lưu mọi dấu vết giấy tờ mà trang tạo ra — đặt chỗ, danh sách liên hệ khách hàng, thỏa thuận đã ký, hồ sơ tải lên, khách tiềm năng, đối tác và hơn thế. Riêng tư, chỉ chủ sở hữu."],
     "← All archives": ["← 全部档案", "← Todos los archivos", "← 전체 아카이브", "← Tất cả kho lưu trữ"],
     "This is your advertising list.": ["这是您的广告投放名单。", "Esta es tu lista de publicidad.", "이것이 광고용 명단입니다.", "Đây là danh sách quảng cáo của bạn."],
     "Every email and phone your site has ever captured — booking customers, account holders, finance leads, waitlists and partner contacts — de-duplicated. Export it to CSV and load it straight into your ad platform (Google/Meta customer match, Mailchimp, etc.). Only market to people per your privacy policy & applicable law.": [
         "网站收集过的所有邮箱和电话——下单客户、账户持有人、金融意向客户、候补名单和合作方联系人——已去重。可导出 CSV，直接导入广告平台（Google/Meta 客户匹配、Mailchimp 等）。请务必在隐私政策和适用法律允许的范围内进行营销。",
         "Todos los correos y teléfonos que tu sitio ha captado —clientes con reserva, titulares de cuenta, prospectos de finanzas, listas de espera y contactos de socios— sin duplicados. Expórtalo a CSV y cárgalo directamente en tu plataforma publicitaria (customer match de Google/Meta, Mailchimp, etc.). Haz marketing solo conforme a tu política de privacidad y la ley aplicable.",
-        "사이트가 수집한 모든 이메일과 전화번호 — 예약 고객, 계정 보유자, 금융 리드, 대기자 명단, 파트너 연락처 — 를 중복 없이 모았습니다. CSV로 내보내 광고 플랫폼(Google/Meta 고객 매칭, Mailchimp 등)에 바로 올릴 수 있습니다. 개인정보 처리방침과 관련 법률이 허용하는 범위에서만 마케팅하세요.",
+        "사이트가 수집한 모든 이메일과 전화번호 — 예약 고객, 계정 보유자, 금융 잠재 고객, 대기자 명단, 파트너 연락처 — 를 중복 없이 모았습니다. CSV로 내보내 광고 플랫폼(Google/Meta 고객 매칭, Mailchimp 등)에 바로 올릴 수 있습니다. 개인정보 처리방침과 관련 법률이 허용하는 범위에서만 마케팅하세요.",
         "Mọi email và số điện thoại trang đã thu thập — khách đặt chỗ, chủ tài khoản, khách tiềm năng tài chính, danh sách chờ và liên hệ đối tác — đã loại trùng. Xuất ra CSV và nạp thẳng vào nền tảng quảng cáo (customer match của Google/Meta, Mailchimp, v.v.). Chỉ tiếp thị theo đúng chính sách bảo mật và luật hiện hành."],
     "⬇️ Export CSV": ["⬇️ 导出 CSV", "⬇️ Exportar CSV", "⬇️ CSV 내보내기", "⬇️ Xuất CSV"],
     "Nothing here yet — records appear automatically as they happen.": ["这里还没有内容——有记录产生时会自动出现。", "Aún no hay nada: los registros aparecen automáticamente a medida que ocurren.", "아직 아무것도 없습니다 — 기록이 발생하면 자동으로 표시됩니다.", "Chưa có gì ở đây — bản ghi sẽ tự xuất hiện khi phát sinh."],
@@ -540,7 +540,7 @@ EXTRA.update({
     "We control the full value chain and share the upside with drivers and partners — so revenue compounds across transportation, real estate, and finance instead of leaking away.": [
         "我们掌握完整的价值链，并把收益与司机和合作方共享——因此收入在交通、房地产和金融之间不断复利，而不是白白流走。",
         "Controlamos toda la cadena de valor y compartimos las ganancias con conductores y socios, de modo que los ingresos se componen entre transporte, inmobiliaria y finanzas en lugar de escaparse.",
-        "우리는 가치사슬 전체를 직접 운영하고 그 이익을 기사·파트너와 나눕니다 — 그래서 수익이 교통·부동산·금융을 오가며 새어 나가지 않고 복리로 쌓입니다.",
+        "저희는 가치사슬 전체를 직접 운영하고 그 이익을 기사·파트너와 나눕니다 — 그래서 수익이 교통·부동산·금융을 오가며 새어 나가지 않고 복리로 쌓입니다.",
         "Chúng tôi kiểm soát trọn chuỗi giá trị và chia lợi ích với tài xế cùng đối tác — nhờ vậy doanh thu tích lũy qua vận tải, bất động sản và tài chính thay vì rò rỉ ra ngoài."],
     "Capital Efficient": ["资本高效", "Eficiente en capital", "자본 효율", "Hiệu quả vốn"],
     "Each part funds the next through shared cash flow and operational leverage — capital works harder across the whole system.": [
@@ -566,7 +566,7 @@ EXTRA.update({
     "We're validating the market and preparing to launch. Early partners, investors, and team members are critical to our success.": [
         "我们正在验证市场、准备启动。早期的合作方、投资人和团队成员对我们的成败至关重要。",
         "Estamos validando el mercado y preparando el lanzamiento. Los primeros socios, inversores y miembros del equipo son decisivos para nuestro éxito.",
-        "우리는 시장을 검증하며 출시를 준비하고 있습니다. 초기 파트너, 투자자, 팀원이 성공의 핵심입니다.",
+        "저희는 시장을 검증하며 출시를 준비하고 있습니다. 초기 파트너, 투자자, 팀원이 성공의 핵심입니다.",
         "Chúng tôi đang kiểm chứng thị trường và chuẩn bị ra mắt. Các đối tác, nhà đầu tư và thành viên đầu tiên là yếu tố quyết định."],
     "For travelers & tour guides — free map planning": ["为旅客和导游打造——免费地图规划", "Para viajeros y guías — planificación gratuita en el mapa", "여행자와 가이드를 위한 무료 지도 플래닝", "Dành cho du khách & hướng dẫn viên — lập kế hoạch trên bản đồ miễn phí"],
     "Plan a real day on the map: every stop lights up or dims by drive time, traffic and closing hours. Guides build and name their own routes here — no website needed — and travelers who'd rather not drive it themselves can hand the route to a guide.": [
@@ -579,14 +579,14 @@ EXTRA.update({
     "Every attraction and restaurant we know, city by city, with local tips from a licensed guide. It grows on its own: search a place in the planner and it's written into the book for the next traveler. One tap sends anything straight into your trip.": [
         "我们知道的每一处景点和餐厅，按城市整理，附持证导游的本地贴士。它会自己长大：在规划工具里搜索一个地点，它就会被写进手册，留给下一位旅客。一键即可把任何地点加进您的行程。",
         "Cada atracción y restaurante que conocemos, ciudad por ciudad, con consejos locales de un guía con licencia. Crece solo: busca un lugar en el planificador y queda escrito en el libro para el próximo viajero. Con un toque lo envías directo a tu viaje.",
-        "우리가 아는 모든 명소와 식당을 도시별로, 자격을 갖춘 가이드의 현지 팁과 함께 정리했습니다. 스스로 자랍니다: 플래너에서 장소를 검색하면 다음 여행자를 위해 북에 기록됩니다. 한 번만 누르면 바로 일정에 들어갑니다.",
-        "Mọi điểm tham quan và nhà hàng chúng tôi biết, theo từng thành phố, kèm mẹo bản địa từ hướng dẫn viên có giấy phép. Nó tự lớn lên: tìm một địa điểm trong công cụ lập kế hoạch là nó được ghi vào sổ cho du khách kế tiếp. Một chạm là đưa thẳng vào chuyến đi của bạn."],
+        "저희가 아는 모든 명소와 식당을 도시별로, 자격을 갖춘 가이드의 현지 팁과 함께 정리했습니다. 스스로 자랍니다: 플래너에서 장소를 검색하면 다음 여행자를 위해 북에 기록됩니다. 한 번만 누르면 바로 일정에 들어갑니다.",
+        "Mọi điểm tham quan và nhà hàng chúng tôi biết, theo từng thành phố, kèm mẹo bản địa từ hướng dẫn viên có giấy phép. Nó tự mở rộng: tìm một địa điểm trong công cụ lập kế hoạch là nó được ghi vào sổ cho du khách kế tiếp. Một chạm là đưa thẳng vào chuyến đi của bạn."],
     "Open the Book →": ["打开手册 →", "Abrir el libro →", "북 열기 →", "Mở sổ →"],
     "🚧 Under Development": ["🚧 开发中", "🚧 En desarrollo", "🚧 개발 중", "🚧 Đang phát triển"],
     "● WORK IN PROGRESS": ["● 建设中", "● TRABAJO EN CURSO", "● 진행 중", "● ĐANG THỰC HIỆN"],
-    "★ ★ ★ DO YOUR PART ★ ★ ★": ["★ ★ ★ 尽一份力 ★ ★ ★", "★ ★ ★ PON DE TU PARTE ★ ★ ★", "★ ★ ★ 당신의 몫을 ★ ★ ★", "★ ★ ★ GÓP PHẦN CỦA BẠN ★ ★ ★"],
+    "★ ★ ★ DO YOUR PART ★ ★ ★": ["★ ★ ★ 尽一份力 ★ ★ ★", "★ ★ ★ PON DE TU PARTE ★ ★ ★", "★ ★ ★ 여러분의 몫을 ★ ★ ★", "★ ★ ★ GÓP PHẦN CỦA BẠN ★ ★ ★"],
     "When you make it, give a little back.": ["等您做起来了，回馈一点点。", "Cuando te vaya bien, devuelve un poco.", "잘되셨을 때, 조금만 돌려주세요.", "Khi bạn thành công, hãy cho lại một chút."],
-    "give something to your country.": ["为您的国家做点什么。", "da algo a tu país.", "당신의 나라에 무언가를 나누세요.", "hãy cho đất nước bạn một điều gì đó."],
+    "give something to your country.": ["为您的国家做点什么。", "da algo a tu país.", "여러분의 나라에 무언가를 나누세요.", "hãy cho đất nước bạn một điều gì đó."],
     "You give directly to the U.S. Treasury.": ["您的钱直接交给美国财政部。", "Donas directamente al Tesoro de EE. UU.", "미국 재무부에 직접 기부하게 됩니다.", "Bạn tặng trực tiếp cho Bộ Tài chính Hoa Kỳ."],
     "The federal government runs a real program for this —": ["联邦政府为此设有一个正式项目——", "El gobierno federal tiene un programa real para esto:", "연방 정부가 이를 위한 공식 프로그램을 운영합니다 —", "Chính phủ liên bang có một chương trình chính thức cho việc này —"],
     ", at the Bureau of the Fiscal Service. Card, bank, or PayPal on Pay.gov.": ["，由财政服务局负责。可在 Pay.gov 使用银行卡、银行账户或 PayPal。", ", en el Bureau of the Fiscal Service. Tarjeta, banco o PayPal en Pay.gov.", " — 재무서비스국이 담당합니다. Pay.gov에서 카드·계좌·PayPal로 가능합니다.", ", tại Bureau of the Fiscal Service. Thẻ, ngân hàng hoặc PayPal trên Pay.gov."],
@@ -640,7 +640,7 @@ EXTRA.update({
     "Search any place — if the map does not know it yet, you discover it →": [
         "搜索任何地点——如果地图还不认识它，那就是您发现的 →",
         "Busca cualquier lugar: si el mapa aún no lo conoce, lo descubres tú →",
-        "어떤 장소든 검색해 보세요 — 지도가 아직 모른다면 당신이 발견한 것입니다 →",
+        "어떤 장소든 검색해 보세요 — 지도가 아직 모른다면 발견하신 것입니다 →",
         "Tìm bất kỳ nơi nào — nếu bản đồ chưa biết, chính bạn là người khám phá ra →"],
     "Guided Trips": ["导览行程", "Viajes guiados", "가이드 투어", "Chuyến có hướng dẫn"],
     "For travellers & the guides who run them": ["为旅客和带团导游打造", "Para viajeros y los guías que los realizan", "여행자와 이를 진행하는 가이드를 위해", "Dành cho du khách & những hướng dẫn viên dẫn tour"],
@@ -674,7 +674,7 @@ EXTRA.update({
     "A prediction clock that never lies to you — weather, markets, your own patterns, every forecast scored against what actually happened. It tells you when it doesn't know. Free while it earns its record ($10/year value).": [
         "一个从不骗您的预测时钟——天气、市场、您自己的规律，每一次预测都拿真实结果来打分。不知道的时候，它会直说。在它积累战绩期间免费（价值每年 10 美元）。",
         "Un reloj de predicción que nunca te miente: clima, mercados, tus propios patrones, y cada pronóstico puntuado contra lo que realmente ocurrió. Te dice cuándo no lo sabe. Gratis mientras se gana su historial (valor de 10 $/año).",
-        "결코 거짓말하지 않는 예측 시계 — 날씨, 시장, 당신의 패턴까지, 모든 예측을 실제 결과와 대조해 채점합니다. 모를 때는 모른다고 말합니다. 실적을 쌓는 동안 무료입니다(연 10달러 상당).",
+        "결코 거짓말하지 않는 예측 시계 — 날씨, 시장, 생활 속 패턴까지, 모든 예측을 실제 결과와 대조해 채점합니다. 모를 때는 모른다고 말합니다. 실적을 쌓는 동안 무료입니다(연 10달러 상당).",
         "Một chiếc đồng hồ dự báo không bao giờ nói dối bạn — thời tiết, thị trường, thói quen của chính bạn, mọi dự báo đều được chấm điểm dựa trên điều đã thực sự xảy ra. Nó nói thẳng khi không biết. Miễn phí trong lúc tạo dựng thành tích (trị giá 10 $/năm)."],
     "Open the Factor Clock →": ["打开因子时钟 →", "Abrir el Reloj de Factores →", "팩터 클록 열기 →", "Mở Đồng hồ Nhân tố →"],
     "More on the way": ["还有更多在路上", "Vienen más", "더 준비 중입니다", "Còn nhiều nữa đang tới"],
@@ -716,19 +716,19 @@ EXTRA.update({
         "Los pagos se procesan mediante el sistema de Square, conforme a PCI. Nunca vemos ni guardamos tu número completo de tarjeta: la parte sensible jamás toca nuestros servidores.",
         "결제는 Square의 PCI 준수 시스템을 통해 처리됩니다. 저희는 전체 카드번호를 보거나 저장하지 않으며, 민감한 부분은 서버에 닿지 않습니다.",
         "Thanh toán chạy qua hệ thống đạt chuẩn PCI của Square. Chúng tôi không bao giờ thấy hay lưu số thẻ đầy đủ của bạn — phần nhạy cảm không chạm tới máy chủ của chúng tôi."],
-    "We never hold your money": ["我们从不代管您的钱", "Nunca retenemos tu dinero", "저희는 당신의 돈을 보관하지 않습니다", "Chúng tôi không bao giờ giữ tiền của bạn"],
+    "We never hold your money": ["我们从不代管您的钱", "Nunca retenemos tu dinero", "저희는 고객님의 돈을 보관하지 않습니다", "Chúng tôi không bao giờ giữ tiền của bạn"],
     "Bookings · guide & driver payouts": ["订单 · 导游与司机结算", "Reservas · pagos a guías y conductores", "예약 · 가이드 및 기사 정산", "Đặt chỗ · chi trả cho hướng dẫn viên & tài xế"],
     "We invoice for our own service and never hold a customer's funds in escrow. Every payout to a driver or guide takes an explicit owner approval — money never moves on its own.": [
         "我们只为自己的服务开具账单，绝不代管客户的资金。每一笔付给司机或导游的款项都需要所有者明确批准——钱不会自己动。",
         "Facturamos por nuestro propio servicio y nunca retenemos fondos del cliente en depósito. Cada pago a un conductor o guía requiere la aprobación explícita del propietario: el dinero nunca se mueve solo.",
         "저희는 자사 서비스에 대해서만 청구하며 고객 자금을 예치하지 않습니다. 기사나 가이드에게 나가는 모든 정산은 소유자의 명시적 승인이 필요합니다 — 돈이 저절로 움직이지 않습니다.",
         "Chúng tôi chỉ xuất hóa đơn cho dịch vụ của mình và không bao giờ giữ tiền khách trong ký quỹ. Mỗi khoản chi cho tài xế hay hướng dẫn viên đều cần chủ sở hữu phê duyệt rõ ràng — tiền không tự chuyển đi."],
-    "Your data stays yours": ["您的数据仍属于您", "Tus datos siguen siendo tuyos", "당신의 데이터는 당신의 것", "Dữ liệu của bạn vẫn là của bạn"],
+    "Your data stays yours": ["您的数据仍属于您", "Tus datos siguen siendo tuyos", "고객님의 데이터는 고객님의 것", "Dữ liệu của bạn vẫn là của bạn"],
     "The free tools": ["这些免费工具", "Las herramientas gratuitas", "무료 도구", "Các công cụ miễn phí"],
     "The Trip Planner and Destination Book store only place names and typical visit times — no personal tracking. Your planned trip stays on your own device until you choose to book.": [
         "行程规划和目的地手册只保存地点名称和常见停留时间——不做个人追踪。在您决定下单之前，您排好的行程只留在自己的设备上。",
         "El planificador y el Libro de destinos solo guardan nombres de lugares y tiempos típicos de visita: sin seguimiento personal. Tu viaje planificado permanece en tu dispositivo hasta que decidas reservar.",
-        "여행 플래너와 여행지 북은 장소 이름과 통상 관람 시간만 저장합니다 — 개인 추적은 없습니다. 예약을 선택하기 전까지 계획한 일정은 당신 기기에만 남습니다.",
+        "여행 플래너와 여행지 북은 장소 이름과 통상 관람 시간만 저장합니다 — 개인 추적은 없습니다. 예약을 선택하기 전까지 계획한 일정은 본인 기기에만 남습니다.",
         "Công cụ lập kế hoạch và Sổ điểm đến chỉ lưu tên địa điểm và thời gian ghé thăm thông thường — không theo dõi cá nhân. Hành trình bạn lên vẫn nằm trên thiết bị của bạn cho tới khi bạn quyết định đặt."],
     "Give-back goes straight to Treasury": ["回馈直接进入财政部", "La devolución va directa al Tesoro", "환원은 재무부로 바로", "Khoản cho lại đi thẳng tới Bộ Tài chính"],
     "The national-debt donation": ["国债捐赠", "La donación a la deuda nacional", "국가 부채 기부", "Khoản quyên góp giảm nợ công"],
@@ -740,7 +740,7 @@ EXTRA.update({
     "This list grows as the site adds features. If a new part of the site handles your data or your money, its safeguard is added here.": [
         "网站每增加一项功能，这份清单就会随之增加。只要有新的部分会处理您的数据或您的钱，它的保障措施就会写进这里。",
         "Esta lista crece a medida que el sitio añade funciones. Si una parte nueva maneja tus datos o tu dinero, su salvaguarda se añade aquí.",
-        "사이트에 기능이 늘어나면 이 목록도 함께 늘어납니다. 새로운 부분이 당신의 데이터나 돈을 다룬다면 그 안전장치가 여기에 추가됩니다.",
+        "사이트에 기능이 늘어나면 이 목록도 함께 늘어납니다. 새로운 부분이 고객님의 데이터나 돈을 다룬다면 그 안전장치가 여기에 추가됩니다.",
         "Danh sách này lớn lên khi trang bổ sung tính năng. Nếu một phần mới xử lý dữ liệu hay tiền của bạn, biện pháp bảo vệ của nó sẽ được thêm vào đây."],
     "An integrated business ecosystem — transportation, real estate and finance in one closed loop, built so revenue compounds instead of leaking away.": [
         "一个一体化的商业生态——交通、房地产与金融构成一个闭环，让收入不断复利，而不是白白流走。",
@@ -819,14 +819,14 @@ EXTRA.update({
     "Referring rides earns a commission. Guiding earns the whole fare — you set it. Write the trip you already know by heart: your stops, how long you actually stand at each one, what you say there, and what it costs. It goes on the public": [
         "推荐用车赚的是佣金。带团导览赚的是整笔团费——价格由您定。把您早已烂熟于心的那条行程写下来：您的站点、每站实际停留多久、您在那里讲什么、以及收费多少。它会出现在公开的",
         "Referir viajes da comisión. Guiar da la tarifa entera, que tú fijas. Escribe el viaje que ya te sabes de memoria: tus paradas, cuánto tiempo estás realmente en cada una, qué cuentas allí y cuánto cuesta. Aparecerá en la",
-        "차량을 추천하면 수수료를 받고, 가이드를 하면 요금 전액을 받습니다 — 가격은 당신이 정합니다. 이미 훤히 아는 그 일정을 적어 보세요: 방문지, 각 지점에서 실제로 머무는 시간, 그곳에서 하는 이야기, 그리고 비용. 공개된",
+        "차량을 추천하면 수수료를 받고, 가이드를 하면 요금 전액을 받습니다 — 가격은 직접 정하십니다. 이미 훤히 아는 그 일정을 적어 보세요: 방문지, 각 지점에서 실제로 머무는 시간, 그곳에서 하는 이야기, 그리고 비용. 공개된",
         "Giới thiệu chuyến xe thì nhận hoa hồng. Dẫn tour thì nhận trọn tiền tour — do bạn định giá. Hãy viết ra hành trình bạn đã thuộc nằm lòng: các điểm dừng, thời gian thực sự ở mỗi nơi, điều bạn kể ở đó, và chi phí. Nó sẽ lên"],
     "the moment you list it, and travellers reach you through us — your contact details are never published.": [
         "上，发布即刻可见；旅客通过我们联系您——您的联系方式绝不会被公开。",
         "en cuanto lo publiques, y los viajeros te contactarán a través de nosotros: tus datos de contacto nunca se publican.",
-        "여행 페이지에 등록 즉시 올라가며, 여행자는 저희를 통해 연락합니다 — 당신의 연락처는 절대 공개되지 않습니다.",
+        "여행 페이지에 등록 즉시 올라가며, 여행자는 저희를 통해 연락합니다 — 회원님의 연락처는 절대 공개되지 않습니다.",
         "ngay khi bạn đăng, và du khách liên hệ bạn qua chúng tôi — thông tin liên hệ của bạn không bao giờ được công khai."],
-    "Your code doubles as your guide credential": ["您的编号同时也是导游身份凭证", "Tu código sirve además como credencial de guía", "당신의 코드는 가이드 자격 증명도 겸합니다", "Mã của bạn đồng thời là chứng nhận hướng dẫn viên"],
+    "Your code doubles as your guide credential": ["您的编号同时也是导游身份凭证", "Tu código sirve además como credencial de guía", "회원님의 코드는 가이드 자격 증명도 겸합니다", "Mã của bạn đồng thời là chứng nhận hướng dẫn viên"],
     "This is what proves a real guide wrote the trip.": ["这就是证明行程出自真正导游之手的凭证。", "Esto es lo que demuestra que un guía real escribió el viaje.", "이것이 실제 가이드가 일정을 작성했다는 증거입니다.", "Đây là bằng chứng một hướng dẫn viên thật đã viết hành trình."],
     "Open Guide Studio →": ["打开导游工作室 →", "Abrir el Estudio de guías →", "가이드 스튜디오 열기 →", "Mở Xưởng hướng dẫn viên →"],
     "Zelle / cash / check — and where": ["Zelle / 现金 / 支票——以及收款地点", "Zelle / efectivo / cheque — y dónde", "Zelle / 현금 / 수표 — 그리고 어디로", "Zelle / tiền mặt / séc — và ở đâu"],
@@ -856,13 +856,13 @@ EXTRA.update({
     "Everything on this site is here to get people out of a hole and into a fortune — the free tools, the work, the trading research. If it works for you, we ask one thing, and only if you want to:": [
         "这个网站上的一切——免费工具、我们做的事、交易研究——都是为了帮人从坑里爬出来，走向富足。如果它对您管用，我们只有一个请求，而且完全自愿：",
         "Todo lo que hay en este sitio existe para sacar a la gente de un agujero y llevarla a la prosperidad: las herramientas gratuitas, el trabajo, la investigación de trading. Si te funciona, te pedimos una sola cosa, y solo si quieres:",
-        "이 사이트의 모든 것 — 무료 도구, 우리가 하는 일, 트레이딩 연구 — 은 사람들을 구덩이에서 꺼내 풍요로 이끌기 위해 있습니다. 도움이 되셨다면 딱 한 가지만 부탁드립니다. 원하실 때만요:",
+        "이 사이트의 모든 것 — 무료 도구, 저희가 하는 일, 트레이딩 연구 — 은 사람들을 구덩이에서 꺼내 풍요로 이끌기 위해 있습니다. 도움이 되셨다면 딱 한 가지만 부탁드립니다. 원하실 때만요:",
         "Mọi thứ trên trang này tồn tại để đưa người ta ra khỏi hố sâu và tới chỗ khá giả — các công cụ miễn phí, công việc, nghiên cứu giao dịch. Nếu nó có ích cho bạn, chúng tôi chỉ xin một điều, và chỉ khi bạn muốn:"],
     "The national debt is measured in trillions; no single gift changes that arithmetic. That isn't the point — the point is the act, and that it's real, voluntary, and goes where we say it goes. Gifts to the United States for exclusively public purposes are generally tax-deductible, but we're not tax advisors — ask yours. Plateau Strategy Solution Lab is not affiliated with, and does not represent, the U.S. Treasury or any government agency.": [
         "国债以万亿计；任何一笔捐赠都改变不了这个算术。但这不是重点——重点在于这个举动本身，在于它真实、自愿，并且确实流向我们所说的地方。为纯公共用途向美国政府所作的捐赠通常可以抵税，但我们不是税务顾问——请咨询您自己的顾问。Plateau Strategy Solution Lab 与美国财政部或任何政府机构均无隶属关系，也不代表它们。",
         "La deuda nacional se mide en billones; ninguna donación cambia esa aritmética. No se trata de eso: se trata del acto, y de que sea real, voluntario y vaya adonde decimos que va. Las donaciones a Estados Unidos con fines exclusivamente públicos suelen ser deducibles, pero no somos asesores fiscales: consulta al tuyo. Plateau Strategy Solution Lab no está afiliado al Tesoro de EE. UU. ni a ninguna agencia gubernamental, ni los representa.",
-        "국가 부채는 조 단위입니다. 한 번의 기부가 그 산술을 바꾸지는 못합니다. 요점은 그것이 아니라 행위 자체이며, 그것이 실제이고 자발적이며 우리가 말한 곳으로 간다는 사실입니다. 오로지 공공 목적으로 미국에 하는 기부는 대체로 세금 공제 대상이지만, 저희는 세무 자문가가 아니니 담당자에게 문의하세요. Plateau Strategy Solution Lab은 미국 재무부나 어떤 정부 기관과도 제휴하지 않으며 이를 대표하지 않습니다.",
-        "Nợ công được tính bằng nghìn tỷ; không khoản tặng đơn lẻ nào thay đổi phép tính đó. Đó không phải là điểm chính — điểm chính là hành động, và rằng nó có thật, tự nguyện, và đi đúng nơi chúng tôi nói. Các khoản tặng cho Hoa Kỳ vì mục đích thuần công cộng thường được khấu trừ thuế, nhưng chúng tôi không phải cố vấn thuế — hãy hỏi cố vấn của bạn. Plateau Strategy Solution Lab không liên kết với và không đại diện cho Bộ Tài chính Hoa Kỳ hay bất kỳ cơ quan chính phủ nào."],
+        "국가 부채는 조 단위입니다. 한 번의 기부가 그 산술을 바꾸지는 못합니다. 요점은 그것이 아니라 행위 자체이며, 그것이 실제이고 자발적이며 저희가 말씀드린 곳으로 간다는 사실입니다. 오로지 공공 목적으로 미국에 하는 기부는 대체로 세금 공제 대상이지만, 저희는 세무 자문가가 아니니 담당자에게 문의하세요. Plateau Strategy Solution Lab은 미국 재무부나 어떤 정부 기관과도 제휴하지 않으며 이를 대표하지 않습니다.",
+        "Nợ công được tính bằng nghìn tỷ; không khoản tặng đơn lẻ nào thay đổi phép tính đó. Vấn đề không nằm ở đó — mà ở chính hành động, và rằng nó có thật, tự nguyện, và đi đúng nơi chúng tôi nói. Các khoản tặng cho Hoa Kỳ vì mục đích thuần công cộng thường được khấu trừ thuế, nhưng chúng tôi không phải cố vấn thuế — hãy hỏi cố vấn của bạn. Plateau Strategy Solution Lab không liên kết với và không đại diện cho Bộ Tài chính Hoa Kỳ hay bất kỳ cơ quan chính phủ nào."],
     "The problem, the business model, how it makes money, and what it needs to launch…": [
         "要解决的问题、商业模式、怎么赚钱，以及启动需要什么…",
         "El problema, el modelo de negocio, cómo gana dinero y qué necesita para lanzarse…",
@@ -954,7 +954,7 @@ EXTRA.update({
     "Weather, markets, your own patterns — every forecast scored against what actually happened. It tells you when it": [
         "天气、市场、您自己的规律——每一次预测都拿真实结果打分。当它",
         "Clima, mercados, tus propios patrones: cada pronóstico puntuado contra lo que realmente pasó. Te dice cuándo",
-        "날씨, 시장, 당신의 패턴 — 모든 예측을 실제 결과와 대조해 채점합니다. 모를 때는",
+        "날씨, 시장, 생활 속 패턴 — 모든 예측을 실제 결과와 대조해 채점합니다. 모를 때는",
         "Thời tiết, thị trường, thói quen của bạn — mọi dự báo đều chấm điểm dựa trên điều đã thực sự xảy ra. Nó nói cho bạn biết khi nào nó"],
     "doesn't": ["不知道时", "no", "모른다고", "không"],
     "know, and it's evolving with everyone who uses it.": ["，它会直说；而且它会随着每一位使用者一起进化。", "lo sabe, y evoluciona con todos los que lo usan.", " 말해 주며, 사용하는 모든 사람과 함께 발전합니다.", "biết, và nó tiến hóa cùng mọi người dùng."],
@@ -967,11 +967,11 @@ EXTRA.update({
         "매일 아침, 당신의 하루를 쉬운 말로 한 번 읽어 줍니다 — 추측은 추측이라고, 근거 있는 답은 근거 있다고 분명히 밝힙니다.",
         "Mỗi sáng, một bản đọc hiểu về ngày của bạn bằng ngôn ngữ dễ hiểu — nói rõ đâu là phỏng đoán và đâu là câu trả lời đã được chứng minh."],
     "A library that's earned it": ["一座凭实绩说话的资料库", "Una biblioteca que se lo ha ganado", "실적으로 증명된 라이브러리", "Một thư viện đã tự chứng minh"],
-        "Learns you, privately": ["私密地了解您", "Te aprende, en privado", "당신을 사적으로 학습합니다", "Học về bạn, một cách riêng tư"],
+        "Learns you, privately": ["私密地了解您", "Te aprende, en privado", "사용자를 사적으로 학습합니다", "Học về bạn, một cách riêng tư"],
     "Log your own life — a shift, a drive, a habit — and it finds your patterns. Your data stays on your device. It gets sharper the longer you own it.": [
         "记录您自己的生活——一个班次、一趟车、一个习惯——它就能找出您的规律。数据留在您自己的设备上。您用得越久，它就越准。",
         "Registra tu propia vida —un turno, un trayecto, un hábito— y encuentra tus patrones. Tus datos se quedan en tu dispositivo. Cuanto más tiempo lo tengas, más afinado será.",
-        "당신의 일상을 기록하세요 — 근무, 운전, 습관 — 그러면 패턴을 찾아냅니다. 데이터는 당신 기기에 남습니다. 오래 쓸수록 더 정확해집니다.",
+        "일상을 기록해 보세요 — 근무, 운전, 습관 — 그러면 패턴을 찾아냅니다. 데이터는 본인 기기에 남습니다. 오래 쓸수록 더 정확해집니다.",
         "Ghi lại đời sống của bạn — một ca làm, một chuyến lái, một thói quen — và nó tìm ra quy luật của bạn. Dữ liệu ở lại trên thiết bị của bạn. Càng dùng lâu càng sắc bén."],
     "The one thing nobody else ships: honest uncertainty": ["别人都不肯给的那样东西：诚实的不确定性", "Lo único que nadie más entrega: incertidumbre honesta", "다른 곳은 내놓지 않는 단 하나: 정직한 불확실성", "Điều duy nhất không ai khác cung cấp: sự bất định trung thực"],
         "Straight talk, because that's the whole point.": ["有话直说，因为这正是重点所在。", "Hablar claro, porque de eso se trata.", "솔직하게 말합니다. 그게 핵심이니까요.", "Nói thẳng, vì đó chính là điểm mấu chốt."],
@@ -980,7 +980,10 @@ EXTRA.update({
         "El Reloj de Factores está en fase inicial. Su biblioteca del mundo es real y está probada; su capacidad de leer",
         "팩터 클록은 아직 초기 단계입니다. 세계 라이브러리는 실재하며 검증되었지만,",
         "Đồng hồ Nhân tố còn ở giai đoạn sớm. Thư viện thế giới của nó là thật và đã được kiểm chứng; khả năng đọc"],
-    "your": ["您", "tu", "당신의", "của bạn"],
+    # The emphasised "your" on the Factor Clock — its power to read YOUR life.
+    # 당신의 is the literal rendering and the one a Korean reader hears as
+    # translated-from-English; 본인의 carries the same emphasis natively.
+    "your": ["您", "tu", "본인의", "của bạn"],
     "life grows as you use it. That's exactly why it's": ["的生活的能力，要靠您使用才会成长。这正是它现在", "vida crece a medida que lo usas. Precisamente por eso es", "삶을 읽는 능력은 쓰실수록 자랍니다. 그래서 지금은", "cuộc sống của bạn lớn lên khi bạn dùng. Chính vì thế nó"],
     "free right now": ["免费的原因", "gratis ahora mismo", "무료입니다", "miễn phí ngay lúc này"],
         "Free while it earns its record": ["在它积累战绩期间免费", "Gratis mientras se gana su historial", "실적을 쌓는 동안 무료", "Miễn phí trong lúc tạo dựng thành tích"],
@@ -1042,11 +1045,11 @@ EXTRA.update({
         "每一款预测应用都在假装有把握。这一款不肯。它会说“87%，这是我的历史战绩”——或者“我不知道，而且这是没人能确定的证据”。它甚至让一个量子随机数发生器在同样的规则下一起上场：如果纯粹的随机居然被评为“有本事”，它就把自己标记为出了问题。这才是一个您真能信得过的工具。",
         "Todas las apps de predicción fingen seguridad. Esta se niega. Dice «87 %, y aquí está mi historial» — o «no lo sé, y aquí está la prueba de que nadie lo sabe». Incluso mantiene en el banquillo un generador cuántico de números aleatorios con las mismas reglas: si el puro azar llega a puntuar como habilidad, se marca a sí misma como defectuosa. Eso sí es una herramienta en la que puedes confiar.",
         "모든 예측 앱은 자신감을 꾸며냅니다. 이 앱은 그러지 않습니다. “87%, 그리고 이것이 제 실적입니다”라고 말하거나, “모릅니다, 그리고 아무도 모른다는 증거가 여기 있습니다”라고 말합니다. 심지어 동일한 규칙으로 양자 난수 생성기를 함께 돌립니다: 순수한 무작위가 실력 있는 것으로 채점된다면, 스스로 고장 났다고 표시합니다. 그래야 진짜로 믿을 수 있는 도구입니다.",
-        "Mọi ứng dụng dự báo đều giả vờ tự tin. Cái này thì không. Nó nói “87%, và đây là thành tích của tôi” — hoặc “tôi không biết, và đây là bằng chứng không ai biết”. Nó thậm chí đặt một bộ sinh số ngẫu nhiên lượng tử lên băng ghế với cùng luật chơi: nếu sự ngẫu nhiên thuần túy lại được chấm là có kỹ năng, nó tự đánh dấu mình hỏng. Đó mới là công cụ bạn thực sự tin được."],
+        "Mọi ứng dụng dự báo đều giả vờ tự tin. Ứng dụng này thì không. Nó nói “87%, và đây là thành tích của tôi” — hoặc “tôi không biết, và đây là bằng chứng không ai biết”. Nó thậm chí đặt một bộ sinh số ngẫu nhiên lượng tử lên băng ghế với cùng luật chơi: nếu sự ngẫu nhiên thuần túy lại được chấm là có kỹ năng, nó tự đánh dấu mình hỏng. Đó mới là công cụ bạn thực sự tin được."],
     "— we'd rather you use it, feed it your own patterns, and watch it earn your trust than pay for a promise. When it's proven it'll be $10 a year; get in now and you lock that in.": [
         "——比起让您为一个承诺付费，我们更希望您先用起来，把自己的规律喂给它，看着它一点点赢得您的信任。等它证明了自己，价格是每年 10 美元；现在加入就能锁定这个价。",
         "— preferimos que lo uses, le des tus propios patrones y veas cómo se gana tu confianza, en lugar de que pagues por una promesa. Cuando esté probado costará 10 $ al año; entra ahora y lo fijas.",
-        "— 약속에 돈을 내기보다, 직접 써 보고 당신의 패턴을 알려주며 신뢰를 얻어가는 모습을 지켜보시길 바랍니다. 검증되면 연 10달러가 되며, 지금 합류하시면 그 가격이 고정됩니다.",
+        "— 약속에 돈을 내기보다, 직접 써 보고 생활 속 패턴을 알려주며 신뢰를 얻어가는 모습을 지켜보시길 바랍니다. 검증되면 연 10달러가 되며, 지금 합류하시면 그 가격이 고정됩니다.",
         "— chúng tôi muốn bạn dùng nó, cho nó biết thói quen của bạn, và xem nó dần chiếm được lòng tin, hơn là trả tiền cho một lời hứa. Khi đã chứng minh được, giá sẽ là 10 $/năm; tham gia bây giờ là bạn khóa được mức đó."],
     ", and no outcome is guaranteed — predictions can be wrong. You are responsible for your own decisions. Your personal data stays on your own device. © Plateau Strategy Solution Lab.": [
         "，也不保证任何结果——预测可能出错。您的决定由您自己负责。您的个人数据留在您自己的设备上。© Plateau Strategy Solution Lab。",
@@ -1150,7 +1153,7 @@ EXTRA.update({
     "Dispatch, invoicing, driver paperwork and the trip-planning tools — built in-house rather than rented, so the customer relationship and the data stay with us.": [
         "调度、开票、司机文件和行程规划工具——都是自己做的，不是租来的，所以客户关系和数据都留在我们手里。",
         "Central, facturación, papeleo de conductores y las herramientas de planificación — construidos en casa en vez de alquilados, de modo que la relación con el cliente y los datos se quedan con nosotros.",
-        "배차, 청구, 기사 서류, 여행 계획 도구 — 빌려 쓰지 않고 직접 만들었기에 고객 관계와 데이터가 우리에게 남습니다.",
+        "배차, 청구, 기사 서류, 여행 계획 도구 — 빌려 쓰지 않고 직접 만들었기에 고객 관계와 데이터가 저희에게 남습니다.",
         "Điều phối, xuất hóa đơn, giấy tờ tài xế và các công cụ lập kế hoạch — tự làm chứ không đi thuê, nên quan hệ khách hàng và dữ liệu ở lại với chúng tôi."],
     "See the platform →": ["查看平台 →", "Ver la plataforma →", "플랫폼 보기 →", "Xem nền tảng →"],
     "In development": ["开发中", "En desarrollo", "개발 중", "Đang phát triển"],
@@ -1352,7 +1355,7 @@ EXTRA.update({
     "Dispatch, invoicing, driver paperwork and the trip-planning tools — built in-house rather than rented, so the customer relationship and the data stay with us.": [
         "调度、开票、司机资料与行程规划工具，均为自研而非外购，因此客户关系与数据都留在我们自己手中。",
         "Despacho, facturación, documentación de conductores y las herramientas de planificación — desarrollados en casa y no alquilados, así la relación con el cliente y los datos se quedan con nosotros.",
-        "배차, 청구, 기사 서류, 여행 계획 도구까지 임대가 아니라 자체 개발했습니다. 그래서 고객 관계와 데이터가 우리에게 남습니다.",
+        "배차, 청구, 기사 서류, 여행 계획 도구까지 임대가 아니라 자체 개발했습니다. 그래서 고객 관계와 데이터가 저희에게 남습니다.",
         "Điều phối, xuất hóa đơn, hồ sơ tài xế và công cụ lập kế hoạch — tự xây dựng thay vì đi thuê, nên quan hệ khách hàng và dữ liệu vẫn thuộc về chúng tôi."],
 
     "Mixed-use development, at drawing stage. Nothing built, nothing leased, nothing offered — the plans are published as they stand.": [
@@ -1391,7 +1394,7 @@ EXTRA.update({
     "We started with transportation: affordable Tesla rentals that turn everyday drivers into earners and everyday riders into loyal clients. From there, each part of our business funds and strengthens the next — operations, real estate, finance, and reinvestment — a closed loop where revenue compounds instead of leaking away.": [
         "我们从出行业务起步：以可负担的特斯拉租赁，让普通司机获得收入，也让乘客愿意再次乘坐。在此基础上，每一项业务为下一项提供资金——出行、房地产、金融、再投资——形成一个闭环，收入在其中不断累积，而不是外流。",
         "Empezamos por el transporte: alquileres de Tesla asequibles que convierten a conductores corrientes en personas que ganan y a cada pasajero en cliente recurrente. A partir de ahí, cada negocio financia al siguiente — transporte, inmobiliario, finanzas, reinversión — formando un circuito cerrado donde los ingresos se acumulan en lugar de escaparse.",
-        "우리는 교통에서 시작했습니다. 합리적인 가격의 테슬라 대여로 평범한 기사가 수입을 얻고, 승객은 다시 찾게 됩니다. 그 위에서 각 사업이 다음 사업의 자금을 댑니다 — 교통, 부동산, 금융, 재투자 — 수익이 빠져나가지 않고 쌓이는 닫힌 순환을 이룹니다.",
+        "저희는 교통에서 시작했습니다. 합리적인 가격의 테슬라 대여로 평범한 기사가 수입을 얻고, 승객은 다시 찾게 됩니다. 그 위에서 각 사업이 다음 사업의 자금을 댑니다 — 교통, 부동산, 금융, 재투자 — 수익이 빠져나가지 않고 쌓이는 닫힌 순환을 이룹니다.",
         "Chúng tôi khởi đầu từ vận tải: cho thuê Tesla với giá hợp lý để tài xế bình thường có thu nhập và hành khách quay lại. Từ đó, mỗi mảng cấp vốn cho mảng kế tiếp — vận tải, bất động sản, tài chính, tái đầu tư — tạo thành vòng khép kín nơi doanh thu tích lũy thay vì thất thoát."],
 })
 
@@ -1455,7 +1458,7 @@ EXTRA.update({
     "Dispatch, invoicing, driver paperwork and the trip-planning tools — built in-house rather than rented, so the customer relationship and the data stay with us.": [
         "调度、开票、司机资料、行程规划工具，都是自己写的，不是租来的。所以客户和数据，都留在自己手里。",
         "Despacho, facturación, papeleo de conductores, herramientas de planificación: escritos por nosotros, no alquilados. Por eso el cliente y los datos se quedan aquí.",
-        "배차, 청구, 기사 서류, 여행 계획 도구 — 빌린 게 아니라 직접 만들었습니다. 그래서 고객도 데이터도 우리에게 남습니다.",
+        "배차, 청구, 기사 서류, 여행 계획 도구 — 빌린 게 아니라 직접 만들었습니다. 그래서 고객도 데이터도 저희에게 남습니다.",
         "Điều phối, hóa đơn, giấy tờ tài xế, công cụ lập kế hoạch — tự viết, không đi thuê. Nhờ vậy khách hàng và dữ liệu vẫn ở lại với chúng tôi."],
 
     "Mixed-use development, at drawing stage. Nothing built, nothing leased, nothing offered — the plans are published as they stand.": [
@@ -1584,7 +1587,7 @@ EXTRA.update({
     "We build one business at a time": [
         "一次只做好一项业务",
         "Un negocio a la vez, hecho bien",
-        "우리는 한 번에 하나의 사업을 구축합니다.",
+        "저희는 한 번에 하나씩 사업을 키웁니다.",
         "Chúng tôi phát triển từng mảng kinh doanh một"
     ],
     "Transportation is the one that runs today: flat-rate Tesla rides across Seattle, cars rented to drivers who earn with them, and trip-planning tools anyone can use free. It pays for what comes next. Every other arm is listed below with the stage it is honestly at — including the ones not finished.": [
@@ -1665,7 +1668,7 @@ EXTRA.update({
     "Transportation operates today and funds what follows: flat-rate Tesla service across Seattle, a vehicle rental programme for drivers, and trip-planning tools available free to anyone. The property development is at drawing stage and the trading research is in private verification. Each business is set out below with the stage it has actually reached.": [
         "出行业务目前已投入运营，并为后续业务提供资金：覆盖西雅图全城的特斯拉固定价格接送服务、面向司机的车辆租赁计划，以及任何人均可免费使用的行程规划工具。地产开发尚处图纸阶段，交易研究仍在内部验证之中。以下逐项列明各业务实际所处的阶段。",
         "El transporte ya opera y financia lo que viene después: servicio Tesla con tarifa fija en todo Seattle, un programa de alquiler de vehículos para conductores y herramientas de planificación de viajes gratuitas para cualquiera. El desarrollo inmobiliario está en fase de proyecto y la investigación en trading, en verificación privada. Cada negocio figura debajo con la etapa que ha alcanzado realmente.",
-        "교통 사업은 현재 운영 중이며 이후 사업의 자금을 조달합니다. 시애틀 전역의 테슬라 정액 운송 서비스, 운전자를 위한 차량 대여 프로그램, 그리고 누구나 무료로 이용할 수 있는 여정 계획 도구가 이에 해당합니다. 부동산 개발은 설계 단계에 있으며, 거래 연구는 비공개 검증 단계에 있습니다. 각 사업이 실제로 도달한 단계를 아래에 정리하였습니다.",
+        "교통 사업은 현재 운영 중이며 이후 사업의 자금을 조달합니다. 시애틀 전역의 테슬라 정액 운송 서비스, 운전자를 위한 차량 대여 프로그램, 그리고 누구나 무료로 이용할 수 있는 여행 플래너가 이에 해당합니다. 부동산 개발은 설계 단계에 있으며, 거래 연구는 비공개 검증 단계에 있습니다. 각 사업이 실제로 도달한 단계를 아래에 정리하였습니다.",
         "Mảng vận tải hiện đã đi vào hoạt động và cấp vốn cho các mảng tiếp theo: dịch vụ Tesla giá cố định trên toàn Seattle, chương trình cho tài xế thuê xe, và các công cụ lập kế hoạch hành trình miễn phí cho mọi người. Dự án bất động sản đang ở giai đoạn thiết kế, còn nghiên cứu giao dịch đang trong quá trình kiểm chứng nội bộ. Từng mảng được trình bày dưới đây kèm giai đoạn thực tế đã đạt được."],
 
     "Four arms, at four different stages": [
@@ -1689,7 +1692,7 @@ EXTRA.update({
     "Dispatch, invoicing, driver paperwork and the trip-planning tools — built in-house rather than rented, so the customer relationship and the data stay with us.": [
         "调度、开票、司机资料管理与行程规划工具，均为自主开发而非外部租用，客户关系与数据因此留存于内部。",
         "Despacho, facturación, documentación de conductores y herramientas de planificación: desarrollados internamente en lugar de alquilados, de modo que la relación con el cliente y los datos permanecen con nosotros.",
-        "배차, 청구, 운전자 서류 관리, 여정 계획 도구를 외부 임대가 아닌 자체 개발로 구축하였으며, 그 결과 고객 관계와 데이터가 내부에 남습니다.",
+        "배차, 청구, 운전자 서류 관리, 여행 플래너를 외부 임대가 아닌 자체 개발로 구축하였으며, 그 결과 고객 관계와 데이터가 내부에 남습니다.",
         "Điều phối, lập hóa đơn, hồ sơ tài xế và công cụ lập kế hoạch hành trình đều do nội bộ phát triển thay vì thuê ngoài, nhờ đó quan hệ khách hàng và dữ liệu được giữ lại."],
 
     "Mixed-use development, at drawing stage. Nothing built, nothing leased, nothing offered — the plans are published as they stand.": [
@@ -1707,7 +1710,7 @@ EXTRA.update({
     "A Seattle car service: flat-rate Tesla rides to Sea–Tac and around the city, plus trip-planning tools that are free to use.": [
         "西雅图的用车服务：特斯拉固定价格接送，往返机场及市区；另提供免费使用的行程规划工具。",
         "Servicio de vehículos en Seattle: traslados Tesla con tarifa fija al aeropuerto y por la ciudad, y herramientas de planificación de viajes de uso gratuito.",
-        "시애틀의 차량 서비스입니다. 공항과 시내를 오가는 테슬라 정액 운송, 그리고 무료로 이용하는 여정 계획 도구를 제공합니다.",
+        "시애틀의 차량 서비스입니다. 공항과 시내를 오가는 테슬라 정액 운송, 그리고 무료로 이용하는 여행 플래너를 제공합니다.",
         "Dịch vụ xe tại Seattle: đưa đón bằng Tesla với giá cố định tới sân bay và trong thành phố, kèm công cụ lập kế hoạch hành trình miễn phí."],
 
     "Flat-rate Tesla rides, Seattle and Sea–Tac.": [
@@ -1769,7 +1772,7 @@ EXTRA.update({
     "Our model is simple: control the full value chain, share the upside with our drivers and partners, and reinvest profits back into the community. Whether you need a ride, want to earn behind the wheel, or want to refer clients and earn commission — there's a place for you here.": [
         "我们的思路很简单：自主掌握完整价值链，与司机及合作伙伴共享收益，并将利润再投入社区。无论您是需要用车、希望以驾驶获得收入，还是有意推荐客户并获取佣金，这里都有适合您的位置。",
         "Nuestro modelo es sencillo: controlar toda la cadena de valor, compartir los beneficios con conductores y socios, y reinvertir en la comunidad. Tanto si necesita un trayecto, como si desea obtener ingresos al volante o recomendar clientes y cobrar comisión, aquí tiene un lugar.",
-        "저희의 모델은 단순합니다. 가치사슬 전체를 직접 운영하고, 그 성과를 기사 및 파트너와 나누며, 이익을 지역사회에 재투자합니다. 차량이 필요하시든, 운전으로 수익을 얻고자 하시든, 고객을 소개하고 수수료를 받고자 하시든 이곳에 자리가 있습니다.",
+        "저희 모델은 단순합니다. 가치사슬 전체를 직접 운영하고, 그 성과를 기사 및 파트너와 나누며, 이익을 지역사회에 재투자합니다. 차량이 필요하시든, 운전으로 수익을 얻고자 하시든, 고객을 소개하고 수수료를 받고자 하시든 이곳에 자리가 있습니다.",
         "Mô hình của chúng tôi rất đơn giản: tự vận hành toàn bộ chuỗi giá trị, chia sẻ lợi ích với tài xế và đối tác, và tái đầu tư lợi nhuận vào cộng đồng. Dù bạn cần một chuyến xe, muốn có thu nhập từ việc lái xe, hay muốn giới thiệu khách và nhận hoa hồng — ở đây đều có chỗ cho bạn."],
 
     "Register as a guide — takes a minute": [
@@ -1781,7 +1784,7 @@ EXTRA.update({
     "Transportation is the one that runs today: flat-rate Tesla rides across Seattle, cars rented to drivers who earn with them, and trip-planning tools anyone can use free. It pays for what comes next. Every other arm is listed below with the stage it is honestly at — including the ones not finished.": [
         "出行业务目前已投入运营，并为后续业务提供资金：覆盖西雅图全城的特斯拉固定价格接送、面向司机的车辆租赁，以及任何人均可免费使用的行程规划工具。以下逐项列明各业务实际所处的阶段，包括尚未完成的部分。",
         "El transporte es lo que ya opera y financia lo que viene después: traslados en Tesla con tarifa fija por todo Seattle, vehículos alquilados a conductores y herramientas de planificación gratuitas para cualquiera. Cada uno de los demás negocios figura debajo con la etapa que ha alcanzado realmente, incluidos los que no están terminados.",
-        "현재 운영 중인 사업은 교통 부문입니다. 시애틀 전역의 테슬라 정액 운송, 운전자를 위한 차량 대여, 그리고 누구나 무료로 이용할 수 있는 여정 계획 도구가 이에 해당하며, 이 사업이 이후 사업의 자금을 조달합니다. 나머지 사업은 아직 완료되지 않은 것을 포함하여 실제 도달한 단계와 함께 아래에 정리하였습니다.",
+        "현재 운영 중인 사업은 교통 부문입니다. 시애틀 전역의 테슬라 정액 운송, 운전자를 위한 차량 대여, 그리고 누구나 무료로 이용할 수 있는 여행 플래너가 이에 해당하며, 이 사업이 이후 사업의 자금을 조달합니다. 나머지 사업은 아직 완료되지 않은 것을 포함하여 실제 도달한 단계와 함께 아래에 정리하였습니다.",
         "Mảng đang vận hành hiện nay là vận tải: dịch vụ Tesla giá cố định trên toàn Seattle, cho tài xế thuê xe, và công cụ lập kế hoạch hành trình miễn phí cho mọi người. Mảng này cấp vốn cho các mảng tiếp theo. Từng mảng còn lại được liệt kê bên dưới kèm giai đoạn thực tế đã đạt được, kể cả những mảng chưa hoàn thiện."],
 })
 
@@ -1796,3 +1799,59 @@ EXTRA_SKIP |= {
 # The company name plus its city reads the same in Spanish and Vietnamese —
 # identical output there is correct, not a missed translation.
 EXTRA_SKIP |= {"Plateau Strategy Solution Lab · Seattle"}
+
+# The Pollock companion's new option.
+EXTRA.update({
+    "Stay": ["留住", "Quédate", "머무르기", "Ở lại"],
+    "Let go": ["放开", "Suéltalo", "놓아주기", "Thả ra"],
+})
+
+# ---------------- location: the strings the new flow speaks ----------------
+# Register note: Korean uses no second-person pronoun here, per the correction
+# pass — 고객님 where the person must be named, otherwise nothing.
+EXTRA.update({
+    "Follow my position as I move": [
+        "移动时持续跟随我的位置", "Seguir mi posición mientras me muevo",
+        "이동하는 동안 위치 따라가기", "Theo dõi vị trí khi tôi di chuyển"],
+    "Stop following your position": [
+        "停止跟随位置", "Dejar de seguir tu posición",
+        "위치 따라가기 중지", "Dừng theo dõi vị trí"],
+    "Getting your location…": ["正在获取您的位置…", "Obteniendo tu ubicación…", "위치를 가져오는 중…", "Đang lấy vị trí của bạn…"],
+    "This browser cannot share location.": [
+        "此浏览器无法共享位置。", "Este navegador no puede compartir la ubicación.",
+        "이 브라우저는 위치를 공유할 수 없습니다.", "Trình duyệt này không chia sẻ được vị trí."],
+    "Following your position. Drive times update from where you are.": [
+        "正在跟随您的位置，车程将按您所在的地方实时更新。",
+        "Siguiendo tu posición. Los tiempos de viaje se calculan desde donde estás.",
+        "위치를 따라갑니다. 이동 시간은 현재 계신 곳을 기준으로 갱신됩니다.",
+        "Đang theo vị trí của bạn. Thời gian di chuyển được tính lại từ nơi bạn đang đứng."],
+    "Click the lock or ⓘ icon beside the address bar → Location → Allow.": [
+        "点击地址栏旁的锁形或 ⓘ 图标 → 位置 → 允许。",
+        "Haz clic en el candado o el icono ⓘ junto a la barra de direcciones → Ubicación → Permitir.",
+        "주소창 옆의 자물쇠 또는 ⓘ 아이콘 → 위치 → 허용을 선택하세요.",
+        "Nhấn vào biểu tượng ổ khóa hoặc ⓘ cạnh thanh địa chỉ → Vị trí → Cho phép."],
+    "Settings → Safari → Location, or the ⓘ in the address bar.": [
+        "设置 → Safari → 位置，或点击地址栏中的 ⓘ。",
+        "Ajustes → Safari → Ubicación, o el ⓘ de la barra de direcciones.",
+        "설정 → Safari → 위치, 또는 주소창의 ⓘ를 누르세요.",
+        "Cài đặt → Safari → Vị trí, hoặc biểu tượng ⓘ trên thanh địa chỉ."],
+    "Tap the lock icon beside the address bar → Permissions → Location.": [
+        "点击地址栏旁的锁形图标 → 权限 → 位置。",
+        "Toca el candado junto a la barra de direcciones → Permisos → Ubicación.",
+        "주소창 옆 자물쇠 아이콘 → 권한 → 위치를 누르세요.",
+        "Chạm biểu tượng ổ khóa cạnh thanh địa chỉ → Quyền → Vị trí."],
+})
+
+# ---- the drawing sheet's own lettering ----
+# Level markers and sheet notes are drafting shorthand; they are translated
+# because a reader of the drawing should be able to read the drawing.
+EXTRA.update({
+    "L4 · RESIDENTIAL": ["4层 · 住宅", "N4 · RESIDENCIAL", "4층 · 주거", "T4 · NHÀ Ở"],
+    "L3 · RESIDENTIAL": ["3层 · 住宅", "N3 · RESIDENCIAL", "3층 · 주거", "T3 · NHÀ Ở"],
+    "L2 · RESIDENTIAL": ["2层 · 住宅", "N2 · RESIDENCIAL", "2층 · 주거", "T2 · NHÀ Ở"],
+    "L1 · OFFICE": ["1层 · 办公", "N1 · OFICINAS", "1층 · 사무", "T1 · VĂN PHÒNG"],
+    "GF · RETAIL": ["首层 · 商铺", "PB · COMERCIO", "1층 · 상가", "TT · BÁN LẺ"],
+    "SITE PLAN · 1:500": ["总平面图 · 1:500", "PLANO DE SITIO · 1:500", "배치도 · 1:500", "MẶT BẰNG · 1:500"],
+    "FOOTPRINT": ["建筑占地", "HUELLA", "건물 외곽", "DIỆN TÍCH XÂY DỰNG"],
+})
+EXTRA_SKIP |= {"ST. — 40′ R.O.W.", "62′-0″", "78′-0″", "N"}

@@ -21,6 +21,8 @@
     <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
     <style>
         .act.ride-wanted { background: #fff7ed; border-color: #fdba74; color: #9a3412; }
+        /* Following is a state, not a press — it stays lit for as long as it runs. */
+        .map-actions button#followBtn.on { background: #1b4d8f; color: #fff; }
         .tap-hint { font-size: 0.72rem; color: #6b655b; line-height: 1.25; max-width: 190px; }
         .am-pin.pop-pin { border-color: #f59e0b; background: var(--psx-wash-warn,#ffefdc); }
         .pop-photo { width: 100%; height: 96px; object-fit: cover; border-radius: 7px; margin-bottom: 0.4rem; }
@@ -45,6 +47,16 @@
 
         .controls { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center; font-size: 0.9rem; }
         .controls label { color: #6b655b; font-weight: 600; }
+        /* A label and the control it names travel together and wrap together. */
+        .controls .field { display: inline-flex; align-items: center; gap: 0.45rem; }
+        @media (max-width: 640px) {
+            /* On a phone there is not room for label-beside-field three across,
+               so each pair stacks and the row becomes two clean columns. */
+            .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 0.7rem; }
+            .controls .field { flex-direction: column; align-items: stretch; gap: 0.2rem; }
+            .controls .field label { font-size: 0.78rem; }
+            .controls .field select, .controls .field input { width: 100%; }
+        }
         .controls input[type=time], .controls select { padding: 0.4rem 0.6rem; border: 1.5px solid #e6e2da;
             border-radius: 8px; font-size: 0.9rem; font-family: inherit; background: #faf8f4; }
         .btn { padding: 0.45rem 0.9rem; border: none; border-radius: 8px; cursor: pointer;
@@ -105,8 +117,7 @@
             .layout.jarvis-hidden .side { display: block; }
             #jarvisDock { display: none !important; }
         }
-        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; }
-            .map-searchbar { left: 10px; right: 10px; max-width: none; top: 54px; } }
+        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
 
         #map { height: 78vh; min-height: 460px; border-radius: 16px; border: 1px solid #dde4ed;
             box-shadow: 0 10px 30px -12px rgba(15,23,42,.22); overflow: hidden; }
@@ -116,33 +127,25 @@
             background: rgba(255,255,255,0.97); border-radius: 12px;
             box-shadow: 0 6px 20px rgba(15,23,42,0.25); padding: 0.45rem 0.55rem; }
         .map-searchbar .build-row { display: flex; gap: 0.4rem; margin: 0; align-items: center; }
-        /* The starting-point pin stands beside the address box.
-           It used to be hidden here and offered instead as a separate icon in
-           the map's control stack — "those live as map icons now". That is the
-           thing the request was against, asked for three times: a traveller
-           opening the planner should see where the day starts sitting right
-           next to where they type where it goes, not have to hunt a floating
-           button for it. The markup always had it in the right place; only
-           this rule took it away. */
-        .loc-here{
-            flex:0 0 auto; width:38px; height:38px; padding:0; line-height:1;
-            font-size:1.05rem; cursor:pointer; border-radius:9px;
-            background:var(--psx-card,#fffdf9); border:1.5px solid var(--psx-border,rgba(20,17,12,.13));
-        }
-        .loc-here:hover{ background:#f5f1e8; }
-        .loc-here.located{ border-color:#1b5e43; }
-        .map-searchbar .build-row .from { display: inline-flex; }
-        .map-searchbar .build-row .to   { display: inline; opacity: .5; }
-        .map-searchbar .build-row .startedit { display: none; }
-        .map-searchbar .build-row .loc-btn {
-            flex: 0 0 auto; white-space: nowrap; border-radius: 9px;
-            padding: 0.5rem 0.66rem; font-size: 0.84rem;
-        }
-        /* On a phone the words cost more room than they earn — the pin badge
-           and the arrow still say "the day starts here". */
+        .map-searchbar .build-row .startedit,
+        .map-searchbar .build-row .to { display: none; }
+        /* The ⌂ start control belongs beside the address bar — that is the whole
+           point of it — so it is NOT hidden here. It keeps its pin and its
+           waiting state; only its label collapses when there is no room. */
+        .map-searchbar .build-row .from { flex: 0 0 auto; padding: 0.4rem 0.5rem; }
+        .map-searchbar .build-row .from .pin-badge { margin-right: 0.3rem; }
         @media (max-width: 640px) {
-            .map-searchbar .build-row .loc-btn #curLocLabel { display: none; }
-            .map-searchbar .build-row .loc-btn { padding: 0.5rem 0.55rem; }
+            .map-searchbar .build-row .from #curLocLabel { display: none; }
+            .map-searchbar .build-row .from { padding: 0.4rem; }
+        }
+
+        /* The bar was positioned for a desktop map — left:58px, right:200px —
+           which on a 390px phone leaves 74px for a search field and collapses
+           everything in it. The phone rule existed but was written above the
+           base rule, so at equal specificity the base rule won at every width.
+           It sits below it now, where it can do its job. */
+        @media (max-width: 900px) {
+            .map-searchbar { left: 10px; right: 10px; max-width: none; top: 54px; }
         }
         .map-searchbar .build-row input { flex: 1; min-width: 0; border: 1.5px solid #e6e2da;
             border-radius: 9px; padding: 0.5rem 0.75rem; font-size: 0.9rem; font-family: inherit; }
@@ -575,6 +578,7 @@
     </style>
     <link rel="stylesheet" href="/paper.css">
     <script src="/psx-net.js"></script>
+    <link rel="stylesheet" href="/modern.css">
 </head>
 <body data-arm="operations">
     <header>
@@ -591,26 +595,30 @@
         <p class="page-sub">Free for everyone — drivers, tour guides, tourists. Tap where you are, and every attraction lights up or dims based on drive time, traffic and closing hours. Your taps build the plan, day by day.</p>
 
         <div class="card">
+            <!-- Each label is bound to its own control. As a flat row of
+                 alternating labels and selects, a wrap could end a line with
+                 "County" and begin the next with the State's own menu — every
+                 label reading against the wrong field. -->
             <div class="controls" style="margin-bottom:0.55rem">
-                <label>State</label>
-                <select id="selState" onchange="onStateChange()"></select>
-                <label>County</label>
-                <select id="selCounty" onchange="onCountyChange()"></select>
-                <label>City</label>
-                <select id="selCity" onchange="onCityChange()"></select>
+                <span class="field"><label for="selState">State</label>
+                    <select id="selState" onchange="onStateChange()"></select></span>
+                <span class="field"><label for="selCounty">County</label>
+                    <select id="selCounty" onchange="onCountyChange()"></select></span>
+                <span class="field"><label for="selCity">City</label>
+                    <select id="selCity" onchange="onCityChange()"></select></span>
             </div>
             <div class="controls" style="margin-bottom:0.55rem">
-                <label>Date of departure</label>
-                <input type="date" id="departDate" onchange="onDepartChange()">
-                <label>Leave by</label>
-                <input type="time" id="leaveAt" value="09:30" onchange="retimeRoute('new departure time')">
-                <label>Traffic</label>
+                <span class="field"><label for="departDate">Date of departure</label>
+                    <input type="date" id="departDate" onchange="onDepartChange()"></span>
+                <span class="field"><label for="leaveAt">Leave by</label>
+                    <input type="time" id="leaveAt" value="09:30" onchange="retimeRoute('new departure time')"></span>
+                <span class="field"><label for="traffic">Traffic</label>
                 <select id="traffic" onchange="trafficChanged()">
                     <option value="auto" selected>Auto (by time of day)</option>
                     <option value="1">Light</option>
                     <option value="1.35">Normal</option>
                     <option value="1.9">Heavy</option>
-                </select>
+                </select></span>
             </div>
             <div class="chips" id="chips"></div>
 
@@ -879,16 +887,22 @@
         ]}
     };
     // State → County → cities. Seeded from what we have; grows as travelers add cities.
+    // The district is named as every geocoder names it. It was listed as a state
+    // called "Washington DC" whose county was "District of Columbia" — the same
+    // place twice, one line apart, and sitting next to the actual state of
+    // Washington. Worse, a DC place someone searched came back from the
+    // geocoder as "District of Columbia" and opened a THIRD entry beside them.
+    // One name, so discovered places merge into it instead of multiplying.
     const GEO = {
-        'New York':      { 'New York County':        [['nyc','New York']] },
-        'Washington DC': { 'District of Columbia':   [['dc','Washington']] },
-        'Washington':    { 'King County':            [['seattle','Seattle']] },
-        'Massachusetts': { 'Suffolk County':         [['boston','Boston']] }
+        'New York':             { 'New York County':  [['nyc','New York']] },
+        'District of Columbia': { 'Washington':       [['dc','Washington']] },
+        'Washington':           { 'King County':      [['seattle','Seattle']] },
+        'Massachusetts':        { 'Suffolk County':   [['boston','Boston']] }
     };
     // city key → its place in the hierarchy, for syncing the pickers to the loaded city
     const CITY_META = {
         nyc:     { state:'New York',      county:'New York County' },
-        dc:      { state:'Washington DC', county:'District of Columbia' },
+        dc:      { state:'District of Columbia', county:'Washington' },
         seattle: { state:'Washington',    county:'King County' },
         boston:  { state:'Massachusetts', county:'Suffolk County' }
     };
@@ -1577,7 +1591,14 @@
             Object.keys(g[state]).forEach(county => {
                 const have = counties[county] || (counties[county] = []);
                 g[state][county].forEach(pair => {
-                    if (!have.some(p => p[0] === pair[0])) have.push(pair);
+                    // The built-in board calls the district's city "dc"; a place
+                    // searched there files under "washington". Same city, two
+                    // keys, and the picker listed Washington twice. Match on
+                    // what the traveller reads, not on our internal key.
+                    const label = String(pair[1] || '').trim().toLowerCase();
+                    if (have.some(p => p[0] === pair[0]
+                                    || String(p[1] || '').trim().toLowerCase() === label)) return;
+                    have.push(pair);
                     if (!CITY_META[pair[0]]) CITY_META[pair[0]] = { state: state, county: county };
                 });
             });
@@ -2154,13 +2175,78 @@
     function setLocInfo(t, warn){ const el = $('curLocInfo'); if (!el) return; el.textContent = t; el.className = 'loc-info' + (warn ? ' warn' : ''); }
     function shortAddr(a){ return a ? a.split(',').slice(0, 3).join(',') : ''; }
 
+    // ---------- location, the way map apps actually do it ----------
+    // Three things every mature map app does that this did not:
+    //
+    //  1. It asks the browser whether permission was ALREADY refused. A second
+    //     getCurrentPosition() after a refusal does nothing at all — no prompt,
+    //     no error for several seconds — so the button simply appeared broken.
+    //     Knowing beforehand means we can say what happened and how to undo it.
+    //  2. It takes a fast, coarse fix first and refines it. Asking for high
+    //     accuracy with no cached position allowed is the slowest possible
+    //     request: up to twelve seconds of "Locating…" before anything moves.
+    //     A cached fix inside two minutes is good enough to move the map now,
+    //     and the precise one lands a moment later.
+    //  3. It draws the accuracy circle. "±25 m" as text tells you nothing;
+    //     the halo is how a person judges whether to trust the dot.
+    let accuracyRing = null;
+    function showAccuracy(lat, lon, metres) {
+        if (!map || !metres) return;
+        if (accuracyRing) { map.removeLayer(accuracyRing); accuracyRing = null; }
+        if (metres > 2000) return;              // too vague to draw honestly
+        accuracyRing = L.circle([lat, lon], {
+            radius: metres, weight: 1, color: '#1b4d8f',
+            fillColor: '#1b4d8f', fillOpacity: 0.08, interactive: false
+        }).addTo(map);
+    }
+    function clearAccuracy() {
+        if (accuracyRing) { map.removeLayer(accuracyRing); accuracyRing = null; }
+    }
+
+    // What the browser will do before we ask it — 'granted', 'denied', 'prompt'
+    // or null when the browser cannot say.
+    async function locationPermission() {
+        try {
+            if (!navigator.permissions || !navigator.permissions.query) return null;
+            const s = await navigator.permissions.query({ name: 'geolocation' });
+            return s.state;
+        } catch (e) { return null; }
+    }
+
+    function blockedHelp() {
+        const ua = navigator.userAgent;
+        if (/iPhone|iPad|iPod/.test(ua))
+            return 'Settings → Safari → Location, or the ⓘ in the address bar.';
+        if (/Android/.test(ua))
+            return 'Tap the lock icon beside the address bar → Permissions → Location.';
+        return 'Click the lock or ⓘ icon beside the address bar → Location → Allow.';
+    }
+
     function detectLocation(){
-        return new Promise(resolve => {
+        return new Promise(async resolve => {
             if (!navigator.geolocation) {
                 setLocInfo('This browser can’t share location — drag the black pin or type your pickup on the booking form.', true);
                 resolve(false); return;
             }
-            setLocLabel('Locating…'); setLocInfo('Getting your exact location…');
+            // Refused before? Asking again does nothing — say so instead of
+            // spinning, and say where to change it.
+            if (await locationPermission() === 'denied') {
+                setLocLabel('Starting point');
+                setLocInfo('Location is blocked for this site, so the browser will not ask again. ' + blockedHelp()
+                         + ' Or type your starting address — tap the ⌂ pin once.', true);
+                jarvisSay('Your browser is blocking location for this site, so I cannot look it up. '
+                        + escj(blockedHelp()) + ' Or <span class="fixlink" onclick="openStartEntry()">type where you are</span> — just as good.');
+                resolve(false); return;
+            }
+            setLocLabel('Locating…'); setLocInfo('Getting your location…');
+            // A fix from the last two minutes is plenty to move the map now.
+            navigator.geolocation.getCurrentPosition(function (quick) {
+                if (currentLoc && currentLoc.source === 'gps') return;   // the precise one already landed
+                const qa = Math.round(quick.coords.accuracy || 0);
+                setLocInfo('📍 Found you to about ±' + qa + ' m — sharpening…');
+                showAccuracy(quick.coords.latitude, quick.coords.longitude, qa);
+            }, function () {}, { enableHighAccuracy: false, timeout: 4000, maximumAge: 120000 });
+
             navigator.geolocation.getCurrentPosition(async pos => {
                 const lat = pos.coords.latitude, lon = pos.coords.longitude, acc = Math.round(pos.coords.accuracy || 0);
                 // Someone in Washington planning Boston still wants to SEE Boston.
@@ -2197,6 +2283,7 @@
                     resolve(true);
                     return;
                 }
+                showAccuracy(lat, lon, acc);
                 setOrigin(lat, lon, 'gps', { address: address, accuracy: acc,
                                              noFly: farAway,   // already handled, or deliberately not
                                              why: 'starting from your location' });
@@ -2215,14 +2302,70 @@
                 resolve(true);
             }, err => {
                 setLocLabel('Starting point');
-                const denied = err && err.code === 1;
-                setLocInfo(denied
-                    ? 'Location permission was blocked — drag the black pin to your spot, or set the pickup on the booking form.'
-                    : 'Couldn’t get a location fix — drag the black pin, or set the pickup on the booking form.', true);
+                clearAccuracy();
+                const code = err && err.code;
+                setLocInfo(
+                    code === 1 ? 'You declined to share your location. ' + blockedHelp()
+                               + ' Or tap the ⌂ pin once and type where you are.'
+                  : code === 3 ? 'Your device did not answer in time — indoors this is common. '
+                               + 'Try again, or tap the ⌂ pin once and type where you are.'
+                               : 'Could not get a location fix. Tap the ⌂ pin once and type where you are, '
+                               + 'or drag it on the map.', true);
                 resolve(false);
-            }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
+            }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
         });
     }
+    // ---------- follow me ----------
+    // The one location feature a walking traveller actually wants and this did
+    // not have: keep the dot with them as they move. Every map app has it, and
+    // it is the difference between a map you consult and a map you walk with.
+    // It is off by default and it says when it is on, because a page quietly
+    // watching your position is not something to switch on for somebody.
+    let followId = null;
+    function following(){ return followId !== null; }
+    async function toggleFollow(){
+        if (following()) { stopFollow('you turned it off'); return; }
+        if (!navigator.geolocation) { say('This browser cannot share location.'); return; }
+        if (await locationPermission() === 'denied') {
+            setLocInfo('Location is blocked for this site, so following is not possible. ' + blockedHelp(), true);
+            return;
+        }
+        followId = navigator.geolocation.watchPosition(function (pos) {
+            const lat = pos.coords.latitude, lon = pos.coords.longitude;
+            const acc = Math.round(pos.coords.accuracy || 0);
+            showAccuracy(lat, lon, acc);
+            startMarker.setLatLng([lat, lon]);
+            currentLoc = { lat: lat, lon: lon, address: (currentLoc && currentLoc.address) || '',
+                           accuracy: acc, source: 'gps' };
+            // Keep the traveller in view without fighting them: only recentre
+            // once they have walked off the screen, never on every reading.
+            if (!map.getBounds().pad(-0.25).contains([lat, lon])) map.panTo([lat, lon]);
+            setLocInfo('🛰 Following you · ±' + acc + ' m — tap again to stop.');
+        }, function (err) {
+            stopFollow(err && err.code === 1 ? 'permission was withdrawn' : 'the signal dropped');
+        }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+        markFollow();
+        say('Following your position. Drive times update from where you are.');
+    }
+    function stopFollow(why){
+        if (followId !== null) { navigator.geolocation.clearWatch(followId); followId = null; }
+        markFollow();
+        // A route timed from a moving start is stale the moment following stops,
+        // so re-time it once against where they actually ended up.
+        if (st.route.length) retimeRoute('you stopped moving');
+        setLocInfo('Stopped following — ' + (why || 'off') + '.');
+    }
+    function markFollow(){
+        const b = document.getElementById('followBtn');
+        if (b) { b.classList.toggle('on', following());
+                 b.title = following() ? 'Stop following your position' : 'Follow my position as I move'; }
+    }
+    // Nobody should be tracked by a page they have wandered away from.
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden && following()) stopFollow('the page went to the background');
+    });
+    window.addEventListener('pagehide', function () { if (following()) stopFollow('you left the page'); });
+
     // Where the traveller actually is, remembered even when we decline to make it
     // the trip's start — so "start from where I am" is one tap, not another GPS ask.
     let homeLoc = null;
@@ -3503,7 +3646,7 @@
             d.innerHTML =
                   '<button onclick="recenterMap()" title="Lost? Fit my whole trip back on screen">⊙</button>'
                 + '<button id="wideMapBtn" onclick="toggleWideMap()" title="Full-width map">⤢</button>'
-                + '<button onclick="startPointTap()" title="Starting point — tap once to type an address, tap twice for your current location">⌂</button>'
+                + '<button id="followBtn" onclick="toggleFollow()" title="Follow my position as I move">🛰</button>'
                 + '<button onclick="undoStop()" title="Undo the last stop">↩</button>'
                 + '<button onclick="nextDay()" title="Start the next day">➡</button>'
                 + '<button onclick="confirmReset()" title="Clear the trip">⟲</button>';

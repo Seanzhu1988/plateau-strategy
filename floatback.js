@@ -24,13 +24,19 @@
         { icon: '🎯', label: 'Dispatch', color: '#8338ec', ink: '#fff',
           act: function () { window.location.href = '/dispatch'; } },
         { icon: '↑',  label: 'Top',      color: '#06d6a0', ink: '#04281e',
-          act: function () { window.scrollTo({ top: 0, behavior: 'smooth' }); } }
+          act: function () { window.scrollTo({ top: 0, behavior: 'smooth' }); } },
+        // The dot fades three seconds after you stop reaching for it, which is
+        // right when it is being helpful and wrong when you actually want it.
+        // This is the option to keep it: pinned, it stops fading, and the choice
+        // is remembered so it does not have to be made again on every page.
+        { icon: '📌', label: 'Stay',     color: '#f1faee', ink: '#0f172a', pin: true,
+          act: function () { setPinned(!pinned); } }
     ];
     // hand-drawn feel: slightly irregular blob shapes + a tiny tilt per bubble
     var BLOBS = ['47% 53% 51% 49% / 52% 48% 55% 45%', '52% 48% 47% 53% / 46% 54% 49% 51%',
                  '49% 51% 54% 46% / 53% 47% 50% 50%', '54% 46% 49% 51% / 48% 52% 46% 54%',
                  '46% 54% 52% 48% / 51% 49% 53% 47%'];
-    var TILT = [-6, 5, -4, 7, -5, 6, -7, 4, -5];
+    var TILT = [-6, 5, -4, 7, -5, 6, -7, 4, -5, 6];
     function blob(i) { return BLOBS[i % BLOBS.length]; }
 
     // Ink on paper, like the rest of the site. The splat keeps its shape —
@@ -108,6 +114,7 @@
         b.innerHTML = '<span>' + a.icon + '</span><span class="pk-lbl">' + a.label + '</span>';
         b.addEventListener('click', function (e) {
             e.stopPropagation();
+            if (a.pin) { a.act(); return; }      // pinning is not a destination
             collapse();
             a.act();
         });
@@ -116,6 +123,25 @@
     });
 
     var expanded = false, shownAt = { x: 0, y: 0 };
+    var PIN_KEY = 'ps_pollock_stay';
+    var pinned = false;
+    try { pinned = localStorage.getItem(PIN_KEY) === '1'; } catch (e) {}
+    function setPinned(on) {
+        pinned = !!on;
+        try { on ? localStorage.setItem(PIN_KEY, '1') : localStorage.removeItem(PIN_KEY); } catch (e) {}
+        labelPin();
+        if (pinned) { clearTimeout(holdT); btn.classList.add('shown'); }
+        else armHold();
+    }
+    // The bubble says what the next tap will DO, which is the only thing worth
+    // printing on a button: "Stay" while it drifts, "Let go" once it is held.
+    function labelPin() {
+        var i = ACTIONS.length - 1;
+        if (!bubbles || !bubbles[i]) return;
+        var lab = bubbles[i].querySelector('.pk-lbl');
+        if (lab) lab.textContent = pinned ? 'Let go' : 'Stay';
+        bubbles[i].setAttribute('aria-pressed', pinned ? 'true' : 'false');
+    }
 
     function clampCenter(x, y) {
         // a full-circle burst needs room on every side
@@ -184,31 +210,39 @@
     // TOWARD the dot (within reach) doesn't dismiss it — so it can be caught.
     var mx = window.innerWidth / 2, my = window.innerHeight / 2;
     var cur = { x: mx, y: my }, showT, holdT;
+    labelPin();
 
     function armHold() {                                // visible for 3s, then gone
         clearTimeout(holdT);
+        if (pinned) return;                       // asked to stay: it stays
         holdT = setTimeout(function () {
             if (!expanded && !btn.matches(':hover')) btn.classList.remove('shown');
         }, 3000);
     }
     function wake() { btn.classList.add('shown'); armHold(); }   // also used after collapse()
 
-    // The paint dot must never land on something you are in the middle of using.
-    // Two of those:
+    // The paint dot must never land on something a person is in the middle of
+    // using. Three of those, and each one was learned the hard way:
     //
     //   * An interactive map. Idling over a map is normal — you are reading it —
     //     and a dot appearing under the cursor there steals the click.
     //
+    //   * Any control. It avoided the map and then parked itself squarely on the
+    //     Traffic menu instead. The dot only has to be somewhere clear, and a
+    //     form control is not clear.
+    //
     //   * The section rail. It opens when the cursor rests at the left edge, so
-    //     resting at the left edge is now a deliberate act, and the dot's usual
-    //     "appear beside the cursor after 450ms" would put it straight on top of
-    //     the list you just asked for. Same rule, same reason.
+    //     resting there is now a deliberate act, and the dot's usual "appear
+    //     beside the cursor after 450ms" would put it on top of the list you
+    //     just asked for.
     //
     // Hidden, the rail is visibility:hidden and pointer-events:none, so
     // elementFromPoint never returns it — no need to test for .shown, and the
     // docked horizontal bar on a narrow window is covered by the same check.
+    var HANDS_OFF = 'input,select,textarea,button,a,label,[role=button],[contenteditable]';
     function keepOut(x, y) {
         var el = document.elementFromPoint(x, y);
+        if (el && el.closest && el.closest(HANDS_OFF)) return true;
         while (el && el !== document.body) {
             if (el.id === 'map' || (el.classList && (el.classList.contains('leaflet-container')
                 || el.classList.contains('map-searchbar') || el.classList.contains('map-layers')
@@ -284,9 +318,21 @@
         return;                                   // no cursor listeners at all
     }
 
+    if (pinned) {
+        // Bottom-LEFT, for the same reason the touch anchor sits there: the
+        // language switcher owns the bottom-right, and two round buttons on top
+        // of each other was the original complaint.
+        var p0 = parkSpot() || clampCenter(42, window.innerHeight - 42);
+        cur = p0;
+        btn.style.left = (cur.x - 25) + 'px';
+        btn.style.top = (cur.y - 25) + 'px';
+        btn.classList.add('shown');
+    }
+
     document.addEventListener('mousemove', function (e) {
         mx = e.clientX; my = e.clientY;
         if (expanded) return;                           // the burst is pinned
+        if (pinned) return;                             // asked to stay: no chasing, no fading
         clearTimeout(showT);
         if (btn.classList.contains('shown')) {
             // parked in the margin while the cursor works the map — leave it be
@@ -297,7 +343,7 @@
         }
         showT = setTimeout(appear, 450);                // mouse idling → appear
     });
-    document.addEventListener('mouseleave', function () { if (!expanded) btn.classList.remove('shown'); });
+    document.addEventListener('mouseleave', function () { if (!expanded && !pinned) btn.classList.remove('shown'); });
     btn.addEventListener('mouseenter', function () { clearTimeout(holdT); });
     btn.addEventListener('mouseleave', function () { if (!expanded) armHold(); });
 })();

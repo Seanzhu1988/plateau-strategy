@@ -1350,53 +1350,80 @@
     </style>
     <style id="psx-blueprint">
       /* ============================================================
-         Real Estate — blueprint / "under development" treatment
+         Real Estate — the drawing, on paper
+
+         It was a blueprint: white lines on deep blue, which read as a
+         different website sitting inside this one. A blueprint was never the
+         drawing anyway — it was the cyanotype REPRODUCTION of it. The drawing
+         itself was always ink on paper, so this is the truer object as well as
+         the one that belongs here: ruled vellum, ink linework, a red stamp.
+         The drawing is untouched; only what it is drawn WITH has changed.
          ============================================================ */
-      #view-realestate{background:#08183a;}
+      #view-realestate{background:var(--psx-bg,#faf8f4);}
       #view-realestate section{padding:2.5rem 1rem;}
       #view-realestate .bp{max-width:1120px;margin:0 auto;}
       #view-realestate .bp-sheet{
-        position:relative;overflow:hidden;border:1.5px solid rgba(126,197,255,.5);border-radius:8px;
-        color:#cfe3ff;font-family:ui-monospace,'SFMono-Regular',Menlo,'Courier New',monospace;
-        box-shadow:0 34px 80px -34px rgba(0,0,0,.85);
+        position:relative;overflow:hidden;border:1px solid rgba(20,17,12,.22);border-radius:3px;
+        color:var(--psx-text,#14110c);font-family:ui-monospace,'SFMono-Regular',Menlo,'Courier New',monospace;
+        /* a drawing sheet: faint ruling, a heavier line every fifth, and the
+           slight warmth of paper rather than the glow of a screen */
+        box-shadow:0 18px 40px -28px rgba(20,17,12,.45);
         background:
-          linear-gradient(rgba(126,197,255,.06) 1px,transparent 1px) 0 0/26px 26px,
-          linear-gradient(90deg,rgba(126,197,255,.06) 1px,transparent 1px) 0 0/26px 26px,
-          linear-gradient(rgba(126,197,255,.13) 1px,transparent 1px) 0 0/130px 130px,
-          linear-gradient(90deg,rgba(126,197,255,.13) 1px,transparent 1px) 0 0/130px 130px,
-          radial-gradient(130% 120% at 50% -10%,#124079 0%,#0c2c5f 45%,#081d40 100%);
-        background-color:#0a2450;
+          linear-gradient(rgba(20,17,12,.045) 1px,transparent 1px) 0 0/26px 26px,
+          linear-gradient(90deg,rgba(20,17,12,.045) 1px,transparent 1px) 0 0/26px 26px,
+          linear-gradient(rgba(20,17,12,.10) 1px,transparent 1px) 0 0/130px 130px,
+          linear-gradient(90deg,rgba(20,17,12,.10) 1px,transparent 1px) 0 0/130px 130px,
+          #fffdf8;
       }
       #view-realestate .bp-titlebar{
         display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;
-        padding:1.1rem 1.5rem;border-bottom:1.5px solid rgba(126,197,255,.4);background:rgba(8,26,60,.45);
+        padding:1.1rem 1.5rem;border-bottom:1px solid rgba(20,17,12,.22);background:rgba(20,17,12,.03);
       }
       #view-realestate .bp-title{display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap;}
       #view-realestate .bp-title h2{
-        margin:0;text-align:left;border:none;color:#eaf4ff;font-family:inherit;
+        margin:0;text-align:left;border:none;color:var(--psx-ink,#14110c);font-family:inherit;
         font-size:1.9rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
       }
-      #view-realestate .bp-sub{color:#8fb4e8;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;}
+      #view-realestate .bp-sub{color:var(--psx-muted,#6b655b);font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;}
+      /* The stamp a drawing office actually puts on an unfinished sheet is red,
+         and red on this site means the one thing: this needs your attention. */
       #view-realestate .bp-stamp{
         display:inline-flex;align-items:center;gap:.45rem;transform:rotate(-4deg);
-        padding:.5rem .95rem;border:2px dashed #ffce6b;border-radius:8px;
-        background:rgba(255,206,107,.07);color:#ffce6b;
+        padding:.5rem .95rem;border:2px solid var(--psx-red,#a4161a);border-radius:2px;
+        background:transparent;color:var(--psx-red,#a4161a);
         font-weight:700;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;
-        box-shadow:0 0 0 4px rgba(255,206,107,.05);
       }
       #view-realestate .bp-body{display:block;padding:1.6rem 1.4rem;}
       #view-realestate .bp-draw{
-        max-width:none;width:100%;border:1px dashed rgba(126,197,255,.4);border-radius:6px;padding:1.4rem 1.2rem;
-        display:flex;flex-direction:column;gap:.6rem;background:rgba(9,30,66,.25);
+        max-width:440px;width:100%;border:1px dashed rgba(20,17,12,.28);border-radius:2px;padding:1rem;
+        display:flex;flex-direction:column;gap:.6rem;background:transparent;
       }
       #view-realestate .bp-svg{width:100%;height:auto;display:block;}
-      #view-realestate .bp-caption{text-align:center;color:#8fb4e8;font-size:.72rem;letter-spacing:.14em;}
+
+      /* ---- the sheet draws itself ----
+         Each line is dashed by exactly its own length and offset out of sight,
+         then the offset runs to nothing — so the pen travels the path instead
+         of the shape fading up. The nine layers go down in the order a drawing
+         is actually built: ground, shell, slabs, floors, street, figures,
+         furniture, dimensions, site plan. Lettering is written, not drawn, so
+         it appears rather than unspooling letter by letter.
+
+         The line length is measured per path in script, because a single
+         guessed dasharray makes short lines snap and long ones crawl. */
+      /* Nothing in this stylesheet hides the drawing. The reveal is applied
+         from script, per line, and the un-drawn state exists only inside a
+         running animation — so if animations are unavailable, suppressed, or
+         the page's timeline is frozen, the drawing is simply there. A
+         stylesheet that hides the ink and waits to be revealed leaves a blank
+         sheet in exactly those cases, which is far worse than not animating. */
+      }
+      #view-realestate .bp-caption{text-align:center;color:var(--psx-muted,#6b655b);font-size:.72rem;letter-spacing:.14em;}
       #view-realestate .bp-footer{
         display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;
-        padding:.85rem 1.5rem;border-top:1.5px solid rgba(126,197,255,.4);background:rgba(8,26,60,.45);
-        color:#8fb4e8;font-size:.68rem;letter-spacing:.16em;
+        padding:.85rem 1.5rem;border-top:1px solid rgba(20,17,12,.22);background:rgba(20,17,12,.03);
+        color:var(--psx-muted,#6b655b);font-size:.68rem;letter-spacing:.16em;
       }
-      #view-realestate .bp-footer .wip{color:#ffce6b;}
+      #view-realestate .bp-footer .wip{color:var(--psx-red,#a4161a);font-weight:700;}
       @media(max-width:820px){
         #view-realestate .bp-title h2{font-size:1.5rem;}
       }
@@ -1556,12 +1583,13 @@
          Finance, Reinvestment, Free Tools, Security) restyled onto the
          same design system as the front page. These views share a small
          set of building blocks, so styling the blocks covers every tab.
-         Real Estate keeps its blueprint treatment.
+         Real Estate is drawn on the same paper as everything else.
          ============================================================ */
 
       /* ---- section ground + headings ---- */
       .view .phases{background:var(--psx-bg);padding:4.5rem 2rem 5.5rem;}
-      #view-realestate .phases{background:#08183a;}   /* blueprint keeps its own ground */
+      /* The drawing sheet used to carve its own dark-blue ground out of the
+         page. It reads on paper now, so it needs no exception. */
 
       .view section h2{
         font-size:clamp(1.9rem,3.6vw,2.6rem);
@@ -1851,6 +1879,7 @@
     </style>
     <link rel="stylesheet" href="/paper.css">
     <script src="/psx-net.js"></script>
+    <link rel="stylesheet" href="/modern.css">
 </head>
 <body>
     <!-- ============================================================
@@ -2164,585 +2193,168 @@
 
                             <div class="bp-body">
                               <div class="bp-draw">
-                                <svg class="bp-svg" viewBox="0 0 1120 640" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="Front elevation of a five-storey mixed-use building, drawing RE-01, work in progress">
-  <!--
-    Front elevation, drawn to drafting convention rather than sketched.
+                                <svg class="bp-svg" viewBox="0 0 520 360" xmlns="http://www.w3.org/2000/svg"
+                                     role="img" aria-label="Architectural elevation and site plan of a mixed-use building, drawn on paper, still at design stage">
+                                  <defs>
+                                    <!-- the slight unsteadiness of a hand and a pen -->
+                                    <!-- There was a pencil-wobble filter here. A displacement map works on
+                                         the rasterised graphic, and this sheet draws at roughly 210px wide,
+                                         so displacing by a unit erased 1.4-unit strokes outright — the
+                                         linework vanished and only the fills survived. Widening the filter
+                                         region did not help, because the cause is the render scale, not the
+                                         region. A texture that rubs out the drawing is not worth having, so
+                                         the lines are drawn straight. The irregularity now comes from the
+                                         geometry itself, which cannot be erased by a filter.
+                                         Do not reintroduce it without checking the strokes still paint. -->
+                                    <pattern id="bpHatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                                      <line x1="0" y1="0" x2="0" y2="6" stroke="#14110c" stroke-width="0.5" opacity=".45"/>
+                                    </pattern>
+                                    <pattern id="bpGlass" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
+                                      <line x1="0" y1="0" x2="0" y2="5" stroke="#1b4d8f" stroke-width="0.4" opacity=".35"/>
+                                    </pattern>
+                                  </defs>
 
-    The version this replaces was a box with a grid of square windows, a
-    lollipop tree, and a turbulence filter making every line wobble as if
-    drawn by hand. Wobble does not read as "architectural", it reads as
-    "child's drawing of a house" — and a company saying its property arm
-    is at drawing stage is judged on whether the drawing looks like one.
+                                  <g fill="none" stroke="#14110c"
+                                     stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
 
-    So: no filter, no freehand. Precise lines, a level datum with real
-    heights, grid bubbles on the column lines, dimension strings with tick
-    marks, a scale bar, and a north point. The things that make a sheet a
-    sheet. Levels are metric to three decimals because that is how they
-    are written on a real drawing.
-  -->
-  <defs>
-    <!-- Graphite, not wobble.
-         The first version shook every line with a turbulence displacement,
-         which is what made it look like a child drew it: real pencil drafting
-         is straight, it just is not uniform. What varies is the DEPOSIT — the
-         line is darker where the lead bites and thinner where it skips, and
-         it overshoots slightly at a corner because the hand keeps going.
-         So: a fine grain over the stroke, and construction lines that run
-         past their intersections. Precision kept, printer's ink dropped. -->
-    <filter id="graphite" x="-4%" y="-4%" width="108%" height="108%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.42" numOctaves="4" seed="11" result="grain"/>
-      <feColorMatrix in="grain" type="matrix" result="soft"
-        values="0 0 0 0 0.40  0 0 0 0 0.55  0 0 0 0 0.78  0 0 0 1.1 -0.15"/>
-      <feComposite in="soft" in2="SourceAlpha" operator="in" result="tex"/>
-      <feBlend in="SourceGraphic" in2="tex" mode="multiply"/>
-    </filter>
-    <!-- the tooth of the paper, very faint, so flat areas are not dead -->
-    <filter id="tooth" x="0" y="0" width="100%" height="100%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" seed="3"/>
-      <feColorMatrix type="matrix"
-        values="0 0 0 0 0.62  0 0 0 0 0.78  0 0 0 0 0.96  0 0 0 0.05 0"/>
-    </filter>
-  </defs>
+                                    <!-- ============ 1 · ground and setting ============ -->
+                                    <g class="ink" data-step="1">
+                                      <line x1="24" y1="264" x2="366" y2="264" stroke-width="2"/>
+                                      <g stroke-width=".8" opacity=".7">
+                                        <line x1="34" y1="264" x2="26" y2="274"/><line x1="58" y1="264" x2="50" y2="274"/>
+                                        <line x1="82" y1="264" x2="74" y2="274"/><line x1="106" y1="264" x2="98" y2="274"/>
+                                        <line x1="286" y1="264" x2="278" y2="274"/><line x1="310" y1="264" x2="302" y2="274"/>
+                                        <line x1="334" y1="264" x2="326" y2="274"/><line x1="358" y1="264" x2="350" y2="274"/>
+                                      </g>
+                                    </g>
 
-  <rect x="0" y="0" width="1120" height="640" filter="url(#tooth)" opacity="0.5"/>
+                                    <!-- ============ 2 · the shell ============ -->
+                                    <g class="ink" data-step="2">
+                                      <path d="M108 264 L108 96 L282 96 L282 264"/>
+                                      <line x1="100" y1="96" x2="290" y2="96" stroke-width="2.2"/>
+                                      <path d="M100 96 L100 86 L290 86 L290 96"/>          <!-- parapet -->
+                                      <rect x="176" y="62" width="44" height="24"/>          <!-- rooftop plant -->
+                                      <line x1="176" y1="70" x2="220" y2="70" stroke-width=".7" opacity=".6"/>
+                                      <line x1="190" y1="62" x2="190" y2="86" stroke-width=".7" opacity=".6"/>
+                                      <line x1="206" y1="62" x2="206" y2="86" stroke-width=".7" opacity=".6"/>
+                                    </g>
 
-  <!-- Never fully opaque. A pencil line lets the sheet through; a printed
-       one does not, and that difference is most of what the eye reads as
-       "drawn" rather than "plotted". -->
-  <g fill="none" stroke="#cfe3ff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"
-     opacity="0.88" filter="url(#graphite)" font-family="ui-monospace, Menlo, monospace">
-    <g stroke="#7ea9e0" stroke-width="0.85" stroke-dasharray="9 5 2 5">
-      <line x1="200" y1="92" x2="200" y2="596"/>
-      <line x1="365" y1="92" x2="365" y2="596"/>
-      <line x1="530" y1="92" x2="530" y2="600"/>
-      <line x1="695" y1="92" x2="695" y2="596"/>
-      <line x1="860" y1="92" x2="860" y2="596"/>
-    </g>
-    <g stroke="#8fb4e8" stroke-width="1.1">
-      <circle cx="200" cy="84" r="13"/>
-      <text x="200" y="89" fill="#cfe3ff" stroke="none" font-size="13" text-anchor="middle">A</text>
-      <circle cx="365" cy="84" r="13"/>
-      <text x="365" y="89" fill="#cfe3ff" stroke="none" font-size="13" text-anchor="middle">B</text>
-      <circle cx="530" cy="84" r="13"/>
-      <text x="530" y="89" fill="#cfe3ff" stroke="none" font-size="13" text-anchor="middle">C</text>
-      <circle cx="695" cy="84" r="13"/>
-      <text x="695" y="89" fill="#cfe3ff" stroke="none" font-size="13" text-anchor="middle">D</text>
-      <circle cx="860" cy="84" r="13"/>
-      <text x="860" y="89" fill="#cfe3ff" stroke="none" font-size="13" text-anchor="middle">E</text>
-    </g>
-    <g stroke="#7ea9e0" stroke-width="0.9">
-      <line x1="96" y1="70" x2="880" y2="70" stroke-dasharray="2 6"/>
-      <line x1="96" y1="142" x2="880" y2="142" stroke-dasharray="2 6"/>
-      <line x1="96" y1="214" x2="880" y2="214" stroke-dasharray="2 6"/>
-      <line x1="96" y1="286" x2="880" y2="286" stroke-dasharray="2 6"/>
-      <line x1="96" y1="358" x2="880" y2="358" stroke-dasharray="2 6"/>
-      <line x1="96" y1="430" x2="880" y2="430" stroke-dasharray="2 6"/>
-      <line x1="96" y1="520" x2="880" y2="520" stroke-dasharray="2 6"/>
-    </g>
-    <g stroke="none" fill="#8fb4e8" font-size="11.5" letter-spacing="1">
-      <text x="24" y="65">PARAPET</text>
-      <text x="24" y="82" fill="#cfe3ff">+22.100</text>
-      <text x="24" y="137">LEVEL 5</text>
-      <text x="24" y="154" fill="#cfe3ff">+18.900</text>
-      <text x="24" y="209">LEVEL 4</text>
-      <text x="24" y="226" fill="#cfe3ff">+15.300</text>
-      <text x="24" y="281">LEVEL 3</text>
-      <text x="24" y="298" fill="#cfe3ff">+11.700</text>
-      <text x="24" y="353">LEVEL 2</text>
-      <text x="24" y="370" fill="#cfe3ff">+8.100</text>
-      <text x="24" y="425">LEVEL 1</text>
-      <text x="24" y="442" fill="#cfe3ff">+4.500</text>
-      <text x="24" y="515">GROUND</text>
-      <text x="24" y="532" fill="#cfe3ff">±0.000</text>
-    </g>
-    <g stroke="#8fb4e8" stroke-width="1.2">
-      <path d="M88 70 l8 -6 l8 6 l-8 6 z" fill="#0c2c5f"/>
-      <path d="M88 142 l8 -6 l8 6 l-8 6 z" fill="#0c2c5f"/>
-      <path d="M88 214 l8 -6 l8 6 l-8 6 z" fill="#0c2c5f"/>
-      <path d="M88 286 l8 -6 l8 6 l-8 6 z" fill="#0c2c5f"/>
-      <path d="M88 358 l8 -6 l8 6 l-8 6 z" fill="#0c2c5f"/>
-      <path d="M88 430 l8 -6 l8 6 l-8 6 z" fill="#0c2c5f"/>
-      <path d="M88 520 l8 -6 l8 6 l-8 6 z" fill="#0c2c5f"/>
-    </g>
-    <!-- shell: five storeys, the top one set back to a terrace -->
-    <g stroke="#eaf4ff" stroke-width="2.2">
-      <path d="M200 520 L200 142 L260 142 L260 70 L800 70 L800 142 L860 142 L860 520 Z"/>
-    </g>
-    <!-- parapet coping -->
-    <g stroke="#eaf4ff" stroke-width="2.6">
-      <line x1="252" y1="62" x2="808" y2="62"/>
-      <line x1="192" y1="134" x2="268" y2="134"/>
-      <line x1="792" y1="134" x2="868" y2="134"/>
-    </g>
-    <!-- floor slabs -->
-    <g stroke="#cfe3ff" stroke-width="1.8">
-      <line x1="200" y1="142" x2="860" y2="142"/>
-      <line x1="200" y1="214" x2="860" y2="214"/>
-      <line x1="200" y1="286" x2="860" y2="286"/>
-      <line x1="200" y1="358" x2="860" y2="358"/>
-      <line x1="200" y1="430" x2="860" y2="430"/>
-    </g>
-    <!-- curtain wall: bay per structural grid, mullions at 1/3 points -->
-    <g stroke="#9fc7f5" stroke-width="0.9" opacity="0.9">
-      <rect x="214" y="154" width="137" height="46"/>
-      <line x1="259.7" y1="154" x2="259.7" y2="200"/>
-      <line x1="305.3" y1="154" x2="305.3" y2="200"/>
-      <rect x="379" y="154" width="137" height="46"/>
-      <line x1="424.7" y1="154" x2="424.7" y2="200"/>
-      <line x1="470.3" y1="154" x2="470.3" y2="200"/>
-      <rect x="544" y="154" width="137" height="46"/>
-      <line x1="589.7" y1="154" x2="589.7" y2="200"/>
-      <line x1="635.3" y1="154" x2="635.3" y2="200"/>
-      <rect x="709" y="154" width="137" height="46"/>
-      <line x1="754.7" y1="154" x2="754.7" y2="200"/>
-      <line x1="800.3" y1="154" x2="800.3" y2="200"/>
-      <rect x="214" y="226" width="137" height="46"/>
-      <line x1="259.7" y1="226" x2="259.7" y2="272"/>
-      <line x1="305.3" y1="226" x2="305.3" y2="272"/>
-      <rect x="379" y="226" width="137" height="46"/>
-      <line x1="424.7" y1="226" x2="424.7" y2="272"/>
-      <line x1="470.3" y1="226" x2="470.3" y2="272"/>
-      <rect x="544" y="226" width="137" height="46"/>
-      <line x1="589.7" y1="226" x2="589.7" y2="272"/>
-      <line x1="635.3" y1="226" x2="635.3" y2="272"/>
-      <rect x="709" y="226" width="137" height="46"/>
-      <line x1="754.7" y1="226" x2="754.7" y2="272"/>
-      <line x1="800.3" y1="226" x2="800.3" y2="272"/>
-      <rect x="214" y="298" width="137" height="46"/>
-      <line x1="259.7" y1="298" x2="259.7" y2="344"/>
-      <line x1="305.3" y1="298" x2="305.3" y2="344"/>
-      <rect x="379" y="298" width="137" height="46"/>
-      <line x1="424.7" y1="298" x2="424.7" y2="344"/>
-      <line x1="470.3" y1="298" x2="470.3" y2="344"/>
-      <rect x="544" y="298" width="137" height="46"/>
-      <line x1="589.7" y1="298" x2="589.7" y2="344"/>
-      <line x1="635.3" y1="298" x2="635.3" y2="344"/>
-      <rect x="709" y="298" width="137" height="46"/>
-      <line x1="754.7" y1="298" x2="754.7" y2="344"/>
-      <line x1="800.3" y1="298" x2="800.3" y2="344"/>
-      <rect x="214" y="370" width="137" height="46"/>
-      <line x1="259.7" y1="370" x2="259.7" y2="416"/>
-      <line x1="305.3" y1="370" x2="305.3" y2="416"/>
-      <rect x="379" y="370" width="137" height="46"/>
-      <line x1="424.7" y1="370" x2="424.7" y2="416"/>
-      <line x1="470.3" y1="370" x2="470.3" y2="416"/>
-      <rect x="544" y="370" width="137" height="46"/>
-      <line x1="589.7" y1="370" x2="589.7" y2="416"/>
-      <line x1="635.3" y1="370" x2="635.3" y2="416"/>
-      <rect x="709" y="370" width="137" height="46"/>
-      <line x1="754.7" y1="370" x2="754.7" y2="416"/>
-      <line x1="800.3" y1="370" x2="800.3" y2="416"/>
-    </g>
-    <!-- spandrel shading at each slab edge -->
-    <g stroke="#5f86bd" stroke-width="0.7" opacity="0.75">
-      <line x1="214" y1="154" x2="220" y2="148"/>
-      <line x1="223" y1="154" x2="229" y2="148"/>
-      <line x1="232" y1="154" x2="238" y2="148"/>
-      <line x1="241" y1="154" x2="247" y2="148"/>
-      <line x1="250" y1="154" x2="256" y2="148"/>
-      <line x1="259" y1="154" x2="265" y2="148"/>
-      <line x1="268" y1="154" x2="274" y2="148"/>
-      <line x1="277" y1="154" x2="283" y2="148"/>
-      <line x1="286" y1="154" x2="292" y2="148"/>
-      <line x1="295" y1="154" x2="301" y2="148"/>
-      <line x1="304" y1="154" x2="310" y2="148"/>
-      <line x1="313" y1="154" x2="319" y2="148"/>
-      <line x1="322" y1="154" x2="328" y2="148"/>
-      <line x1="331" y1="154" x2="337" y2="148"/>
-      <line x1="340" y1="154" x2="346" y2="148"/>
-      <line x1="349" y1="154" x2="355" y2="148"/>
-      <line x1="379" y1="154" x2="385" y2="148"/>
-      <line x1="388" y1="154" x2="394" y2="148"/>
-      <line x1="397" y1="154" x2="403" y2="148"/>
-      <line x1="406" y1="154" x2="412" y2="148"/>
-      <line x1="415" y1="154" x2="421" y2="148"/>
-      <line x1="424" y1="154" x2="430" y2="148"/>
-      <line x1="433" y1="154" x2="439" y2="148"/>
-      <line x1="442" y1="154" x2="448" y2="148"/>
-      <line x1="451" y1="154" x2="457" y2="148"/>
-      <line x1="460" y1="154" x2="466" y2="148"/>
-      <line x1="469" y1="154" x2="475" y2="148"/>
-      <line x1="478" y1="154" x2="484" y2="148"/>
-      <line x1="487" y1="154" x2="493" y2="148"/>
-      <line x1="496" y1="154" x2="502" y2="148"/>
-      <line x1="505" y1="154" x2="511" y2="148"/>
-      <line x1="514" y1="154" x2="520" y2="148"/>
-      <line x1="544" y1="154" x2="550" y2="148"/>
-      <line x1="553" y1="154" x2="559" y2="148"/>
-      <line x1="562" y1="154" x2="568" y2="148"/>
-      <line x1="571" y1="154" x2="577" y2="148"/>
-      <line x1="580" y1="154" x2="586" y2="148"/>
-      <line x1="589" y1="154" x2="595" y2="148"/>
-      <line x1="598" y1="154" x2="604" y2="148"/>
-      <line x1="607" y1="154" x2="613" y2="148"/>
-      <line x1="616" y1="154" x2="622" y2="148"/>
-      <line x1="625" y1="154" x2="631" y2="148"/>
-      <line x1="634" y1="154" x2="640" y2="148"/>
-      <line x1="643" y1="154" x2="649" y2="148"/>
-      <line x1="652" y1="154" x2="658" y2="148"/>
-      <line x1="661" y1="154" x2="667" y2="148"/>
-      <line x1="670" y1="154" x2="676" y2="148"/>
-      <line x1="679" y1="154" x2="685" y2="148"/>
-      <line x1="709" y1="154" x2="715" y2="148"/>
-      <line x1="718" y1="154" x2="724" y2="148"/>
-      <line x1="727" y1="154" x2="733" y2="148"/>
-      <line x1="736" y1="154" x2="742" y2="148"/>
-      <line x1="745" y1="154" x2="751" y2="148"/>
-      <line x1="754" y1="154" x2="760" y2="148"/>
-      <line x1="763" y1="154" x2="769" y2="148"/>
-      <line x1="772" y1="154" x2="778" y2="148"/>
-      <line x1="781" y1="154" x2="787" y2="148"/>
-      <line x1="790" y1="154" x2="796" y2="148"/>
-      <line x1="799" y1="154" x2="805" y2="148"/>
-      <line x1="808" y1="154" x2="814" y2="148"/>
-      <line x1="817" y1="154" x2="823" y2="148"/>
-      <line x1="826" y1="154" x2="832" y2="148"/>
-      <line x1="835" y1="154" x2="841" y2="148"/>
-      <line x1="844" y1="154" x2="850" y2="148"/>
-      <line x1="214" y1="226" x2="220" y2="220"/>
-      <line x1="223" y1="226" x2="229" y2="220"/>
-      <line x1="232" y1="226" x2="238" y2="220"/>
-      <line x1="241" y1="226" x2="247" y2="220"/>
-      <line x1="250" y1="226" x2="256" y2="220"/>
-      <line x1="259" y1="226" x2="265" y2="220"/>
-      <line x1="268" y1="226" x2="274" y2="220"/>
-      <line x1="277" y1="226" x2="283" y2="220"/>
-      <line x1="286" y1="226" x2="292" y2="220"/>
-      <line x1="295" y1="226" x2="301" y2="220"/>
-      <line x1="304" y1="226" x2="310" y2="220"/>
-      <line x1="313" y1="226" x2="319" y2="220"/>
-      <line x1="322" y1="226" x2="328" y2="220"/>
-      <line x1="331" y1="226" x2="337" y2="220"/>
-      <line x1="340" y1="226" x2="346" y2="220"/>
-      <line x1="349" y1="226" x2="355" y2="220"/>
-      <line x1="379" y1="226" x2="385" y2="220"/>
-      <line x1="388" y1="226" x2="394" y2="220"/>
-      <line x1="397" y1="226" x2="403" y2="220"/>
-      <line x1="406" y1="226" x2="412" y2="220"/>
-      <line x1="415" y1="226" x2="421" y2="220"/>
-      <line x1="424" y1="226" x2="430" y2="220"/>
-      <line x1="433" y1="226" x2="439" y2="220"/>
-      <line x1="442" y1="226" x2="448" y2="220"/>
-      <line x1="451" y1="226" x2="457" y2="220"/>
-      <line x1="460" y1="226" x2="466" y2="220"/>
-      <line x1="469" y1="226" x2="475" y2="220"/>
-      <line x1="478" y1="226" x2="484" y2="220"/>
-      <line x1="487" y1="226" x2="493" y2="220"/>
-      <line x1="496" y1="226" x2="502" y2="220"/>
-      <line x1="505" y1="226" x2="511" y2="220"/>
-      <line x1="514" y1="226" x2="520" y2="220"/>
-      <line x1="544" y1="226" x2="550" y2="220"/>
-      <line x1="553" y1="226" x2="559" y2="220"/>
-      <line x1="562" y1="226" x2="568" y2="220"/>
-      <line x1="571" y1="226" x2="577" y2="220"/>
-      <line x1="580" y1="226" x2="586" y2="220"/>
-      <line x1="589" y1="226" x2="595" y2="220"/>
-      <line x1="598" y1="226" x2="604" y2="220"/>
-      <line x1="607" y1="226" x2="613" y2="220"/>
-      <line x1="616" y1="226" x2="622" y2="220"/>
-      <line x1="625" y1="226" x2="631" y2="220"/>
-      <line x1="634" y1="226" x2="640" y2="220"/>
-      <line x1="643" y1="226" x2="649" y2="220"/>
-      <line x1="652" y1="226" x2="658" y2="220"/>
-      <line x1="661" y1="226" x2="667" y2="220"/>
-      <line x1="670" y1="226" x2="676" y2="220"/>
-      <line x1="679" y1="226" x2="685" y2="220"/>
-      <line x1="709" y1="226" x2="715" y2="220"/>
-      <line x1="718" y1="226" x2="724" y2="220"/>
-      <line x1="727" y1="226" x2="733" y2="220"/>
-      <line x1="736" y1="226" x2="742" y2="220"/>
-      <line x1="745" y1="226" x2="751" y2="220"/>
-      <line x1="754" y1="226" x2="760" y2="220"/>
-      <line x1="763" y1="226" x2="769" y2="220"/>
-      <line x1="772" y1="226" x2="778" y2="220"/>
-      <line x1="781" y1="226" x2="787" y2="220"/>
-      <line x1="790" y1="226" x2="796" y2="220"/>
-      <line x1="799" y1="226" x2="805" y2="220"/>
-      <line x1="808" y1="226" x2="814" y2="220"/>
-      <line x1="817" y1="226" x2="823" y2="220"/>
-      <line x1="826" y1="226" x2="832" y2="220"/>
-      <line x1="835" y1="226" x2="841" y2="220"/>
-      <line x1="844" y1="226" x2="850" y2="220"/>
-      <line x1="214" y1="298" x2="220" y2="292"/>
-      <line x1="223" y1="298" x2="229" y2="292"/>
-      <line x1="232" y1="298" x2="238" y2="292"/>
-      <line x1="241" y1="298" x2="247" y2="292"/>
-      <line x1="250" y1="298" x2="256" y2="292"/>
-      <line x1="259" y1="298" x2="265" y2="292"/>
-      <line x1="268" y1="298" x2="274" y2="292"/>
-      <line x1="277" y1="298" x2="283" y2="292"/>
-      <line x1="286" y1="298" x2="292" y2="292"/>
-      <line x1="295" y1="298" x2="301" y2="292"/>
-      <line x1="304" y1="298" x2="310" y2="292"/>
-      <line x1="313" y1="298" x2="319" y2="292"/>
-      <line x1="322" y1="298" x2="328" y2="292"/>
-      <line x1="331" y1="298" x2="337" y2="292"/>
-      <line x1="340" y1="298" x2="346" y2="292"/>
-      <line x1="349" y1="298" x2="355" y2="292"/>
-      <line x1="379" y1="298" x2="385" y2="292"/>
-      <line x1="388" y1="298" x2="394" y2="292"/>
-      <line x1="397" y1="298" x2="403" y2="292"/>
-      <line x1="406" y1="298" x2="412" y2="292"/>
-      <line x1="415" y1="298" x2="421" y2="292"/>
-      <line x1="424" y1="298" x2="430" y2="292"/>
-      <line x1="433" y1="298" x2="439" y2="292"/>
-      <line x1="442" y1="298" x2="448" y2="292"/>
-      <line x1="451" y1="298" x2="457" y2="292"/>
-      <line x1="460" y1="298" x2="466" y2="292"/>
-      <line x1="469" y1="298" x2="475" y2="292"/>
-      <line x1="478" y1="298" x2="484" y2="292"/>
-      <line x1="487" y1="298" x2="493" y2="292"/>
-      <line x1="496" y1="298" x2="502" y2="292"/>
-      <line x1="505" y1="298" x2="511" y2="292"/>
-      <line x1="514" y1="298" x2="520" y2="292"/>
-      <line x1="544" y1="298" x2="550" y2="292"/>
-      <line x1="553" y1="298" x2="559" y2="292"/>
-      <line x1="562" y1="298" x2="568" y2="292"/>
-      <line x1="571" y1="298" x2="577" y2="292"/>
-      <line x1="580" y1="298" x2="586" y2="292"/>
-      <line x1="589" y1="298" x2="595" y2="292"/>
-      <line x1="598" y1="298" x2="604" y2="292"/>
-      <line x1="607" y1="298" x2="613" y2="292"/>
-      <line x1="616" y1="298" x2="622" y2="292"/>
-      <line x1="625" y1="298" x2="631" y2="292"/>
-      <line x1="634" y1="298" x2="640" y2="292"/>
-      <line x1="643" y1="298" x2="649" y2="292"/>
-      <line x1="652" y1="298" x2="658" y2="292"/>
-      <line x1="661" y1="298" x2="667" y2="292"/>
-      <line x1="670" y1="298" x2="676" y2="292"/>
-      <line x1="679" y1="298" x2="685" y2="292"/>
-      <line x1="709" y1="298" x2="715" y2="292"/>
-      <line x1="718" y1="298" x2="724" y2="292"/>
-      <line x1="727" y1="298" x2="733" y2="292"/>
-      <line x1="736" y1="298" x2="742" y2="292"/>
-      <line x1="745" y1="298" x2="751" y2="292"/>
-      <line x1="754" y1="298" x2="760" y2="292"/>
-      <line x1="763" y1="298" x2="769" y2="292"/>
-      <line x1="772" y1="298" x2="778" y2="292"/>
-      <line x1="781" y1="298" x2="787" y2="292"/>
-      <line x1="790" y1="298" x2="796" y2="292"/>
-      <line x1="799" y1="298" x2="805" y2="292"/>
-      <line x1="808" y1="298" x2="814" y2="292"/>
-      <line x1="817" y1="298" x2="823" y2="292"/>
-      <line x1="826" y1="298" x2="832" y2="292"/>
-      <line x1="835" y1="298" x2="841" y2="292"/>
-      <line x1="844" y1="298" x2="850" y2="292"/>
-      <line x1="214" y1="370" x2="220" y2="364"/>
-      <line x1="223" y1="370" x2="229" y2="364"/>
-      <line x1="232" y1="370" x2="238" y2="364"/>
-      <line x1="241" y1="370" x2="247" y2="364"/>
-      <line x1="250" y1="370" x2="256" y2="364"/>
-      <line x1="259" y1="370" x2="265" y2="364"/>
-      <line x1="268" y1="370" x2="274" y2="364"/>
-      <line x1="277" y1="370" x2="283" y2="364"/>
-      <line x1="286" y1="370" x2="292" y2="364"/>
-      <line x1="295" y1="370" x2="301" y2="364"/>
-      <line x1="304" y1="370" x2="310" y2="364"/>
-      <line x1="313" y1="370" x2="319" y2="364"/>
-      <line x1="322" y1="370" x2="328" y2="364"/>
-      <line x1="331" y1="370" x2="337" y2="364"/>
-      <line x1="340" y1="370" x2="346" y2="364"/>
-      <line x1="349" y1="370" x2="355" y2="364"/>
-      <line x1="379" y1="370" x2="385" y2="364"/>
-      <line x1="388" y1="370" x2="394" y2="364"/>
-      <line x1="397" y1="370" x2="403" y2="364"/>
-      <line x1="406" y1="370" x2="412" y2="364"/>
-      <line x1="415" y1="370" x2="421" y2="364"/>
-      <line x1="424" y1="370" x2="430" y2="364"/>
-      <line x1="433" y1="370" x2="439" y2="364"/>
-      <line x1="442" y1="370" x2="448" y2="364"/>
-      <line x1="451" y1="370" x2="457" y2="364"/>
-      <line x1="460" y1="370" x2="466" y2="364"/>
-      <line x1="469" y1="370" x2="475" y2="364"/>
-      <line x1="478" y1="370" x2="484" y2="364"/>
-      <line x1="487" y1="370" x2="493" y2="364"/>
-      <line x1="496" y1="370" x2="502" y2="364"/>
-      <line x1="505" y1="370" x2="511" y2="364"/>
-      <line x1="514" y1="370" x2="520" y2="364"/>
-      <line x1="544" y1="370" x2="550" y2="364"/>
-      <line x1="553" y1="370" x2="559" y2="364"/>
-      <line x1="562" y1="370" x2="568" y2="364"/>
-      <line x1="571" y1="370" x2="577" y2="364"/>
-      <line x1="580" y1="370" x2="586" y2="364"/>
-      <line x1="589" y1="370" x2="595" y2="364"/>
-      <line x1="598" y1="370" x2="604" y2="364"/>
-      <line x1="607" y1="370" x2="613" y2="364"/>
-      <line x1="616" y1="370" x2="622" y2="364"/>
-      <line x1="625" y1="370" x2="631" y2="364"/>
-      <line x1="634" y1="370" x2="640" y2="364"/>
-      <line x1="643" y1="370" x2="649" y2="364"/>
-      <line x1="652" y1="370" x2="658" y2="364"/>
-      <line x1="661" y1="370" x2="667" y2="364"/>
-      <line x1="670" y1="370" x2="676" y2="364"/>
-      <line x1="679" y1="370" x2="685" y2="364"/>
-      <line x1="709" y1="370" x2="715" y2="364"/>
-      <line x1="718" y1="370" x2="724" y2="364"/>
-      <line x1="727" y1="370" x2="733" y2="364"/>
-      <line x1="736" y1="370" x2="742" y2="364"/>
-      <line x1="745" y1="370" x2="751" y2="364"/>
-      <line x1="754" y1="370" x2="760" y2="364"/>
-      <line x1="763" y1="370" x2="769" y2="364"/>
-      <line x1="772" y1="370" x2="778" y2="364"/>
-      <line x1="781" y1="370" x2="787" y2="364"/>
-      <line x1="790" y1="370" x2="796" y2="364"/>
-      <line x1="799" y1="370" x2="805" y2="364"/>
-      <line x1="808" y1="370" x2="814" y2="364"/>
-      <line x1="817" y1="370" x2="823" y2="364"/>
-      <line x1="826" y1="370" x2="832" y2="364"/>
-      <line x1="835" y1="370" x2="841" y2="364"/>
-      <line x1="844" y1="370" x2="850" y2="364"/>
-    </g>
-    <!-- top-floor terrace balustrade -->
-    <g stroke="#9fc7f5" stroke-width="0.9" opacity="0.9">
-      <line x1="200" y1="128" x2="256" y2="128"/>
-      <line x1="804" y1="128" x2="860" y2="128"/>
-      <line x1="208" y1="128" x2="208" y2="142"/>
-      <line x1="220" y1="128" x2="220" y2="142"/>
-      <line x1="232" y1="128" x2="232" y2="142"/>
-      <line x1="244" y1="128" x2="244" y2="142"/>
-      <line x1="808" y1="128" x2="808" y2="142"/>
-      <line x1="820" y1="128" x2="820" y2="142"/>
-      <line x1="832" y1="128" x2="832" y2="142"/>
-      <line x1="844" y1="128" x2="844" y2="142"/>
-      <line x1="856" y1="128" x2="856" y2="142"/>
-    </g>
-    <g stroke="#9fc7f5" stroke-width="0.9" opacity="0.9">
-      <rect x="286" y="84" width="228" height="44"/>
-      <rect x="546" y="84" width="228" height="44"/>
-      <line x1="400" y1="84" x2="400" y2="128"/>
-      <line x1="660" y1="84" x2="660" y2="128"/>
-    </g>
-    <!-- ground floor: retail frontage, recessed residential entrance -->
-    <g stroke="#eaf4ff" stroke-width="1.4">
-      <rect x="214" y="446" width="222" height="74"/>
-      <rect x="614" y="446" width="232" height="74"/>
-      <rect x="468" y="434" width="118" height="86"/>
-    </g>
-    <g stroke="#9fc7f5" stroke-width="0.9">
-      <line x1="288" y1="446" x2="288" y2="520"/>
-      <line x1="362" y1="446" x2="362" y2="520"/>
-      <line x1="690" y1="446" x2="690" y2="520"/>
-      <line x1="768" y1="446" x2="768" y2="520"/>
-      <line x1="527" y1="434" x2="527" y2="520"/>
-      <line x1="468" y1="470" x2="586" y2="470"/>
-    </g>
-    <!-- entrance canopy -->
-    <g stroke="#eaf4ff" stroke-width="2.2">
-      <path d="M452 426 L602 426 L602 418 L452 418 Z"/>
-    </g>
-    <g stroke="#eaf4ff" stroke-width="2.6">
-      <line x1="120" y1="520" x2="1000" y2="520"/>
-    </g>
-    <g stroke="#7ea9e0" stroke-width="1">
-      <line x1="126" y1="520" x2="116" y2="532"/>
-      <line x1="142" y1="520" x2="132" y2="532"/>
-      <line x1="158" y1="520" x2="148" y2="532"/>
-      <line x1="174" y1="520" x2="164" y2="532"/>
-      <line x1="190" y1="520" x2="180" y2="532"/>
-      <line x1="206" y1="520" x2="196" y2="532"/>
-      <line x1="222" y1="520" x2="212" y2="532"/>
-      <line x1="238" y1="520" x2="228" y2="532"/>
-      <line x1="254" y1="520" x2="244" y2="532"/>
-      <line x1="270" y1="520" x2="260" y2="532"/>
-      <line x1="286" y1="520" x2="276" y2="532"/>
-      <line x1="302" y1="520" x2="292" y2="532"/>
-      <line x1="318" y1="520" x2="308" y2="532"/>
-      <line x1="334" y1="520" x2="324" y2="532"/>
-      <line x1="350" y1="520" x2="340" y2="532"/>
-      <line x1="366" y1="520" x2="356" y2="532"/>
-      <line x1="382" y1="520" x2="372" y2="532"/>
-      <line x1="398" y1="520" x2="388" y2="532"/>
-      <line x1="414" y1="520" x2="404" y2="532"/>
-      <line x1="430" y1="520" x2="420" y2="532"/>
-      <line x1="446" y1="520" x2="436" y2="532"/>
-      <line x1="462" y1="520" x2="452" y2="532"/>
-      <line x1="478" y1="520" x2="468" y2="532"/>
-      <line x1="494" y1="520" x2="484" y2="532"/>
-      <line x1="510" y1="520" x2="500" y2="532"/>
-      <line x1="526" y1="520" x2="516" y2="532"/>
-      <line x1="542" y1="520" x2="532" y2="532"/>
-      <line x1="558" y1="520" x2="548" y2="532"/>
-      <line x1="574" y1="520" x2="564" y2="532"/>
-      <line x1="590" y1="520" x2="580" y2="532"/>
-      <line x1="606" y1="520" x2="596" y2="532"/>
-      <line x1="622" y1="520" x2="612" y2="532"/>
-      <line x1="638" y1="520" x2="628" y2="532"/>
-      <line x1="654" y1="520" x2="644" y2="532"/>
-      <line x1="670" y1="520" x2="660" y2="532"/>
-      <line x1="686" y1="520" x2="676" y2="532"/>
-      <line x1="702" y1="520" x2="692" y2="532"/>
-      <line x1="718" y1="520" x2="708" y2="532"/>
-      <line x1="734" y1="520" x2="724" y2="532"/>
-      <line x1="750" y1="520" x2="740" y2="532"/>
-      <line x1="766" y1="520" x2="756" y2="532"/>
-      <line x1="782" y1="520" x2="772" y2="532"/>
-      <line x1="798" y1="520" x2="788" y2="532"/>
-      <line x1="814" y1="520" x2="804" y2="532"/>
-      <line x1="830" y1="520" x2="820" y2="532"/>
-      <line x1="846" y1="520" x2="836" y2="532"/>
-      <line x1="862" y1="520" x2="852" y2="532"/>
-      <line x1="878" y1="520" x2="868" y2="532"/>
-      <line x1="894" y1="520" x2="884" y2="532"/>
-      <line x1="910" y1="520" x2="900" y2="532"/>
-      <line x1="926" y1="520" x2="916" y2="532"/>
-      <line x1="942" y1="520" x2="932" y2="532"/>
-      <line x1="958" y1="520" x2="948" y2="532"/>
-      <line x1="974" y1="520" x2="964" y2="532"/>
-      <line x1="990" y1="520" x2="980" y2="532"/>
-    </g>
-    <!-- overall and bay dimensions -->
-    <g stroke="#8fb4e8" stroke-width="1">
-      <line x1="200" y1="572" x2="860" y2="572"/>
-      <line x1="200" y1="556" x2="200" y2="588"/>
-      <line x1="195" y1="577" x2="205" y2="567"/>
-      <line x1="365" y1="556" x2="365" y2="588"/>
-      <line x1="360" y1="577" x2="370" y2="567"/>
-      <line x1="530" y1="556" x2="530" y2="588"/>
-      <line x1="525" y1="577" x2="535" y2="567"/>
-      <line x1="695" y1="556" x2="695" y2="588"/>
-      <line x1="690" y1="577" x2="700" y2="567"/>
-      <line x1="860" y1="556" x2="860" y2="588"/>
-      <line x1="855" y1="577" x2="865" y2="567"/>
-      <line x1="200" y1="606" x2="860" y2="606"/>
-      <line x1="200" y1="596" x2="200" y2="616"/>
-      <line x1="860" y1="596" x2="860" y2="616"/>
-    </g>
-    <g stroke="none" fill="#cfe3ff" font-size="11" text-anchor="middle">
-      <text x="282.5" y="566">7 500</text>
-      <text x="447.5" y="566">7 500</text>
-      <text x="612.5" y="566">7 500</text>
-      <text x="777.5" y="566">7 500</text>
-      <text x="530" y="600" font-size="12" letter-spacing="1">30 000 OVERALL</text>
-    </g>
-    <!-- north point -->
-    <g stroke="#cfe3ff" stroke-width="1.2" transform="translate(1030,120)">
-      <circle cx="0" cy="0" r="26"/>
-      <path d="M0 -20 L7 8 L0 1 L-7 8 Z" fill="#cfe3ff"/>
-      <text x="0" y="44" fill="#cfe3ff" stroke="none" font-size="12" text-anchor="middle">N</text>
-    </g>
-    <!-- scale bar -->
-    <g transform="translate(944,556)">
-      <g stroke="#cfe3ff" stroke-width="1">
-        <rect x="0" y="0" width="30" height="8" fill="#cfe3ff"/>
-        <rect x="30" y="0" width="30" height="8" fill="none"/>
-        <rect x="60" y="0" width="30" height="8" fill="#cfe3ff"/>
-      </g>
-      <g stroke="none" fill="#8fb4e8" font-size="10" text-anchor="middle">
-        <text x="0" y="22">0</text><text x="45" y="22">5</text><text x="90" y="22">10 m</text>
-      </g>
-    </g>
-    <!-- the stamp a real sheet carries while it is not for construction -->
-    <g transform="rotate(-24 530 300)" opacity="0.5">
-      <rect x="330" y="262" width="400" height="72" fill="none" stroke="#ffce6b" stroke-width="2.4"/>
-      <text x="530" y="311" fill="#ffce6b" stroke="none" font-size="34" letter-spacing="6" text-anchor="middle">PRELIMINARY</text>
-    </g>
-    <g stroke="none" fill="#8fb4e8" font-size="11" letter-spacing="1.5">
-      <text x="120" y="632">FRONT ELEVATION · 1:200 @ A3 · NOT FOR CONSTRUCTION</text>
-    </g>
-  </g>
-</svg>
-                                <div class="bp-caption">FIG 1 — MIXED-USE HUB · FRONT ELEVATION</div>
+                                    <!-- ============ 3 · floor slabs ============ -->
+                                    <g class="ink" data-step="3">
+                                      <line x1="108" y1="130" x2="282" y2="130"/>
+                                      <line x1="108" y1="164" x2="282" y2="164"/>
+                                      <line x1="108" y1="198" x2="282" y2="198"/>
+                                      <line x1="108" y1="228" x2="282" y2="228" stroke-width="1.7"/>
+                                    </g>
+
+                                    <!-- ============ 4 · the residential floors ============ -->
+                                    <g class="ink" data-step="4">
+                                      <g fill="url(#bpGlass)">
+                                        <rect x="120" y="104" width="30" height="20"/><rect x="160" y="104" width="30" height="20"/>
+                                        <rect x="200" y="104" width="30" height="20"/><rect x="240" y="104" width="30" height="20"/>
+                                        <rect x="120" y="138" width="30" height="20"/><rect x="160" y="138" width="30" height="20"/>
+                                        <rect x="200" y="138" width="30" height="20"/><rect x="240" y="138" width="30" height="20"/>
+                                        <rect x="120" y="172" width="30" height="20"/><rect x="160" y="172" width="30" height="20"/>
+                                        <rect x="200" y="172" width="30" height="20"/><rect x="240" y="172" width="30" height="20"/>
+                                      </g>
+                                      <g stroke-width=".6" opacity=".65">
+                                        <line x1="135" y1="104" x2="135" y2="124"/><line x1="175" y1="104" x2="175" y2="124"/>
+                                        <line x1="215" y1="104" x2="215" y2="124"/><line x1="255" y1="104" x2="255" y2="124"/>
+                                        <line x1="135" y1="138" x2="135" y2="158"/><line x1="175" y1="138" x2="175" y2="158"/>
+                                        <line x1="215" y1="138" x2="215" y2="158"/><line x1="255" y1="138" x2="255" y2="158"/>
+                                        <line x1="135" y1="172" x2="135" y2="192"/><line x1="175" y1="172" x2="175" y2="192"/>
+                                        <line x1="215" y1="172" x2="215" y2="192"/><line x1="255" y1="172" x2="255" y2="192"/>
+                                      </g>
+                                      <!-- balconies on the middle floor -->
+                                      <g stroke-width=".9">
+                                        <path d="M118 158 L152 158 L152 152 M118 158 L118 152"/>
+                                        <path d="M238 158 L272 158 L272 152 M238 158 L238 152"/>
+                                      </g>
+                                    </g>
+
+                                    <!-- ============ 5 · the street ============ -->
+                                    <g class="ink" data-step="5">
+                                      <path d="M108 228 L282 228 L282 264 L108 264 Z" stroke-width="1.2"/>
+                                      <rect x="118" y="236" width="42" height="28" fill="url(#bpGlass)"/>
+                                      <rect x="230" y="236" width="42" height="28" fill="url(#bpGlass)"/>
+                                      <path d="M180 232 L210 232 L210 264 L180 264 Z"/>       <!-- entrance -->
+                                      <line x1="195" y1="232" x2="195" y2="264" stroke-width=".7"/>
+                                      <path d="M170 226 L220 226 L226 218 L164 218 Z" stroke-width="1.1"/>  <!-- canopy -->
+                                      <line x1="164" y1="264" x2="226" y2="264" stroke-width="1.6"/>
+                                      <path d="M158 264 L164 258 L226 258 L232 264" stroke-width=".8" opacity=".7"/>
+                                    </g>
+
+                                    <!-- ============ 6 · people, for scale ============ -->
+                                    <g class="ink" data-step="6" stroke-width="1.1">
+                                      <g><circle cx="96" cy="246" r="3.2"/><path d="M96 249 L96 258 M96 252 L91 256 M96 252 L101 256 M96 258 L92 264 M96 258 L100 264"/></g>
+                                      <g><circle cx="300" cy="247" r="3"/><path d="M300 250 L300 258 M300 253 L296 257 M300 253 L304 257 M300 258 L297 264 M300 258 L303 264"/></g>
+                                      <g><circle cx="312" cy="248" r="2.6"/><path d="M312 251 L312 258 M312 254 L309 257 M312 254 L315 257 M312 258 L310 264 M312 258 L314 264"/></g>
+                                    </g>
+
+                                    <!-- ============ 7 · street furniture ============ -->
+                                    <g class="ink" data-step="7">
+                                      <g><line x1="60" y1="264" x2="60" y2="240"/><circle cx="60" cy="230" r="13"/>
+                                         <path d="M52 224 L60 216 L68 224" stroke-width=".7" opacity=".6"/></g>
+                                      <g><line x1="340" y1="264" x2="340" y2="242"/><circle cx="340" cy="233" r="11"/></g>
+                                      <g stroke-width="1"><line x1="80" y1="264" x2="80" y2="238"/>
+                                         <path d="M74 238 L86 238 L86 232 L74 232 Z"/></g>
+                                      <!-- a car, for street scale -->
+                                      <g stroke-width="1">
+                                        <path d="M-0 0" />
+                                        <path d="M382 264 L382 252 L392 244 L416 244 L424 252 L430 252 L430 264 Z" transform="translate(-60,0)"/>
+                                        <circle cx="333" cy="264" r="4.5"/><circle cx="360" cy="264" r="4.5"/>
+                                      </g>
+                                    </g>
+
+                                    <!-- ============ 8 · dimensions and notes ============ -->
+                                    <g class="ink" data-step="8" stroke="#1b4d8f" stroke-width="1">
+                                      <line x1="86" y1="86" x2="86" y2="264"/>
+                                      <path d="M82 92 l4 -8 l4 8 z" fill="#1b4d8f" stroke="none"/>
+                                      <path d="M82 258 l4 8 l4 -8 z" fill="#1b4d8f" stroke="none"/>
+                                      <line x1="108" y1="288" x2="282" y2="288"/>
+                                      <path d="M114 284 l-8 4 l8 4 z" fill="#1b4d8f" stroke="none"/>
+                                      <path d="M276 284 l8 4 l-8 4 z" fill="#1b4d8f" stroke="none"/>
+                                      <g stroke-width=".7" opacity=".8">
+                                        <line x1="292" y1="96" x2="308" y2="96"/><line x1="292" y1="130" x2="308" y2="130"/>
+                                        <line x1="292" y1="164" x2="308" y2="164"/><line x1="292" y1="198" x2="308" y2="198"/>
+                                        <line x1="292" y1="228" x2="308" y2="228"/><line x1="292" y1="264" x2="308" y2="264"/>
+                                        <line x1="300" y1="96" x2="300" y2="264"/>
+                                      </g>
+                                      <circle cx="404" cy="46" r="15" stroke="#14110c"/>
+                                      <line x1="404" y1="59" x2="404" y2="35" stroke="#14110c"/>
+                                      <path d="M404 31 l5 10 l-10 0 z" fill="#14110c" stroke="none"/>
+                                    </g>
+
+                                    <!-- ============ 9 · site plan, inset ============ -->
+                                    <g class="ink" data-step="9" stroke-width="1">
+                                      <rect x="392" y="150" width="104" height="120" stroke-dasharray="4 3" opacity=".8"/>
+                                      <rect x="410" y="176" width="52" height="62" fill="url(#bpHatch)"/>
+                                      <path d="M392 262 L496 262" stroke-width="1.4"/>
+                                      <path d="M404 150 L404 270" stroke-width=".7" opacity=".55"/>
+                                      <g stroke-width=".7" opacity=".65">
+                                        <line x1="470" y1="176" x2="488" y2="176"/><line x1="470" y1="192" x2="488" y2="192"/>
+                                        <line x1="470" y1="208" x2="488" y2="208"/><line x1="470" y1="224" x2="488" y2="224"/>
+                                      </g>
+                                      <circle cx="424" cy="250" r="6"/><circle cx="448" cy="250" r="6"/>
+                                    </g>
+                                  </g>
+
+                                  <!-- lettering is written, not drawn — it appears rather than unspooling -->
+                                  <g class="bp-text" fill="#4a453d" font-family="ui-monospace,monospace" font-size="10" letter-spacing="1">
+                                    <text x="404" y="70" text-anchor="middle" fill="#14110c">N</text>
+                                    <text x="72" y="178" text-anchor="middle" transform="rotate(-90 72 178)">62&#8242;-0&#8243;</text>
+                                    <text x="195" y="303" text-anchor="middle">78&#8242;-0&#8243;</text>
+                                    <text x="316" y="100" font-size="8.5">L4 · RESIDENTIAL</text>
+                                    <text x="316" y="134" font-size="8.5">L3 · RESIDENTIAL</text>
+                                    <text x="316" y="168" font-size="8.5">L2 · RESIDENTIAL</text>
+                                    <text x="316" y="202" font-size="8.5">L1 · OFFICE</text>
+                                    <text x="316" y="232" font-size="8.5">GF · RETAIL</text>
+                                    <text x="444" y="144" text-anchor="middle" font-size="8.5">SITE PLAN · 1:500</text>
+                                    <text x="436" y="196" font-size="7.5" fill="#6b655b">FOOTPRINT</text>
+                                    <text x="392" y="284" font-size="7.5" fill="#6b655b">ST. — 40&#8242; R.O.W.</text>
+                                  </g>
+                                </svg>
+                                <div class="bp-caption">FIG 1 — MIXED-USE HUB · FRONT ELEVATION (NTS)</div>
                               </div>
                             </div>
 
@@ -3764,6 +3376,70 @@
                 + (ago(r) ? ' · ' + ago(r) : '') + '</span></span>').join('');
             strip.style.display = 'block';
         }).catch(() => {});
+    })();
+    </script>
+    <script>
+    // Measure every line so it can draw at its own speed, then let the sheet
+    // draw itself when the reader actually arrives at it — and again if they
+    // come back, because a drawing appearing is the point of it.
+    (function drawTheSheet(){
+        const sheet = document.querySelector('#view-realestate .bp-sheet');
+        const svg = sheet && sheet.querySelector('.bp-svg');
+        if (!sheet || !svg) return;
+
+        if (!('animate' in Element.prototype)) return;          // leave the drawing be
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const STEP = 340;                        // ms between layers
+        const plan = [];
+        Array.from(svg.querySelectorAll('.ink')).forEach(function (layer) {
+            const step = parseInt(layer.getAttribute('data-step'), 10) || 1;
+            layer.querySelectorAll('path,line,rect,circle,polyline,polygon').forEach(function (el, i) {
+                let len = 0;
+                try { len = el.getTotalLength ? el.getTotalLength() : 0; } catch (e) {}
+                if (!len || !isFinite(len) || len < 2) return;
+                // a small stagger inside a layer, so a wall of lines does not
+                // arrive as one block
+                plan.push({ el: el, len: Math.ceil(len),
+                            delay: (step - 1) * STEP + Math.min(i, 12) * 35 });
+            });
+        });
+        if (!plan.length) return;
+
+        let running = [];
+        function play(){
+            running.forEach(function (a) { try { a.cancel(); } catch (e) {} });
+            running = plan.map(function (s) {
+                // The dash pattern lives only inside the animation, so cancelling
+                // it — for any reason at all — restores a solid line.
+                return s.el.animate(
+                    [{ strokeDasharray: s.len + ' ' + s.len, strokeDashoffset: s.len },
+                     { strokeDasharray: s.len + ' ' + s.len, strokeDashoffset: 0 }],
+                    { duration: 900, delay: s.delay, easing: 'cubic-bezier(.55,.1,.3,1)' });
+            });
+            // The lettering waits for the last line to be down, then is written.
+            // It is hung off the drawing FINISHING rather than a fixed delay, and
+            // it is only ever hidden from inside a running animation — the same
+            // rule as the lines, for the same reason: a caption held invisible by
+            // an animation that never ran is a caption nobody reads.
+            const text = svg.querySelector('.bp-text');
+            const last = running[running.length - 1];
+            if (text && last && last.finished) {
+                const write = text.animate([{ opacity: 0 }, { opacity: 1 }],
+                                           { duration: 500, fill: 'backwards' });
+                write.pause();
+                running.push(write);
+                last.finished.then(function () { write.play(); }).catch(function () { write.cancel(); });
+                // and if the drawing never finishes, the words are not held hostage
+                setTimeout(function () { if (write.playState === 'paused') write.cancel(); }, 6000);
+            }
+        }
+
+        if (!('IntersectionObserver' in window)) { play(); return; }
+        const io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) { if (e.isIntersecting) play(); });
+        }, { threshold: 0.25 });
+        io.observe(sheet);
     })();
     </script>
     <script src="/floatback.js"></script>

@@ -62,9 +62,21 @@ COLLOQUIAL = {
         ("mola", "slang"),
     ],
     "ko": [
-        ("해요체 확인 필요", "placeholder — needs a reader"),
+        # Korean has now been read. These are the faults that were in it, kept
+        # here so no future pass can reintroduce them.
+        ("당신", "not a neutral 'you' in Korean — commercial copy drops the pronoun"),
+        ("우리는", "the plain 'we'; a company addressing a customer says 저희"),
+        ("우리가", "same — 저희가"),
+        ("우리의", "same — 저희의"),
+        ("리드", "transliterated 'lead'; the term is 잠재 고객"),
+        ("여정 계획 도구", "the Trip Planner is 여행 플래너 everywhere, or it is two products"),
+        ("곳바로", "misspelling of 곧바로"),
     ],
-    "vi": [],
+    "vi": [
+        # Vietnamese has now been read too.
+        ("Cái này", "spoken deixis; name the thing"),
+        ("tự lớn lên", "how a child grows, not how a collection grows"),
+    ],
 }
 
 # Strings that are supposed to stay English.

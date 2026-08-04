@@ -911,6 +911,17 @@ def admin_terminal_css():
     return send_file(os.path.join(BASE_DIR, "admin-terminal.css"))
 
 
+@app.route("/modern.css")
+def modern_css():
+    """The current surface: white ground, big type, colour only in solid things.
+
+    Loaded after paper.css and overriding it, in its own file on purpose — the
+    look is one <link> to remove. Two earlier attempts at this were wrong in
+    opposite directions and both had to be unpicked out of a shared stylesheet.
+    """
+    return send_file(os.path.join(BASE_DIR, "modern.css"), mimetype="text/css")
+
+
 @app.route("/paper.css")
 def paper_css():
     """The paper theme, shared by every page.
@@ -1265,11 +1276,16 @@ def api_geography():
     cities = d.get("cities", {})
     geo, seen = {}, {}
     for e in d.get("entries", []):
-        state = (e.get("state") or "").strip()
+        state = _canon_region(e.get("state"))
         city = (e.get("city") or "").strip()
         if not (state and city):
             continue
-        county = (e.get("county") or state).strip()
+        county = _canon_region(e.get("county")) or state
+        # A district that is its own county would read "District of Columbia ›
+        # District of Columbia". Name the city there instead — it is the same
+        # ground, and saying it twice helps nobody.
+        if county.lower() == state.lower():
+            county = (e.get("city_label") or city).title()
         label = (e.get("city_label") or cities.get(city) or city.title()).strip()
         counties = geo.setdefault(state, {})
         lst = counties.setdefault(county, [])
@@ -1581,6 +1597,25 @@ def _wiki_describe(name, lat, lon):
         return None, None, None
 
 
+# One place, one name. Geocoders and people spell the district several ways,
+# and each spelling would otherwise open its own entry in the pickers — the
+# duplicate everyone notices, sitting next to the actual state of Washington.
+_REGION_ALIASES = {
+    "washington dc": "District of Columbia",
+    "washington d.c.": "District of Columbia",
+    "washington, d.c.": "District of Columbia",
+    "washington, dc": "District of Columbia",
+    "d.c.": "District of Columbia",
+    "dc": "District of Columbia",
+    "district of columbia": "District of Columbia",
+}
+
+
+def _canon_region(name):
+    n = " ".join(str(name or "").strip().split())
+    return _REGION_ALIASES.get(n.lower(), n)
+
+
 def _derive_region(meta):
     """The state and county a discovered place sits in, from the geocoder.
 
@@ -1594,6 +1629,7 @@ def _derive_region(meta):
     county = (addr.get("county") or addr.get("district")
               or addr.get("state_district") or "").strip()
     country = (addr.get("country") or "").strip()
+    state, county = _canon_region(state), _canon_region(county)
     # Outside the US a "state" is often absent; the country is the honest
     # top level there, and saying so beats filing it under nothing.
     if not state and country:
@@ -4139,7 +4175,16 @@ FINANCE_PLANS = {
 
 @app.route("/api/finance/enroll", methods=["POST"])
 def api_finance_enroll():
-    """Enroll a customer in the AI Debt Eliminator and send their Square charge."""
+    """Enroll a customer in the AI Debt Eliminator and send their Square charge.
+
+    🔒 CLOSED 2026-08-01 [40-agent council finding, unanimous]: this was a LIVE,
+    UNAUTHENTICATED endpoint firing a real production Square charge whose
+    description guarantees "Principal always protected" for a product that does
+    not exist yet — FTC/consumer-protection exposure + anyone could trigger
+    charges. Owner-only until the product is real and lawyer-reviewed.
+    Re-open by deleting the two lines below (and see the landing-page modal)."""
+    if not session.get("owner"):
+        return Response("Not Found", status=404, mimetype="text/plain")
     data = request.get_json(force=True, silent=True) or {}
     name = (data.get("name") or "").strip()
     email = (data.get("email") or "").strip()
