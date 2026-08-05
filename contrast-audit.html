@@ -73,6 +73,23 @@ function auditDoc(doc, win) {
         if (!Array.from(el.childNodes).some(n => n.nodeType === 3 && n.nodeValue.trim().length > 2)) return;
         const cs = win.getComputedStyle(el);
         if (cs.visibility === 'hidden' || parseFloat(cs.opacity) < 0.4) return;
+        // A filled control whose label matches its own fill: the words are
+        // not dim, they are gone. Checked separately because the walk below
+        // climbs to the nearest opaque ancestor, and for a filled element
+        // that ancestor is itself — a case worth naming rather than scoring.
+        const own = cs.backgroundColor.match(/[\d.]+/g);
+        if (own && (own.length < 4 || parseFloat(own[3]) > 0.5)) {
+            const lo = lum(cs.backgroundColor), lt = lum(cs.color);
+            if (lo !== null && lt !== null) {
+                const r0 = (Math.max(lo, lt) + .05) / (Math.min(lo, lt) + .05);
+                if (r0 < 1.6) {
+                    out.push({ text: (el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 46),
+                               ratio: +r0.toFixed(2), need: 4.5, fg: cs.color, bg: cs.backgroundColor,
+                               sel: el.tagName.toLowerCase() + (el.className ? '.' + String(el.className).split(' ')[0] : '') + '  ← LABEL INVISIBLE ON ITS OWN FILL' });
+                    return;
+                }
+            }
+        }
         const ground = groundOf(el);
         if (ground === PAINTED) return;          // measured by eye, not by maths
         const lf = lum(cs.color), lb = lum(ground);
@@ -105,6 +122,19 @@ function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&
             fr.onerror = res;
             fr.src = path;
         });
+        // Open anything that hides behind a click before measuring.
+        //
+        // This audit reported "all pages pass" for four straight rounds while
+        // the Sections strip carried an invisible label — because the strip is
+        // display:none until you open it, so offsetParent was null and every
+        // element in it was skipped. An audit that only sees the default state
+        // is an audit that agrees with you.
+        try {
+            fr.contentDocument.querySelectorAll(
+                '.sections-trigger, [class*="sections-trig"], .menu-trigger, [data-opens]'
+            ).forEach(t => { try { t.click(); } catch (e) {} });
+            await new Promise(r => setTimeout(r, 500));
+        } catch (e) {}
         let found = [];
         try { found = auditDoc(fr.contentDocument, fr.contentWindow); } catch (e) {}
         found.forEach(f => {

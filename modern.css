@@ -469,7 +469,24 @@ td { border-bottom: 1px solid var(--m-line) !important; color: var(--m-body) !im
               border-radius: var(--m-radius) !important; box-shadow: var(--m-shadow) !important; }
 .phase-tab, .phase-tabs button { background: transparent !important; color: var(--m-muted) !important;
                                  border: 0 !important; font-weight: 650 !important; }
-.phase-tab.active, .phase-tabs button.active {
-  background: var(--m-accent) !important; color: var(--m-accent-ink) !important;
-  border-radius: var(--m-radius-sm) !important;
+/* The contents strip — the thing that was actually wrong all along.
+
+   paper.css already styled the current tab correctly: an accent-coloured
+   word with a 2px rule under it. My rule painted a filled block behind it,
+   and paper's `.phase-tab[data-arm].active` colour rule outranks mine, so
+   the label stayed accent-coloured ON an accent-coloured block. The word
+   didn't go dark — it disappeared. Every repaint after that changed which
+   colour the block was, which is why it kept reading as the same fault.
+
+   The fill is gone. Same treatment as every other control on the site. */
+.phase-tab.active, .phase-tabs button.active,
+.phase-tab[data-arm].active, .phase-tab[data-arm].active:hover {
+  background: transparent !important;
+  background-image: none !important;
+  color: var(--m-rose-deep) !important;
+  border: 0 !important;
+  border-bottom: 2px solid var(--m-rose) !important;
+  border-radius: 0 !important;
+  font-weight: 800 !important;
 }
+.phase-tab:hover:not(.active) { color: var(--m-ink) !important; }
