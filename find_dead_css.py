@@ -18,6 +18,11 @@ Two rules about how this is used, both learned the hard way on this repo:
     deleted layout.
   * BOTH widths. A rule that only ever matches inside a phone media query is
     invisible at 1440px and very much alive at 390px.
+  * SHORTHANDS COUNT. `border:1px solid X` is reported by the browser as a
+    shorthand plus the longhands it implies, and only the shorthand carries a
+    source range. An earlier version required a range and so believed those
+    rules supplied nothing — it marked four live rules dead, and the snapshot
+    caught it at the border widths.
 
 Even then this is evidence, not permission. Nothing here is deleted without
 snapshot_styles.py proving the page resolves identically afterwards — the
@@ -53,6 +58,7 @@ def main():
     alive = collections.defaultdict(bool)
     seen = {}                       # (start,end) -> selector text, for the report
 
+    sigs_seen = set()
     with sync_playwright() as p:
         b = p.chromium.launch(executable_path=CHROME)
         for w, h in WIDTHS:
@@ -63,11 +69,51 @@ def main():
                 e["header"]["styleSheetId"], e["header"]))
             cdp.send("DOM.enable"); cdp.send("CSS.enable")
 
+            # One getMatchedStylesForNode per element is a round trip per
+            # element, and 11650 elements at two widths does not finish. But
+            # most of those elements are the same element: every card on every
+            # page has the same tag, the same classes and the same ancestry, so
+            # it matches the same rules and asking again learns nothing. Query
+            # one representative per distinct style context, globally — which
+            # collapses twenty pages sharing a header and a footer into one ask.
+            SIG_JS = """() => {
+              const sig = el => {
+                const parts = [];
+                for (let n = el; n && n !== document.documentElement; n = n.parentElement) {
+                  parts.push(n.tagName + '.' + (typeof n.className === 'string' ? n.className : '')
+                             + '#' + (n.id || '') + '[' + [...n.attributes]
+                             .map(a => a.name).filter(a => a.startsWith('data-')).join(',') + ']');
+                  if (parts.length > 4) break;      // deeper than any selector here reaches
+                }
+                return parts.join('>');
+              };
+              const out = [];
+              let i = 0;
+              for (const el of document.querySelectorAll('body, body *')) {
+                el.setAttribute('data-psx-dead-probe', i);
+                out.push([i++, sig(el)]);
+              }
+              return out;
+            }"""
+
             def sweep():
+                pairs = pg.evaluate(SIG_JS)
+                want = []
+                for idx, s in pairs:
+                    if s in sigs_seen:
+                        continue
+                    sigs_seen.add(s)
+                    want.append(idx)
+                if not want:
+                    return
                 doc = cdp.send("DOM.getDocument", {"depth": -1, "pierce": False})
-                ids = cdp.send("DOM.querySelectorAll",
-                               {"nodeId": doc["root"]["nodeId"],
-                                "selector": "body, body *"})["nodeIds"]
+                root = doc["root"]["nodeId"]
+                ids = []
+                for idx in want:
+                    r = cdp.send("DOM.querySelectorAll",
+                                 {"nodeId": root,
+                                  "selector": '[data-psx-dead-probe="%d"]' % idx})["nodeIds"]
+                    ids.extend(r)
                 for nid in ids:
                     try:
                         m = cdp.send("CSS.getMatchedStylesForNode", {"nodeId": nid})
@@ -90,7 +136,17 @@ def main():
                             seen[key] = (rule.get("selectorList") or {}).get("text", "?")
                         for d in st.get("cssProperties", []):
                             name = d.get("name")
-                            if not name or d.get("disabled") or not d.get("range"):
+                            # NOT `and d.get("range")`. A shorthand is reported
+                            # with a range; the longhands it implies are
+                            # reported without one. Requiring a range made every
+                            # rule that writes `border:1px solid X` look as
+                            # though it supplied nothing, and the first deletion
+                            # run took out four such rules. The snapshot caught
+                            # it — border widths went 1px to 0px on the tabs and
+                            # the CTA — but the analyser should not have said
+                            # they were dead. A derived longhand is still this
+                            # rule doing the work.
+                            if not name or d.get("disabled"):
                                 continue
                             chain[name].append((key, bool(d.get("important"))))
                     for name, cs in chain.items():
