@@ -430,6 +430,18 @@ header {
   border-bottom: 1px solid var(--m-line) !important;
   padding: .95rem 1.25rem !important;
 }
+/* The wordmark in black.
+
+   Two things had to be set, not one. paper.css paints .logo-text with
+   `-webkit-text-fill-color` as well as `color`, and text-fill-color wins
+   over colour at paint time — so setting `color` alone leaves the mark
+   exactly as it was. Both are set here. The footer mark matches the
+   masthead; if you want the footer left coloured, it's the second selector. */
+header .brand, header .logo-text, .logo-text, .psx-foot-mark span {
+  color: var(--m-ink) !important;
+  -webkit-text-fill-color: var(--m-ink) !important;
+}
+
 header .brand, header .logo-text {
   font-family: var(--m-sans) !important;
   font-weight: 800 !important; letter-spacing: -.02em !important;
