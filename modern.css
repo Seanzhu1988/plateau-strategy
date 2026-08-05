@@ -30,14 +30,23 @@
   --m-line:      #e6e6ea;
   --m-line-firm: #d3d3da;
 
-  /* The four businesses, taken up to full strength. They were chosen dark
-     and desaturated so they could survive being used as pale washes. Used
-     solid, they can be themselves. */
-  --m-transport: #1d4ed8;
-  --m-operations:#0d7a6f;
-  --m-realestate:#a8321f;
-  --m-finance:   #b45309;
-  --m-accent:    var(--m-transport);
+  /* ---- rose gold: the owner's colour, and now the site's ----
+
+     Two tones, because one cannot do both jobs. #B76E79 is rose gold as
+     people picture it, but white text on it measures 3.80:1 — under the
+     4.5:1 a button label needs. So the true tone does the work where only
+     3:1 is required (large headings, borders, rules, icon tiles), and a
+     deepened rose carries anything with small white text on it. Same
+     colour family, nothing muddy, and nothing unreadable. */
+  --m-rose:      #b76e79;   /* true rose gold — edges, rules, large marks */
+  --m-rose-deep: #a85764;   /* fills carrying small white text (4.99:1)   */
+  --m-rose-soft: #f3e3e2;   /* the faintest wash — hairlines only         */
+
+  --m-transport: var(--m-rose-deep);
+  --m-operations:var(--m-rose-deep);
+  --m-realestate:var(--m-rose-deep);
+  --m-finance:   var(--m-rose-deep);
+  --m-accent:    var(--m-rose-deep);
   --m-accent-ink:#ffffff;
 
   --m-radius:    10px;
@@ -48,11 +57,13 @@
             Helvetica, Arial, sans-serif;
 }
 
-[data-arm="transportation"] { --m-accent: var(--m-transport); }
-[data-arm="operations"]     { --m-accent: var(--m-operations); }
-[data-arm="realestate"]     { --m-accent: var(--m-realestate); }
-[data-arm="finance"]        { --m-accent: var(--m-finance); }
-[data-arm="company"]        { --m-accent: var(--m-transport); }
+/* One brand colour across all four businesses. The old scheme gave each arm
+   its own hue as wayfinding; the owner asked for rose gold, and four hues
+   plus rose gold would just be five colours arguing. If the per-business
+   tints are wanted back, this block is the single place to restore them. */
+[data-arm="transportation"], [data-arm="operations"],
+[data-arm="realestate"], [data-arm="finance"],
+[data-arm="company"] { --m-accent: var(--m-rose-deep); }
 
 /* ---------- the paper layer's own variables, repointed ----------
 
@@ -86,17 +97,14 @@
   /* The four arms at full strength. They were mixed dark and dull so they
      could survive being spread thin behind text; used as solid marks they
      no longer have to apologise for themselves. */
-  --psx-blue:    var(--m-transport);
-  --psx-slate:   var(--m-operations);
-  --psx-oxblood: var(--m-realestate);
-  --psx-sienna:  var(--m-finance);
-  --psx-accent:  var(--m-accent);
-  --psx-accent-rgb: 29,78,216;
-  --psx-accent-dark: #1741ad;
+  --psx-blue:    var(--m-rose-deep);
+  --psx-slate:   var(--m-rose-deep);
+  --psx-oxblood: var(--m-rose-deep);
+  --psx-sienna:  var(--m-rose-deep);
+  --psx-accent:  var(--m-rose-deep);
+  --psx-accent-rgb: 168,87,100;
+  --psx-accent-dark: #8f4653;
 }
-[data-arm="operations"] { --psx-accent: var(--m-operations); --psx-accent-rgb: 13,122,111; }
-[data-arm="realestate"] { --psx-accent: var(--m-realestate); --psx-accent-rgb: 168,50,31; }
-[data-arm="finance"]    { --psx-accent: var(--m-finance);    --psx-accent-rgb: 180,83,9; }
 
 /* ---------- ground ---------- */
 html, body { background: var(--m-bg) !important; color: var(--m-body) !important; }
@@ -223,12 +231,22 @@ p, li, .sub, .summary, .view-intro, .psx-lede {
 .service-card .service-icon, .psx-card .psx-card-icon, .card .icon {
   display: inline-flex; align-items: center; justify-content: center;
   width: 2.75rem; height: 2.75rem; border-radius: var(--m-radius-sm);
-  background: var(--m-accent) !important;
+  background: var(--m-rose) !important;
   color: #fff !important;
   font-size: 1.3rem; margin-bottom: .9rem;
 }
 
-/* ---------- buttons: solid, high contrast ---------- */
+/* ---------- buttons: the section's colour, not black ----------
+
+   These were ink. The reasoning was hierarchy — one coloured call to action
+   per view, everything else neutral — and as a rule of composition it is
+   defensible. It was still the wrong call here, because the owner has asked
+   for colour on this site repeatedly and what he kept being handed was a
+   page of black bars. A rule that keeps producing the thing someone has
+   said no to several times is not a principle, it is a habit.
+
+   So the buttons now wear the business's own colour, solid. Hierarchy comes
+   from filled versus outlined instead of from colour versus no colour. */
 /* The :not() chain below is deliberately the same shape as the one in
    paper.css, plus one more exclusion. Specificity is the whole reason: the
    paper layer paints every button ink through a chain of that size, so a
@@ -239,9 +257,9 @@ p, li, .sub, .summary, .view-intro, .psx-lede {
    cancel, a chip. */
 .btn, .book-cta, .psx-btn-primary, .primary, .submit, .cta,
 button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip) {
-  background: var(--m-ink) !important;
-  color: #fff !important;
-  border: 1px solid var(--m-ink) !important;
+  background: var(--m-accent) !important;
+  color: var(--m-accent-ink) !important;
+  border: 1px solid var(--m-accent) !important;
   border-radius: var(--m-radius-sm) !important;
   font-family: var(--m-sans) !important;
   font-weight: 650 !important;
@@ -250,8 +268,9 @@ button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([
   box-shadow: none !important;
   transition: background .15s ease, border-color .15s ease;
 }
-.btn:hover, .book-cta:hover, .psx-btn-primary:hover, .primary:hover, .cta:hover {
-  background: #26262c !important; border-color: #26262c !important;
+.btn:hover, .book-cta:hover, .psx-btn-primary:hover, .primary:hover, .cta:hover,
+button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip):hover {
+  background: #8f4653 !important; border-color: #8f4653 !important;
 }
 
 /* The one call to action per view wears the business's colour, solid. */
@@ -263,7 +282,7 @@ button.cta:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):n
   color: var(--m-accent-ink) !important;
 }
 .book-cta:hover, .psx-btn-primary:hover, .cta:hover, .btn.blue:hover, .act.ride:hover {
-  filter: brightness(.92);
+  background: #8f4653 !important; border-color: #8f4653 !important;
 }
 
 /* A row of four identical black bars gives a reader nothing to aim at. One
@@ -276,10 +295,10 @@ button.cta:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):n
    white outline would have vanished completely. */
 .actionbar button.act:not(.ride):not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip) {
   background: var(--m-surface) !important;
-  color: var(--m-ink) !important;
-  border: 1px solid var(--m-line-firm) !important;
+  color: var(--m-accent) !important;
+  border: 1.5px solid var(--m-accent) !important;
 }
-.actionbar button.act:not(.ride):not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip):hover { background: var(--m-raised) !important; border-color: var(--m-ink) !important; }
+.actionbar button.act:not(.ride):not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip):hover { background: var(--m-accent) !important; color: var(--m-accent-ink) !important; }
 
 /* The research button was held at 55% opacity, which read as "not yet" on a
    solid ink bar. On a white outline the same 55% just makes the words hard
@@ -299,10 +318,37 @@ button.cta:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):n
 
 .btn.ghost, .psx-btn-ghost, .btn-ghost {
   background: var(--m-surface) !important;
-  color: var(--m-ink) !important;
-  border: 1px solid var(--m-line-firm) !important;
+  color: var(--m-accent) !important;
+  border: 1.5px solid var(--m-accent) !important;
+}
+.btn.ghost:hover, .psx-btn-ghost:hover, .btn-ghost:hover {
+  background: var(--m-accent) !important; color: var(--m-accent-ink) !important;
 }
 .btn.ghost:hover { background: var(--m-raised) !important; }
+
+/* The black bars, traced to their actual source.
+
+   paper.css carries a block commented "the last gradient buttons on the
+   site" which paints `a.btn.blue` with var(--psx-ink) !important. That
+   selector is two classes plus an element — heavier than anything the
+   general button rule above can be without becoming absurd — so those
+   buttons stayed black through every previous pass while everything around
+   them turned. A second block does the same to `.cta`.
+
+   Those rules were written to strip out old gradient buttons, which was
+   right at the time. They now outrank the site's own colour, which is
+   wrong. Matched here selector-for-selector, arriving later, so the tie is
+   won honestly instead of with an id hack. */
+a.btn.blue, a.btn.dark, a.btn-blue, a.cta,
+a.btn, .btn.dark, .btn.blue, .btn-blue, button.btn, .cta {
+  background: var(--m-accent) !important;
+  color: var(--m-accent-ink) !important;
+  border-color: var(--m-accent) !important;
+}
+a.btn.blue:hover, a.btn.dark:hover, a.cta:hover,
+a.btn.dark:hover, .btn.dark:hover, a.btn:hover, .cta:hover {
+  background: #8f4653 !important; border-color: #8f4653 !important;
+}
 
 /* ---------- links ---------- */
 a { color: var(--m-accent); }
@@ -317,7 +363,7 @@ p a, .sub a, .summary a, .note a {
   font-weight: 700 !important; font-size: .69rem !important;
   letter-spacing: .04em; text-transform: uppercase;
   padding: .24rem .6rem !important;
-  background: var(--m-ink) !important; color: #fff !important; border: 0 !important;
+  background: var(--m-accent) !important; color: var(--m-accent-ink) !important; border: 0 !important;
 }
 .chip {
   border-radius: 999px !important;
@@ -327,7 +373,7 @@ p a, .sub a, .summary a, .note a {
   font-weight: 600 !important;
   padding: .42rem .85rem !important;
 }
-.chip.on { background: var(--m-ink) !important; border-color: var(--m-ink) !important; color: #fff !important; }
+.chip.on { background: var(--m-accent) !important; border-color: var(--m-accent) !important; color: var(--m-accent-ink) !important; }
 
 /* Status keeps its own meaning and its own colours — untouched by any of
    the above, because a reader must never decode whether red means
@@ -382,5 +428,6 @@ td { border-bottom: 1px solid var(--m-line) !important; color: var(--m-body) !im
 .phase-tab, .phase-tabs button { background: transparent !important; color: var(--m-muted) !important;
                                  border: 0 !important; font-weight: 650 !important; }
 .phase-tab.active, .phase-tabs button.active {
-  background: var(--m-ink) !important; color: #fff !important; border-radius: var(--m-radius-sm) !important;
+  background: var(--m-accent) !important; color: var(--m-accent-ink) !important;
+  border-radius: var(--m-radius-sm) !important;
 }
