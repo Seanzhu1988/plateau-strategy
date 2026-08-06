@@ -179,17 +179,6 @@
       .psx-eyebrow{color:var(--psx-muted) !important;font-weight:500 !important;}
 
       /* ---------- stats: rules, not a floating glass slab ---------- */
-      #view-overview .psx-stats{
-        background:transparent !important;border:none !important;
-        border-top:1px solid var(--psx-rule) !important;
-        border-radius:0 !important;box-shadow:none !important;
-        backdrop-filter:none !important;
-      }
-      .psx-stat-val{
-        font-family:var(--psx-display);font-weight:600 !important;
-        color:var(--psx-ink) !important;
-      }
-      .psx-stat-label{color:var(--psx-muted) !important;}
       .psx-divider{background:var(--psx-rule) !important;}
 
       /* ---------- cards: paper on paper ---------- */
