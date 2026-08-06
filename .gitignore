@@ -55,3 +55,8 @@ ride_demand.json
 board_auth.json
 guide_trips.json
 guide_interest.json
+
+# Converted copies of licences and filings — the source PDFs are already
+# ignored above, and the JPGs carry the same identifiers, so they must not
+# reach a repo that gets deployed to a public site.
+jpg-out/
