@@ -66,6 +66,18 @@
            off it the way a screen red does. */
         --psx-red:#a4161a; --psx-red-soft:#c1121f; --psx-red-wash:#fbeceb;
 
+        /* ---- the company's own blue ----
+           The wordmark and Book a ride are the company, not the page they sit
+           on, so they hold one colour everywhere. That was written against
+           --psx-blue, which modern.css redefines as its transport hue — so the
+           pin moved with the layer, and the button came out a bright #1d4ed8
+           screen blue on a page whose whole idea is ink on paper.
+
+           This token exists to be un-repointable: nothing else in any layer
+           refers to it, so changing the company blue is this one line and
+           nothing else moves. Deep rather than bright, to sit on paper. */
+        --psx-cta:#1b4d8f; --psx-cta-dark:#16406f;
+
         /* One variable decides the display face. Point it at Carna here if
            the licence is bought — @font-face above, then swap this line.
            Until then: real book faces that ship with macOS and Windows, so
@@ -105,11 +117,6 @@
       }
       .logo-img{box-shadow:none !important;border:1px solid var(--psx-rule) !important;}
       nav a:hover{color:var(--psx-ink) !important;}
-      nav a[href="/book"],.psx-btn-primary,.book-cta{
-        background:var(--psx-ink) !important;background-image:none !important;
-        color:#fff !important;box-shadow:none !important;border:1px solid var(--psx-ink) !important;
-      }
-      nav a[href="/book"]:hover,.psx-btn-primary:hover{background:#000 !important;}
 
       /* ---------- hero: no glow, no gradient, no pill-with-a-dot ---------- */
       .psx-glow,.psx-glow-1,.psx-glow-2,.psx-dot{display:none !important;}
@@ -526,15 +533,12 @@
          accent call-to-action per view and ink for every form submit
          under it. Two sienna buttons stacked in the same panel was what
          made the mismatch visible in the first place. */
-      .psx-btn-primary,
-      nav a[href="/book"],
-      .book-cta,
       button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.here-btn),
       .btn.blue,.btn-blue,.cta{
         background:var(--psx-accent) !important;background-image:none !important;
         border-color:var(--psx-accent) !important;color:#fff !important;
       }
-      .psx-btn-primary:hover,nav a[href="/book"]:hover,.cta:hover,
+      .cta:hover,
       button:not(.i18n-opt):not([id="i18nBtn"]):not(.pk-bubble):not([id="pollock"]):not(.here-btn):hover:not(:disabled){
         background:var(--psx-accent-dark) !important;border-color:var(--psx-accent-dark) !important;
       }
@@ -601,14 +605,23 @@
          stops being recognisable as the same button — which is the one
          thing a conversion button cannot afford. Both are pinned. */
       .logo-text,.psx-foot-mark span{
-        -webkit-text-fill-color:var(--psx-blue) !important;
-        color:var(--psx-blue) !important;
+        -webkit-text-fill-color:var(--psx-cta) !important;
+        color:var(--psx-cta) !important;
       }
-      nav a[href="/book"],nav a[href="/book"]:hover{
-        background:var(--psx-blue) !important;border-color:var(--psx-blue) !important;
+      a[href="/book"],.psx-btn-primary,.book-cta{
+        background:var(--psx-cta) !important;background-image:none !important;
+        border:1px solid var(--psx-cta) !important;
+        color:#fff !important;box-shadow:none !important;
+        border-radius:3px !important;
+        padding:.55rem 1rem !important;
+        font-weight:600 !important;
+        text-decoration:none !important;
+        display:inline-block !important;
+      }
+      a[href="/book"]:hover,.psx-btn-primary:hover,.book-cta:hover{
+        background:var(--psx-cta-dark) !important;border-color:var(--psx-cta-dark) !important;
         color:#fff !important;
       }
-      nav a[href="/book"]:hover{background:#16406f !important;border-color:#16406f !important;}
 
       /* ---------- and neither does anything that means something ----------
          "Located" is a success state, not a section. It was reading the

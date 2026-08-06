@@ -1182,13 +1182,12 @@
       nav a{color:#4a453d !important;font-size:.94rem !important;font-weight:500 !important;
         margin:0 .85rem !important;opacity:1 !important;border-bottom:none !important;transition:color .2s,transform .2s,filter .2s;}
       nav a:hover{color:#fff !important;border-bottom:none !important;}
-      nav a[href="/book"]{
-        background:linear-gradient(135deg,var(--psx-blue),var(--psx-indigo)) !important;
-        color:#fff !important;padding:.6rem 1.15rem !important;border-radius:10px !important;
-        margin-left:1rem !important;font-weight:600 !important;
-        box-shadow:0 10px 22px -8px rgba(59,130,246,.7) !important;
-      }
-      nav a[href="/book"]:hover{filter:brightness(1.07);transform:translateY(-1px);}
+      /* The Book a ride button is painted once, in paper.css, keyed on the
+         destination rather than on being inside a <nav>. What stood here was a
+         135deg gradient with a blue glow — the exact thing the redesign exists
+         to remove — kept alive only because a later layer covered it. It is
+         gone rather than overridden. Spacing is layout, so that stays. */
+      nav a[href="/book"]{margin-left:1rem !important;}
       .sections-trigger{color:#4a453d !important;font-weight:500 !important;}
       .sections-trigger:hover{color:#fff !important;border-bottom-color:transparent !important;}
 
