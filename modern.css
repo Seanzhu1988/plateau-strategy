@@ -467,6 +467,51 @@ header .brand, header .logo-text {
 header a { color: var(--m-body) !important; font-weight: 600 !important; }
 header a:hover { color: var(--m-ink) !important; }
 
+/* ---------- what Tab reveals ----------
+
+   The owner tabbed through the site and hit a solid navy block. It was the
+   skip link: parked off-screen at left:-9999px and slid in on :focus as a
+   filled bar, right beside the header. Every sweep I ran missed it for the
+   same reason the Sections strip was missed — it does not exist on screen
+   until an interaction puts it there.
+
+   It has to stay obvious (it is the keyboard user's shortcut past the nav),
+   but obvious does not require a fill. White ground, navy word, navy edge,
+   and a ring so it is unmistakable. */
+.psx-skip, .psx-skip:focus, .skip-link, .skip-link:focus {
+  background: var(--m-surface) !important;
+  color: var(--m-rose-deep) !important;
+  border: 2px solid var(--m-rose-deep) !important;
+  border-radius: var(--m-radius-sm) !important;
+  font-weight: 700 !important;
+  padding: .6rem 1rem !important;
+  box-shadow: 0 0 0 4px rgba(31,58,95,.18), 0 6px 18px -6px rgba(11,8,9,.25) !important;
+}
+
+/* And the reason it was the only thing Tab showed at all: focus was being
+   removed everywhere without anything put in its place, so a keyboard user
+   had no idea where they were. A ring, never a fill — the same language as
+   the rest of the site, and it satisfies the visible-focus requirement the
+   old `outline: none` was quietly breaking. */
+a:focus-visible, button:focus-visible, .btn:focus-visible, .chip:focus-visible,
+[tabindex]:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--m-rose-deep) !important;
+  outline-offset: 3px !important;
+  border-radius: 3px;
+}
+
+/* Two pale washes left over from the old scheme — a tinted panel behind a
+   line of text is the same mistake as a tinted button, one size larger. */
+.jarvis-line.flash, .total {
+  background: var(--m-surface) !important;
+  border-left: 3px solid var(--m-rose) !important;
+}
+.soon-badge {
+  background: transparent !important;
+  color: var(--m-muted) !important;
+  border: 1px solid var(--m-line-firm) !important;
+}
+
 /* ---------- forms ---------- */
 input, select, textarea {
   background: var(--m-surface) !important;
