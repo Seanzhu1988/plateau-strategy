@@ -30,22 +30,24 @@
   --m-line:      #e6e6ea;
   --m-line-firm: #d3d3da;
 
-  /* ---- Board 2, sampled ----
+  /* ---- the company's own navy ----
 
-     The owner chose the second Canva palette board. The hex codes printed
-     on that board are scrambled — an orange swatch is labelled #FFFFFF —
-     so these are read from the image's own pixels, not from its captions.
+     Taken from the LLC logo the owner supplied — navy type on cream, in a
+     serif, carrying the same tagline now on the hero. That is the real
+     registered identity, so the website follows it rather than the reverse.
+     A generated palette lost to the company's own.
 
-     Nine swatches came back. Five are warm neutrals (tan, blush, cream,
-     amber) that measure 1.4–2.2:1 on white: real colours, but only ever
-     decoration, never a line or a word. They are deliberately unused. The
-     ground stays white, which is the thing that made the last version
-     legible. What the board actually contributes is the warm red family,
-     and that is what the site now runs on. */
-  --m-rose:      #ce4022;   /* burnt orange, 4.79:1 — rules and underlines */
-  --m-rose-deep: #964533;   /* terracotta,   6.57:1 — coloured words       */
-  --m-rose-soft: #f8d3ba;   /* blush — decoration only, never text or line */
-  --m-navy:      #0d1b2a;   /* the board's deep navy, held for a second ink */
+     Cream is deliberately NOT the page ground. The owner's judgement on
+     washed backgrounds was that they look cheap, and white is what made
+     the type legible; cream lives inside the mark and nowhere else.
+
+     Navy carries every job the accent had — rules, underlines, links,
+     figures, section labels — at 11.48:1 on white, which is nearly triple
+     what small text needs, so nothing has to be checked twice. */
+  --m-rose:      #1f3a5f;   /* navy, 11.48:1 — rules, underlines, marks   */
+  --m-rose-deep: #1f3a5f;   /* the same navy for coloured words            */
+  --m-rose-soft: #f7f4ea;   /* the logo's cream — inside the mark only     */
+  --m-navy:      #14273f;   /* deeper navy, for hover                      */
 
   --m-transport: var(--m-rose-deep);
   --m-operations:var(--m-rose-deep);
@@ -107,8 +109,8 @@
   --psx-oxblood: var(--m-rose-deep);
   --psx-sienna:  var(--m-rose-deep);
   --psx-accent:  var(--m-rose-deep);
-  --psx-accent-rgb: 168,87,100;
-  --psx-accent-dark: #7a3729;
+  --psx-accent-rgb: 31,58,95;
+  --psx-accent-dark: #14273f;
 }
 
 /* ---------- ground ---------- */
