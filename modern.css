@@ -485,7 +485,7 @@ header a:hover { color: var(--m-ink) !important; }
   border-radius: var(--m-radius-sm) !important;
   font-weight: 700 !important;
   padding: .6rem 1rem !important;
-  box-shadow: 0 0 0 4px rgba(31,58,95,.18), 0 6px 18px -6px rgba(11,8,9,.25) !important;
+  box-shadow: inset 0 -4px 0 0 var(--m-navy) !important;
 }
 
 /* And the reason it was the only thing Tab showed at all: focus was being
@@ -493,23 +493,54 @@ header a:hover { color: var(--m-ink) !important; }
    had no idea where they were. A ring, never a fill — the same language as
    the rest of the site, and it satisfies the visible-focus requirement the
    old `outline: none` was quietly breaking. */
-a:focus-visible, button:focus-visible, .btn:focus-visible, .chip:focus-visible,
-[tabindex]:focus-visible, summary:focus-visible {
-  outline: 2px solid var(--m-rose-deep) !important;
-  outline-offset: 3px !important;
-  border-radius: 3px;
+/* And the focus indicator itself is NOT a box.
+
+   Three attempts to get here, each wrong in a way worth recording.
+   A navy ring: still a rectangle around a word, which is the same
+   objection as a fill in outline form. Thickening the element's own bottom
+   border: worked where a border existed, invisible on the section tabs
+   where none does. Then an inset shadow at a tidy specificity: silently
+   beaten by this file's own button rule, which sets box-shadow:none through
+   a seven-class :not() chain, so focus landed with no indicator at all on
+   15 of 16 controls.
+
+   This carries the same chain, so it wins on its own terms. The indicator
+   is an INSET bar along the bottom edge — the underline this site already
+   speaks in. It appears on every control whether or not one is there
+   already, draws nothing around or behind the word, and shifts no layout. */
+a:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+a:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+button:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+button:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.btn:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.btn:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.cta:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.cta:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.book-cta:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.book-cta:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.psx-btn-primary:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.psx-btn-primary:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.act:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.act:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.phase-tab:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.phase-tab:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.chip:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.chip:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+summary:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+summary:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+[tabindex]:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+[tabindex]:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip) {
+  outline: none !important;
+  box-shadow: inset 0 -3px 0 0 var(--m-navy) !important;
+  color: var(--m-navy) !important;
 }
 
-/* Two pale washes left over from the old scheme — a tinted panel behind a
-   line of text is the same mistake as a tinted button, one size larger. */
-.jarvis-line.flash, .total {
-  background: var(--m-surface) !important;
-  border-left: 3px solid var(--m-rose) !important;
-}
-.soon-badge {
-  background: transparent !important;
-  color: var(--m-muted) !important;
-  border: 1px solid var(--m-line-firm) !important;
+/* Icon-only controls have no word to underline, so the bar becomes a full
+   inset edge — still inside the control, still not a box around it. */
+.loc-btn:focus, .map-actions button:focus, .leaflet-control a:focus,
+button.x:focus, .modal-x:focus, .auth-close:focus {
+  outline: none !important;
+  box-shadow: inset 0 0 0 2px var(--m-navy) !important;
 }
 
 /* ---------- forms ---------- */
