@@ -1542,6 +1542,15 @@ EXTRA.update({
 # Korean and Vietnamese follow the same correction, from DeepL.
 # ---------------------------------------------------------------------------
 EXTRA.update({
+    # The hero headline, replaced 2026-08-05. DeepL for all four; the Chinese
+    # keeps the 书面语 register the note above insists on — 您 rather than 你,
+    # 商务伙伴 rather than anything conversational.
+    "Your professional business companion": [
+        "您专业的商务伙伴",
+        "Tu compañero profesional en los negocios",
+        "여러분의 전문적인 비즈니스 파트너",
+        "Người đồng hành chuyên nghiệp trong công việc của bạn"],
+
     "One company, four businesses": [
         "一家公司，四项业务",
         "Una empresa, cuatro negocios",
