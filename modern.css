@@ -417,7 +417,22 @@ p a, .sub a, .summary a, .note a {
   font-weight: 600 !important;
   padding: .42rem .85rem !important;
 }
-.chip.on { background: var(--m-accent) !important; border-color: var(--m-accent) !important; color: var(--m-accent-ink) !important; }
+/* The selected filter chip. This was the last filled control on the site —
+   a navy pill with the word sitting inside it. It measured fine (white on
+   navy, 11.48:1), which is exactly why the audits kept passing it: legible
+   is not the same as wanted. The owner's objection to fills was never about
+   contrast, it was that a block around a short word buries the word.
+
+   Selected now reads the same way as everything else: the word in navy,
+   a rule under it, the outline firmed up. Nothing filled. */
+.chip.on {
+  background: transparent !important;
+  color: var(--m-rose-deep) !important;
+  border-color: var(--m-rose-deep) !important;
+  font-weight: 700 !important;
+  box-shadow: inset 0 -2px 0 0 var(--m-rose) !important;
+}
+.chip.on:hover { border-color: var(--m-navy) !important; color: var(--m-navy) !important; }
 
 /* Status keeps its own meaning and its own colours — untouched by any of
    the above, because a reader must never decode whether red means
