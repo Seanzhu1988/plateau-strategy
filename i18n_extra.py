@@ -1659,6 +1659,15 @@ EXTRA.update({
 # Korean and Vietnamese follow the same correction, from DeepL.
 # ---------------------------------------------------------------------------
 EXTRA.update({
+    # The hero headline, replaced 2026-08-05. DeepL for all four; the Chinese
+    # keeps the 书面语 register the note above insists on — 您 rather than 你,
+    # 商务伙伴 rather than anything conversational.
+    "Your professional business companion": [
+        "您专业的商务伙伴",
+        "Tu compañero profesional en los negocios",
+        "여러분의 전문적인 비즈니스 파트너",
+        "Người đồng hành chuyên nghiệp trong công việc của bạn"],
+
     "One company, four businesses": [
         "一家公司，四项业务",
         "Una empresa, cuatro negocios",
@@ -1853,5 +1862,16 @@ EXTRA.update({
     "GF · RETAIL": ["首层 · 商铺", "PB · COMERCIO", "1층 · 상가", "TT · BÁN LẺ"],
     "SITE PLAN · 1:500": ["总平面图 · 1:500", "PLANO DE SITIO · 1:500", "배치도 · 1:500", "MẶT BẰNG · 1:500"],
     "FOOTPRINT": ["建筑占地", "HUELLA", "건물 외곽", "DIỆN TÍCH XÂY DỰNG"],
+
+    # The start control: one box that takes a typed address OR fills itself
+    # from where you are. The placeholder keeps the ◎ glyph in every language
+    # because it names the button sitting inside the same box — translating a
+    # symbol away would leave the sentence pointing at nothing.
+    "Starting address or ◎": [
+        "起点地址，或点 ◎", "Dirección de inicio, o pulsa ◎",
+        "출발지 주소, 또는 ◎", "Địa chỉ xuất phát, hoặc bấm ◎"],
+    "Use my current location": [
+        "使用我的当前位置", "Usar mi ubicación actual",
+        "현재 위치 사용", "Dùng vị trí hiện tại của tôi"],
 })
 EXTRA_SKIP |= {"ST. — 40′ R.O.W.", "62′-0″", "78′-0″", "N"}

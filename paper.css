@@ -597,20 +597,11 @@
         -webkit-text-fill-color:var(--psx-cta) !important;
         color:var(--psx-cta) !important;
       }
-      a[href="/book"],.psx-btn-primary,.book-cta{
-        background:var(--psx-cta) !important;background-image:none !important;
-        border:1px solid var(--psx-cta) !important;
-        color:#fff !important;box-shadow:none !important;
-        border-radius:3px !important;
-        padding:.55rem 1rem !important;
-        font-weight:600 !important;
-        text-decoration:none !important;
-        display:inline-block !important;
-      }
-      a[href="/book"]:hover,.psx-btn-primary:hover,.book-cta:hover{
-        background:var(--psx-cta-dark) !important;border-color:var(--psx-cta-dark) !important;
-        color:#fff !important;
-      }
+      /* The Book a ride button is painted once, in modern.css, as an
+         underline in the company navy. What stood here was a filled blue
+         version of the same control — correct when it was written, and
+         superseded. Two rules for one button is how this file got the way it
+         is, so the older one goes rather than being out-specified. */
 
       /* ---------- and neither does anything that means something ----------
          "Located" is a success state, not a section. It was reading the

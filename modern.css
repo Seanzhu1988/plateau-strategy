@@ -24,20 +24,36 @@
   --m-bg:        #ffffff;
   --m-surface:   #ffffff;
   --m-raised:    #fafafa;   /* the ONLY off-white, and only under a card */
-  --m-ink:       #0b0b0c;
+  --m-ink:       #0b0809;   /* the board's headline ink */
   --m-body:      #3d3d42;
   --m-muted:     #6e6e76;
   --m-line:      #e6e6ea;
   --m-line-firm: #d3d3da;
 
-  /* The four businesses, taken up to full strength. They were chosen dark
-     and desaturated so they could survive being used as pale washes. Used
-     solid, they can be themselves. */
-  --m-transport: #1d4ed8;
-  --m-operations:#0d7a6f;
-  --m-realestate:#a8321f;
-  --m-finance:   #b45309;
-  --m-accent:    var(--m-transport);
+  /* ---- the company's own navy ----
+
+     Taken from the LLC logo the owner supplied — navy type on cream, in a
+     serif, carrying the same tagline now on the hero. That is the real
+     registered identity, so the website follows it rather than the reverse.
+     A generated palette lost to the company's own.
+
+     Cream is deliberately NOT the page ground. The owner's judgement on
+     washed backgrounds was that they look cheap, and white is what made
+     the type legible; cream lives inside the mark and nowhere else.
+
+     Navy carries every job the accent had — rules, underlines, links,
+     figures, section labels — at 11.48:1 on white, which is nearly triple
+     what small text needs, so nothing has to be checked twice. */
+  --m-rose:      #1f3a5f;   /* navy, 11.48:1 — rules, underlines, marks   */
+  --m-rose-deep: #1f3a5f;   /* the same navy for coloured words            */
+  --m-rose-soft: #f7f4ea;   /* the logo's cream — inside the mark only     */
+  --m-navy:      #14273f;   /* deeper navy, for hover                      */
+
+  --m-transport: var(--m-rose-deep);
+  --m-operations:var(--m-rose-deep);
+  --m-realestate:var(--m-rose-deep);
+  --m-finance:   var(--m-rose-deep);
+  --m-accent:    var(--m-rose-deep);
   --m-accent-ink:#ffffff;
 
   --m-radius:    10px;
@@ -48,11 +64,13 @@
             Helvetica, Arial, sans-serif;
 }
 
-[data-arm="transportation"] { --m-accent: var(--m-transport); }
-[data-arm="operations"]     { --m-accent: var(--m-operations); }
-[data-arm="realestate"]     { --m-accent: var(--m-realestate); }
-[data-arm="finance"]        { --m-accent: var(--m-finance); }
-[data-arm="company"]        { --m-accent: var(--m-transport); }
+/* One brand colour across all four businesses. The old scheme gave each arm
+   its own hue as wayfinding; the owner asked for rose gold, and four hues
+   plus rose gold would just be five colours arguing. If the per-business
+   tints are wanted back, this block is the single place to restore them. */
+[data-arm="transportation"], [data-arm="operations"],
+[data-arm="realestate"], [data-arm="finance"],
+[data-arm="company"] { --m-accent: var(--m-rose-deep); }
 
 /* ---------- the paper layer's own variables, repointed ----------
 
@@ -86,17 +104,14 @@
   /* The four arms at full strength. They were mixed dark and dull so they
      could survive being spread thin behind text; used as solid marks they
      no longer have to apologise for themselves. */
-  --psx-blue:    var(--m-transport);
-  --psx-slate:   var(--m-operations);
-  --psx-oxblood: var(--m-realestate);
-  --psx-sienna:  var(--m-finance);
-  --psx-accent:  var(--m-accent);
-  --psx-accent-rgb: 29,78,216;
-  --psx-accent-dark: #1741ad;
+  --psx-blue:    var(--m-rose-deep);
+  --psx-slate:   var(--m-rose-deep);
+  --psx-oxblood: var(--m-rose-deep);
+  --psx-sienna:  var(--m-rose-deep);
+  --psx-accent:  var(--m-rose-deep);
+  --psx-accent-rgb: 31,58,95;
+  --psx-accent-dark: #14273f;
 }
-[data-arm="operations"] { --psx-accent: var(--m-operations); --psx-accent-rgb: 13,122,111; }
-[data-arm="realestate"] { --psx-accent: var(--m-realestate); --psx-accent-rgb: 168,50,31; }
-[data-arm="finance"]    { --psx-accent: var(--m-finance);    --psx-accent-rgb: 180,83,9; }
 
 /* ---------- ground ---------- */
 html, body { background: var(--m-bg) !important; color: var(--m-body) !important; }
@@ -223,70 +238,99 @@ p, li, .sub, .summary, .view-intro, .psx-lede {
 .service-card .service-icon, .psx-card .psx-card-icon, .card .icon {
   display: inline-flex; align-items: center; justify-content: center;
   width: 2.75rem; height: 2.75rem; border-radius: var(--m-radius-sm);
-  background: var(--m-accent) !important;
+  background: var(--m-rose) !important;
   color: #fff !important;
   font-size: 1.3rem; margin-bottom: .9rem;
 }
 
-/* ---------- buttons: solid, high contrast ---------- */
-/* The :not() chain below is deliberately the same shape as the one in
-   paper.css, plus one more exclusion. Specificity is the whole reason: the
-   paper layer paints every button ink through a chain of that size, so a
-   short, tidy selector here loses to it silently and every call to action
-   comes out black. Matching its weight and arriving later wins the tie
-   honestly, without an id hack. The buttons excluded are the ones that draw
-   themselves: the language pill, the Pollock bubbles, the map's pin, a
-   cancel, a chip. */
+/* ---------- buttons: an underlined word, not a coloured block ----------
+
+   Two attempts sat here before this one: black fills, then rose fills. The
+   owner's read on both was the same and it is the correct one — a solid
+   block behind a short label buries the word. At button size the fill is
+   most of what the eye receives and the text is a hole punched in it.
+
+   So the control is the word itself, with the colour carried underneath it.
+   The rule is the affordance; the label stays black and fully legible; the
+   colour reads as an accent rather than as a wall. */
 .btn, .book-cta, .psx-btn-primary, .primary, .submit, .cta,
+a.btn, a.btn.blue, a.btn.dark, a.btn-blue, a.cta,
+.btn.blue, .btn.dark, .btn-blue,
 button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip):not(.here-btn) {
-  background: var(--m-ink) !important;
-  color: #fff !important;
-  border: 1px solid var(--m-ink) !important;
-  border-radius: var(--m-radius-sm) !important;
-  font-family: var(--m-sans) !important;
-  font-weight: 650 !important;
-  letter-spacing: -.005em !important;
-  padding: .72rem 1.15rem !important;
-  box-shadow: none !important;
-  transition: background .15s ease, border-color .15s ease;
-}
-.btn:hover, .book-cta:hover, .psx-btn-primary:hover, .primary:hover, .cta:hover {
-  background: #26262c !important; border-color: #26262c !important;
-}
-
-/* The one call to action per view wears the business's colour, solid. */
-button.ride:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
-button.cta:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
-.book-cta, .psx-btn-primary, .cta, .btn.blue {
-  background: var(--m-accent) !important;
-  border-color: var(--m-accent) !important;
-  color: var(--m-accent-ink) !important;
-}
-.book-cta:hover, .psx-btn-primary:hover, .cta:hover, .btn.blue:hover, .act.ride:hover {
-  filter: brightness(.92);
-}
-
-/* A row of four identical black bars gives a reader nothing to aim at. One
-   is the thing most people came to do; the rest are alternatives, so they
-   step back to outlines and the eye lands where it should.
-
-   Scoped to the action bar deliberately. The same .act classes are reused on
-   the Send button inside a panel, where the button IS the action and must
-   stay solid — one of them even carries an inline white label, which on a
-   white outline would have vanished completely. */
-.actionbar button.act:not(.ride):not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip) {
-  background: var(--m-surface) !important;
+  background: transparent !important;
+  background-image: none !important;
   color: var(--m-ink) !important;
-  border: 1px solid var(--m-line-firm) !important;
+  border: 0 !important;
+  border-bottom: 2px solid var(--m-rose) !important;
+  border-radius: 0 !important;
+  padding: .1rem 0 .18rem !important;
+  font-family: var(--m-sans) !important;
+  font-weight: 700 !important;
+  letter-spacing: -.005em !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  transition: border-color .15s ease, color .15s ease, border-bottom-width .15s ease;
 }
-.actionbar button.act:not(.ride):not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip):hover { background: var(--m-raised) !important; border-color: var(--m-ink) !important; }
 
-/* The research button was held at 55% opacity, which read as "not yet" on a
-   solid ink bar. On a white outline the same 55% just makes the words hard
-   to read, so it says "not yet" in words and full-strength muted ink
-   instead — a label a reader can actually finish. */
+/* Hover deepens the rule and the word together — no colour swap, no fill. */
+.btn:hover, .book-cta:hover, .psx-btn-primary:hover, .primary:hover, .cta:hover,
+a.btn:hover, a.btn.blue:hover, a.btn.dark:hover, a.cta:hover,
+.btn.blue:hover, .btn.dark:hover,
+button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip):hover {
+  color: var(--m-rose-deep) !important;
+  border-bottom-color: var(--m-rose-deep) !important;
+  border-bottom-width: 3px !important;
+}
+
+/* The action bar's buttons are laid out as wide flex bars. Stripped to bare
+   words they would sit marooned in all that width, so they keep a box —
+   an outline in the colour, never a fill. */
+.actionbar button.act:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip):not(.here-btn) {
+  border: 1.5px solid var(--m-rose) !important;
+  border-radius: var(--m-radius-sm) !important;
+  padding: .8rem 1rem !important;
+  background: transparent !important;
+  color: var(--m-ink) !important;
+}
+.actionbar button.act:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip):hover {
+  border-color: var(--m-rose-deep) !important;
+  color: var(--m-rose-deep) !important;
+  border-bottom-width: 1.5px !important;
+}
 .actionbar .act.robotaxi { opacity: 1 !important; color: var(--m-muted) !important; border-style: dashed !important; }
-.actionbar .act.robotaxi:hover { color: var(--m-ink) !important; }
+
+/* Icon-sized controls keep their own shape. An underline under a map's
+   zoom button or a toolbar icon is not an affordance, it is a stray mark —
+   the underline treatment only makes sense under a word. */
+button.x:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+.modal-x:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+.auth-close:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+.role-close:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+.dn-close:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+.jarvis-close:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+.close:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+button[aria-label='Exit']:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+button[title='Remove']:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+.leaflet-container button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+.leaflet-container a:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+.leaflet-bar a:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+.leaflet-control a:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+.leaflet-control button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+.map-actions button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+.itin-tools button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+.map-tools button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+.chipbar button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+.toolbar button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
+.zoombar button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip):not(.here-btn) {
+  border-bottom: 0 !important;
+  padding: revert !important;
+}
+
+/* The map's starting-point control styles itself and is a pin, not a word.
+   It was excluded from the button rules on purpose, which now leaves it the
+   only filled control on the page — flagged rather than quietly changed,
+   because its red waiting-state carries meaning the colour rules shouldn't
+   overwrite without a decision. */
 
 /* A live count of other people is a note, not a panel. White ground, one
    solid rule in the accent — the wash it used to sit on was the cheap look. */
@@ -297,12 +341,61 @@ button.cta:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):n
   border-radius: var(--m-radius-sm) !important;
 }
 
-.btn.ghost, .psx-btn-ghost, .btn-ghost {
-  background: var(--m-surface) !important;
+/* The secondary action gets the same underline, one weight lighter, so the
+   pair reads as two words on a line rather than a word and a box. */
+.btn.ghost, .psx-btn-ghost, .btn-ghost,
+/* Keyed on WHERE IT GOES, not on what wraps it. `nav a[href="/book"]`
+   matched only the front page: the Trip Planner and Articles put the same
+   link in <div class="right">, so the site's most important control was a
+   navy underline in one place and unstyled body text in the others. */
+a[href="/book"], header .book-cta, header a.btn {
+  background: transparent !important;
+  background-image: none !important;
   color: var(--m-ink) !important;
-  border: 1px solid var(--m-line-firm) !important;
+  border: 0 !important;
+  border-bottom: 2px solid var(--m-rose) !important;
+  border-radius: 0 !important;
+  padding: .1rem 0 .18rem !important;
+  box-shadow: none !important;
+}
+.btn.ghost:hover, .psx-btn-ghost:hover, .btn-ghost:hover,
+a[href="/book"]:hover, header .book-cta:hover, header a.btn:hover {
+  color: var(--m-rose-deep) !important;
+  border-bottom-color: var(--m-rose-deep) !important;
+  border-bottom-width: 3px !important;
 }
 .btn.ghost:hover { background: var(--m-raised) !important; }
+
+/* The black bars, traced to their actual source.
+
+   paper.css carries a block commented "the last gradient buttons on the
+   site" which paints `a.btn.blue` with var(--psx-ink) !important. That
+   selector is two classes plus an element — heavier than anything the
+   general button rule above can be without becoming absurd — so those
+   buttons stayed black through every previous pass while everything around
+   them turned. A second block does the same to `.cta`.
+
+   Those rules were written to strip out old gradient buttons, which was
+   right at the time. They now outrank the site's own colour, which is
+   wrong. Matched here selector-for-selector, arriving later, so the tie is
+   won honestly instead of with an id hack. */
+a.btn.blue, a.btn.dark, a.btn-blue, a.cta,
+a.btn, .btn.dark, .btn.blue, .btn-blue, button.btn, .cta {
+  background: transparent !important;
+  background-image: none !important;
+  color: var(--m-ink) !important;
+  border: 0 !important;
+  border-bottom: 2px solid var(--m-rose) !important;
+  border-radius: 0 !important;
+  padding: .1rem 0 .18rem !important;
+  box-shadow: none !important;
+}
+a.btn.blue:hover, a.btn.dark:hover, a.cta:hover,
+a.btn:hover, .btn.dark:hover, .btn.blue:hover, .cta:hover {
+  color: var(--m-rose-deep) !important;
+  border-bottom-color: var(--m-rose-deep) !important;
+  border-bottom-width: 3px !important;
+}
 
 /* ---------- links ---------- */
 a { color: var(--m-accent); }
@@ -317,7 +410,8 @@ p a, .sub a, .summary a, .note a {
   font-weight: 700 !important; font-size: .69rem !important;
   letter-spacing: .04em; text-transform: uppercase;
   padding: .24rem .6rem !important;
-  background: var(--m-ink) !important; color: #fff !important; border: 0 !important;
+  background: transparent !important; color: var(--m-rose-deep) !important;
+  border: 1px solid var(--m-rose) !important;
 }
 .chip {
   border-radius: 999px !important;
@@ -327,7 +421,22 @@ p a, .sub a, .summary a, .note a {
   font-weight: 600 !important;
   padding: .42rem .85rem !important;
 }
-.chip.on { background: var(--m-ink) !important; border-color: var(--m-ink) !important; color: #fff !important; }
+/* The selected filter chip. This was the last filled control on the site —
+   a navy pill with the word sitting inside it. It measured fine (white on
+   navy, 11.48:1), which is exactly why the audits kept passing it: legible
+   is not the same as wanted. The owner's objection to fills was never about
+   contrast, it was that a block around a short word buries the word.
+
+   Selected now reads the same way as everything else: the word in navy,
+   a rule under it, the outline firmed up. Nothing filled. */
+.chip.on {
+  background: transparent !important;
+  color: var(--m-rose-deep) !important;
+  border-color: var(--m-rose-deep) !important;
+  font-weight: 700 !important;
+  box-shadow: inset 0 -2px 0 0 var(--m-rose) !important;
+}
+.chip.on:hover { border-color: var(--m-navy) !important; color: var(--m-navy) !important; }
 
 /* Status keeps its own meaning and its own colours — untouched by any of
    the above, because a reader must never decode whether red means
@@ -342,6 +451,18 @@ header {
   border-bottom: 1px solid var(--m-line) !important;
   padding: .95rem 1.25rem !important;
 }
+/* The wordmark in black.
+
+   Two things had to be set, not one. paper.css paints .logo-text with
+   `-webkit-text-fill-color` as well as `color`, and text-fill-color wins
+   over colour at paint time — so setting `color` alone leaves the mark
+   exactly as it was. Both are set here. The footer mark matches the
+   masthead; if you want the footer left coloured, it's the second selector. */
+header .brand, header .logo-text, .logo-text, .psx-foot-mark span {
+  color: var(--m-ink) !important;
+  -webkit-text-fill-color: var(--m-ink) !important;
+}
+
 header .brand, header .logo-text {
   font-family: var(--m-sans) !important;
   font-weight: 800 !important; letter-spacing: -.02em !important;
@@ -349,6 +470,82 @@ header .brand, header .logo-text {
 }
 header a { color: var(--m-body) !important; font-weight: 600 !important; }
 header a:hover { color: var(--m-ink) !important; }
+
+/* ---------- what Tab reveals ----------
+
+   The owner tabbed through the site and hit a solid navy block. It was the
+   skip link: parked off-screen at left:-9999px and slid in on :focus as a
+   filled bar, right beside the header. Every sweep I ran missed it for the
+   same reason the Sections strip was missed — it does not exist on screen
+   until an interaction puts it there.
+
+   It has to stay obvious (it is the keyboard user's shortcut past the nav),
+   but obvious does not require a fill. White ground, navy word, navy edge,
+   and a ring so it is unmistakable. */
+.psx-skip, .psx-skip:focus, .skip-link, .skip-link:focus {
+  background: var(--m-surface) !important;
+  color: var(--m-rose-deep) !important;
+  border: 2px solid var(--m-rose-deep) !important;
+  border-radius: var(--m-radius-sm) !important;
+  font-weight: 700 !important;
+  padding: .6rem 1rem !important;
+  box-shadow: inset 0 -4px 0 0 var(--m-navy) !important;
+}
+
+/* And the reason it was the only thing Tab showed at all: focus was being
+   removed everywhere without anything put in its place, so a keyboard user
+   had no idea where they were. A ring, never a fill — the same language as
+   the rest of the site, and it satisfies the visible-focus requirement the
+   old `outline: none` was quietly breaking. */
+/* And the focus indicator itself is NOT a box.
+
+   Three attempts to get here, each wrong in a way worth recording.
+   A navy ring: still a rectangle around a word, which is the same
+   objection as a fill in outline form. Thickening the element's own bottom
+   border: worked where a border existed, invisible on the section tabs
+   where none does. Then an inset shadow at a tidy specificity: silently
+   beaten by this file's own button rule, which sets box-shadow:none through
+   a seven-class :not() chain, so focus landed with no indicator at all on
+   15 of 16 controls.
+
+   This carries the same chain, so it wins on its own terms. The indicator
+   is an INSET bar along the bottom edge — the underline this site already
+   speaks in. It appears on every control whether or not one is there
+   already, draws nothing around or behind the word, and shifts no layout. */
+a:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+a:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+button:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+button:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.btn:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.btn:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.cta:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.cta:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.book-cta:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.book-cta:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.psx-btn-primary:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.psx-btn-primary:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.act:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.act:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.phase-tab:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.phase-tab:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.chip:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+.chip:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+summary:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+summary:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+[tabindex]:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
+[tabindex]:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip) {
+  outline: none !important;
+  box-shadow: inset 0 -3px 0 0 var(--m-navy) !important;
+  color: var(--m-navy) !important;
+}
+
+/* Icon-only controls have no word to underline, so the bar becomes a full
+   inset edge — still inside the control, still not a box around it. */
+.loc-btn:focus, .map-actions button:focus, .leaflet-control a:focus,
+button.x:focus, .modal-x:focus, .auth-close:focus {
+  outline: none !important;
+  box-shadow: inset 0 0 0 2px var(--m-navy) !important;
+}
 
 /* ---------- forms ---------- */
 input, select, textarea {
@@ -381,6 +578,24 @@ td { border-bottom: 1px solid var(--m-line) !important; color: var(--m-body) !im
               border-radius: var(--m-radius) !important; box-shadow: var(--m-shadow) !important; }
 .phase-tab, .phase-tabs button { background: transparent !important; color: var(--m-muted) !important;
                                  border: 0 !important; font-weight: 650 !important; }
-.phase-tab.active, .phase-tabs button.active {
-  background: var(--m-ink) !important; color: #fff !important; border-radius: var(--m-radius-sm) !important;
+/* The contents strip — the thing that was actually wrong all along.
+
+   paper.css already styled the current tab correctly: an accent-coloured
+   word with a 2px rule under it. My rule painted a filled block behind it,
+   and paper's `.phase-tab[data-arm].active` colour rule outranks mine, so
+   the label stayed accent-coloured ON an accent-coloured block. The word
+   didn't go dark — it disappeared. Every repaint after that changed which
+   colour the block was, which is why it kept reading as the same fault.
+
+   The fill is gone. Same treatment as every other control on the site. */
+.phase-tab.active, .phase-tabs button.active,
+.phase-tab[data-arm].active, .phase-tab[data-arm].active:hover {
+  background: transparent !important;
+  background-image: none !important;
+  color: var(--m-rose-deep) !important;
+  border: 0 !important;
+  border-bottom: 2px solid var(--m-rose) !important;
+  border-radius: 0 !important;
+  font-weight: 800 !important;
 }
+.phase-tab:hover:not(.active) { color: var(--m-ink) !important; }
