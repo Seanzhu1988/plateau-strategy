@@ -4426,6 +4426,50 @@ def api_books_export():
 # interest to invest in it or to launch/run it themselves. This is a lead
 # board only — no money or equity ever moves through the site; registering
 # interest just leaves contact info for Plateau Strategy to follow up on.
+# ---------- the idea board is a public write, and it was unguarded ----------
+# Anyone can pitch a business idea with no account — that openness is the
+# point, and it should stay. But the endpoint accepted five posts in a row
+# from one caller in a test, with nothing to slow it and nothing to take a
+# post down afterwards. A public write on a real company's domain needs both:
+# a stranger with good intentions never notices a limit this loose, and a
+# script does immediately.
+IDEA_MAX_PER_HOUR = 3
+IDEA_MAX_PER_DAY = 8
+
+
+def _idea_rate_ok(items):
+    """True when this caller may post another idea right now.
+
+    Counted per address over the stored ideas themselves rather than in a
+    side table, so it survives a restart and cannot drift out of step with
+    what was actually published. The address is kept only to make this
+    decision — _public_article never returns it."""
+    ip = _client_ip()
+    if not ip:
+        return True, ""
+    now = datetime.datetime.now()
+    hour = day = 0
+    for a in items:
+        if a.get("ip") != ip:
+            continue
+        try:
+            t = datetime.datetime.fromisoformat(a.get("created_at") or "")
+        except Exception:
+            continue
+        age = (now - t).total_seconds()
+        if age < 3600:
+            hour += 1
+        if age < 86400:
+            day += 1
+    if hour >= IDEA_MAX_PER_HOUR:
+        return False, ("That is %d ideas in an hour. Give the last one time to be read — "
+                       "you can post again shortly." % IDEA_MAX_PER_HOUR)
+    if day >= IDEA_MAX_PER_DAY:
+        return False, ("That is %d ideas today. The board is for ideas worth reading, "
+                       "not volume — try again tomorrow." % IDEA_MAX_PER_DAY)
+    return True, ""
+
+
 def _public_article(a):
     """Public shape — investor/launcher emails are kept private, only counts are shown."""
     return {
@@ -4445,7 +4489,10 @@ def _public_article(a):
 @app.route("/api/articles")
 def api_articles():
     items = _load(ARTICLES_PATH)
-    return jsonify({"articles": [_public_article(a) for a in reversed(items)]})
+    # A hidden idea is still in the file — taking one down must not destroy
+    # what someone wrote, only stop it being published.
+    return jsonify({"articles": [_public_article(a) for a in reversed(items)
+                                 if not a.get("hidden")]})
 
 
 @app.route("/api/articles", methods=["POST"])
@@ -4458,9 +4505,13 @@ def api_article_create():
         return jsonify({"ok": False, "error": "Your name, a title and body are all required."}), 400
     with _LOCK:
         items = _load(ARTICLES_PATH)
+        ok, why = _idea_rate_ok(items)
+        if not ok:
+            return jsonify({"ok": False, "error": why}), 429
         now = datetime.datetime.now()
         article = {
             "id": _next_id(items, "ART", datestamp=False),
+            "ip": _client_ip(),          # for the rate limit only; never published
             "author": author[:80],
             "created_at": now.isoformat(timespec="seconds"),
             "stamp": now.strftime("%Y%m%d%H%M%S"),  # time-proof mark: YYYYMMDDHHMMSS
@@ -4474,6 +4525,26 @@ def api_article_create():
         items.append(article)
         _save(ARTICLES_PATH, items)
     return jsonify({"ok": True, "article": _public_article(article)})
+
+
+@app.route("/api/articles/<aid>/hide", methods=["POST"])
+@owner_required
+def api_article_hide(aid):
+    """Take an idea off the public board, or put it back.
+
+    The board publishes instantly and on purpose, so this is the other half of
+    that decision: something has to be able to remove what should not be on a
+    company's domain. It sets a flag rather than deleting — a takedown should
+    not also destroy the record of what was posted."""
+    on = bool((request.get_json(silent=True) or {}).get("hidden", True))
+    with _LOCK:
+        items = _load(ARTICLES_PATH)
+        for a in items:
+            if a.get("id") == aid:
+                a["hidden"] = on
+                _save(ARTICLES_PATH, items)
+                return jsonify({"ok": True, "hidden": on})
+    return jsonify({"ok": False, "error": "No idea with that id."}), 404
 
 
 @app.route("/api/articles/<aid>/vote", methods=["POST"])
