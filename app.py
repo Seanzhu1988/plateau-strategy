@@ -5264,6 +5264,13 @@ _OVERPASS_MIRRORS = ["https://overpass.kumi.systems/api/interpreter",
 _OVERPASS_CACHE = {}          # query hash -> {"ts": float, "data": [...]}
 _OVERPASS_TTL = 3600
 _OVERPASS_MAX = 400           # keep the cache from growing without bound
+# Phase-0 hardening (MAP_TOOLING_REDESIGN.md): gunicorn runs 1 worker x 8 threads
+# with --timeout 120. Unbounded, 3 mirrors x 65s ≈ 195s per request could pin
+# every thread past the kill line and drop booking traffic with it. So: at most
+# 4 concurrent upstream fetches, 25s per mirror, 60s total upstream budget.
+_OVERPASS_SEM = threading.BoundedSemaphore(4)
+_OVERPASS_MIRROR_TIMEOUT = (5, 25)   # (connect, read) seconds per mirror
+_OVERPASS_DEADLINE = 60              # total upstream seconds per request
 
 
 # ----------------------------------------------------------- live road traffic
@@ -5505,30 +5512,43 @@ def api_mapdata():
     hit = _OVERPASS_CACHE.get(key)
     if hit and (now - hit["ts"] < _OVERPASS_TTL):
         return jsonify({"ok": True, "elements": hit["data"], "cached": True})
-    import requests
-    last = ""
-    for url in _OVERPASS_MIRRORS:
-        try:
-            r = requests.post(url, data={"data": q}, timeout=(5, 60),
-                              headers={"User-Agent": "PlateauStrategy/1.0 (trip planner)"})
-            if r.status_code != 200:
-                last = "HTTP %s" % r.status_code
-                continue
-            j = r.json()
-            els = j.get("elements") or []
-            # a throttled reply carries a "remark" with an empty list — that is
-            # not "nothing here", so move on to the next mirror
-            if not els and j.get("remark"):
-                last = j["remark"][:120]
-                continue
-            with _LOCK:
-                if len(_OVERPASS_CACHE) > _OVERPASS_MAX:
-                    for k in sorted(_OVERPASS_CACHE, key=lambda k: _OVERPASS_CACHE[k]["ts"])[:_OVERPASS_MAX // 2]:
-                        _OVERPASS_CACHE.pop(k, None)
-                _OVERPASS_CACHE[key] = {"ts": now, "data": els}
-            return jsonify({"ok": True, "elements": els, "cached": False})
-        except Exception as e:
-            last = str(e)[:120]
+    # more than 4 map fetches already in flight → don't queue a 5th worker thread
+    # behind slow mirrors; answer from stale cache or say busy honestly
+    if not _OVERPASS_SEM.acquire(timeout=10):
+        if hit:
+            return jsonify({"ok": True, "elements": hit["data"], "cached": True, "stale": True})
+        return jsonify({"ok": False, "error": "map servers busy"}), 503
+    try:
+        import requests
+        last = ""
+        started = time.time()
+        for url in _OVERPASS_MIRRORS:
+            if time.time() - started > _OVERPASS_DEADLINE:
+                last = last or "deadline exceeded"
+                break
+            try:
+                r = requests.post(url, data={"data": q}, timeout=_OVERPASS_MIRROR_TIMEOUT,
+                                  headers={"User-Agent": "PlateauStrategy/1.0 (trip planner)"})
+                if r.status_code != 200:
+                    last = "HTTP %s" % r.status_code
+                    continue
+                j = r.json()
+                els = j.get("elements") or []
+                # a throttled reply carries a "remark" with an empty list — that is
+                # not "nothing here", so move on to the next mirror
+                if not els and j.get("remark"):
+                    last = j["remark"][:120]
+                    continue
+                with _LOCK:
+                    if len(_OVERPASS_CACHE) > _OVERPASS_MAX:
+                        for k in sorted(_OVERPASS_CACHE, key=lambda k: _OVERPASS_CACHE[k]["ts"])[:_OVERPASS_MAX // 2]:
+                            _OVERPASS_CACHE.pop(k, None)
+                    _OVERPASS_CACHE[key] = {"ts": now, "data": els}
+                return jsonify({"ok": True, "elements": els, "cached": False})
+            except Exception as e:
+                last = str(e)[:120]
+    finally:
+        _OVERPASS_SEM.release()
     # everything failed — hand back a stale answer rather than nothing
     if hit:
         return jsonify({"ok": True, "elements": hit["data"], "cached": True, "stale": True})

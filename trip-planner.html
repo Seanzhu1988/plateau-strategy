@@ -536,6 +536,10 @@
             border-bottom: 1px solid #e8edf3 !important; width: 32px !important; height: 32px !important;
             line-height: 32px !important; }
         .leaflet-bar a:hover { background: #f5f8fc !important; color: #14110c !important; }
+        /* OSM standard tiles are busier than the old CARTO ones — mute the basemap
+           so the planner's own status colours keep carrying the meaning. Scoped by
+           className so the TomTom traffic overlay keeps its full colour. */
+        .basemap-muted { filter: saturate(.35) contrast(.95) brightness(1.03); }
         .leaflet-control-attribution { background: rgba(255,255,255,.86) !important;
             color: #6b655b !important; font-size: 10.5px !important; border-radius: 8px 0 0 0; }
         .leaflet-control-attribution a { color: #5b6779 !important; }
@@ -2965,10 +2969,14 @@
     // A near-greyscale basemap. Standard OSM tiles are full of their own colour
     // — green parks, yellow roads, pink motorways — which competes with the pin
     // colours that actually carry the meaning here. A recessive basemap lets the
-    // status colours read at a glance. Retina tiles via {r} on capable screens.
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 20, subdomains: 'abcd',
-        attribution: '© OpenStreetMap contributors © CARTO'
+    // status colours read at a glance — kept via the .basemap-muted filter below.
+    // Tiles: OSM standard (CARTO free basemaps exclude commercial use; OSMF tile
+    // policy permits light commercial use w/ attribution — checked 2026-08-07,
+    // MAP_TOOLING_REDESIGN.md Phase 0). If traffic grows past a few thousand map
+    // loads/day, move to a paid provider (Stadia $20/mo) — do not stay on OSMF.
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19, className: 'basemap-muted',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
     }).addTo(map);
 
     // ---------- 🚻🍽️💊 convenience layers (traveler's choice, off by default) ----------
