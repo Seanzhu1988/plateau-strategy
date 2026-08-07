@@ -4470,20 +4470,49 @@ def _idea_rate_ok(items):
     return True, ""
 
 
+def _entitled(a, vid=None):
+    """Has this reader paid for this locked piece?
+
+    Owner always; otherwise the reader's anonymous id must be on the unlock
+    list. Deliberately server-side: see _public_article."""
+    if session.get("owner"):
+        return True
+    vid = vid or request.cookies.get("psx_vid")
+    return bool(vid) and vid in (a.get("unlocked_by") or [])
+
+
 def _public_article(a):
-    """Public shape — investor/launcher emails are kept private, only counts are shown."""
-    return {
+    """Public shape — investor/launcher emails are kept private, only counts are shown.
+
+    A LOCKED piece does not ship its body. That is the whole of the lock and
+    it is the only place it can live: a paywall implemented in the page is a
+    paywall a reader defeats with Ctrl-U, and one implemented by hiding an
+    element with CSS is not a paywall at all — the text is already on their
+    machine. So the body is replaced by the teaser here, before the JSON is
+    written, and the reader's browser never receives what it has not paid for.
+
+    This is written to be general on purpose. The first use is an attorney's
+    read on a business idea, but nothing below knows that; anything that
+    carries a `lock` behaves this way, which is what "other ideas locked too"
+    needs."""
+    lock = a.get("lock") or {}
+    locked = bool(lock) and not _entitled(a)
+    out = {
         "id": a.get("id"),
         "author": a.get("author", ""),
         "created_at": a.get("created_at"),
         "stamp": a.get("stamp", ""),
         "title": a.get("title"),
-        "body": a.get("body"),
+        "body": (lock.get("teaser") or "") if locked else a.get("body"),
         "likes": a.get("likes", 0),
         "unlikes": a.get("unlikes", 0),
+        "locked": locked,
+        "price_usd": lock.get("price_usd") if locked else None,
+        "locked_by": lock.get("by") if lock else None,
         "follower_count": len(a.get("followers", [])),
         "launcher_count": len(a.get("launchers", [])),
     }
+    return out
 
 
 @app.route("/api/articles")
@@ -4525,6 +4554,81 @@ def api_article_create():
         items.append(article)
         _save(ARTICLES_PATH, items)
     return jsonify({"ok": True, "article": _public_article(article)})
+
+
+@app.route("/api/articles/<aid>/lock", methods=["POST"])
+@owner_required
+def api_article_lock(aid):
+    """Put a price on a piece, or take it off.
+
+    Owner-only, and that is a deliberate limit rather than a placeholder. The
+    obvious next step is letting a verified attorney lock their own answer,
+    and it is NOT built here because it cannot be built correctly until the
+    money question below is settled — who charges whom decides whether the
+    attorney is a seller on this platform or a professional whose fee never
+    touches it, and those are different systems.
+
+    See ATTORNEY_ACCESS.md. Short version: Washington RPC 5.4(a) bars a lawyer
+    from sharing legal fees with a non-lawyer. If Plateau takes a percentage
+    of what an attorney is paid for legal advice, the exposure lands on the
+    attorney's licence, not just on this company. That is a question for a
+    lawyer to answer before a line of payment code is written, which is why
+    this endpoint records a price and an unlock and captures no money."""
+    d = request.get_json(silent=True) or {}
+    if d.get("unlock_forever"):
+        with _LOCK:
+            items = _load(ARTICLES_PATH)
+            for a in items:
+                if a.get("id") == aid:
+                    a.pop("lock", None)
+                    _save(ARTICLES_PATH, items)
+                    return jsonify({"ok": True, "locked": False})
+        return jsonify({"ok": False, "error": "No idea with that id."}), 404
+
+    try:
+        price = round(float(d.get("price_usd")), 2)
+    except (TypeError, ValueError):
+        return jsonify({"ok": False, "error": "A price in dollars is required."}), 400
+    if price <= 0:
+        return jsonify({"ok": False, "error": "A locked piece needs a price above zero."}), 400
+    teaser = _no_tags((d.get("teaser") or "").strip())[:600]
+    by = _no_tags((d.get("by") or "").strip())[:120]
+    if not teaser:
+        return jsonify({"ok": False, "error":
+                        "A teaser is required — a lock with nothing to read is not an offer."}), 400
+    with _LOCK:
+        items = _load(ARTICLES_PATH)
+        for a in items:
+            if a.get("id") == aid:
+                a["lock"] = {"price_usd": price, "teaser": teaser, "by": by}
+                a.setdefault("unlocked_by", [])
+                _save(ARTICLES_PATH, items)
+                return jsonify({"ok": True, "locked": True, "price_usd": price})
+    return jsonify({"ok": False, "error": "No idea with that id."}), 404
+
+
+@app.route("/api/articles/<aid>/grant", methods=["POST"])
+@owner_required
+def api_article_grant(aid):
+    """Give one reader access to one locked piece.
+
+    Owner-only because nothing here takes payment yet. When a rail is wired in
+    it calls this after the money has actually settled — which is the reason
+    granting is its own step rather than something the checkout page does:
+    a reader must never be able to reach this by asking."""
+    vid = ((request.get_json(silent=True) or {}).get("vid") or "").strip()[:64]
+    if not vid:
+        return jsonify({"ok": False, "error": "A reader id is required."}), 400
+    with _LOCK:
+        items = _load(ARTICLES_PATH)
+        for a in items:
+            if a.get("id") == aid:
+                lst = a.setdefault("unlocked_by", [])
+                if vid not in lst:
+                    lst.append(vid)
+                    _save(ARTICLES_PATH, items)
+                return jsonify({"ok": True, "readers": len(lst)})
+    return jsonify({"ok": False, "error": "No idea with that id."}), 404
 
 
 @app.route("/api/articles/<aid>/hide", methods=["POST"])
