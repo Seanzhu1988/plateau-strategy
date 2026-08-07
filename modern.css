@@ -156,25 +156,53 @@ footer, .psx-foot { border-top: 1px solid var(--m-line) !important; }
   border: 1px solid var(--m-line) !important;
 }
 
-/* ---------- type ---------- */
+/* ---------- type ----------
+   The headline was set in var(--m-sans), which resolves to -apple-system —
+   the operating system's user-interface font. Measured on the front page it
+   came out 73.6px at weight 800 in a 573px column, so the largest words on
+   the site were the OS chrome font, shouting, broken over four lines.
+   Meanwhile --psx-display has been sitting defined and unused: Iowan Old
+   Style, a book serif, chosen because the whole idea here is ink on paper.
+
+   A UI font is designed to disappear behind an interface. That is the
+   opposite of what a headline is for, and it is why this read as a template
+   rather than as anyone's work. The one genuinely artistic asset already
+   paid for is the typography; this switches it on.
+
+   Serifs also want less weight and more room than a grotesque: 800 turns a
+   book face into a slab, and the tight -.033em tracking was compensating for
+   size that is no longer there. */
 h1, .psx-h1, .page-title, .hero h1 {
-  font-family: var(--m-sans) !important;
-  font-weight: 800 !important;
-  letter-spacing: -.033em !important;
-  line-height: 1.04 !important;
+  font-family: var(--psx-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: -.014em !important;
+  line-height: 1.08 !important;
   color: var(--m-ink) !important;
 }
-h1, .hero h1, .psx-h1 { font-size: clamp(2.5rem, 6.2vw, 4.6rem) !important; }
-.page-title { font-size: clamp(1.9rem, 4vw, 2.6rem) !important; }
+h1, .hero h1, .psx-h1 { font-size: clamp(2.2rem, 4.6vw, 3.5rem) !important; }
+.page-title { font-size: clamp(1.8rem, 3.4vw, 2.4rem) !important; }
+
+/* Four lines of headline is a wall, and a hand-set measure only ever breaks
+   well in one language — this page ships in five. text-wrap:balance lets the
+   browser even the lines out itself, which is the whole reason it exists, and
+   the max-width keeps it a title rather than a paragraph. */
+#view-overview .psx-h1 {
+  max-width: 19ch !important;
+  margin-inline: auto;
+  text-wrap: balance;
+}
 
 h2, .psx-h2 {
-  font-family: var(--m-sans) !important;
-  font-weight: 750 !important;
-  letter-spacing: -.024em !important;
-  line-height: 1.12 !important;
-  font-size: clamp(1.7rem, 3.4vw, 2.5rem) !important;
+  font-family: var(--psx-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: -.008em !important;
+  line-height: 1.16 !important;
+  font-size: clamp(1.6rem, 3vw, 2.2rem) !important;
   color: var(--m-ink) !important;
 }
+/* h3 stays in the sans. A serif at 1rem on a card title reads as a mistake
+   rather than a choice — the serif earns its place at size, and the cards
+   are where the interface starts and the poster stops. */
 h3, .psx-h3 {
   font-family: var(--m-sans) !important;
   font-weight: 700 !important; letter-spacing: -.014em !important;
