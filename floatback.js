@@ -1,42 +1,83 @@
 /* 🎨 POLLOCK BUTTON — the site's mouse companion.
    A paint-splat dot FOLLOWS the mouse (smooth trailing, slightly offset so it
    never covers what you're pointing at). Reach toward it and it holds still so
-   you can catch it; click it and it BURSTS into nine paint bubbles on stems
+   you can catch it; click it and it BURSTS into a ring of paint bubbles on stems
    (radial splat — Sean's sketch, 2026-07-22), each a shortcut.
    Same file as the old "← Back" pill, so every page gets it automatically. */
 (function () {
-    var DIST = 108;                       // stem length (px, center → bubble)
+    // ---- the palette ----------------------------------------------------
+    // Measured, the old set ran L 0.55 to 0.98 and chroma 0.018 to 0.248 — a
+    // fourteen-fold saturation spread across ten bubbles, while the company's
+    // own navy sits at L 0.35, C 0.073. Every droplet was brighter and louder
+    // than the company colour, which is why a splat meant to look painted
+    // read as a box of markers instead.
+    //
+    // These are one lightness (0.45) and one chroma (0.079 — the navy's own),
+    // with hue the only thing that moves: nine steps of 40 degrees starting at
+    // the navy. Holding two of the three is what makes a set of colours look
+    // like one hand rather than an assortment, and low chroma is what makes it
+    // restful. Every one lands 7.0-7.7:1 against the paper disc it edges.
+    var PAINTS = ['#385681', '#5a4b7c', '#714365', '#7b4246', '#764926',
+                  '#62551a', '#405f32', '#0f6354', '#046072'];
+    function paint(i) { return PAINTS[i % PAINTS.length]; }
+
+    // ---- where it can take you ------------------------------------------
+    // `at` is the path this bubble leads to. A bubble for the page you are
+    // already standing on is a wasted droplet in a ring that has no room to
+    // spare, so expand() drops it — the burst is different on every page and
+    // always full of somewhere else.
+    //
+    // Dispatch is gone. It is the owner's console: a visitor who taps it gets
+    // a login they cannot pass, and it was occupying one of ten places.
+    // In its stead, the three free tools — the planner, the road trip, the
+    // book — which are the reason most people are on this site at all and
+    // were, remarkably, the only things the shortcut menu could not reach.
     var ACTIONS = [
-        { icon: '←',  label: 'Back',     color: '#f1faee', ink: '#0f172a',
+        { icon: '←',  label: 'Back',
           act: function () { if (window.history.length > 1) window.history.back(); else window.location.href = '/'; } },
-        { icon: '🏠', label: 'Home',     color: '#e63946', ink: '#fff',
+        { icon: '🏠', label: 'Home',     at: '/',
           act: function () { window.location.href = '/'; } },
-        { icon: '🦅', label: 'Finance',  color: '#e6c56a', ink: '#231b00',
-          act: function () { window.location.href = '/#finance'; } },
-        { icon: '🚗', label: 'Book',     color: '#ffb703', ink: '#231b00',
+        { icon: '🚗', label: 'Book',     at: '/book',
           act: function () { window.location.href = '/book'; } },
-        { icon: '📰', label: 'Articles', color: '#219ebc', ink: '#fff',
+        { icon: '🗺', label: 'Planner',  at: '/trip-planner',
+          act: function () { window.location.href = '/trip-planner'; } },
+        { icon: '🛣', label: 'Road trip', at: '/road-trip',
+          act: function () { window.location.href = '/road-trip'; } },
+        { icon: '📖', label: 'Places',   at: '/destination-book',
+          act: function () { window.location.href = '/destination-book'; } },
+        { icon: '📰', label: 'Ideas',    at: '/articles',
           act: function () { window.location.href = '/articles'; } },
-        { icon: '🤝', label: 'Agents',   color: '#ff6d00', ink: '#fff',
+        { icon: '🤝', label: 'Agents',   at: '/agent',
           act: function () { window.location.href = '/agent'; } },
-        { icon: '🚙', label: 'Drivers',  color: '#8ac926', ink: '#13290a',
+        { icon: '🚙', label: 'Drivers',  at: '/renter',
           act: function () { window.location.href = '/renter'; } },
-        { icon: '🎯', label: 'Dispatch', color: '#8338ec', ink: '#fff',
-          act: function () { window.location.href = '/dispatch'; } },
-        { icon: '↑',  label: 'Top',      color: '#06d6a0', ink: '#04281e',
+        { icon: '↑',  label: 'Top',
           act: function () { window.scrollTo({ top: 0, behavior: 'smooth' }); } },
         // The dot fades three seconds after you stop reaching for it, which is
         // right when it is being helpful and wrong when you actually want it.
         // This is the option to keep it: pinned, it stops fading, and the choice
         // is remembered so it does not have to be made again on every page.
-        { icon: '📌', label: 'Stay',     color: '#f1faee', ink: '#0f172a', pin: true,
+        { icon: '📌', label: 'Stay',     pin: true,
           act: function () { setPinned(!pinned); } }
     ];
+
+    // Paint thrown at a surface does not land in equal drops, and a ring of
+    // ten identical circles is a menu wearing a splat's clothes. Size varies
+    // by a few per cent per position, the way the blob shapes and the tilt
+    // already do.
+    var SIZE = [1.00, 0.93, 1.06, 0.96, 1.03, 0.91, 1.05, 0.97, 1.02, 0.94, 1.00];
+    function sizeOf(i) { return SIZE[i % SIZE.length]; }
+
+    // The ring grows to fit. A 58px droplet needs about 76px of arc before
+    // there is visible air between it and its neighbour — at 68 they touch,
+    // which reads as a clump rather than a splat. Ten comes out at 121.
+    function radiusFor(n) { return Math.max(108, Math.round(76 * n / (2 * Math.PI))); }
+
     // hand-drawn feel: slightly irregular blob shapes + a tiny tilt per bubble
     var BLOBS = ['47% 53% 51% 49% / 52% 48% 55% 45%', '52% 48% 47% 53% / 46% 54% 49% 51%',
                  '49% 51% 54% 46% / 53% 47% 50% 50%', '54% 46% 49% 51% / 48% 52% 46% 54%',
                  '46% 54% 52% 48% / 51% 49% 53% 47%'];
-    var TILT = [-6, 5, -4, 7, -5, 6, -7, 4, -5, 6];
+    var TILT = [-6, 5, -4, 7, -5, 6, -7, 4, -5, 6, -4];
     function blob(i) { return BLOBS[i % BLOBS.length]; }
 
     // Ink on paper, like the rest of the site. The splat keeps its shape —
@@ -110,7 +151,7 @@
         var b = document.createElement('button');
         b.className = 'pk-bubble';
         b.style.borderRadius = blob(i);
-        b.style.borderColor = a.color;          // a hint of its own colour, not a fill
+        b.style.borderColor = paint(i);         // a hint of its own colour, not a fill
         b.innerHTML = '<span>' + a.icon + '</span><span class="pk-lbl">' + a.label + '</span>';
         b.addEventListener('click', function (e) {
             e.stopPropagation();
@@ -143,9 +184,21 @@
         bubbles[i].setAttribute('aria-pressed', pinned ? 'true' : 'false');
     }
 
-    function clampCenter(x, y) {
+    // Which droplets lead somewhere other than here. Trailing slashes are
+    // stripped so /articles and /articles/ are the same page, which they are.
+    function liveIndexes() {
+        var here = (location.pathname || '/').replace(/\/+$/, '') || '/';
+        var out = [];
+        ACTIONS.forEach(function (a, i) {
+            if (a.at && (a.at.replace(/\/+$/, '') || '/') === here) return;
+            out.push(i);
+        });
+        return out;
+    }
+
+    function clampCenter(x, y, radius) {
         // a full-circle burst needs room on every side
-        var m = DIST + 42, vw = window.innerWidth, vh = window.innerHeight;
+        var m = (radius || 108) + 42, vw = window.innerWidth, vh = window.innerHeight;
         return { x: Math.min(Math.max(x, m), Math.max(vw - m, m)),
                  y: Math.min(Math.max(y, m), Math.max(vh - m, m)) };
     }
@@ -155,27 +208,40 @@
         btn.classList.add('expanded');
         scrim.classList.add('on');
         clearTimeout(holdT);
-        shownAt = clampCenter(cur.x, cur.y);
+        var live = liveIndexes();
+        var R = radiusFor(live.length);
+        shownAt = clampCenter(cur.x, cur.y, R);
         cur = { x: shownAt.x, y: shownAt.y };          // pin the dot at the burst center
         btn.style.left = (shownAt.x - 25) + 'px';
         btn.style.top = (shownAt.y - 25) + 'px';
-        var base = -90, step = 360 / ACTIONS.length;   // full radial splat, Back at the top
+        var base = -90, step = 360 / live.length;      // full radial splat, Back at the top
+
+        // Anything not in `live` is the page we are standing on. Park it at the
+        // centre and leave it invisible rather than skipping the element: it
+        // still has to be un-clickable and still has to collapse cleanly.
         ACTIONS.forEach(function (a, i) {
-            var deg = base + i * step;
+            if (live.indexOf(i) !== -1) return;
+            bubbles[i].style.opacity = '0';
+            bubbles[i].classList.remove('on');
+            stems[i].style.transform = 'rotate(0deg) scaleX(0)';
+        });
+
+        live.forEach(function (i, j) {
+            var deg = base + j * step;
             var ang = deg * Math.PI / 180;
-            var bx = shownAt.x + Math.cos(ang) * DIST;
-            var by = shownAt.y + Math.sin(ang) * DIST;
+            var bx = shownAt.x + Math.cos(ang) * R;
+            var by = shownAt.y + Math.sin(ang) * R;
             var s = stems[i];
             s.style.left = shownAt.x + 'px';
             s.style.top = shownAt.y + 'px';
-            s.style.width = (DIST - 26) + 'px';
+            s.style.width = (R - 26) + 'px';
             s.style.transform = 'rotate(' + deg + 'deg) scaleX(1)';
             var b = bubbles[i];
             b.style.left = bx + 'px';
             b.style.top = by + 'px';
-            b.style.transitionDelay = (i * 30) + 'ms';
+            b.style.transitionDelay = (j * 30) + 'ms';
             b.style.opacity = '1';
-            b.style.transform = 'scale(1) rotate(' + TILT[i] + 'deg)';
+            b.style.transform = 'scale(' + sizeOf(i) + ') rotate(' + TILT[i] + 'deg)';
             b.classList.add('on');
         });
     }
