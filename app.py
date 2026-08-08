@@ -38,6 +38,7 @@ except Exception:
 import square_client
 import notify
 import paypal_client
+import bot_lab
 
 def _no_tags(s):
     """Defense-in-depth vs stored XSS: strip angle brackets from any string
@@ -1396,6 +1397,152 @@ def api_share_links():
         {"name": "robot", "title": "Robotic trading — the concept",
          "url": "%s/robot?k=%s" % (SITE_ORIGIN, _share_key("robot"))},
     ]})
+
+
+# ---------------------------------------------------------------------------
+# The bot lab
+#
+# Everything below answers 404 unless BOT_LAB_ENABLED is set. That is the
+# point: the legal question of whether software may trade in somebody else's
+# account is with an attorney and is not answered, so this code can sit in the
+# repository and be deployed without any of it existing to a visitor. Turning
+# it on is a deliberate act on one instance, not a consequence of a merge.
+#
+# 404 rather than 401 or 403 — "you may not" tells a stranger there is
+# something here. See bot_lab.py for the rest of the reasoning, including why
+# there is no signup, no password reset and no account recovery.
+# ---------------------------------------------------------------------------
+LAB = bot_lab.BotLab(_data_path("bot_users.json"),
+                     _data_path("bot_ledger.json"),
+                     _data_path("bot_locks.json"))
+
+
+def _lab_404():
+    return Response("Not Found", status=404, mimetype="text/plain")
+
+
+def lab_enabled(fn):
+    @wraps(fn)
+    def wrapper(*a, **k):
+        if not bot_lab.enabled():
+            return _lab_404()
+        return fn(*a, **k)
+    return wrapper
+
+
+def lab_user_required(fn):
+    """A signed-in lab user. The owner is NOT automatically one: the owner's
+    console is a different surface, and conflating them is how an admin
+    session ends up doing a user's actions by accident."""
+    @wraps(fn)
+    def wrapper(*a, **k):
+        if not bot_lab.enabled():
+            return _lab_404()
+        if not session.get("lab_user"):
+            return jsonify({"ok": False, "auth_required": True,
+                            "error": "Sign in to continue."}), 401
+        return fn(*a, **k)
+    return wrapper
+
+
+@app.route("/lab")
+@lab_enabled
+def lab_page():
+    r = make_response(send_file(os.path.join(BASE_DIR, "bot-lab.html")))
+    r.headers["X-Robots-Tag"] = "noindex, nofollow"
+    r.headers["Cache-Control"] = "private, no-store"
+    return r
+
+
+@app.route("/api/lab/login", methods=["POST"])
+@lab_enabled
+def api_lab_login():
+    d = request.get_json(force=True, silent=True) or {}
+    username = (d.get("username") or "").strip().lower()
+    if LAB.check_login(username, d.get("password") or ""):
+        session["lab_user"] = username
+        LAB.touch(username)
+        return jsonify({"ok": True, "username": username})
+    # One message for every failure. Naming which half was wrong turns the
+    # form into a way to find out who has an account.
+    return jsonify({"ok": False, "error": "Those details were not accepted."}), 401
+
+
+@app.route("/api/lab/logout", methods=["POST"])
+@lab_enabled
+def api_lab_logout():
+    session.pop("lab_user", None)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/lab/board")
+@lab_user_required
+def api_lab_board():
+    """What a signed-in user sees: the locks and the record. Nothing about the
+    owner, nothing about any other user."""
+    return jsonify(dict(LAB.board(), ok=True, username=session.get("lab_user")))
+
+
+@app.route("/api/lab/fills", methods=["POST"])
+@lab_user_required
+def api_lab_fill():
+    """The plug point for the bot. Records one completed PAPER trade.
+
+    There is no live counterpart, on purpose. When there is an answer from the
+    attorney and a bot to connect, the live path gets written then — with the
+    three switches in bot_lab.live_execution_allowed() lined up — and not a
+    moment earlier."""
+    d = request.get_json(force=True, silent=True) or {}
+    row, err = LAB.record_fill(d.get("strategy"), d.get("pnl_usd"),
+                               note=d.get("note"))
+    if err:
+        return jsonify({"ok": False, "error": err}), 400
+    return jsonify({"ok": True, "fill": row})
+
+
+# ---- owner side ----
+@app.route("/api/lab/users", methods=["GET", "POST"])
+@lab_enabled
+@owner_required
+def api_lab_users():
+    """Mint an account, or list them. The only door: there is no signup route
+    anywhere in this file, and no reset."""
+    if request.method == "GET":
+        return jsonify({"ok": True, "users": LAB.public_users()})
+    d = request.get_json(force=True, silent=True) or {}
+    password, err = LAB.mint_user(d.get("username"), d.get("note"))
+    if err:
+        return jsonify({"ok": False, "error": err}), 400
+    return jsonify({"ok": True, "username": (d.get("username") or "").strip().lower(),
+                    "password": password,
+                    "notice": "Shown once. It is stored only as a hash — nobody, "
+                              "including you, can read it back. Lost means reissue."})
+
+
+@app.route("/api/lab/users/<username>/revoke", methods=["POST"])
+@lab_enabled
+@owner_required
+def api_lab_revoke(username):
+    d = request.get_json(force=True, silent=True) or {}
+    ok = LAB.revoke(username, d.get("revoked", True))
+    return (jsonify({"ok": True}) if ok
+            else (jsonify({"ok": False, "error": "No such user."}), 404))
+
+
+@app.route("/api/lab/locks/<kind>/<key>", methods=["POST"])
+@lab_enabled
+@owner_required
+def api_lab_lock(kind, key):
+    """The owner's half of the unlock. The record's half is checked inside
+    set_lock, so this route cannot open something the results have not
+    earned — and cannot open Kalshi at all."""
+    if kind not in ("venue", "strategy"):
+        return jsonify({"ok": False, "error": "Unknown kind."}), 400
+    d = request.get_json(force=True, silent=True) or {}
+    ok, err = LAB.set_lock(kind, key, bool(d.get("locked", True)))
+    if not ok:
+        return jsonify({"ok": False, "error": err}), 400
+    return jsonify({"ok": True, "board": LAB.board()})
 
 
 @app.route("/road-trip")
