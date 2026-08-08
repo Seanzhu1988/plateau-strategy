@@ -2287,26 +2287,69 @@ def api_config():
     })
 
 
-_DEBT_CACHE = {"amount": None, "as_of": None, "ts": 0}
+_DEBT_CACHE = {"amount": None, "as_of": None, "per_sec": None, "ts": 0}
+DEBT_WINDOW_ROWS = 40          # ~two months of business days
+
+
+def _debt_per_sec(rows):
+    """How fast the debt has actually been growing, in dollars per second.
+
+    The clock on the Finance tab ticks between fetches, and it used to tick at
+    a rate somebody typed in — the comment beside it said ~$90k/sec while the
+    code did ~$62.5k/sec, so the two had already drifted apart from each other,
+    never mind from the debt. Measuring it from the same rows that supply the
+    figure means the ticker cannot disagree with its own source.
+
+    Returns None if the window cannot support a rate. Negative is returned as
+    zero, not as invented growth: the debt genuinely falls sometimes (tax
+    season), and a clock that has stopped is honest where one that climbs
+    anyway is not."""
+    if len(rows) < 2:
+        return None
+    try:
+        new, old = rows[0], rows[-1]
+        d1 = datetime.date.fromisoformat(new["record_date"])
+        d0 = datetime.date.fromisoformat(old["record_date"])
+        days = (d1 - d0).days
+        if days <= 0:
+            return None
+        delta = float(new["tot_pub_debt_out_amt"]) - float(old["tot_pub_debt_out_amt"])
+        return max(0.0, delta / (days * 86400.0))
+    except Exception:
+        return None
 
 
 @app.route("/api/national-debt")
 def api_national_debt():
     """The real US national debt (total public debt outstanding) from the U.S.
     Treasury's public 'Debt to the Penny' API. Cached 6h. Proxied server-side so
-    the browser never hits a CORS wall."""
+    the browser never hits a CORS wall.
+
+    Returns the growth rate alongside the figure. 'Debt to the Penny' is a
+    DAILY close published a business day behind, so a browser that seeds a
+    live-looking ticker with it is starting from a stale number — on a Monday
+    it is showing Friday's. With as_of and per_sec the page can carry the
+    figure forward by the time that has actually elapsed instead."""
     import requests as _rq
     if _DEBT_CACHE["amount"] and time.time() - _DEBT_CACHE["ts"] < 21600:
-        return jsonify({"ok": True, "amount": _DEBT_CACHE["amount"], "as_of": _DEBT_CACHE["as_of"], "cached": True})
+        return jsonify({"ok": True, "amount": _DEBT_CACHE["amount"],
+                        "as_of": _DEBT_CACHE["as_of"],
+                        "per_sec": _DEBT_CACHE["per_sec"], "cached": True})
     try:
         r = _rq.get(
             "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny",
-            params={"sort": "-record_date", "page[size]": "1",
+            params={"sort": "-record_date", "page[size]": str(DEBT_WINDOW_ROWS),
                     "fields": "record_date,tot_pub_debt_out_amt"}, timeout=12)
-        row = (r.json().get("data") or [{}])[0]
-        amount = float(row.get("tot_pub_debt_out_amt"))
-        _DEBT_CACHE.update({"amount": amount, "as_of": row.get("record_date"), "ts": time.time()})
-        return jsonify({"ok": True, "amount": amount, "as_of": row.get("record_date")})
+        rows = r.json().get("data") or []
+        if not rows:
+            return jsonify({"ok": False, "error": "no rows"}), 502
+        amount = float(rows[0]["tot_pub_debt_out_amt"])
+        as_of = rows[0].get("record_date")
+        per_sec = _debt_per_sec(rows)
+        _DEBT_CACHE.update({"amount": amount, "as_of": as_of,
+                            "per_sec": per_sec, "ts": time.time()})
+        return jsonify({"ok": True, "amount": amount, "as_of": as_of,
+                        "per_sec": per_sec})
     except Exception as e:
         return jsonify({"ok": False, "error": str(e)}), 502
 
@@ -4697,8 +4740,14 @@ def api_finance_enroll():
     invoice = square_client.create_charge(
         {"name": name, "email": email, "phone": phone},
         p["amount"], p["label"],
+        # No safety claim in the charge description. "Principal always protected"
+        # was here, and a charge description is a written representation to the
+        # customer at the moment they are billed — the worst possible place for a
+        # promise the product cannot keep. Removed 2026-08-08 with the landing
+        # page's price cards; if this endpoint is ever reopened it must not carry
+        # a guarantee back in with it.
         "AI Debt Eliminator subscription (%s). 30-day free trial, then billed %s. "
-        "Principal always protected — only profits go to debt." % (plan, p["billing"]))
+        "Automated trading can lose money." % (plan, p["billing"]))
 
     with _LOCK:
         signups = _load(FINANCE_PATH)

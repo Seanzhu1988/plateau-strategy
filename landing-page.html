@@ -2394,48 +2394,33 @@
 
                         <div class="fin-pane" id="fin-debt">
                             <button class="fin-back" onclick="closeFinProduct()">← All Finance products</button>
-                            <p class="view-intro">Your paycheck works while you sleep — profits go straight to your debt, and your principal is never at risk.</p>
+                            <p class="view-intro">An idea we are testing with our own money: trading rules that run on their own, with anything they earn going against expensive debt instead of back into the market. It is not finished and it is not for sale.</p>
 
                         <div class="fin-flow">
                             <div class="fin-step"><span class="fin-num">1</span><p>Your paycheck arrives as normal</p></div>
-                            <div class="fin-step"><span class="fin-num">2</span><p>Our AI trades the balance during a 1–2 week window</p></div>
-                            <div class="fin-step"><span class="fin-num">3</span><p>Profits lock in a protected vault (5–15%/mo target)</p></div>
-                            <div class="fin-step"><span class="fin-num">4</span><p>100% of profit auto-pays your debt</p></div>
-                            <div class="fin-step"><span class="fin-num">5</span><p>Your principal returns intact — no risk</p></div>
+                            <div class="fin-step"><span class="fin-num">2</span><p>A set of trading rules runs for a fixed window</p></div>
+                            <div class="fin-step"><span class="fin-num">3</span><p>Anything earned is set aside rather than traded again</p></div>
+                            <div class="fin-step"><span class="fin-num">4</span><p>What was earned goes against the debt</p></div>
+                            <div class="fin-step"><span class="fin-num">5</span><p>The balance comes back — and it can come back smaller, because trading loses as well as wins</p></div>
                         </div>
 
-                        <h3 class="pricing-title">Simple pricing · 30-day free trial</h3>
-                        <div class="pricing-grid">
-                            <div class="price-card best">
-                                <div class="price-badge">Best value</div>
-                                <h4>Annual</h4>
-                                <div class="price">$170<span>/year</span></div>
-                                <p class="price-sub">Just $14.17/mo — billed once a year</p>
-                                <ul>
-                                    <li>✓ Automated trading engine</li>
-                                    <li>✓ Principal always protected</li>
-                                    <li>✓ Auto debt payoff</li>
-                                    <li>✓ Real-time dashboard</li>
-                                </ul>
-                                <button class="price-btn" onclick="openEnroll('annual')">Start free trial →</button>
-                            </div>
-                            <div class="price-card">
-                                <h4>Monthly</h4>
-                                <div class="price">$14.17<span>/month</span></div>
-                                <p class="price-sub">Billed monthly · cancel anytime</p>
-                                <ul>
-                                    <li>✓ Automated trading engine</li>
-                                    <li>✓ Principal always protected</li>
-                                    <li>✓ Auto debt payoff</li>
-                                    <li>✓ Real-time dashboard</li>
-                                </ul>
-                                <button class="price-btn ghost" onclick="openEnroll('monthly')">Start free trial →</button>
-                            </div>
+                        <!-- The two price cards and their "Start free trial" buttons stood here
+                             until 2026-08-08. The billing behind them had already been closed on
+                             2026-08-01, so the buttons could only fail — the page was quoting
+                             $170/year for something that could not be bought, and listing
+                             "Principal always protected" as a feature of a product that does not
+                             exist. Replaced with what is actually true. Do not restore a price
+                             here until there is a verified record and a lawyer has read it. -->
+                        <h3 class="pricing-title">Where this actually stands</h3>
+                        <div class="fin-flow">
+                            <div class="fin-step"><p><b>Not for sale.</b> No price, no trial, no enrolment. Nothing on this page can take a payment, and the billing behind it is closed.</p></div>
+                            <div class="fin-step"><p><b>No track record yet.</b> We are not showing a return figure, because none has been earned. A number written down before it is earned is a promise.</p></div>
+                            <div class="fin-step"><p><b>Our own money only.</b> It runs on ours, not anyone else's, until it is proven and the legal structure is right.</p></div>
                         </div>
-                        <p class="fin-fineprint">Less than one month's minimum credit-card payment. Only profits go toward debt — your principal is never spent. Trading involves risk; results are not guaranteed.</p>
+                        <p class="fin-fineprint">Automated trading can and does lose money, and a balance that has been traded can come back smaller than it went in. Nothing here is an offer to sell or a solicitation to buy any security or investment product, and nothing here is investment, legal or tax advice.</p>
 
                         <div class="wish-box">
-                            <p class="wish-lead">Not ready to enroll, but want this to exist?</p>
+                            <p class="wish-lead">Want this to exist? Leave your email and we will tell you if it ever becomes real.</p>
                             <button class="wish-btn" id="wishBtn" onclick="showWish()">💜 I wish that to be happening</button>
                             <div class="wish-form" id="wishForm" style="display:none;">
                                 <input id="wish_email" type="email" placeholder="your@email.com">
@@ -2776,24 +2761,13 @@
     </div>
 
     <!-- AI Debt Eliminator enroll modal -->
-    <div class="role-modal" id="financeModal">
-        <div class="role-modal-card">
-            <button class="role-close" onclick="closeEnroll()">&times;</button>
-            <div class="role-form">
-                <h2>Start your free trial</h2>
-                <p class="rm-sub" id="fin_plan_sub">30-day free trial, then <strong>$170/year</strong>. Cancel anytime.</p>
-                <label>Full name</label>
-                <input id="fin_name" placeholder="Your name">
-                <div class="rm-row">
-                    <div><label>Email</label><input id="fin_email" type="email" placeholder="you@email.com"></div>
-                    <div><label>Phone</label><input id="fin_phone" placeholder="(415) 555-0100"></div>
-                </div>
-                <button class="rm-primary" style="background:linear-gradient(135deg,#f59e0b,#d97706);" onclick="submitEnroll()">Start free trial &amp; enroll →</button>
-                <div class="rm-msg" id="fin_msg"></div>
-                <p class="rm-alt" id="fin_result" style="display:none;"></p>
-            </div>
-        </div>
-    </div>
+    <!-- The "Start your free trial" enrolment modal stood here until 2026-08-08.
+         It collected a name, email and phone and posted to /api/finance/enroll,
+         which has answered 404 to everyone but the owner since 2026-08-01 — so
+         the only thing a visitor could get from it was "Could not enroll." A
+         form that cannot succeed is worse than no form: it reads as a product
+         you can buy. Removed along with openEnroll/closeEnroll/submitEnroll.
+         The server endpoint is deliberately left in place and still closed. -->
 
     <!-- The floating mouse button is the 🎨 Pollock button (shared /floatback.js) -->
 
@@ -2820,39 +2794,10 @@
             if (menu) menu.style.display = '';
         }
 
-        // ---- AI Debt Eliminator enrollment ----
-        let _finPlan = 'annual';
-        function openEnroll(plan) {
-            _finPlan = plan;
-            document.getElementById('fin_plan_sub').innerHTML = (plan === 'monthly')
-                ? '30-day free trial, then <strong>$14.17/month</strong>. Cancel anytime.'
-                : '30-day free trial, then <strong>$170/year</strong>. Cancel anytime.';
-            document.getElementById('fin_msg').textContent = '';
-            document.getElementById('fin_result').style.display = 'none';
-            document.getElementById('financeModal').classList.add('open');
-        }
-        function closeEnroll() { document.getElementById('financeModal').classList.remove('open'); }
-        document.addEventListener('click', function (e) { if (e.target && e.target.id === 'financeModal') closeEnroll(); });
-
-        async function submitEnroll() {
-            const msg = document.getElementById('fin_msg');
-            const body = {
-                plan: _finPlan,
-                name: (document.getElementById('fin_name').value || '').trim(),
-                email: (document.getElementById('fin_email').value || '').trim(),
-                phone: (document.getElementById('fin_phone').value || '').trim(),
-            };
-            if (!body.name || !body.email) { msg.textContent = 'Name and email are required.'; return; }
-            msg.textContent = 'Enrolling…';
-            const j = await (await fetch('/api/finance/enroll', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
-            if (!j.ok) { msg.textContent = j.error || 'Could not enroll.'; return; }
-            msg.textContent = '';
-            const inv = j.signup.invoice || {};
-            const invLine = inv.url ? '<a href="' + inv.url + '" target="_blank">View your invoice →</a>' : 'Your invoice will be emailed to you.';
-            const res = document.getElementById('fin_result');
-            res.style.display = 'block'; res.style.color = '#047857';
-            res.innerHTML = "✅ You're enrolled on the " + j.signup.plan + ' plan (' + j.signup.billing + ').<br>' + invLine;
-        }
+        // The debt-product enrollment handlers stood here, with the modal they
+        // drove. Removed 2026-08-08 — nothing is for sale, so there is nothing to
+        // enrol in and no invoice to raise. See the note where the modal was for
+        // what was taken out.
 
         // ---- "I wish that to be happening" interest capture ----
         function showWish() {
@@ -3025,17 +2970,43 @@
                     }
                 }
             }
-            function step() {   // ~$90k/sec — roughly the real recent pace of the debt
+            // How fast to tick between fetches. The server measures this from the same
+            // Treasury rows that supply the figure, so the ticker cannot disagree with
+            // its own source; this literal is only the fallback for when the fetch
+            // fails, and matches the pace the ticker has always run at (~$2.0T a year).
+            // It used to be a bare 7000 + random*11000 with a comment claiming ~$90k/sec
+            // beside it — the two had drifted apart from each other by about 44%.
+            var ND_TICK_MS = 200;
+            var ndPerSec = 62500;
+            function step() {
                 // Only do the work when the Finance section is actually open and the tab is
                 // visible — otherwise this is a near-free early return (no CPU burned in the background).
                 var fin = document.getElementById('view-finance');
                 if (document.hidden || !fin || !fin.classList.contains('active')) return;
-                val += 7000 + Math.random() * 11000; paint();
+                var perTick = ndPerSec * ND_TICK_MS / 1000;
+                val += perTick * (0.56 + Math.random() * 0.88);   // same mean, visible jitter
+                paint();
             }
             if (segEls.length) {
-                paint(); setInterval(step, 200);
+                paint(); setInterval(step, ND_TICK_MS);
                 fetch('/api/national-debt').then(function (r) { return r.json(); })
-                    .then(function (d) { if (d && d.ok && d.amount) { val = d.amount; paint(); } })
+                    .then(function (d) {
+                        if (!d || !d.ok || !d.amount) return;
+                        if (d.per_sec > 0) ndPerSec = d.per_sec;
+                        // 'Debt to the Penny' is a DAILY close, published a business day
+                        // behind. Seeding a live-looking ticker with it and starting from
+                        // now shows a number that is a day or more stale and never catches
+                        // up — on a Monday it is Friday's close, roughly $10bn light.
+                        // Carry it forward by the time that has actually elapsed since the
+                        // date Treasury stamped it.
+                        val = d.amount;
+                        var stamped = d.as_of ? Date.parse(d.as_of + 'T00:00:00Z') : NaN;
+                        if (!isNaN(stamped)) {
+                            var secs = (Date.now() - stamped) / 1000;
+                            if (secs > 0 && secs < 30 * 86400) val += secs * ndPerSec;
+                        }
+                        paint();
+                    })
                     .catch(function () { });
             }
 
