@@ -222,10 +222,18 @@
                   + '<div style="height:4px;border-radius:2px;background:#1f3a5f;width:'
                   + Math.round(r.count / max * 100) + '%"></div></div></div>').join('');
             };
+            const LANGS = {en:'English', zh:'中文 Chinese', es:'Español Spanish',
+                           ko:'한국어 Korean', vi:'Tiếng Việt Vietnamese', ja:'Japanese',
+                           fr:'French', de:'German', pt:'Portuguese', ru:'Russian', hi:'Hindi'};
+            const pretty = rows => rows.map(r => ({...r, name: LANGS[r.name] || r.name}));
+            const col = (title, rows) =>
+                '<div><h3 style="font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;'
+              + 'color:#6e6e76;margin:0 0 .5rem">' + title + '</h3>' + bar(rows) + '</div>';
             cols.innerHTML =
-                '<div><h3 style="font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:#6e6e76;margin:0 0 .5rem">Country</h3>' + bar(d.countries) + '</div>'
-              + '<div><h3 style="font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:#6e6e76;margin:0 0 .5rem">State / region</h3>' + bar(d.regions) + '</div>'
-              + '<div><h3 style="font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:#6e6e76;margin:0 0 .5rem">City</h3>' + bar(d.cities) + '</div>';
+                col('Country', d.countries) + col('State / region', d.regions) + col('City', d.cities)
+              + col('Language asked for', pretty(d.languages || []))
+              + col('Reading on', d.devices || [])
+              + col('Arrived on', d.landings || []);
             document.getElementById('wfNote').textContent = d.note;
             box.style.display = 'block';
 

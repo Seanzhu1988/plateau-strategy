@@ -634,6 +634,39 @@ def _geo_lookup(ip):
     return place
 
 
+
+def _visit_language():
+    """The language the visitor's browser actually asks for.
+
+    This site is published in five languages, and until now nothing recorded
+    which ones people wanted — so there was no way to tell whether the
+    translation work was reaching anyone. Only the primary tag is kept
+    ("zh", "es"), never the full Accept-Language string, which is specific
+    enough to help fingerprint a browser.
+    """
+    raw = (request.headers.get("Accept-Language") or "").strip()
+    if not raw:
+        return ""
+    first = raw.split(",")[0].split(";")[0].strip().lower()
+    return first.split("-")[0][:5] or ""
+
+
+def _visit_device():
+    """Phone, tablet or desktop — three buckets, nothing finer.
+
+    Enough to answer "should I be designing for a phone" and deliberately
+    not a device fingerprint. The full user-agent is never stored.
+    """
+    ua = (request.headers.get("User-Agent") or "").lower()
+    if not ua:
+        return "unknown"
+    if "ipad" in ua or ("android" in ua and "mobile" not in ua) or "tablet" in ua:
+        return "tablet"
+    if "mobi" in ua or "iphone" in ua or "android" in ua:
+        return "phone"
+    return "desktop"
+
+
 @app.after_request
 def _track_traffic(resp):
     """Lightweight, self-hosted page-view counter — no third-party analytics,
@@ -683,6 +716,19 @@ def _track_traffic(resp):
                     # day record keeps "United States|Washington|Seattle": 3,
                     # which can answer "where are my viewers from" and can
                     # never answer "where was this particular visitor".
+                    # Language asked for, and what they are reading on. Both
+                    # are counted per day, never attached to a person.
+                    lang = _visit_language()
+                    if lang:
+                        rec.setdefault("langs", {})
+                        rec["langs"][lang] = rec["langs"].get(lang, 0) + 1
+                    dev = _visit_device()
+                    rec.setdefault("devices", {})
+                    rec["devices"][dev] = rec["devices"].get(dev, 0) + 1
+                    # The page they arrived on — which of your tools is actually
+                    # pulling people in, as opposed to which they click later.
+                    rec.setdefault("landings", {})
+                    rec["landings"][request.path] = rec["landings"].get(request.path, 0) + 1
                     place = _geo_lookup(_client_ip())
                     if place and (place.get("country") or place.get("city")):
                         label = "|".join([place.get("country", ""),
@@ -4728,6 +4774,14 @@ def api_traffic_places():
             shown.append({"name": "elsewhere", "count": hidden, "folded": True})
         return shown[:25]
 
+    langs, devices, landings = {}, {}, {}
+    for date, rec in days.items():
+        if date < cutoff:
+            continue
+        for src, dst in (("langs", langs), ("devices", devices), ("landings", landings)):
+            for k, n in (rec.get(src) or {}).items():
+                dst[k] = dst.get(k, 0) + n
+
     pins = []
     for label, n in sorted(city_labels.items(), key=lambda kv: -kv[1]):
         xy = coords.get(label)
@@ -4738,6 +4792,9 @@ def api_traffic_places():
                      "label": city + (", " + region if region else ""), "country": country})
 
     return jsonify({"ok": True, "days": days_back, "total_located": total, "pins": pins,
+                    "languages": top(langs, keep_small=True),
+                    "devices": top(devices, keep_small=True),
+                    "landings": top(landings, keep_small=True),
                     "countries": top(countries, keep_small=True),
                     "regions": top(regions),
                     "cities": top(cities),
