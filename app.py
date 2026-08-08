@@ -933,6 +933,11 @@ def floatback_js():
     return send_file(os.path.join(BASE_DIR, "floatback.js"))
 
 
+@app.route("/basemap.js")
+def basemap_js():
+    return send_file(os.path.join(BASE_DIR, "basemap.js"))
+
+
 @app.route("/i18n.js")
 def i18n_js():
     return send_file(os.path.join(BASE_DIR, "i18n.js"))
@@ -4729,6 +4734,26 @@ def api_online():
         _presence_touch(request.cookies.get("psx_vid"))
     n = _presence_count()
     return jsonify({"ok": True, "online": n, "window_minutes": _PRESENCE_WINDOW // 60})
+
+
+@app.route("/api/idea-professionals", methods=["POST"])
+def api_idea_professionals():
+    """Which professionals an idea likely needs.
+
+    Public and stateless — it reads the text it is given and returns trades.
+    Nothing is stored here; the board calls it when an idea is written and
+    again when it is displayed, so editing the idea updates the list.
+    """
+    d = request.get_json(silent=True) or {}
+    try:
+        import professional_match
+        out = professional_match.professionals_for(d.get("title", ""), d.get("body", ""))
+        out["ok"] = True
+        return jsonify(out)
+    except Exception as e:
+        # A suggestion feature must never be able to break posting an idea.
+        return jsonify({"ok": False, "always": [], "matched": [], "domains": [],
+                        "summary": "", "error": str(e)[:120]})
 
 
 @app.route("/api/traffic/places")
