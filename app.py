@@ -4736,6 +4736,78 @@ def api_online():
     return jsonify({"ok": True, "online": n, "window_minutes": _PRESENCE_WINDOW // 60})
 
 
+def _load_professions():
+    try:
+        with open(_data_path("professions.json")) as f:
+            d = json.load(f)
+            return d if isinstance(d, dict) else {}
+    except Exception:
+        return {}
+
+
+def _record_profession_demand(result, title):
+    """Every recognised trade becomes a standing slot on the platform.
+
+    This is the collection step. An idea is posted, the trades it needs are
+    recognised, and each one is written down with a count and the ideas that
+    called for it. Nobody curates the list — it is built entirely by what
+    people actually ask for, so the platform only ever grows spots there is
+    real demand for.
+
+    The consequence worth naming: a trade with 6 ideas waiting and nobody
+    signed up is not an empty page, it is a recruiting pitch with evidence.
+    """
+    try:
+        with _LOCK:
+            store = _load_professions()
+            for pro in (result.get("matched") or []) + (result.get("always") or []):
+                slug = pro.get("slug")
+                if not slug:
+                    continue
+                rec = store.setdefault(slug, {
+                    "slug": slug, "label": pro.get("label", slug),
+                    "why": pro.get("why", ""), "domain": pro.get("domain", ""),
+                    "demand": 0, "ideas": [], "claimed_by": [],
+                    "first_seen": datetime.date.today().isoformat()})
+                rec["demand"] += 1
+                rec["last_seen"] = datetime.date.today().isoformat()
+                t = (title or "").strip()[:120]
+                if t and t not in rec["ideas"]:
+                    rec["ideas"].insert(0, t)
+                    del rec["ideas"][12:]
+            _save(_data_path("professions.json"), store)
+    except Exception:
+        pass          # collection must never break posting an idea
+
+
+@app.route("/professionals")
+def professionals_page():
+    """The trades directory — generated from demand, not curated by hand."""
+    return send_file(os.path.join(BASE_DIR, "professionals.html"))
+
+
+@app.route("/api/professions")
+def api_professions():
+    """The trades this platform has been asked for, ranked by demand.
+
+    Public: a professional deciding whether to join should be able to see how
+    much work is waiting before they hand over their licence number.
+    """
+    store = _load_professions()
+    rows = sorted(store.values(), key=lambda r: (-r.get("demand", 0), r.get("label", "")))
+    q = (request.args.get("q") or "").strip().lower()
+    if q:
+        rows = [r for r in rows
+                if q in r.get("label", "").lower() or q in r.get("domain", "").lower()
+                or any(q in i.lower() for i in r.get("ideas", []))]
+    return jsonify({"ok": True, "count": len(rows), "professions": [
+        {"slug": r["slug"], "label": r["label"], "why": r.get("why", ""),
+         "domain": r.get("domain", ""), "demand": r.get("demand", 0),
+         "ideas_waiting": len(r.get("ideas", [])), "recent_ideas": r.get("ideas", [])[:5],
+         "claimed": len(r.get("claimed_by", [])), "first_seen": r.get("first_seen", "")}
+        for r in rows]})
+
+
 @app.route("/api/idea-professionals", methods=["POST"])
 def api_idea_professionals():
     """Which professionals an idea likely needs.
@@ -4748,6 +4820,10 @@ def api_idea_professionals():
     try:
         import professional_match
         out = professional_match.professionals_for(d.get("title", ""), d.get("body", ""))
+        # Only count it when there is a real idea behind it — a keystroke in a
+        # draft box should not inflate demand for an interior designer.
+        if d.get("record") and len((d.get("title", "") + d.get("body", "")).strip()) > 25:
+            _record_profession_demand(out, d.get("title", ""))
         out["ok"] = True
         return jsonify(out)
     except Exception as e:

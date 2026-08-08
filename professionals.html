@@ -1,0 +1,105 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Professionals — Plateau Strategy Solution Lab</title>
+<link rel="icon" href="/plateau-logo.svg">
+<style>
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+           background:#fff; color:#3d3d42; }
+    .wrap { max-width:1000px; margin:0 auto; padding:2rem 1.25rem 4rem; }
+    header { border-bottom:1px solid #e6e6ea; padding:.95rem 1.25rem; display:flex; align-items:center; gap:.7rem; }
+    header img { width:34px; height:34px; }
+    header b { font-size:1.02rem; letter-spacing:-.02em; color:#0b0809; }
+    header nav { margin-left:auto; display:flex; gap:1.1rem; font-size:.9rem; }
+    header nav a { color:#3d3d42; text-decoration:none; font-weight:600; }
+    h1 { font-size:clamp(1.9rem,4vw,2.6rem); font-weight:800; letter-spacing:-.033em; color:#0b0809; margin:1.4rem 0 .4rem; }
+    .lede { font-size:1.05rem; max-width:62ch; line-height:1.62; }
+    .searchrow { margin:1.6rem 0 1rem; display:flex; gap:.6rem; flex-wrap:wrap; }
+    .searchrow input { flex:1 1 260px; padding:.62rem .8rem; border:1px solid #d3d3da; border-radius:7px;
+                       font-size:1rem; font-family:inherit; color:#0b0809; }
+    .searchrow input:focus { outline:none; box-shadow:inset 0 -3px 0 0 #14273f; }
+    .count { color:#6e6e76; font-size:.86rem; margin-bottom:1rem; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:1rem; }
+    .card { border:1px solid #e6e6ea; border-top:2px solid #1f3a5f; border-radius:10px; padding:1.1rem 1.2rem; }
+    .card h3 { margin:.1rem 0 .3rem; font-size:1.06rem; color:#0b0809; letter-spacing:-.014em; }
+    .card .why { font-size:.9rem; line-height:1.5; margin:0 0 .7rem; }
+    .demand { font-weight:800; color:#1f3a5f; font-size:1.5rem; letter-spacing:-.02em; }
+    .demand span { font-size:.8rem; font-weight:600; color:#6e6e76; letter-spacing:0; }
+    .ideas { list-style:none; padding:0; margin:.6rem 0 0; font-size:.86rem; color:#6e6e76; }
+    .ideas li { padding:.22rem 0; border-top:1px solid #f0f0f3; }
+    .claim { display:inline-block; margin-top:.85rem; font-weight:700; color:#0b0809;
+             border-bottom:2px solid #1f3a5f; text-decoration:none; padding-bottom:.1rem; }
+    .claim:hover { color:#14273f; }
+    .taken { display:inline-block; margin-top:.85rem; font-size:.86rem; color:#6e6e76; }
+    .empty { color:#6e6e76; padding:2rem 0; }
+    .note { color:#6e6e76; font-size:.86rem; margin-top:2rem; line-height:1.6; max-width:70ch; }
+</style>
+
+<header>
+    <img src="/plateau-logo.svg" alt="">
+    <b>Plateau Strategy Solution Lab</b>
+    <nav><a href="/">Home</a><a href="/#reinvestment">Reinvestment USA</a></nav>
+</header>
+
+<div class="wrap">
+    <h1>Professionals</h1>
+    <p class="lede">Every trade on this page is here because somebody asked for it. People post
+    what they want to build, the board works out which professionals that needs, and each one
+    gets a spot. Nothing is listed speculatively — the number beside a trade is real demand.</p>
+
+    <div class="searchrow">
+        <input id="q" placeholder="Search a trade, a field, or an idea — interior designer, property, cafe…"
+               oninput="render()" autocomplete="off">
+    </div>
+    <div class="count" id="count"></div>
+    <div class="grid" id="grid"></div>
+    <p class="note" id="note"></p>
+</div>
+
+<script>
+let ALL = [];
+
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function card(p){
+    const ideas = (p.recent_ideas || []).slice(0, 4)
+        .map(i => '<li>' + esc(i) + '</li>').join('');
+    // A trade nobody has claimed is not an empty page — it is a recruiting
+    // pitch with evidence attached, so it says how much work is waiting.
+    const action = p.claimed
+        ? '<span class="taken">' + p.claimed + ' professional' + (p.claimed === 1 ? '' : 's') + ' here</span>'
+        : '<a class="claim" href="/agent?role=' + encodeURIComponent(p.slug) + '">Claim this spot →</a>';
+    return '<div class="card">'
+        + '<div class="demand">' + p.demand + ' <span>' + (p.demand === 1 ? 'request' : 'requests') + '</span></div>'
+        + '<h3>' + esc(p.label) + '</h3>'
+        + '<p class="why">' + esc(p.why) + '</p>'
+        + (ideas ? '<ul class="ideas">' + ideas + '</ul>' : '')
+        + action + '</div>';
+}
+
+function render(){
+    const q = (document.getElementById('q').value || '').toLowerCase().trim();
+    const rows = !q ? ALL : ALL.filter(p =>
+        p.label.toLowerCase().includes(q) || (p.domain || '').toLowerCase().includes(q)
+        || (p.recent_ideas || []).some(i => i.toLowerCase().includes(q)));
+    document.getElementById('count').textContent =
+        rows.length + (rows.length === 1 ? ' trade' : ' trades')
+        + (q ? ' matching “' + q + '”' : ' asked for so far');
+    document.getElementById('grid').innerHTML = rows.length
+        ? rows.map(card).join('')
+        : '<p class="empty">No trade matches that yet. Every trade here comes from a posted idea — '
+          + 'if nobody has asked for it, it is not listed.</p>';
+}
+
+fetch('/api/professions').then(r => r.json()).then(d => {
+    ALL = d.professions || [];
+    render();
+    document.getElementById('note').textContent =
+        'This list is generated, not curated. When somebody posts what they want to build, the '
+      + 'board reads it and records which trades it calls for. A trade appears the first time it '
+      + 'is needed and its count rises each time it is needed again.';
+}).catch(() => {
+    document.getElementById('grid').innerHTML =
+        '<p class="empty">Could not load the trades just now.</p>';
+});
+</script>

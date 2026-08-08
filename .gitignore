@@ -63,3 +63,5 @@ jpg-out/
 
 # Coarsened location cache — visitor-derived, never committed.
 geo_cache.json
+
+professions.json
