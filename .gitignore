@@ -60,3 +60,6 @@ guide_interest.json
 # ignored above, and the JPGs carry the same identifiers, so they must not
 # reach a repo that gets deployed to a public site.
 jpg-out/
+
+# Coarsened location cache — visitor-derived, never committed.
+geo_cache.json

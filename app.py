@@ -540,6 +540,89 @@ def record_conversion(kind):
         pass
 
 
+
+def _load_geo_cache():
+    """_load() returns [] when a file is missing, and this cache is a dict —
+    so it gets its own reader rather than making the shared helper ambiguous."""
+    try:
+        with open(_data_path("geo_cache.json")) as f:
+            d = json.load(f)
+            return d if isinstance(d, dict) else {}
+    except Exception:
+        return {}
+
+
+GEO_CACHE_TTL_DAYS = 30
+_GEO_MEM = {}
+
+
+def _geo_key(ip):
+    """Coarsen the address before it is ever used as a key.
+
+    An IPv4 address is cut to its /24 and an IPv6 to its /48. That is enough
+    to place someone in a city and not enough to identify the household, and
+    it means the cache cannot become a log of who visited. The full address
+    is never written to disk and never leaves this function.
+    """
+    ip = (ip or "").strip()
+    if not ip:
+        return ""
+    if ":" in ip:
+        return ":".join(ip.split(":")[:3]) + "::/48"
+    parts = ip.split(".")
+    return ".".join(parts[:3]) + ".0/24" if len(parts) == 4 else ""
+
+
+def _geo_lookup(ip):
+    """Country / region / city for a visitor, or None.
+
+    Deliberately cheap and deliberately quiet:
+      · called once per NEW visitor, not once per pageview, so a busy day
+        costs a handful of lookups rather than thousands;
+      · cached on disk by the coarsened key, for a month;
+      · a 2.5s timeout, and any failure returns None rather than raising —
+        analytics must never be able to break a page load;
+      · ipwho.is needs no key and no account, so there is nothing for the
+        owner to sign up for or pay.
+    """
+    key = _geo_key(ip)
+    if not key:
+        return None
+    if key in _GEO_MEM:
+        return _GEO_MEM[key]
+    cache = _load_geo_cache()
+    hit = cache.get(key)
+    now = datetime.date.today().isoformat()
+    if hit and hit.get("seen", "") >= (datetime.date.today()
+                                       - datetime.timedelta(days=GEO_CACHE_TTL_DAYS)).isoformat():
+        _GEO_MEM[key] = hit.get("place")
+        return hit.get("place")
+    place = None
+    try:
+        import requests as _rq
+        r = _rq.get("https://ipwho.is/" + ip.split("%")[0],
+                         params={"fields": "success,country,region,city"}, timeout=2.5)
+        j = r.json()
+        if j.get("success"):
+            place = {"country": j.get("country") or "",
+                     "region": j.get("region") or "",
+                     "city": j.get("city") or ""}
+    except Exception:
+        place = None
+    try:
+        with _LOCK:
+            cache = _load_geo_cache()
+            cache[key] = {"place": place, "seen": now}
+            if len(cache) > 5000:
+                for k in sorted(cache, key=lambda k: cache[k].get("seen", ""))[:1000]:
+                    del cache[k]
+            _save(_data_path("geo_cache.json"), cache)
+    except Exception:
+        pass
+    _GEO_MEM[key] = place
+    return place
+
+
 @app.after_request
 def _track_traffic(resp):
     """Lightweight, self-hosted page-view counter — no third-party analytics,
@@ -585,6 +668,17 @@ def _track_traffic(resp):
                         rec.setdefault("sources", {})
                         rec["sources"][src] = rec["sources"].get(src, 0) + 1
                         set_src = src
+                    # Where they are, counted — never stored per person. The
+                    # day record keeps "United States|Washington|Seattle": 3,
+                    # which can answer "where are my viewers from" and can
+                    # never answer "where was this particular visitor".
+                    place = _geo_lookup(_client_ip())
+                    if place and (place.get("country") or place.get("city")):
+                        label = "|".join([place.get("country", ""),
+                                          place.get("region", ""),
+                                          place.get("city", "")])
+                        rec.setdefault("places", {})
+                        rec["places"][label] = rec["places"].get(label, 0) + 1
                 # Who opened this particular tool, so "N travellers" can mean N
                 # people rather than N page opens. Same lifecycle as visitor_ids:
                 # raw ids only for today, folded to a plain count once the day ends.
@@ -4573,6 +4667,54 @@ def api_online():
         _presence_touch(request.cookies.get("psx_vid"))
     n = _presence_count()
     return jsonify({"ok": True, "online": n, "window_minutes": _PRESENCE_WINDOW // 60})
+
+
+@app.route("/api/traffic/places")
+@owner_required
+def api_traffic_places():
+    """Where the viewers are — owner only.
+
+    Aggregate rows only: the day records hold "country|region|city": count,
+    so this can say 40 people came from Seattle and can never say which 40.
+    Anything with fewer than MIN_SHOW visitors in the whole window is folded
+    into "elsewhere" rather than named, because a city with one visitor in a
+    small dataset is close to naming the visitor.
+    """
+    MIN_SHOW = 2
+    days_back = max(1, min(365, int(request.args.get("days", 30))))
+    cutoff = (datetime.date.today() - datetime.timedelta(days=days_back - 1)).isoformat()
+    days = _load_traffic()["days"]
+
+    countries, regions, cities, total = {}, {}, {}, 0
+    for date, rec in days.items():
+        if date < cutoff:
+            continue
+        for label, n in (rec.get("places") or {}).items():
+            country, region, city = (label.split("|") + ["", "", ""])[:3]
+            total += n
+            if country:
+                countries[country] = countries.get(country, 0) + n
+            if country and region:
+                regions[country + " / " + region] = regions.get(country + " / " + region, 0) + n
+            if city:
+                key = city + (", " + region if region else "") + (" — " + country if country else "")
+                cities[key] = cities.get(key, 0) + n
+
+    def top(d, keep_small=False):
+        rows = sorted(d.items(), key=lambda kv: -kv[1])
+        shown = [{"name": k, "count": v} for k, v in rows if keep_small or v >= MIN_SHOW]
+        hidden = sum(v for k, v in rows if not keep_small and v < MIN_SHOW)
+        if hidden:
+            shown.append({"name": "elsewhere", "count": hidden, "folded": True})
+        return shown[:25]
+
+    return jsonify({"ok": True, "days": days_back, "total_located": total,
+                    "countries": top(countries, keep_small=True),
+                    "regions": top(regions),
+                    "cities": top(cities),
+                    "note": "Aggregate counts only. Locations are derived from a "
+                            "coarsened address (an IPv4 /24), cached for a month, "
+                            "and no address is stored."})
 
 
 @app.route("/api/traffic/summary")

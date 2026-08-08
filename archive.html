@@ -98,6 +98,13 @@
             </div>
         </div>
 
+        <div id="whereFrom" style="display:none;margin-top:1.6rem">
+            <h2 style="margin:0 0 .2rem">Where your viewers are</h2>
+            <p class="sub" id="wfSub" style="margin:0 0 .9rem"></p>
+            <div id="wfCols" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.4rem"></div>
+            <p class="note" id="wfNote" style="margin-top:.9rem"></p>
+        </div>
+
         <p class="note" id="footNote"></p>
     </div>
 
@@ -186,6 +193,41 @@
     </script>
     <script src="/floatback.js"></script>
     <script src="/jarvis-widget.js"></script>
-    <script src="/i18n.js"></script>
+    <script src="/i18n.js">
+    // Where the viewers are. Owner-only endpoint, aggregate rows only — it can
+    // say forty people came from Seattle and cannot say which forty.
+    async function loadWhereFrom(){
+        try {
+            const r = await fetch('/api/traffic/places?days=30');
+            if (!r.ok) return;                       // not logged in — stay hidden
+            const d = await r.json();
+            if (!d.ok) return;
+            const box = document.getElementById('whereFrom');
+            const cols = document.getElementById('wfCols');
+            document.getElementById('wfSub').textContent =
+                d.total_located ? d.total_located + ' visitors located over the last ' + d.days + ' days'
+                                : 'No located visitors yet — this fills in as people arrive.';
+            const bar = (rows) => {
+                if (!rows.length) return '<p class="note">nothing yet</p>';
+                const max = Math.max.apply(null, rows.map(r => r.count));
+                return rows.map(r =>
+                    '<div style="margin:.42rem 0">'
+                  + '<div style="display:flex;justify-content:space-between;font-size:.86rem">'
+                  + '<span' + (r.folded ? ' style="color:#6e6e76;font-style:italic"' : '') + '>'
+                  + r.name.replace(/[<>&]/g, '') + '</span><b>' + r.count + '</b></div>'
+                  + '<div style="height:4px;background:#e6e6ea;border-radius:2px;margin-top:3px">'
+                  + '<div style="height:4px;border-radius:2px;background:#1f3a5f;width:'
+                  + Math.round(r.count / max * 100) + '%"></div></div></div>').join('');
+            };
+            cols.innerHTML =
+                '<div><h3 style="font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:#6e6e76;margin:0 0 .5rem">Country</h3>' + bar(d.countries) + '</div>'
+              + '<div><h3 style="font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:#6e6e76;margin:0 0 .5rem">State / region</h3>' + bar(d.regions) + '</div>'
+              + '<div><h3 style="font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:#6e6e76;margin:0 0 .5rem">City</h3>' + bar(d.cities) + '</div>';
+            document.getElementById('wfNote').textContent = d.note;
+            box.style.display = 'block';
+        } catch (e) { /* analytics must never break the page */ }
+    }
+    loadWhereFrom();
+</script>
 </body>
 </html>
