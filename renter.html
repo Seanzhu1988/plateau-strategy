@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Driver Portal — Plateau Strategy Solution Lab</title>
-    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -91,14 +91,14 @@
             color: #fff; border: none; border-radius: 6px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: var(--sans); }
         .primary:hover { filter: brightness(1.08); }
         .divider { text-align: center; color: var(--muted2); margin: 1.5rem 0 0.6rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
-        .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #ffffff;
+        .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: var(--psx-card,#fffdf9);
             border: 1px solid #6b655b; color: #14110c; padding: 0.8rem 1.4rem; border-radius: 6px; display: none; z-index: 50; font-size: 0.9rem; }
 
         /* Modals */
         .taken-overlay, .sig-overlay { display: none; position: fixed; inset: 0; background: rgba(2,6,23,0.75);
             z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
         .taken-overlay.open, .sig-overlay.open { display: flex; }
-        .taken-box { background: #ffffff; border: 1px solid #6b655b; border-top: 3px solid #1b4d8f; border-radius: 10px;
+        .taken-box { background: var(--psx-card,#fffdf9); border: 1px solid #6b655b; border-top: 3px solid #1b4d8f; border-radius: 10px;
             padding: 2rem; max-width: 410px; width: 100%; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.6); }
         .taken-box .big { font-family: var(--serif); font-size: 2.3rem; line-height: 1; margin-bottom: 0.6rem; color: #1b4d8f; }
         .taken-box h3 { font-family: var(--serif); color: #fff; font-size: 1.25rem; margin-bottom: 0.5rem; }
@@ -133,7 +133,7 @@
         .contract-card .c-btn.primary-btn:hover { filter: brightness(1.08); }
 
         /* Sign modal */
-        .sig-box { background: #ffffff; border: 1px solid #6b655b; border-top: 3px solid #1b4d8f; border-radius: 10px;
+        .sig-box { background: var(--psx-card,#fffdf9); border: 1px solid #6b655b; border-top: 3px solid #1b4d8f; border-radius: 10px;
             max-width: 620px; width: 100%; max-height: 92vh; overflow-y: auto; padding: 1.8rem; box-shadow: 0 24px 60px rgba(0,0,0,0.6); }
         .sig-box h3 { font-family: var(--serif); color: #fff; font-size: 1.3rem; margin-bottom: 0.2rem; }
         .sig-box .ver { color: var(--muted2); font-size: 0.75rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.6px; }
@@ -143,7 +143,7 @@
         .contract-text .fill { color: #1b4d8f; font-weight: 600; padding: 0 3px;
             border-bottom: 1px solid rgba(147,197,253,.55); border-radius: 2px; background: rgba(59,130,246,.08); }
         .sig-pad-wrap { position: relative; }
-        .sig-pad { width: 100%; height: 160px; background: #fff; border: 1px solid #6b655b; border-radius: 6px;
+        .sig-pad { width: 100%; height: 160px; background: var(--psx-card,#fffdf9); border: 1px solid #6b655b; border-radius: 6px;
             touch-action: none; cursor: crosshair; display: block; }
         .sig-hint { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%);
             text-align: center; color: #4a453d; font-size: 0.85rem; pointer-events: none; }
@@ -202,11 +202,12 @@
     </style>
     <script src="/session.js"></script>
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
     <link rel="stylesheet" href="/modern.css">
 </head>
 <body data-arm="transportation">
     <header>
-        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab">
+        <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab">
         <span class="brand">Plateau Strategy Solution Lab</span>
         <div class="right">
             <span id="whoami" class="who"></span>
@@ -495,7 +496,7 @@
             if (!vin) { msg.textContent = 'Enter your renting VIN.'; return; }
             if (dob.length !== 8) { msg.textContent = 'Enter your birthday as DDMMYYYY (8 digits).'; return; }
             let j;
-            try { j = await (await fetch('/api/renters/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ vin, dob }) })).json(); }
+            try { j = await psxJSON('/api/renters/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ vin, dob }) }); }
             catch (e) { msg.textContent = 'Connection problem — try again.'; return; }
             if (!j.ok) { msg.textContent = j.error || 'Sign in failed.'; return; }
             RENTER = j.renter; localStorage.setItem('renter_id', RENTER.id); enterPortal();
@@ -527,14 +528,14 @@
 
         async function loadInsurance() {
             if (!RENTER) return;
-            try { INSURANCE = (await (await fetch('/api/renters/' + RENTER.id + '/insurance')).json()).insurance; }
+            try { INSURANCE = (await psxJSON('/api/renters/' + RENTER.id + '/insurance')).insurance; }
             catch (e) { return; }
             renderInsurance();
         }
 
         function insBadge(st) {
             const m = { VALID: ['#e8f2ee', '#1b6b5a', 'Valid'], EXPIRING: ['#fdf3e3', '#a4161a', 'Expiring soon'],
-                        EXPIRED: ['#fbeceb', '#a4161a', 'Expired'], MISSING: ['#fbeceb', '#a4161a', 'Not on file'] }[st] || ['#fbeceb', '#a4161a', 'Not on file'];
+                        EXPIRED: ['var(--psx-wash-bad,#ffeae7)', '#a4161a', 'Expired'], MISSING: ['var(--psx-wash-bad,#ffeae7)', '#a4161a', 'Not on file'] }[st] || ['var(--psx-wash-bad,#ffeae7)', '#a4161a', 'Not on file'];
             return '<span style="background:' + m[0] + ';color:' + m[1] + ';padding:.24rem .7rem;border-radius:4px;font-weight:700;font-size:.72rem;">' + m[2] + '</span>';
         }
 
@@ -577,7 +578,7 @@
             }
             const body = { provider: val('ins_provider'), policy_number: val('ins_policy'), expires, file: fileData };
             let j;
-            try { j = await (await fetch('/api/renters/' + RENTER.id + '/insurance/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json(); }
+            try { j = await psxJSON('/api/renters/' + RENTER.id + '/insurance/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
             catch (e) { msg.style.color = '#a4161a'; msg.textContent = 'Connection problem — try again.'; return; }
             if (!j.ok) { msg.style.color = '#a4161a'; msg.textContent = j.error || 'Upload failed.'; return; }
             msg.style.color = '#1b6b5a'; msg.textContent = 'Saved — your insurance is on file. You can now accept rides.';
@@ -590,7 +591,7 @@
         function fmtSize(n) { n = +n || 0; return n < 1024 ? n + ' B' : n < 1048576 ? (n / 1024).toFixed(0) + ' KB' : (n / 1048576).toFixed(1) + ' MB'; }
         async function loadDocuments() {
             if (!RENTER) return;
-            try { DOCS = await (await fetch('/api/renters/' + RENTER.id + '/documents')).json(); }
+            try { DOCS = await psxJSON('/api/renters/' + RENTER.id + '/documents'); }
             catch (e) { return; }
             const sel = document.getElementById('doc_type');
             if (sel && !sel.options.length) sel.innerHTML = (DOCS.types || []).map(t => '<option>' + esc(t) + '</option>').join('');
@@ -604,7 +605,7 @@
             const fileData = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(fileEl.files[0]); });
             const body = { doc_type: document.getElementById('doc_type').value, original_name: fileEl.files[0].name, notes: val('doc_note'), file: fileData };
             let j;
-            try { j = await (await fetch('/api/renters/' + RENTER.id + '/documents/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json(); }
+            try { j = await psxJSON('/api/renters/' + RENTER.id + '/documents/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
             catch (e) { msg.style.color = '#a4161a'; msg.textContent = 'Connection problem — try again.'; return; }
             if (!j.ok) { msg.style.color = '#a4161a'; msg.textContent = j.error || 'Upload failed.'; return; }
             msg.style.color = '#1b6b5a'; msg.textContent = 'Archived — kept on file permanently.';
@@ -636,13 +637,13 @@
         let VIOLATIONS = null;
         async function loadViolations() {
             if (!RENTER) return;
-            try { VIOLATIONS = await (await fetch('/api/renters/' + RENTER.id + '/violations')).json(); }
+            try { VIOLATIONS = await psxJSON('/api/renters/' + RENTER.id + '/violations'); }
             catch (e) { return; }
             renderViolations();
         }
         function violCard(v) {
             const sev = v.severity || 'medium';
-            const c = { high: ['#fbeceb', '#a4161a', '#ef4444'], medium: ['#fdf3e3', '#a4161a', '#f59e0b'],
+            const c = { high: ['var(--psx-wash-bad,#ffeae7)', '#a4161a', '#ef4444'], medium: ['#fdf3e3', '#a4161a', '#f59e0b'],
                         low: ['#ffffff', '#4a453d', '#6b655b'] }[sev] || ['#fdf3e3', '#a4161a', '#f59e0b'];
             let fix = '';
             if (v.kind === 'insurance') fix = '<button class="pick" style="margin-top:.7rem;width:auto;padding:.5rem 1rem;" onclick="showPanel(\'insurance\')">Fix — upload insurance</button>';
@@ -678,7 +679,7 @@
             const nav = document.getElementById('nav-payments');
             if (!RENTER.rto) { if (nav) nav.style.display = 'none'; return; }   // not rent-to-own — skip the Square call
             let d;
-            try { d = await (await fetch('/api/renters/' + RENTER.id + '/rto')).json(); } catch (e) { return; }
+            try { d = await psxJSON('/api/renters/' + RENTER.id + '/rto'); } catch (e) { return; }
             if (!d || !d.ok || !d.enrolled) { if (nav) nav.style.display = 'none'; return; }
             if (nav) nav.style.display = '';
             const usd = n => '$' + Math.round(n).toLocaleString('en-US');
@@ -747,7 +748,7 @@
                 fare: parseFloat(document.getElementById('rf_fare').value) || 75
             };
             let j;
-            try { j = await (await fetch('/api/renters/' + RENTER.id + '/refer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json(); }
+            try { j = await psxJSON('/api/renters/' + RENTER.id + '/refer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
             catch (e) { msg.style.color = '#a4161a'; msg.textContent = 'Connection problem — try again.'; return; }
             if (j.contract_required) { msg.style.color = '#a4161a'; msg.textContent = j.error; openSign(); return; }
             if (j.insurance_required) { msg.style.color = '#a4161a'; msg.textContent = j.error; loadInsurance(); showPanel('insurance'); return; }
@@ -763,7 +764,7 @@
             let all = [];
             // identify ourselves so the server releases our own rides in full;
             // the open pool comes back with the customer's contact withheld
-            try { all = ((await (await fetch('/api/reservations?renter_id=' + encodeURIComponent(RENTER.id))).json()).reservations) || []; } catch (e) { return; }
+            try { all = ((await psxJSON('/api/reservations?renter_id=' + encodeURIComponent(RENTER.id))).reservations) || []; } catch (e) { return; }
             const pool = all.filter(r => r.status === 'NEW');
             const mine = all.filter(r => r.renter_id === RENTER.id);
             document.getElementById('poolGrid').innerHTML = pool.map(r => resCard(r, false)).join('');

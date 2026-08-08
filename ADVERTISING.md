@@ -338,6 +338,48 @@ Sell relevance now, attention later.
 
 ---
 
+## 1.5 Offers that arrive by ad — the Reddit $500, evaluated
+
+A Reddit Ads signup link with a matched-credit promo came in. Recording the
+answer here so it does not get re-argued the next time one lands, because
+these arrive constantly and they all read as free money.
+
+**What it actually is.** Spend $500, get $500 in credit. First-time
+advertisers only, one per account. The offer must be accepted within 30 days
+of creating the account, and the $500 has to be *spent within 14 days* of
+accepting; the credit then expires 90 days after that. So it is not $500 of
+free advertising — it is $500 of real money on a two-week clock, buying $500
+of credit on a three-month clock.
+
+**Why not now.** Measured against the gate at the top of this file, five of
+nine boxes are open, and the two that matter most are:
+
+  · A stranger cannot yet be shown to complete a booking end to end and get
+    an invoice. That is the one thing an ad has to work for.
+  · A crawler sees two headings on the Destination Book, so anyone arriving
+    without JavaScript lands on an empty shell.
+
+And the site currently gives a visitor no way to reach a person: the phone is
+a `XXX-XXXX` placeholder in both the schema block and the footer, and the
+email was pulled because the domain has no MX records and mail to it bounces.
+An ad campaign into that is paying to create demand with nowhere to put it.
+
+**Why Reddit in particular is the wrong first channel here.** Reddit targets
+by subreddit and interest — people reading, not people buying. An airport
+transfer is bought in the moment somebody types "seatac airport car service",
+and that demand lives in search and in the map pack. Section 2(a) and 2(b)
+below are both free, both higher-intent, and both still unclaimed.
+
+**The part that makes this easy.** The offer is for first-time advertisers,
+one per account. Taking it now spends a one-time offer at the worst possible
+moment. These promotions run more or less continuously, so the cost of
+waiting is close to zero and the cost of going early is $500 plus the one
+chance at the match.
+
+Revisit when the gate is clear. Then the first spend is search, not social.
+
+---
+
 ## 2. Channels, cheapest first
 
 **a) Google Business Profile — free, unclaimed.**

@@ -18,6 +18,7 @@ import re
 import json
 import time
 import hashlib
+import gzip
 import secrets
 import threading
 import subprocess
@@ -525,8 +526,22 @@ def _visit_source():
 
 def record_conversion(kind):
     """Count something that actually mattered, against the source that brought
-    them. Without this an ad test only ever proves that pageviews went up."""
+    them. Without this an ad test only ever proves that pageviews went up.
+
+    The same exclusions as a pageview, and for a stronger reason. This did not
+    check them, so every guard built for _track_traffic — the opt-out cookie,
+    the ignore-list addresses, the bot and headless-browser hints — applied to
+    views and not to bookings. A test run on this machine left a day reading
+    "0 pageviews, 1 booking", which is not a number anyone should have to
+    interpret, and 17 bookings against 59 visitors on an earlier day.
+
+    Conversions are the numbers most likely to be believed and hardest to sanity
+    check, because a booking looks like a real thing happening. A device that is
+    not a traveller for the purpose of counting visits is not a traveller for the
+    purpose of counting bookings either."""
     try:
+        if _skip_traffic():
+            return
         src = request.cookies.get("psx_src") or "direct"
         today = datetime.date.today().isoformat()
         with _LOCK:
@@ -668,6 +683,74 @@ def _visit_device():
 
 
 @app.after_request
+def _compress_and_cache(resp):
+    """Two things nothing else was doing: squeeze the bytes, and let the
+    browser keep them.
+
+    Measured before this existed — a cold load of the home page pulled
+    1.8 MB across 17 requests with Content-Encoding empty on every one of
+    them. Locally that is 214 ms and looks fine. On a phone on mobile data
+    it is closer to ten seconds, and that is the number that matters,
+    because the people this site is translated for are reading it on a
+    phone.
+
+    gzip, not brotli: brotli needs a package that is not a dependency here,
+    and gzip on text is most of the win for none of the risk.
+
+    Caching is the other half. Every asset answered Cache-Control:no-cache,
+    which does not mean "do not cache" — it means "ask me every single
+    time". Seventeen conditional requests per navigation, each one a round
+    trip, all to be told nothing changed. Static files now hold for ten
+    minutes, which is short enough that a deploy reaches everyone quickly
+    and long enough that moving between pages costs nothing. HTML keeps
+    revalidating, because a stale page is a stale price."""
+    try:
+        path = request.path or ""
+        is_static = path.endswith((".css", ".js", ".png", ".svg", ".jpg", ".jpeg",
+                                   ".webp", ".ico", ".woff", ".woff2", ".mp4"))
+        if is_static:
+            resp.headers["Cache-Control"] = "public, max-age=600"
+        elif (resp.mimetype or "").startswith("text/html"):
+            resp.headers["Cache-Control"] = "no-cache"
+
+        # Compress text that is worth compressing. Below ~1 KB the header
+        # overhead and the CPU are not repaid.
+        if (resp.status_code < 200 or resp.status_code >= 300
+                or "Content-Encoding" in resp.headers):
+            return resp
+        ctype = (resp.mimetype or "")
+        if not (ctype.startswith("text/") or ctype in
+                ("application/json", "application/javascript", "text/javascript",
+                 "application/xml", "image/svg+xml")):
+            return resp
+        if "gzip" not in (request.headers.get("Accept-Encoding") or "").lower():
+            return resp
+        # send_file streams the file and sets direct_passthrough, and the
+        # first version of this bailed out on that flag — skipping every
+        # static file, which is to say every file worth compressing. The
+        # 354 KB dictionary went out uncompressed while the check reported
+        # itself working. Read it in instead; the cap keeps a stray video
+        # out of memory.
+        if resp.direct_passthrough:
+            if (resp.content_length or 0) > 4_000_000:
+                return resp
+            resp.direct_passthrough = False
+        data = resp.get_data()
+        if len(data) < 1024:
+            return resp
+        packed = gzip.compress(data, 6)
+        if len(packed) >= len(data):
+            return resp
+        resp.set_data(packed)
+        resp.headers["Content-Encoding"] = "gzip"
+        resp.headers["Content-Length"] = str(len(packed))
+        resp.headers.add("Vary", "Accept-Encoding")
+    except Exception:
+        pass          # a failed optimisation must never fail the response
+    return resp
+
+
+@app.after_request
 def _track_traffic(resp):
     """Lightweight, self-hosted page-view counter — no third-party analytics,
     no ad tracking. Counts real page loads only (GET, 200, text/html); API
@@ -683,6 +766,7 @@ def _track_traffic(resp):
             vid = request.cookies.get("psx_vid")
             set_cookie = not vid
             set_src = None
+            need_geo = False
             if set_cookie:
                 vid = secrets.token_hex(16)
             _presence_touch(vid)
@@ -729,18 +813,10 @@ def _track_traffic(resp):
                     # pulling people in, as opposed to which they click later.
                     rec.setdefault("landings", {})
                     rec["landings"][request.path] = rec["landings"].get(request.path, 0) + 1
-                    place = _geo_lookup(_client_ip())
-                    if place and (place.get("country") or place.get("city")):
-                        label = "|".join([place.get("country", ""),
-                                          place.get("region", ""),
-                                          place.get("city", "")])
-                        rec.setdefault("places", {})
-                        rec["places"][label] = rec["places"].get(label, 0) + 1
-                        # One coordinate per place, kept beside the days rather
-                        # than inside them — a city does not move, and repeating
-                        # it per day would just bloat the file.
-                        if place.get("lat") is not None:
-                            data.setdefault("place_coords", {})[label] = [place["lat"], place["lon"]]
+                    # Where they are is looked up AFTER this lock is released
+                    # — see below. _geo_lookup takes _LOCK too, and _LOCK is
+                    # not reentrant, so doing it here never returns.
+                    need_geo = True
                 # Who opened this particular tool, so "N travellers" can mean N
                 # people rather than N page opens. Same lifecycle as visitor_ids:
                 # raw ids only for today, folded to a plain count once the day ends.
@@ -751,6 +827,36 @@ def _track_traffic(resp):
                     for old in sorted(days.keys())[:len(days) - TRAFFIC_MAX_DAYS]:
                         del days[old]
                 _save_traffic(data)
+
+            # ---- geography, outside the lock -------------------------------
+            # This used to sit inside the block above, and _geo_lookup takes
+            # the same _LOCK to write its cache. _LOCK is a threading.Lock,
+            # which is NOT reentrant, so the second acquire never returned:
+            # every visitor whose city was not already in memory hung forever,
+            # and with gunicorn on one worker and eight threads, eight of them
+            # took the whole site down. It is a deadlock, not a slow path.
+            #
+            # Out here it is also no longer holding the global write lock
+            # across a 2.5s network call to a third party, which would have
+            # serialised every other request behind it even when it worked.
+            if need_geo:
+                place = _geo_lookup(_client_ip())
+                if place and (place.get("country") or place.get("city")):
+                    label = "|".join([place.get("country", ""),
+                                      place.get("region", ""),
+                                      place.get("city", "")])
+                    with _LOCK:
+                        data = _load_traffic()
+                        rec = data["days"].setdefault(today, {"pageviews": 0, "visitor_ids": [], "paths": {}})
+                        rec.setdefault("places", {})
+                        rec["places"][label] = rec["places"].get(label, 0) + 1
+                        # One coordinate per place, kept beside the days rather
+                        # than inside them — a city does not move, and repeating
+                        # it per day would just bloat the file.
+                        if place.get("lat") is not None:
+                            data.setdefault("place_coords", {})[label] = [place["lat"], place["lon"]]
+                        _save_traffic(data)
+
             if set_cookie:
                 resp.set_cookie("psx_vid", vid, max_age=60 * 60 * 24 * 400,
                                  httponly=True, samesite="Lax")
@@ -923,6 +1029,15 @@ def logo():
     return send_file(os.path.join(BASE_DIR, "plateau-logo.png"))
 
 
+@app.route("/favicon.ico")
+def favicon():
+    """Browsers ask for this whether or not the page links to it, and a 404
+    is what leaves a tab blank. Answered with the SVG mark, which every
+    browser that asks for a favicon can render."""
+    return send_file(os.path.join(BASE_DIR, "plateau-logo.svg"),
+                     mimetype="image/svg+xml")
+
+
 @app.route("/plateau-logo.svg")
 def logo_svg():
     return send_file(os.path.join(BASE_DIR, "plateau-logo.svg"))
@@ -941,6 +1056,47 @@ def basemap_js():
 @app.route("/i18n.js")
 def i18n_js():
     return send_file(os.path.join(BASE_DIR, "i18n.js"))
+
+
+@app.route("/i18n.<lang>.js")
+def i18n_pack(lang):
+    """One language, fetched only by someone reading it.
+
+    The dictionary used to live inside i18n.js — 1123 entries times four
+    languages, 265 KB on every page of the site. An English reader, which is
+    most of them, downloaded Chinese, Spanish, Korean and Vietnamese and used
+    none of it. The engine is 11 KB now and asks for the single pack it
+    needs; English asks for nothing, because English is the text already on
+    the page."""
+    if lang not in ("zh", "es", "ko", "vi"):
+        return ("", 404)
+    path = os.path.join(BASE_DIR, "i18n.%s.js" % lang)
+    if not os.path.exists(path):
+        return ("", 404)
+    return send_file(path, mimetype="text/javascript")
+
+
+@app.route("/vendor/leaflet/<path:filename>")
+def leaflet_vendor(filename):
+    """Leaflet, served from here rather than unpkg.
+
+    The map pages loaded it from a CDN, which means the map is only as
+    available as somebody else's edge network. unpkg is routinely blocked or
+    throttled in mainland China — and this site is translated into Chinese
+    precisely to reach travelers from there, so the map was most likely dead
+    for the readers the translation was written for. It is 160 KB. We serve
+    it."""
+    from flask import send_from_directory
+    return send_from_directory(os.path.join(BASE_DIR, "vendor", "leaflet"), filename)
+
+
+@app.route("/psx-net.js")
+def psx_net_js():
+    """One network helper, shared by every page.
+
+    Lives in its own file rather than inside i18n.js because i18n.js is
+    generated by build_i18n.py and would lose anything hand-edited into it."""
+    return send_file(os.path.join(BASE_DIR, "psx-net.js"))
 
 
 @app.route("/session.js")
@@ -2371,6 +2527,58 @@ def _distance_fare(miles):
     except (TypeError, ValueError):
         return None
     return round(_ride_base_fare() + _ride_per_mile() * m, 2)
+
+
+# The flat airport fare, and the radius it holds inside. Stated on the site
+# as "$75 flat to Sea-Tac" with no distance attached, which is a promise the
+# fare cannot keep from ninety miles out — so the boundary is written down
+# here, in the one place that prices anything, rather than implied.
+AIRPORT_FLAT_USD = 75.0
+AIRPORT_FLAT_RADIUS_MI = 30.0
+
+
+def _airport_or_distance_fare(miles, to_airport):
+    """What a ride costs, and why.
+
+    Returns (fare, basis) so a caller can say which rule applied rather than
+    just showing a number — a rider who is told 75 dollars flat and then
+    charged 112 has been surprised, and this whole business is built on the
+    quote being the fare."""
+    try:
+        m = max(0.0, float(miles))
+    except (TypeError, ValueError):
+        return (None, None)
+    if to_airport and m <= AIRPORT_FLAT_RADIUS_MI:
+        return (AIRPORT_FLAT_USD, "airport_flat")
+    return (_distance_fare(m), "distance")
+
+
+@app.route("/api/quote")
+def api_quote():
+    """Price a trip before anyone commits to it.
+
+    The booking page used to ask for pickup and drop-off and say nothing
+    about cost until a human answered. Same constants as a real booking,
+    deliberately: a calculator that computes its own answer is a second
+    price, and two prices is exactly what "the quote is the fare" promises
+    not to do."""
+    try:
+        miles = float(request.args.get("miles", ""))
+    except (TypeError, ValueError):
+        return jsonify({"ok": False, "error": "miles required"}), 400
+    if miles < 0 or miles > 3000:
+        return jsonify({"ok": False, "error": "miles out of range"}), 400
+    to_airport = (request.args.get("airport") or "").lower() in ("1", "true", "yes")
+    fare, basis = _airport_or_distance_fare(miles, to_airport)
+    if fare is None:
+        return jsonify({"ok": False, "error": "could not price that"}), 400
+    return jsonify({
+        "ok": True, "fare": fare, "basis": basis,
+        "miles": round(miles, 1),
+        "flat_radius_mi": AIRPORT_FLAT_RADIUS_MI,
+        "flat_usd": AIRPORT_FLAT_USD,
+        "base_fare": _ride_base_fare(), "per_mile": _ride_per_mile(),
+    })
 
 
 def _create_reservation(data, agent=None, self_driver=None):
@@ -4402,26 +4610,102 @@ def api_books_export():
 # interest to invest in it or to launch/run it themselves. This is a lead
 # board only — no money or equity ever moves through the site; registering
 # interest just leaves contact info for Plateau Strategy to follow up on.
+# ---------- the idea board is a public write, and it was unguarded ----------
+# Anyone can pitch a business idea with no account — that openness is the
+# point, and it should stay. But the endpoint accepted five posts in a row
+# from one caller in a test, with nothing to slow it and nothing to take a
+# post down afterwards. A public write on a real company's domain needs both:
+# a stranger with good intentions never notices a limit this loose, and a
+# script does immediately.
+IDEA_MAX_PER_HOUR = 3
+IDEA_MAX_PER_DAY = 8
+
+
+def _idea_rate_ok(items):
+    """True when this caller may post another idea right now.
+
+    Counted per address over the stored ideas themselves rather than in a
+    side table, so it survives a restart and cannot drift out of step with
+    what was actually published. The address is kept only to make this
+    decision — _public_article never returns it."""
+    ip = _client_ip()
+    if not ip:
+        return True, ""
+    now = datetime.datetime.now()
+    hour = day = 0
+    for a in items:
+        if a.get("ip") != ip:
+            continue
+        try:
+            t = datetime.datetime.fromisoformat(a.get("created_at") or "")
+        except Exception:
+            continue
+        age = (now - t).total_seconds()
+        if age < 3600:
+            hour += 1
+        if age < 86400:
+            day += 1
+    if hour >= IDEA_MAX_PER_HOUR:
+        return False, ("That is %d ideas in an hour. Give the last one time to be read — "
+                       "you can post again shortly." % IDEA_MAX_PER_HOUR)
+    if day >= IDEA_MAX_PER_DAY:
+        return False, ("That is %d ideas today. The board is for ideas worth reading, "
+                       "not volume — try again tomorrow." % IDEA_MAX_PER_DAY)
+    return True, ""
+
+
+def _entitled(a, vid=None):
+    """Has this reader paid for this locked piece?
+
+    Owner always; otherwise the reader's anonymous id must be on the unlock
+    list. Deliberately server-side: see _public_article."""
+    if session.get("owner"):
+        return True
+    vid = vid or request.cookies.get("psx_vid")
+    return bool(vid) and vid in (a.get("unlocked_by") or [])
+
+
 def _public_article(a):
-    """Public shape — investor/launcher emails are kept private, only counts are shown."""
-    return {
+    """Public shape — investor/launcher emails are kept private, only counts are shown.
+
+    A LOCKED piece does not ship its body. That is the whole of the lock and
+    it is the only place it can live: a paywall implemented in the page is a
+    paywall a reader defeats with Ctrl-U, and one implemented by hiding an
+    element with CSS is not a paywall at all — the text is already on their
+    machine. So the body is replaced by the teaser here, before the JSON is
+    written, and the reader's browser never receives what it has not paid for.
+
+    This is written to be general on purpose. The first use is an attorney's
+    read on a business idea, but nothing below knows that; anything that
+    carries a `lock` behaves this way, which is what "other ideas locked too"
+    needs."""
+    lock = a.get("lock") or {}
+    locked = bool(lock) and not _entitled(a)
+    out = {
         "id": a.get("id"),
         "author": a.get("author", ""),
         "created_at": a.get("created_at"),
         "stamp": a.get("stamp", ""),
         "title": a.get("title"),
-        "body": a.get("body"),
+        "body": (lock.get("teaser") or "") if locked else a.get("body"),
         "likes": a.get("likes", 0),
         "unlikes": a.get("unlikes", 0),
+        "locked": locked,
+        "price_usd": lock.get("price_usd") if locked else None,
+        "locked_by": lock.get("by") if lock else None,
         "follower_count": len(a.get("followers", [])),
         "launcher_count": len(a.get("launchers", [])),
     }
+    return out
 
 
 @app.route("/api/articles")
 def api_articles():
     items = _load(ARTICLES_PATH)
-    return jsonify({"articles": [_public_article(a) for a in reversed(items)]})
+    # A hidden idea is still in the file — taking one down must not destroy
+    # what someone wrote, only stop it being published.
+    return jsonify({"articles": [_public_article(a) for a in reversed(items)
+                                 if not a.get("hidden")]})
 
 
 @app.route("/api/articles", methods=["POST"])
@@ -4434,9 +4718,13 @@ def api_article_create():
         return jsonify({"ok": False, "error": "Your name, a title and body are all required."}), 400
     with _LOCK:
         items = _load(ARTICLES_PATH)
+        ok, why = _idea_rate_ok(items)
+        if not ok:
+            return jsonify({"ok": False, "error": why}), 429
         now = datetime.datetime.now()
         article = {
             "id": _next_id(items, "ART", datestamp=False),
+            "ip": _client_ip(),          # for the rate limit only; never published
             "author": author[:80],
             "created_at": now.isoformat(timespec="seconds"),
             "stamp": now.strftime("%Y%m%d%H%M%S"),  # time-proof mark: YYYYMMDDHHMMSS
@@ -4450,6 +4738,101 @@ def api_article_create():
         items.append(article)
         _save(ARTICLES_PATH, items)
     return jsonify({"ok": True, "article": _public_article(article)})
+
+
+@app.route("/api/articles/<aid>/lock", methods=["POST"])
+@owner_required
+def api_article_lock(aid):
+    """Put a price on a piece, or take it off.
+
+    Owner-only, and that is a deliberate limit rather than a placeholder. The
+    obvious next step is letting a verified attorney lock their own answer,
+    and it is NOT built here because it cannot be built correctly until the
+    money question below is settled — who charges whom decides whether the
+    attorney is a seller on this platform or a professional whose fee never
+    touches it, and those are different systems.
+
+    See ATTORNEY_ACCESS.md. Short version: Washington RPC 5.4(a) bars a lawyer
+    from sharing legal fees with a non-lawyer. If Plateau takes a percentage
+    of what an attorney is paid for legal advice, the exposure lands on the
+    attorney's licence, not just on this company. That is a question for a
+    lawyer to answer before a line of payment code is written, which is why
+    this endpoint records a price and an unlock and captures no money."""
+    d = request.get_json(silent=True) or {}
+    if d.get("unlock_forever"):
+        with _LOCK:
+            items = _load(ARTICLES_PATH)
+            for a in items:
+                if a.get("id") == aid:
+                    a.pop("lock", None)
+                    _save(ARTICLES_PATH, items)
+                    return jsonify({"ok": True, "locked": False})
+        return jsonify({"ok": False, "error": "No idea with that id."}), 404
+
+    try:
+        price = round(float(d.get("price_usd")), 2)
+    except (TypeError, ValueError):
+        return jsonify({"ok": False, "error": "A price in dollars is required."}), 400
+    if price <= 0:
+        return jsonify({"ok": False, "error": "A locked piece needs a price above zero."}), 400
+    teaser = _no_tags((d.get("teaser") or "").strip())[:600]
+    by = _no_tags((d.get("by") or "").strip())[:120]
+    if not teaser:
+        return jsonify({"ok": False, "error":
+                        "A teaser is required — a lock with nothing to read is not an offer."}), 400
+    with _LOCK:
+        items = _load(ARTICLES_PATH)
+        for a in items:
+            if a.get("id") == aid:
+                a["lock"] = {"price_usd": price, "teaser": teaser, "by": by}
+                a.setdefault("unlocked_by", [])
+                _save(ARTICLES_PATH, items)
+                return jsonify({"ok": True, "locked": True, "price_usd": price})
+    return jsonify({"ok": False, "error": "No idea with that id."}), 404
+
+
+@app.route("/api/articles/<aid>/grant", methods=["POST"])
+@owner_required
+def api_article_grant(aid):
+    """Give one reader access to one locked piece.
+
+    Owner-only because nothing here takes payment yet. When a rail is wired in
+    it calls this after the money has actually settled — which is the reason
+    granting is its own step rather than something the checkout page does:
+    a reader must never be able to reach this by asking."""
+    vid = ((request.get_json(silent=True) or {}).get("vid") or "").strip()[:64]
+    if not vid:
+        return jsonify({"ok": False, "error": "A reader id is required."}), 400
+    with _LOCK:
+        items = _load(ARTICLES_PATH)
+        for a in items:
+            if a.get("id") == aid:
+                lst = a.setdefault("unlocked_by", [])
+                if vid not in lst:
+                    lst.append(vid)
+                    _save(ARTICLES_PATH, items)
+                return jsonify({"ok": True, "readers": len(lst)})
+    return jsonify({"ok": False, "error": "No idea with that id."}), 404
+
+
+@app.route("/api/articles/<aid>/hide", methods=["POST"])
+@owner_required
+def api_article_hide(aid):
+    """Take an idea off the public board, or put it back.
+
+    The board publishes instantly and on purpose, so this is the other half of
+    that decision: something has to be able to remove what should not be on a
+    company's domain. It sets a flag rather than deleting — a takedown should
+    not also destroy the record of what was posted."""
+    on = bool((request.get_json(silent=True) or {}).get("hidden", True))
+    with _LOCK:
+        items = _load(ARTICLES_PATH)
+        for a in items:
+            if a.get("id") == aid:
+                a["hidden"] = on
+                _save(ARTICLES_PATH, items)
+                return jsonify({"ok": True, "hidden": on})
+    return jsonify({"ok": False, "error": "No idea with that id."}), 404
 
 
 @app.route("/api/articles/<aid>/vote", methods=["POST"])

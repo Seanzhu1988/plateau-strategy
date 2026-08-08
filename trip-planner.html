@@ -17,14 +17,14 @@
     <meta name="twitter:title" content="Free Trip Planner — see what you can still reach today">
     <meta name="twitter:description" content="Pick your stops and see which ones you can still reach before they close — real drive times, traffic and opening hours, checked as you build the day. Free, no account.">
     <meta name="twitter:image" content="https://plateaustrategy.io/plateau-logo.png">
-    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+    <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
     <style>
         .act.ride-wanted { background: #fff7ed; border-color: #fdba74; color: #9a3412; }
         /* Following is a state, not a press — it stays lit for as long as it runs. */
         .map-actions button#followBtn.on { background: #1b4d8f; color: #fff; }
         .tap-hint { font-size: 0.72rem; color: #6b655b; line-height: 1.25; max-width: 190px; }
-        .am-pin.pop-pin { border-color: #f59e0b; background: #fffbeb; }
+        .am-pin.pop-pin { border-color: #f59e0b; background: var(--psx-wash-warn,#ffefdc); }
         .pop-photo { width: 100%; height: 96px; object-fit: cover; border-radius: 7px; margin-bottom: 0.4rem; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -42,7 +42,7 @@
         .page-title { font-size: 1.9rem; font-weight: 800; color: #14110c; }
         .page-sub { color: #6b655b; margin: 0.2rem 0 1.2rem; }
 
-        .card { background: #fff; border: 1px solid #e6e2da; border-radius: 16px;
+        .card { background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da; border-radius: 16px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1rem 1.2rem; margin-bottom: 1rem; }
 
         .controls { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center; font-size: 0.9rem; }
@@ -62,13 +62,13 @@
         .btn { padding: 0.45rem 0.9rem; border: none; border-radius: 8px; cursor: pointer;
             font-weight: 700; font-size: 0.85rem; font-family: inherit;
             background: linear-gradient(135deg,#1b4d8f,#1b4d8f); color: #fff; }
-        .btn.ghost { background: #eef2f7; color: #14110c; }
+        .btn.ghost { background: var(--psx-wash-info,#e5f3ff); color: #14110c; }
         .btn:hover { filter: brightness(1.07); }
 
         .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.7rem; }
         .chip { font-size: 0.8rem; font-weight: 600; padding: 0.3rem 0.85rem; border-radius: 999px;
-            border: 1.5px solid #e6e2da; color: #6b655b; cursor: pointer; user-select: none; background: #fff; }
-        .chip.on { background: #dbeafe; border-color: #1b4d8f; color: #1b4d8f; }
+            border: 1.5px solid #e6e2da; color: #6b655b; cursor: pointer; user-select: none; background: var(--psx-card,#fffdf9); }
+        .chip.on { background: var(--psx-wash-info-on,#d5eaff); border-color: #1b4d8f; color: #1b4d8f; }
 
         /* Sean's layout: content on the LEFT, the map large on the RIGHT */
         /* The map is the tool; everything else floats over it or tucks away. */
@@ -96,7 +96,7 @@
         .layout.jarvis-mini #auto,
         .layout.jarvis-mini #jask { display: none !important; }
         .jarvis-expand { display: none; width: 100%; margin-top: 0.4rem; border: none;
-            background: #eff6ff; color: #1b4d8f; font-weight: 700; font-size: 0.75rem;
+            background: var(--psx-wash-info,#e5f3ff); color: #1b4d8f; font-weight: 700; font-size: 0.75rem;
             border-radius: 8px; padding: 0.38rem 0.5rem; cursor: pointer; font-family: inherit; }
         .layout.jarvis-mini .jarvis-expand { display: block; }
         .jarvis-shrink { display: block; width: 100%; margin-top: 0.5rem; border: none;
@@ -127,16 +127,41 @@
             background: rgba(255,255,255,0.97); border-radius: 12px;
             box-shadow: 0 6px 20px rgba(15,23,42,0.25); padding: 0.45rem 0.55rem; }
         .map-searchbar .build-row { display: flex; gap: 0.4rem; margin: 0; align-items: center; }
-        .map-searchbar .build-row .startedit,
         .map-searchbar .build-row .to { display: none; }
+
+        /* ---- the start control: pin, address, target — one box ---- */
+        .startbox{
+            display:flex; align-items:center; gap:.3rem; flex:1 1 170px; min-width:0;
+            border:1.5px solid #e6e2da; border-radius:3px; background:var(--psx-card,#fff);
+            padding:0 .22rem 0 .45rem;
+        }
+        .startbox:focus-within{ border-color:var(--psx-accent,#1b4d8f); }
+        .startbox .pin-badge{ flex:0 0 auto; }
+        .startbox .start-entry{ display:flex; flex:1 1 auto; min-width:0; }
+        .startbox input{
+            flex:1 1 auto; min-width:0; border:none !important; background:transparent;
+            padding:.34rem .1rem; font:inherit; font-size:.86rem; color:inherit; height:auto;
+        }
+        .startbox input:focus{ outline:none; }
+        /* The target is inside the field, not beside it — it acts ON the field,
+           and a control that fills a box belongs in that box. */
+        .here-btn{
+            flex:0 0 auto; width:26px; height:26px; padding:0; line-height:1;
+            font-size:.95rem; cursor:pointer; border-radius:2px;
+            border:1px solid transparent; background:transparent; color:var(--psx-muted,#6b655b);
+        }
+        .here-btn:hover{ border-color:#ddd8cd; color:var(--psx-accent,#1b4d8f); }
+        .here-btn.located{ color:#1b5e43; }
+        /* Short status only — "Locating…", or the street it found. */
+        .startstat{ font-size:.78rem; color:var(--psx-muted,#6b655b); white-space:nowrap; }
+        .startstat:empty{ display:none; }
+        .startbox.located{ border-color:#1b5e43; }
+        .startbox.needs-start .pin-badge{ animation:pinWaiting 1.9s ease-out infinite; }
+        @media (prefers-reduced-motion:reduce){ .startbox.needs-start .pin-badge{ animation:none; } }
         /* The ⌂ start control belongs beside the address bar — that is the whole
            point of it — so it is NOT hidden here. It keeps its pin and its
            waiting state; only its label collapses when there is no room. */
-        .map-searchbar .build-row .from { flex: 0 0 auto; padding: 0.4rem 0.5rem; }
-        .map-searchbar .build-row .from .pin-badge { margin-right: 0.3rem; }
         @media (max-width: 640px) {
-            .map-searchbar .build-row .from #curLocLabel { display: none; }
-            .map-searchbar .build-row .from { padding: 0.4rem; }
         }
 
         /* The bar was positioned for a desktop map — left:58px, right:200px —
@@ -147,7 +172,7 @@
         @media (max-width: 900px) {
             .map-searchbar { left: 10px; right: 10px; max-width: none; top: 54px; }
         }
-        .map-searchbar .build-row input { flex: 1; min-width: 0; border: 1.5px solid #e6e2da;
+        .map-searchbar .build-row input { flex: 1 1 170px; min-width: 0; border: 1.5px solid #e6e2da;
             border-radius: 9px; padding: 0.5rem 0.75rem; font-size: 0.9rem; font-family: inherit; }
         .map-searchbar .build-row input:focus { outline: none; border-color: #1b4d8f; }
         .map-searchbar .start-entry { margin-top: 0.4rem; }
@@ -156,7 +181,7 @@
         .map-actions button { width: 34px; height: 34px; border-radius: 9px; border: none;
             background: rgba(255,255,255,0.96); box-shadow: 0 2px 8px rgba(15,23,42,0.22);
             font-size: 15px; cursor: pointer; line-height: 1; padding: 0; }
-        .map-actions button:hover { background: #eff6ff; }
+        .map-actions button:hover { background: var(--psx-wash-info,#e5f3ff); }
         .map-cats { background: rgba(255,255,255,0.96); border-radius: 10px;
             box-shadow: 0 4px 14px rgba(15,23,42,0.22); padding: 0.3rem 0.4rem;
             display: flex; gap: 0.25rem; max-width: calc(100vw - 40px); overflow-x: auto; }
@@ -167,7 +192,7 @@
         .map-legend.open .legend { display: flex; }
 
         /* ---- overnight prompt ---- */
-        .ov-choice { margin-top: 1rem; padding-top: .9rem; border-top: 1px solid #eef2f7; }
+        .ov-choice { margin-top: 1rem; padding-top: .9rem; border-top: 1px solid var(--psx-wash-info,#e5f3ff); }
         .ov-choice:first-of-type { border-top: none; padding-top: 0; }
         .ov-row { display: flex; gap: .5rem; flex-wrap: wrap; }
         .ov-row input { flex: 1; min-width: 190px; padding: .6rem .8rem;
@@ -178,7 +203,7 @@
         .ov-list { display: flex; flex-direction: column; gap: .35rem; margin-top: .6rem;
             max-height: 210px; overflow-y: auto; }
         .ov-hotel { display: flex; justify-content: space-between; align-items: center; gap: .6rem;
-            width: 100%; text-align: left; background: #fff; border: 1px solid #e6e2da;
+            width: 100%; text-align: left; background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da;
             border-radius: 9px; padding: .55rem .75rem; font-size: .9rem; font-family: inherit;
             color: #14110c; cursor: pointer; }
         .ov-hotel:hover { border-color: #db2777; background: #fff5fa; }
@@ -190,7 +215,7 @@
 
         .far-gateways { margin-top: 0.4rem; }
         .fg-lead { font-size: 0.72rem; font-weight: 700; color: #78350f; margin-bottom: 0.25rem; }
-        .fg-opt { display: inline-block; font-size: 0.72rem; font-weight: 600; background: #fff;
+        .fg-opt { display: inline-block; font-size: 0.72rem; font-weight: 600; background: var(--psx-card,#fffdf9);
             border: 1.5px solid #8a5a12; border-radius: 999px; padding: 0.2rem 0.6rem;
             margin: 0 0.25rem 0.25rem 0; cursor: pointer; color: #92400e; }
         .fg-opt:hover { border-color: #f59e0b; }
@@ -207,14 +232,14 @@
         .fg-more { font-size: 0.68rem; color: #78350f; margin: 0.2rem 0 0.1rem; }
         .far-alts { margin-top: 0.45rem; font-size: 0.68rem; opacity: .85; }
         .far-note { margin-top: 0.3rem; font-size: 0.75rem; line-height: 1.45; color: #92400e;
-            background: #fffbeb; border: 1px solid #8a5a12; border-radius: 8px; padding: 0.4rem 0.6rem; }
+            background: var(--psx-wash-warn,#ffefdc); border: 1px solid #8a5a12; border-radius: 8px; padding: 0.4rem 0.6rem; }
         .start-entry { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-top: 0.5rem; }
         .start-entry input { flex: 1; min-width: 210px; padding: 0.5rem 0.8rem; border: 1.5px solid #e6e2da;
             border-radius: 10px; font-size: 0.92rem; font-family: inherit; background: #faf8f4; }
-        .start-entry input:focus { outline: none; border-color: #1b4d8f; background: #fff; }
+        .start-entry input:focus { outline: none; border-color: #1b4d8f; background: var(--psx-card,#fffdf9); }
         .start-hint { font-size: 0.74rem; color: #6b655b; }
         .traffic-note { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem;
-            font-weight: 600; color: #1b4d8f; background: #eff6ff; border: 1px solid #dbeafe;
+            font-weight: 600; color: #1b4d8f; background: var(--psx-wash-info,#e5f3ff); border: 1px solid var(--psx-wash-info-on,#d5eaff);
             border-radius: 10px; padding: 0.55rem 0.9rem; margin-bottom: 0.6rem; }
         /* 🗺️ ON-MAP layer switch — every available resource is toggled here, on the
            map itself, so a traveler never hunts for the control somewhere else. */
@@ -226,10 +251,10 @@
         .achip-row { display: flex; gap: 0.22rem; }
         .achip { position: relative; width: 30px; height: 30px; border-radius: 8px;
             display: flex; align-items: center; justify-content: center; font-size: 14px;
-            border: 1.5px solid #e6e2da; background: #fff; cursor: pointer; user-select: none;
+            border: 1.5px solid #e6e2da; background: var(--psx-card,#fffdf9); cursor: pointer; user-select: none;
             line-height: 1; }
         .achip:hover { border-color: #1b4d8f; }
-        .achip.on { background: #dbeafe; border-color: #1b4d8f; }
+        .achip.on { background: var(--psx-wash-info-on,#d5eaff); border-color: #1b4d8f; }
         .achip .star-badge { position: absolute; right: -3px; bottom: -3px; background: #f59e0b;
             color: #fff; font-size: 8px; font-weight: 800; line-height: 12px; min-width: 12px;
             height: 12px; border-radius: 6px; text-align: center; padding: 0 2px;
@@ -237,8 +262,8 @@
         .amenity-note { display: block; font-size: 0.62rem; color: #6b655b; line-height: 1.3;
             margin-top: 0.28rem; max-width: 150px; }
         /* 🌍 the map announcing that it just grew */
-        .discovery-note { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px;
-            padding: 0.55rem 0.9rem; margin-bottom: 0.6rem; font-size: 0.82rem; color: #065f46; }
+        .discovery-note { background: var(--psx-wash-good,#e1f8ec); border: 1px solid var(--psx-wash-good-on,#cef2df); border-radius: 10px;
+            padding: 0.55rem 0.9rem; margin-bottom: 0.6rem; font-size: 0.82rem; color: #1b5e43; }
         /* When a traveler discovers something, the news must reach THEM — the inline
            banner sits beside the map, thousands of pixels below the search box they
            just used. So the announcement also floats into view. */
@@ -248,17 +273,17 @@
             border-color: #1b5e43; animation: dropIn .28s ease-out; }
         @keyframes dropIn { from { opacity: 0; transform: translate(-50%, -12px); }
                             to   { opacity: 1; transform: translate(-50%, 0); } }
-        .discovery-note .dn-close { float: right; cursor: pointer; color: #047857; font-weight: 800;
+        .discovery-note .dn-close { float: right; cursor: pointer; color: #1b5e43; font-weight: 800;
             font-size: 1rem; line-height: 1; padding: 0 0 0 .6rem; }
-        .discovery-note b { color: #064e3b; }
-        .discovery-note .dn-sub { display: block; color: #047857; font-size: 0.75rem; margin-top: 0.15rem; }
+        .discovery-note b { color: #14110c; }
+        .discovery-note .dn-sub { display: block; color: #1b5e43; font-size: 0.75rem; margin-top: 0.15rem; }
         .dn-ask { margin-top: 0.45rem; display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; }
         .dn-ask .q { font-size: 0.76rem; color: #065f46; font-weight: 600; margin-right: 0.2rem; }
         .dn-ask span.opt { font-size: 0.74rem; font-weight: 600; padding: 0.25rem 0.6rem; border-radius: 999px;
-            border: 1.5px solid #a7f3d0; background: #fff; color: #047857; cursor: pointer; user-select: none; }
+            border: 1.5px solid var(--psx-wash-good-on,#cef2df); background: var(--psx-card,#fffdf9); color: #047857; cursor: pointer; user-select: none; }
         .dn-ask span.opt:hover { border-color: #1b5e43; }
-        .dn-rec { font-size: 0.72rem; color: #047857; margin-left: 0.2rem; }
-        .am-pin { width: 22px; height: 22px; border-radius: 50%; background: #fff;
+        .dn-rec { font-size: 0.72rem; color: #1b5e43; margin-left: 0.2rem; }
+        .am-pin { width: 22px; height: 22px; border-radius: 50%; background: var(--psx-card,#fffdf9);
             display: flex; align-items: center; justify-content: center; font-size: 12px;
             border: 2px solid #8a8377; box-shadow: 0 1px 3px rgba(15,23,42,0.3); }
         .am-pop { font-size: 0.82rem; line-height: 1.5; }
@@ -286,14 +311,14 @@
         .side h3 { font-size: 1rem; color: #14110c; margin-bottom: 0.4rem; display: flex;
             align-items: center; gap: 0.4rem; }
         .stop { display: flex; justify-content: space-between; gap: 0.6rem; font-size: 0.86rem;
-            padding: 0.42rem 0; border-top: 1px solid #eef2f7; }
+            padding: 0.42rem 0; border-top: 1px solid var(--psx-wash-info,#e5f3ff); }
         .stop .t { color: #6b655b; white-space: nowrap; }
         .dayhead { font-weight: 800; font-size: 0.8rem; color: #14110c; text-transform: uppercase;
             letter-spacing: 0.04em; margin-top: 0.6rem; }
         .muted { color: #6b655b; font-size: 0.84rem; }
 
         .place-row { display: flex; align-items: center; gap: 0.45rem; padding: 0.4rem 0;
-            border-top: 1px solid #eef2f7; font-size: 0.84rem; flex-wrap: wrap; }
+            border-top: 1px solid var(--psx-wash-info,#e5f3ff); font-size: 0.84rem; flex-wrap: wrap; }
         .place-row .nm { flex: 1 1 120px; font-weight: 600; color: #4a453d; min-width: 110px; }
         .place-row input[type=time] { width: 88px; }
         .place-row input[type=number] { width: 58px; }
@@ -301,10 +326,10 @@
             border-radius: 6px; font-size: 0.8rem; font-family: inherit; background: #faf8f4; }
         .place-row .rm { color: var(--psx-red); cursor: pointer; font-weight: 800; padding: 0 0.3rem; }
         .place-row .crowd { font-style: normal; font-weight: 700; font-size: 0.72rem; color: #0f6d5c;
-            background: #ecfdf5; border-radius: 6px; padding: 1px 5px; margin-left: 4px; white-space: nowrap; }
+            background: var(--psx-wash-good,#e1f8ec); border-radius: 6px; padding: 1px 5px; margin-left: 4px; white-space: nowrap; }
         .place-row .crowd.guided { color: #7c2d12; background: #fef3c7; }
         .dayhead .drivetime { font-weight: 700; font-size: 0.72rem; color: #1b4d8f;
-            background: #eff6ff; border-radius: 6px; padding: 1px 6px; margin-left: 6px; }
+            background: var(--psx-wash-info,#e5f3ff); border-radius: 6px; padding: 1px 6px; margin-left: 6px; }
 
         /* 🤵 Jarvis — the day-sheet organizer panel */
         .card.jarvis h3 { margin-bottom: 0.35rem; }
@@ -312,7 +337,7 @@
         #auto { max-height: 22vh; overflow-y: auto; }
         .jarvis-line { font-size: 0.8rem; color: #4a453d; line-height: 1.5; padding: 0.45rem 0.6rem;
             background: #faf8f4; border: 1px solid #e6e2da; border-radius: 8px; margin: 0.35rem 0 0.55rem; }
-        .jarvis-line.flash { background: #eff6ff; border-color: #4a453d; }
+        .jarvis-line.flash { background: var(--psx-wash-info,#e5f3ff); border-color: #4a453d; }
         .jarvis-line b { color: #14110c; }
         .jarvis-line .warn { color: #b45309; font-weight: 700; }
         .jarvis-line .j-tip { display: block; margin-top: 0.3rem; padding-top: 0.3rem;
@@ -328,12 +353,12 @@
         .itin-tools button { background: none; border: none; color: #1b4d8f; font-size: 0.7rem;
             font-weight: 700; cursor: pointer; padding: 0; letter-spacing: normal; text-transform: none; }
         .jday { display: flex; flex-wrap: wrap; gap: 0.15rem 0.5rem; font-size: 0.72rem; font-weight: 700;
-            color: #14110c; background: #eff6ff; border-radius: 8px; padding: 0.32rem 0.55rem; margin-top: 0.55rem; }
+            color: #14110c; background: var(--psx-wash-info,#e5f3ff); border-radius: 8px; padding: 0.32rem 0.55rem; margin-top: 0.55rem; }
         .jday .jd-meta { font-weight: 600; color: #4a453d; }
         .itin-row { display: grid; grid-template-columns: 52px 1fr; column-gap: 0.5rem;
-            padding: 0.42rem 0; border-top: 1px solid #eef2f7; }
+            padding: 0.42rem 0; border-top: 1px solid var(--psx-wash-info,#e5f3ff); }
         .itin-row.tight { border-left: 3px solid #9a5b06; padding-left: 0.45rem; }
-        .itin-row.risk { border-left: 3px solid var(--psx-red); padding-left: 0.45rem; background: #fffbeb; }
+        .itin-row.risk { border-left: 3px solid var(--psx-red); padding-left: 0.45rem; background: var(--psx-wash-warn,#ffefdc); }
         .itin-row.nowrow { border-left: 3px solid #1b4d8f; padding-left: 0.45rem; }
         .itin-time { text-align: right; color: #14110c; font-weight: 700; font-size: 0.78rem;
             font-variant-numeric: tabular-nums; line-height: 1.35; }
@@ -349,7 +374,7 @@
         .fixlink { color: #1b4d8f; text-decoration: underline; cursor: pointer; font-weight: 700; }
         .fixlink:hover { color: #1e40af; }
         .itin-tag { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.05em; color: #1b4d8f;
-            background: #eff6ff; border-radius: 6px; padding: 1px 6px; margin-left: 6px; }
+            background: var(--psx-wash-info,#e5f3ff); border-radius: 6px; padding: 1px 6px; margin-left: 6px; }
         .jcursor { font-size: 0.72rem; color: #6b655b; font-style: italic; padding: 0.35rem 0 0 0.3rem; }
         .sug-row .sug-add { color: #1b4d8f; font-weight: 800; cursor: pointer; margin-right: 0.35rem; }
         /* 💬 Jarvis asks — one quick community question, one-tap answers */
@@ -357,21 +382,21 @@
         .jask .jask-q { font-size: 0.78rem; color: #4a453d; font-weight: 600; margin-bottom: 0.4rem; }
         .jask .jask-opts { display: flex; flex-wrap: wrap; gap: 0.35rem; }
         .jask .jask-opts span { font-size: 0.74rem; font-weight: 600; padding: 0.28rem 0.7rem; border-radius: 999px;
-            border: 1.5px solid #e6e2da; color: #4a453d; cursor: pointer; user-select: none; background: #fff; }
+            border: 1.5px solid #e6e2da; color: #4a453d; cursor: pointer; user-select: none; background: var(--psx-card,#fffdf9); }
         .jask .jask-opts span:hover { border-color: #1b4d8f; color: #1b4d8f; }
         .jask .jask-skip { color: #6b655b !important; border-color: transparent !important; }
         .jarvis-actions { display: none; gap: 0.45rem; flex-wrap: wrap; margin-top: 0.5rem; }
         .jarvis-actions button { border: none; border-radius: 8px; color: #fff; font-weight: 700;
             font-size: 0.76rem; padding: 0.42rem 0.62rem; cursor: pointer; }
         .jarvis-actions button:hover { filter: brightness(1.1); }
-        .jarvis-actions .ja-ride { background: #1b4d8f; }
-        .jarvis-actions .ja-guide { background: #0f6d5c; }
-        .jarvis-actions .ja-hire { background: #6b2fbe; }
+        .jarvis-actions .ja-ride { background: var(--psx-accent,#1d4c4f); }
+        .jarvis-actions .ja-guide { background: var(--psx-ink,#14110c); }
+        .jarvis-actions .ja-hire { background: var(--psx-ink,#14110c); }
 
         /* Sean's sketch: Current location → Destination + Add → D1 → D2 → … */
         .build-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
         .build-row .from { font-weight: 700; color: #14110c; font-size: 0.9rem; white-space: nowrap; }
-        .build-row .loc-btn { cursor: pointer; border: 1px solid #ddd8cd; background: #fff; border-radius: 9px;
+        .build-row .loc-btn { cursor: pointer; border: 1px solid #ddd8cd; background: var(--psx-card,#fffdf9); border-radius: 9px;
             padding: 0.5rem 0.7rem; font-weight: 700; color: #14110c; font-size: 0.85rem; white-space: nowrap; }
         .build-row .loc-btn:hover { border-color: #1b4d8f; color: #1b4d8f; }
         .build-row .loc-btn.located { border-color: #0f6d5c; color: #0f6d5c; background: #f0fdfa; }
@@ -437,7 +462,7 @@
         .act.sale  { background: linear-gradient(135deg,#9a5b06,#b45309); }
         .act.robotaxi { background: #2a251d; border: 2px dashed #6b655b; opacity: 0.55; }
         .act.robotaxi:hover { opacity: 0.85; }
-        .soon-badge { font-size: 0.58rem; font-weight: 800; background: #f7efe0; color: #7a4e0f;
+        .soon-badge { font-size: 0.58rem; font-weight: 800; background: #f5f1e8; color: #7a4e0f;
             border-radius: 6px; padding: 1px 6px; margin-left: 6px; vertical-align: middle; letter-spacing: 0.04em; }
         .act:hover { filter: brightness(1.08); }
         .act-link { flex-basis: 100%; text-align: center; color: #b45309; font-weight: 700;
@@ -447,14 +472,14 @@
         .modal-back { position: fixed; inset: 0; background: rgba(15,23,42,0.55); display: none;
             align-items: center; justify-content: center; padding: 1rem; z-index: 3000; }
         .modal-back.on { display: flex; }
-        .modal { background: #fff; border-radius: 16px; padding: 1.4rem; width: 100%; max-width: 460px;
+        .modal { background: var(--psx-card,#fffdf9); border-radius: 16px; padding: 1.4rem; width: 100%; max-width: 460px;
             position: relative; max-height: 92vh; overflow-y: auto; }
         .modal h3 { color: #14110c; font-size: 1.2rem; margin-bottom: 0.25rem; }
         .modal-x { position: absolute; top: 0.7rem; right: 0.8rem; border: none; background: none;
             font-size: 1.2rem; color: #6b655b; cursor: pointer; }
         .ho-summary { background: #faf8f4; border: 1px solid #e6e2da; border-radius: 10px; padding: 0.7rem 0.9rem;
             font-size: 0.85rem; color: #4a453d; margin: 0.7rem 0; line-height: 1.5; }
-        .ho-fee { background: #eff6ff; border: 1px solid #4a453d; color: #1e40af; border-radius: 10px;
+        .ho-fee { background: var(--psx-wash-info,#e5f3ff); border: 1px solid #4a453d; color: #1e40af; border-radius: 10px;
             padding: 0.6rem 0.85rem; font-size: 0.82rem; font-weight: 600; margin-bottom: 0.4rem; line-height: 1.45; }
         .ho-lab { display: block; font-size: 0.78rem; font-weight: 700; color: #4a453d; margin: 0.6rem 0 0.2rem; }
         .modal input, .modal textarea { width: 100%; border: 1px solid #ddd8cd; border-radius: 8px;
@@ -466,11 +491,11 @@
         .search-box { position: relative; margin-top: 0.6rem; }
         .search-box input { width: 100%; padding: 0.55rem 0.8rem; border: 1.5px solid #e6e2da;
             border-radius: 10px; font-size: 0.9rem; font-family: inherit; background: #faf8f4; }
-        .search-res { position: absolute; left: 0; right: 0; top: 100%; background: #fff; z-index: 1000;
+        .search-res { position: absolute; left: 0; right: 0; top: 100%; background: var(--psx-card,#fffdf9); z-index: 1000;
             border: 1px solid #e6e2da; border-radius: 10px; box-shadow: 0 8px 24px rgba(15,23,42,0.12);
             max-height: 220px; overflow-y: auto; display: none; }
         .search-res div { padding: 0.5rem 0.8rem; font-size: 0.84rem; cursor: pointer; }
-        .search-res div:hover { background: #eff6ff; }
+        .search-res div:hover { background: var(--psx-wash-info,#e5f3ff); }
 
         /* ============================================================
            MAP PINS
@@ -485,8 +510,8 @@
            glyph as well, so the state survives greyscale and print.
            ============================================================ */
         :root{
-            --tp-good:#0f6d5c;      /* enough time      ✓ */
-            --tp-warn:#a85a08;      /* tight            ! */
+            --tp-good:#1b5e43;      /* enough time      ✓ */
+            --tp-warn:#8a5a12;      /* tight            ! */
             --tp-off:#6b655b;       /* can't make it    ✕ */
             --tp-pick:#1b4d8f;      /* in your trip     ★ */
             --tp-start:#14110c;     /* start point      ⌂ */
@@ -503,7 +528,7 @@
         .tp-dot::after { content: attr(data-glyph);
             position: absolute; right: -4px; bottom: -4px;
             width: 11px; height: 11px; border-radius: 50%;
-            background: #fff; color: inherit;
+            background: var(--psx-card,#fffdf9); color: inherit;
             font-size: 7px; line-height: 11px; font-weight: 800;
             box-shadow: 0 1px 2px rgba(15,23,42,.3); }
         .tp-lit   .tp-dot { background: var(--tp-good); }
@@ -532,7 +557,7 @@
         .leaflet-container { background: #f5f1e8; font: inherit; }
         .leaflet-bar { border: none !important; box-shadow: 0 2px 10px rgba(15,23,42,.16) !important;
             border-radius: 10px !important; overflow: hidden; }
-        .leaflet-bar a { background: #fff !important; color: #4a453d !important;
+        .leaflet-bar a { background: var(--psx-card,#fffdf9) !important; color: #4a453d !important;
             border-bottom: 1px solid #e8edf3 !important; width: 32px !important; height: 32px !important;
             line-height: 32px !important; }
         .leaflet-bar a:hover { background: #f5f8fc !important; color: #14110c !important; }
@@ -581,11 +606,12 @@
         }
     </style>
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
     <link rel="stylesheet" href="/modern.css">
 </head>
 <body data-arm="operations">
     <header>
-        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+        <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
         <span class="brand">Plateau Strategy Solution Lab</span>
         <div class="right">
             <a href="/">Home</a>
@@ -626,19 +652,31 @@
             <div class="chips" id="chips"></div>
 
             <div class="build-row">
-                <button type="button" class="from loc-btn" id="curLocBtn" onclick="startPointTap()"
-                        title="Tap once to type a starting address · tap twice to use your current location"><span class="pin-badge" aria-hidden="true">⌂</span><span id="curLocLabel">Starting point</span></button>
-
+                <!-- ONE control, both jobs.
+                     The starting point used to be a button that revealed an
+                     address field on one tap and used your location on two.
+                     Nothing on screen announced the second gesture, and the
+                     comment beside it already admitted nobody discovers it. So
+                     the field is simply there now, with the pin on its left and
+                     current location on its right: type an address, or press
+                     the target. Nothing hidden, no gesture to learn, and the
+                     two things a traveller might want are one control apart
+                     instead of one behind the other. -->
+                <span class="startbox" id="curLocBtn">
+                    <span class="pin-badge" aria-hidden="true">⌂</span>
+                    <span id="startEntry" class="start-entry">
+                        <input id="startAddr" aria-label="Starting address"
+                               placeholder="Starting address or ◎"
+                               autocomplete="off" onkeydown="if(event.key==='Enter')applyStartAddress()">
+                    </span>
+                    <button type="button" class="here-btn" id="hereBtn" onclick="useMyLocation()"
+                            title="Use my current location" aria-label="Use my current location">◎</button>
+                </span>
+                <span id="curLocLabel" class="startstat"></span>
                 <span class="to">→</span>
                 <input id="destAdd" placeholder="Type a destination and press Add — or tap a pin on the map"
                        autocomplete="off" onkeydown="if(event.key==='Enter')addDestination()">
                 <button class="btn add" onclick="addDestination()">＋ Add</button>
-            </div>
-            <div id="startEntry" class="start-entry" style="display:none;">
-                <input id="startAddr" placeholder="Type your starting address, hotel or airport…"
-                       autocomplete="off" onkeydown="if(event.key==='Enter')applyStartAddress()">
-                <button class="btn add" onclick="applyStartAddress()">Set start</button>
-                <span class="start-hint">or drag the ⌂ pin on the map</span>
             </div>
             <div id="curLocInfo" class="loc-info"></div>
             <div id="farNote" class="far-note" style="display:none;"></div>
@@ -785,7 +823,7 @@
                 <div id="ho_guidefields" style="display:none">
                     <label class="ho-lab">Your guide code</label>
                     <input id="ho_code" placeholder="AGT-XXXX — proves you're a listed guide">
-                    <!-- Without this, anyone who has not joined the agent programme hits
+                    <!-- Without this, anyone who has not joined the agent program hits
                          "a guide code is required" and stops. They can register right here. -->
                     <p class="ho-msg" id="ho_regline">No code yet?
                         <span class="fixlink" onclick="showGuideReg()">Register as a guide — takes a minute</span></p>
@@ -826,7 +864,7 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/vendor/leaflet/leaflet.js"></script>
     <script>
     'use strict';
     // ---------- data ----------
@@ -1084,12 +1122,6 @@
     }
 
     // And a search that fails should say so rather than look like a no-op.
-    async function geocode(url){
-        const r = await fetch(url);
-        if (!r.ok) throw new Error('search service returned ' + r.status);
-        return r.json();
-    }
-
     // The sketch's core: type a destination, press Add, it joins the chain (D1→D2→…).
     async function addDestination(){
         const q = ($('destAdd').value || '').trim();
@@ -1099,8 +1131,16 @@
             const b = map.getBounds();
             const vb = viewboxParam(b);
             const base = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=' + encodeURIComponent(q);
-            let j = await geocode(base + vb + '&bounded=1');
-            if (!j.length) j = await geocode(base);      // nearby if not in view
+            // psxJSON hands back the array on success and {ok:false} when the
+            // geocoder could not be reached, so ask what it actually is rather
+            // than trusting .length on either. main's geocode() was a bare
+            // fetch that THREW on a bad response, which is the thing psx-net
+            // exists to stop — a rejected promise here left the message on
+            // screen forever. Its retry URL is the better one though: dropping
+            // the viewbox entirely, not re-sending it.
+            let j = await psxJSON(base + vb + '&bounded=1');
+            if (!Array.isArray(j) || !j.length) j = await psxJSON(base);   // unbounded retry
+            if (!Array.isArray(j)) { say('Search is unavailable right now — try again in a moment.'); return; }
             if (!j.length) { say('Couldn\'t find “' + q + '” — try adding the city name.'); return; }
             const res = j[0];
             const nm = res.display_name.split(',')[0].replace(/[<>&"]/g, '').slice(0, 60) || q;
@@ -1111,8 +1151,15 @@
                 i = places.length; places.push(np);
                 rememberPlace(np, res);
                 rebuildMarkers(); renderPlaces(); savePlaces(); fetchMatrix();
-                flyToPlace(+res.lat, +res.lon);   // fly, don't cut — the traveller has to see it move
             }
+            // OUTSIDE the if. This was the bug, and it survived three reports
+            // because it only shows up on the second half of the journey: type
+            // an address the board has never seen and the map flies, so it
+            // looks fixed. Type one it already knows — the usual case once a
+            // day is part-built — and nothing moves at all. "Any address" in
+            // the request meant any, so the flight belongs to the entry, not
+            // to the place being new.
+            flyToPlace(+res.lat, +res.lon);
             $('destAdd').value = '';
             addToRoute(i);                                   // append to the chain (feasibility-checked)
         } catch (e) { say('Search unavailable right now — try again.'); }
@@ -1349,7 +1396,7 @@
     }
     function renderChain(){                 // the D1 → D2 → D3 strip from the sketch
         const el = $('chain'); if (!el) return;
-        if (!st.route.length) { el.innerHTML = '<span class="muted">Your route builds here: D1 → D2 → D3 …</span>'; return; }
+        if (!st.route.length) { el.innerHTML = '<span class="muted">' + T('Your route builds here: D1 → D2 → D3 …') + '</span>'; return; }
         el.innerHTML = st.route.map((r, k) =>
             '<span class="dnode" title="' + escj(places[r.i].name) + '">D' + (k + 1) + ' · '
              + escj(places[r.i].name.split(' ').slice(0, 2).join(' ')) + '</span>'
@@ -1359,7 +1406,7 @@
         const el = $('trip'); if (!el) return;
         const ja = $('jarvisActions'), tools = $('itinTools'), mast = $('jarvisMast');
         if (!st.route.length) {
-            el.innerHTML = '<p class="muted">🤵 At your service. Add any place — search above or tap a pin — and I\'ll build your day sheet: miles, drive time, arrival, stay and closing time.</p>';
+            el.innerHTML = '<p class="muted">🤵 ' + T('At your service. Add any place — search above or tap a pin — and I\u2019ll build your day sheet: miles, drive time, arrival, stay and closing time.') + '</p>';
             if (ja) ja.style.display = 'none';
             if (tools) tools.style.display = 'none';
             if (mast) mast.style.display = 'none';
@@ -1536,7 +1583,7 @@
             const url = 'https://router.project-osrm.org/route/v1/driving/'
                 + pts.map(p => p.lon.toFixed(6) + ',' + p.lat.toFixed(6)).join(';')
                 + '?overview=full&geometries=geojson';
-            const j = await (await fetch(url)).json();
+            const j = await psxJSON(url);
             const rt = j && j.code === 'Ok' && j.routes && j.routes[0];
             if (!rt) return;
             geoCache[sig] = rt.geometry.coordinates.map(c => [c[1], c[0]]);   // lon,lat -> lat,lng
@@ -1846,7 +1893,7 @@
     }
     async function loadCrowdTimes(applyDefaults){
         try {
-            const d = await (await fetch('/api/visit-times?city=' + encodeURIComponent(curCity))).json();
+            const d = await psxJSON('/api/visit-times?city=' + encodeURIComponent(curCity));
             if (!d || !d.ok) return;
             crowdTimes = d.places || {}; crowdMinN = d.min_n || 3;
             let applied = 0;
@@ -2123,11 +2170,12 @@
             const vb = viewboxParam(b);
             const base = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=' + encodeURIComponent(q);
             let hint = '';
-            let j = await geocode(base + vb + '&bounded=1');
-            if (!j.length) {
-                j = await (await fetch(base + vb)).json();      // nearby-first, not bounded
-                if (j.length) hint = '<div class="muted">Nothing in view — closest matches:</div>';
+            let j = await psxJSON(base + vb + '&bounded=1');
+            if (!Array.isArray(j) || !j.length) {
+                j = await psxJSON(base + vb);      // nearby-first, not bounded
+                if (Array.isArray(j) && j.length) hint = '<div class="muted">Nothing in view — closest matches:</div>';
             }
+            if (!Array.isArray(j)) { box.innerHTML = '<div class="muted">Search is unavailable right now.</div>'; return; }
             if (!j.length) { box.innerHTML = '<div class="muted">No results — try adding the city name.</div>'; return; }
             box.innerHTML = hint;
             j.forEach(res => {
@@ -2302,7 +2350,9 @@
                                              noFly: farAway,   // already handled, or deliberately not
                                              why: 'starting from your location' });
                 $('curLocBtn').classList.add('located');
+        { const h = $('hereBtn'); if (h) h.classList.add('located'); }
                 setLocLabel(address ? shortAddr(address) : 'My location');
+                { const i = $('startAddr'); if (i && address) i.value = address; }
                 const weak = acc > 150;
                 setLocInfo('📍 ' + (address || (lat.toFixed(5) + ', ' + lon.toFixed(5)))
                     + '  ·  accurate to ±' + acc + ' m'
@@ -2387,7 +2437,9 @@
         setOrigin(homeLoc.lat, homeLoc.lon, 'gps',
                   { address: homeLoc.address, accuracy: homeLoc.accuracy, why: 'starting from your location' });
         $('curLocBtn').classList.add('located');
+        { const h = $('hereBtn'); if (h) h.classList.add('located'); }
         setLocLabel(homeLoc.address ? shortAddr(homeLoc.address) : 'My location');
+        { const i = $('startAddr'); if (i && homeLoc.address) i.value = homeLoc.address; }
         map.setView([homeLoc.lat, homeLoc.lon], 11);
         fetchMatrix(); refresh();
         say('Start moved to where you are — the far-distance options are below the map.');
@@ -2404,23 +2456,16 @@
     // repeated inside the address box — nobody should have to discover this.
     const DOUBLE_TAP_MS = 300;
     let startTapTimer = null;
-    function startPointTap(){
-        if (startTapTimer) {                       // second tap inside the window
-            clearTimeout(startTapTimer); startTapTimer = null;
-            const box = $('startEntry'); if (box) box.style.display = 'none';
-            say('Finding your current location…');
-            useMyLocation();
-            return;
-        }
-        startTapTimer = setTimeout(() => {
-            startTapTimer = null;
-            openStartEntry();
-        }, DOUBLE_TAP_MS);
-    }
+    // Was: one tap opens the address box, two taps use your location. Both of
+    // those are now their own visible control, so the gesture is retired
+    // rather than kept as a second way to do the same thing.
+    function startPointTap(){ openStartEntry(); }
+    // The address box is always on screen now, so "open" means put the cursor
+    // in it. Kept under the old name because the geolocation-denied message
+    // links to it — "Or type where you are" has to land somewhere.
     function openStartEntry(){
-        const box = $('startEntry'); if (!box) return;
-        box.style.display = 'flex';
-        const i = $('startAddr'); if (i) { i.focus(); i.select(); }
+        const i = $('startAddr');
+        if (i) { i.focus(); i.select(); i.scrollIntoView({block:'nearest'}); }
     }
 
     // Best pickup address we can give the reservation, in priority order:
@@ -2443,7 +2488,7 @@
             const url = 'https://router.project-osrm.org/route/v1/driving/'
                 + from.lon.toFixed(6) + ',' + from.lat.toFixed(6) + ';'
                 + to.lon.toFixed(6) + ',' + to.lat.toFixed(6) + '?overview=false';
-            const j = await (await fetch(url)).json();
+            const j = await psxJSON(url);
             const rt = j && j.code === 'Ok' && j.routes && j.routes[0];
             if (rt && isFinite(rt.distance)) return { mi: rt.distance / 1609.344, road: true };
         } catch (e) {}
@@ -2517,7 +2562,7 @@
                               : (function(){ const ll = startMarker.getLatLng(); return { lat: ll.lat, lon: ll.lng }; })();
         const miles = (await driveMiles(pk, { lat: drop.lat, lon: drop.lon })).mi;
         let base = 15, perMile = 2.5;
-        try { const p = await (await fetch('/api/pricing')).json();
+        try { const p = await psxJSON('/api/pricing');
               if (p) { if (isFinite(p.base_fare)) base = p.base_fare; if (isFinite(p.per_mile)) perMile = p.per_mile; } } catch (e) {}
         const distance_mi = Math.round(miles * 100) / 100;
         const fare = Math.round((base + perMile * miles) * 100) / 100;
@@ -2749,10 +2794,7 @@
     // GPS covers "I'm here now", but a traveler planning from home needs to say
     // where they'll START — a hotel, an airport, a friend's address. Dragging the
     // pin worked; typing it did not, so this fills that gap.
-    function toggleStartEntry(){          // kept: the address box also closes itself
-        const box = $('startEntry'); if (!box) return;
-        if (box.style.display === 'none') openStartEntry(); else box.style.display = 'none';
-    }
+    function toggleStartEntry(){ openStartEntry(); }   // nothing left to hide
     // ONE writer for the trip origin. The black pin is its view — never a second
     // truth — so drag, GPS and typed entry can no longer disagree about where the
     // day begins, and none of them destroy the plan.
@@ -2760,6 +2802,18 @@
     // simply somewhere else and the traveller has to work out where. A short
     // flight is the signal: they watch it travel, so they know the thing they
     // typed is the thing now under the pin.
+    // Strings this page assembles itself go through the shared formatter when
+    // i18n.js is present, and fall straight through to English when it is not.
+    // Without this the page can be fully translated in the dictionary and
+    // still show English, because the text walker only sees what the HTML
+    // contained — never what JavaScript wrote afterwards.
+    function T(pattern, vals) {
+        if (window.psxFmt) return window.psxFmt(pattern, vals);
+        return String(pattern).replace(/\{(\w+)\}/g, function (m, k) {
+            return (vals && vals[k] !== undefined) ? vals[k] : m;
+        });
+    }
+
     function flyToPlace(lat, lon, minZoom){
         if (typeof map === 'undefined' || !map) return;
         var z = Math.max(map.getZoom() || 0, minZoom || 13);
@@ -2897,14 +2951,13 @@
             const b = map.getBounds();
             const vb = viewboxParam(b);
             const base = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=' + encodeURIComponent(q);
-            let j = await (await fetch(base + vb)).json();          // nearby first
-            if (!j.length) j = await (await fetch(base)).json();     // then anywhere
+            let j = await psxJSON(base + vb);          // nearby first
+            if (!j.length) j = await psxJSON(base);     // then anywhere
             if (!j.length) { setLocInfo('Couldn\'t find “' + q + '” — try adding the city.', true); return; }
             const r = j[0], lat = +r.lat, lon = +r.lon;
             setOrigin(lat, lon, 'typed', { address: r.display_name, why: 'starting from ' + r.display_name.split(',')[0] });
             setLocLabel('Start set');
             setLocInfo('Starting from ' + r.display_name.split(',').slice(0, 3).join(','));
-            $('startEntry').style.display = 'none';
             jarvisSay('Starting from <b>' + escj(r.display_name.split(',')[0]) + '</b> — I\'ve re-timed the day from there.');
         } catch (e) { setLocInfo('Address lookup unavailable right now — drag the black pin instead.', true); }
     }
@@ -2968,13 +3021,13 @@
     }
     async function loadDiscoveryFeed(){
         try {
-            const d = await (await fetch('/api/discoveries')).json();
+            const d = await psxJSON('/api/discoveries');
             const el = $('discoveryNote');
             if (!el || !d || !d.ok || !d.recent.length || dnCur) return;
             if (el.style.display === 'block') return;         // never overwrite a live announcement
             const r = d.recent[0];
             el.classList.remove('floating');
-            el.innerHTML = '🌍 <b>Newest discovery:</b> ' + escj(r.name)
+            el.innerHTML = '🌍 <b>' + T('Newest discovery:') + '</b> ' + escj(r.name)
                 + ' <span class="dn-rec">in ' + escj(r.city_label || r.city) + '</span>'
                 + '<span class="dn-sub">' + d.total + ' place' + (d.total === 1 ? '' : 's')
                 + ' discovered by travelers across ' + d.city_count + ' cit' + (d.city_count === 1 ? 'y' : 'ies')
@@ -3413,8 +3466,8 @@
                 body: JSON.stringify({ name: o.name, lat: o.lat, lon: o.lon, city: curCity,
                                        found_via: 'map-rate', osm_class: t.tourism ? 'tourism' : (t.amenity ? 'amenity' : ''),
                                        type: t.amenity || t.tourism || '', address: t.address }) }).catch(function(){});
-            const d = await (await fetch('/api/rate', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: o.name, city: curCity, stars: stars }) })).json();
+            const d = await psxJSON('/api/rate', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: o.name, city: curCity, stars: stars }) });
             if (d && d.ok) {
                 bookStars[curCity + '|' + String(o.name).toLowerCase()] = { stars: d.avg, n: d.count };
                 map.closePopup();
@@ -3635,8 +3688,10 @@
         // search bar, floating top-centre
         const bar = document.createElement('div');
         bar.className = 'map-searchbar';
+        // .build-row carries the start box with it — do not move that
+        // separately. `bar` is still detached here, so a getElementById for
+        // anything already inside it returns null.
         bar.appendChild(document.querySelector('.build-row'));
-        bar.appendChild(document.getElementById('startEntry'));
         bar.appendChild(document.getElementById('curLocInfo'));
         bar.appendChild(document.getElementById('farNote'));
         mc.appendChild(bar);
@@ -3738,7 +3793,7 @@
     refresh();
     jarvisSay(resumed
         ? 'Welcome back — your <b>' + st.route.length + '-stop day sheet</b> is laid out below. Add more stops, or hand it to a pro when ready.'
-        : 'I\'m <b>Jarvis</b>. Add any place — search above or tap a pin — and I\'ll build your day sheet.');
+        : T('I\u2019m <b>Jarvis</b>. Add any place — search above or tap a pin — and I\u2019ll build your day sheet.'));
     if (navigator.share && $('shareBtn')) $('shareBtn').style.display = '';
     fetchMatrix();
     mergeCommunity(curCity);           // bug 4: every visit, not just on a sample load
@@ -3758,7 +3813,13 @@
         function paint(online){
             let text = '';
             if (online >= 2) text = '🟢 ' + online + ' travelers online now';
-            else if (weekCount > 0) text = '🧳 ' + weekCount + ' traveler' + (weekCount === 1 ? '' : 's') + ' planned a trip here this week';
+            // English pluralises by gluing an 's' on; Chinese, Korean and
+            // Vietnamese do not pluralise at all. Two whole patterns, so each
+            // language writes its own sentence rather than inheriting an
+            // English grammar rule that does not apply to it.
+            else if (weekCount > 0) text = '🧳 ' + (weekCount === 1
+                ? T('One traveler planned a trip here this week')
+                : T('{n} travelers planned a trip here this week', { n: weekCount }));
             else if (allTime > 0) text = '🧳 ' + allTime + ' traveler' + (allTime === 1 ? '' : 's') + ' have used this planner';
             if (!text) { el.style.display = 'none'; return; }   // brand new — say nothing rather than a zero
             el.textContent = text;
