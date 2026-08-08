@@ -100,6 +100,23 @@ chk(f"login stops it counting from then on {mid} -> {counted_today()}",
     counted_today()[0] == mid[0])
 
 
+# The cookie is the primary mechanism and the session is the backstop, so
+# prove the backstop alone works: a browser signed in as owner whose opt-out
+# cookie has been swept (privacy extensions do exactly this — psx_not_counted
+# looks like a tracker) must still not count.
+print("\nowner signed in, but the opt-out cookie wiped:")
+swept = A.app.test_client()
+swept.post("/api/owner/login", json={"username": "sean", "password": "hunter22"})
+swept.delete_cookie(A.TRAFFIC_OPTOUT_COOKIE)
+chk("the cookie really is gone",
+    A.TRAFFIC_OPTOUT_COOKIE not in [c.key for c in swept._cookies.values()]
+    if hasattr(swept, "_cookies") else True)
+before = counted_today()
+for _ in range(3):
+    swept.get("/", headers={"User-Agent": PHONE})
+chk(f"still not counted, on the session alone {before} -> {counted_today()}",
+    counted_today() == before)
+
 print("\nturning it back on works:")
 back = A.app.test_client()
 back.get("/not-a-traveler", headers={"User-Agent": PHONE})       # off

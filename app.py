@@ -355,6 +355,15 @@ def _skip_traffic():
     """True when this request should not appear in any visitor number."""
     if request.cookies.get(TRAFFIC_OPTOUT_COOKIE) == "1":
         return True
+    if session.get("owner"):
+        # Signed in as the owner is not a visit. Mostly redundant — owner login
+        # and setup both call _set_not_counted, so the cookie above is usually
+        # already there. It earns its place in the narrow case where the cookie
+        # is gone but the session is not: psx_not_counted looks exactly like a
+        # tracking cookie, and privacy extensions that sweep those often leave
+        # a session cookie alone. Without this line the owner would silently
+        # start counting again and have no way to notice.
+        return True
     if request.path == "/not-a-traveler":
         # The page whose whole purpose is "stop counting me" must not itself
         # count. The cookie is only set on the way OUT, so without this the
