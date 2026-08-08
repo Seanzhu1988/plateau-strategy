@@ -341,9 +341,31 @@ button[title='Remove']:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.
   border-radius: var(--m-radius-sm) !important;
 }
 
-/* The secondary action gets the same underline, one weight lighter, so the
-   pair reads as two words on a line rather than a word and a box. */
-.btn.ghost, .psx-btn-ghost, .btn-ghost,
+/* The secondary action steps back.
+
+   Measured on the hero: "Book a ride" is 86px, "Partner with us" is 112px.
+   Given both the same 2px navy rule, the longer phrase ends up wider AND
+   as heavy as the thing it is supposed to defer to, so the eye lands on
+   the secondary action first. Nothing is wrong with the rendering — the
+   rule hugs the text exactly — the weighting was simply equal when it
+   should not have been.
+
+   So the secondary keeps the underline language but at half the weight and
+   in muted ink. The primary now leads on emphasis rather than on width. */
+a.psx-btn-ghost:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip), .btn.ghost:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip), .btn-ghost:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip) {
+  color: var(--m-muted) !important;
+  border-bottom: 1px solid var(--m-line-firm) !important;
+  border-top: 0 !important; border-left: 0 !important; border-right: 0 !important;
+  font-weight: 600 !important;
+  background: transparent !important;
+  padding: .1rem 0 .18rem !important;
+}
+a.psx-btn-ghost:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip):hover, .btn.ghost:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip):hover, .btn-ghost:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip):hover {
+  color: var(--m-rose-deep) !important;
+  border-bottom-color: var(--m-rose) !important;
+  background: transparent !important;
+}
+
 nav a[href="/book"], header .book-cta, header a.btn {
   background: transparent !important;
   background-image: none !important;
@@ -354,13 +376,12 @@ nav a[href="/book"], header .book-cta, header a.btn {
   padding: .1rem 0 .18rem !important;
   box-shadow: none !important;
 }
-.btn.ghost:hover, .psx-btn-ghost:hover, .btn-ghost:hover,
 nav a[href="/book"]:hover, header .book-cta:hover, header a.btn:hover {
   color: var(--m-rose-deep) !important;
   border-bottom-color: var(--m-rose-deep) !important;
   border-bottom-width: 3px !important;
 }
-.btn.ghost:hover { background: var(--m-raised) !important; }
+
 
 /* The black bars, traced to their actual source.
 
