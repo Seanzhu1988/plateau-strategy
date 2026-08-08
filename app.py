@@ -323,9 +323,31 @@ _BOT_HINTS = ("bot", "crawler", "spider", "slurp", "headless", "curl/", "wget",
               "preview", "scrapy", "facebookexternalhit", "embedly")
 
 
+IGNORE_NETS_PATH = _data_path("traffic_ignore.json")
+
+
+def _registered_nets():
+    """Networks the owner has registered as "this is me, do not count it".
+
+    A cookie is per browser: clear it, use a different browser, open a private
+    window, pick up a different phone, and the site counts you again. This is
+    the other half — one entry covers every device on that network at once,
+    survives clearing anything, and needs no cookie to work.
+
+    Stored rather than env-only so it can be added from a phone at the kitchen
+    table instead of a redeploy. The env var still works and the two are
+    merged, so an address set in Render is not lost."""
+    try:
+        rows = _load(IGNORE_NETS_PATH)
+        return {_norm_ip(r.get("ip")): r for r in rows if isinstance(r, dict) and r.get("ip")}
+    except Exception:
+        return {}
+
+
 def _ignored_ips():
     raw = os.environ.get("TRAFFIC_IGNORE_IPS", "")
-    return {_norm_ip(s) for s in raw.split(",") if s.strip()}
+    from_env = {_norm_ip(s) for s in raw.split(",") if s.strip()}
+    return from_env | set(_registered_nets())
 
 
 def _norm_ip(raw):
@@ -443,6 +465,45 @@ def _forget_vid_today(vid):
     return True
 
 
+@app.route("/api/traffic/networks", methods=["GET", "POST"])
+@owner_required
+def api_traffic_networks():
+    """Register (or drop) the network this request came from.
+
+    Owner-only, because it decides whose visits disappear from the numbers —
+    a stranger able to call this could quietly delete themselves from the
+    figures the business is read by.
+
+    The address is taken from the request, never from the body. Letting the
+    caller name an address would let a signed-in session erase traffic from
+    somewhere it has never been, and the honest use — "I am sitting on this
+    network now, stop counting it" — does not need the parameter."""
+    here = _norm_ip(_client_ip())
+    if request.method == "GET":
+        return jsonify({"ok": True, "here": here,
+                        "here_registered": here in _registered_nets(),
+                        "networks": list(_registered_nets().values()),
+                        "from_env": sorted(
+                            {_norm_ip(s) for s in
+                             (os.environ.get("TRAFFIC_IGNORE_IPS", "") or "").split(",")
+                             if s.strip()})})
+    d = request.get_json(force=True, silent=True) or {}
+    drop = (d.get("ip") or "").strip() if d.get("remove") else ""
+    with _LOCK:
+        rows = [r for r in (_load(IGNORE_NETS_PATH) or []) if isinstance(r, dict)]
+        if drop:
+            rows = [r for r in rows if _norm_ip(r.get("ip")) != _norm_ip(drop)]
+        elif not any(_norm_ip(r.get("ip")) == here for r in rows):
+            if not here:
+                return jsonify({"ok": False, "error": "No address on this request."}), 400
+            rows.append({"ip": here,
+                         "label": _no_tags((d.get("label") or "").strip())[:60] or "this network",
+                         "added_at": datetime.datetime.now().isoformat(timespec="seconds")})
+        _save(IGNORE_NETS_PATH, rows)
+    return jsonify({"ok": True, "here": here, "here_registered": here in _registered_nets(),
+                    "networks": list(_registered_nets().values())})
+
+
 @app.route("/not-a-traveler")
 def not_a_traveler_page():
     """The human version of the opt-out, for a phone.
@@ -517,7 +578,32 @@ device are added to the visitor totals.</p>
 %s
 <span class="s">Do this once on every device you use to check the site.
 <a class="h" href="/">Back to the site</a></span>
-</div></body></html>""" % (state, other, today_note)
+</div>
+<script>
+// Keep the OPT-OUT alive, and only the opt-out.
+//
+// The flag is a cookie, and privacy tools sweep cookies — psx_nocount looks
+// exactly like a tracker, because structurally it is one. When it is swept the
+// device silently starts counting again, with no symptom: the numbers just
+// drift up and nobody knows why. A copy in localStorage, which those tools
+// usually leave alone, restores it on the next visit to this page.
+//
+// Worth being precise about what this is, because the same mechanism used the
+// other way round is a dark pattern: respawning a cleared cookie to keep
+// TRACKING someone is wrong. This respawns a cleared cookie to keep NOT
+// counting someone. It only ever restores "do not count me", it never
+// resurrects consent, and pressing "Count this device again" erases the
+// backup as well as the cookie — so the reversal is real and permanent.
+(function () {
+  try {
+    var KEY = 'psx_nocount_pref';
+    var counted = %s;                       // what the server just decided
+    if (counted) { localStorage.removeItem(KEY); return; }
+    localStorage.setItem(KEY, '1');
+  } catch (e) { /* storage blocked — the cookie alone still works */ }
+})();
+</script>
+</body></html>""" % (state, other, today_note, "true" if counted_after else "false")
     return _set_not_counted(Response(html, mimetype="text/html"), not counted_after)
 
 

@@ -75,6 +75,11 @@ jpg-out/
 # Coarsened location cache — visitor-derived, never committed.
 geo_cache.json
 
+# Networks the owner registered as "this is me, do not count it". Home and
+# office IP addresses — the owner's own location, which is not something to
+# publish in a public repo.
+traffic_ignore.json
+
 professions.json
 pros.json
 opinions.json

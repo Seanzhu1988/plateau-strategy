@@ -74,4 +74,32 @@
   w.psxFetch = async function psxFetch(url, opts) {
     try { return await fetch(url, opts); } catch (e) { return null; }
   };
+
+  /* Restore a swept opt-out.
+   *
+   * "Do not count this device" is a cookie, and privacy tools sweep cookies —
+   * psx_nocount looks exactly like a tracker because structurally it is one.
+   * When it goes, the device silently starts counting again and there is no
+   * symptom; the visitor numbers just drift up. /not-a-traveler leaves a copy
+   * of the preference in localStorage, which those tools usually spare, and
+   * this puts the cookie back.
+   *
+   * It has to live here rather than on that page, because a preference that
+   * only repairs itself when you happen to revisit the page that set it is
+   * not much of a repair.
+   *
+   * The cookie is httponly, so this cannot write it directly and asks the
+   * server instead. One page view is counted before the repair lands — the
+   * request is already finished by the time this runs. One is not forever.
+   *
+   * Only ever restores the opt-OUT. The same trick used to respawn a cleared
+   * tracking cookie is a dark pattern; this respawns a cleared refusal. It
+   * never resurrects consent, and "Count this device again" clears the backup
+   * too, so turning it off stays off. */
+  try {
+    if (localStorage.getItem('psx_nocount_pref') === '1'
+        && !/(^|;\s*)psx_nocount=/.test(document.cookie)) {
+      fetch('/api/traffic/optout', { credentials: 'same-origin' }).catch(function () {});
+    }
+  } catch (e) { /* storage blocked, or a sandboxed frame — the cookie stands alone */ }
 })(window);

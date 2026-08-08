@@ -130,6 +130,45 @@ back.get("/", headers={"User-Agent": PHONE})
 chk(f"and it counts again {before} -> {counted_today()}",
     counted_today()[0] == before[0] + 1)
 
+# A cookie is per browser. Registering the network covers every device on it
+# at once, needs no cookie, and survives clearing anything — which is the point
+# for a house or an office where the same person browses from four devices.
+print("\nregistering the network Sean is sitting on:")
+A.IGNORE_NETS_PATH = os.path.join(tmp, "nets.json")
+HOME = {"User-Agent": PHONE, "X-Forwarded-For": "73.21.4.9"}
+CAFE = {"User-Agent": PHONE, "X-Forwarded-For": "198.51.100.7"}
+
+boss = A.app.test_client()
+boss.post("/api/owner/login", json={"username": "sean", "password": "hunter22"})
+r = boss.post("/api/traffic/networks", json={"label": "home wifi"}, headers=HOME)
+chk(f"the owner registers the address the request came from ({r.status_code})",
+    r.status_code == 200 and r.get_json()["here"] == "73.21.4.9")
+
+before = counted_today()
+for _ in range(4):
+    A.app.test_client().get("/", headers=HOME)          # four DIFFERENT browsers
+chk(f"four fresh browsers on it count for nothing {before} -> {counted_today()}",
+    counted_today() == before)
+
+before = counted_today()
+A.app.test_client().get("/", headers=CAFE)
+chk("but a stranger somewhere else still counts", counted_today() != before)
+
+r = A.app.test_client().post("/api/traffic/networks", json={}, headers=HOME)
+chk(f"a stranger cannot register anything ({r.status_code})", r.status_code == 401)
+
+# The address is read from the request, never the body — otherwise a signed-in
+# session could erase traffic from a place it has never been.
+r = boss.post("/api/traffic/networks", json={"ip": "198.51.100.7"}, headers=HOME)
+chk("and the owner cannot register a network they are not on",
+    "198.51.100.7" not in A._registered_nets())
+
+boss.post("/api/traffic/networks", json={"remove": True, "ip": "73.21.4.9"}, headers=HOME)
+before = counted_today()
+A.app.test_client().get("/", headers=HOME)
+chk(f"un-registering brings it back {before} -> {counted_today()}",
+    counted_today() != before)
+
 print("\nbots were already ignored, and still are:")
 bot = A.app.test_client()
 before = counted_today()
