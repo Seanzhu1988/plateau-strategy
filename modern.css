@@ -389,7 +389,13 @@ a.psx-btn-ghost:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubb
   background: transparent !important;
 }
 
-nav a[href="/book"], header .book-cta, header a.btn {
+/* Keyed on the destination, not the wrapper. The landing page puts this
+   control in a <nav>; trip-planner, articles and driver put it in a
+   <div class="right">. Keying on `nav` meant the same link wore the old
+   filled look on three pages and the quiet one on the fourth. Scoped to
+   <header> so the footer's "Book a ride — $75 flat to SeaTac" and the
+   body-copy links stay ordinary links. */
+header a[href="/book"], header .book-cta, header a.btn {
   background: transparent !important;
   background-image: none !important;
   color: var(--m-ink) !important;
@@ -399,7 +405,7 @@ nav a[href="/book"], header .book-cta, header a.btn {
   padding: .1rem 0 .18rem !important;
   box-shadow: none !important;
 }
-nav a[href="/book"]:hover, header .book-cta:hover, header a.btn:hover {
+header a[href="/book"]:hover, header .book-cta:hover, header a.btn:hover {
   color: var(--m-rose-deep) !important;
   border-bottom-color: var(--m-rose-deep) !important;
   border-bottom-width: 3px !important;
