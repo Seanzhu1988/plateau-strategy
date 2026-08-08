@@ -45,9 +45,16 @@ Render and redeploy. To turn it off, remove it. Nothing else changes.
 
 ## Issuing access
 
+These accounts are **not** the lab's property — `/robot` uses them too, so
+minting and sign-in deliberately sit outside `BOT_LAB_ENABLED`. Otherwise
+switching the lab off would lock people out of an unrelated page.
+
 ```
-POST /api/lab/users          {"username": "friend1", "note": "optional"}
+POST /api/access/users       {"username": "friend1", "note": "optional"}
 → {"password": "cedar-yonder-fjord-anchor-997"}
+
+POST /api/access/login       {"username": "...", "password": "..."}
+POST /api/access/logout
 ```
 
 Owner-authenticated. The password is **generated, not chosen**, shown **once**,
@@ -59,7 +66,7 @@ Four words and a number, so it can be read down a phone without spelling every
 character.
 
 ```
-POST /api/lab/users/<username>/revoke   {"revoked": true}
+POST /api/access/users/<username>/revoke   {"revoked": true}
 ```
 
 ## Wiring a bot
@@ -143,6 +150,7 @@ Until there are answers: the lab stays off, and the live path stays unwritten.
 | Path | What |
 |---|---|
 | `bot_lab.py` | Accounts, locks, ledger, unlock rule. No Flask. |
+| `access-gate.html` | The sign-in shown when a by-link page needs a password. |
 | `app.py` | Routes, all behind `@lab_enabled`. |
 | `bot-lab.html` | The console at `/lab`. |
 | `test_bot_lab.py` | 43 checks. Leads with "switched off, the lab does not exist". |

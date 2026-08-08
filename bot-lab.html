@@ -123,7 +123,7 @@
             posting each completed paper trade:</p>
 <pre>POST /api/lab/fills
 Content-Type: application/json
-Cookie: &lt;the session from /api/lab/login&gt;
+Cookie: &lt;the session from /api/access/login&gt;
 
 { "strategy": "farm", "pnl_usd": -12.40, "note": "optional" }</pre>
             <p>Rules the lab enforces, so a misconfigured bot cannot quietly do
@@ -167,7 +167,7 @@ async function signIn(e) {
     e.preventDefault();
     var msg = document.getElementById('gate_msg');
     msg.className = 'msg'; msg.textContent = 'Checking…';
-    var j = await psxJSON('/api/lab/login', { method: 'POST',
+    var j = await psxJSON('/api/access/login', { method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: document.getElementById('u').value,
                                password: document.getElementById('p').value }) });
@@ -182,7 +182,7 @@ async function signIn(e) {
 }
 
 async function signOut() {
-    await psxJSON('/api/lab/logout', { method: 'POST' });
+    await psxJSON('/api/access/logout', { method: 'POST' });
     document.getElementById('app').style.display = 'none';
     document.getElementById('gate').style.display = 'block';
     document.getElementById('gate_msg').textContent = '';

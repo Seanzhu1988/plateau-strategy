@@ -64,12 +64,16 @@ def off():
     os.environ.pop("BOT_LAB_ENABLED", None)
 
 
-LAB_ROUTES = [("GET", "/lab"), ("POST", "/api/lab/login"),
-              ("POST", "/api/lab/logout"), ("GET", "/api/lab/board"),
-              ("POST", "/api/lab/fills"), ("GET", "/api/lab/users"),
-              ("POST", "/api/lab/users"),
-              ("POST", "/api/lab/users/x/revoke"),
-              ("POST", "/api/lab/locks/strategy/farm")]
+# Only the lab's own surfaces. The account routes are deliberately NOT here:
+# they moved to /api/access/* and out from behind this switch, because those
+# accounts also open /robot — gating them on the lab meant that with the lab
+# off the owner could not issue a credential for an unrelated page. They are
+# protected by @owner_required, which does not depend on any switch, and they
+# get their own assertions further down.
+LAB_ROUTES = [("GET", "/lab"), ("GET", "/api/lab/board"),
+              ("POST", "/api/lab/fills"),
+              ("POST", "/api/lab/locks/strategy/farm"),
+              ("POST", "/api/lab/locks/venue/kalshi")]
 
 print("switched off, the lab does not exist:")
 off()
@@ -79,7 +83,7 @@ for method, path in LAB_ROUTES:
     r = c.open(path, method=method, json={})
     if r.status_code != 404:
         bad.append("%s %s -> %d" % (method, path, r.status_code))
-chk("every route answers 404 (%s)" % (bad or "all 9"), not bad)
+chk("every route answers 404 (%s)" % (bad or "all %d" % len(LAB_ROUTES)), not bad)
 chk("404 rather than 401 — a refusal would confirm it is there",
     all(c.open(p, method=m, json={}).status_code != 401 for m, p in LAB_ROUTES))
 chk("live execution is not allowed", bot_lab.live_execution_allowed() is False)
@@ -103,31 +107,50 @@ WAYS_IN = ("signup", "register", "reset", "forgot", "recover", "invite",
 leak = [r for r in rules if "lab" in r and any(w in r.lower() for w in WAYS_IN)]
 chk("no signup/reset/recovery/invite route exists (%s)" % (leak or "none"), not leak)
 
-r = c.post("/api/lab/users", json={"username": "friend1"})
+r = c.post("/api/access/users", json={"username": "friend1"})
 chk("a stranger cannot mint one (%d)" % r.status_code, r.status_code == 401)
 
 own = A.app.test_client()
 own.post("/api/owner/setup", json={"username": "sean", "password": "hunter22"})
-r = own.post("/api/lab/users", json={"username": "friend1", "note": "a friend"})
+r = own.post("/api/access/users", json={"username": "friend1", "note": "a friend"})
 chk("the owner can (%d)" % r.status_code, r.status_code == 200)
 pw = r.get_json()["password"]
 chk("the password is strong enough to be sent by text (%d chars)" % len(pw), len(pw) >= 24)
 
-r2 = own.get("/api/lab/users").get_json()
+r2 = own.get("/api/access/users").get_json()
 chk("the owner's list never carries the hash or the salt",
     all("hash" not in u and "salt" not in u for u in r2["users"]))
 raw = json.load(open(A.LAB.users_path))
 chk("and the password itself is not stored anywhere",
     all(pw not in json.dumps(u) for u in raw))
 
+# These accounts open /robot too. Gating them on BOT_LAB_ENABLED meant that
+# with the lab off the owner could not issue a credential for an unrelated
+# page — found by writing the /robot password test, not by reading the code.
+print("\nthe accounts are not the lab's property:")
+off()
+r = own.post("/api/access/users", json={"username": "friend2"})
+chk("the owner can still mint with the lab switched off (%d)" % r.status_code,
+    r.status_code == 200)
+pw2 = r.get_json()["password"]
+other = A.app.test_client()
+r = other.post("/api/access/login", json={"username": "friend2", "password": pw2})
+chk("and that account can still sign in (%d)" % r.status_code, r.status_code == 200)
+r = other.get("/api/lab/board")
+chk("but the lab itself is still gone (%d)" % r.status_code, r.status_code == 404)
+r = c.post("/api/access/users", json={"username": "sneaky"})
+chk("a stranger still cannot mint, switch or no switch (%d)" % r.status_code,
+    r.status_code == 401)
+on()
+
 print("\nsigning in:")
 user = A.app.test_client()
-r = user.post("/api/lab/login", json={"username": "friend1", "password": "wrong"})
+r = user.post("/api/access/login", json={"username": "friend1", "password": "wrong"})
 chk("a wrong password is refused (%d)" % r.status_code, r.status_code == 401)
-wrong_user = user.post("/api/lab/login", json={"username": "nobody", "password": "x"})
+wrong_user = user.post("/api/access/login", json={"username": "nobody", "password": "x"})
 chk("an unknown user gets the SAME message — no way to enumerate accounts",
     wrong_user.get_json().get("error") == r.get_json().get("error"))
-r = user.post("/api/lab/login", json={"username": "friend1", "password": pw})
+r = user.post("/api/access/login", json={"username": "friend1", "password": pw})
 chk("the issued password works (%d)" % r.status_code, r.status_code == 200)
 r = user.get("/api/lab/board")
 chk("and the board opens (%d)" % r.status_code, r.status_code == 200)
@@ -195,9 +218,9 @@ r = user.post("/api/lab/fills", json={"strategy": "farm", "pnl_usd": "abc"})
 chk("a non-numeric result is rejected (%d)" % r.status_code, r.status_code == 400)
 
 print("\na revoked account stops working:")
-own.post("/api/lab/users/friend1/revoke", json={"revoked": True})
+own.post("/api/access/users/friend1/revoke", json={"revoked": True})
 fresh = A.app.test_client()
-r = fresh.post("/api/lab/login", json={"username": "friend1", "password": pw})
+r = fresh.post("/api/access/login", json={"username": "friend1", "password": pw})
 chk("the password no longer signs in (%d)" % r.status_code, r.status_code == 401)
 
 print("\nand it is not indexable:")

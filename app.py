@@ -1357,8 +1357,17 @@ after <code>?</code> is what lets you in.</p>
 </div></body></html>"""
 
 
-def _shared_page(name, filename):
-    """Serve a by-link page, or refuse. Three replies, one per state."""
+def _shared_page(name, filename, password=False):
+    """Serve a by-link page, or refuse.
+
+    With password=True the reader needs BOTH halves: the link, and an account
+    the owner issued. Either one alone gets them nothing. That is a real
+    difference rather than a doubled-up formality — a link can be forwarded to
+    someone you did not choose, and a password can be typed at an address a
+    stranger never found. Requiring both means a forwarded link is inert in
+    the hands of anyone you have not also given a password to, and it means
+    you can cut one person off (revoke their account) without invalidating the
+    link for everybody else."""
     state = _share_state(name)
     if state is None:
         r = make_response(SHARE_MISS_HTML, 404)
@@ -1373,19 +1382,63 @@ def _shared_page(name, filename):
                      max_age=SHARE_COOKIE_DAYS * 24 * 3600,
                      httponly=True, samesite="Lax", secure=request.is_secure)
         return r
+    if password and not _access_user():
+        # The key was good, so this reader was sent the link — they just have
+        # not signed in. Show the sign-in rather than the 404: pretending the
+        # page is missing would be a lie to somebody who is meant to be here.
+        r = make_response(send_file(os.path.join(BASE_DIR, "access-gate.html")), 401)
+        r.headers["X-Robots-Tag"] = "noindex, nofollow"
+        r.headers["Cache-Control"] = "private, no-store"
+        return r
     r = make_response(send_file(os.path.join(BASE_DIR, filename)))
     r.headers["X-Robots-Tag"] = "noindex, nofollow"
     r.headers["Cache-Control"] = "private, no-store"
     return r
 
 
+# ---------------------------------------------------------------------------
+# Issued accounts, shared by every private surface
+#
+# The accounts live in bot_lab.BotLab because that is where they were first
+# written, but they are not the lab's property — /robot uses them too, and
+# sign-in deliberately does NOT sit behind BOT_LAB_ENABLED. Otherwise turning
+# the lab off would lock people out of an unrelated page.
+#
+# The owner mints these at /api/lab/users. There is still exactly one door.
+# ---------------------------------------------------------------------------
+def _access_user():
+    return session.get("access_user")
+
+
+@app.route("/api/access/login", methods=["POST"])
+def api_access_login():
+    d = request.get_json(force=True, silent=True) or {}
+    username = (d.get("username") or "").strip().lower()
+    if LAB.check_login(username, d.get("password") or ""):
+        session["access_user"] = username
+        LAB.touch(username)
+        return jsonify({"ok": True, "username": username})
+    return jsonify({"ok": False, "error": "Those details were not accepted."}), 401
+
+
+@app.route("/api/access/logout", methods=["POST"])
+def api_access_logout():
+    session.pop("access_user", None)
+    session.pop("lab_user", None)
+    return jsonify({"ok": True})
+
+
 @app.route("/robot")
 def robot_concept_page():
     """The robotic-trading concept, for people Sean sends the link to.
 
-    Reading matter only. It takes no money, no bank connection and no
-    account, and there is no form on it that could start any of those."""
-    return _shared_page("robot", "robot-concept.html")
+    Link AND password now: it describes an unfinished trading idea, and a
+    forwarded link should not be enough to read it.
+
+    Still reading matter only. It takes no money, no bank connection and no
+    account of the reader's, and there is no form on it that could start any
+    of those — the sign-in is a separate page."""
+    return _shared_page("robot", "robot-concept.html", password=True)
 
 
 @app.route("/api/share-links")
@@ -1431,14 +1484,18 @@ def lab_enabled(fn):
 
 
 def lab_user_required(fn):
-    """A signed-in lab user. The owner is NOT automatically one: the owner's
+    """A signed-in account, plus the lab being switched on.
+
+    Sign-in itself lives at /api/access/login and is shared with /robot — one
+    credential, one door. The lab adds its own switch on top; it does not have
+    its own login. The owner is NOT automatically signed in: the owner's
     console is a different surface, and conflating them is how an admin
     session ends up doing a user's actions by accident."""
     @wraps(fn)
     def wrapper(*a, **k):
         if not bot_lab.enabled():
             return _lab_404()
-        if not session.get("lab_user"):
+        if not _access_user():
             return jsonify({"ok": False, "auth_required": True,
                             "error": "Sign in to continue."}), 401
         return fn(*a, **k)
@@ -1454,25 +1511,10 @@ def lab_page():
     return r
 
 
-@app.route("/api/lab/login", methods=["POST"])
-@lab_enabled
-def api_lab_login():
-    d = request.get_json(force=True, silent=True) or {}
-    username = (d.get("username") or "").strip().lower()
-    if LAB.check_login(username, d.get("password") or ""):
-        session["lab_user"] = username
-        LAB.touch(username)
-        return jsonify({"ok": True, "username": username})
-    # One message for every failure. Naming which half was wrong turns the
-    # form into a way to find out who has an account.
-    return jsonify({"ok": False, "error": "Those details were not accepted."}), 401
-
-
-@app.route("/api/lab/logout", methods=["POST"])
-@lab_enabled
-def api_lab_logout():
-    session.pop("lab_user", None)
-    return jsonify({"ok": True})
+# The lab has no login of its own. It used to, which meant two sign-in routes
+# against one account file and two session keys that could disagree — sign in
+# for /robot and the lab would still consider you a stranger. Both surfaces
+# now use /api/access/login, defined above with the shared-account block.
 
 
 @app.route("/api/lab/board")
@@ -1500,11 +1542,16 @@ def api_lab_fill():
     return jsonify({"ok": True, "fill": row})
 
 
-# ---- owner side ----
-@app.route("/api/lab/users", methods=["GET", "POST"])
-@lab_enabled
+# ---- owner side: the accounts, which are NOT the lab's property ----
+#
+# Deliberately not behind @lab_enabled. These accounts open /robot as well, so
+# gating them on the lab switch meant that with the lab off the owner could
+# not issue a credential for an unrelated page — the exact hole this pair of
+# routes exists to close. @owner_required is the real protection here and it
+# does not depend on any switch.
+@app.route("/api/access/users", methods=["GET", "POST"])
 @owner_required
-def api_lab_users():
+def api_access_users():
     """Mint an account, or list them. The only door: there is no signup route
     anywhere in this file, and no reset."""
     if request.method == "GET":
@@ -1519,10 +1566,9 @@ def api_lab_users():
                               "including you, can read it back. Lost means reissue."})
 
 
-@app.route("/api/lab/users/<username>/revoke", methods=["POST"])
-@lab_enabled
+@app.route("/api/access/users/<username>/revoke", methods=["POST"])
 @owner_required
-def api_lab_revoke(username):
+def api_access_revoke(username):
     d = request.get_json(force=True, silent=True) or {}
     ok = LAB.revoke(username, d.get("revoked", True))
     return (jsonify({"ok": True}) if ok
