@@ -1987,7 +1987,12 @@
                 </div>
             </div>
             <nav>
-                <span class="sections-trigger" id="sectionsTrigger">☰ Sections</span>
+                <!-- The "☰ Sections" trigger stood here until 2026-08-08. It was
+                     the handle for the left rail; with the strip back in its
+                     original place under the header, a button whose only job is
+                     to reveal something that reveals itself is one control too
+                     many. The strip still opens on mouse-to-top on desktop, and
+                     on a phone it is docked and always visible. -->
                 <a href="#" id="navArticles" onclick="showView('reinvestment', event)">Business Ideas</a>
                 <a href="/dispatch">Dispatch</a>
                 <a href="/board">Board of Directors</a>
@@ -2932,8 +2937,9 @@
                 nav.addEventListener('mouseenter', showNav);
                 nav.addEventListener('mouseleave', scheduleHideNav);
             }
-            const trig = document.getElementById('sectionsTrigger');
-            if (trig) { trig.addEventListener('mouseenter', showNav); trig.addEventListener('click', showNav); }
+            // The sectionsTrigger listeners were removed with the button on
+            // 2026-08-08. Reveal is mouse-to-top on desktop; on a phone the
+            // strip is docked by the max-width:768px block and never hides.
         });
 
         // Initialize on the Overview view — or the view named in the URL hash
