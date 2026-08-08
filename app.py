@@ -3565,6 +3565,183 @@ def api_contract_publish():
     return jsonify({"ok": True, "contract": new})
 
 
+# ---------- professionals & their opinions ----------
+PROS_PATH = _data_path("pros.json")
+OPINIONS_PATH = _data_path("opinions.json")
+PLATFORM_FEE_PCT = 0.20
+
+
+def _pro_required(fn):
+    @wraps(fn)
+    def wrapper(*a, **k):
+        if not session.get("pro_id"):
+            return jsonify({"ok": False, "auth_required": True,
+                            "error": "Sign in with your professional code."}), 401
+        return fn(*a, **k)
+    return wrapper
+
+
+def _find_pro(pid):
+    for p in _load(PROS_PATH):
+        if p.get("id") == pid:
+            return p
+    return None
+
+
+def _public_pro(p):
+    """What anyone may see about a professional. Never the contact details —
+    those belong to the platform until a sale happens."""
+    return {"id": p.get("id"), "name": p.get("name"), "firm": p.get("firm"),
+            "trade": p.get("trade"), "trade_label": p.get("trade_label"),
+            "license_type": p.get("license_type"), "state": p.get("state"),
+            "verified": bool(p.get("verified")), "joined_at": p.get("joined_at")}
+
+
+@app.route("/api/pros/register", methods=["POST"])
+def api_pro_register():
+    """Apply for a professional account.
+
+    An account is created immediately but starts UNVERIFIED: it can be signed
+    into and opinions can be drafted, but nothing publishes until the licence
+    is checked by hand. That order matters — asking someone to wait before they
+    can even look loses them, and publishing an unchecked licence is the one
+    mistake this platform cannot afford.
+    """
+    d = request.get_json(force=True, silent=True) or {}
+    name = (d.get("name") or "").strip()
+    trade = (d.get("trade") or "").strip().lower()
+    if not name or not trade:
+        return jsonify({"ok": False, "error": "Name and trade are required."}), 400
+    store = _load_professions()
+    with _LOCK:
+        pros = _load(PROS_PATH)
+        if not isinstance(pros, list):
+            pros = []
+        pro = {
+            "id": _next_id(pros, "PRO", datestamp=False),
+            "code": secrets.token_hex(4).upper(),
+            "name": name,
+            "firm": (d.get("firm") or "").strip(),
+            "email": (d.get("email") or "").strip(),
+            "trade": trade,
+            "trade_label": (store.get(trade, {}) or {}).get("label") or trade.replace("-", " ").title(),
+            "license_type": (d.get("license_type") or "").strip(),
+            "license_number": (d.get("license_number") or "").strip(),
+            "state": (d.get("state") or "").strip().upper()[:2],
+            "hourly_usd": d.get("hourly_usd") or None,
+            "verified": False,
+            "joined_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        }
+        pros.append(pro)
+        _save(PROS_PATH, pros)
+        # the trade now has somebody in it
+        try:
+            ps = _load_professions()
+            rec = ps.setdefault(trade, {"slug": trade, "label": pro["trade_label"],
+                                        "demand": 0, "ideas": [], "claimed_by": []})
+            rec.setdefault("claimed_by", []).append(pro["id"])
+            _save(_data_path("professions.json"), ps)
+        except Exception:
+            pass
+    session["pro_id"] = pro["id"]
+    return jsonify({"ok": True, "pro": pro,
+                    "note": "Keep your code — it is how you sign in. "
+                            "Your licence is checked by hand before anything you write publishes."})
+
+
+@app.route("/api/pros/login", methods=["POST"])
+def api_pro_login():
+    code = ((request.get_json(force=True, silent=True) or {}).get("code") or "").strip().upper()
+    for p in _load(PROS_PATH):
+        if p.get("code") and p["code"].upper() == code:
+            session["pro_id"] = p["id"]
+            return jsonify({"ok": True, "pro": p})
+    return jsonify({"ok": False, "error": "That code was not recognised."}), 404
+
+
+@app.route("/api/pros/me")
+@_pro_required
+def api_pro_me():
+    pro = _find_pro(session["pro_id"])
+    if not pro:
+        session.pop("pro_id", None)
+        return jsonify({"ok": False, "error": "Account not found."}), 404
+    mine = [o for o in _load(OPINIONS_PATH) if o.get("pro_id") == pro["id"]]
+    earned = sum(o.get("sales", 0) * o.get("price_usd", 0) * (1 - PLATFORM_FEE_PCT) for o in mine)
+    return jsonify({"ok": True, "pro": pro, "opinions": mine,
+                    "sales": sum(o.get("sales", 0) for o in mine),
+                    "earned_usd": round(earned, 2), "platform_fee_pct": PLATFORM_FEE_PCT})
+
+
+@app.route("/api/pros/opinion", methods=["POST"])
+@_pro_required
+def api_pro_opinion():
+    """Write an opinion once; it can be bought any number of times.
+
+    This is the whole economic point — the professional's effort is fixed and
+    their revenue is not. Price is theirs to set, in whole dollars.
+    """
+    d = request.get_json(force=True, silent=True) or {}
+    title = (d.get("title") or "").strip()
+    body = (d.get("body") or "").strip()
+    if len(title) < 6 or len(body) < 120:
+        return jsonify({"ok": False,
+                        "error": "A title and at least a few paragraphs are required — "
+                                 "this is sold as a document, not a comment."}), 400
+    try:
+        price = max(0, round(float(d.get("price_usd") or 0), 2))
+    except Exception:
+        price = 0
+    pro = _find_pro(session["pro_id"])
+    with _LOCK:
+        ops = _load(OPINIONS_PATH)
+        if not isinstance(ops, list):
+            ops = []
+        op = {
+            "id": _next_id(ops, "OPN", datestamp=False),
+            "pro_id": pro["id"], "pro_name": pro["name"], "trade": pro.get("trade"),
+            "trade_label": pro.get("trade_label"),
+            "title": title,
+            "preview": body[:300].rstrip() + ("…" if len(body) > 300 else ""),
+            "body": body,
+            "price_usd": price,
+            "tags": [t.strip().lower() for t in (d.get("tags") or []) if str(t).strip()][:8],
+            "published": bool(d.get("published")) and bool(pro.get("verified")),
+            "sales": 0,
+            "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        }
+        ops.append(op)
+        _save(OPINIONS_PATH, ops)
+    return jsonify({"ok": True, "opinion": op,
+                    "published": op["published"],
+                    "note": "" if op["published"] else
+                            "Saved. It publishes once your licence is verified."})
+
+
+@app.route("/api/opinions")
+def api_opinions_public():
+    """Opinions on offer — preview and price only. The body is what is sold."""
+    trade = (request.args.get("trade") or "").strip().lower()
+    q = (request.args.get("q") or "").strip().lower()
+    pros = {p["id"]: p for p in _load(PROS_PATH)}
+    out = []
+    for o in _load(OPINIONS_PATH):
+        if not o.get("published"):
+            continue
+        if trade and o.get("trade") != trade:
+            continue
+        hay = (o.get("title", "") + " " + o.get("preview", "") + " " + " ".join(o.get("tags", []))).lower()
+        if q and q not in hay:
+            continue
+        p = pros.get(o.get("pro_id"), {})
+        out.append({"id": o["id"], "title": o["title"], "preview": o["preview"],
+                    "price_usd": o["price_usd"], "trade": o.get("trade"),
+                    "trade_label": o.get("trade_label"), "sales": o.get("sales", 0),
+                    "by": _public_pro(p) if p else {"name": o.get("pro_name")}})
+    out.sort(key=lambda o: -o["sales"])
+    return jsonify({"ok": True, "count": len(out), "opinions": out})
+
+
 # ---------- agents (referral partners) ----------
 @app.route("/api/agents/register", methods=["POST"])
 def api_agent_register():
