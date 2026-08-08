@@ -52,7 +52,7 @@ INPUT_FLOOR = 16        # px — below this iOS Safari zooms on focus
 
 PROBE = """(cfg) => {
   const doc = document.documentElement;
-  const out = {overflow: 0, widest: null, taps: [], small: [], zoomy: []};
+  const out = {overflow: 0, widest: null, primary: [], taps: [], small: [], zoomy: []};
 
   // ---- 1. sideways scroll, and what is causing it
   out.overflow = Math.max(0, doc.scrollWidth - doc.clientWidth);
@@ -71,16 +71,60 @@ PROBE = """(cfg) => {
     out.widest = worst;
   }
 
+  // "Can a finger actually hit this right now?" — not merely "is it in the
+  // layout". The first version of this checked only display and visibility and
+  // duly reported the Pollock menu's bubbles as 9px targets on every page. They
+  // are 64px when the menu is open; 9px is the closed state, at opacity 0 with
+  // pointer-events off, which nobody can tap and nobody can see. A gate that
+  // reports a control as broken when it is merely put away is a gate that gets
+  // ignored, so opacity and pointer-events are part of the question.
   const seen = (el) => {
     const r = el.getBoundingClientRect();
     const cs = getComputedStyle(el);
-    return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none';
+    if (r.width === 0 || r.height === 0) return false;
+    if (cs.visibility === 'hidden' || cs.display === 'none') return false;
+    if (cs.pointerEvents === 'none') return false;
+    if (parseFloat(cs.opacity) < 0.05) return false;
+    // An ancestor can hide it without the element itself saying so.
+    for (let p = el.parentElement; p; p = p.parentElement) {
+      const pc = getComputedStyle(p);
+      if (pc.visibility === 'hidden' || pc.display === 'none') return false;
+      if (parseFloat(pc.opacity) < 0.05) return false;
+    }
+    return true;
   };
   const name = (el) => el.tagName.toLowerCase()
       + (el.id ? '#' + el.id : '')
       + (el.className ? '.' + el.className.toString().trim().split(/\\s+/)[0] : '');
 
   // ---- 2. tap targets
+  //
+  // Two populations, judged differently, because they are not the same thing.
+  //
+  // PRIMARY controls are what a visitor must hit to get anywhere: real
+  // buttons, form submits, nav and header links, calls to action, cards that
+  // act as links. These are gated. Height is the test, not width: in a
+  // horizontal nav a link is as tall as its hit area and only as wide as its
+  // word, and forcing "Home" to 44px wide buys nothing.
+  //
+  // Everything else — links sitting inside a sentence — is counted and not
+  // gated. Inflating every prose link to 44px would wreck the line spacing of
+  // the paragraph around it, and nobody navigates by stabbing at a word
+  // mid-paragraph.
+  const PRIMARY = 'button, input[type=submit], input[type=button], a.btn, a.book-cta,'
+    + ' a.psx-btn, .psx-btn, .cta, .price-btn, .publish, .addbtn, .vbtn, .wish-btn,'
+    + ' .connect, .rm-primary, nav a, header a, .topnav a, .phase-tab, .fin-card,'
+    + ' .service-card';
+  const inProse = (el) => !!el.closest('p, li, .fine, .foot, .psx-foot, small, .hint, .steps');
+
+  for (const el of document.querySelectorAll(PRIMARY)) {
+    if (!seen(el) || inProse(el)) continue;
+    const r = el.getBoundingClientRect();
+    if (r.height < cfg.tap) {
+      out.primary.push({el: name(el), w: Math.round(r.width), h: Math.round(r.height),
+                        text: (el.textContent || '').trim().slice(0, 24)});
+    }
+  }
   for (const el of document.querySelectorAll('a[href], button, [onclick], select')) {
     if (!seen(el)) continue;
     const r = el.getBoundingClientRect();
@@ -123,6 +167,7 @@ def main():
 
     cfg = {"tap": TAP_FLOOR, "text": TEXT_FLOOR, "input": INPUT_FLOOR}
     overflow_fails, tap_fails, zoom_fails, text_fails = [], [], [], []
+    primary_fails = []
 
     with sync_playwright() as p:
         browser = p.chromium.launch(executable_path=CHROME)
@@ -159,12 +204,18 @@ def main():
                         print("FAIL %-6s %-24s %d field(s) under %dpx — iOS will zoom: %s"
                               % (tag, label, len(r["zoomy"]), INPUT_FLOOR,
                                  ", ".join("%s(%gpx)" % (z["el"], z["size"]) for z in r["zoomy"][:3])))
+                    if r["primary"]:
+                        primary_fails.append((tag, label, r["primary"]))
+                        print("FAIL %-6s %-24s %d PRIMARY control(s) under %dpx: %s"
+                              % (tag, label, len(r["primary"]), TAP_FLOOR,
+                                 ", ".join("%s %dpx '%s'" % (t["el"], t["h"], t["text"])
+                                           for t in r["primary"][:3])))
                     if r["taps"]:
                         tap_fails.append((tag, label, r["taps"]))
                     if r["small"]:
                         text_fails.append((tag, label, r["small"]))
 
-                    if not (r["overflow"] > 1 or r["zoomy"]):
+                    if not (r["overflow"] > 1 or r["zoomy"] or r["primary"]):
                         print("ok   %-6s %-24s %s"
                               % (tag, label,
                                  ("%d small tap target(s)" % len(r["taps"])) if r["taps"] else ""))
@@ -172,9 +223,11 @@ def main():
         browser.close()
 
     print("\n" + "=" * 70)
-    bad = bool(overflow_fails or zoom_fails)
+    bad = bool(overflow_fails or zoom_fails or primary_fails)
     print("%-5s no page scrolls sideways" % ("FAIL" if overflow_fails else "ok"))
     print("%-5s no field small enough to make iOS zoom" % ("FAIL" if zoom_fails else "ok"))
+    print("%-5s every primary control clears %dpx under a thumb"
+          % ("FAIL" if primary_fails else "ok", TAP_FLOOR))
     # Tap targets and small text are reported, not gated: the site has dense
     # tables and legal fine print where a 40px row is a deliberate choice.
     # Printing the count keeps them visible without blocking a commit on them.

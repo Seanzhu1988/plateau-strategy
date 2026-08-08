@@ -623,6 +623,38 @@ input:focus, select:focus, textarea:focus {
 @media (pointer: coarse), (max-width: 768px) {
   input, select, textarea { font-size: 16px !important; }
 }
+
+/* ---------- touch targets ----------
+   Measured on a phone before this block: 201 primary controls under the 44px
+   both Apple and Google give as the floor — including "Request this ride" at
+   26px, which is the button the whole booking page exists to have pressed,
+   "Book a Ride" at 28px, and a back control at 9px. A thumb is about 45px of
+   contact; a 26px button is a coin toss, and the visitor blames themselves.
+
+   Only controls, and only where a finger is the pointer. Links inside a
+   sentence are excluded deliberately — inflating every prose link to 44px
+   would wreck the line spacing of the paragraph around it and buy nothing,
+   because nobody navigates by stabbing at a word mid-paragraph.
+
+   min-height alone does nothing to an inline <a>, so the links get
+   inline-flex; the buttons are already block-level and just need the floor. */
+@media (pointer: coarse) {
+  button, input[type="submit"], input[type="button"],
+  .btn, .psx-btn, .cta, .price-btn, .publish, .addbtn, .vbtn,
+  .wish-btn, .connect, .rm-primary, .fin-card-link {
+    min-height: 44px !important;
+  }
+  /* .book-cta belongs here rather than with the buttons above: it is the link
+     at the foot of every service card ("Book a Ride →", "Open Trip Planner →"),
+     and an inline <a> ignores min-height until it is given a box. It measured
+     31px — the actual way off the landing page on a phone, on the two views
+     that carry the most cards. */
+  header a, nav a, .topnav a, .phase-tab, .book-cta, .fin-card-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 44px !important;
+  }
+}
 label { color: var(--m-muted) !important; font-weight: 600 !important; }
 
 /* ---------- tables ---------- */
