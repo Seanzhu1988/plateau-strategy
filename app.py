@@ -400,6 +400,49 @@ def api_traffic_optout():
                              if on else "This device is being counted again.")}), on)
 
 
+def _vid_counted_today(vid):
+    """Has THIS browser been counted in today's visitor number?
+
+    Answers "is the traffic including me" with a fact instead of a guess. Only
+    today can be answered: _track_traffic folds every finished day down to a
+    plain count and deletes the ids, on purpose, so the file cannot become a
+    log of who visited when. The price of that is that a past day can never be
+    separated back out — the information needed to do it was thrown away, which
+    is the correct trade and worth stating plainly rather than hiding."""
+    if not vid:
+        return False
+    try:
+        rec = (_load_traffic().get("days") or {}).get(datetime.date.today().isoformat()) or {}
+        return vid in (rec.get("visitor_ids") or [])
+    except Exception:
+        return False
+
+
+def _forget_vid_today(vid):
+    """Take this browser out of today's unique-visitor count.
+
+    Only the unique count. Pageviews are not attributable: the counter never
+    records how many pages a given id opened, so there is no honest way to
+    subtract them. Same for the source, language, device and landing tallies —
+    each is a first-touch entry with no id attached to it. Removing the id
+    fixes the number that actually gets read ("N visitors today") and leaves
+    the rest slightly high, which is better than guessing at a correction."""
+    if not vid:
+        return False
+    with _LOCK:
+        data = _load_traffic()
+        rec = (data.get("days") or {}).get(datetime.date.today().isoformat())
+        if not rec or vid not in (rec.get("visitor_ids") or []):
+            return False
+        rec["visitor_ids"] = [v for v in rec["visitor_ids"] if v != vid]
+        for key in ("path_ids", "tool_ids"):
+            for k, ids in list((rec.get(key) or {}).items()):
+                if isinstance(ids, list) and vid in ids:
+                    rec[key][k] = [v for v in ids if v != vid]
+        _save_traffic(data)
+    return True
+
+
 @app.route("/not-a-traveler")
 def not_a_traveler_page():
     """The human version of the opt-out, for a phone.
@@ -425,6 +468,27 @@ def not_a_traveler_page():
     other = ('<a class="b" href="/not-a-traveler?count=1">Count this device again</a>'
              if not counted_after else
              '<a class="b" href="/not-a-traveler?set=0">Stop counting this device</a>')
+
+    # "Am I in today's number?" answered as a fact. Opting out stops the count
+    # from here on; it does nothing about visits already recorded, and without
+    # this the page cannot tell the difference — which is exactly the doubt
+    # that makes someone distrust their own numbers.
+    vid = request.cookies.get("psx_vid")
+    if request.args.get("forget") == "1" and _forget_vid_today(vid):
+        today_note = ("<p class='n'>Removed. This device is no longer in today's "
+                      "visitor count.</p>")
+    elif _vid_counted_today(vid):
+        today_note = ("<p class='n'>This device <strong>is in today's visitor "
+                      "count</strong>. "
+                      "<a class='b' href='/not-a-traveler?forget=1'>Take it out"
+                      "</a></p>")
+    else:
+        today_note = "<p class='n'>This device is not in today's visitor count.</p>"
+    # Earlier days genuinely cannot be separated: their ids were discarded when
+    # the day closed. Say so rather than let the page imply a clean slate.
+    today_note += ("<p class='n' style='opacity:.62'>Only today can be corrected. "
+                   "Finished days keep a count and no identifiers, so a past "
+                   "visit cannot be told apart from anyone else's.</p>")
     html = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
@@ -440,6 +504,8 @@ def not_a_traveler_page():
    background:#2563eb;color:#fff;text-decoration:none;font-weight:600;min-height:44px;}
  .b:hover{background:#1d4ed8;}
  .s{display:block;margin-top:1.6rem;color:#6f7c92;font-size:.85rem;}
+ .n{font-size:.92rem;margin:.5rem 0;}
+ .n .b{margin-top:.5rem;padding:.55rem 1rem;font-size:.9rem;}
  a.h{color:#7da2ff;}
 </style></head><body><div class="c">
 <h1>Visitor counting</h1>
@@ -448,9 +514,10 @@ def not_a_traveler_page():
 recorded about you either way — the only effect is whether page opens from this
 device are added to the visitor totals.</p>
 %s
+%s
 <span class="s">Do this once on every device you use to check the site.
 <a class="h" href="/">Back to the site</a></span>
-</div></body></html>""" % (state, other)
+</div></body></html>""" % (state, other, today_note)
     return _set_not_counted(Response(html, mimetype="text/html"), not counted_after)
 
 
