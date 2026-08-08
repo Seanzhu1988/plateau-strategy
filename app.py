@@ -555,6 +555,100 @@ def record_conversion(kind):
         pass
 
 
+
+def _load_geo_cache():
+    """_load() returns [] when a file is missing, and this cache is a dict —
+    so it gets its own reader rather than making the shared helper ambiguous."""
+    try:
+        with open(_data_path("geo_cache.json")) as f:
+            d = json.load(f)
+            return d if isinstance(d, dict) else {}
+    except Exception:
+        return {}
+
+
+GEO_CACHE_TTL_DAYS = 30
+_GEO_MEM = {}
+
+
+def _geo_key(ip):
+    """Coarsen the address before it is ever used as a key.
+
+    An IPv4 address is cut to its /24 and an IPv6 to its /48. That is enough
+    to place someone in a city and not enough to identify the household, and
+    it means the cache cannot become a log of who visited. The full address
+    is never written to disk and never leaves this function.
+    """
+    ip = (ip or "").strip()
+    if not ip:
+        return ""
+    if ":" in ip:
+        return ":".join(ip.split(":")[:3]) + "::/48"
+    parts = ip.split(".")
+    return ".".join(parts[:3]) + ".0/24" if len(parts) == 4 else ""
+
+
+def _geo_lookup(ip):
+    """Country / region / city for a visitor, or None.
+
+    Deliberately cheap and deliberately quiet:
+      · called once per NEW visitor, not once per pageview, so a busy day
+        costs a handful of lookups rather than thousands;
+      · cached on disk by the coarsened key, for a month;
+      · a 2.5s timeout, and any failure returns None rather than raising —
+        analytics must never be able to break a page load;
+      · ipwho.is needs no key and no account, so there is nothing for the
+        owner to sign up for or pay.
+    """
+    key = _geo_key(ip)
+    if not key:
+        return None
+    if key in _GEO_MEM:
+        return _GEO_MEM[key]
+    cache = _load_geo_cache()
+    hit = cache.get(key)
+    now = datetime.date.today().isoformat()
+    if hit and hit.get("seen", "") >= (datetime.date.today()
+                                       - datetime.timedelta(days=GEO_CACHE_TTL_DAYS)).isoformat():
+        _GEO_MEM[key] = hit.get("place")
+        return hit.get("place")
+    place = None
+    try:
+        import requests as _rq
+        r = _rq.get("https://ipwho.is/" + ip.split("%")[0],
+                         params={"fields": "success,country,region,city,latitude,longitude"},
+                         timeout=2.5)
+        j = r.json()
+        if j.get("success"):
+            # Rounded to 2dp — about a kilometre. That is a pin on a city, which
+            # is all a map of "where viewers are" needs, and it deliberately
+            # throws away the precision that would point at a neighbourhood.
+            def _r2(v):
+                try:
+                    return round(float(v), 2)
+                except Exception:
+                    return None
+            place = {"country": j.get("country") or "",
+                     "region": j.get("region") or "",
+                     "city": j.get("city") or "",
+                     "lat": _r2(j.get("latitude")),
+                     "lon": _r2(j.get("longitude"))}
+    except Exception:
+        place = None
+    try:
+        with _LOCK:
+            cache = _load_geo_cache()
+            cache[key] = {"place": place, "seen": now}
+            if len(cache) > 5000:
+                for k in sorted(cache, key=lambda k: cache[k].get("seen", ""))[:1000]:
+                    del cache[k]
+            _save(_data_path("geo_cache.json"), cache)
+    except Exception:
+        pass
+    _GEO_MEM[key] = place
+    return place
+
+
 @app.after_request
 def _compress_and_cache(resp):
     """Two things nothing else was doing: squeeze the bytes, and let the
@@ -639,6 +733,7 @@ def _track_traffic(resp):
             vid = request.cookies.get("psx_vid")
             set_cookie = not vid
             set_src = None
+            need_geo = False
             if set_cookie:
                 vid = secrets.token_hex(16)
             _presence_touch(vid)
@@ -668,6 +763,9 @@ def _track_traffic(resp):
                         rec.setdefault("sources", {})
                         rec["sources"][src] = rec["sources"].get(src, 0) + 1
                         set_src = src
+                    # Where they are is looked up AFTER this lock is released
+                    # — see below. Doing it here deadlocked the process.
+                    need_geo = True
                 # Who opened this particular tool, so "N travellers" can mean N
                 # people rather than N page opens. Same lifecycle as visitor_ids:
                 # raw ids only for today, folded to a plain count once the day ends.
@@ -678,6 +776,36 @@ def _track_traffic(resp):
                     for old in sorted(days.keys())[:len(days) - TRAFFIC_MAX_DAYS]:
                         del days[old]
                 _save_traffic(data)
+
+            # ---- geography, outside the lock -------------------------------
+            # This used to sit inside the block above, and _geo_lookup takes
+            # the same _LOCK to write its cache. _LOCK is a threading.Lock,
+            # which is NOT reentrant, so the second acquire never returned:
+            # every visitor whose city was not already in memory hung forever,
+            # and with gunicorn on one worker and eight threads, eight of them
+            # took the whole site down. It is a deadlock, not a slow path.
+            #
+            # Out here it is also no longer holding the global write lock
+            # across a 2.5s network call to a third party, which would have
+            # serialised every other request behind it even when it worked.
+            if need_geo:
+                place = _geo_lookup(_client_ip())
+                if place and (place.get("country") or place.get("city")):
+                    label = "|".join([place.get("country", ""),
+                                      place.get("region", ""),
+                                      place.get("city", "")])
+                    with _LOCK:
+                        data = _load_traffic()
+                        rec = data["days"].setdefault(today, {"pageviews": 0, "visitor_ids": [], "paths": {}})
+                        rec.setdefault("places", {})
+                        rec["places"][label] = rec["places"].get(label, 0) + 1
+                        # One coordinate per place, kept beside the days rather
+                        # than inside them — a city does not move, and repeating
+                        # it per day would just bloat the file.
+                        if place.get("lat") is not None:
+                            data.setdefault("place_coords", {})[label] = [place["lat"], place["lon"]]
+                        _save_traffic(data)
+
             if set_cookie:
                 resp.set_cookie("psx_vid", vid, max_age=60 * 60 * 24 * 400,
                                  httponly=True, samesite="Lax")
@@ -4935,6 +5063,67 @@ def api_online():
     return jsonify({"ok": True, "online": n, "window_minutes": _PRESENCE_WINDOW // 60})
 
 
+@app.route("/api/traffic/places")
+@owner_required
+def api_traffic_places():
+    """Where the viewers are — owner only.
+
+    Aggregate rows only: the day records hold "country|region|city": count,
+    so this can say 40 people came from Seattle and can never say which 40.
+    Anything with fewer than MIN_SHOW visitors in the whole window is folded
+    into "elsewhere" rather than named, because a city with one visitor in a
+    small dataset is close to naming the visitor.
+    """
+    MIN_SHOW = 2
+    days_back = max(1, min(365, int(request.args.get("days", 30))))
+    cutoff = (datetime.date.today() - datetime.timedelta(days=days_back - 1)).isoformat()
+    days = _load_traffic()["days"]
+
+    countries, regions, cities, total = {}, {}, {}, 0
+    city_labels = {}
+    for date, rec in days.items():
+        if date < cutoff:
+            continue
+        for label, n in (rec.get("places") or {}).items():
+            country, region, city = (label.split("|") + ["", "", ""])[:3]
+            total += n
+            if country:
+                countries[country] = countries.get(country, 0) + n
+            if country and region:
+                regions[country + " / " + region] = regions.get(country + " / " + region, 0) + n
+            if city:
+                key = city + (", " + region if region else "") + (" — " + country if country else "")
+                cities[key] = cities.get(key, 0) + n
+                city_labels[label] = city_labels.get(label, 0) + n
+
+    coords = _load_traffic().get("place_coords", {})
+
+    def top(d, keep_small=False):
+        rows = sorted(d.items(), key=lambda kv: -kv[1])
+        shown = [{"name": k, "count": v} for k, v in rows if keep_small or v >= MIN_SHOW]
+        hidden = sum(v for k, v in rows if not keep_small and v < MIN_SHOW)
+        if hidden:
+            shown.append({"name": "elsewhere", "count": hidden, "folded": True})
+        return shown[:25]
+
+    pins = []
+    for label, n in sorted(city_labels.items(), key=lambda kv: -kv[1]):
+        xy = coords.get(label)
+        if not xy or n < MIN_SHOW:
+            continue
+        country, region, city = (label.split("|") + ["", "", ""])[:3]
+        pins.append({"lat": xy[0], "lon": xy[1], "count": n,
+                     "label": city + (", " + region if region else ""), "country": country})
+
+    return jsonify({"ok": True, "days": days_back, "total_located": total, "pins": pins,
+                    "countries": top(countries, keep_small=True),
+                    "regions": top(regions),
+                    "cities": top(cities),
+                    "note": "Aggregate counts only. Locations are derived from a "
+                            "coarsened address (an IPv4 /24), cached for a month, "
+                            "and no address is stored."})
+
+
 @app.route("/api/traffic/summary")
 def api_traffic_summary():
     """Public, aggregate-only traffic numbers — no per-visitor detail, no
@@ -5624,6 +5813,13 @@ _OVERPASS_MIRRORS = ["https://overpass.kumi.systems/api/interpreter",
 _OVERPASS_CACHE = {}          # query hash -> {"ts": float, "data": [...]}
 _OVERPASS_TTL = 3600
 _OVERPASS_MAX = 400           # keep the cache from growing without bound
+# Phase-0 hardening (MAP_TOOLING_REDESIGN.md): gunicorn runs 1 worker x 8 threads
+# with --timeout 120. Unbounded, 3 mirrors x 65s ≈ 195s per request could pin
+# every thread past the kill line and drop booking traffic with it. So: at most
+# 4 concurrent upstream fetches, 25s per mirror, 60s total upstream budget.
+_OVERPASS_SEM = threading.BoundedSemaphore(4)
+_OVERPASS_MIRROR_TIMEOUT = (5, 25)   # (connect, read) seconds per mirror
+_OVERPASS_DEADLINE = 60              # total upstream seconds per request
 
 
 # ----------------------------------------------------------- live road traffic
@@ -5865,30 +6061,43 @@ def api_mapdata():
     hit = _OVERPASS_CACHE.get(key)
     if hit and (now - hit["ts"] < _OVERPASS_TTL):
         return jsonify({"ok": True, "elements": hit["data"], "cached": True})
-    import requests
-    last = ""
-    for url in _OVERPASS_MIRRORS:
-        try:
-            r = requests.post(url, data={"data": q}, timeout=(5, 60),
-                              headers={"User-Agent": "PlateauStrategy/1.0 (trip planner)"})
-            if r.status_code != 200:
-                last = "HTTP %s" % r.status_code
-                continue
-            j = r.json()
-            els = j.get("elements") or []
-            # a throttled reply carries a "remark" with an empty list — that is
-            # not "nothing here", so move on to the next mirror
-            if not els and j.get("remark"):
-                last = j["remark"][:120]
-                continue
-            with _LOCK:
-                if len(_OVERPASS_CACHE) > _OVERPASS_MAX:
-                    for k in sorted(_OVERPASS_CACHE, key=lambda k: _OVERPASS_CACHE[k]["ts"])[:_OVERPASS_MAX // 2]:
-                        _OVERPASS_CACHE.pop(k, None)
-                _OVERPASS_CACHE[key] = {"ts": now, "data": els}
-            return jsonify({"ok": True, "elements": els, "cached": False})
-        except Exception as e:
-            last = str(e)[:120]
+    # more than 4 map fetches already in flight → don't queue a 5th worker thread
+    # behind slow mirrors; answer from stale cache or say busy honestly
+    if not _OVERPASS_SEM.acquire(timeout=10):
+        if hit:
+            return jsonify({"ok": True, "elements": hit["data"], "cached": True, "stale": True})
+        return jsonify({"ok": False, "error": "map servers busy"}), 503
+    try:
+        import requests
+        last = ""
+        started = time.time()
+        for url in _OVERPASS_MIRRORS:
+            if time.time() - started > _OVERPASS_DEADLINE:
+                last = last or "deadline exceeded"
+                break
+            try:
+                r = requests.post(url, data={"data": q}, timeout=_OVERPASS_MIRROR_TIMEOUT,
+                                  headers={"User-Agent": "PlateauStrategy/1.0 (trip planner)"})
+                if r.status_code != 200:
+                    last = "HTTP %s" % r.status_code
+                    continue
+                j = r.json()
+                els = j.get("elements") or []
+                # a throttled reply carries a "remark" with an empty list — that is
+                # not "nothing here", so move on to the next mirror
+                if not els and j.get("remark"):
+                    last = j["remark"][:120]
+                    continue
+                with _LOCK:
+                    if len(_OVERPASS_CACHE) > _OVERPASS_MAX:
+                        for k in sorted(_OVERPASS_CACHE, key=lambda k: _OVERPASS_CACHE[k]["ts"])[:_OVERPASS_MAX // 2]:
+                            _OVERPASS_CACHE.pop(k, None)
+                    _OVERPASS_CACHE[key] = {"ts": now, "data": els}
+                return jsonify({"ok": True, "elements": els, "cached": False})
+            except Exception as e:
+                last = str(e)[:120]
+    finally:
+        _OVERPASS_SEM.release()
     # everything failed — hand back a stale answer rather than nothing
     if hit:
         return jsonify({"ok": True, "elements": hit["data"], "cached": True, "stale": True})

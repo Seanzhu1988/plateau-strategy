@@ -170,6 +170,32 @@ with A.app.test_request_context("/", headers={"User-Agent": PHONE},
     chk(f"an opted-out device's booking is not ({before} -> {booking_count()})",
         booking_count() == before)
 
+# ---- the deadlock, which took the whole site down ------------------------
+#
+# _track_traffic held _LOCK and, inside it, called _geo_lookup — which takes
+# the same lock to write its cache. threading.Lock is not reentrant, so the
+# second acquire never returned. Every visitor whose city was not already in
+# memory hung forever, and gunicorn runs one worker with eight threads, so
+# eight of them stopped the site answering at all.
+#
+# It is timed rather than inspected because the shape of the fix may change;
+# what must not change is that a page load finishes.
+print("\ncounting a visitor never blocks the page:")
+import threading as _th
+
+A._GEO_MEM.clear()
+done = []
+
+def _one():
+    c = A.app.test_client()
+    c.get("/", headers={"User-Agent": PHONE, "X-Forwarded-For": "203.0.113.44"})
+    done.append(True)
+
+t = _th.Thread(target=_one, daemon=True)
+t.start()
+t.join(timeout=20)
+chk("a page request with a cold geo cache returns at all", bool(done))
+
 shutil.rmtree(tmp, ignore_errors=True)
 print("\nPASSED" if not fails else f"\nFAILED: {fails}")
 raise SystemExit(1 if fails else 0)

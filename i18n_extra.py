@@ -1870,6 +1870,10 @@ EXTRA.update({
     "Starting address or ◎": [
         "起点地址，或点 ◎", "Dirección de inicio, o pulsa ◎",
         "출발지 주소, 또는 ◎", "Địa chỉ xuất phát, hoặc bấm ◎"],
+    # From main's visitor-cities map on the Archive page.
+    "Where your viewers are": [
+        "访客来自哪里", "De dónde son tus visitantes",
+        "방문자가 어디에서 오는지", "Người xem của bạn ở đâu"],
     "Use my current location": [
         "使用我的当前位置", "Usar mi ubicación actual",
         "현재 위치 사용", "Dùng vị trí hiện tại của tôi"],
