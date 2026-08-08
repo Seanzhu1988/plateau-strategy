@@ -1061,6 +1061,35 @@
         refresh();
     }
 
+    // Nominatim rejects a malformed viewbox with a 400, and the failure is
+    // invisible: the 400 body is not JSON, .json() throws, the catch swallows
+    // it, and the search just silently does nothing.
+    //
+    // Leaflet hands back degenerate bounds when the map has not been sized yet
+    // — west equal to east, latitudes spanning nearly pole to pole. That is a
+    // box of zero width, which is what was being sent:
+    //     viewbox=-74.5313,89.8107,-74.5313,-89.0895
+    //
+    // So the box is only attached when it is actually a box. Without it the
+    // search still works, just unbiased toward the current view, which is far
+    // better than not working at all.
+    function viewboxParam(b){
+        try {
+            const w = b.getWest(), e = b.getEast(), n = b.getNorth(), s = b.getSouth();
+            if (![w, e, n, s].every(Number.isFinite)) return '';
+            if (Math.abs(e - w) < 0.0005 || Math.abs(n - s) < 0.0005) return '';   // no width or no height
+            if (Math.abs(n - s) > 170) return '';                                  // effectively the whole globe
+            return '&viewbox=' + [w, n, e, s].map(x => x.toFixed(4)).join(',');
+        } catch (err) { return ''; }
+    }
+
+    // And a search that fails should say so rather than look like a no-op.
+    async function geocode(url){
+        const r = await fetch(url);
+        if (!r.ok) throw new Error('search service returned ' + r.status);
+        return r.json();
+    }
+
     // The sketch's core: type a destination, press Add, it joins the chain (D1→D2→…).
     async function addDestination(){
         const q = ($('destAdd').value || '').trim();
@@ -1068,10 +1097,10 @@
         say('Finding “' + q + '” near ' + ((CITIES[curCity] || {}).label || 'here') + '…');
         try {
             const b = map.getBounds();
-            const vb = '&viewbox=' + [b.getWest(), b.getNorth(), b.getEast(), b.getSouth()].map(n => n.toFixed(4)).join(',');
+            const vb = viewboxParam(b);
             const base = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=' + encodeURIComponent(q);
-            let j = await (await fetch(base + vb + '&bounded=1')).json();
-            if (!j.length) j = await (await fetch(base + vb)).json();      // nearby if not in view
+            let j = await geocode(base + vb + '&bounded=1');
+            if (!j.length) j = await geocode(base);      // nearby if not in view
             if (!j.length) { say('Couldn\'t find “' + q + '” — try adding the city name.'); return; }
             const res = j[0];
             const nm = res.display_name.split(',')[0].replace(/[<>&"]/g, '').slice(0, 60) || q;
@@ -2091,10 +2120,10 @@
             // wrecking the map and the drive-time matrix. Bias to what's on screen, and
             // fall back to a wide search only if the local one finds nothing.
             const b = map.getBounds();
-            const vb = '&viewbox=' + [b.getWest(), b.getNorth(), b.getEast(), b.getSouth()].map(n => n.toFixed(4)).join(',');
+            const vb = viewboxParam(b);
             const base = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=' + encodeURIComponent(q);
             let hint = '';
-            let j = await (await fetch(base + vb + '&bounded=1')).json();
+            let j = await geocode(base + vb + '&bounded=1');
             if (!j.length) {
                 j = await (await fetch(base + vb)).json();      // nearby-first, not bounded
                 if (j.length) hint = '<div class="muted">Nothing in view — closest matches:</div>';
@@ -2866,7 +2895,7 @@
         setLocInfo('Finding “' + q + '”…');
         try {
             const b = map.getBounds();
-            const vb = '&viewbox=' + [b.getWest(), b.getNorth(), b.getEast(), b.getSouth()].map(n => n.toFixed(4)).join(',');
+            const vb = viewboxParam(b);
             const base = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=' + encodeURIComponent(q);
             let j = await (await fetch(base + vb)).json();          // nearby first
             if (!j.length) j = await (await fetch(base)).json();     // then anywhere
