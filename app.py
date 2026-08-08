@@ -4855,9 +4855,23 @@ def api_partner_delete(pid):
 
 
 # ---------- finance: AI Debt Eliminator enrollment ----------
+# Priced 2026-08-08 at Sean's instruction: $34, as a yearly rate.
+#
+# Down from $170/year, not up — the old figure was set when this was pitched as
+# a managed product with a monthly return target. What it can honestly be sold
+# as now is software, and $34 prices it as software.
+#
+# The monthly plan is gone rather than rescaled: a twelfth of $34 is $2.83,
+# which is not a price anybody means to charge. One line to restore if a
+# monthly option is wanted later.
+#
+# This number is NOT published. The endpoint below has answered 404 to
+# everyone but the owner since 2026-08-01, and the landing page says the
+# product is not for sale. Changing the figure here settles what the price
+# will be; it does not make an offer, which is the part that waits for the
+# attorney.
 FINANCE_PLANS = {
-    "annual": {"amount": 170.00, "label": "AI Debt Eliminator — Annual Plan", "billing": "$170/year"},
-    "monthly": {"amount": 14.17, "label": "AI Debt Eliminator — Monthly Plan", "billing": "$14.17/month"},
+    "annual": {"amount": 34.00, "label": "AI Debt Eliminator — Annual Plan", "billing": "$34/year"},
 }
 
 

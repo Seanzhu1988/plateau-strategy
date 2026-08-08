@@ -55,8 +55,22 @@ for frag in ("openEnroll", "submitEnroll", 'id="financeModal"',
              'id="fin_email"', 'class="price-btn"', "price-card best"):
     chk("no %s" % frag, frag not in prose)
 chk("no 30-day free trial offered", "free trial" not in prose.lower())
-chk("no annual price", "$170" not in prose)
-chk("no monthly price", "14.17" not in prose)
+# Not "no $170" — ANY price. The figure in FINANCE_PLANS changed once already
+# ($170/year to $34/year on 2026-08-08) and a test naming the old number would
+# have gone on passing while the new one was published. What must stay true is
+# that the finance section quotes no price at all while the product is not for
+# sale, whatever the number happens to be.
+# Slice the pane from the RAW page — the markers that bound it are HTML
+# comments, so slicing the comment-stripped copy runs to the end of the file
+# and drags in the Factor Clock and the $75 fare. Strip comments after.
+pane = re.sub(r"<!--.*?-->", "",
+              page.split('id="fin-debt"', 1)[-1].split("/fin-debt pane", 1)[0],
+              flags=re.S)
+priced = re.findall(r"\$\s?\d[\d,]*(?:\.\d{2})?", pane)
+chk("no price of any kind in the finance pane (%s)" % (priced or "clean"), not priced)
+chk("and the current plan price is not published on the page (%s)"
+    % A.FINANCE_PLANS["annual"]["billing"],
+    "$%g" % A.FINANCE_PLANS["annual"]["amount"] not in prose)
 chk("it says outright that it is not for sale", "not for sale" in prose.lower())
 
 print("\nand it does not promise what nobody can promise:")
