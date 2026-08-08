@@ -68,9 +68,18 @@ pane = re.sub(r"<!--.*?-->", "",
               flags=re.S)
 priced = re.findall(r"\$\s?\d[\d,]*(?:\.\d{2})?", pane)
 chk("no price of any kind in the finance pane (%s)" % (priced or "clean"), not priced)
-chk("and the current plan price is not published on the page (%s)"
-    % A.FINANCE_PLANS["annual"]["billing"],
-    "$%g" % A.FINANCE_PLANS["annual"]["amount"] not in prose)
+for _k, _p in A.FINANCE_PLANS.items():
+    chk("the %s price is not published on the page (%s)" % (_k, _p["billing"]),
+        "$%g" % _p["amount"] not in prose)
+# The plan table and the endpoint's fallback used to be written out separately,
+# so dropping a plan left the endpoint defaulting to a key that no longer
+# existed — a KeyError, not a graceful default. Nothing may name a plan that
+# FINANCE_PLANS does not define.
+_src = open(os.path.join(HERE, "app.py"), encoding="utf-8").read()
+_enroll = _src.split("def api_finance_enroll", 1)[1].split("\n@app.route", 1)[0]
+_named = set(re.findall(r'plan = "([a-z]+)"', _enroll))
+chk("the endpoint hardcodes no plan name (%s)" % (_named or "none"),
+    _named <= set(A.FINANCE_PLANS))
 chk("it says outright that it is not for sale", "not for sale" in prose.lower())
 
 print("\nand it does not promise what nobody can promise:")

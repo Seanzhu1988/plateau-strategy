@@ -4855,15 +4855,16 @@ def api_partner_delete(pid):
 
 
 # ---------- finance: AI Debt Eliminator enrollment ----------
-# Priced 2026-08-08 at Sean's instruction: $34, as a yearly rate.
+# Priced 2026-08-08 at Sean's instruction: $34 a MONTH.
 #
-# Down from $170/year, not up — the old figure was set when this was pitched as
-# a managed product with a monthly return target. What it can honestly be sold
-# as now is software, and $34 prices it as software.
+# Worth seeing written down: $34/month is $408 a year, against the $170/year
+# this used to carry. That is a 140% increase, not the small move the number
+# alone suggests, and it prices the product as a managed service rather than
+# as software.
 #
-# The monthly plan is gone rather than rescaled: a twelfth of $34 is $2.83,
-# which is not a price anybody means to charge. One line to restore if a
-# monthly option is wanted later.
+# No annual plan until Sean picks its figure. An annual rate is normally a
+# discount on twelve months rather than 12 x monthly, so it is a decision, not
+# an arithmetic result — inventing one here would be guessing at a price.
 #
 # This number is NOT published. The endpoint below has answered 404 to
 # everyone but the owner since 2026-08-01, and the landing page says the
@@ -4871,7 +4872,7 @@ def api_partner_delete(pid):
 # will be; it does not make an offer, which is the part that waits for the
 # attorney.
 FINANCE_PLANS = {
-    "annual": {"amount": 34.00, "label": "AI Debt Eliminator — Annual Plan", "billing": "$34/year"},
+    "monthly": {"amount": 34.00, "label": "AI Debt Eliminator — Monthly Plan", "billing": "$34/month"},
 }
 
 
@@ -4891,9 +4892,14 @@ def api_finance_enroll():
     name = (data.get("name") or "").strip()
     email = (data.get("email") or "").strip()
     phone = (data.get("phone") or "").strip()
-    plan = (data.get("plan") or "annual").strip().lower()
+    # Fall back to whichever plan exists, not to a name typed in here. This
+    # said "annual" twice, so removing the annual plan turned an unrecognised
+    # plan into a KeyError on the line below rather than a sensible default.
+    # Reading the fallback out of FINANCE_PLANS means the two cannot disagree.
+    default_plan = next(iter(FINANCE_PLANS))
+    plan = (data.get("plan") or default_plan).strip().lower()
     if plan not in FINANCE_PLANS:
-        plan = "annual"
+        plan = default_plan
     if not name or not email:
         return jsonify({"ok": False, "error": "Name and email are required."}), 400
 
