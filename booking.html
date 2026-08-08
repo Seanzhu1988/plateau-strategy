@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book a Reservation Ride — Plateau Strategy Solution Lab</title>
-    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -26,7 +26,7 @@
 
         .wrap { max-width: 640px; margin: 2.5rem auto; padding: 0 1.2rem; }
         .card {
-            background: #fff; border-radius: 16px; padding: 2.2rem;
+            background: var(--psx-card,#fffdf9); border-radius: 16px; padding: 2.2rem;
             box-shadow: 0 10px 30px rgba(15,23,42,0.08);
             border: 1px solid #e6e2da;
         }
@@ -74,7 +74,7 @@
             background: #faf8f4; transition: all 0.2s;
         }
         input:focus, textarea:focus, select:focus {
-            outline: none; border-color: #1b4d8f; background: #fff;
+            outline: none; border-color: #1b4d8f; background: var(--psx-card,#fffdf9);
             box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
         }
         .row { display: flex; gap: 1rem; }
@@ -92,7 +92,7 @@
 
         .result { margin-top: 1.5rem; border-radius: 12px; padding: 1.4rem;
             display: none; }
-        .result.ok { display: block; background: #ecfdf5; border: 1px solid #a7f3d0; }
+        .result.ok { display: block; background: var(--psx-wash-good,#e1f8ec); border: 1px solid var(--psx-wash-good-on,#cef2df); }
         .result.err { display: block; background: #fef2f2; border: 1px solid #a3302a; }
         .result h3 { color: #065f46; margin-bottom: 0.6rem; font-size: 1.1rem; }
         .result.err h3 { color: #991b1b; }
@@ -102,7 +102,7 @@
 
         .cancel-btn {
             width: auto; margin-top: 0.8rem; padding: 0.5rem 1.1rem;
-            background: #fff; color: #b91c1c; border: 1.5px solid #a3302a;
+            background: var(--psx-card,#fffdf9); color: #b91c1c; border: 1.5px solid #a3302a;
             border-radius: 8px; font-size: 0.85rem; font-weight: 700; box-shadow: none;
         }
         .cancel-btn:hover:not(:disabled) { background: #fef2f2; transform: none; box-shadow: none; }
@@ -119,14 +119,35 @@
             background: #b91c1c; box-shadow: none; }
         .manage-box button:hover:not(:disabled) { background: #991b1b; transform: none; box-shadow: none; }
         .manage-msg { font-size: 0.88rem; font-weight: 600; margin-top: 0.7rem; }
-    </style>
+            .pick-row { display: flex; gap: .5rem; align-items: stretch; }
+        .pick-row input { flex: 1 1 auto; width: auto; min-width: 0; margin: 0; }
+        /* The form's own rule puts width:100% on every button, which crushed
+           the address field to 34px and stretched this one across the row. */
+        .pick-row .gp-chip { flex: 0 0 auto; width: auto; white-space: nowrap; background: var(--psx-card,#fffdf9);
+            border: 1px solid var(--psx-border, rgba(20,17,12,.13)); border-radius: 3px;
+            padding: 0 .8rem; font: inherit; font-size: .88rem; cursor: pointer;
+            color: var(--psx-text, #14110c); }
+        .pick-row .gp-chip:hover { background: #f5f1e8; }
+        .pick-row .gp-chip[disabled] { opacity: .55; cursor: default; }
+        .pick-note { font-size: .8rem; color: var(--psx-muted, #6b655b); margin: .3rem 0 0; }
+        .pick-note.err { color: var(--psx-red, #a4161a); }
+        @media (max-width: 520px) { .pick-row { flex-wrap: wrap; }
+            .pick-row .gp-chip { width: 100%; flex: 1 0 100%; padding: .6rem .8rem; } }
+        .quote { margin: .7rem 0 0; padding: .8rem 1rem; border: 1px solid var(--psx-border, rgba(20,17,12,.13));
+            border-left: 3px solid var(--psx-accent, #1b4d8f); border-radius: 3px; background: var(--psx-card,#fffdf9); }
+        .quote-fare { font-family: var(--psx-display, Georgia, serif); font-size: 1.6rem;
+            font-weight: 600; color: var(--psx-accent, #1b4d8f); line-height: 1.1; }
+        .quote-why { font-size: .84rem; color: var(--psx-text2, #4a453d); margin-top: .25rem; line-height: 1.5; }
+        .quote.working .quote-fare { color: var(--psx-muted, #6b655b); }
+</style>
     <script src="/session.js"></script>
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
     <link rel="stylesheet" href="/modern.css">
 </head>
 <body data-arm="transportation">
     <header>
-        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab">
+        <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab">
         <span class="brand">Plateau Strategy Solution Lab</span>
         <a href="/">← Home</a>
     </header>
@@ -141,7 +162,7 @@
                  will actually come. Stated once, at the top, so the form below
                  is filling in details rather than negotiating. -->
             <ul class="assure">
-                <li><b>$75</b> flat to Sea–Tac</li>
+                <li><b>$75</b> flat to Sea–Tac, from anywhere within 30 miles</li>
                 <li>The quote is the fare — no surge</li>
                 <li>Driver arrives 15 min early</li>
             </ul>
@@ -185,12 +206,28 @@
 
                 <p class="fs">The trip</p>
                 <label>Pickup location <span class="req">*</span></label>
-                <input name="pickup" required placeholder="1200 Pine St, Seattle"
-                       autocomplete="street-address" autocapitalize="words">
+                <!-- Most people booking a car are standing where they want to be
+                     collected from. Typing your own address while holding a
+                     suitcase is the worst moment to ask for it, and getting it
+                     slightly wrong is how a driver ends up on the wrong side of
+                     a hotel. One tap and the phone already knows. -->
+                <div class="pick-row">
+                    <input name="pickup" required placeholder="1200 Pine St, Seattle"
+                           autocomplete="street-address" autocapitalize="words">
+                    <button type="button" id="useLoc" class="gp-chip">📍 Use my location</button>
+                </div>
+                <p class="pick-note" id="locNote"></p>
 
                 <label>Drop-off location <span class="req">*</span></label>
                 <input name="dropoff" required placeholder="Seattle–Tacoma International Airport (SEA)"
                        autocapitalize="words">
+                <!-- The form asked where you are going and said nothing about
+                     cost until a human answered. A rider deciding whether to
+                     book should not have to guess. -->
+                <div class="quote" id="quoteBox" hidden>
+                    <div class="quote-fare"><span id="quoteAmt">—</span></div>
+                    <div class="quote-why" id="quoteWhy"></div>
+                </div>
 
                 <label>Service</label>
                 <select name="fare" id="b_service"></select>
@@ -283,7 +320,7 @@
                 // Say plainly where we drive today, without turning the request away.
                 if (ride.covered === false) {
                     const banner = document.createElement('div');
-                    banner.style.cssText = 'background:#fffbeb;border:1px solid #8a5a12;color:#92400e;'
+                    banner.style.cssText = 'background:var(--psx-wash-warn,#ffefdc);border:1px solid #8a5a12;color:#92400e;'
                         + 'border-radius:10px;padding:0.8rem 1rem;font-size:0.87rem;line-height:1.5;margin-bottom:1rem';
                     banner.innerHTML = 'We drive in <b>Seattle</b> today. Send this request anyway — '
                         + 'we will confirm quickly whether we can cover your city, and your ask counts '
@@ -481,7 +518,7 @@
             if (!box) return;
             var cfg;
             try {
-                cfg = await (await fetch('/api/auth/google/config')).json();
+                cfg = await psxJSON('/api/auth/google/config');
             } catch (e) { return; }
             if (!cfg || !cfg.enabled || !cfg.client_id) return;   // stays hidden
 
@@ -522,6 +559,147 @@
         })();
     </script>
     <script src="/floatback.js"></script>
+    <script>
+    // ---- "Use my location" on the pickup field ----
+    //
+    // Reverse-geocodes to a real street address rather than dropping raw
+    // coordinates in the box: a driver needs somewhere to go, and
+    // "47.60621, -122.33207" is not an instruction. If the lookup fails the
+    // coordinates go in anyway with a note saying so — a dispatcher can work
+    // with a pin, and losing the fix entirely would be worse.
+    (function () {
+        var btn  = document.getElementById('useLoc');
+        var note = document.getElementById('locNote');
+        var box  = document.querySelector('[name=pickup]');
+        if (!btn || !box) return;
+
+        function T(p, v) {
+            if (window.psxFmt) return window.psxFmt(p, v);
+            return String(p).replace(/\{(\w+)\}/g, function (m, k) {
+                return (v && v[k] !== undefined) ? v[k] : m; });
+        }
+        function say(msg, isErr) {
+            note.textContent = msg || '';
+            note.className = 'pick-note' + (isErr ? ' err' : '');
+        }
+
+        btn.addEventListener('click', function () {
+            if (!navigator.geolocation) {
+                say(T('This browser cannot share a location. Please type the address.'), true);
+                return;
+            }
+            btn.disabled = true;
+            say(T('Finding you…'));
+            navigator.geolocation.getCurrentPosition(async function (pos) {
+                var la = pos.coords.latitude, lo = pos.coords.longitude;
+                var acc = Math.round(pos.coords.accuracy || 0);
+                var addr = '';
+                try {
+                    var j = await (window.psxJSON
+                        ? psxJSON('https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1&lat=' + la + '&lon=' + lo)
+                        : fetch('https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1&lat=' + la + '&lon=' + lo).then(function (r) { return r.json(); }));
+                    if (j && j.display_name) addr = j.display_name.split(',').slice(0, 4).join(',').trim();
+                } catch (e) { /* fall through to coordinates */ }
+
+                if (addr) {
+                    box.value = addr;
+                    say(acc ? T('Located to about {n} m. Edit it if the door is round the back.', { n: acc })
+                            : T('Located. Edit it if the door is round the back.'));
+                } else {
+                    box.value = la.toFixed(5) + ', ' + lo.toFixed(5);
+                    say(T('Got your position but not a street address — the coordinates are in the box, and your driver can navigate to them.'));
+                }
+                box.dispatchEvent(new Event('input', { bubbles: true }));
+                btn.disabled = false;
+            }, function (err) {
+                btn.disabled = false;
+                say(err && err.code === 1
+                    ? T('Location permission was declined. Please type the pickup address.')
+                    : T('Could not get a location right now. Please type the pickup address.'), true);
+            }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+        });
+    })();
+    </script>
+    <script>
+    // ---- fare estimate, from the same numbers the real quote uses ----
+    //
+    // Geocode both ends, drive between them, ask the server what that costs.
+    // The arithmetic deliberately lives on the server: a calculator that
+    // works the price out for itself is a second price, and two prices is
+    // the one thing "the quote is the fare" promises not to do.
+    (function () {
+        var pick = document.querySelector('[name=pickup]');
+        var drop = document.querySelector('[name=dropoff]');
+        var box  = document.getElementById('quoteBox');
+        var amt  = document.getElementById('quoteAmt');
+        var why  = document.getElementById('quoteWhy');
+        if (!pick || !drop || !box) return;
+
+        function T(p, v) {
+            if (window.psxFmt) return window.psxFmt(p, v);
+            return String(p).replace(/\{(\w+)\}/g, function (m, k) {
+                return (v && v[k] !== undefined) ? v[k] : m; });
+        }
+        var AIRPORT = /\b(sea[-\s]?tac|seattle[-\s]?tacoma|\bSEA\b|airport|机场|공항|aeropuerto|sân bay)\b/i;
+
+        var cache = {};
+        async function geo(q) {
+            if (cache[q]) return cache[q];
+            var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q='
+                    + encodeURIComponent(q);
+            var j = window.psxJSON ? await psxJSON(url)
+                                   : await fetch(url).then(function (r) { return r.json(); });
+            if (!Array.isArray(j) || !j.length) return null;
+            cache[q] = { lat: +j[0].lat, lon: +j[0].lon };
+            return cache[q];
+        }
+
+        var timer = null, lastKey = '';
+        async function estimate() {
+            var a = (pick.value || '').trim(), b = (drop.value || '').trim();
+            if (a.length < 4 || b.length < 4) { box.hidden = true; return; }
+            var key = a + '|' + b;
+            if (key === lastKey) return;
+            lastKey = key;
+
+            box.hidden = false; box.classList.add('working');
+            amt.textContent = '…';
+            why.textContent = T('Working out the distance…');
+            try {
+                var A = await geo(a), Bp = await geo(b);
+                if (!A || !Bp) throw new Error('geo');
+                var r = 'https://router.project-osrm.org/route/v1/driving/'
+                      + A.lon + ',' + A.lat + ';' + Bp.lon + ',' + Bp.lat + '?overview=false';
+                var rj = window.psxJSON ? await psxJSON(r)
+                                        : await fetch(r).then(function (x) { return x.json(); });
+                if (!rj || !rj.routes || !rj.routes.length) throw new Error('route');
+                var miles = rj.routes[0].distance / 1609.34;
+                var toAir = AIRPORT.test(b);
+                var q = await psxJSON('/api/quote?miles=' + miles.toFixed(2) + (toAir ? '&airport=1' : ''));
+                if (!q || !q.ok) throw new Error('quote');
+
+                box.classList.remove('working');
+                amt.textContent = '$' + q.fare.toFixed(0);
+                why.textContent = q.basis === 'airport_flat'
+                    ? T('Flat airport fare — {miles} miles, inside the {radius}-mile flat-rate area. This is the price; it does not move.',
+                        { miles: q.miles, radius: q.flat_radius_mi })
+                    : T('About {miles} miles. Estimated from the road distance — we confirm the exact fare before you pay, and it does not change after that.',
+                        { miles: q.miles });
+            } catch (e) {
+                box.classList.remove('working');
+                amt.textContent = '—';
+                // Never guess a number here. A wrong estimate is worse than none
+                // on a page whose whole promise is that the quote is the fare.
+                why.textContent = T('Could not measure that route automatically — send the request and we will quote it before you pay.');
+            }
+        }
+        function schedule() { clearTimeout(timer); timer = setTimeout(estimate, 700); }
+        [pick, drop].forEach(function (el) {
+            el.addEventListener('change', schedule);
+            el.addEventListener('input', schedule);
+        });
+    })();
+    </script>
     <script src="/jarvis-widget.js"></script>
     <script src="/i18n.js"></script>
 </body>

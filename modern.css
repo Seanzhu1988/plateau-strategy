@@ -157,24 +157,47 @@ footer, .psx-foot { border-top: 1px solid var(--m-line) !important; }
 }
 
 /* ---------- type ---------- */
+/* The headline was set in var(--m-sans), which resolves to -apple-system —
+   the operating system's user-interface font. Measured on the front page it
+   came out 73.6px at weight 800 in a 573px column, broken over four lines,
+   while --psx-display sat defined and unused: Iowan Old Style, a book serif,
+   chosen because the whole idea here is ink on paper.
+
+   A UI font is drawn to disappear behind an interface, which is the opposite
+   of a headline's job. The one genuinely artistic asset already paid for is
+   the typography; this switches it on. Serifs also want less weight and more
+   room than a grotesque — 800 turns a book face into a slab, and the tight
+   tracking was compensating for size that is no longer there. */
 h1, .psx-h1, .page-title, .hero h1 {
-  font-family: var(--m-sans) !important;
-  font-weight: 800 !important;
-  letter-spacing: -.033em !important;
-  line-height: 1.04 !important;
+  font-family: var(--psx-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: -.014em !important;
+  line-height: 1.08 !important;
   color: var(--m-ink) !important;
 }
-h1, .hero h1, .psx-h1 { font-size: clamp(2.5rem, 6.2vw, 4.6rem) !important; }
-.page-title { font-size: clamp(1.9rem, 4vw, 2.6rem) !important; }
+h1, .hero h1, .psx-h1 { font-size: clamp(2.2rem, 4.6vw, 3.5rem) !important; }
+.page-title { font-size: clamp(1.8rem, 3.4vw, 2.4rem) !important; }
+
+/* Four lines of headline is a wall, and a hand-set measure only breaks well
+   in one language — this page ships in five. text-wrap:balance lets the
+   browser even the lines out, which is the whole reason it exists. */
+#view-overview .psx-h1 {
+  max-width: 19ch !important;
+  margin-inline: auto;
+  text-wrap: balance;
+}
 
 h2, .psx-h2 {
-  font-family: var(--m-sans) !important;
-  font-weight: 750 !important;
-  letter-spacing: -.024em !important;
-  line-height: 1.12 !important;
-  font-size: clamp(1.7rem, 3.4vw, 2.5rem) !important;
+  font-family: var(--psx-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: -.008em !important;
+  line-height: 1.16 !important;
+  font-size: clamp(1.6rem, 3vw, 2.2rem) !important;
   color: var(--m-ink) !important;
 }
+/* h3 stays in the sans. A serif at 1rem on a card title reads as a mistake
+   rather than a choice — the serif earns its place at size, and the cards are
+   where the interface starts and the poster stops. */
 h3, .psx-h3 {
   font-family: var(--m-sans) !important;
   font-weight: 700 !important; letter-spacing: -.014em !important;
@@ -256,7 +279,7 @@ p, li, .sub, .summary, .view-intro, .psx-lede {
 .btn, .book-cta, .psx-btn-primary, .primary, .submit, .cta,
 a.btn, a.btn.blue, a.btn.dark, a.btn-blue, a.cta,
 .btn.blue, .btn.dark, .btn-blue,
-button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip) {
+button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip):not(.here-btn) {
   background: transparent !important;
   background-image: none !important;
   color: var(--m-ink) !important;
@@ -285,7 +308,7 @@ button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([
 /* The action bar's buttons are laid out as wide flex bars. Stripped to bare
    words they would sit marooned in all that width, so they keep a box —
    an outline in the colour, never a fill. */
-.actionbar button.act:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip) {
+.actionbar button.act:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip):not(.here-btn) {
   border: 1.5px solid var(--m-rose) !important;
   border-radius: var(--m-radius-sm) !important;
   padding: .8rem 1rem !important;
@@ -321,7 +344,7 @@ button[title='Remove']:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.
 .map-tools button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
 .chipbar button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
 .toolbar button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
-.zoombar button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip) {
+.zoombar button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip):not(.here-btn) {
   border-bottom: 0 !important;
   padding: revert !important;
 }
@@ -366,7 +389,13 @@ a.psx-btn-ghost:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubb
   background: transparent !important;
 }
 
-nav a[href="/book"], header .book-cta, header a.btn {
+/* Keyed on the destination, not the wrapper. The landing page puts this
+   control in a <nav>; trip-planner, articles and driver put it in a
+   <div class="right">. Keying on `nav` meant the same link wore the old
+   filled look on three pages and the quiet one on the fourth. Scoped to
+   <header> so the footer's "Book a ride — $75 flat to SeaTac" and the
+   body-copy links stay ordinary links. */
+header a[href="/book"], header .book-cta, header a.btn {
   background: transparent !important;
   background-image: none !important;
   color: var(--m-ink) !important;
@@ -376,7 +405,7 @@ nav a[href="/book"], header .book-cta, header a.btn {
   padding: .1rem 0 .18rem !important;
   box-shadow: none !important;
 }
-nav a[href="/book"]:hover, header .book-cta:hover, header a.btn:hover {
+header a[href="/book"]:hover, header .book-cta:hover, header a.btn:hover {
   color: var(--m-rose-deep) !important;
   border-bottom-color: var(--m-rose-deep) !important;
   border-bottom-width: 3px !important;
