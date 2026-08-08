@@ -62,8 +62,13 @@ ROUTES = ["/", "/book", "/renter", "/driver", "/agent", "/partners", "/dispatch"
 # environment; the skip is printed rather than silent, because a gate that
 # quietly stops covering a page is worse than one that fails.
 _ROBOT_KEY = (os.environ.get("ROBOT_SHARE_KEY") or "").strip()
+_LAB_USER = (os.environ.get("LAB_TEST_USER") or "").strip()
+_LAB_PASS = (os.environ.get("LAB_TEST_PASS") or "").strip()
 if _ROBOT_KEY:
     ROUTES.append("/robot")
+    if not _LAB_USER:
+        print("note: /robot will show its sign-in page — set LAB_TEST_USER and "
+              "LAB_TEST_PASS to check the page behind it")
 else:
     print("note: /robot not checked — set ROBOT_SHARE_KEY to include it")
 
@@ -229,10 +234,27 @@ def main():
             if _ROBOT_KEY:                      # trade the key for a cookie once
                 page.goto(args.base + "/robot?k=" + _ROBOT_KEY,
                           wait_until="domcontentloaded")
+                # /robot needs a password as well as the link now, so without
+                # an account this gate would only ever see the sign-in page.
+                # With one it sees the page behind it too. Credentials come
+                # from the environment for the same reason the key does — so
+                # they are never printed on a result line or written down here.
+                if _LAB_USER:
+                    page.evaluate(
+                        """([u, p]) => fetch('/api/access/login', {method: 'POST',
+                             headers: {'Content-Type': 'application/json'},
+                             body: JSON.stringify({username: u, password: p})})""",
+                        [_LAB_USER, _LAB_PASS])
+                    page.wait_for_timeout(200)
             for route in ROUTES:
                 resp = page.goto(args.base + route, wait_until="domcontentloaded")
                 page.wait_for_timeout(320)
-                if resp is None or resp.status >= 400:
+                # A by-link page answers 401 with a real sign-in page rather
+                # than an error body. That is a page visitors see, so it gets
+                # checked like any other instead of being counted as dead.
+                if resp is not None and resp.status == 401 and route == "/robot":
+                    print(f"note {tag:8} {route:20} showing its sign-in page")
+                elif resp is None or resp.status >= 400:
                     print(f"DEAD {tag:8} {route:20} {resp.status if resp else 'no response'}")
                     contrast_fails += 1
                     continue

@@ -207,7 +207,54 @@ r = own.post("/api/lab/locks/strategy/farm", json={"locked": True})
 chk("farm can be shut again at once (%d)" % r.status_code, r.status_code == 200)
 chk("and it is shut", A.LAB.is_locked("strategy", "farm") is True)
 
+print("\nreading the record and writing to it are different permissions:")
+chk("an account is a reader unless asked otherwise",
+    A.LAB.role_of("friend1") == "reader")
+r = user.post("/api/lab/fills", json={"strategy": "farm", "pnl_usd": 99})
+chk("a reader cannot file a trade (%d)" % r.status_code, r.status_code == 403)
+chk("and is told why, not just refused",
+    "bot account" in (r.get_json().get("error") or ""))
+chk("nothing was written", A.LAB.stats("farm")["fills"] == bot_lab.UNLOCK_RULE["min_fills"])
+
+r = own.post("/api/access/users", json={"username": "thebot", "role": "bot"})
+chk("the owner can mint a bot account (%d)" % r.status_code, r.status_code == 200)
+bot_pw = r.get_json()["password"]
+chk("and it is labelled as one", r.get_json().get("role") == "bot")
+botc = A.app.test_client()
+botc.post("/api/access/login", json={"username": "thebot", "password": bot_pw})
+r = botc.post("/api/lab/fills", json={"strategy": "farm", "pnl_usd": 1.0})
+chk("the bot account can file a trade (%d)" % r.status_code, r.status_code == 200)
+
+r = own.post("/api/access/users", json={"username": "nonsense", "role": "admin"})
+chk("an unknown role is refused rather than ignored (%d)" % r.status_code,
+    r.status_code == 400)
+
+# An account written before roles existed has no role field at all. Reading a
+# missing permission as "bot" would have handed write access to every account
+# that predates the check — the exact way a security fix becomes a hole.
+raw = json.load(open(A.LAB.users_path))
+for u in raw:
+    u.pop("role", None)
+A.LAB._write(A.LAB.users_path, raw)
+chk("an account from before roles existed reads as a reader, not a bot",
+    A.LAB.role_of("thebot") == "reader")
+r = botc.post("/api/lab/fills", json={"strategy": "farm", "pnl_usd": 1.0})
+chk("so it can no longer write either (%d)" % r.status_code, r.status_code == 403)
+for u in raw:
+    u["role"] = "bot" if u.get("username") == "thebot" else "reader"
+A.LAB._write(A.LAB.users_path, raw)
+
+r = own.post("/api/lab/fills", json={"strategy": "farm", "pnl_usd": 500})
+chk("even the owner cannot write without a bot account (%d)" % r.status_code,
+    r.status_code in (401, 403))
+
+own.post("/api/access/users/thebot/revoke", json={"revoked": True})
+r = botc.post("/api/lab/fills", json={"strategy": "farm", "pnl_usd": 1.0})
+chk("a revoked bot stops writing (%d)" % r.status_code, r.status_code in (401, 403))
+own.post("/api/access/users/thebot/revoke", json={"revoked": False})
+
 print("\nthe fill endpoint cannot be used to invent a live trade:")
+user = botc                      # the remaining write checks need a writer
 r = user.post("/api/lab/fills", json={"strategy": "farm", "pnl_usd": 5, "mode": "live"})
 chk("a mode the caller asks for is ignored (%s)" % r.get_json()["fill"]["mode"],
     r.get_json()["fill"]["mode"] == "paper")

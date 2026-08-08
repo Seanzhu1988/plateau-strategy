@@ -1525,8 +1525,38 @@ def api_lab_board():
     return jsonify(dict(LAB.board(), ok=True, username=session.get("lab_user")))
 
 
+def lab_bot_required(fn):
+    """Only a bot account may write to the ledger.
+
+    This used to be @lab_user_required, which meant every account that could
+    read the pages could also file trades — so a friend given a password to
+    read the concept could have posted fabricated winners until a strategy
+    cleared the unlock bar. The two-key rule still needed the owner's flip, so
+    nothing could open by itself, but the record would have been lying by the
+    time the owner looked at it, and the record is the whole basis for the
+    decision.
+
+    403, not 404: this caller is signed in and known. Hiding the endpoint from
+    them would only make a misconfigured bot harder to diagnose."""
+    @wraps(fn)
+    def wrapper(*a, **k):
+        if not bot_lab.enabled():
+            return _lab_404()
+        who = _access_user()
+        if not who:
+            return jsonify({"ok": False, "auth_required": True,
+                            "error": "Sign in to continue."}), 401
+        if not LAB.may_write(who):
+            return jsonify({"ok": False,
+                            "error": "This account may read the record but not "
+                                     "write to it. Posting fills needs a bot "
+                                     "account."}), 403
+        return fn(*a, **k)
+    return wrapper
+
+
 @app.route("/api/lab/fills", methods=["POST"])
-@lab_user_required
+@lab_bot_required
 def api_lab_fill():
     """The plug point for the bot. Records one completed PAPER trade.
 
@@ -1557,10 +1587,13 @@ def api_access_users():
     if request.method == "GET":
         return jsonify({"ok": True, "users": LAB.public_users()})
     d = request.get_json(force=True, silent=True) or {}
-    password, err = LAB.mint_user(d.get("username"), d.get("note"))
+    # role defaults to reader inside mint_user. Handing out write access has
+    # to be asked for explicitly — it is not something to get by omission.
+    password, err = LAB.mint_user(d.get("username"), d.get("note"), d.get("role"))
     if err:
         return jsonify({"ok": False, "error": err}), 400
     return jsonify({"ok": True, "username": (d.get("username") or "").strip().lower(),
+                    "role": (d.get("role") or "reader").strip().lower(),
                     "password": password,
                     "notice": "Shown once. It is stored only as a hash — nobody, "
                               "including you, can read it back. Lost means reissue."})

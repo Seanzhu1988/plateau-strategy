@@ -77,6 +77,12 @@ _LOCK = threading.RLock()          # reentrant: helpers below call each other
 # --------------------------------------------------------------------------
 PBKDF2_ROUNDS = 200_000
 
+# Two kinds of account, and the split is the point: a reader can open the
+# pages and read the record; a bot can write to the ledger and nothing else
+# needs it. One credential should never do both jobs, because the reading
+# credential is the one that gets handed around.
+ROLES = ("reader", "bot")
+
 
 def hash_pw(password, salt=None):
     salt = salt or secrets.token_hex(16)
@@ -163,7 +169,7 @@ class BotLab(object):
     def users(self):
         return self._read(self.users_path, [])
 
-    def mint_user(self, username, note=""):
+    def mint_user(self, username, note="", role="reader"):
         """Create an account and return the password ONCE.
 
         The password is generated here rather than chosen: a password the
@@ -171,10 +177,22 @@ class BotLab(object):
         returned exactly once, in this call's reply, and only its hash is
         stored — so it cannot be looked up later, by anyone, including the
         owner. Losing it means minting a new one, which is the correct
-        recovery story for a system with no reset."""
+        recovery story for a system with no reset.
+
+        The role decides who may WRITE. Readers read; a bot writes; nobody
+        does both. Without this every account that could open the page could
+        also post fills, so anybody given a password to read the concept
+        could have filed fabricated winning trades into the ledger — and the
+        ledger is the entire basis for deciding what has earned an unlock.
+        A poisoned scoreboard is worse than no scoreboard.
+
+        'reader' is the default deliberately: a role has to be asked for."""
         username = (username or "").strip().lower()
         if not username or len(username) < 3:
             return None, "A username of at least 3 characters is required."
+        role = (role or "reader").strip().lower()
+        if role not in ROLES:
+            return None, "Role must be one of: %s." % ", ".join(ROLES)
         with _LOCK:
             users = self.users()
             if any(u.get("username") == username for u in users):
@@ -184,6 +202,7 @@ class BotLab(object):
             users.append({
                 "username": username,
                 "salt": salt, "hash": h,
+                "role": role,
                 "note": (note or "").strip()[:120],
                 "created_at": _now(),
                 "revoked": False,
@@ -191,6 +210,21 @@ class BotLab(object):
             })
             self._write(self.users_path, users)
         return password, None
+
+    def role_of(self, username):
+        """The role of a live account, or None if there isn't one.
+
+        An account stored before roles existed has no role field. It is read
+        as 'reader', not as 'bot' — an unknown permission has to fail closed,
+        or adding the check would have silently granted write access to every
+        account that predates it."""
+        for u in self.users():
+            if u.get("username") == (username or "").strip().lower() and not u.get("revoked"):
+                return u.get("role") or "reader"
+        return None
+
+    def may_write(self, username):
+        return self.role_of(username) == "bot"
 
     def check_login(self, username, password):
         username = (username or "").strip().lower()
@@ -228,6 +262,7 @@ class BotLab(object):
     def public_users(self):
         """The owner's list. Never the hash, never the salt."""
         return [{"username": u.get("username"), "note": u.get("note"),
+                 "role": u.get("role") or "reader",
                  "created_at": u.get("created_at"), "revoked": bool(u.get("revoked")),
                  "last_seen": u.get("last_seen")}
                 for u in self.users()]
