@@ -601,12 +601,23 @@ def _geo_lookup(ip):
     try:
         import requests as _rq
         r = _rq.get("https://ipwho.is/" + ip.split("%")[0],
-                         params={"fields": "success,country,region,city"}, timeout=2.5)
+                         params={"fields": "success,country,region,city,latitude,longitude"},
+                         timeout=2.5)
         j = r.json()
         if j.get("success"):
+            # Rounded to 2dp — about a kilometre. That is a pin on a city, which
+            # is all a map of "where viewers are" needs, and it deliberately
+            # throws away the precision that would point at a neighbourhood.
+            def _r2(v):
+                try:
+                    return round(float(v), 2)
+                except Exception:
+                    return None
             place = {"country": j.get("country") or "",
                      "region": j.get("region") or "",
-                     "city": j.get("city") or ""}
+                     "city": j.get("city") or "",
+                     "lat": _r2(j.get("latitude")),
+                     "lon": _r2(j.get("longitude"))}
     except Exception:
         place = None
     try:
@@ -679,6 +690,11 @@ def _track_traffic(resp):
                                           place.get("city", "")])
                         rec.setdefault("places", {})
                         rec["places"][label] = rec["places"].get(label, 0) + 1
+                        # One coordinate per place, kept beside the days rather
+                        # than inside them — a city does not move, and repeating
+                        # it per day would just bloat the file.
+                        if place.get("lat") is not None:
+                            data.setdefault("place_coords", {})[label] = [place["lat"], place["lon"]]
                 # Who opened this particular tool, so "N travellers" can mean N
                 # people rather than N page opens. Same lifecycle as visitor_ids:
                 # raw ids only for today, folded to a plain count once the day ends.
@@ -4686,6 +4702,7 @@ def api_traffic_places():
     days = _load_traffic()["days"]
 
     countries, regions, cities, total = {}, {}, {}, 0
+    city_labels = {}
     for date, rec in days.items():
         if date < cutoff:
             continue
@@ -4699,6 +4716,9 @@ def api_traffic_places():
             if city:
                 key = city + (", " + region if region else "") + (" — " + country if country else "")
                 cities[key] = cities.get(key, 0) + n
+                city_labels[label] = city_labels.get(label, 0) + n
+
+    coords = _load_traffic().get("place_coords", {})
 
     def top(d, keep_small=False):
         rows = sorted(d.items(), key=lambda kv: -kv[1])
@@ -4708,7 +4728,16 @@ def api_traffic_places():
             shown.append({"name": "elsewhere", "count": hidden, "folded": True})
         return shown[:25]
 
-    return jsonify({"ok": True, "days": days_back, "total_located": total,
+    pins = []
+    for label, n in sorted(city_labels.items(), key=lambda kv: -kv[1]):
+        xy = coords.get(label)
+        if not xy or n < MIN_SHOW:
+            continue
+        country, region, city = (label.split("|") + ["", "", ""])[:3]
+        pins.append({"lat": xy[0], "lon": xy[1], "count": n,
+                     "label": city + (", " + region if region else ""), "country": country})
+
+    return jsonify({"ok": True, "days": days_back, "total_located": total, "pins": pins,
                     "countries": top(countries, keep_small=True),
                     "regions": top(regions),
                     "cities": top(cities),
