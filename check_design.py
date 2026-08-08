@@ -70,6 +70,19 @@ PALETTE = [
     "rgb(22, 64, 111)", "rgb(22, 58, 60)", "rgb(99, 36, 30)", "rgb(125, 53, 26)",
     "rgb(27, 94, 67)", "rgb(138, 90, 18)", "rgb(163, 48, 42)",
     "rgb(164, 22, 26)", "rgb(193, 18, 31)",
+    # modern.css's four arm hues and its ink. These are the CURRENT design's
+    # chosen colours — the four above them are paper.css's, which modern.css
+    # supersedes. Both lists are live because both stylesheets are, and that is
+    # the layering problem this gate was reporting as 967 stray colours. Listing
+    # them stops the gate crying wolf; it does not make eight arm hues right,
+    # and the fix is to end up with one set, not two.
+    "rgb(29, 78, 216)", "rgb(13, 122, 111)", "rgb(168, 50, 31)", "rgb(180, 83, 9)",
+    "rgb(11, 11, 12)", "rgb(61, 61, 66)", "rgb(110, 110, 118)",   # --m-body, --m-muted
+    # modern.css moved again: a deeper ink and the navy taken from the owner's
+    # LLC logo. Listed for the same reason as the four above — the gate should
+    # measure against the palette actually in use, and say so rather than
+    # reporting 696 strays every run and being ignored.
+    "rgb(11, 8, 9)", "rgb(31, 58, 95)", "rgb(20, 39, 63)",   # --m-ink, --m-rose navy, --m-navy
     # map categories — data, so they stay distinguishable from each other
     "rgb(15, 109, 92)", "rgb(168, 90, 8)", "rgb(107, 47, 190)", "rgb(11, 100, 128)",
     "rgb(154, 91, 6)",
@@ -212,7 +225,12 @@ def main():
                 for view in steps:
                     if view:
                         page.evaluate(f"showView('{view}')")
-                        page.wait_for_timeout(260)
+                        # The view fade is 350ms. Sampling inside it composites
+                        # every colour against what is underneath at 0.9-something
+                        # opacity, and reports tokens one unit off — rgb(75,69,61)
+                        # for body text that is rgb(74,69,61). Two false failures
+                        # that look exactly like real ones.
+                        page.wait_for_timeout(500)
 
                     res = page.evaluate(CONTRAST_JS)
                     bad = res["fails"]

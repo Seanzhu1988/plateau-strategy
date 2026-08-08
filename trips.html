@@ -14,7 +14,7 @@
     <meta property="og:description" content="In-depth trips written by the guides who run them. See every stop and how long you spend there before you book.">
     <meta property="og:image" content="https://plateaustrategy.io/plateau-logo.png">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -30,17 +30,17 @@
         .sub { color: #6b655b; margin: 0.35rem 0 1.4rem; line-height: 1.55; font-size: 0.94rem; }
         .sub a { color: #1b4d8f; }
         .filters { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
-        .chip { background: #fff; border: 1px solid #ddd8cd; border-radius: 999px; padding: 0.4rem 0.85rem;
+        .chip { background: var(--psx-card,#fffdf9); border: 1px solid #ddd8cd; border-radius: 999px; padding: 0.4rem 0.85rem;
             font-size: 0.83rem; cursor: pointer; color: #4a453d; font-weight: 600; }
         .chip.on { background: #14110c; border-color: #14110c; color: #fff; }
-        .trip { background: #fff; border: 1px solid #e6e2da; border-radius: 14px; padding: 1.25rem 1.35rem; margin-bottom: 1rem; }
+        .trip { background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da; border-radius: 14px; padding: 1.25rem 1.35rem; margin-bottom: 1rem; }
         .trip h2 { font-size: 1.12rem; color: #14110c; margin-bottom: 0.3rem; line-height: 1.35; }
         .meta { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 0.7rem; }
         .tag { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.3px; text-transform: uppercase;
             background: #eef2ff; color: #3730a3; border-radius: 999px; padding: 0.2rem 0.6rem; }
         .tag.city { background: #ecfeff; color: #155e75; }
         .tag.time { background: #faf8f4; color: #4a453d; }
-        .tag.price { background: #ecfdf5; color: #065f46; }
+        .tag.price { background: var(--psx-wash-good,#e1f8ec); color: #065f46; }
         .summary { color: #4a453d; font-size: 0.9rem; line-height: 1.6; margin-bottom: 0.85rem; }
         .by { color: #6b655b; font-size: 0.82rem; margin-bottom: 0.85rem; }
         .stops { border-top: 1px solid #faf8f4; padding-top: 0.8rem; margin-bottom: 0.9rem; display: none; }
@@ -56,10 +56,10 @@
         .acts { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
         .btn { padding: 0.6rem 1.05rem; border: none; border-radius: 9px; font-weight: 700;
             font-size: 0.86rem; cursor: pointer; font-family: inherit; }
-        .btn.blue { background: linear-gradient(135deg,#1b4d8f,#1b4d8f); color: #fff; }
-        .btn.ghost { background: #fff; border: 1px solid #ddd8cd; color: #4a453d; }
+        .btn.blue { background: var(--psx-accent, #1b4d8f); color: #fff; }
+        .btn.ghost { background: var(--psx-card,#fffdf9); border: 1px solid #ddd8cd; color: #4a453d; }
         .asked { color: #0f766e; font-size: 0.8rem; font-weight: 700; }
-        .empty { background: #fff; border: 1px dashed #ddd8cd; border-radius: 14px; padding: 2.2rem 1.4rem;
+        .empty { background: var(--psx-card,#fffdf9); border: 1px dashed #ddd8cd; border-radius: 14px; padding: 2.2rem 1.4rem;
             text-align: center; color: #6b655b; line-height: 1.65; }
         .empty a { color: #1b4d8f; font-weight: 700; }
         .form { border-top: 1px solid #faf8f4; margin-top: 0.9rem; padding-top: 0.9rem; display: none; }
@@ -72,11 +72,12 @@
         .msg.ok { color: #065f46; } .msg.err { color: #b91c1c; }
     </style>
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
     <link rel="stylesheet" href="/modern.css">
 </head>
 <body data-arm="operations">
     <header>
-        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+        <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
         <span class="brand">Plateau Strategy Solution Lab</span>
         <div class="right">
             <a href="/">Home</a>
@@ -91,7 +92,7 @@
             Not sightseeing loops — these are written by the guides who run them, stop by stop, with
             how long you actually stand at each one. A student's hour in Harvard Yard is a different
             thing from a bus past the gate. <a href="/guide-studio">Guides can list their own →</a> Part of the
-            <a href="/agent">agent programme</a>.
+            <a href="/agent">agent program</a>.
         </p>
 
         <div class="filters" id="filters"></div>

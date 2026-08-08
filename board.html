@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Board of Directors — Plateau Strategy Solution Lab</title>
-    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -18,7 +18,7 @@
         .wrap { max-width: 1080px; margin: 2rem auto; padding: 0 1.2rem; }
         h1 { font-size: 1.7rem; color: #14110c; font-weight: 800; }
         .sub { color: #6b655b; margin: 0.2rem 0 1.6rem; }
-        .card { background: #fff; border: 1px solid #e6e2da; border-radius: 14px; padding: 1.4rem; margin-top: 1.2rem; }
+        .card { background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da; border-radius: 14px; padding: 1.4rem; margin-top: 1.2rem; }
         h2 { font-size: 1.2rem; color: #14110c; margin-bottom: 0.9rem; }
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: 0.55rem 0.6rem; font-size: 0.86rem; border-bottom: 1px solid #faf8f4; vertical-align: middle; }
@@ -27,7 +27,7 @@
         .addrow { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; margin-top: 1rem; }
         .addrow input, .addrow select { flex: 1; min-width: 140px; padding: 0.6rem 0.8rem; border: 1px solid #ddd8cd; border-radius: 8px; font-size: 0.88rem; }
         .btn { padding: 0.62rem 1.1rem; border: none; border-radius: 9px; font-weight: 700; font-size: 0.86rem; cursor: pointer; text-decoration: none; display: inline-block; white-space: nowrap; }
-        .btn.blue { background: linear-gradient(135deg,#1b4d8f,#1b4d8f); color: #fff; }
+        .btn.blue { background: var(--psx-accent, #1b4d8f); color: #fff; }
         .btn.mini { padding: 0.3rem 0.6rem; font-size: 0.74rem; background: #ef4444; color: #fff; }
         .badge { font-size: 0.66rem; font-weight: 800; padding: 0.16rem 0.55rem; border-radius: 999px; background: #e0e7ff; color: #3730a3; }
         .empty { color: #8a8377; text-align: center; padding: 1.4rem; }
@@ -39,15 +39,16 @@
         .doc-item .meta { flex: 1; min-width: 220px; }
         .doc-item .t { font-weight: 700; color: #14110c; font-size: 0.92rem; }
         .doc-item .d { color: #6b655b; font-size: 0.78rem; margin-top: 0.1rem; }
-        .lock { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 0.9rem 1.1rem; font-size: 0.85rem; color: #065f46; margin-bottom: 1rem; line-height: 1.5; }
+        .lock { background: var(--psx-wash-good,#e1f8ec); border: 1px solid var(--psx-wash-good-on,#cef2df); border-radius: 12px; padding: 0.9rem 1.1rem; font-size: 0.85rem; color: #065f46; margin-bottom: 1rem; line-height: 1.5; }
     </style>
     <link rel="stylesheet" href="/admin-terminal.css">
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
     <link rel="stylesheet" href="/modern.css">
 </head>
 <body data-arm="company">
     <header>
-        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab">
+        <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab">
         <span class="brand">Plateau Strategy Solution Lab</span>
         <div class="links"><a href="/dispatch">Dispatch</a><a href="/archive">Archive</a><a href="/">← Home</a></div>
     </header>
@@ -165,22 +166,22 @@
             const name = val('m_name');
             if (!name) { alert('Enter a member name.'); return; }
             const body = { name, role: val('m_role'), ownership_pct: val('m_own'), email: val('m_email'), since: val('m_since') };
-            const j = await (await fetch('/api/board/members', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })).json();
+            const j = await psxJSON('/api/board/members', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
             if (!j.ok) { alert(j.error || 'Could not add member'); return; }
             ['m_name','m_role','m_own','m_email','m_since'].forEach(i => document.getElementById(i).value = '');
-            const r = await (await fetch('/api/board/members')).json();
+            const r = await psxJSON('/api/board/members');
             renderMembers(r.members || []);
         }
 
         async function removeMember(id) {
             if (!confirm('Remove this member from the registry?')) return;
             await fetch('/api/board/members/' + id + '/remove', { method:'POST' });
-            const r = await (await fetch('/api/board/members')).json();
+            const r = await psxJSON('/api/board/members');
             renderMembers(r.members || []);
         }
 
         async function loadDocs() {
-            const j = await (await fetch('/api/board/documents')).json();
+            const j = await psxJSON('/api/board/documents');
             if (!j.ok) return;
             TYPES = j.types || [];
             const sel = document.getElementById('d_type');
@@ -212,8 +213,8 @@
             let j;
             try {
                 const dataUrl = await fileToDataURL(f);
-                j = await (await fetch('/api/board/documents', { method:'POST', headers:{'Content-Type':'application/json'},
-                    body: JSON.stringify({ file: dataUrl, doc_type: val('d_type'), title: val('d_title'), original_name: f.name, notes: val('d_notes') }) })).json();
+                j = await psxJSON('/api/board/documents', { method:'POST', headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify({ file: dataUrl, doc_type: val('d_type'), title: val('d_title'), original_name: f.name, notes: val('d_notes') }) });
             } catch (e) { btn.disabled = false; btn.textContent = '⬆ Upload'; out.className = 'result err'; out.textContent = 'Upload failed — try again.'; return; }
             btn.disabled = false; btn.textContent = '⬆ Upload';
             if (!j.ok) { out.className = 'result err'; out.textContent = j.error || 'Upload failed'; return; }
