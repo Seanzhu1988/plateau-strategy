@@ -6,6 +6,57 @@ and it stays dark until somebody sets an environment variable on purpose.
 
 ---
 
+## THE HARD CONSTRAINT: we hold no keys
+
+Decided by Sean, 2026-08-08. Write it down here because it is the kind of
+constraint that gets built over by someone who never heard it said.
+
+> **This system never stores, receives, or transmits another person's exchange
+> API key, OAuth token, or any other credential to their money.**
+
+The key still has to exist — Coinbase will not accept an order without one.
+The constraint is about *where it lives*: on the user's own machine, never on
+ours. Automated trading still works exactly the same; we are simply not the
+custodian.
+
+**The shape that satisfies this** — a local agent:
+
+```
+their machine                          our server
+┌──────────────────────┐
+│ their exchange key   │ ── asks ──▶  "what is the signal?"
+│ (never leaves)       │ ◀── reply ──  (the strategy lives here)
+│ small local agent    │
+│ places the order     │ ── reports ─▶ ledger: {strategy, pnl_usd}
+└──────────────────────┘
+```
+
+The agent is deliberately stupid: ask, execute, report. It carries no
+strategy, so it does not matter if a user reads every line of it. The strategy
+never leaves our server; their credential never arrives at it.
+
+**What this buys, and what it does not.** It removes the custody question
+entirely, removes the breach exposure (there is nothing of theirs to steal),
+and removes a large amount of engineering that would otherwise be mandatory:
+encryption at rest, key-scope verification, rotation, revocation, breach
+response. None of that has to be built correctly if the asset is never held.
+
+It does **not** answer the adviser question. If the agent auto-executes, the
+user is not deciding each trade — software is, on our instruction, and that is
+still arguably discretionary. Not holding keys removes the sharpest edge; it
+does not remove the need for the legal answer below.
+
+**The cost, which users must be told:** the agent has to be running to trade.
+That means their own always-on machine — a small VPS in their name, or a Pi at
+home. A laptop that sleeps will miss trades. They own the box, the key, and
+the uptime.
+
+**So: any future design that asks a user to paste an API key into this site,
+or connects their exchange account via OAuth to our server, contradicts this
+decision.** Do not build it without Sean saying so explicitly and in writing.
+
+---
+
 ## What it does today
 
 - Accounts that **only the owner can create**. No signup, no password reset, no
