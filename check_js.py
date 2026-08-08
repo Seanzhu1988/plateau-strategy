@@ -8,9 +8,19 @@ block stops running — so it gets checked by loading the page, not by reading
 it. Also exercises psxJSON against a URL that cannot answer, which is the
 actual reported bug: the promise must resolve, not reject.
 """
+import os
 import sys
 from playwright.sync_api import sync_playwright
 B = "http://127.0.0.1:5055"
+
+# /setup became owner-only on 2026-08-08 — it was reachable by anyone, which
+# let a stranger overwrite the Square and Twilio credentials. Gating it broke
+# this gate, which is the recurring shape: locking a page silently drops it
+# from whatever was checking it. Credentials come from the environment, and
+# the skip is printed rather than silent.
+OWNER_USER = (os.environ.get("OWNER_TEST_USER") or "").strip()
+OWNER_PASS = (os.environ.get("OWNER_TEST_PASS") or "").strip()
+OWNER_ONLY = {"/setup"}
 ROUTES = ["/","/book","/renter","/driver","/agent","/partners","/dispatch","/trips",
           "/trip-planner","/road-trip","/destination-book","/favorite-place",
           "/guide-studio","/books","/articles","/archive","/board","/deflator",
@@ -18,9 +28,21 @@ ROUTES = ["/","/book","/renter","/driver","/agent","/partners","/dispatch","/tri
 bad = 0
 with sync_playwright() as p:
     b = p.chromium.launch(executable_path="/opt/pw-browsers/chromium-1194/chrome-linux/chrome")
+    if not OWNER_USER:
+        print("note: %s not checked — set OWNER_TEST_USER/OWNER_TEST_PASS to include them"
+              % ", ".join(sorted(OWNER_ONLY)))
     for route in ROUTES:
+        if route in OWNER_ONLY and not OWNER_USER:
+            continue
         errs = []
         pg = b.new_page()
+        if route in OWNER_ONLY:
+            pg.goto(B + "/", wait_until="domcontentloaded")
+            pg.evaluate("""([u, w]) => fetch('/api/owner/login', {method: 'POST',
+                 headers: {'Content-Type': 'application/json'},
+                 body: JSON.stringify({username: u, password: w})})""",
+                        [OWNER_USER, OWNER_PASS])
+            pg.wait_for_timeout(250)
         pg.on("pageerror", lambda e: errs.append(str(e)))
         pg.goto(B + route, wait_until="domcontentloaded")
         pg.wait_for_timeout(700)

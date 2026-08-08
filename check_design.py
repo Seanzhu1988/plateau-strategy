@@ -61,6 +61,15 @@ ROUTES = ["/", "/book", "/renter", "/driver", "/agent", "/partners", "/dispatch"
 # whatever log this gate writes to. Covered when the key is in the
 # environment; the skip is printed rather than silent, because a gate that
 # quietly stops covering a page is worse than one that fails.
+# /setup became owner-only on 2026-08-08, after the council found it open to
+# anyone. Same story as /robot below: locking a page drops it out of whatever
+# was checking it unless the checker can sign in too.
+_OWNER_USER = (os.environ.get("OWNER_TEST_USER") or "").strip()
+_OWNER_PASS = (os.environ.get("OWNER_TEST_PASS") or "").strip()
+if not _OWNER_USER:
+    ROUTES = [r for r in ROUTES if r != "/setup"]
+    print("note: /setup not checked — set OWNER_TEST_USER/OWNER_TEST_PASS to include it")
+
 _ROBOT_KEY = (os.environ.get("ROBOT_SHARE_KEY") or "").strip()
 _LAB_USER = (os.environ.get("LAB_TEST_USER") or "").strip()
 _LAB_PASS = (os.environ.get("LAB_TEST_PASS") or "").strip()
@@ -231,6 +240,14 @@ def main():
         browser = p.chromium.launch(executable_path=CHROME)
         for width, tag in ((1280, "desktop"), (390, "mobile")):
             page = browser.new_page(viewport={"width": width, "height": 900})
+            if _OWNER_USER:                     # sign in once per context
+                page.goto(args.base + "/", wait_until="domcontentloaded")
+                page.evaluate(
+                    """([u, w]) => fetch('/api/owner/login', {method: 'POST',
+                         headers: {'Content-Type': 'application/json'},
+                         body: JSON.stringify({username: u, password: w})})""",
+                    [_OWNER_USER, _OWNER_PASS])
+                page.wait_for_timeout(250)
             if _ROBOT_KEY:                      # trade the key for a cookie once
                 page.goto(args.base + "/robot?k=" + _ROBOT_KEY,
                           wait_until="domcontentloaded")

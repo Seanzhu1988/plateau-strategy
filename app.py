@@ -2510,12 +2510,45 @@ def api_deflator_waitlist():
     return jsonify({"success": True, "already": False, "count": len(items)})
 
 
+# ---------------------------------------------------------------------------
+# 🔒 CLOSED 2026-08-08 [nine-lens council, three lenses independently, both
+# skeptics confirming high severity each time].
+#
+# These five routes had NO authentication of any kind. Verified by execution,
+# not by reading: a client with no cookies and no session POSTed to
+# /api/setup/square and got 200, after which the running process held the
+# caller's token. What a stranger on the internet could do:
+#
+#   * /api/setup/twilio      — repoint SMS at their own Twilio account.
+#     notify._twilio_cfg() reads os.environ on every call and the service runs
+#     --workers 1, so one POST poisons the whole process. Every ride-offer text
+#     after that — pickup address, dropoff, date, time, flight number, fare —
+#     lands in a stranger's logs, and driver dispatch stops arriving here.
+#   * /api/setup/twilio/test — send SMS to a number THEY choose, on our live
+#     credentials, unauthenticated and unthrottled. Textbook toll fraud billed
+#     to us, and a fast route to Twilio suspending the account, which takes
+#     driver dispatch down with it.
+#   * /api/setup/square      — overwrite the payment token. Not a redirect of
+#     money: SQUARE_LOCATION_ID is read-only everywhere, so a foreign token
+#     paired with our location id is simply rejected and square_client._bill
+#     swallows the error. The real outcome is a SILENT BILLING OUTAGE —
+#     bookings keep succeeding, invoices quietly stop going out.
+#   * /api/setup/status      — reports which integrations are configured.
+#
+# owner_required already existed and already guards ~48 lower-value routes;
+# these four had simply fallen out of the pattern, and nothing global catches
+# it — app.py has no before_request at all. OWNER_ONLY_PATHS looks like a
+# control but only feeds robots.txt, where it advertises /setup rather than
+# protecting it.
+# ---------------------------------------------------------------------------
 @app.route("/setup")
+@owner_required
 def setup_page():
     return send_file(os.path.join(BASE_DIR, "setup.html"))
 
 
 @app.route("/api/setup/status")
+@owner_required
 def api_setup_status():
     return jsonify({
         "connected": bool(os.environ.get("SQUARE_ACCESS_TOKEN") and os.environ.get("SQUARE_LOCATION_ID")),
@@ -2526,6 +2559,7 @@ def api_setup_status():
 
 
 @app.route("/api/setup/twilio", methods=["POST"])
+@owner_required
 def api_setup_twilio():
     """Save pasted Twilio credentials to .env and load them live (no restart)."""
     data = request.get_json(force=True, silent=True) or {}
@@ -2542,17 +2576,28 @@ def api_setup_twilio():
 
 
 @app.route("/api/setup/twilio/test", methods=["POST"])
+@owner_required
 def api_setup_twilio_test():
-    """Send a test SMS to the given number using the saved Twilio credentials."""
-    data = request.get_json(force=True, silent=True) or {}
-    to = (data.get("to") or os.environ.get("DRIVER_PHONE", "")).strip()
+    """Send a test SMS to OUR OWN number using the saved Twilio credentials.
+
+    The destination is no longer taken from the request. It used to be, which
+    made this an unauthenticated endpoint that sent a message to any number a
+    caller named, on our live account — someone else's phone, billed to us, as
+    fast as the server would loop. Owner-only closes the door; ignoring the
+    caller's number means that even a stolen owner session cannot turn this
+    into a way to text strangers. A test message only has to reach the person
+    running the test, and they are the one number we already know."""
+    to = (os.environ.get("OWNER_PHONE") or os.environ.get("DRIVER_PHONE") or "").strip()
     if not to:
-        return jsonify({"ok": False, "error": "No destination number."}), 400
+        return jsonify({"ok": False,
+                        "error": "Set OWNER_PHONE or DRIVER_PHONE first — the test "
+                                 "sends only to your own number."}), 400
     result = notify.send_sms(to, "Plateau Strategy Solution Lab: test message - your driver SMS dispatch is LIVE. Reply YES when a real ride comes in.")
     return jsonify({"ok": result == "sent", "result": result, "to": to})
 
 
 @app.route("/api/setup/square", methods=["POST"])
+@owner_required
 def api_setup_square():
     """Save the pasted Square Access Token to .env and load it live (no restart)."""
     data = request.get_json(force=True, silent=True) or {}
