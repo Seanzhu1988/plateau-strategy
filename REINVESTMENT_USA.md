@@ -190,3 +190,76 @@ building.
 - **Focus.** You run rides, rentals and tours, and cash is tight. This is a second
   company, not a page. Worth being honest with yourself about which one is paying
   the bills this quarter.
+
+---
+
+## CORRECTION, 2026-08-07 — the opinion is a product, not a service
+
+My first draft had this wrong in a way that changes the whole economics.
+
+I described a professional opening a bespoke File on one person's idea, sold
+once to that person. That is **consulting with extra steps** — it does not
+scale, because the professional has to do fresh work for every sale.
+
+What the owner actually described:
+
+> "Whoever wants to create this project will buy this idea and build their
+> house, something like a blueprint... we make a platform fee. It's not going
+> to be a lot, but if we have volume, we can make a lot of money from volume."
+
+**The opinion is written once and sold many times.** A licensed contractor
+writes "how to actually get a house built in King County — permits, sequence,
+what it really costs, what fails inspection" once. Everyone who wants to build
+a house in King County buys the same document. The professional's effort is
+fixed; their revenue is not.
+
+That is the difference between a consultancy and a platform, and it is the only
+version of this that reaches volume.
+
+### What that changes
+
+| | bespoke File (wrong) | published opinion (right) |
+|---|---|---|
+| Written | per customer | once |
+| Sold | once | unlimited |
+| Professional's incentive | bill hours | write the best one and let it sell |
+| Ceiling | their calendar | none |
+| Platform's job | matchmaking | distribution and trust |
+
+### The article is the anchor
+
+Someone writes what they want to build. The board recognises the trades. Each
+trade's professionals can find that article, and publish a priced opinion
+against it. The next person with the same ambition finds the article **and the
+opinions already attached to it**. The value compounds — an article with six
+professional opinions on it is worth more than a fresh one, and neither the
+founder nor the professionals had to meet.
+
+### The maths, at his own numbers
+
+Square takes roughly 2.9% + 30¢ of the whole charge before any split.
+
+```
+$10 opinion, 20% platform fee   →  $2.00 to us, $0.59 to Square  →  $1.41 net
+$100 opinion, 20% platform fee  →  $20.00 to us, $3.20 to Square →  $16.80 net
+
+$10  x 10,000 sales  →  $14,100 a year
+$100 x 10,000 sales  →  $168,000 a year
+```
+
+**The 30¢ fixed fee is the thing to design around.** At a 20% platform fee the
+break-even price is **$1.75** — below that, every sale loses money on card fees
+alone. A $10 opinion works, but a third of the platform's cut is eaten by the
+processor. Two ways out, both worth doing:
+
+1. **Bundle.** A buyer purchasing four opinions on one article pays one charge,
+   so the 30¢ is paid once instead of four times.
+2. **Wallet.** A buyer tops up $20 once; purchases draw down. One card fee, many
+   sales. This is why every micro-transaction platform ends up with credits.
+
+### What is still true from the first draft
+
+The 🚫 BLOCKED section stands unchanged. Selling a document is a service, and
+none of this is a security. The moment strangers fund somebody's actual house,
+that is a different legal object entirely.
+
