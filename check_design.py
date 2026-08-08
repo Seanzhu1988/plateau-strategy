@@ -40,6 +40,7 @@ Usage:
     python3 check_design.py --strict    # exit non-zero on any failure
 """
 import argparse
+import os
 import sys
 
 try:
@@ -53,6 +54,18 @@ ROUTES = ["/", "/book", "/renter", "/driver", "/agent", "/partners", "/dispatch"
           "/trips", "/trip-planner", "/road-trip", "/destination-book",
           "/favorite-place", "/guide-studio", "/books", "/articles", "/archive",
           "/board", "/deflator", "/factor-clock", "/setup"]
+
+# Pages shared by link need their key before they will answer at all. The key
+# is spent once per browser context, below, rather than being carried in the
+# route — otherwise it would be printed on every result line and end up in
+# whatever log this gate writes to. Covered when the key is in the
+# environment; the skip is printed rather than silent, because a gate that
+# quietly stops covering a page is worse than one that fails.
+_ROBOT_KEY = (os.environ.get("ROBOT_SHARE_KEY") or "").strip()
+if _ROBOT_KEY:
+    ROUTES.append("/robot")
+else:
+    print("note: /robot not checked — set ROBOT_SHARE_KEY to include it")
 
 # The eight views stacked inside "/". Each is activated in turn.
 VIEWS = ["overview", "transportation", "operations", "realestate",
@@ -213,6 +226,9 @@ def main():
         browser = p.chromium.launch(executable_path=CHROME)
         for width, tag in ((1280, "desktop"), (390, "mobile")):
             page = browser.new_page(viewport={"width": width, "height": 900})
+            if _ROBOT_KEY:                      # trade the key for a cookie once
+                page.goto(args.base + "/robot?k=" + _ROBOT_KEY,
+                          wait_until="domcontentloaded")
             for route in ROUTES:
                 resp = page.goto(args.base + route, wait_until="domcontentloaded")
                 page.wait_for_timeout(320)

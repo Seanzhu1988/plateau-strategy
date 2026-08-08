@@ -26,7 +26,8 @@ import datetime
 import urllib.parse
 import shutil
 from functools import wraps
-from flask import Flask, request, jsonify, send_file, session, Response
+from flask import (Flask, request, jsonify, send_file, session, Response,
+                   redirect, make_response)
 
 try:
     from dotenv import load_dotenv
@@ -708,7 +709,15 @@ def _compress_and_cache(resp):
         path = request.path or ""
         is_static = path.endswith((".css", ".js", ".png", ".svg", ".jpg", ".jpeg",
                                    ".webp", ".ico", ".woff", ".woff2", ".mp4"))
-        if is_static:
+        # A route that has already said "no-store" means it: the by-link
+        # pages set that so a shared page is not left in a proxy or in the
+        # back/forward cache of a borrowed phone. Revalidating is the right
+        # default for HTML, but it is weaker than what those pages asked for,
+        # so it must not overwrite them.
+        already = resp.headers.get("Cache-Control") or ""
+        if "no-store" in already:
+            pass
+        elif is_static:
             resp.headers["Cache-Control"] = "public, max-age=600"
         elif (resp.mimetype or "").startswith("text/html"):
             resp.headers["Cache-Control"] = "no-cache"
@@ -1273,6 +1282,120 @@ def sitemap_xml():
                 "  </url>"]
     out.append("</urlset>")
     return Response("\n".join(out), mimetype="application/xml")
+
+
+# ---------------------------------------------------------------------------
+# Pages shared by link only
+#
+# Some work is ready to show a few people and not ready to be on the site.
+# The robotic-trading write-up is the first: it describes an idea, it is not
+# an offer, and while it still says "research" it must not turn up in a
+# search result or be found by someone clicking around.
+#
+# So it lives behind a capability URL — the key IS the link. Whoever holds it
+# gets in; nobody else can guess it. Deliberately NOT listed in robots.txt:
+# that file is public, so a Disallow line would advertise the path to exactly
+# the people it is hidden from. It carries X-Robots-Tag: noindex instead, and
+# so does the refusal, so a crawler that somehow reaches either drops it.
+#
+# Be clear about what this is: share-link privacy, the same model as an
+# unlisted document. It is not authentication. Anyone Sean sends the link to
+# can forward it to anyone else, and there is no way to tell that apart from
+# the friend opening it twice. It is the right strength for a concept and the
+# wrong strength for anything that needs to stay secret.
+#
+# The key comes from the environment when set (so the link is stable and can
+# be chosen), otherwise it is generated once and kept on disk, so a restart
+# never breaks a link that has already been sent to somebody.
+# ---------------------------------------------------------------------------
+SHARE_KEYS_PATH = _data_path("share_keys.json")
+SHARE_COOKIE_DAYS = 90
+
+
+def _share_key(name):
+    env = (os.environ.get("%s_SHARE_KEY" % name.upper().replace("-", "_")) or "").strip()
+    if env:
+        return env
+    with _LOCK:
+        keys = _load(SHARE_KEYS_PATH)
+        if not isinstance(keys, dict):
+            keys = {}
+        if not keys.get(name):
+            keys[name] = secrets.token_urlsafe(12)
+            _save(SHARE_KEYS_PATH, keys)
+        return keys[name]
+
+
+def _share_state(name):
+    """'arriving' on a good ?k=, 'holding' on a good cookie, None otherwise.
+
+    compare_digest rather than == so a wrong key cannot be narrowed down by
+    timing the reply. Overkill for a concept page, free to write correctly."""
+    want = _share_key(name)
+    given = (request.args.get("k") or "").strip()
+    if given and secrets.compare_digest(given, want):
+        return "arriving"
+    held = request.cookies.get("psx_share_" + name) or ""
+    if held and secrets.compare_digest(held, want):
+        return "holding"
+    return None
+
+
+SHARE_MISS_HTML = """<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Shared by link — Plateau Strategy Solution Lab</title>
+<link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+<link rel="stylesheet" href="/paper.css"><link rel="stylesheet" href="/modern.css">
+</head><body data-arm="company"><div class="wrap" style="max-width:34rem;margin:5rem auto;padding:0 1.2rem">
+<h1 class="page-title">This page is shared by link</h1>
+<p class="page-sub">It opens only from the full link it was sent with. If you
+were given one, open that link again rather than this address &mdash; the part
+after <code>?</code> is what lets you in.</p>
+<p><a href="/">Back to Plateau Strategy Solution Lab</a></p>
+</div></body></html>"""
+
+
+def _shared_page(name, filename):
+    """Serve a by-link page, or refuse. Three replies, one per state."""
+    state = _share_state(name)
+    if state is None:
+        r = make_response(SHARE_MISS_HTML, 404)
+        r.headers["X-Robots-Tag"] = "noindex, nofollow"
+        return r
+    if state == "arriving":
+        # Move the key out of the address bar and into a cookie, so a
+        # screenshot or a shoulder-glance does not hand the link on. The
+        # link itself still carries it — that is what makes it shareable.
+        r = redirect(request.path)
+        r.set_cookie("psx_share_" + name, _share_key(name),
+                     max_age=SHARE_COOKIE_DAYS * 24 * 3600,
+                     httponly=True, samesite="Lax", secure=request.is_secure)
+        return r
+    r = make_response(send_file(os.path.join(BASE_DIR, filename)))
+    r.headers["X-Robots-Tag"] = "noindex, nofollow"
+    r.headers["Cache-Control"] = "private, no-store"
+    return r
+
+
+@app.route("/robot")
+def robot_concept_page():
+    """The robotic-trading concept, for people Sean sends the link to.
+
+    Reading matter only. It takes no money, no bank connection and no
+    account, and there is no form on it that could start any of those."""
+    return _shared_page("robot", "robot-concept.html")
+
+
+@app.route("/api/share-links")
+@owner_required
+def api_share_links():
+    """The owner's copy of the links to send. Owner-only for the obvious
+    reason: this endpoint hands out the keys."""
+    return jsonify({"links": [
+        {"name": "robot", "title": "Robotic trading — the concept",
+         "url": "%s/robot?k=%s" % (SITE_ORIGIN, _share_key("robot"))},
+    ]})
 
 
 @app.route("/road-trip")

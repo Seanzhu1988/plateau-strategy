@@ -2,6 +2,10 @@
 .env
 .flask_secret
 owner_auth.json
+# Keys for by-link pages. On Render these live in /var/data, but running
+# locally without that disk writes them here — and this repo is public, so a
+# committed key would hand the link to everyone.
+share_keys.json
 *.pem
 *.key
 
