@@ -252,6 +252,11 @@ own.post("/api/access/users/thebot/revoke", json={"revoked": True})
 r = botc.post("/api/lab/fills", json={"strategy": "farm", "pnl_usd": 1.0})
 chk("a revoked bot stops writing (%d)" % r.status_code, r.status_code in (401, 403))
 own.post("/api/access/users/thebot/revoke", json={"revoked": False})
+# Un-revoking does NOT restore the old session — revoking now clears it, so
+# the account has to sign in again. That is the point of the fix (a revoked
+# session used to keep working), and it means this test has to log back in
+# rather than assume the cookie still means something.
+botc.post("/api/access/login", json={"username": "thebot", "password": bot_pw})
 
 print("\nthe fill endpoint cannot be used to invent a live trade:")
 user = botc                      # the remaining write checks need a writer

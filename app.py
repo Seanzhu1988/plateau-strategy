@@ -18,6 +18,8 @@ import re
 import json
 import time
 import hashlib
+import hmac
+import base64
 import gzip
 import secrets
 import threading
@@ -106,6 +108,89 @@ SECRET_PATH = _data_path(".flask_secret")
 CONTRACT_PATH = _data_path("contract.json")
 SIGNATURES_PATH = _data_path("contract_signatures.json")
 _LOCK = threading.Lock()
+
+
+# ---------------------------------------------------------------------------
+# Guessing limit on every sign-in
+#
+# Nothing on this site limited login attempts. The council put numbers on what
+# that costs, and they are small: the driver login is a VIN plus a date of
+# birth, and a VIN is not a secret — it is stamped on the dashboard and legally
+# readable through the windscreen of a car parked in public. That leaves the
+# birthday, about 25,200 valid dates for an adult, roughly 14.6 bits. An agent
+# code is four characters from a 31-symbol alphabet, about 19.8 bits. Both are
+# minutes of scripted guessing when nothing counts the attempts, and neither is
+# fixable by making the secret longer without reissuing every credential.
+#
+# So the fix is the counter, not the secret. Ten wrong answers from one address
+# for one account, then that pair waits fifteen minutes. Scoped to (address,
+# account) rather than to either alone: keying on the address only would let
+# one attacker lock out a whole office, and keying on the account only would
+# let them lock a driver out of their own portal from anywhere.
+#
+# In memory on purpose. One process, one machine — a restart clears it, which
+# is a real limit worth stating rather than hiding, but a restart is not
+# something an attacker can trigger.
+# ---------------------------------------------------------------------------
+# TWO counters, and the second one exists because the first missed the actual
+# attack. Keying only on (address, account) counts wrong PASSWORDS for one
+# account — but guessing an agent code means trying a different ACCOUNT every
+# time, so a code-spraying run never touches the same key twice and sails
+# straight through. Found by the test written for this fix, not by reading it.
+#
+# So: a tight per-account limit for password guessing, and a looser
+# per-address limit for spraying across accounts. The address ceiling is high
+# enough that a shared office behind one NAT never meets it and low enough
+# that enumerating a 923,521-code space takes centuries instead of an hour.
+LOGIN_MAX_TRIES = 10            # wrong answers for ONE account, from one address
+LOGIN_MAX_PER_IP = 30           # wrong answers across ALL accounts, from one address
+LOGIN_WINDOW_S = 900
+_LOGIN_TRIES = {}
+
+
+def _login_keys(who):
+    ip = _client_ip()
+    return (ip, (who or "").strip().lower()), (ip, "*")
+
+
+def _recent(key):
+    now = time.time()
+    tries = [t for t in _LOGIN_TRIES.get(key, []) if now - t < LOGIN_WINDOW_S]
+    _LOGIN_TRIES[key] = tries
+    return tries
+
+
+def _login_blocked(who):
+    """True if either counter has run out."""
+    per_account, per_ip = _login_keys(who)
+    return (len(_recent(per_account)) >= LOGIN_MAX_TRIES
+            or len(_recent(per_ip)) >= LOGIN_MAX_PER_IP)
+
+
+def _login_failed(who):
+    """Record one wrong answer against both counters. Called only on failure,
+    so somebody who signs in correctly every day never approaches either."""
+    now = time.time()
+    for key in _login_keys(who):
+        _recent(key).append(now)
+    if len(_LOGIN_TRIES) > 4000:            # bound the table; oldest first
+        for k in sorted(_LOGIN_TRIES, key=lambda k: max(_LOGIN_TRIES[k] or [0]))[:1000]:
+            _LOGIN_TRIES.pop(k, None)
+
+
+def _login_ok(who):
+    """Clear the account counter on success.
+
+    The per-address counter is deliberately NOT cleared: one correct sign-in
+    would otherwise wipe the evidence of thirty wrong ones, and an attacker
+    who owns any single valid credential could reset the ceiling at will."""
+    per_account, _ = _login_keys(who)
+    _LOGIN_TRIES.pop(per_account, None)
+
+
+def _too_many_tries():
+    return jsonify({"ok": False,
+                    "error": "Too many attempts. Wait 15 minutes and try again."}), 429
 
 
 def _hash_pw(password, salt=None):
@@ -214,10 +299,14 @@ def api_owner_login():
     data = request.get_json(force=True, silent=True) or {}
     u = (data.get("username") or "").strip()
     pw = data.get("password") or ""
+    if _login_blocked(u):
+        return _too_many_tries()
     owner = _load_owner()
     if not owner or owner.get("username", "").lower() != u.lower() \
             or not _verify_pw(pw, owner.get("salt", ""), owner.get("hash", "")):
+        _login_failed(u)
         return jsonify({"ok": False, "error": "Wrong username or password."}), 401
+    _login_ok(u)
     session["owner"] = owner.get("username")
     # Whoever signs in here is running the business, not visiting it. Mark the
     # device so it stops inflating the numbers — the session expires, this does
@@ -1569,17 +1658,36 @@ def _shared_page(name, filename, password=False):
 # The owner mints these at /api/lab/users. There is still exactly one door.
 # ---------------------------------------------------------------------------
 def _access_user():
-    return session.get("access_user")
+    """The signed-in account, re-checked against storage on every request.
+
+    This used to return session.get("access_user") and nothing else, which
+    meant revoking somebody only stopped them logging in AGAIN — anyone
+    already signed in kept reading indefinitely. That is the opposite of what
+    revocation is for, and it was the only remedy available, since this system
+    deliberately has no password reset.
+
+    role_of already fails closed for revoked and unknown accounts, so one
+    lookup closes it. The session is cleared as well as refused, so the next
+    request does not repeat the work."""
+    who = session.get("access_user")
+    if who and LAB.role_of(who) is None:
+        session.pop("access_user", None)
+        return None
+    return who
 
 
 @app.route("/api/access/login", methods=["POST"])
 def api_access_login():
     d = request.get_json(force=True, silent=True) or {}
     username = (d.get("username") or "").strip().lower()
+    if _login_blocked(username):
+        return _too_many_tries()
     if LAB.check_login(username, d.get("password") or ""):
+        _login_ok(username)
         session["access_user"] = username
         LAB.touch(username)
         return jsonify({"ok": True, "username": username})
+    _login_failed(username)
     return jsonify({"ok": False, "error": "Those details were not accepted."}), 401
 
 
@@ -3353,6 +3461,19 @@ def _reservation_for_board(r):
     out = dict(r)
     name = ((r.get("client") or {}).get("name") or "").strip()
     out["client"] = {"name": (name.split(" ")[0] if name else "Client")}
+    # The agent block used to pass through whole, and it carries `code` — the
+    # agent's entire sign-in credential. Agent login needs only that code and a
+    # last name, and this board printed both, to anyone, with no session. The
+    # chain the council reproduced: read the board, log in as the agent, change
+    # their payout email, request a payout. The owner then clicks Pay on a
+    # request that looks legitimate and the money goes to whoever read the
+    # board. Nothing anywhere signals that the address changed.
+    #
+    # Not popped: renter.html renders "Referred by {agent.name}" on open-board
+    # cards, so removing the block breaks the page. Keep the name, drop
+    # everything that opens a door.
+    if isinstance(r.get("agent"), dict):
+        out["agent"] = {"name": (r["agent"].get("name") or "").strip()}
     out["contact_hidden"] = True
     return out
 
@@ -3481,12 +3602,44 @@ def api_accept(rid):
     return jsonify({"ok": False, "error": "not found"}), 404
 
 
+def _twilio_signature_ok():
+    """Is this really Twilio, or somebody typing curl?
+
+    The handler below identifies the driver purely by the "From" field, and
+    the first YES claims the ride. Without this check anyone could POST that
+    form with a driver's number and take rides in their name — the phone
+    number is not a secret, drivers hand it out, and it is printed in the
+    panel. Twilio signs every request; verifying the signature is the only
+    thing that makes "From" mean anything.
+
+    HMAC-SHA1 over the full URL with the POST fields appended in sorted order,
+    which is Twilio's scheme, not a choice made here.
+
+    Fails CLOSED when no auth token is configured. If Twilio is not set up
+    then nothing legitimate is calling this, and answering an unsigned request
+    would be answering the only kind that can arrive."""
+    token = (os.environ.get("TWILIO_AUTH_TOKEN") or "").strip()
+    if not token:
+        return False
+    sig = request.headers.get("X-Twilio-Signature") or ""
+    if not sig:
+        return False
+    # Behind Render's proxy request.url says http; Twilio signed the https URL.
+    url = request.url.replace("http://", "https://", 1)
+    payload = url + "".join(k + request.form[k] for k in sorted(request.form))
+    want = base64.b64encode(
+        hmac.new(token.encode(), payload.encode("utf-8"), hashlib.sha1).digest()).decode()
+    return hmac.compare_digest(want, sig)
+
+
 @app.route("/sms/reply", methods=["POST"])
 def sms_reply():
     """Twilio webhook: a driver replies YES to claim a ride by text.
     First YES wins (same atomic claim as the panel). Point Twilio's
     'A message comes in' webhook at https://<public-url>/sms/reply."""
     from flask import Response as _Resp
+    if not _twilio_signature_ok():
+        return Response("", status=403, mimetype="text/plain")
     frm = (request.form.get("From") or "").strip()
     body = (request.form.get("Body") or "").strip()
 
@@ -4926,6 +5079,8 @@ def api_renter_login():
     data = request.get_json(force=True, silent=True) or {}
     vin = (data.get("vin") or "").strip().lower()
     dob = _norm_dob(data.get("dob"))
+    if _login_blocked(vin):
+        return _too_many_tries()
     if not vin:
         return jsonify({"ok": False, "error": "Enter your renting VIN."}), 400
     if not dob:
@@ -4939,13 +5094,18 @@ def api_renter_login():
             stored = r.get("dob")
             if stored:
                 if dob != stored:
+                    _login_failed(vin)
                     return jsonify({"ok": False, "error": "That birthday doesn't match this vehicle."}), 401
             else:
                 # legacy account with no birthday on file — enroll it now (VIN proves identity)
                 r["dob"] = dob
                 _save(RENTERS_PATH, renters)
+            _login_ok(vin)
             session["renter_id"] = r["id"]
             return jsonify({"ok": True, "renter": r})
+    # A wrong VIN counts too: without this, guessing the account is unlimited
+    # and only guessing the birthday is throttled.
+    _login_failed(vin)
     return jsonify({"ok": False, "error": "No driver found with that VIN."}), 404
 
 
@@ -4966,13 +5126,17 @@ def api_agent_login():
     org = (data.get("organization") or "").strip().lower()
     if not code or not last:
         return jsonify({"ok": False, "error": "Agent code and last name are required."}), 400
+    if _login_blocked(code):
+        return _too_many_tries()
     for a in _load(AGENTS_PATH):
         ac = (a.get("code") or "").strip().upper()
         if ac and ac == code and _last_name(a.get("name")) == last:
             if org and (a.get("organization") or "").strip().lower() != org:
                 continue   # organization was provided but doesn't match
+            _login_ok(code)
             session["agent_id"] = a["id"]
             return jsonify({"ok": True, "agent": a})
+    _login_failed(code)
     return jsonify({"ok": False, "error": "No agent matches that code and last name."}), 404
 
 
@@ -6566,9 +6730,13 @@ def api_board_login():
     else:
         return jsonify({"ok": False, "error": "The board password has not been set yet."}), 403
     roll = _board_roll()
+    if _login_blocked(name):
+        return _too_many_tries()
     if not (ok_pw and name and name in roll):
+        _login_failed(name)
         # One message for both failures — never reveal which half was right.
         return jsonify({"ok": False, "error": "That name and password do not match our board roll."}), 401
+    _login_ok(name)
     session["board"] = name
     session.permanent = True
     return jsonify({"ok": True, "name": name})
