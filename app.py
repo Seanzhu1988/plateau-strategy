@@ -6444,6 +6444,13 @@ def api_traffic_places():
                             "and no address is stored."})
 
 
+# Floor for the public visitor note on the main page. Set from the real
+# numbers: the site runs at a median of about 17 visitors a day, so anything
+# under a hundred all-time is a number that argues against the site rather
+# than for it.
+PUBLIC_TRAFFIC_MIN = int(os.environ.get("PUBLIC_TRAFFIC_MIN", "100"))
+
+
 @app.route("/api/traffic/summary")
 def api_traffic_summary():
     """Public, aggregate-only traffic numbers — no per-visitor detail, no
@@ -6489,9 +6496,49 @@ def api_traffic_summary():
                 "views_week": sum_path(path, week_cutoff),
                 "views_all_time": sum_path(path)}
 
+    # ---- site-wide, for the note on the main page --------------------------
+    # Only the visitor count goes out. NOT the path breakdown, not the source
+    # labels and not the conversions: which pages people open is competitive
+    # information, where they came from tells anyone reading whether the ad
+    # spend is working, and the conversions are bookings — that is revenue.
+    # Those stay owner-only in the Archive. A public number can be the number
+    # of people and nothing else.
+    def site_people(cutoff=None):
+        """Visitor-days: deduplicated within a day, summed across days.
+
+        Someone who comes back on Tuesday and Thursday counts twice. That is
+        the same convention the per-tool numbers above already use and say so
+        — it is the honest reading of "this week", and the information needed
+        to do better was deliberately thrown away when each day closed.
+        """
+        total = 0
+        for date, rec in days.items():
+            if cutoff and date < cutoff:
+                continue
+            # Today's record still holds raw ids; finished days keep a count.
+            if "visitor_ids" in rec:
+                total += len(rec["visitor_ids"])
+            else:
+                total += rec.get("unique_visitors") or 0
+        return total
+
+    all_time = site_people()
     return jsonify({"ok": True,
-                     "trip_planner": tool_stats("/trip-planner"),
-                     "destination_book": tool_stats("/destination-book")})
+                    "trip_planner": tool_stats("/trip-planner"),
+                    "destination_book": tool_stats("/destination-book"),
+                    "site": {
+                        "today": site_people(today_iso),
+                        "week": site_people(week_cutoff),
+                        "all_time": all_time,
+                        "since": min(days) if days else None,
+                        # Below this the page says nothing at all. A counter
+                        # reading "6 visits" is worse than no counter: it
+                        # invites the reader to conclude nobody is here, which
+                        # is the opposite of what a usage note is for. Silence
+                        # is not a lie; a discouraging true number is still a
+                        # bad thing to volunteer.
+                        "show": all_time >= PUBLIC_TRAFFIC_MIN,
+                    }})
 
 
 def _arch_comments():

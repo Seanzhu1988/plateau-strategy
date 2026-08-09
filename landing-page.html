@@ -1221,6 +1221,13 @@
         font-size:1.12rem;line-height:1.62;
       }
       #view-overview .psx-cta-row{display:flex;gap:.85rem;flex-wrap:wrap;justify-content:center;margin-top:2.2rem;}
+      /* Deliberately quiet. This is a footnote that happens to be a number,
+         not a scoreboard — a big counter under the buttons reads as a growth
+         metric aimed at investors, and the person standing here wants a car.
+         .93rem clears the 12px floor check_mobile.py enforces. */
+      #view-overview .psx-usage{
+        margin:1.4rem 0 0;font-size:.93rem;color:var(--psx-text2);opacity:.8;
+      }
       #view-overview .psx-btn{
         display:inline-flex;align-items:center;gap:.5rem;
         padding:.9rem 1.5rem;border-radius:12px;font-size:1rem;font-weight:600;
@@ -2037,6 +2044,12 @@
                             <a href="/book" class="psx-btn psx-btn-primary">Book a ride</a>
                             <a href="/agent" class="psx-btn psx-btn-ghost">Partner with us</a>
                         </div>
+                        <!-- Real visitor numbers, counted by our own server.
+                             Hidden entirely until the endpoint says show:true —
+                             a homepage announcing "9 travellers" argues against
+                             the site. Also hidden if the request fails, so a
+                             blip never leaves a half-sentence on the page. -->
+                        <p class="psx-usage" id="psxUsage" hidden></p>
                     </div>
                 </section>
 
@@ -2976,6 +2989,42 @@
                 })
                 .catch(function () { });
         });
+
+        /* ---- Visitor note under the hero ----
+           Our own server's count, not a third-party widget: nothing here loads
+           anything from anyone else, which is the same reason the site has no
+           analytics script.
+
+           Three ways this stays quiet, and each matters:
+             - the server says show:false while the total is too small to help;
+             - psxJSON never throws, so a failed request returns {ok:false}
+               and the paragraph simply stays hidden;
+             - the element ships with `hidden`, so a visitor with JavaScript
+               off sees no empty gap where a sentence should be.
+
+           The wording says "visits" rather than "travellers" on purpose. The
+           number is deduplicated within a day and summed across days, so
+           somebody who came back on Tuesday and Thursday is two — calling that
+           two travellers would be a small lie, and the whole page is built on
+           not telling those. */
+        (async function usageNote() {
+            var el = document.getElementById('psxUsage');
+            if (!el || typeof psxJSON !== 'function') return;
+            var d = await psxJSON('/api/traffic/summary');
+            var s = d && d.ok && d.site;
+            if (!s || !s.show || !s.week) return;
+            var since = '';
+            if (s.since) {
+                var dt = new Date(s.since + 'T00:00:00');
+                if (!isNaN(dt)) {
+                    since = ' · ' + s.all_time.toLocaleString() + ' since '
+                          + dt.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+                }
+            }
+            el.textContent = s.week.toLocaleString()
+                + ' visits in the last seven days' + since;
+            el.hidden = false;
+        })();
 
         // Initialize on the Overview view — or the view named in the URL hash
         // (e.g. /#finance from the Pollock button's Finance bubble). hashchange
