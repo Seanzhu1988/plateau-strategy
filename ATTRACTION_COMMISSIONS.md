@@ -57,6 +57,62 @@ can make. Recommend running that track alongside the New York one, not instead.
 
 Operated by Empire State Realty Trust. **Has a real trade programme.**
 
+#### The contacts — found 2026-08-09
+
+**`sales@esbonyc.com`** — one address covers both group sales and travel
+trade. Note the domain: **esb·o·nyc**, for Observatory, not esbnyc.com. Getting
+that wrong bounces.
+
+Corroborated from two independent searches of their own group-sales and
+Travel Trade Resource Center pages. Not read first-hand — esbnyc.com is
+blocked by this container's egress proxy, so **check the address on the page
+before sending**, which takes ten seconds in a browser.
+
+There is also a named address published for dignitary and celebrity visits.
+Deliberately not repeated here: it is the wrong desk, and arriving at the
+wrong desk is how a first approach gets forwarded to nobody.
+
+#### Who is actually on the other end
+
+ESRT runs a real travel-trade sales organisation, not a shared inbox. From
+their own job posting for *Director of Sales, Travel Trade*:
+
+- reports to the **VP, Business Development (Travel Trade)** — one version of
+  the posting says the SVP/General Manager of the Observatory
+- **manages roughly four sales professionals**
+- the job is targeting "group and travel trade sales" and setting sales targets
+
+*From search summaries of the posting on Lever and ZipRecruiter; both are
+blocked here, so the structure is second-hand.* What it establishes is enough:
+there are named people whose job is exactly this conversation, and a small
+partner who asks a specific question gets a real answer.
+
+#### What is NOT the route
+
+- **`esbnyc.com/partnerships` and the brand-partnerships form** are for brand
+  and sponsorship deals — lighting the tower, co-marketing. Not ticket
+  reselling. Writing there gets filed under marketing.
+- **The Ambassador programme** (launched 2024) is consumer loyalty — one point
+  per dollar for superfans and locals hosting guests. It is not a reseller
+  commission, and it is not a business programme.
+- No public affiliate programme with a published commission was found for ESB
+  directly. Their commission money runs through distributors.
+
+#### The realistic opening: group sales, not commission
+
+The commission contract is the wrong first ask and probably a no. **Group
+sales is a yes to a different question.** Groups of 20+ get published group
+handling, a self-service booking portal and a named account manager.
+
+That matters because it inverts the pitch. Instead of "pay me for referrals",
+which a trade desk hears fifty times a week from people with no volume, it is
+"I have a group of 24 arriving on the 14th." That is a booking, and a booking
+gets an account manager, and an account manager is a person who can later be
+asked what the trade programme needs.
+
+So: the first real ESB relationship most likely starts with an actual group —
+a wedding party, a corporate team, a tour — not with a proposal.
+
 - **Travel Trade Resource Center** — `esbnyc.com/travel-trade-resource-center`.
   Described as resources and tools for travel professionals, including group
   planning.
@@ -196,6 +252,47 @@ That is true, specific, and it describes intent data rather than raw traffic.
 
 Swap `[VENUE]` and drop the CityPASS sentence for Top of the Rock, where it is
 less relevant.
+
+### Email — Empire State Building, ready to send
+
+To **`sales@esbonyc.com`** (verify on the page first — see above). This is the
+trade version, not the group version; send the group version instead the day
+there is an actual group, because that one gets answered.
+
+> **Subject:** Travel trade — Seattle planner sending NYC itineraries, what does your programme need?
+>
+> Hello,
+>
+> I run Plateau Strategy Solution Lab in Seattle. We operate a car service and
+> publish free trip-planning tools — a day planner, a road-trip planner and a
+> destination guide — which people use to build real itineraries. That means we
+> see where someone intends to go before they have booked anything, and the
+> Empire State Building Observatory is on a lot of those New York itineraries.
+>
+> Today we point them at your site and the referral is worth nothing to either
+> of us. I would rather send them properly.
+>
+> Two questions, and I would be glad of a short answer to either:
+>
+> 1. What does your travel-trade programme need from a referring partner —
+>    volume, entity, insurance — before it is worth your team's time?
+> 2. If the answer is "go through a distributor for now", which one do you
+>    prefer to see partners come through? I am happy to work via CityPASS or
+>    another if that is how you would rather this run.
+>
+> I am early and I am not going to dress it up as more than it is. I would
+> rather learn what your programme needs and come back when I meet it than
+> take your time with a pitch.
+>
+> Best,
+> Xiaojun (Sean) Zhu
+> Plateau Strategy Solution Lab · Seattle, WA
+> plateaustrategy.io
+
+Why it is shaped this way: it asks a question a salesperson can answer in two
+lines, it never claims volume that does not exist, and question 2 gives them an
+easy win — pointing you at CityPASS costs them nothing and still starts a
+relationship. A "go through CityPASS" reply is a **success**, not a rejection.
 
 ### Phone — Top of the Rock group sales, 877-692-7625
 
