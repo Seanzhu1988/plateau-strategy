@@ -512,6 +512,44 @@ def api_traffic_optout():
                              if on else "This device is being counted again.")}), on)
 
 
+@app.route("/api/traffic/me")
+def api_traffic_me():
+    """Is THIS device being counted? Read-only, and only about the caller.
+
+    /api/traffic/optout could not answer this: a GET of it SETS the opt-out,
+    so asking the question changed the answer. Anything wanting to show the
+    current state had to either toggle it or guess.
+
+    Public, like /not-a-traveler, and for the same reason — "am I in your
+    numbers" is a question anybody may ask about themselves. It reports
+    nothing about anyone else: no list of registered networks, no counts, no
+    other devices. `network_registered` is a yes/no about the address this
+    request already came from, which the caller plainly knows.
+    """
+    vid = request.cookies.get("psx_vid")
+    here = _norm_ip(_client_ip())
+    return jsonify({
+        "ok": True,
+        "device_counted": request.cookies.get(TRAFFIC_OPTOUT_COOKIE) != "1",
+        "in_today_count": _vid_counted_today(vid),
+        "network": here,
+        "network_registered": bool(here) and here in _registered_nets(),
+    })
+
+
+@app.route("/api/traffic/forget-today", methods=["POST"])
+def api_traffic_forget_today():
+    """Take this device out of TODAY's unique count.
+
+    Opting out stops the counting from here on; it does nothing about a visit
+    already recorded this morning. Without this, switching the flag on leaves
+    the person looking at a number they know includes them and no way to fix
+    it. Only today is correctable — finished days kept a count and threw the
+    ids away."""
+    ok = _forget_vid_today(request.cookies.get("psx_vid"))
+    return jsonify({"ok": True, "removed": ok})
+
+
 def _vid_counted_today(vid):
     """Has THIS browser been counted in today's visitor number?
 
