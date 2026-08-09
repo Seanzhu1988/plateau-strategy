@@ -232,10 +232,10 @@
             <div class="divider">or register a new vehicle</div>
 
             <label>Your name <span style="color:#a3302a">*</span></label>
-            <input id="r_name" placeholder="Carlos Diaz">
+            <input id="r_name" placeholder="Carlos Diaz" autocomplete="name">
             <div class="row">
-                <div><label>Email</label><input id="r_email" type="email" placeholder="carlos@email.com"></div>
-                <div><label>Phone</label><input id="r_phone" placeholder="(415) 555-0143"></div>
+                <div><label>Email</label><input id="r_email" type="email" placeholder="carlos@email.com" autocomplete="email"></div>
+                <div><label>Phone</label><input id="r_phone" placeholder="(415) 555-0143" autocomplete="tel"></div>
             </div>
             <div class="row">
                 <div><label>Vehicle make</label><input id="r_make" placeholder="Tesla"></div>
@@ -312,14 +312,14 @@
                             <div style="margin-top:0.55rem; color:#1b6b5a; font-size:0.78rem;">Tax note: the full fare is your income (referral + trip) and is reportable on your 1099. The customer is charged once.</div>
                         </div>
                         <label>Customer name <span style="color:#a3302a">*</span></label>
-                        <input id="rf_name" placeholder="Airport customer">
+                        <input id="rf_name" placeholder="Airport customer" autocomplete="name">
                         <div class="row">
-                            <div><label>Customer email</label><input id="rf_email" type="email" placeholder="customer@email.com"></div>
-                            <div><label>Customer phone</label><input id="rf_phone" placeholder="(415) 555-0100"></div>
+                            <div><label>Customer email</label><input id="rf_email" type="email" placeholder="customer@email.com" autocomplete="email"></div>
+                            <div><label>Customer phone</label><input id="rf_phone" placeholder="(415) 555-0100" autocomplete="tel"></div>
                         </div>
                         <div class="row">
-                            <div><label>Pickup</label><input id="rf_pickup" placeholder="Hotel lobby"></div>
-                            <div><label>Drop-off</label><input id="rf_dropoff" placeholder="SeaTac Airport"></div>
+                            <div><label>Pickup</label><input id="rf_pickup" placeholder="Hotel lobby" autocomplete="street-address"></div>
+                            <div><label>Drop-off</label><input id="rf_dropoff" placeholder="SeaTac Airport" autocomplete="street-address"></div>
                         </div>
                         <label>Fare (USD)</label>
                         <input id="rf_fare" type="number" value="75" step="1" min="1">

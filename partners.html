@@ -118,7 +118,7 @@ Plateau Strategy Solution Lab
 
         <div class="card">
             <div class="addrow">
-                <div><label>Organization</label><input id="p_name" placeholder="Hotel or agency name"></div>
+                <div><label>Organization</label><input id="p_name" placeholder="Hotel or agency name" autocomplete="name"></div>
                 <div style="flex:0 0 150px;"><label>Type</label>
                     <select id="p_type">
                         <option value="hotel">Hotel</option>
@@ -128,8 +128,8 @@ Plateau Strategy Solution Lab
                         <option value="other">Other</option>
                     </select>
                 </div>
-                <div><label>Phone</label><input id="p_phone" placeholder="(206) 555-0100"></div>
-                <div><label>Email</label><input id="p_email" placeholder="sales@..."></div>
+                <div><label>Phone</label><input id="p_phone" placeholder="(206) 555-0100" autocomplete="tel"></div>
+                <div><label>Email</label><input id="p_email" placeholder="sales@..." autocomplete="email"></div>
                 <div><label>Website</label><input id="p_website" placeholder="example.com"></div>
                 <button class="addbtn" onclick="addPartner()">+ Add prospect</button>
             </div>
