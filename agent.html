@@ -137,6 +137,18 @@
             .navitem { flex: 1 1 auto; text-align: center; }
             .stats { grid-template-columns: 1fr; }
         }
+
+        /* Continue with Google — a shortcut above the fields, visibly optional.
+           The divider is what stops it reading as a required first step. It
+           renders only when GOOGLE_CLIENT_ID is configured; otherwise the box
+           stays hidden and the form behaves exactly as it always has. */
+        #gsiBox { margin: 0 0 1.2rem; }
+        #gsiBtn { display: flex; justify-content: center; min-height: 44px; }
+        .gsi-note { color: #8a8377; font-size: 0.82rem; text-align: center; margin: 0.6rem 0 0; }
+        .gsi-or { display: flex; align-items: center; gap: 0.9rem; margin: 1.2rem 0 0.2rem;
+                  color: #8a8377; font-size: 0.8rem; text-transform: uppercase;
+                  letter-spacing: 0.06em; }
+        .gsi-or::before, .gsi-or::after { content: ""; flex: 1; height: 1px; background: #e6e2da; }
     </style>
     <script src="/session.js"></script>
     <link rel="stylesheet" href="/paper.css">
@@ -173,14 +185,23 @@
                 neighborhood properly. Your code is what proves the trip was written by a real guide.
             </p>
 
+            <!-- Hidden unless GOOGLE_CLIENT_ID is set. Nothing is requested from
+                 Google until then, and the fields below work the same whether
+                 this is used or ignored. -->
+            <div id="gsiBox" hidden>
+                <div id="gsiBtn"></div>
+                <p class="gsi-note">Fills your name and email. Nothing is stored.</p>
+                <div class="gsi-or">or fill it in yourself</div>
+            </div>
+
             <label>Your name <span style="color:#a3302a">*</span></label>
-            <input id="a_name" placeholder="Maria Lopez" autocomplete="name">
+            <input data-gsi-name id="a_name" placeholder="Maria Lopez" autocomplete="name">
             <div id="orgWrap" style="display:none;">
                 <label>Organization name <span style="color:#a3302a">*</span></label>
                 <input id="a_org" placeholder="Lopez Travel Agency">
             </div>
             <div class="row">
-                <div><label>Email</label><input id="a_email" type="email" placeholder="maria@email.com" autocomplete="email"></div>
+                <div><label>Email</label><input data-gsi-email id="a_email" type="email" placeholder="maria@email.com" autocomplete="email"></div>
                 <div><label>Phone</label><input id="a_phone" placeholder="(415) 555-0177" autocomplete="tel"></div>
             </div>
             <button class="primary" onclick="register()">Register &amp; Get My Code</button>
@@ -696,5 +717,6 @@
     <script src="/floatback.js"></script>
     <script src="/jarvis-widget.js"></script>
     <script src="/i18n.js"></script>
+<script src="/google-signin.js"></script>
 </body>
 </html>

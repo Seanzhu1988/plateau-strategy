@@ -507,57 +507,12 @@
                 msg.style.color = '#b91c1c'; msg.textContent = err.message;
             }
         }
-        /* ---------- Continue with Google (optional) ----------
-           Loads nothing from Google unless a client id is configured, so a
-           site without one sends no request to anyone and shows no button.
-           The credential is NOT decoded here — a browser can say anything.
-           It goes to the server, which checks the signature against Google's
-           keys, and we only use what comes back. */
-        (async function initGoogle() {
-            var box = document.getElementById('gsiBox');
-            if (!box) return;
-            var cfg;
-            try {
-                cfg = await psxJSON('/api/auth/google/config');
-            } catch (e) { return; }
-            if (!cfg || !cfg.enabled || !cfg.client_id) return;   // stays hidden
-
-            await new Promise(function (done) {
-                var s = document.createElement('script');
-                s.src = 'https://accounts.google.com/gsi/client';
-                s.async = true; s.defer = true;
-                s.onload = done;
-                s.onerror = function () { done('failed'); };
-                document.head.appendChild(s);
-            });
-            if (!window.google || !google.accounts || !google.accounts.id) return;
-
-            google.accounts.id.initialize({
-                client_id: cfg.client_id,
-                callback: async function (resp) {
-                    try {
-                        const r = await fetch('/api/auth/google', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ credential: resp.credential })
-                        });
-                        const d = await r.json();
-                        if (!d || !d.ok) return;             // silent: they can still type
-                        var f = document.getElementById('bookForm');
-                        if (d.name && !f.name.value) f.name.value = d.name;
-                        if (d.email && !f.email.value) f.email.value = d.email;
-                        box.querySelector('.gsi-note').textContent =
-                            'Signed in as ' + d.email + ' — check the rest and send it.';
-                        (f.phone || f.pickup).focus();
-                    } catch (e) { /* typing still works */ }
-                }
-            });
-            google.accounts.id.renderButton(document.getElementById('gsiBtn'),
-                { theme: 'outline', size: 'large', text: 'continue_with',
-                  shape: 'pill', width: 280 });
-            box.hidden = false;
-        })();
+        /* Continue with Google now lives in /google-signin.js — one copy,
+           shared with the driver and agent forms. The rule it exists to keep
+           is that the credential is never decoded here; three copies would be
+           three chances to get that wrong. */
     </script>
+    <script src="/google-signin.js"></script>
     <script src="/floatback.js"></script>
     <script>
     // ---- "Use my location" on the pickup field ----

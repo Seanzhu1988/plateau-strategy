@@ -199,6 +199,18 @@
         .rto-table td { padding: 0.55rem 0.5rem; font-size: 0.85rem; border-bottom: 1px solid #24324a; color: #4a453d; }
         .rto-paid { color: #1b6b5a; font-weight: 700; font-size: 0.66rem; letter-spacing: 0.5px; }
         @media (max-width: 640px) { .rto-stats { grid-template-columns: 1fr; } }
+
+        /* Continue with Google — a shortcut above the fields, visibly optional.
+           The divider is what stops it reading as a required first step. It
+           renders only when GOOGLE_CLIENT_ID is configured; otherwise the box
+           stays hidden and the form behaves exactly as it always has. */
+        #gsiBox { margin: 0 0 1.2rem; }
+        #gsiBtn { display: flex; justify-content: center; min-height: 44px; }
+        .gsi-note { color: #8a8377; font-size: 0.82rem; text-align: center; margin: 0.6rem 0 0; }
+        .gsi-or { display: flex; align-items: center; gap: 0.9rem; margin: 1.2rem 0 0.2rem;
+                  color: #8a8377; font-size: 0.8rem; text-transform: uppercase;
+                  letter-spacing: 0.06em; }
+        .gsi-or::before, .gsi-or::after { content: ""; flex: 1; height: 1px; background: #e6e2da; }
     </style>
     <script src="/session.js"></script>
     <link rel="stylesheet" href="/paper.css">
@@ -231,10 +243,19 @@
 
             <div class="divider">or register a new vehicle</div>
 
+            <!-- Hidden unless GOOGLE_CLIENT_ID is set. Nothing is requested from
+                 Google until then, and the fields below work the same whether
+                 this is used or ignored. -->
+            <div id="gsiBox" hidden>
+                <div id="gsiBtn"></div>
+                <p class="gsi-note">Fills your name and email. Nothing is stored.</p>
+                <div class="gsi-or">or fill it in yourself</div>
+            </div>
+
             <label>Your name <span style="color:#a3302a">*</span></label>
-            <input id="r_name" placeholder="Carlos Diaz" autocomplete="name">
+            <input data-gsi-name id="r_name" placeholder="Carlos Diaz" autocomplete="name">
             <div class="row">
-                <div><label>Email</label><input id="r_email" type="email" placeholder="carlos@email.com" autocomplete="email"></div>
+                <div><label>Email</label><input data-gsi-email id="r_email" type="email" placeholder="carlos@email.com" autocomplete="email"></div>
                 <div><label>Phone</label><input id="r_phone" placeholder="(415) 555-0143" autocomplete="tel"></div>
             </div>
             <div class="row">
@@ -1064,5 +1085,6 @@
     <script src="/floatback.js"></script>
     <script src="/jarvis-widget.js"></script>
     <script src="/i18n.js"></script>
+<script src="/google-signin.js"></script>
 </body>
 </html>

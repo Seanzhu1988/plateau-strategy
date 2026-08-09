@@ -1351,6 +1351,17 @@ def leaflet_vendor(filename):
     return send_from_directory(os.path.join(BASE_DIR, "vendor", "leaflet"), filename)
 
 
+@app.route("/google-signin.js")
+def google_signin_js():
+    """The "Continue with Google" button, shared by every form that offers it.
+
+    One copy rather than one per page: it is security-sensitive — the rule that
+    the credential is never decoded in the browser has to hold everywhere — and
+    three copies is three places to get that wrong."""
+    return send_file(os.path.join(BASE_DIR, "google-signin.js"),
+                     mimetype="text/javascript")
+
+
 @app.route("/psx-net.js")
 def psx_net_js():
     """One network helper, shared by every page.
