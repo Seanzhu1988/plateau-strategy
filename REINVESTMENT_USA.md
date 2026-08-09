@@ -263,3 +263,219 @@ The 🚫 BLOCKED section stands unchanged. Selling a document is a service, and
 none of this is a security. The moment strangers fund somebody's actual house,
 that is a different legal object entirely.
 
+
+---
+
+# THE FULL MACHINE, 2026-08-08 — Sean's description, written down
+
+This is the whole vision as Sean described it, captured because most of it was
+not in the draft above and it is the first time the pieces have been connected
+end to end. Recorded faithfully first; the objections are collected at the
+bottom rather than sprinkled through, so the idea can be read on its own terms
+before it is argued with.
+
+## The flow, as described
+
+1. **Anyone submits an idea.** No account needed — the board is already open.
+2. **The council debates it.** Many agents, deliberately expensive
+   ("high token burning"), to refine the idea into what the project would
+   actually need.
+3. **The council produces a file**, and the contents are specific:
+   - a to-do list — register the company, what it costs, what roles are needed
+   - draft paperwork — contract, company structure, agreement, bylaws
+   - which professionals the project needs, named by discipline
+   - **the feasibility assessment**, which Sean calls the most important part
+4. **Ideas are filtered.** Not everything proceeds. This is the point of the
+   council, not a side effect.
+5. **The submitter pays a low platform fee.**
+6. **The idea is listed publicly** to gather interest, votes and donations.
+   **A donation unlocks the blueprint** and the general shape of the project.
+7. **Professionals are recognised automatically.** If the file says an attorney
+   is needed, the site generates an attorney account. They offer professional
+   opinions on that project; substantive legal advice is paid to unlock.
+8. **The professional stays.** They hold the account as an agent and keep
+   working on the site as the business grows. Anyone needing legal help can
+   search for them.
+9. **The directory compounds.** Over time the site accumulates a list of
+   professionals — including disciplines nobody thought of in advance — funded
+   by platform fees or subscriptions.
+10. **Popular ideas become businesses.** Votes and donations carry an idea until
+    it can stand up.
+11. **When it needs real money, Plateau is Phase 4.** The financial arm exists
+    for this moment; phases 1–4 were built to support it.
+
+## The money, and the exit — Sean's own terms
+
+- Plateau funds the business and **holds shares**.
+- **The shares are not permanent.** The business pays **10% royalty a year**,
+  and that royalty **buys Plateau out** over time.
+- The return is **principal plus the 10%**.
+- *"Plateau will never or will not become a vampire drain for the business."*
+- The 10% is not only revenue. It is **a pooled emergency fund** — mechanical,
+  legal, whatever the business hits.
+- Plateau assesses **leadership**. If a leader cannot keep the business in
+  shape, *"the loyalty won the business"* — Plateau takes over, and the owner
+  should understand exit may be the only option. Everything is negotiable.
+- The royalty **splits into pieces of a pie chart** as leadership stabilises.
+- Businesses must hold **moral, ethical and legal standards**. When they cannot,
+  they can search the site for advice — not always free, and never promised to
+  work, because it depends on the severity of the case.
+- **Every agent gets paid.**
+- **Plateau does not hold funds.** Stated flatly and twice. "No fund should be
+  withheld... we want to make clear of that."
+
+## What is genuinely strong here
+
+Worth saying, because the objections below are long and this part is real.
+
+**The buy-out royalty is a good instrument.** Most small-business funding is
+either a loan that crushes cash flow or equity the founder never gets back.
+A royalty that retires the stake is neither — the founder ends up owning their
+company again, and Plateau's return is bounded and knowable. That is a genuinely
+founder-friendly structure and it is unusual.
+
+**"We do not hold funds" is the single best decision in the document.** It is
+the same instinct as "we hold no keys" for the trading bot, and it removes an
+entire category of risk — custody, commingling, money transmission licensing —
+by never touching the asset. Keep it. Write it into every contract.
+
+**The emergency pool is a real product.** Small businesses do not fail because
+the idea was bad; they fail because a transmission went and there was no
+$4,000. A funder that pools for that is solving the actual failure mode.
+
+**The professional directory compounds.** Every file that says "this needs a
+surveyor" is a lead for a surveyor, and the directory is worth more the longer
+it runs. That is a real moat and it costs nothing extra to build.
+
+## Objections, in the order they will bite
+
+### 1. The takeover clause contradicts the promise, in Sean's own words
+
+Two sentences, both his:
+
+> "Plateau will never or will not become a vampire drain for the business."
+> "The loyalty won the business. Plateau will take over the business for good."
+
+The second is the thing the first promises not to be. A funder who can judge the
+founder unfit and take the company **is** the thing founders are afraid of, and
+no amount of good intent in the drafting changes how it reads to someone being
+asked to sign it.
+
+It is also the clause most likely to be struck down. A contract where one party
+decides unilaterally that the other has failed, and takes the asset, is where
+courts start asking about unconscionability — and the sympathetic party in that
+room is the founder, not the fund.
+
+**This does not have to be abandoned, it has to be made objective.** Replace
+"we decide you are failing" with covenants the business either meets or does
+not: missed royalty payments, a covenant breach, insolvency. Then the trigger
+is arithmetic and the founder can see it coming and fix it. Same protection,
+none of the discretion, and far easier to sign.
+
+### 2. "Donation unlocks the blueprint" is not a donation
+
+If money buys access to something, it is a **sale**, and it is taxable revenue
+rather than a gift. That is fine — just call it what it is.
+
+If it really is a donation, soliciting donations from the public requires
+**charitable solicitation registration** in Washington and in most states where
+donors live, and generally a nonprofit to receive them. Doing it as an LLC
+invites a different set of problems.
+
+Pick one. The dangerous version is the one that uses the warm word for the cold
+mechanism.
+
+### 3. Auto-generating accounts for professionals who never asked
+
+*"The site will auto generate such log in for the attorney."*
+
+Creating an account in a named professional's identity, without their knowledge,
+is the part of this plan most likely to produce an angry letter. It reads as
+impersonation, it puts their name on a platform they never joined, and if their
+details were scraped it adds a data-protection question on top.
+
+**The fix is small and keeps everything that matters:** generate the *invitation*,
+not the account. "Your discipline is needed on this project — claim your profile."
+The directory still compounds, the professional still arrives, and nothing exists
+in their name until they say yes.
+
+### 4. Generated bylaws and contracts — unauthorised practice of law
+
+The council producing "contract, company structure, agreement and bylaws" for a
+stranger's company is the exact activity **UPL** rules cover. LegalZoom spent
+years and a great deal of money establishing where that line sits.
+
+The workable shape is documented and narrow: **blank forms and general
+information are fine; applying law to one person's specific situation is not.**
+So the council can produce a checklist, an explanation of what an operating
+agreement does, and a template. The moment it selects clauses *for this business
+because of its facts*, it is practising. That distinction has to be built into
+the product, not written in a disclaimer under it.
+
+### 5. Attorney fees on the platform — RPC 5.4, again
+
+Flagged before for "Everybody's Business Attorney" and now structural rather
+than optional. **A lawyer may not share legal fees with a non-lawyer.** If
+Plateau takes a cut of what the attorney charges for advice, that is fee
+splitting, and the exposure lands on the attorney's licence, not on Plateau.
+
+Structures that work: the attorney pays a flat subscription or listing fee
+regardless of what they earn; or Plateau charges the *client* a platform fee
+that is separate from and not contingent on the legal fee. What does not work is
+a percentage of the advice.
+
+The WSBA ethics line will answer this, and that call is free.
+
+### 6. Equity plus royalty makes Plateau an investment company
+
+"We do not hold funds" solves custody. It does not solve this. Taking equity
+stakes in businesses, funded by money raised from the public, is what an
+investment company does, and the public-funding half is already marked BLOCKED
+above for the same reason. Nothing in this new description changes that
+boundary — it makes it load-bearing.
+
+### 7. The feasibility assessment is the liability
+
+Sean calls it the most important output, and it is also the one that can be
+sued over. Somebody donates because the council said an idea was feasible; it
+was not; they want their money back. The assessment must be visibly the opinion
+of a machine, dated, with its reasoning shown and its uncertainty stated — the
+same standard already applied to the trading page. An assessment that hedges
+nothing is the one that costs the most.
+
+## The unit economics nobody has costed yet
+
+"High token burning" is correct, and it is the platform's main cost driver.
+A real number from this repo, today: **one council run on one codebase used 44
+agents, 931 tool calls, 3.19 million tokens, and 80 minutes.**
+
+That is the cost of ONE assessment. The "low platform fee" has to exceed it, or
+every submission loses money and popularity makes it worse. Three levers, and
+the design should pick deliberately rather than by accident:
+
+- a **triage pass** — one cheap agent decides whether an idea is worth a council
+  at all, so the expensive machinery only runs on ideas that survive a first look
+- a **fee that covers the run**, charged before the council starts
+- **council depth by tier** — a nine-lens panel for a serious submission, three
+  for a first look
+
+The filtering Sean already wants is the same mechanism as the cost control. That
+is a happy accident and the design should lean on it.
+
+## What is buildable now, unchanged by any of the above
+
+1. **The idea board** — already live, already open to anyone.
+2. **The council on submitted ideas**, producing the to-do list, the roles, the
+   costs and the feasibility — as *information*, with templates rather than
+   tailored legal documents.
+3. **The professional directory**, built from invitations rather than
+   auto-created accounts.
+4. **The platform fee**, for the council run. Ordinary revenue for a service
+   rendered, no securities question anywhere near it.
+5. **Public listing, votes and interest** — with no money attached, exactly as
+   the board does today.
+
+That is most of the machine. What waits is the money half: donations (pick sale
+or gift), Plateau's equity stakes, and anything raised from the public. Those
+wait on the securities lawyer already named above, and the takeover clause waits
+on being rewritten as covenants before it goes near a founder.
