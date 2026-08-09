@@ -1711,7 +1711,11 @@
       .fin-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.16);}
       .fin-card h3{color:#f2f5fa;}
       .fin-card > p{color:#6b655b;}
-      .fin-card-link{color:#7da2ff;}
+      /* #7da2ff was 2.48:1 on the card — a fail nobody saw, because every
+         fin-card was commented out and the class had nothing visible to
+         colour. The Bot Lab card was the first to paint it and the gate
+         caught it immediately. The palette accent clears the floor. */
+      .fin-card-link{color:var(--psx-accent);}
       .price-card{border-width:1px;}
       .price-card.best{border-color:rgba(245,158,11,.55);}
       .fin-step p{color:var(--psx-text2);}
@@ -1987,7 +1991,12 @@
                 </div>
             </div>
             <nav>
-                <span class="sections-trigger" id="sectionsTrigger">☰ Sections</span>
+                <!-- The "☰ Sections" trigger stood here until 2026-08-08. It was
+                     the handle for the left rail; with the strip back in its
+                     original place under the header, a button whose only job is
+                     to reveal something that reveals itself is one control too
+                     many. The strip still opens on mouse-to-top on desktop, and
+                     on a phone it is docked and always visible. -->
                 <a href="#" id="navArticles" onclick="showView('reinvestment', event)">Business Ideas</a>
                 <a href="/dispatch">Dispatch</a>
                 <a href="/board">Board of Directors</a>
@@ -2384,6 +2393,22 @@
                                 <span class="fin-card-link">Follow the research →</span>
                             </div>
                             -->
+                            <!-- Bot lab. Hidden until the lab actually answers — see the
+                                 Deflator note above for the precedent: /lab is 404 to
+                                 everyone unless BOT_LAB_ENABLED is set on the instance, so a
+                                 card that is always painted would be a dead link on the
+                                 public site. revealLabCard() below asks the server and only
+                                 un-hides this if the page is really there. -->
+                            <div class="fin-card" id="labCard" style="display:none" onclick="window.location.href='/lab'">
+                                <div class="fin-card-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-chart"/></svg></div>
+                                <!-- A quiet uppercase label rather than the amber pill the
+                                     Deflator card used. That pill predates the palette and
+                                     its two colours are both off it; a word in the palette's
+                                     own secondary ink says the same thing without shouting. -->
+                                <h3>Bot Lab <span style="font-size:.62rem;letter-spacing:.09em;font-weight:700;color:var(--psx-text2);vertical-align:middle">RESEARCH</span></h3>
+                                <p>Automated trading research, on paper trades only. Nothing here connects to an exchange, holds a key, or touches a balance. Access is issued directly and nothing is for sale.</p>
+                                <span class="fin-card-link">Sign in →</span>
+                            </div>
                             <p class="view-intro" style="grid-column:1/-1;opacity:.7">More financial products coming soon.</p>
                             <!-- Add more finance product cards here (same pattern):
                             <div class="fin-card" onclick="openFinProduct('savings')">
@@ -2649,29 +2674,28 @@
                             <img src="plateau-logo.svg" alt="">
                             <span>Plateau Strategy</span>
                         </div>
-                        <p>A Seattle car service: flat-rate Tesla rides to Sea–Tac and around the city, plus trip-planning tools that are free to use.</p>
+                        <!-- Taken off 2026-08-08 at Sean's instruction: the
+                             "A Seattle car service…" line, the service-area and
+                             24/7 lines, and the "Book a ride — $75 flat to
+                             SeaTac" link. The mark above carries the name; the
+                             columns to the right carry the links.
 
-                        <!-- Contact. Whatever goes here must match the Google
-                             Business Profile word for word — same business name,
-                             same phone — or verification gets harder and the two
-                             listings compete instead of reinforcing each other.
+                             When contact details do go back, they must match the
+                             Google Business Profile word for word — same business
+                             name, same phone — or verification gets harder and
+                             the two listings compete instead of reinforcing each
+                             other. See ADVERTISING.md § 0.5.
 
-                             PHONE GOES HERE once the Seattle 206 line exists:
+                             PHONE, once the Seattle 206 line exists:
                                <a href="tel:+1206XXXXXXX"><b>📞</b>(206) XXX-XXXX</a>
-                             directly above the email line. Put the same digits in
-                             the LocalBusiness node at the top of this file and on
-                             the Business Profile. See ADVERTISING.md § 0.5. -->
-                        <div class="psx-foot-contact">
-                            <span>Serving Seattle &amp; Seattle–Tacoma International (SEA)</span>
-                            <span>Rides available 24/7, by reservation</span>
-                            <!-- EMAIL GOES BACK HERE the moment Porkbun forwarding
-                                 is live (hello@ -> the owner's Gmail). Pulled for
-                                 now because the domain has no MX records, so mail
-                                 to this address bounces. A contact address that
-                                 bounces is worse than no address at all.
-                                   <a href="mailto:hello@plateaustrategy.io"><b>✉️</b>hello@plateaustrategy.io</a> -->
-                            <a href="/book">Book a ride — $75 flat to SeaTac</a>
-                        </div>
+                             and put the same digits in the LocalBusiness node at
+                             the top of this file.
+
+                             EMAIL, the moment Porkbun forwarding is live
+                             (hello@ -> the owner's Gmail). Pulled because the
+                             domain has no MX records, so mail to it bounces, and
+                             an address that bounces is worse than none:
+                               <a href="mailto:hello@plateaustrategy.io"><b>✉️</b>hello@plateaustrategy.io</a> -->
                     </div>
 
                     <div>
@@ -2932,8 +2956,25 @@
                 nav.addEventListener('mouseenter', showNav);
                 nav.addEventListener('mouseleave', scheduleHideNav);
             }
-            const trig = document.getElementById('sectionsTrigger');
-            if (trig) { trig.addEventListener('mouseenter', showNav); trig.addEventListener('click', showNav); }
+            // The sectionsTrigger listeners were removed with the button on
+            // 2026-08-08. Reveal is mouse-to-top on desktop; on a phone the
+            // strip is docked by the max-width:768px block and never hides.
+
+            // Show the Bot Lab card in Finance only if the lab is switched on
+            // for this instance. Asking beats hardcoding: /lab answers 404
+            // unless BOT_LAB_ENABLED is set, and a card leading to a 404 is
+            // what got the Deflator card taken down. A failed fetch leaves the
+            // card hidden, which is the right way for this to fail.
+            fetch('/lab', { method: 'GET', redirect: 'manual' })
+                .then(function (r) {
+                    // 200 = open, 401 = there but wants a sign-in. Both mean the
+                    // page exists and the card should lead to it.
+                    if (r.status === 200 || r.status === 401) {
+                        var c = document.getElementById('labCard');
+                        if (c) c.style.display = '';
+                    }
+                })
+                .catch(function () { });
         });
 
         // Initialize on the Overview view — or the view named in the URL hash

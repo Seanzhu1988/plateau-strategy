@@ -55,8 +55,31 @@ for frag in ("openEnroll", "submitEnroll", 'id="financeModal"',
              'id="fin_email"', 'class="price-btn"', "price-card best"):
     chk("no %s" % frag, frag not in prose)
 chk("no 30-day free trial offered", "free trial" not in prose.lower())
-chk("no annual price", "$170" not in prose)
-chk("no monthly price", "14.17" not in prose)
+# Not "no $170" — ANY price. The figure in FINANCE_PLANS changed once already
+# ($170/year to $34/year on 2026-08-08) and a test naming the old number would
+# have gone on passing while the new one was published. What must stay true is
+# that the finance section quotes no price at all while the product is not for
+# sale, whatever the number happens to be.
+# Slice the pane from the RAW page — the markers that bound it are HTML
+# comments, so slicing the comment-stripped copy runs to the end of the file
+# and drags in the Factor Clock and the $75 fare. Strip comments after.
+pane = re.sub(r"<!--.*?-->", "",
+              page.split('id="fin-debt"', 1)[-1].split("/fin-debt pane", 1)[0],
+              flags=re.S)
+priced = re.findall(r"\$\s?\d[\d,]*(?:\.\d{2})?", pane)
+chk("no price of any kind in the finance pane (%s)" % (priced or "clean"), not priced)
+for _k, _p in A.FINANCE_PLANS.items():
+    chk("the %s price is not published on the page (%s)" % (_k, _p["billing"]),
+        "$%g" % _p["amount"] not in prose)
+# The plan table and the endpoint's fallback used to be written out separately,
+# so dropping a plan left the endpoint defaulting to a key that no longer
+# existed — a KeyError, not a graceful default. Nothing may name a plan that
+# FINANCE_PLANS does not define.
+_src = open(os.path.join(HERE, "app.py"), encoding="utf-8").read()
+_enroll = _src.split("def api_finance_enroll", 1)[1].split("\n@app.route", 1)[0]
+_named = set(re.findall(r'plan = "([a-z]+)"', _enroll))
+chk("the endpoint hardcodes no plan name (%s)" % (_named or "none"),
+    _named <= set(A.FINANCE_PLANS))
 chk("it says outright that it is not for sale", "not for sale" in prose.lower())
 
 print("\nand it does not promise what nobody can promise:")

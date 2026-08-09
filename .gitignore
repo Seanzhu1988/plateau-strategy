@@ -6,6 +6,13 @@ owner_auth.json
 # locally without that disk writes them here — and this repo is public, so a
 # committed key would hand the link to everyone.
 share_keys.json
+# Bot lab. bot_users.json holds password hashes for owner-issued accounts;
+# the other two are the record and the lock state. Same story as above — on
+# Render these live in /var/data, but a local run writes them here, and this
+# repo is public.
+bot_users.json
+bot_ledger.json
+bot_locks.json
 *.pem
 *.key
 
@@ -67,6 +74,11 @@ jpg-out/
 
 # Coarsened location cache — visitor-derived, never committed.
 geo_cache.json
+
+# Networks the owner registered as "this is me, do not count it". Home and
+# office IP addresses — the owner's own location, which is not something to
+# publish in a public repo.
+traffic_ignore.json
 
 professions.json
 pros.json

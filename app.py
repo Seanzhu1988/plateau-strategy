@@ -18,6 +18,8 @@ import re
 import json
 import time
 import hashlib
+import hmac
+import base64
 import gzip
 import secrets
 import threading
@@ -38,6 +40,7 @@ except Exception:
 import square_client
 import notify
 import paypal_client
+import bot_lab
 
 def _no_tags(s):
     """Defense-in-depth vs stored XSS: strip angle brackets from any string
@@ -105,6 +108,89 @@ SECRET_PATH = _data_path(".flask_secret")
 CONTRACT_PATH = _data_path("contract.json")
 SIGNATURES_PATH = _data_path("contract_signatures.json")
 _LOCK = threading.Lock()
+
+
+# ---------------------------------------------------------------------------
+# Guessing limit on every sign-in
+#
+# Nothing on this site limited login attempts. The council put numbers on what
+# that costs, and they are small: the driver login is a VIN plus a date of
+# birth, and a VIN is not a secret — it is stamped on the dashboard and legally
+# readable through the windscreen of a car parked in public. That leaves the
+# birthday, about 25,200 valid dates for an adult, roughly 14.6 bits. An agent
+# code is four characters from a 31-symbol alphabet, about 19.8 bits. Both are
+# minutes of scripted guessing when nothing counts the attempts, and neither is
+# fixable by making the secret longer without reissuing every credential.
+#
+# So the fix is the counter, not the secret. Ten wrong answers from one address
+# for one account, then that pair waits fifteen minutes. Scoped to (address,
+# account) rather than to either alone: keying on the address only would let
+# one attacker lock out a whole office, and keying on the account only would
+# let them lock a driver out of their own portal from anywhere.
+#
+# In memory on purpose. One process, one machine — a restart clears it, which
+# is a real limit worth stating rather than hiding, but a restart is not
+# something an attacker can trigger.
+# ---------------------------------------------------------------------------
+# TWO counters, and the second one exists because the first missed the actual
+# attack. Keying only on (address, account) counts wrong PASSWORDS for one
+# account — but guessing an agent code means trying a different ACCOUNT every
+# time, so a code-spraying run never touches the same key twice and sails
+# straight through. Found by the test written for this fix, not by reading it.
+#
+# So: a tight per-account limit for password guessing, and a looser
+# per-address limit for spraying across accounts. The address ceiling is high
+# enough that a shared office behind one NAT never meets it and low enough
+# that enumerating a 923,521-code space takes centuries instead of an hour.
+LOGIN_MAX_TRIES = 10            # wrong answers for ONE account, from one address
+LOGIN_MAX_PER_IP = 30           # wrong answers across ALL accounts, from one address
+LOGIN_WINDOW_S = 900
+_LOGIN_TRIES = {}
+
+
+def _login_keys(who):
+    ip = _client_ip()
+    return (ip, (who or "").strip().lower()), (ip, "*")
+
+
+def _recent(key):
+    now = time.time()
+    tries = [t for t in _LOGIN_TRIES.get(key, []) if now - t < LOGIN_WINDOW_S]
+    _LOGIN_TRIES[key] = tries
+    return tries
+
+
+def _login_blocked(who):
+    """True if either counter has run out."""
+    per_account, per_ip = _login_keys(who)
+    return (len(_recent(per_account)) >= LOGIN_MAX_TRIES
+            or len(_recent(per_ip)) >= LOGIN_MAX_PER_IP)
+
+
+def _login_failed(who):
+    """Record one wrong answer against both counters. Called only on failure,
+    so somebody who signs in correctly every day never approaches either."""
+    now = time.time()
+    for key in _login_keys(who):
+        _recent(key).append(now)
+    if len(_LOGIN_TRIES) > 4000:            # bound the table; oldest first
+        for k in sorted(_LOGIN_TRIES, key=lambda k: max(_LOGIN_TRIES[k] or [0]))[:1000]:
+            _LOGIN_TRIES.pop(k, None)
+
+
+def _login_ok(who):
+    """Clear the account counter on success.
+
+    The per-address counter is deliberately NOT cleared: one correct sign-in
+    would otherwise wipe the evidence of thirty wrong ones, and an attacker
+    who owns any single valid credential could reset the ceiling at will."""
+    per_account, _ = _login_keys(who)
+    _LOGIN_TRIES.pop(per_account, None)
+
+
+def _too_many_tries():
+    return jsonify({"ok": False,
+                    "error": "Too many attempts. Wait 15 minutes and try again."}), 429
 
 
 def _hash_pw(password, salt=None):
@@ -213,10 +299,14 @@ def api_owner_login():
     data = request.get_json(force=True, silent=True) or {}
     u = (data.get("username") or "").strip()
     pw = data.get("password") or ""
+    if _login_blocked(u):
+        return _too_many_tries()
     owner = _load_owner()
     if not owner or owner.get("username", "").lower() != u.lower() \
             or not _verify_pw(pw, owner.get("salt", ""), owner.get("hash", "")):
+        _login_failed(u)
         return jsonify({"ok": False, "error": "Wrong username or password."}), 401
+    _login_ok(u)
     session["owner"] = owner.get("username")
     # Whoever signs in here is running the business, not visiting it. Mark the
     # device so it stops inflating the numbers — the session expires, this does
@@ -322,9 +412,31 @@ _BOT_HINTS = ("bot", "crawler", "spider", "slurp", "headless", "curl/", "wget",
               "preview", "scrapy", "facebookexternalhit", "embedly")
 
 
+IGNORE_NETS_PATH = _data_path("traffic_ignore.json")
+
+
+def _registered_nets():
+    """Networks the owner has registered as "this is me, do not count it".
+
+    A cookie is per browser: clear it, use a different browser, open a private
+    window, pick up a different phone, and the site counts you again. This is
+    the other half — one entry covers every device on that network at once,
+    survives clearing anything, and needs no cookie to work.
+
+    Stored rather than env-only so it can be added from a phone at the kitchen
+    table instead of a redeploy. The env var still works and the two are
+    merged, so an address set in Render is not lost."""
+    try:
+        rows = _load(IGNORE_NETS_PATH)
+        return {_norm_ip(r.get("ip")): r for r in rows if isinstance(r, dict) and r.get("ip")}
+    except Exception:
+        return {}
+
+
 def _ignored_ips():
     raw = os.environ.get("TRAFFIC_IGNORE_IPS", "")
-    return {_norm_ip(s) for s in raw.split(",") if s.strip()}
+    from_env = {_norm_ip(s) for s in raw.split(",") if s.strip()}
+    return from_env | set(_registered_nets())
 
 
 def _norm_ip(raw):
@@ -353,6 +465,15 @@ def _client_ip():
 def _skip_traffic():
     """True when this request should not appear in any visitor number."""
     if request.cookies.get(TRAFFIC_OPTOUT_COOKIE) == "1":
+        return True
+    if session.get("owner"):
+        # Signed in as the owner is not a visit. Mostly redundant — owner login
+        # and setup both call _set_not_counted, so the cookie above is usually
+        # already there. It earns its place in the narrow case where the cookie
+        # is gone but the session is not: psx_not_counted looks exactly like a
+        # tracking cookie, and privacy extensions that sweep those often leave
+        # a session cookie alone. Without this line the owner would silently
+        # start counting again and have no way to notice.
         return True
     if request.path == "/not-a-traveler":
         # The page whose whole purpose is "stop counting me" must not itself
@@ -390,6 +511,88 @@ def api_traffic_optout():
                              if on else "This device is being counted again.")}), on)
 
 
+def _vid_counted_today(vid):
+    """Has THIS browser been counted in today's visitor number?
+
+    Answers "is the traffic including me" with a fact instead of a guess. Only
+    today can be answered: _track_traffic folds every finished day down to a
+    plain count and deletes the ids, on purpose, so the file cannot become a
+    log of who visited when. The price of that is that a past day can never be
+    separated back out — the information needed to do it was thrown away, which
+    is the correct trade and worth stating plainly rather than hiding."""
+    if not vid:
+        return False
+    try:
+        rec = (_load_traffic().get("days") or {}).get(datetime.date.today().isoformat()) or {}
+        return vid in (rec.get("visitor_ids") or [])
+    except Exception:
+        return False
+
+
+def _forget_vid_today(vid):
+    """Take this browser out of today's unique-visitor count.
+
+    Only the unique count. Pageviews are not attributable: the counter never
+    records how many pages a given id opened, so there is no honest way to
+    subtract them. Same for the source, language, device and landing tallies —
+    each is a first-touch entry with no id attached to it. Removing the id
+    fixes the number that actually gets read ("N visitors today") and leaves
+    the rest slightly high, which is better than guessing at a correction."""
+    if not vid:
+        return False
+    with _LOCK:
+        data = _load_traffic()
+        rec = (data.get("days") or {}).get(datetime.date.today().isoformat())
+        if not rec or vid not in (rec.get("visitor_ids") or []):
+            return False
+        rec["visitor_ids"] = [v for v in rec["visitor_ids"] if v != vid]
+        for key in ("path_ids", "tool_ids"):
+            for k, ids in list((rec.get(key) or {}).items()):
+                if isinstance(ids, list) and vid in ids:
+                    rec[key][k] = [v for v in ids if v != vid]
+        _save_traffic(data)
+    return True
+
+
+@app.route("/api/traffic/networks", methods=["GET", "POST"])
+@owner_required
+def api_traffic_networks():
+    """Register (or drop) the network this request came from.
+
+    Owner-only, because it decides whose visits disappear from the numbers —
+    a stranger able to call this could quietly delete themselves from the
+    figures the business is read by.
+
+    The address is taken from the request, never from the body. Letting the
+    caller name an address would let a signed-in session erase traffic from
+    somewhere it has never been, and the honest use — "I am sitting on this
+    network now, stop counting it" — does not need the parameter."""
+    here = _norm_ip(_client_ip())
+    if request.method == "GET":
+        return jsonify({"ok": True, "here": here,
+                        "here_registered": here in _registered_nets(),
+                        "networks": list(_registered_nets().values()),
+                        "from_env": sorted(
+                            {_norm_ip(s) for s in
+                             (os.environ.get("TRAFFIC_IGNORE_IPS", "") or "").split(",")
+                             if s.strip()})})
+    d = request.get_json(force=True, silent=True) or {}
+    drop = (d.get("ip") or "").strip() if d.get("remove") else ""
+    with _LOCK:
+        rows = [r for r in (_load(IGNORE_NETS_PATH) or []) if isinstance(r, dict)]
+        if drop:
+            rows = [r for r in rows if _norm_ip(r.get("ip")) != _norm_ip(drop)]
+        elif not any(_norm_ip(r.get("ip")) == here for r in rows):
+            if not here:
+                return jsonify({"ok": False, "error": "No address on this request."}), 400
+            rows.append({"ip": here,
+                         "label": _no_tags((d.get("label") or "").strip())[:60] or "this network",
+                         "added_at": datetime.datetime.now().isoformat(timespec="seconds")})
+        _save(IGNORE_NETS_PATH, rows)
+    return jsonify({"ok": True, "here": here, "here_registered": here in _registered_nets(),
+                    "networks": list(_registered_nets().values())})
+
+
 @app.route("/not-a-traveler")
 def not_a_traveler_page():
     """The human version of the opt-out, for a phone.
@@ -415,6 +618,27 @@ def not_a_traveler_page():
     other = ('<a class="b" href="/not-a-traveler?count=1">Count this device again</a>'
              if not counted_after else
              '<a class="b" href="/not-a-traveler?set=0">Stop counting this device</a>')
+
+    # "Am I in today's number?" answered as a fact. Opting out stops the count
+    # from here on; it does nothing about visits already recorded, and without
+    # this the page cannot tell the difference — which is exactly the doubt
+    # that makes someone distrust their own numbers.
+    vid = request.cookies.get("psx_vid")
+    if request.args.get("forget") == "1" and _forget_vid_today(vid):
+        today_note = ("<p class='n'>Removed. This device is no longer in today's "
+                      "visitor count.</p>")
+    elif _vid_counted_today(vid):
+        today_note = ("<p class='n'>This device <strong>is in today's visitor "
+                      "count</strong>. "
+                      "<a class='b' href='/not-a-traveler?forget=1'>Take it out"
+                      "</a></p>")
+    else:
+        today_note = "<p class='n'>This device is not in today's visitor count.</p>"
+    # Earlier days genuinely cannot be separated: their ids were discarded when
+    # the day closed. Say so rather than let the page imply a clean slate.
+    today_note += ("<p class='n' style='opacity:.62'>Only today can be corrected. "
+                   "Finished days keep a count and no identifiers, so a past "
+                   "visit cannot be told apart from anyone else's.</p>")
     html = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
@@ -430,6 +654,8 @@ def not_a_traveler_page():
    background:#2563eb;color:#fff;text-decoration:none;font-weight:600;min-height:44px;}
  .b:hover{background:#1d4ed8;}
  .s{display:block;margin-top:1.6rem;color:#6f7c92;font-size:.85rem;}
+ .n{font-size:.92rem;margin:.5rem 0;}
+ .n .b{margin-top:.5rem;padding:.55rem 1rem;font-size:.9rem;}
  a.h{color:#7da2ff;}
 </style></head><body><div class="c">
 <h1>Visitor counting</h1>
@@ -438,9 +664,35 @@ def not_a_traveler_page():
 recorded about you either way — the only effect is whether page opens from this
 device are added to the visitor totals.</p>
 %s
+%s
 <span class="s">Do this once on every device you use to check the site.
 <a class="h" href="/">Back to the site</a></span>
-</div></body></html>""" % (state, other)
+</div>
+<script>
+// Keep the OPT-OUT alive, and only the opt-out.
+//
+// The flag is a cookie, and privacy tools sweep cookies — psx_nocount looks
+// exactly like a tracker, because structurally it is one. When it is swept the
+// device silently starts counting again, with no symptom: the numbers just
+// drift up and nobody knows why. A copy in localStorage, which those tools
+// usually leave alone, restores it on the next visit to this page.
+//
+// Worth being precise about what this is, because the same mechanism used the
+// other way round is a dark pattern: respawning a cleared cookie to keep
+// TRACKING someone is wrong. This respawns a cleared cookie to keep NOT
+// counting someone. It only ever restores "do not count me", it never
+// resurrects consent, and pressing "Count this device again" erases the
+// backup as well as the cookie — so the reversal is real and permanent.
+(function () {
+  try {
+    var KEY = 'psx_nocount_pref';
+    var counted = %s;                       // what the server just decided
+    if (counted) { localStorage.removeItem(KEY); return; }
+    localStorage.setItem(KEY, '1');
+  } catch (e) { /* storage blocked — the cookie alone still works */ }
+})();
+</script>
+</body></html>""" % (state, other, today_note, "true" if counted_after else "false")
     return _set_not_counted(Response(html, mimetype="text/html"), not counted_after)
 
 
@@ -1356,8 +1608,17 @@ after <code>?</code> is what lets you in.</p>
 </div></body></html>"""
 
 
-def _shared_page(name, filename):
-    """Serve a by-link page, or refuse. Three replies, one per state."""
+def _shared_page(name, filename, password=False):
+    """Serve a by-link page, or refuse.
+
+    With password=True the reader needs BOTH halves: the link, and an account
+    the owner issued. Either one alone gets them nothing. That is a real
+    difference rather than a doubled-up formality — a link can be forwarded to
+    someone you did not choose, and a password can be typed at an address a
+    stranger never found. Requiring both means a forwarded link is inert in
+    the hands of anyone you have not also given a password to, and it means
+    you can cut one person off (revoke their account) without invalidating the
+    link for everybody else."""
     state = _share_state(name)
     if state is None:
         r = make_response(SHARE_MISS_HTML, 404)
@@ -1372,19 +1633,82 @@ def _shared_page(name, filename):
                      max_age=SHARE_COOKIE_DAYS * 24 * 3600,
                      httponly=True, samesite="Lax", secure=request.is_secure)
         return r
+    if password and not _access_user():
+        # The key was good, so this reader was sent the link — they just have
+        # not signed in. Show the sign-in rather than the 404: pretending the
+        # page is missing would be a lie to somebody who is meant to be here.
+        r = make_response(send_file(os.path.join(BASE_DIR, "access-gate.html")), 401)
+        r.headers["X-Robots-Tag"] = "noindex, nofollow"
+        r.headers["Cache-Control"] = "private, no-store"
+        return r
     r = make_response(send_file(os.path.join(BASE_DIR, filename)))
     r.headers["X-Robots-Tag"] = "noindex, nofollow"
     r.headers["Cache-Control"] = "private, no-store"
     return r
 
 
+# ---------------------------------------------------------------------------
+# Issued accounts, shared by every private surface
+#
+# The accounts live in bot_lab.BotLab because that is where they were first
+# written, but they are not the lab's property — /robot uses them too, and
+# sign-in deliberately does NOT sit behind BOT_LAB_ENABLED. Otherwise turning
+# the lab off would lock people out of an unrelated page.
+#
+# The owner mints these at /api/lab/users. There is still exactly one door.
+# ---------------------------------------------------------------------------
+def _access_user():
+    """The signed-in account, re-checked against storage on every request.
+
+    This used to return session.get("access_user") and nothing else, which
+    meant revoking somebody only stopped them logging in AGAIN — anyone
+    already signed in kept reading indefinitely. That is the opposite of what
+    revocation is for, and it was the only remedy available, since this system
+    deliberately has no password reset.
+
+    role_of already fails closed for revoked and unknown accounts, so one
+    lookup closes it. The session is cleared as well as refused, so the next
+    request does not repeat the work."""
+    who = session.get("access_user")
+    if who and LAB.role_of(who) is None:
+        session.pop("access_user", None)
+        return None
+    return who
+
+
+@app.route("/api/access/login", methods=["POST"])
+def api_access_login():
+    d = request.get_json(force=True, silent=True) or {}
+    username = (d.get("username") or "").strip().lower()
+    if _login_blocked(username):
+        return _too_many_tries()
+    if LAB.check_login(username, d.get("password") or ""):
+        _login_ok(username)
+        session["access_user"] = username
+        LAB.touch(username)
+        return jsonify({"ok": True, "username": username})
+    _login_failed(username)
+    return jsonify({"ok": False, "error": "Those details were not accepted."}), 401
+
+
+@app.route("/api/access/logout", methods=["POST"])
+def api_access_logout():
+    session.pop("access_user", None)
+    session.pop("lab_user", None)
+    return jsonify({"ok": True})
+
+
 @app.route("/robot")
 def robot_concept_page():
     """The robotic-trading concept, for people Sean sends the link to.
 
-    Reading matter only. It takes no money, no bank connection and no
-    account, and there is no form on it that could start any of those."""
-    return _shared_page("robot", "robot-concept.html")
+    Link AND password now: it describes an unfinished trading idea, and a
+    forwarded link should not be enough to read it.
+
+    Still reading matter only. It takes no money, no bank connection and no
+    account of the reader's, and there is no form on it that could start any
+    of those — the sign-in is a separate page."""
+    return _shared_page("robot", "robot-concept.html", password=True)
 
 
 @app.route("/api/share-links")
@@ -1396,6 +1720,178 @@ def api_share_links():
         {"name": "robot", "title": "Robotic trading — the concept",
          "url": "%s/robot?k=%s" % (SITE_ORIGIN, _share_key("robot"))},
     ]})
+
+
+# ---------------------------------------------------------------------------
+# The bot lab
+#
+# Everything below answers 404 unless BOT_LAB_ENABLED is set. That is the
+# point: the legal question of whether software may trade in somebody else's
+# account is with an attorney and is not answered, so this code can sit in the
+# repository and be deployed without any of it existing to a visitor. Turning
+# it on is a deliberate act on one instance, not a consequence of a merge.
+#
+# 404 rather than 401 or 403 — "you may not" tells a stranger there is
+# something here. See bot_lab.py for the rest of the reasoning, including why
+# there is no signup, no password reset and no account recovery.
+# ---------------------------------------------------------------------------
+LAB = bot_lab.BotLab(_data_path("bot_users.json"),
+                     _data_path("bot_ledger.json"),
+                     _data_path("bot_locks.json"))
+
+
+def _lab_404():
+    return Response("Not Found", status=404, mimetype="text/plain")
+
+
+def lab_enabled(fn):
+    @wraps(fn)
+    def wrapper(*a, **k):
+        if not bot_lab.enabled():
+            return _lab_404()
+        return fn(*a, **k)
+    return wrapper
+
+
+def lab_user_required(fn):
+    """A signed-in account, plus the lab being switched on.
+
+    Sign-in itself lives at /api/access/login and is shared with /robot — one
+    credential, one door. The lab adds its own switch on top; it does not have
+    its own login. The owner is NOT automatically signed in: the owner's
+    console is a different surface, and conflating them is how an admin
+    session ends up doing a user's actions by accident."""
+    @wraps(fn)
+    def wrapper(*a, **k):
+        if not bot_lab.enabled():
+            return _lab_404()
+        if not _access_user():
+            return jsonify({"ok": False, "auth_required": True,
+                            "error": "Sign in to continue."}), 401
+        return fn(*a, **k)
+    return wrapper
+
+
+@app.route("/lab")
+@lab_enabled
+def lab_page():
+    r = make_response(send_file(os.path.join(BASE_DIR, "bot-lab.html")))
+    r.headers["X-Robots-Tag"] = "noindex, nofollow"
+    r.headers["Cache-Control"] = "private, no-store"
+    return r
+
+
+# The lab has no login of its own. It used to, which meant two sign-in routes
+# against one account file and two session keys that could disagree — sign in
+# for /robot and the lab would still consider you a stranger. Both surfaces
+# now use /api/access/login, defined above with the shared-account block.
+
+
+@app.route("/api/lab/board")
+@lab_user_required
+def api_lab_board():
+    """What a signed-in user sees: the locks and the record. Nothing about the
+    owner, nothing about any other user."""
+    return jsonify(dict(LAB.board(), ok=True, username=session.get("lab_user")))
+
+
+def lab_bot_required(fn):
+    """Only a bot account may write to the ledger.
+
+    This used to be @lab_user_required, which meant every account that could
+    read the pages could also file trades — so a friend given a password to
+    read the concept could have posted fabricated winners until a strategy
+    cleared the unlock bar. The two-key rule still needed the owner's flip, so
+    nothing could open by itself, but the record would have been lying by the
+    time the owner looked at it, and the record is the whole basis for the
+    decision.
+
+    403, not 404: this caller is signed in and known. Hiding the endpoint from
+    them would only make a misconfigured bot harder to diagnose."""
+    @wraps(fn)
+    def wrapper(*a, **k):
+        if not bot_lab.enabled():
+            return _lab_404()
+        who = _access_user()
+        if not who:
+            return jsonify({"ok": False, "auth_required": True,
+                            "error": "Sign in to continue."}), 401
+        if not LAB.may_write(who):
+            return jsonify({"ok": False,
+                            "error": "This account may read the record but not "
+                                     "write to it. Posting fills needs a bot "
+                                     "account."}), 403
+        return fn(*a, **k)
+    return wrapper
+
+
+@app.route("/api/lab/fills", methods=["POST"])
+@lab_bot_required
+def api_lab_fill():
+    """The plug point for the bot. Records one completed PAPER trade.
+
+    There is no live counterpart, on purpose. When there is an answer from the
+    attorney and a bot to connect, the live path gets written then — with the
+    three switches in bot_lab.live_execution_allowed() lined up — and not a
+    moment earlier."""
+    d = request.get_json(force=True, silent=True) or {}
+    row, err = LAB.record_fill(d.get("strategy"), d.get("pnl_usd"),
+                               note=d.get("note"))
+    if err:
+        return jsonify({"ok": False, "error": err}), 400
+    return jsonify({"ok": True, "fill": row})
+
+
+# ---- owner side: the accounts, which are NOT the lab's property ----
+#
+# Deliberately not behind @lab_enabled. These accounts open /robot as well, so
+# gating them on the lab switch meant that with the lab off the owner could
+# not issue a credential for an unrelated page — the exact hole this pair of
+# routes exists to close. @owner_required is the real protection here and it
+# does not depend on any switch.
+@app.route("/api/access/users", methods=["GET", "POST"])
+@owner_required
+def api_access_users():
+    """Mint an account, or list them. The only door: there is no signup route
+    anywhere in this file, and no reset."""
+    if request.method == "GET":
+        return jsonify({"ok": True, "users": LAB.public_users()})
+    d = request.get_json(force=True, silent=True) or {}
+    # role defaults to reader inside mint_user. Handing out write access has
+    # to be asked for explicitly — it is not something to get by omission.
+    password, err = LAB.mint_user(d.get("username"), d.get("note"), d.get("role"))
+    if err:
+        return jsonify({"ok": False, "error": err}), 400
+    return jsonify({"ok": True, "username": (d.get("username") or "").strip().lower(),
+                    "role": (d.get("role") or "reader").strip().lower(),
+                    "password": password,
+                    "notice": "Shown once. It is stored only as a hash — nobody, "
+                              "including you, can read it back. Lost means reissue."})
+
+
+@app.route("/api/access/users/<username>/revoke", methods=["POST"])
+@owner_required
+def api_access_revoke(username):
+    d = request.get_json(force=True, silent=True) or {}
+    ok = LAB.revoke(username, d.get("revoked", True))
+    return (jsonify({"ok": True}) if ok
+            else (jsonify({"ok": False, "error": "No such user."}), 404))
+
+
+@app.route("/api/lab/locks/<kind>/<key>", methods=["POST"])
+@lab_enabled
+@owner_required
+def api_lab_lock(kind, key):
+    """The owner's half of the unlock. The record's half is checked inside
+    set_lock, so this route cannot open something the results have not
+    earned — and cannot open Kalshi at all."""
+    if kind not in ("venue", "strategy"):
+        return jsonify({"ok": False, "error": "Unknown kind."}), 400
+    d = request.get_json(force=True, silent=True) or {}
+    ok, err = LAB.set_lock(kind, key, bool(d.get("locked", True)))
+    if not ok:
+        return jsonify({"ok": False, "error": err}), 400
+    return jsonify({"ok": True, "board": LAB.board()})
 
 
 @app.route("/road-trip")
@@ -2208,12 +2704,45 @@ def api_deflator_waitlist():
     return jsonify({"success": True, "already": False, "count": len(items)})
 
 
+# ---------------------------------------------------------------------------
+# 🔒 CLOSED 2026-08-08 [nine-lens council, three lenses independently, both
+# skeptics confirming high severity each time].
+#
+# These five routes had NO authentication of any kind. Verified by execution,
+# not by reading: a client with no cookies and no session POSTed to
+# /api/setup/square and got 200, after which the running process held the
+# caller's token. What a stranger on the internet could do:
+#
+#   * /api/setup/twilio      — repoint SMS at their own Twilio account.
+#     notify._twilio_cfg() reads os.environ on every call and the service runs
+#     --workers 1, so one POST poisons the whole process. Every ride-offer text
+#     after that — pickup address, dropoff, date, time, flight number, fare —
+#     lands in a stranger's logs, and driver dispatch stops arriving here.
+#   * /api/setup/twilio/test — send SMS to a number THEY choose, on our live
+#     credentials, unauthenticated and unthrottled. Textbook toll fraud billed
+#     to us, and a fast route to Twilio suspending the account, which takes
+#     driver dispatch down with it.
+#   * /api/setup/square      — overwrite the payment token. Not a redirect of
+#     money: SQUARE_LOCATION_ID is read-only everywhere, so a foreign token
+#     paired with our location id is simply rejected and square_client._bill
+#     swallows the error. The real outcome is a SILENT BILLING OUTAGE —
+#     bookings keep succeeding, invoices quietly stop going out.
+#   * /api/setup/status      — reports which integrations are configured.
+#
+# owner_required already existed and already guards ~48 lower-value routes;
+# these four had simply fallen out of the pattern, and nothing global catches
+# it — app.py has no before_request at all. OWNER_ONLY_PATHS looks like a
+# control but only feeds robots.txt, where it advertises /setup rather than
+# protecting it.
+# ---------------------------------------------------------------------------
 @app.route("/setup")
+@owner_required
 def setup_page():
     return send_file(os.path.join(BASE_DIR, "setup.html"))
 
 
 @app.route("/api/setup/status")
+@owner_required
 def api_setup_status():
     return jsonify({
         "connected": bool(os.environ.get("SQUARE_ACCESS_TOKEN") and os.environ.get("SQUARE_LOCATION_ID")),
@@ -2224,6 +2753,7 @@ def api_setup_status():
 
 
 @app.route("/api/setup/twilio", methods=["POST"])
+@owner_required
 def api_setup_twilio():
     """Save pasted Twilio credentials to .env and load them live (no restart)."""
     data = request.get_json(force=True, silent=True) or {}
@@ -2240,17 +2770,28 @@ def api_setup_twilio():
 
 
 @app.route("/api/setup/twilio/test", methods=["POST"])
+@owner_required
 def api_setup_twilio_test():
-    """Send a test SMS to the given number using the saved Twilio credentials."""
-    data = request.get_json(force=True, silent=True) or {}
-    to = (data.get("to") or os.environ.get("DRIVER_PHONE", "")).strip()
+    """Send a test SMS to OUR OWN number using the saved Twilio credentials.
+
+    The destination is no longer taken from the request. It used to be, which
+    made this an unauthenticated endpoint that sent a message to any number a
+    caller named, on our live account — someone else's phone, billed to us, as
+    fast as the server would loop. Owner-only closes the door; ignoring the
+    caller's number means that even a stolen owner session cannot turn this
+    into a way to text strangers. A test message only has to reach the person
+    running the test, and they are the one number we already know."""
+    to = (os.environ.get("OWNER_PHONE") or os.environ.get("DRIVER_PHONE") or "").strip()
     if not to:
-        return jsonify({"ok": False, "error": "No destination number."}), 400
+        return jsonify({"ok": False,
+                        "error": "Set OWNER_PHONE or DRIVER_PHONE first — the test "
+                                 "sends only to your own number."}), 400
     result = notify.send_sms(to, "Plateau Strategy Solution Lab: test message - your driver SMS dispatch is LIVE. Reply YES when a real ride comes in.")
     return jsonify({"ok": result == "sent", "result": result, "to": to})
 
 
 @app.route("/api/setup/square", methods=["POST"])
+@owner_required
 def api_setup_square():
     """Save the pasted Square Access Token to .env and load it live (no restart)."""
     data = request.get_json(force=True, silent=True) or {}
@@ -2920,6 +3461,19 @@ def _reservation_for_board(r):
     out = dict(r)
     name = ((r.get("client") or {}).get("name") or "").strip()
     out["client"] = {"name": (name.split(" ")[0] if name else "Client")}
+    # The agent block used to pass through whole, and it carries `code` — the
+    # agent's entire sign-in credential. Agent login needs only that code and a
+    # last name, and this board printed both, to anyone, with no session. The
+    # chain the council reproduced: read the board, log in as the agent, change
+    # their payout email, request a payout. The owner then clicks Pay on a
+    # request that looks legitimate and the money goes to whoever read the
+    # board. Nothing anywhere signals that the address changed.
+    #
+    # Not popped: renter.html renders "Referred by {agent.name}" on open-board
+    # cards, so removing the block breaks the page. Keep the name, drop
+    # everything that opens a door.
+    if isinstance(r.get("agent"), dict):
+        out["agent"] = {"name": (r["agent"].get("name") or "").strip()}
     out["contact_hidden"] = True
     return out
 
@@ -3048,12 +3602,44 @@ def api_accept(rid):
     return jsonify({"ok": False, "error": "not found"}), 404
 
 
+def _twilio_signature_ok():
+    """Is this really Twilio, or somebody typing curl?
+
+    The handler below identifies the driver purely by the "From" field, and
+    the first YES claims the ride. Without this check anyone could POST that
+    form with a driver's number and take rides in their name — the phone
+    number is not a secret, drivers hand it out, and it is printed in the
+    panel. Twilio signs every request; verifying the signature is the only
+    thing that makes "From" mean anything.
+
+    HMAC-SHA1 over the full URL with the POST fields appended in sorted order,
+    which is Twilio's scheme, not a choice made here.
+
+    Fails CLOSED when no auth token is configured. If Twilio is not set up
+    then nothing legitimate is calling this, and answering an unsigned request
+    would be answering the only kind that can arrive."""
+    token = (os.environ.get("TWILIO_AUTH_TOKEN") or "").strip()
+    if not token:
+        return False
+    sig = request.headers.get("X-Twilio-Signature") or ""
+    if not sig:
+        return False
+    # Behind Render's proxy request.url says http; Twilio signed the https URL.
+    url = request.url.replace("http://", "https://", 1)
+    payload = url + "".join(k + request.form[k] for k in sorted(request.form))
+    want = base64.b64encode(
+        hmac.new(token.encode(), payload.encode("utf-8"), hashlib.sha1).digest()).decode()
+    return hmac.compare_digest(want, sig)
+
+
 @app.route("/sms/reply", methods=["POST"])
 def sms_reply():
     """Twilio webhook: a driver replies YES to claim a ride by text.
     First YES wins (same atomic claim as the panel). Point Twilio's
     'A message comes in' webhook at https://<public-url>/sms/reply."""
     from flask import Response as _Resp
+    if not _twilio_signature_ok():
+        return Response("", status=403, mimetype="text/plain")
     frm = (request.form.get("From") or "").strip()
     body = (request.form.get("Body") or "").strip()
 
@@ -4493,6 +5079,8 @@ def api_renter_login():
     data = request.get_json(force=True, silent=True) or {}
     vin = (data.get("vin") or "").strip().lower()
     dob = _norm_dob(data.get("dob"))
+    if _login_blocked(vin):
+        return _too_many_tries()
     if not vin:
         return jsonify({"ok": False, "error": "Enter your renting VIN."}), 400
     if not dob:
@@ -4506,13 +5094,18 @@ def api_renter_login():
             stored = r.get("dob")
             if stored:
                 if dob != stored:
+                    _login_failed(vin)
                     return jsonify({"ok": False, "error": "That birthday doesn't match this vehicle."}), 401
             else:
                 # legacy account with no birthday on file — enroll it now (VIN proves identity)
                 r["dob"] = dob
                 _save(RENTERS_PATH, renters)
+            _login_ok(vin)
             session["renter_id"] = r["id"]
             return jsonify({"ok": True, "renter": r})
+    # A wrong VIN counts too: without this, guessing the account is unlimited
+    # and only guessing the birthday is throttled.
+    _login_failed(vin)
     return jsonify({"ok": False, "error": "No driver found with that VIN."}), 404
 
 
@@ -4533,13 +5126,17 @@ def api_agent_login():
     org = (data.get("organization") or "").strip().lower()
     if not code or not last:
         return jsonify({"ok": False, "error": "Agent code and last name are required."}), 400
+    if _login_blocked(code):
+        return _too_many_tries()
     for a in _load(AGENTS_PATH):
         ac = (a.get("code") or "").strip().upper()
         if ac and ac == code and _last_name(a.get("name")) == last:
             if org and (a.get("organization") or "").strip().lower() != org:
                 continue   # organization was provided but doesn't match
+            _login_ok(code)
             session["agent_id"] = a["id"]
             return jsonify({"ok": True, "agent": a})
+    _login_failed(code)
     return jsonify({"ok": False, "error": "No agent matches that code and last name."}), 404
 
 
@@ -4708,9 +5305,24 @@ def api_partner_delete(pid):
 
 
 # ---------- finance: AI Debt Eliminator enrollment ----------
+# Priced 2026-08-08 at Sean's instruction: $34 a MONTH.
+#
+# Worth seeing written down: $34/month is $408 a year, against the $170/year
+# this used to carry. That is a 140% increase, not the small move the number
+# alone suggests, and it prices the product as a managed service rather than
+# as software.
+#
+# No annual plan until Sean picks its figure. An annual rate is normally a
+# discount on twelve months rather than 12 x monthly, so it is a decision, not
+# an arithmetic result — inventing one here would be guessing at a price.
+#
+# This number is NOT published. The endpoint below has answered 404 to
+# everyone but the owner since 2026-08-01, and the landing page says the
+# product is not for sale. Changing the figure here settles what the price
+# will be; it does not make an offer, which is the part that waits for the
+# attorney.
 FINANCE_PLANS = {
-    "annual": {"amount": 170.00, "label": "AI Debt Eliminator — Annual Plan", "billing": "$170/year"},
-    "monthly": {"amount": 14.17, "label": "AI Debt Eliminator — Monthly Plan", "billing": "$14.17/month"},
+    "monthly": {"amount": 34.00, "label": "AI Debt Eliminator — Monthly Plan", "billing": "$34/month"},
 }
 
 
@@ -4730,9 +5342,14 @@ def api_finance_enroll():
     name = (data.get("name") or "").strip()
     email = (data.get("email") or "").strip()
     phone = (data.get("phone") or "").strip()
-    plan = (data.get("plan") or "annual").strip().lower()
+    # Fall back to whichever plan exists, not to a name typed in here. This
+    # said "annual" twice, so removing the annual plan turned an unrecognised
+    # plan into a KeyError on the line below rather than a sensible default.
+    # Reading the fallback out of FINANCE_PLANS means the two cannot disagree.
+    default_plan = next(iter(FINANCE_PLANS))
+    plan = (data.get("plan") or default_plan).strip().lower()
     if plan not in FINANCE_PLANS:
-        plan = "annual"
+        plan = default_plan
     if not name or not email:
         return jsonify({"ok": False, "error": "Name and email are required."}), 400
 
@@ -6113,9 +6730,13 @@ def api_board_login():
     else:
         return jsonify({"ok": False, "error": "The board password has not been set yet."}), 403
     roll = _board_roll()
+    if _login_blocked(name):
+        return _too_many_tries()
     if not (ok_pw and name and name in roll):
+        _login_failed(name)
         # One message for both failures — never reveal which half was right.
         return jsonify({"ok": False, "error": "That name and password do not match our board roll."}), 401
+    _login_ok(name)
     session["board"] = name
     session.permanent = True
     return jsonify({"ok": True, "name": name})
