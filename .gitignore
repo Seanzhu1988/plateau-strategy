@@ -75,6 +75,14 @@ jpg-out/
 # Coarsened location cache — visitor-derived, never committed.
 geo_cache.json
 
+# The consent ledger and what people contributed under it. The ledger is the
+# proof of who agreed to what and when; committing it would publish a record
+# of people's choices, and committing the contributions would publish the
+# places they added. On Render both live in /var/data, but a local run writes
+# them here and this repo is public.
+consents.json
+place_contributions.json
+
 # Networks the owner registered as "this is me, do not count it". Home and
 # office IP addresses — the owner's own location, which is not something to
 # publish in a public repo.

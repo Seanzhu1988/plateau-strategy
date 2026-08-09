@@ -41,6 +41,7 @@ import square_client
 import notify
 import paypal_client
 import bot_lab
+import consent
 
 def _no_tags(s):
     """Defense-in-depth vs stored XSS: strip angle brackets from any string
@@ -1427,6 +1428,185 @@ def agent_page():
 @app.route("/partners")
 def partners_page():
     return send_file(os.path.join(BASE_DIR, "partners.html"))
+
+
+# ---------------------------------------------------------------------------
+# Privacy policy
+#
+# The site ran without one. That is not a small gap: the archive page tells the
+# owner to market "per your privacy policy", Washington's My Health My Data Act
+# wants a distinctly-linked notice, and every processor agreement assumes one
+# exists. Publishing an accurate description of what already happens lowers
+# risk on the day it goes up.
+#
+# It will not serve without PRIVACY_CONTACT. A policy that grants people the
+# right to ask for their data, and gives them no working address to ask at, is
+# worse than none — it documents an obligation and then fails it. The domain
+# has no MX records today, so hello@plateaustrategy.io bounces, and the owner's
+# personal address is not going up without his say-so. One environment variable
+# publishes it.
+# ---------------------------------------------------------------------------
+PRIVACY_CONTACT = os.environ.get("PRIVACY_CONTACT", "").strip()
+
+
+@app.route("/privacy")
+def privacy_page():
+    if not PRIVACY_CONTACT:
+        return Response(
+            "The privacy policy is not published yet.\n"
+            "Set PRIVACY_CONTACT to a working address to publish it.\n",
+            status=404, mimetype="text/plain")
+    return send_file(os.path.join(BASE_DIR, "privacy.html"))
+
+
+@app.route("/api/privacy/contact")
+def api_privacy_contact():
+    """The address on the policy. Configuration, so it cannot go stale in HTML."""
+    return jsonify({"ok": bool(PRIVACY_CONTACT), "contact": PRIVACY_CONTACT})
+
+
+# ---------------------------------------------------------------------------
+# "Add this place to the map" — consented, coarse, and switched off
+#
+# Every route here answers 404 unless LOCATION_CONSENT_ENABLED is set. Same
+# discipline as the bot lab: the code can be reviewed, tested and deployed
+# while the feature does not exist to a visitor, and turning it on is a
+# deliberate act by one person on one instance.
+#
+# The subject of a consent is a RANDOM TOKEN IN THE SESSION, never the customer
+# id. Two reasons, and the second is the important one:
+#
+#   1. A client-supplied id is a client-supplied id. If withdrawal or the data
+#      export keyed on whatever the browser claimed to be, anyone could erase
+#      or read anyone else's.
+#   2. Tying contributions to an account would create exactly the record this
+#      whole design exists to avoid: named person, plus places. Unlinked, the
+#      contributions file is a list of city names that identifies nobody.
+#
+# The honest cost: clear your cookies and this browser can no longer withdraw
+# what it added. Since what it added is "somebody once said Tacoma", that is
+# the right side of the trade, and it is written on the page rather than
+# hidden. See consent.py and PRIVACY.md.
+# ---------------------------------------------------------------------------
+CONSENT = consent.ConsentStore(_data_path("consents.json"),
+                               _data_path("place_contributions.json"))
+
+
+def consent_enabled():
+    return os.environ.get("LOCATION_CONSENT_ENABLED", "").strip().lower() \
+        in ("1", "true", "yes", "on")
+
+
+def consent_on(fn):
+    @wraps(fn)
+    def wrapper(*a, **k):
+        if not consent_enabled():
+            return Response("Not Found", status=404, mimetype="text/plain")
+        return fn(*a, **k)
+    return wrapper
+
+
+def _consent_subject(create=False):
+    """This browser's opaque handle, minted on first consent and never reused."""
+    who = session.get("consent_subject")
+    if not who and create:
+        who = "sub_" + secrets.token_urlsafe(12)
+        session["consent_subject"] = who
+    return who
+
+
+@app.route("/api/consent/text")
+@consent_on
+def api_consent_text():
+    """The exact wording to show, and the version to send back with the answer.
+
+    The page must render THIS text. If it renders its own words and posts this
+    version, the ledger records agreement to something the person never read.
+    """
+    t = consent.consent_text(request.args.get("purpose") or "")
+    if not t:
+        return jsonify({"ok": False, "error": "Unknown purpose."}), 400
+    return jsonify({"ok": True, **t})
+
+
+@app.route("/api/consent/grant", methods=["POST"])
+@consent_on
+def api_consent_grant():
+    d = request.get_json(force=True, silent=True) or {}
+    # `granted` must arrive as a real JSON true. consent.grant enforces it too;
+    # this is the same rule stated where the request is parsed, because a
+    # missing key reading as consent is the classic way these go wrong.
+    row = CONSENT.grant(_consent_subject(create=True),
+                        (d.get("purpose") or "").strip(),
+                        (d.get("version") or "").strip(),
+                        d.get("granted"))
+    if not row:
+        session.pop("consent_subject", None)      # nothing was recorded
+        return jsonify({"ok": False, "error": "That consent was not recorded."}), 400
+    return jsonify({"ok": True, "purpose": row["purpose"],
+                    "version": row["text_version"]})
+
+
+@app.route("/api/consent/withdraw", methods=["POST"])
+@consent_on
+def api_consent_withdraw():
+    d = request.get_json(force=True, silent=True) or {}
+    who = _consent_subject()
+    if not who:
+        return jsonify({"ok": True, "deleted": 0})     # nothing here to take back
+    deleted = CONSENT.withdraw(who, (d.get("purpose") or "").strip())
+    return jsonify({"ok": True, "deleted": deleted})
+
+
+@app.route("/api/consent/place", methods=["POST"])
+@consent_on
+def api_consent_place():
+    """File one city, against a live consent, with no coordinate anywhere.
+
+    The coordinate check runs on the WHOLE body before anything is read out of
+    it. A caller sending a lat/lon alongside the city is refused rather than
+    quietly ignored: silently dropping it would leave the caller believing we
+    accept coordinates, and the next version of that caller would send more.
+    """
+    d = request.get_json(force=True, silent=True) or {}
+    hit = consent.looks_like_coordinate(d)
+    if hit:
+        return jsonify({"ok": False,
+                        "error": "This endpoint does not accept location "
+                                 "coordinates (%s). Send the city name." % hit}), 400
+    who = _consent_subject()
+    row = CONSENT.live_consent(who, "map_place") if who else None
+    if not row:
+        return jsonify({"ok": False, "error": "No consent on record."}), 403
+    CONSENT.sweep()                    # retention runs on use, not on a promise
+    saved = CONSENT.record_place(row, d.get("city"), d.get("region"),
+                                 d.get("country"))
+    if not saved:
+        return jsonify({"ok": False, "error": "Need a city name."}), 400
+    return jsonify({"ok": True, "city": saved["city"]})
+
+
+@app.route("/api/consent/me")
+@consent_on
+def api_consent_me():
+    """Everything this browser has consented to and contributed."""
+    who = _consent_subject()
+    if not who:
+        return jsonify({"ok": True, "consents": [], "places": []})
+    return jsonify({"ok": True, **CONSENT.export(who)})
+
+
+@app.route("/api/consent/cities")
+@consent_on
+@owner_required
+def api_consent_cities():
+    """The output: city -> how many distinct people added it. Owner only.
+
+    Owner-only while the counts are small. A city with one contributor is one
+    person's whereabouts however it is labelled, and a public page showing that
+    would undo the rest of this.
+    """
+    return jsonify({"ok": True, "cities": CONSENT.cities()})
 
 
 @app.route("/dispatch")

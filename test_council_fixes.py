@@ -22,7 +22,14 @@ import app as A                                              # noqa: E402
 import bot_lab                                               # noqa: E402
 
 tmp = tempfile.mkdtemp()
-for name in ("RES_PATH", "RENTERS_PATH", "AGENTS_PATH", "OWNER_AUTH_PATH"):
+# SHARE_KEYS_PATH belongs in this list because line ~148 calls _share_key(),
+# which MINTS a key and writes it if one is not on file. Left pointing at the
+# repo it created share_keys.json in the working tree, and test_share_link.py
+# — which asserts that file never appears there — then failed depending on
+# which test ran first. A suite whose result depends on its order is not a
+# suite.
+for name in ("RES_PATH", "RENTERS_PATH", "AGENTS_PATH", "OWNER_AUTH_PATH",
+             "SHARE_KEYS_PATH"):
     if hasattr(A, name):
         setattr(A, name, os.path.join(tmp, name.lower() + ".json"))
 A.LAB = bot_lab.BotLab(os.path.join(tmp, "u.json"), os.path.join(tmp, "l.json"),
