@@ -479,3 +479,134 @@ That is most of the machine. What waits is the money half: donations (pick sale
 or gift), Plateau's equity stakes, and anything raised from the public. Those
 wait on the securities lawyer already named above, and the takeover clause waits
 on being rewritten as covenants before it goes near a founder.
+
+---
+
+# THE TRAFFIC AND MAPPING ENGINE, 2026-08-09 — Sean's description, written down
+
+Second half of the machine, described after the platform half above. The
+council, the professional directory, the royalty and the takeover are analysed
+earlier in this file and are not re-argued here.
+
+## The flow, as described
+
+1. **Articles and proposals are shareable.** Someone writes their idea and
+   sends it into their own circle. The share spreads the idea *and* advertises
+   the site — their friends and family arrive to read it. Distribution comes
+   from the author's self-interest, not from ad spend.
+2. **Arriving visitors may sign in with Google.** Optional. Guests can read,
+   with limits to be decided.
+3. **Sign-in carries a location-sharing consent**, which is where a visitor's
+   city enters the data.
+4. **Occasional survey questions**, asked at random: what is the food in your
+   city, what is your favourite place to go, how long do you usually stay,
+   do you have a secret scenic spot to share.
+5. **The answers perfect the map.** Tourist mapping becomes the destination
+   business.
+6. **The map is sold to the trade** — hotels, attractions, bus companies.
+   Sean's example: if 50 travellers are using the same city map, those 50 are
+   the people likely to take a tour, and a bus company would rather contact
+   them directly than run traditional advertising. A subscription is likely.
+
+## What is genuinely strong here
+
+**The share loop is the best distribution idea in the whole plan.** Every other
+route to traffic costs money or time. This one is powered by the author wanting
+their own idea read, which is a motive that does not run out. The idea board is
+already live and already open to anyone, so the missing piece is a share
+affordance and a readable public page per idea — small work, large effect.
+
+**The survey questions are the right shape**, and it is worth saying why,
+because it is the opposite of the design rejected two days ago. "What is your
+favourite place?" is a person volunteering a place they like. "Where is this
+phone right now?" is a reading taken off them. Same data category, completely
+different act — one is contribution, and the person is proud of the answer.
+This is the version that gets better data *and* needs less defending.
+
+**The buyer is real.** A bus company genuinely does prefer 50 people who have
+already planned a Leavenworth day over 50,000 impressions. That is a true
+insight about how tour operators buy.
+
+## The collision that has to be resolved first
+
+**"The bus companies might take this data for direct contact" is selling
+personal information.** As described — handing a bus company a way to contact
+50 named travellers — it is data brokerage, and:
+
+- it contradicts `consent.py`, where `SALE = False` and `SHARING = False` are
+  constants rather than settings, written that way on 2026-08-09 at Sean's own
+  instruction;
+- it contradicts `/privacy`, which states plainly that we do not sell personal
+  information and do not share it with anyone for their own purposes;
+- it is the "vampire drain" posture this document says Plateau must never
+  take, applied to travellers instead of founders.
+
+**The version that earns the same money without selling anything:**
+
+> Sell the aggregate and keep the introduction.
+>
+> The bus company never receives a name, an email or a device. They are told
+> *"41 people planned a Leavenworth day trip this month"* and they buy the
+> right to put an offer in front of travellers whose plan matches. **We show
+> their offer. They never hold the audience.**
+
+That is advertising inventory, not a data sale. It is the model that lets the
+sentence "we do not sell your information" stay true on the privacy page, and
+it is worth more over time, because an audience you can only reach through us
+is a subscription that renews. A list you have sold is sold once.
+
+It also matches what is already built: `consent.py` stores a city against a
+random token, never a person, and `cities()` returns counts. The aggregate is
+the shape the storage already has.
+
+## The tension nobody has spotted yet: sign-in versus the share loop
+
+These two ideas in the same message pull against each other:
+
+- *"people will write their proposal and share specific ideas into their
+  circle… bring their friend and family into our page"*
+- *"people come in to the webpage will require to have their Google sign in…
+  there will be limitation for guests"*
+
+**A shared link that lands on a sign-in wall does not spread.** The friend
+who clicks it has no relationship with us, no reason to make an account, and
+one reason to close the tab. The share loop dies at the door it was supposed
+to come through.
+
+The resolution is to gate the *act*, never the *read*:
+
+| Anyone, no account | Requires sign-in |
+|---|---|
+| Read any shared idea in full | Post an idea |
+| See the votes and interest | Vote, or register interest |
+| Read the map and the guides | Answer surveys, add a place |
+| | Anything that attaches to a person |
+
+Reading is what spreads. Contributing is what needs an identity, and by then
+the person has a reason to give one.
+
+## Honest scale note on the 50 travellers
+
+Fifty is roughly one coach. It is a real product for one operator in one
+season, and it is not yet a subscription business — the site presently sees
+around seventeen visitors a day. This does not weaken the idea; it dates it.
+The survey and mapping work has to run for months before there is anything to
+sell, which is an argument for starting the collection early and the selling
+late.
+
+## What can be built now, and what waits
+
+**Now, no new legal questions:**
+
+1. A public, readable page per idea, plus a share affordance. Powers the loop.
+2. The survey questions, asked occasionally, answers stored as places rather
+   than people — the consent module already built takes exactly this shape.
+3. Guest reading with sign-in only for contribution, per the table above.
+
+**Waits:**
+
+4. Anything sold to a hotel, attraction or bus company. Not because it is
+   wrong, but because the honest version — aggregate plus a placed offer — is a
+   different product from the one described, and it should be designed as that
+   from the first line of code rather than converted later.
+5. Everything in the money half already listed above.
