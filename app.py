@@ -43,6 +43,7 @@ import notify
 import paypal_client
 import bot_lab
 import consent
+import journeys
 
 def _no_tags(s):
     """Defense-in-depth vs stored XSS: strip angle brackets from any string
@@ -1400,6 +1401,27 @@ def google_signin_js():
     three copies is three places to get that wrong."""
     return send_file(os.path.join(BASE_DIR, "google-signin.js"),
                      mimetype="text/javascript")
+
+
+@app.route("/api/journeys")
+def api_journeys():
+    """What we can walk somebody through, and what is held back.
+
+    The held list is returned rather than hidden: a journey withheld for want
+    of checking is work to be done, and a list that only shows the good ones
+    makes that work invisible."""
+    return jsonify({"ok": True, **journeys.listing()})
+
+
+@app.route("/api/journeys/<jid>")
+def api_journey(jid):
+    j, why = journeys.serve(jid)
+    if not j:
+        # 409, not 404: it exists, it is simply not fit to hand anybody. A 404
+        # would send the next person to build it again.
+        return jsonify({"ok": False, "error": "This journey is not verified "
+                                              "yet.", "reasons": why}), 409
+    return jsonify({"ok": True, "journey": j})
 
 
 @app.route("/walk")
