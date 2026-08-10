@@ -93,6 +93,27 @@ chk("with their reasons",
     any(x.get("reasons") for x in d["held"] if x["id"] == "__test_bad"))
 chk("ready ones are separate", "__test_good" in {x["id"] for x in d["ready"]})
 
+print("\na footprint can stand in for prose verification:")
+conn = {"do": "Walk to the platform", "confirm": "You are on it",
+        "if_wrong": "Ask", "corridor": "c1", "verified": None, "source": ""}
+J.JOURNEYS["__test_fp"] = journey(conn, GOOD)
+got, why = J.serve("__test_fp")
+chk("without a walked footprint the journey is held (%s)" % why,
+    got is None and "footprint" in why[0])
+chk("and the reason names the corridor", "c1" in why[0])
+WALKED = lambda k: {"date": "2026-08-10", "walks": 1} if k == "c1" else None  # noqa: E731
+got, why = J.serve("__test_fp", walked=WALKED)
+chk("with one it serves", got is not None and not why)
+chk("and the step says how it was verified (%s)"
+    % got["steps"][0].get("verified_by"),
+    got["steps"][0].get("verified_by") == "walked on 2026-08-10")
+chk("the registry itself is never mutated",
+    "verified_by" not in J.JOURNEYS["__test_fp"]["steps"][0])
+chk("a walk of the WRONG corridor verifies nothing",
+    J.serve("__test_fp", walked=lambda k: {"date": "2026-08-10"}
+            if k == "other" else None)[0] is None)
+J.JOURNEYS.pop("__test_fp", None)
+
 print("\nthe real journey, SeaTac to Lynnwood:")
 sl = J.JOURNEYS["seatac-lynnwood"]
 chk("it is one train, no transfer", "no change" in sl["summary"].lower())

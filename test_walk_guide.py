@@ -180,6 +180,34 @@ with sync_playwright() as p:
     chk("the right one as right", any(x == "Right Place:right" for x in walked))
     chk("and neither was repeated", len(set(walked)) == len(walked))
 
+    print("\nfollowing a footprint — how far off the recorded line am I?")
+    # A straight north line at -122.33. At 47.6°N a degree of longitude is
+    # ~75.0 km (111.32 cos 47.6), so 0.0004° east is ~30 m off the line.
+    PATH = "[[47.6000,-122.33],[47.6002,-122.33],[47.6004,-122.33]]"
+    d = pg.evaluate("WalkGuide.nearestOnPathM({lat:47.6001,lon:-122.33}, %s)" % PATH)
+    chk("standing on the line reads ~0 m (%.1f)" % d, d < 1)
+    d = pg.evaluate("WalkGuide.nearestOnPathM({lat:47.6001,lon:-122.3296}, %s)" % PATH)
+    chk("30 m east of it reads ~30 m (%.1f)" % d, 27 < d < 33)
+    # 30 m beyond the north end: nearest point must clamp to the endpoint,
+    # not project onto the segment's infinite extension.
+    d = pg.evaluate("WalkGuide.nearestOnPathM({lat:47.60067,lon:-122.33}, %s)" % PATH)
+    chk("beyond the end clamps to the endpoint (%.1f)" % d, 27 < d < 33)
+    chk("stored-shape [lat,lon] pairs and {lat,lon} objects both work",
+        abs(pg.evaluate("WalkGuide.nearestOnPathM({lat:47.6001,lon:-122.3296},"
+                        "[{lat:47.6000,lon:-122.33},{lat:47.6004,lon:-122.33}])") - 30) < 3)
+    chk("an empty path is infinitely far, not zero",
+        pg.evaluate("WalkGuide.nearestOnPathM({lat:0,lon:0}, []) === Infinity"))
+
+    print("\nand 'you have left the path' is only said when it is provable:")
+    chk("40 m off with a ±5 m fix is astray",
+        pg.evaluate("WalkGuide.offPath(5, 40)") is True)
+    chk("40 m off with a ±35 m fix is NOT provable — the fix could be lying",
+        pg.evaluate("WalkGuide.offPath(35, 40)") is False)
+    chk("24 m off is within the floor even with a perfect fix",
+        pg.evaluate("WalkGuide.offPath(0, 24)") is False)
+    chk("26 m off with a perfect fix is astray",
+        pg.evaluate("WalkGuide.offPath(0, 26)") is True)
+
     chk("no page errors across the whole run (%s)" % (errs or "clean"), not errs)
     pg.close()
     br.close()

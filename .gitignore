@@ -88,6 +88,16 @@ place_contributions.json
 # /var/data. A local run writes it here and this repo is public.
 route_demand.json
 
+# Footprints — recorded walks of our own corridors. The only file holding
+# metre-level GPS traces (geo_cache.json above keeps km-coarse city centroids,
+# a different kind of thing). They map public walkways, not people, but they
+# are survey work the business paid for with shoe leather, and the repo is
+# public. The .tmp twin matters just as much: the atomic write dumps the FULL
+# store there before os.replace, so a crash mid-write strands every trace in
+# an un-ignored file one `git add -A` from publication.
+footprints.json
+footprints.json.tmp
+
 # Networks the owner registered as "this is me, do not count it". Home and
 # office IP addresses — the owner's own location, which is not something to
 # publish in a public repo.

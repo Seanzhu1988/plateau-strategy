@@ -162,6 +162,48 @@
     return s;
   }
 
+  /* Metres from a position to the nearest point of a recorded footprint.
+   *
+   * A footprint's promise is "this line works". The useful question while
+   * following one is not "where is the next turn" — indoors there are no
+   * street names to turn onto — but "am I still on the line, and how far off
+   * if not". Flat projection around the position: corridors are hundreds of
+   * metres, where the error in that flattening is centimetres. Accepts points
+   * as [lat, lon] pairs (the stored shape) or {lat, lon} objects. */
+  function nearestOnPathM(pos, points) {
+    if (!points || !points.length) return Infinity;
+    var kx = 111320 * Math.cos(rad(pos.lat)), ky = 111320;
+    function xy(p) {
+      var lat = (p.lat !== undefined) ? p.lat : p[0];
+      var lon = (p.lon !== undefined) ? p.lon : p[1];
+      return { x: (lon - pos.lon) * kx, y: (lat - pos.lat) * ky };
+    }
+    var prev = xy(points[0]);
+    var best = Math.sqrt(prev.x * prev.x + prev.y * prev.y);
+    for (var i = 1; i < points.length; i++) {
+      var cur = xy(points[i]);
+      var dx = cur.x - prev.x, dy = cur.y - prev.y;
+      var len2 = dx * dx + dy * dy;
+      // The closest point of this segment to the origin (which is us).
+      var t = len2 ? (-(prev.x * dx + prev.y * dy)) / len2 : 0;
+      t = Math.max(0, Math.min(1, t));
+      var px = prev.x + t * dx, py = prev.y + t * dy;
+      var d = Math.sqrt(px * px + py * py);
+      if (d < best) best = d;
+      prev = cur;
+    }
+    return best;
+  }
+
+  /* Confidently astray, or just not provably on the line? The tolerance grows
+   * with the fix error for the same reason announcements are withheld on a
+   * rough fix: "you have left the path" from a phone that is merely guessing
+   * is the guide crying wolf, and it is ignored by the time it is right. */
+  function offPath(accuracyM, distM) {
+    var acc = (isFinite(accuracyM) && accuracyM > 0) ? accuracyM : 0;
+    return distM > Math.max(25, acc * 1.5);
+  }
+
   w.WalkGuide = {
     distanceM: distanceM,
     bearingTo: bearingTo,
@@ -170,6 +212,8 @@
     fixIsGoodEnough: fixIsGoodEnough,
     shouldAnnounce: shouldAnnounce,
     phrase: phrase,
+    nearestOnPathM: nearestOnPathM,
+    offPath: offPath,
     NEAR: NEAR, GAP_MS: GAP_MS, MIN_RUN: MIN_RUN, AHEAD_MAX: AHEAD_MAX
   };
 })(window);

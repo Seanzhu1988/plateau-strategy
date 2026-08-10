@@ -214,3 +214,33 @@ re-hash with PBKDF2 on the next successful sign-in, so nobody is locked out and
 the weak hashes drain away as people return. Not done here because changing
 authentication is not the same change as adding a consent layer, and it should
 land where it can be reviewed on its own.
+
+---
+
+## 10. Footprints — the one coordinate store, and why it is not visitor data
+
+Added 2026-08-10. `footprints.py` holds recorded walks of **our own named
+corridors** — terminal door to platform, that kind of thing — used to verify
+and later guide the journey walkthroughs. It is the only store of
+**metre-level GPS traces** on the site. (Stated precisely because a document
+for counsel must not overclaim: the traffic system's `geo_cache.json` holds
+**city-level** centroids — lat/lon rounded to two decimals, ~1 km — derived
+from IP geolocation for the aggregate viewers-by-city table, and traffic day
+records carry the same coarse place coordinates. Those cannot describe a
+walk or a person's position; these traces can, which is why the fence below
+exists.) The fence, for counsel:
+
+- The submitting endpoint is **owner-authenticated**. No visitor can reach it.
+- The corridors are a **closed list in code**. A walk for a corridor we did
+  not deliberately open is refused, so the store cannot become anyone's
+  movement diary — there is nowhere to file a movement that is not one of our
+  own walkways.
+- A stored walk carries **no identity and no clock** — a date and a duration,
+  never a timestamp. "The corridor takes nine minutes" is a map; "someone was
+  at the door at 23:41" is surveillance, and the field does not exist.
+- Traces expire from use after 180 days and each corridor keeps at most 20.
+
+Our position: this is the business surveying its own ground, equivalent to
+photographing a hallway; no consumer data is collected. Counsel should
+confirm nothing in MHMDA or RCW 19.373 reads a business's own surveyor traces
+as consumer health or location data.

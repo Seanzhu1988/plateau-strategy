@@ -44,6 +44,7 @@ import paypal_client
 import bot_lab
 import consent
 import journeys
+import footprints
 
 def _no_tags(s):
     """Defense-in-depth vs stored XSS: strip angle brackets from any string
@@ -1403,6 +1404,14 @@ def google_signin_js():
                      mimetype="text/javascript")
 
 
+FOOTPRINTS = footprints.Store(_data_path("footprints.json"))
+
+
+def _fp_walked(key):
+    """The bridge from journeys to footprints: has this corridor a fresh trace?"""
+    return FOOTPRINTS.walked(key)
+
+
 @app.route("/api/journeys")
 def api_journeys():
     """What we can walk somebody through, and what is held back.
@@ -1410,18 +1419,76 @@ def api_journeys():
     The held list is returned rather than hidden: a journey withheld for want
     of checking is work to be done, and a list that only shows the good ones
     makes that work invisible."""
-    return jsonify({"ok": True, **journeys.listing()})
+    return jsonify({"ok": True, **journeys.listing(walked=_fp_walked)})
 
 
 @app.route("/api/journeys/<jid>")
 def api_journey(jid):
-    j, why = journeys.serve(jid)
+    j, why = journeys.serve(jid, walked=_fp_walked)
     if not j:
         # 409, not 404: it exists, it is simply not fit to hand anybody. A 404
         # would send the next person to build it again.
         return jsonify({"ok": False, "error": "This journey is not verified "
                                               "yet.", "reasons": why}), 409
     return jsonify({"ok": True, "journey": j})
+
+
+# ---------------------------------------------------------------------------
+# Footprints — recorded walks of our own corridors
+#
+# The one place on this site that accepts coordinates, and the fence around
+# it: the submitter is owner-authenticated, the corridors are a closed list
+# written in footprints.py, and what is stored is a public walkway with no
+# person attached — no identity, no clock, a date and a duration only.
+#
+# consent.py's refusal of coordinates guards VISITOR data. This is the
+# business surveying its own ground; conflating the two would mean either
+# weakening the visitors' guard or never being able to map our own front door.
+# ---------------------------------------------------------------------------
+@app.route("/api/footprints")
+@owner_required
+def api_footprints():
+    """Every corridor, walked or waiting. Owner-only: the waiting list is a
+    map of our unfinished edges, which is nobody else's business."""
+    return jsonify({"ok": True, "corridors": FOOTPRINTS.corridors()})
+
+
+@app.route("/api/footprints/<key>", methods=["POST"])
+@owner_required
+def api_footprint_add(key):
+    d = request.get_json(force=True, silent=True)
+    if not isinstance(d, dict):
+        # A top-level JSON array is truthy, so `or {}` kept it and d.get()
+        # blew up with a 500. A refusal, like every other bad input here.
+        d = {}
+    walk, why = FOOTPRINTS.add_walk(key, d.get("points") or [],
+                                    minutes=d.get("minutes"),
+                                    worst_accuracy_m=d.get("worst_accuracy_m"))
+    if not walk:
+        return jsonify({"ok": False, "error": why}), 400
+    return jsonify({"ok": True,
+                    "walk": {k: v for k, v in walk.items() if k != "points"},
+                    "walked": FOOTPRINTS.walked(key)})
+
+
+@app.route("/api/footprints/<key>/path")
+def api_footprint_path(key):
+    """The recorded line of a walked corridor — public, because it is the
+    product: the next traveller gets a path known to work. 404 for unknown
+    and unwalked alike; an unwalked corridor's existence is nobody's business."""
+    p = FOOTPRINTS.path(key)
+    if not p:
+        return Response("Not Found", status=404, mimetype="text/plain")
+    return jsonify({"ok": True, **p})
+
+
+@app.route("/footprint")
+def footprint_page():
+    """The recorder. Content is harmless without an owner session — the POST
+    it feeds is what is guarded — but noindex anyway; it is a work tool."""
+    r = send_file(os.path.join(BASE_DIR, "footprint.html"))
+    r.headers["X-Robots-Tag"] = "noindex, nofollow"
+    return r
 
 
 @app.route("/walk")

@@ -38,6 +38,7 @@ A journey also expires. Transit changes: a line extends, a stop closes, a
 fare rises. A step verified three years ago is a guess wearing a date, so
 anything past MAX_AGE_DAYS stops being served until somebody looks again.
 """
+import copy
 import datetime
 
 # Beyond this, a verification is too old to trust. Transit timetables change
@@ -73,8 +74,13 @@ JOURNEYS = {
                            "leave the building yet.",
                 "if_wrong": "Ask anyone in an airport uniform for Link light "
                             "rail — it is the question they answer most.",
-                "verified": None,          # station-level walking not checked
-                "source": "",
+                # No operator page describes this walk, so prose cannot verify
+                # it. A footprint can: the step unlocks the day one of us walks
+                # terminal-to-platform with /footprint recording. The corridor
+                # key names which trace counts.
+                "corridor": "seatac-terminal-to-link",
+                "verified": None,
+                "source": "awaiting a walked footprint",
             },
             {
                 "do": "Buy a $3 ticket to Lynnwood City Center at the machine, "
@@ -125,13 +131,27 @@ def _stale(step, today=None):
     return (today - when).days > MAX_AGE_DAYS
 
 
-def problems(journey, today=None):
-    """Every reason this journey must not be shown, in order."""
+def problems(journey, today=None, walked=None):
+    """Every reason this journey must not be shown, in order.
+
+    `walked` is how a footprint stands in for prose: a callable that answers
+    "has this corridor a fresh recorded walk?" (see footprints.Store.walked).
+    A step naming a corridor is satisfied by either a fresh human check OR a
+    fresh footprint. With no callable supplied, corridor steps fail closed —
+    absence of the store must read as unverified, never as fine.
+    """
     out = []
     for i, s in enumerate(journey.get("steps") or []):
-        if not s.get("verified"):
+        if s.get("verified") and not _stale(s, today):
+            continue
+        key = s.get("corridor")
+        if key and walked and walked(key):
+            continue
+        if key:
+            out.append("step %d awaits a walked footprint of %s" % (i + 1, key))
+        elif not s.get("verified"):
             out.append("step %d has never been verified" % (i + 1))
-        elif _stale(s, today):
+        else:
             out.append("step %d was verified on %s, too long ago"
                        % (i + 1, s["verified"]))
     if not journey.get("steps"):
@@ -139,7 +159,7 @@ def problems(journey, today=None):
     return out
 
 
-def serve(jid, today=None):
+def serve(jid, today=None, walked=None):
     """A journey fit to hand somebody, or (None, why-not).
 
     Refuses rather than degrades. There is deliberately no parameter to force
@@ -148,17 +168,28 @@ def serve(jid, today=None):
     j = JOURNEYS.get(jid)
     if not j:
         return None, ["no such journey"]
-    bad = problems(j, today)
+    bad = problems(j, today, walked)
     if bad:
         return None, bad
-    return j, []
+    # A copy, annotated — the registry itself must stay clean. Where a step
+    # passed on a footprint rather than a written check, say so: the traveller
+    # is being handed a walk somebody actually walked, and that provenance is
+    # worth a line.
+    out = copy.deepcopy(j)
+    for s in out["steps"]:
+        key = s.get("corridor")
+        if key and walked and (not s.get("verified") or _stale(s, today)):
+            w = walked(key)
+            if isinstance(w, dict) and w.get("date"):
+                s["verified_by"] = "walked on %s" % w["date"]
+    return out, []
 
 
-def listing(today=None):
+def listing(today=None, walked=None):
     """What can be offered right now, and what is held back and why."""
     ready, held = [], []
     for jid, j in sorted(JOURNEYS.items()):
-        bad = problems(j, today)
+        bad = problems(j, today, walked)
         row = {"id": jid, "from": j["from"], "to": j["to"],
                "summary": j.get("summary", ""), "minutes": j.get("minutes")}
         if bad:
