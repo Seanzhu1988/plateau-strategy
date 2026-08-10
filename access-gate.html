@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Sign in — Plateau Strategy Solution Lab</title>
+    <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+    <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
+    <link rel="stylesheet" href="/modern.css">
+    <style>
+        /* header img: the shared sheets only size it below 560px, so without
+           this the logo renders at its natural 1224px. Same note as the other
+           standalone pages. */
+        header img { height: 42px; width: 42px; border-radius: 50%; }
+        header .brand { font-size: 1.2rem; font-weight: 800; }
+        header .right { margin-left: auto; display: flex; gap: 1.2rem; }
+
+        .wrap { max-width: 30rem; }
+        p { margin: .85rem 0; font-size: 1.02rem; }
+        .signin { margin: 1.8rem 0; display: grid; gap: .7rem; }
+        .signin input { width: 100%; padding: .7rem .9rem; font: inherit;
+                        border: 1.5px solid var(--psx-line, #e6e2da); border-radius: 10px;
+                        background: var(--psx-bg, #faf8f4); color: inherit; }
+        .signin button { padding: .7rem 1.4rem; font: inherit; font-weight: 600;
+                         cursor: pointer; border-radius: 10px;
+                         border: 1px solid var(--psx-accent, #1f3a5f);
+                         background: var(--psx-accent, #1f3a5f); color: #fff; }
+        .msg { min-height: 1.3em; font-size: .95rem; }
+        .msg.bad { color: #b3261e; }
+        .quiet { opacity: .72; font-size: .93rem; }
+    </style>
+</head>
+<body data-arm="company">
+    <header>
+        <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="right"><a href="/">Home</a></div>
+    </header>
+
+    <div class="wrap">
+        <div class="page-title">Sign in</div>
+        <p class="page-sub">You have the link. This page also needs a password.</p>
+
+        <form class="signin" onsubmit="return signIn(event)">
+            <input id="u" placeholder="username" autocomplete="username" autocapitalize="none">
+            <input id="p" type="password" placeholder="password" autocomplete="current-password">
+            <button type="submit">Sign in</button>
+            <p class="msg" id="msg"></p>
+        </form>
+
+        <p class="quiet">There is no signup, no password reset and no recovery
+        link here, and nothing on this site can issue you one. If you do not
+        have a username and password, they come from Sean directly.</p>
+    </div>
+
+<script>
+async function signIn(e) {
+    e.preventDefault();
+    var m = document.getElementById('msg');
+    m.className = 'msg'; m.textContent = 'Checking…';
+    var j = await psxJSON('/api/access/login', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: document.getElementById('u').value,
+                               password: document.getElementById('p').value }) });
+    if (!j || !j.ok) {
+        m.className = 'msg bad';
+        m.textContent = (j && j.error) || 'Those details were not accepted.';
+        return false;
+    }
+    // Straight back to the page they were trying to reach — they still hold
+    // the share cookie, so this lands rather than bouncing.
+    location.reload();
+    return false;
+}
+</script>
+</body>
+</html>

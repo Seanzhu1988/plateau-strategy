@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Footprints — see it work · Plateau Strategy</title>
+<link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+<!-- The viewable proof. The blueprint page DESCRIBES the direction gate;
+     this page RUNS it — the same trailAhead() the walking guide uses, no
+     mock geometry, deciding live which footprints to draw as the heading
+     turns. If this feels right on a phone, the product feels right, because
+     this IS the product's decision code with a dial attached. -->
+<script src="/walk-guide.js"></script>
+<style>
+  :root { --bp:#10305c; --bp2:#0c2749; --ink:#dcecff; --ink2:#8fb4e3;
+          --grid:rgba(220,236,255,.07); }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bp); color:var(--ink);
+         font:17px/1.6 Georgia,'Times New Roman',serif;
+         background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+           linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+         background-size:28px 28px; }
+  .sheet { max-width:34rem; margin:0 auto; padding:1.2rem 1rem 3rem; }
+  h1 { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+       font-size:1.35rem; letter-spacing:.04em; margin:.4rem 0 .2rem; }
+  .sub { color:var(--ink2); font-style:italic; margin:0 0 1.2rem; }
+  .stage { background:var(--bp2); border:1.5px solid var(--ink2); }
+  .stage svg { width:100%; height:auto; display:block; }
+  .why { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+         font-size:.78rem; letter-spacing:.14em; text-transform:uppercase;
+         color:var(--ink2); min-height:2.2em; margin:.7rem 0 .2rem;
+         text-align:center; }
+  .why.on { color:var(--ink); }
+  .dial { margin:1rem 0 .4rem; }
+  .dial input { width:100%; min-height:44px; accent-color:var(--ink); }
+  .dial label { font-family:ui-monospace,Menlo,Consolas,monospace;
+                font-size:.72rem; letter-spacing:.18em; text-transform:uppercase;
+                color:var(--ink2); display:block; text-align:center; }
+  .row { display:flex; gap:.7rem; justify-content:center; flex-wrap:wrap;
+         margin:1rem 0; }
+  button { min-height:48px; padding:.6rem 1.2rem; border-radius:999px;
+           border:1.5px solid var(--ink2); background:none; color:var(--ink);
+           font:inherit; font-weight:700; cursor:pointer; }
+  button[disabled] { opacity:.4; cursor:default; }
+  .note { color:var(--ink2); font-size:.92rem; }
+  a { color:var(--ink); }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <h1>Footprints — see it work</h1>
+  <p class="sub">Turn until the footprints appear. Then take a step.</p>
+
+  <div class="stage">
+    <svg id="stage" viewBox="0 0 360 420" aria-label="A walker on a recorded corridor; footprints appear ahead only when the walker faces along it"></svg>
+  </div>
+  <div class="why" id="why"></div>
+
+  <div class="dial">
+    <label for="hdg">Your heading — drag, or use the compass</label>
+    <input id="hdg" type="range" min="0" max="359" value="90" step="1">
+  </div>
+  <div class="row">
+    <button id="stepBtn">Take a step</button>
+    <button id="compassBtn">Use my real compass</button>
+  </div>
+
+  <p class="note">Everything deciding what you see here is the guide's real
+  code — the same <i>trailAhead()</i> that runs on a walk. The dial stands in
+  for which way your body faces; on a phone, the compass button makes it the
+  real thing: turn yourself, and the prints obey.</p>
+  <p class="note">The drawn corridor is a stand-in for a recorded walk —
+  a bend and a straight, like a terminal hallway. The blueprint is at
+  <a href="/footprints-concept">/footprints-concept</a>.</p>
+</div>
+<script>
+(function () {
+  "use strict";
+  /* A stand-in corridor in real lat/lon so trailAhead consumes it unchanged:
+     ~90 m north, a bend, ~110 m east. A DEMO trace, not survey data — it
+     exists so the geometry has something to chew on screen. */
+  var LAT0 = 47.60000, LON0 = -122.33300;
+  var PATH = [];
+  (function build() {
+    var i;
+    for (i = 0; i <= 11; i++)                       // north leg, 8 m steps
+      PATH.push([LAT0 + i * 8 / 111320, LON0]);
+    var lat = PATH[PATH.length - 1][0];
+    var kx = 111320 * Math.cos(47.6 * Math.PI / 180);
+    for (i = 1; i <= 14; i++)                       // east leg, 8 m steps
+      PATH.push([lat, LON0 + i * 8 / kx]);
+  })();
+
+  var atIdx = 2;                    // where the walker stands, ON the path
+  var heading = 90;                 // start facing the WRONG way on purpose
+
+  var svg = document.getElementById('stage'), whyEl = document.getElementById('why');
+  var kx = 111320 * Math.cos(47.6 * Math.PI / 180), ky = 111320;
+  function xy(p) {
+    var lat = p.lat !== undefined ? p.lat : p[0];
+    var lon = p.lon !== undefined ? p.lon : p[1];
+    // metres from origin, scaled ~2.4 px/m, y up the screen
+    return { x: 60 + (lon - LON0) * kx * 2.4, y: 380 - (lat - LAT0) * ky * 2.4 };
+  }
+
+  function el(name, attrs) {
+    var e = document.createElementNS('http://www.w3.org/2000/svg', name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    // the corridor's faint centreline — the recorded walk
+    var pts = PATH.map(xy).map(function (p) { return p.x + ',' + p.y; }).join(' ');
+    svg.appendChild(el('polyline', { points: pts, fill: 'none',
+      stroke: '#8fb4e3', 'stroke-width': 1, 'stroke-dasharray': '2 7' }));
+    var me = xy(PATH[atIdx]);
+    // the decision — the guide's own code, nothing else
+    var d = WalkGuide.trailAhead({ lat: PATH[atIdx][0], lon: PATH[atIdx][1] },
+                                 heading, PATH, { accuracy: 5 });
+    if (d.show) {
+      // footprints: alternate feet either side of the recorded line, each
+      // rotated to the direction of travel at that point
+      var prev = PATH[atIdx];
+      for (var i = 0; i < d.trail.length; i++) {
+        var p = d.trail[i], P = xy(p), Q = xy(prev);
+        var ang = Math.atan2(P.x - Q.x, Q.y - P.y) * 180 / Math.PI;
+        var side = (i % 2 ? 6 : -6);
+        var rad = ang * Math.PI / 180;
+        var ox = Math.cos(rad) * side, oy = Math.sin(rad) * side;
+        var foot = el('ellipse', { cx: P.x + ox, cy: P.y + oy, rx: 3.2, ry: 6,
+          fill: '#dcecff', transform: 'rotate(' + ang + ' ' + (P.x + ox) + ' ' + (P.y + oy) + ')' });
+        svg.appendChild(foot);
+        prev = p;
+      }
+      whyEl.textContent = 'FOOTPRINTS AHEAD — ' + (d.dir === 1 ? 'onward' : 'back the way it was walked');
+      whyEl.className = 'why on';
+    } else {
+      whyEl.textContent = d.why === 'facing away from the path'
+        ? 'NOTHING — THE EMPTINESS IS THE MESSAGE. KEEP TURNING.'
+        : d.why.toUpperCase();
+      whyEl.className = 'why';
+    }
+    // the walker: a dot and a heading cone, drawn LAST so it sits on top
+    var r = heading * Math.PI / 180;
+    var cx = me.x, cy = me.y, L = 34, half = 24 * Math.PI / 180;
+    svg.appendChild(el('path', { d:
+      'M ' + cx + ' ' + cy +
+      ' L ' + (cx + Math.sin(r - half) * L) + ' ' + (cy - Math.cos(r - half) * L) +
+      ' L ' + (cx + Math.sin(r + half) * L) + ' ' + (cy - Math.cos(r + half) * L) + ' Z',
+      fill: 'rgba(220,236,255,.16)', stroke: '#8fb4e3', 'stroke-width': 1 }));
+    svg.appendChild(el('circle', { cx: cx, cy: cy, r: 7, fill: '#dcecff' }));
+    document.getElementById('stepBtn').disabled = !d.show;
+    window.__demo = { show: d.show, why: d.why || '', at: atIdx,
+                      feet: d.show ? d.trail.length : 0 };
+  }
+
+  var dial = document.getElementById('hdg');
+  dial.addEventListener('input', function () { heading = +dial.value; draw(); });
+
+  document.getElementById('stepBtn').addEventListener('click', function () {
+    var d = WalkGuide.trailAhead({ lat: PATH[atIdx][0], lon: PATH[atIdx][1] },
+                                 heading, PATH, { accuracy: 5 });
+    if (!d.show) return;
+    atIdx = Math.max(0, Math.min(PATH.length - 1, atIdx + d.dir));
+    if (atIdx === PATH.length - 1) {
+      whyEl.textContent = 'END OF THE CORRIDOR — THIS IS WHERE THE PLATFORM WOULD BE.';
+      whyEl.className = 'why on';
+    }
+    draw();
+  });
+
+  /* The real compass, where the platform allows it. iOS wants an explicit
+     permission grant from inside a tap; elsewhere it just starts. Every
+     failure path leaves the dial working — same rule as everything else:
+     a shortcut that breaks must degrade to the ordinary way, silently. */
+  document.getElementById('compassBtn').addEventListener('click', function () {
+    var btn = this;
+    function attach() {
+      window.addEventListener('deviceorientation', function (e) {
+        var h = (e.webkitCompassHeading !== undefined)
+          ? e.webkitCompassHeading                     // iOS: true heading
+          : (e.alpha !== null ? (360 - e.alpha) % 360 : null);
+        if (h === null) return;
+        heading = Math.round(h);
+        dial.value = heading;
+        draw();
+      });
+      btn.textContent = 'Compass on — turn yourself';
+      btn.disabled = true;
+    }
+    try {
+      if (typeof DeviceOrientationEvent !== 'undefined'
+          && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission()
+          .then(function (s) { if (s === 'granted') attach(); })
+          .catch(function () { /* the dial still works */ });
+      } else if (typeof DeviceOrientationEvent !== 'undefined') {
+        attach();
+      }
+    } catch (err) { /* the dial still works */ }
+  });
+
+  draw();
+})();
+</script>
+</body>
+</html>

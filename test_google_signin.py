@@ -28,10 +28,31 @@ chk("no client id is published", not cfg["client_id"])
 r = c.post("/api/auth/google", json={"credential": "anything"})
 chk(f"the endpoint refuses rather than half-working ({r.status_code})", r.status_code == 503)
 
-page = c.get("/book").get_data(as_text=True)
-chk("the button markup is hidden by default", 'id="gsiBox" hidden' in page)
+FORMS = ["/book", "/renter", "/agent"]
+for _p in FORMS:
+    _page = c.get(_p).get_data(as_text=True)
+    chk(f"{_p}: the button markup is hidden by default", 'id="gsiBox" hidden' in _page)
+    chk(f"{_p}: it loads the shared implementation", 'src="/google-signin.js"' in _page)
+    # The reason the shared file exists. Three copies of a routine whose whole
+    # security is "never decode the credential here" is three chances to get it
+    # wrong, and the next person fixing a bug in it would fix one of them.
+    chk(f"{_p}: and carries no inline copy of it",
+        "accounts.google.com/gsi/client" not in _page)
+
+js = c.get("/google-signin.js")
+chk(f"the shared file is served ({js.status_code})", js.status_code == 200)
+js = js.get_data(as_text=True)
 chk("nothing is loaded from Google unless configured",
-    "accounts.google.com/gsi/client" in page and "cfg.enabled" in page)
+    "accounts.google.com/gsi/client" in js and "cfg.enabled" in js)
+# The client-side half of the security. Everything else here tests that the
+# server refuses a forged token; this tests that the browser never gets the
+# chance to skip asking. A copy that decoded the JWT itself would pass every
+# assertion above and hand the form to whoever typed the loudest.
+for _forbidden in ("atob(", "decodeJwt", "JSON.parse(resp.credential",
+                   "credential.split"):
+    chk(f"the credential is never decoded in the browser (no {_forbidden})",
+        _forbidden not in js)
+chk("it is POSTed to the server for checking", "/api/auth/google" in js)
 
 # ----------------------------------------------------------------- forgeries
 print("\nwith a client id set, a forged or bad token gets nothing:")

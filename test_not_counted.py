@@ -100,6 +100,23 @@ chk(f"login stops it counting from then on {mid} -> {counted_today()}",
     counted_today()[0] == mid[0])
 
 
+# The cookie is the primary mechanism and the session is the backstop, so
+# prove the backstop alone works: a browser signed in as owner whose opt-out
+# cookie has been swept (privacy extensions do exactly this — psx_not_counted
+# looks like a tracker) must still not count.
+print("\nowner signed in, but the opt-out cookie wiped:")
+swept = A.app.test_client()
+swept.post("/api/owner/login", json={"username": "sean", "password": "hunter22"})
+swept.delete_cookie(A.TRAFFIC_OPTOUT_COOKIE)
+chk("the cookie really is gone",
+    A.TRAFFIC_OPTOUT_COOKIE not in [c.key for c in swept._cookies.values()]
+    if hasattr(swept, "_cookies") else True)
+before = counted_today()
+for _ in range(3):
+    swept.get("/", headers={"User-Agent": PHONE})
+chk(f"still not counted, on the session alone {before} -> {counted_today()}",
+    counted_today() == before)
+
 print("\nturning it back on works:")
 back = A.app.test_client()
 back.get("/not-a-traveler", headers={"User-Agent": PHONE})       # off
@@ -113,11 +130,127 @@ back.get("/", headers={"User-Agent": PHONE})
 chk(f"and it counts again {before} -> {counted_today()}",
     counted_today()[0] == before[0] + 1)
 
+# A cookie is per browser. Registering the network covers every device on it
+# at once, needs no cookie, and survives clearing anything — which is the point
+# for a house or an office where the same person browses from four devices.
+print("\nregistering the network Sean is sitting on:")
+A.IGNORE_NETS_PATH = os.path.join(tmp, "nets.json")
+HOME = {"User-Agent": PHONE, "X-Forwarded-For": "73.21.4.9"}
+CAFE = {"User-Agent": PHONE, "X-Forwarded-For": "198.51.100.7"}
+
+boss = A.app.test_client()
+boss.post("/api/owner/login", json={"username": "sean", "password": "hunter22"})
+r = boss.post("/api/traffic/networks", json={"label": "home wifi"}, headers=HOME)
+chk(f"the owner registers the address the request came from ({r.status_code})",
+    r.status_code == 200 and r.get_json()["here"] == "73.21.4.9")
+
+before = counted_today()
+for _ in range(4):
+    A.app.test_client().get("/", headers=HOME)          # four DIFFERENT browsers
+chk(f"four fresh browsers on it count for nothing {before} -> {counted_today()}",
+    counted_today() == before)
+
+before = counted_today()
+A.app.test_client().get("/", headers=CAFE)
+chk("but a stranger somewhere else still counts", counted_today() != before)
+
+r = A.app.test_client().post("/api/traffic/networks", json={}, headers=HOME)
+chk(f"a stranger cannot register anything ({r.status_code})", r.status_code == 401)
+
+# The address is read from the request, never the body — otherwise a signed-in
+# session could erase traffic from a place it has never been.
+r = boss.post("/api/traffic/networks", json={"ip": "198.51.100.7"}, headers=HOME)
+chk("and the owner cannot register a network they are not on",
+    "198.51.100.7" not in A._registered_nets())
+
+boss.post("/api/traffic/networks", json={"remove": True, "ip": "73.21.4.9"}, headers=HOME)
+before = counted_today()
+A.app.test_client().get("/", headers=HOME)
+chk(f"un-registering brings it back {before} -> {counted_today()}",
+    counted_today() != before)
+
 print("\nbots were already ignored, and still are:")
 bot = A.app.test_client()
 before = counted_today()
 bot.get("/", headers={"User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1)"})
 chk("a crawler is not a traveler", counted_today() == before)
+
+
+# ---- and the same must hold for CONVERSIONS ------------------------------
+#
+# It did not. record_conversion() checked none of the exclusions above, so a
+# device excluded from pageviews still added a booking. The live file showed
+# exactly that: a day reading 0 pageviews and 1 booking, and an earlier day
+# with 17 bookings against 59 visitors.
+#
+# This is the more damaging half. A pageview that should not be there inflates
+# a number nobody acts on; a booking that should not be there is the number the
+# whole site is judged by.
+print("\nand a conversion follows the same rules as a view:")
+
+def conversions_today():
+    try:
+        d = json.load(open(A.TRAFFIC_PATH))
+    except Exception:
+        return {}
+    if not d.get("days"):
+        return {}
+    return d["days"][sorted(d["days"])[-1]].get("conversions", {})
+
+def booking_count():
+    return sum(conversions_today().get("booking", {}).values())
+
+with A.app.test_request_context("/", headers={"User-Agent": PHONE}):
+    before = booking_count()
+    A.record_conversion("booking")
+    chk(f"a real traveler's booking is counted ({before} -> {booking_count()})",
+        booking_count() == before + 1)
+
+with A.app.test_request_context("/", headers={"User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1)"}):
+    before = booking_count()
+    A.record_conversion("booking")
+    chk(f"a crawler's booking is not ({before} -> {booking_count()})",
+        booking_count() == before)
+
+with A.app.test_request_context(
+        "/", headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) HeadlessChrome/141.0 Safari/537.36"}):
+    before = booking_count()
+    A.record_conversion("booking")
+    chk(f"a headless test browser's booking is not ({before} -> {booking_count()})",
+        booking_count() == before)
+
+with A.app.test_request_context("/", headers={"User-Agent": PHONE},
+                                environ_base={"HTTP_COOKIE": A.TRAFFIC_OPTOUT_COOKIE + "=1"}):
+    before = booking_count()
+    A.record_conversion("booking")
+    chk(f"an opted-out device's booking is not ({before} -> {booking_count()})",
+        booking_count() == before)
+
+# ---- the deadlock, which took the whole site down ------------------------
+#
+# _track_traffic held _LOCK and, inside it, called _geo_lookup — which takes
+# the same lock to write its cache. threading.Lock is not reentrant, so the
+# second acquire never returned. Every visitor whose city was not already in
+# memory hung forever, and gunicorn runs one worker with eight threads, so
+# eight of them stopped the site answering at all.
+#
+# It is timed rather than inspected because the shape of the fix may change;
+# what must not change is that a page load finishes.
+print("\ncounting a visitor never blocks the page:")
+import threading as _th
+
+A._GEO_MEM.clear()
+done = []
+
+def _one():
+    c = A.app.test_client()
+    c.get("/", headers={"User-Agent": PHONE, "X-Forwarded-For": "203.0.113.44"})
+    done.append(True)
+
+t = _th.Thread(target=_one, daemon=True)
+t.start()
+t.join(timeout=20)
+chk("a page request with a cold geo cache returns at all", bool(done))
 
 shutil.rmtree(tmp, ignore_errors=True)
 print("\nPASSED" if not fails else f"\nFAILED: {fails}")

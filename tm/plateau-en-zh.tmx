@@ -1,0 +1,4597 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tmx version="1.4">
+  <header creationtool="plateau-strategy/export_tmx.py"
+          creationtoolversion="1.0" segtype="sentence"
+          o-tmf="plain" adminlang="en" srclang="en"
+          datatype="plaintext" creationdate="20260802T162234Z"/>
+  <body>
+    <tu>
+      <tuv xml:lang="en"><seg>$10 / year</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>10 美元 / 年</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>$170/year</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>$170/年</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>$75 to Sea–Tac from anywhere within 30 miles, quoted before you book. Drivers rent our cars and keep the fare, hotels and agents earn commission for sending riders, and the trip-planning tools are free to anyone. Below: the three businesses that income is building, and where each one stands today.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>30 英里范围内至西雅图-塔科马国际机场固定价 75 美元，预订前即告知。司机租用我们的车辆并保留全部车费，酒店与代理商推荐乘客可获得佣金，行程规划工具向所有人免费开放。以下为这笔收入正在建设的三项业务，以及各自目前的进展。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>$75 to Sea–Tac, quoted before you book. Drivers rent our cars and keep the fare, hotels and agents earn commission for sending riders, and the trip-planning tools are free to anyone. Below: the three businesses that income is building, and where each one stands today.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>至西雅图-塔科马国际机场固定价 75 美元，预订前即告知。司机租用我们的车辆并保留全部车费，酒店与代理商推荐乘客可获得佣金，行程规划工具向所有人免费开放。以下为这笔收入正在建设的三项业务，以及各自目前的进展。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>&#x27;Old Ironsides&#x27;, launched 1797 and still a commissioned Navy ship — the oldest warship afloat anywhere in the world.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>「老铁甲」，1797 年下水，至今仍是一艘在役的海军舰艇——全世界还浮在水上的最古老战舰。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>(by Intuit) →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>（由 Intuit 提供）→</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>(optional)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>（可选）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>(used to sign in)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>（用于登录）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>+ Add</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>+ 添加</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>+ Add member</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>+ 添加成员</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>+ Add prospect</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>+ 添加潜在客户</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>+ Add to Trip Planner</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>+ 加入行程规划</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>+{n} min</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>多 {n} 分钟</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>, and no outcome is guaranteed — predictions can be wrong. You are responsible for your own decisions. Your personal data stays on your own device. © Plateau Strategy Solution Lab.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>，也不保证任何结果——预测可能出错。您的决定由您自己负责。您的个人数据留在您自己的设备上。© Plateau Strategy Solution Lab。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>, at the Bureau of the Fiscal Service. Card, bank, or PayPal on Pay.gov.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>，由财政服务局负责。可在 Pay.gov 使用银行卡、银行账户或 PayPal。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>, or register to</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>，或登记</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>, write</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>，在备注栏写上</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>. Cancel anytime.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>。可随时取消。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>. Guiding is part of the</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>查看。带团导览隶属于</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>. Hours shown are typical — check before you go.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>。所列营业时间为一般情况——出发前请再确认。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>. No customer funds are accepted or managed. Cryptocurrency is highly volatile and you can lose the entire amount you put at risk. Past performance, once published, will not guarantee future results.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>。我们不接受也不管理客户资金。加密货币波动极大，您投入的资金可能全部亏光。过往业绩即便日后公开，也不保证未来结果。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>. The same agent code does both. Anyone can join, as an individual or an organization.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>上出售。同一代理编号即可兼顾两者。个人与机构均可加入。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>. This is a connections board, not a transaction — no money or equity changes hands on this page; Plateau Strategy follows up directly with anyone who registers interest.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>。这是一个牵线的板块，不是交易平台——本页面不涉及任何资金或股权转手；Plateau Strategy 会直接联系每一位登记意向的人。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>. You&#x27;ll use it, with your last name, to sign in.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>。您将用它和您的姓氏一起登录。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>/month</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>/月</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>/year</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>/年</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>0 investor(s) interested</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>0 位投资人关注</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>0 operator(s) interested</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>0 位运营者关注</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>1 day</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>1 天</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>1 hour</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>1 小时</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>100% of profit auto-pays your debt</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>100% 的利润自动偿还您的债务</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>12 hours</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>12 小时</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>15 min</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>15 分钟</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>15 minutes before</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>前 15 分钟</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>1½ h</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>1.5 小时</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>2 days</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>2 天</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>2 h</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>2 小时</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>2 hours</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>2 小时</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>3 h</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>3 小时</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>3 hours</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>3 小时</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>30 min</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>30 分钟</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>30-day free trial, then</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>30 天免费试用，之后</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>4 hours</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>4 小时</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>46 of 46 destinations</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>46 个目的地，共 46 个</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>8 hours</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>8 小时</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>843 acres of lakes, lawns and woodland in the middle of Manhattan. Bethesda Terrace, Bow Bridge and the Mall make the classic loop.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>曼哈顿正中央 843 英亩的湖泊、草坪与林地。贝塞斯达平台、弓桥和林荫大道连成经典一圈。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>: write your own in-depth trip and sell it on our</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>：写一条自己的深度行程，放到我们的</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A 2.5-mile red brick line through sixteen Revolutionary sites, from Boston Common to the Bunker Hill Monument — the whole founding story laid out as a walk.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一条 2.5 英里的红砖线，串起十六处独立战争遗址，从波士顿公园一路走到邦克山纪念碑——整个建国故事被铺成一条步道。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A Seattle car service that funds what comes next</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>西雅图用车服务，为后续业务提供资金</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A Seattle car service: flat-rate Tesla rides to Sea–Tac and around the city, plus trip-planning tools that are free to use.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>西雅图的用车服务：特斯拉固定价格接送，往返机场及市区；另提供免费使用的行程规划工具。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A beaux-arts cathedral of transit — the turquoise celestial ceiling and the four-faced opal clock above the information booth.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一座学院派风格的交通殿堂——青绿色的星空穹顶，问询处上方那只四面蛋白石钟。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A block-long food hall in the old Nabisco factory — tacos, lobster rolls, doughnuts and thirty-five vendors.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>老纳贝斯克饼干厂改成的一整条街的美食大厅——塔可、龙虾卷、甜甜圈，三十五家摊位。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A brief that&#x27;s honest</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一份诚实的简报</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A closed loop, not a funnel</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>这是一个闭环，不是漏斗</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A cobblestone lane of pubs and outdoor tables in the financial district — one of Manhattan&#x27;s oldest streets.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>金融区里一条铺鹅卵石的小街，两旁是酒馆和露天桌子——曼哈顿最老的街道之一。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A curated guidebook of attractions and restaurants — every type of destination, organized by category, with descriptions and local tips from a professionally licensed tour guide. One tap sends any place into the</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一本精选的景点与餐厅指南——各类目的地按类别整理，附有描述和持证导游的本地贴士。一键即可把任意地点加入</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A curated guidebook of attractions and restaurants — every type of destination, organized by category, with descriptions and local tips. One tap sends any place into the Trip Planner.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一本精选的景点与餐厅指南——各类目的地按类别整理，附描述与本地贴士。一键即可把任意地点送入行程规划。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A four-story Giant Ocean Tank spirals through a Caribbean reef with sea turtles, sharks and rays, right on the harbor.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>四层高的巨型海洋缸，一路盘旋穿过加勒比珊瑚礁，海龟、鲨鱼和鳐鱼就在身边，位置就在港边。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A free tool by Plateau Strategy Solution Lab · descriptions curated with a professionally licensed tour guide</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>Plateau Strategy Solution Lab 出品的免费工具 · 描述内容由持证导游共同编写</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A freight rail line reborn as an elevated garden walk from Gansevoort Street to 34th, with Hudson views and public art.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>废弃货运铁路改成的空中花园步道，从 Gansevoort 街一直走到 34 街，沿途是哈德逊河景和公共艺术。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A full 24 hours</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>整整 24 小时</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A guidebook of attractions and restaurants, city by city, with descriptions and local tips from a licensed tour guide. One tap sends any place into the</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一份按城市编排的景点与餐厅指南，附有说明与持证导游提供的本地建议。点击即可将任一地点加入</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A library that&#x27;s earned it</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一座凭实绩说话的资料库</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A mile of waterfront restaurants and music halls beside the Municipal Fish Market — the oldest continuously operating fish market in the country.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>市政鱼市旁一英里长的滨水餐厅和演出场地——那座鱼市是全美连续经营时间最长的。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A mixed-use building, still on paper. The drawings are published as they stand.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一栋综合用途建筑，目前仍处于图纸阶段。设计图按现状公开。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A place</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一个地方</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A prediction clock that never lies to you — weather, markets, your own patterns, every forecast scored against what actually happened. It tells you when it doesn&#x27;t know. Free while it earns its record ($10/year value).</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一个从不骗您的预测时钟——天气、市场、您自己的规律，每一次预测都拿真实结果来打分。不知道的时候，它会直说。在它积累战绩期间免费（价值每年 10 美元）。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A prediction clock that never lies to you.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一个从不骗您的预测时钟。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>A rusted 1900s gasification plant turned lakefront park — industrial ruins, kite hill, and seaplanes landing on Lake Union in front of the skyline.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一座 1900 年代的煤气厂锈在原地，四周变成了湖畔公园——工业遗迹、放风筝的小山，还有水上飞机贴着天际线降落在联合湖上。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>AI Debt Eliminator</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>AI 债务消除器</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>API keys, tokens and passwords live in encrypted server configuration — never in your browser, never shown on a page, never committed to our code.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>API 密钥、令牌和密码都存放在加密的服务器配置中——绝不进入您的浏览器，绝不显示在页面上，也绝不写进我们的代码。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>ATM &amp; bank</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>取款机与银行</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>About Plateau Strategy Solution Lab</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>关于 Plateau Strategy Solution Lab</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>About {miles} miles. Estimated from the road distance — we confirm the exact fare before you pay, and it does not change after that.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>约 {miles} 英里。此为按路程估算，付款前我们会确认准确金额，确认后不再变动。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>About {time} in</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>约行驶 {time}</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Acquire and develop properties supporting our transportation operations plus generate rental income. Transform land into mixed-use hubs with residential, commercial, and operational space.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>收购并开发支持我们交通运营的物业，同时产生租金收入。将土地转变为集住宅、商业和运营空间于一体的综合用途枢纽。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Action Required — Proof of Insurance</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>需要处理 —— 保险证明</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Action Required — Sign Your Driver Agreement</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>需要操作 —— 签署您的司机协议</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Add my wish</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>提交我的心愿</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Add to the map →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>加入地图 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Address lookup unavailable right now — drag the black pin instead.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>地址查询暂时不可用——请改为拖动黑色标记。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Affordable Tesla rentals turn everyday drivers into earners and riders into owners — the first loop in a closed system where revenue compounds instead of leaking away.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>平价特斯拉租赁让普通司机开始赚钱，也让乘客变成车主——这是闭环系统的第一环，收入在其中不断复利，而不是白白流走。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Affordable, reliable Tesla rides — booked online in seconds, with your invoice sent automatically. No app to download, no surge-pricing games.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>实惠又靠谱的 Tesla 专车 —— 在线几秒就能约，账单自动开好。不用下载 App，也没有高峰期乱加价。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Agent</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>代理</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Agent &amp; Guide Portal</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>代理人与导游平台</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Agent Menu</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>代理菜单</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Agent Portal</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>代理门户</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Agent Portal →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>代理门户 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Agent Program</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>代理计划</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Agent code</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>代理代码</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Agent earns $</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>代理赚取 $</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Agents</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>代理人</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Agents &amp; driver-agents request their earned money here. Send it your way (Zelle / cash / check), then mark it paid — the ledger stays honest. Balances show what each agent can still request.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>代理人和司机代理在这里申请自己赚到的钱。您用自己的方式付款（Zelle / 现金 / 支票），然后标记为已支付——账目就始终准确。余额显示每位代理还能申请多少。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Agents →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>代理 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Airbnb &amp; tenant revenue streams</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>Airbnb 与租户收入来源</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Airport Pickup (flat) — $75</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>机场接送（固定价格）— $75</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>All categories</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>全部类别</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>All cities</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>所有城市</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>All transactions</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>所有交易</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>All types</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>所有类型</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>America&#x27;s most hallowed ground — the Kennedy gravesite and the Tomb of the Unknown Soldier.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>美国最庄严的一片土地——肯尼迪墓与无名战士墓都在这里。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>America&#x27;s oldest public park, 1634, running into the Public Garden with its swan boats and weeping willows.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>美国最老的公共公园，1634 年，一直连到公共花园——那里有天鹅船和垂柳。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Amount</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>金额</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Amount you gave ($)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您捐了多少（美元）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>An automated crypto-trading</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一个自动化加密货币交易</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>An automated trading project in private testing, building a record you can follow. It is not open to outside money.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一项自动化交易项目，正在内部验证中，逐步建立可供查阅的记录。不接受外部资金。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>An automated trading research project in private verification, building an audited record. Nothing is for sale and no money is accepted — you can follow the results.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>自动化交易研究项目，目前处于内部验证阶段，正在建立可审计的业绩记录。不对外销售任何产品，亦不接受任何资金；结果公开，可持续关注。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>An experience</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一种体验</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>An integrated business ecosystem creating opportunity for the people who ride, drive, and grow with us.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一个环环相扣的商业生态，为搭我们车、替我们开车、和我们一起成长的每个人创造机会。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>An integrated business ecosystem — transportation, real estate and finance in one closed loop, built so revenue compounds instead of leaking away.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一个一体化的商业生态——交通、房地产与金融构成一个闭环，让收入不断复利，而不是白白流走。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Annual</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>年付</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Another driver claimed this ride first. It has been removed from your list.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>这单已被别的司机先接走了，已从您的列表中移除。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Any gift to reduce the national debt goes directly to the U.S. Treasury&#x27;s own program. We never touch a cent — the button leaves our site for the government&#x27;s payment page.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>任何用于减少国债的捐赠都直接进入美国财政部自己的项目。我们一分钱也碰不到——按钮会带您离开本站，前往政府的支付页面。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Any rating ⟳</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>不限评分 ⟳</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Anyone can pitch a business idea here — free, no account needed. Readers back an idea one of two ways: register to</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>任何人都可以在这里提出商业点子——免费，无需注册。读者可以用两种方式支持一个点子：登记</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Anything else</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>其他</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Anything to tell the guide? (optional)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>有什么要告诉导游的吗？（选填）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Apps</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>应用</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Architecture</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>建筑</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Archive</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>档案库</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Archive — Plateau Strategy Solution Lab</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>档案库 — Plateau Strategy Solution Lab</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Archive →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>档案库 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Art &amp; museums</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>艺术与博物馆</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Articles</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>文章</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>At your service. Add any place — search above or tap a pin — and I’ll build your day sheet: miles, drive time, arrival, stay and closing time.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>随时为您服务。您可在上方搜索或点击地图上的图钉添加任意地点，我会为您生成当日行程表：里程、车程、到达时间、停留时长与关门时间。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Attraction</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>景点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Attractions</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>景点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Auto (by time of day)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>自动（按时段）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Available to pay out</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>可提现金额</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Back</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>返回</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Back it by running it</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>以运营方式支持</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Back it with capital</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>以资金方式支持</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Be specific. &quot;Harvard Yard in depth — a student&#x27;s walk&quot; sells; &quot;Boston tour&quot; does not.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>写具体一点。“哈佛校园深度游——学生带路”卖得动；“波士顿一日游”卖不动。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Become an agent →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>成为代理 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Best after dark, when the lights do the work. Keep your wallet in a front pocket.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>入夜后最佳，灯光自会说话。随身财物请置于前袋。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Best value</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>最超值</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Billed monthly · cancel anytime</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>按月结算 · 可随时取消</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Birthday</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>生日</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Birthday (DDMMYYYY)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>生日（DDMMYYYY）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Board of Directors</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>董事会</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Board of Directors — Plateau Strategy Solution Lab</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>董事会 — Plateau Strategy Solution Lab</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Book</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>预订</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Book a Reservation Ride</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>预约用车</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Book a Ride</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>预约用车</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Book a Ride →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>预约用车 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Book a Trip</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>预订行程</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Book a ride</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>预约用车</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Book a ride to your stop</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>预约用车前往您的目的地</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Book a ride — $75 flat to SeaTac</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>预约用车——到西雅图机场统一 75 美元</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Book a ride — $75 flat to Sea–Tac within 30 mi</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>预约用车 — 30 英里内至机场固定价 75 美元</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Book any hour</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>全天候可预约</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Book any trip for your client — airport, cruise, tour, or a custom day out. It comes straight to our dispatch and your commission is tracked automatically.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>为您的客户预订任何行程——机场、邮轮、观光或定制一日游。订单会直接进入我们的调度中心，您的佣金自动记账。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Book the first boat of the day; crown access sells out weeks ahead, and last boarding is mid-afternoon.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>建议预订当日首班；登冠名额通常提前数周售罄，末班登船在下午。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Book the free tour through your senator&#x27;s office for a smaller group.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>可通过所在州参议员办公室预约免费导览，团体规模更小。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Booking page</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>预订页面</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Bookings · guide &amp; driver payouts</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>订单 · 导游与司机结算</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Books</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>账目</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Books &amp; Taxes</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>账簿与税务</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Books &amp; Taxes →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>账簿与税务 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Boston</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>波士顿</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Break {i}</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>休息点 {i}</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Bring takeout and claim the hill — it&#x27;s Seattle&#x27;s favorite picnic view.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>可自带食物登上草坡，此处是西雅图人最钟爱的野餐视野。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Browse Guided Trips →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>浏览导览行程 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Browse trips</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>浏览行程</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Build a route first, then offer it for sale.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>请先排好一条路线，再挂出来出售。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Building integrated wealth through connected ecosystems.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>以彼此相连的生态，构筑一体化的财富。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Business Ideas</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>商业点子</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Business idea — e.g. Mobile EV-detailing fleet for gig drivers</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>商业点子——例如：面向零工司机的移动电动车美容车队</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Business intelligence &amp; analytics</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>商业智能与分析</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Business verticals</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>业务板块</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Buys Chainlink dips only inside a data-defined value zone (90-day market structure), with hard rules a human can&#x27;t hold at 2am: depth gates, cooldowns, position caps.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>只在由数据划定的价值区间内（90 天市场结构）买入 Chainlink 的回调，并执行人在凌晨两点守不住的硬规则：深度闸门、冷却期、仓位上限。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>By business line</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>按业务线</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Bylaws · operating &amp; shareholder agreements · articles of formation · board resolutions · contracts · cap table · tax/EIN. Append-only — every version is kept.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>章程 · 经营与股东协议 · 设立文件 · 董事会决议 · 合同 · 股权结构表 · 税务/EIN。只增不改——每个版本都会保留。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Calculating…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>计算中…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Campus / university</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>校园 / 大学</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Can&#x27;t make it</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>赶不上</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Cancel</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>取消</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Cancel my reservation</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>取消我的预约</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Capital Efficient</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>资本高效</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Car Rentals</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>汽车租赁</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Car repair &amp; tyres</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>汽车维修与轮胎</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Car seat, extra luggage, meet &amp; greet, accessibility…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>儿童座椅、额外行李、接机举牌、无障碍需求…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Category</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>类别</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Charging along the route</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>沿途充电</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Charging station</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>充电站</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>City</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>城市</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>City day planner</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>城市一日规划</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Clear</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>清除</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Client</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>客户</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Client email</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>客户邮箱</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Client name</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>客户姓名</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Client phone</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>客户电话</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Client relationship management</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>客户关系管理</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Close</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>关闭</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Closes</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>关门时间</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Coffee</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>咖啡</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Collected</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>已收款</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Collected revenue (PAID) ·</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>已收款收入（已付）·</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Color</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>颜色</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Come 30 minutes after sunset for the blue-hour photo every Seattle poster is made from.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>日落后三十分钟前往，即是蓝调时刻——西雅图各式海报皆摄于此时。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Commission</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>佣金</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Commission earned (completed)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>已赚佣金（已完成）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Community development</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>社区发展</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Company</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>公司</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Compliance</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>合规</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Compounding Growth</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>复利式增长</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Confirmation number</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>确认号</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Continue to booking →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>继续预约 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Continue to portal</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>进入门户</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Conviction is how strongly the founder believes in this system — not a return, a win rate, or a projection. The record beneath it is the honest counterweight: until results are published and measured as True Net, it stays at zero.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>信念指的是创始人对这套系统有多信——它不是收益率、胜率或预测。下面那份记录是诚实的对照：在结果公开并以“真实净值”衡量之前，它一直是零。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Copy code</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>复制代码</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Copy pitch</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>复制推介文案</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Copy the itinerary as text — send it to anyone</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>复制文字版行程——发给任何人</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Could not get a location right now. Please type the pickup address.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>暂时无法获取位置，请手动输入上车地址。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Could not measure that route automatically — send the request and we will quote it before you pay.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>无法自动测算该路线 — 请提交预约，我们会在付款前提供报价。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Could not record that just now — please try again in a moment.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>刚才没能记录下来——请稍后再试。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>County</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>县</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Cruise line</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>邮轮公司</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Cruise terminal / port</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>邮轮码头 / 港口</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Culture</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>文化</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Customer</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>客户</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Customer email</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>客户邮箱</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Customer name</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>客户姓名</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Customer phone</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>客户电话</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>DDMMYYYY — this becomes your login pass</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>DDMMYYYY —— 这将成为您的登录密码</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>DDMMYYYY — your login pass</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>DDMMYYYY —— 您的登录密码</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Dale Chihuly&#x27;s molten-glass dreamscapes — eight galleries and a garden where the sculptures grow among real plants, right under the Space Needle.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>奇胡利的熔融玻璃梦境——八个展厅加一座花园，雕塑就长在真花草中间，位置就在太空针塔脚下。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Date</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>日期</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Date of departure</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>出发日期</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Dates, group size, must-sees…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>日期、人数、必去的地方…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Day</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>天</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Deploy accumulated capital back into American infrastructure, communities, and businesses. Create a virtuous cycle of economic value creation and reinvestment.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>将积累的资本重新投入美国的基础设施、社区和企业。创造一个经济价值创造与再投资的良性循环。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Description</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>描述</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Destination</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>目的地</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Destination Book</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>目的地手册</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Destination Book —</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>目的地手册 —</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Destination Book — Plateau Strategy Solution Lab</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>目的地手册 — Plateau Strategy Solution Lab</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Digital Operations Platform</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>数字化运营平台</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Dispatch</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>调度中心</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Dispatch Login</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>调度登录</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Dispatch, invoicing, driver paperwork and the trip-planning tools — built in-house rather than rented, so the customer relationship and the data stay with us.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>调度、开票、司机资料管理与行程规划工具，均为自主开发而非外部租用，客户关系与数据因此留存于内部。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Dispatch, invoicing, driver paperwork, and the trip-planning tools. We built them instead of renting them, so the customer and the data stay here.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>调度、开票、司机文件与行程规划工具。均为自建而非租用，客户关系与数据因此留在公司内部。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Distance</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>距离</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Document title — e.g. Operating Agreement v2</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>文件标题——例如：经营协议 v2</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Document type</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>文件类型</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Dog walk</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>遛狗区</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Downtown Transfer — $45</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>市区接送 — $45</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Draw above</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>在上方绘制</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Draw your signature</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>绘制您的签名</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Drinking water</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>饮用水</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Driver &amp; Controls</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>司机与操作</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Driver Agreement</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>司机协议</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Driver Dashboard — Plateau Strategy</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>司机面板 — Plateau Strategy</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Driver Menu</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>司机菜单</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Driver Paperwork &amp; Compliance</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>司机文件与合规</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Driver Portal</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>司机门户</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Driver Portal →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>司机门户 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Driver arrives 15 min early</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>司机提前 15 分钟到</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Drivers</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>司机</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Drivers →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>司机 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Driving time</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>行车时间</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Drop-off</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>下车地点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Drop-off (airport)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>送达地点（机场）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Drop-off location</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>下车地点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Duration (hours)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>时长（小时）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Duration (hours, optional)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>时长（小时，选填）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>EV charging</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>充电桩</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Each part creates value that feeds the next — a self-reinforcing cycle that compounds growth and margin as it scales.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>每一环节都创造价值并反哺下一环节 —— 一个随规模扩大而复利增长和提升利润的自我强化循环。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Each part funds the next through shared cash flow and operational leverage — capital works harder across the whole system.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>各环节通过共享现金流和运营杠杆为下一环提供资金——资本在整个系统里被用得更充分。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Each part funds the next through shared cash flow and operational leverage.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>各环节通过共享现金流和运营杠杆为下一环节提供资金。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Earnings &amp; Code</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>收益与代码</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Economic impact scaling</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>扩大经济影响力</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Email</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>电子邮箱</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Email or phone</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>邮箱或电话</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Email or phone (optional)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>邮箱或电话（选填）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Email used for the booking</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>预订时使用的邮箱</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>End location (optional)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>结束地点（选填）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Enough time</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>时间充足</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Enter a location first — type where you want to go, then choose.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>请先输入地点——打上您想去的地方，再做选择。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Enter a location first, then choose.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>请先输入地点，再做选择。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Enter at the south end and exit straight into Chelsea Market for lunch.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>由南端进入，出口即达 Chelsea Market，可于此午餐。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Enter two places and press “Plan the drive”.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>输入两个地点，然后点“规划这段路”。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Enter your details and a password, then book your ride.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>填写您的信息并设置密码，就能开始预约用车。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Every attraction and restaurant we know, city by city, with local tips from a licensed guide. It grows on its own: search a place in the planner and it&#x27;s written into the book for the next traveler. One tap sends anything straight into your trip.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我们知道的每一处景点和餐厅，按城市整理，附持证导游的本地贴士。它会自己长大：在规划工具里搜索一个地点，它就会被写进手册，留给下一位旅客。一键即可把任何地点加进您的行程。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Every checkout</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>每一次结账</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Every driver&#x27;s archived documents and compliance standing. Click a driver to open their paper trail, then open any document to review it.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>每位司机的归档文件与合规状况。点击某位司机可查看其文件记录，再打开任意文件进行查看。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Every email and phone your site has ever captured — booking customers, account holders, finance leads, waitlists and partner contacts — de-duplicated. Export it to CSV and load it straight into your ad platform (Google/Meta customer match, Mailchimp, etc.). Only market to people per your privacy policy &amp; applicable law.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>网站收集过的所有邮箱和电话——下单客户、账户持有人、金融意向客户、候补名单和合作方联系人——已去重。可导出 CSV，直接导入广告平台（Google/Meta 客户匹配、Mailchimp 等）。请务必在隐私政策和适用法律允许的范围内进行营销。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Every morning, one plain-language read of your day — and it clearly labels a guess a guess, and an earned answer earned.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>每日清晨，以平实的语言为您通读当日情况；属于推测的明确标注为推测，经验证得出的结论亦如实标明。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Every new domain we prove, added free</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我们每验证一个新领域，都免费加进来</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Every paper trail — bookings, contacts, agreements &amp; paperwork</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>全部纸面记录——订单、联系人、协议与文件</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Every place you share is checked against the map for a real location, then written into the Destination Book. No account needed — this takes about 15 seconds.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您分享的每个地点都会先在地图上核对真实位置，然后写入目的地手册。无需注册——大约 15 秒就好。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Every prediction app fakes confidence. This one refuses to. It says “87%, and here&#x27;s my track record” — or “I don&#x27;t know, and here&#x27;s the proof nobody does.” It even keeps a quantum random number generator on the bench under identical rules: if pure randomness ever scores as skilled, it flags itself as broken. That&#x27;s a tool you can actually trust.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>每一款预测应用都在假装有把握。这一款不肯。它会说“87%，这是我的历史战绩”——或者“我不知道，而且这是没人能确定的证据”。它甚至让一个量子随机数发生器在同样的规则下一起上场：如果纯粹的随机居然被评为“有本事”，它就把自己标记为出了问题。这才是一个您真能信得过的工具。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Every vehicle</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>全部车辆</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Everything here is private corporate governance material — bylaws, agreements, resolutions and contracts. Uploads are archived permanently and never overwritten.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>此处的一切都属于私密的公司治理材料——章程、协议、决议与合同。上传的文件会被永久归档，绝不覆盖。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Everything on this site is here to get people out of a hole and into a fortune — the free tools, the work, the trading research. If it works for you, we ask one thing, and only if you want to:</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>这个网站上的一切——免费工具、我们做的事、交易研究——都是为了帮人从坑里爬出来，走向富足。如果它对您管用，我们只有一个请求，而且完全自愿：</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Exit to homepage</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>退出到主页</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Expiry date</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>到期日</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Explore the model</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>了解这套模式</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>FIG 1 — MIXED-USE HUB · FRONT ELEVATION</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>图 1 — 综合用途建筑 · 正立面</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>FIG 1 — MIXED-USE HUB · FRONT ELEVATION (NTS)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>图 1 — 综合体 · 正立面（无比例）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>FREE</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>免费</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>FRONT ELEVATION · 1:200 @ A3 · NOT FOR CONSTRUCTION</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>正立面 · 1:200 @ A3 · 不作施工依据</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Family friendly</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>适合亲子</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Fare</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>车费</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Fare (USD)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>车费（美元）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Farm-owned American cooking — fried chicken and waffles, beignets, serious breakfasts.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>由农场主自己开的美式餐厅——炸鸡华夫、贝奈特饼，早餐做得很认真。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Favorite Places — Plateau Strategy Solution Lab</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>最爱的地方 — Plateau Strategy Solution Lab</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Ferries from Battery Park to Liberty and Ellis Islands — the statue up close and the immigration museum.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>从炮台公园开往自由岛与埃利斯岛的渡轮——近看自由女神，再逛移民博物馆。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>File</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>文件</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Finance</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>金融</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Financial transaction processing</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>金融交易处理</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Financials · customer records · board documents</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>财务 · 客户记录 · 董事会文件</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Finding charging stations along the route…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>正在沿途查找充电站…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Finding those two places…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>正在查找这两个地点…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Finding your current location…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>正在获取您的当前位置…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Finding you…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>正在定位…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Fixed-price Tesla rides at $75 to Sea–Tac from within 30 miles, cars rented to drivers who keep the fare, and commission for hotels and agents who send us riders. This is where the money comes from.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>30 英里范围内至机场固定价 75 美元的特斯拉专车服务；向司机出租车辆，车费全额归司机所有；酒店与代理商推荐乘客可获得佣金。公司收入来源于此。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Fixed-price Tesla rides at $75 to Sea–Tac, cars rented to drivers who keep the fare, and commission for hotels and agents who send us riders. This is where the money comes from.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>固定价格的特斯拉专车服务，至机场 75 美元；向司机出租车辆，车费全额归司机所有；酒店与代理商推荐乘客可获得佣金。公司收入来源于此。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Flat airport fare — {miles} miles, inside the {radius}-mile flat-rate area. This is the price; it does not move.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>机场固定价 — {miles} 英里，位于 {radius} 英里固定价范围内。此即最终价格，不会变动。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Flat fare to Sea–Tac</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>至西雅图机场固定价格</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Flat-rate Tesla rides in Seattle at $75 to Sea–Tac, cars rented to drivers who keep the fare, and a commission programme for hotels and agents. This is the business that earns.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>西雅图的特斯拉固定价格接送服务，至机场统一收费 75 美元；车辆租赁予司机，车费全额归司机所有；并设有面向酒店与代理机构的佣金计划。此为目前产生收入的业务。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Flat-rate Tesla rides, Seattle and Sea–Tac.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>特斯拉固定价格接送服务，覆盖西雅图市区与机场。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Fleet and asset tracking</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>车队与资产追踪</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Flight # (optional)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>航班号（选填）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Follow the research</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>关注这项研究</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Follow the research →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>关注研究进展 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Follow this proposal:</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>关注这个提案：</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Food</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>美食</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Food &amp; drink</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>美食与饮品</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>For anyone who wants an honest forecast</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>献给想要一个诚实预测的人</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>For drivers</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>面向司机</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>For drivers operating vehicles with Plateau Strategy Solution Lab. Register your vehicle to view and claim client reservations.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>为在 Plateau Strategy Solution Lab 跑车的司机准备。登记您的车辆，就能查看并接下客户订单。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>For drivers, tour guides &amp; tourists</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>为司机、导游和游客打造</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>For everyone — free, and growing</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>人人可用——免费，且在不断丰富</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>For partners — organizations or individuals</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>为合作伙伴 —— 机构或个人皆可</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>For riders &amp; clients</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>为乘客和客户</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>For the long hauls — free</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>为长途而生——免费</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>For the long hauls. Give it two points and it finds the fuel, food, rest areas and viewpoints near your actual road — grouped by how many hours in you&#x27;ll be, so you can plan real breaks instead of scrolling a map.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>专为长途设计。给它两个地点，它会沿着您实际要走的那条路，找出加油站、餐饮、休息区和观景点——并按您开到第几小时分组，让您能真正安排休息，而不是一直划地图。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>For tourists &amp; trip planning</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>为游客和行程规划打造</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>For travelers &amp; tour guides — free map planning</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>为旅客和导游打造——免费地图规划</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>For travellers &amp; the guides who run them</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>为旅客和带团导游打造</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Forty-plus vendors in a bright Northeast market hall — dumplings, Korean tacos, local oysters.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>东北区一座明亮的市场大厅，四十多家摊位——饺子、韩式塔可、本地生蚝。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Found the route, but the places service did not answer. It is free and rate-limited — wait a minute and try again.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>已找到路线，但地点服务未响应。该服务为免费服务，有调用频率限制，请稍后重试。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Founder&#x27;s conviction</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>创始人的信念</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Founding members lock in — you&#x27;ll never pay more than $10</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>创始会员锁定价格——您永远不会付超过 10 美元</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Four arms, at four different stages</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>四项业务，各处不同阶段</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Four businesses, four stages</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>四项业务，四个阶段</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Frank Gehry&#x27;s shimmering blob of a building, stuffed with Nirvana and Hendrix relics, sci-fi props, horror history and a guitar tornado.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>盖里设计的那栋闪着光的怪建筑，里面塞满了涅槃与亨德里克斯的旧物、科幻道具、恐怖片史，还有一座吉他龙卷风。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Free Tools</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>免费工具</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Free for everyone — drivers, tour guides, tourists. Tap where you are, and every attraction lights up or dims based on drive time, traffic and closing hours. Your taps build the plan, day by day.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>对所有人免费——司机、导游、游客都能用。点一下您的位置，每个景点会根据车程、路况和关门时间自动变亮或变暗。您点到哪里，行程就排到哪里，一天一天成形。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Free while it earns its record</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>在它积累战绩期间免费</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Free, but adults need photo ID to board. The museum next door is separate and worth the extra half hour.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>免费登舰，成人须出示附照片证件。邻近博物馆另行计费，值得再留半小时。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Free, but timed-entry passes are required — book before your trip.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>免费参观，但须持分时入场券，请于行前预约。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Friday and Saturday it stays open late; the rooftop has a skyline view in season.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>周五、周六延长开放；应季时可登屋顶远眺天际线。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>From</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>起点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>From the start to {to} in — {len} with no mapped stop</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>自出发至 {to}，{len} 路程内无已知停靠点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Fuel</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>加油</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Full access as each piece ships — no card required</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>每上线一块功能即可全量使用——无需绑卡</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Full control over supply chain, client experience, and margin capture.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>全面掌控供应链、客户体验和利润获取。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Full control over the supply chain, client experience, and margin capture, end to end — no middlemen skimming value.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>从头到尾完全掌控供应链、客户体验和利润留存——没有中间商抽成。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Full day</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一整天</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Full name</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>全名</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>GROUND</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>首层</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>General contact</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>常规联系方式</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Generates revenue &amp; data</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>产生收入与数据</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Get Early Access</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>获取抢先体验</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Get app now</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>立即获取应用</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Get early access — free →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>抢先体验——免费 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Get it free</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>免费获取</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Get my guide code</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>获取我的导游编号</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Getting your exact location…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>正在获取您的精确位置…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Getting your exact pickup location…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>正在获取您的精确上车地点…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Give-back goes straight to Treasury</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>回馈直接进入财政部</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Go at opening or in the last 90 minutes — the ramp around the tank is a single-file crush midday.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>宜于开馆时或闭馆前九十分钟前往；正午环缸坡道拥挤，仅容单列通行。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Go at sunset and watch the city switch its lights on.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>建议黄昏时段登顶，可见全城灯火逐次亮起。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Go before 10am to watch the fishmongers set up, and don&#x27;t miss the lower levels — most visitors never find them.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>建议十点前到达，可见鱼贩布置摊位；下层区域不宜错过，多数访客未曾发现。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Got your position but not a street address — the coordinates are in the box, and your driver can navigate to them.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>已获取您的位置，但未能解析出街道地址。坐标已填入，司机可据此导航。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Guide Studio — build a trip to sell</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>导游工作室——打造一条可出售的行程</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Guided Trips</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>导览行程</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Guided Trips — in-depth walks from local guides</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>导览行程——当地导游的深度徒步</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Guides can list their own →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>导游可发布自己的行程 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Guides register here too — a student running a campus walk, a driver who knows one neighborhood properly. Your code is what proves the trip was written by a real guide.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>导游亦在此注册——带领校园徒步的学生、熟悉某一街区的司机均可。您的编号即为该行程出自真实导游之手的凭证。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Guides: list a trip</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>导游：发布行程</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Guiding only — museum entry not included</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>仅含导览——不含博物馆门票</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>HOW IT CONNECTS</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>它们如何相连</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Half a million works across an encyclopedic collection, strongest in Impressionists, Egyptian art and American painting.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>五十万件藏品的百科全书式收藏，其中印象派、埃及艺术与美国绘画最强。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Half day</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>半天</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Hand it off — a local guide reaches out</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>交给当地导游——他们会联系您</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Hand your trip to a guide</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>把行程交给导游</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Harbor-front dining and river views, with M Street&#x27;s shops and Federal row houses up the hill.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>河岸餐厅与河景，坡上是 M 街的店铺和联邦式排屋。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Haven&#x27;t been yet</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>还没去过</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Heavy</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>拥堵</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Here&#x27;s what you earn for referring each service. Your commission depends on the service — pick it on the “Refer a Client” tab and the price fills in automatically.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>这是您推荐每项服务可获得的收益。您的佣金取决于所选服务 —— 在“推荐客户”标签中选择，价格将自动填入。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>History</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>历史</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Home</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>首页</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Home of the six-ounce chocolate-chip walnut cookie — warm, half-molten in the middle, worth the line.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>那块六盎司重的核桃巧克力曲奇就出自这里——温热，中间半流心，值得排队。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Hotel</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>酒店</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Hotel name or address…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>酒店名称或地址…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Hotel or agency name</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>酒店或旅行社名称</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Hourly (per hour) — $65</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>按小时计（每小时）— $65</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>How It Connects</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>各环节如何连接</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>How the guide reaches you</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>导游如何联系您</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>I am registering as</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我注册为</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>I gave — count it</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我捐了——请计入</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>I have read and agree to the terms of this Driver Agreement, and this is my legal electronic signature.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我已阅读并同意本司机协议的条款，这是我的合法电子签名。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>I&#x27;m heading back to my start point →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我要回到起点 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>INTEGRATED BUSINESS ECOSYSTEM</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一体化商业生态</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Ideas and proposals from Plateau Strategy Solution Lab. Like what resonates, and leave your email to follow a proposal you want to see happen.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>来自 Plateau Strategy Solution Lab 的想法与提案。为您认同的内容点赞，并留下您的邮箱以关注您希望实现的提案。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>If this is a trip to the airport, what is the flight number?</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>如果是去机场，请填写航班号。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>If you&#x27;ve been there, how long did you stay?</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>如果您去过，待了多久？</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Important:</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>重要提示：</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>In development</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>开发中</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>In the meantime, tap</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>在此期间，点击</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>In your trip</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>已加入行程</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>In-depth / deep dive</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>深度游</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>In-depth trips written by the guides themselves — a student&#x27;s hour in Harvard Yard, a food route through one neighborhood — with every stop and how long you stand there, before you book. Guides list their own for free.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>由导游亲手写下的深度行程——哈佛校园里的学生一小时，一个街区里的美食路线——每一站以及在那里停留多久，下单前都看得清清楚楚。导游可免费发布自己的行程。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Individual</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>个人</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Insurance</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>保险</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Insurance provider</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>保险公司</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Integrated wealth, built through</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一体化的财富，源自</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>It books out — reserve ahead, or come at off-hours.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>座位紧张，建议提前预订或避开用餐高峰。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Itinerary / stops</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>行程 / 停靠点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Itinerary copied — paste it anywhere.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>行程已复制——可以粘贴到任何地方。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>I’m &lt;b&gt;Jarvis&lt;/b&gt;. Add any place — search above or tap a pin — and I’ll build your day sheet.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我是 &lt;b&gt;Jarvis&lt;/b&gt;。您可在上方搜索或点击地图上的图钉添加地点，我会为您生成当日行程表。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Join Us in Building the Future</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>与我们一起构建未来</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Join free beta →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>加入免费内测 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Join us in building the future</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>与我们一起建设未来</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Just $14.17/mo — billed once a year</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>仅 $14.17/月 —— 每年结算一次</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Keep this safe. You&#x27;ll use your organization, last name, and this code to sign in.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>请妥善保管。您将使用您的组织、姓氏和此代码登录。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Keys, tokens &amp; passwords</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>密钥、令牌与密码</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>LEVEL 1</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一层</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>LEVEL 2</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>二层</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>LEVEL 3</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>三层</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>LEVEL 4</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>四层</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>LEVEL 5</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>五层</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Languages you run it in</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您用哪些语言带团</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Last name</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>姓氏</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Learns you, privately</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>私密地了解您</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Leave blank if it&#x27;s just you</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>个人报名请留空</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Leave by</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>出发时间</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Leave your email and you&#x27;ll be notified when the verified track record is published. No spam, no sales pitch — one update when the numbers are real.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>留下邮箱，等经过验证的业绩记录发布时我们会通知您。不发垃圾邮件，不做推销——数字为真时，只发一封更新。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Less than one month&#x27;s minimum credit-card payment. Only profits go toward debt — your principal is never spent. Trading involves risk; results are not guaranteed.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>低于一个月的信用卡最低还款额。只有利润用于偿还债务 —— 您的本金永不动用。交易存在风险；结果无法保证。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Light</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>畅通</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>List this trip</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>发布这条行程</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Listing is free. When a traveller asks for your trip we introduce you directly. You can list as many trips as you like — most guides run several versions of the same walk at different lengths.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>发布免费。有旅客想订您的行程时，我们会直接为双方牵线。您想发布多少条都可以——多数导游会把同一条路线做成长短不同的几个版本。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Live Square revenue</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>Square 实时收入</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Live on the trips page right now.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>此刻已在行程页面展示。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Live revenue from your Square account — the numbers your taxes are built on.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>来自您 Square 账户的实时收入 —— 您报税所依据的数字。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Loading drive times…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>正在计算车程…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Loading…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>加载中……</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Located to about {n} m. Edit it if the door is round the back.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>定位精度约 {n} 米。若入口在建筑背面，请修改地址。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Located. Edit it if the door is round the back.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>已定位。若入口在建筑背面，请修改地址。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Location permission was declined. Please type the pickup address.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>定位权限被拒绝，请手动输入上车地址。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Log in with your last name and agent code.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>使用您的姓氏和代理代码登录。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Log in with your renting VIN and birthday.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>使用您的租车 VIN 和生日登录。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Log in →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>登录 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Log out</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>退出登录</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Log your own life — a shift, a drive, a habit — and it finds your patterns. Your data stays on your device. It gets sharper the longer you own it.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>记录您自己的生活——一个班次、一趟车、一个习惯——它就能找出您的规律。数据留在您自己的设备上。您用得越久，它就越准。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Long-term wealth creation</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>长期财富创造</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Look for</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>查找</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Looking for stops around break {i} of {n}…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>正在查找第 {i} 个休息点附近的地点，共 {n} 个…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Managing members only.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>仅限管理成员。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Map data ©</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>地图数据 ©</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Met a customer who needs a ride? Refer them here and drive them yourself — you keep the full fare.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>碰到需要用车的客户？在这里推荐并亲自接送，整笔车费都归您。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Mixed-use development (MU zoning)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>综合用途开发（MU 分区）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Mixed-use development · Sheet RE-01</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>综合开发项目 · 图纸 RE-01</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Mixed-use development, at drawing stage. Nothing built, nothing leased, nothing offered — the plans are published as they stand.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>综合体开发项目，目前处于图纸阶段。尚未动工，尚未招租，亦未对外发售；图纸按现状公开。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Model</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>型号</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Month</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>月份</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Monthly</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>月付</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>More financial products coming soon.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>更多金融产品即将推出。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>More on the way</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>还有更多在路上</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Most people you will take</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>最多接待人数</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Move the zero →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>让这个零动起来 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>My Referrals</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我的推荐</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>My Rides</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我的行程</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Name</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>姓名</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Name or initials (optional)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>姓名或缩写（选填）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Nature</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>自然</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Nature &amp; outdoors</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>自然与户外</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Need to cancel a reservation?</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>需要取消预约？</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Neighborhood walk</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>街区漫步</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>New York</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>纽约</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>New agent?</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>新代理？</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>New driver?</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>新司机？</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>New here? Just fill this in — we&#x27;ll create your account.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>第一次来？填好这些，我们就帮您建好账户。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Newest discoveries</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>最新发现</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Newest discovery:</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>最新发现：</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Night after Day</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>第</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Nightlife</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>夜生活</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No account of ours is involved, no cut, no processing, nothing held. The button below leaves this site and lands on the government&#x27;s own payment page.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>不经过我们的任何账户，不抽成，不代收，不留存。点下面的按钮会离开本站，直接进入政府自己的支付页面。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No agents yet.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>暂无代理。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No articles yet. Write your first proposal above.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>暂无文章。在上方撰写您的第一个提案。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No charge until the ride is confirmed.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>确认之前，不收费。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No code yet?</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>还没有编号？</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No documents yet — upload your first governance record above.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>还没有文件——请在上方上传第一份治理记录。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No ideas posted yet — be the first to pitch one.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>还没有人提出点子——来当第一个。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No members added yet.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>尚未添加成员。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No open reservations at this time. New client bookings appear here automatically.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>目前没有可接的订单。有新客户预约时会自动出现在这里。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No paid invoices yet.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>暂无已付账单。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No payment now · we&#x27;ll email you when it&#x27;s ready</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>现在不收费 · 准备好时我们会发邮件通知您</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No payout requests yet — when rides complete, your money shows as available here.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>还没有提现申请——行程完成后，您的钱会在这里显示为可提现。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No payout requests yet.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>还没有提现申请。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No prospects yet. Add one above.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>暂无潜在客户。请在上方添加。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No referrals yet. Submit your first one under “Refer a Client.”</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>还没有推荐。在“推荐客户”下提交您的第一个推荐。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No reservations yet. Bookings from customers and agents appear here automatically.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>暂无预订。来自客户和代理的预订将自动显示在此处。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No reservations yet. New bookings from the</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>还没有预订。来自</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No stops yet.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>还没有站点。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>No transactions yet — they appear here as bookings come in.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>暂无交易 —— 随着预订到来，交易将显示在此处。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Nobody has reported a gift yet — the zero is honest.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>目前还没有人报告捐赠——这个零是真实的。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Normal</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>正常</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Normally about $15 of a $75 fare goes to a separate referring agent — but since you referred and drove it, that stays with you. You keep the full fare.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>通常 $75 车费里约有 $15 是付给另一位推荐人的佣金 —— 但这单是您推荐、也是您开的，这笔钱就留给您。整笔车费都是您的。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Not ready to enroll, but want this to exist?</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>还没准备好注册，但希望它存在？</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Not sightseeing loops — these are written by the guides who run them, stop by stop, with how long you actually stand at each one. A student&#x27;s hour in Harvard Yard is a different thing from a bus past the gate.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>这不是走马观花的观光环线——每条行程都由带团的导游亲手写下，一站一站，连在每处站多久都写清楚。哈佛学生带您在校园里走一小时，和坐大巴从校门口开过去，完全是两回事。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Not yet — near where Day</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>还没订——就在第</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Note</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>备注</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Notes</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>备注</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Notes (optional)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>备注（选填）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Notes for the driver</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>给司机的留言</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Nothing here yet — records appear automatically as they happen.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>这里还没有内容——有记录产生时会自动出现。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Nothing is offered or sold today</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>今天不提供也不出售任何东西</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Nothing matches these filters — loosen one and the book fills back up.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>没有符合这些筛选条件的结果——放宽一项，内容就会重新出现。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Nothing published yet. This moves only when verified results go public.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>尚未发布任何内容。只有当经过验证的结果公开时，这里才会变动。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Nothing to copy yet — add a stop first.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>还没有可复制的内容——请先加一站。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Nothing to print yet — add a stop first.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>还没有可打印的内容——请先加一站。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Nothing to share yet — add a stop first.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>还没有可分享的内容——请先加一站。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Nothing to undo.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>没有可撤销的操作。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Notify me</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>通知我</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Number</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>编号</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Office</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>办公场所</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>On non-game days the hour-long tour walks you onto the Monster seats — book it, they sell out, and it&#x27;s the only way in without a ticket.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>非比赛日提供一小时球场导览，可登上「绿色怪物」看台；名额有限须提前预订，亦是无票入场的唯一途径。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>On summer evenings the whole street becomes one open-air dining room.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>夏季傍晚，整条街道即成露天餐厅。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>One business pays for the next. That only means something if we say plainly which ones are earning today and which are still being built — so we do.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一项业务为下一项提供资金。此话唯有在明确说明哪些业务已在盈利、哪些仍在建设之后方才成立，故一并列明。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>One code, two ways to earn.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一个编号，两种赚钱方式。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>One company, four businesses</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一家公司，四项业务</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>One ecosystem. Every part funds the next.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一个生态。每一环都为下一环提供资金。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>One of the world&#x27;s great museums — 5,000 years of art, including a complete Egyptian temple in a glass hall.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>世界顶级博物馆之一——五千年的艺术，包括一座完整搬进玻璃厅的埃及神庙。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>One pays for the next. Here is where each one stands today.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一项业务为下一项提供资金。以下为各项业务目前的进展。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>One person drives and guides you</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一个人既开车又讲解</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>One place that keeps every paper trail the site produces — bookings, your customer contact list, signed agreements, uploaded paperwork, leads, partners and more. Private, owner only.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一个地方保存网站产生的全部纸面记录——订单、客户联系名单、已签协议、上传的文件、潜在客户、合作方等等。私密，仅限所有者查看。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>One stretch with nowhere to pull in</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一段路程无可停靠地点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>One traveler planned a trip here this week</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>本周有一位旅客在此规划了行程</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>One way (to the port)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>单程（送到港口）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Open 24 hours; sunrise and after dark are the quiet, beautiful times.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>全天开放；清晨与入夜后最为安静，也最宜观览。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Open Guide Studio →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>打开导游工作室 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Open Reservations</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>开放的预订</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Open Trip Planner →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>打开行程规划 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Open the Book →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>打开手册 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Open the Destination Book</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>打开目的地手册</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Open the Factor Clock →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>打开因子时钟 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Open till {time} · </seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>开放至 {time} · </seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Open till {time} · ~{mins} min visit</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>开放至 {time} · 建议游览约 {mins} 分钟</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Open →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>打开 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Operating</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>运营中</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Operations</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>运营</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Operations platform</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>运营平台</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Optimizes capital</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>优化资本</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Optional — fills your name and email. You can just type them instead.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>可选——会自动填入您的姓名和邮箱。您也可以直接手动输入。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Order a flight from the experience bar and watch the roaster run — skip the regular latte you can get anywhere.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>建议于体验吧点选一组对比品鉴，并观看烘焙机运作；寻常拿铁各处皆有。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Order it &#x27;all the way&#x27; — mustard, onions, chili.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>点单时说明「all the way」，即配芥末、洋葱与辣肉酱。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Organization</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>组织</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Organization (if any)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>组织（如有）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Organization (optional)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>机构名称（选填）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Organization name</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>组织名称</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Organizations to recruit as referral agents — hotels, travel agencies, and offices whose people need airport rides. Reach out personally (they earn $15 per completed referral), track each one here, and when they say yes, sign them up in the Agent portal.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>待招募为推荐代理的组织 —— 酒店、旅行社以及员工需要机场接送的办公场所。亲自联系（每完成一次推荐可赚 $15），在此追踪每一家，当他们同意后，在代理门户为其注册。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Other</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>其他</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Other way to be paid? (optional)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>其他收款方式？（选填）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Otter feedings are the show — check the day&#x27;s schedule at the door and plan around one.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>海獭喂食是当日重点，请于入口查看时刻表并据此安排。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Our AI trades the balance during a 1–2 week window</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我们的 AI 在 1–2 周的窗口期内交易该余额</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Our automated crypto-trading research project — in private verification, building an audited track record. Nothing for sale yet; follow the results.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我们的自动化加密交易研究项目 —— 正处于私密验证阶段，正在建立经审计的业绩记录。目前尚无任何出售；请关注结果。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Our financial products — choose one to explore.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我们的金融产品 —— 选择一个进行探索。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Our flagship business — affordable Tesla rentals powering rides, drivers, and referral partners. Here&#x27;s what we do, and where you fit in.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我们的招牌业务 —— 实惠的 Tesla 租赁，撑起用车、司机和推荐伙伴三方。看看我们做什么，以及您能站在哪一环。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Our model is simple: control the full value chain, share the upside with our drivers and partners, and reinvest profits back into the community. Whether you need a ride, want to earn behind the wheel, or want to refer clients and earn commission — there&#x27;s a place for you here.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我们的思路很简单：自主掌握完整价值链，与司机及合作伙伴共享收益，并将利润再投入社区。无论您是需要用车、希望以驾驶获得收入，还是有意推荐客户并获取佣金，这里都有适合您的位置。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Outstanding (invoiced, unpaid) ·</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>未结（已开票、未付）·</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Overview</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>概览</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Owner-only vaults</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>仅所有者可进的保险库</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Ownership</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>持股</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Ownership % — e.g. 50</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>持股比例 %——例如：50</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Oysters under vaulted Guastavino tile since 1913, in the belly of Grand Central Terminal.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>1913 年开业，在中央车站肚子里，瓜斯塔维诺拱砖顶下吃生蚝。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>PARAPET</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>女儿墙</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>PRELIMINARY</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>初步方案</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>PROJECT · PLATEAU STRATEGY</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>项目 · PLATEAU STRATEGY</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Paid</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>支付时间</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Paid out so far</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>累计已支付</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Paid revenue by month</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>按月已付收入</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Pair it with the Needle on a combo ticket; the Glasshouse glows best in late-afternoon light.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>可与太空针塔购买联票；午后偏晚的光线下，玻璃屋最为动人。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Paperwork</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>文件资料</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Part of the</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>隶属于</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Partner pipeline · Greater Seattle.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>合作伙伴渠道 · 大西雅图地区。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Partner pipeline · organizations to recruit as agents</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>合作伙伴渠道 · 待招募为代理的组织</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Partner with us</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>与我们合作</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Partners</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>合作伙伴</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Partnership pitch (personalize the [brackets])</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>合作推介（请自定义[方括号]内容）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Passengers</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>乘客人数</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Password</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>密码</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>PayPal email — get paid directly</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>PayPal 邮箱——直接收款</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Payment safety</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>支付安全</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Payments</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>付款</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Payments run through Square&#x27;s PCI-compliant system. We never see or store your full card number — the sensitive part never touches our servers.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>支付通过 Square 符合 PCI 标准的系统完成。我们从不查看也不保存您的完整卡号——敏感部分从不经过我们的服务器。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Pending (in progress)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>待处理（进行中）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Per-agent rates — an agent&#x27;s referrals pre-fill to their negotiated rate (blank = your default).</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>按代理设定费率 —— 代理的推荐将自动填入其协商费率（留空 = 您的默认值）。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Performance is measured as</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>业绩以</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Pharmacy &amp; urgent care</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>药房与急诊</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Phone</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>电话</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Photography</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>摄影</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Pick your attractions and see which ones you can still reach in time — drive time, traffic and closing hours all checked. Every tap builds your day-one, day-two plan. Designed with a professionally licensed tour guide.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>挑好景点，立刻看出哪些还赶得及——车程、路况和关门时间全都算进去了。您每点一下，第一天、第二天的计划就成形一分。由持证导游共同设计。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Pickup</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>上车地点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Pickup location</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>上车地点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Picnic area</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>野餐区</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Place</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>地点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Places found</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>找到的地点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Plan a real day on the map: every stop lights up or dims by drive time, traffic and closing hours. Guides build and name their own routes here — no website needed — and travelers who&#x27;d rather not drive it themselves can hand the route to a guide.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>在地图上规划真实的一天：每一站都会依据车程、路况和关门时间自动变亮或变暗。导游可以在这里搭建并命名自己的路线——不需要自建网站——不想自己开车的旅客，也可以把路线直接交给导游。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Plan a road trip →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>规划一次长途自驾 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Plan the drive</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>规划这段路</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Planned. {failed} of {n} breaks came back empty from the places service — try again for those.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>已规划。{n} 个休息点中有 {failed} 个未返回结果，请稍后重试这些地点。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Planned: {miles} miles, {time} driving, {rests} rest stops on the road, {breaks} suggested breaks.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>已规划：{miles} 英里，行车 {time}，沿途 {rests} 处休息区，建议休息 {breaks} 次。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Plate</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>车牌</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Plateau Strategy Deflator — Automated Trading Research</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>Plateau Strategy Deflator——自动化交易研究</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Plateau Strategy Solution Lab is an integrated business ecosystem built to create opportunity at every level — for the people who</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>Plateau Strategy Solution Lab 是一个环环相扣的商业生态，在每一个环节都为人们创造机会 —— 为那些与我们一起</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Plateau Strategy Solution Lab · Seattle</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>Plateau Strategy Solution Lab · 西雅图</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Playground</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>儿童游乐场</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Policy number</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>保单号</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Practical details</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>实用信息</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Practical tools for everyday life — built by our lab, free for everyone. No account, no cost.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>面向日常生活的实用工具——由我们实验室打造，对所有人免费。无需注册，也不收费。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Prefer a check? Make it payable to the</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>更想寄支票？收款人写</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Preferred method</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>首选方式</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Preparing your ride…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>正在为您准备用车…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Price</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>价格</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Price $</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>价格 $</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Price (USD)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>价格（美元）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Price for this guided trip (USD)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>这条导览行程的价格（美元）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Price presets — fill the price on the booking &amp; agent forms (still editable per ride).</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>价格预设 —— 自动填入预订和代理表单中的价格（每次行程仍可编辑）。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Priced</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>计价方式</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Print the day sheet (or save as PDF)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>打印行程单（或存为 PDF）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Private governance vault — for the managing members only. The company&#x27;s corporate documents and ownership record, kept in one secure place.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>私密治理文件库——仅限管理成员查阅。公司的法人文件与股权记录，统一存放在一个安全之处。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Profits lock in a protected vault (5–15%/mo target)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>利润锁定在受保护的金库中（目标 5–15%/月）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Proof of insurance</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>保险证明</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Prospects</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>潜在客户</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Proven forecasters — two independent weather oracles, a real-money crowd, and more — each trusted only after it beats chance on thousands of real outcomes.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>经过检验的预测源——两个各自独立的天气预言机、一个真金白银的群体，还有更多——每一个都要在成千上万条真实结果上跑赢随机，才会被采信。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Provides infrastructure</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>提供基础设施</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Public data collection record</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>公开数据采集记录</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Publish</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>发布</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Publish idea</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>发布点子</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>QuickBooks — automatic sync (recommended):</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>QuickBooks —— 自动同步（推荐）：</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Quincy Market&#x27;s food hall is packed at noon; eat at 11 or after 2 and take it out to the benches by the hall&#x27;s east door.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>Quincy Market 正午拥挤，宜十一时或两时后用餐，并移至东门外长椅。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>RESEARCH</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>研究</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>REV · A</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>版本 · A</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Real Estate</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>房地产</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Real Estate Development</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>房地产开发</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Real estate</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>房地产</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Refer</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>推荐</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Refer &amp; Assign to Me</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>推荐并指派给我</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Refer &amp; Drive</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>推荐并接送</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Refer a Client</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>推荐客户</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Refer clients and earn commission on every ride they take. Ideal for hotels, travel agencies, or any individual with a network to tap.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>把客户推荐给我们，他们每完成一次用车，您就有佣金。特别适合酒店、旅行社，或任何有人脉的人。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Refer customers and earn a commission on every completed ride. Anyone can be an agent — as an individual or an organization.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>把客户推荐给我们，每完成一单您都有佣金。任何人都能当代理 —— 个人或机构皆可。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Referral partners &amp; commissions</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>推荐合作伙伴与佣金</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Referrals submitted</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>已提交的推荐</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Referring rides earns a commission. Guiding earns the whole fare — you set it. Write the trip you already know by heart: your stops, how long you actually stand at each one, what you say there, and what it costs. It goes on the public</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>推荐用车赚的是佣金。带团导览赚的是整笔团费——价格由您定。把您早已烂熟于心的那条行程写下来：您的站点、每站实际停留多久、您在那里讲什么、以及收费多少。它会出现在公开的</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Register &amp; Enter Portal</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>注册并进入门户</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Register &amp; Get My Agent Code</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>注册并获取我的代理代码</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Register &amp; Get My Code</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>注册并获取我的编号</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Register as a guide — takes a minute</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>注册成为导游——约需一分钟</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Register your car →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>注册您的车辆 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Reinvestment</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>再投资</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Reinvestment USA</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>再投资美国</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Remove it from the trip first (Undo).</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>请先把它从行程中移除（撤销）。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Remove the last stop</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>删除最后一站</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Rent a Tesla from us and earn from a shared pool of client rides. Low-cost entry, steady income, and a path to owning the car you drive.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>从我们这里租一辆 Tesla，靠平台派给你的客户订单赚钱。入门成本低、收入稳定，还能一步步把车开成自己的。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Rent a rowboat at the Loeb Boathouse in warm months.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>天气转暖时，可于 Loeb 船屋租借划艇。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Rent-to-Own Payments</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>以租代购付款</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Rent-to-own property programs</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>以租代购物业计划</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Renting VIN</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>租车 VIN</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Request</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>申请单</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Request Payout</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>申请提现</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Request a quote instead — we&#x27;ll price it and confirm back</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>改为索取报价——我们会定价并回复确认</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Request a ride and Pay</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>预约并支付</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Request this ride</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>提交这次预约</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Requested</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>申请时间</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Requested (awaiting)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>已申请（待处理）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Research</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>研究阶段</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Reservation</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>预订</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Reservation Already Taken</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>预订已被接单</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Reservations</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>预订</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Rest &amp; services</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>休息与服务区</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Rest area</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>休息区</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Rest stops along the whole route</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>全程休息区</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Restaurant</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>餐厅</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Restaurants &amp; food</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>餐饮美食</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Revenue synergies accelerate expansion across all business lines.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>收入协同效应加速所有业务线的扩张。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Revenue synergies accelerate expansion across every business line, so growth continuously reinvests into more growth.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>各业务线之间的收入协同加速扩张，让增长不断再投资于下一轮增长。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Review &amp; Sign</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>查看并签署</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Ride &amp; Drive</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>乘车与驾驶</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Ride &amp; Services</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>用车与服务</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Ride availability</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>用车可用度</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Rides available 24/7, by reservation</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>全天 24 小时可预约用车</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Rides, contracts &amp; rent-to-own</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>行程、合同与以租代购</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Road Trip Planner</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>长途自驾规划</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Road Trip Planner — Plateau Strategy Solution Lab</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>长途自驾规划 — Plateau Strategy Solution Lab</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Role</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>职务</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Role — e.g. Managing Member</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>职务——例如：管理成员</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Round trip (return pickup too)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>往返（含返程接送）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Route</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>路线</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Routing by</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>路径规划</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Running</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>运行中</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>SCALE · NTS</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>比例 · 无比例</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>SHEET · RE-01</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>图纸 · RE-01</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Sailing date</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>起航日期</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Sales team (direct)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>销售团队（直接联系）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Same-day tickets go early — reserve online a month out if you can.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>当日门票售罄极快，建议提前一个月在线预订。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Save</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>保存</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Save my email</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>保存我的邮箱</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Scenic</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>观景</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Sea otters, giant Pacific octopus and a diver-fed underwater dome, right on the working waterfront piers.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>海獭、太平洋巨型章鱼，还有一座由潜水员投喂的水下穹顶，就开在还在作业的码头上。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Search</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>搜索</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Search a place — anywhere in the world…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>搜索一个地点——世界任何角落…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Search any address or attraction — it joins the book…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>搜索任意地址或景点——它会自动收录进手册…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Search any place — if the map does not know it yet, you discover it →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>搜索任何地点——如果地图还不认识它，那就是您发现的 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Search anywhere and tell us your favorite place — it joins the free Destination Book for the next traveler. The more you share, the smarter our map gets.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>搜索世界任何角落，告诉我们您最喜欢的地方——它会被收进免费的目的地手册，留给下一位旅客。您分享得越多，我们的地图就越聪明。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Search the book — or type a new place to suggest &amp; add…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>搜索手册——或输入一个新地点来推荐并添加…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Search unavailable right now — try again.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>搜索暂时不可用——请重试。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Searched again wider and found nothing. Fill up and stop before these.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>已扩大范围再次搜索，仍无结果。请在进入这些路段前加油并休息。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Search…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>搜索…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Seattle</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>西雅图</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Seattle&#x27;s beating heart since 1907 — fish throwers, flower stalls, craft stands and the original Starbucks, stacked on a hillside over Elliott Bay.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>1907 年至今，西雅图跳动的心脏——抛鱼的鱼贩、花摊、手作摊位和第一家星巴克，层层叠叠挂在艾略特湾上方的坡上。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Seattle–Tacoma International Airport (SEA)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>西雅图-塔科马国际机场（SEA）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Secrets stay secret</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>密钥始终保密</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Security</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>安全</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Security Parameter</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>安全边界</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>See how it works →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>看它如何运作 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>See the drawings →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>查看图纸 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>See the platform →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>查看平台 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Self-driving pickup — under research</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>无人驾驶接送——研究中</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Self-driving pickups are under research — we&#x27;re studying how to hail an autonomous car straight from your planned route, safely and privately. It isn&#x27;t bookable today, and no ride is being requested.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>无人驾驶接送仍在研究中——我们正在研究如何安全、私密地从您已排好的行程直接叫一辆自动驾驶车。目前还不能预约，也不会发出任何叫车请求。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Self-reported, on your honor. We can&#x27;t verify a payment we deliberately never see — and we&#x27;d rather be honest about that than fake a number.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>全凭自觉申报。我们刻意不去看这笔付款，因此无法核实——与其编一个数字，不如把话说清楚。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Sell My Own Trips</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>出售我自己的行程</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Send</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>发送</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Send Booking</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>提交预订</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Senior living</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>养老社区</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Service</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>服务</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Service Tickets &amp; Pricing</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>服务项目与定价</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Service area</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>服务区</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Service name</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>服务名称</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Service-area business — we come to you, there&#x27;s no counter to visit.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我们是上门服务的商家——我们到您那里去，没有门店柜台可供到访。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Services &amp; Rates</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>服务与费率</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Serving Seattle &amp; Seattle–Tacoma International (SEA)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>服务西雅图及西雅图-塔科马国际机场（SEA）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Set start</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>设为起点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Share the itinerary</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>分享行程</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Ship</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>船名</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Shops</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>商店</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Sign &amp; Agree</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>签署并同意</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Sign In</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>登录</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Sign here with your mouse or finger</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>用鼠标或手指在此签名</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Sign in</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>登录</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Sign in to your control center.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>登录您的控制中心。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Simple pricing · 30-day free trial</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>简单定价 · 30 天免费试用</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Since</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>加入时间</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Sit at the counter for the classic experience.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>坐于吧台，方是此处的传统吃法。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Skip to content</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>跳到正文</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Something else</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>其他</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Something went wrong — try again.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>出现问题，请重试。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Somewhere to sleep</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>住宿</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Special requests / notes</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>特殊要求 / 备注</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Stars</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>评分</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Start</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>起点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Start free trial &amp; enroll →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>开始免费试用并注册 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Start free trial →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>开始免费试用 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Start from where I am now</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>以我当前位置为起点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Start moved to where you are — the far-distance options are below the map.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>起点已移到您所在的位置——远距离的选项在地图下方。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Start on the Brooklyn side and walk toward the skyline.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>自布鲁克林一侧起步，朝天际线方向步行。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Start point (drag it)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>起点（可拖动）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Start your free trial</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>开始您的免费试用</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Starting point</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>出发地</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>State</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>州</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Staten Island to Niagara Falls, or any long drive. Give it two points and it finds the fuel, food, rest areas and viewpoints near your actual road — grouped by how many hours in you&#x27;ll be, so you can plan real breaks instead of scrolling a map.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>从斯塔滕岛到尼亚加拉大瀑布，或任何一段长途。给它两个点，它就会沿着您真正要走的路找出加油站、餐饮、休息区和观景点——并按开到第几小时分组，让您能真正安排休息，而不是一直划地图。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Status</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>状态</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Status: private verification phase.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>状态：私下验证阶段。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Statuses come live from your Square account (refreshed every minute). &quot;Collected revenue&quot; counts only invoices Square marks PAID — the number that matters for taxes.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>状态实时来自您的 Square 账户（每分钟刷新）。“已收款收入”仅统计 Square 标记为已付的账单 —— 这是报税所关注的数字。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Stop every</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>每隔多久停一次</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Straight talk, because that&#x27;s the whole point.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>有话直说，因为这正是重点所在。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Strategic property acquisition</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>战略性物业收购</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Strategic reinvestment</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>战略性再投资</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Stream</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>业务</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Submit Referral &amp; Create Reservation</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>提交推荐并创建预订</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Suggest a Tool →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>提议一个工具 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Suggested break</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>建议休息</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Suggested breaks</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>建议休息次数</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Sunset slots sell out — book the golden hour online a few days ahead.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>日落时段名额紧俏，建议提前数日在线预订黄金时刻。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Swan boats run mid-April to Labor Day only. The Common is the natural place to start any Boston day — three subway lines meet underneath it.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>天鹅船仅于四月中旬至劳动节运营。此处是波士顿一日行程的自然起点，地下有三条地铁线交汇。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Sweeping the whole route for rest stops…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>正在沿全程搜索休息区…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Switch agent</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>切换代理</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Switch driver</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>切换司机</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>THE COMPANY</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>公司</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>THE MODEL</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>这套模式</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Take the Red Line to Harvard rather than driving — Cambridge parking is genuinely difficult. Student-led tours leave from the visitor center and are free.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>建议乘红线至 Harvard 站，不宜自驾——剑桥停车确实困难。游客中心有学生带领的免费导览。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Take the ticket at the door and don&#x27;t lose it — you pay on the way out.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>入门时领取的单据请妥善保管，离店凭此结账。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Tap once to type a starting address · tap twice to use your current location</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>点一下输入出发地址 · 点两下使用当前位置</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Tax note: the full fare is your income (referral + trip) and is reportable on your 1099. The customer is charged once.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>税务提示：整笔车费都算您的收入（推荐费 + 车程），需计入您的 1099 报税。客户只付一次款。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Tell us the place you want to see — or the kind of thing you&#x27;re looking for. Every wish tells us what to add next, and where travelers want a guide. No account, no email needed.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>告诉我们您想去的地方——或您在找哪一类体验。每条心愿都会告诉我们下一步该补什么，以及旅客在哪里需要导游。无需注册，也不用留邮箱。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Tell us where you&#x27;re going — we&#x27;ll take care of the rest.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>告诉我们您要去哪儿，剩下的交给我们。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>That drive is shorter than one break — no stops needed.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>此段车程较短，无需中途停靠。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>That&#x27;s what moves the green zero at the top of this page — the number that counts what this community has given back.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>这才会让页面顶部那个绿色的零动起来——它记录着这个社区一共回馈了多少。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The 1636 college green across the river, ringed by red brick halls, with Harvard Square&#x27;s bookshops and cafes at the gate.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>河对岸 1636 年的校园草坪，四周是红砖楼；门口就是哈佛广场的书店和咖啡馆。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The 1888 delicatessen that defines pastrami on rye, sliced by hand at the counter.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>1888 年开到今天的熟食店，黑麦面包夹手切熏牛肉的标准就是从这儿定下的。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The 1962 World&#x27;s Fair icon — 520 feet up with a rotating glass floor and a 360° sweep of the city, the Sound, and on a clear day Mount Rainier.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>1962 年世博会留下的地标——520 英尺高，旋转玻璃地板，360 度看城市与普吉特海湾；天晴时还能望见雷尼尔山。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The 555-foot obelisk at the center of the Mall; the elevator to the top gives the only 360-degree view of the city.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>国家广场正中那座 555 英尺的方尖碑；坐电梯上去，是全城唯一的 360 度视野。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The Factor Clock</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>因子时钟</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The Factor Clock is early. Its world library is real and proven; its power to read</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>因子时钟还处在早期。它的世界资料库是真实且经过验证的；而它读懂</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The Factor Clock provides probabilistic forecasts and personal decision-support for informational purposes only. It is</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>因子时钟提供的是概率性预测和个人决策辅助，仅供参考。它</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The Factor Clock — Plateau Strategy</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>因子时钟 — Plateau Strategy</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The Sound Lab lets you play real instruments — worth the last 30 minutes of your visit.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>Sound Lab 可实际演奏乐器，值得留出最后半小时。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The Star-Spangled Banner itself, Lincoln&#x27;s top hat and the First Ladies&#x27; gowns — America&#x27;s attic, free to enter.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>那面《星条旗》原件、林肯的高礼帽、历任第一夫人的礼服——美国的阁楼，免费进。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The Trip Planner and Destination Book store only place names and typical visit times — no personal tracking. Your planned trip stays on your own device until you choose to book.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>行程规划和目的地手册只保存地点名称和常见停留时间——不做个人追踪。在您决定下单之前，您排好的行程只留在自己的设备上。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The U Street half-smoke, unchanged since 1958 — a civil-rights landmark as much as a diner.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>U 街上的半烟肠，1958 年到现在没变过——它既是小馆子，也是民权运动的地标。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The Wright Flyer, Apollo 11&#x27;s command module and a moon rock you can touch — the Smithsonian&#x27;s biggest crowd-pleaser.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>莱特飞行者号、阿波罗 11 号指令舱，还有一块可以伸手摸的月岩——史密森学会人气最高的一馆。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The art-deco icon of the skyline. The open-air 86th-floor deck is the classic New York view.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>天际线上的装饰艺术地标。86 层露天观景台，看的是最经典的那个纽约。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The benchmark New York slice since 1975 — thin, hot, and eaten folded, standing up.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>1975 年至今的纽约切片标准——薄、烫，站着对折了吃。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The classic north-face view from Lafayette Square. Public tours exist but need a request through Congress weeks ahead.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>从拉法叶广场看过去的经典北立面。公众参观是有的，但要提前数周通过国会议员申请。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The daily brief + the growing library of proven sources</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>每日简报 + 不断增长的可信来源库</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The domed rotunda on the Tidal Basin, ringed by cherry trees that explode into bloom around late March.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>潮汐湖畔的圆顶纪念堂，四周的樱花约在三月底一齐炸开。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The federal government runs a real program for this —</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>联邦政府为此设有一个正式项目——</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The free tools</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>这些免费工具</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The lab keeps building</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>实验室还在继续造</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The lit walkway between the two wings is a work of art itself.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>连接两馆的灯光通道本身即是一件作品。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The money records, customer information and governance documents are locked behind a private owner login. No one reaches them without those credentials.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>资金记录、客户信息和治理文件都锁在所有者的私人登录之后。没有这套凭证，谁也进不去。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The mothership on Capitol Hill — a working roastery where beans ride copper pipes overhead and the menu goes far beyond any normal Starbucks.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>国会山上的母舰——一座真在运转的烘焙厂，豆子顺着头顶的铜管走，菜单远超任何一家普通星巴克。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The national debt is measured in trillions; no single gift changes that arithmetic. That isn&#x27;t the point — the point is the act, and that it&#x27;s real, voluntary, and goes where we say it goes. Gifts to the United States for exclusively public purposes are generally tax-deductible, but we&#x27;re not tax advisors — ask yours. Plateau Strategy Solution Lab is not affiliated with, and does not represent, the U.S. Treasury or any government agency.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>国债以万亿计；任何一笔捐赠都改变不了这个算术。但这不是重点——重点在于这个举动本身，在于它真实、自愿，并且确实流向我们所说的地方。为纯公共用途向美国政府所作的捐赠通常可以抵税，但我们不是税务顾问——请咨询您自己的顾问。Plateau Strategy Solution Lab 与美国财政部或任何政府机构均无隶属关系，也不代表它们。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The national-debt donation</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>国债捐赠</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The neon crossroads of the world — massive digital billboards, Broadway marquees and street performers at all hours.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>世界的霓虹十字路口——巨幅电子广告牌、百老汇剧院招牌，还有全天不散的街头艺人。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The oldest ballpark in the majors, opened 1912, with the 37-foot Green Monster still standing in left field.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>大联盟最老的球场，1912 年开场，左外野那面 37 英尺高的「绿色怪物」还立在那里。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The one thing nobody else ships: honest uncertainty</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>别人都不肯给的那样东西：诚实的不确定性</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The only Leonardo da Vinci painting in the Americas, plus Vermeer, Monet and a sculpture garden.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>美洲唯一一幅达·芬奇真迹在这里，还有维米尔、莫奈，以及一座雕塑花园。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The order engine calibrates itself from every single trade outcome — tightening or deepening its bids automatically — and every layer of the system is audited against real exchange fees.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>下单引擎会从每一笔交易的结果自我校准——自动收紧或压低报价——系统的每一层都要按交易所的真实手续费接受核查。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The outdoor memorial is free and open late; the museum needs a timed ticket.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>室外纪念区免费开放且闭园较晚；博物馆需预约分时门票。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The postcard shot: the whole skyline with the Space Needle front and center and Rainier floating behind it — a tiny park on Queen Anne hill.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>明信片上的那一张：整条天际线，太空针塔正中，雷尼尔山浮在后面——皇后安山上一个很小的公园。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The problem, the business model, how it makes money, and what it needs to launch…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>要解决的问题、商业模式、怎么赚钱，以及启动需要什么…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The questions every traveller asks before they book.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>每位旅客下单前都会问的问题。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The quote is the fare — no surge</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>报价就是车费，不加价</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The raw bar goes half-price late in the evening.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>入夜稍晚时段，生蚝吧半价供应。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The rules that protect you when you use this site — your data, your money, and your bookings. These are the safeguards that are already in place, in plain language.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您使用本站时受到保护的各项规则——数据、款项与订单。以下为已经落实的保障措施，以平实语言逐条说明。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The seated Lincoln above the Reflecting Pool — read the Second Inaugural carved on the north wall.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>倒影池尽头端坐的林肯——北墙上刻着第二次就职演说，值得读完。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The system is currently trading only its founder&#x27;s own capital while it builds an audited, honest track record.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>目前系统只用创始人自己的资金交易，同时积累一份可审计、诚实的业绩记录。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The trip</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>行程</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>The trip planner draws a sightseeing loop. This is for the other kind — the walk you know by heart, where the point is what you say at each stop. Write it out yourself: your stops, your timings, your price. Travellers browse it on the</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>行程规划工具画的是一条观光环线。这里是另一种——您烂熟于心的那条路，重点在于您在每一站讲些什么。自己把它写出来：您的站点、您的时间、您的价格。旅客可在</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Then come back and tell us.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>然后回来告诉我们一声。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>This browser cannot share a location. Please type the address.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>此浏览器不支持共享位置，请手动输入地址。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>This browser can’t share location — drag the black pin or type your pickup on the booking form.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>此浏览器无法共享位置——请拖动黑色标记，或在预订表单里填写上车地点。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>This is what makes it an in-depth trip rather than a drive-past: name each stop and say how long you actually stand there. The note is for you to say why it matters.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>这正是深度游与走马观花的区别：写下每一站的名字，以及您实际会在那里停留多久。备注用来说明这一站为什么重要。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>This is what proves a real guide wrote the trip.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>这就是证明行程出自真正导游之手的凭证。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>This is your advertising list.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>这是您的广告投放名单。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>This is your unique agent code —</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>这是您专属的代理代码 ——</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>This list grows as the site adds features. If a new part of the site handles your data or your money, its safeguard is added here.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>网站每增加一项功能，这份清单就会随之增加。只要有新的部分会处理您的数据或您的钱，它的保障措施就会写进这里。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>This page describes an internal research project of Plateau Strategy Solution Lab. It is</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>本页介绍的是 Plateau Strategy Solution Lab 的一个内部研究项目。它</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Three days or more</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>三天或更久</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Three granite halls of food stalls and street performers beside the 1742 meeting house where colonists argued their way toward revolution.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>三座花岗岩厅堂的食摊与街头表演，紧挨着 1742 年那座会议厅——当年殖民地居民就是在那里吵着吵着走向了革命。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Tight</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>时间紧</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Time</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>时间</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Time your visit to the Changing of the Guard — every hour on the hour, every half hour in summer.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>建议配合换岗仪式时间前往：整点举行，夏季每半小时一次。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Title</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>标题</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Title — e.g. Proposal: Rent-to-own Tesla program</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>标题 —— 例如：提案：以租代购 Tesla 计划</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Toilets</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>洗手间</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Tours run from the underground visitor center through the Crypt, the Rotunda and Statuary Hall.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>导览从地下游客中心出发，穿过地下室、圆形大厅和雕像厅。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Traffic</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>路况</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Transportation</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>交通出行</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Transportation is the one that runs today: flat-rate Tesla rides across Seattle, cars rented to drivers who earn with them, and trip-planning tools anyone can use free. It pays for what comes next. Every other arm is listed below with the stage it is honestly at — including the ones not finished.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>出行业务目前已投入运营，并为后续业务提供资金：覆盖西雅图全城的特斯拉固定价格接送、面向司机的车辆租赁，以及任何人均可免费使用的行程规划工具。以下逐项列明各业务实际所处的阶段，包括尚未完成的部分。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Transportation operates today and funds what follows: flat-rate Tesla service across Seattle, a vehicle rental programme for drivers, and trip-planning tools available free to anyone. The property development is at drawing stage and the trading research is in private verification. Each business is set out below with the stage it has actually reached.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>出行业务目前已投入运营，并为后续业务提供资金：覆盖西雅图全城的特斯拉固定价格接送服务、面向司机的车辆租赁计划，以及任何人均可免费使用的行程规划工具。地产开发尚处图纸阶段，交易研究仍在内部验证之中。以下逐项列明各业务实际所处的阶段。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Travel agency</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>旅行社</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Trip</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>行程</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Trip Planner</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>行程规划</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Trip Planner — Plateau Strategy Solution Lab</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>行程规划 — Plateau Strategy Solution Lab</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Trip title</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>行程标题</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Trip type</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>行程类型</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>True Net</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>真实净值</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Try the whispering gallery on the ramp outside the Oyster Bar.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>可至 Oyster Bar 门外坡道体验「回声长廊」。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Twin reflecting pools in the footprints of the towers; the museum below tells the story with artifacts and voices.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>两座反射池坐落于原双塔基址之上；地下博物馆以遗物与幸存者的声音记述那一天。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Two days</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>两天</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Two hours inside the Yard with someone who studies here — the statue that lies three times, why the gates are numbered, what the freshman dorms are actually like, and the reading room most tours never enter.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>和在这里念书的人一起，在哈佛园里待上两小时——那尊“说了三个谎”的雕像、校门为什么要编号、新生宿舍到底什么样，还有多数旅行团从没进过的那间阅览室。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Type</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>类型</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Type a destination and press Add — or tap a pin on the map</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>输入目的地并点“添加”——或直接点地图上的标记</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Type of trip</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>行程类型</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Type your full legal name</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>输入您的法定全名</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Type your starting address, hotel or airport…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>输入出发地址、酒店或机场…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>UNDER RESEARCH</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>研究中</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Unified software infrastructure powering fleet management, client interactions, and data analytics across all business lines. AI-driven optimization and decision support.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>统一的软件基础设施，为所有业务线的车队管理、客户互动和数据分析提供支持。AI 驱动的优化与决策支持。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Upload &amp; Archive</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>上传并归档</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Upload &amp; Save</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>上传并保存</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Upload Insurance</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>上传保险</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Upload valid proof of insurance before you can accept rides.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>接单前，请先上传有效的保险证明。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Upload your documents — each one is archived and kept on file permanently (nothing is ever overwritten). This is your paper trail.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>上传您的文件 —— 每一份都会归档并永久保存（绝不覆盖）。这就是您的文件记录。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Use this</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>就用这个</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Username</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>用户名</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Valid proof of insurance is required to accept rides. We track your expiry date so your coverage never lapses.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>接单需要提供有效的保险证明。我们会记录到期日，确保您的保障不会中断。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Value chain owned</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>自有价值链占比</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Vehicle VIN</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>车辆 VIN</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Vehicle make</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>车辆品牌</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Vertically Integrated</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>垂直整合</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Views</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>观景</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Visible to all drivers. The first to claim secures the ride.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>所有司机都能看到，谁先抢到就是谁的。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Visit min</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>建议停留（分钟）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>WORK IN PROGRESS · REV A</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>编制中 · 修订 A</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Walk it north-to-south in the afternoon so the sun is behind you, and treat the posted 90 minutes as walking time only — stopping inside sites doubles it.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>午后由北向南行走，可背向日光；标示的九十分钟仅为步行时间，入内参观将增至一倍。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Walk the Tidal Basin loop to catch the MLK and FDR memorials while you&#x27;re there.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>沿潮汐湖环行一周，可一并参观马丁·路德·金与罗斯福纪念碑。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Walk the wooden promenade of the 1883 bridge — the best free view of the Manhattan skyline.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>走上这座 1883 年建成的桥的木栈道——看曼哈顿天际线，最好的免费位置。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Want us to tell you when it&#x27;s ready?</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>想在开放时收到通知吗？</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Washington DC</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>华盛顿特区</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Washington&#x27;s oldest saloon (1856), two blocks from the White House — oysters, burgers and power lunches.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>华盛顿最老的酒馆（1856 年），离白宫两个街区——生蚝、汉堡，还有饭桌上的政治。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>We build one business at a time</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>一次只做好一项业务</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>We control the full value chain and share the upside with drivers and partners — so revenue compounds across transportation, real estate, and finance instead of leaking away.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我们掌握完整的价值链，并把收益与司机和合作方共享——因此收入在交通、房地产和金融之间不断复利，而不是白白流走。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>We invoice for our own service and never hold a customer&#x27;s funds in escrow. Every payout to a driver or guide takes an explicit owner approval — money never moves on its own.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我们只为自己的服务开具账单，绝不代管客户的资金。每一笔付给司机或导游的款项都需要所有者明确批准——钱不会自己动。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>We never hold your money</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我们从不代管您的钱</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>We never touch the money.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>这笔钱我们碰都不碰。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>We started with transportation: affordable Tesla rentals that turn everyday drivers into earners and everyday riders into loyal clients. From there, each part of our business funds and strengthens the next — operations, real estate, finance, and reinvestment — a closed loop where revenue compounds instead of leaking away.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我们从出行业务起步：以可负担的特斯拉租赁，让普通司机获得收入，也让乘客愿意再次乘坐。在此基础上，每一项业务为下一项提供资金——出行、房地产、金融、再投资——形成一个闭环，收入在其中不断累积，而不是外流。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>We&#x27;re adding more free daily-life tools here. Have an idea for a tool you&#x27;d use every day? Pitch it on the Business Ideas board.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我们会在这里持续添加更多免费的生活工具。有什么您每天都会用的工具点子？去商业点子板块提出来。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>We&#x27;re building something ambitious. Join our community of early believers.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我们正在打造一项雄心勃勃的事业。加入我们早期信仰者的社区。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>We&#x27;re currently validating the market and preparing to launch. Early partners, investors, and team members are critical to our success.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我们目前正在验证市场并准备启动。早期合作伙伴、投资者和团队成员对我们的成功至关重要。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>We&#x27;re validating the market and preparing to launch. Early partners, investors, and team members are critical to our success.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我们正在验证市场、准备启动。早期的合作方、投资人和团队成员对我们的成败至关重要。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Weather, markets, your own patterns — every forecast scored against what actually happened. It tells you when it</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>天气、市场、您自己的规律——每一次预测都拿真实结果打分。当它</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Website</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>网站</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Wednesday through Friday evenings are the quietest hours, and the Art of the Americas wing alone is worth the full two hours.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>周三至周五傍晚人流最少；仅「美洲艺术」一翼即值得两小时。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Weekday mornings are calm; weekend afternoons are a crush.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>工作日上午较为清静，周末午后人流密集。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Welcome to Plateau Strategy Solution Lab</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>欢迎来到 Plateau Strategy Solution Lab</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>What does the client want?</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>客户想要什么？</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>What is included</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>费用包含</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>What it does</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>它能做什么</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>What the trip is</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>这是什么样的行程</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>What travellers will get out of it</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>旅客能收获什么</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>What&#x27;s along the way?</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>路上有什么？</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>What&#x27;s your favorite place?</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您最喜欢的地方是哪里？</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>When you make it, give a little back.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>等您做起来了，回馈一点点。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Where we reach you</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我们如何联系您</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Where you meet them</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>集合地点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Who is running it</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>由谁带团</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Who should the guide ask for?</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>导游到时找谁？</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Who&#x27;s travelling</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>乘车人</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Working out the distance…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>正在计算距离…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Working out the drive…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>正在计算行车路线…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Write your article or proposal here…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>在此撰写您的文章或提案……</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Year</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>年份</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Yes — I&#x27;ve booked somewhere</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>订好了</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>You earn</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您的收益</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>You earn a flat commission on every customer you refer whose ride is completed.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您推荐的每位客户只要完成用车，您就能拿到一笔固定佣金。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>You earn a flat commission on every trip you book that&#x27;s completed.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您预订的每一趟行程只要完成，就能拿到一笔固定佣金。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>You give directly to the U.S. Treasury.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您的钱直接交给美国财政部。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>You have not claimed any rides yet.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您还没有接过订单。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>You must sign your agreement before you can accept any rides.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>接单前，请先签署您的协议。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>You need a code to list a trip — it is how we know a real guide wrote it. It is the same code the</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>发布行程需要一个编号——我们凭它确认行程出自真正的导游之手。它和</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>You&#x27;re both the agent and the driver on this trip.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>这趟行程里，您既是推荐人，也是司机。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>You&#x27;re registered as an agent</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您已注册为代理</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your Agent Code — this is your sign-in</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您的代理代码 —— 这是您的登录凭证</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your Vehicle</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您的车辆</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your code doubles as your guide credential</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您的编号同时也是导游身份凭证</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your code identifies you. Travellers see your name, never your contact details — interest comes to you through us, so your listing cannot be harvested for emails.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>编号用于识别您的身份。旅客只看到您的名字，绝不会看到您的联系方式——有人感兴趣时由我们转达，所以您的行程页不会被用来抓取邮箱。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your control center — every reservation, from every source, in one place. Assign drivers, complete rides, and keep the whole operation organized.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您的控制中心 —— 将来自各个来源的每一笔预订集中于一处。分配司机、完成行程，让整个运营井然有序。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your data stays yours</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您的数据仍属于您</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your driver will arrive</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您的司机会在您出发时间</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your guide code</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您的导游编号</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your listings</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您已发布的行程</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your name</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您的姓名</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your name (author)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您的姓名（作者）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your own private life-tracking &amp; personal predictions</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您自己的私密生活记录与个人预测</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your paycheck arrives as normal</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您的薪水照常到账</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your paycheck works while you sleep — profits go straight to your debt, and your principal is never at risk.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您的薪水在您睡觉时也在工作 —— 利润直接用于偿还债务，而您的本金永不承担风险。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your paycheck&#x27;s profits automatically pay down your debt — principal never at risk. From $14.17/mo.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您薪水产生的利润自动偿还您的债务 —— 本金永不承担风险。低至 $14.17/月。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your principal returns intact — no risk</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您的本金完好无损地返还 —— 无风险</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your route builds here: D1 → D2 → D3 …</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您的行程将显示在这里：D1 → D2 → D3 …</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your standing against the Driver Agreement. The system flags issues automatically, and anything logged by dispatch appears here too. Clear all issues to keep accepting rides.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您在《司机协议》下的合规状况。系统会自动标记问题，调度中心记录的任何情况也会显示在此。请解决所有问题，以便继续接单。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Your stops, in order</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您的站点（按顺序）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>Zelle / cash / check — and where</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>Zelle / 现金 / 支票——以及收款地点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>agent program</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>代理商计划</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>agent programme</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>代理人计划</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>and</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>以及</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>appear here automatically.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>的新订单会自动出现在这里。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>booking page</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>预订页面</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>coffee</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>咖啡</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>connected ecosystems</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>彼此相连的生态</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>contributors · routing by</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>贡献者 · 路径规划</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>could not reach the attraction lists just now</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>暂时连不上景点资料库</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>customers and take a commission on every completed ride — or</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>客户，每完成一趟就拿一次佣金——或者</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>doesn&#x27;t</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>不知道时</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>drive</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>驾驶</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>email or phone</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>邮箱或电话</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>ends</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>天结束的地方附近</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>fastest</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>最快</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>finding the places people travel here to see…</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>正在寻找人们专程来看的地方…</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>flat to Sea–Tac</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>到机场，固定价</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>flat to Sea–Tac, from anywhere within 30 miles</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>30 英里内至机场，均为固定价</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>free</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>免费</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>free right now</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>免费的原因</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>give something to your country.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>为您的国家做点什么。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>grow</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>成长</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>guide</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>当导游</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>in the memo, and mail to:</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>然后寄往：</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>invest</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>投资</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>issues, so if you already refer rides you have one. If not, registering there takes a minute.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>发放的编号是同一个，所以如果您已经在推荐用车，就已经有了。若还没有，去那里注册只要一分钟。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>know, and it&#x27;s evolving with everyone who uses it.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>，它会直说；而且它会随着每一位使用者一起进化。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>launch and run it</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>启动并经营它</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>life grows as you use it. That&#x27;s exactly why it&#x27;s</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>的生活的能力，要靠您使用才会成长。这正是它现在</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>lines up with a break</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>与休息点重合</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>live</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>实时</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>my last stop</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>我的最后一站</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>not an offer to sell — or a solicitation to buy — any security, investment product, or advisory service</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>不是出售任何证券、投资产品或顾问服务的要约，也不是购买邀请</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>not financial, investment, medical, legal, or professional advice</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>不构成金融、投资、医疗、法律或任何专业建议</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>not investment advice</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>不构成投资建议</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>nothing within a walk</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>步行范围内无配套设施</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>or drag the ⌂ pin on the map</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>或拖动地图上的 ⌂ 标记</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>or enter your details</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>或手动填写您的信息</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>or register a new vehicle</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>或注册新车辆</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>payments</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>笔付款</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>per group</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>每团</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>per person</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>每人</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>places here · tap to browse, search, and add to your route</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>个地点 · 点击浏览、搜索并加入行程</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>research project</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>研究项目</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>ride</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>搭车</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>save it now</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>立即保存</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>shop</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>便利店</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>shortest</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>最短</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>should start from wherever you sleep — otherwise it plans your morning from your original start point. Have you already got somewhere?</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>天应该从您过夜的地方出发——否则系统会按最初的起点安排早上的行程。您订好住处了吗？</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>since every payment runs through Square, connect Square inside QuickBooks once and all revenue flows into your books automatically: QuickBooks →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>由于每一笔付款都通过 Square 处理，只需在 QuickBooks 中连接一次 Square，所有收入便会自动进入您的账簿：QuickBooks →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>tap to cycle 5★ → 1★</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>点击在 5★ → 1★ 之间切换</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>tap to rate</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>点击评分</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>the moment you list it, and travellers reach you through us — your contact details are never published.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>上，发布即刻可见；旅客通过我们联系您——您的联系方式绝不会被公开。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>this city</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>本城市</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>to book a real driver to the same stop.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>即可预约真人司机送您到同一地点。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>toilets</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>洗手间</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>trips page</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>行程页面</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>via</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>经由</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>with us,</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>、</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>with us, and</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>、以及</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>with us.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>的人。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>your</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>your departure time.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>到达。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>your email</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>您的邮箱</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>{from} to {to} in — {len} with no mapped stop</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>出发后 {from} 至 {to} 之间，{len} 路程内无已知停靠点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>{h} hr</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>{h} 小时</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>{h} hr {m} min</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>{h} 小时 {m} 分</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>{m} min</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>{m} 分</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>{n} found within 2½ miles of the road, in the order you’ll pass them</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>沿途 4 公里内共 {n} 处，按经过先后排列</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>{n} mi</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>{n} 英里</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>{n} stalls</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>{n} 个车位</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>{n} stations · {w} have food, coffee or a toilet within a 5-minute walk</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>共 {n} 处充电站，其中 {w} 处步行 5 分钟内有餐饮、咖啡或洗手间</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>{n} stretches with nowhere to pull in</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>{n} 段路程无可停靠地点</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>{n} travelers planned a trip here this week</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>本周有 {n} 位旅客在此规划了行程</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>{shown} of {total} destinations</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>共 {total} 处，显示 {shown} 处</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>{time} in</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>行驶 {time} 处</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>© 2026 Plateau Strategy Solution Lab. Building integrated wealth through connected ecosystems.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>© 2026 Plateau Strategy Solution Lab。通过互联的生态系统构建综合财富。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>· 0 following</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>· 0 人关注</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>· free while it proves itself</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>· 在它自证期间免费</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>· places from</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>· 地点来自</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>· search by</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>· 搜索由</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>· search by Nominatim · a free tool by Plateau Strategy Solution Lab</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>· 搜索由 Nominatim 提供 · Plateau Strategy Solution Lab 出品的免费工具</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>— $10/year value, founding members lock it in free.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>——价值每年 10 美元，创始会员免费锁定。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>— already an agent? sign in —</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>—— 已是代理？登录 ——</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>— fighting inflation with disciplined, self-learning automation.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>——用有纪律、会自我学习的自动化对抗通胀。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>— one code refers rides and sells trips.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>——同一个编号既能推荐用车，也能出售行程。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>— photo or PDF</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>—— 照片或 PDF</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>— realized plus unrealized, fees included. No vanity win-rates. When results are published, they will be the real number.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>衡量——已实现加未实现，含手续费。不做好看的胜率。等到公布结果时，那就是真实的数字。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>— this page exists so you can follow the research.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>——这个页面的存在，只是为了让您能跟进这项研究。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>— we&#x27;d rather you use it, feed it your own patterns, and watch it earn your trust than pay for a promise. When it&#x27;s proven it&#x27;ll be $10 a year; get in now and you lock that in.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>——比起让您为一个承诺付费，我们更希望您先用起来，把自己的规律喂给它，看着它一点点赢得您的信任。等它证明了自己，价格是每年 10 美元；现在加入就能锁定这个价。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>← All Finance products</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>← 所有金融产品</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>← All archives</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>← 全部档案</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>← Back</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>← 返回</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>← Back to Lab</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>← 返回实验室</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>← Exit to homepage</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>← 退出到主页</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>← Home</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>← 首页</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>→ search</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>→ 搜索</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>→ sign in to Square → done. After that, this page is your quick view and the CSV is your backup/manual import.</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>→ 登录 Square → 完成。之后，此页面是您的快速查看，CSV 则是您的备份/手动导入。</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>↩ Undo</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>↩ 撤销</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>↻ Refresh from Square</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>↻ 从 Square 刷新</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>⏱ Been here? Tell us how long you stayed →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>⏱ 来过这里？告诉我们您待了多久 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>▴ Smaller — just keep me posted</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>▴ 收起——有事再告诉我</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>◆ founding beta · free access</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>◆ 创始内测 · 免费使用</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>● LIVE</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>● 实时</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>● WORK IN PROGRESS</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>● 建设中</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>● live</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>● 实时</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>★ ★ ★ DO YOUR PART ★ ★ ★</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>★ ★ ★ 尽一份力 ★ ★ ★</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>☰ Sections</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>☰ 版块</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>⚓ Boston sample</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>⚓ 波士顿示例</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>✈️ Airport</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>✈️ 机场</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>✍️ Pitch a business idea</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>✍️ 提出一个商业点子</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>✍️ Write a new article / proposal</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>✍️ 撰写新文章 / 提案</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>✓ Auto debt payoff</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>✓ 自动偿还债务</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>✓ Automated trading engine</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>✓ 自动交易引擎</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>✓ In your planner</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>✓ 已在您的行程中</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>✓ Principal always protected</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>✓ 本金始终受保护</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>✓ Real-time dashboard</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>✓ 实时仪表盘</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>✨ Custom</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>✨ 定制</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>✨ Jarvis suggests</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>✨ Jarvis 的建议</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>❤️ Favorite Places</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>❤️ 最爱的地方</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>⧉ Copy</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>⧉ 复制</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>⬆ Upload</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>⬆ 上传</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>⬇ Download the official copy (Word)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>⬇ 下载正式文本（Word）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>⬇️ Export CSV</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>⬇️ 导出 CSV</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>⬇️ Export CSV (for QuickBooks / accountant)</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>⬇️ 导出 CSV（用于 QuickBooks / 会计）</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>＋ Add</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>＋ 添加</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>＋ Add a stop</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>＋ 添加一站</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🇺🇸 Give at the U.S. Treasury (Pay.gov) →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🇺🇸 通过美国财政部捐赠（Pay.gov）→</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🌟 What do you wish was in this book?</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🌟 您希望这本手册里出现什么？</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🌲 Seattle sample</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🌲 西雅图示例</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🎫 Guide Studio</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🎫 导游工作室</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🎫 Guided Trips</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🎫 导览行程</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🎫 Or write your own in-depth trip and sell it →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🎫 或者自己写一条深度行程来出售 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🎯 Disciplined accumulation</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🎯 有纪律地积累</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🏛️ Washington DC sample</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🏛️ 华盛顿特区示例</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🏨 Find places to stay near</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🏨 在附近找住宿</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🏷️ Guide? Offer this route for sale →</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🏷️ 您是导游？把这条路线挂出来出售 →</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>👔 Managing Members</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>👔 管理成员</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>👤 Driver</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>👤 司机</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>👥 travelers stay ~{stay}</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>👥 旅客平均待约 {stay}</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>💜 I wish that to be happening</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>💜 我希望这能实现</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>💡 Business Ideas</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>💡 商业点子</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>💬 Add the first note</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>💬 写下第一条留言</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>💰 Capital Efficient</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>💰 资本高效</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>💰 I want to invest</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>💰 我想投资</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>💸 Get Paid</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>💸 领取收入</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>💸 Payouts</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>💸 结算</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>📁 Governance Vault</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>📁 治理文件库</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>📈 Compounding Growth</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>📈 复利增长</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>📊 One honest scoreboard</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>📊 一块诚实的记分牌</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>📍 Use my location</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>📍 使用我的位置</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>📖 Destination Book</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>📖 目的地手册</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>📝 Articles &amp; Proposals</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>📝 文章与提案</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>📤 Share</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>📤 分享</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🔄 Vertically Integrated</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🔄 垂直整合</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🔒 Security Parameter</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🔒 安全边界</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🔔 Notify me when robotaxi launches</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🔔 上线时通知我</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🕐 The Factor Clock · for anyone who wants an honest forecast</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🕐 因子时钟 · 献给想要诚实预测的人</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🖨 Print</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🖨 打印</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🗺️ Tour</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🗺️ 观光</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🗺️ Trip Planner</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🗺️ 行程规划</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🗽 New York sample</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🗽 纽约示例</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🙋 Drop to a guide</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🙋 交给导游</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🚀 I want to launch this</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🚀 我想把它做起来</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🚕 Driver-guide</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🚕 司机兼导游</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🚕 Hire a driver-guide</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🚕 雇一位司机兼导游</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🚗 Customer</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🚗 客户</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🚗 Driver Dashboard</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🚗 司机面板</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🚗 Get a ride</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🚗 叫车</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🚗 I need a ride</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🚗 我需要用车</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🚧 Under Development</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🚧 开发中</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🛳️ Cruise</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🛳️ 邮轮</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🤖 Robotaxi</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🤖 无人驾驶车</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🤖 Robotaxi ride</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🤖 无人驾驶接送</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🤝 Agent</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🤝 代理</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🤵 Jarvis — your trip organizer</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🤵 Jarvis——您的行程管家</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🧠 Self-learning execution</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🧠 会自我学习的执行</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🧭 Itinerary</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🧭 行程表</seg></tuv>
+    </tu>
+    <tu>
+      <tuv xml:lang="en"><seg>🧭 Show my day sheet</seg></tuv>
+      <tuv xml:lang="zh-CN"><seg>🧭 查看当天行程单</seg></tuv>
+    </tu>
+  </body>
+</tmx>

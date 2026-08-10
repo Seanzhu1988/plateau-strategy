@@ -17,7 +17,7 @@
     <meta name="twitter:title" content="Destination Book — attractions and restaurants, city by city">
     <meta name="twitter:description" content="A growing guidebook of attractions and restaurants with local tips from a licensed guide. One tap sends any place into your trip. Free, no account.">
     <meta name="twitter:image" content="https://plateaustrategy.io/plateau-logo.png">
-    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -35,7 +35,7 @@
         .page-title { font-size: 1.9rem; font-weight: 800; color: #14110c; }
         .page-sub { color: #6b655b; margin: 0.2rem 0 1.2rem; }
 
-        .filters { background: #fff; border: 1px solid #e6e2da; border-radius: 16px;
+        .filters { background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da; border-radius: 16px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1rem 1.2rem; margin-bottom: 1.2rem; }
         .frow { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 0.6rem; }
         .frow:last-child { margin-bottom: 0; }
@@ -49,24 +49,34 @@
         .flab { font-size: 0.72rem; font-weight: 800; color: #6b655b; text-transform: uppercase;
             letter-spacing: 0.05em; width: 76px; }
         .chip { font-size: 0.82rem; font-weight: 600; padding: 0.32rem 0.9rem; border-radius: 999px;
-            border: 1.5px solid #e6e2da; color: #6b655b; cursor: pointer; user-select: none; background: #fff; }
-        .chip.on { background: #14110c; border-color: #14110c; color: #fff; }
+            border: 1.5px solid #e6e2da; color: #6b655b; cursor: pointer; user-select: none; background: var(--psx-card,#fffdf9); }
+        .chip.on { background: var(--psx-accent, #14110c); border-color: var(--psx-accent, #14110c); color: #fff; }
         .chip:hover { border-color: #ddd8cd; }
         .chip.on:hover { border-color: #14110c; }
         .filters input[type=text] { flex: 1; min-width: 180px; padding: 0.45rem 0.8rem; border: 1.5px solid #e6e2da;
-            border-radius: 3px; font-size: 0.9rem; font-family: inherit; background: #fff; }
+            border-radius: 3px; font-size: 0.9rem; font-family: inherit; background: var(--psx-card,#fffdf9); }
         .count { font-size: 0.82rem; color: #6b655b; margin: 0 0 0.8rem 0.2rem; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
-        .entry { background: #fff; border: 1px solid #e6e2da; border-radius: 4px;
+        /* #grid is now just the container; each city section carries the
+           columns, so a heading spans the band instead of becoming a card. */
+        .grid { display: block; }
+        .city-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+        .city-band { font-family: var(--psx-display, Georgia, serif); font-size: 1.15rem;
+            font-weight: 600; color: var(--psx-text, #14110c); margin: 2rem 0 .85rem;
+            padding-bottom: .45rem; border-bottom: 1px solid var(--psx-rule, rgba(20,17,12,.1));
+            display: flex; align-items: baseline; gap: .6rem; }
+        .city-band:first-child { margin-top: .2rem; }
+        .city-band span { font-family: var(--psx-sans, sans-serif); font-size: .74rem;
+            font-weight: 600; letter-spacing: .1em; color: var(--psx-muted, #6b655b); }
+        .entry { background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da; border-radius: 4px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1.1rem 1.2rem;
             display: flex; flex-direction: column; gap: 0.5rem; }
         .entry h3 { font-size: 1.05rem; color: #14110c; }
         .badges { display: flex; flex-wrap: wrap; gap: 0.35rem; }
         .badge { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
             padding: 0.18rem 0.55rem; border-radius: 6px; }
-        .b-city { background: #f0ede5; color: #4a453d; }
-        .b-comm { background: #e8f2ec; color: #14513a; }
+        .b-city { background: #f5f1e8; color: #4a453d; }
+        .b-comm { background: var(--psx-wash-good,#e1f8ec); color: #1b5e43; }
         .rate-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.3rem 0 0.5rem; }
         .stars { font-size: 1.15rem; letter-spacing: 1px; cursor: pointer; }
         .stars .star { color: #6b655b; transition: color 0.1s; }
@@ -76,19 +86,19 @@
         .star-chip { cursor: pointer; user-select: none; }
         .star-chip.on { background: #fef3c7; border-color: #8a5a12; color: #92400e; }
         .star-hint { font-size: 0.72rem; color: #6b655b; margin-left: 0.4rem; }
-        .sugbtn { margin: 0.5rem 0 0 0; background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857;
+        .sugbtn { margin: 0.5rem 0 0 0; background: var(--psx-wash-good,#e1f8ec); border: 1px solid var(--psx-wash-good-on,#cef2df); color: #047857;
             border-radius: 9px; padding: 0.55rem 0.9rem; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
         .sugbtn:hover { background: #d1fae5; }
         .sugitem { padding: 0.5rem 0.7rem; border: 1px solid #e6e2da; border-top: none; font-size: 0.82rem;
-            cursor: pointer; background: #fff; color: #4a453d; }
+            cursor: pointer; background: var(--psx-card,#fffdf9); color: #4a453d; }
         .sugitem:first-of-type { border-top: 1px solid #e6e2da; border-radius: 8px 8px 0 0; margin-top: 0.4rem; }
         .sugitem:last-of-type { border-radius: 0 0 8px 8px; }
-        .sugitem:hover { background: #f0f9ff; }
+        .sugitem:hover { background: var(--psx-wash-info,#e5f3ff); }
         .sugmuted { color: #6b655b; font-size: 0.8rem; padding: 0.4rem 0.2rem; }
-        .b-attr { background: #e8eef6; color: #17436f; }
-        .b-rest { background: #f7efe0; color: #7a4e0f; }
+        .b-attr { background: var(--psx-wash-info,#e5f3ff); color: #17436f; }
+        .b-rest { background: #f5f1e8; color: #7a4e0f; }
         .b-cat  { background: #faf8f4; color: #6b655b; border: 1px solid #e6e2da; }
-        .b-price{ background: #e8f2ec; color: #14513a; }
+        .b-price{ background: var(--psx-wash-good,#e1f8ec); color: #14513a; }
         .entry .desc { font-size: 0.9rem; color: #4a453d; line-height: 1.55; }
         .entry .meta { font-size: 0.8rem; color: #6b655b; }
         .entry .tip { font-size: 0.86rem; color: #4a453d; background: none; border: none;
@@ -100,18 +110,18 @@
             font-weight: 700; font-size: 0.82rem; font-family: inherit;
             background: linear-gradient(135deg,#1b4d8f,#1b4d8f); color: #fff; }
         .addbtn:hover { filter: brightness(1.07); }
-        .addbtn.added { background: #dcfce7; color: #166534; cursor: default; }
+        .addbtn.added { background: #dcfce7; color: #166534; cursor: pointer; }
         .openlink { font-size: 0.82rem; font-weight: 700; color: #1b4d8f; text-decoration: none; }
         .empty { text-align: center; color: #6b655b; padding: 3rem 0; }
         /* 🌟 wish box — the demand side of the book */
-        .wishbox { background: #fff; border: 1px solid #e6e2da; border-radius: 16px;
+        .wishbox { background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da; border-radius: 16px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1.1rem 1.2rem; margin-bottom: 1.2rem; }
         .wishbox h3 { font-size: 1rem; color: #14110c; margin-bottom: 0.2rem; }
         .wishbox .sub { color: #6b655b; font-size: 0.84rem; margin-bottom: 0.7rem; line-height: 1.5; }
         .wishrow { display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center; }
         .wishrow input { flex: 1; min-width: 190px; padding: 0.55rem 0.85rem; border: 1.5px solid #e6e2da;
             border-radius: 10px; font-size: 0.92rem; font-family: inherit; background: #faf8f4; }
-        .wishrow input:focus { outline: none; border-color: #1b4d8f; background: #fff; }
+        .wishrow input:focus { outline: none; border-color: #1b4d8f; background: var(--psx-card,#fffdf9); }
         .wishrow select { padding: 0.55rem 0.7rem; border: 1.5px solid #e6e2da; border-radius: 10px;
             font-size: 0.88rem; font-family: inherit; background: #faf8f4; color: #4a453d; }
         .wishrow button { border: none; border-radius: 10px; background: linear-gradient(135deg,#1b4d8f,#1b4d8f);
@@ -121,10 +131,10 @@
         .wishmsg.ok { color: #047857; } .wishmsg.err { color: #b91c1c; }
         .wishtop { margin-top: 0.7rem; font-size: 0.8rem; color: #6b655b; line-height: 1.6; }
         .wishtop b { color: #14110c; }
-        .wishtag { display: inline-block; background: #eef2f7; border-radius: 999px;
+        .wishtag { display: inline-block; background: var(--psx-wash-info,#e5f3ff); border-radius: 999px;
             padding: 0.15rem 0.6rem; margin: 0.15rem 0.25rem 0 0; font-size: 0.76rem; }
         /* 🆕 discovered by a traveler + 💬 their notes */
-        .b-new { background: #f7efe0; color: #7a4e0f; }
+        .b-new { background: #f5f1e8; color: #8a5a12; }
         .cmt-wrap { border-top: 1px solid #faf8f4; margin-top: 0.5rem; padding-top: 0.5rem; }
         .cmt-toggle { font-size: 0.78rem; font-weight: 700; color: #1b4d8f; cursor: pointer;
             user-select: none; }
@@ -150,18 +160,19 @@
         .stay-opts { display: none; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.35rem; }
         .stay-opts.on { display: flex; }
         .stay-opts span { font-size: 0.74rem; font-weight: 600; padding: 0.25rem 0.62rem; border-radius: 999px;
-            border: 1.5px solid #e6e2da; background: #fff; color: #4a453d; cursor: pointer; user-select: none; }
+            border: 1.5px solid #e6e2da; background: var(--psx-card,#fffdf9); color: #4a453d; cursor: pointer; user-select: none; }
         .stay-opts span:hover { border-color: #5eead4; color: #0d9488; }
         .stay-done { color: #047857; font-weight: 700; font-size: 0.78rem; margin-top: 0.35rem; }
 
         footer.attrib { text-align: center; color: #6b655b; font-size: 0.75rem; padding: 1.6rem 0 2rem; }
     </style>
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
     <link rel="stylesheet" href="/modern.css">
 </head>
 <body data-arm="operations">
     <header>
-        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+        <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
         <span class="brand">Plateau Strategy Solution Lab</span>
         <div class="right">
             <a href="/">Home</a>
@@ -171,7 +182,7 @@
 
     <div class="wrap">
         <div class="page-title">📖 Destination Book</div>
-        <p class="page-sub">A curated guidebook of attractions and restaurants — every type of destination, organized by category, with descriptions and local tips from a professionally licensed tour guide. One tap sends any place into the <a href="/trip-planner">Trip Planner</a>. Hours shown are typical — check before you go.</p>
+        <p class="page-sub">A guidebook of attractions and restaurants, city by city, with descriptions and local tips from a licensed tour guide. One tap sends any place into the <a href="/trip-planner">Trip Planner</a>. Hours shown are typical — check before you go.</p>
 
         <div class="filters">
             <div class="frow"><span class="flab">City</span><span id="cityChips"></span></div>
@@ -182,6 +193,14 @@
                 <input type="text" id="q" placeholder="Search the book — or type a new place to suggest &amp; add…" oninput="render()"></div>
             <div id="suggest"></div>
         </div>
+        <div class="count" id="count"></div>
+        <div class="grid" id="grid"></div>
+
+        <!-- Asking "what do you wish was here?" made sense; asking it before
+             the reader has seen a single destination did not. It sat between
+             the filters and the results, so 47 places were pushed below a
+             form for the thing that is missing. Moved to where the question
+             is actually earned: after you have looked and not found it. -->
 
         <div class="wishbox">
             <h3>🌟 What do you wish was in this book?</h3>
@@ -200,9 +219,6 @@
             <div class="wishmsg" id="wishMsg"></div>
             <div class="wishtop" id="wishTop"></div>
         </div>
-
-        <div class="count" id="count"></div>
-        <div class="grid" id="grid"></div>
         <div class="empty" id="empty" style="display:none">Nothing matches these filters — loosen one and the book fills back up.</div>
 
         <footer class="attrib">A free tool by Plateau Strategy Solution Lab · descriptions curated with a professionally licensed tour guide</footer>
@@ -214,7 +230,8 @@
     const CATS = [ ['history','History'], ['culture','Culture'], ['nature','Nature'], ['food','Food'], ['views','Views'] ];
     const TYPES = [ ['attraction','Attractions'], ['restaurant','Restaurants & food'] ];
     let DATA = { cities: {}, entries: [] };
-    const f = { city: 'all', type: 'all', cats: new Set(CATS.map(c => c[0])), minStars: 0 };
+    const f = { city: 'all', type: 'all', cats: new Set(CATS.map(c => c[0])),
+                allCats: true, minStars: 0 };
 
     // ---------- star ratings (real, community) ----------
     function starWidget(e, i){
@@ -266,18 +283,33 @@
               return new Set((s && s.places || []).map(p => p.name)); }
         catch (e) { return new Set(); }
     }
+    // Adding was one-way. A mis-tap put a place in the planner and the only
+    // way back out was to open the planner and remove it there — so the second
+    // click on the same button, which every reader tries first, did nothing at
+    // all. Same button, both directions.
     function addToPlanner(i, btn){
         const e = DATA.entries[i];
         let s = null;
         try { s = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (err) {}
         if (!s || !s.places) s = { city: e.city, places: [] };
-        if (!s.places.some(p => p.name === e.name)) {
-            s.places.push({ name: e.name, lat: e.lat, lon: e.lon, close: e.close, visit: e.visit, cat: e.cat });
+        const at = s.places.findIndex(p => p.name === e.name);
+        const link = btn.nextElementSibling;
+        if (at >= 0) {
+            s.places.splice(at, 1);
             try { localStorage.setItem(LS_KEY, JSON.stringify(s)); } catch (err) {}
+            btn.textContent = T('+ Add to Trip Planner');
+            btn.classList.remove('added');
+            if (link && link.classList.contains('openlink')) link.remove();
+            return;
         }
-        btn.textContent = '✓ In your planner';
+        s.places.push({ name: e.name, lat: e.lat, lon: e.lon, close: e.close, visit: e.visit, cat: e.cat });
+        try { localStorage.setItem(LS_KEY, JSON.stringify(s)); } catch (err) {}
+        btn.textContent = T('✓ In your planner');
         btn.classList.add('added');
-        btn.insertAdjacentHTML('afterend', '<a class="openlink" href="/trip-planner">Open Trip Planner →</a>');
+        if (!(link && link.classList.contains('openlink'))) {
+            btn.insertAdjacentHTML('afterend',
+                '<a class="openlink" href="/trip-planner">' + T('Open Trip Planner →') + '</a>');
+        }
     }
 
     function makeChip(label, on, fn){
@@ -289,35 +321,80 @@
     }
     function initFilters(){
         const cc = $('cityChips');
-        [['all','All cities']].concat(Object.entries(DATA.cities)).forEach(([k, label]) => {
-            cc.appendChild(makeChip(label, f.city === k, b => {
-                f.city = k;
-                Array.from(cc.children).forEach(x => x.classList.remove('on'));
-                b.classList.add('on'); render();
-            }));
+        // Alphabetical, except "Other" which is a bucket rather than a place
+        // and belongs at the end of the row instead of between New York and
+        // Seattle, where it read as a city nobody had heard of.
+        const cityList = Object.entries(DATA.cities).sort((x, y) =>
+            x[0] === 'other' ? 1 : y[0] === 'other' ? -1 : x[1].localeCompare(y[1]));
+        // Clicking the chip that is ALREADY lit clears the filter instead of
+        // re-applying it. Category below has always worked this way; City and
+        // Type did not, so a reader who tapped Seattle had no way back to
+        // every city except noticing the "All cities" chip and clicking that
+        // instead — a second control to undo the first. A filter you cannot
+        // unpick by tapping it again reads as stuck, which is exactly what it
+        // was reported as.
+        const clearable = (row, key, k, b) => {
+            f[key] = (f[key] === k && k !== 'all') ? 'all' : k;
+            Array.from(row.children).forEach(x => x.classList.remove('on'));
+            // kept the pick → light this chip; cleared it → light "All", which
+            // is always the first chip in the row
+            (f[key] === k ? b : row.children[0]).classList.add('on');
+            render();
+        };
+        [['all', T('All cities')]].concat(cityList).forEach(([k, label]) => {
+            cc.appendChild(makeChip(T(label), f.city === k,
+                                    b => clearable(cc, 'city', k, b)));
         });
         const tc = $('typeChips');
-        [['all','All types']].concat(TYPES).forEach(([k, label]) => {
-            tc.appendChild(makeChip(label, f.type === k, b => {
-                f.type = k;
-                Array.from(tc.children).forEach(x => x.classList.remove('on'));
-                b.classList.add('on'); render();
-            }));
+        [['all', T('All types')]].concat(TYPES).forEach(([k, label]) => {
+            tc.appendChild(makeChip(T(label), f.type === k,
+                                    b => clearable(tc, 'type', k, b)));
         });
+        // Category used a different idiom from the two rows above it: five
+        // multi-select chips, all switched on by default. Functionally that
+        // means "no filter", but it renders as five solid black chips
+        // shouting for attention next to a City row where exactly one chip is
+        // lit. Same row, same grammar — an "All" chip that is on until you
+        // pick something. Multi-select survives: picking a second category
+        // adds it rather than replacing.
         const kc = $('catChips');
-        CATS.forEach(([k, label]) => {
-            kc.appendChild(makeChip(label, true, b => {
-                if (f.cats.has(k)) { f.cats.delete(k); b.classList.remove('on'); }
-                else { f.cats.add(k); b.classList.add('on'); }
-                render();
-            }));
+        const paintCats = () => {
+            Array.from(kc.children).forEach(ch => {
+                const k = ch.getAttribute('data-cat');
+                ch.classList.toggle('on', k === 'all' ? f.allCats : (!f.allCats && f.cats.has(k)));
+            });
+        };
+        const allChip = makeChip(T('All categories'), true, () => {
+            f.allCats = true; f.cats = new Set(CATS.map(c => c[0]));
+            paintCats(); render();
         });
+        allChip.setAttribute('data-cat', 'all');
+        kc.appendChild(allChip);
+        CATS.forEach(([k, label]) => {
+            const ch = makeChip(T(label), false, () => {
+                if (f.allCats) { f.allCats = false; f.cats = new Set([k]); }
+                else if (f.cats.has(k)) {
+                    f.cats.delete(k);
+                    // Unpicking the last one means "no filter", not "nothing".
+                    if (!f.cats.size) { f.allCats = true; f.cats = new Set(CATS.map(c => c[0])); }
+                } else { f.cats.add(k); }
+                paintCats(); render();
+            });
+            ch.setAttribute('data-cat', k);
+            kc.appendChild(ch);
+        });
+        paintCats();
     }
 
     function render(){
         const q = $('q').value.trim().toLowerCase();
         const inPlanner = plannerNames();
-        const rows = [];
+        // The lede promises a book "organized by category" and the page
+        // delivered 47 cards in one flat grid — which is the thing that made
+        // it read as a pile rather than a book. Grouped by city, because that
+        // is the question a traveller actually arrives with: they are going
+        // to one place, not browsing a category.
+        const groups = new Map();
         let shown = 0;
         DATA.entries.forEach((e, i) => {
             if (f.city !== 'all' && e.city !== f.city) return;
@@ -328,13 +405,15 @@
             shown++;
             const catLabel = (CATS.find(c => c[0] === e.cat) || ['',''])[1];
             const added = inPlanner.has(e.name);
-            rows.push('<div class="entry">'
+            const gk = e.city || 'other';
+            if (!groups.has(gk)) groups.set(gk, []);
+            groups.get(gk).push('<div class="entry">'
                 + '<h3>' + esc(e.name) + '</h3>'
                 + '<div class="badges">'
-                +   '<span class="badge b-city">' + esc(DATA.cities[e.city] || e.city) + '</span>'
+                +   '<span class="badge b-city">' + esc(T(DATA.cities[e.city] || e.city)) + '</span>'
                 +   '<span class="badge ' + (e.type === 'restaurant' ? 'b-rest' : 'b-attr') + '">'
-                +       (e.type === 'restaurant' ? 'Restaurant' : 'Attraction') + '</span>'
-                +   '<span class="badge b-cat">' + catLabel + '</span>'
+                +       T(e.type === 'restaurant' ? 'Restaurant' : 'Attraction') + '</span>'
+                +   '<span class="badge b-cat">' + T(catLabel) + '</span>'
                 +   (e.price ? '<span class="badge b-price">' + esc(e.price) + '</span>' : '')
                 +   (e.source === 'user' ? '<span class="badge b-comm">🌱 Community</span>' : '')
                 +   (e.is_new ? '<span class="badge b-new">🆕 Just discovered</span>' : '')
@@ -361,7 +440,7 @@
                            + '<span>' + esc(e.tip) + '</span></p>' : '')
                 + '<div class="actions">'
                 +   (added
-                        ? '<button class="addbtn added">✓ In your planner</button><a class="openlink" href="/trip-planner">Open Trip Planner →</a>'
+                        ? '<button class="addbtn added" onclick="addToPlanner(' + i + ', this)">✓ In your planner</button><a class="openlink" href="/trip-planner">Open Trip Planner →</a>'
                         : '<button class="addbtn" onclick="addToPlanner(' + i + ', this)">+ Add to Trip Planner</button>')
                 + '</div>'
                 + '<div class="cmt-wrap">'
@@ -372,9 +451,27 @@
                 + '</div>'
                 + '</div>');
         });
-        $('grid').innerHTML = rows.join('');
+        // One city per section, largest first, "Other" always last so the
+        // bucket does not sit between two real places.
+        const order = Array.from(groups.keys()).sort((x, y) => {
+            if (x === 'other') return 1;
+            if (y === 'other') return -1;
+            const d = groups.get(y).length - groups.get(x).length;
+            return d || (DATA.cities[x] || x).localeCompare(DATA.cities[y] || y);
+        });
+        // A heading above a single group is a label for the whole page and
+        // adds nothing — only band the list when there is more than one city
+        // in it, which is exactly when a reader needs to know where they are.
+        $('grid').innerHTML = order.length > 1
+            ? order.map(k => {
+                const list = groups.get(k);
+                return '<h2 class="city-band">' + esc(T(DATA.cities[k] || k))
+                     + ' <span>' + list.length + '</span></h2>'
+                     + '<div class="city-grid">' + list.join('') + '</div>';
+              }).join('')
+            : order.map(k => '<div class="city-grid">' + groups.get(k).join('') + '</div>').join('');
         $('empty').style.display = shown ? 'none' : 'block';
-        $('count').textContent = shown + ' of ' + DATA.entries.length + ' destinations'
+        $('count').textContent = T('{shown} of {total} destinations', { shown: shown, total: DATA.entries.length })
             + (f.minStars ? ' · showing ' + '★'.repeat(f.minStars) + ' & up' : '');
         renderSuggest(q, shown);
     }
@@ -415,15 +512,15 @@
         const city = f.city !== 'all' ? f.city : 'other';
         let resp = null;
         try {
-            resp = await (await fetch('/api/destinations/add', {
+            resp = await psxJSON('/api/destinations/add', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: name, lat: +m.lat, lon: +m.lon, city: city,
                                        found_via: 'book', osm_class: m.class, type: m.type,
-                                       address: m.address }) })).json();
+                                       address: m.address }) });
         } catch (e) {}
         $('suggest').innerHTML = ''; $('suggest').dataset.q = '';
         if (resp && resp.ok) {
-            try { DATA = await (await fetch('/api/destinations')).json(); } catch (e) {}
+            try { DATA = await psxJSON('/api/destinations'); } catch (e) {}
             $('q').value = name;
             render();
             $('count').textContent += resp.already_known
@@ -455,9 +552,9 @@
         const e = DATA.entries[i];
         const wrap = document.getElementById('stay_' + i);
         try {
-            const d = await (await fetch('/api/visit-time', { method: 'POST',
+            const d = await psxJSON('/api/visit-time', { method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: e.name, city: e.city, minutes: minutes }) })).json();
+                body: JSON.stringify({ name: e.name, city: e.city, minutes: minutes }) });
             if (!d || !d.ok) { wrap.innerHTML = '<div class="stay-done" style="color:#b91c1c">Could not save that.</div>'; return; }
             wrap.innerHTML = '<div class="stay-done">✅ Thank you — ' + minutes + ' min recorded'
                 + (d.median ? ' · travelers now say ~' + d.median + ' min' : ' · a few more answers and this becomes the published number')
@@ -479,8 +576,8 @@
         box.innerHTML = '<div class="cmt" style="color:#6b655b">Loading notes…</div>';
         const e = DATA.entries[i];
         try {
-            const d = await (await fetch('/api/destinations/comments?city=' + encodeURIComponent(e.city || '')
-                                         + '&name=' + encodeURIComponent(e.name || ''))).json();
+            const d = await psxJSON('/api/destinations/comments?city=' + encodeURIComponent(e.city || '')
+                                         + '&name=' + encodeURIComponent(e.name || ''));
             const list = (d.comments || []).map(m =>
                 '<div class="cmt"><span class="who">' + esc(m.author) + '</span> '
                 + '<span class="when">' + esc(String(m.at || '').slice(0, 10)) + '</span><br>' + esc(m.text) + '</div>'
@@ -500,9 +597,9 @@
         const msg = document.getElementById('cm_' + i);
         if (txt.length < 2) { msg.style.color = '#b91c1c'; msg.textContent = 'Write a few words first.'; return; }
         try {
-            const d = await (await fetch('/api/destinations/comment', { method: 'POST',
+            const d = await psxJSON('/api/destinations/comment', { method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: e.name, city: e.city, text: txt, author: who }) })).json();
+                body: JSON.stringify({ name: e.name, city: e.city, text: txt, author: who }) });
             if (!d.ok) { msg.style.color = '#b91c1c'; msg.textContent = d.error || 'Could not post.'; return; }
             e.comment_count = d.count;
             document.getElementById('cmt_' + i).classList.remove('on');
@@ -518,9 +615,9 @@
         msg.className = 'wishmsg';
         if (wish.length < 2) { msg.className = 'wishmsg err'; msg.textContent = 'Tell us the place or the kind of place.'; return; }
         try {
-            const j = await (await fetch('/api/travel-wish', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            const j = await psxJSON('/api/travel-wish', { method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ wish: wish, city: f.city === 'all' ? '' : f.city,
-                                       kind: document.getElementById('wishKind').value }) })).json();
+                                       kind: document.getElementById('wishKind').value }) });
             if (!j.ok) { msg.className = 'wishmsg err'; msg.textContent = j.error || 'Could not save that — try again.'; return; }
             msg.className = 'wishmsg ok';
             msg.textContent = j.count > 1
@@ -532,7 +629,7 @@
     }
     async function loadWishTop(){
         try {
-            const d = await (await fetch('/api/travel-wishes')).json();
+            const d = await psxJSON('/api/travel-wishes');
             const box = document.getElementById('wishTop');
             if (!d || !d.ok || !d.top || !d.top.length) { box.innerHTML = ''; return; }
             box.innerHTML = '<b>Most asked for:</b> ' + d.top.slice(0, 8).map(w =>
