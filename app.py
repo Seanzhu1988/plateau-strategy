@@ -1512,6 +1512,17 @@ def footprints_concept_page():
     return r
 
 
+@app.route("/footprints-demo")
+def footprints_demo_page():
+    """The concept, moving. The blueprint page describes the direction gate;
+    this one runs it — the guide's own trailAhead() deciding live which
+    footprints to draw as a dial (or the phone's real compass) turns. Same
+    noindex posture as the blueprint: it travels by being sent."""
+    r = send_file(os.path.join(BASE_DIR, "footprints-demo.html"))
+    r.headers["X-Robots-Tag"] = "noindex, nofollow"
+    return r
+
+
 @app.route("/footprint")
 def footprint_page():
     """The recorder. Content is harmless without an owner session — the POST
