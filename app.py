@@ -1402,6 +1402,24 @@ def google_signin_js():
                      mimetype="text/javascript")
 
 
+@app.route("/walk")
+def walk_page():
+    """The live walking guide — prototype, deliberately unlisted.
+
+    noindex and out of the sitemap while it is a prototype: a half-built guide
+    found by a stranger through search is a bad first impression of a good
+    idea."""
+    r = send_file(os.path.join(BASE_DIR, "walk.html"))
+    r.headers["X-Robots-Tag"] = "noindex, nofollow"
+    return r
+
+
+@app.route("/walk-guide.js")
+def walk_guide_js():
+    return send_file(os.path.join(BASE_DIR, "walk-guide.js"),
+                     mimetype="text/javascript")
+
+
 @app.route("/psx-net.js")
 def psx_net_js():
     """One network helper, shared by every page.
