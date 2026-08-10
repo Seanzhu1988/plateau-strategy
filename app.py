@@ -6318,6 +6318,26 @@ def api_article_hide(aid):
     return jsonify({"ok": False, "error": "No idea with that id."}), 404
 
 
+@app.route("/api/articles/<aid>/delete", methods=["POST"])
+@owner_required
+def api_article_delete(aid):
+    """Remove an idea outright. Hide and delete are different verbs on
+    purpose: hide is a TAKEDOWN — somebody else's post comes off the board
+    but the record of what was posted survives, which is the record you want
+    if it ever has to be shown to anyone. Delete is for the owner clearing
+    their own drafts and tests, where keeping a tombstone serves nobody.
+    Sean's first use was his own June test post, #20260630210246."""
+    with _LOCK:
+        items = _load(ARTICLES_PATH)
+        keep = [a for a in items if a.get("id") != aid]
+        if len(keep) == len(items):
+            return jsonify({"ok": False, "error": "No idea with that id."}), 404
+        _save(ARTICLES_PATH, keep)
+    # /idea/<aid> now 404s and the sitemap drops it on next read — both come
+    # straight from the file, so there is nothing else to clean.
+    return jsonify({"ok": True, "deleted": aid})
+
+
 @app.route("/api/articles/<aid>/vote", methods=["POST"])
 def api_article_vote(aid):
     """Adjust like/unlike counts. Client sends its previous vote and new vote

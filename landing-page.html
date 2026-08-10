@@ -3298,6 +3298,13 @@
                         // WhatsApp that shows a bare grey URL does not get shared twice.
                         '<button class="idea-vbtn" id="ish_' + a.id + '" onclick="ideaShare(\'' + a.id + '\')">↗ Share</button>' +
                         '<a class="idea-vbtn" href="/idea/' + encodeURIComponent(a.id) + '">Open</a>' +
+                        // Owner only. The takedown endpoint existed for months
+                        // with no way to press it — which is how a June test
+                        // post sat on the board until August. The id is
+                        // server-minted (ART_nnnn), not visitor text.
+                        (window.__ideaOwner
+                            ? '<button class="idea-vbtn" onclick="ideaDelete(\'' + a.id + '\')">✕ Delete</button>'
+                            : '') +
                     '</div>' +
                     '<div class="idea-backing">' +
                         '<div class="idea-back invest" id="ideaInv_' + a.id + '"><span class="lbl">Back it with capital</span>' + investBlock(a) + '</div>' +
@@ -3307,6 +3314,14 @@
             }
 
             window.ideaLoad = async function () {
+                // Asked once, not per render: whether this browser is the
+                // signed-in owner, which decides if the Delete buttons draw.
+                // The server enforces regardless — this only chooses pixels.
+                if (window.__ideaOwner === undefined) {
+                    try {
+                        window.__ideaOwner = !!((await (await fetch('/api/owner/status')).json()).logged_in);
+                    } catch (e) { window.__ideaOwner = false; }
+                }
                 var items = [];
                 try { items = ((await (await fetch('/api/articles')).json()).articles) || []; } catch (e) { return; }
                 var empty = document.getElementById('ideaEmpty'), feed = document.getElementById('ideaFeed');
@@ -3349,6 +3364,15 @@
                     return;
                 }
                 setTimeout(function () { if (btn) btn.textContent = '↗ Share'; }, 2500);
+            };
+
+            window.ideaDelete = async function (id) {
+                if (!confirm('Delete this idea for good? This removes it '
+                             + 'entirely — the record does not survive.')) return;
+                var j = await (await fetch('/api/articles/' + id + '/delete',
+                                           { method: 'POST' })).json();
+                if (!j.ok) { alert(j.error || 'Could not delete'); return; }
+                window.ideaLoad();
             };
 
             window.ideaVote = async function (id, choice) {

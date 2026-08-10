@@ -93,6 +93,33 @@ r = own.post("/api/articles/%s/hide" % bad, json={"hidden": False})
 chk("and it can be put back (%d)" % r.status_code, r.status_code == 200)
 chk("it returns to the public board", len(public_titles(c)) == len(titles_before))
 
+print("\nand delete is the other verb — gone, not archived:")
+# Hide preserves the record because a takedown of someone ELSE's post may
+# need showing later. Delete is the owner clearing their own drafts, where a
+# tombstone serves nobody. Sean's first use: his June test post.
+r = c.post("/api/articles/%s/delete" % bad)
+chk("a stranger cannot delete (%d)" % r.status_code, r.status_code == 401)
+chk("and it survived the attempt",
+    any(x.get("id") == bad for x in json.load(open(A.ARTICLES_PATH))))
+r = own.post("/api/articles/%s/delete" % bad)
+chk("the owner can (%d)" % r.status_code, r.status_code == 200)
+chk("it is gone from the file entirely — no tombstone",
+    not any(x.get("id") == bad for x in json.load(open(A.ARTICLES_PATH))))
+chk("gone from the board", len(public_titles(c)) == len(titles_before) - 1)
+chk("its share page is gone too (%d)" % c.get("/idea/%s" % bad).status_code,
+    c.get("/idea/%s" % bad).status_code == 404)
+chk("and the sitemap no longer names it",
+    ("/idea/%s" % bad) not in c.get("/sitemap.xml").get_data(as_text=True))
+chk("deleting it twice is a 404, not a success",
+    own.post("/api/articles/%s/delete" % bad).status_code == 404)
+
+print("\nthe board draws the delete button for the owner alone:")
+lp = open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                       "landing-page.html"), encoding="utf-8").read()
+chk("the button is gated on the owner check", "__ideaOwner" in lp
+    and "ideaDelete" in lp)
+chk("and asks before it acts", "confirm(" in lp.split("ideaDelete = ")[1][:400])
+
 shutil.rmtree(tmp, ignore_errors=True)
 print("\nPASSED" if not fails else "\nFAILED: %s" % fails)
 raise SystemExit(1 if fails else 0)

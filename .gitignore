@@ -36,6 +36,12 @@ visit_times.json
 guide_offers.json
 robotaxi_interest.json
 
+# The idea board's store. Public content by design, but still user-submitted
+# runtime data — and a tracked copy is how Sean's own June test post ended up
+# committed and needing deletion later (#20260630210246). A fresh deploy with
+# no file starts as an empty board, which is correct.
+articles.json
+
 # --- runtime data with customer / business PII — NEVER commit or upload ---
 reservations.json
 customers.json
