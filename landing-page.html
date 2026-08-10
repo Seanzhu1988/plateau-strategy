@@ -3292,6 +3292,12 @@
                     '<div class="idea-votes">' +
                         '<button class="idea-vbtn like ' + (v === 'like' ? 'active' : '') + '" onclick="ideaVote(\'' + a.id + '\',\'like\')">👍 <span id="ilk_' + a.id + '">' + a.likes + '</span></button>' +
                         '<button class="idea-vbtn unlike ' + (v === 'unlike' ? 'active' : '') + '" onclick="ideaVote(\'' + a.id + '\',\'unlike\')">👎 <span id="iul_' + a.id + '">' + a.unlikes + '</span></button>' +
+                        // The board lives inside a tab and loads over JS, so an idea had
+                        // no address anybody could send. /idea/<id> is that address, and
+                        // it is server-rendered so the link preview works — a paste into
+                        // WhatsApp that shows a bare grey URL does not get shared twice.
+                        '<button class="idea-vbtn" id="ish_' + a.id + '" onclick="ideaShare(\'' + a.id + '\')">↗ Share</button>' +
+                        '<a class="idea-vbtn" href="/idea/' + encodeURIComponent(a.id) + '">Open</a>' +
                     '</div>' +
                     '<div class="idea-backing">' +
                         '<div class="idea-back invest" id="ideaInv_' + a.id + '"><span class="lbl">Back it with capital</span>' + investBlock(a) + '</div>' +
@@ -3319,6 +3325,30 @@
                 a.value = ''; t.value = ''; b.value = '';
                 var c = document.getElementById('ideaComposer'); if (c) c.classList.remove('open');
                 window.ideaLoad();
+            };
+
+            /* Share one idea. The native sheet on a phone — which is where the
+               circle actually is, in a message thread — and the clipboard on a
+               desktop. Both end with the link somewhere it can be pasted.
+               A cancelled share sheet is not an error and must say nothing. */
+            window.ideaShare = async function (id) {
+                var url = location.origin + '/idea/' + encodeURIComponent(id);
+                var card = document.getElementById('idea_' + id);
+                var title = card ? (card.querySelector('h4') || {}).textContent || 'A business idea'
+                                 : 'A business idea';
+                var btn = document.getElementById('ish_' + id);
+                if (navigator.share) {
+                    try { await navigator.share({ title: title.trim(), url: url }); return; }
+                    catch (e) { if (e && e.name === 'AbortError') return; }
+                }
+                try {
+                    await navigator.clipboard.writeText(url);
+                    if (btn) btn.textContent = '✓ Link copied';
+                } catch (e) {
+                    window.prompt('Copy this link:', url);
+                    return;
+                }
+                setTimeout(function () { if (btn) btn.textContent = '↗ Share'; }, 2500);
             };
 
             window.ideaVote = async function (id, choice) {

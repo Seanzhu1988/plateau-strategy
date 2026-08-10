@@ -27,6 +27,7 @@ import subprocess
 import datetime
 import urllib.parse
 import shutil
+import html
 from functools import wraps
 from flask import (Flask, request, jsonify, send_file, session, Response,
                    redirect, make_response)
@@ -1760,6 +1761,18 @@ def sitemap_xml():
                 "    <lastmod>%s</lastmod>" % today,
                 "    <changefreq>%s</changefreq>" % freq,
                 "    <priority>%s</priority>" % priority,
+                "  </url>"]
+    # Every live idea, so a search engine can find one without knowing the
+    # board exists. These are the only pages here whose addresses nobody could
+    # guess, and the whole point of them is that strangers arrive.
+    for a in _load(ARTICLES_PATH):
+        if a.get("hidden") or not a.get("id"):
+            continue
+        out += ["  <url>",
+                "    <loc>%s/idea/%s</loc>" % (SITE_ORIGIN, html.escape(a["id"])),
+                "    <lastmod>%s</lastmod>" % ((a.get("created_at") or today)[:10]),
+                "    <changefreq>weekly</changefreq>",
+                "    <priority>0.6</priority>",
                 "  </url>"]
     out.append("</urlset>")
     return Response("\n".join(out), mimetype="application/xml")
@@ -5901,6 +5914,163 @@ def api_articles():
     # what someone wrote, only stop it being published.
     return jsonify({"articles": [_public_article(a) for a in reversed(items)
                                  if not a.get("hidden")]})
+
+
+# ---------------------------------------------------------------------------
+# One idea, one address, readable by anyone
+#
+# The board lives inside a tab on the landing page and loads over JavaScript,
+# which means an idea had no address of its own — there was nothing to send
+# somebody. This is the missing half of "share your idea into your circle".
+#
+# Rendered on the SERVER, and that is the whole point rather than a style
+# preference. When a link is pasted into WhatsApp, iMessage, Messenger, Slack
+# or Discord, the preview is fetched by a scraper that does NOT run JavaScript.
+# A client-rendered page hands that scraper an empty shell, so the message
+# shows a bare grey URL, and a bare grey URL is not shared twice. The Open
+# Graph tags below have to exist in the first response or the loop does not
+# start.
+#
+# Deliberately indexable, unlike /robot: the entire purpose is that strangers
+# arrive here.
+# ---------------------------------------------------------------------------
+def _og_description(text, limit=180):
+    """A one-line summary for a link preview, cut on a word."""
+    s = " ".join((text or "").split())
+    if len(s) <= limit:
+        return s
+    cut = s[:limit].rsplit(" ", 1)[0]
+    return (cut or s[:limit]).rstrip(",.;:—-") + "…"
+
+
+@app.route("/idea/<aid>")
+def idea_page(aid):
+    a = next((x for x in _load(ARTICLES_PATH)
+              if x.get("id") == aid and not x.get("hidden")), None)
+    if not a:
+        return Response("That idea is not here.", status=404, mimetype="text/plain")
+
+    pub = _public_article(a)
+    e = html.escape
+    title = pub.get("title") or "A business idea"
+    author = pub.get("author") or "Anonymous"
+    body = pub.get("body") or ""
+    locked = pub.get("locked")
+
+    # The lock is enforced in _public_article, before the JSON or the HTML is
+    # built — so a locked idea's body is never in the bytes we send, and Ctrl-U
+    # shows the teaser too. Said out loud because a paywall drawn in CSS is not
+    # a paywall.
+    when = ""
+    try:
+        when = datetime.datetime.fromisoformat(
+            pub["created_at"]).strftime("%d %B %Y")
+    except Exception:
+        pass
+
+    url = "%s/idea/%s" % (SITE_ORIGIN, e(aid))
+    desc = _og_description(body) or ("A business idea posted by %s." % author)
+    paras = "".join("<p>%s</p>" % e(p) for p in body.split("\n") if p.strip())
+
+    locked_note = ""
+    if locked:
+        locked_note = (
+            '<p class="idea-locked">This idea is locked. What you can read '
+            'above is the opening — the rest is available to unlock%s.</p>'
+            % (" for $%g" % pub["price_usd"] if pub.get("price_usd") else ""))
+
+    return Response("""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>%(title)s — a business idea on Plateau Strategy</title>
+<meta name="description" content="%(desc)s">
+<meta property="og:type" content="article">
+<meta property="og:title" content="%(title)s">
+<meta property="og:description" content="%(desc)s">
+<meta property="og:url" content="%(url)s">
+<meta property="og:site_name" content="Plateau Strategy Solution Lab">
+<meta property="og:image" content="%(origin)s/plateau-logo.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="%(title)s">
+<meta name="twitter:description" content="%(desc)s">
+<link rel="canonical" href="%(url)s">
+<link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+<link rel="stylesheet" href="/paper.css">
+<script src="/psx-net.js"></script>
+<link rel="stylesheet" href="/modern.css">
+<style>
+  header img { height: 42px; width: 42px; border-radius: 50%%; }
+  header .brand { font-size: 1.2rem; font-weight: 800; }
+  header .right { margin-left: auto; display: flex; gap: 1.2rem; }
+  .wrap { max-width: 44rem; }
+  .idea-meta { color: var(--psx-text2, #6b6459); font-size: .93rem;
+               margin: .3rem 0 1.6rem; }
+  .idea-body p { margin: .9rem 0; font-size: 1.02rem; line-height: 1.65; }
+  .idea-locked { border-left: 2px solid var(--psx-accent, #1f3a5f);
+                 padding-left: 1rem; color: var(--psx-text2, #6b6459); }
+  .idea-actions { display: flex; gap: .7rem; flex-wrap: wrap;
+                  margin: 2.2rem 0 1rem; }
+  .idea-actions button, .idea-actions a {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 44px; padding: .6rem 1.1rem; border-radius: 999px;
+      border: 1px solid var(--psx-line, #e6e2da); background: none;
+      color: inherit; font: inherit; font-weight: 600; cursor: pointer;
+      text-decoration: none; }
+  .idea-foot { color: var(--psx-text2, #6b6459); font-size: .93rem;
+               border-top: 1px solid var(--psx-line, #e6e2da);
+               margin-top: 2.4rem; padding-top: 1.2rem; }
+</style>
+</head>
+<body data-arm="company">
+<header>
+  <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+  <span class="brand">Plateau Strategy Solution Lab</span>
+  <div class="right"><a href="/">Home</a></div>
+</header>
+<div class="wrap">
+  <div class="page-title">%(title)s</div>
+  <p class="idea-meta">Posted by %(author)s%(when)s · %(likes)s interested</p>
+  <div class="idea-body">%(paras)s</div>
+  %(locked_note)s
+  <div class="idea-actions">
+    <button id="shareBtn">Share this idea</button>
+    <a href="/#reinvestment">See every idea</a>
+  </div>
+  <p class="idea-foot">Anyone can post a business idea on Plateau Strategy —
+  free, no account needed. Ideas are read, discussed and, when they are ready,
+  worked up into what it would actually take to start them.</p>
+</div>
+<script>
+  /* Native sheet on a phone, clipboard everywhere else. Both end with the
+     link somewhere the person can paste it, which is the only job. */
+  document.getElementById('shareBtn').addEventListener('click', async function () {
+    var btn = this, url = %(url_js)s, title = %(title_js)s;
+    if (navigator.share) {
+      try { await navigator.share({ title: title, url: url }); return; }
+      catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      btn.textContent = 'Link copied';
+    } catch (e) {
+      btn.textContent = url;          /* select-and-copy fallback */
+    }
+    setTimeout(function () { btn.textContent = 'Share this idea'; }, 2500);
+  });
+</script>
+</body>
+</html>""" % {
+        "title": e(title), "author": e(author), "desc": e(desc),
+        "url": url, "origin": SITE_ORIGIN, "paras": paras,
+        "locked_note": locked_note,
+        "when": (" on " + when) if when else "",
+        "likes": pub.get("likes", 0),
+        # json.dumps, not quote-wrapping: it escapes the quotes, backslashes and
+        # the </script> sequence that would otherwise end the block early.
+        "url_js": json.dumps(url), "title_js": json.dumps(title),
+    }, mimetype="text/html")
 
 
 @app.route("/api/articles", methods=["POST"])
