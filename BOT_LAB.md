@@ -96,8 +96,11 @@ Render and redeploy. To turn it off, remove it. Nothing else changes.
 
 ## Issuing access
 
-These accounts are **not** the lab's property — `/robot` uses them too, so
-minting and sign-in deliberately sit outside `BOT_LAB_ENABLED`. Otherwise
+These accounts are **not** the lab's property — `/robot` uses them, and
+since 2026-08-10 the footprint recorder (`/footprint`) accepts them as the
+surveyor programme: an issued account can record corridor walks, and revoking
+it cuts that off mid-session like everything else. Minting and sign-in
+deliberately sit outside `BOT_LAB_ENABLED`. Otherwise
 switching the lab off would lock people out of an unrelated page.
 
 ```

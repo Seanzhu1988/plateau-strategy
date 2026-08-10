@@ -244,3 +244,20 @@ Our position: this is the business surveying its own ground, equivalent to
 photographing a hallway; no consumer data is collected. Counsel should
 confirm nothing in MHMDA or RCW 19.373 reads a business's own surveyor traces
 as consumer health or location data.
+
+### Added to the attorney list, 2026-08-10 (footprints for data collection)
+
+9. **Visitor-contributed corridor walks — parked until answered.** The current
+   design accepts GPS traces only from the owner and owner-issued surveyor
+   accounts. The proposed extension — a traveller deliberately contributing a
+   walk of a named public corridor, "add this corridor" like "add this place"
+   — would be consumer **precise location** under MHMDA even though the
+   corridor is public and the act deliberate. What consent framework, if any,
+   makes that lawful, and does bounding acceptance to registered public
+   corridors (refusing anything outside them) change the analysis? Until
+   answered, no visitor path to the footprint store exists, and consent.py
+   continues to refuse coordinates from visitors everywhere.
+
+   For the record, the passive version — the walking guide reporting
+   travellers' movements back to the server — is a **never**, not a question.
+   The policy sentence "we do not record visitors' movements" is load-bearing.

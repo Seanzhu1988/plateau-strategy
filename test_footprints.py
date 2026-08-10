@@ -146,6 +146,33 @@ r = owner.post("/api/footprints/nope", json={"points": corridor_pts()})
 chk("an unopened corridor is refused over HTTP too (%d)" % r.status_code,
     r.status_code == 400)
 
+print("\nthe surveyor programme — issued accounts can walk corridors too:")
+import bot_lab                                             # noqa: E402
+A.LAB = bot_lab.BotLab(os.path.join(tmp, "u.json"),
+                       os.path.join(tmp, "l.json"),
+                       os.path.join(tmp, "k.json"))
+PW = owner.post("/api/access/users", json={"username": "scout"}).get_json()["password"]
+scout = A.app.test_client()
+r = scout.post("/api/access/login", json={"username": "scout", "password": PW})
+chk("the issued account signs in (%d)" % r.status_code, r.status_code == 200)
+r = scout.post("/api/footprints/westlake-to-pike-place",
+               json={"points": corridor_pts(), "minutes": 7,
+                     "worst_accuracy_m": 12})
+chk("and can record a walk (%d)" % r.status_code, r.status_code == 200)
+chk("of a Seattle survey corridor, which the code list now opens",
+    r.get_json().get("walked") is not None)
+raw = open(store.file).read()
+chk("the trace still carries NO name — authorization is the provenance, "
+    "the record stays clean", "scout" not in raw)
+owner.post("/api/access/users/scout/revoke", json={"revoked": True})
+r = scout.post("/api/footprints/westlake-to-pike-place",
+               json={"points": corridor_pts(), "minutes": 7})
+chk("a revoked surveyor is cut off mid-session (%d)" % r.status_code,
+    r.status_code == 401)
+chk("and the tourist corridors are in the work list",
+    {"westlake-to-pike-place", "pike-place-to-waterfront",
+     "monorail-to-space-needle"} <= {c["key"] for c in store.corridors()})
+
 print("\nthe path is public only once it exists:")
 chk("an unknown corridor's path is 404",
     c.get("/api/footprints/nope/path").status_code == 404)

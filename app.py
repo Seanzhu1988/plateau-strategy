@@ -1445,16 +1445,35 @@ def api_journey(jid):
 # business surveying its own ground; conflating the two would mean either
 # weakening the visitors' guard or never being able to map our own front door.
 # ---------------------------------------------------------------------------
+def surveyor_required(fn):
+    """The owner, or an account the owner issued — the surveyor programme.
+
+    One person cannot walk every corridor in a growing list, so recording
+    extends to the accounts minted at /api/access/users: named, issued by
+    Sean, revocable, and re-checked against storage on every request, so
+    cutting somebody off cuts them off mid-session. What does NOT change is
+    who can be on the other end: never a visitor. The authorization is the
+    provenance — a trace exists because somebody Sean trusts walked it — and
+    that is why the walk record itself still needs no name in it."""
+    @wraps(fn)
+    def wrapper(*a, **k):
+        if not session.get("owner") and not _access_user():
+            return jsonify({"ok": False, "auth_required": True,
+                            "error": "Login required."}), 401
+        return fn(*a, **k)
+    return wrapper
+
+
 @app.route("/api/footprints")
-@owner_required
+@surveyor_required
 def api_footprints():
-    """Every corridor, walked or waiting. Owner-only: the waiting list is a
-    map of our unfinished edges, which is nobody else's business."""
+    """Every corridor, walked or waiting — for the people doing the walking.
+    Not public: the waiting list is a map of our unfinished edges."""
     return jsonify({"ok": True, "corridors": FOOTPRINTS.corridors()})
 
 
 @app.route("/api/footprints/<key>", methods=["POST"])
-@owner_required
+@surveyor_required
 def api_footprint_add(key):
     d = request.get_json(force=True, silent=True)
     if not isinstance(d, dict):

@@ -59,10 +59,31 @@ MAX_AGE_DAYS = 180
 
 # The closed list. Opening a corridor is a code change with an author, which
 # is the point — see the module docstring.
+#
+# The Seattle set below is the data-collection programme, 2026-08-10: the
+# corridors travellers actually ask about, opened for surveying so that the
+# footprint tool collects the tourism map as well as the transit one. A
+# recorded walk of each becomes a self-guided route the talking guide can
+# narrate. All are A-to-B on purpose — the recorder refuses a loop, because
+# start-equals-finish is indistinguishable from a trace that never went
+# anywhere. No corridor here carries coordinates until somebody walks it;
+# a name is a promise to survey, not a survey.
 DEFAULT_CORRIDORS = {
     "seatac-terminal-to-link": {
         "label": "SeaTac Airport — arrivals to the Link light rail platform",
         "journey": "seatac-lynnwood",
+    },
+    "westlake-to-pike-place": {
+        "label": "Westlake Station to the Pike Place Market entrance",
+        "journey": None,
+    },
+    "pike-place-to-waterfront": {
+        "label": "Pike Place Market to the waterfront at Pier 62",
+        "journey": None,
+    },
+    "monorail-to-space-needle": {
+        "label": "Seattle Center Monorail platform to the Space Needle entrance",
+        "journey": None,
     },
 }
 
