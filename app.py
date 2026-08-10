@@ -1482,6 +1482,17 @@ def api_footprint_path(key):
     return jsonify({"ok": True, **p})
 
 
+@app.route("/footprints-concept")
+def footprints_concept_page():
+    """The blueprint draft of the footprints idea, for the Reinvestment USA
+    board. The shareable, limited-information half: what it does and why it
+    matters, with the mechanics named but not described. noindex and out of
+    the sitemap — it travels by being sent, not by being found."""
+    r = send_file(os.path.join(BASE_DIR, "footprints-concept.html"))
+    r.headers["X-Robots-Tag"] = "noindex, nofollow"
+    return r
+
+
 @app.route("/footprint")
 def footprint_page():
     """The recorder. Content is harmless without an owner session — the POST

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Footprints — a guide that walked here before you · Plateau Strategy</title>
+<link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+<!-- Deliberately self-contained: a blueprint is its own world, and this page
+     is also handed around as a file, where the site's stylesheets are not
+     there to lean on. Everything it needs is below.
+
+     LIMITED INFORMATION, by design. This is the shareable draft for the
+     Reinvestment USA board: it shows what the thing does and why it matters,
+     and names — without disclosing — the parts we keep. The validation
+     rules, the refusal thresholds and the verification mechanics are not on
+     this page, and a section says so out loud rather than hoping nobody
+     notices the gap. -->
+<style>
+  :root {
+    --bp: #10305c;          /* blueprint ground */
+    --bp2: #0c2749;         /* deeper panel */
+    --ink: #dcecff;         /* line work */
+    --ink2: #8fb4e3;        /* secondary line work */
+    --grid: rgba(220, 236, 255, .07);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bp); color: var(--ink);
+    font: 17px/1.65 Georgia, 'Times New Roman', serif;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .sheet { max-width: 52rem; margin: 0 auto; padding: 1.4rem 1.2rem 4rem; }
+  .tblock {
+    border: 2px solid var(--ink); padding: .9rem 1.1rem; margin: 1rem 0 2.4rem;
+    display: flex; flex-wrap: wrap; gap: .4rem 2rem; align-items: baseline;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink2);
+  }
+  .tblock b { color: var(--ink); font-size: .95rem; letter-spacing: .18em; }
+  h1 {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 1.65rem; letter-spacing: .04em; line-height: 1.25;
+    margin: 0 0 .4rem; color: var(--ink); font-weight: 700;
+  }
+  .sub { color: var(--ink2); margin: 0 0 2rem; font-style: italic; }
+  h2 {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: .82rem; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--ink); border-bottom: 1px solid var(--ink2);
+    padding-bottom: .45rem; margin: 2.8rem 0 1rem;
+  }
+  p { margin: .85rem 0; }
+  .quiet { color: var(--ink2); font-size: .93rem; }
+  figure { margin: 1.6rem 0 2.2rem; }
+  figure svg { width: 100%; height: auto; display: block;
+               background: var(--bp2); border: 1.5px solid var(--ink2); }
+  figcaption {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: .7rem; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--ink2); margin-top: .55rem;
+  }
+  .held {
+    border: 1.5px dashed var(--ink2); padding: 1rem 1.2rem; margin: 1.6rem 0;
+  }
+  .held p { margin: .5rem 0; }
+  a { color: var(--ink); }
+  .foot { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--ink2);
+          color: var(--ink2); font-size: .9rem; }
+  /* line-work defaults for the figures */
+  svg text { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+             fill: var(--ink2); font-size: 11px; letter-spacing: .12em; }
+  svg .big { fill: var(--ink); font-size: 12.5px; }
+  svg .wall { fill: none; stroke: var(--ink); stroke-width: 1.6; }
+  svg .faint { fill: none; stroke: var(--ink2); stroke-width: 1;
+               stroke-dasharray: 5 5; }
+  svg .trace { fill: none; stroke: var(--ink2); stroke-width: 1;
+               stroke-dasharray: 2 6; }
+  svg .fp { fill: var(--ink); }
+  svg .dim { stroke: var(--ink2); stroke-width: 1; }
+  svg .cone { fill: rgba(220, 236, 255, .16); stroke: var(--ink2);
+              stroke-width: 1; }
+  svg .box { fill: none; stroke: var(--ink); stroke-width: 1.5; }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="tblock">
+    <b>Plateau Strategy Solution Lab</b>
+    <span>Project · Footprints</span>
+    <span>Sheet · 1 of 1</span>
+    <span>Scale · not to scale</span>
+    <span>Status · draft for the Reinvestment USA board</span>
+  </div>
+
+  <h1>Footprints — a guide that walked here before you</h1>
+  <p class="sub">When you face the right direction, footprints appear. That is
+  the whole interface.</p>
+
+  <h2>The problem</h2>
+  <p>Getting lost does not happen on the road. It happens in the last four
+  hundred metres — inside the airport, between the arrivals door and the
+  train, in the places where the map on your phone goes grey and the signs
+  assume you have been here before. That is also where a traveller is most
+  tired, most burdened and least able to ask.</p>
+
+  <h2>The idea</h2>
+  <p>Someone who knows the way walks it once, with a phone recording. What
+  they leave behind is a footprint trail: the line a real person actually
+  walked, kept with its length and roughly how long it takes.</p>
+  <p>The next traveller opens the guide and simply turns on the spot. <b>Facing
+  the right way, footprints appear on the screen ahead of them — the prints
+  of the person who walked it before. Facing the wrong way, there is nothing.</b>
+  No arrows, no re-routing voice, nothing to interpret. The emptiness is the
+  message, and turning until the footprints come back is a thing a tired
+  person does without being taught.</p>
+
+  <figure>
+    <svg viewBox="0 0 800 340" role="img" aria-label="Plan drawing: a recorded walk from the terminal arrivals door, across the skybridge, to the station platform, shown as a footprint trail">
+      <text x="24" y="30" class="big">FIG. 1 — THE RECORDING (PLAN)</text>
+      <!-- buildings -->
+      <rect x="40" y="60" width="220" height="220" class="wall"/>
+      <text x="60" y="84">TERMINAL — ARRIVALS</text>
+      <rect x="260" y="140" width="280" height="60" class="wall"/>
+      <text x="316" y="128">SKYBRIDGE / GARAGE</text>
+      <rect x="540" y="60" width="220" height="220" class="wall"/>
+      <text x="586" y="84">LINK STATION</text>
+      <!-- door + platform -->
+      <rect x="92" y="236" width="16" height="8" class="wall"/>
+      <text x="60" y="262">DOOR</text>
+      <rect x="628" y="112" width="24" height="6" class="wall"/>
+      <text x="600" y="106">PLATFORM</text>
+      <!-- the trace -->
+      <polyline points="100,236 100,170 640,170 640,122" class="trace"/>
+      <!-- footprints: up from the door -->
+      <ellipse class="fp" cx="96"  cy="222" rx="3" ry="5.5"/>
+      <ellipse class="fp" cx="104" cy="204" rx="3" ry="5.5"/>
+      <ellipse class="fp" cx="96"  cy="186" rx="3" ry="5.5"/>
+      <!-- footprints: across, pointing right -->
+      <ellipse class="fp" cx="130" cy="165" rx="5.5" ry="3"/>
+      <ellipse class="fp" cx="162" cy="175" rx="5.5" ry="3"/>
+      <ellipse class="fp" cx="194" cy="165" rx="5.5" ry="3"/>
+      <ellipse class="fp" cx="226" cy="175" rx="5.5" ry="3"/>
+      <ellipse class="fp" cx="258" cy="165" rx="5.5" ry="3"/>
+      <ellipse class="fp" cx="290" cy="175" rx="5.5" ry="3"/>
+      <ellipse class="fp" cx="322" cy="165" rx="5.5" ry="3"/>
+      <ellipse class="fp" cx="354" cy="175" rx="5.5" ry="3"/>
+      <ellipse class="fp" cx="386" cy="165" rx="5.5" ry="3"/>
+      <ellipse class="fp" cx="418" cy="175" rx="5.5" ry="3"/>
+      <ellipse class="fp" cx="450" cy="165" rx="5.5" ry="3"/>
+      <ellipse class="fp" cx="482" cy="175" rx="5.5" ry="3"/>
+      <ellipse class="fp" cx="514" cy="165" rx="5.5" ry="3"/>
+      <ellipse class="fp" cx="546" cy="175" rx="5.5" ry="3"/>
+      <ellipse class="fp" cx="578" cy="165" rx="5.5" ry="3"/>
+      <ellipse class="fp" cx="610" cy="175" rx="5.5" ry="3"/>
+      <!-- up into the station -->
+      <ellipse class="fp" cx="636" cy="152" rx="3" ry="5.5"/>
+      <ellipse class="fp" cx="644" cy="136" rx="3" ry="5.5"/>
+      <!-- dimension -->
+      <line x1="100" y1="308" x2="480" y2="308" class="dim"/>
+      <line x1="100" y1="300" x2="100" y2="316" class="dim"/>
+      <line x1="480" y1="300" x2="480" y2="316" class="dim"/>
+      <text x="130" y="328">ONE WALK · MEASURED, NOT CLAIMED</text>
+      <!-- stamp -->
+      <rect x="516" y="288" width="264" height="44" class="faint"/>
+      <text x="530" y="306">KEPT: LINE · LENGTH · MINUTES</text>
+      <text x="530" y="322">NOT: NAME · CLOCK · VISITOR</text>
+    </svg>
+    <figcaption>Fig. 1 · One surveyor's walk, door to platform, becomes the
+    trail everyone after them follows.</figcaption>
+  </figure>
+
+  <figure>
+    <svg viewBox="0 0 800 300" role="img" aria-label="Two panels: facing along the path shows footprints ahead; facing away shows nothing">
+      <text x="24" y="30" class="big">FIG. 2 — THE DIRECTION GATE</text>
+      <!-- panel A -->
+      <rect x="24" y="44" width="356" height="210" class="faint"/>
+      <polyline points="200,244 200,60" class="trace"/>
+      <path d="M 200 244 L 182 186 L 218 186 Z" class="cone"/>
+      <circle cx="200" cy="244" r="7" class="fp"/>
+      <ellipse class="fp" cx="195" cy="212" rx="3" ry="5.5"/>
+      <ellipse class="fp" cx="205" cy="192" rx="3" ry="5.5"/>
+      <ellipse class="fp" cx="195" cy="172" rx="3" ry="5.5"/>
+      <ellipse class="fp" cx="205" cy="152" rx="3" ry="5.5"/>
+      <ellipse class="fp" cx="195" cy="132" rx="3" ry="5.5"/>
+      <ellipse class="fp" cx="205" cy="112" rx="3" ry="5.5"/>
+      <ellipse class="fp" cx="195" cy="92"  rx="3" ry="5.5"/>
+      <text x="70" y="278">FACING ALONG THE PATH — FOOTPRINTS APPEAR</text>
+      <!-- panel B -->
+      <rect x="420" y="44" width="356" height="210" class="faint"/>
+      <polyline points="600,244 600,60" class="trace"/>
+      <path d="M 600 244 L 658 226 L 658 262 Z" class="cone"/>
+      <circle cx="600" cy="244" r="7" class="fp"/>
+      <text x="452" y="278">FACING AWAY — THE EMPTINESS IS THE MESSAGE</text>
+    </svg>
+    <figcaption>Fig. 2 · No arrows and no instructions. You turn until the
+    footprints come back.</figcaption>
+  </figure>
+
+  <h2>What is deliberately not collected</h2>
+  <p>The guide runs on the traveller's own phone; their position is not sent
+  to our server, and no account is needed. The recorded trails are made by
+  our own team, on our own sign-in, walking public corridors — an airport
+  hallway, a station concourse. A trail keeps the line, its length and
+  roughly how many minutes it takes. It keeps no name, no clock and no
+  visitor: <i>"the corridor takes nine minutes"</i> is a map, and that is all
+  the map ever needs to be.</p>
+
+  <figure>
+    <svg viewBox="0 0 800 210" role="img" aria-label="Flow: walk it once, the trace is kept without name or clock, the next traveller follows, the route is verified by the walk itself">
+      <text x="24" y="30" class="big">FIG. 3 — ONE WALK SERVES EVERYONE AFTER IT</text>
+      <rect x="30"  y="60" width="160" height="70" class="box"/>
+      <text x="52"  y="90">WALK IT ONCE</text>
+      <text x="46"  y="108">(a person, a phone)</text>
+      <rect x="230" y="60" width="160" height="70" class="box"/>
+      <text x="252" y="90">KEEP THE TRACE</text>
+      <text x="244" y="108">(no name, no clock)</text>
+      <rect x="430" y="60" width="160" height="70" class="box"/>
+      <text x="446" y="90">THE NEXT PERSON</text>
+      <text x="466" y="108">FOLLOWS IT</text>
+      <rect x="630" y="60" width="150" height="70" class="box"/>
+      <text x="648" y="90">THE ROUTE IS</text>
+      <text x="655" y="108">PROVEN BY IT</text>
+      <line x1="190" y1="95" x2="230" y2="95" class="dim"/>
+      <line x1="390" y1="95" x2="430" y2="95" class="dim"/>
+      <line x1="590" y1="95" x2="630" y2="95" class="dim"/>
+      <text x="30" y="170">A ROUTE NOBODY HAS WALKED IS NOT OFFERED TO ANYBODY. THE WALK IS THE PROOF.</text>
+    </svg>
+    <figcaption>Fig. 3 · The loop. Directions are not written; they are
+    walked, and the walk is what makes them trustworthy.</figcaption>
+  </figure>
+
+  <h2>Where it goes</h2>
+  <p>The first corridor is SeaTac Airport — the arrivals door to the Link
+  light rail platform — because that is where our own customers land. After
+  that, every place that receives tired strangers has the same four hundred
+  metres: hotels off a transit stop, cruise terminals, stadiums, hospitals,
+  campuses. An operator whose visitors arrive lost is the customer; the
+  traveller never pays.</p>
+
+  <h2>What this page does not say</h2>
+  <div class="held">
+    <p>This is the shareable half. The working half — how a recorded walk is
+    validated and when it is refused, when the guide chooses silence over a
+    guess, and how a walk proves a route fit to hand a stranger — is built,
+    tested and deliberately not described here.</p>
+    <p class="quiet">Interested in the idea, or in a corridor of your own?
+    Register interest on the board where this is posted, and the full
+    blueprint follows a conversation rather than a click.</p>
+  </div>
+
+  <p class="foot">Draft · Plateau Strategy Solution Lab, Seattle · a working
+  prototype exists and the first corridor awaits its first recorded walk ·
+  this page describes an idea, not an offer, and collects nothing from you.</p>
+</div>
+</body>
+</html>

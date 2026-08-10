@@ -610,3 +610,60 @@ late.
    different product from the one described, and it should be designed as that
    from the first line of code rather than converted later.
 5. Everything in the money half already listed above.
+
+---
+
+# FOOTPRINTS, 2026-08-10 — the first article drafted for the board
+
+Sean's rule, verbatim: *"they face correct direction shows foot prints."*
+Face the right way and the footprints of the person who walked it before you
+appear ahead; face wrong and there is nothing, and the emptiness is the
+message. No arrows, no re-routing voice — you turn until they come back,
+which a tired traveller does without being taught.
+
+**Status: built.** The direction gate is `trailAhead()` in `walk-guide.js`
+(±60° cone along the recorded path, both directions, refuses on no-heading /
+off-path / no-trace, tested). The recording, the storage fence and the
+route-verification are the footprints work committed the same day.
+
+## The shareable draft
+
+`/footprints-concept` — a self-contained blueprint-styled page with three
+drawn figures (the recording, the direction gate, the loop). Deliberately
+**limited information**: it names the held-back mechanics — validation,
+refusal thresholds, verification — without describing them, and says so in
+its own "What this page does not say" section. Interest routes to the board.
+
+## Paste-ready pitch for the idea board
+
+When Sean wants it on the live board (the composer on the Reinvestment tab,
+or lock it with a teaser via the article lock):
+
+> **Footprints — a guide that walked here before you**
+>
+> Getting lost happens in the last 400 metres: inside the airport, between
+> the arrivals door and the train, where maps go grey and signs assume you
+> have been here before. Our answer: someone who knows the way walks it once,
+> recording. The next traveller just turns on the spot — face the right way
+> and the walker's footprints appear ahead on screen; face wrong and there is
+> nothing. The emptiness is the instruction. Nothing is collected from the
+> traveller, no account, no tracking — the recorded trails are our own
+> surveyors walking public corridors, kept with no name and no clock. First
+> corridor: SeaTac arrivals to Link light rail. Every operator who receives
+> tired strangers — hotels, cruise terminals, stadiums, campuses — has the
+> same 400 metres. A working prototype exists; the full blueprint follows a
+> conversation, not a click.
+
+Post it as the article, and the blueprint page is what gets sent around;
+`/idea/<id>` gives it the shareable address with a working link preview.
+
+## Why the article is limited-information on purpose
+
+The value worth protecting is not the idea (wayfinding is old); it is the
+**refusal discipline** — when the guide will not speak, will not draw, will
+not verify — which is what makes it trustworthy enough to sell to an
+operator. That is process knowledge, it lives in the repo and the tests, and
+the public repo is the one place it is ALREADY visible. Honest note recorded
+here: the code being public means "limited information" limits the *article*,
+not a determined reader of the repository. If that ever matters commercially,
+the repo goes private before the marketing goes loud.

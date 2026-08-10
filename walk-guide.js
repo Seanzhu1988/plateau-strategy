@@ -204,6 +204,64 @@
     return distM > Math.max(25, acc * 1.5);
   }
 
+  /* Sean's rule, verbatim: "they face correct direction shows foot prints."
+   *
+   * The footprints of the person who walked this corridor before you are the
+   * guidance — but only when you are FACING along the path. Turn the wrong
+   * way and they disappear, and the emptiness is the message: no arrows, no
+   * "recalculating", nothing to read. You turn until the footprints come
+   * back, which is a thing a tired traveller does without being taught.
+   *
+   * Returns {show, dir, trail, why}: dir is +1 walking the corridor the way
+   * it was recorded, -1 walking it home again — a corridor works both ways —
+   * and trail is the next stretch of recorded points to draw as footprints.
+   */
+  var TRAIL_CONE = 60;             // degrees off the path direction that still counts as "along it"
+  var TRAIL_M = 40;                // how far ahead the footprints are drawn
+
+  function trailAhead(pos, heading, points, opts) {
+    opts = opts || {};
+    if (!points || points.length < 2) return { show: false, why: 'no recorded path' };
+    if (heading === null || heading === undefined) {
+      return { show: false, why: 'not moving enough to know which way you face' };
+    }
+    var d = nearestOnPathM(pos, points);
+    if (offPath(opts.accuracy, d)) {
+      return { show: false, why: 'off the path', distance: d };
+    }
+    // Nearest recorded vertex, and the path's own direction there.
+    var ni = 0, nd = Infinity;
+    for (var i = 0; i < points.length; i++) {
+      var p = { lat: points[i].lat !== undefined ? points[i].lat : points[i][0],
+                lon: points[i].lon !== undefined ? points[i].lon : points[i][1] };
+      var dm = distanceM(pos, p);
+      if (dm < nd) { nd = dm; ni = i; }
+    }
+    function at(i) {
+      var p = points[Math.max(0, Math.min(points.length - 1, i))];
+      return { lat: p.lat !== undefined ? p.lat : p[0],
+               lon: p.lon !== undefined ? p.lon : p[1] };
+    }
+    var fwd = ni < points.length - 1 ? bearingTo(at(ni), at(ni + 1))
+                                     : bearingTo(at(ni - 1), at(ni));
+    // 0 = facing along the path, 180 = facing back down it.
+    var delta = Math.abs(((fwd - heading + 540) % 360) - 180);
+    var dir = 0;
+    if (delta <= TRAIL_CONE) dir = 1;
+    else if (delta >= 180 - TRAIL_CONE) dir = -1;
+    else return { show: false, why: 'facing away from the path', distance: d };
+    var trail = [], run = 0, j = ni;
+    while (run < TRAIL_M) {
+      var k = j + dir;
+      if (k < 0 || k >= points.length) break;
+      run += distanceM(at(j), at(k));
+      trail.push(at(k));
+      j = k;
+    }
+    if (!trail.length) return { show: false, why: 'end of the recorded path', distance: d };
+    return { show: true, dir: dir, trail: trail, distance: d };
+  }
+
   w.WalkGuide = {
     distanceM: distanceM,
     bearingTo: bearingTo,
@@ -214,6 +272,8 @@
     phrase: phrase,
     nearestOnPathM: nearestOnPathM,
     offPath: offPath,
-    NEAR: NEAR, GAP_MS: GAP_MS, MIN_RUN: MIN_RUN, AHEAD_MAX: AHEAD_MAX
+    trailAhead: trailAhead,
+    NEAR: NEAR, GAP_MS: GAP_MS, MIN_RUN: MIN_RUN, AHEAD_MAX: AHEAD_MAX,
+    TRAIL_CONE: TRAIL_CONE, TRAIL_M: TRAIL_M
   };
 })(window);

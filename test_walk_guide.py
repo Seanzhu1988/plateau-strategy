@@ -208,6 +208,33 @@ with sync_playwright() as p:
     chk("26 m off with a perfect fix is astray",
         pg.evaluate("WalkGuide.offPath(0, 26)") is True)
 
+    print("\nfootprints appear only when you face the right way — Sean's rule:")
+    # A recorded path running due north; the walker stands on it.
+    TRAIL = ("[[47.6000,-122.33],[47.6001,-122.33],[47.6002,-122.33],"
+             "[47.6003,-122.33],[47.6004,-122.33],[47.6005,-122.33]]")
+    ARGS = "({lat:47.6001,lon:-122.33}, %s, " + TRAIL + ", {accuracy:5})"
+
+    t = pg.evaluate("WalkGuide.trailAhead" + ARGS % "0")
+    chk("facing along the path, the footprints show (%s)" % t.get("why", "ok"),
+        t.get("show") is True and t.get("dir") == 1)
+    chk("and they lead FORWARD — the next points north",
+        t["trail"][0]["lat"] > 47.6001)
+    t = pg.evaluate("WalkGuide.trailAhead" + ARGS % "180")
+    chk("facing back down it also shows — a corridor works both ways (dir %s)"
+        % t.get("dir"), t.get("show") is True and t.get("dir") == -1)
+    chk("and those footprints lead south", t["trail"][0]["lat"] < 47.6001)
+    t = pg.evaluate("WalkGuide.trailAhead" + ARGS % "90")
+    chk("facing across it shows NOTHING — the emptiness is the message (%s)"
+        % t.get("why"), t.get("show") is False and "facing" in t.get("why", ""))
+    t = pg.evaluate("WalkGuide.trailAhead" + ARGS % "null")
+    chk("standing still shows nothing — no heading, no guess", t.get("show") is False)
+    t = pg.evaluate("WalkGuide.trailAhead({lat:47.6001,lon:-122.325}, 0, "
+                    + TRAIL + ", {accuracy:5})")
+    chk("380 m off the path shows nothing (%s)" % t.get("why"),
+        t.get("show") is False and t.get("why") == "off the path")
+    t = pg.evaluate("WalkGuide.trailAhead({lat:47.6001,lon:-122.33}, 0, [], {})")
+    chk("no recorded path, no footprints", t.get("show") is False)
+
     chk("no page errors across the whole run (%s)" % (errs or "clean"), not errs)
     pg.close()
     br.close()
