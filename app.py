@@ -4592,6 +4592,8 @@ def _public_article(a):
         "unlikes": a.get("unlikes", 0),
         "follower_count": len(a.get("followers", [])),
         "launcher_count": len(a.get("launchers", [])),
+        # The trades this article calls for — what goes at the foot of it.
+        "professionals": a.get("professionals"),
     }
 
 
@@ -4624,8 +4626,22 @@ def api_article_create():
             "followers": [],
             "launchers": [],
         }
+        # Read the article and work out which trades it calls for. Stored ON the
+        # article so the summary at the foot of it is the same list every time it
+        # is read, rather than something recomputed and drifting.
+        try:
+            import professional_match
+            article["professionals"] = professional_match.professionals_for(title, body)
+        except Exception:
+            article["professionals"] = None
         items.append(article)
         _save(ARTICLES_PATH, items)
+    # And count the demand, outside the lock the save holds.
+    try:
+        if article.get("professionals"):
+            _record_profession_demand(article["professionals"], title)
+    except Exception:
+        pass
     return jsonify({"ok": True, "article": _public_article(article)})
 
 
