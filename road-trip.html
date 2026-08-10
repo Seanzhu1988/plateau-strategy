@@ -890,6 +890,30 @@
             var a = await geocode($('fromInput').value.trim());
             var b = await geocode($('toInput').value.trim());
 
+            /* Count the road, never the traveller. Two place names go to the
+               server and nothing else — no coordinates, no identity — so what
+               accumulates is "this route is in demand", which is the thing a
+               bus company would actually buy.
+
+               Recorded HERE, as soon as both places resolve, and deliberately
+               not after the routing call below. Demand is the intent to travel
+               from A to B; it exists whether or not OSRM is up. Counting after
+               the route drew would have quietly undercounted every busy period
+               and every outage — exactly when a spike is most interesting.
+
+               Fire-and-forget: a planner must never wait on, or fail because
+               of, a counter. */
+            try {
+                psxJSON('/api/route-demand', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        from: (a && a.label) || $('fromInput').value.trim(),
+                        to: (b && b.label) || $('toInput').value.trim()
+                    })
+                });
+            } catch (e) { /* the drive is the point; the tally is not */ }
+
             say(T('Working out the drive…'));
             var alts = await routes(a, b);
 

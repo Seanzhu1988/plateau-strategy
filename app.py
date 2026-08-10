@@ -7414,6 +7414,170 @@ def api_traffic_key():
                     "attribution": "Traffic \u00a9 TomTom"})
 
 
+# ------------------------------------------------------- route demand
+# What a bus company would actually buy.
+#
+# Sean's correction, 2026-08-09: the product is not "here are fifty travellers,
+# go and contact them". It is "this route has fifty people planning it". The
+# operator learns that a road is in demand and rings US. Nobody's identity is
+# in the transaction, and there is nothing to sell that belongs to a person.
+#
+# So the storage is built to make the wrong version impossible rather than
+# merely discouraged: this file holds COUNTS, not events. There is no row per
+# planning, no timestamp finer than a month, and no origin address. A route
+# somebody planned is not attributable to them even by whoever holds the disk.
+#
+# The current month keeps a set of browser ids so one person replanning eleven
+# times is one planner rather than eleven. When the month rolls the ids are
+# dropped and the count is all that survives — the same trade traffic.json
+# makes, for the same reason, with the same cost: a closed month cannot be
+# recounted, because the information needed to do it is gone on purpose.
+ROUTE_DEMAND_PATH = _data_path("route_demand.json")
+# A route with one or two planners is somebody's actual trip. Below this it is
+# not reported at all, to the owner or to anyone.
+ROUTE_DEMAND_MIN = int(os.environ.get("ROUTE_DEMAND_MIN", "5"))
+
+
+# The geocoder says "Washington", a person types "WA", and until these collapse
+# to one string every route is a bucket of one and nothing ever clears the
+# reporting floor. Found by testing the normaliser rather than trusting it:
+# "Leavenworth, WA" and "Leavenworth, Chelan County, Washington" were landing
+# in different buckets, which would have made the whole tally useless while
+# looking like it worked.
+_US_STATES = {
+    "al": "alabama", "ak": "alaska", "az": "arizona", "ar": "arkansas",
+    "ca": "california", "co": "colorado", "ct": "connecticut",
+    "de": "delaware", "fl": "florida", "ga": "georgia", "hi": "hawaii",
+    "id": "idaho", "il": "illinois", "in": "indiana", "ia": "iowa",
+    "ks": "kansas", "ky": "kentucky", "la": "louisiana", "me": "maine",
+    "md": "maryland", "ma": "massachusetts", "mi": "michigan",
+    "mn": "minnesota", "ms": "mississippi", "mo": "missouri",
+    "mt": "montana", "ne": "nebraska", "nv": "nevada",
+    "nh": "new hampshire", "nj": "new jersey", "nm": "new mexico",
+    "ny": "new york", "nc": "north carolina", "nd": "north dakota",
+    "oh": "ohio", "ok": "oklahoma", "or": "oregon", "pa": "pennsylvania",
+    "ri": "rhode island", "sc": "south carolina", "sd": "south dakota",
+    "tn": "tennessee", "tx": "texas", "ut": "utah", "vt": "vermont",
+    "va": "virginia", "wa": "washington", "wv": "west virginia",
+    "wi": "wisconsin", "wy": "wyoming",
+    "dc": "district of columbia", "d.c.": "district of columbia",
+    "pr": "puerto rico",
+}
+
+
+def _route_place(s):
+    """A place name reduced to something two people typing it would share.
+
+    'Leavenworth, Chelan County, Washington, United States' and 'Leavenworth,
+    WA' have to land in the same bucket or every route is a bucket of one and
+    the aggregate never clears the floor. Keeps the town and the region, drops
+    the county and the country, and spells the state out.
+    """
+    s = _no_tags(str(s or "")).strip().lower()
+    s = " ".join(s.split())
+    parts = [p.strip() for p in s.split(",") if p.strip()]
+    if not parts:
+        return ""
+    keep = parts[:1]
+    for p in parts[1:]:
+        # county and country lines add nothing a person would type
+        if p.startswith("united states") or p == "usa" or p == "us" \
+                or p.endswith(" county"):
+            continue
+        keep.append(_US_STATES.get(p.replace(".", "").strip(), p))
+        break
+    return ", ".join(keep)[:60]
+
+
+def _route_month():
+    return datetime.date.today().strftime("%Y-%m")
+
+
+def _route_fold(data):
+    """Drop the browser ids from every month except the current one."""
+    now = _route_month()
+    for month, rec in (data.get("months") or {}).items():
+        if month == now:
+            continue
+        for r in (rec.get("routes") or {}).values():
+            if "ids" in r:
+                r["n"] = max(int(r.get("n") or 0), len(r.pop("ids") or []))
+    return data
+
+
+@app.route("/api/route-demand", methods=["POST"])
+def api_route_demand():
+    """Record that somebody planned this road. No person is stored."""
+    d = request.get_json(force=True, silent=True) or {}
+    # Same guard the consent module uses. A planner that starts sending
+    # coordinates would turn a demand counter into a location trail, and the
+    # refusal has to be loud rather than a silent drop.
+    hit = consent.looks_like_coordinate(d)
+    if hit:
+        return jsonify({"ok": False,
+                        "error": "Route demand takes place names, not "
+                                 "coordinates (%s)." % hit}), 400
+    a, b = _route_place(d.get("from")), _route_place(d.get("to"))
+    if not a or not b or a == b:
+        return jsonify({"ok": False, "error": "Two different places are needed."}), 400
+    if _skip_traffic():
+        return jsonify({"ok": True, "counted": False})   # our own planning is not demand
+
+    key = "%s|%s" % (a, b)
+    vid = request.cookies.get("psx_vid") or ""
+    with _LOCK:
+        data = _load(ROUTE_DEMAND_PATH)
+        if not isinstance(data, dict):
+            data = {}
+        data.setdefault("months", {})
+        _route_fold(data)
+        month = data["months"].setdefault(_route_month(), {"routes": {}})
+        rec = month["routes"].setdefault(key, {"n": 0, "ids": []})
+        if vid:
+            if vid not in rec["ids"]:
+                rec["ids"].append(vid)
+                rec["n"] = len(rec["ids"])
+        else:
+            # No id to dedupe on — count it once and move on.
+            rec["n"] = int(rec.get("n") or 0) + 1
+        _save(ROUTE_DEMAND_PATH, data)
+    return jsonify({"ok": True, "counted": True})
+
+
+@app.route("/api/route-demand")
+@owner_required
+def api_route_demand_list():
+    """Which roads people are planning, ranked. Owner only.
+
+    Owner-only even though it names no one: a public leaderboard of routes is
+    a live feed of where travellers are heading, and a route just over the
+    floor is a handful of people. This is a sales document, not a page.
+    """
+    data = _load(ROUTE_DEMAND_PATH)
+    if not isinstance(data, dict):
+        data = {}
+    months = data.get("months") or {}
+    window = sorted(months)[-12:]
+    tally, per_month = {}, {}
+    for m in window:
+        for key, rec in (months[m].get("routes") or {}).items():
+            n = int(rec.get("n") or len(rec.get("ids") or []))
+            tally[key] = tally.get(key, 0) + n
+            per_month.setdefault(key, {})[m] = n
+    rows = []
+    for key, n in tally.items():
+        if n < ROUTE_DEMAND_MIN:
+            continue                      # too few to be anything but a person
+        a, _, b = key.partition("|")
+        rows.append({"from": a, "to": b, "planners": n,
+                     "by_month": per_month.get(key, {})})
+    rows.sort(key=lambda r: -r["planners"])
+    return jsonify({"ok": True, "routes": rows, "months": window,
+                    "min_shown": ROUTE_DEMAND_MIN,
+                    "below_floor": sum(1 for n in tally.values()
+                                       if n < ROUTE_DEMAND_MIN)})
+
+
 # ------------------------------------------------------------- ride coverage
 # Rides are only offered where there are actually drivers. Everywhere else the
 # ask is worth more as evidence than as a promise: we record which city wanted a

@@ -83,6 +83,11 @@ geo_cache.json
 consents.json
 place_contributions.json
 
+# Route demand. Counts only — no person is in this file by construction — but
+# it is still the business's own demand data, and on Render it lives in
+# /var/data. A local run writes it here and this repo is public.
+route_demand.json
+
 # Networks the owner registered as "this is me, do not count it". Home and
 # office IP addresses — the owner's own location, which is not something to
 # publish in a public repo.
