@@ -108,6 +108,18 @@ in a throwaway git worktree**, verify the app actually serves, then push. Its
 working files are never touched. Never `git add -A` here — that once deleted a
 file the other session was working on.
 
+**And do not trust the local preview.** Merging in a worktree means this folder's
+own checkout never advances — it sat **91 commits behind** what was deployed, so
+the page being previewed on localhost was months of work out of date. The chapter
+framing was designed and checked against headings in a sans face; live, the same
+headings are set in the paper serif, because the other session had changed them
+and this checkout had never seen it.
+
+Nothing was lost — the worktree merge combined both sides correctly — but the
+verification was against the wrong page. **Measure on the deployed site**, or
+preview from the worktree, which is current. `git pull` here is not the fix: the
+other session's uncommitted files live in this folder.
+
 ---
 
 ## Where the data lives
