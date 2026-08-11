@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Robotic trading — the concept — Plateau Strategy Solution Lab</title>
+    <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+    <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
+    <link rel="stylesheet" href="/modern.css">
+    <style>
+        /* Deliberately thin: only rules that actually win. paper.css and
+           modern.css own the paper, the ink and the type scale, and anything
+           restated here would be a second coat on a surface already painted —
+           the thing being cleaned up sitewide. Checked with the browser, not
+           by eye: h2/h3 sizes and the p line-height are set !important in
+           modern.css, so rules for them here would be dead weight and are
+           left out.
+
+           The header sizing is the exception, and it is not a nice one. The
+           shared sheets only size `header img` below 560px; above that every
+           standalone page declares its own, and there are eighteen copies in
+           five different sizes. Without a copy here the logo renders at its
+           natural 1224px and swallows the page. Matching articles.html (the
+           most common of the five) rather than unifying all eighteen, which
+           would restyle pages this change has no business touching. */
+        header img { height: 42px; width: 42px; border-radius: 50%; }
+        header .brand { font-size: 1.2rem; font-weight: 800; }
+        header .right { margin-left: auto; display: flex; gap: 1.2rem; }
+
+        .wrap { max-width: 44rem; }
+        .rule { border: 0; border-top: 1px solid var(--psx-line, #e6e2da);
+                margin: 2.6rem 0 2.2rem; }
+        .standing { border-left: 2px solid var(--psx-accent, #1f3a5f);
+                    padding: .1rem 0 .1rem 1.1rem; margin: 1.6rem 0 2rem; }
+        .standing p { margin: .5rem 0; }
+        h2 { margin: 2.6rem 0 .8rem; }
+        h3 { margin: 1.4rem 0 .4rem; }
+        p, li { font-size: 1.02rem; }
+        p { margin: .85rem 0; }
+        ul, ol { margin: .9rem 0 .9rem 1.2rem; }
+        li { margin: .55rem 0; }
+        .stage { display: grid; gap: .1rem; margin: 1rem 0 1.6rem; }
+        .stage div { display: grid; grid-template-columns: 8.5rem 1fr;
+                     gap: .9rem; padding: .55rem 0;
+                     border-top: 1px solid var(--psx-line, #e6e2da); }
+        .stage div:last-child { border-bottom: 1px solid var(--psx-line, #e6e2da); }
+        .stage b { font-weight: 600; }
+        .stage span { opacity: .78; }
+        .quiet { opacity: .72; font-size: .93rem; }
+        @media (max-width: 34rem) {
+            .stage div { grid-template-columns: 1fr; gap: .1rem; }
+        }
+    </style>
+</head>
+<body data-arm="finance">
+    <header>
+        <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="right">
+            <a href="/">Home</a>
+        </div>
+    </header>
+
+    <div class="wrap">
+        <div class="page-title">Robotic trading — the concept</div>
+        <p class="page-sub">Shared with you by link. Not on the website, not
+        finished, and not asking you for anything.</p>
+
+        <div class="standing">
+            <p><b>This page takes nothing from you.</b> No money, no bank
+            account, no card, no signup. There is no form on this page that
+            could start any of those, because none has been built.</p>
+            <p>It is a written-up idea, sent to a few people for their honest
+            reaction. It is not an offer to sell anything, not an invitation to
+            invest, and not financial advice.</p>
+        </div>
+
+        <p class="psx-lede">The short version: software that places trades on its
+        own, according to rules written in advance, and reports what it did.
+        Not a prediction engine and not a machine that knows where the market
+        is going — a machine that follows instructions without getting bored,
+        scared or hopeful.</p>
+
+        <hr class="rule">
+
+        <h2>What a trading robot actually is</h2>
+
+        <p>A person trading by hand does four things: watches prices, decides,
+        places the order, and records the result. A trading robot does the same
+        four things, except the deciding step is a rule someone wrote down
+        beforehand — "if this, then that" — and it never deviates from it.</p>
+
+        <p>That is the whole trick, and it is smaller than it sounds. The robot
+        has no opinion. Its only real advantages over a person are that it
+        never sleeps, never talks itself out of its own plan, and can be tested
+        against years of past prices in an afternoon.</p>
+
+        <p>Its disadvantages are the same size. A rule that worked in one kind
+        of market keeps being followed when the market changes. It cannot tell
+        the difference between a strategy that stopped working and a run of bad
+        luck. And a rule that was quietly fitted to past data will look
+        brilliant in a test and do nothing in real life — this is the single
+        most common way these projects fail, and it is very hard to see from
+        the inside.</p>
+
+        <h2>The idea</h2>
+
+        <p>Most people carrying expensive debt cannot get out of it by trying
+        harder. The interest compounds faster than the willpower lasts. The
+        idea is to attack that with something that does not need willpower:
+        a set of trading rules, run automatically, with anything it earns
+        pointed at the debt rather than back into the market.</p>
+
+        <p>The part that makes it different from the usual pitch is the part
+        that makes it slow: the results have to be real and provable before
+        anyone is asked for a cent. That means a track record built with our
+        own money, timestamped, including the losing months, before there is a
+        product at all.</p>
+
+        <h2>Where it actually stands</h2>
+
+        <div class="stage">
+            <div><b>Written down</b><span>The strategy and the rules exist on paper.</span></div>
+            <div><b>In verification</b><span>Running privately, on our own money, to find out whether it works.</span></div>
+            <div><b>Track record</b><span>Not established. There is no verified performance history to show you, so this page shows you none.</span></div>
+            <div><b>Product</b><span>Does not exist. Nothing is for sale.</span></div>
+            <div><b>Taking money</b><span>No. Not from you, not from anyone.</span></div>
+        </div>
+
+        <p>If a claim about returns is missing from this page, that is not an
+        oversight. A number written down before it has been earned is a
+        promise, and this idea has not earned one yet.</p>
+
+        <h2>Why nobody's money is being touched</h2>
+
+        <p>Partly because it would be wrong to take money for something
+        unproven. But also because of what handling other people's money
+        legally <em>is</em>.</p>
+
+        <p>The moment you pool other people's funds and trade them, or take a
+        share of what you make for them, you are in territory the SEC and the
+        state of Washington regulate closely — adviser registration, custody
+        rules, disclosure obligations, and personal liability that does not go
+        away because everyone involved is a friend. Those rules exist because
+        this exact idea, minus the honesty, is one of the oldest ways people
+        get robbed.</p>
+
+        <p>So the sequence is: prove it with our own money first, get the legal
+        structure right second, and only then talk to anyone about theirs. This
+        page is step zero — showing you the thinking, at the stage where the
+        only thing at stake is my own time.</p>
+
+        <h2>What could go wrong, plainly</h2>
+
+        <p>You are reading this to react to it, so here is what I would push
+        on if someone showed it to me:</p>
+
+        <ul>
+            <li><b>A strategy can be right and still lose.</b> Any position
+            that is down is a real loss while it is down. Holding it instead of
+            selling does not undo that — it only postpones writing it in the
+            ledger. Any version of this that describes not-selling as
+            protection is describing a feeling, not a safeguard.</li>
+
+            <li><b>Backtests lie by default.</b> Rules tuned until they look
+            good on past prices will look good on past prices. The only test
+            that counts is money at risk, forward in time, with the dates
+            recorded before the result is known.</li>
+
+            <li><b>Crypto moves far more than most people plan for.</b>
+            Drawdowns of half the account have happened repeatedly, to
+            competent people, in living memory.</li>
+
+            <li><b>Big monthly percentages are the reddest flag in finance.</b>
+            The best-known funds in the world are proud of numbers that sound
+            unimpressive next to what gets promised in this corner of the
+            internet. If a version of this ever quotes you a comfortable
+            monthly return, treat that as the thing to interrogate first — and
+            that goes for a version of it with my name on it.</li>
+
+            <li><b>The regulation is not a formality.</b> Getting the structure
+            wrong is not a fine, it is the end of the business.</li>
+        </ul>
+
+        <hr class="rule">
+
+        <h2>What I'd like from you</h2>
+
+        <p>Nothing you have to click. Read it, and tell me the part you don't
+        believe — by text, or however you normally reach me. Scepticism is more
+        useful to me right now than encouragement, and much more useful than
+        money, which I am not asking for and would not take today.</p>
+
+        <p class="quiet">Plateau Strategy Solution Lab · Seattle, WA. Shared
+        privately by link. Nothing on this page is an offer to sell or a
+        solicitation to buy any security or investment product, and nothing on
+        it is investment, legal or tax advice. Automated trading can and does
+        lose money.</p>
+    </div>
+</body>
+</html>

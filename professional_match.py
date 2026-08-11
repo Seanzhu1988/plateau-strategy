@@ -34,7 +34,7 @@ ALWAYS = [
 DOMAINS = {
     "property": (
         ["real estate", "property", "building", "renovat", "remodel", "construct", "apartment",
-         "duplex", "land", "lot", "zoning", "landlord", "tenant", "airbnb", "short-term rental",
+         "duplex", "land ", "lot ", "zoning", "landlord", "tenant", "airbnb", "short-term rental",
          "mixed-use", "development", "house", "housing", "commercial space", "storefront", "lease"],
         [("real-estate-attorney", "Real estate attorney", "Title, zoning, purchase and lease agreements."),
          ("architect", "Architect", "Drawings, and whether the plan is buildable at all."),
@@ -74,7 +74,7 @@ DOMAINS = {
          ("software-engineer", "Software engineer", "What it costs to build and to keep running.")],
     ),
     "health": (
-        ["clinic", "medical", "health", "patient", "therapy", "dental", "wellness", "care ",
+        ["clinic", "medical", "healthcare", "patient", "therapy", "dental", "wellness", "nursing home",
          "nursing", "pharmacy", "telehealth"],
         [("healthcare-attorney", "Healthcare attorney", "Licensing, and the rules on who may treat whom."),
          ("hipaa-consultant", "HIPAA compliance consultant", "Handling patient data lawfully."),
@@ -111,11 +111,27 @@ DOMAINS = {
 
 
 def _hits(text, words):
-    """Which trigger words appear, so the founder can be shown the evidence."""
+    """Which trigger words appear, so the founder can be shown the evidence.
+
+    Two kinds of trigger, and the difference matters:
+
+      · a trigger ending in a space is a WHOLE WORD — "car " must not fire on
+        "carry", "ev " must not fire on "every";
+      · a trigger without one is a PREFIX — "renovat" is meant to catch
+        renovate/renovation, "manufactur" to catch manufacture/manufacturing.
+
+    The first version stripped the trailing space before building the pattern,
+    which collapsed the two kinds into one. A housing article then matched the
+    transport domain on "carry" and "everything" and recommended a fleet
+    manager. The space is load-bearing; do not strip it.
+    """
     found = []
     for w in words:
-        if re.search(r"(?<![a-z])" + re.escape(w.strip()), text):
-            found.append(w.strip())
+        whole = w.endswith(" ")
+        stem = w.strip()
+        pattern = r"(?<![a-z])" + re.escape(stem) + (r"(?![a-z])" if whole else "")
+        if re.search(pattern, text):
+            found.append(stem)
     return found
 
 

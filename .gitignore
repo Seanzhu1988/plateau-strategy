@@ -2,6 +2,17 @@
 .env
 .flask_secret
 owner_auth.json
+# Keys for by-link pages. On Render these live in /var/data, but running
+# locally without that disk writes them here — and this repo is public, so a
+# committed key would hand the link to everyone.
+share_keys.json
+# Bot lab. bot_users.json holds password hashes for owner-issued accounts;
+# the other two are the record and the lock state. Same story as above — on
+# Render these live in /var/data, but a local run writes them here, and this
+# repo is public.
+bot_users.json
+bot_ledger.json
+bot_locks.json
 *.pem
 *.key
 
@@ -24,6 +35,12 @@ give_back.json
 visit_times.json
 guide_offers.json
 robotaxi_interest.json
+
+# The idea board's store. Public content by design, but still user-submitted
+# runtime data — and a tracked copy is how Sean's own June test post ended up
+# committed and needing deletion later (#20260630210246). A fresh deploy with
+# no file starts as an empty board, which is correct.
+articles.json
 
 # --- runtime data with customer / business PII — NEVER commit or upload ---
 reservations.json
@@ -64,8 +81,35 @@ jpg-out/
 # Coarsened location cache — visitor-derived, never committed.
 geo_cache.json
 
+# The consent ledger and what people contributed under it. The ledger is the
+# proof of who agreed to what and when; committing it would publish a record
+# of people's choices, and committing the contributions would publish the
+# places they added. On Render both live in /var/data, but a local run writes
+# them here and this repo is public.
+consents.json
+place_contributions.json
+
+# Route demand. Counts only — no person is in this file by construction — but
+# it is still the business's own demand data, and on Render it lives in
+# /var/data. A local run writes it here and this repo is public.
+route_demand.json
+
+# Footprints — recorded walks of our own corridors. The only file holding
+# metre-level GPS traces (geo_cache.json above keeps km-coarse city centroids,
+# a different kind of thing). They map public walkways, not people, but they
+# are survey work the business paid for with shoe leather, and the repo is
+# public. The .tmp twin matters just as much: the atomic write dumps the FULL
+# store there before os.replace, so a crash mid-write strands every trace in
+# an un-ignored file one `git add -A` from publication.
+footprints.json
+footprints.json.tmp
+
+# Networks the owner registered as "this is me, do not count it". Home and
+# office IP addresses — the owner's own location, which is not something to
+# publish in a public repo.
+traffic_ignore.json
+
 professions.json
 pros.json
 opinions.json
-articles.json
 purchases.json

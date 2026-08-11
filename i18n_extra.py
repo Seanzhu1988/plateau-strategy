@@ -26,9 +26,126 @@ EXTRA_SKIP = {
     "Mixed-use development · Sheet RE-01",
     "© 2026 Plateau Strategy Solution Lab",
     '"Connect to Square"',
+
+    "C",
+    "D",
+    "E",
+    "30 000 OVERALL",
+    "10 m",
+    "SCALE · 1:200 @ A3",
 }
 
 EXTRA = {
+    "At your service. Add any place — search above or tap a pin — and I’ll build your day sheet: miles, drive time, arrival, stay and closing time.": ["随时为您服务。您可在上方搜索或点击地图上的图钉添加任意地点，我会为您生成当日行程表：里程、车程、到达时间、停留时长与关门时间。", "A su servicio. Añada cualquier lugar — busque arriba o toque un pin en el mapa — y le prepararé la hoja del día: millas, tiempo de conducción, llegada, estancia y hora de cierre.", "무엇이든 도와드리겠습니다. 위에서 검색하거나 지도의 핀을 눌러 장소를 추가하시면 하루 일정표를 만들어 드립니다 — 거리, 주행 시간, 도착 시각, 체류 시간, 폐장 시간.", "Sẵn sàng hỗ trợ bạn. Hãy thêm bất kỳ địa điểm nào — tìm ở trên hoặc chạm vào ghim trên bản đồ — và tôi sẽ lập bảng hành trình trong ngày: quãng đường, thời gian lái, giờ đến, thời gian dừng và giờ đóng cửa."],
+    "I’m <b>Jarvis</b>. Add any place — search above or tap a pin — and I’ll build your day sheet.": ["我是 <b>Jarvis</b>。您可在上方搜索或点击地图上的图钉添加地点，我会为您生成当日行程表。", "Soy <b>Jarvis</b>. Añada cualquier lugar — busque arriba o toque un pin — y le prepararé la hoja del día.", "저는 <b>Jarvis</b>입니다. 위에서 검색하거나 핀을 눌러 장소를 추가하시면 하루 일정표를 만들어 드립니다.", "Tôi là <b>Jarvis</b>. Hãy thêm địa điểm — tìm ở trên hoặc chạm vào ghim — và tôi sẽ lập bảng hành trình trong ngày."],
+    "Newest discovery:": ["最新发现：", "Descubrimiento más reciente:", "최근 발견:", "Địa điểm mới nhất:"],
+    "One traveler planned a trip here this week": ["本周有一位旅客在此规划了行程", "Un viajero planificó un viaje aquí esta semana", "이번 주에 한 명이 이곳에서 여행을 계획했습니다", "Tuần này có một du khách lên kế hoạch tại đây"],
+    "{n} travelers planned a trip here this week": ["本周有 {n} 位旅客在此规划了行程", "{n} viajeros planificaron un viaje aquí esta semana", "이번 주에 {n}명이 이곳에서 여행을 계획했습니다", "Tuần này có {n} du khách lên kế hoạch tại đây"],
+    # ------- labels the pages assemble in JS, invisible to the text walker -------
+    "{shown} of {total} destinations": ["共 {total} 处，显示 {shown} 处", "{shown} de {total} destinos", "전체 {total}곳 중 {shown}곳", "{shown} trong {total} địa điểm"],
+    "Your route builds here: D1 → D2 → D3 …": ["您的行程将显示在这里：D1 → D2 → D3 …", "Su ruta se construye aquí: D1 → D2 → D3 …", "여기에 경로가 만들어집니다: D1 → D2 → D3 …", "Lộ trình của bạn sẽ hiện ở đây: D1 → D2 → D3 …"],
+    "All categories": ["全部类别", "Todas las categorías", "전체 분류", "Tất cả danh mục"],
+    "Other": ["其他", "Otros", "기타", "Khác"],
+    # ------- flat-rate radius, and the booking fare estimate -------
+    "$75 to Sea–Tac from anywhere within 30 miles, quoted before you book. Drivers rent our cars and keep the fare, hotels and agents earn commission for sending riders, and the trip-planning tools are free to anyone. Below: the three businesses that income is building, and where each one stands today.": ["30 英里范围内至西雅图-塔科马国际机场固定价 75 美元，预订前即告知。司机租用我们的车辆并保留全部车费，酒店与代理商推荐乘客可获得佣金，行程规划工具向所有人免费开放。以下为这笔收入正在建设的三项业务，以及各自目前的进展。", "75 $ al Sea–Tac desde cualquier punto en 30 millas, con el precio cerrado antes de reservar. Los conductores alquilan nuestros coches y se quedan con la tarifa, los hoteles y agentes cobran comisión por enviarnos pasajeros, y las herramientas de planificación son gratuitas para cualquiera. Debajo: los tres negocios que ese ingreso está construyendo, y en qué punto está cada uno hoy.", "30마일 이내 어디서든 시택 공항까지 75달러, 예약 전에 요금이 확정됩니다. 기사는 저희 차량을 임차해 요금 전액을 가져가고, 호텔과 에이전트는 승객을 연결하면 수수료를 받으며, 여행 계획 도구는 누구나 무료로 사용할 수 있습니다. 아래는 그 수익으로 만들어 가는 세 가지 사업과 각각의 현재 단계입니다.", "75 USD tới sân bay Sea–Tac từ bất kỳ đâu trong bán kính 30 dặm, báo giá trước khi đặt. Tài xế thuê xe của chúng tôi và giữ trọn tiền cước, khách sạn và đại lý nhận hoa hồng khi giới thiệu khách, còn các công cụ lập kế hoạch chuyến đi miễn phí cho tất cả mọi người. Dưới đây là ba mảng kinh doanh mà nguồn thu này đang xây dựng, cùng tiến độ hiện tại của từng mảng."],
+    "Fixed-price Tesla rides at $75 to Sea–Tac from within 30 miles, cars rented to drivers who keep the fare, and commission for hotels and agents who send us riders. This is where the money comes from.": ["30 英里范围内至机场固定价 75 美元的特斯拉专车服务；向司机出租车辆，车费全额归司机所有；酒店与代理商推荐乘客可获得佣金。公司收入来源于此。", "Trayectos en Tesla a precio fijo, 75 $ al Sea–Tac desde 30 millas a la redonda; coches alquilados a conductores que se quedan con la tarifa; y comisión para hoteles y agentes que nos envían pasajeros. De aquí sale el dinero.", "30마일 이내에서 시택 공항까지 정액 75달러의 테슬라 차량 서비스, 요금 전액을 가져가는 기사 대상 차량 임대, 그리고 승객을 연결한 호텔과 에이전트에 지급하는 수수료. 수익은 여기에서 나옵니다.", "Dịch vụ xe Tesla giá cố định 75 USD tới sân bay Sea–Tac trong bán kính 30 dặm, cho tài xế thuê xe và giữ trọn tiền cước, cùng hoa hồng cho khách sạn và đại lý giới thiệu khách. Nguồn thu đến từ đây."],
+    "Book a ride — $75 flat to Sea–Tac within 30 mi": ["预约用车 — 30 英里内至机场固定价 75 美元", "Reservar — 75 $ fijos al Sea–Tac en 30 mi", "차량 예약 — 30마일 이내 시택 공항 정액 75달러", "Đặt xe — 75 USD cố định tới Sea–Tac trong 30 dặm"],
+    "flat to Sea–Tac, from anywhere within 30 miles": ["30 英里内至机场，均为固定价", "fijos al Sea–Tac, desde cualquier punto en 30 millas", "30마일 이내 어디서든 시택 공항 정액", "cố định tới Sea–Tac, từ bất kỳ đâu trong 30 dặm"],
+    "Start from where I am now": ["以我当前位置为起点", "Empezar desde donde estoy", "현재 위치에서 출발", "Bắt đầu từ vị trí hiện tại"],
+    "Working out the distance…": ["正在计算距离…", "Calculando la distancia…", "거리를 계산하는 중…", "Đang tính khoảng cách…"],
+    "Flat airport fare — {miles} miles, inside the {radius}-mile flat-rate area. This is the price; it does not move.": ["机场固定价 — {miles} 英里，位于 {radius} 英里固定价范围内。此即最终价格，不会变动。", "Tarifa fija de aeropuerto — {miles} millas, dentro del área de {radius} millas. Este es el precio y no cambia.", "공항 정액 요금 — {miles}마일, {radius}마일 정액 구간 이내입니다. 이 금액이 최종 요금이며 변동되지 않습니다.", "Giá cố định sân bay — {miles} dặm, nằm trong vùng bán kính {radius} dặm. Đây là giá cuối, không thay đổi."],
+    "About {miles} miles. Estimated from the road distance — we confirm the exact fare before you pay, and it does not change after that.": ["约 {miles} 英里。此为按路程估算，付款前我们会确认准确金额，确认后不再变动。", "Unas {miles} millas. Estimado según la distancia por carretera — confirmamos la tarifa exacta antes de pagar, y después no cambia.", "약 {miles}마일입니다. 도로 거리 기준 추정치이며, 결제 전에 정확한 요금을 확정하고 이후에는 변경되지 않습니다.", "Khoảng {miles} dặm. Ước tính theo quãng đường — chúng tôi xác nhận mức giá chính xác trước khi bạn thanh toán và sau đó không thay đổi."],
+    "Could not measure that route automatically — send the request and we will quote it before you pay.": ["无法自动测算该路线 — 请提交预约，我们会在付款前提供报价。", "No pudimos medir esa ruta automáticamente — envíe la solicitud y le daremos precio antes de pagar.", "해당 경로를 자동으로 계산하지 못했습니다 — 요청을 보내주시면 결제 전에 요금을 안내해 드립니다.", "Không đo được tuyến đường này tự động — hãy gửi yêu cầu và chúng tôi sẽ báo giá trước khi bạn thanh toán."],
+    # ------- Real Estate: the drawing sheet -------
+    "WORK IN PROGRESS · REV A": ["编制中 · 修订 A", "EN CURSO · REV A", "작업 중 · REV A", "ĐANG THỰC HIỆN · REV A"],
+    "PARAPET": ["女儿墙", "PRETIL", "파라펫", "TƯỜNG CHẮN MÁI"],
+    "LEVEL 5": ["五层", "NIVEL 5", "5층", "TẦNG 5"],
+    "LEVEL 4": ["四层", "NIVEL 4", "4층", "TẦNG 4"],
+    "LEVEL 3": ["三层", "NIVEL 3", "3층", "TẦNG 3"],
+    "LEVEL 2": ["二层", "NIVEL 2", "2층", "TẦNG 2"],
+    "LEVEL 1": ["一层", "NIVEL 1", "1층", "TẦNG 1"],
+    "GROUND": ["首层", "PLANTA BAJA", "지상층", "TẦNG TRỆT"],
+    "PRELIMINARY": ["初步方案", "PRELIMINAR", "예비안", "SƠ BỘ"],
+    "FRONT ELEVATION · 1:200 @ A3 · NOT FOR CONSTRUCTION": ["正立面 · 1:200 @ A3 · 不作施工依据", "ALZADO FRONTAL · 1:200 @ A3 · NO APTO PARA CONSTRUCCIÓN", "정면도 · 1:200 @ A3 · 시공용 아님", "MẶT ĐỨNG CHÍNH · 1:200 @ A3 · KHÔNG DÙNG ĐỂ THI CÔNG"],
+    "FIG 1 — MIXED-USE HUB · FRONT ELEVATION": ["图 1 — 综合用途建筑 · 正立面", "FIG 1 — CENTRO DE USO MIXTO · ALZADO FRONTAL", "그림 1 — 복합용도 건물 · 정면도", "HÌNH 1 — TÒA NHÀ ĐA CHỨC NĂNG · MẶT ĐỨNG CHÍNH"],
+    "One stretch with nowhere to pull in": ["一段路程无可停靠地点", "Un tramo sin dónde parar", "정차할 곳이 없는 구간 한 곳", "Một đoạn không có chỗ dừng"],
+    "From the start to {to} in — {len} with no mapped stop": ["自出发至 {to}，{len} 路程内无已知停靠点", "desde la salida hasta {to} de trayecto — {len} sin ninguna parada registrada", "출발부터 {to} 지점까지 — {len} 동안 등록된 정차 지점 없음", "từ lúc khởi hành đến {to} — {len} không có điểm dừng nào được ghi nhận"],
+    # ------- road trip: stretches with nowhere to stop -------
+    "{n} stretches with nowhere to pull in": ["{n} 段路程无可停靠地点", "{n} tramos sin dónde parar", "정차할 곳이 없는 구간 {n}곳", "{n} đoạn không có chỗ dừng"],
+    "{from} to {to} in — {len} with no mapped stop": ["出发后 {from} 至 {to} 之间，{len} 路程内无已知停靠点", "de {from} a {to} de trayecto — {len} sin ninguna parada registrada", "{from}부터 {to} 지점까지 — {len} 동안 등록된 정차 지점 없음", "từ {from} đến {to} — {len} không có điểm dừng nào được ghi nhận"],
+    "Searched again wider and found nothing. Fill up and stop before these.": ["已扩大范围再次搜索，仍无结果。请在进入这些路段前加油并休息。", "Se buscó de nuevo en un radio mayor sin resultados. Reposte y descanse antes de estos tramos.", "범위를 넓혀 다시 검색했으나 결과가 없습니다. 해당 구간에 진입하기 전에 주유하고 휴식하십시오.", "Đã tìm lại với phạm vi rộng hơn nhưng không có kết quả. Hãy đổ xăng và nghỉ trước các đoạn này."],
+    # ------- booking: use my location -------
+    "Finding you…": ["正在定位…", "Localizándole…", "위치를 확인하는 중…", "Đang xác định vị trí…"],
+    "Located to about {n} m. Edit it if the door is round the back.": ["定位精度约 {n} 米。若入口在建筑背面，请修改地址。", "Localizado con unos {n} m de precisión. Corríjalo si la entrada está detrás.", "약 {n} m 정확도로 확인되었습니다. 출입구가 뒤편이라면 수정해 주십시오.", "Đã xác định trong khoảng {n} m. Vui lòng sửa nếu lối vào ở phía sau."],
+    "Located. Edit it if the door is round the back.": ["已定位。若入口在建筑背面，请修改地址。", "Localizado. Corríjalo si la entrada está detrás.", "위치가 확인되었습니다. 출입구가 뒤편이라면 수정해 주십시오.", "Đã xác định vị trí. Vui lòng sửa nếu lối vào ở phía sau."],
+    "Got your position but not a street address — the coordinates are in the box, and your driver can navigate to them.": ["已获取您的位置，但未能解析出街道地址。坐标已填入，司机可据此导航。", "Tenemos su posición pero no una dirección — las coordenadas están en el campo y su conductor puede navegar hasta ellas.", "위치는 확인했으나 도로명 주소를 찾지 못했습니다. 좌표가 입력되었으며 기사가 해당 좌표로 이동할 수 있습니다.", "Đã có vị trí của bạn nhưng chưa có địa chỉ đường phố — tọa độ đã được điền và tài xế có thể dẫn đường tới đó."],
+    "Location permission was declined. Please type the pickup address.": ["定位权限被拒绝，请手动输入上车地址。", "Se denegó el permiso de ubicación. Escriba la dirección de recogida.", "위치 권한이 거부되었습니다. 픽업 주소를 입력해 주십시오.", "Quyền truy cập vị trí đã bị từ chối. Vui lòng nhập địa chỉ đón."],
+    "Could not get a location right now. Please type the pickup address.": ["暂时无法获取位置，请手动输入上车地址。", "No se pudo obtener la ubicación ahora. Escriba la dirección de recogida.", "지금은 위치를 가져올 수 없습니다. 픽업 주소를 입력해 주십시오.", "Hiện chưa lấy được vị trí. Vui lòng nhập địa chỉ đón."],
+    "This browser cannot share a location. Please type the address.": ["此浏览器不支持共享位置，请手动输入地址。", "Este navegador no puede compartir la ubicación. Escriba la dirección.", "이 브라우저는 위치를 공유할 수 없습니다. 주소를 입력해 주십시오.", "Trình duyệt này không chia sẻ được vị trí. Vui lòng nhập địa chỉ."],
+    "📍 Use my location": ["📍 使用我的位置", "📍 Usar mi ubicación", "📍 현재 위치 사용", "📍 Dùng vị trí của tôi"],
+    # ------- road trip: what to look for along the road -------
+    "Look for": ["查找", "Buscar", "찾기", "Tìm"],
+    "EV charging": ["充电桩", "Carga eléctrica", "전기차 충전", "Trạm sạc điện"],
+    "Coffee": ["咖啡", "Café", "커피", "Cà phê"],
+    "Toilets": ["洗手间", "Aseos", "화장실", "Nhà vệ sinh"],
+    "Shops": ["商店", "Tiendas", "상점", "Cửa hàng"],
+    "Somewhere to sleep": ["住宿", "Dónde dormir", "숙박", "Chỗ nghỉ"],
+    "Pharmacy & urgent care": ["药房与急诊", "Farmacia y urgencias", "약국 및 응급진료", "Nhà thuốc & cấp cứu"],
+    "Car repair & tyres": ["汽车维修与轮胎", "Taller y neumáticos", "자동차 정비 및 타이어", "Sửa xe & lốp"],
+    "ATM & bank": ["取款机与银行", "Cajero y banco", "ATM 및 은행", "ATM & ngân hàng"],
+    "Dog walk": ["遛狗区", "Zona para perros", "반려견 산책", "Chỗ dắt chó"],
+    "Playground": ["儿童游乐场", "Parque infantil", "놀이터", "Sân chơi trẻ em"],
+    "Picnic area": ["野餐区", "Área de picnic", "피크닉 구역", "Khu dã ngoại"],
+    "Drinking water": ["饮用水", "Agua potable", "식수", "Nước uống"],
+    # ------- EV charging on the road trip planner -------
+    "Finding charging stations along the route…": ["正在沿途查找充电站…", "Buscando estaciones de carga en la ruta…", "경로를 따라 충전소를 찾는 중…", "Đang tìm trạm sạc dọc tuyến đường…"],
+    "Charging along the route": ["沿途充电", "Carga en la ruta", "경로상 충전", "Trạm sạc dọc tuyến"],
+    "{n} stations · {w} have food, coffee or a toilet within a 5-minute walk": ["共 {n} 处充电站，其中 {w} 处步行 5 分钟内有餐饮、咖啡或洗手间", "{n} estaciones · {w} tienen comida, café o aseo a menos de 5 minutos a pie", "충전소 {n}곳 · 그중 {w}곳은 도보 5분 이내에 식사, 커피 또는 화장실이 있습니다", "{n} trạm · {w} trạm có đồ ăn, cà phê hoặc nhà vệ sinh trong 5 phút đi bộ"],
+    "Charging station": ["充电站", "Estación de carga", "충전소", "Trạm sạc"],
+    "lines up with a break": ["与休息点重合", "coincide con una pausa", "휴식 지점과 겹침", "trùng với chặng nghỉ"],
+    "nothing within a walk": ["步行范围内无配套设施", "nada a poca distancia a pie", "도보 거리에 편의시설 없음", "không có tiện ích trong tầm đi bộ"],
+    "{n} stalls": ["{n} 个车位", "{n} plazas", "{n}대", "{n} chỗ"],
+    "free": ["免费", "gratis", "무료", "miễn phí"],
+    "toilets": ["洗手间", "aseos", "화장실", "nhà vệ sinh"],
+    "coffee": ["咖啡", "café", "커피", "cà phê"],
+    "shop": ["便利店", "tienda", "상점", "cửa hàng"],
+    # ------- durations assembled from numbers -------
+    "{h} hr {m} min": ["{h} 小时 {m} 分", "{h} h {m} min", "{h}시간 {m}분", "{h} giờ {m} phút"],
+    "{h} hr": ["{h} 小时", "{h} h", "{h}시간", "{h} giờ"],
+    "{m} min": ["{m} 分", "{m} min", "{m}분", "{m} phút"],
+    "{time} in": ["行驶 {time} 处", "a {time} de trayecto", "{time} 지점", "{time} kể từ điểm xuất phát"],
+    # ------- front page rewrite + Destination Book lede -------
+    "A Seattle car service that funds what comes next": ["西雅图用车服务，为后续业务提供资金", "Un servicio de coches de Seattle que financia lo que viene después", "다음 사업을 뒷받침하는 시애틀 차량 서비스", "Dịch vụ xe tại Seattle, tài trợ cho những gì tiếp theo"],
+    "$75 to Sea–Tac, quoted before you book. Drivers rent our cars and keep the fare, hotels and agents earn commission for sending riders, and the trip-planning tools are free to anyone. Below: the three businesses that income is building, and where each one stands today.": ["至西雅图-塔科马国际机场固定价 75 美元，预订前即告知。司机租用我们的车辆并保留全部车费，酒店与代理商推荐乘客可获得佣金，行程规划工具向所有人免费开放。以下为这笔收入正在建设的三项业务，以及各自目前的进展。", "75 $ al Sea–Tac, con el precio cerrado antes de reservar. Los conductores alquilan nuestros coches y se quedan con la tarifa, los hoteles y agentes cobran comisión por enviarnos pasajeros, y las herramientas de planificación son gratuitas para cualquiera. Debajo: los tres negocios que ese ingreso está construyendo, y en qué punto está cada uno hoy.", "시택 공항까지 75달러, 예약 전에 요금이 확정됩니다. 기사는 저희 차량을 임차해 요금 전액을 가져가고, 호텔과 에이전트는 승객을 연결하면 수수료를 받으며, 여행 계획 도구는 누구나 무료로 사용할 수 있습니다. 아래는 그 수익으로 만들어 가는 세 가지 사업과 각각의 현재 단계입니다.", "75 USD tới sân bay Sea–Tac, báo giá trước khi đặt. Tài xế thuê xe của chúng tôi và giữ trọn tiền cước, khách sạn và đại lý nhận hoa hồng khi giới thiệu khách, còn các công cụ lập kế hoạch chuyến đi miễn phí cho tất cả mọi người. Dưới đây là ba mảng kinh doanh mà nguồn thu này đang xây dựng, cùng tiến độ hiện tại của từng mảng."],
+    "Four businesses, four stages": ["四项业务，四个阶段", "Cuatro negocios, cuatro etapas", "네 개의 사업, 네 개의 단계", "Bốn mảng kinh doanh, bốn giai đoạn"],
+    "One pays for the next. Here is where each one stands today.": ["一项业务为下一项提供资金。以下为各项业务目前的进展。", "Uno paga el siguiente. Aquí está en qué punto se encuentra cada uno hoy.", "하나가 다음을 뒷받침합니다. 각 사업의 현재 단계는 아래와 같습니다.", "Mảng này tài trợ cho mảng kế tiếp. Dưới đây là tiến độ hiện tại của từng mảng."],
+    "Fixed-price Tesla rides at $75 to Sea–Tac, cars rented to drivers who keep the fare, and commission for hotels and agents who send us riders. This is where the money comes from.": ["固定价格的特斯拉专车服务，至机场 75 美元；向司机出租车辆，车费全额归司机所有；酒店与代理商推荐乘客可获得佣金。公司收入来源于此。", "Trayectos en Tesla a precio fijo, 75 $ al Sea–Tac; coches alquilados a conductores que se quedan con la tarifa; y comisión para hoteles y agentes que nos envían pasajeros. De aquí sale el dinero.", "시택 공항까지 정액 75달러의 테슬라 차량 서비스, 요금 전액을 가져가는 기사 대상 차량 임대, 그리고 승객을 연결한 호텔과 에이전트에 지급하는 수수료. 수익은 여기에서 나옵니다.", "Dịch vụ xe Tesla giá cố định 75 USD tới sân bay Sea–Tac, cho tài xế thuê xe và giữ trọn tiền cước, cùng hoa hồng cho khách sạn và đại lý giới thiệu khách. Nguồn thu đến từ đây."],
+    "Dispatch, invoicing, driver paperwork, and the trip-planning tools. We built them instead of renting them, so the customer and the data stay here.": ["调度、开票、司机文件与行程规划工具。均为自建而非租用，客户关系与数据因此留在公司内部。", "Despacho, facturación, documentación de conductores y las herramientas de planificación. Los construimos en lugar de alquilarlos, así que el cliente y los datos se quedan aquí.", "배차, 청구, 기사 서류, 그리고 여행 계획 도구. 임대하지 않고 직접 만들었기에 고객 관계와 데이터가 회사 안에 남습니다.", "Điều phối, lập hóa đơn, hồ sơ tài xế và các công cụ lập kế hoạch chuyến đi. Chúng tôi tự xây dựng thay vì đi thuê, nhờ đó quan hệ khách hàng và dữ liệu đều được giữ lại."],
+    "A mixed-use building, still on paper. The drawings are published as they stand.": ["一栋综合用途建筑，目前仍处于图纸阶段。设计图按现状公开。", "Un edificio de uso mixto, todavía sobre plano. Los planos se publican tal como están.", "복합 용도 건물로, 아직 도면 단계입니다. 도면은 현재 상태 그대로 공개합니다.", "Một tòa nhà đa chức năng, hiện vẫn ở giai đoạn bản vẽ. Các bản vẽ được công bố đúng như hiện trạng."],
+    "An automated trading project in private testing, building a record you can follow. It is not open to outside money.": ["一项自动化交易项目，正在内部验证中，逐步建立可供查阅的记录。不接受外部资金。", "Un proyecto de trading automatizado en pruebas privadas, construyendo un registro que puede seguir. No está abierto a capital externo.", "비공개 검증 단계의 자동 트레이딩 프로젝트로, 확인 가능한 기록을 쌓고 있습니다. 외부 자금은 받지 않습니다.", "Một dự án giao dịch tự động đang trong giai đoạn kiểm chứng nội bộ, từng bước xây dựng hồ sơ có thể theo dõi. Dự án không nhận vốn từ bên ngoài."],
+    "agent program": ["代理商计划", "programa de agentes", "에이전트 프로그램", "chương trình đại lý"],
+    "A guidebook of attractions and restaurants, city by city, with descriptions and local tips from a licensed tour guide. One tap sends any place into the": ["一份按城市编排的景点与餐厅指南，附有说明与持证导游提供的本地建议。点击即可将任一地点加入", "Una guía de atracciones y restaurantes, ciudad por ciudad, con descripciones y consejos locales de un guía turístico titulado. Un toque envía cualquier lugar al", "도시별로 정리한 명소와 음식점 안내서로, 공인 가이드의 설명과 현지 조언이 담겨 있습니다. 한 번 누르면 어떤 장소든", "Cẩm nang các điểm tham quan và nhà hàng, sắp xếp theo từng thành phố, kèm mô tả và lời khuyên địa phương từ hướng dẫn viên có chứng chỉ. Chỉ cần một lần chạm để đưa bất kỳ địa điểm nào vào"],
+    # ---------------- Road Trip Planner (assembled in JS) ----------------
+    "Finding those two places…": ["正在查找这两个地点…", "Buscando esos dos lugares…", "두 장소를 찾는 중…", "Đang tìm hai địa điểm đó…"],
+    "Working out the drive…": ["正在计算行车路线…", "Calculando el trayecto…", "주행 경로를 계산하는 중…", "Đang tính toán lộ trình…"],
+    "Sweeping the whole route for rest stops…": ["正在沿全程搜索休息区…", "Recorriendo toda la ruta en busca de áreas de descanso…", "전 구간에서 휴게소를 찾는 중…", "Đang rà soát toàn tuyến để tìm trạm dừng nghỉ…"],
+    "That drive is shorter than one break — no stops needed.": ["此段车程较短，无需中途停靠。", "Ese trayecto es más corto que una pausa: no hacen falta paradas.", "이 구간은 휴식이 필요 없을 만큼 짧습니다.", "Chặng này ngắn hơn một lần nghỉ — không cần dừng."],
+    "Something went wrong — try again.": ["出现问题，请重试。", "Algo salió mal; inténtelo de nuevo.", "문제가 발생했습니다. 다시 시도해 주십시오.", "Đã xảy ra lỗi — vui lòng thử lại."],
+    "Rest stops along the whole route": ["全程休息区", "Áreas de descanso en toda la ruta", "전 구간 휴게소", "Trạm dừng nghỉ trên toàn tuyến"],
+    "{n} found within 2½ miles of the road, in the order you’ll pass them": ["沿途 4 公里内共 {n} 处，按经过先后排列", "{n} encontradas a menos de 4 km de la carretera, en el orden en que las pasará", "도로에서 4km 이내에 {n}곳을 찾았으며, 지나가는 순서대로 표시됩니다", "Tìm thấy {n} trạm trong phạm vi 4 km từ đường, xếp theo thứ tự bạn sẽ đi qua"],
+    "Looking for stops around break {i} of {n}…": ["正在查找第 {i} 个休息点附近的地点，共 {n} 个…", "Buscando paradas cerca de la pausa {i} de {n}…", "{n}개 중 {i}번째 휴식 지점 주변을 검색하는 중…", "Đang tìm điểm dừng quanh chặng nghỉ {i} trong {n}…"],
+    "Break {i}": ["休息点 {i}", "Pausa {i}", "휴식 지점 {i}", "Chặng nghỉ {i}"],
+    "Found the route, but the places service did not answer. It is free and rate-limited — wait a minute and try again.": ["已找到路线，但地点服务未响应。该服务为免费服务，有调用频率限制，请稍后重试。", "Se encontró la ruta, pero el servicio de lugares no respondió. Es gratuito y limita las consultas: espere un minuto e inténtelo de nuevo.", "경로는 찾았으나 장소 서비스가 응답하지 않았습니다. 무료 서비스로 요청 제한이 있으니 잠시 후 다시 시도해 주십시오.", "Đã tìm được lộ trình, nhưng dịch vụ địa điểm không phản hồi. Dịch vụ này miễn phí và giới hạn truy vấn — vui lòng đợi một phút rồi thử lại."],
+    "Planned. {failed} of {n} breaks came back empty from the places service — try again for those.": ["已规划。{n} 个休息点中有 {failed} 个未返回结果，请稍后重试这些地点。", "Planificado. {failed} de {n} pausas no devolvieron resultados del servicio de lugares; vuelva a intentarlo para esas.", "계획 완료. 휴식 지점 {n}곳 중 {failed}곳에서 결과를 받지 못했습니다. 해당 지점은 다시 시도해 주십시오.", "Đã lên kế hoạch. {failed} trong {n} chặng nghỉ không có kết quả từ dịch vụ địa điểm — vui lòng thử lại với những chặng đó."],
+    "Planned: {miles} miles, {time} driving, {rests} rest stops on the road, {breaks} suggested breaks.": ["已规划：{miles} 英里，行车 {time}，沿途 {rests} 处休息区，建议休息 {breaks} 次。", "Planificado: {miles} millas, {time} de conducción, {rests} áreas de descanso en la ruta, {breaks} pausas sugeridas.", "계획 완료: {miles}마일, 주행 {time}, 도로 위 휴게소 {rests}곳, 권장 휴식 {breaks}회.", "Đã lên kế hoạch: {miles} dặm, lái xe {time}, {rests} trạm dừng nghỉ trên đường, {breaks} chặng nghỉ được đề xuất."],
+    "fastest": ["最快", "más rápida", "가장 빠름", "nhanh nhất"],
+    "shortest": ["最短", "más corta", "가장 짧음", "ngắn nhất"],
+    "+{n} min": ["多 {n} 分钟", "+{n} min", "+{n}분", "+{n} phút"],
+    "{n} mi": ["{n} 英里", "{n} mi", "{n}마일", "{n} dặm"],
+    "About {time} in": ["约行驶 {time}", "Unas {time} de trayecto", "약 {time} 지점", "Khoảng {time} kể từ điểm xuất phát"],
+    "Service area": ["服务区", "Área de servicio", "종합휴게소", "Trạm dịch vụ"],
+    "Rest area": ["休息区", "Área de descanso", "휴게소", "Trạm dừng nghỉ"],
+    "Rest & services": ["休息与服务区", "Descanso y servicios", "휴게 및 편의시설", "Nghỉ ngơi & dịch vụ"],
     # ---------------- Trip Planner ----------------
     "🗺️ Trip Planner": ["🗺️ 行程规划", "🗺️ Planificador de viaje", "🗺️ 여행 플래너", "🗺️ Lập kế hoạch chuyến đi"],
     "Free for everyone — drivers, tour guides, tourists. Tap where you are, and every attraction lights up or dims based on drive time, traffic and closing hours. Your taps build the plan, day by day.": [
@@ -1745,5 +1862,20 @@ EXTRA.update({
     "GF · RETAIL": ["首层 · 商铺", "PB · COMERCIO", "1층 · 상가", "TT · BÁN LẺ"],
     "SITE PLAN · 1:500": ["总平面图 · 1:500", "PLANO DE SITIO · 1:500", "배치도 · 1:500", "MẶT BẰNG · 1:500"],
     "FOOTPRINT": ["建筑占地", "HUELLA", "건물 외곽", "DIỆN TÍCH XÂY DỰNG"],
+
+    # The start control: one box that takes a typed address OR fills itself
+    # from where you are. The placeholder keeps the ◎ glyph in every language
+    # because it names the button sitting inside the same box — translating a
+    # symbol away would leave the sentence pointing at nothing.
+    "Starting address or ◎": [
+        "起点地址，或点 ◎", "Dirección de inicio, o pulsa ◎",
+        "출발지 주소, 또는 ◎", "Địa chỉ xuất phát, hoặc bấm ◎"],
+    # From main's visitor-cities map on the Archive page.
+    "Where your viewers are": [
+        "访客来自哪里", "De dónde son tus visitantes",
+        "방문자가 어디에서 오는지", "Người xem của bạn ở đâu"],
+    "Use my current location": [
+        "使用我的当前位置", "Usar mi ubicación actual",
+        "현재 위치 사용", "Dùng vị trí hiện tại của tôi"],
 })
 EXTRA_SKIP |= {"ST. — 40′ R.O.W.", "62′-0″", "78′-0″", "N"}

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Footprint recorder — Plateau Strategy Solution Lab</title>
+<link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+<link rel="stylesheet" href="/paper.css">
+<script src="/psx-net.js"></script>
+<link rel="stylesheet" href="/modern.css">
+<style>
+  header img { height: 42px; width: 42px; border-radius: 50%; }
+  header .brand { font-size: 1.2rem; font-weight: 800; }
+  header .right { margin-left: auto; display: flex; gap: 1.2rem; }
+  .wrap { max-width: 40rem; }
+  .fp-note { border-left: 2px solid var(--psx-accent, #1f3a5f); padding-left: 1rem;
+             color: var(--psx-text2, #6b6459); font-size: .95rem; margin: 1.4rem 0; }
+  .fp-note p { margin: .5rem 0; }
+  select#fpKey { width: 100%; min-height: 48px; font-size: 16px; margin: .4rem 0 1rem;
+                 padding: .5rem .7rem; }
+  .fp-btn { display: inline-flex; align-items: center; justify-content: center;
+            min-height: 52px; padding: .8rem 1.6rem; border-radius: 999px; border: 0;
+            background: var(--psx-accent, #1f3a5f); color: #fff; font: inherit;
+            font-weight: 700; font-size: 1.05rem; cursor: pointer; }
+  .fp-btn[disabled] { opacity: .5; cursor: default; }
+  .fp-stop { background: #7a2f2a; }
+  .fp-live { font-size: .95rem; color: var(--psx-text2, #6b6459); margin: 1rem 0; }
+  .fp-verdict { margin: 1.2rem 0; font-size: 1rem; }
+  .fp-verdict.bad { color: #a3302a; }
+  .fp-verdict.good { color: #1b6b5a; font-weight: 700; }
+</style>
+</head>
+<body data-arm="operations">
+<header>
+  <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+  <span class="brand">Plateau Strategy Solution Lab</span>
+  <div class="right"><a href="/walk">Walking guide</a><a href="/">Home</a></div>
+</header>
+<div class="wrap">
+  <div class="page-title">Footprint recorder</div>
+  <p class="page-sub">Walk a corridor once, and the trace becomes the map.</p>
+
+  <div class="fp-note">
+    <p><b>This records a corridor, not a person.</b> Pick the corridor, press
+    Start at one end, walk it normally, press Stop at the other. What is kept
+    is the line, its length, and roughly how long it takes — no name, no
+    clock, no device.</p>
+    <p>Only corridors we have opened can be recorded, and only a signed-in
+    owner can submit. If it refuses the walk, the reason says what to do —
+    usually just walk it again; indoor GPS misses sometimes.</p>
+  </div>
+
+  <div id="fpAuth" class="fp-verdict bad" hidden>
+    You are not signed in. Sean signs in at <a href="/dispatch">Dispatch</a>;
+    everyone else uses the username and password Sean issued them (the same
+    sign-in as the shared pages), then comes back here. This page submits on
+    your authority, and that authority is what makes a trace worth keeping.
+  </div>
+
+  <label for="fpKey">Corridor</label>
+  <select id="fpKey"></select>
+
+  <button class="fp-btn" id="fpBtn" disabled>Start recording</button>
+  <p class="fp-live" id="fpLive">Loading…</p>
+  <div class="fp-verdict" id="fpVerdict"></div>
+</div>
+<script>
+(function () {
+  var btn = document.getElementById('fpBtn'), live = document.getElementById('fpLive'),
+      sel = document.getElementById('fpKey'), verdict = document.getElementById('fpVerdict');
+  var watch = null, pts = [], worst = 0, dropped = 0, startedAt = 0, lengthM = 0;
+
+  function rad(d) { return d * Math.PI / 180; }
+  function distM(a, b) {
+    var dLat = rad(b[0] - a[0]), dLon = rad(b[1] - a[1]);
+    var s = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+          + Math.cos(rad(a[0])) * Math.cos(rad(b[0]))
+          * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return 6371000 * 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s));
+  }
+
+  async function init() {
+    var d = await psxJSON('/api/footprints');
+    if (!d || !d.ok) {
+      document.getElementById('fpAuth').hidden = false;
+      live.textContent = '';
+      return;
+    }
+    (d.corridors || []).forEach(function (c) {
+      var o = document.createElement('option');
+      o.value = c.key;
+      o.textContent = c.label + (c.walked ? ' — walked ' + c.walked.date : ' — not walked yet');
+      sel.appendChild(o);
+    });
+    btn.disabled = !sel.options.length;
+    live.textContent = sel.options.length ? 'Ready.' : 'No corridors are open.';
+  }
+
+  function onFix(p) {
+    var acc = p.coords.accuracy || 0;
+    /* Fixes rougher than the server will accept are dropped HERE, so one bad
+       moment under a concrete ceiling costs a gap, not the whole walk. The
+       drop is counted and shown — a number climbing tells you to slow down. */
+    if (acc > 35) { dropped++; update(); return; }
+    var pt = [ +p.coords.latitude.toFixed(5), +p.coords.longitude.toFixed(5) ];
+    if (pts.length) {
+      var d = distM(pts[pts.length - 1], pt);
+      if (d < 2) return;                       // standing still is not walking
+      lengthM += d;
+    }
+    if (acc > worst) worst = acc;
+    pts.push(pt);
+    update();
+  }
+
+  function update() {
+    live.textContent = pts.length + ' fixes · ' + Math.round(lengthM) + ' m · worst ±'
+      + Math.round(worst) + ' m' + (dropped ? ' · ' + dropped + ' too rough, dropped' : '');
+  }
+
+  async function stopAndSubmit() {
+    if (watch !== null) navigator.geolocation.clearWatch(watch);
+    watch = null;
+    btn.textContent = 'Start recording';
+    btn.classList.remove('fp-stop');
+    var minutes = Math.max(1, Math.round((Date.now() - startedAt) / 60000));
+    verdict.className = 'fp-verdict';
+    verdict.textContent = 'Submitting ' + pts.length + ' fixes…';
+    var d = await psxJSON('/api/footprints/' + encodeURIComponent(sel.value), {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ points: pts, minutes: minutes, worst_accuracy_m: worst })
+    });
+    if (!d || !d.ok) {
+      verdict.className = 'fp-verdict bad';
+      verdict.textContent = (d && d.error) || 'Could not submit — try again.';
+      return;
+    }
+    verdict.className = 'fp-verdict good';
+    verdict.textContent = 'Recorded: ' + d.walk.length_m + ' m in about '
+      + d.walk.minutes + ' min. This corridor is now walked'
+      + (d.walked ? ' (as of ' + d.walked.date + ')' : '') +
+      ' — anything waiting on it unlocks by itself.';
+    init2();     // refresh labels
+  }
+
+  function init2() { sel.innerHTML = ''; init(); }
+
+  btn.addEventListener('click', function () {
+    if (watch !== null) { stopAndSubmit(); return; }
+    if (!navigator.geolocation) { live.textContent = 'This browser cannot record position.'; return; }
+    pts = []; worst = 0; dropped = 0; lengthM = 0; startedAt = Date.now();
+    verdict.textContent = '';
+    btn.textContent = 'Stop & submit';
+    btn.classList.add('fp-stop');
+    live.textContent = 'Waiting for the first fix…';
+    watch = navigator.geolocation.watchPosition(onFix, function (e) {
+      live.textContent = 'No position: ' + (e && e.message ? e.message : 'unavailable');
+    }, { enableHighAccuracy: true, maximumAge: 1000, timeout: 15000 });
+  });
+
+  init();
+})();
+</script>
+</body>
+</html>
