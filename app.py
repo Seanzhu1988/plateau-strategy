@@ -1372,6 +1372,13 @@ def floatback_js():
     return send_file(os.path.join(BASE_DIR, "floatback.js"))
 
 
+@app.route("/frame-preview.js")
+def frame_preview_js():
+    """The section-framing preview. Inert unless the URL carries ?frame=,
+    so it is invisible to visitors while a choice is being made."""
+    return send_file(os.path.join(BASE_DIR, "frame-preview.js"))
+
+
 @app.route("/basemap.js")
 def basemap_js():
     return send_file(os.path.join(BASE_DIR, "basemap.js"))

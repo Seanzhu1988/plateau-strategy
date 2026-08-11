@@ -812,3 +812,130 @@ section.phases + section.phases {
   font-weight: 700 !important;
   letter-spacing: .13em !important;
 }
+
+/* ============================================================
+   SECTION FRAMING — three candidates, judged on the real page
+
+   Reached only with ?frame= in the address (see frame-preview.js), so
+   the published site is untouched while these are being looked at.
+   Each is written as shippable CSS rather than a mock-up: whichever is
+   chosen, the others get deleted and nothing has to be rebuilt.
+
+   What is already live is the quiet one — a hairline with a small
+   centred mark. The owner's read was that he could not see it, which is
+   fair: on a page you know by heart, one pixel of grey is nothing.
+   ============================================================ */
+
+/* the injected chapter head is invisible until a mode asks for it */
+.fp-head { display: none; }
+
+/* ---------- A · numbered chapters ----------
+   A number is the loudest thing you can add without filling anything,
+   and it changes what the site claims to be: parts of one document
+   rather than pages that happen to follow each other. */
+html[data-frame="numbered"] .view section.phases::after,
+html[data-frame="numbered"] #view-overview .psx-section::after { display: none; }
+
+html[data-frame="numbered"] .fp-head {
+  display: flex;
+  align-items: baseline;
+  gap: .85rem;
+  max-width: 1120px;
+  margin: 0 auto clamp(1.75rem, 3vw, 2.75rem);
+  padding: 0 1.25rem;
+}
+html[data-frame="numbered"] .fp-n::before {
+  content: attr(data-n);
+}
+html[data-frame="numbered"] .fp-head .fp-n {
+  font-family: var(--m-sans);
+  font-weight: 800;
+  font-size: clamp(2.1rem, 4.2vw, 3.1rem);
+  letter-spacing: -.04em;
+  line-height: 1;
+  color: var(--m-rose);
+}
+html[data-frame="numbered"] .fp-head .fp-name {
+  font-family: var(--m-sans);
+  font-weight: 700;
+  font-size: .78rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--m-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* the name trails off into the rule, so the head reads as one object */
+html[data-frame="numbered"] .fp-head::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--m-line-firm);
+}
+
+/* ---------- B · alternating grounds ----------
+   Kept honest: seven of the eight views hold exactly ONE section, so
+   there is nothing for them to alternate against and they will look
+   unchanged. Only the overview, which has three, shows the idea at all.
+   Built anyway, because that is easier to see than to be told. */
+html[data-frame="bands"] .view section.phases:nth-of-type(even),
+html[data-frame="bands"] #view-overview .psx-section {
+  background: var(--m-raised) !important;
+}
+html[data-frame="bands"] .view section.phases::before,
+html[data-frame="bands"] .view section.phases::after,
+html[data-frame="bands"] #view-overview .psx-section::before,
+html[data-frame="bands"] #view-overview .psx-section::after { display: none; }
+
+/* ---------- C · full-width heavy rule ----------
+   The same idea that is live, no longer whispering: edge to edge, three
+   pixels, and considerably more air on both sides of it. */
+html[data-frame="rule"] .view section.phases::before,
+html[data-frame="rule"] #view-overview .psx-section::before {
+  left: 0; right: 0;
+  width: auto;
+  transform: none;
+  height: 3px;
+  background: var(--m-rose);
+}
+html[data-frame="rule"] .view section.phases::after,
+html[data-frame="rule"] #view-overview .psx-section::after { display: none; }
+html[data-frame="rule"] .view section.phases,
+html[data-frame="rule"] section.phases,
+html[data-frame="rule"] #view-overview .psx-section {
+  padding-top: clamp(4.5rem, 8vw, 7rem) !important;
+  padding-bottom: clamp(5.5rem, 10vw, 8.5rem) !important;
+}
+
+/* ---------- the switcher itself ----------
+   A tool, not part of the site — so it is allowed the solid fill the
+   pages are not. */
+#fp-switch {
+  position: fixed; left: 16px; bottom: 16px; z-index: 99999;
+  background: #ffffff;
+  border: 1px solid var(--m-line-firm);
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 10px 30px rgba(11, 8, 9, .13);
+  font-family: var(--m-sans);
+  max-width: 300px;
+}
+#fp-switch .fp-t {
+  font-size: .68rem; font-weight: 700; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--m-muted); margin-bottom: 9px;
+}
+#fp-switch button {
+  display: inline-block; margin: 0 6px 6px 0; padding: 6px 11px;
+  font: inherit; font-size: .85rem; font-weight: 600;
+  color: var(--m-ink); background: #fff; cursor: pointer;
+  border: 1px solid var(--m-line-firm); border-radius: 7px;
+}
+#fp-switch button.on {
+  border-color: var(--m-rose);
+  box-shadow: inset 0 -3px 0 0 var(--m-rose);
+}
+#fp-switch .fp-note {
+  font-size: .76rem; color: var(--m-muted); line-height: 1.45; margin-top: 4px;
+}
+#fp-switch .fp-fine { opacity: .72; margin-top: 7px; }
