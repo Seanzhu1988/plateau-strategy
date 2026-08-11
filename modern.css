@@ -573,10 +573,15 @@ input, select, textarea {
   font-family: var(--m-sans) !important;
   padding: .62rem .8rem !important;
 }
+/* Form fields focus the same way everything else does: an inset bar.
+   This rule used to paint `0 0 0 3px` — a RING, the one form the settled rule
+   forbids — unconditionally and with !important, twenty lines below the inset
+   bar it contradicted. It survived four audits because no audit ever called
+   .focus(); the gate now does. */
 input:focus, select:focus, textarea:focus {
   outline: none !important;
   border-color: var(--m-accent) !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--m-accent) 18%, transparent) !important;
+  box-shadow: inset 0 -3px 0 0 var(--m-navy) !important;
 }
 label { color: var(--m-muted) !important; font-weight: 600 !important; }
 
@@ -616,3 +621,117 @@ td { border-bottom: 1px solid var(--m-line) !important; color: var(--m-body) !im
   font-weight: 800 !important;
 }
 .phase-tab:hover:not(.active) { color: var(--m-ink) !important; }
+
+/* ============================================================
+   CHAPTERS — giving each section a frame of its own
+
+   The site is one page wearing eight faces: overview, transportation,
+   operations, real estate, finance, reinvestment, free tools, security.
+   Each is its own view, and — measured, not assumed — each holds exactly
+   one section. So these are not stacked chapters separated by a seam;
+   they are eight separate openings, and every one of them simply began
+   under the sticky header with nothing to say a subject had started.
+
+   A chapter now opens with a rule: a hairline the width of the content
+   beneath it, carrying a short heavy navy mark at its centre. Then air,
+   then the title. The mark is what the eye catches; the hairline gives
+   it something to sit on. It is drawn, not filled — no band of colour
+   appears here, which is the site's standing rule.
+
+   The rule is measured against the CONTENT COLUMN, not the section. A
+   line narrower than the cards it introduces floats; one that matches
+   them reads as an edge.
+
+   The mark is centred, without exception. The first attempt set it flush
+   left, which looked wrong the moment it was on screen: every heading on
+   this site is centred — measured, all seven — so a left-flush mark
+   disagreed with the title directly beneath it and read as a stray
+   graphic rather than the opening of a chapter.
+
+   ONE mark per chapter. The site already had a small 34x2 rule tucked
+   under each title; with this one above, every chapter carried two navy
+   marks a few lines apart, and that is what read as clutter. The small
+   one is retired below rather than cut out of paper.css, so the older
+   layer stays intact if this is ever unpicked.
+   ============================================================ */
+
+.view section.phases,
+#view-overview .psx-section {
+  position: relative;
+  /* The header is sticky and ~71px tall. Without this, jumping to a
+     section by anchor parks its opening rule underneath the header,
+     where nobody sees it. */
+  scroll-margin-top: 6rem;
+}
+
+/* the line the chapter sits on — the width of the content it introduces */
+.view section.phases::before,
+#view-overview .psx-section::before {
+  content: "";
+  position: absolute; top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: min(1120px, 100% - 2.5rem);
+  height: 1px;
+  background: var(--m-line-firm);
+}
+
+/* and the mark that says a new one starts here */
+.view section.phases::after,
+#view-overview .psx-section::after {
+  content: "";
+  position: absolute; top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 64px; height: 3px;
+  background: var(--m-rose);
+}
+
+/* One separator, not two. The old rule drew a full-bleed line between
+   every pair of sections; under the chapter rule that landed as a
+   double line at every seam. */
+.view section.phases + section.phases,
+.view section.phases,
+section.phases + section.phases {
+  border-top: 0 !important;
+}
+
+/* Retired: the small rule under each title. Superseded by the one above
+   it, and two marks per chapter is one too many. */
+.view[data-arm] .psx-head .psx-eyebrow::after,
+.view[data-arm]:not(#view-realestate) > .phases h2::after {
+  content: none !important;
+}
+
+/* Room to breathe, weighted downward — a chapter should end with more
+   space than it opens with, so the gap reads as "that subject is
+   finished" rather than "something is missing here". */
+.view section.phases, section.phases,
+#view-overview .psx-section {
+  padding: clamp(3rem, 5vw, 4.25rem) 1.25rem clamp(4.5rem, 8vw, 7rem) !important;
+}
+
+/* Air above the rule as well as below it. Each view opens straight into
+   its chapter, so without this the opening rule landed about seven
+   pixels under the sticky header — close enough to read as part of the
+   header's own border rather than the start of something. */
+.view > section.phases:first-child {
+  margin-top: clamp(1.75rem, 3vw, 2.75rem);
+}
+
+/* Consistent rhythm inside the frame: rule, air, title, intro, content.
+   Set once here so no chapter has to remember it. */
+.view section.phases > .container > h2 {
+  margin: 0 0 .7rem !important;
+}
+.view section.phases > .container > .view-intro {
+  margin: 0 0 clamp(2rem, 3.4vw, 2.9rem) !important;
+  max-width: 60ch;
+}
+
+/* A chapter label left over from the palette before this one — it was
+   still wearing the old blue while everything around it had moved to
+   the company's navy. */
+#view-overview .psx-eyebrow {
+  color: var(--m-accent) !important;
+  font-weight: 700 !important;
+  letter-spacing: .13em !important;
+}
