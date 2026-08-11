@@ -998,6 +998,14 @@ def _visit_device():
     return "desktop"
 
 
+# href="/x.css" / src="/x.js" — ours only. Anything already carrying a
+# query string, and anything absolute, is left alone.
+_ASSET_RE = re.compile(rb'\b(href|src)="(/[\w./-]+\.(?:css|js))"')
+
+# What the assets are stamped with. Changes on every deploy — the point of it.
+_ASSET_V = (os.environ.get("RENDER_GIT_COMMIT") or "")[:8] or str(int(time.time()))
+
+
 @app.after_request
 def _compress_and_cache(resp):
     """Two things nothing else was doing: squeeze the bytes, and let the
@@ -1036,6 +1044,36 @@ def _compress_and_cache(resp):
             resp.headers["Cache-Control"] = "public, max-age=600"
         elif (resp.mimetype or "").startswith("text/html"):
             resp.headers["Cache-Control"] = "no-cache"
+
+        # Stamp the version onto our own stylesheets and scripts.
+        #
+        # Static files are held for ten minutes, which is the right call for
+        # someone on mobile data. The cost is that for ten minutes after a
+        # deploy a returning visitor keeps the OLD stylesheet, sees nothing
+        # change, and reasonably concludes nothing shipped — which is exactly
+        # what happened here, to the owner and then to me: the server was
+        # serving the new CSS while the page went on painting with the
+        # cached one.
+        #
+        # A version in the URL fixes both ends. A deploy changes every asset
+        # URL, so the new look is immediate; between deploys the URL is
+        # stable, so the ten-minute cache keeps doing its job. Nothing is
+        # fetched more often than it was.
+        #
+        # This sits ABOVE the gzip section deliberately: the first attempt
+        # put it below the Accept-Encoding guard, where a client that does
+        # not ask for gzip would have been served unstamped HTML.
+        if (resp.mimetype or "").startswith("text/html") and resp.status_code == 200:
+            if resp.direct_passthrough:
+                if (resp.content_length or 0) > 4_000_000:
+                    return resp
+                resp.direct_passthrough = False
+            body = resp.get_data()
+            stamped = _ASSET_RE.sub(
+                lambda m: b'%s="%s?v=%s"' % (m.group(1), m.group(2), _ASSET_V.encode()),
+                body)
+            if stamped != body:
+                resp.set_data(stamped)
 
         # Compress text that is worth compressing. Below ~1 KB the header
         # overhead and the CPU are not repaid.
@@ -6984,6 +7022,7 @@ def api_idea_professionals():
 
 
 _BOOT_TS = time.time()
+
 
 
 @app.route("/api/build")
