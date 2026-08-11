@@ -9,5 +9,98 @@
     "likes": 0,
     "unlikes": 0,
     "followers": []
+  },
+  {
+    "id": "ART_0002",
+    "author": "Plateau Strategy Solution Lab",
+    "created_at": "2026-08-10T09:19:29",
+    "stamp": "20260810091929",
+    "title": "Turn a single Seattle lot into a two-home rental \u2014 what it would actually take",
+    "body": "Most people who own a lot in Seattle are sitting on more than one house. Since the state changed the rules on middle housing, a great many single-family lots can now legally carry a second home \u2014 a detached unit in the back garden, or a duplex where one house stands today. The land is already paid for. That is the whole opportunity, and it is why this is worth writing down.\n\nThe idea is simple to say and hard to do. Take one lot with an older house on it. Keep the house, renovate it, and build a second, smaller home behind it. Rent both. The second home costs far less per square foot than buying a second property, because the most expensive part \u2014 the land \u2014 you already own.\n\nWhat makes it hard is not the building. It is everything before the building.\n\nZoning first: not every lot qualifies, and the ones that do have limits on height, footprint, and how far the new home must sit from the boundary. Then the survey, because you cannot design to a boundary you have not had measured. Then soils, because Seattle is full of slopes and a difficult site can add tens of thousands before a single wall goes up. Then the design, then the permit \u2014 and permits here are measured in months, not weeks. Sequence these wrong and a nine-month project becomes a two-year one, paying interest the whole way.\n\nThere is also a question most people never ask until it is too late: what is the finished thing actually worth, and will anyone lend against it? A second home on the same lot is valued differently from two separate houses. That answer changes whether the project is worth starting at all.\n\nWhat this needs is not encouragement. It needs somebody who has done it to say plainly: here is the order, here is what it costs, here is what fails inspection, and here is the point where you should walk away.\n\nThat is what this board is for. If you have built one of these, the sequence in your head is worth money to everyone reading this \u2014 and you can put a price on it.",
+    "likes": 0,
+    "unlikes": 0,
+    "followers": [],
+    "launchers": [],
+    "professionals": {
+      "always": [
+        {
+          "slug": "accountant",
+          "label": "CPA / accountant",
+          "why": "Entity choice, tax treatment, and what the setup actually costs.",
+          "domain": "any business"
+        },
+        {
+          "slug": "business-attorney",
+          "label": "Business attorney",
+          "why": "Formation, contracts, and what licences the work requires.",
+          "domain": "any business"
+        },
+        {
+          "slug": "insurance-broker",
+          "label": "Insurance broker",
+          "why": "The cover the business needs before it can legally trade.",
+          "domain": "any business"
+        },
+        {
+          "slug": "bookkeeper",
+          "label": "Bookkeeper",
+          "why": "Keeping the books from day one, so the first tax year is not a rescue job.",
+          "domain": "any business"
+        }
+      ],
+      "matched": [
+        {
+          "slug": "real-estate-attorney",
+          "label": "Real estate attorney",
+          "why": "Title, zoning, purchase and lease agreements.",
+          "domain": "property"
+        },
+        {
+          "slug": "architect",
+          "label": "Architect",
+          "why": "Drawings, and whether the plan is buildable at all.",
+          "domain": "property"
+        },
+        {
+          "slug": "interior-designer",
+          "label": "Interior designer",
+          "why": "Layout, finish and how the space actually gets used.",
+          "domain": "property"
+        },
+        {
+          "slug": "general-contractor",
+          "label": "General contractor",
+          "why": "What the build costs and how long it takes.",
+          "domain": "property"
+        },
+        {
+          "slug": "appraiser",
+          "label": "Appraiser",
+          "why": "What it is worth, as opposed to what it is hoped to be worth.",
+          "domain": "property"
+        },
+        {
+          "slug": "mortgage-broker",
+          "label": "Mortgage broker",
+          "why": "How the purchase or build is financed.",
+          "domain": "property"
+        }
+      ],
+      "domains": [
+        {
+          "name": "property",
+          "evidence": [
+            "property",
+            "building",
+            "renovat",
+            "duplex",
+            "land",
+            "lot"
+          ]
+        }
+      ],
+      "summary": "This idea likely needs Real estate attorney, Architect, Interior designer and General contractor \u2014 plus the accountant, attorney, insurance and bookkeeping any business needs.",
+      "total": 10
+    }
   }
 ]
