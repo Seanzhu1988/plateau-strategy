@@ -108,6 +108,18 @@ in a throwaway git worktree**, verify the app actually serves, then push. Its
 working files are never touched. Never `git add -A` here — that once deleted a
 file the other session was working on.
 
+**And do not trust the local preview.** Merging in a worktree means this folder's
+own checkout never advances — it sat **91 commits behind** what was deployed, so
+the page being previewed on localhost was months of work out of date. The chapter
+framing was designed and checked against headings in a sans face; live, the same
+headings are set in the paper serif, because the other session had changed them
+and this checkout had never seen it.
+
+Nothing was lost — the worktree merge combined both sides correctly — but the
+verification was against the wrong page. **Measure on the deployed site**, or
+preview from the worktree, which is current. `git pull` here is not the fix: the
+other session's uncommitted files live in this folder.
+
 ---
 
 ## Where the data lives
@@ -127,3 +139,73 @@ writes actually go, whether that is a mounted disk, and can write a marker and
 read it back. The honest test is: write something through the live site, deploy,
 and read it again. Configuration that looks right and data that survived a deploy
 are different claims.
+
+## The gate, rebuilt (2026-08-11)
+
+The design system kept failing silently in the same shape, five rounds running.
+A multi-agent review of the whole surface returned one verdict, and it was not
+about CSS: **fix the verifier before touching a single line of style, because
+`check_design.py` is what gets trusted to say "done," and it structurally could
+not see the bug class it was being trusted about.**
+
+Three things were wrong with it, in ascending order of embarrassment.
+
+**It could not run here.** `CHROME` was hardcoded to
+`/opt/pw-browsers/chromium-1194/chrome-linux/chrome`, a Linux container path
+that does not exist on the machine this site is developed on. Not "missed the
+findings" — never launched. That is the quietest false pass there is. It now
+resolves the container binary if present and Playwright's own otherwise.
+
+**Its route list was hand-typed, and had already drifted.** `/professionals`
+went live at `app.py:5412` and was never added, so a page nobody had ever
+gated read as part of a clean sweep. Routes are now *derived* — scanned out of
+`app.py`, cross-checked against the `.html` files on disk so a file with no
+route (`rent-a-tesla.html`, dark until S11) is named rather than invisible. A
+list a human must remember to update is the same failure shape as a `:not()`
+chain a human must remember to sync.
+
+**It had no assertion for the strongest rule in the system.** "A control is a
+word with a rule under it, never a fill behind a word" was stated three times
+and measured zero times. Contrast cannot catch it: a solid `#2563eb` pill with
+white text passes contrast beautifully. That is exactly how the language
+switcher's fill survived four audits on all 23 pages. There is now a FILL
+sensor (every control must be transparent unless it carries an explicit
+`data-carveout`) and a FOCUS sensor (focus must be an inset bar, never a ring),
+and everything a reader can open is opened before measuring.
+
+Two lessons paid for in the same session:
+
+**Measure the delta, not the state.** The focus sensor first flagged the
+switcher's permanent drop shadow as a focus ring. It would have sent someone
+editing a shadow that was never the bug. It now compares box-shadow before and
+after focus — what focus *adds* is the only thing the rule is about.
+
+**Fix the constant before believing the number.** `PALETTE` was written in the
+paper era and never updated, so the gate reported the brand navy itself as a
+leftover: 1869 "off-palette" hits, nearly all of them the design system obeying
+itself. A gate that cries wolf gets ignored, which is its own silent pass. With
+the real `modern.css` tokens in the list the number is 7.
+
+### What the rebuilt gate found within a minute of working
+
+A **third** styling authority over one component. The language switcher is
+styled in `paper.css`, filtered by `modern.css`'s `:not()` chain, *and* injects
+its own `<style>` from `i18n.js`. Rewriting the widget to obey the system made
+its word navy while `paper.css`'s `!important` ink fill kept the ground
+near-black — navy on black, 1.74:1, a real regression introduced by a real fix.
+The gate caught it on the next run. That is the entire argument for building
+the verifier first, in one incident.
+
+### Still open
+
+The `:not()`-exemption architecture is judged **not survivable** and is to be
+replaced by default-deny plus a small `data-carveout` allowlist: a missed
+allowlist entry renders something too plain and is caught by eye, while a missed
+denylist entry renders a normal-looking filled button and is caught by nobody.
+That inversion is the point. Remaining at last run: 359 fills, 213 focus rings,
+2 unrouted files, `/professionals` untagged. The gate is honest about all of
+them, which is new.
+
+`jarvis-widget.js` only builds for an owner session, so an anonymous sweep can
+never see it — the gate needs a logged-in pass, or that component stays exactly
+as invisible as everything else on this list used to be.
