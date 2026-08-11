@@ -834,7 +834,16 @@ section.phases + section.phases {
    and it changes what the site claims to be: parts of one document
    rather than pages that happen to follow each other. */
 html[data-frame="numbered"] .view section.phases::after,
-html[data-frame="numbered"] #view-overview .psx-section::after { display: none; }
+html[data-frame="numbered"] #view-overview .psx-section::after,
+html[data-frame="numbered"] .view section.phases::before,
+html[data-frame="numbered"] #view-overview .psx-section::before { display: none; }
+
+/* The name is dropped, not styled. On screen it read as
+   "01 FOUR ARMS AT FOUR DIFFERENT STAGES" directly above a heading that
+   says "Four arms, at four different stages" — the same words twice, a
+   line apart. The number is the new information; the title is already
+   doing the naming. */
+html[data-frame="numbered"] .fp-head .fp-name { display: none; }
 
 html[data-frame="numbered"] .fp-head {
   display: flex;
