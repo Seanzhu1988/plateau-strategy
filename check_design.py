@@ -40,6 +40,7 @@ Usage:
     python3 check_design.py --strict    # exit non-zero on any failure
 """
 import argparse
+import os
 import sys
 
 try:
@@ -53,6 +54,32 @@ ROUTES = ["/", "/book", "/renter", "/driver", "/agent", "/partners", "/dispatch"
           "/trips", "/trip-planner", "/road-trip", "/destination-book",
           "/favorite-place", "/guide-studio", "/books", "/articles", "/archive",
           "/board", "/deflator", "/factor-clock", "/setup"]
+
+# Pages shared by link need their key before they will answer at all. The key
+# is spent once per browser context, below, rather than being carried in the
+# route — otherwise it would be printed on every result line and end up in
+# whatever log this gate writes to. Covered when the key is in the
+# environment; the skip is printed rather than silent, because a gate that
+# quietly stops covering a page is worse than one that fails.
+# /setup became owner-only on 2026-08-08, after the council found it open to
+# anyone. Same story as /robot below: locking a page drops it out of whatever
+# was checking it unless the checker can sign in too.
+_OWNER_USER = (os.environ.get("OWNER_TEST_USER") or "").strip()
+_OWNER_PASS = (os.environ.get("OWNER_TEST_PASS") or "").strip()
+if not _OWNER_USER:
+    ROUTES = [r for r in ROUTES if r != "/setup"]
+    print("note: /setup not checked — set OWNER_TEST_USER/OWNER_TEST_PASS to include it")
+
+_ROBOT_KEY = (os.environ.get("ROBOT_SHARE_KEY") or "").strip()
+_LAB_USER = (os.environ.get("LAB_TEST_USER") or "").strip()
+_LAB_PASS = (os.environ.get("LAB_TEST_PASS") or "").strip()
+if _ROBOT_KEY:
+    ROUTES.append("/robot")
+    if not _LAB_USER:
+        print("note: /robot will show its sign-in page — set LAB_TEST_USER and "
+              "LAB_TEST_PASS to check the page behind it")
+else:
+    print("note: /robot not checked — set ROBOT_SHARE_KEY to include it")
 
 # The eight views stacked inside "/". Each is activated in turn.
 VIEWS = ["overview", "transportation", "operations", "realestate",
@@ -70,6 +97,19 @@ PALETTE = [
     "rgb(22, 64, 111)", "rgb(22, 58, 60)", "rgb(99, 36, 30)", "rgb(125, 53, 26)",
     "rgb(27, 94, 67)", "rgb(138, 90, 18)", "rgb(163, 48, 42)",
     "rgb(164, 22, 26)", "rgb(193, 18, 31)",
+    # modern.css's four arm hues and its ink. These are the CURRENT design's
+    # chosen colours — the four above them are paper.css's, which modern.css
+    # supersedes. Both lists are live because both stylesheets are, and that is
+    # the layering problem this gate was reporting as 967 stray colours. Listing
+    # them stops the gate crying wolf; it does not make eight arm hues right,
+    # and the fix is to end up with one set, not two.
+    "rgb(29, 78, 216)", "rgb(13, 122, 111)", "rgb(168, 50, 31)", "rgb(180, 83, 9)",
+    "rgb(11, 11, 12)", "rgb(61, 61, 66)", "rgb(110, 110, 118)",   # --m-body, --m-muted
+    # modern.css moved again: a deeper ink and the navy taken from the owner's
+    # LLC logo. Listed for the same reason as the four above — the gate should
+    # measure against the palette actually in use, and say so rather than
+    # reporting 696 strays every run and being ignored.
+    "rgb(11, 8, 9)", "rgb(31, 58, 95)", "rgb(20, 39, 63)",   # --m-ink, --m-rose navy, --m-navy
     # map categories — data, so they stay distinguishable from each other
     "rgb(15, 109, 92)", "rgb(168, 90, 8)", "rgb(107, 47, 190)", "rgb(11, 100, 128)",
     "rgb(154, 91, 6)",
@@ -200,10 +240,38 @@ def main():
         browser = p.chromium.launch(executable_path=CHROME)
         for width, tag in ((1280, "desktop"), (390, "mobile")):
             page = browser.new_page(viewport={"width": width, "height": 900})
+            if _OWNER_USER:                     # sign in once per context
+                page.goto(args.base + "/", wait_until="domcontentloaded")
+                page.evaluate(
+                    """([u, w]) => fetch('/api/owner/login', {method: 'POST',
+                         headers: {'Content-Type': 'application/json'},
+                         body: JSON.stringify({username: u, password: w})})""",
+                    [_OWNER_USER, _OWNER_PASS])
+                page.wait_for_timeout(250)
+            if _ROBOT_KEY:                      # trade the key for a cookie once
+                page.goto(args.base + "/robot?k=" + _ROBOT_KEY,
+                          wait_until="domcontentloaded")
+                # /robot needs a password as well as the link now, so without
+                # an account this gate would only ever see the sign-in page.
+                # With one it sees the page behind it too. Credentials come
+                # from the environment for the same reason the key does — so
+                # they are never printed on a result line or written down here.
+                if _LAB_USER:
+                    page.evaluate(
+                        """([u, p]) => fetch('/api/access/login', {method: 'POST',
+                             headers: {'Content-Type': 'application/json'},
+                             body: JSON.stringify({username: u, password: p})})""",
+                        [_LAB_USER, _LAB_PASS])
+                    page.wait_for_timeout(200)
             for route in ROUTES:
                 resp = page.goto(args.base + route, wait_until="domcontentloaded")
                 page.wait_for_timeout(320)
-                if resp is None or resp.status >= 400:
+                # A by-link page answers 401 with a real sign-in page rather
+                # than an error body. That is a page visitors see, so it gets
+                # checked like any other instead of being counted as dead.
+                if resp is not None and resp.status == 401 and route == "/robot":
+                    print(f"note {tag:8} {route:20} showing its sign-in page")
+                elif resp is None or resp.status >= 400:
                     print(f"DEAD {tag:8} {route:20} {resp.status if resp else 'no response'}")
                     contrast_fails += 1
                     continue
@@ -212,7 +280,12 @@ def main():
                 for view in steps:
                     if view:
                         page.evaluate(f"showView('{view}')")
-                        page.wait_for_timeout(260)
+                        # The view fade is 350ms. Sampling inside it composites
+                        # every colour against what is underneath at 0.9-something
+                        # opacity, and reports tokens one unit off — rgb(75,69,61)
+                        # for body text that is rgb(74,69,61). Two false failures
+                        # that look exactly like real ones.
+                        page.wait_for_timeout(500)
 
                     res = page.evaluate(CONTRAST_JS)
                     bad = res["fails"]

@@ -14,9 +14,9 @@ rendering all 20 routes and compositing every translucent layer.
 
 | Role | Hex | On paper | Where it appears |
 |---|---|---|---|
+| Card | `#fffdf9` | — | every card, panel, input |
 | Paper — page background | `#faf8f4` | — | every page |
 | Panel — hero, footer, table headers | `#f5f1e8` | — | banded sections |
-| Card | `#ffffff` | — | every card, panel, input |
 | **Ink** — headings, body, buttons | `#14110c` | 17.8:1 | 37% of all colour used |
 | Text — paragraphs | `#4a453d` | 9.4:1 | 13% |
 | Muted — captions, labels | `#6b655b` | 6.3:1 | 7% |
@@ -26,6 +26,38 @@ rendering all 20 routes and compositing every translucent layer.
 Ink is near-black but *warm* — pure `#000` on cream reads as a hole. Same reason
 the background is not `#fff`: white under a serif headline looks like a login
 form, not a page.
+
+### The ladder
+
+Those first three rows are a **ladder**, and that matters more than the
+individual values. In OKLCH they are L 0.994 / 0.980 / 0.959, all at hue 84–87
+and chroma 0.006–0.013 — one warm stock in three brightnesses. Nothing on the
+site may invent a fourth rung.
+
+That rule was written after measuring what was actually painted, which is the
+only way this kind of fault is ever found. The card face had been `#ffffff` —
+chroma exactly 0.000, 243 elements, 8.9% of every painted pixel — so the one
+surface a reader looks at hardest was the one surface that wasn't paper. And
+eight status washes carried over from Tailwind's default scales sat on eight
+rungs nobody chose: 0.932, 0.947, 0.952, 0.960, 0.970, 0.977, 0.979, 0.987.
+Two of them were within 0.003 of the page itself, so a "highlighted" panel was
+exactly as bright as the thing it was meant to stand out from.
+
+Every hue in that set was defensible on its own. The palette still read as
+wrong, because a palette is a ladder and there wasn't one.
+
+### Washes — a panel that means something
+
+One rung each, and the hue comes from the ink whose meaning the wash shares. A
+wash is a diluted version of its own status colour, never a pastel from
+somewhere else.
+
+| Meaning | Wash (L 0.959) | Selected (L 0.930) |
+|---|---|---|
+| Info / neutral highlight | `#e5f3ff` | `#d5eaff` |
+| Good / paid / fits | `#e1f8ec` | `#cef2df` |
+| Warning / pending | `#ffefdc` | `#fce4c8` |
+| Error / needs you | `#ffeae7` | `#ffddd8` |
 
 ### Status colours — meaning, not decoration
 
@@ -72,9 +104,15 @@ of `paper.css` are the only place the accent is ever reassigned.
 
 ### What the accent is allowed to touch
 
-Section labels, links, figures, icon strokes, focus rings, the active tab
-underline, the rule across the top of a business card, and the one named
+Section labels, links, figures, icon strokes, focus rings, the mark on the
+active section, the rule across the top of a business card, and the one named
 call-to-action per view. Nothing else.
+
+That mark is a 2px rule, and which edge it sits on follows the shape of the
+list. On a desktop the sections are a rail down the left, so the rule runs
+down the left of the label. On a phone the same list is a horizontal bar above
+the content, so it goes back to an underline. Same 2px, same arm colour,
+whichever edge faces the reader.
 
 ### What never takes an arm colour
 
@@ -100,6 +138,44 @@ before they read as two different arms. Every card also carries its name, and
 the arms are never otherwise seen together, so nothing depends on telling them
 apart by colour. If it grates, the fix is to swap one of them for evergreen
 `#1c4636` or slate `#1d4c4f`; it is one line in `paper.css`.
+
+---
+
+## The map taxonomy — four families, not fourteen hues
+
+The Road Trip Planner finds fourteen kinds of stop, and each one used to have
+its own colour. That set had picked itself over several rounds: `kids` and
+`scenic` were the *same* hex, `rest` and `sleep` were two steps apart, four
+pins wore arm hues on a filled badge — which the rule above forbids — and two
+more were the site's body-text greys. Chroma ran from 0.207 on the food pin
+down to 0.015 on the ATM pin, a fourteen-fold spread across one legend.
+
+The deeper problem is that fourteen was never possible. Colour separates about
+eight categories on a chart's adjacent pairs and about **three to four** when
+any two marks can land side by side — which is exactly what a map is. Past
+that, adding hues does not add information; it adds noise that looks like
+information.
+
+So colour answers a coarser question — *whose problem is this stop?* — and the
+glyph on the pin carries the identity, as it always did.
+
+| Family | Hex | Categories |
+|---|---|---|
+| The car needs something | `#893703` | Fuel, EV charging, Car repair |
+| You need something | `#0c7d48` | Food, Coffee |
+| Somewhere to stop | `#0267c7` | Rest & services, Toilets, Somewhere to sleep |
+| Everything else in the car | `#993793` | Shops, ATM, Pharmacy, Dog walk, Playground, Scenic |
+
+Validated as a set on the cream surface, all pairs: worst CVD ΔE 8.2 (deutan,
+target ≥8), worst normal-vision ΔE 19.5 (floor ≥15), every family ≥3:1 on
+paper and ≥4.5:1 against the white glyph it carries. Re-run it before changing
+any of the four — the numbers are the reason the set is what it is, and the
+white-glyph floor is what rules out the brighter, prettier version.
+
+Scenic sits in the plum family rather than the blue one for a reason the
+validator cannot see: blue on that map already means *suggested break*, the
+one thing the tool actually produces, and two blues in one legend read as a
+single category split in half.
 
 ---
 

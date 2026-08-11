@@ -17,8 +17,8 @@
     <meta name="twitter:title" content="Road Trip Planner — what's along the way">
     <meta name="twitter:description" content="Give it two points and see the fuel, food, rest stops and viewpoints near your actual road, grouped by how many hours into the drive you'll be. Free.">
     <meta name="twitter:image" content="https://plateaustrategy.io/plateau-logo.png">
-<link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+<link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
 <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
@@ -37,7 +37,7 @@
     h1{font-size:1.75rem;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
     .sub{color:#4a453d;margin-bottom:22px;max-width:64ch}
 
-    .form{background:#fff;border:1px solid #e6e2da;border-radius:14px;padding:18px;
+    .form{background:var(--psx-card,#fffdf9);border:1px solid #e6e2da;border-radius:14px;padding:18px;
         box-shadow:0 4px 16px rgba(15,23,42,.05);margin-bottom:18px}
     .fields{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end}
     .field label{display:block;font-size:.74rem;font-weight:700;letter-spacing:.1em;
@@ -56,7 +56,7 @@
     #status.err{color:#b91c1c;font-weight:600}
 
     .summary{display:none;gap:14px;flex-wrap:wrap;margin-bottom:16px}
-    .stat{background:#fff;border:1px solid #e6e2da;border-radius:12px;padding:14px 18px;flex:1;min-width:140px}
+    .stat{background:var(--psx-card,#fffdf9);border:1px solid #e6e2da;border-radius:12px;padding:14px 18px;flex:1;min-width:140px}
     .stat .k{font-size:.72rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#6b655b}
     .stat .v{font-size:1.5rem;font-weight:800;color:#14110c;font-variant-numeric:tabular-nums;line-height:1.25}
 
@@ -69,9 +69,9 @@
         justify-content:center;color:#fff;font-size:9px;font-weight:800;margin-right:6px;flex:0 0 auto}
 
     .legs{display:flex;flex-direction:column;gap:14px}
-    .leg{background:#fff;border:1px solid #e6e2da;border-radius:14px;overflow:hidden;
+    .leg{background:var(--psx-card,#fffdf9);border:1px solid #e6e2da;border-radius:14px;overflow:hidden;
         box-shadow:0 4px 16px rgba(15,23,42,.05)}
-    .leg-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid #eef2f7;
+    .leg-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--psx-wash-info,#e5f3ff);
         background:#fbfdff}
     .leg-n{width:30px;height:30px;border-radius:50%;background:#1b4d8f;color:#fff;flex:0 0 auto;
         display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem}
@@ -97,12 +97,39 @@
         background:rgba(255,255,255,.92);border-radius:6px;padding:1px 5px;margin-top:3px;
         display:inline-block;box-shadow:0 1px 3px rgba(15,23,42,.14)}
     .ep-a .tp-dot{background:#14110c}
-    .ep-b .tp-dot{background:#0f6d5c}
+    .ep-b .tp-dot{background:#1d4c4f}
+    .gapwarn{margin:.7rem 0 0;padding:.7rem .9rem;border:1px solid rgba(164,22,26,.28);
+        border-left:3px solid #a4161a;border-radius:3px;background:var(--psx-wash-bad,#ffeae7);font-size:.9rem;color:#14110c}
+    .gapnote{color:#4a453d;font-size:.86em}
+    .chg-meta{color:#6b655b;font-size:.86em}
+    .chg-near{color:#1d4c4f;font-size:.86em;font-weight:600}
+    .chg-bare{color:#6b655b;font-size:.86em}
+    .chg-fit{background:var(--psx-wash-good,#e1f8ec);color:#1b5e43;font-size:.72em;font-weight:700;
+        border-radius:3px;padding:.05rem .35rem;margin-left:.25rem;white-space:nowrap}
+    .grouppick{display:flex;gap:.4rem;flex-wrap:wrap;margin:0 0 .9rem;align-items:center;}
+    .grouppick .gp-lab{font-size:.74rem;font-weight:700;letter-spacing:.1em;
+        text-transform:uppercase;color:#6b655b;margin-right:.3rem;}
+    .grouppick .gp-chip{background:var(--psx-card,#fffdf9);border:1px solid var(--psx-border,rgba(20,17,12,.13));
+        border-radius:999px;padding:.34rem .7rem;font:inherit;font-size:.84rem;
+        cursor:pointer;color:#4a453d;line-height:1.2;}
+    /* A switched-on category is the page's own colour, not ink. Ink here
+       put a black slab on top of a slate page — two colour systems stacked,
+       which is what reads as "blackened tabs". */
+    .grouppick .gp-chip[aria-pressed="true"]{background:var(--psx-accent,#14110c);
+        border-color:var(--psx-accent,#14110c);color:#fff;}
+    .routepick{display:flex;gap:.5rem;flex-wrap:wrap;margin:0 0 .9rem;}
+    .routepick .gp-chip{flex:1 1 190px;text-align:left;background:var(--psx-card,#fffdf9);
+        border:1px solid var(--psx-border,rgba(20,17,12,.13));border-radius:4px;
+        padding:.6rem .75rem;cursor:pointer;font:inherit;color:inherit;}
+    .routepick .gp-chip .rp-t{display:block;font-weight:700;font-size:.94rem;}
+    .routepick .gp-chip .rp-s{display:block;font-size:.78rem;color:#6b655b;margin-top:.15rem;}
+    .routepick .gp-chip[aria-pressed="true"]{border-color:var(--psx-accent,#1b4d8f);
+        box-shadow:inset 0 0 0 1px var(--psx-accent,#1b4d8f);}
 
     .leaflet-container{background:#f5f1e8;font:inherit}
     .leaflet-bar{border:none!important;border-radius:10px!important;overflow:hidden;
         box-shadow:0 2px 10px rgba(15,23,42,.16)!important}
-    .leaflet-bar a{background:#fff!important;color:#4a453d!important;
+    .leaflet-bar a{background:var(--psx-card,#fffdf9)!important;color:#4a453d!important;
         border-bottom:1px solid #e8edf3!important}
     /* mute the OSM basemap so route + stop colours stay the loudest thing on the map */
     .basemap-muted{filter:saturate(.35) contrast(.95) brightness(1.03)}
@@ -119,11 +146,12 @@
     @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
     <link rel="stylesheet" href="/modern.css">
 </head>
 <body data-arm="operations">
 <header>
-    <img src="plateau-logo.svg" alt="">
+    <img src="/plateau-logo.svg" alt="">
     <div class="brand">Road Trip Planner</div>
     <div class="sp">
         <a href="/trip-planner">City day planner</a>
@@ -159,6 +187,15 @@
 
     <div id="status">Enter two places and press “Plan the drive”.</div>
 
+    <!-- Which road. Hidden until there is more than one worth choosing
+         between: a chooser with a single option in it is furniture. -->
+    <!-- What to look for. Thirteen categories at once is an unreadable page
+         and a heavy Overpass query, so this decides both: switching one off
+         makes the search cheaper as well as quieter. -->
+    <div class="grouppick" id="groupPick"></div>
+
+    <div class="routepick" id="routePick" style="display:none"></div>
+
     <div class="summary" id="summary">
         <div class="stat"><div class="k">Distance</div><div class="v" id="stDist">—</div></div>
         <div class="stat"><div class="k">Driving time</div><div class="v" id="stTime">—</div></div>
@@ -169,11 +206,11 @@
     <div id="map"></div>
     <div class="legend">
         <span><span class="ldot" style="background:#14110c">A</span>Start</span>
-        <span><span class="ldot" style="background:#0f6d5c">B</span>Destination</span>
+        <span><span class="ldot" style="background:#1d4c4f">B</span>Destination</span>
         <span><span class="ldot" style="background:#1b4d8f">1</span>Suggested break</span>
-        <span><span class="ldot" style="background:#a85a08">⛽</span>Fuel</span>
-        <span><span class="ldot" style="background:#6b2fbe">🍽</span>Food</span>
-        <span><span class="ldot" style="background:#0b6480">👁</span>Scenic</span>
+        <span><span class="ldot" style="background:#893703">⛽</span>Fuel</span>
+        <span><span class="ldot" style="background:#0c7d48">🍽</span>Food</span>
+        <span><span class="ldot" style="background:#993793">👁</span>Scenic</span>
     </div>
 
     <div class="legs" id="legs"></div>
@@ -186,7 +223,7 @@
     search by <a href="https://nominatim.openstreetmap.org" target="_blank" rel="noopener">Nominatim</a>
 </footer>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/vendor/leaflet/leaflet.js"></script>
 <script>
 (function () {
     'use strict';
@@ -199,15 +236,35 @@
             return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
         });
     }
+    // Strings this page assembles itself go through the shared formatter when
+    // i18n.js is present, and fall straight through to English when it is not.
+    //
+    // This is why the road trip planner did not translate. i18n.js walks the
+    // page's text nodes and swaps them, which handles everything written in
+    // the HTML — the heading, the labels, the button — and can do nothing
+    // about a string built in JavaScript afterwards. Every result on this
+    // page is built that way, so a Chinese reader got a Chinese page with an
+    // entirely English answer in the middle of it.
+    function T(pattern, vals) {
+        if (window.psxFmt) return window.psxFmt(pattern, vals);
+        return String(pattern).replace(/\{(\w+)\}/g, function (m, k) {
+            return (vals && vals[k] !== undefined) ? vals[k] : m;
+        });
+    }
+
     function say(msg, isErr) {
         var el = $('status');
         el.textContent = msg;
         el.className = isErr ? 'err' : '';
     }
+    // "3 h 12 m" is assembled from numbers, so it is invisible to the text
+    // walker and stayed English on every translated page — the last of the
+    // results to do so. The unit words are patterns like anything else.
     function hhmm(sec) {
         var h = Math.floor(sec / 3600), m = Math.round((sec % 3600) / 60);
         if (m === 60) { h += 1; m = 0; }
-        return h ? h + ' h ' + (m ? m + ' m' : '') : m + ' m';
+        if (!h) return T('{m} min', { m: m });
+        return m ? T('{h} hr {m} min', { h: h, m: m }) : T('{h} hr', { h: h });
     }
 
     // ---------- map ----------
@@ -266,15 +323,32 @@
     }
 
     // ---------- route ----------
-    async function route(a, b) {
+    // Every route, not the first one. Two places are often joined by an
+    // interstate and a slower road through towns, and which one a driver
+    // wants is not something the router can know: the fast one if they are
+    // making a flight, the other if the point is the drive. OSRM will offer
+    // alternatives, it just has to be asked.
+    async function routes(a, b) {
         var url = 'https://router.project-osrm.org/route/v1/driving/' +
                   a.lon + ',' + a.lat + ';' + b.lon + ',' + b.lat +
-                  '?overview=full&geometries=geojson';
+                  '?overview=full&geometries=geojson&alternatives=3';
         var r = await fetch(url);
         if (!r.ok) throw new Error('The routing service is busy — try again in a moment.');
         var j = await r.json();
         if (!j.routes || !j.routes.length) throw new Error('No driving route between those two places.');
-        return j.routes[0];
+        // Fastest first, and drop any alternative that is barely a different
+        // road — two routes within a minute and a mile of each other are the
+        // same drive, and offering them as a choice is noise.
+        var out = j.routes.slice().sort(function (x, y) { return x.duration - y.duration; });
+        var keep = [];
+        out.forEach(function (rt) {
+            var dup = keep.some(function (k) {
+                return Math.abs(k.duration - rt.duration) < 60 &&
+                       Math.abs(k.distance - rt.distance) < 1609;
+            });
+            if (!dup) keep.push(rt);
+        });
+        return keep;
     }
 
     // Walk the route geometry and drop a marker every `gapMin` minutes of driving.
@@ -314,17 +388,109 @@
     // ---------- places along the way ----------
     // One Overpass call per break point, radius in metres. Kept deliberately
     // small: a driver wants somewhere just off this road, not the whole county.
+    // What a driver can look for along the road.
+    //
+    // Four categories was a demo. A real road trip has more questions than
+    // fuel-food-rest-view, and the ones missing were the ones people
+    // actually stop for: a toilet on its own, a pharmacy, somewhere to sleep,
+    // a tyre place when something goes wrong. Twelve now, each one a real
+    // OpenStreetMap tag rather than a guess.
+    //
+    // `on` is the default set. All twelve at once is both an unreadable page
+    // and a heavy Overpass query — the toggles below the map decide what gets
+    // asked for, so turning things off makes the search cheaper as well as
+    // quieter.
     var GROUPS = [
-        { key: 'fuel',    label: 'Fuel',        glyph: '⛽', color: '#a85a08',
+        { key: 'fuel',    label: 'Fuel',       glyph: '⛽', color: '#893703', on: true,
           q: 'node(around:{R},{LAT},{LON})[amenity=fuel];' },
-        { key: 'food',    label: 'Food',        glyph: '🍽', color: '#6b2fbe',
-          q: 'node(around:{R},{LAT},{LON})[amenity~"^(restaurant|cafe|fast_food)$"];' },
-        { key: 'rest',    label: 'Rest & services', glyph: '🅿', color: '#1b4d8f',
+
+        // access= is filtered in the query, not afterwards. The corridor
+        // sweep drops gated chargers in JS, and adding this category to the
+        // per-break search quietly routed around that check and started
+        // offering a dealership's private stall again. Filtering where the
+        // data is asked for means every path gets it.
+        { key: 'charge',  label: 'EV charging', glyph: '⚡', color: '#893703', on: true,
+          q: 'node(around:{R},{LAT},{LON})[amenity=charging_station][access!~"^(private|no|customers)$"];' +
+             'way(around:{R},{LAT},{LON})[amenity=charging_station][access!~"^(private|no|customers)$"];' },
+
+        { key: 'food',    label: 'Food',       glyph: '🍽', color: '#0c7d48', on: true,
+          q: 'node(around:{R},{LAT},{LON})[amenity~"^(restaurant|fast_food)$"];' },
+
+        // Separate from food on purpose. At 3pm on a long drive, coffee is
+        // not a meal — it is the reason you are stopping at all.
+        { key: 'coffee',  label: 'Coffee',     glyph: '☕', color: '#0c7d48', on: false,
+          q: 'node(around:{R},{LAT},{LON})[amenity=cafe];' +
+             'node(around:{R},{LAT},{LON})[cuisine=coffee_shop];' },
+
+        // highway=rest_area / services is the tag this was written against,
+        // and on its own it misses most American rest stops: state DOT
+        // imports overwhelmingly use amenity=parking + parking=rest_area, and
+        // the big interstate plazas are mapped as areas, so ways matter as
+        // much as nodes. Picnic sites and drinking water belong here too —
+        // they are what a rest stop IS, not scenery.
+        { key: 'rest',    label: 'Rest & services', glyph: '🅿', color: '#0267c7', on: true,
           q: 'node(around:{R},{LAT},{LON})[highway~"^(services|rest_area)$"];' +
-             'way(around:{R},{LAT},{LON})[highway~"^(services|rest_area)$"];' },
-        { key: 'scenic',  label: 'Scenic',      glyph: '👁', color: '#0b6480',
-          q: 'node(around:{R},{LAT},{LON})[tourism~"^(viewpoint|picnic_site)$"];' }
+             'way(around:{R},{LAT},{LON})[highway~"^(services|rest_area)$"];' +
+             'node(around:{R},{LAT},{LON})[amenity=parking][parking=rest_area];' +
+             'way(around:{R},{LAT},{LON})[amenity=parking][parking=rest_area];' +
+             'node(around:{R},{LAT},{LON})[tourism=picnic_site];' +
+             'node(around:{R},{LAT},{LON})[amenity=drinking_water];' },
+
+        // On its own, because it is the most common reason to pull over and
+        // the one thing every other planner buries inside "services".
+        { key: 'toilets', label: 'Toilets',    glyph: '🚻', color: '#0267c7', on: true,
+          q: 'node(around:{R},{LAT},{LON})[amenity=toilets];' },
+
+        { key: 'shop',    label: 'Shops',      glyph: '🛒', color: '#993793', on: false,
+          q: 'node(around:{R},{LAT},{LON})[shop~"^(convenience|supermarket)$"];' },
+
+        { key: 'sleep',   label: 'Somewhere to sleep', glyph: '🛏', color: '#0267c7', on: false,
+          q: 'node(around:{R},{LAT},{LON})[tourism~"^(hotel|motel|camp_site|caravan_site)$"];' +
+             'way(around:{R},{LAT},{LON})[tourism~"^(hotel|motel|camp_site|caravan_site)$"];' },
+
+        // Not decoration. On a long drive these are the searches that happen
+        // in a hurry, and hunting for them on a phone at the roadside is
+        // exactly when a planner should already have the answer.
+        { key: 'health',  label: 'Pharmacy & urgent care', glyph: '⚕', color: '#993793', on: false,
+          q: 'node(around:{R},{LAT},{LON})[amenity~"^(pharmacy|hospital|clinic|doctors)$"];' +
+             'way(around:{R},{LAT},{LON})[amenity~"^(hospital|clinic)$"];' },
+
+        { key: 'repair',  label: 'Car repair & tyres', glyph: '🔧', color: '#893703', on: false,
+          q: 'node(around:{R},{LAT},{LON})[shop~"^(car_repair|tyres)$"];' },
+
+        { key: 'money',   label: 'ATM & bank', glyph: '🏧', color: '#993793', on: false,
+          q: 'node(around:{R},{LAT},{LON})[amenity~"^(atm|bank)$"];' },
+
+        // Two travellers who never get planned for: the dog, and the kids.
+        { key: 'dog',     label: 'Dog walk',   glyph: '🐕', color: '#993793', on: false,
+          q: 'node(around:{R},{LAT},{LON})[leisure=dog_park];' +
+             'way(around:{R},{LAT},{LON})[leisure=dog_park];' +
+             'node(around:{R},{LAT},{LON})[amenity=dog_toilet];' },
+
+        { key: 'kids',    label: 'Playground', glyph: '🛝', color: '#993793', on: false,
+          q: 'node(around:{R},{LAT},{LON})[leisure=playground];' +
+             'way(around:{R},{LAT},{LON})[leisure=playground];' },
+
+        { key: 'scenic',  label: 'Scenic',     glyph: '👁', color: '#993793', on: true,
+          q: 'node(around:{R},{LAT},{LON})[tourism=viewpoint];' +
+             'node(around:{R},{LAT},{LON})[natural=peak];' +
+             'node(around:{R},{LAT},{LON})[historic~"^(memorial|monument|ruins)$"];' }
     ];
+
+    // Which categories are being asked for. Persisted, because a driver who
+    // travels with a dog travels with it every time.
+    var groupOn = (function () {
+        var d = {};
+        GROUPS.forEach(function (g) { d[g.key] = g.on; });
+        try {
+            var saved = JSON.parse(localStorage.getItem('psx_rt_groups') || 'null');
+            if (saved) GROUPS.forEach(function (g) {
+                if (typeof saved[g.key] === 'boolean') d[g.key] = saved[g.key];
+            });
+        } catch (e) {}
+        return d;
+    })();
+    function activeGroups() { return GROUPS.filter(function (g) { return groupOn[g.key]; }); }
 
     // Service plazas sit 30-40 miles apart, so checking a small circle at each
     // break misses nearly all of them. Overpass accepts a whole linestring in
@@ -358,11 +524,26 @@
         var line = pts.map(function (c) {
             return c[1].toFixed(4) + ',' + c[0].toFixed(4);
         }).join(',');
-        var q = '[out:json][timeout:60];(' +
+        // The corridor sweep is the one query that covers the WHOLE road
+        // rather than a circle around a planned break, so it is where a
+        // missing tag costs the most. Six shapes of the same thing:
+        //   highway=rest_area / services   the tag everyone writes first
+        //   amenity=parking + rest_area    what US state DOT imports use
+        //   tourism=picnic_site            a rest stop with tables
+        //   amenity=toilets                on its own, which is often all
+        //                                  there is and all you need
+        //   amenity=drinking_water         the other reason to pull in
+        // plus named fuel, which doubles as a rest stop everywhere rural.
+        var q = '[out:json][timeout:90];(' +
                 'node(around:' + radius + ',' + line + ')[highway~"^(services|rest_area)$"];' +
                 'way(around:' + radius + ',' + line + ')[highway~"^(services|rest_area)$"];' +
+                'node(around:' + radius + ',' + line + ')[amenity=parking][parking=rest_area];' +
+                'way(around:' + radius + ',' + line + ')[amenity=parking][parking=rest_area];' +
+                'node(around:' + radius + ',' + line + ')[tourism=picnic_site];' +
+                'node(around:' + radius + ',' + line + ')[amenity=toilets];' +
+                'node(around:' + radius + ',' + line + ')[amenity=drinking_water];' +
                 'node(around:' + radius + ',' + line + ')[amenity=fuel][name];' +
-                ');out center 300;';
+                ');out center 600;';
         var r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: q });
         if (!r.ok) throw new Error('overpass');
         var j = await r.json();
@@ -374,8 +555,17 @@
             var lon = e.lon || (e.center && e.center.lon);
             if (!lat || !lon) return;
             var isFuel = t.amenity === 'fuel';
+            // Say which kind it is. "Rest area" for a toilet block in a
+            // lay-by promises a building that is not there, and a driver who
+            // needs a toilet and a driver who needs a picnic table are not
+            // looking for the same stop.
+            var kindName = t.highway === 'services' ? T('Service area')
+                         : t.amenity === 'toilets' ? T('Toilets')
+                         : t.tourism === 'picnic_site' ? T('Picnic area')
+                         : t.amenity === 'drinking_water' ? T('Drinking water')
+                         : T('Rest area');
             stops.push({
-                name: t.name || (t.highway === 'rest_area' ? 'Rest area' : 'Service area'),
+                name: t.name || kindName,
                 kind: isFuel ? 'fuel' : 'rest',
                 lat: lat, lon: lon,
                 sec: progressAt(rt, pts, lat, lon)
@@ -385,13 +575,216 @@
         // de-dupe: same name within ~2 km is the same plaza mapped twice
         stops.sort(function (a, b) { return a.sec - b.sec; });
         var seen = [];
-        return stops.filter(function (s) {
+        stops = stops.filter(function (s) {
             var dup = seen.some(function (o) {
                 return o.name === s.name && haversine(o.lat, o.lon, s.lat, s.lon) < 2000;
             });
             if (!dup) seen.push(s);
             return !dup;
         });
+
+        // ---- no more than 30 minutes without somewhere to pull in ----
+        //
+        // The sweep finds what is mapped near the road. That is not the same
+        // as covering the drive: a wide-radius pass can still leave two hours
+        // with nothing in it, and a driver only discovers that at the point
+        // it matters.
+        //
+        // So: measure the gaps, and go back for the long ones with a wider
+        // net before giving up on them. What cannot be filled is not hidden.
+        // No planner can invent a rest stop on a road that has none — but it
+        // can say "the next 90 minutes has nothing", which is the piece of
+        // information that actually changes what a driver does.
+        stops = await fillGaps(rt, pts, stops, 30 * 60, radius);
+        return stops;
+    }
+
+    var MAX_GAP_SEC = 30 * 60;
+
+    // Where the drive goes longer than `maxGap` without a stop. Includes the
+    // run from the start to the first one and from the last to the finish —
+    // an empty first two hours is still an empty two hours.
+    function gapsIn(stops, duration, maxGap) {
+        var marks = [0].concat(stops.map(function (s) { return s.sec; })).concat([duration]);
+        marks.sort(function (a, b) { return a - b; });
+        var out = [];
+        for (var i = 1; i < marks.length; i++) {
+            if (marks[i] - marks[i - 1] > maxGap) out.push({ from: marks[i - 1], to: marks[i] });
+        }
+        return out;
+    }
+
+    async function fillGaps(rt, pts, stops, maxGap, radius) {
+        var gaps = gapsIn(stops, rt.duration, maxGap);
+        if (!gaps.length) return stops;
+
+        // One query for every gap at once, at three times the radius. Three
+        // separate round trips would be three chances to be rate-limited.
+        var probes = [];
+        gaps.forEach(function (g) {
+            var mid = (g.from + g.to) / 2;
+            var idx = Math.round((mid / rt.duration) * (pts.length - 1));
+            var c = pts[Math.max(0, Math.min(pts.length - 1, idx))];
+            probes.push(c[1].toFixed(4) + ',' + c[0].toFixed(4));
+        });
+        var wide = Math.round(radius * 3);
+        var q = '[out:json][timeout:60];(' +
+                'node(around:' + wide + ',' + probes.join(',') + ')[highway~"^(services|rest_area)$"];' +
+                'way(around:' + wide + ',' + probes.join(',') + ')[highway~"^(services|rest_area)$"];' +
+                'node(around:' + wide + ',' + probes.join(',') + ')[amenity=parking][parking=rest_area];' +
+                'node(around:' + wide + ',' + probes.join(',') + ')[amenity=toilets];' +
+                'node(around:' + wide + ',' + probes.join(',') + ')[amenity=fuel][name];' +
+                ');out center 200;';
+        try {
+            var r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: q });
+            if (!r.ok) return stops;
+            var j = await r.json();
+            var have = stops.slice();
+            (j.elements || []).forEach(function (e) {
+                var t = e.tags || {};
+                var lat = e.lat || (e.center && e.center.lat);
+                var lon = e.lon || (e.center && e.center.lon);
+                if (!lat || !lon) return;
+                if (have.some(function (o) { return haversine(o.lat, o.lon, lat, lon) < 2000; })) return;
+                have.push({
+                    name: t.name || (t.amenity === 'toilets' ? T('Toilets') :
+                                     t.amenity === 'fuel' ? T('Fuel') : T('Rest area')),
+                    kind: t.amenity === 'fuel' ? 'fuel' : 'rest',
+                    lat: lat, lon: lon, wide: true,
+                    sec: progressAt(rt, pts, lat, lon)
+                });
+            });
+            have.sort(function (a, b) { return a.sec - b.sec; });
+            return have;
+        } catch (e) { return stops; }
+    }
+
+    // ---------- EV charging ----------
+    //
+    // Every EV route planner will tell you where the chargers are. A Better
+    // Route Planner models the charge curve; PlugShare knows the stall and
+    // who complained about it; the car's own nav routes between its own
+    // network. None of them answer the question a driver actually has once
+    // the cable is in: I am here for twenty-five minutes, is there a toilet.
+    //
+    // A charger is a place you are stuck at, not a place you pass. So the
+    // chargers get swept like the rest stops, and then a SECOND query asks
+    // what is within a short walk of each one, and the two are joined. That
+    // join is the thing nobody else ships, and it costs one extra Overpass
+    // call.
+    var WALK_M = 400;          // ~5 minutes, and the far side of a big lot
+
+    async function chargersAlongRoute(rt) {
+        var target = Math.ceil(rt.distance / 3000);
+        var pts = sampleRoute(rt, Math.max(60, Math.min(500, target)));
+        var maxGap = 0;
+        for (var i = 1; i < pts.length; i++) {
+            maxGap = Math.max(maxGap, haversine(pts[i-1][1], pts[i-1][0], pts[i][1], pts[i][0]));
+        }
+        var radius = Math.round(Math.max(4000, maxGap / 2 + 500));
+        var line = pts.map(function (c) { return c[1].toFixed(4) + ',' + c[0].toFixed(4); }).join(',');
+
+        var q = '[out:json][timeout:90];(' +
+                'node(around:' + radius + ',' + line + ')[amenity=charging_station][access!~"^(private|no|customers)$"];' +
+                'way(around:' + radius + ',' + line + ')[amenity=charging_station][access!~"^(private|no|customers)$"];' +
+                ');out center 300;';
+        var r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: q });
+        if (!r.ok) throw new Error('overpass');
+        var j = await r.json();
+
+        var out = [];
+        (j.elements || []).forEach(function (e) {
+            var t = e.tags || {};
+            var lat = e.lat || (e.center && e.center.lat);
+            var lon = e.lon || (e.center && e.center.lon);
+            if (!lat || !lon) return;
+            // Access matters more than anything else here: a charger behind a
+            // gate at a dealership is not a charger you can use.
+            if (t.access && /private|no|customers/.test(t.access)) return;
+            out.push({
+                name: t.name || t.operator || T('Charging station'),
+                operator: t.operator || '',
+                lat: lat, lon: lon,
+                plugs: plugsOf(t),
+                stalls: parseInt(t.capacity, 10) || null,
+                kw: maxKw(t),
+                fee: t.fee === 'no' ? 'free' : (t.fee === 'yes' ? 'paid' : ''),
+                sec: progressAt(rt, pts, lat, lon),
+                near: []
+            });
+        });
+        out.sort(function (a, b) { return a.sec - b.sec; });
+
+        // Drop duplicates the way the rest-stop sweep does — one site is
+        // often mapped as several nodes.
+        var seen = [];
+        out = out.filter(function (c) {
+            var dup = seen.some(function (o) { return haversine(o.lat, o.lon, c.lat, c.lon) < 250; });
+            if (!dup) seen.push(c);
+            return !dup;
+        });
+        if (!out.length) return out;
+
+        // ---- the join: what is within a walk of each charger ----
+        var top = out.slice(0, 60);        // one query, bounded
+        var around = top.map(function (c) { return c.lat.toFixed(5) + ',' + c.lon.toFixed(5); }).join(',');
+        var q2 = '[out:json][timeout:60];(' +
+                 'node(around:' + WALK_M + ',' + around + ')[amenity~"^(toilets|cafe|restaurant|fast_food)$"];' +
+                 'node(around:' + WALK_M + ',' + around + ')[shop~"^(convenience|supermarket)$"];' +
+                 ');out center 400;';
+        try {
+            var r2 = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: q2 });
+            if (r2.ok) {
+                var j2 = await r2.json();
+                (j2.elements || []).forEach(function (e) {
+                    var t = e.tags || {};
+                    var lat = e.lat || (e.center && e.center.lat);
+                    var lon = e.lon || (e.center && e.center.lon);
+                    if (!lat || !lon) return;
+                    var kind = t.amenity === 'toilets' ? 'toilets'
+                             : t.amenity === 'cafe' ? 'cafe'
+                             : (t.amenity === 'restaurant' || t.amenity === 'fast_food') ? 'food'
+                             : 'shop';
+                    // Attach to the nearest charger, and only if it is really
+                    // within a walk of that one.
+                    var best = null, bestD = Infinity;
+                    top.forEach(function (c) {
+                        var d = haversine(c.lat, c.lon, lat, lon);
+                        if (d < bestD) { bestD = d; best = c; }
+                    });
+                    if (best && bestD <= WALK_M && best.near.indexOf(kind) < 0) best.near.push(kind);
+                });
+            }
+        } catch (e) { /* the charger list is still worth showing without this */ }
+        return out;
+    }
+
+    // OSM records one socket:* key per connector type. Only the ones a driver
+    // in North America has to care about are surfaced — the rest is noise on a
+    // page whose job is "can I plug in here".
+    function plugsOf(t) {
+        var p = [];
+        if (t['socket:tesla_supercharger'] || t['socket:tesla_supercharger_ccs'] ||
+            /tesla/i.test(t.operator || '') || /tesla/i.test(t.brand || '')) p.push('Tesla');
+        if (t['socket:type2_combo'] || t['socket:ccs'] || t['socket:type2_css']) p.push('CCS');
+        if (t['socket:type1_combo']) p.push('CCS');
+        if (t['socket:chademo']) p.push('CHAdeMO');
+        if (t['socket:type2'] || t['socket:type2_cable']) p.push('J1772/Type 2');
+        if (t['socket:nacs']) p.push('NACS');
+        return p;
+    }
+
+    // The fastest output any socket on the site advertises.
+    function maxKw(t) {
+        var best = 0;
+        Object.keys(t).forEach(function (k) {
+            if (k.indexOf('socket:') !== 0 || k.indexOf(':output') < 0) return;
+            var v = parseFloat(String(t[k]).replace(/[^\d.]/g, ''));
+            if (v > best) best = v;
+        });
+        if (!best && t['charging_station:output'])
+            best = parseFloat(String(t['charging_station:output']).replace(/[^\d.]/g, '')) || 0;
+        return best || null;
     }
 
     // How far into the drive a point is, by snapping it to the nearest
@@ -406,28 +799,47 @@
     }
 
     async function placesNear(lat, lon, radius) {
-        var body = '[out:json][timeout:25];(' +
-            GROUPS.map(function (g) {
+        var groups = activeGroups();
+        if (!groups.length) return {};
+        var body = '[out:json][timeout:40];(' +
+            groups.map(function (g) {
                 return g.q.replace(/\{R\}/g, radius)
                           .replace(/\{LAT\}/g, lat.toFixed(5))
                           .replace(/\{LON\}/g, lon.toFixed(5));
             }).join('') +
-            ');out center 60;';
+            ');out center 120;';
         var r = await fetch('https://overpass-api.de/api/interpreter', {
             method: 'POST', body: body
         });
         if (!r.ok) throw new Error('overpass');
         var j = await r.json();
         var buckets = {};
-        GROUPS.forEach(function (g) { buckets[g.key] = []; });
+        activeGroups().forEach(function (g) { buckets[g.key] = []; });
         (j.elements || []).forEach(function (e) {
             var t = e.tags || {};
-            var key = t.amenity === 'fuel' ? 'fuel'
-                    : (t.highway === 'services' || t.highway === 'rest_area') ? 'rest'
-                    : (t.tourism === 'viewpoint' || t.tourism === 'picnic_site') ? 'scenic'
-                    : (t.amenity ? 'food' : null);
+            // One classifier for thirteen categories, most specific first —
+            // a hotel is tourism=hotel and a viewpoint is tourism=viewpoint,
+            // so testing the key alone would put them in the same bucket.
+            var key =
+                  t.amenity === 'fuel' ? 'fuel'
+                : t.amenity === 'charging_station' ? 'charge'
+                : t.amenity === 'toilets' ? 'toilets'
+                : t.amenity === 'cafe' || t.cuisine === 'coffee_shop' ? 'coffee'
+                : /^(pharmacy|hospital|clinic|doctors)$/.test(t.amenity || '') ? 'health'
+                : /^(atm|bank)$/.test(t.amenity || '') ? 'money'
+                : t.amenity === 'dog_toilet' || t.leisure === 'dog_park' ? 'dog'
+                : t.leisure === 'playground' ? 'kids'
+                : /^(car_repair|tyres)$/.test(t.shop || '') ? 'repair'
+                : /^(convenience|supermarket)$/.test(t.shop || '') ? 'shop'
+                : /^(hotel|motel|camp_site|caravan_site)$/.test(t.tourism || '') ? 'sleep'
+                : (t.highway === 'services' || t.highway === 'rest_area' ||
+                   t.parking === 'rest_area' || t.tourism === 'picnic_site' ||
+                   t.amenity === 'drinking_water') ? 'rest'
+                : (t.tourism === 'viewpoint' || t.natural === 'peak' || t.historic) ? 'scenic'
+                : /^(restaurant|fast_food)$/.test(t.amenity || '') ? 'food'
+                : null;
             if (!key || !buckets[key]) return;
-            var name = t.name || (key === 'rest' ? 'Rest area' :
+            var name = t.name || (key === 'rest' ? T('Rest area') :
                        key === 'scenic' ? 'Viewpoint' : null);
             if (!name) return;                                   // skip unnamed clutter
             if (buckets[key].some(function (p) { return p.name === name; })) return;
@@ -448,7 +860,7 @@
             total += list.length;
             if (!list.length) return '';
             return '<div class="poi-group"><h4><span class="chip" style="background:' + g.color +
-                   '">' + g.glyph + '</span>' + g.label + '</h4><ul>' +
+                   '">' + g.glyph + '</span>' + T(g.label) + '</h4><ul>' +
                    list.slice(0, 12).map(function (p) {
                        return '<li>' + esc(p.name) + '</li>';
                    }).join('') + '</ul></div>';
@@ -457,7 +869,7 @@
         return {
             html: '<div class="leg"><div class="leg-head"><div class="leg-n">' + (i + 1) + '</div>' +
                   '<div class="leg-t"><h3>' + esc(label) + '</h3>' +
-                  '<p>About ' + hhmm(bp.sec) + ' in</p></div></div>' +
+                  '<p>' + T('About {time} in', { time: hhmm(bp.sec) }) + '</p></div></div>' +
                   '<div class="pois">' + (groupsHtml ||
                     '<p class="none">Nothing mapped close to the road here — plan to push on to the next stop.</p>') +
                   '</div></div>',
@@ -474,12 +886,104 @@
 
         try {
             var gap = +document.querySelector('input[name=gap]:checked').value;
-            say('Finding those two places…');
+            say(T('Finding those two places…'));
             var a = await geocode($('fromInput').value.trim());
             var b = await geocode($('toInput').value.trim());
 
-            say('Working out the drive…');
-            var rt = await route(a, b);
+            /* Count the road, never the traveller. Two place names go to the
+               server and nothing else — no coordinates, no identity — so what
+               accumulates is "this route is in demand", which is the thing a
+               bus company would actually buy.
+
+               Recorded HERE, as soon as both places resolve, and deliberately
+               not after the routing call below. Demand is the intent to travel
+               from A to B; it exists whether or not OSRM is up. Counting after
+               the route drew would have quietly undercounted every busy period
+               and every outage — exactly when a spike is most interesting.
+
+               Fire-and-forget: a planner must never wait on, or fail because
+               of, a counter. */
+            try {
+                psxJSON('/api/route-demand', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        from: (a && a.label) || $('fromInput').value.trim(),
+                        to: (b && b.label) || $('toInput').value.trim()
+                    })
+                });
+            } catch (e) { /* the drive is the point; the tally is not */ }
+
+            say(T('Working out the drive…'));
+            var alts = await routes(a, b);
+
+            // Offer the choice before doing the expensive part. Sweeping a
+            // route for rest stops is one big Overpass query and Overpass is
+            // free and rate-limited, so it runs for the road actually chosen
+            // rather than for all three up front.
+            buildRoutePicker(alts, a, b);
+            selectedIdx = 0;
+            await renderRoute(alts[0], a, b);
+            btn.disabled = false;
+            return;
+        } catch (e) {
+            say(e.message || T('Something went wrong — try again.'), true);
+            btn.disabled = false;
+            return;
+        }
+    }
+
+    // Which of the alternatives is drawn. Kept so re-picking can redraw
+    // without geocoding again.
+    var lastAlts = [], lastA = null, lastB = null, selectedIdx = 0;
+
+    function buildRoutePicker(alts, a, b) {
+        lastAlts = alts; lastA = a; lastB = b;
+        var box = $('routePick');
+        if (alts.length < 2) { box.style.display = 'none'; box.innerHTML = ''; return; }
+        var fastest = alts[0].duration, shortest = Math.min.apply(null, alts.map(function (r) { return r.distance; }));
+        box.innerHTML = alts.map(function (rt, i) {
+            var mi = Math.round(rt.distance / 1609.34);   // miles stay miles; this is a US road planner
+            var tags = [];
+            if (rt.duration === fastest) tags.push(T('fastest'));
+            if (rt.distance === shortest && alts.length > 1) tags.push(T('shortest'));
+            var extra = Math.round((rt.duration - fastest) / 60);
+            if (!tags.length) tags.push(T('+{n} min', { n: extra }));
+            return '<button type="button" class="gp-chip" aria-pressed="' + (i === 0) + '" data-i="' + i + '">' +
+                   '<span class="rp-t">' + hhmm(rt.duration) + ' · ' + T('{n} mi', { n: mi }) + '</span>' +
+                   '<span class="rp-s">' + tags.join(' · ') + '</span></button>';
+        }).join('');
+        box.style.display = 'flex';
+        box.querySelectorAll('button').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var i = +btn.getAttribute('data-i');
+                box.querySelectorAll('button').forEach(function (o) {
+                    o.setAttribute('aria-pressed', o === btn);
+                });
+                selectedIdx = i;
+                renderRoute(lastAlts[i], lastA, lastB);
+            });
+        });
+    }
+
+    async function renderRoute(rt, a, b) {
+        var btn = $('goBtn');
+        var gap = +document.querySelector('input[name=gap]:checked').value;
+        btn.disabled = true;
+        // Every previous drawing goes, or picking a second route leaves the
+        // first one's line and pins underneath it.
+        layers.forEach(function (l) { map.removeLayer(l); });
+        layers.length = 0;
+        $('legs').innerHTML = '';
+        try {
+            // The other alternatives stay on the map, faint, so the choice is
+            // visible as two roads rather than as two rows of numbers.
+            lastAlts.forEach(function (other) {
+                if (other === rt) return;
+                var g = L.polyline(other.geometry.coordinates.map(function (c) { return [c[1], c[0]]; }),
+                    { color: '#6b655b', weight: 3, opacity: .3, dashArray: '5,6' }).addTo(map);
+                layers.push(g);
+            });
 
             // draw route + endpoints
             var line = L.polyline(rt.geometry.coordinates.map(function (c) { return [c[1], c[0]]; }),
@@ -498,7 +1002,7 @@
             $('summary').style.display = 'flex';
 
             // ---- every rest stop on the road, not just near a break ----
-            say('Sweeping the whole route for rest stops…');
+            say(T('Sweeping the whole route for rest stops…'));
             var rests = [];
             try {
                 rests = await restStopsAlongRoute(rt);
@@ -507,14 +1011,38 @@
             if (rests.length) {
                 var restHtml = '<div class="leg"><div class="leg-head">' +
                     '<div class="leg-n" style="background:#1b4d8f">🅿</div><div class="leg-t">' +
-                    '<h3>Rest stops along the whole route</h3>' +
-                    '<p>' + rests.length + ' found within 2½ miles of the road, in the order you\'ll pass them</p>' +
+                    '<h3>' + T('Rest stops along the whole route') + '</h3>' +
+                    '<p>' + T('{n} found within 2½ miles of the road, in the order you\u2019ll pass them', { n: rests.length }) + '</p>' +
                     '</div></div><div class="pois"><div class="poi-group"><ul>' +
                     rests.map(function (s) {
                         return '<li>' + (s.kind === 'fuel' ? '⛽ ' : '🅿 ') + esc(s.name) +
-                               ' <span style="color:#6b655b">· ' + hhmm(s.sec) + ' in</span></li>';
+                               ' <span style="color:#6b655b">· ' + T('{time} in', { time: hhmm(s.sec) }) + '</span></li>';
                     }).join('') +
                     '</ul></div></div></div>';
+                // The gaps that survived the second, wider pass. This is the
+                // most useful line on the page and the one a planner that
+                // only lists what it found can never print: telling someone
+                // the next ninety minutes has nowhere to stop changes what
+                // they do before they set off.
+                var left = gapsIn(rests, rt.duration, MAX_GAP_SEC);
+                if (left.length) {
+                    restHtml += '<div class="gapwarn"><b>' +
+                        (left.length === 1
+                            ? T('One stretch with nowhere to pull in')
+                            : T('{n} stretches with nowhere to pull in', { n: left.length })) + '</b><br>' +
+                        left.map(function (g) {
+                            // "0 min to 5 hr in" is a clumsy way to say the
+                            // road is empty from the moment you leave.
+                            return g.from < 60
+                                ? T('From the start to {to} in — {len} with no mapped stop',
+                                    { to: hhmm(g.to), len: hhmm(g.to - g.from) })
+                                : T('{from} to {to} in — {len} with no mapped stop',
+                                    { from: hhmm(g.from), to: hhmm(g.to), len: hhmm(g.to - g.from) });
+                        }).join('<br>') +
+                        '<br><span class="gapnote">' +
+                        T('Searched again wider and found nothing. Fill up and stop before these.') +
+                        '</span></div>';
+                }
                 $('legs').innerHTML = restHtml;
 
                 rests.forEach(function (s) {
@@ -522,13 +1050,61 @@
                         radius: 6, color: '#fff', weight: 1.5,
                         fillColor: s.kind === 'fuel' ? '#a85a08' : '#1b4d8f', fillOpacity: .95
                     }).bindTooltip((s.kind === 'fuel' ? 'Fuel' : 'Rest stop') + ' · ' + s.name +
-                                   ' · ' + hhmm(s.sec) + ' in');
+                                   ' · ' + T('{time} in', { time: hhmm(s.sec) }));
                     c.addTo(map); layers.push(c);
                 });
             }
 
+            // ---- charging, and what is within a walk of each stall ----
+            say(T('Finding charging stations along the route…'));
+            var chargers = [];
+            try { chargers = await chargersAlongRoute(rt); } catch (e) { /* shown below */ }
+
+            if (chargers.length) {
+                // A charge you were going to stop for anyway is free. Anything
+                // within twenty minutes of a planned break is flagged, because
+                // that is the stop to aim for rather than a separate one.
+                chargers.forEach(function (c) {
+                    c.atBreak = bps.some(function (b) { return Math.abs(b.sec - c.sec) < 20 * 60; });
+                });
+                var NEAR_LABEL = { toilets: '🚻 ' + T('toilets'), cafe: '☕ ' + T('coffee'),
+                                   food: '🍽 ' + T('food'), shop: '🛒 ' + T('shop') };
+                var withAmenity = chargers.filter(function (c) { return c.near.length; }).length;
+
+                $('legs').innerHTML += '<div class="leg"><div class="leg-head">' +
+                    '<div class="leg-n" style="background:#0f6d5c">⚡</div><div class="leg-t">' +
+                    '<h3>' + T('Charging along the route') + '</h3>' +
+                    '<p>' + T('{n} stations · {w} have food, coffee or a toilet within a 5-minute walk',
+                              { n: chargers.length, w: withAmenity }) + '</p>' +
+                    '</div></div><div class="pois"><div class="poi-group"><ul>' +
+                    chargers.map(function (c) {
+                        var bits = [];
+                        if (c.plugs.length) bits.push(c.plugs.join(' · '));
+                        if (c.kw) bits.push(Math.round(c.kw) + ' kW');
+                        if (c.stalls) bits.push(T('{n} stalls', { n: c.stalls }));
+                        if (c.fee === 'free') bits.push(T('free'));
+                        var walk = c.near.length
+                            ? '<span class="chg-near">' + c.near.map(function (k) { return NEAR_LABEL[k]; }).join(' · ') + '</span>'
+                            : '<span class="chg-bare">' + T('nothing within a walk') + '</span>';
+                        return '<li>⚡ ' + esc(c.name) +
+                               (c.atBreak ? ' <span class="chg-fit">' + T('lines up with a break') + '</span>' : '') +
+                               '<span class="chg-meta"> · ' + T('{time} in', { time: hhmm(c.sec) }) +
+                               (bits.length ? ' · ' + esc(bits.join(' · ')) : '') + '</span><br>' + walk + '</li>';
+                    }).join('') +
+                    '</ul></div></div></div>';
+
+                chargers.forEach(function (c) {
+                    var m = L.circleMarker([c.lat, c.lon], {
+                        radius: c.near.length ? 7 : 5, color: '#fff', weight: 1.5,
+                        fillColor: '#0f6d5c', fillOpacity: .95
+                    }).bindTooltip('⚡ ' + c.name + ' · ' + T('{time} in', { time: hhmm(c.sec) }) +
+                                   (c.near.length ? ' · ' + c.near.map(function (k) { return NEAR_LABEL[k]; }).join(' · ') : ''));
+                    m.addTo(map); layers.push(m);
+                });
+            }
+
             if (!bps.length) {
-                say('That drive is shorter than one break — no stops needed.');
+                say(T('That drive is shorter than one break — no stops needed.'));
                 btn.disabled = false;
                 return;
             }
@@ -539,13 +1115,13 @@
             var html = '', found = 0, failed = 0;
 
             for (var i = 0; i < bps.length; i++) {
-                say('Looking for stops around break ' + (i + 1) + ' of ' + bps.length + '…');
+                say(T('Looking for stops around break {i} of {n}…', { i: i + 1, n: bps.length }));
                 var bp = bps[i], buckets = null;
                 try {
                     buckets = await placesNear(bp.lat, bp.lon, radius);
                 } catch (e) { failed++; }
 
-                var where = 'Break ' + (i + 1);
+                var where = T('Break {i}', { i: i + 1 });
                 try {
                     var rev = await fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' +
                                           bp.lat + '&lon=' + bp.lon);
@@ -559,13 +1135,13 @@
 
                 // drop the individual places on the map too, small and quiet
                 if (buckets) {
-                    GROUPS.forEach(function (g) {
+                    activeGroups().forEach(function (g) {
                         (buckets[g.key] || []).slice(0, 12).forEach(function (p) {
                             if (!p.lat || !p.lon) return;
                             var c = L.circleMarker([p.lat, p.lon], {
                                 radius: 5, color: '#fff', weight: 1.5,
                                 fillColor: g.color, fillOpacity: .95
-                            }).bindTooltip(g.label + ' · ' + p.name);
+                            }).bindTooltip(T(g.label) + ' · ' + p.name);
                             c.addTo(map); layers.push(c);
                         });
                     });
@@ -580,20 +1156,54 @@
             $('stPois').textContent = found + rests.length;
 
             if (failed === bps.length && !rests.length) {
-                say('Found the route, but the places service did not answer. It is free and rate-limited — wait a minute and try again.', true);
+                say(T('Found the route, but the places service did not answer. It is free and rate-limited — wait a minute and try again.'), true);
             } else if (failed) {
-                say('Planned. ' + failed + ' of ' + bps.length + ' breaks came back empty from the places service — try again for those.', false);
+                say(T('Planned. {failed} of {n} breaks came back empty from the places service — try again for those.', { failed: failed, n: bps.length }), false);
             } else {
-                say('Planned: ' + Math.round(miles) + ' miles, ' + hhmm(rt.duration) +
-                    ' driving, ' + rests.length + ' rest stops on the road, ' +
-                    bps.length + ' suggested breaks.');
+                say(T('Planned: {miles} miles, {time} driving, {rests} rest stops on the road, {breaks} suggested breaks.',
+                      { miles: Math.round(miles), time: hhmm(rt.duration),
+                        rests: rests.length, breaks: bps.length }));
             }
         } catch (e) {
-            say(e.message || 'Something went wrong — try again.', true);
+            say(e.message || T('Something went wrong — try again.'), true);
         } finally {
             btn.disabled = false;
         }
     }
+
+    // apply() re-walks text nodes, but an assembled string is one baked
+    // node — the only way to change it is to build it again. Redraw the
+    // chosen route so the results follow the switcher like the rest of the
+    // page does.
+    document.addEventListener('psx:lang', function () {
+        try { if (lastAlts.length) renderRoute(lastAlts[selectedIdx] || lastAlts[0], lastA, lastB); }
+        catch (e) {}
+    });
+
+    // The toggles. Painted from groupOn so a reload restores the driver's
+    // own set, not the defaults.
+    function buildGroupPicker() {
+        var box = $('groupPick');
+        box.innerHTML = '<span class="gp-lab">' + T('Look for') + '</span>' +
+            GROUPS.map(function (g) {
+                return '<button type="button" class="gp-chip" data-g="' + g.key + '" aria-pressed="' +
+                       (groupOn[g.key] ? 'true' : 'false') + '">' +
+                       g.glyph + ' ' + T(g.label) + '</button>';
+            }).join('');
+        box.querySelectorAll('button').forEach(function (b) {
+            b.addEventListener('click', function () {
+                var k = b.getAttribute('data-g');
+                groupOn[k] = !groupOn[k];
+                b.setAttribute('aria-pressed', groupOn[k] ? 'true' : 'false');
+                try { localStorage.setItem('psx_rt_groups', JSON.stringify(groupOn)); } catch (e) {}
+                // Changing what to look for only means something if the search
+                // is run again, and re-running is cheap once the route is known.
+                if (lastAlts.length) renderRoute(lastAlts[selectedIdx] || lastAlts[0], lastA, lastB);
+            });
+        });
+    }
+    buildGroupPicker();
+    document.addEventListener('psx:lang', buildGroupPicker);
 
     $('goBtn').addEventListener('click', plan);
     ['fromInput', 'toInput'].forEach(function (id) {

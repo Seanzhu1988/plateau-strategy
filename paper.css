@@ -66,6 +66,18 @@
            off it the way a screen red does. */
         --psx-red:#a4161a; --psx-red-soft:#c1121f; --psx-red-wash:#fbeceb;
 
+        /* ---- the company's own blue ----
+           The wordmark and Book a ride are the company, not the page they sit
+           on, so they hold one colour everywhere. That was written against
+           --psx-blue, which modern.css redefines as its transport hue — so the
+           pin moved with the layer, and the button came out a bright #1d4ed8
+           screen blue on a page whose whole idea is ink on paper.
+
+           This token exists to be un-repointable: nothing else in any layer
+           refers to it, so changing the company blue is this one line and
+           nothing else moves. Deep rather than bright, to sit on paper. */
+        --psx-cta:#1b4d8f; --psx-cta-dark:#16406f;
+
         /* One variable decides the display face. Point it at Carna here if
            the licence is bought — @font-face above, then swap this line.
            Until then: real book faces that ship with macOS and Windows, so
@@ -104,13 +116,7 @@
         color:var(--psx-ink) !important;
       }
       .logo-img{box-shadow:none !important;border:1px solid var(--psx-rule) !important;}
-      nav a{color:var(--psx-text2) !important;font-weight:400 !important;}
       nav a:hover{color:var(--psx-ink) !important;}
-      nav a[href="/book"],.psx-btn-primary,.book-cta{
-        background:var(--psx-ink) !important;background-image:none !important;
-        color:#fff !important;box-shadow:none !important;border:1px solid var(--psx-ink) !important;
-      }
-      nav a[href="/book"]:hover,.psx-btn-primary:hover{background:#000 !important;}
 
       /* ---------- hero: no glow, no gradient, no pill-with-a-dot ---------- */
       .psx-glow,.psx-glow-1,.psx-glow-2,.psx-dot{display:none !important;}
@@ -139,7 +145,6 @@
         color:var(--psx-ink) !important;
         text-shadow:none !important;
       }
-      .psx-h1{line-height:1.08 !important;}
       /* The Real Estate sheet used to be an architect's blueprint — dark ground,
          pale linework — so its title block was held at #eaf4ff to stay legible
          on navy. The sheet is drawn on paper now, and that same pale title on
@@ -174,17 +179,6 @@
       .psx-eyebrow{color:var(--psx-muted) !important;font-weight:500 !important;}
 
       /* ---------- stats: rules, not a floating glass slab ---------- */
-      #view-overview .psx-stats{
-        background:transparent !important;border:none !important;
-        border-top:1px solid var(--psx-rule) !important;
-        border-radius:0 !important;box-shadow:none !important;
-        backdrop-filter:none !important;
-      }
-      .psx-stat-val{
-        font-family:var(--psx-display);font-weight:600 !important;
-        color:var(--psx-ink) !important;
-      }
-      .psx-stat-label{color:var(--psx-muted) !important;}
       .psx-divider{background:var(--psx-rule) !important;}
 
       /* ---------- cards: paper on paper ---------- */
@@ -199,7 +193,6 @@
         box-shadow:0 2px 10px rgba(20,17,12,.07) !important;
         border-color:rgba(20,17,12,.22) !important;
       }
-      .psx-card h3,.service-card h3,.fin-card h3{color:var(--psx-ink) !important;}
       .psx-card p,.service-card p,.fin-card > p{color:var(--psx-text2) !important;}
       /* the gradient icon tiles were the loudest "template" signal on the page */
       .psx-chip,.psx-chip-blue,.psx-chip-violet,.psx-chip-teal{
@@ -362,8 +355,6 @@
          deliberately left alone; they are instruments, not shopfront.
          ============================================================ */
       body{background:var(--psx-bg) !important;color:var(--psx-text) !important;}
-      header .brand,header .logo-text{font-family:var(--psx-display);color:var(--psx-ink) !important;}
-      header a{color:var(--psx-text2) !important;}
       header a:hover{color:var(--psx-ink) !important;}
       header img{border:1px solid var(--psx-rule) !important;}
 
@@ -392,14 +383,14 @@
          Written this way they match exactly the same buttons and behave
          identically on their own; they simply no longer outrank the layer
          that is meant to sit on top of them. */
-      button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn),
+      button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.here-btn),
       .btn,.book-cta{
         background:var(--psx-ink) !important;background-image:none !important;
         color:#fff !important;border:1px solid var(--psx-ink) !important;
         border-radius:3px !important;box-shadow:none !important;
         font-weight:600 !important;
       }
-      button:not(.i18n-opt):not([id="i18nBtn"]):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):hover:not(:disabled){
+      button:not(.i18n-opt):not([id="i18nBtn"]):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.here-btn):hover:not(:disabled){
         background:#000 !important;transform:none !important;box-shadow:none !important;
       }
       /* On paper: a cream face, an ink pin, and red only while it waits. */
@@ -426,7 +417,6 @@
         box-shadow:0 0 0 3px rgba(var(--psx-accent-rgb),.13) !important;
         background:#fff !important;
       }
-      label{color:var(--psx-text2) !important;}
       /* The map must keep its own colours — it is data, not decoration. */
       .leaflet-container,.leaflet-container *{font-family:var(--psx-sans);}
 
@@ -479,7 +469,6 @@
         border:1px solid var(--psx-border) !important;border-radius:4px !important;
         box-shadow:none !important;
       }
-      .psx-cta-glow{display:none !important;}
       .board{background:#fff !important;border:1px solid var(--psx-border) !important;}
       table th{
         background:var(--psx-hero) !important;
@@ -533,16 +522,13 @@
          accent call-to-action per view and ink for every form submit
          under it. Two sienna buttons stacked in the same panel was what
          made the mismatch visible in the first place. */
-      .psx-btn-primary,
-      nav a[href="/book"],
-      .book-cta,
-      button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]),
+      button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.here-btn),
       .btn.blue,.btn-blue,.cta{
         background:var(--psx-accent) !important;background-image:none !important;
         border-color:var(--psx-accent) !important;color:#fff !important;
       }
-      .psx-btn-primary:hover,nav a[href="/book"]:hover,.cta:hover,
-      button:not(.i18n-opt):not([id="i18nBtn"]):not(.pk-bubble):not([id="pollock"]):hover:not(:disabled){
+      .cta:hover,
+      button:not(.i18n-opt):not([id="i18nBtn"]):not(.pk-bubble):not([id="pollock"]):not(.here-btn):hover:not(:disabled){
         background:var(--psx-accent-dark) !important;border-color:var(--psx-accent-dark) !important;
       }
 
@@ -554,10 +540,6 @@
       .psx-eyebrow,.psx-eyebrow-pill,.fs{color:var(--psx-accent) !important;}
 
       /* And the wordmark, so the masthead is not pure black either. */
-      .logo-text,.psx-foot-mark span{
-        -webkit-text-fill-color:var(--psx-accent) !important;
-        color:var(--psx-accent) !important;
-      }
 
       /* ============================================================
          THE FOUR ARMS — colour as an index, not as decoration.
@@ -612,14 +594,14 @@
          stops being recognisable as the same button — which is the one
          thing a conversion button cannot afford. Both are pinned. */
       .logo-text,.psx-foot-mark span{
-        -webkit-text-fill-color:var(--psx-blue) !important;
-        color:var(--psx-blue) !important;
+        -webkit-text-fill-color:var(--psx-cta) !important;
+        color:var(--psx-cta) !important;
       }
-      nav a[href="/book"],nav a[href="/book"]:hover{
-        background:var(--psx-blue) !important;border-color:var(--psx-blue) !important;
-        color:#fff !important;
-      }
-      nav a[href="/book"]:hover{background:#16406f !important;border-color:#16406f !important;}
+      /* The Book a ride button is painted once, in modern.css, as an
+         underline in the company navy. What stood here was a filled blue
+         version of the same control — correct when it was written, and
+         superseded. Two rules for one button is how this file got the way it
+         is, so the older one goes rather than being out-specified. */
 
       /* ---------- and neither does anything that means something ----------
          "Located" is a success state, not a section. It was reading the
@@ -645,13 +627,23 @@
         border-top-color:var(--psx-accent) !important;
       }
 
-      /* The contents strip: the current section is marked in its own
-         colour, so the tab and the page underneath agree. */
+      /* The contents strip: the current section is marked in its own colour,
+         so the tab and the page underneath agree.
+
+         The TEXT colour used to be set here too, and it was doing real damage.
+         modern.css marks the current section as an ink pill with white text —
+         `.phase-tab.active`, specificity (0,2,0). This rule is (0,3,0), so it
+         won, and the live site drew the arm's blue on modern's near-black
+         pill: 2.94:1 against a 4.5 floor, on every section tab, on the front
+         page. Eight failures, and the fix that would have been reached for is
+         a louder rule here — which is how nine stylesheets happened.
+
+         So the old declaration comes out instead. The mark stays a rule in the
+         arm's colour, which is what it was for; whoever owns the tab's fill
+         owns the text that sits on it. */
       .phase-tab[data-arm].active,.phase-tab[data-arm].active:hover{
-        color:var(--psx-accent) !important;
         border-bottom:2px solid var(--psx-accent) !important;
       }
-      .phase-tab[data-arm].active .tab-ico{color:var(--psx-accent) !important;}
 
       /* The loop diagram names three of the four arms, so it uses their
          colours rather than three shades of the same one. */
@@ -722,8 +714,6 @@
       /* Destination Book category badges — a taxonomy, so they keep three
          distinguishable hues; they were just a shade off the ones the rest
          of the site already uses. */
-      .b-attr{color:var(--psx-blue) !important;}
-      .b-price{color:#1b5e43 !important;}
       .b-rest,.soon-badge{color:#8a5a12 !important;}
 
       /* Red means a field still needs you — that is what --psx-red is for. */

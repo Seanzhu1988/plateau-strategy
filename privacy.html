@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy — Plateau Strategy Solution Lab</title>
+    <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+    <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
+    <link rel="stylesheet" href="/modern.css">
+    <!-- Every sentence below describes something that is in the code today.
+         Nothing here is aspirational, and nothing describes a feature that is
+         built but switched off — photo GPS reading exists as a module and is
+         NOT wired to any route, so it is not described as something the site
+         does. A privacy policy that describes an intention is a false
+         statement with good manners. When a feature goes live, this page
+         changes in the same commit. -->
+    <style>
+        header img { height: 42px; width: 42px; border-radius: 50%; }
+        header .brand { font-size: 1.2rem; font-weight: 800; }
+        header .right { margin-left: auto; display: flex; gap: 1.2rem; }
+
+        .wrap { max-width: 44rem; }
+        .rule { border: 0; border-top: 1px solid var(--psx-line, #e6e2da);
+                margin: 2.6rem 0 2.2rem; }
+        .standing { border-left: 2px solid var(--psx-accent, #1f3a5f);
+                    padding: .1rem 0 .1rem 1.1rem; margin: 1.6rem 0 2rem; }
+        .standing p { margin: .5rem 0; }
+        h2 { margin: 2.6rem 0 .8rem; }
+        h3 { margin: 1.6rem 0 .4rem; }
+        p, li { font-size: 1.02rem; }
+        p { margin: .85rem 0; }
+        ul, ol { margin: .9rem 0 .9rem 1.2rem; }
+        li { margin: .55rem 0; }
+        .quiet { opacity: .72; font-size: .93rem; }
+        table.pp { width: 100%; border-collapse: collapse; margin: 1.1rem 0 1.6rem; }
+        table.pp th, table.pp td { text-align: left; vertical-align: top;
+                                   padding: .6rem .7rem .6rem 0;
+                                   border-top: 1px solid var(--psx-line, #e6e2da);
+                                   font-size: .96rem; }
+        /* modern.css styles every `th` as a column header for a data table:
+           uppercase, letter-spaced, 0.72rem, all !important. These are ROW
+           headers carrying whole sentences, so that treatment shrinks them to
+           11.5px and shouts them in caps. Overridden at equal weight, which is
+           the only thing that beats !important, and kept as `th scope="row"`
+           because a screen reader announcing which row you are in is worth
+           more than the convenience of using a `td`. */
+        table.pp th { width: 34%;
+                      font-size: .96rem !important; font-weight: 600 !important;
+                      text-transform: none !important; letter-spacing: 0 !important;
+                      background: transparent !important;
+                      color: inherit !important; }
+        .tbl-scroll { overflow-x: auto; }
+        @media (max-width: 34rem) {
+            table.pp th, table.pp td { display: block; width: auto;
+                                       border-top: 0; padding: .15rem 0; }
+            table.pp tr { display: block; padding: .7rem 0;
+                          border-top: 1px solid var(--psx-line, #e6e2da); }
+            table.pp th { font-weight: 700; }
+        }
+    </style>
+</head>
+<body data-arm="rides">
+    <header>
+        <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="right">
+            <a href="/">Home</a>
+        </div>
+    </header>
+
+    <div class="wrap">
+        <div class="page-title">Privacy</div>
+        <p class="page-sub">What this site collects, why, who else sees it, and
+        how to make us stop. Last updated <b>9 August 2026</b>.</p>
+
+        <div class="standing">
+            <p><b>We do not sell your personal information.</b> Not to anyone,
+            not in any form, not de-identified and not "shared for analytics".</p>
+            <p>There are no third-party analytics on this site and no
+            advertising trackers. Visitor numbers are counted by our own server
+            as daily totals.</p>
+            <p><b>We do not track your location.</b> The visitor features that
+            use your position — the "Use my location" button on the booking
+            form and the walking-guide prototype — never send it to our
+            server. In both, your browser asks OpenStreetMap directly: once to
+            turn your position into an address, once to ask what is near you
+            (see "Who else sees any of it"). The walking guide's trail of
+            where you have been lives and dies on your phone. You can always
+            type an address instead.</p>
+        </div>
+
+        <p class="psx-lede">This is a small business, not a data business. The
+        short version: we keep what is needed to drive you somewhere, to run
+        driver and agent accounts, and to know roughly how many people visited.
+        Everything below is detail on that.</p>
+
+        <hr class="rule">
+
+        <h2>What we collect</h2>
+
+        <div class="tbl-scroll">
+        <table class="pp">
+            <tr>
+                <th scope="row">Booking a ride</th>
+                <td>Your name, email, phone, pickup and drop-off address, the
+                date and time, how many passengers, and anything you write in
+                the notes. We need these to send a car to the right place.</td>
+            </tr>
+            <tr>
+                <th scope="row">A customer account</th>
+                <td>Name, email, phone, and your password stored as a hash. An
+                account is optional — you can book without one.</td>
+            </tr>
+            <tr>
+                <th scope="row">A driver account</th>
+                <td>Name, email, phone, your vehicle's details including the
+                VIN, and your date of birth, which is what you sign in with.</td>
+            </tr>
+            <tr>
+                <th scope="row">An agent account</th>
+                <td>Name, email, phone, organization if you have one, and the
+                agent code we issue you.</td>
+            </tr>
+            <tr>
+                <th scope="row">Signing a driver agreement</th>
+                <td>Your typed name, the signature you draw, the date and time,
+                your IP address and your browser's user-agent string. The last
+                two are kept for one reason: they are the evidence that a
+                particular person signed a particular version, which is what
+                makes the signature worth anything.</td>
+            </tr>
+            <tr>
+                <th scope="row">Comments and ratings on places</th>
+                <td>Whatever you type. No account is needed, so these are not
+                connected to a name unless you put one in the text.</td>
+            </tr>
+            <tr>
+                <th scope="row">Simply visiting</th>
+                <td>A daily count of page views per page, and a one-word label
+                for where the visit came from — "google", "direct", "reddit".
+                Never the full address of the page you came from.</td>
+            </tr>
+        </table>
+        </div>
+
+        <h3>How visitor counting works, exactly</h3>
+
+        <p>Our server keeps one record per day: how many page views, which
+        pages, the coarse source labels above, and how many bookings resulted.
+        To count <em>unique</em> visitors it holds a random id for your browser
+        <b>for that day only</b>. When the day closes, the ids are deleted and
+        all that survives is a number.</p>
+
+        <p>That is a deliberate trade and it has a cost worth stating: because
+        the ids are thrown away, we cannot go back and remove your device from
+        a past day's number. Only today can be corrected. We think a system
+        that cannot reconstruct who visited when is worth more than one that
+        can be edited.</p>
+
+        <p>You can switch counting off for your device entirely, at
+        <a href="/not-a-traveler">/not-a-traveler</a>. It sets a preference that
+        stops both the visit count and the booking count for that browser.</p>
+
+        <hr class="rule">
+
+        <h2>Who else sees any of it</h2>
+
+        <p>Only these, and only for the job named:</p>
+
+        <ul>
+            <li><b>Square</b> — card payments and invoices. They receive what a
+            payment needs.</li>
+            <li><b>Twilio</b> — the text messages that tell a driver about a
+            job. They receive the message and the number it goes to.</li>
+            <li><b>OpenStreetMap</b> — map tiles, place search and the route
+            tools. <b>Your browser calls them directly</b>, so OpenStreetMap
+            receives your IP address and what you typed into a place search. It
+            does not pass through our server, and we never see it. This is how
+            every map on the site works, including the trip planner and the
+            road-trip tool.</li>
+            <li><b>Wikipedia and Wikidata</b> — descriptions of places, fetched
+            by our server. Nothing about you is sent.</li>
+            <li><b>Google</b> — only if you use a "Continue with Google" button.
+            We receive your name and verified email address to fill the form in,
+            and store neither beyond what you then submit. This feature is
+            currently switched off.</li>
+        </ul>
+
+        <p>We may also disclose information if the law requires it, or to
+        establish or defend a legal claim — for example, producing a signed
+        driver agreement in a dispute.</p>
+
+        <p class="quiet">Our own hosting provider (Render) necessarily handles
+        the traffic to this site, as any host does.</p>
+
+        <hr class="rule">
+
+        <h2>What we do not do</h2>
+
+        <ul>
+            <li>We do not sell personal information.</li>
+            <li>We do not share it with anyone for their own purposes.</li>
+            <li>We do not run third-party analytics or advertising trackers.</li>
+            <li>We do not build advertising profiles, and we do not target ads
+            at you based on anything here.</li>
+            <li>We do not send your information to an AI system. The assistant
+            on this site is available only to the owner when signed in, and
+            visitor data is not put through it.</li>
+            <li>We do not record visitors' movements. The walking guide's
+            trail stays on your device, and our server never receives your
+            position from it or from the booking form. The only movement
+            traces we keep are of our own team deliberately walking public
+            corridors — an airport hallway, a station platform — to map them,
+            recorded on our own sign-in, with no visitor and no name in
+            them.</li>
+        </ul>
+
+        <hr class="rule">
+
+        <!-- Washington's My Health My Data Act requires this to be its own
+             policy, distinctly linked from the homepage, even for a business
+             that collects no health data. Saying "we collect none" is itself
+             the disclosure, and it is only credible if it is specific about
+             the thing the statute actually reaches: precise location. -->
+        <h2>Washington consumer health data</h2>
+
+        <p>Washington's <i>My Health My Data Act</i> requires a separate notice
+        about consumer health data. Ours is short:</p>
+
+        <p><b>We collect no consumer health data.</b> We do not ask about your
+        health, we do not infer anything about it, and we do not collect precise
+        location information — which the Act treats as health data when it could
+        indicate that someone sought health services.</p>
+
+        <p>A pickup or drop-off address you type into a booking is used to drive
+        you and for nothing else: it is not analysed, not categorised by what is
+        at that address, and not used to infer anything about you. We do not
+        collect, share or sell consumer health data, and there is accordingly no
+        list of categories to disclose, no third parties to name, and nothing
+        for which we would need your authorization.</p>
+
+        <p>If that ever changes, this section changes first, and we will ask for
+        your consent before collecting anything of the kind — not after.</p>
+
+        <hr class="rule">
+
+        <h2>How long we keep things</h2>
+
+        <ul>
+            <li><b>Bookings</b> — kept as business records.</li>
+            <li><b>Accounts</b> — until you ask us to delete them.</li>
+            <li><b>Signed agreements</b> — kept while they could still matter to
+            a claim.</li>
+            <li><b>Daily visitor counts</b> — the per-day totals are kept for
+            about four months and then dropped. The browser ids behind the
+            unique count are deleted at the end of each day, as above.</li>
+        </ul>
+
+        <hr class="rule">
+
+        <h2>What you can ask for</h2>
+
+        <ul>
+            <li><b>A copy</b> of what we hold about you.</li>
+            <li><b>Correction</b> of anything wrong.</li>
+            <li><b>Deletion.</b> We will delete what we are not required to
+            keep, and tell you plainly what is left and why — a signed
+            agreement, for instance, cannot be deleted while it is still
+            operative.</li>
+            <li><b>To stop being counted</b>, which needs no request at all:
+            <a href="/not-a-traveler">/not-a-traveler</a>.</li>
+        </ul>
+
+        <p>Ask by writing to <b><span id="ppContact">the address below</span></b>.
+        We will not charge you, and we will not make you create an account to
+        ask.</p>
+
+        <p class="quiet">Depending on where you live you may have further rights
+        under your local law, and nothing here is meant to reduce them.</p>
+
+        <hr class="rule">
+
+        <h2>Children</h2>
+
+        <p>This site is not directed at children under 13 and we do not
+        knowingly collect their information. A child can of course be a
+        passenger on a booking made by an adult; the booking is the adult's.</p>
+
+        <h2>Changes</h2>
+
+        <p>If this policy changes, the date at the top changes with it. If a
+        change means we would collect something new about you, we will ask
+        first.</p>
+
+        <p class="quiet">Plateau Strategy Solution Lab, Seattle, Washington.</p>
+    </div>
+
+    <script>
+      /* The contact address is configuration, not content: it is set once in
+         the environment and rendered here, so the policy cannot go out quoting
+         an address that bounces. The route serving this page refuses to serve
+         it at all until that is set — a privacy policy with no working way to
+         reach a human is not a privacy policy. */
+      (async function () {
+        var el = document.getElementById('ppContact');
+        if (!el || typeof psxJSON !== 'function') return;
+        var d = await psxJSON('/api/privacy/contact');
+        if (d && d.ok && d.contact) {
+          el.textContent = d.contact;
+          if (d.contact.indexOf('@') > 0) {
+            var a = document.createElement('a');
+            a.href = 'mailto:' + d.contact;
+            a.textContent = d.contact;
+            el.replaceWith(a);
+          }
+        }
+      })();
+    </script>
+</body>
+</html>

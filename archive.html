@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Archive — Plateau Strategy Solution Lab</title>
-    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -20,7 +20,7 @@
         .sub { color: #6b655b; margin: 0.2rem 0 1.6rem; }
 
         .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
-        .tile { background: #fff; border: 1px solid #e6e2da; border-radius: 14px; padding: 1.3rem; cursor: pointer;
+        .tile { background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da; border-radius: 14px; padding: 1.3rem; cursor: pointer;
             transition: box-shadow .15s, transform .15s, border-color .15s; }
         .tile:hover { box-shadow: 0 8px 24px rgba(15,23,42,0.10); transform: translateY(-2px); border-color: #4a453d; }
         .tile .lbl { font-size: 1.02rem; font-weight: 800; color: #14110c; }
@@ -30,7 +30,7 @@
         .tile.hot { border-color: #1b5e43; background: linear-gradient(180deg,#ffffff,#f0fdf9); }
         .tile.hot .n { color: #047857; }
 
-        .card { background: #fff; border: 1px solid #e6e2da; border-radius: 14px; padding: 1.4rem; margin-top: 1.2rem; }
+        .card { background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da; border-radius: 14px; padding: 1.4rem; margin-top: 1.2rem; }
         .backbar { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
         .back { background: none; border: none; color: #1b4d8f; font-weight: 700; cursor: pointer; font-size: 0.9rem; padding: 0; }
         h2 { font-size: 1.25rem; color: #14110c; }
@@ -38,34 +38,35 @@
         .toolbar input { flex: 1; min-width: 180px; padding: 0.6rem 0.9rem; border: 1px solid #ddd8cd; border-radius: 9px; font-size: 0.9rem; }
         .btn { padding: 0.62rem 1.1rem; border: none; border-radius: 10px; font-weight: 700; font-size: 0.86rem;
             cursor: pointer; text-decoration: none; display: inline-block; }
-        .btn.blue { background: linear-gradient(135deg,#1b4d8f,#1b4d8f); color: #fff; }
+        .btn.blue { background: var(--psx-accent, #1b4d8f); color: #fff; }
         .btn.dark { background: #14110c; color: #fff; }
         .count { color: #6b655b; font-size: 0.82rem; font-weight: 600; }
         .tbl-scroll { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: 0.5rem 0.6rem; font-size: 0.84rem; border-bottom: 1px solid #faf8f4; white-space: nowrap; }
-        th { color: #6b655b; font-weight: 700; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; background: #fff; }
+        th { color: #6b655b; font-weight: 700; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; background: var(--psx-card,#fffdf9); }
         td.amt { text-align: right; font-weight: 700; }
         td a { color: #1b4d8f; }
         .badge { font-size: 0.66rem; font-weight: 800; padding: 0.16rem 0.5rem; border-radius: 999px; background: #e6e2da; color: #4a453d; }
         .badge.NEW, .badge.QUOTE { background: #fef3c7; color: #92400e; }
         .badge.COMPLETED, .badge.PAID { background: #dcfce7; color: #166534; }
-        .badge.ASSIGNED { background: #dbeafe; color: #1e40af; }
+        .badge.ASSIGNED { background: var(--psx-wash-info-on,#d5eaff); color: #1e40af; }
         .badge.CANCELED { background: #fee2e2; color: #991b1b; }
         .empty { color: #6b655b; text-align: center; padding: 1.6rem; }
         .note { color: #6b655b; font-size: 0.8rem; margin-top: 1.2rem; line-height: 1.5; }
-        .mkt-note { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 0.9rem 1.1rem;
+        .mkt-note { background: var(--psx-wash-good,#e1f8ec); border: 1px solid var(--psx-wash-good-on,#cef2df); border-radius: 12px; padding: 0.9rem 1.1rem;
             font-size: 0.85rem; color: #065f46; margin-top: 0.9rem; line-height: 1.5; display: none; }
     </style>
     <link rel="stylesheet" href="/admin-terminal.css">
     <link rel="stylesheet" href="/paper.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="/psx-net.js"></script>
+    <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
     <link rel="stylesheet" href="/modern.css">
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/vendor/leaflet/leaflet.js"></script>
 </head>
 <body data-arm="company">
     <header>
-        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab">
+        <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab">
         <span class="brand">Plateau Strategy Solution Lab</span>
         <div class="links"><a href="/dispatch">Dispatch</a><a href="/books">Books</a><a href="/">← Home</a></div>
     </header>
