@@ -3742,6 +3742,197 @@ def api_opinions_public():
     return jsonify({"ok": True, "count": len(out), "opinions": out})
 
 
+PURCHASES_PATH = _data_path("purchases.json")
+
+
+def _find_opinion(oid):
+    for o in _load(OPINIONS_PATH):
+        if o.get("id") == oid:
+            return o
+    return None
+
+
+def _has_paid(oid, buyer_key):
+    for b in _load(PURCHASES_PATH):
+        if b.get("opinion_id") == oid and b.get("status") == "paid" \
+                and b.get("buyer_key") == buyer_key:
+            return b
+    return None
+
+
+def _buyer_key():
+    """Who the buyer is, without making them hold an account.
+
+    An anonymous long-lived cookie. Somebody who buys an opinion should be able
+    to come back and read it tomorrow without a login they never asked for.
+    """
+    k = session.get("buyer_key")
+    if not k:
+        k = secrets.token_hex(16)
+        session["buyer_key"] = k
+    return k
+
+
+@app.route("/api/opinions/<oid>/buy", methods=["POST"])
+def api_opinion_buy(oid):
+    """Buy one opinion. Charged through the same Square path as a booking."""
+    d = request.get_json(force=True, silent=True) or {}
+    name = (d.get("name") or "").strip()
+    email = (d.get("email") or "").strip()
+    if not name or not email:
+        return jsonify({"ok": False, "error": "A name and email are required to send the invoice."}), 400
+    op = _find_opinion(oid)
+    if not op or not op.get("published"):
+        return jsonify({"ok": False, "error": "That opinion is not available."}), 404
+
+    key = _buyer_key()
+    already = _has_paid(oid, key)
+    if already:
+        return jsonify({"ok": True, "already_paid": True, "purchase_id": already["id"]})
+
+    price = float(op.get("price_usd") or 0)
+    # The split, recorded at the moment of sale rather than worked out later.
+    # Square takes its cut of the whole charge before anyone is paid, so the
+    # platform's real margin is its fee MINUS processing — not its fee.
+    fee = round(price * PLATFORM_FEE_PCT, 2)
+    processing = round(price * 0.029 + 0.30, 2)
+    to_pro = round(price - fee, 2)
+    net = round(fee - processing, 2)
+
+    invoice = None
+    try:
+        invoice = square_client.create_charge(
+            {"name": name, "email": email, "phone": (d.get("phone") or "").strip()},
+            price, "Professional opinion: " + op.get("title", "")[:60],
+            "Written by %s — %s. One-time purchase; yours to keep." % (
+                op.get("pro_name", ""), op.get("trade_label", "")))
+    except Exception as e:
+        invoice = {"ok": False, "error": str(e)[:160]}
+
+    # An invoice that failed to raise is not a pending sale. Recording it as one
+    # would put money in the ledger that nobody was ever asked for, and leave a
+    # row that can never be reconciled because there is nothing at Square to
+    # reconcile against.
+    # square_client falls back to a MOCK invoice when SQUARE_ACCESS_TOKEN and
+    # SQUARE_LOCATION_ID are absent. That is useful for developing against, and
+    # dangerous in a ledger: a simulated invoice can never be reconciled, so a
+    # "pending" row against it would sit there forever looking like money owed.
+    # It is recorded as demo, and excluded from earnings.
+    is_demo = isinstance(invoice, dict) and (
+        invoice.get("mode") == "mock" or str(invoice.get("status", "")).upper() == "SIMULATED")
+
+    inv_err = None
+    if isinstance(invoice, dict) and not is_demo:
+        if invoice.get("errors"):
+            try:
+                inv_err = invoice["errors"][0].get("detail") or str(invoice["errors"][0])
+            except Exception:
+                inv_err = "Square rejected the invoice."
+        elif invoice.get("ok") is False:
+            inv_err = invoice.get("error") or "Square rejected the invoice."
+    if inv_err:
+        return jsonify({"ok": False, "error": inv_err,
+                        "hint": "Nothing was recorded — the invoice was never raised."}), 502
+
+    with _LOCK:
+        buys = _load(PURCHASES_PATH)
+        if not isinstance(buys, list):
+            buys = []
+        rec = {
+            "id": _next_id(buys, "BUY", datestamp=False),
+            "opinion_id": oid, "opinion_title": op.get("title"),
+            "pro_id": op.get("pro_id"), "buyer_key": key,
+            "buyer_name": name[:80], "buyer_email": email[:120],
+            "price_usd": price, "platform_fee_usd": fee,
+            "processing_usd": processing, "to_professional_usd": to_pro,
+            "platform_net_usd": net,
+            "status": "demo" if is_demo else "pending",
+            "invoice_id": (invoice or {}).get("id") or (invoice or {}).get("invoice_id"),
+            "invoice_url": (invoice or {}).get("url") or (invoice or {}).get("public_url"),
+            "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        }
+        buys.append(rec)
+        _save(PURCHASES_PATH, buys)
+
+    return jsonify({"ok": True, "purchase": rec, "invoice": invoice, "demo": is_demo,
+                    "note": ("Square is not connected, so no invoice was really sent and "
+                             "nothing will be charged. Recorded as a demo sale and kept out "
+                             "of earnings.") if is_demo else
+                            ("Pay the invoice and the opinion unlocks for you. Nothing is "
+                             "charged here — the invoice comes from Square.")})
+
+
+@app.route("/api/opinions/<oid>/read")
+def api_opinion_read(oid):
+    """The body — only for someone who has paid for it.
+
+    This is the single most important gate on the platform. The preview and the
+    price are public; the document is the product. If this leaks, there is
+    nothing to sell.
+    """
+    op = _find_opinion(oid)
+    if not op or not op.get("published"):
+        return jsonify({"ok": False, "error": "Not available."}), 404
+    paid = _has_paid(oid, _buyer_key())
+    if not paid:
+        return jsonify({"ok": False, "locked": True,
+                        "preview": op.get("preview", ""),
+                        "price_usd": op.get("price_usd", 0),
+                        "error": "This opinion has not been purchased on this device."}), 402
+    return jsonify({"ok": True, "title": op.get("title"), "body": op.get("body"),
+                    "by": op.get("pro_name"), "trade": op.get("trade_label"),
+                    "purchased_at": paid.get("paid_at") or paid.get("created_at")})
+
+
+@app.route("/api/purchases/reconcile", methods=["POST"])
+@owner_required
+def api_purchases_reconcile():
+    """Ask Square which invoices are actually paid, and unlock those.
+
+    Square invoices are paid out of band — a link in an email, minutes or days
+    later — so nothing can be unlocked at the moment of purchase. This is the
+    same reconcile-against-the-processor pattern the bookings already use:
+    the processor is the source of truth, never our own record.
+    """
+    try:
+        sq = square_client.list_invoices() or {}
+    except Exception as e:
+        return jsonify({"ok": False, "error": "Could not reach Square: " + str(e)[:120]}), 502
+    paid_ids = {k for k, v in (sq.items() if isinstance(sq, dict) else [])
+                if str((v or {}).get("status", "")).upper() in ("PAID", "COMPLETED")}
+    unlocked = []
+    with _LOCK:
+        buys = _load(PURCHASES_PATH)
+        ops = _load(OPINIONS_PATH)
+        for b in buys:
+            if b.get("status") == "pending" and b.get("invoice_id") in paid_ids:
+                b["status"] = "paid"
+                b["paid_at"] = datetime.datetime.now().isoformat(timespec="seconds")
+                unlocked.append(b["id"])
+                for o in ops:
+                    if o.get("id") == b.get("opinion_id"):
+                        o["sales"] = o.get("sales", 0) + 1
+        if unlocked:
+            _save(PURCHASES_PATH, buys)
+            _save(OPINIONS_PATH, ops)
+    return jsonify({"ok": True, "unlocked": len(unlocked), "purchase_ids": unlocked})
+
+
+@app.route("/api/purchases/ledger")
+@owner_required
+def api_purchases_ledger():
+    """What the platform has actually earned, after the processor."""
+    all_buys = _load(PURCHASES_PATH)
+    buys = [b for b in all_buys if b.get("status") == "paid"]
+    return jsonify({"ok": True, "sales": len(buys),
+                    "demo_sales_excluded": len([b for b in all_buys if b.get("status") == "demo"]),
+                    "gross_usd": round(sum(b.get("price_usd", 0) for b in buys), 2),
+                    "to_professionals_usd": round(sum(b.get("to_professional_usd", 0) for b in buys), 2),
+                    "processing_usd": round(sum(b.get("processing_usd", 0) for b in buys), 2),
+                    "platform_net_usd": round(sum(b.get("platform_net_usd", 0) for b in buys), 2),
+                    "pending": len([b for b in all_buys if b.get("status") == "pending"])})
+
+
 # ---------- agents (referral partners) ----------
 @app.route("/api/agents/register", methods=["POST"])
 def api_agent_register():
@@ -4592,6 +4783,8 @@ def _public_article(a):
         "unlikes": a.get("unlikes", 0),
         "follower_count": len(a.get("followers", [])),
         "launcher_count": len(a.get("launchers", [])),
+        # The trades this article calls for — what goes at the foot of it.
+        "professionals": a.get("professionals"),
     }
 
 
@@ -4624,8 +4817,22 @@ def api_article_create():
             "followers": [],
             "launchers": [],
         }
+        # Read the article and work out which trades it calls for. Stored ON the
+        # article so the summary at the foot of it is the same list every time it
+        # is read, rather than something recomputed and drifting.
+        try:
+            import professional_match
+            article["professionals"] = professional_match.professionals_for(title, body)
+        except Exception:
+            article["professionals"] = None
         items.append(article)
         _save(ARTICLES_PATH, items)
+    # And count the demand, outside the lock the save holds.
+    try:
+        if article.get("professionals"):
+            _record_profession_demand(article["professionals"], title)
+    except Exception:
+        pass
     return jsonify({"ok": True, "article": _public_article(article)})
 
 
