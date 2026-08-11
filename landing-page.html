@@ -1076,9 +1076,9 @@
             padding: 1.1rem 1.3rem; margin: 0 0 2rem; }
         .ds-head { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.85rem; }
         .ds-head b { font-size: 1.02rem; color: #14110c; }
-        .ds-live { font-size: 0.64rem; font-weight: 800; letter-spacing: 0.6px; color: #059669;
+        .ds-live { font-size: 0.64rem; font-weight: 800; letter-spacing: 0.6px; color: #1b5e43;   /* was #059669 — 3.58:1 on the wash it sits on */
             background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 999px; padding: 0.15rem 0.5rem; }
-        .ds-count { color: #8a8377; font-size: 0.82rem; margin-left: auto; }
+        .ds-count { color: #6b655b;   /* was #8a8377 — 3.75:1 on white */ font-size: 0.82rem; margin-left: auto; }
         .ds-items { display: flex; flex-wrap: wrap; gap: 0.5rem; }
         .ds-item { background: #faf8f4; border: 1px solid #e6e2da; border-radius: 999px;
             padding: 0.35rem 0.8rem; font-size: 0.84rem; color: #4a453d; }
@@ -1182,13 +1182,8 @@
       nav a{color:#4a453d !important;font-size:.94rem !important;font-weight:500 !important;
         margin:0 .85rem !important;opacity:1 !important;border-bottom:none !important;transition:color .2s,transform .2s,filter .2s;}
       nav a:hover{color:#fff !important;border-bottom:none !important;}
-      nav a[href="/book"]{
-        background:linear-gradient(135deg,var(--psx-blue),var(--psx-indigo)) !important;
-        color:#fff !important;padding:.6rem 1.15rem !important;border-radius:10px !important;
-        margin-left:1rem !important;font-weight:600 !important;
-        box-shadow:0 10px 22px -8px rgba(59,130,246,.7) !important;
-      }
-      nav a[href="/book"]:hover{filter:brightness(1.07);transform:translateY(-1px);}
+      /* The CTA is painted once, in modern.css. Spacing is layout, so it stays. */
+      nav a[href="/book"]{margin-left:1rem !important;}
       .sections-trigger{color:#4a453d !important;font-weight:500 !important;}
       .sections-trigger:hover{color:#fff !important;border-bottom-color:transparent !important;}
 
@@ -1226,6 +1221,13 @@
         font-size:1.12rem;line-height:1.62;
       }
       #view-overview .psx-cta-row{display:flex;gap:.85rem;flex-wrap:wrap;justify-content:center;margin-top:2.2rem;}
+      /* Deliberately quiet. This is a footnote that happens to be a number,
+         not a scoreboard — a big counter under the buttons reads as a growth
+         metric aimed at investors, and the person standing here wants a car.
+         .93rem clears the 12px floor check_mobile.py enforces. */
+      #view-overview .psx-usage{
+        margin:1.4rem 0 0;font-size:.93rem;color:var(--psx-text2);opacity:.8;
+      }
       #view-overview .psx-btn{
         display:inline-flex;align-items:center;gap:.5rem;
         padding:.9rem 1.5rem;border-radius:12px;font-size:1rem;font-weight:600;
@@ -1240,16 +1242,6 @@
         background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.16);color:#e7ecf5;
       }
       #view-overview .psx-btn-ghost:hover{background:rgba(255,255,255,.08);transform:translateY(-2px);}
-      #view-overview .psx-stats{
-        display:inline-flex;align-items:center;margin-top:2.6rem;
-        padding:1.35rem .5rem;border-radius:18px;
-        background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.09);
-        backdrop-filter:blur(6px);
-      }
-      #view-overview .psx-stat{display:flex;flex-direction:column;align-items:center;padding:0 2.6rem;}
-      #view-overview .psx-stat-val{font-size:1.9rem;font-weight:800;color:#fff;letter-spacing:-.02em;}
-      #view-overview .psx-stat-label{margin-top:.25rem;font-size:.84rem;color:var(--psx-muted);}
-      #view-overview .psx-divider{width:1px;height:46px;background:rgba(255,255,255,.10);}
 
       /* ---------- shared section head ---------- */
       #view-overview .psx-head{max-width:760px;margin:0 auto;text-align:center;display:flex;flex-direction:column;align-items:center;}
@@ -1338,13 +1330,10 @@
         #view-overview .psx-cards{grid-template-columns:1fr;max-width:460px;}
         #view-overview .psx-flow{flex-direction:column;}
         #view-overview .psx-arrow{transform:rotate(90deg);}
-        #view-overview .psx-stat{padding:0 1.5rem;}
         #view-overview .psx-hero{padding:4.5rem 1.25rem 4rem;}
         #view-overview .psx-section,#view-overview .psx-connects{padding:4.5rem 1.25rem;}
       }
       @media(max-width:520px){
-        #view-overview .psx-stats{flex-direction:column;padding:1.25rem 2rem;gap:1rem;}
-        #view-overview .psx-divider{width:120px;height:1px;}
         nav .sections-trigger,nav #navArticles,nav a[href="/dispatch"],nav a[href="/board"]{display:none;}
       }
     </style>
@@ -1729,7 +1718,11 @@
       .fin-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.16);}
       .fin-card h3{color:#f2f5fa;}
       .fin-card > p{color:#6b655b;}
-      .fin-card-link{color:#7da2ff;}
+      /* #7da2ff was 2.48:1 on the card — a fail nobody saw, because every
+         fin-card was commented out and the class had nothing visible to
+         colour. The Bot Lab card was the first to paint it and the gate
+         caught it immediately. The palette accent clears the floor. */
+      .fin-card-link{color:var(--psx-accent);}
       .price-card{border-width:1px;}
       .price-card.best{border-color:rgba(245,158,11,.55);}
       .fin-step p{color:var(--psx-text2);}
@@ -1879,6 +1872,7 @@
     </style>
     <link rel="stylesheet" href="/paper.css">
     <link rel="stylesheet" href="/modern.css">
+    <script src="/psx-net.js"></script>
 </head>
 <body>
     <!-- ============================================================
@@ -2004,7 +1998,12 @@
                 </div>
             </div>
             <nav>
-                <span class="sections-trigger" id="sectionsTrigger">☰ Sections</span>
+                <!-- The "☰ Sections" trigger stood here until 2026-08-08. It was
+                     the handle for the left rail; with the strip back in its
+                     original place under the header, a button whose only job is
+                     to reveal something that reveals itself is one control too
+                     many. The strip still opens on mouse-to-top on desktop, and
+                     on a phone it is docked and always visible. -->
                 <a href="#" id="navArticles" onclick="showView('reinvestment', event)">Business Ideas</a>
                 <a href="/dispatch">Dispatch</a>
                 <a href="/board">Board of Directors</a>
@@ -2045,13 +2044,12 @@
                             <a href="/book" class="psx-btn psx-btn-primary">Book a ride</a>
                             <a href="/agent" class="psx-btn psx-btn-ghost">Partner with us</a>
                         </div>
-                        <div class="psx-stats">
-                            <div class="psx-stat"><span class="psx-stat-val">$75</span><span class="psx-stat-label">Flat fare to Sea–Tac</span></div>
-                            <div class="psx-divider"></div>
-                            <div class="psx-stat"><span class="psx-stat-val">24/7</span><span class="psx-stat-label">Book any hour</span></div>
-                            <div class="psx-divider"></div>
-                            <div class="psx-stat"><span class="psx-stat-val">Tesla</span><span class="psx-stat-label">Every vehicle</span></div>
-                        </div>
+                        <!-- Real visitor numbers, counted by our own server.
+                             Hidden entirely until the endpoint says show:true —
+                             a homepage announcing "9 travellers" argues against
+                             the site. Also hidden if the request fails, so a
+                             blip never leaves a half-sentence on the page. -->
+                        <p class="psx-usage" id="psxUsage" hidden></p>
                     </div>
                 </section>
 
@@ -2408,6 +2406,22 @@
                                 <span class="fin-card-link">Follow the research →</span>
                             </div>
                             -->
+                            <!-- Bot lab. Hidden until the lab actually answers — see the
+                                 Deflator note above for the precedent: /lab is 404 to
+                                 everyone unless BOT_LAB_ENABLED is set on the instance, so a
+                                 card that is always painted would be a dead link on the
+                                 public site. revealLabCard() below asks the server and only
+                                 un-hides this if the page is really there. -->
+                            <div class="fin-card" id="labCard" style="display:none" onclick="window.location.href='/lab'">
+                                <div class="fin-card-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-chart"/></svg></div>
+                                <!-- A quiet uppercase label rather than the amber pill the
+                                     Deflator card used. That pill predates the palette and
+                                     its two colours are both off it; a word in the palette's
+                                     own secondary ink says the same thing without shouting. -->
+                                <h3>Bot Lab <span style="font-size:.62rem;letter-spacing:.09em;font-weight:700;color:var(--psx-text2);vertical-align:middle">RESEARCH</span></h3>
+                                <p>Automated trading research, on paper trades only. Nothing here connects to an exchange, holds a key, or touches a balance. Access is issued directly and nothing is for sale.</p>
+                                <span class="fin-card-link">Sign in →</span>
+                            </div>
                             <p class="view-intro" style="grid-column:1/-1;opacity:.7">More financial products coming soon.</p>
                             <!-- Add more finance product cards here (same pattern):
                             <div class="fin-card" onclick="openFinProduct('savings')">
@@ -2418,48 +2432,33 @@
 
                         <div class="fin-pane" id="fin-debt">
                             <button class="fin-back" onclick="closeFinProduct()">← All Finance products</button>
-                            <p class="view-intro">Your paycheck works while you sleep — profits go straight to your debt, and your principal is never at risk.</p>
+                            <p class="view-intro">An idea we are testing with our own money: trading rules that run on their own, with anything they earn going against expensive debt instead of back into the market. It is not finished and it is not for sale.</p>
 
                         <div class="fin-flow">
                             <div class="fin-step"><span class="fin-num">1</span><p>Your paycheck arrives as normal</p></div>
-                            <div class="fin-step"><span class="fin-num">2</span><p>Our AI trades the balance during a 1–2 week window</p></div>
-                            <div class="fin-step"><span class="fin-num">3</span><p>Profits lock in a protected vault (5–15%/mo target)</p></div>
-                            <div class="fin-step"><span class="fin-num">4</span><p>100% of profit auto-pays your debt</p></div>
-                            <div class="fin-step"><span class="fin-num">5</span><p>Your principal returns intact — no risk</p></div>
+                            <div class="fin-step"><span class="fin-num">2</span><p>A set of trading rules runs for a fixed window</p></div>
+                            <div class="fin-step"><span class="fin-num">3</span><p>Anything earned is set aside rather than traded again</p></div>
+                            <div class="fin-step"><span class="fin-num">4</span><p>What was earned goes against the debt</p></div>
+                            <div class="fin-step"><span class="fin-num">5</span><p>The balance comes back — and it can come back smaller, because trading loses as well as wins</p></div>
                         </div>
 
-                        <h3 class="pricing-title">Simple pricing · 30-day free trial</h3>
-                        <div class="pricing-grid">
-                            <div class="price-card best">
-                                <div class="price-badge">Best value</div>
-                                <h4>Annual</h4>
-                                <div class="price">$170<span>/year</span></div>
-                                <p class="price-sub">Just $14.17/mo — billed once a year</p>
-                                <ul>
-                                    <li>✓ Automated trading engine</li>
-                                    <li>✓ Principal always protected</li>
-                                    <li>✓ Auto debt payoff</li>
-                                    <li>✓ Real-time dashboard</li>
-                                </ul>
-                                <button class="price-btn" onclick="openEnroll('annual')">Start free trial →</button>
-                            </div>
-                            <div class="price-card">
-                                <h4>Monthly</h4>
-                                <div class="price">$14.17<span>/month</span></div>
-                                <p class="price-sub">Billed monthly · cancel anytime</p>
-                                <ul>
-                                    <li>✓ Automated trading engine</li>
-                                    <li>✓ Principal always protected</li>
-                                    <li>✓ Auto debt payoff</li>
-                                    <li>✓ Real-time dashboard</li>
-                                </ul>
-                                <button class="price-btn ghost" onclick="openEnroll('monthly')">Start free trial →</button>
-                            </div>
+                        <!-- The two price cards and their "Start free trial" buttons stood here
+                             until 2026-08-08. The billing behind them had already been closed on
+                             2026-08-01, so the buttons could only fail — the page was quoting
+                             $170/year for something that could not be bought, and listing
+                             "Principal always protected" as a feature of a product that does not
+                             exist. Replaced with what is actually true. Do not restore a price
+                             here until there is a verified record and a lawyer has read it. -->
+                        <h3 class="pricing-title">Where this actually stands</h3>
+                        <div class="fin-flow">
+                            <div class="fin-step"><p><b>Not for sale.</b> No price, no trial, no enrolment. Nothing on this page can take a payment, and the billing behind it is closed.</p></div>
+                            <div class="fin-step"><p><b>No track record yet.</b> We are not showing a return figure, because none has been earned. A number written down before it is earned is a promise.</p></div>
+                            <div class="fin-step"><p><b>Our own money only.</b> It runs on ours, not anyone else's, until it is proven and the legal structure is right.</p></div>
                         </div>
-                        <p class="fin-fineprint">Less than one month's minimum credit-card payment. Only profits go toward debt — your principal is never spent. Trading involves risk; results are not guaranteed.</p>
+                        <p class="fin-fineprint">Automated trading can and does lose money, and a balance that has been traded can come back smaller than it went in. Nothing here is an offer to sell or a solicitation to buy any security or investment product, and nothing here is investment, legal or tax advice.</p>
 
                         <div class="wish-box">
-                            <p class="wish-lead">Not ready to enroll, but want this to exist?</p>
+                            <p class="wish-lead">Want this to exist? Leave your email and we will tell you if it ever becomes real.</p>
                             <button class="wish-btn" id="wishBtn" onclick="showWish()">💜 I wish that to be happening</button>
                             <div class="wish-form" id="wishForm" style="display:none;">
                                 <input id="wish_email" type="email" placeholder="your@email.com">
@@ -2688,30 +2687,28 @@
                             <img src="plateau-logo.svg" alt="">
                             <span>Plateau Strategy</span>
                         </div>
-                        <p>A Seattle car service: flat-rate Tesla rides to Sea–Tac and around the city, plus trip-planning tools that are free to use.</p>
+                        <!-- Taken off 2026-08-08 at Sean's instruction: the
+                             "A Seattle car service…" line, the service-area and
+                             24/7 lines, and the "Book a ride — $75 flat to
+                             SeaTac" link. The mark above carries the name; the
+                             columns to the right carry the links.
 
-                        <!-- Contact. Whatever goes here must match the Google
-                             Business Profile word for word — same business name,
-                             same phone — or verification gets harder and the two
-                             listings compete instead of reinforcing each other.
+                             When contact details do go back, they must match the
+                             Google Business Profile word for word — same business
+                             name, same phone — or verification gets harder and
+                             the two listings compete instead of reinforcing each
+                             other. See ADVERTISING.md § 0.5.
 
-                             PHONE GOES HERE once the Seattle 206 line exists:
+                             PHONE, once the Seattle 206 line exists:
                                <a href="tel:+1206XXXXXXX"><b>📞</b>(206) XXX-XXXX</a>
-                             directly above the email line. Put the same digits in
-                             the LocalBusiness node at the top of this file and on
-                             the Business Profile. See ADVERTISING.md § 0.5. -->
-                        <div class="psx-foot-contact">
-                            <span>Serving Seattle &amp; Seattle–Tacoma International (SEA)</span>
-                            <span>Rides available 24/7, by reservation</span>
-                            <!-- EMAIL GOES BACK HERE the moment Porkbun forwarding
-                                 is live (hello@ -> the owner's Gmail). Pulled for
-                                 now because the domain has no MX records, so mail
-                                 to this address bounces. A contact address that
-                                 bounces is worse than no address at all.
-                                   <a href="mailto:hello@plateaustrategy.io"><b>✉️</b>hello@plateaustrategy.io</a> -->
-                            <a href="/book">Book a ride — $75 flat to SeaTac</a>
-                            <span class="psx-foot-note">Service-area business — we come to you, there's no counter to visit.</span>
-                        </div>
+                             and put the same digits in the LocalBusiness node at
+                             the top of this file.
+
+                             EMAIL, the moment Porkbun forwarding is live
+                             (hello@ -> the owner's Gmail). Pulled because the
+                             domain has no MX records, so mail to it bounces, and
+                             an address that bounces is worse than none:
+                               <a href="mailto:hello@plateaustrategy.io"><b>✉️</b>hello@plateaustrategy.io</a> -->
                     </div>
 
                     <div>
@@ -2746,7 +2743,6 @@
 
                 <div class="psx-foot-bottom">
                     <p>&copy; 2026 Plateau Strategy Solution Lab</p>
-                    <p>Flat-rate Tesla rides, Seattle and Sea–Tac.</p>
                 </div>
             </footer>
         </div>
@@ -2802,24 +2798,13 @@
     </div>
 
     <!-- AI Debt Eliminator enroll modal -->
-    <div class="role-modal" id="financeModal">
-        <div class="role-modal-card">
-            <button class="role-close" onclick="closeEnroll()">&times;</button>
-            <div class="role-form">
-                <h2>Start your free trial</h2>
-                <p class="rm-sub" id="fin_plan_sub">30-day free trial, then <strong>$170/year</strong>. Cancel anytime.</p>
-                <label>Full name</label>
-                <input id="fin_name" placeholder="Your name">
-                <div class="rm-row">
-                    <div><label>Email</label><input id="fin_email" type="email" placeholder="you@email.com"></div>
-                    <div><label>Phone</label><input id="fin_phone" placeholder="(415) 555-0100"></div>
-                </div>
-                <button class="rm-primary" style="background:linear-gradient(135deg,#f59e0b,#d97706);" onclick="submitEnroll()">Start free trial &amp; enroll →</button>
-                <div class="rm-msg" id="fin_msg"></div>
-                <p class="rm-alt" id="fin_result" style="display:none;"></p>
-            </div>
-        </div>
-    </div>
+    <!-- The "Start your free trial" enrolment modal stood here until 2026-08-08.
+         It collected a name, email and phone and posted to /api/finance/enroll,
+         which has answered 404 to everyone but the owner since 2026-08-01 — so
+         the only thing a visitor could get from it was "Could not enroll." A
+         form that cannot succeed is worse than no form: it reads as a product
+         you can buy. Removed along with openEnroll/closeEnroll/submitEnroll.
+         The server endpoint is deliberately left in place and still closed. -->
 
     <!-- The floating mouse button is the 🎨 Pollock button (shared /floatback.js) -->
 
@@ -2846,39 +2831,10 @@
             if (menu) menu.style.display = '';
         }
 
-        // ---- AI Debt Eliminator enrollment ----
-        let _finPlan = 'annual';
-        function openEnroll(plan) {
-            _finPlan = plan;
-            document.getElementById('fin_plan_sub').innerHTML = (plan === 'monthly')
-                ? '30-day free trial, then <strong>$14.17/month</strong>. Cancel anytime.'
-                : '30-day free trial, then <strong>$170/year</strong>. Cancel anytime.';
-            document.getElementById('fin_msg').textContent = '';
-            document.getElementById('fin_result').style.display = 'none';
-            document.getElementById('financeModal').classList.add('open');
-        }
-        function closeEnroll() { document.getElementById('financeModal').classList.remove('open'); }
-        document.addEventListener('click', function (e) { if (e.target && e.target.id === 'financeModal') closeEnroll(); });
-
-        async function submitEnroll() {
-            const msg = document.getElementById('fin_msg');
-            const body = {
-                plan: _finPlan,
-                name: (document.getElementById('fin_name').value || '').trim(),
-                email: (document.getElementById('fin_email').value || '').trim(),
-                phone: (document.getElementById('fin_phone').value || '').trim(),
-            };
-            if (!body.name || !body.email) { msg.textContent = 'Name and email are required.'; return; }
-            msg.textContent = 'Enrolling…';
-            const j = await (await fetch('/api/finance/enroll', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
-            if (!j.ok) { msg.textContent = j.error || 'Could not enroll.'; return; }
-            msg.textContent = '';
-            const inv = j.signup.invoice || {};
-            const invLine = inv.url ? '<a href="' + inv.url + '" target="_blank">View your invoice →</a>' : 'Your invoice will be emailed to you.';
-            const res = document.getElementById('fin_result');
-            res.style.display = 'block'; res.style.color = '#047857';
-            res.innerHTML = "✅ You're enrolled on the " + j.signup.plan + ' plan (' + j.signup.billing + ').<br>' + invLine;
-        }
+        // The debt-product enrollment handlers stood here, with the modal they
+        // drove. Removed 2026-08-08 — nothing is for sale, so there is nothing to
+        // enrol in and no invoice to raise. See the note where the modal was for
+        // what was taken out.
 
         // ---- "I wish that to be happening" interest capture ----
         function showWish() {
@@ -3013,9 +2969,62 @@
                 nav.addEventListener('mouseenter', showNav);
                 nav.addEventListener('mouseleave', scheduleHideNav);
             }
-            const trig = document.getElementById('sectionsTrigger');
-            if (trig) { trig.addEventListener('mouseenter', showNav); trig.addEventListener('click', showNav); }
+            // The sectionsTrigger listeners were removed with the button on
+            // 2026-08-08. Reveal is mouse-to-top on desktop; on a phone the
+            // strip is docked by the max-width:768px block and never hides.
+
+            // Show the Bot Lab card in Finance only if the lab is switched on
+            // for this instance. Asking beats hardcoding: /lab answers 404
+            // unless BOT_LAB_ENABLED is set, and a card leading to a 404 is
+            // what got the Deflator card taken down. A failed fetch leaves the
+            // card hidden, which is the right way for this to fail.
+            fetch('/lab', { method: 'GET', redirect: 'manual' })
+                .then(function (r) {
+                    // 200 = open, 401 = there but wants a sign-in. Both mean the
+                    // page exists and the card should lead to it.
+                    if (r.status === 200 || r.status === 401) {
+                        var c = document.getElementById('labCard');
+                        if (c) c.style.display = '';
+                    }
+                })
+                .catch(function () { });
         });
+
+        /* ---- Visitor note under the hero ----
+           Our own server's count, not a third-party widget: nothing here loads
+           anything from anyone else, which is the same reason the site has no
+           analytics script.
+
+           Three ways this stays quiet, and each matters:
+             - the server says show:false while the total is too small to help;
+             - psxJSON never throws, so a failed request returns {ok:false}
+               and the paragraph simply stays hidden;
+             - the element ships with `hidden`, so a visitor with JavaScript
+               off sees no empty gap where a sentence should be.
+
+           The wording says "visits" rather than "travellers" on purpose. The
+           number is deduplicated within a day and summed across days, so
+           somebody who came back on Tuesday and Thursday is two — calling that
+           two travellers would be a small lie, and the whole page is built on
+           not telling those. */
+        (async function usageNote() {
+            var el = document.getElementById('psxUsage');
+            if (!el || typeof psxJSON !== 'function') return;
+            var d = await psxJSON('/api/traffic/summary');
+            var s = d && d.ok && d.site;
+            if (!s || !s.show || !s.week) return;
+            var since = '';
+            if (s.since) {
+                var dt = new Date(s.since + 'T00:00:00');
+                if (!isNaN(dt)) {
+                    since = ' · ' + s.all_time.toLocaleString() + ' since '
+                          + dt.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+                }
+            }
+            el.textContent = s.week.toLocaleString()
+                + ' visits in the last seven days' + since;
+            el.hidden = false;
+        })();
 
         // Initialize on the Overview view — or the view named in the URL hash
         // (e.g. /#finance from the Pollock button's Finance bubble). hashchange
@@ -3051,17 +3060,43 @@
                     }
                 }
             }
-            function step() {   // ~$90k/sec — roughly the real recent pace of the debt
+            // How fast to tick between fetches. The server measures this from the same
+            // Treasury rows that supply the figure, so the ticker cannot disagree with
+            // its own source; this literal is only the fallback for when the fetch
+            // fails, and matches the pace the ticker has always run at (~$2.0T a year).
+            // It used to be a bare 7000 + random*11000 with a comment claiming ~$90k/sec
+            // beside it — the two had drifted apart from each other by about 44%.
+            var ND_TICK_MS = 200;
+            var ndPerSec = 62500;
+            function step() {
                 // Only do the work when the Finance section is actually open and the tab is
                 // visible — otherwise this is a near-free early return (no CPU burned in the background).
                 var fin = document.getElementById('view-finance');
                 if (document.hidden || !fin || !fin.classList.contains('active')) return;
-                val += 7000 + Math.random() * 11000; paint();
+                var perTick = ndPerSec * ND_TICK_MS / 1000;
+                val += perTick * (0.56 + Math.random() * 0.88);   // same mean, visible jitter
+                paint();
             }
             if (segEls.length) {
-                paint(); setInterval(step, 200);
+                paint(); setInterval(step, ND_TICK_MS);
                 fetch('/api/national-debt').then(function (r) { return r.json(); })
-                    .then(function (d) { if (d && d.ok && d.amount) { val = d.amount; paint(); } })
+                    .then(function (d) {
+                        if (!d || !d.ok || !d.amount) return;
+                        if (d.per_sec > 0) ndPerSec = d.per_sec;
+                        // 'Debt to the Penny' is a DAILY close, published a business day
+                        // behind. Seeding a live-looking ticker with it and starting from
+                        // now shows a number that is a day or more stale and never catches
+                        // up — on a Monday it is Friday's close, roughly $10bn light.
+                        // Carry it forward by the time that has actually elapsed since the
+                        // date Treasury stamped it.
+                        val = d.amount;
+                        var stamped = d.as_of ? Date.parse(d.as_of + 'T00:00:00Z') : NaN;
+                        if (!isNaN(stamped)) {
+                            var secs = (Date.now() - stamped) / 1000;
+                            if (secs > 0 && secs < 30 * 86400) val += secs * ndPerSec;
+                        }
+                        paint();
+                    })
                     .catch(function () { });
             }
 
@@ -3257,6 +3292,19 @@
                     '<div class="idea-votes">' +
                         '<button class="idea-vbtn like ' + (v === 'like' ? 'active' : '') + '" onclick="ideaVote(\'' + a.id + '\',\'like\')">👍 <span id="ilk_' + a.id + '">' + a.likes + '</span></button>' +
                         '<button class="idea-vbtn unlike ' + (v === 'unlike' ? 'active' : '') + '" onclick="ideaVote(\'' + a.id + '\',\'unlike\')">👎 <span id="iul_' + a.id + '">' + a.unlikes + '</span></button>' +
+                        // The board lives inside a tab and loads over JS, so an idea had
+                        // no address anybody could send. /idea/<id> is that address, and
+                        // it is server-rendered so the link preview works — a paste into
+                        // WhatsApp that shows a bare grey URL does not get shared twice.
+                        '<button class="idea-vbtn" id="ish_' + a.id + '" onclick="ideaShare(\'' + a.id + '\')">↗ Share</button>' +
+                        '<a class="idea-vbtn" href="/idea/' + encodeURIComponent(a.id) + '">Open</a>' +
+                        // Owner only. The takedown endpoint existed for months
+                        // with no way to press it — which is how a June test
+                        // post sat on the board until August. The id is
+                        // server-minted (ART_nnnn), not visitor text.
+                        (window.__ideaOwner
+                            ? '<button class="idea-vbtn" onclick="ideaDelete(\'' + a.id + '\')">✕ Delete</button>'
+                            : '') +
                     '</div>' +
                     '<div class="idea-backing">' +
                         '<div class="idea-back invest" id="ideaInv_' + a.id + '"><span class="lbl">Back it with capital</span>' + investBlock(a) + '</div>' +
@@ -3266,6 +3314,14 @@
             }
 
             window.ideaLoad = async function () {
+                // Asked once, not per render: whether this browser is the
+                // signed-in owner, which decides if the Delete buttons draw.
+                // The server enforces regardless — this only chooses pixels.
+                if (window.__ideaOwner === undefined) {
+                    try {
+                        window.__ideaOwner = !!((await (await fetch('/api/owner/status')).json()).logged_in);
+                    } catch (e) { window.__ideaOwner = false; }
+                }
                 var items = [];
                 try { items = ((await (await fetch('/api/articles')).json()).articles) || []; } catch (e) { return; }
                 var empty = document.getElementById('ideaEmpty'), feed = document.getElementById('ideaFeed');
@@ -3283,6 +3339,39 @@
                 if (!j.ok) { alert(j.error || 'Could not publish'); return; }
                 a.value = ''; t.value = ''; b.value = '';
                 var c = document.getElementById('ideaComposer'); if (c) c.classList.remove('open');
+                window.ideaLoad();
+            };
+
+            /* Share one idea. The native sheet on a phone — which is where the
+               circle actually is, in a message thread — and the clipboard on a
+               desktop. Both end with the link somewhere it can be pasted.
+               A cancelled share sheet is not an error and must say nothing. */
+            window.ideaShare = async function (id) {
+                var url = location.origin + '/idea/' + encodeURIComponent(id);
+                var card = document.getElementById('idea_' + id);
+                var title = card ? (card.querySelector('h4') || {}).textContent || 'A business idea'
+                                 : 'A business idea';
+                var btn = document.getElementById('ish_' + id);
+                if (navigator.share) {
+                    try { await navigator.share({ title: title.trim(), url: url }); return; }
+                    catch (e) { if (e && e.name === 'AbortError') return; }
+                }
+                try {
+                    await navigator.clipboard.writeText(url);
+                    if (btn) btn.textContent = '✓ Link copied';
+                } catch (e) {
+                    window.prompt('Copy this link:', url);
+                    return;
+                }
+                setTimeout(function () { if (btn) btn.textContent = '↗ Share'; }, 2500);
+            };
+
+            window.ideaDelete = async function (id) {
+                if (!confirm('Delete this idea for good? This removes it '
+                             + 'entirely — the record does not survive.')) return;
+                var j = await (await fetch('/api/articles/' + id + '/delete',
+                                           { method: 'POST' })).json();
+                if (!j.ok) { alert(j.error || 'Could not delete'); return; }
                 window.ideaLoad();
             };
 

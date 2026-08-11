@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dispatch — Plateau Strategy Solution Lab</title>
-    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -119,11 +119,12 @@
     </style>
     <link rel="stylesheet" href="/admin-terminal.css">
     <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
     <link rel="stylesheet" href="/modern.css">
 </head>
 <body data-arm="operations">
     <header>
-        <img src="plateau-logo.svg" alt="Plateau Strategy Solution Lab">
+        <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab">
         <span class="brand">Plateau Strategy Solution Lab</span>
         <div class="right"><span class="live" id="live">● live</span><button class="linkbtn" id="logoutBtn" style="display:none" onclick="logout()">Log out</button><a href="/">Home</a></div>
     </header>
@@ -205,6 +206,35 @@
             <div class="small" id="payoutNone" style="display:none; padding:0.8rem 0;">No payout requests yet.</div>
             <div class="small" id="payoutBalances" style="margin-top:0.8rem;"></div>
         </div>
+
+        <!-- Our own devices inflate every number the business is judged on, and
+             the numbers that matter most are the smallest: a handful of
+             self-visits is invisible in a thousand and decisive in twenty.
+
+             The network row is the one that scales. Opting out a device is one
+             browser — a phone on a different browser, or after a cookie sweep,
+             starts counting again. Registering the office or home network
+             takes every device on it out at once, which is what "add their
+             devices" actually needs.
+
+             The link at the bottom exists because only the owner can sign in
+             here. A driver or an agent has no dispatch login and cannot be
+             sent to this panel, so they get the public one-tap page instead. -->
+        <h2>👣 Who counts as a visitor</h2>
+        <div class="board" style="padding:1.2rem 1.4rem;">
+            <div class="small" style="margin-bottom:0.9rem;">Keep the team out of the visitor numbers. Signing in here already stops this browser being counted — the rest is for your other devices, and for anyone on the team without a dispatch login.</div>
+
+            <div id="trafficMe"><div class="small">Loading…</div></div>
+
+            <div style="margin-top:1.1rem;border-top:1px solid #4a453d;padding-top:1rem;">
+                <div class="plabel">Anyone else on the team</div>
+                <div class="small" style="margin:0.4rem 0 0.6rem;">Send them this. One tap on the phone, no login, nothing installed. It works for drivers, agents, family — anyone whose visits should not read as a customer's.</div>
+                <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
+                    <input class="pin" id="optoutLink" readonly style="flex:1;min-width:220px;">
+                    <button class="auth-btn" style="width:auto;margin:0;padding:0.55rem 1rem;font-size:0.85rem;" onclick="copyOptoutLink()">Copy link</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="toast" id="toast"></div>
@@ -233,7 +263,7 @@
 
         async function loadPayouts(){
             let j;
-            try { j = await (await fetch('/api/payouts')).json(); } catch(e){ return; }
+            try { j = await psxJSON('/api/payouts'); } catch(e){ return; }
             if (!j || !j.ok) return;
             const pp = j.paypal || {};
             const emailByAgent = {};
@@ -268,8 +298,8 @@
 
         async function payPaypal(pid){
             if (!confirm('Send this payout via PayPal now? The money leaves your PayPal balance immediately.')) return;
-            const j = await (await fetch('/api/payouts/' + pid + '/pay-paypal', { method:'POST',
-                headers:{'Content-Type':'application/json'}, body: '{}' })).json();
+            const j = await psxJSON('/api/payouts/' + pid + '/pay-paypal', { method:'POST',
+                headers:{'Content-Type':'application/json'}, body: '{}' });
             if (!j.ok) { showToast(j.error || 'PayPal payout failed'); loadPayouts(); return; }
             showToast('Paid via PayPal — batch ' + (j.paypal && j.paypal.batch_id || 'ok'));
             loadPayouts();
@@ -277,23 +307,23 @@
 
         async function markPaid(pid){
             const method = prompt('How did you send it? (Zelle / cash / check + reference — optional)') || '';
-            const j = await (await fetch('/api/payouts/' + pid + '/mark-paid', { method:'POST',
-                headers:{'Content-Type':'application/json'}, body: JSON.stringify({ method }) })).json();
+            const j = await psxJSON('/api/payouts/' + pid + '/mark-paid', { method:'POST',
+                headers:{'Content-Type':'application/json'}, body: JSON.stringify({ method }) });
             if (!j.ok) { showToast(j.error || 'Failed'); return; }
             showToast('Marked paid — the agent sees it instantly'); loadPayouts();
         }
 
         async function declinePayout(pid){
             const reason = prompt('Reason (the agent will see their request declined):') || '';
-            const j = await (await fetch('/api/payouts/' + pid + '/decline', { method:'POST',
-                headers:{'Content-Type':'application/json'}, body: JSON.stringify({ reason }) })).json();
+            const j = await psxJSON('/api/payouts/' + pid + '/decline', { method:'POST',
+                headers:{'Content-Type':'application/json'}, body: JSON.stringify({ reason }) });
             if (!j.ok) { showToast(j.error || 'Failed'); return; }
             showToast('Request declined'); loadPayouts();
         }
 
         async function loadAttention(){
             let j;
-            try { j = await (await fetch('/api/dispatch/uncovered')).json(); } catch(e){ return; }
+            try { j = await psxJSON('/api/dispatch/uncovered'); } catch(e){ return; }
             if (!j || !j.ok) return;
             const el = document.getElementById('attention');
             const list = j.uncovered || [];
@@ -374,7 +404,7 @@
 
         async function assign(rid, renter_id){
             if(!renter_id) return;
-            const j = await (await fetch('/api/dispatch/assign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reservation_id:rid,renter_id})})).json();
+            const j = await psxJSON('/api/dispatch/assign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reservation_id:rid,renter_id})});
             if(!j.ok){ showToast(j.error||'Could not assign'); return; }
             showToast('Assigned to '+j.reservation.driver); loadAll();
         }
@@ -417,7 +447,7 @@
             const price = document.getElementById('pr_price').value.trim();
             const commission = document.getElementById('pr_comm').value.trim();
             if(!name || price===''){ showToast('Name and price required'); return; }
-            const j = await (await fetch('/api/pricing/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name, price, commission})})).json();
+            const j = await psxJSON('/api/pricing/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name, price, commission})});
             if(!j.ok){ showToast(j.error||'Could not add'); return; }
             document.getElementById('pr_name').value=''; document.getElementById('pr_price').value=''; document.getElementById('pr_comm').value='';
             showToast('Service added'); loadPricing();
@@ -436,7 +466,7 @@
         let AUTH_MODE = 'login', _started = false;
         async function checkAuth(){
             let s;
-            try { s = await (await fetch('/api/owner/status')).json(); } catch(e){ return; }
+            try { s = await psxJSON('/api/owner/status'); } catch(e){ return; }
             if (s.logged_in){ startApp(); return; }
             AUTH_MODE = s.configured ? 'login' : 'setup';
             const setup = AUTH_MODE === 'setup';
@@ -456,7 +486,7 @@
             if(!u || !p){ msg.textContent = 'Enter a username and password.'; return; }
             const url = AUTH_MODE === 'setup' ? '/api/owner/setup' : '/api/owner/login';
             let j;
-            try { j = await (await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})})).json(); }
+            try { j = await psxJSON(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}); }
             catch(e){ msg.textContent = 'Connection problem — try again.'; return; }
             if(!j.ok){ msg.textContent = j.error || 'Failed'; return; }
             document.getElementById('authOverlay').classList.add('hidden');
@@ -471,7 +501,140 @@
             loadAll();
             loadPricing();
             loadPaperwork();
+            loadTrafficMe();
             setInterval(loadAll, 10000);
+        }
+
+        /* ---- Who counts as a visitor ----
+           Three separate things, deliberately not merged into one switch,
+           because they undo different amounts and one of them is not
+           reversible:
+
+             device   — this browser only. A cookie, so a cookie sweep or a
+                        different browser on the same phone starts counting
+                        again. psx-net.js restores a swept opt-out.
+             today    — removes this device from TODAY's number. Opting out
+                        stops counting from now on and does nothing about a
+                        visit already recorded this morning, which is exactly
+                        the doubt that makes someone distrust their own
+                        figures. Finished days cannot be corrected: the ids
+                        were thrown away when the day closed.
+             network  — every device on this address, now and later. The one
+                        worth using for a household or an office, and the one
+                        that keeps working after a phone is replaced. */
+        async function loadTrafficMe(){
+            var box = document.getElementById('trafficMe');
+            if(!box) return;
+            var link = document.getElementById('optoutLink');
+            if(link) link.value = location.origin + '/not-a-traveler';
+
+            var d = await psxJSON('/api/traffic/me');
+            box.textContent = '';
+            if(!d || !d.ok){
+                var e = document.createElement('div');
+                e.className = 'small';
+                e.textContent = 'Could not read the current state — '
+                              + ((d && d.error) || 'try again');
+                box.appendChild(e);
+                return;
+            }
+
+            /* Built as DOM nodes with listeners attached, not as an HTML
+               string with onclick="...". The network address comes from
+               X-Forwarded-For, which the client controls, so it is attacker
+               text: concatenating it into markup is the bug, and the page's
+               own esc() at the top of this script does not escape single
+               quotes. textContent cannot be escaped wrongly because there is
+               no escaping step. */
+            row('This browser ' + (d.device_counted ? 'IS being counted' : 'is not counted'),
+                d.device_counted
+                    ? 'Every page you open here reads as a traveller.'
+                    : 'Set when you signed in. Nothing you do here shows up in the numbers.',
+                d.device_counted ? 'Stop counting this browser' : 'Count it again',
+                function(){ toggleDevice(d.device_counted); });
+
+            if(d.in_today_count){
+                row('It is already in today’s number',
+                    'Opting out stops the count from here on. This takes the visit you already made out of today.',
+                    'Remove from today', forgetToday);
+            }
+
+            row('This network is ' + (d.network_registered ? 'registered' : 'not registered'),
+                (d.network ? d.network + ' — ' : '')
+                + (d.network_registered
+                    ? 'Every device on it is out of the numbers, including ones you have not set up yet.'
+                    : 'Register it to take every device on this wifi out at once — phones, tablets, a replaced laptop.'),
+                d.network_registered ? 'Stop ignoring this network' : 'Register this network',
+                function(){ toggleNetwork(d.network_registered, d.network); });
+
+            function row(title, note, label, onClick){
+                var wrap = document.createElement('div');
+                wrap.style.cssText = 'display:flex;gap:1rem;flex-wrap:wrap;'
+                    + 'align-items:flex-start;justify-content:space-between;'
+                    + 'padding:0.7rem 0;border-top:1px solid #4a453d;';
+                var left = document.createElement('div');
+                left.style.cssText = 'flex:1;min-width:200px;';
+                var h = document.createElement('div');
+                h.style.cssText = 'font-weight:700;font-size:0.9rem;';
+                h.textContent = title;
+                var n = document.createElement('div');
+                n.className = 'small';
+                n.style.marginTop = '0.2rem';
+                n.textContent = note;
+                left.appendChild(h); left.appendChild(n);
+                var b = document.createElement('button');
+                b.className = 'auth-btn';
+                b.style.cssText = 'width:auto;margin:0;padding:0.5rem 0.9rem;'
+                    + 'font-size:0.82rem;white-space:nowrap;';
+                b.textContent = label;
+                b.addEventListener('click', onClick);
+                wrap.appendChild(left); wrap.appendChild(b);
+                box.appendChild(wrap);
+            }
+        }
+
+        async function toggleDevice(currentlyCounted){
+            // ?off=1 puts it BACK in the count; no argument takes it out.
+            var d = await psxJSON('/api/traffic/optout' + (currentlyCounted ? '' : '?off=1'));
+            showToast((d && d.message) || 'Updated');
+            loadTrafficMe();
+        }
+
+        async function forgetToday(){
+            var d = await psxJSON('/api/traffic/forget-today', {method:'POST'});
+            showToast(d && d.removed ? 'Removed from today’s count'
+                                     : 'Nothing to remove for today');
+            loadTrafficMe();
+        }
+
+        async function toggleNetwork(registered, ip){
+            var d = await psxJSON('/api/traffic/networks', {
+                method:'POST', headers:{'Content-Type':'application/json'},
+                // The address is never sent for a REGISTER: the server takes it
+                // from the request, so this cannot be used to erase traffic
+                // from somewhere it has never been. Removing names one, which
+                // is how you drop an old office you are no longer sitting in.
+                body: JSON.stringify(registered ? {remove:true, ip:ip}
+                                                : {label:'dispatch'})});
+            if(!d || !d.ok){ showToast((d && d.error) || 'Could not update'); return; }
+            showToast(registered ? 'This network is counted again'
+                                 : 'This network is no longer counted');
+            loadTrafficMe();
+        }
+
+        function copyOptoutLink(){
+            var el = document.getElementById('optoutLink');
+            if(!el) return;
+            el.select();
+            var done = false;
+            try { done = document.execCommand('copy'); } catch(e){ done = false; }
+            if(!done && navigator.clipboard){
+                navigator.clipboard.writeText(el.value).then(
+                    function(){ showToast('Link copied'); },
+                    function(){ showToast('Select the link and copy it'); });
+                return;
+            }
+            showToast(done ? 'Link copied' : 'Select the link and copy it');
         }
 
         function pwDate(s){ if(!s) return ''; const dt=new Date(s); return isNaN(dt)?s:dt.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}); }
@@ -504,7 +667,7 @@
         }
         async function loadPaperwork(){
             let d;
-            try { d = await (await fetch('/api/documents')).json(); } catch(e){ return; }
+            try { d = await psxJSON('/api/documents'); } catch(e){ return; }
             const box = document.getElementById('paperworkList');
             if(!box) return;
             if(!d || !d.ok){ box.innerHTML='<div class="small">Could not load paperwork.</div>'; return; }
