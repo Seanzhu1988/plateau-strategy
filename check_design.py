@@ -47,19 +47,89 @@ try:
 except ImportError:                                          # pragma: no cover
     sys.exit("playwright is not installed:  pip install playwright")
 
-# Every page the site serves to a visitor. /contrast-audit is the older
-# in-browser tool and is deliberately not in the list — it is scaffolding.
-ROUTES = ["/", "/book", "/renter", "/driver", "/agent", "/partners", "/dispatch",
-          "/trips", "/trip-planner", "/road-trip", "/destination-book",
-          "/favorite-place", "/guide-studio", "/books", "/articles", "/archive",
-          "/board", "/deflator", "/factor-clock", "/setup"]
+# ---------------------------------------------------------------------------
+# Routes are DERIVED, never hand-typed.
+#
+# The hand-typed list drifted: /professionals went live at app.py:5412 and was
+# never added, so the gate reported "every page passes" while never opening it.
+# A list a human must remember to update is the same failure shape as a
+# :not() chain a human must remember to sync.
+#
+# Two sources, because neither alone is complete:
+#   * app.py            — what the site actually serves (catches new routes)
+#   * the .html files    — what exists on disk (catches files with no route,
+#                          which a url_map walk can never see)
+# ---------------------------------------------------------------------------
+import os
+import re
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Scaffolding, on purpose. Anything NOT listed here must be swept or explained.
+EXCLUDED = {
+    "contrast-audit.html": "the older in-browser tool — scaffolding, not a page",
+}
+BACKUP_RE = re.compile(r"\.backup-\d+", re.I)
+
+
+def discover():
+    """Return (routes, dark_files). Static scan — importing app.py would start
+    its background threads, and a gate must not have side effects."""
+    src = open(os.path.join(BASE_DIR, "app.py"), encoding="utf-8", errors="replace").read()
+    # @app.route("/x")  ...  send_file(... "y.html")   — decorator to the file
+    # it eventually serves, allowing decorator stacks and intervening lines.
+    routes, served = [], set()
+    for m in re.finditer(r'@app\.route\(\s*[\'"]([^\'"]+)[\'"]', src):
+        path = m.group(1)
+        if "<" in path or path.startswith(("/api/", "/sms/", "/media/")):
+            continue                                    # params + non-HTML endpoints
+        # Bound the window to THIS decorator's own function.
+        #   * unbounded, it reads the next function and credits this route with
+        #     that file (/modern.css was first reported as a page this way);
+        #   * bounded at the next @app.route, it truncates STACKED decorators —
+        #     @app.route("/renter") sits directly above @app.route("/driver"),
+        #     so /renter lost its send_file and silently left the sweep. That
+        #     is a coverage regression wearing the costume of a tidy fix.
+        # So: find this route's `def`, then stop at the decorator after it.
+        d = src.find("\ndef ", m.end())
+        nxt = src.find("@app.route", d) if d != -1 else -1
+        body = src[m.end():nxt if nxt != -1 else m.end() + 1400]
+        f = re.search(r'BASE_DIR,\s*[\'"]([a-zA-Z0-9_.-]+\.html)[\'"]', body)
+        if not f:
+            continue
+        if f.group(1) in EXCLUDED:
+            continue
+        routes.append(path)
+        served.add(f.group(1))
+
+    dark = []
+    for fn in sorted(os.listdir(BASE_DIR)):
+        if not fn.endswith(".html") or BACKUP_RE.search(fn):
+            continue
+        if fn in served or fn in EXCLUDED:
+            continue
+        dark.append(fn)
+    return sorted(set(routes)), dark
+
+
+ROUTES, DARK_FILES = discover()
 
 # The eight views stacked inside "/". Each is activated in turn.
 VIEWS = ["overview", "transportation", "operations", "realestate",
          "finance", "reinvestment", "tools", "security"]
 
-# Chromium ships with the container; do not download another one.
-CHROME = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
+
+def resolve_chrome():
+    """The container's Chromium if we are in the container, otherwise the one
+    Playwright installed locally.
+
+    This was hardcoded to a Linux container path, which means the gate could
+    not LAUNCH on the machine the site is developed on — it did not merely miss
+    findings, it never ran here at all. A gate that cannot start is the
+    quietest false pass there is.
+    """
+    container = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
+    return container if os.path.exists(container) else None
 
 # Every colour a glyph is allowed to be. Anything else is a leftover — it
 # does not matter that it is legible. Kept as rendered rgb() strings so this
@@ -75,6 +145,18 @@ PALETTE = [
     "rgb(154, 91, 6)",
     # the Real Estate blueprint sheet, which keeps its own linework colours
     "rgb(234, 244, 255)", "rgb(207, 227, 255)", "rgb(143, 180, 232)", "rgb(255, 206, 107)",
+    # ---- modern.css :root, the CURRENT system ----
+    # This list was written in the paper era and never updated when the system
+    # moved to navy, so the gate reported the brand colour itself as a leftover
+    # — 1869 "off-palette" hits, nearly all of them the design system obeying
+    # itself. A gate that cries wolf is ignored, which is its own silent pass.
+    # Exactly these tokens, read from modern.css :root — not every colour that
+    # happened to render, which would be papering over rather than fixing.
+    "rgb(11, 8, 9)",        # --m-ink
+    "rgb(61, 61, 66)",      # --m-body
+    "rgb(110, 110, 118)",   # --m-muted
+    "rgb(31, 58, 95)",      # --m-rose / --m-rose-deep  (the brand navy)
+    "rgb(20, 39, 63)",      # --m-navy (hover)
 ]
 
 STRAY_JS = r"""(palette) => {
@@ -186,6 +268,100 @@ GRADIENT_JS = r"""() => {
 }"""
 
 
+# ---------------------------------------------------------------------------
+# THE FILL SENSOR — the check that did not exist.
+#
+# "A control is a word with a rule under it, never a fill behind a word" is the
+# strongest rule in the system, stated three times, and nothing measured it.
+# Contrast cannot: a solid #2563eb pill with white text PASSES contrast
+# beautifully. That is exactly how .jvMsg.me and the language switcher's
+# aria-current fill survived four audits.
+#
+# Carve-outs are declared AT THE ELEMENT (data-carveout), not inferred from a
+# chain in a stylesheet. An element that forgets its marking renders plain and
+# is caught by eye; a denylist that forgets an entry renders filled and looks
+# completely normal. That asymmetry is the whole point.
+# ---------------------------------------------------------------------------
+FILL_JS = r"""() => {
+  const CONTROL = 'a,button,summary,[role=button],[onclick],.chip,.btn,.badge,.tag,.i18n-opt,.pk-bubble';
+  const px = c => { const m = c.match(/[\d.]+/g);
+                    return m ? [+m[0], +m[1], +m[2], m.length > 3 ? +m[3] : 1] : null; };
+  const out = [];
+  for (const el of document.querySelectorAll("*")) {
+    if (el.closest("[data-carveout]")) continue;        // declared exception
+    if (el.closest(".leaflet-container")) continue;     // the map is data
+    if (el.closest("#pollock")) continue;               // the mark itself, by design
+    const cs = getComputedStyle(el);
+    const isControl = el.matches(CONTROL) || cs.cursor === "pointer";
+    if (!isControl) continue;
+    // must carry its own word — a filled wrapper around a link is a panel
+    const own = [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
+    if (!own) continue;
+    if (!el.getClientRects().length) continue;
+    const bg = px(cs.backgroundColor);
+    const filled = bg && bg[3] > 0.06;                  // a real fill, not a hairline wash
+    const img = cs.backgroundImage && cs.backgroundImage !== "none";
+    if (filled || img) {
+      out.push({ sel: el.tagName.toLowerCase() + (el.id ? "#" + el.id : "") +
+                      (typeof el.className === "string" && el.className
+                        ? "." + el.className.trim().split(/\s+/).slice(0,2).join(".") : ""),
+                 bg: cs.backgroundColor, img: img ? cs.backgroundImage.slice(0, 40) : "",
+                 t: el.textContent.trim().slice(0, 30) });
+    }
+  }
+  return out;
+}"""
+
+# Focus must be an INSET BAR. Any shadow that paints OUTSIDE the element box is
+# a ring — the exact form the settled rule forbids, and the form sitting
+# unconditionally on every input at modern.css:576-580. Never measured, because
+# the gate never called .focus() once.
+FOCUS_JS = r"""() => {
+  const out = [];
+  if (!document.hasFocus()) return [{ sel: "(window)", shadow: "WINDOW NOT FOCUSED",
+                                      t: "focus styles do not render — result is meaningless" }];
+  const controls = [...document.querySelectorAll("a,button,input,select,textarea,summary,[role=button],.chip")]
+                     .filter(el => el.getClientRects().length);
+  for (const el of controls.slice(0, 40)) {
+    // Measure the DELTA, not the state. A permanent drop shadow is not a focus
+    // ring: the switcher's own `0 10px 28px rgba(0,0,0,.35)` read as a ring on
+    // the first pass and would have sent me editing a shadow that was never
+    // the bug. What focus ADDS is the only thing this rule is about.
+    const before = getComputedStyle(el).boxShadow;
+    try { el.focus({ preventScroll: true }); } catch (e) { continue; }
+    if (document.activeElement !== el) continue;
+    const cs = getComputedStyle(el);
+    const sh = cs.boxShadow;
+    if (sh && sh !== "none" && sh !== before && !sh.includes("inset")) {
+      out.push({ sel: el.tagName.toLowerCase() + (el.id ? "#" + el.id : ""),
+                 shadow: sh.slice(0, 60), t: (el.textContent || el.value || "").trim().slice(0, 24) });
+    }
+    const ow = parseFloat(cs.outlineWidth) || 0;
+    if (ow > 0 && cs.outlineStyle !== "none") {
+      out.push({ sel: el.tagName.toLowerCase() + (el.id ? "#" + el.id : ""),
+                 shadow: `outline ${cs.outlineStyle} ${cs.outlineWidth}`,
+                 t: (el.textContent || "").trim().slice(0, 24) });
+    }
+  }
+  try { document.activeElement && document.activeElement.blur(); } catch (e) {}
+  return out;
+}"""
+
+# Everything a reader can open, opened. The docstring already records that
+# display:none views hid seven-eighths of the landing page; the same lesson was
+# never generalised to click-to-open widgets, so the language switcher's
+# dropdown — a solid fill behind a language word, on all 23 pages — sat at
+# getClientRects().length === 0 and was skipped by every pass.
+OPEN_JS = r"""() => {
+  for (const sel of ["#i18nBtn", "#jvBtn", "#pollock"]) {
+    const el = document.querySelector(sel);
+    if (el) { try { el.click(); } catch (e) {} }
+  }
+  for (const d of document.querySelectorAll("details")) d.open = true;
+  return true;
+}"""
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--base", default="http://127.0.0.1:5055",
@@ -195,9 +371,13 @@ def main():
     args = ap.parse_args()
 
     contrast_fails, gradient_fails, stray_fails, untagged = 0, 0, 0, []
+    fill_fails, focus_fails = 0, 0
+
+    print(f"sweeping {len(ROUTES)} derived route(s); "
+          f"{len(DARK_FILES)} file(s) on disk with no route")
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(executable_path=CHROME)
+        browser = p.chromium.launch(executable_path=resolve_chrome())
         for width, tag in ((1280, "desktop"), (390, "mobile")):
             page = browser.new_page(viewport={"width": width, "height": 900})
             for route in ROUTES:
@@ -214,10 +394,16 @@ def main():
                         page.evaluate(f"showView('{view}')")
                         page.wait_for_timeout(260)
 
+                    # open everything a reader can open BEFORE measuring
+                    page.evaluate(OPEN_JS)
+                    page.wait_for_timeout(220)
+
                     res = page.evaluate(CONTRAST_JS)
                     bad = res["fails"]
                     grads = page.evaluate(GRADIENT_JS) if tag == "desktop" else []
                     strays = page.evaluate(STRAY_JS, PALETTE) if tag == "desktop" else []
+                    fills = page.evaluate(FILL_JS) if tag == "desktop" else []
+                    focus = page.evaluate(FOCUS_JS) if tag == "desktop" else []
 
                     if view:
                         scope = f"document.querySelector('#view-{view}')"
@@ -233,8 +419,10 @@ def main():
                     contrast_fails += len(bad)
                     gradient_fails += len(grads)
                     stray_fails += len(strays)
+                    fill_fails += len(fills)
+                    focus_fails += len(focus)
 
-                    mark = "ok  " if not (bad or grads or strays or not arm) else "FAIL"
+                    mark = "ok  " if not (bad or grads or strays or fills or focus or not arm) else "FAIL"
                     print(f"{mark} {tag:8} {label:20} arm={str(arm):15} accent={accent}")
                     for f in bad[:6]:
                         print(f"       contrast {f['got']}:1 (needs {f['need']}) {f['sel']}"
@@ -250,6 +438,15 @@ def main():
                             continue
                         seen_stray.add(key)
                         print(f"       off-palette {h['c']} {h['sel']}  {h['t']!r}")
+                    seen_fill = set()
+                    for h in fills:
+                        if h["sel"] in seen_fill:
+                            continue
+                        seen_fill.add(h["sel"])
+                        print(f"       FILL behind a word: {h['sel']}  "
+                              f"{h['bg']}{' ' + h['img'] if h['img'] else ''}  {h['t']!r}")
+                    for h in focus[:6]:
+                        print(f"       focus ring: {h['sel']}  {h['shadow']}  {h['t']!r}")
             page.close()
         browser.close()
 
@@ -271,6 +468,20 @@ def main():
         print(f"FAIL  {len(untagged)} page(s) with no data-arm: {', '.join(untagged)}"); ok = False
     else:
         print("ok    every page resolves to one of the four arms")
+    if fill_fails:
+        print(f"FAIL  {fill_fails} control(s) with a fill behind the word"); ok = False
+    else:
+        print("ok    every control is a word with a rule under it — no fills")
+    if focus_fails:
+        print(f"FAIL  {focus_fails} control(s) focus as a ring instead of an inset bar"); ok = False
+    else:
+        print("ok    focus is an inset bar everywhere it was measured")
+    if DARK_FILES:
+        # Not a failure: an unrouted file ships to nobody. But it must be named,
+        # because "no route" is exactly how rent-a-tesla.html kept a full cream
+        # theme that no stylesheet could reach and no audit ever opened.
+        print(f"note  {len(DARK_FILES)} file(s) with no route (not served, not gated): "
+              f"{', '.join(DARK_FILES)}")
 
     sys.exit(1 if (args.strict and not ok) else 0)
 

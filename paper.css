@@ -301,10 +301,15 @@
         background:rgba(20,17,12,.04) !important;color:var(--psx-ink) !important;
       }
 
-      /* ---------- the language switcher, in ink ---------- */
+      /* ---------- the language switcher ----------
+         This was `background:var(--psx-ink) !important` — a paper-era ink pill.
+         It is a THIRD authority over one component (paper.css, modern.css's
+         :not() chain, and the widget's own injected <style>), and being
+         !important it beat the widget: the switcher's own rule set the word
+         navy while this kept the ground near-black, rendering navy-on-black at
+         1.74:1. The component owns its appearance; this rule stands down. */
       #i18nBtn{
-        background:var(--psx-ink) !important;
-        border-color:rgba(255,255,255,.15) !important;
+        border-color:var(--m-line-firm,#d3d3da) !important;
       }
 
       @media (prefers-reduced-motion:reduce){

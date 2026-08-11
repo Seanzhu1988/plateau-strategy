@@ -104,15 +104,24 @@
     var css = document.createElement("style");
     css.textContent =
       "#i18nSwitch{position:fixed;bottom:18px;right:18px;z-index:600;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}" +
-      "#i18nBtn{display:flex;align-items:center;gap:.4rem;background:#0f172a;color:#fff;border:1px solid rgba(255,255,255,.18);" +
-      "border-radius:999px;padding:.5rem .9rem;font-size:.86rem;font-weight:600;cursor:pointer;box-shadow:0 10px 28px rgba(0,0,0,.35);}" +
-      "#i18nBtn:hover{background:#1e293b;}" +
-      "#i18nMenu{display:none;position:absolute;bottom:52px;right:0;min-width:160px;background:#0f172a;border:1px solid rgba(255,255,255,.14);" +
-      "border-radius:12px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.45);}" +
-      "#i18nMenu .i18n-opt{display:block;width:100%;text-align:left;background:none;border:none;color:#e2e8f0;padding:.62rem .95rem;" +
-      "font-size:.9rem;cursor:pointer;}" +
-      "#i18nMenu .i18n-opt:hover{background:#1e293b;}" +
-      "#i18nMenu .i18n-opt[aria-current='true']{background:#2563eb;color:#fff;}" +
+      // The switcher speaks the site's language: white ground, navy word,
+      // hairline rule. It used to be slate #0f172a with a #2563eb FILL behind
+      // the current language — a fill behind a word, in two colours the brand
+      // does not contain, on all 23 pages. It survived four audits because it
+      // is injected from JS, where no stylesheet and no :not() chain reaches.
+      "#i18nBtn{display:flex;align-items:center;gap:.4rem;background:#fff;color:#1f3a5f;border:1px solid #d3d3da;" +
+      "border-radius:999px;padding:.5rem .9rem;font-size:.86rem;font-weight:600;cursor:pointer;" +
+      "box-shadow:0 1px 2px rgba(11,11,12,.05),0 8px 24px -12px rgba(11,11,12,.18);}" +
+      "#i18nBtn:hover{border-color:#1f3a5f;}" +
+      "#i18nBtn:focus{outline:none;box-shadow:inset 0 -3px 0 0 #14273f;}" +
+      "#i18nMenu{display:none;position:absolute;bottom:52px;right:0;min-width:160px;background:#fff;border:1px solid #e6e6ea;" +
+      "border-radius:12px;overflow:hidden;box-shadow:0 1px 2px rgba(11,11,12,.05),0 16px 40px -16px rgba(11,11,12,.28);}" +
+      "#i18nMenu .i18n-opt{display:block;width:100%;text-align:left;background:none;border:none;color:#3d3d42;padding:.62rem .95rem;" +
+      "font-size:.9rem;cursor:pointer;border-bottom:1px solid transparent;}" +
+      // hover and current are a RULE UNDER THE WORD and weight — never a fill
+      "#i18nMenu .i18n-opt:hover{color:#1f3a5f;border-bottom-color:#d3d3da;}" +
+      "#i18nMenu .i18n-opt:focus{outline:none;box-shadow:inset 0 -3px 0 0 #14273f;}" +
+      "#i18nMenu .i18n-opt[aria-current='true']{color:#1f3a5f;font-weight:700;border-bottom-color:#1f3a5f;}" +
       // On a phone the switcher sits exactly where the next form field and the
       // submit button are. Shrink it to the globe alone — a round 44px target,
       // which is bigger to hit than the old pill and covers a third as much.
