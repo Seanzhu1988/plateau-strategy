@@ -57,7 +57,28 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # behave exactly as before. Set, any file the repository ships (the seeded
 # destinations book, pricing) is copied across once on first boot, so switching
 # it on never starts the site with an empty book.
-DATA_DIR = os.environ.get("DATA_DIR", "").strip() or BASE_DIR
+def _pick_data_dir():
+    """Where the site's data files live.
+
+    DATA_DIR wins if set. Failing that, a disk mounted at the conventional
+    path is used automatically — because a disk that is attached but that
+    nothing points at behaves exactly like no disk at all, and that failure
+    is silent: the site keeps working and quietly forgets everything on
+    every deploy. Detecting the mount removes the one manual step that
+    stood between paying for persistence and having it.
+
+    On a laptop /var/data does not exist, so local runs are unaffected.
+    """
+    d = os.environ.get("DATA_DIR", "").strip()
+    if d:
+        return d
+    for cand in ("/var/data", "/data"):
+        if os.path.isdir(cand) and os.access(cand, os.W_OK):
+            return cand
+    return BASE_DIR
+
+
+DATA_DIR = _pick_data_dir()
 _SEEDED = set()
 
 
@@ -5235,6 +5256,9 @@ def api_build():
         "booted_at": datetime.datetime.utcfromtimestamp(_BOOT_TS).isoformat() + "Z",
         "uptime_s": int(time.time() - _BOOT_TS),
         "persistent_data": DATA_DIR != BASE_DIR,
+        # Distinguishes "no disk attached" from "disk attached, app not
+        # pointed at it" without publishing any path.
+        "disk_mounted": any(os.path.isdir(p) for p in ("/var/data", "/data")),
     })
 
 
