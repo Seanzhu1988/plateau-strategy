@@ -11,7 +11,7 @@
 (function () {
   var MODES = [
     { key: '',          label: 'Now',        note: 'hairline + small centred mark' },
-    { key: 'numbered',  label: '01 Numbered', note: 'number and name open each chapter' },
+    { key: 'numbered',  label: '01 Numbered', note: 'a number opens each chapter' },
     { key: 'bands',     label: 'Bands',      note: 'alternating grounds — only the overview has two sections to alternate' },
     { key: 'rule',      label: 'Heavy rule', note: 'full-width 3px navy, much more air' }
   ];
