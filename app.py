@@ -5216,6 +5216,28 @@ def api_idea_professionals():
                         "summary": "", "error": str(e)[:120]})
 
 
+_BOOT_TS = time.time()
+
+
+@app.route("/api/build")
+def api_build():
+    """Which version is live, and when this process started.
+
+    Small but load-bearing: without it there is no way to tell whether a
+    deploy actually landed, so "I pushed the fix" and "the fix is running"
+    stay indistinguishable. Render exposes the deployed commit in the
+    environment; boot time proves the process itself restarted.
+    """
+    return jsonify({
+        "ok": True,
+        "commit": (os.environ.get("RENDER_GIT_COMMIT") or "")[:8],
+        "branch": os.environ.get("RENDER_GIT_BRANCH", ""),
+        "booted_at": datetime.datetime.utcfromtimestamp(_BOOT_TS).isoformat() + "Z",
+        "uptime_s": int(time.time() - _BOOT_TS),
+        "persistent_data": DATA_DIR != BASE_DIR,
+    })
+
+
 @app.route("/api/persistence")
 @owner_required
 def api_persistence():
