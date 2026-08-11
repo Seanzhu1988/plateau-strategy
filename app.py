@@ -5216,6 +5216,56 @@ def api_idea_professionals():
                         "summary": "", "error": str(e)[:120]})
 
 
+@app.route("/api/persistence")
+@owner_required
+def api_persistence():
+    """Is the site actually writing somewhere that survives a deploy?
+
+    Owner-only. Exists because "the setting looks right" and "the data
+    survived a deploy" are different claims, and only the second one matters.
+    Reports where writes go, whether that is a real mounted disk, and a marker
+    it can write and read back so persistence can be proved rather than assumed.
+    """
+    import shutil
+    persistent = DATA_DIR != BASE_DIR
+    marker_path = os.path.join(DATA_DIR, "_persistence_marker.txt")
+    action = (request.args.get("action") or "").strip()
+    wrote = None
+    if action == "mark":
+        try:
+            os.makedirs(DATA_DIR, exist_ok=True)
+            wrote = datetime.datetime.now().isoformat(timespec="seconds")
+            with open(marker_path, "w") as f:
+                f.write(wrote)
+        except Exception as e:
+            return jsonify({"ok": False, "error": str(e)[:160]}), 500
+    marker = None
+    try:
+        with open(marker_path) as f:
+            marker = f.read().strip()
+    except Exception:
+        marker = None
+    try:
+        usage = shutil.disk_usage(DATA_DIR)
+        free_gb = round(usage.free / 1e9, 2)
+        total_gb = round(usage.total / 1e9, 2)
+    except Exception:
+        free_gb = total_gb = None
+    return jsonify({
+        "ok": True,
+        "data_dir": DATA_DIR,
+        "base_dir": BASE_DIR,
+        "persistent_disk_configured": persistent,
+        "marker_written_now": wrote,
+        "marker_on_disk": marker,
+        "disk_total_gb": total_gb, "disk_free_gb": free_gb,
+        "verdict": ("Writing to a mounted disk — data should survive a deploy."
+                    if persistent else
+                    "DATA_DIR is unset, so writes go to the disposable filesystem "
+                    "and are destroyed on every deploy."),
+    })
+
+
 @app.route("/api/traffic/places")
 @owner_required
 def api_traffic_places():
