@@ -1,0 +1,12 @@
+{
+  "name": "Plateau Walk",
+  "short_name": "Walk",
+  "description": "The walking guide: footprints of the person who walked it before you.",
+  "start_url": "/walk",
+  "display": "standalone",
+  "background_color": "#10305c",
+  "theme_color": "#10305c",
+  "icons": [
+    { "src": "/plateau-logo.png", "sizes": "any", "type": "image/png" }
+  ]
+}

@@ -173,6 +173,19 @@ chk("and the tourist corridors are in the work list",
     {"westlake-to-pike-place", "pike-place-to-waterfront",
      "monorail-to-space-needle"} <= {c["key"] for c in store.corridors()})
 
+print("\nthe walked list is public; the waiting list is not:")
+r = c.get("/api/footprints/walked")
+chk("anyone can ask what has been walked (%d)" % r.status_code,
+    r.status_code == 200)
+keys = {x["key"] for x in r.get_json()["corridors"]}
+chk("it names the walked corridors (%s)" % sorted(keys),
+    {"seatac-terminal-to-link", "westlake-to-pike-place"} <= keys)
+chk("and NOT the unwalked ones — those map our unfinished edges",
+    "pike-place-to-waterfront" not in keys
+    and "monorail-to-space-needle" not in keys)
+chk("rows carry no points — the line comes from /path, one at a time",
+    all("points" not in x for x in r.get_json()["corridors"]))
+
 print("\nthe path is public only once it exists:")
 chk("an unknown corridor's path is 404",
     c.get("/api/footprints/nope/path").status_code == 404)

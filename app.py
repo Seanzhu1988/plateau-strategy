@@ -1641,6 +1641,25 @@ def api_footprint_add(key):
                     "walked": FOOTPRINTS.walked(key)})
 
 
+@app.route("/api/footprints/walked")
+def api_footprints_walked():
+    """The corridors that HAVE a recorded walk — public, unlike the work list.
+
+    The distinction: an unwalked corridor's existence maps our unfinished
+    edges and stays surveyor-only. A walked one is the product, and the guide
+    on a stranger's phone needs this list to know which recorded lines exist
+    near them. Keys, labels and dates only; the lines themselves come one at
+    a time from /path."""
+    out = []
+    for c in FOOTPRINTS.corridors():
+        if c.get("walked"):
+            p = FOOTPRINTS.path(c["key"])
+            out.append({"key": c["key"], "label": c["label"],
+                        "date": c["walked"]["date"],
+                        "length_m": p["length_m"] if p else None})
+    return jsonify({"ok": True, "corridors": out})
+
+
 @app.route("/api/footprints/<key>/path")
 def api_footprint_path(key):
     """The recorded line of a walked corridor, public, because it is the
@@ -1698,6 +1717,19 @@ def walk_page():
 @app.route("/walk-guide.js")
 def walk_guide_js():
     return send_file(os.path.join(BASE_DIR, "walk-guide.js"),
+                     mimetype="text/javascript")
+
+
+@app.route("/manifest.webmanifest")
+def walk_manifest():
+    """The install manifest: what makes /walk an app on a home screen."""
+    return send_file(os.path.join(BASE_DIR, "manifest.webmanifest"),
+                     mimetype="application/manifest+json")
+
+
+@app.route("/sw.js")
+def walk_sw():
+    return send_file(os.path.join(BASE_DIR, "sw.js"),
                      mimetype="text/javascript")
 
 

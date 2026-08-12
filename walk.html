@@ -6,6 +6,14 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Walking guide, Plateau Strategy Solution Lab</title>
 <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+<!-- Installable: Add to Home Screen makes this a full-screen app with its own
+     icon — the app-based version that needs no app store. The service worker
+     keeps the shell opening in an airport basement; live data still needs a
+     connection. -->
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#10305c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="stylesheet" href="/paper.css">
 <script src="/psx-net.js"></script>
 <link rel="stylesheet" href="/modern.css">
@@ -56,6 +64,18 @@
 
   <button class="wg-start" id="wgBtn">Start the guide</button>
   <p class="wg-fix" id="wgFix">Not started.</p>
+
+  <!-- The footprints, when you are near a corridor somebody has walked.
+       Hidden until then: an empty map is clutter, and most of a walk is
+       nowhere near a recorded line. -->
+  <div id="wgStage" hidden style="border:1.5px solid var(--psx-line,#e6e2da);margin:1rem 0;">
+    <div id="wgCorr" style="font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;
+         color:var(--psx-text2,#6b6459);padding:.5rem .7rem .2rem;"></div>
+    <svg id="wgSvg" viewBox="0 0 340 260" style="width:100%;height:auto;display:block;"></svg>
+    <div id="wgFollow" style="font-size:.85rem;color:var(--psx-text2,#6b6459);
+         padding:.2rem .7rem .6rem;min-height:1.6em;"></div>
+  </div>
+
   <ul class="wg-log" id="wgLog"></ul>
 </div>
 <script>
@@ -64,6 +84,95 @@
       logEl = document.getElementById('wgLog');
   var watch = null, trail = [], places = [], state = { said: {}, lastSpokeAt: 0 };
   var fetchedFor = null;
+  var corridors = [];               // walked corridors: {key,label,points}
+  var wakeLock = null;
+
+  /* The screen sleeping mid-walk is the single biggest real-world killer of
+     a web guide — the phone locks, JavaScript suspends, the guide dies
+     silently. The Wake Lock API holds the screen while the guide runs, and
+     is re-acquired when the tab comes back, because the lock is released by
+     the platform every time the page is hidden. Everything is wrapped:
+     browsers without it just behave as before. */
+  async function keepAwake() {
+    try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && watch !== null) keepAwake();
+  });
+
+  /* Every corridor somebody has walked, fetched once. These are the recorded
+     lines the stage below draws footprints along. */
+  (async function loadCorridors() {
+    var d = await psxJSON('/api/footprints/walked');
+    if (!d || !d.ok) return;
+    for (var i = 0; i < (d.corridors || []).length; i++) {
+      var c = d.corridors[i];
+      var p = await psxJSON('/api/footprints/' + encodeURIComponent(c.key) + '/path');
+      if (p && p.ok && p.points) {
+        corridors.push({ key: c.key, label: c.label, points: p.points });
+      }
+    }
+  })();
+
+  /* Draw the footprints of the nearest walked corridor — the real-world half
+     of the demo at /footprints-demo, fed by real GPS instead of a dial. The
+     decision of WHAT to draw is WalkGuide.trailAhead, the same code, so what
+     was proven there is what happens here. */
+  var stage = document.getElementById('wgStage'), wgSvg = document.getElementById('wgSvg'),
+      wgCorr = document.getElementById('wgCorr'), wgFollow = document.getElementById('wgFollow');
+  function svgEl(name, attrs) {
+    var e = document.createElementNS('http://www.w3.org/2000/svg', name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function followRender(pos, heading, acc) {
+    var best = null, bestD = Infinity;
+    for (var i = 0; i < corridors.length; i++) {
+      var d = WalkGuide.nearestOnPathM(pos, corridors[i].points);
+      if (d < bestD) { bestD = d; best = corridors[i]; }
+    }
+    if (!best || bestD > 150) { stage.hidden = true; return; }
+    stage.hidden = false;
+    wgCorr.textContent = best.label;
+    while (wgSvg.firstChild) wgSvg.removeChild(wgSvg.firstChild);
+    var kx = 111320 * Math.cos(pos.lat * Math.PI / 180), ky = 111320, S = 2.2;
+    function xy(p) {
+      var lat = p.lat !== undefined ? p.lat : p[0];
+      var lon = p.lon !== undefined ? p.lon : p[1];
+      return { x: 170 + (lon - pos.lon) * kx * S, y: 130 - (lat - pos.lat) * ky * S };
+    }
+    var pts = best.points.map(xy).map(function (p) { return p.x + ',' + p.y; }).join(' ');
+    wgSvg.appendChild(svgEl('polyline', { points: pts, fill: 'none',
+      stroke: '#b9b2a6', 'stroke-width': 1, 'stroke-dasharray': '2 7' }));
+    var d2 = WalkGuide.trailAhead(pos, heading, best.points, { accuracy: acc });
+    if (d2.show) {
+      var prev = pos;
+      for (var j = 0; j < d2.trail.length; j++) {
+        var P = xy(d2.trail[j]), Q = xy(prev);
+        var ang = Math.atan2(P.x - Q.x, Q.y - P.y) * 180 / Math.PI;
+        var side = (j % 2 ? 6 : -6), rad = ang * Math.PI / 180;
+        wgSvg.appendChild(svgEl('ellipse', {
+          cx: P.x + Math.cos(rad) * side, cy: P.y + Math.sin(rad) * side,
+          rx: 3.2, ry: 6, fill: '#1f3a5f',
+          transform: 'rotate(' + ang + ' ' + (P.x + Math.cos(rad) * side) + ' '
+                     + (P.y + Math.sin(rad) * side) + ')' }));
+        prev = d2.trail[j];
+      }
+      wgFollow.textContent = 'Follow the footprints.';
+    } else {
+      wgFollow.textContent = d2.why === 'facing away from the path'
+        ? 'Turn on the spot until the footprints appear.'
+        : d2.why;
+    }
+    if (heading !== null && heading !== undefined) {
+      var r = heading * Math.PI / 180, half = 24 * Math.PI / 180, L = 30;
+      wgSvg.appendChild(svgEl('path', { d: 'M 170 130 L '
+        + (170 + Math.sin(r - half) * L) + ' ' + (130 - Math.cos(r - half) * L) + ' L '
+        + (170 + Math.sin(r + half) * L) + ' ' + (130 - Math.cos(r + half) * L) + ' Z',
+        fill: 'rgba(31,58,95,.15)', stroke: '#8a8377', 'stroke-width': 1 }));
+    }
+    wgSvg.appendChild(svgEl('circle', { cx: 170, cy: 130, r: 6, fill: '#1f3a5f' }));
+  }
 
   function log(text, quiet) {
     var li = document.createElement('li');
@@ -120,6 +229,7 @@
     fixEl.textContent = 'Fix ±' + Math.round(acc) + ' m · '
       + (heading === null ? 'walk a few steps so it knows which way you face'
                           : 'facing ' + Math.round(heading) + '°');
+    followRender(pos, heading, acc);
 
     var now = Date.now();
     var best = null;
@@ -146,7 +256,9 @@
     btn.textContent = 'Start the guide';
     btn.classList.remove('wg-stop');
     fixEl.textContent = 'Stopped.';
+    stage.hidden = true;
     try { speechSynthesis.cancel(); } catch (e) {}
+    try { if (wakeLock) { wakeLock.release(); wakeLock = null; } } catch (e) {}
   }
 
   btn.addEventListener('click', function () {
@@ -156,8 +268,10 @@
       return;
     }
     // Spoken once from inside the click, because iOS will not let a page speak
-    // later unless speech started from a real tap.
+    // later unless speech started from a real tap. The wake lock also has to
+    // be requested from a user gesture, so it lives here too.
     say('Guide started.');
+    keepAwake();
     btn.textContent = 'Stop';
     btn.classList.add('wg-stop');
     fixEl.textContent = 'Waiting for a fix…';
@@ -167,6 +281,11 @@
   });
 
   window.__wgFeed = onFix;          // used by the test to walk a fake street
+  window.__wgCorridors = corridors; // and to see what follow-mode loaded
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(function () {});
+  }
 })();
 </script>
 <script src="/i18n.js"></script>
