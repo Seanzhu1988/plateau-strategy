@@ -7198,6 +7198,139 @@ def professionals_page():
     return send_file(os.path.join(BASE_DIR, "professionals.html"))
 
 
+def _a_or_an(word):
+    """"a IP attorney" was on screen. Acronyms are read letter by letter, so
+    the article follows how the first letter SOUNDS, not how it is spelled:
+    an IP attorney, an MBA, an FBI agent — but a CPA, a HIPAA consultant."""
+    w = (word or "").strip()
+    if not w:
+        return "a"
+    first = w.split()[0].strip(".,/")
+    # Acronyms said as a word, not spelled out: "a HIPAA consultant", not "an".
+    SAID_AS_WORD = {"HIPAA", "NASA", "OSHA", "FEMA", "NATO", "NAFTA", "FICO"}
+    if first.isupper() and len(first) > 1 and first not in SAID_AS_WORD:
+        return "an" if first[0] in "AEFHILMNORSX" else "a"
+    return "an" if first[0].lower() in "aeiou" else "a"
+
+
+@app.route("/trade/<slug>")
+def trade_page(slug):
+    """Every idea that needs this trade, on one page, with a link to each.
+
+    The point Sean made: the trades and the ideas were living in different
+    places. The board recognised that a post needs a real estate attorney,
+    and separately there was a list of trades, and nothing joined the two —
+    so a real estate attorney had no way to see the work waiting for them.
+
+    This is the join, and it is a plain URL, which means it is something you
+    can send to a professional directly: here are the posts that need you.
+    """
+    slug = (slug or "").strip().lower()
+    label, why = slug.replace("-", " ").title(), ""
+    store = _load_professions()
+    if slug in store:
+        label = store[slug].get("label") or label
+        why = store[slug].get("why") or ""
+
+    hits = []
+    for a in reversed(_load(ARTICLES_PATH)):
+        if a.get("hidden"):
+            continue
+        pr = a.get("professionals") or {}
+        allp = (pr.get("matched") or []) + (pr.get("always") or [])
+        me = next((x for x in allp if x.get("slug") == slug), None)
+        if not me:
+            continue
+        # the words in the post that called for this trade — so a professional
+        # can judge whether it is really their job before spending time on it
+        ev = ", ".join(next((d.get("evidence") or [] for d in (pr.get("domains") or [])
+                             if d.get("name") == me.get("domain")), [])[:5])
+        hits.append((a, me, ev))
+
+    e = _no_tags
+    if hits:
+        items = "".join(
+            '''<a class="tr-item" href="/idea/%s">
+                 <div class="tr-t">%s</div>
+                 <div class="tr-m">by %s%s</div>
+                 <p class="tr-x">%s</p>
+               </a>''' % (
+                e(a.get("id")), e(a.get("title") or ""), e(a.get("author") or "someone"),
+                (" · called for by: " + e(ev)) if ev else "",
+                e((_og_description(a.get("body") or "") or "")[:220]))
+            for a, me, ev in hits)
+        lede = ("%d idea%s here need%s %s %s." %
+                (len(hits), "" if len(hits) == 1 else "s",
+                 "s" if len(hits) == 1 else "", _a_or_an(label), label))
+    else:
+        items = ('''<p class="tr-empty">No one has posted an idea needing this yet.
+                 When somebody does, it appears here, and this page keeps the
+                 same address — so it is worth keeping.</p>''')
+        lede = "Nothing posted yet that needs %s %s." % (_a_or_an(label), label)
+
+    return Response("""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ideas that need %(an)s %(label)s — Plateau Strategy</title>
+<meta name="description" content="%(lede)s">
+<meta property="og:title" content="Ideas that need %(an)s %(label)s">
+<meta property="og:description" content="%(lede)s">
+<meta property="og:url" content="%(origin)s/trade/%(slug)s">
+<meta property="og:site_name" content="Plateau Strategy Solution Lab">
+<meta property="og:image" content="%(origin)s/icon-512.png">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="%(origin)s/trade/%(slug)s">
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Plateau">
+<meta name="theme-color" content="#1f3a5f">
+<link rel="stylesheet" href="/paper.css">
+<link rel="stylesheet" href="/modern.css">
+<style>
+  header img { height: 42px; width: 42px; border-radius: 50%%; }
+  header .brand { font-size: 1.2rem; font-weight: 800; }
+  header .right { margin-left: auto; display: flex; gap: 1.2rem; }
+  .wrap { max-width: 44rem; }
+  .tr-lede { color: var(--psx-text2, #6b6459); margin: .2rem 0 2rem; }
+  .tr-item { display: block; text-decoration: none; color: inherit;
+             padding: 1.15rem 0; border-top: 1px solid var(--psx-line, #e6e2da); }
+  .tr-item:first-of-type { border-top: 0; }
+  .tr-t { font-weight: 700; font-size: 1.1rem; color: var(--psx-text, #1b1b1f); }
+  .tr-m { color: var(--psx-text2, #6b6459); font-size: .86rem; margin: .25rem 0 .5rem; }
+  .tr-x { margin: 0; color: var(--psx-text2, #6b6459); font-size: .97rem; line-height: 1.6; }
+  .tr-cta { border-top: 1px solid var(--psx-line, #e6e2da); margin-top: 2.4rem;
+            padding-top: 1.4rem; }
+  .tr-empty { color: var(--psx-text2, #6b6459); }
+  @media (max-width: 640px) {
+    .wrap { padding-left: 1.1rem; padding-right: 1.1rem; }
+    header .brand { font-size: 1rem; }
+  }
+</style>
+</head>
+<body data-arm="company">
+<header>
+  <img src="/icon-192.png" alt="Plateau Strategy Solution Lab">
+  <span class="brand">Plateau Strategy Solution Lab</span>
+  <div class="right"><a href="/">Home</a></div>
+</header>
+<div class="wrap">
+  <div class="page-title">Ideas that need %(an)s %(label)s</div>
+  <p class="tr-lede">%(lede)s%(why)s</p>
+  %(items)s
+  <div class="tr-cta">
+    <p>Are you one? Publish an opinion against any of these and set your own
+       price — written once, sold as many times as it is worth buying.</p>
+    <p><a href="/#reinvestment">Register as a professional →</a></p>
+  </div>
+</div>
+</body>
+</html>""" % {"label": e(label), "lede": e(lede), "items": items, "an": _a_or_an(label),
+              "why": (" " + e(why)) if why else "",
+              "slug": e(slug), "origin": SITE_ORIGIN}, mimetype="text/html")
+
+
 @app.route("/api/professions")
 def api_professions():
     """The trades this platform has been asked for, ranked by demand.

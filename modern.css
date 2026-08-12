@@ -1102,3 +1102,23 @@ html[data-frame="rule"] #view-overview .psx-section {
   padding: .22rem .62rem;
   cursor: help;
 }
+
+/* A trade is a link, so it has to look like one you can press. Same shape as
+   before — a word inside a hairline — but it now goes somewhere: every idea
+   waiting for that trade. Sized for a thumb, because the person who most
+   needs this link is a professional reading on a phone. */
+a.idea-pro, a.rusa-chip {
+  text-decoration: none;
+  transition: border-color .14s ease, color .14s ease;
+}
+a.idea-pro:hover, a.rusa-chip:hover {
+  border-color: var(--m-rose);
+  color: var(--m-rose);
+}
+a.idea-pro:focus-visible, a.rusa-chip:focus-visible {
+  outline: none;
+  box-shadow: inset 0 -3px 0 0 var(--m-navy);
+}
+@media (max-width: 640px) {
+  a.idea-pro, a.rusa-chip { padding: .5rem .8rem; }
+}

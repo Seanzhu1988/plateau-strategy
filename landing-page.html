@@ -3335,11 +3335,17 @@
                 (pr.domains || []).forEach(function (d) { ev[d.name] = (d.evidence || []).join(', '); });
                 var list = (pr.matched || []).concat(pr.always || []);
                 if (!list.length) return '';
+                // Each trade is a LINK, not a label. The board knew which
+                // professionals a post needed and showed it as dead text, so a
+                // professional had no way from "this needs an attorney" to
+                // "here is every post that needs one".
                 return '<div class="idea-pros"><span class="idea-pros-t">Likely needs</span>' +
                     list.map(function (p) {
                         var why = p.why || '';
                         if (ev[p.domain]) why += '  (from: ' + ev[p.domain] + ')';
-                        return '<span class="idea-pro" title="' + esc(why) + '">' + esc(p.label) + '</span>';
+                        return '<a class="idea-pro" href="/trade/' + encodeURIComponent(p.slug) +
+                               '" title="' + esc(why) + ' — see every idea needing this">' +
+                               esc(p.label) + '</a>';
                     }).join('') + '</div>';
             }
 
@@ -3624,8 +3630,9 @@
           if (tw) {
             tw.innerHTML = trades.length
               ? trades.slice(0, 14).map(function (t) {
-                  return '<span class="rusa-chip">' + esc(t.label || t.slug)
-                    + (t.demand ? '<b>' + t.demand + '</b>' : '') + '</span>';
+                  return '<a class="rusa-chip" href="/trade/' + encodeURIComponent(t.slug) + '">'
+                    + esc(t.label || t.slug)
+                    + (t.demand ? '<b>' + t.demand + '</b>' : '') + '</a>';
                 }).join('')
               : '<p class="rusa-empty">No trades yet — the first idea posted will name some.</p>';
           }
