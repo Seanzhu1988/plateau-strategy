@@ -30,7 +30,7 @@ import shutil
 import html
 from functools import wraps
 from flask import (Flask, request, jsonify, send_file, session, Response,
-                   redirect, make_response)
+                   redirect, make_response, abort)
 
 try:
     from dotenv import load_dotenv
@@ -1386,6 +1386,61 @@ def home():
     return send_file(os.path.join(BASE_DIR, "landing-page.html"))
 
 
+# The home-screen and tab icons.
+#
+# These exist because the icon iOS was being handed — plateau-logo.png — was a
+# 1024x1024 transparent PNG with the mark rendered as a speck in the middle:
+# 5,116 ink pixels out of a million. iOS composites a transparent touch icon
+# onto black, so the result on the home screen was a black square with a dot,
+# which is exactly what the owner photographed and sent.
+#
+# Two rules learned from that: a touch icon must be OPAQUE, and it must be
+# checked by looking at it rather than by trusting the conversion.
+_ICONS = {
+    "apple-touch-icon.png": "image/png",   # 180, iOS home screen
+    "icon-192.png": "image/png",
+    "icon-512.png": "image/png",
+    "icon-32.png": "image/png",            # browser tab
+}
+
+
+@app.route("/apple-touch-icon.png")
+@app.route("/apple-touch-icon-precomposed.png")
+@app.route("/icon-192.png")
+@app.route("/icon-512.png")
+@app.route("/icon-32.png")
+def _icon_file():
+    name = request.path.lstrip("/")
+    if name == "apple-touch-icon-precomposed.png":
+        name = "apple-touch-icon.png"      # older iOS asks for this one
+    if name not in _ICONS:
+        abort(404)
+    return send_file(os.path.join(BASE_DIR, name), mimetype=_ICONS[name])
+
+
+@app.route("/site.webmanifest")
+def site_manifest():
+    """So "Open as Web App" has a name and an icon of its own.
+
+    Without it iOS falls back to the page <title>, which is
+    "Plateau Strategy Solution Lab — Integrated Business Ecosystem" and gets
+    truncated to nonsense under an icon.
+    """
+    return jsonify({
+        "name": "Plateau Strategy Solution Lab",
+        "short_name": "Plateau",
+        "start_url": "/",
+        "display": "standalone",
+        "background_color": "#0b1a2e",
+        "theme_color": "#1f3a5f",
+        "icons": [
+            {"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"},
+            {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png"},
+            {"src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png"},
+        ],
+    })
+
+
 @app.route("/plateau-logo.png")
 def logo():
     return send_file(os.path.join(BASE_DIR, "plateau-logo.png"))
@@ -2053,7 +2108,10 @@ SHARE_MISS_HTML = """<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Shared by link — Plateau Strategy Solution Lab</title>
-<link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Plateau">
+<meta name="theme-color" content="#1f3a5f">
 <link rel="stylesheet" href="/paper.css"><link rel="stylesheet" href="/modern.css">
 </head><body data-arm="company"><div class="wrap" style="max-width:34rem;margin:5rem auto;padding:0 1.2rem">
 <h1 class="page-title">This page is shared by link</h1>
