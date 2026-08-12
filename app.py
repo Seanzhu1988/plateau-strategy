@@ -6543,7 +6543,16 @@ def idea_page(aid):
                 buttons.append('<button class="lang-opt" data-l="%s">%s</button>'
                                % (code, LANG_NAMES[code]))
         lang_row = '<div class="lang-row" role="group" aria-label="Language">%s</div>' % "".join(buttons)
-    trs_json = json.dumps(trs, ensure_ascii=False)
+    # Paragraphs are split HERE, not in the browser. The first version passed
+    # the body whole and split it in JavaScript with "\\n" — which was written
+    # into the page as a real line break, leaving an unterminated string. The
+    # script died at parse time, so the language button rendered and did
+    # nothing. Generated code should never carry an escape it does not have to.
+    trs_json = json.dumps(
+        {lang: {"title": t.get("title") or "",
+                "paras": [s.strip() for s in (t.get("body") or "").split("\n") if s.strip()]}
+         for lang, t in trs.items()},
+        ensure_ascii=False)
 
     locked_note = ""
     if locked:
@@ -6564,7 +6573,7 @@ def idea_page(aid):
 <meta property="og:description" content="%(desc)s">
 <meta property="og:url" content="%(url)s">
 <meta property="og:site_name" content="Plateau Strategy Solution Lab">
-<meta property="og:image" content="%(origin)s/plateau-logo.png">
+<meta property="og:image" content="%(origin)s/icon-512.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="%(title)s">
 <meta name="twitter:description" content="%(desc)s">
@@ -6643,18 +6652,19 @@ def idea_page(aid):
   var TR = %(trs_json)s;
   var EN = { title: document.getElementById("ideaTitle").textContent,
              body: document.getElementById("ideaBody").innerHTML };
-  function paras(text) {
-    return text.split("\n").filter(function (s) { return s.trim(); })
-      .map(function (s) {
-        var d = document.createElement("p"); d.textContent = s; return d.outerHTML;
-      }).join("");
+  function paras(list) {
+    return list.map(function (s) {
+      var d = document.createElement("p");
+      d.textContent = s;
+      return d.outerHTML;
+    }).join("");
   }
   function show(l) {
     var t = l === "en" ? EN : TR[l];
     if (!t) return;
     document.getElementById("ideaTitle").textContent = t.title || EN.title;
     document.getElementById("ideaBody").innerHTML =
-      l === "en" ? EN.body : paras(t.body || "");
+      l === "en" ? EN.body : paras(t.paras || []);
     document.documentElement.lang = l;
     Array.prototype.forEach.call(document.querySelectorAll(".lang-row button"), function (b) {
       b.setAttribute("aria-current", b.getAttribute("data-l") === l ? "true" : "false");
