@@ -6725,8 +6725,9 @@ def idea_page(aid):
 </style>
 </head>
 <body data-arm="company">
+<div style="position:absolute;left:-9999px;top:0;width:300px;height:300px;overflow:hidden" aria-hidden="true"><img src="/share-card.jpg" width="300" height="300" alt=""></div>
 <header>
-  <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+  <img src="/icon-192.png" alt="Plateau Strategy Solution Lab logo">
   <span class="brand">Plateau Strategy Solution Lab</span>
   <div class="right"><a href="/">Home</a></div>
 </header>
@@ -6785,7 +6786,7 @@ def idea_page(aid):
   /* Native sheet on a phone, clipboard everywhere else. Both end with the
      link somewhere the person can paste it, which is the only job. */
   document.getElementById('shareBtn').addEventListener('click', async function () {
-    var btn = this, url = %(url_js)s, title = %(title_js)s;
+    var btn = this, url = %(url_js)s + '?s=%(share_tag)s', title = %(title_js)s;
     if (navigator.share) {
       try { await navigator.share({ title: title, url: url }); return; }
       catch (e) { if (e && e.name === 'AbortError') return; }
@@ -6810,6 +6811,7 @@ def idea_page(aid):
         # json.dumps, not quote-wrapping: it escapes the quotes, backslashes and
         # the </script> sequence that would otherwise end the block early.
         "url_js": json.dumps(url), "title_js": json.dumps(title),
+        "share_tag": _content_hash(a.get("title"), a.get("body"))[:6],
         "lang_row": lang_row, "trs_json": trs_json,
     }, mimetype="text/html")
 
@@ -7475,6 +7477,7 @@ def trade_page(slug):
 </style>
 </head>
 <body data-arm="company">
+<div style="position:absolute;left:-9999px;top:0;width:300px;height:300px;overflow:hidden" aria-hidden="true"><img src="/share-card.jpg" width="300" height="300" alt=""></div>
 <header>
   <img src="/icon-192.png" alt="Plateau Strategy Solution Lab">
   <span class="brand">Plateau Strategy Solution Lab</span>

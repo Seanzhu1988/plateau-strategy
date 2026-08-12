@@ -3455,7 +3455,13 @@
                desktop. Both end with the link somewhere it can be pasted.
                A cancelled share sheet is not an error and must say nothing. */
             window.ideaShare = async function (id) {
-                var url = location.origin + '/idea/' + encodeURIComponent(id);
+                // The share URL carries the post's stamp. WeChat pins its link
+                // card to the exact URL it first saw, with no way to purge a
+                // stale one; a stamp in the URL means a re-posted or edited
+                // article is a NEW link to WeChat, fetched fresh.
+                var it = (window.__ideaItems || []).find(function (x) { return x.id === id; });
+                var url = location.origin + '/idea/' + encodeURIComponent(id)
+                        + (it && it.stamp ? '?s=' + it.stamp : '');
                 var card = document.getElementById('idea_' + id);
                 var title = card ? (card.querySelector('h4') || {}).textContent || 'A business idea'
                                  : 'A business idea';
