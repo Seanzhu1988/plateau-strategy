@@ -2522,16 +2522,57 @@
                 <section class="phases">
                     <div class="container">
                         <h2>Reinvestment</h2>
-                        <div class="phase-card" style="border-left-color:#ec4899;">
-                            <h3>Reinvestment USA</h3>
-                            <p>Deploy accumulated capital back into American infrastructure, communities, and businesses. Create a virtuous cycle of economic value creation and reinvestment.</p>
-                            <div class="phase-highlights">
-                                <ul>
-                                    <li>Community development</li>
-                                    <li>Strategic reinvestment</li>
-                                    <li>Economic impact scaling</li>
-                                    <li>Long-term wealth creation</li>
-                                </ul>
+                        <!-- Reinvestment USA. What stood here was four lines of
+                             investor-deck language — "economic impact scaling",
+                             "long-term wealth creation" — describing nothing a
+                             visitor could do. Meanwhile the machine underneath it
+                             was already built and running with no way in. This is
+                             that machine, said plainly. -->
+                        <div class="rusa">
+                            <p class="rusa-lede">A launchpad for someone with an idea and no company yet. You post what you want to build; the board works out which professionals it will take; those professionals publish an opinion you can buy.</p>
+
+                            <ol class="rusa-steps">
+                                <li>
+                                    <span class="rusa-n">1</span>
+                                    <div>
+                                        <h4>You post what you want to build</h4>
+                                        <p>Free, and no account. You decide how much of it is public.</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="rusa-n">2</span>
+                                    <div>
+                                        <h4>The board reads it for the trades it needs</h4>
+                                        <p>The attorney, the accountant, the contractor, the licence nobody mentioned. Each suggestion shows the words that prompted it, so you can see when it has guessed wrong.</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="rusa-n">3</span>
+                                    <div>
+                                        <h4>A professional publishes an opinion, at their own price</h4>
+                                        <p>Written once and sold as many times as it is worth buying. The professional sets the price and keeps most of what it earns.</p>
+                                    </div>
+                                </li>
+                            </ol>
+
+                            <p class="rusa-live" id="rusaLive">Reading the board…</p>
+
+                            <div class="rusa-block">
+                                <h4>Trades being asked for</h4>
+                                <p class="rusa-note">Built from what people actually post here, not from a list somebody wrote in advance.</p>
+                                <div id="rusaTrades" class="rusa-trades"></div>
+                                <a class="rusa-more" href="/professionals">See every trade →</a>
+                            </div>
+
+                            <div class="rusa-block">
+                                <h4>Opinions on offer</h4>
+                                <div id="rusaOpinions"></div>
+                            </div>
+
+                            <div class="rusa-block" id="rusaPro">
+                                <h4>Are you a licensed professional?</h4>
+                                <p class="rusa-note">Publish once, and be paid every time it sells. Your licence is checked by hand before anything you write goes public.</p>
+                                <div id="rusaProBody"></div>
                             </div>
                         </div>
 
@@ -3283,12 +3324,33 @@
                       '<button onclick="ideaLaunch(\'' + a.id + '\')">🚀 I want to launch this</button></div>' +
                       '<div class="count">' + a.launcher_count + ' operator(s) interested</div>';
             }
+            function tradesBlock(a) {
+                var pr = a.professionals;
+                if (!pr) return '';
+                var ev = {};
+                (pr.domains || []).forEach(function (d) { ev[d.name] = (d.evidence || []).join(', '); });
+                var list = (pr.matched || []).concat(pr.always || []);
+                if (!list.length) return '';
+                return '<div class="idea-pros"><span class="idea-pros-t">Likely needs</span>' +
+                    list.map(function (p) {
+                        var why = p.why || '';
+                        if (ev[p.domain]) why += '  (from: ' + ev[p.domain] + ')';
+                        return '<span class="idea-pro" title="' + esc(why) + '">' + esc(p.label) + '</span>';
+                    }).join('') + '</div>';
+            }
+
             function render(a) {
                 var v = myVote(a.id);
                 return '<div class="idea-card" id="idea_' + a.id + '">' +
                     '<h4>' + esc(a.title) + (a.stamp ? '<span class="idea-stamp" title="Time-proof stamp — pitched ' + fmtStamp(a.created_at) + '">#' + esc(a.stamp) + '</span>' : '') + '</h4>' +
                     '<div class="idea-meta">By <strong>' + esc(a.author || 'Anonymous') + '</strong> · ' + fmtStamp(a.created_at) + '</div>' +
                     '<div class="idea-text">' + esc(a.body) + '</div>' +
+                    // The trades this idea calls for. The API has shipped them on
+                    // every idea since the matcher was written; nothing displayed
+                    // them, so the one feature the board exists for was invisible.
+                    // The evidence goes in the tooltip: a reader who can see WHY a
+                    // trade was suggested can tell when it has guessed wrong.
+                    tradesBlock(a) +
                     '<div class="idea-votes">' +
                         '<button class="idea-vbtn like ' + (v === 'like' ? 'active' : '') + '" onclick="ideaVote(\'' + a.id + '\',\'like\')">👍 <span id="ilk_' + a.id + '">' + a.likes + '</span></button>' +
                         '<button class="idea-vbtn unlike ' + (v === 'unlike' ? 'active' : '') + '" onclick="ideaVote(\'' + a.id + '\',\'unlike\')">👎 <span id="iul_' + a.id + '">' + a.unlikes + '</span></button>' +
@@ -3511,5 +3573,172 @@
     <script src="/floatback.js"></script>
     <script src="/jarvis-widget.js"></script>
     <script src="/frame-preview.js"></script>
+
+    <script>
+    /* Reinvestment USA — the front end for machinery that was already running.
+     *
+     * Eight endpoints existed and shipped with no interface at all: trades
+     * recognised from posted ideas, professional accounts, published opinions,
+     * the purchase gate. The section described none of it, so the honest
+     * reading of the page was that nothing had been built.
+     *
+     * Everything here reads live. Where there is nothing yet it says so
+     * plainly rather than showing an invented example — an empty board that
+     * admits it is empty is worth more than a populated one that is lying.
+     */
+    (function () {
+      var $ = function (id) { return document.getElementById(id); };
+      var esc = function (s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+      };
+      var money = function (n) {
+        n = Number(n || 0);
+        return '$' + (n % 1 ? n.toFixed(2) : n.toFixed(0));
+      };
+
+      function loadBoard() {
+        var trades = [], opinions = [], ideas = 0;
+        Promise.all([
+          fetch('/api/professions').then(function (r) { return r.json(); }).catch(function () { return {}; }),
+          fetch('/api/opinions').then(function (r) { return r.json(); }).catch(function () { return {}; }),
+          fetch('/api/articles').then(function (r) { return r.json(); }).catch(function () { return {}; })
+        ]).then(function (res) {
+          trades   = (res[0] && res[0].professions) || [];
+          opinions = (res[1] && res[1].opinions) || [];
+          ideas    = ((res[2] && res[2].articles) || []).length;
+
+          var live = $('rusaLive');
+          if (live) {
+            live.textContent = ideas + (ideas === 1 ? ' idea posted' : ' ideas posted')
+              + ' · ' + trades.length + (trades.length === 1 ? ' trade asked for' : ' trades asked for')
+              + ' · ' + opinions.length + (opinions.length === 1 ? ' opinion published' : ' opinions published');
+          }
+
+          var tw = $('rusaTrades');
+          if (tw) {
+            tw.innerHTML = trades.length
+              ? trades.slice(0, 14).map(function (t) {
+                  return '<span class="rusa-chip">' + esc(t.label || t.slug)
+                    + (t.demand ? '<b>' + t.demand + '</b>' : '') + '</span>';
+                }).join('')
+              : '<p class="rusa-empty">No trades yet — the first idea posted will name some.</p>';
+          }
+
+          var ow = $('rusaOpinions');
+          if (ow) {
+            ow.innerHTML = opinions.length
+              ? opinions.map(function (o) {
+                  return '<div class="rusa-op">'
+                    + '<div class="rusa-op-t">' + esc(o.title) + '</div>'
+                    + '<div class="rusa-op-m">' + esc((o.by && o.by.name) || o.pro_name || '')
+                    + (o.trade_label ? ' · ' + esc(o.trade_label) : '')
+                    + (o.sales ? ' · sold ' + o.sales : '') + '</div>'
+                    + '<div class="rusa-op-p">' + money(o.price_usd) + '</div>'
+                    + '</div>';
+                }).join('')
+              : '<p class="rusa-empty">Nothing published yet. Whoever writes the first opinion for a trade above has it to themselves.</p>';
+          }
+        });
+      }
+
+      /* --- the professional's own corner --- */
+      function proSignedOut(msg) {
+        var b = $('rusaProBody');
+        if (!b) return;
+        b.innerHTML =
+          '<div class="rusa-forms">'
+          + '<form id="rusaLogin" class="rusa-form">'
+          +   '<label>Already registered</label>'
+          +   '<input name="code" placeholder="Your sign-in code" autocomplete="off" required>'
+          +   '<button type="submit">Sign in</button>'
+          + '</form>'
+          + '<form id="rusaReg" class="rusa-form">'
+          +   '<label>New here</label>'
+          +   '<input name="name" placeholder="Your name" required>'
+          +   '<input name="firm" placeholder="Firm (optional)">'
+          +   '<input name="trade" placeholder="Your trade — e.g. cpa, real-estate-attorney" required>'
+          +   '<input name="license_type" placeholder="Licence type">'
+          +   '<input name="license_number" placeholder="Licence number">'
+          +   '<input name="state" placeholder="State" maxlength="2">'
+          +   '<button type="submit">Register</button>'
+          + '</form>'
+          + '</div>'
+          + (msg ? '<p class="rusa-msg">' + esc(msg) + '</p>' : '');
+
+        $('rusaLogin').addEventListener('submit', function (e) {
+          e.preventDefault();
+          post('/api/pros/login', { code: this.code.value }, function (j) {
+            if (j.ok) proSignedIn(); else proSignedOut(j.error || 'That code was not recognised.');
+          });
+        });
+        $('rusaReg').addEventListener('submit', function (e) {
+          e.preventDefault();
+          var d = {};
+          Array.prototype.forEach.call(this.elements, function (el) { if (el.name) d[el.name] = el.value; });
+          post('/api/pros/register', d, function (j) {
+            if (j.ok) proSignedIn(j.pro && j.pro.code);
+            else proSignedOut(j.error || 'Could not register.');
+          });
+        });
+      }
+
+      function post(url, data, done) {
+        fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                     body: JSON.stringify(data) })
+          .then(function (r) { return r.json(); }).then(done)
+          .catch(function () { done({ ok: false, error: 'Could not reach the server.' }); });
+      }
+
+      function proSignedIn(newCode, note) {
+        fetch('/api/pros/me').then(function (r) { return r.json(); }).then(function (j) {
+          var b = $('rusaProBody');
+          if (!b) return;
+          if (!j.ok) { proSignedOut(); return; }
+          var p = j.pro || {};
+          b.innerHTML =
+            '<p class="rusa-who"><b>' + esc(p.name) + '</b>'
+            + (p.trade_label ? ' · ' + esc(p.trade_label) : '')
+            + ' · ' + (p.verified ? 'licence verified' : 'licence not checked yet — nothing publishes until it is')
+            + '</p>'
+            + (newCode ? '<p class="rusa-msg">Your sign-in code is <b>' + esc(newCode) + '</b>. Keep it — it is how you get back in.</p>' : '')
+            + (note ? '<p class="rusa-msg">' + esc(note) + '</p>' : '')
+            + '<p class="rusa-who">' + (j.opinions || []).length + ' published · '
+            + (j.sales || 0) + ' sold · ' + money(j.earned_usd) + ' earned'
+            + ' · you keep ' + Math.round((1 - (j.platform_fee_pct || 0)) * 100) + '%</p>'
+            + '<form id="rusaWrite" class="rusa-form rusa-form-wide">'
+            +   '<label>Publish an opinion</label>'
+            +   '<input name="title" placeholder="What it answers" required>'
+            +   '<textarea name="body" rows="6" placeholder="The work itself — sequence, real costs, what fails, what to walk away from." required></textarea>'
+            +   '<input name="price_usd" type="number" min="0" step="1" placeholder="Your price in dollars" required>'
+            +   '<button type="submit">Publish</button>'
+            + '</form>';
+          $('rusaWrite').addEventListener('submit', function (e) {
+            e.preventDefault();
+            post('/api/pros/opinion', {
+              title: this.title.value, body: this.body.value,
+              price_usd: this.price_usd.value, published: true
+            }, function (r) {
+              // The server holds a draft back until the licence is checked.
+              // Saying only "done" here would read as published, and the
+              // professional would go looking for work that is not on sale.
+              if (r.ok) { proSignedIn(r.published ? null : undefined, r.note); loadBoard(); }
+              else alert(r.error || 'Could not publish.');
+            });
+          });
+        });
+      }
+
+      function boot() {
+        loadBoard();
+        fetch('/api/pros/me').then(function (r) { return r.json(); })
+          .then(function (j) { if (j.ok) proSignedIn(); else proSignedOut(); })
+          .catch(function () { proSignedOut(); });
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+      else boot();
+    })();
+    </script>
 </body>
 </html>

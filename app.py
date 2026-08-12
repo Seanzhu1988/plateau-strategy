@@ -5134,6 +5134,65 @@ def api_pro_opinion():
                             "Saved. It publishes once your licence is verified."})
 
 
+@app.route("/api/pros")
+@owner_required
+def api_pros_list():
+    """Everyone who has applied, newest first — the queue to check.
+
+    Owner-only, and it carries the licence numbers, which is exactly why
+    it is not public: the directory shows a name and a credential, never
+    the number itself.
+    """
+    pros = _load(PROS_PATH)
+    return jsonify({"ok": True, "count": len(pros), "pros": list(reversed(pros))})
+
+
+@app.route("/api/pros/<pid>/verify", methods=["POST"])
+@owner_required
+def api_pro_verify(pid):
+    """Mark a licence as checked — or withdraw that.
+
+    Without this the whole board dead-ends: an account can be registered
+    and an opinion can be written, but publishing requires `verified`, and
+    nothing anywhere could set it. Every opinion would have sat as a
+    private draft forever while the page said the work was for sale.
+
+    Checking stays a human act. This records the outcome; it does not
+    pretend to do the checking, because a licence number is verified
+    against a state register by a person looking at it.
+    """
+    on = bool((request.get_json(force=True, silent=True) or {}).get("verified", True))
+    with _LOCK:
+        pros = _load(PROS_PATH)
+        hit = None
+        for p in pros:
+            if p.get("id") == pid:
+                p["verified"] = on
+                p["verified_at"] = (datetime.datetime.now().isoformat(timespec="seconds")
+                                    if on else None)
+                hit = p
+                break
+        if not hit:
+            return jsonify({"ok": False, "error": "No such professional."}), 404
+        _save(PROS_PATH, pros)
+
+        # Anything they wrote while unverified was held back. Verifying the
+        # licence is what those drafts were waiting for, so release them —
+        # otherwise the professional has to notice and republish, and most
+        # will simply assume the site swallowed their work.
+        released = 0
+        if on:
+            ops = _load(OPINIONS_PATH)
+            for o in ops:
+                if o.get("pro_id") == pid and not o.get("published"):
+                    o["published"] = True
+                    released += 1
+            if released:
+                _save(OPINIONS_PATH, ops)
+
+    return jsonify({"ok": True, "pro": _public_pro(hit), "released": released})
+
+
 @app.route("/api/opinions")
 def api_opinions_public():
     """Opinions on offer — preview and price only. The body is what is sold."""

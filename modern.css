@@ -948,3 +948,157 @@ html[data-frame="rule"] #view-overview .psx-section {
   font-size: .76rem; color: var(--m-muted); line-height: 1.45; margin-top: 4px;
 }
 #fp-switch .fp-fine { opacity: .72; margin-top: 7px; }
+
+/* ============================================================
+   REINVESTMENT USA — the section that had a machine and no face
+
+   Eight endpoints shipped with no interface: trades recognised from
+   posted ideas, professional accounts, published opinions, the purchase
+   gate. What the page showed instead was four lines of deck language —
+   "economic impact scaling", "long-term wealth creation" — so the only
+   fair reading was that nothing had been built.
+
+   Styled to the site's rules: statement rows rather than boxed tiles,
+   rules rather than fills, and the numbers navy because a numeral is
+   colour used as a mark. The one filled thing is the price on an
+   opinion, and that is the same exception the map pins get — the fill
+   is carrying information, not decoration.
+   ============================================================ */
+
+.rusa-lede {
+  font-size: clamp(1.05rem, 1.6vw, 1.24rem) !important;
+  max-width: 62ch;
+  margin: 0 auto clamp(2rem, 3.4vw, 2.9rem) !important;
+}
+
+.rusa-steps {
+  list-style: none;
+  margin: 0 0 clamp(1.6rem, 2.6vw, 2.2rem);
+  padding: 0;
+  text-align: left;
+  max-width: 760px;
+  margin-inline: auto;
+}
+.rusa-steps > li {
+  display: flex;
+  gap: 1.1rem;
+  align-items: baseline;
+  padding: 1.15rem 0;
+  border-top: 1px solid var(--m-line);
+}
+.rusa-steps > li:first-child { border-top: 0; }
+.rusa-n {
+  font-family: var(--m-sans);
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: -.03em;
+  color: var(--m-rose);
+  flex: none;
+  min-width: 1.4rem;
+}
+.rusa-steps h4 {
+  font-family: var(--m-sans);
+  font-weight: 700;
+  font-size: 1.06rem;
+  letter-spacing: -.012em;
+  color: var(--m-ink);
+  margin: 0 0 .3rem;
+}
+.rusa-steps p { margin: 0; font-size: .97rem; }
+
+/* the live count — the section's only claim about itself, and it is measured */
+.rusa-live {
+  font-family: var(--m-sans);
+  font-weight: 700;
+  font-size: .78rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--m-muted) !important;
+  padding: .9rem 0;
+  border-top: 1px solid var(--m-line);
+  border-bottom: 1px solid var(--m-line);
+  margin: 0 auto clamp(1.8rem, 3vw, 2.6rem) !important;
+  max-width: 760px;
+}
+
+.rusa-block {
+  max-width: 760px;
+  margin: 0 auto clamp(2rem, 3.4vw, 2.9rem);
+  text-align: left;
+}
+.rusa-block h4 {
+  font-family: var(--m-sans);
+  font-weight: 750;
+  font-size: 1.16rem;
+  letter-spacing: -.015em;
+  color: var(--m-ink);
+  margin: 0 0 .35rem;
+}
+.rusa-note { margin: 0 0 1rem !important; font-size: .93rem; color: var(--m-muted) !important; }
+.rusa-empty { margin: 0 !important; font-size: .95rem; color: var(--m-muted) !important; }
+
+.rusa-trades { display: flex; flex-wrap: wrap; gap: .5rem .55rem; }
+.rusa-chip {
+  font-size: .87rem;
+  color: var(--m-body);
+  border: 1px solid var(--m-line-firm);
+  border-radius: 999px;
+  padding: .32rem .8rem;
+}
+.rusa-chip b { color: var(--m-rose); margin-left: .4rem; font-weight: 700; }
+.rusa-more { display: inline-block; margin-top: .9rem; }
+
+/* one opinion, one line: what it answers, who wrote it, what it costs */
+.rusa-op {
+  display: flex; align-items: baseline; gap: 1rem;
+  padding: .9rem 0;
+  border-top: 1px solid var(--m-line);
+}
+.rusa-op:first-child { border-top: 0; }
+.rusa-op-t { font-weight: 650; color: var(--m-ink); flex: 1 1 auto; }
+.rusa-op-m { color: var(--m-muted); font-size: .87rem; flex: 0 1 auto; }
+.rusa-op-p { font-weight: 800; color: var(--m-rose); font-variant-numeric: tabular-nums; }
+
+.rusa-forms { display: flex; flex-wrap: wrap; gap: 1.6rem; }
+.rusa-form { display: flex; flex-direction: column; gap: .5rem; min-width: 240px; flex: 1 1 240px; }
+.rusa-form-wide { max-width: 100%; }
+.rusa-form label {
+  font-size: .72rem; font-weight: 700; letter-spacing: .11em;
+  text-transform: uppercase; color: var(--m-muted);
+}
+.rusa-form input, .rusa-form textarea {
+  font: inherit; font-size: .95rem;
+  padding: .55rem .7rem;
+  border: 1px solid var(--m-line-firm);
+  border-radius: 7px;
+  background: #fff; color: var(--m-ink);
+}
+.rusa-form textarea { resize: vertical; }
+.rusa-form button {
+  align-self: flex-start;
+  font: inherit; font-size: .95rem; font-weight: 700;
+  color: var(--m-ink); background: none; border: 0;
+  border-bottom: 2px solid var(--m-rose);
+  padding: .3rem 0; cursor: pointer;
+}
+.rusa-msg, .rusa-who { font-size: .93rem; margin: .8rem 0 0 !important; }
+.rusa-who b { color: var(--m-ink); }
+
+/* the trades an idea calls for, under the idea itself */
+.idea-pros {
+  display: flex; flex-wrap: wrap; gap: .4rem .45rem;
+  align-items: center;
+  margin: .9rem 0 .2rem;
+  padding-top: .8rem;
+  border-top: 1px solid var(--m-line);
+}
+.idea-pros-t {
+  font-size: .7rem; font-weight: 700; letter-spacing: .11em;
+  text-transform: uppercase; color: var(--m-muted); margin-right: .3rem;
+}
+.idea-pro {
+  font-size: .82rem; color: var(--m-body);
+  border: 1px solid var(--m-line); border-radius: 999px;
+  padding: .22rem .62rem;
+  cursor: help;
+}
