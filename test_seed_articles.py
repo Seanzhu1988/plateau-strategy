@@ -48,16 +48,30 @@ chk("with a fixed stamp so re-seeding is a no-op", bool(STAMP) and len(STAMP) ==
 chk("and no long dash in the shipped body",
     all("—" not in (s.get("body") or "") for s in _seed))
 
-print("\nit does NOT run without a real disk (local / tests are safe):")
-# DATA_DIR == BASE_DIR here, so seeding must be a no-op regardless of files.
+print("\nit does NOT run locally or in tests (no disk, not on Render):")
+# DATA_DIR == BASE_DIR and no RENDER_GIT_COMMIT, so seeding must be a no-op.
 tmp = tempfile.mkdtemp()
 A.ARTICLES_PATH = os.path.join(tmp, "articles.json")
 A.SEED_MARKER_PATH = os.path.join(tmp, "seeded.json")
 saved_dir = A.DATA_DIR
+saved_render = os.environ.pop("RENDER_GIT_COMMIT", None)
 A.DATA_DIR = A.BASE_DIR
 A._seed_articles_once()
-chk("no board file is written when DATA_DIR == BASE_DIR",
-    not os.path.exists(A.ARTICLES_PATH))
+chk("no board file is written locally", not os.path.exists(A.ARTICLES_PATH))
+
+print("\nbut on Render with no disk yet, it DOES seed (so the article shows):")
+# The exact situation behind "I don't see anything": on Render, disk not
+# attached, DATA_DIR falls back to BASE_DIR. The paths are pointed at tmp so
+# the test does not write into the working tree, but the guard must let it run.
+os.environ["RENDER_GIT_COMMIT"] = "deadbeef"
+A._seed_articles_once()
+chk("the article seeds even with DATA_DIR == BASE_DIR on Render",
+    any(a.get("stamp") == STAMP for a in A._load(A.ARTICLES_PATH)))
+os.environ.pop("RENDER_GIT_COMMIT", None)
+# Reset for the real-disk cases below.
+os.remove(A.ARTICLES_PATH)
+if os.path.exists(A.SEED_MARKER_PATH):
+    os.remove(A.SEED_MARKER_PATH)
 
 print("\non a real disk it seeds exactly once:")
 A.DATA_DIR = tmp                         # pretend /var/data
@@ -93,6 +107,8 @@ chk("the article seeds on the new disk",
     any(a.get("stamp") == STAMP for a in A._load(A.ARTICLES_PATH)))
 
 A.DATA_DIR = saved_dir
+if saved_render is not None:
+    os.environ["RENDER_GIT_COMMIT"] = saved_render
 shutil.rmtree(tmp, ignore_errors=True)
 shutil.rmtree(tmp2, ignore_errors=True)
 print("\nPASSED" if not fails else "\nFAILED: %s" % fails)

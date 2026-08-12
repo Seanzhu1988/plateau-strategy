@@ -6922,7 +6922,14 @@ SEED_MARKER_PATH = _data_path("seeded_articles.json")
 
 
 def _seed_articles_once():
-    if DATA_DIR == BASE_DIR:
+    # Run on production, whether or not a persistent disk is attached yet.
+    # DATA_DIR != BASE_DIR means a real disk (seeds and persists). RENDER_GIT_COMMIT
+    # means we are on Render even with no disk, where DATA_DIR falls back to the
+    # app's own ephemeral folder: seeding there re-runs every deploy, so the
+    # article stays visible while the disk is being sorted. Locally and under the
+    # tests neither is true, so this returns at once and never writes into a
+    # working tree. (The tests that DO exercise it point the paths at a temp dir.)
+    if DATA_DIR == BASE_DIR and not os.environ.get("RENDER_GIT_COMMIT"):
         return
     try:
         seeds = _load(SEED_ARTICLES_PATH)
