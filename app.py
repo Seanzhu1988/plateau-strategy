@@ -4163,8 +4163,13 @@ def api_renter_refer(rid):
 
 
 @app.route("/api/reservations/<rid>/accept", methods=["POST"])
+@owner_required
 def api_accept(rid):
-    """Legacy manual-assign endpoint (kept for compatibility)."""
+    """Legacy manual-assign endpoint (kept for compatibility).
+
+    Owner-gated: it returned the full reservation, with the customer's name,
+    phone and address, to anyone who POSTed a guessable id, and let them
+    reassign the ride. Assignment is a dispatch action."""
     data = request.get_json(force=True, silent=True) or {}
     driver = (data.get("driver") or "Driver").strip()
     with _LOCK:
@@ -4366,7 +4371,11 @@ def api_cancel(rid):
 
 
 @app.route("/api/reservations/<rid>/complete", methods=["POST"])
+@owner_required
 def api_complete(rid):
+    # Owner-gated: it returned the full reservation with customer PII and let
+    # anyone mark any ride complete by guessing a sequential id. Completion is
+    # a dispatch action.
     with _LOCK:
         items = _load(RES_PATH)
         for r in items:
@@ -5066,8 +5075,13 @@ def api_contract_sign():
 
 
 @app.route("/api/contract/roster")
+@owner_required
 def api_contract_roster():
-    """Owner view: every driver's signing status for the current version."""
+    """Owner view: every driver's signing status for the current version.
+
+    Owner-gated because it returns every driver's name and phone. Without the
+    gate it read out the whole roster to anyone who asked, which is exactly the
+    kind of leak the audit was for."""
     contract = _load_contract()
     rows = []
     for r in _load(RENTERS_PATH):
@@ -6231,7 +6245,10 @@ def api_finance_wish():
 
 
 @app.route("/api/finance/wishlist")
+@owner_required
 def api_finance_wishlist():
+    # Owner-gated: this returns every finance-interest signup with their
+    # contact details. It used to hand the whole list to anyone who asked.
     return jsonify({"wishes": list(reversed(_load(WISHLIST_PATH)))})
 
 
