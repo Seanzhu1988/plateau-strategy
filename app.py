@@ -6901,6 +6901,95 @@ def api_article_create():
     return jsonify({"ok": True, "article": _public_article(article)})
 
 
+# ---------- seeding a few articles the deploy should carry ----------
+# The board lives in runtime data that a deploy does not carry. Almost nothing
+# belongs in the code, but the IP Launchpad proposal is a special case: it was
+# lost when the data disk was being wiped on every deploy, before that bug was
+# found, and it was recovered from its own translations. This ships it in the
+# code and puts it back on the board on the first boot that has a real disk.
+#
+# Idempotent two ways so it can never duplicate and can never come back once
+# taken down:
+#   * a seed already on the board (matched by its fixed stamp) is skipped;
+#   * a seed recorded in the marker is skipped even after it leaves the board,
+#     so deleting a seeded post with the Dispatch button keeps it gone.
+#
+# It runs ONLY where DATA_DIR is a real disk (production). Locally and under the
+# tests DATA_DIR == BASE_DIR, so this returns at once and never writes a seed
+# into a working tree or a test's board.
+SEED_ARTICLES_PATH = os.path.join(BASE_DIR, "seed_articles.json")
+SEED_MARKER_PATH = _data_path("seeded_articles.json")
+
+
+def _seed_articles_once():
+    if DATA_DIR == BASE_DIR:
+        return
+    try:
+        seeds = _load(SEED_ARTICLES_PATH)
+    except Exception:
+        seeds = None
+    if not isinstance(seeds, list) or not seeds:
+        return
+    added = []
+    try:
+        with _LOCK:
+            done = _load(SEED_MARKER_PATH)
+            done = set(done) if isinstance(done, list) else set()
+            items = _load(ARTICLES_PATH)
+            if not isinstance(items, list):
+                items = []
+            have = {a.get("stamp") for a in items}
+            changed = False
+            for s in seeds:
+                sid = s.get("seed_id") or s.get("stamp")
+                stamp = (s.get("stamp") or "").strip()
+                if not sid or not stamp:
+                    continue
+                if sid in done or stamp in have:
+                    continue
+                title = _no_em_dash(_no_tags((s.get("title") or "").strip()), title=True)
+                body = _no_em_dash(_no_tags((s.get("body") or "").strip()))
+                author = _no_tags((s.get("author") or "").strip()) or "Anonymous"
+                if not title or not body:
+                    continue
+                try:
+                    created = datetime.datetime.strptime(
+                        stamp, "%Y%m%d%H%M%S").isoformat(timespec="seconds")
+                except Exception:
+                    created = datetime.datetime.now().isoformat(timespec="seconds")
+                art = {
+                    "id": _next_id(items, "ART", datestamp=False),
+                    "author": author[:80],
+                    "created_at": created,
+                    "stamp": stamp,
+                    "title": title[:200],
+                    "body": body[:20000],
+                    "likes": 0, "unlikes": 0, "followers": [], "launchers": [],
+                    "seeded": True,
+                }
+                try:
+                    import professional_match
+                    art["professionals"] = professional_match.professionals_for(title, body)
+                except Exception:
+                    art["professionals"] = None
+                items.append(art)
+                have.add(stamp)
+                done.add(sid)
+                added.append((title, body))
+                changed = True
+            if changed:
+                _save(ARTICLES_PATH, items)
+                _save(SEED_MARKER_PATH, sorted(done))
+    except Exception:
+        return
+    for title, body in added:
+        try:
+            import translator
+            translator.translate_async(title, body)
+        except Exception:
+            pass
+
+
 @app.route("/api/articles/<aid>/lock", methods=["POST"])
 @owner_required
 def api_article_lock(aid):
@@ -8954,6 +9043,14 @@ def _reservation_reminder_loop():
         except Exception:
             pass
         time.sleep(interval)
+
+
+# Put the shipped-in articles on the board once, at boot, on a real disk only.
+# Wrapped so a seeding failure can never stop the app from starting.
+try:
+    _seed_articles_once()
+except Exception:
+    pass
 
 
 if __name__ == "__main__":

@@ -113,3 +113,7 @@ professions.json
 pros.json
 opinions.json
 purchases.json
+
+# One-time seed marker: which shipped articles have been placed and must not
+# resurrect after deletion. Runtime state, lives on the data disk.
+seeded_articles.json
