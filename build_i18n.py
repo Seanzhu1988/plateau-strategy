@@ -71,7 +71,7 @@ SKIP = {
     # proper nouns kept as-is
     "Atlas", "Atlas →", '"Connect to Square"',
     # partner outreach template, sent to businesses in English, kept verbatim
-    "Hi [Name], I run Plateau Strategy Solution Lab, a licensed Seattle-area car service, flat-rate $75 airport pickups to and from SeaTac. Your [guests / clients] often need reliable airport transportation, and I'd like to make that easy for you and profitable. Through our Agent program, every time you refer a customer to us, you earn a flat $15 commission on their completed ride. No cost and no obligation, you share our booking link or give guests your agent code, and you get paid per ride. It takes about two minutes to sign up and get your code. Could we set up a quick call, or would you like me to send the sign-up link? Thank you, Sean (Xiaojun) Zhu Plateau Strategy Solution Lab (917) 588-6013 · seanzhu1988115@gmail.com",
+    "Hi [Name], I run Plateau Strategy Solution Lab, a licensed Seattle-area car service, flat-rate $75 airport pickups to and from SeaTac. Your [guests / clients] often need reliable airport transportation, and I'd like to make that easy for you and profitable. Through our Agent program, every time you refer a customer to us, you earn a flat $15 commission on their completed ride. No cost and no obligation, you share our booking link or give guests your agent code, and you get paid per ride. It takes about two minutes to sign up and get your code. Could we set up a quick call, or would you like me to send the sign-up link? Thank you, Sean (Xiaojun) Zhu Plateau Strategy Solution Lab plateaustrategy.io",
 }
 
 # ---- translations: english -> [zh, es, ko, vi] ----
