@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Bot lab — Plateau Strategy Solution Lab</title>
+    <title>Bot lab, Plateau Strategy Solution Lab</title>
     <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <link rel="stylesheet" href="/paper.css">
     <script src="/psx-net.js"></script>
     <link rel="stylesheet" href="/modern.css">
     <style>
-        /* Thin on purpose — see robot-concept.html for why. header img is the
+        /* Thin on purpose, see robot-concept.html for why. header img is the
            one rule that has to be restated: the shared sheets only size it
            below 560px, so without this the logo renders at 1224px. */
         header img { height: 42px; width: 42px; border-radius: 50%; }
@@ -83,7 +83,7 @@
             <div class="standing">
                 <p><b>There is no way to request access from this page.</b> No
                 signup, no password reset, no recovery link. If you do not have
-                a username and password, they come from Sean directly — nothing
+                a username and password, they come from Sean directly, nothing
                 on this site can issue them, and nobody who emails asking will
                 be sent one.</p>
             </div>
@@ -99,7 +99,7 @@
         <div id="app">
             <div class="standing">
                 <p><b>Nothing here trades real money.</b> This lab does not
-                connect to any exchange, hold any key, or touch any balance —
+                connect to any exchange, hold any key, or touch any balance, 
                 yours or anyone else's. Every figure below comes from recorded
                 paper trades.</p>
                 <p>It is a test. There is no service being provided to you, no
@@ -139,7 +139,7 @@ Cookie: &lt;the session from /api/access/login&gt;
                 <li>Every fill is recorded as <b>paper</b>. There is no field
                 that marks one as real, because there is no real mode.</li>
                 <li>Losses count. A bot that only reports its winners produces
-                a record that will unlock something it should not — post every
+                a record that will unlock something it should not, post every
                 closed trade, including the bad ones.</li>
                 <li>Nothing you post can move money, place an order, or reach
                 an exchange. There is no code here that does any of that.</li>
@@ -158,7 +158,7 @@ Cookie: &lt;the session from /api/access/login&gt;
             <p class="quiet">Whether this software may one day place orders in
             an account belonging to someone other than its owner is a question
             with a lawyer, and it has not been answered. Until it is, the lab
-            has no live mode — not a disabled one, none.</p>
+            has no live mode, not a disabled one, none.</p>
 
             <p style="margin-top:2rem"><button class="signout" onclick="signOut()">Sign out</button></p>
         </div>
@@ -210,10 +210,10 @@ function rowsInto(el, items, withProgress) {
 
 async function load() {
     var j = await psxJSON('/api/lab/board');
-    if (!j || !j.ok) return;                       // not signed in — stay on the gate
+    if (!j || !j.ok) return;                       // not signed in, stay on the gate
     document.getElementById('gate').style.display = 'none';
     // 'block', not '': clearing the inline value falls back to the stylesheet,
-    // where #app is display:none — which left the page blank after a good
+    // where #app is display:none, which left the page blank after a good
     // sign-in.
     document.getElementById('app').style.display = 'block';
     rowsInto(document.getElementById('venues'), j.venues, false);
@@ -222,10 +222,11 @@ async function load() {
     document.getElementById('rule').textContent =
         'At least ' + r.min_fills + ' recorded trades, spanning at least '
         + r.min_days + ' days, with a net result that is positive after costs. '
-        + 'Meeting the bar makes a strategy eligible — it does not open it.';
+        + 'Meeting the bar makes a strategy eligible, it does not open it.';
 }
 
 load();      // a live session lands straight on the board
 </script>
+<script src="/i18n.js"></script>
 </body>
 </html>

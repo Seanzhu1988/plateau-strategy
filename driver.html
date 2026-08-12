@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Driver Dashboard — Plateau Strategy</title>
+    <title>Driver Dashboard, Plateau Strategy</title>
     <link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -128,7 +128,7 @@
                 if (inv.mode === 'mock') invHtml = '<span class="inv">Invoice: simulated (demo)</span>';
                 else if (inv.url) invHtml = '<span class="inv">Invoice: <a href="' + esc(inv.url) + '" target="_blank">view →</a> (' + esc(inv.status) + ')</span>';
                 else if (inv.status === 'ERROR') invHtml = '<span class="inv">Invoice: error</span>';
-                else invHtml = '<span class="inv">Invoice: ' + esc(inv.status || '—') + '</span>';
+                else invHtml = '<span class="inv">Invoice: ' + esc(inv.status || ', ') + '</span>';
 
                 const when = (t.date || '') + ' ' + (t.time || '');
                 const driver = r.driver ? '<div class="meta"><b>Driver:</b> ' + esc(r.driver) + '</div>' : '';

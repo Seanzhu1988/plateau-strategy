@@ -17,7 +17,7 @@ its fills to the ledger and the ledger decides what may unlock.
 THREE THINGS ARE DELIBERATELY DIFFICULT
 ---------------------------------------
 1. The whole module is inert unless BOT_LAB_ENABLED is set. Unset, every route
-   answers 404 — not "unauthorised", which would confirm the thing exists.
+   answers 404, not "unauthorised", which would confirm the thing exists.
    This is what makes it safe for the code to be pushed while the legal
    question is open: shipping it changes nothing until somebody deliberately
    turns it on.
@@ -34,7 +34,7 @@ THREE THINGS ARE DELIBERATELY DIFFICULT
 
 NO PERSONAL DATA
 ----------------
-Nothing about the owner is stored or served here — no name, no email, no
+Nothing about the owner is stored or served here, no name, no email, no
 phone, no location. A signed-in user sees the ledger and the lock state and
 nothing else. The only personal datum in the file is a username the owner
 chose, and its hash.
@@ -101,7 +101,7 @@ def verify_pw(password, salt, want):
 # Venues and strategies
 #
 # Everything ships locked. Kalshi is locked with its own reason and is not
-# merely "not yet proven" — it was losing money, which is a different fact and
+# merely "not yet proven", it was losing money, which is a different fact and
 # is recorded as one so nobody later mistakes it for a strategy that simply
 # has not had its turn.
 # --------------------------------------------------------------------------
@@ -175,14 +175,14 @@ class BotLab(object):
         The password is generated here rather than chosen: a password the
         owner invents for somebody else is a password the owner reuses. It is
         returned exactly once, in this call's reply, and only its hash is
-        stored — so it cannot be looked up later, by anyone, including the
+        stored, so it cannot be looked up later, by anyone, including the
         owner. Losing it means minting a new one, which is the correct
         recovery story for a system with no reset.
 
         The role decides who may WRITE. Readers read; a bot writes; nobody
         does both. Without this every account that could open the page could
         also post fills, so anybody given a password to read the concept
-        could have filed fabricated winning trades into the ledger — and the
+        could have filed fabricated winning trades into the ledger, and the
         ledger is the entire basis for deciding what has earned an unlock.
         A poisoned scoreboard is worse than no scoreboard.
 
@@ -215,7 +215,7 @@ class BotLab(object):
         """The role of a live account, or None if there isn't one.
 
         An account stored before roles existed has no role field. It is read
-        as 'reader', not as 'bot' — an unknown permission has to fail closed,
+        as 'reader', not as 'bot', an unknown permission has to fail closed,
         or adding the check would have silently granted write access to every
         account that predates it."""
         for u in self.users():
@@ -321,7 +321,7 @@ class BotLab(object):
 
     def eligibility(self, key):
         """Has the record earned the right to be considered? This is only the
-        first of the two keys — it never unlocks anything by itself."""
+        first of the two keys, it never unlocks anything by itself."""
         spec = STRATEGIES.get(key)
         if not spec:
             return {"eligible": False, "blockers": ["Unknown strategy."]}
@@ -343,7 +343,7 @@ class BotLab(object):
         return {"eligible": not blockers, "blockers": blockers, "stats": s}
 
     def set_lock(self, kind, key, locked):
-        """The owner's key. Locking is always allowed — shutting something off
+        """The owner's key. Locking is always allowed, shutting something off
         should never be the hard direction. Unlocking a strategy requires the
         record to have earned it first; unlocking a hard-locked venue is
         refused outright, so Kalshi cannot be reopened by this route at all."""

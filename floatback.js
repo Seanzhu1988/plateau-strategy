@@ -1,18 +1,18 @@
-/* 🎨 POLLOCK BUTTON — the site's mouse companion.
+/* 🎨 POLLOCK BUTTON, the site's mouse companion.
    A paint-splat dot FOLLOWS the mouse (smooth trailing, slightly offset so it
    never covers what you're pointing at). Reach toward it and it holds still so
    you can catch it; click it and it BURSTS into a ring of paint bubbles on stems
-   (radial splat — Sean's sketch, 2026-07-22), each a shortcut.
+   (radial splat, Sean's sketch, 2026-07-22), each a shortcut.
    Same file as the old "← Back" pill, so every page gets it automatically. */
 (function () {
     // ---- the palette ----------------------------------------------------
-    // Measured, the old set ran L 0.55 to 0.98 and chroma 0.018 to 0.248 — a
+    // Measured, the old set ran L 0.55 to 0.98 and chroma 0.018 to 0.248, a
     // fourteen-fold saturation spread across ten bubbles, while the company's
     // own navy sits at L 0.35, C 0.073. Every droplet was brighter and louder
     // than the company colour, which is why a splat meant to look painted
     // read as a box of markers instead.
     //
-    // These are one lightness (0.45) and one chroma (0.079 — the navy's own),
+    // These are one lightness (0.45) and one chroma (0.079, the navy's own),
     // with hue the only thing that moves: nine steps of 40 degrees starting at
     // the navy. Holding two of the three is what makes a set of colours look
     // like one hand rather than an assortment, and low chroma is what makes it
@@ -24,13 +24,13 @@
     // ---- where it can take you ------------------------------------------
     // `at` is the path this bubble leads to. A bubble for the page you are
     // already standing on is a wasted droplet in a ring that has no room to
-    // spare, so expand() drops it — the burst is different on every page and
+    // spare, so expand() drops it, the burst is different on every page and
     // always full of somewhere else.
     //
     // Dispatch is gone. It is the owner's console: a visitor who taps it gets
     // a login they cannot pass, and it was occupying one of ten places.
-    // In its stead, the three free tools — the planner, the road trip, the
-    // book — which are the reason most people are on this site at all and
+    // In its stead, the three free tools, the planner, the road trip, the
+    // book, which are the reason most people are on this site at all and
     // were, remarkably, the only things the shortcut menu could not reach.
     var ACTIONS = [
         { icon: '←',  label: 'Back',
@@ -69,7 +69,7 @@
     function sizeOf(i) { return SIZE[i % SIZE.length]; }
 
     // The ring grows to fit. A 58px droplet needs about 76px of arc before
-    // there is visible air between it and its neighbour — at 68 they touch,
+    // there is visible air between it and its neighbour, at 68 they touch,
     // which reads as a clump rather than a splat. Ten comes out at 121.
     function radiusFor(n) { return Math.max(108, Math.round(76 * n / (2 * Math.PI))); }
 
@@ -80,8 +80,8 @@
     var TILT = [-6, 5, -4, 7, -5, 6, -7, 4, -5, 6, -4];
     function blob(i) { return BLOBS[i % BLOBS.length]; }
 
-    // Ink on paper, like the rest of the site. The splat keeps its shape —
-    // that is the idea, and it is the one playful thing here — but it is drawn
+    // Ink on paper, like the rest of the site. The splat keeps its shape, 
+    // that is the idea, and it is the one playful thing here, but it is drawn
     // rather than lit: paper discs, hairline ink edges, thin stems. Neon
     // bubbles floating over a cream page looked like a different website.
     var css =
@@ -105,13 +105,13 @@
         'font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}' +
         '.pk-bubble:hover{border-color:rgba(20,17,12,.45);box-shadow:0 5px 18px rgba(20,17,12,.18);}' +
         // A paper wash behind the burst. Without it the bubbles float over
-        // the headline and neither is readable — worst on a phone, where
+        // the headline and neither is readable, worst on a phone, where
         // the splat covers most of the screen.
         '.pk-scrim{position:fixed;inset:0;z-index:637;background:rgba(250,248,244,.86);' +
         'opacity:0;pointer-events:none;transition:opacity .22s ease;}' +
         '.pk-scrim.on{opacity:1;pointer-events:auto;}' +
         // On a touch screen there is no cursor to follow and no idle to detect,
-        // so it stopped existing entirely — which is why it went missing on the
+        // so it stopped existing entirely, which is why it went missing on the
         // phone. It anchors in the bottom-left instead and simply stays there.
         // Bottom-RIGHT is the language switcher's, and they must not stack.
         '@media (hover:none){#pollock{opacity:1;pointer-events:auto;transform:scale(1);' +
@@ -273,7 +273,7 @@
     // ---- HIDDEN WHILE MOVING · APPEARS ON IDLE · HOLDS 3 SECONDS ----
     // The mouse moving → the dot stays away. The mouse resting → the dot
     // appears beside the cursor and holds for 3s, then slips off. Moving
-    // TOWARD the dot (within reach) doesn't dismiss it — so it can be caught.
+    // TOWARD the dot (within reach) doesn't dismiss it, so it can be caught.
     var mx = window.innerWidth / 2, my = window.innerHeight / 2;
     var cur = { x: mx, y: my }, showT, holdT;
     labelPin();
@@ -290,7 +290,7 @@
     // The paint dot must never land on something a person is in the middle of
     // using. Three of those, and each one was learned the hard way:
     //
-    //   * An interactive map. Idling over a map is normal — you are reading it —
+    //   * An interactive map. Idling over a map is normal, you are reading it, 
     //     and a dot appearing under the cursor there steals the click.
     //
     //   * Any control. It avoided the map and then parked itself squarely on the
@@ -303,7 +303,7 @@
     //     just asked for.
     //
     // Hidden, the rail is visibility:hidden and pointer-events:none, so
-    // elementFromPoint never returns it — no need to test for .shown, and the
+    // elementFromPoint never returns it, no need to test for .shown, and the
     // docked horizontal bar on a narrow window is covered by the same check.
     var HANDS_OFF = 'input,select,textarea,button,a,label,[role=button],[contenteditable]';
     function keepOut(x, y) {
@@ -335,7 +335,7 @@
     }
 
     function appear() {
-        // Reading a map is exactly when you idle. The dot never lands on it — it
+        // Reading a map is exactly when you idle. The dot never lands on it, it
         // follows the cursor only in the page's own space, and parks in the margin
         // whenever the cursor (or its natural spot) is over the map.
         var spot = null;
@@ -358,7 +358,7 @@
     }
 
     // ---- TOUCH: anchored, always there --------------------------------
-    // Everything below this point is cursor logic — idle detection, reaching
+    // Everything below this point is cursor logic, idle detection, reaching
     // for the dot, parking beside a map. None of it means anything without a
     // pointer, so on a touch screen the button simply sits in the bottom-left
     // corner and waits. That corner is chosen because the language switcher
@@ -378,7 +378,7 @@
         window.addEventListener('resize', place);
         window.addEventListener('orientationchange', function () { setTimeout(place, 200); });
         // collapse() calls wake(), which arms a 3-second fade meant for a mouse.
-        // Anchored, it should stay put — so put it back after every collapse.
+        // Anchored, it should stay put, so put it back after every collapse.
         var _collapse = collapse;
         collapse = function () { _collapse(); clearTimeout(holdT); place(); };
         return;                                   // no cursor listeners at all
@@ -401,7 +401,7 @@
         if (pinned) return;                             // asked to stay: no chasing, no fading
         clearTimeout(showT);
         if (btn.classList.contains('shown')) {
-            // parked in the margin while the cursor works the map — leave it be
+            // parked in the margin while the cursor works the map, leave it be
             if (keepOut(mx, my)) { armHold(); return; }
             // reaching for the dot? keep it; real movement elsewhere? it disappears
             if (Math.hypot(mx - cur.x, my - cur.y) < 130) { armHold(); return; }

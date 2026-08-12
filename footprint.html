@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Footprint recorder — Plateau Strategy Solution Lab</title>
+<title>Footprint recorder, Plateau Strategy Solution Lab</title>
 <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
 <link rel="stylesheet" href="/paper.css">
 <script src="/psx-net.js"></script>
@@ -49,10 +49,10 @@
   <div class="fp-note">
     <p><b>This records a corridor, not a person.</b> Pick the corridor, press
     Start at one end, walk it normally, press Stop at the other. What is kept
-    is the line, its length, and roughly how long it takes — no name, no
+    is the line, its length, and roughly how long it takes, no name, no
     clock, no device.</p>
     <p>Only corridors we have opened can be recorded, and only a signed-in
-    owner can submit. If it refuses the walk, the reason says what to do —
+    owner can submit. If it refuses the walk, the reason says what to do, 
     usually just walk it again; indoor GPS misses sometimes.</p>
   </div>
 
@@ -95,7 +95,7 @@
     (d.corridors || []).forEach(function (c) {
       var o = document.createElement('option');
       o.value = c.key;
-      o.textContent = c.label + (c.walked ? ' — walked ' + c.walked.date : ' — not walked yet');
+      o.textContent = c.label + (c.walked ? ', walked ' + c.walked.date : ', not walked yet');
       sel.appendChild(o);
     });
     btn.disabled = !sel.options.length;
@@ -106,7 +106,7 @@
     var acc = p.coords.accuracy || 0;
     /* Fixes rougher than the server will accept are dropped HERE, so one bad
        moment under a concrete ceiling costs a gap, not the whole walk. The
-       drop is counted and shown — a number climbing tells you to slow down. */
+       drop is counted and shown, a number climbing tells you to slow down. */
     if (acc > 35) { dropped++; update(); return; }
     var pt = [ +p.coords.latitude.toFixed(5), +p.coords.longitude.toFixed(5) ];
     if (pts.length) {
@@ -138,14 +138,14 @@
     });
     if (!d || !d.ok) {
       verdict.className = 'fp-verdict bad';
-      verdict.textContent = (d && d.error) || 'Could not submit — try again.';
+      verdict.textContent = (d && d.error) || 'Could not submit, try again.';
       return;
     }
     verdict.className = 'fp-verdict good';
     verdict.textContent = 'Recorded: ' + d.walk.length_m + ' m in about '
       + d.walk.minutes + ' min. This corridor is now walked'
       + (d.walked ? ' (as of ' + d.walked.date + ')' : '') +
-      ' — anything waiting on it unlocks by itself.';
+      ', anything waiting on it unlocks by itself.';
     init2();     // refresh labels
   }
 
@@ -167,5 +167,6 @@
   init();
 })();
 </script>
+<script src="/i18n.js"></script>
 </body>
 </html>

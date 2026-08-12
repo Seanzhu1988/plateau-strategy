@@ -5,7 +5,7 @@ The price, because for a week this page quoted $170/year and offered a
 30-day free trial for a product that does not exist, with "Principal always
 protected" listed as one of its features. The billing behind those buttons had
 already been closed server-side on 2026-08-01, so the only thing a visitor
-could actually get was "Could not enroll" — the page went on advertising a
+could actually get was "Could not enroll", the page went on advertising a
 purchase that could not happen. Sean's instruction was plain: we are not for
 sale for now. These assertions make that structural, so it cannot drift back
 by way of a copy-and-paste.
@@ -15,7 +15,7 @@ comes from Treasury's "Debt to the Penny", which is a daily close published a
 business day behind, and the page ticks it forward between fetches. Two things
 were wrong with that: the ticker discarded the as_of date it was given, so it
 started from a stale figure and never caught up, and it ticked at a rate typed
-in by hand — the comment beside it said ~$90k/sec while the code did ~$62.5k,
+in by hand, the comment beside it said ~$90k/sec while the code did ~$62.5k,
 so the two had drifted 44% apart from each other before you even compare them
 to the debt.
 
@@ -55,12 +55,12 @@ for frag in ("openEnroll", "submitEnroll", 'id="financeModal"',
              'id="fin_email"', 'class="price-btn"', "price-card best"):
     chk("no %s" % frag, frag not in prose)
 chk("no 30-day free trial offered", "free trial" not in prose.lower())
-# Not "no $170" — ANY price. The figure in FINANCE_PLANS changed once already
+# Not "no $170", ANY price. The figure in FINANCE_PLANS changed once already
 # ($170/year to $34/year on 2026-08-08) and a test naming the old number would
 # have gone on passing while the new one was published. What must stay true is
 # that the finance section quotes no price at all while the product is not for
 # sale, whatever the number happens to be.
-# Slice the pane from the RAW page — the markers that bound it are HTML
+# Slice the pane from the RAW page, the markers that bound it are HTML
 # comments, so slicing the comment-stripped copy runs to the end of the file
 # and drags in the Factor Clock and the $75 fare. Strip comments after.
 pane = re.sub(r"<!--.*?-->", "",
@@ -73,7 +73,7 @@ for _k, _p in A.FINANCE_PLANS.items():
         "$%g" % _p["amount"] not in prose)
 # The plan table and the endpoint's fallback used to be written out separately,
 # so dropping a plan left the endpoint defaulting to a key that no longer
-# existed — a KeyError, not a graceful default. Nothing may name a plan that
+# existed, a KeyError, not a graceful default. Nothing may name a plan that
 # FINANCE_PLANS does not define.
 _src = open(os.path.join(HERE, "app.py"), encoding="utf-8").read()
 _enroll = _src.split("def api_finance_enroll", 1)[1].split("\n@app.route", 1)[0]
@@ -90,8 +90,8 @@ low = prose.lower()
 hits = [p for p in PROMISES if p in low]
 chk("no promise of safety (%s)" % (hits or "clean"), not hits)
 chk("no monthly return target (%s)"
-    % (re.findall(r"\d+\s*[-–]\s*\d+\s*%\s*/?\s*mo", low) or "clean"),
-    not re.search(r"\d+\s*[-–]\s*\d+\s*%\s*/?\s*mo", low))
+    % (re.findall(r"\d+\s*[-, ]\s*\d+\s*%\s*/?\s*mo", low) or "clean"),
+    not re.search(r"\d+\s*[-, ]\s*\d+\s*%\s*/?\s*mo", low))
 chk("it says trading can lose money", "lose money" in low or "lose" in low)
 
 print("\nthe server refuses to enrol anyone either:")
@@ -111,7 +111,7 @@ chk("the charge description carries no guarantee",
     not any(p in charge_live for p in
             ("always protected", "never at risk", "no risk", "guaranteed")))
 
-print("\nthe wish box still works — wanting it is not buying it:")
+print("\nthe wish box still works, wanting it is not buying it:")
 chk("the interest form is still there", 'id="wish_email"' in page)
 r = c.post("/api/finance/wish", json={"email": "someone@example.com"})
 chk("and still accepts an email (%d)" % r.status_code, r.status_code == 200)

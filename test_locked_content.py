@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 """A lock that the reader's browser can undo is not a lock.
 
-This is the whole test. Everything else about paid content — the price, the
-teaser, who gets the money — is a business decision that can change. The one
+This is the whole test. Everything else about paid content, the price, the
+teaser, who gets the money, is a business decision that can change. The one
 thing that cannot be got wrong is that a reader who has not paid never
 RECEIVES the text, because every other kind of lock is theatre:
 
-  * hidden with CSS — the text is already on their machine
-  * cut by JavaScript after render — same, and View Source shows it
-  * omitted by the page but present in the JSON — Network tab shows it
+  * hidden with CSS, the text is already on their machine
+  * cut by JavaScript after render, same, and View Source shows it
+  * omitted by the page but present in the JSON, Network tab shows it
 
 So these assertions read the raw bytes of the API response and check the
 protected sentence is not in them anywhere. Not "the page does not show it";
-not "the field is absent" — the string does not leave the server.
+not "the field is absent", the string does not leave the server.
 
     python3 test_locked_content.py
 """

@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Road Trip Planner — Plateau Strategy Solution Lab</title>
+<title>Road Trip Planner, Plateau Strategy Solution Lab</title>
     <meta name="description" content="Give it two points and see the fuel, food, rest stops and viewpoints near your actual road, grouped by how many hours into the drive you'll be. Free.">
     <link rel="canonical" href="https://plateaustrategy.io/road-trip">
     <meta name="theme-color" content="#14110c">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Plateau Strategy Solution Lab">
     <meta property="og:url" content="https://plateaustrategy.io/road-trip">
-    <meta property="og:title" content="Road Trip Planner — what's along the way">
+    <meta property="og:title" content="Road Trip Planner, what's along the way">
     <meta property="og:description" content="Give it two points and see the fuel, food, rest stops and viewpoints near your actual road, grouped by how many hours into the drive you'll be. Free.">
-    <meta property="og:image" content="https://plateaustrategy.io/icon-512.png">
+    <meta property="og:image" content="https://plateaustrategy.io/share-card.jpg">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Road Trip Planner — what's along the way">
+    <meta name="twitter:title" content="Road Trip Planner, what's along the way">
     <meta name="twitter:description" content="Give it two points and see the fuel, food, rest stops and viewpoints near your actual road, grouped by how many hours into the drive you'll be. Free.">
-    <meta name="twitter:image" content="https://plateaustrategy.io/icon-512.png">
+    <meta name="twitter:image" content="https://plateaustrategy.io/share-card.jpg">
 <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
 <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
 <style>
@@ -113,7 +113,7 @@
         border-radius:999px;padding:.34rem .7rem;font:inherit;font-size:.84rem;
         cursor:pointer;color:#4a453d;line-height:1.2;}
     /* A switched-on category is the page's own colour, not ink. Ink here
-       put a black slab on top of a slate page — two colour systems stacked,
+       put a black slab on top of a slate page, two colour systems stacked,
        which is what reads as "blackened tabs". */
     .grouppick .gp-chip[aria-pressed="true"]{background:var(--psx-accent,#14110c);
         border-color:var(--psx-accent,#14110c);color:#fff;}
@@ -167,7 +167,7 @@
 <div class="wrap">
     <h1>What's along the way?</h1>
     <p class="sub">For the long hauls. Give it two points and it finds the fuel, food, rest areas and
-       viewpoints near your actual road — grouped by how many hours in you'll be, so you can plan
+       viewpoints near your actual road, grouped by how many hours in you'll be, so you can plan
        real breaks instead of scrolling a map.</p>
 
     <div class="form">
@@ -202,10 +202,10 @@
     <div class="routepick" id="routePick" style="display:none"></div>
 
     <div class="summary" id="summary">
-        <div class="stat"><div class="k">Distance</div><div class="v" id="stDist">—</div></div>
-        <div class="stat"><div class="k">Driving time</div><div class="v" id="stTime">—</div></div>
-        <div class="stat"><div class="k">Suggested breaks</div><div class="v" id="stStops">—</div></div>
-        <div class="stat"><div class="k">Places found</div><div class="v" id="stPois">—</div></div>
+        <div class="stat"><div class="k">Distance</div><div class="v" id="stDist">, </div></div>
+        <div class="stat"><div class="k">Driving time</div><div class="v" id="stTime">, </div></div>
+        <div class="stat"><div class="k">Suggested breaks</div><div class="v" id="stStops">, </div></div>
+        <div class="stat"><div class="k">Places found</div><div class="v" id="stPois">, </div></div>
     </div>
 
     <div id="map"></div>
@@ -246,7 +246,7 @@
     //
     // This is why the road trip planner did not translate. i18n.js walks the
     // page's text nodes and swaps them, which handles everything written in
-    // the HTML — the heading, the labels, the button — and can do nothing
+    // the HTML, the heading, the labels, the button, and can do nothing
     // about a string built in JavaScript afterwards. Every result on this
     // page is built that way, so a Chinese reader got a Chinese page with an
     // entirely English answer in the middle of it.
@@ -263,7 +263,7 @@
         el.className = isErr ? 'err' : '';
     }
     // "3 h 12 m" is assembled from numbers, so it is invisible to the text
-    // walker and stayed English on every translated page — the last of the
+    // walker and stayed English on every translated page, the last of the
     // results to do so. The unit words are patterns like anything else.
     function hhmm(sec) {
         var h = Math.floor(sec / 3600), m = Math.round((sec % 3600) / 60);
@@ -274,7 +274,7 @@
 
     // ---------- map ----------
     map = L.map('map').setView([42.5, -76.5], 6);
-    // OSM standard tiles — CARTO free basemaps exclude commercial use; OSMF policy
+    // OSM standard tiles, CARTO free basemaps exclude commercial use; OSMF policy
     // permits light commercial use w/ attribution (checked 2026-08-07, Phase 0).
     // Past a few thousand map loads/day, move to a paid provider (Stadia $20/mo).
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -305,7 +305,7 @@
         var url = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=' +
                   encodeURIComponent(q);
         var r = await fetch(url);
-        if (!r.ok) throw new Error('Place search is busy — try again in a moment.');
+        if (!r.ok) throw new Error('Place search is busy, try again in a moment.');
         var j = await r.json();
         if (!j.length) throw new Error('Could not find “' + q + '”. Try adding the state.');
         collectDiscovery(j[0]);        // every place anyone enters joins the book
@@ -338,11 +338,11 @@
                   a.lon + ',' + a.lat + ';' + b.lon + ',' + b.lat +
                   '?overview=full&geometries=geojson&alternatives=3';
         var r = await fetch(url);
-        if (!r.ok) throw new Error('The routing service is busy — try again in a moment.');
+        if (!r.ok) throw new Error('The routing service is busy, try again in a moment.');
         var j = await r.json();
         if (!j.routes || !j.routes.length) throw new Error('No driving route between those two places.');
         // Fastest first, and drop any alternative that is barely a different
-        // road — two routes within a minute and a mile of each other are the
+        // road, two routes within a minute and a mile of each other are the
         // same drive, and offering them as a choice is noise.
         var out = j.routes.slice().sort(function (x, y) { return x.duration - y.duration; });
         var keep = [];
@@ -358,7 +358,7 @@
 
     // Walk the route geometry and drop a marker every `gapMin` minutes of driving.
     // OSRM gives one duration for the whole route, so time is apportioned by
-    // distance along the line — close enough to place a break, and it avoids a
+    // distance along the line, close enough to place a break, and it avoids a
     // second round trip for per-step timings.
     function breakPoints(rt, gapMin) {
         var coords = rt.geometry.coordinates;          // [lon,lat] pairs
@@ -402,7 +402,7 @@
     // OpenStreetMap tag rather than a guess.
     //
     // `on` is the default set. All twelve at once is both an unreadable page
-    // and a heavy Overpass query — the toggles below the map decide what gets
+    // and a heavy Overpass query, the toggles below the map decide what gets
     // asked for, so turning things off makes the search cheaper as well as
     // quieter.
     var GROUPS = [
@@ -422,7 +422,7 @@
           q: 'node(around:{R},{LAT},{LON})[amenity~"^(restaurant|fast_food)$"];' },
 
         // Separate from food on purpose. At 3pm on a long drive, coffee is
-        // not a meal — it is the reason you are stopping at all.
+        // not a meal, it is the reason you are stopping at all.
         { key: 'coffee',  label: 'Coffee',     glyph: '☕', color: '#0c7d48', on: false,
           q: 'node(around:{R},{LAT},{LON})[amenity=cafe];' +
              'node(around:{R},{LAT},{LON})[cuisine=coffee_shop];' },
@@ -431,7 +431,7 @@
         // and on its own it misses most American rest stops: state DOT
         // imports overwhelmingly use amenity=parking + parking=rest_area, and
         // the big interstate plazas are mapped as areas, so ways matter as
-        // much as nodes. Picnic sites and drinking water belong here too —
+        // much as nodes. Picnic sites and drinking water belong here too, 
         // they are what a rest stop IS, not scenery.
         { key: 'rest',    label: 'Rest & services', glyph: '🅿', color: '#0267c7', on: true,
           q: 'node(around:{R},{LAT},{LON})[highway~"^(services|rest_area)$"];' +
@@ -511,7 +511,7 @@
 
     async function restStopsAlongRoute(rt) {
         // Sample densely enough that consecutive points are closer together than
-        // the search radius — otherwise the corridor has holes the sweep never
+        // the search radius, otherwise the corridor has holes the sweep never
         // looks into, and a longer trip silently misses more of them.
         var target = Math.ceil(rt.distance / 3000);          // a point every ~3 km
         var pts = sampleRoute(rt, Math.max(60, Math.min(500, target)));
@@ -597,7 +597,7 @@
         //
         // So: measure the gaps, and go back for the long ones with a wider
         // net before giving up on them. What cannot be filled is not hidden.
-        // No planner can invent a rest stop on a road that has none — but it
+        // No planner can invent a rest stop on a road that has none, but it
         // can say "the next 90 minutes has nothing", which is the piece of
         // information that actually changes what a driver does.
         stops = await fillGaps(rt, pts, stops, 30 * 60, radius);
@@ -607,7 +607,7 @@
     var MAX_GAP_SEC = 30 * 60;
 
     // Where the drive goes longer than `maxGap` without a stop. Includes the
-    // run from the start to the first one and from the last to the finish —
+    // run from the start to the first one and from the last to the finish, 
     // an empty first two hours is still an empty two hours.
     function gapsIn(stops, duration, maxGap) {
         var marks = [0].concat(stops.map(function (s) { return s.sec; })).concat([duration]);
@@ -720,7 +720,7 @@
         });
         out.sort(function (a, b) { return a.sec - b.sec; });
 
-        // Drop duplicates the way the rest-stop sweep does — one site is
+        // Drop duplicates the way the rest-stop sweep does, one site is
         // often mapped as several nodes.
         var seen = [];
         out = out.filter(function (c) {
@@ -765,7 +765,7 @@
     }
 
     // OSM records one socket:* key per connector type. Only the ones a driver
-    // in North America has to care about are surfaced — the rest is noise on a
+    // in North America has to care about are surfaced, the rest is noise on a
     // page whose job is "can I plug in here".
     function plugsOf(t) {
         var p = [];
@@ -822,7 +822,7 @@
         activeGroups().forEach(function (g) { buckets[g.key] = []; });
         (j.elements || []).forEach(function (e) {
             var t = e.tags || {};
-            // One classifier for thirteen categories, most specific first —
+            // One classifier for thirteen categories, most specific first, 
             // a hotel is tourism=hotel and a viewpoint is tourism=viewpoint,
             // so testing the key alone would put them in the same bucket.
             var key =
@@ -876,7 +876,7 @@
                   '<div class="leg-t"><h3>' + esc(label) + '</h3>' +
                   '<p>' + T('About {time} in', { time: hhmm(bp.sec) }) + '</p></div></div>' +
                   '<div class="pois">' + (groupsHtml ||
-                    '<p class="none">Nothing mapped close to the road here — plan to push on to the next stop.</p>') +
+                    '<p class="none">Nothing mapped close to the road here, plan to push on to the next stop.</p>') +
                   '</div></div>',
             count: total
         };
@@ -896,7 +896,7 @@
             var b = await geocode($('toInput').value.trim());
 
             /* Count the road, never the traveller. Two place names go to the
-               server and nothing else — no coordinates, no identity — so what
+               server and nothing else, no coordinates, no identity, so what
                accumulates is "this route is in demand", which is the thing a
                bus company would actually buy.
 
@@ -904,7 +904,7 @@
                not after the routing call below. Demand is the intent to travel
                from A to B; it exists whether or not OSRM is up. Counting after
                the route drew would have quietly undercounted every busy period
-               and every outage — exactly when a spike is most interesting.
+               and every outage, exactly when a spike is most interesting.
 
                Fire-and-forget: a planner must never wait on, or fail because
                of, a counter. */
@@ -932,7 +932,7 @@
             btn.disabled = false;
             return;
         } catch (e) {
-            say(e.message || T('Something went wrong — try again.'), true);
+            say(e.message || T('Something went wrong, try again.'), true);
             btn.disabled = false;
             return;
         }
@@ -1039,9 +1039,9 @@
                             // "0 min to 5 hr in" is a clumsy way to say the
                             // road is empty from the moment you leave.
                             return g.from < 60
-                                ? T('From the start to {to} in — {len} with no mapped stop',
+                                ? T('From the start to {to} in, {len} with no mapped stop',
                                     { to: hhmm(g.to), len: hhmm(g.to - g.from) })
-                                : T('{from} to {to} in — {len} with no mapped stop',
+                                : T('{from} to {to} in, {len} with no mapped stop',
                                     { from: hhmm(g.from), to: hhmm(g.to), len: hhmm(g.to - g.from) });
                         }).join('<br>') +
                         '<br><span class="gapnote">' +
@@ -1109,7 +1109,7 @@
             }
 
             if (!bps.length) {
-                say(T('That drive is shorter than one break — no stops needed.'));
+                say(T('That drive is shorter than one break, no stops needed.'));
                 btn.disabled = false;
                 return;
             }
@@ -1136,7 +1136,7 @@
                     if (town) where = town + (ad.state ? ', ' + ad.state : '');
                 } catch (e) { /* keep the fallback label */ }
 
-                pin(bp.lat, bp.lon, '', String(i + 1), where, where + ' — about ' + hhmm(bp.sec) + ' in');
+                pin(bp.lat, bp.lon, '', String(i + 1), where, where + ', about ' + hhmm(bp.sec) + ' in');
 
                 // drop the individual places on the map too, small and quiet
                 if (buckets) {
@@ -1156,28 +1156,28 @@
                 html += out.html; found += out.count;
             }
 
-            // append — the rest-stop sweep already wrote its own section above
+            // append, the rest-stop sweep already wrote its own section above
             $('legs').innerHTML += html;
             $('stPois').textContent = found + rests.length;
 
             if (failed === bps.length && !rests.length) {
-                say(T('Found the route, but the places service did not answer. It is free and rate-limited — wait a minute and try again.'), true);
+                say(T('Found the route, but the places service did not answer. It is free and rate-limited, wait a minute and try again.'), true);
             } else if (failed) {
-                say(T('Planned. {failed} of {n} breaks came back empty from the places service — try again for those.', { failed: failed, n: bps.length }), false);
+                say(T('Planned. {failed} of {n} breaks came back empty from the places service, try again for those.', { failed: failed, n: bps.length }), false);
             } else {
                 say(T('Planned: {miles} miles, {time} driving, {rests} rest stops on the road, {breaks} suggested breaks.',
                       { miles: Math.round(miles), time: hhmm(rt.duration),
                         rests: rests.length, breaks: bps.length }));
             }
         } catch (e) {
-            say(e.message || T('Something went wrong — try again.'), true);
+            say(e.message || T('Something went wrong, try again.'), true);
         } finally {
             btn.disabled = false;
         }
     }
 
     // apply() re-walks text nodes, but an assembled string is one baked
-    // node — the only way to change it is to build it again. Redraw the
+    // node, the only way to change it is to build it again. Redraw the
     // chosen route so the results follow the switcher like the rest of the
     // page does.
     document.addEventListener('psx:lang', function () {

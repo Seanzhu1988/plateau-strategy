@@ -3,7 +3,7 @@
 
 The board lives inside a tab on the landing page and loads over JavaScript, so
 an idea had no address anybody could send. That is the missing half of "share
-your idea into your circle" — the author's own motive is the only free
+your idea into your circle", the author's own motive is the only free
 distribution this business has, and it could not fire.
 
 The assertions that matter are about the SERVER rendering:
@@ -76,7 +76,7 @@ chk("so is the author", "Dana Whitfield" in page)
 chk("the body is rendered as paragraphs, not one blob", page.count("<p>") >= 2)
 chk("an unknown id is 404", c.get("/idea/NOPE").status_code == 404)
 
-print("\nthe link previews — the whole reason this is server-rendered:")
+print("\nthe link previews, the whole reason this is server-rendered:")
 for prop, why in [("og:title", "what the message shows as the headline"),
                   ("og:description", "the line under it"),
                   ("og:url", "so the preview links back here"),
@@ -84,12 +84,12 @@ for prop, why in [("og:title", "what the message shows as the headline"),
                   ("og:type", ""), ("og:site_name", ""),
                   ("twitter:card", "for X and iMessage")]:
     chk("%s is in the first response%s"
-        % (prop, (" — %s" % why) if why else ""), prop in page)
+        % (prop, (", %s" % why) if why else ""), prop in page)
 chk("the description is real text, not the raw body with newlines",
     re.search(r'og:description" content="Gig drivers cannot take a car off the '
               r'road for a day\. We come', page) is not None)
 chk("there is a canonical url", 'rel="canonical"' in page)
-chk("it is NOT blocked from indexing — strangers arriving is the point",
+chk("it is NOT blocked from indexing, strangers arriving is the point",
     "noindex" not in page and "noindex" not in (r.headers.get("X-Robots-Tag") or ""))
 
 print("\nand a search engine can find one without knowing the board exists:")
@@ -108,7 +108,7 @@ r = c.get("/idea/ART3")
 locked_page = r.get_data(as_text=True)
 chk("the page still opens (%d)" % r.status_code, r.status_code == 200)
 chk("the teaser is shown", "Opening line everyone sees" in locked_page)
-chk("the paid text is NOT in the bytes — Ctrl-U shows the teaser too",
+chk("the paid text is NOT in the bytes, Ctrl-U shows the teaser too",
     SECRET not in locked_page)
 chk("nor is it leaked through the link preview",
     SECRET not in re.sub(r"(?s).*?og:description", "", locked_page)[:400])

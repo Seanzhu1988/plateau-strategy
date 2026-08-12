@@ -1,5 +1,5 @@
       /* ============================================================
-         PAPER — the last layer, and the one that decides how this reads.
+         PAPER, the last layer, and the one that decides how this reads.
 
          A friend called the old site an AI-generated scam, and they were
          right. The tells were not subtle: a navy-to-violet gradient behind
@@ -7,7 +7,7 @@
          invented statistics ("100% value chain owned"), and three cards
          reading Capital Efficient / Vertically Integrated / Compounding
          Growth. That is the house style of every fake company on the
-         internet, and no amount of polish rescues it — the look itself is
+         internet, and no amount of polish rescues it, the look itself is
          the problem.
 
          So: ink on paper. Warm white, near-black text, a book serif for
@@ -19,7 +19,7 @@
          ============================================================ */
 
       :root{
-        /* Paper, not white — #fff under a headline looks like a login form.
+        /* Paper, not white, #fff under a headline looks like a login form.
            A little warmth reads as stock. */
         --psx-bg:#faf8f4; --psx-hero:#f5f1e8; --psx-connect:#faf8f4;
         --psx-card:#ffffff; --psx-node:#ffffff;
@@ -40,10 +40,10 @@
            never have to work out whether brown-red means "property" or
            "something went wrong". Arm hues mark WHERE YOU ARE; status
            colours mark WHAT HAPPENED. Different jobs, different places. */
-        --psx-blue:#1b4d8f;      /* Transportation — and the company itself */
+        --psx-blue:#1b4d8f;      /* Transportation, and the company itself */
         --psx-slate:#1d4c4f;     /* Operations platform, and the free tools */
         --psx-oxblood:#7b2d26;   /* Real estate */
-        --psx-sienna:#9c4221;    /* Finance — research */
+        --psx-sienna:#9c4221;    /* Finance, research */
 
         /* The live accent. Every rule below points at this, and only the
            [data-arm] blocks near the end of this file ever change it, so
@@ -58,7 +58,7 @@
         --psx-teal:var(--psx-accent);
         --psx-ink:#14110c;
         /* Three inks, and each one means something. Black is what the page SAYS,
-           blue is what you can DO, and red is what NEEDS you — an error, a live
+           blue is what you can DO, and red is what NEEDS you, an error, a live
            signal, a field still waiting. Red is the second ink of printed pages
            for exactly this reason: it only works while it stays rare. Anything
            that is merely important is not red; it is bold black.
@@ -69,7 +69,7 @@
         /* ---- the company's own blue ----
            The wordmark and Book a ride are the company, not the page they sit
            on, so they hold one colour everywhere. That was written against
-           --psx-blue, which modern.css redefines as its transport hue — so the
+           --psx-blue, which modern.css redefines as its transport hue, so the
            pin moved with the layer, and the button came out a bright #1d4ed8
            screen blue on a page whose whole idea is ink on paper.
 
@@ -79,10 +79,10 @@
         --psx-cta:#1b4d8f; --psx-cta-dark:#16406f;
 
         /* One variable decides the display face. Point it at Carna here if
-           the licence is bought — @font-face above, then swap this line.
+           the licence is bought, @font-face above, then swap this line.
            Until then: real book faces that ship with macOS and Windows, so
            the page renders instantly with nothing fetched from anyone. */
-        /* Latin book faces first, then a CJK serif — otherwise a Chinese or
+        /* Latin book faces first, then a CJK serif, otherwise a Chinese or
            Korean headline falls back to a heavy system sans and the page
            stops looking like the same page. Songti/Ming/Batang are the
            printed-book faces on macOS and Windows respectively. */
@@ -132,7 +132,7 @@
         letter-spacing:.16em !important;text-transform:uppercase;
         padding:0 !important;box-shadow:none !important;
       }
-      /* .page-title is a div, not an h1, on six pages — the trip planner, the
+      /* .page-title is a div, not an h1, on six pages, the trip planner, the
          Destination Book, Guided Trips, Guide Studio, Favourite Places and
          Articles. Every one of them is the page's headline and every one was
          rendering in the system sans while the other twelve pages carried the
@@ -145,8 +145,8 @@
         color:var(--psx-ink) !important;
         text-shadow:none !important;
       }
-      /* The Real Estate sheet used to be an architect's blueprint — dark ground,
-         pale linework — so its title block was held at #eaf4ff to stay legible
+      /* The Real Estate sheet used to be an architect's blueprint, dark ground,
+         pale linework, so its title block was held at #eaf4ff to stay legible
          on navy. The sheet is drawn on paper now, and that same pale title on
          cream measures 1.1:1, which is to say invisible. It takes the ink like
          every other heading; only the monospace title-block face is kept. */
@@ -155,7 +155,7 @@
         color:var(--psx-ink) !important;font-family:inherit !important;
       }
       /* The accent was a violet gradient. A real underline says the same thing
-         without pretending to be lit from behind — and unlike a box-shadow
+         without pretending to be lit from behind, and unlike a box-shadow
          highlight it follows the text across a line break instead of leaving
          a grey slab hanging off the end of each line. */
       .psx-accent{
@@ -235,7 +235,7 @@
       /* ---------- stage labels ----------
          The most persuasive thing on the page, because they are the only
          claims a reader can check and the only ones that admit a limit.
-         Set as small caps in ink, not coloured badges — a badge decorates,
+         Set as small caps in ink, not coloured badges, a badge decorates,
          a label states. Four cards need a tighter grid than three. */
       .psx-cards{gap:1.1rem !important;}
       @media (min-width:1000px){
@@ -243,7 +243,7 @@
       }
       .psx-stage{
         /* align-self, because the card is a flex column and would otherwise
-           stretch the label to the full card width — a banner, not a label. */
+           stretch the label to the full card width, a banner, not a label. */
         display:inline-block;align-self:flex-start;margin-bottom:.85rem;
         font-family:var(--psx-sans);
         font-size:.66rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
@@ -277,7 +277,7 @@
         border-bottom-color:var(--psx-rule) !important;
       }
       /* The current section is marked by a rule under it, the way a printed
-         contents page marks a place — not by a blue gradient lozenge. */
+         contents page marks a place, not by a blue gradient lozenge. */
       .phase-tab.active,.phase-tab.active:hover{
         color:var(--psx-ink) !important;
         background:none !important;background-image:none !important;
@@ -295,7 +295,7 @@
       }
 
       /* ---------- the language switcher ----------
-         This was `background:var(--psx-ink) !important` — a paper-era ink pill.
+         This was `background:var(--psx-ink) !important`, a paper-era ink pill.
          It is a THIRD authority over one component (paper.css, modern.css's
          :not() chain, and the widget's own injected <style>), and being
          !important it beat the widget: the switcher's own rule set the word
@@ -310,7 +310,7 @@
       }
 
       /* ============================================================
-         ICONS — drawn, not pasted.
+         ICONS, drawn, not pasted.
 
          The tiles used to be pastel-filled rounded squares in three
          rotating hues, which is the same decorative instinct as the
@@ -340,7 +340,7 @@
       }
 
       /* ---------- tab icons ----------
-         Small enough to be a bullet rather than a picture — they help the
+         Small enough to be a bullet rather than a picture, they help the
          eye find a place in a strip that scrolls on a phone, and stop
          short of turning a contents list into a toolbar. */
       .tab-ico{
@@ -356,7 +356,7 @@
          Booking, the planner, the book and the portals were each built
          with their own navy header and blue gradient buttons. Same paper
          treatment, so moving between pages doesn't feel like moving
-         between sites. Owner tools — dispatch, archive, board — are
+         between sites. Owner tools, dispatch, archive, board, are
          deliberately left alone; they are instruments, not shopfront.
          ============================================================ */
       body{background:var(--psx-bg) !important;color:var(--psx-text) !important;}
@@ -376,14 +376,14 @@
       /* The Pollock bubbles are <button> too, and a blanket button rule
          painted every one of them ink and squared off their hand-drawn
          edges. They carry their own paper styling in floatback.js. */
-      /* The starting-point control is not a call to action — it is the map's
+      /* The starting-point control is not a call to action, it is the map's
          black pin, sitting beside the address bar so the two read as one thing.
          Painted ink like every other button, its pin went black-on-black and
          the waiting state had nothing left to say. It styles itself. */
       /* The two ids in the :not() chains below are written as attribute
          selectors on purpose. An id inside :not() scores as an id, which
          lifted these blanket button rules above anything a later stylesheet
-         could say without resorting to tricks — they outranked the surface
+         could say without resorting to tricks, they outranked the surface
          layer's own button colours and painted every call to action ink.
          Written this way they match exactly the same buttons and behave
          identically on their own; they simply no longer outrank the layer
@@ -422,14 +422,14 @@
         box-shadow:0 0 0 3px rgba(var(--psx-accent-rgb),.13) !important;
         background:#fff !important;
       }
-      /* The map must keep its own colours — it is data, not decoration. */
+      /* The map must keep its own colours, it is data, not decoration. */
       .leaflet-container,.leaflet-container *{font-family:var(--psx-sans);}
 
       /* ============================================================
          LEFTOVERS
          Found by walking every route and flagging any sizeable visible
          block still painted dark or still carrying a gradient. Body
-         background alone was not enough of a test — these all sat on
+         background alone was not enough of a test, these all sat on
          pages whose <body> had already turned to paper.
          ============================================================ */
       html{background:var(--psx-bg) !important;}
@@ -482,7 +482,7 @@
       }
       table td{border-bottom:1px solid var(--psx-rule) !important;color:var(--psx-text) !important;}
 
-      /* Factor Clock's sky-blue call to action — the last off-palette fill.
+      /* Factor Clock's sky-blue call to action, the last off-palette fill.
          Caught only after widening the sweep from "dark or gradient" to
          "any solid fill that is not one of ours"; a light colour passed the
          first test while still belonging to the old scheme. */
@@ -504,21 +504,21 @@
       /* ============================================================
          COLOUR, FORWARD.
 
-         The paper pass left the accent doing almost nothing — 4% of the
+         The paper pass left the accent doing almost nothing, 4% of the
          page, and all of it on small parts: icon strokes, a link, a focus
          ring. Correct by the numbers and monochrome to look at. Restraint
          became absence.
 
          The accent moves onto the parts a reader actually looks at: the
          primary action, the figures, and the section labels. Ink still
-         carries the type, so the page is still ink on paper — but now
+         carries the type, so the page is still ink on paper, but now
          something in it is blue on purpose.
          ============================================================ */
 
       /* Named primary actions take the accent; a plain <button> stays ink.
 
-         That split is not what this comment used to claim — it said the
-         accent applies to every button — and the stylesheet has been doing
+         That split is not what this comment used to claim, it said the
+         accent applies to every button, and the stylesheet has been doing
          the opposite the whole time. The ink rule further up carries one
          extra :not(), which outranks this one no matter that it comes
          first, so a bare <button> renders black. Measured, not read.
@@ -537,7 +537,7 @@
         background:var(--psx-accent-dark) !important;border-color:var(--psx-accent-dark) !important;
       }
 
-      /* Figures carry the accent — the number is the thing being read. */
+      /* Figures carry the accent, the number is the thing being read. */
       .psx-stat-val,.tile .n{color:var(--psx-accent) !important;}
 
       /* Section labels: the accent at small size, where it reads as a
@@ -547,7 +547,7 @@
       /* And the wordmark, so the masthead is not pure black either. */
 
       /* ============================================================
-         THE FOUR ARMS — colour as an index, not as decoration.
+         THE FOUR ARMS, colour as an index, not as decoration.
 
          The company has four businesses and the site has one page per
          business plus a stack of tool pages hanging off them. Until now
@@ -556,7 +556,7 @@
          That is the actual job colour is good at, and the only job it
          gets here.
 
-         Blue      Transportation — and the company itself, because
+         Blue      Transportation, and the company itself, because
                    transportation is what the company currently is.
          Slate     Operations platform, and every free tool it runs.
          Oxblood   Real estate.
@@ -584,7 +584,7 @@
       [data-arm="finance"]{
         --psx-accent:var(--psx-sienna); --psx-accent-rgb:156,66,33;   --psx-accent-dark:#7d351a;
       }
-      /* The company itself, for pages that belong to no single arm —
+      /* The company itself, for pages that belong to no single arm, 
          the overview, the security page, setup. */
       [data-arm="company"]{
         --psx-accent:var(--psx-blue);   --psx-accent-rgb:27,77,143;   --psx-accent-dark:#16406f;
@@ -596,7 +596,7 @@
          not to whichever page they happen to be sitting on. A masthead
          that changes colour as you browse is not a masthead, and a
          primary action that is blue on one page and rust on the next
-         stops being recognisable as the same button — which is the one
+         stops being recognisable as the same button, which is the one
          thing a conversion button cannot afford. Both are pinned. */
       .logo-text,.psx-foot-mark span{
         -webkit-text-fill-color:var(--psx-cta) !important;
@@ -604,7 +604,7 @@
       }
       /* The Book a ride button is painted once, in modern.css, as an
          underline in the company navy. What stood here was a filled blue
-         version of the same control — correct when it was written, and
+         version of the same control, correct when it was written, and
          superseded. Two rules for one button is how this file got the way it
          is, so the older one goes rather than being out-specified. */
 
@@ -621,7 +621,7 @@
          learns the code, so this is the one place the hue is a block of
          colour rather than a line of text: a rule across the top of the
          card, the way a printed index tabs its sections. Everything
-         after that — the tab you clicked, the page you land on — repeats
+         after that, the tab you clicked, the page you land on, repeats
          the colour you were just taught. */
       .psx-cards .psx-card[data-arm]{
         border-top:3px solid var(--psx-accent) !important;
@@ -636,12 +636,12 @@
          so the tab and the page underneath agree.
 
          The TEXT colour used to be set here too, and it was doing real damage.
-         modern.css marks the current section as an ink pill with white text —
+         modern.css marks the current section as an ink pill with white text, 
          `.phase-tab.active`, specificity (0,2,0). This rule is (0,3,0), so it
          won, and the live site drew the arm's blue on modern's near-black
          pill: 2.94:1 against a 4.5 floor, on every section tab, on the front
          page. Eight failures, and the fix that would have been reached for is
-         a louder rule here — which is how nine stylesheets happened.
+         a louder rule here, which is how nine stylesheets happened.
 
          So the old declaration comes out instead. The mark stays a rule in the
          arm's colour, which is what it was for; whoever owns the tab's fill
@@ -661,7 +661,7 @@
       .psx-flow .psx-node[data-arm]{border-top:2px solid var(--psx-accent) !important;}
 
       /* A section heading on an arm page gets a short rule in its
-         colour — enough to place the page, not enough to shout. */
+         colour, enough to place the page, not enough to shout. */
       .view[data-arm] .psx-head .psx-eyebrow::after,
       .view[data-arm]:not(#view-realestate) > .phases h2::after{
         content:"";display:block;width:34px;height:2px;
@@ -669,7 +669,7 @@
       }
 
       /* ============================================================
-         NO GRADIENTS — enforced here rather than asserted in a doc.
+         NO GRADIENTS, enforced here rather than asserted in a doc.
 
          PALETTE.md has said twice that gradients are "verified absent on
          every route". Both times that was written, not measured, and both
@@ -698,14 +698,14 @@
       .car{background-color:var(--psx-card) !important;}
 
       /* ============================================================
-         STRAGGLERS — legible, but not chosen.
+         STRAGGLERS, legible, but not chosen.
 
          Passing contrast is not the same as belonging to the palette. A
          sweep for text colours outside the token set turned up eleven
          that all clear AA and none of which anyone picked: two Tailwind
          ambers, a Tailwind red on the required-field asterisk, three
          badge colours a shade off the status colours they were imitating,
-         a slate-blue arrow, and — on the Destination Book — a link with
+         a slate-blue arrow, and, on the Destination Book, a link with
          no styling at all, rendering in the 1994 browser default blue.
 
          This is the difference between a page that is accessible and a
@@ -716,12 +716,12 @@
          rule goes last so any styled link above keeps its own colour. */
       a:not([class]):not([id]){color:var(--psx-accent);}
 
-      /* Destination Book category badges — a taxonomy, so they keep three
+      /* Destination Book category badges, a taxonomy, so they keep three
          distinguishable hues; they were just a shade off the ones the rest
          of the site already uses. */
       .b-rest,.soon-badge{color:#8a5a12 !important;}
 
-      /* Red means a field still needs you — that is what --psx-red is for. */
+      /* Red means a field still needs you, that is what --psx-red is for. */
       .req{color:var(--psx-red) !important;}
 
       /* The loop arrows are punctuation between nodes, not content. */
@@ -738,7 +738,7 @@
    At 375px the header was 113px tall before a word of content: the wordmark
    broke across three lines and "Book a Ride" was squeezed into a 35px column
    reading "Book / a / Ride" down the screen. Nothing was overflowing, so
-   nothing looked broken — it was simply eating a third of the screen.
+   nothing looked broken, it was simply eating a third of the screen.
 
    Three changes, no markup: the links stop wrapping and scroll sideways if
    they must, the wordmark takes a size that fits, and the row is allowed to
@@ -762,7 +762,7 @@
     header .brand, header .logo-text { font-size: 0.84rem !important; }
   }
   /* The nav gets its width first. Sharing the row proportionally left it 21px
-     short and "Book a Ride" was clipped to "Book a R" — a cut-off call to
+     short and "Book a Ride" was clipped to "Book a R", a cut-off call to
      action being worse than a wordmark that takes an extra line. */
   header .right, header .links, header nav {
     margin-left: auto;
@@ -781,7 +781,7 @@
 /* ---- nothing slides the page sideways ----
    Three pages did, each for its own reason: a chip row that would not wrap, a
    partner table wider than the screen, and a form row eight pixels over. The
-   symptom is the same and so is the rule — wide content scrolls inside its own
+   symptom is the same and so is the rule, wide content scrolls inside its own
    box, the page itself never does. */
 @media (max-width: 560px) {
   html, body { overflow-x: hidden; }

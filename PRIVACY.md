@@ -31,8 +31,8 @@ discovered city. That was rejected, and the reasons are worth keeping because
 they will come up again.
 
 **It would not have worked.** A location at login is derived either from the
-IP address — which gives the carrier's regional hub, the VPN exit, or Apple
-Private Relay, so the map fills with datacentres — or from the browser
+IP address, which gives the carrier's regional hub, the VPN exit, or Apple
+Private Relay, so the map fills with datacentres, or from the browser
 geolocation API, which requires a permission prompt. A prompt at login, when
 the person is trying to do something else, gets refused, and browsers remember
 a refusal per site. That refusal would also have killed the "Use my location"
@@ -45,8 +45,8 @@ person has and the least useful one for a map of places worth visiting.
 **Consent does not fix a bad idea.** Asking permission properly and then
 collecting a home address is still collecting a home address.
 
-So the ask moves to the moment of contribution — when somebody is somewhere
-worth adding and wants to add it — and what gets stored is the city, not the
+So the ask moves to the moment of contribution, when somebody is somewhere
+worth adding and wants to add it, and what gets stored is the city, not the
 person.
 
 ---
@@ -57,7 +57,7 @@ These are not policies. They are properties of the code, each with a test.
 
 1. **No coordinate can be stored.** `record_place()` has no parameter for one.
    The endpoint runs `looks_like_coordinate()` over the entire request body
-   first and refuses anything shaped like a fix on the ground — by key name, by
+   first and refuses anything shaped like a fix on the ground, by key name, by
    value pattern, at any nesting depth, including a bare float. It refuses
    rather than silently dropping, so a caller cannot come to believe we accept
    coordinates.
@@ -67,7 +67,7 @@ These are not policies. They are properties of the code, each with a test.
    each would pass `if granted:`.
 
 3. **The purpose is a closed set.** An unrecognised purpose is refused. There
-   is no "other", and there is deliberately no purpose called "research" — see
+   is no "other", and there is deliberately no purpose called "research", see
    §5.
 
 4. **The wording is pinned.** Every consent row stores the version and a
@@ -87,7 +87,7 @@ These are not policies. They are properties of the code, each with a test.
 
 8. **`coarsen()` clears the statutory line at every latitude.** If a coordinate
    ever legitimately has to be handled server-side, this is the only sanctioned
-   road. It snaps to a cell ~11 km across — about 21× coarser than the 1,750
+   road. It snaps to a cell ~11 km across, about 21× coarser than the 1,750
    ft that Washington treats as "precise". The longitude step is widened by
    1/cos(latitude), because a fixed grid in degrees is not a fixed distance:
    0.1° of longitude at 89°N is under 200 m, which would be *inside* the line
@@ -104,12 +104,12 @@ Never the customer id.
 - A client-supplied identity is a client-supplied identity: if withdrawal or
   export keyed on it, anyone could erase or read anyone else's.
 - Tying contributions to an account would create precisely the record this
-  design avoids — named person plus places. Unlinked, `place_contributions.json`
+  design avoids, named person plus places. Unlinked, `place_contributions.json`
   is a list of city names that identifies nobody.
 
 **The cost, stated plainly:** clearing cookies means that browser can no longer
 withdraw what it added. What it added is "somebody once said Tacoma", so this
-is the right side of the trade — but it belongs on the page, not buried here.
+is the right side of the trade, but it belongs on the page, not buried here.
 
 ---
 
@@ -128,7 +128,7 @@ share". Three problems:
 The text now in `consent.py` says what happens and what does not:
 
 > Add this place to the map?
-> We save the name of the city you are in — not your exact location, not your
+> We save the name of the city you are in, not your exact location, not your
 > address, and not your name.
 > Saying no changes nothing about your booking or your account, and you can
 > undo this later.
@@ -162,8 +162,8 @@ already lists the role (`privacy-counsel`).
    collect none" notice the right form? Specifically: pickup and drop-off
    addresses are precise locations, volunteered, used only to drive the person.
    Does that reach the definition of consumer health data if someone is
-   collected from a medical building? Our position is no — we do not analyse,
-   categorise or infer from the address — but the private right of action makes
+   collected from a medical building? Our position is no, we do not analyse,
+   categorise or infer from the address, but the private right of action makes
    this worth an answer rather than a view.
 
 3. **Does the homepage link satisfy the "prominently published" requirement,**
@@ -194,7 +194,7 @@ already lists the role (`privacy-counsel`).
 |---|---|
 | Publish the policy | Set `PRIVACY_CONTACT` in Render to a working address |
 | Link it | Add `<li><a href="/privacy">Privacy</a></li>` to the Company column of the footer in `landing-page.html`, and a link from the homepage for the MHMDA "prominently published" requirement |
-| Enable the map consent | Set `LOCATION_CONSENT_ENABLED=1` — **after** counsel answers §7 |
+| Enable the map consent | Set `LOCATION_CONSENT_ENABLED=1`, **after** counsel answers §7 |
 | Build the button | Not built. `/api/consent/text` supplies the exact wording to render; the page must show that text and post that version back |
 
 ---
@@ -205,7 +205,7 @@ already lists the role (`privacy-counsel`).
 while the bot lab uses PBKDF2 at 200,000 rounds. A single round falls to a GPU
 at billions of guesses per second.
 
-This is not urgent for the consent work — contributions are unlinked from
+This is not urgent for the consent work, contributions are unlinked from
 accounts by design, which is part of why they are. It matters for
 `customers.json`, which holds names, emails and phone numbers today.
 
@@ -217,14 +217,14 @@ land where it can be reviewed on its own.
 
 ---
 
-## 10. Footprints — the one coordinate store, and why it is not visitor data
+## 10. Footprints, the one coordinate store, and why it is not visitor data
 
 Added 2026-08-10. `footprints.py` holds recorded walks of **our own named
-corridors** — terminal door to platform, that kind of thing — used to verify
+corridors**, terminal door to platform, that kind of thing, used to verify
 and later guide the journey walkthroughs. It is the only store of
 **metre-level GPS traces** on the site. (Stated precisely because a document
 for counsel must not overclaim: the traffic system's `geo_cache.json` holds
-**city-level** centroids — lat/lon rounded to two decimals, ~1 km — derived
+**city-level** centroids, lat/lon rounded to two decimals, ~1 km, derived
 from IP geolocation for the aggregate viewers-by-city table, and traffic day
 records carry the same coarse place coordinates. Those cannot describe a
 walk or a person's position; these traces can, which is why the fence below
@@ -233,9 +233,9 @@ exists.) The fence, for counsel:
 - The submitting endpoint is **owner-authenticated**. No visitor can reach it.
 - The corridors are a **closed list in code**. A walk for a corridor we did
   not deliberately open is refused, so the store cannot become anyone's
-  movement diary — there is nowhere to file a movement that is not one of our
+  movement diary, there is nowhere to file a movement that is not one of our
   own walkways.
-- A stored walk carries **no identity and no clock** — a date and a duration,
+- A stored walk carries **no identity and no clock**, a date and a duration,
   never a timestamp. "The corridor takes nine minutes" is a map; "someone was
   at the door at 23:41" is surveillance, and the field does not exist.
 - Traces expire from use after 180 days and each corridor keeps at most 20.
@@ -247,17 +247,17 @@ as consumer health or location data.
 
 ### Added to the attorney list, 2026-08-10 (footprints for data collection)
 
-9. **Visitor-contributed corridor walks — parked until answered.** The current
+9. **Visitor-contributed corridor walks, parked until answered.** The current
    design accepts GPS traces only from the owner and owner-issued surveyor
-   accounts. The proposed extension — a traveller deliberately contributing a
+   accounts. The proposed extension, a traveller deliberately contributing a
    walk of a named public corridor, "add this corridor" like "add this place"
-   — would be consumer **precise location** under MHMDA even though the
+  , would be consumer **precise location** under MHMDA even though the
    corridor is public and the act deliberate. What consent framework, if any,
    makes that lawful, and does bounding acceptance to registered public
    corridors (refusing anything outside them) change the analysis? Until
    answered, no visitor path to the footprint store exists, and consent.py
    continues to refuse coordinates from visitors everywhere.
 
-   For the record, the passive version — the walking guide reporting
-   travellers' movements back to the server — is a **never**, not a question.
+   For the record, the passive version, the walking guide reporting
+   travellers' movements back to the server, is a **never**, not a question.
    The policy sentence "we do not record visitors' movements" is load-bearing.

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agent Portal — Plateau Strategy Solution Lab</title>
+    <title>Agent Portal, Plateau Strategy Solution Lab</title>
     <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -138,7 +138,7 @@
             .stats { grid-template-columns: 1fr; }
         }
 
-        /* Continue with Google — a shortcut above the fields, visibly optional.
+        /* Continue with Google, a shortcut above the fields, visibly optional.
            The divider is what stops it reading as a required first step. It
            renders only when GOOGLE_CLIENT_ID is configured; otherwise the box
            stays hidden and the form behaves exactly as it always has. */
@@ -176,7 +176,7 @@
         <div class="card">
             <h1>Agent &amp; Guide Portal</h1>
             <p class="sub">One code, two ways to earn. <b>Refer</b> customers and take a commission on every
-                completed ride — or <b>guide</b>: write your own in-depth trip and sell it on our
+                completed ride, or <b>guide</b>: write your own in-depth trip and sell it on our
                 <a href="/trips" style="color:#1b4d8f">trips page</a>. The same agent code does both.
                 Anyone can join, as an individual or an organization.</p>
 
@@ -186,7 +186,7 @@
                 <button type="button" id="tOrganization" onclick="setType('organization')">Organization</button>
             </div>
             <p class="sub" style="font-size:0.82rem;margin:-0.35rem 0 0.9rem">
-                Guides register here too — a student running a campus walk, a driver who knows one
+                Guides register here too, a student running a campus walk, a driver who knows one
                 neighborhood properly. Your code is what proves the trip was written by a real guide.
             </p>
 
@@ -211,7 +211,7 @@
             </div>
             <button class="primary" onclick="register()">Register &amp; Get My Code</button>
 
-            <div class="divider">— already an agent? sign in —</div>
+            <div class="divider">, already an agent? sign in, </div>
             <div class="row">
                 <div><label>Organization (if any)</label><input id="l_org" placeholder="Lopez Travel Agency"></div>
                 <div><label>Last name <span style="color:#a3302a">*</span></label><input id="l_last" placeholder="Lopez"></div>
@@ -241,7 +241,7 @@
                 <div class="panel active" id="panel-refer">
                     <h2>Book a Trip</h2>
                     <div class="p-card">
-                        <div class="note">Book any trip for your client — airport, cruise, tour, or a custom day out. It comes straight to our dispatch and your commission is tracked automatically.</div>
+                        <div class="note">Book any trip for your client, airport, cruise, tour, or a custom day out. It comes straight to our dispatch and your commission is tracked automatically.</div>
 
                         <label>Trip type</label>
                         <div class="triptype" id="tripType">
@@ -314,7 +314,7 @@
                             <div><label>Fare (USD)</label><input id="c_fare" type="number" min="0" step="0.01"></div>
                         </div>
                         <div class="qrow">
-                            <label><input type="checkbox" id="c_quote" onchange="toggleQuote()"> Request a quote instead — we'll price it and confirm back</label>
+                            <label><input type="checkbox" id="c_quote" onchange="toggleQuote()"> Request a quote instead, we'll price it and confirm back</label>
                         </div>
                         <div class="note" id="commNote" style="margin-top:.7rem">You earn a flat commission on every trip you book that's completed.</div>
 
@@ -337,7 +337,7 @@
                 <div class="panel" id="panel-rates">
                     <h2>Services &amp; Rates</h2>
                     <div class="p-card">
-                        <div class="note">Here's what you earn for referring each service. Your commission depends on the service — pick it on the “Refer a Client” tab and the price fills in automatically.</div>
+                        <div class="note">Here's what you earn for referring each service. Your commission depends on the service, pick it on the “Refer a Client” tab and the price fills in automatically.</div>
                         <table>
                             <thead><tr><th>Service</th><th>Price</th><th>You earn</th></tr></thead>
                             <tbody id="ratesBody"></tbody>
@@ -361,11 +361,11 @@
                             <div class="stat"><div class="n" id="s_paidout">$0</div><div class="l">Paid out so far</div></div>
                         </div>
                         <div class="row">
-                            <div><label>PayPal email — get paid directly</label><input id="p_paypal" type="email" placeholder="you@paypal-email.com"></div>
+                            <div><label>PayPal email, get paid directly</label><input id="p_paypal" type="email" placeholder="you@paypal-email.com"></div>
                             <div style="flex:0 0 auto; display:flex; align-items:flex-end;"><button class="primary" style="width:auto; margin-top:0; padding:0.72rem 1.1rem;" onclick="savePayoutEmail()">Save</button></div>
                         </div>
                         <div class="row">
-                            <div><label>Other way to be paid? (optional)</label><input id="p_method" placeholder="Zelle / cash / check — and where"></div>
+                            <div><label>Other way to be paid? (optional)</label><input id="p_method" placeholder="Zelle / cash / check, and where"></div>
                         </div>
                         <button class="primary" id="payoutBtn" onclick="requestPayout()">Request Payout</button>
                         <div class="result" id="payoutResult"></div>
@@ -373,11 +373,11 @@
                             <thead><tr><th>Request</th><th>Amount</th><th>Status</th><th>Requested</th><th>Paid</th></tr></thead>
                             <tbody id="payoutBody"></tbody>
                         </table>
-                        <div class="empty" id="payoutEmpty" style="display:none;">No payout requests yet — when rides complete, your money shows as available here.</div>
+                        <div class="empty" id="payoutEmpty" style="display:none;">No payout requests yet, when rides complete, your money shows as available here.</div>
                     </div>
 
                     <div class="mycode">
-                        <div class="kicker">Your Agent Code — this is your sign-in</div>
+                        <div class="kicker">Your Agent Code, this is your sign-in</div>
                         <div class="v" id="myCode">AGT-••••</div>
                         <div class="h" id="commExplain">Keep this safe. You'll use your organization, last name, and this code to sign in.</div>
                     </div>
@@ -385,11 +385,11 @@
 
                 <div class="panel" id="panel-guide">
                     <h2>Sell My Own Trips</h2>
-                    <p class="sub">Referring rides earns a commission. Guiding earns the whole fare — you set
+                    <p class="sub">Referring rides earns a commission. Guiding earns the whole fare, you set
                         it. Write the trip you already know by heart: your stops, how long you actually
                         stand at each one, what you say there, and what it costs. It goes on the public
                         <a href="/trips" style="color:#1b4d8f">trips page</a> the moment you list it, and
-                        travellers reach you through us — your contact details are never published.</p>
+                        travellers reach you through us, your contact details are never published.</p>
 
                     <div class="mycode" style="margin-bottom:1rem">
                         <div class="kicker">Your code doubles as your guide credential</div>
@@ -414,7 +414,7 @@
     <div class="code-overlay" id="codeOverlay">
         <div class="code-box">
             <h3>You're registered as an agent</h3>
-            <p>This is your unique agent code — <b>save it now</b>. You'll use it, with your last name, to sign in.</p>
+            <p>This is your unique agent code, <b>save it now</b>. You'll use it, with your last name, to sign in.</p>
             <div class="code-value" id="revealCode">AGT-••••</div>
             <button class="cbtn copy" onclick="copyCode()">Copy code</button>
             <button class="cbtn enter" onclick="enterFromReveal()">Continue to portal</button>
@@ -470,7 +470,7 @@
                           String(t.city_label || '').replace(/[<>&]/g, '') + '</td><td>' +
                           (t.stops || []).length + '</td><td>' + (t.interest_count || 0) + '</td></tr>').join('') +
                       '</tbody></table>'
-                    : '<div class="empty">Nothing listed yet — the studio takes about five minutes.</div>';
+                    : '<div class="empty">Nothing listed yet, the studio takes about five minutes.</div>';
             } catch (e) { /* the studio link still works */ }
         }
 
@@ -533,7 +533,7 @@
                 if (!val('c_fare')) document.getElementById('c_fare').value = (AGENT.default_fare != null ? AGENT.default_fare : c.default_fare);
                 updateCommNote();
                 document.getElementById('commExplain').textContent =
-                    'Your commission depends on which service you refer — see “Services & Rates.” Sign in with your last name and this code.';
+                    'Your commission depends on which service you refer, see “Services & Rates.” Sign in with your last name and this code.';
             }).catch(() => {});
             refresh();
             clearInterval(window._poll); window._poll = setInterval(refresh, 8000);
@@ -545,13 +545,13 @@
             const sel = document.getElementById('c_service');
             if (sel) {
                 sel.innerHTML = PRESETS.map(p => '<option value="' + p.price + '" data-comm="' + (p.commission != null ? p.commission : '') + '">'
-                    + esc(p.name) + ' — $' + p.price + ' (you earn $' + (p.commission != null ? p.commission : '?') + ')</option>').join('')
+                    + esc(p.name) + ', $' + p.price + ' (you earn $' + (p.commission != null ? p.commission : '?') + ')</option>').join('')
                     + '<option value="">Custom amount…</option>';
                 applyService();
             }
             const rb = document.getElementById('ratesBody');
             if (rb) rb.innerHTML = PRESETS.map(p =>
-                '<tr><td>' + esc(p.name) + '</td><td>$' + esc(p.price) + '</td><td class="comm">$' + esc(p.commission != null ? p.commission : '—') + '</td></tr>').join('');
+                '<tr><td>' + esc(p.name) + '</td><td>$' + esc(p.price) + '</td><td class="comm">$' + esc(p.commission != null ? p.commission : ', ') + '</td></tr>').join('');
         }
         function applyService() {
             const sel = document.getElementById('c_service');
@@ -617,7 +617,7 @@
                 body.dropoff = port;
                 body.cruise_line = val('f_cruiseline'); body.ship = val('f_ship'); body.sailing_date = val('f_sailing');
                 if (document.getElementById('f_roundtrip').value === 'yes') {
-                    body.notes = ('Round trip — driver returns the client too. ' + body.notes).trim();
+                    body.notes = ('Round trip, driver returns the client too. ' + body.notes).trim();
                 }
             } else if (TRIP_TYPE === 'tour') {
                 body.itinerary = val('f_itinerary'); body.duration_hours = val('f_hours'); body.dropoff = val('f_end');
@@ -629,8 +629,8 @@
             const r = j.reservation, comm = (r.agent && r.agent.commission_usd) || 0;
             result.className = 'result ok';
             result.innerHTML = r.quote_requested
-                ? 'Quote request sent — <b>' + r.id + '</b>. We\'ll price this trip and confirm it back to you. Your commission applies once it\'s completed.'
-                : 'Booking sent — <b>' + r.id + '</b>. Your commission: <b>$' + comm + '</b> once the trip is completed. It\'s now with our dispatch.';
+                ? 'Quote request sent, <b>' + r.id + '</b>. We\'ll price this trip and confirm it back to you. Your commission applies once it\'s completed.'
+                : 'Booking sent, <b>' + r.id + '</b>. Your commission: <b>$' + comm + '</b> once the trip is completed. It\'s now with our dispatch.';
             ['c_name','c_email','c_phone','c_pickup','c_dropoff','c_date','c_time','c_notes',
              'f_flight','f_port','f_cruiseline','f_ship','f_sailing','f_itinerary','f_hours','f_end',
              'f_title','f_desc','f_hours2'].forEach(i => { const e = document.getElementById(i); if (e) e.value = ''; });
@@ -656,14 +656,14 @@
             document.getElementById('s_paidout').textContent = '$' + (j.paid_out || 0);
             const pb = document.getElementById('payoutBtn');
             pb.disabled = avail <= 0;
-            pb.textContent = avail > 0 ? ('Request Payout — $' + avail) : 'Nothing available yet';
+            pb.textContent = avail > 0 ? ('Request Payout, $' + avail) : 'Nothing available yet';
             const outs = j.payouts || [];
             document.getElementById('payoutEmpty').style.display = outs.length ? 'none' : 'block';
             document.getElementById('payoutBody').innerHTML = outs.map(p =>
                 '<tr><td>' + esc(p.id) + '</td><td>$' + esc(p.amount) + '</td>' +
                 '<td><span class="badge ' + esc(p.status) + '">' + esc(p.status) + '</span></td>' +
                 '<td>' + esc((p.requested_at || '').slice(0,16).replace('T',' ')) + '</td>' +
-                '<td>' + esc(p.status === 'PAID' ? ((p.paid_at || '').slice(0,16).replace('T',' ') + (p.paid_method ? ' · ' + p.paid_method : '')) : '—') + '</td></tr>').join('');
+                '<td>' + esc(p.status === 'PAID' ? ((p.paid_at || '').slice(0,16).replace('T',' ') + (p.paid_method ? ' · ' + p.paid_method : '')) : ', ') + '</td></tr>').join('');
             const rows = j.referrals || [];
             document.getElementById('refEmpty').style.display = rows.length ? 'none' : 'block';
             document.getElementById('refBody').innerHTML = rows.map(r => {
@@ -687,10 +687,10 @@
                 j = await psxJSON('/api/agents/' + AGENT.id + '/payout-email', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ payout_email: email }) });
-            } catch (e) { out.className = 'result err'; out.textContent = 'Connection problem — try again.'; return; }
+            } catch (e) { out.className = 'result err'; out.textContent = 'Connection problem, try again.'; return; }
             if (!j.ok) { out.className = 'result err'; out.textContent = j.error || 'Could not save.'; return; }
             out.className = 'result ok';
-            out.textContent = email ? 'Saved — payouts can now be sent to ' + email + ' via PayPal.'
+            out.textContent = email ? 'Saved, payouts can now be sent to ' + email + ' via PayPal.'
                                     : 'PayPal email cleared.';
         }
 
@@ -705,14 +705,14 @@
                     body: JSON.stringify({ method: val('p_method') }) });
             } catch (e) {
                 btn.disabled = false; btn.textContent = old;
-                out.className = 'result err'; out.textContent = 'Connection problem — try again.'; return;
+                out.className = 'result err'; out.textContent = 'Connection problem, try again.'; return;
             }
             if (!j.ok) {
                 btn.disabled = false; btn.textContent = old;
                 out.className = 'result err'; out.textContent = j.error || 'Could not request payout.'; return;
             }
             out.className = 'result ok';
-            out.innerHTML = 'Payout requested — <b>' + j.payout.id + '</b> for <b>$' + j.payout.amount + '</b>. The owner has been notified and will send it, then mark it paid here.';
+            out.innerHTML = 'Payout requested, <b>' + j.payout.id + '</b> for <b>$' + j.payout.amount + '</b>. The owner has been notified and will send it, then mark it paid here.';
             document.getElementById('p_method').value = '';
             refresh();
         }

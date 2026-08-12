@@ -6,7 +6,7 @@ Channels (each enabled by environment variables):
     New rides are texted to EVERY registered driver with a phone number.
     Drivers claim by replying YES (handled by /sms/reply in app.py).
 
-If a channel isn't configured it is skipped. Never raises — returns a summary
+If a channel isn't configured it is skipped. Never raises, returns a summary
 dict of which channels were used and their result.
 """
 import os
@@ -87,14 +87,14 @@ def sms_ride_offer_to_drivers(reservation, renters):
 
 def sms_ride_taken(reservation, winner, renters):
     """The moment one driver wins a ride, tell every OTHER driver who was offered it
-    that it's gone — so nobody wastes a reply and everyone knows the situation.
+    that it's gone, so nobody wastes a reply and everyone knows the situation.
     Texts the drivers in reservation['offered_driver_ids'] (minus the winner). Falls
     back to all drivers-with-phones if the offer list wasn't recorded."""
     rid = reservation.get("id")
     offered = reservation.get("offered_driver_ids") or []
     winner_id = (winner or {}).get("id")
     msg = ("Ride %s has been taken by another driver. "
-           "Thanks for the quick reply — we'll send the next one your way." % rid)
+           "Thanks for the quick reply, we'll send the next one your way." % rid)
     results = {}
     for r in renters:
         if r.get("id") == winner_id:
@@ -172,8 +172,8 @@ def email_owner(subject, body):
     """Send the owner a plain-text record of something that just happened.
 
     This exists because the live server's disk does not survive a deploy or a
-    restart: anything written at runtime — a guide's listing, a traveller's
-    request — can vanish before it is ever read. An email is the one copy that
+    restart: anything written at runtime, a guide's listing, a traveller's
+    request, can vanish before it is ever read. An email is the one copy that
     cannot be wiped by a redeploy, so every record worth keeping is mailed out
     at the moment it is created. Fails silently; it must never break the
     request that triggered it.

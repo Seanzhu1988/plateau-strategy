@@ -1,17 +1,17 @@
 /* ============================================================
-   Admin "Terminal" theme — shared owner-dashboard styling.
+   Admin "Terminal" theme, shared owner-dashboard styling.
    Link this in any owner/admin page:
        <link rel="stylesheet" href="/admin-terminal.css">
 
    This was a dark-navy dashboard, and it is paper now like the rest of the
    site. Not a cosmetic change: paper.css had already turned these pages to
    paper, but every rule in this file carries !important and kept its dark
-   TEXT colours — so pale blue-grey landed on cream at 2.3:1 and the
+   TEXT colours, so pale blue-grey landed on cream at 2.3:1 and the
    archive's own description became barely readable.
 
    Palette:  paper #faf8f4 · panel #f5f1e8 · card #fff · border #e6e2da
              ink #14110c · text #4a453d · muted #6b655b · accent #1b4d8f
-   Green, amber and red stay reserved for money and status — darkened so
+   Green, amber and red stay reserved for money and status, darkened so
    they read as ink on paper instead of glowing on navy.
    ============================================================ */
 
@@ -46,7 +46,7 @@ input::placeholder, textarea::placeholder { color: #8a8377 !important; }
 .btn.blue { background: #14110c !important; background-image: none !important; color: #fff !important; }
 .btn.dark { background: #fff !important; border: 1px solid #ddd8cd !important; color: #14110c !important; }
 
-/* badges — tinted paper with dark ink. Each keeps its own hue so a status
+/* badges, tinted paper with dark ink. Each keeps its own hue so a status
    is still findable at a glance, but the text carries the meaning. */
 .badge { background: #f0ede5 !important; color: #4a453d !important; }
 .badge.PAID, .badge.COMPLETED { background: #e8f2ec !important; color: #14513a !important; }
@@ -55,7 +55,7 @@ input::placeholder, textarea::placeholder { color: #8a8377 !important; }
 .badge.CANCELED { background: #f7e9e8 !important; color: #8f2822 !important; }
 .badge.SIMULATED, .badge.UNKNOWN { background: #f0ede5 !important; color: #6b655b !important; }
 
-/* callout notes (marketing list / tax help) — money-green */
+/* callout notes (marketing list / tax help), money-green */
 .mkt-note { background: #eef5f1 !important; border-color: #b9d4c7 !important; color: #14513a !important; }
 .mkt-note b { color: #0f3c2b !important; }
 .qb { background: #eef5f1 !important; border-color: #b9d4c7 !important; color: #14513a !important; }

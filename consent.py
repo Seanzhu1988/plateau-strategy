@@ -2,7 +2,7 @@
 """Consent, made structural.
 
 The idea this exists for: when someone is standing somewhere worth visiting,
-let them add that place to the map. The instinct behind it was right — ask
+let them add that place to the map. The instinct behind it was right, ask
 first, and take no for an answer. This file is what turns that instinct into
 something that cannot quietly stop being true.
 
@@ -16,7 +16,7 @@ There is no field for a coordinate. Not a rounded one, not an encrypted one.
 rejects a payload that smells of one. That shape is the whole design, and the
 reason is Washington's My Health My Data Act: the duties attach to what a
 business COLLECTS, and its definition of protected health data reaches PRECISE
-location — roughly a 1,750-foot radius — when it could indicate someone sought
+location, roughly a 1,750-foot radius, when it could indicate someone sought
 health care. A latitude sitting in a JSON file on our disk is collection. A
 city name is not, and a city name is all a map of cities ever needed.
 
@@ -32,7 +32,7 @@ something storable, and it is deliberately blunt.
 
 TWO STORES, ON PURPOSE
 ----------------------
-The consent ledger says who agreed to what, and must survive — a consent you
+The consent ledger says who agreed to what, and must survive, a consent you
 cannot produce the wording of is not a defence. The contributions say which
 cities were added, and must NOT identify anyone. They are linked only by a
 random key held in the ledger, so:
@@ -85,7 +85,7 @@ CONSENT_TEXTS = {
         "version": "2026-08-09.1",
         "text": (
             "Add this place to the map?\n"
-            "We save the name of the city you are in — not your exact location, "
+            "We save the name of the city you are in, not your exact location, "
             "not your address, and not your name.\n"
             "Saying no changes nothing about your booking or your account, and "
             "you can undo this later."
@@ -166,7 +166,7 @@ def coarsen(lat, lon):
     location, and still fine enough to name a metropolitan area.
 
     Returns None for anything that is not a real point on Earth, rather than
-    clamping — a bad coordinate is a bug upstream, and quietly relocating it to
+    clamping, a bad coordinate is a bug upstream, and quietly relocating it to
     the nearest pole would hide that.
     """
     try:
@@ -230,7 +230,7 @@ class ConsentStore(object):
         """Record an affirmative, specific consent. Returns the row, or None.
 
         `granted` must be exactly True. Not 1, not "yes", not a non-empty
-        string — the places those values come from are a checkbox that shipped
+        string, the places those values come from are a checkbox that shipped
         pre-ticked, or a JSON body where a missing field read as truthy. Both
         are how consent records end up describing agreements nobody made.
 
@@ -293,7 +293,7 @@ class ConsentStore(object):
         """Take it back: delete what was contributed, keep the proof.
 
         Returns the number of contributions deleted. The ledger row stays, with
-        the withdrawal stamped and the key destroyed — that row is the evidence
+        the withdrawal stamped and the key destroyed, that row is the evidence
         that consent existed and that it was honoured when revoked, and it can
         no longer point at anything.
         """

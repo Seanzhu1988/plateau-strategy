@@ -1,4 +1,4 @@
-/* Section-framing preview — three candidates, side by side, on the real page.
+/* Section-framing preview, three candidates, side by side, on the real page.
  *
  * Dormant unless the URL carries ?frame=. A visitor never sees this, and
  * nothing about the published site changes while it sleeps. That matters:
@@ -12,7 +12,7 @@
   var MODES = [
     { key: '',          label: 'Now',        note: 'hairline + small centred mark' },
     { key: 'numbered',  label: '01 Numbered', note: 'a number opens each chapter' },
-    { key: 'bands',     label: 'Bands',      note: 'alternating grounds — only the overview has two sections to alternate' },
+    { key: 'bands',     label: 'Bands',      note: 'alternating grounds, only the overview has two sections to alternate' },
     { key: 'rule',      label: 'Heavy rule', note: 'full-width 3px navy, much more air' }
   ];
 
@@ -33,7 +33,7 @@
   }
 
   /* Each chapter gets a head carrying its own number and its own name. The
-     name is read from the h2 already on the page — no new copy is invented
+     name is read from the h2 already on the page, no new copy is invented
      here, because the thing being judged is framing, not wording. */
   function stampChapters() {
     var secs = document.querySelectorAll('.view section.phases, #view-overview .psx-section');
@@ -64,13 +64,13 @@
     }
     var cur = MODES.filter(function (m) { return m.key === (active || ''); })[0] || MODES[0];
     box.innerHTML =
-      '<div class="fp-t">Section framing — pick one</div>' +
+      '<div class="fp-t">Section framing, pick one</div>' +
       MODES.map(function (m) {
         return '<button data-mode="' + m.key + '"' +
                (m.key === (active || '') ? ' class="on"' : '') + '>' + m.label + '</button>';
       }).join('') +
       '<div class="fp-note">' + cur.note + '</div>' +
-      '<div class="fp-note fp-fine">only you see this — it needs ?frame= in the address</div>';
+      '<div class="fp-note fp-fine">only you see this, it needs ?frame= in the address</div>';
   }
 
   function boot() {

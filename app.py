@@ -1,4 +1,4 @@
-"""Plateau Strategy Solution Lab — Transportation booking app.
+"""Plateau Strategy Solution Lab, Transportation booking app.
 
 Roles:
   - Client : books a ride (/book)            -> creates a Square invoice
@@ -46,10 +46,35 @@ import consent
 import journeys
 import footprints
 
+def _no_em_dash(text, title=False):
+    """Remove em dashes from user-facing article text.
+
+    The owner's standing rule: the long dash makes any article read as AI
+    generated, so no article on this board carries one, whoever wrote it.
+    In a title the dash was doing a colon's job; in a body it was doing a
+    comma's. Words are never touched, only the punctuation.
+    """
+    if not text:
+        return text
+    joiner = ": " if title else ", "
+    # the Chinese double dash first, or the single pass eats it in halves.
+    # Spaces around it go too: Chinese punctuation carries its own spacing.
+    text = text.replace(" \u2014\u2014 ", "\uff0c")
+    text = text.replace("\u2014\u2014 ", "\uff0c")
+    text = text.replace(" \u2014\u2014", "\uff0c")
+    text = text.replace("\u2014\u2014", "\uff0c")
+    for dash in ("\u2014", "\u2013", "\u2e3a", "\u2e3b"):
+        text = text.replace(" " + dash + " ", joiner)
+        text = text.replace(dash + " ", joiner)
+        text = text.replace(" " + dash, joiner)
+        text = text.replace(dash, joiner)
+    return text
+
+
 def _no_tags(s):
     """Defense-in-depth vs stored XSS: strip angle brackets from any string
     that ends up rendered in every visitor's browser. Pages escape on render
-    too — this guard protects any future sink someone forgets."""
+    too, this guard protects any future sink someone forgets."""
     return (s or "").replace("<", "").replace(">", "")
 
 
@@ -57,8 +82,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # ---------------------------------------------------------------- where data lives
 # The code ships in BASE_DIR; everything the site SAVES lives in DATA_DIR. On a
-# host whose filesystem is reset on each deploy — which is what free Render does
-# — those being the same directory means every reservation, agent code and guide
+# host whose filesystem is reset on each deploy, which is what free Render does
+#, those being the same directory means every reservation, agent code and guide
 # listing is destroyed the next time anyone pushes. Pointing DATA_DIR at a
 # mounted disk keeps them.
 #
@@ -70,7 +95,7 @@ def _pick_data_dir():
     """Where the site's data files live.
 
     DATA_DIR wins if set. Failing that, a disk mounted at the conventional
-    path is used automatically — because a disk that is attached but that
+    path is used automatically, because a disk that is attached but that
     nothing points at behaves exactly like no disk at all, and that failure
     is silent: the site keeps working and quietly forgets everything on
     every deploy. Detecting the mount removes the one manual step that
@@ -140,7 +165,7 @@ _LOCK = threading.Lock()
 #
 # Nothing on this site limited login attempts. The council put numbers on what
 # that costs, and they are small: the driver login is a VIN plus a date of
-# birth, and a VIN is not a secret — it is stamped on the dashboard and legally
+# birth, and a VIN is not a secret, it is stamped on the dashboard and legally
 # readable through the windscreen of a car parked in public. That leaves the
 # birthday, about 25,200 valid dates for an adult, roughly 14.6 bits. An agent
 # code is four characters from a 31-symbol alphabet, about 19.8 bits. Both are
@@ -153,13 +178,13 @@ _LOCK = threading.Lock()
 # one attacker lock out a whole office, and keying on the account only would
 # let them lock a driver out of their own portal from anywhere.
 #
-# In memory on purpose. One process, one machine — a restart clears it, which
+# In memory on purpose. One process, one machine, a restart clears it, which
 # is a real limit worth stating rather than hiding, but a restart is not
 # something an attacker can trigger.
 # ---------------------------------------------------------------------------
 # TWO counters, and the second one exists because the first missed the actual
 # attack. Keying only on (address, account) counts wrong PASSWORDS for one
-# account — but guessing an agent code means trying a different ACCOUNT every
+# account, but guessing an agent code means trying a different ACCOUNT every
 # time, so a code-spraying run never touches the same key twice and sails
 # straight through. Found by the test written for this fix, not by reading it.
 #
@@ -234,7 +259,7 @@ def _last_name(full):
 
 
 def _get_secret():
-    """Stable Flask session secret — from env, else a persisted random file."""
+    """Stable Flask session secret, from env, else a persisted random file."""
     env = os.environ.get("SECRET_KEY", "").strip()
     if env:
         return env
@@ -278,7 +303,7 @@ def owner_required(fn):
 
 def _self_or_owner(session_key, url_param):
     """A driver/agent may only reach their OWN record; the owner may reach any.
-    Without this, any of these URLs could be requested with someone else's id —
+    Without this, any of these URLs could be requested with someone else's id, 
     the routes below used to trust whatever id the browser sent, with nothing
     checking that the caller had actually logged in as that person."""
     def deco(fn):
@@ -334,7 +359,7 @@ def api_owner_login():
     _login_ok(u)
     session["owner"] = owner.get("username")
     # Whoever signs in here is running the business, not visiting it. Mark the
-    # device so it stops inflating the numbers — the session expires, this does
+    # device so it stops inflating the numbers, the session expires, this does
     # not, so the computer stays uncounted after the login is forgotten.
     return _set_not_counted(jsonify({"ok": True, "username": owner.get("username")}))
 
@@ -347,7 +372,7 @@ def api_owner_logout():
 
 # ---------- "Continue with Google" on the booking form ----------
 # Optional, and never a gate. A stranger booking a 5am airport run wants a car,
-# not an account — requiring a sign-in before a first booking costs bookings.
+# not an account, requiring a sign-in before a first booking costs bookings.
 # All this does is fill in the name and email so the form is two taps shorter.
 #
 # The client id is configuration, not a secret: it is public by design and
@@ -370,7 +395,7 @@ def api_auth_google():
     The token is verified on the SERVER, against Google's own signing keys.
     That is the entire security of this endpoint: the browser hands us a
     signed assertion, and a browser can say anything. Decoding the token
-    client-side and trusting what it says would let anyone book as anyone —
+    client-side and trusting what it says would let anyone book as anyone, 
     so the claims used below come only from a token whose signature,
     audience and expiry Google's library has checked.
 
@@ -416,7 +441,7 @@ def _save(path, items):
     os.replace(tmp, path)
 
 
-# ---------- site traffic — self-hosted, no third party ----------
+# ---------- site traffic, self-hosted, no third party ----------
 TRAFFIC_MAX_DAYS = 120  # bound file growth; older days are just dropped
 # Pages tracked individually for the "which tool" breakdown; every other
 # page rolls into a single "other" bucket so the archive table stays short.
@@ -426,7 +451,7 @@ TRAFFIC_TOOL_PATHS = {"/trip-planner": "trip_planner", "/destination-book": "des
 # ---------- traffic we should not be counting ----------
 # The number beside the map is meant to tell Sean whether strangers are using
 # the tools. Our own laptops and phones, and the browser used to test a build,
-# were being counted the same as a visitor from Ohio — so a quiet day could read
+# were being counted the same as a visitor from Ohio, so a quiet day could read
 # as thirty travellers. Three exclusions, cheapest first:
 #   · a device that has opted out (a cookie set once, kept for years)
 #   · an address on the ignore list (Sean's home or office)
@@ -445,7 +470,7 @@ def _registered_nets():
 
     A cookie is per browser: clear it, use a different browser, open a private
     window, pick up a different phone, and the site counts you again. This is
-    the other half — one entry covers every device on that network at once,
+    the other half, one entry covers every device on that network at once,
     survives clearing anything, and needs no cookie to work.
 
     Stored rather than env-only so it can be added from a phone at the kitchen
@@ -468,7 +493,7 @@ def _norm_ip(raw):
     """Normalise an address so the ignore list matches what actually arrives.
 
     A local or proxied request often turns up as an IPv4 address wrapped in IPv6
-    form — "::ffff:127.0.0.1" — which never equals the "127.0.0.1" someone wrote
+    form, "::ffff:127.0.0.1", which never equals the "127.0.0.1" someone wrote
     in the ignore list. Unwrap it, and drop any :port a proxy appended.
     """
     s = (raw or "").strip()
@@ -492,7 +517,7 @@ def _skip_traffic():
     if request.cookies.get(TRAFFIC_OPTOUT_COOKIE) == "1":
         return True
     if session.get("owner"):
-        # Signed in as the owner is not a visit. Mostly redundant — owner login
+        # Signed in as the owner is not a visit. Mostly redundant, owner login
         # and setup both call _set_not_counted, so the cookie above is usually
         # already there. It earns its place in the narrow case where the cookie
         # is gone but the session is not: psx_not_counted looks exactly like a
@@ -527,7 +552,7 @@ def _set_not_counted(resp, on=True):
 
 @app.route("/api/traffic/optout")
 def api_traffic_optout():
-    """Open this once on a device and it stops being counted — ours, or anyone's
+    """Open this once on a device and it stops being counted, ours, or anyone's
     who asks. Sets a plain flag cookie; no identity is stored either way."""
     on = request.args.get("off") != "1"
     return _set_not_counted(
@@ -544,7 +569,7 @@ def api_traffic_me():
     so asking the question changed the answer. Anything wanting to show the
     current state had to either toggle it or guess.
 
-    Public, like /not-a-traveler, and for the same reason — "am I in your
+    Public, like /not-a-traveler, and for the same reason, "am I in your
     numbers" is a question anybody may ask about themselves. It reports
     nothing about anyone else: no list of registered networks, no counts, no
     other devices. `network_registered` is a yes/no about the address this
@@ -568,7 +593,7 @@ def api_traffic_forget_today():
     Opting out stops the counting from here on; it does nothing about a visit
     already recorded this morning. Without this, switching the flag on leaves
     the person looking at a number they know includes them and no way to fix
-    it. Only today is correctable — finished days kept a count and threw the
+    it. Only today is correctable, finished days kept a count and threw the
     ids away."""
     ok = _forget_vid_today(request.cookies.get("psx_vid"))
     return jsonify({"ok": True, "removed": ok})
@@ -581,7 +606,7 @@ def _vid_counted_today(vid):
     today can be answered: _track_traffic folds every finished day down to a
     plain count and deletes the ids, on purpose, so the file cannot become a
     log of who visited when. The price of that is that a past day can never be
-    separated back out — the information needed to do it was thrown away, which
+    separated back out, the information needed to do it was thrown away, which
     is the correct trade and worth stating plainly rather than hiding."""
     if not vid:
         return False
@@ -597,7 +622,7 @@ def _forget_vid_today(vid):
 
     Only the unique count. Pageviews are not attributable: the counter never
     records how many pages a given id opened, so there is no honest way to
-    subtract them. Same for the source, language, device and landing tallies —
+    subtract them. Same for the source, language, device and landing tallies, 
     each is a first-touch entry with no id attached to it. Removing the id
     fixes the number that actually gets read ("N visitors today") and leaves
     the rest slightly high, which is better than guessing at a correction."""
@@ -622,14 +647,14 @@ def _forget_vid_today(vid):
 def api_traffic_networks():
     """Register (or drop) the network this request came from.
 
-    Owner-only, because it decides whose visits disappear from the numbers —
+    Owner-only, because it decides whose visits disappear from the numbers, 
     a stranger able to call this could quietly delete themselves from the
     figures the business is read by.
 
     The address is taken from the request, never from the body. Letting the
     caller name an address would let a signed-in session erase traffic from
-    somewhere it has never been, and the honest use — "I am sitting on this
-    network now, stop counting it" — does not need the parameter."""
+    somewhere it has never been, and the honest use, "I am sitting on this
+    network now, stop counting it", does not need the parameter."""
     here = _norm_ip(_client_ip())
     if request.method == "GET":
         return jsonify({"ok": True, "here": here,
@@ -660,7 +685,7 @@ def api_traffic_networks():
 def not_a_traveler_page():
     """The human version of the opt-out, for a phone.
 
-    Our own devices inflate every number the business is judged on — and the
+    Our own devices inflate every number the business is judged on, and the
     ones that matter most are the smallest, because a handful of self-visits is
     invisible in a thousand and decisive in twenty. Open this once per device.
 
@@ -684,7 +709,7 @@ def not_a_traveler_page():
 
     # "Am I in today's number?" answered as a fact. Opting out stops the count
     # from here on; it does nothing about visits already recorded, and without
-    # this the page cannot tell the difference — which is exactly the doubt
+    # this the page cannot tell the difference, which is exactly the doubt
     # that makes someone distrust their own numbers.
     vid = request.cookies.get("psx_vid")
     if request.args.get("forget") == "1" and _forget_vid_today(vid):
@@ -705,7 +730,7 @@ def not_a_traveler_page():
     html = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Not a traveler — Plateau Strategy</title>
+<title>Not a traveler, Plateau Strategy</title>
 <style>
  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
    background:#070b16;color:#e7ecf5;font:16px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:1.5rem;}
@@ -724,7 +749,7 @@ def not_a_traveler_page():
 <h1>Visitor counting</h1>
 <p>%s</p>
 <p>It is a single flag stored on this device. No identity, no address, nothing
-recorded about you either way — the only effect is whether page opens from this
+recorded about you either way, the only effect is whether page opens from this
 device are added to the visitor totals.</p>
 %s
 %s
@@ -734,7 +759,7 @@ device are added to the visitor totals.</p>
 <script>
 // Keep the OPT-OUT alive, and only the opt-out.
 //
-// The flag is a cookie, and privacy tools sweep cookies — psx_nocount looks
+// The flag is a cookie, and privacy tools sweep cookies, psx_nocount looks
 // exactly like a tracker, because structurally it is one. When it is swept the
 // device silently starts counting again, with no symptom: the numbers just
 // drift up and nobody knows why. A copy in localStorage, which those tools
@@ -745,14 +770,14 @@ device are added to the visitor totals.</p>
 // TRACKING someone is wrong. This respawns a cleared cookie to keep NOT
 // counting someone. It only ever restores "do not count me", it never
 // resurrects consent, and pressing "Count this device again" erases the
-// backup as well as the cookie — so the reversal is real and permanent.
+// backup as well as the cookie, so the reversal is real and permanent.
 (function () {
   try {
     var KEY = 'psx_nocount_pref';
     var counted = %s;                       // what the server just decided
     if (counted) { localStorage.removeItem(KEY); return; }
     localStorage.setItem(KEY, '1');
-  } catch (e) { /* storage blocked — the cookie alone still works */ }
+  } catch (e) { /* storage blocked, the cookie alone still works */ }
 })();
 </script>
 </body></html>""" % (state, other, today_note, "true" if counted_after else "false")
@@ -762,7 +787,7 @@ device are added to the visitor totals.</p>
 # ---------- who's actually here RIGHT NOW ----------
 # Deliberately in-memory and ephemeral: presence is a live fact, not a record.
 # It never touches disk, resets on restart, and holds only anonymous cookie ids
-# with a last-seen stamp — nothing identifying, nothing retained.
+# with a last-seen stamp, nothing identifying, nothing retained.
 _PRESENCE = {}                 # anonymous vid -> last-seen epoch seconds
 _PRESENCE_WINDOW = 300         # "online" = seen in the last 5 minutes
 _PRESENCE_MAX = 5000           # hard bound so a burst can't grow memory unchecked
@@ -807,8 +832,8 @@ def _visit_source():
     """Where this visit came from, as ONE short label.
 
     utm_source wins when present, because that is what an ad platform sets.
-    Otherwise the referring host, collapsed to a family — every Google property
-    is 'google', not 'www.google.co.uk' — so a week of ad spend adds up to a
+    Otherwise the referring host, collapsed to a family, every Google property
+    is 'google', not 'www.google.co.uk', so a week of ad spend adds up to a
     single row instead of scattering across forty near-identical strings.
 
     Deliberately coarse: a label, never a URL and never a full referrer. It is
@@ -845,8 +870,8 @@ def record_conversion(kind):
     them. Without this an ad test only ever proves that pageviews went up.
 
     The same exclusions as a pageview, and for a stronger reason. This did not
-    check them, so every guard built for _track_traffic — the opt-out cookie,
-    the ignore-list addresses, the bot and headless-browser hints — applied to
+    check them, so every guard built for _track_traffic, the opt-out cookie,
+    the ignore-list addresses, the bot and headless-browser hints, applied to
     views and not to bookings. A test run on this machine left a day reading
     "0 pageviews, 1 booking", which is not a number anyone should have to
     interpret, and 17 bookings against 59 visitors on an earlier day.
@@ -873,7 +898,7 @@ def record_conversion(kind):
 
 
 def _load_geo_cache():
-    """_load() returns [] when a file is missing, and this cache is a dict —
+    """_load() returns [] when a file is missing, and this cache is a dict, 
     so it gets its own reader rather than making the shared helper ambiguous."""
     try:
         with open(_data_path("geo_cache.json")) as f:
@@ -911,7 +936,7 @@ def _geo_lookup(ip):
       · called once per NEW visitor, not once per pageview, so a busy day
         costs a handful of lookups rather than thousands;
       · cached on disk by the coarsened key, for a month;
-      · a 2.5s timeout, and any failure returns None rather than raising —
+      · a 2.5s timeout, and any failure returns None rather than raising, 
         analytics must never be able to break a page load;
       · ipwho.is needs no key and no account, so there is nothing for the
         owner to sign up for or pay.
@@ -936,7 +961,7 @@ def _geo_lookup(ip):
                          timeout=2.5)
         j = r.json()
         if j.get("success"):
-            # Rounded to 2dp — about a kilometre. That is a pin on a city, which
+            # Rounded to 2dp, about a kilometre. That is a pin on a city, which
             # is all a map of "where viewers are" needs, and it deliberately
             # throws away the precision that would point at a neighbourhood.
             def _r2(v):
@@ -970,7 +995,7 @@ def _visit_language():
     """The language the visitor's browser actually asks for.
 
     This site is published in five languages, and until now nothing recorded
-    which ones people wanted — so there was no way to tell whether the
+    which ones people wanted, so there was no way to tell whether the
     translation work was reaching anyone. Only the primary tag is kept
     ("zh", "es"), never the full Accept-Language string, which is specific
     enough to help fingerprint a browser.
@@ -983,7 +1008,7 @@ def _visit_language():
 
 
 def _visit_device():
-    """Phone, tablet or desktop — three buckets, nothing finer.
+    """Phone, tablet or desktop, three buckets, nothing finer.
 
     Enough to answer "should I be designing for a phone" and deliberately
     not a device fingerprint. The full user-agent is never stored.
@@ -998,11 +1023,11 @@ def _visit_device():
     return "desktop"
 
 
-# href="/x.css" / src="/x.js" — ours only. Anything already carrying a
+# href="/x.css" / src="/x.js", ours only. Anything already carrying a
 # query string, and anything absolute, is left alone.
 _ASSET_RE = re.compile(rb'\b(href|src)="(/[\w./-]+\.(?:css|js))"')
 
-# What the assets are stamped with. Changes on every deploy — the point of it.
+# What the assets are stamped with. Changes on every deploy, the point of it.
 _ASSET_V = (os.environ.get("RENDER_GIT_COMMIT") or "")[:8] or str(int(time.time()))
 
 
@@ -1011,7 +1036,7 @@ def _compress_and_cache(resp):
     """Two things nothing else was doing: squeeze the bytes, and let the
     browser keep them.
 
-    Measured before this existed — a cold load of the home page pulled
+    Measured before this existed, a cold load of the home page pulled
     1.8 MB across 17 requests with Content-Encoding empty on every one of
     them. Locally that is 214 ms and looks fine. On a phone on mobile data
     it is closer to ten seconds, and that is the number that matters,
@@ -1022,7 +1047,7 @@ def _compress_and_cache(resp):
     and gzip on text is most of the win for none of the risk.
 
     Caching is the other half. Every asset answered Cache-Control:no-cache,
-    which does not mean "do not cache" — it means "ask me every single
+    which does not mean "do not cache", it means "ask me every single
     time". Seventeen conditional requests per navigation, each one a round
     trip, all to be told nothing changed. Static files now hold for ten
     minutes, which is short enough that a deploy reaches everyone quickly
@@ -1050,7 +1075,7 @@ def _compress_and_cache(resp):
         # Static files are held for ten minutes, which is the right call for
         # someone on mobile data. The cost is that for ten minutes after a
         # deploy a returning visitor keeps the OLD stylesheet, sees nothing
-        # change, and reasonably concludes nothing shipped — which is exactly
+        # change, and reasonably concludes nothing shipped, which is exactly
         # what happened here, to the owner and then to me: the server was
         # serving the new CSS while the page went on painting with the
         # cached one.
@@ -1088,7 +1113,7 @@ def _compress_and_cache(resp):
         if "gzip" not in (request.headers.get("Accept-Encoding") or "").lower():
             return resp
         # send_file streams the file and sets direct_passthrough, and the
-        # first version of this bailed out on that flag — skipping every
+        # first version of this bailed out on that flag, skipping every
         # static file, which is to say every file worth compressing. The
         # 354 KB dictionary went out uncompressed while the check reported
         # itself working. Read it in instead; the cap keeps a stray video
@@ -1114,10 +1139,10 @@ def _compress_and_cache(resp):
 
 @app.after_request
 def _track_traffic(resp):
-    """Lightweight, self-hosted page-view counter — no third-party analytics,
+    """Lightweight, self-hosted page-view counter, no third-party analytics,
     no ad tracking. Counts real page loads only (GET, 200, text/html); API
     calls and static assets never touch this. A "unique visitor" is
-    approximated by an anonymous long-lived cookie — nothing identifying —
+    approximated by an anonymous long-lived cookie, nothing identifying, 
     and the raw cookie id is only ever kept for TODAY's still-open day.
     Once a day finishes it's folded down to a plain count and never grows
     again, so this file can't turn into a visitor-tracking log over time."""
@@ -1136,7 +1161,7 @@ def _track_traffic(resp):
             with _LOCK:
                 data = _load_traffic()
                 days = data["days"]
-                # Finalize any day that isn't today — its ids are spent, strip them.
+                # Finalize any day that isn't today, its ids are spent, strip them.
                 for d, rec in days.items():
                     if d != today and "visitor_ids" in rec:
                         rec["unique_visitors"] = len(rec["visitor_ids"])
@@ -1158,7 +1183,7 @@ def _track_traffic(resp):
                         rec.setdefault("sources", {})
                         rec["sources"][src] = rec["sources"].get(src, 0) + 1
                         set_src = src
-                    # Where they are, counted — never stored per person. The
+                    # Where they are, counted, never stored per person. The
                     # day record keeps "United States|Washington|Seattle": 3,
                     # which can answer "where are my viewers from" and can
                     # never answer "where was this particular visitor".
@@ -1171,12 +1196,12 @@ def _track_traffic(resp):
                     dev = _visit_device()
                     rec.setdefault("devices", {})
                     rec["devices"][dev] = rec["devices"].get(dev, 0) + 1
-                    # The page they arrived on — which of your tools is actually
+                    # The page they arrived on, which of your tools is actually
                     # pulling people in, as opposed to which they click later.
                     rec.setdefault("landings", {})
                     rec["landings"][request.path] = rec["landings"].get(request.path, 0) + 1
                     # Where they are is looked up AFTER this lock is released
-                    # — see below. _geo_lookup takes _LOCK too, and _LOCK is
+                    #, see below. _geo_lookup takes _LOCK too, and _LOCK is
                     # not reentrant, so doing it here never returns.
                     need_geo = True
                 # Who opened this particular tool, so "N travellers" can mean N
@@ -1213,7 +1238,7 @@ def _track_traffic(resp):
                         rec.setdefault("places", {})
                         rec["places"][label] = rec["places"].get(label, 0) + 1
                         # One coordinate per place, kept beside the days rather
-                        # than inside them — a city does not move, and repeating
+                        # than inside them, a city does not move, and repeating
                         # it per day would just bloat the file.
                         if place.get("lat") is not None:
                             data.setdefault("place_coords", {})[label] = [place["lat"], place["lon"]]
@@ -1225,7 +1250,7 @@ def _track_traffic(resp):
             if set_src:
                 # Carried so a booking made later can be credited to the source
                 # that brought them. Holds a label like "google", never a URL,
-                # and expires in 30 days — an ad click is not owed credit for a
+                # and expires in 30 days, an ad click is not owed credit for a
                 # booking made a year later.
                 resp.set_cookie("psx_src", set_src, max_age=60 * 60 * 24 * 30,
                                 httponly=True, samesite="Lax")
@@ -1237,8 +1262,8 @@ def _track_traffic(resp):
 # ---------- driver contract helpers ----------
 DEFAULT_CONTRACT = {
     "version": 1,
-    "title": "Plateau Strategy — Driver & Vehicle Rental Agreement",
-    "body": ("PLACEHOLDER AGREEMENT — replace this with your attorney-reviewed text "
+    "title": "Plateau Strategy, Driver & Vehicle Rental Agreement",
+    "body": ("PLACEHOLDER AGREEMENT, replace this with your attorney-reviewed text "
              "on the /setup page or by editing contract.json.\n\n"
              "This Driver & Vehicle Rental Agreement is between Plateau Strategy LLC "
              "(\"the Company\") and the driver identified by the signature below "
@@ -1388,7 +1413,7 @@ def home():
 
 # The home-screen and tab icons.
 #
-# These exist because the icon iOS was being handed — plateau-logo.png — was a
+# These exist because the icon iOS was being handed, plateau-logo.png, was a
 # 1024x1024 transparent PNG with the mark rendered as a speck in the middle:
 # 5,116 ink pixels out of a million. iOS composites a transparent touch icon
 # onto black, so the result on the home screen was a black square with a dot,
@@ -1397,6 +1422,10 @@ def home():
 # Two rules learned from that: a touch icon must be OPAQUE, and it must be
 # checked by looking at it rather than by trusting the conversion.
 _ICONS = {
+    # The share-card thumbnail. A separate, smaller file because WeChat's
+    # crawler skips og:image files much over 300KB, which is why the owner
+    # kept seeing a blank card after everything else was fixed.
+    "share-card.jpg": "image/jpeg",
     "apple-touch-icon.png": "image/png",   # 180, iOS home screen
     "icon-192.png": "image/png",
     "icon-512.png": "image/png",
@@ -1404,6 +1433,7 @@ _ICONS = {
 }
 
 
+@app.route("/share-card.jpg")
 @app.route("/apple-touch-icon.png")
 @app.route("/apple-touch-icon-precomposed.png")
 @app.route("/icon-192.png")
@@ -1423,7 +1453,7 @@ def site_manifest():
     """So "Open as Web App" has a name and an icon of its own.
 
     Without it iOS falls back to the page <title>, which is
-    "Plateau Strategy Solution Lab — Integrated Business Ecosystem" and gets
+    "Plateau Strategy Solution Lab, Integrated Business Ecosystem" and gets
     truncated to nonsense under an icon.
     """
     return jsonify({
@@ -1486,7 +1516,7 @@ def i18n_js():
 def i18n_pack(lang):
     """One language, fetched only by someone reading it.
 
-    The dictionary used to live inside i18n.js — 1123 entries times four
+    The dictionary used to live inside i18n.js, 1123 entries times four
     languages, 265 KB on every page of the site. An English reader, which is
     most of them, downloaded Chinese, Spanish, Korean and Vietnamese and used
     none of it. The engine is 11 KB now and asks for the single pack it
@@ -1506,7 +1536,7 @@ def leaflet_vendor(filename):
 
     The map pages loaded it from a CDN, which means the map is only as
     available as somebody else's edge network. unpkg is routinely blocked or
-    throttled in mainland China — and this site is translated into Chinese
+    throttled in mainland China, and this site is translated into Chinese
     precisely to reach travelers from there, so the map was most likely dead
     for the readers the translation was written for. It is 160 KB. We serve
     it."""
@@ -1518,8 +1548,8 @@ def leaflet_vendor(filename):
 def google_signin_js():
     """The "Continue with Google" button, shared by every form that offers it.
 
-    One copy rather than one per page: it is security-sensitive — the rule that
-    the credential is never decoded in the browser has to hold everywhere — and
+    One copy rather than one per page: it is security-sensitive, the rule that
+    the credential is never decoded in the browser has to hold everywhere, and
     three copies is three places to get that wrong."""
     return send_file(os.path.join(BASE_DIR, "google-signin.js"),
                      mimetype="text/javascript")
@@ -1555,26 +1585,26 @@ def api_journey(jid):
 
 
 # ---------------------------------------------------------------------------
-# Footprints — recorded walks of our own corridors
+# Footprints, recorded walks of our own corridors
 #
 # The one place on this site that accepts coordinates, and the fence around
 # it: the submitter is owner-authenticated, the corridors are a closed list
 # written in footprints.py, and what is stored is a public walkway with no
-# person attached — no identity, no clock, a date and a duration only.
+# person attached, no identity, no clock, a date and a duration only.
 #
 # consent.py's refusal of coordinates guards VISITOR data. This is the
 # business surveying its own ground; conflating the two would mean either
 # weakening the visitors' guard or never being able to map our own front door.
 # ---------------------------------------------------------------------------
 def surveyor_required(fn):
-    """The owner, or an account the owner issued — the surveyor programme.
+    """The owner, or an account the owner issued, the surveyor programme.
 
     One person cannot walk every corridor in a growing list, so recording
     extends to the accounts minted at /api/access/users: named, issued by
     Sean, revocable, and re-checked against storage on every request, so
     cutting somebody off cuts them off mid-session. What does NOT change is
     who can be on the other end: never a visitor. The authorization is the
-    provenance — a trace exists because somebody Sean trusts walked it — and
+    provenance, a trace exists because somebody Sean trusts walked it, and
     that is why the walk record itself still needs no name in it."""
     @wraps(fn)
     def wrapper(*a, **k):
@@ -1588,7 +1618,7 @@ def surveyor_required(fn):
 @app.route("/api/footprints")
 @surveyor_required
 def api_footprints():
-    """Every corridor, walked or waiting — for the people doing the walking.
+    """Every corridor, walked or waiting, for the people doing the walking.
     Not public: the waiting list is a map of our unfinished edges."""
     return jsonify({"ok": True, "corridors": FOOTPRINTS.corridors()})
 
@@ -1613,7 +1643,7 @@ def api_footprint_add(key):
 
 @app.route("/api/footprints/<key>/path")
 def api_footprint_path(key):
-    """The recorded line of a walked corridor — public, because it is the
+    """The recorded line of a walked corridor, public, because it is the
     product: the next traveller gets a path known to work. 404 for unknown
     and unwalked alike; an unwalked corridor's existence is nobody's business."""
     p = FOOTPRINTS.path(key)
@@ -1627,7 +1657,7 @@ def footprints_concept_page():
     """The blueprint draft of the footprints idea, for the Reinvestment USA
     board. The shareable, limited-information half: what it does and why it
     matters, with the mechanics named but not described. noindex and out of
-    the sitemap — it travels by being sent, not by being found."""
+    the sitemap, it travels by being sent, not by being found."""
     r = send_file(os.path.join(BASE_DIR, "footprints-concept.html"))
     r.headers["X-Robots-Tag"] = "noindex, nofollow"
     return r
@@ -1636,7 +1666,7 @@ def footprints_concept_page():
 @app.route("/footprints-demo")
 def footprints_demo_page():
     """The concept, moving. The blueprint page describes the direction gate;
-    this one runs it — the guide's own trailAhead() deciding live which
+    this one runs it, the guide's own trailAhead() deciding live which
     footprints to draw as a dial (or the phone's real compass) turns. Same
     noindex posture as the blueprint: it travels by being sent."""
     r = send_file(os.path.join(BASE_DIR, "footprints-demo.html"))
@@ -1646,8 +1676,8 @@ def footprints_demo_page():
 
 @app.route("/footprint")
 def footprint_page():
-    """The recorder. Content is harmless without an owner session — the POST
-    it feeds is what is guarded — but noindex anyway; it is a work tool."""
+    """The recorder. Content is harmless without an owner session, the POST
+    it feeds is what is guarded, but noindex anyway; it is a work tool."""
     r = send_file(os.path.join(BASE_DIR, "footprint.html"))
     r.headers["X-Robots-Tag"] = "noindex, nofollow"
     return r
@@ -1655,7 +1685,7 @@ def footprint_page():
 
 @app.route("/walk")
 def walk_page():
-    """The live walking guide — prototype, deliberately unlisted.
+    """The live walking guide, prototype, deliberately unlisted.
 
     noindex and out of the sitemap while it is a prototype: a half-built guide
     found by a stranger through search is a bad first impression of a good
@@ -1694,7 +1724,7 @@ def admin_terminal_css():
 def modern_css():
     """The current surface: white ground, big type, colour only in solid things.
 
-    Loaded after paper.css and overriding it, in its own file on purpose — the
+    Loaded after paper.css and overriding it, in its own file on purpose, the
     look is one <link> to remove. Two earlier attempts at this were wrong in
     opposite directions and both had to be unpicked out of a shared stylesheet.
     """
@@ -1749,7 +1779,7 @@ def partners_page():
 #
 # It will not serve without PRIVACY_CONTACT. A policy that grants people the
 # right to ask for their data, and gives them no working address to ask at, is
-# worse than none — it documents an obligation and then fails it. The domain
+# worse than none, it documents an obligation and then fails it. The domain
 # has no MX records today, so hello@plateaustrategy.io bounces, and the owner's
 # personal address is not going up without his say-so. One environment variable
 # publishes it.
@@ -1774,7 +1804,7 @@ def api_privacy_contact():
 
 
 # ---------------------------------------------------------------------------
-# "Add this place to the map" — consented, coarse, and switched off
+# "Add this place to the map", consented, coarse, and switched off
 #
 # Every route here answers 404 unless LOCATION_CONSENT_ENABLED is set. Same
 # discipline as the bot lab: the code can be reviewed, tested and deployed
@@ -1936,7 +1966,7 @@ def trip_planner_page():
 # ---------------------------------------------------------------------------
 # Search engines
 #
-# The free tools are the top of the funnel — they only pay for themselves if
+# The free tools are the top of the funnel, they only pay for themselves if
 # people can find them. Nothing here was crawlable: no robots.txt, no sitemap,
 # and the tool pages carried no canonical URL. Owner surfaces stay out of the
 # sitemap and are disallowed outright, so dispatch and setup never get indexed.
@@ -1957,7 +1987,7 @@ PUBLIC_PAGES = [
 ]
 OWNER_ONLY_PATHS = ["/dispatch", "/setup", "/archive", "/api/", "/deflator"]
 SITE_ORIGIN = os.environ.get("SITE_ORIGIN", "https://plateaustrategy.io").rstrip("/")
-# Referrers from our own pages are not a traffic source — they are navigation.
+# Referrers from our own pages are not a traffic source, they are navigation.
 SITE_HOSTS = ("plateaustrategy.io", "plateau-strategy.onrender.com")
 
 
@@ -2055,7 +2085,7 @@ def sitemap_xml():
 # an offer, and while it still says "research" it must not turn up in a
 # search result or be found by someone clicking around.
 #
-# So it lives behind a capability URL — the key IS the link. Whoever holds it
+# So it lives behind a capability URL, the key IS the link. Whoever holds it
 # gets in; nobody else can guess it. Deliberately NOT listed in robots.txt:
 # that file is public, so a Disallow line would advertise the path to exactly
 # the people it is hidden from. It carries X-Robots-Tag: noindex instead, and
@@ -2107,7 +2137,7 @@ def _share_state(name):
 SHARE_MISS_HTML = """<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Shared by link — Plateau Strategy Solution Lab</title>
+<title>Shared by link, Plateau Strategy Solution Lab</title>
 <link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="Plateau">
@@ -2127,7 +2157,7 @@ def _shared_page(name, filename, password=False):
 
     With password=True the reader needs BOTH halves: the link, and an account
     the owner issued. Either one alone gets them nothing. That is a real
-    difference rather than a doubled-up formality — a link can be forwarded to
+    difference rather than a doubled-up formality, a link can be forwarded to
     someone you did not choose, and a password can be typed at an address a
     stranger never found. Requiring both means a forwarded link is inert in
     the hands of anyone you have not also given a password to, and it means
@@ -2141,14 +2171,14 @@ def _shared_page(name, filename, password=False):
     if state == "arriving":
         # Move the key out of the address bar and into a cookie, so a
         # screenshot or a shoulder-glance does not hand the link on. The
-        # link itself still carries it — that is what makes it shareable.
+        # link itself still carries it, that is what makes it shareable.
         r = redirect(request.path)
         r.set_cookie("psx_share_" + name, _share_key(name),
                      max_age=SHARE_COOKIE_DAYS * 24 * 3600,
                      httponly=True, samesite="Lax", secure=request.is_secure)
         return r
     if password and not _access_user():
-        # The key was good, so this reader was sent the link — they just have
+        # The key was good, so this reader was sent the link, they just have
         # not signed in. Show the sign-in rather than the 404: pretending the
         # page is missing would be a lie to somebody who is meant to be here.
         r = make_response(send_file(os.path.join(BASE_DIR, "access-gate.html")), 401)
@@ -2165,7 +2195,7 @@ def _shared_page(name, filename, password=False):
 # Issued accounts, shared by every private surface
 #
 # The accounts live in bot_lab.BotLab because that is where they were first
-# written, but they are not the lab's property — /robot uses them too, and
+# written, but they are not the lab's property, /robot uses them too, and
 # sign-in deliberately does NOT sit behind BOT_LAB_ENABLED. Otherwise turning
 # the lab off would lock people out of an unrelated page.
 #
@@ -2175,7 +2205,7 @@ def _access_user():
     """The signed-in account, re-checked against storage on every request.
 
     This used to return session.get("access_user") and nothing else, which
-    meant revoking somebody only stopped them logging in AGAIN — anyone
+    meant revoking somebody only stopped them logging in AGAIN, anyone
     already signed in kept reading indefinitely. That is the opposite of what
     revocation is for, and it was the only remedy available, since this system
     deliberately has no password reset.
@@ -2221,7 +2251,7 @@ def robot_concept_page():
 
     Still reading matter only. It takes no money, no bank connection and no
     account of the reader's, and there is no form on it that could start any
-    of those — the sign-in is a separate page."""
+    of those, the sign-in is a separate page."""
     return _shared_page("robot", "robot-concept.html", password=True)
 
 
@@ -2231,7 +2261,7 @@ def api_share_links():
     """The owner's copy of the links to send. Owner-only for the obvious
     reason: this endpoint hands out the keys."""
     return jsonify({"links": [
-        {"name": "robot", "title": "Robotic trading — the concept",
+        {"name": "robot", "title": "Robotic trading, the concept",
          "url": "%s/robot?k=%s" % (SITE_ORIGIN, _share_key("robot"))},
     ]})
 
@@ -2245,7 +2275,7 @@ def api_share_links():
 # repository and be deployed without any of it existing to a visitor. Turning
 # it on is a deliberate act on one instance, not a consequence of a merge.
 #
-# 404 rather than 401 or 403 — "you may not" tells a stranger there is
+# 404 rather than 401 or 403, "you may not" tells a stranger there is
 # something here. See bot_lab.py for the rest of the reasoning, including why
 # there is no signup, no password reset and no account recovery.
 # ---------------------------------------------------------------------------
@@ -2270,7 +2300,7 @@ def lab_enabled(fn):
 def lab_user_required(fn):
     """A signed-in account, plus the lab being switched on.
 
-    Sign-in itself lives at /api/access/login and is shared with /robot — one
+    Sign-in itself lives at /api/access/login and is shared with /robot, one
     credential, one door. The lab adds its own switch on top; it does not have
     its own login. The owner is NOT automatically signed in: the owner's
     console is a different surface, and conflating them is how an admin
@@ -2296,7 +2326,7 @@ def lab_page():
 
 
 # The lab has no login of its own. It used to, which meant two sign-in routes
-# against one account file and two session keys that could disagree — sign in
+# against one account file and two session keys that could disagree, sign in
 # for /robot and the lab would still consider you a stranger. Both surfaces
 # now use /api/access/login, defined above with the shared-account block.
 
@@ -2313,7 +2343,7 @@ def lab_bot_required(fn):
     """Only a bot account may write to the ledger.
 
     This used to be @lab_user_required, which meant every account that could
-    read the pages could also file trades — so a friend given a password to
+    read the pages could also file trades, so a friend given a password to
     read the concept could have posted fabricated winners until a strategy
     cleared the unlock bar. The two-key rule still needed the owner's flip, so
     nothing could open by itself, but the record would have been lying by the
@@ -2345,8 +2375,8 @@ def api_lab_fill():
     """The plug point for the bot. Records one completed PAPER trade.
 
     There is no live counterpart, on purpose. When there is an answer from the
-    attorney and a bot to connect, the live path gets written then — with the
-    three switches in bot_lab.live_execution_allowed() lined up — and not a
+    attorney and a bot to connect, the live path gets written then, with the
+    three switches in bot_lab.live_execution_allowed() lined up, and not a
     moment earlier."""
     d = request.get_json(force=True, silent=True) or {}
     row, err = LAB.record_fill(d.get("strategy"), d.get("pnl_usd"),
@@ -2360,7 +2390,7 @@ def api_lab_fill():
 #
 # Deliberately not behind @lab_enabled. These accounts open /robot as well, so
 # gating them on the lab switch meant that with the lab off the owner could
-# not issue a credential for an unrelated page — the exact hole this pair of
+# not issue a credential for an unrelated page, the exact hole this pair of
 # routes exists to close. @owner_required is the real protection here and it
 # does not depend on any switch.
 @app.route("/api/access/users", methods=["GET", "POST"])
@@ -2372,14 +2402,14 @@ def api_access_users():
         return jsonify({"ok": True, "users": LAB.public_users()})
     d = request.get_json(force=True, silent=True) or {}
     # role defaults to reader inside mint_user. Handing out write access has
-    # to be asked for explicitly — it is not something to get by omission.
+    # to be asked for explicitly, it is not something to get by omission.
     password, err = LAB.mint_user(d.get("username"), d.get("note"), d.get("role"))
     if err:
         return jsonify({"ok": False, "error": err}), 400
     return jsonify({"ok": True, "username": (d.get("username") or "").strip().lower(),
                     "role": (d.get("role") or "reader").strip().lower(),
                     "password": password,
-                    "notice": "Shown once. It is stored only as a hash — nobody, "
+                    "notice": "Shown once. It is stored only as a hash, nobody, "
                               "including you, can read it back. Lost means reissue."})
 
 
@@ -2398,7 +2428,7 @@ def api_access_revoke(username):
 def api_lab_lock(kind, key):
     """The owner's half of the unlock. The record's half is checked inside
     set_lock, so this route cannot open something the results have not
-    earned — and cannot open Kalshi at all."""
+    earned, and cannot open Kalshi at all."""
     if kind not in ("venue", "strategy"):
         return jsonify({"ok": False, "error": "Unknown kind."}), 400
     d = request.get_json(force=True, silent=True) or {}
@@ -2410,7 +2440,7 @@ def api_lab_lock(kind, key):
 
 @app.route("/road-trip")
 def road_trip_page():
-    """Free tool: long-haul planner — fuel, food, rest areas and viewpoints found
+    """Free tool: long-haul planner, fuel, food, rest areas and viewpoints found
     along the actual route and grouped by how many hours into the drive they are.
     The city planner answers 'what can I reach from here'; this answers
     'what is on the way'."""
@@ -2425,14 +2455,14 @@ def destination_book_page():
 
 @app.route("/favorite-place")
 def favorite_place_page():
-    """Free tool: a 2-question data-collection flow — search a place, say how
-    long you stayed — that feeds the same community pipeline as the planner."""
+    """Free tool: a 2-question data-collection flow, search a place, say how
+    long you stayed, that feeds the same community pipeline as the planner."""
     return send_file(os.path.join(BASE_DIR, "favorite-place.html"))
 
 
 @app.route("/factor-clock")
 def factor_clock_page():
-    """Free tool: the Factor Clock — an honest prediction engine (free founding beta)."""
+    """Free tool: the Factor Clock, an honest prediction engine (free founding beta)."""
     return send_file(os.path.join(BASE_DIR, "factor-clock.html"))
 
 
@@ -2462,22 +2492,22 @@ def api_clock_signup():
 #
 #  Two bodies of place data exist and they must never mix:
 #
-#    PUBLIC  destinations.json — a book anyone can read. Only public places.
-#    PRIVATE reservations.json — where customers are actually driven. Any
+#    PUBLIC  destinations.json, a book anyone can read. Only public places.
+#    PRIVATE reservations.json, where customers are actually driven. Any
 #            address at all, including someone's home, because that is the
 #            service. Reachable only by the owner, or the driver assigned
 #            to that ride.
 #
 #  A customer's right to be driven to a private address, and a stranger's
 #  right not to have their home published, are both absolute. They do not
-#  trade against each other — they live in different files.
+#  trade against each other, they live in different files.
 #
 #  Everything below exists so that separation survives the next feature.
 #  It is enforced three ways, deliberately overlapping:
 #
 #    1. CLASSIFY ONCE, AT THE DOOR.  /api/destinations/add decides public or
 #       private while it still has the geocoder's tags, and stamps the verdict
-#       on the record. Reads never re-derive it — by then the tags are gone
+#       on the record. Reads never re-derive it, by then the tags are gone
 #       and only the name is left, which is a weaker signal.
 #    2. ONE DOOR OUT.  public_book() is the only way a route may read the
 #       book. It drops anything not stamped public, and falls back to the
@@ -2494,7 +2524,7 @@ VISIBILITY_PUBLIC = "public"
 def _book_raw():
     """The whole file, withheld records included. Writers only.
 
-    Routes must call public_book() instead — this is the raw store and has no
+    Routes must call public_book() instead, this is the raw store and has no
     idea what may be shown to anyone."""
     try:
         with open(_data_path("destinations.json")) as f:
@@ -2510,7 +2540,7 @@ def _may_publish(entry):
     A record stamped at write time is believed. A record written before
     stamping existed gets the only test its stored fields still support: is
     the name a street address? Nothing worth visiting is called "412 Maple
-    St", and this fails in the safe direction — at worst a genuine place with
+    St", and this fails in the safe direction, at worst a genuine place with
     a number for a name waits until someone adds it under its real name."""
     vis = (entry.get("visibility") or "").strip().lower()
     if vis:
@@ -2555,7 +2585,7 @@ def api_destinations():
                     e["visit_source"] = "public"
             r = ratings.get(_visit_key(e.get("city"), e.get("name")))
             if r and r.get("n", 0) >= 1:
-                e["stars"] = r["avg"]           # community average, 1–5
+                e["stars"] = r["avg"]           # community average, 1, 5
                 e["rating_count"] = r["n"]
             k = _visit_key(e.get("city"), e.get("name"))
             e["comment_count"] = len(comments.get(k, []))
@@ -2587,7 +2617,7 @@ def contrast_audit_page():
     """Owner-only: loads every page and measures whether its text can be read.
 
     A stylesheet can set the site's ink to near-black while a page keeps its own
-    dark panels, and nothing errors — the words are simply invisible. Only a
+    dark panels, and nothing errors, the words are simply invisible. Only a
     rendered measurement catches that, so this renders them.
     """
     return send_file(os.path.join(BASE_DIR, "contrast-audit.html"))
@@ -2599,7 +2629,7 @@ def api_geography():
 
     The planner ships with three or four cities hard-coded. Every place a
     traveller searches for is filed with its state and county, so this returns
-    the real, growing hierarchy — search Mount Rushmore once and South Dakota
+    the real, growing hierarchy, search Mount Rushmore once and South Dakota
     appears in the picker for everyone after you. Places recorded before this
     existed have no state and are simply left out rather than guessed at.
     """
@@ -2613,7 +2643,7 @@ def api_geography():
             continue
         county = _canon_region(e.get("county")) or state
         # A district that is its own county would read "District of Columbia ›
-        # District of Columbia". Name the city there instead — it is the same
+        # District of Columbia". Name the city there instead, it is the same
         # ground, and saying it twice helps nobody.
         if county.lower() == state.lower():
             county = (e.get("city_label") or city).title()
@@ -2631,7 +2661,7 @@ def api_geography():
 
 @app.route("/api/discoveries")
 def api_discoveries():
-    """What travelers have been discovering lately, newest first, worldwide —
+    """What travelers have been discovering lately, newest first, worldwide, 
     the visible proof that the map grows by itself."""
     d = public_book()
     cities = d.get("cities", {})
@@ -2657,10 +2687,10 @@ def api_discoveries():
     })
 
 
-# ---------- 💬 destination comments — the community's own guidebook ----------
+# ---------- 💬 destination comments, the community's own guidebook ----------
 # A place someone DISCOVERED by searching becomes an entry others can talk
 # about: what it's really like, what to know before you go. Keyed city|name
-# like every other community store. Free text, no account — so it is capped,
+# like every other community store. Free text, no account, so it is capped,
 # tag-stripped, and visible to the owner in the Archive.
 COMMENTS_PATH = _data_path("destination_comments.json")
 COMMENT_MAX_PER_PLACE = 200
@@ -2706,16 +2736,16 @@ def api_destination_comment_add():
 
 # ---------- how long people actually stay (crowd memory) ----------
 # Everyone who sets a visit length in the Trip Planner teaches the site something.
-# We keep the MEDIAN, never the average — one person typing 999 must not move the
-# recommendation — and we refuse to recommend anything until enough people have
+# We keep the MEDIAN, never the average, one person typing 999 must not move the
+# recommendation, and we refuse to recommend anything until enough people have
 # said it. No identities are stored: this is a list of durations, nothing else.
 VISITS_PATH = _data_path("visit_times.json")
-VISIT_MIN_N = 3          # below this we have an opinion, not a fact — stay quiet
+VISIT_MIN_N = 3          # below this we have an opinion, not a fact, stay quiet
 GUIDE_MIN_N = 1          # a verified guide's endorsement stands on its own
 VISIT_MAX_SAMPLES = 300  # per place; oldest fall off
 # Up to three days: a national park, a festival or a ski trip is a real answer
 # to "how long did you stay", and capping it at ten hours quietly forced anyone
-# who stayed longer to understate it — which then taught the next traveller too
+# who stayed longer to understate it, which then taught the next traveller too
 # short a visit.
 VISIT_MIN_M, VISIT_MAX_M = 5, 4320
 
@@ -2725,7 +2755,7 @@ def _visit_key(city, name):
 
 
 def _visit_role(guide_code):
-    """A guide's judgment is worth more than a stranger's — but only a REAL guide's.
+    """A guide's judgment is worth more than a stranger's, but only a REAL guide's.
     'guide' is granted solely by a verified agent code; anyone can claim it otherwise,
     and a claimed endorsement is worth nothing."""
     code = (guide_code or "").strip().upper()
@@ -2759,8 +2789,8 @@ def _median(nums):
 
 
 # ---------- star ratings (real, community-driven) ----------
-# Visitors rate a place 1–5 stars anywhere in the planner; we keep the average and
-# the count. No fabricated stars — a place shows stars only once someone rates it.
+# Visitors rate a place 1, 5 stars anywhere in the planner; we keep the average and
+# the count. No fabricated stars, a place shows stars only once someone rates it.
 RATINGS_PATH = _data_path("place_ratings.json")
 
 
@@ -2779,7 +2809,7 @@ def api_rate():
     except (TypeError, ValueError):
         return jsonify({"ok": False, "error": "stars required"}), 400
     if len(name) < 2 or not (1 <= stars <= 5):
-        return jsonify({"ok": False, "error": "need a place and 1–5 stars"}), 400
+        return jsonify({"ok": False, "error": "need a place and 1, 5 stars"}), 400
     key = _visit_key(city, name)
     with _LOCK:
         allr = _ratings_all()
@@ -2795,7 +2825,7 @@ def api_rate():
 @app.route("/api/visit-times")
 def api_visit_times():
     """What the crowd says a stop is worth, per city. Only places that cleared
-    the sample floor are returned — the rest are still listening."""
+    the sample floor are returned, the rest are still listening."""
     city = (request.args.get("city") or "").strip().lower()
     out = {}
     for k, rec in _visit_all().items():
@@ -2819,7 +2849,7 @@ def api_visit_times():
 
 @app.route("/api/visit-time", methods=["POST"])
 def api_visit_time_record():
-    """Someone set how long they want at a place — remember it for everyone."""
+    """Someone set how long they want at a place, remember it for everyone."""
     d = request.get_json(silent=True) or {}
     name = (d.get("name") or "").strip()[:80]
     city = (d.get("city") or "").strip()[:40]
@@ -2886,8 +2916,8 @@ def _derive_city(meta, fallback=""):
 def _wiki_describe(name, lat, lon):
     """A real description for a newly discovered place, from Wikipedia.
 
-    The map's own data can only ever say what KIND of thing something is — "a
-    museum in Boston" — which is true and useless. Wikipedia says what it is and
+    The map's own data can only ever say what KIND of thing something is, "a
+    museum in Boston", which is true and useless. Wikipedia says what it is and
     why anyone goes. We look for an article at the same spot and only accept one
     whose title plainly matches the name searched for, so a place never inherits
     the description of its neighbour. Returns (description, photo, url) or Nones;
@@ -2929,7 +2959,7 @@ def _wiki_describe(name, lat, lon):
 
 
 # One place, one name. Geocoders and people spell the district several ways,
-# and each spelling would otherwise open its own entry in the pickers — the
+# and each spelling would otherwise open its own entry in the pickers, the
 # duplicate everyone notices, sitting next to the actual state of Washington.
 _REGION_ALIASES = {
     "washington dc": "District of Columbia",
@@ -2973,7 +3003,7 @@ def _derive_region(meta):
 def _describe_osm(meta):
     """Write an honest one-line description of a place from the MAP'S OWN data.
 
-    Nothing here is invented — the words come from OpenStreetMap's classification
+    Nothing here is invented, the words come from OpenStreetMap's classification
     and address for that exact point. A person (or a guide) can always write a
     better one later; this just means a newly discovered place never lands in the
     book blank."""
@@ -3001,7 +3031,7 @@ def _describe_osm(meta):
 
 
 # Somebody's home is not a destination. These are OpenStreetMap's own words for
-# residential buildings and plots — if the map says a point is one of these, it
+# residential buildings and plots, if the map says a point is one of these, it
 # does not go in a public book, no matter who searched for it.
 _RESIDENTIAL_TYPES = {
     "house", "houses", "residential", "apartments", "apartment", "detached",
@@ -3009,7 +3039,7 @@ _RESIDENTIAL_TYPES = {
     "bungalow", "dormitory", "farmhouse", "static_caravan", "houseboat",
     "cabin", "hut", "trailer", "mobile_home", "annexe", "ger",
 }
-# A point classified under one of these is a public thing — a park, a museum, a
+# A point classified under one of these is a public thing, a park, a museum, a
 # shop, a station. Anything with no such classification has not earned a page.
 _PUBLIC_CLASSES = {
     "tourism", "historic", "leisure", "natural", "amenity", "shop", "man_made",
@@ -3051,7 +3081,7 @@ def _is_private_residence(meta, name=""):
         return True, "residential land"
 
     # No public classification at all, and the name is a street address rather
-    # than the name of anything — "412 Maple St" is where someone lives, not a
+    # than the name of anything, "412 Maple St" is where someone lives, not a
     # place to visit. A named landmark ("Pike Place Market") never matches this,
     # and a real landmark that happens to sit at a number is normally tagged
     # tourism/historic, so it is caught by the class check above.
@@ -3065,12 +3095,12 @@ def _is_private_residence(meta, name=""):
 @app.route("/api/destinations/add", methods=["POST"])
 def api_destinations_add():
     """COMMUNITY MEMORY for the free tools: a place anyone adds in the Trip
-    Planner search is remembered by the site — it joins the city's planner list
+    Planner search is remembered by the site, it joins the city's planner list
     for every future visitor AND appears in the Destination Book (tagged
     'community'). Deduped by name+city; capped so the book can't be flooded.
 
     Private homes are refused. Anyone can type any address into the planner and
-    be driven there — that is the whole service — but a place only becomes a
+    be driven there, that is the whole service, but a place only becomes a
     public page if it is a public place. Otherwise searching for where someone
     lives would publish their address, with coordinates, to every future
     visitor. The traveler keeps it on their own board either way."""
@@ -3111,7 +3141,7 @@ def api_destinations_add():
         # here would quietly delete every withheld record on the next save.
         d = _book_raw()
         # THE BOOK GROWS WORLDWIDE. A city we have never seen before is not an
-        # error to be swept into "Other" — it is a new chapter. The first traveler
+        # error to be swept into "Other", it is a new chapter. The first traveler
         # to search a place there names the city, and it joins the book for good.
         city, city_lbl = _derive_city(data, data.get("city"))
         cities = d.setdefault("cities", {})
@@ -3126,7 +3156,7 @@ def api_destinations_add():
                 label = (city_lbl or _no_tags((data.get("city_label") or "").strip())[:60]
                          or city.title())
                 cities[city] = label
-        # dedupe: the site already remembers this place — but a re-search is a chance
+        # dedupe: the site already remembers this place, but a re-search is a chance
         # to FILL IN what's still missing. A blank description gets one; a description
         # someone actually wrote is never touched.
         for e in d.get("entries", []):
@@ -3186,13 +3216,13 @@ def api_destinations_add():
 
 @app.route("/deflator")
 def deflator_page():
-    """Plateau Strategy Deflator — research-project page + notify list (no offering)."""
+    """Plateau Strategy Deflator, research-project page + notify list (no offering)."""
     return send_file(os.path.join(BASE_DIR, "deflator.html"))
 
 
 @app.route("/api/deflator/waitlist", methods=["POST"])
 def api_deflator_waitlist():
-    """Notify-only list stored locally in deflator_waitlist.json — emails get one
+    """Notify-only list stored locally in deflator_waitlist.json, emails get one
     update when verified results publish. No product, no funds, no claims.
 
     CLOSED while the Deflator is private: the page is owner-only, so this endpoint
@@ -3227,25 +3257,25 @@ def api_deflator_waitlist():
 # /api/setup/square and got 200, after which the running process held the
 # caller's token. What a stranger on the internet could do:
 #
-#   * /api/setup/twilio      — repoint SMS at their own Twilio account.
+#   * /api/setup/twilio     , repoint SMS at their own Twilio account.
 #     notify._twilio_cfg() reads os.environ on every call and the service runs
 #     --workers 1, so one POST poisons the whole process. Every ride-offer text
-#     after that — pickup address, dropoff, date, time, flight number, fare —
+#     after that, pickup address, dropoff, date, time, flight number, fare, 
 #     lands in a stranger's logs, and driver dispatch stops arriving here.
-#   * /api/setup/twilio/test — send SMS to a number THEY choose, on our live
+#   * /api/setup/twilio/test, send SMS to a number THEY choose, on our live
 #     credentials, unauthenticated and unthrottled. Textbook toll fraud billed
 #     to us, and a fast route to Twilio suspending the account, which takes
 #     driver dispatch down with it.
-#   * /api/setup/square      — overwrite the payment token. Not a redirect of
+#   * /api/setup/square     , overwrite the payment token. Not a redirect of
 #     money: SQUARE_LOCATION_ID is read-only everywhere, so a foreign token
 #     paired with our location id is simply rejected and square_client._bill
-#     swallows the error. The real outcome is a SILENT BILLING OUTAGE —
+#     swallows the error. The real outcome is a SILENT BILLING OUTAGE, 
 #     bookings keep succeeding, invoices quietly stop going out.
-#   * /api/setup/status      — reports which integrations are configured.
+#   * /api/setup/status     , reports which integrations are configured.
 #
 # owner_required already existed and already guards ~48 lower-value routes;
 # these four had simply fallen out of the pattern, and nothing global catches
-# it — app.py has no before_request at all. OWNER_ONLY_PATHS looks like a
+# it, app.py has no before_request at all. OWNER_ONLY_PATHS looks like a
 # control but only feeds robots.txt, where it advertises /setup rather than
 # protecting it.
 # ---------------------------------------------------------------------------
@@ -3290,7 +3320,7 @@ def api_setup_twilio_test():
 
     The destination is no longer taken from the request. It used to be, which
     made this an unauthenticated endpoint that sent a message to any number a
-    caller named, on our live account — someone else's phone, billed to us, as
+    caller named, on our live account, someone else's phone, billed to us, as
     fast as the server would loop. Owner-only closes the door; ignoring the
     caller's number means that even a stolen owner session cannot turn this
     into a way to text strangers. A test message only has to reach the person
@@ -3298,7 +3328,7 @@ def api_setup_twilio_test():
     to = (os.environ.get("OWNER_PHONE") or os.environ.get("DRIVER_PHONE") or "").strip()
     if not to:
         return jsonify({"ok": False,
-                        "error": "Set OWNER_PHONE or DRIVER_PHONE first — the test "
+                        "error": "Set OWNER_PHONE or DRIVER_PHONE first, the test "
                                  "sends only to your own number."}), 400
     result = notify.send_sms(to, "Plateau Strategy Solution Lab: test message - your driver SMS dispatch is LIVE. Reply YES when a real ride comes in.")
     return jsonify({"ok": result == "sent", "result": result, "to": to})
@@ -3350,7 +3380,7 @@ def _debt_per_sec(rows):
     """How fast the debt has actually been growing, in dollars per second.
 
     The clock on the Finance tab ticks between fetches, and it used to tick at
-    a rate somebody typed in — the comment beside it said ~$90k/sec while the
+    a rate somebody typed in, the comment beside it said ~$90k/sec while the
     code did ~$62.5k/sec, so the two had already drifted apart from each other,
     never mind from the debt. Measuring it from the same rows that supply the
     figure means the ticker cannot disagree with its own source.
@@ -3382,7 +3412,7 @@ def api_national_debt():
 
     Returns the growth rate alongside the figure. 'Debt to the Penny' is a
     DAILY close published a business day behind, so a browser that seeds a
-    live-looking ticker with it is starting from a stale number — on a Monday
+    live-looking ticker with it is starting from a stale number, on a Monday
     it is showing Friday's. With as_of and per_sec the page can carry the
     figure forward by the time that has actually elapsed instead."""
     import requests as _rq
@@ -3413,7 +3443,7 @@ def api_national_debt():
 # We never touch a cent of this money. Donors give DIRECTLY to the U.S. Treasury
 # (Pay.gov "Gifts to Reduce the Public Debt", or a check to the Bureau of the
 # Fiscal Service). This ledger only COUNTS what people tell us they gave, so the
-# green zero on the Finance tab can move. It is self-reported by design — the
+# green zero on the Finance tab can move. It is self-reported by design, the
 # honest alternative to pretending we can verify a payment we deliberately never see.
 GIVEBACK_PATH = _data_path("give_back.json")
 TREASURY_PAYGOV = "https://www.pay.gov/public/form/start/23779454"
@@ -3444,7 +3474,7 @@ def api_give_back():
 
 @app.route("/api/give-back/log", methods=["POST"])
 def api_give_back_log():
-    """Someone gave at Treasury and is telling us so — move the zero.
+    """Someone gave at Treasury and is telling us so, move the zero.
 
     No payment is processed here and none ever will be: the money went straight
     to the U.S. Treasury. This records the ACT, not the transaction."""
@@ -3456,7 +3486,7 @@ def api_give_back_log():
     if amount <= 0:
         return jsonify({"ok": False, "error": "Enter the amount you gave."}), 400
     if amount > 10_000_000:
-        return jsonify({"ok": False, "error": "That amount looks like a typo — please check it."}), 400
+        return jsonify({"ok": False, "error": "That amount looks like a typo, please check it."}), 400
 
     rec = {
         "id": _next_id(_giveback_all(), "GIFT"),
@@ -3464,7 +3494,7 @@ def api_give_back_log():
         "amount": amount,
         "note": str(d.get("note") or "").strip()[:140],
         "at": datetime.datetime.now().isoformat(timespec="seconds"),
-        "self_reported": True,          # always — see the module note above
+        "self_reported": True,          # always, see the module note above
     }
     with _LOCK:
         gifts = _giveback_all()
@@ -3476,7 +3506,7 @@ def api_give_back_log():
 
 # ---------- guide handoff (Phase 3 offer capture) ----------
 # When a traveler chooses "prefer my trip to a guide", or a guide lists a route
-# "for sale", the request lands here. This is the OFFER object — the first slice of
+# "for sale", the request lands here. This is the OFFER object, the first slice of
 # the ding handshake. It captures the plan + who to reach; the accept/decline/expire
 # loop (routed to a specific guide) is the next build. No money moves here.
 GUIDE_OFFERS_PATH = _data_path("guide_offers.json")
@@ -3484,7 +3514,7 @@ GUIDE_OFFERS_PATH = _data_path("guide_offers.json")
 
 def _platform_fee():
     """The site's revenue for connecting a customer to a guide or driver-guide.
-    Owner's business decision — set in .env, sane default here."""
+    Owner's business decision, set in .env, sane default here."""
     try:
         return round(float(os.environ.get("PLATFORM_FEE_USD", 5)), 2)
     except Exception:
@@ -3534,7 +3564,7 @@ def api_guide_offer():
             "guide_code": guide_code or None,
             "price": price,
             # the moment a customer hits "drop to a guide" / "hire a driver-guide",
-            # a platform fee is billed to the trip — this is the website's revenue
+            # a platform fee is billed to the trip, this is the website's revenue
             "platform_fee": _platform_fee() if mode in ("prefer", "hire") else 0.0,
             "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
         }
@@ -3542,7 +3572,7 @@ def api_guide_offer():
         _save(GUIDE_OFFERS_PATH, offers)
 
     # A route offered for sale is a product, so it belongs in the shop window
-    # beside the hand-written ones — not only in the owner's inbox, which is
+    # beside the hand-written ones, not only in the owner's inbox, which is
     # where every previous listing quietly stopped. The planner already knows
     # arrival and departure at each stop, so the minutes come out of the route
     # itself rather than being asked for again.
@@ -3567,7 +3597,7 @@ def api_guide_offer():
                 "kind": "in-depth" if len(stops) > 4 else "neighborhood",
                 "city": rec["city"], "city_label": rec["trip"]["cityLabel"],
                 "summary": (rec.get("note") or
-                            ("A guided version of this route — " + ", ".join(s["name"] for s in stops[:4])
+                            ("A guided version of this route, " + ", ".join(s["name"] for s in stops[:4])
                              + (" and more." if len(stops) > 4 else ".")))[:900],
                 "stops": stops[:30],
                 "total_minutes": sum(s["minutes"] for s in stops[:30]),
@@ -3596,10 +3626,10 @@ def api_guide_offer():
             _push_owner_alert("guide_listing", "🏷️ Guide %s listed a %s route for sale (%s)."
                               % (guide_code, where, rec["id"]))
         elif mode == "hire":
-            _push_owner_alert("driverguide_request", "🚕 %s wants to hire a driver-guide for a %s trip — reach %s (%s)."
+            _push_owner_alert("driverguide_request", "🚕 %s wants to hire a driver-guide for a %s trip, reach %s (%s)."
                               % (rec["name"], where, rec["contact"], rec["id"]))
         else:
-            _push_owner_alert("guide_request", "🙋 %s wants a guide for a %s trip — reach %s (%s)."
+            _push_owner_alert("guide_request", "🙋 %s wants a guide for a %s trip, reach %s (%s)."
                               % (rec["name"], where, rec["contact"], rec["id"]))
     except Exception:
         pass
@@ -3614,7 +3644,7 @@ ROBOTAXI_PATH = _data_path("robotaxi_interest.json")
 
 @app.route("/api/robotaxi-interest", methods=["POST"])
 def api_robotaxi_interest():
-    """Robotaxi is UNDER DEVELOPMENT — this only counts demand, never books a ride.
+    """Robotaxi is UNDER DEVELOPMENT, this only counts demand, never books a ride.
     Contact is optional; even an anonymous tap is a useful signal of where the
     interest is."""
     d = request.get_json(silent=True) or {}
@@ -3642,7 +3672,7 @@ def api_robotaxi_list():
     items = _load(ROBOTAXI_PATH)
     by_city = {}
     for r in items:
-        k = r.get("city_label") or r.get("city") or "—"
+        k = r.get("city_label") or r.get("city") or ", "
         by_city[k] = by_city.get(k, 0) + 1
     return jsonify({"ok": True, "total": len(items), "by_city": by_city,
                     "with_contact": sum(1 for r in items if r.get("contact")),
@@ -3719,14 +3749,14 @@ def _quote_alert_text(res):
     who = a.get("name") or "An agent"
     desc = (t.get("title") or t.get("description") or t.get("itinerary")
             or ("%s → %s" % (t.get("pickup", ""), t.get("dropoff", ""))))
-    return ("QUOTE REQUEST %s — %s trip by %s for %s. %s. When: %s %s. Needs pricing." % (
+    return ("QUOTE REQUEST %s, %s trip by %s for %s. %s. When: %s %s. Needs pricing." % (
         res.get("id"), label, who, c.get("name", ""), desc,
         t.get("date", ""), t.get("time", "")))
 
 
 # ---------- distance-based fare (destination rides) ----------
 # The destination drives the price: fare = base + per-mile × drive distance.
-# Rates are the owner's business decision — set in .env, sane defaults here.
+# Rates are the owner's business decision, set in .env, sane defaults here.
 def _ride_base_fare():
     try:
         return round(float(os.environ.get("RIDE_BASE_FARE", 15)), 2)
@@ -3752,7 +3782,7 @@ def _distance_fare(miles):
 
 # The flat airport fare, and the radius it holds inside. Stated on the site
 # as "$75 flat to Sea-Tac" with no distance attached, which is a promise the
-# fare cannot keep from ninety miles out — so the boundary is written down
+# fare cannot keep from ninety miles out, so the boundary is written down
 # here, in the one place that prices anything, rather than implied.
 AIRPORT_FLAT_USD = 75.0
 AIRPORT_FLAT_RADIUS_MI = 30.0
@@ -3762,7 +3792,7 @@ def _airport_or_distance_fare(miles, to_airport):
     """What a ride costs, and why.
 
     Returns (fare, basis) so a caller can say which rule applied rather than
-    just showing a number — a rider who is told 75 dollars flat and then
+    just showing a number, a rider who is told 75 dollars flat and then
     charged 112 has been surprised, and this whole business is built on the
     quote being the fare."""
     try:
@@ -3806,7 +3836,7 @@ def _create_reservation(data, agent=None, self_driver=None):
     """Build, invoice, persist and notify a reservation. Returns the record.
     If self_driver is set, this is a Driver-Agent self-referral: the driver both
     referred the customer AND will drive the trip, so the reservation is pre-assigned
-    to them and flagged self_service (they keep the full fare — commission + trip)."""
+    to them and flagged self_service (they keep the full fare, commission + trip)."""
     name = (data.get("name") or "").strip()
     pickup = (data.get("pickup") or "").strip()
     dropoff = (data.get("dropoff") or "").strip()
@@ -3820,10 +3850,10 @@ def _create_reservation(data, agent=None, self_driver=None):
     if trip_type == "airport" and not dropoff:
         return None, "Drop-off is required for an airport trip."
     if not dropoff:
-        dropoff = {"cruise": "Cruise terminal", "tour": "Round trip — see itinerary",
+        dropoff = {"cruise": "Cruise terminal", "tour": "Round trip, see itinerary",
                    "custom": "As arranged"}.get(trip_type, "Round trip")
 
-    # distance the trip covers (miles) — for a destination ride it sets the price
+    # distance the trip covers (miles), for a destination ride it sets the price
     try:
         distance_mi = round(float(data.get("distance_mi")), 2) if data.get("distance_mi") not in (None, "") else None
     except (TypeError, ValueError):
@@ -3832,7 +3862,7 @@ def _create_reservation(data, agent=None, self_driver=None):
     if quote_requested:
         fare = 0.0                       # priced later by the owner
     elif trip_type == "destination" and distance_mi is not None:
-        # the destination drives the price — recompute server-side so the rate is
+        # the destination drives the price, recompute server-side so the rate is
         # authoritative (the client can't dictate the fare, only the distance)
         fare = _distance_fare(distance_mi)
     else:
@@ -3851,7 +3881,7 @@ def _create_reservation(data, agent=None, self_driver=None):
         "flight": (data.get("flight") or "").strip(),
         "notes": (data.get("notes") or "").strip(),
     }
-    # rich, trip-type-specific details — only stored when the agent provided them
+    # rich, trip-type-specific details, only stored when the agent provided them
     for k in ("title", "description", "itinerary", "cruise_line", "ship",
               "sailing_date", "return_date", "return_time"):
         v = (data.get(k) or "").strip()
@@ -3859,7 +3889,7 @@ def _create_reservation(data, agent=None, self_driver=None):
             trip[k] = v
     if data.get("duration_hours"):
         trip["duration_hours"] = data.get("duration_hours")
-    # a destination ride is filed under where it concludes — the destination and its
+    # a destination ride is filed under where it concludes, the destination and its
     # category (history / culture / nature / food / views) + the distance that priced it
     if trip_type == "destination":
         trip["destination"] = dropoff
@@ -3923,7 +3953,7 @@ def _create_reservation(data, agent=None, self_driver=None):
         _save(RES_PATH, items)
 
     if self_driver:
-        # already assigned to its driver — no need to broadcast it.
+        # already assigned to its driver, no need to broadcast it.
         reservation["notified"] = {"ok": True, "self_service": True}
     elif quote_requested:
         # not priced yet → don't offer to drivers; route to the owner to quote it.
@@ -3951,7 +3981,7 @@ def api_book():
 
 @app.route("/api/agent/book-trip", methods=["POST"])
 def api_agent_book_trip():
-    """Agent 'Book a Trip' API — the in-portal form posts here. Handles any
+    """Agent 'Book a Trip' API, the in-portal form posts here. Handles any
     trip_type (airport / cruise / tour / custom) and an optional quote request
     (quote_requested=True → no price yet, routed to the owner to quote).
     Requires a valid agent_id so the commission is attributed correctly."""
@@ -3970,12 +4000,12 @@ def _reservation_for_board(r):
     """A copy of a reservation that is safe to show on the open board.
 
     A driver deciding whether to take a ride needs the pickup, the time and
-    the fare — not the customer's phone, email or full name. Contact details
+    the fare, not the customer's phone, email or full name. Contact details
     are released by /claim, to the one driver who actually took the ride."""
     out = dict(r)
     name = ((r.get("client") or {}).get("name") or "").strip()
     out["client"] = {"name": (name.split(" ")[0] if name else "Client")}
-    # The agent block used to pass through whole, and it carries `code` — the
+    # The agent block used to pass through whole, and it carries `code`, the
     # agent's entire sign-in credential. Agent login needs only that code and a
     # last name, and this board printed both, to anyone, with no session. The
     # chain the council reproduced: read the board, log in as the agent, change
@@ -4001,8 +4031,8 @@ def api_reservations():
               plus the open board with contact details withheld.
     Anyone else -> the open board only, contact details withheld.
 
-    This endpoint used to return every reservation — customer names, phones
-    and addresses — to anyone who requested it. The first fix redacted the
+    This endpoint used to return every reservation, customer names, phones
+    and addresses, to anyone who requested it. The first fix redacted the
     open board but still took the driver's identity from ?renter_id=, which
     is not a secret: ids are handed out in sequence (RTR_0001, RTR_0002, ...),
     so counting up from one walked out every customer's name, email, phone and
@@ -4018,7 +4048,7 @@ def api_reservations():
         return jsonify({"reservations": items})
 
     # Session, never the query string. ?renter_id= is still accepted by the
-    # driver portal's URL but is now ignored for access — a driver who is not
+    # driver portal's URL but is now ignored for access, a driver who is not
     # signed in gets the same redacted board as everyone else and is asked to
     # log in, which is the safe failure.
     renter_id = (session.get("renter_id") or "").strip()
@@ -4039,7 +4069,7 @@ def api_claim(rid):
 
     The driver is whoever is signed in, not whoever the request says it is.
     This used to take renter_id from the body, and a successful claim returns
-    the reservation in full — so anyone who guessed a driver id (they run
+    the reservation in full, so anyone who guessed a driver id (they run
     RTR_0001, RTR_0002, ...) could claim someone else's ride and read the
     customer's name, email, phone and address out of the response."""
     data = request.get_json(force=True, silent=True) or {}
@@ -4049,7 +4079,7 @@ def api_claim(rid):
                         "error": "Please sign in before accepting rides."}), 401
     renter = next((x for x in _load(RENTERS_PATH) if x.get("id") == renter_id), None)
     if not renter:
-        return jsonify({"ok": False, "error": "Unknown renter — please register first."}), 400
+        return jsonify({"ok": False, "error": "Unknown renter, please register first."}), 400
     if not _driver_signed_current(renter_id):
         return jsonify({"ok": False, "contract_required": True,
                         "error": "Please review and sign your current driver agreement "
@@ -4071,7 +4101,7 @@ def api_claim(rid):
                 break
         else:
             return jsonify({"ok": False, "error": "not found"}), 404
-    # First claim won — tell the other offered drivers the ride is taken.
+    # First claim won, tell the other offered drivers the ride is taken.
     notify.sms_ride_taken(claimed, renter, _load(RENTERS_PATH))
     return jsonify({"ok": True, "reservation": claimed})
 
@@ -4080,13 +4110,13 @@ def api_claim(rid):
 @renter_self_or_owner
 def api_renter_refer(rid):
     """Driver-Agent self-referral. A driver met a customer who needs a ride, refers
-    them here, and drives the trip themselves — so they earn BOTH the referral
+    them here, and drives the trip themselves, so they earn BOTH the referral
     commission and the trip, i.e. the full fare. The reservation is created,
     invoiced to the customer, and pre-assigned to this driver."""
     data = request.get_json(force=True, silent=True) or {}
     renter = next((x for x in _load(RENTERS_PATH) if x.get("id") == rid), None)
     if not renter:
-        return jsonify({"ok": False, "error": "Unknown driver — please sign in again."}), 400
+        return jsonify({"ok": False, "error": "Unknown driver, please sign in again."}), 400
     if not _driver_signed_current(rid):
         return jsonify({"ok": False, "contract_required": True,
                         "error": "Please review and sign your current driver agreement first."}), 403
@@ -4121,7 +4151,7 @@ def _twilio_signature_ok():
 
     The handler below identifies the driver purely by the "From" field, and
     the first YES claims the ride. Without this check anyone could POST that
-    form with a driver's number and take rides in their name — the phone
+    form with a driver's number and take rides in their name, the phone
     number is not a secret, drivers hand it out, and it is printed in the
     panel. Twilio signs every request; verifying the signature is the only
     thing that makes "From" mean anything.
@@ -4201,7 +4231,7 @@ def sms_reply():
         target["driver"] = renter.get("name")
         _save(RES_PATH, items)
 
-    # This driver replied fastest and won — tell the other offered drivers it's taken.
+    # This driver replied fastest and won, tell the other offered drivers it's taken.
     notify.sms_ride_taken(target, renter, _load(RENTERS_PATH))
 
     t = target.get("trip", {})
@@ -4243,7 +4273,7 @@ def api_giveup(rid):
             hours_left = None  # no schedule -> allow
         if hours_left is not None and hours_left < 12:
             return jsonify({"ok": False, "blocked": True,
-                            "error": "Pickup is less than 12 hours away — this ride can no longer be given up online. Call dispatch immediately so we can cover it."}), 403
+                            "error": "Pickup is less than 12 hours away, this ride can no longer be given up online. Call dispatch immediately so we can cover it."}), 403
         driver_name = r.get("driver")
         r.setdefault("giveups", []).append({
             "driver": driver_name, "renter_id": renter_id,
@@ -4300,7 +4330,7 @@ def api_cancel(rid):
                 r["canceled_at"] = datetime.datetime.now().isoformat(timespec="seconds")
                 _save(RES_PATH, items)
                 return jsonify({"ok": True, "reservation": r, "invoice_cancel": inv_result})
-    return jsonify({"ok": False, "error": "Reservation not found — check the confirmation number."}), 404
+    return jsonify({"ok": False, "error": "Reservation not found, check the confirmation number."}), 404
 
 
 @app.route("/api/reservations/<rid>/complete", methods=["POST"])
@@ -4466,7 +4496,7 @@ DOC_TYPES = ["Driver's License", "Vehicle Registration", "Proof of Insurance",
 
 def _save_document_file(data_url, rid):
     """Persist an uploaded document (image/PDF data URL) to the archive dir. Every
-    upload gets a unique name (timestamp + random) so nothing is ever overwritten —
+    upload gets a unique name (timestamp + random) so nothing is ever overwritten, 
     that's the paper trail. Returns (stored_name, size) | ('TOO_BIG', 0) | (None, 0)."""
     import base64
     if not data_url or "," not in data_url:
@@ -4526,7 +4556,7 @@ def _trip_datetime(trip):
 
 
 def _driver_violations(renter):
-    """Auto-detect compliance issues from LIVE data — the things the system can
+    """Auto-detect compliance issues from LIVE data, the things the system can
     actually see a driver doing (or not doing) against the Driver Agreement.
     Each: {kind, title, detail, severity[high|medium|low], ref?}."""
     rid = renter.get("id")
@@ -4534,10 +4564,10 @@ def _driver_violations(renter):
     st = _contract_status(rid).get("status")
     if st == "unsigned":
         out.append({"kind": "agreement", "title": "Driver Agreement not signed", "severity": "high",
-                    "detail": "Driving requires a signed, current Driver Agreement — it has not been signed."})
+                    "detail": "Driving requires a signed, current Driver Agreement, it has not been signed."})
     elif st == "outdated":
         out.append({"kind": "agreement", "title": "Driver Agreement out of date", "severity": "high",
-                    "detail": "The agreement was updated to a new version — the current one must be re-signed."})
+                    "detail": "The agreement was updated to a new version, the current one must be re-signed."})
     ins = _insurance_status(renter)
     if ins.get("state") == "MISSING":
         out.append({"kind": "insurance", "title": "No proof of insurance on file", "severity": "high",
@@ -4547,7 +4577,7 @@ def _driver_violations(renter):
                     "detail": "The policy expired %s day(s) ago. A current policy must be uploaded immediately." % abs(ins.get("days_left") or 0)})
     elif ins.get("state") == "EXPIRING":
         out.append({"kind": "insurance", "title": "Insurance expiring soon", "severity": "low",
-                    "detail": "The policy expires in %s day(s) — renew before it lapses." % (ins.get("days_left") or 0)})
+                    "detail": "The policy expires in %s day(s), renew before it lapses." % (ins.get("days_left") or 0)})
     now = datetime.datetime.now()
     for r in _load(RES_PATH):
         if r.get("renter_id") != rid or r.get("status") != "ASSIGNED":
@@ -4602,7 +4632,7 @@ def api_renter_register():
         return jsonify({"ok": False, "error": "Name is required."}), 400
     dob = _norm_dob(data.get("dob"))
     if not dob:
-        return jsonify({"ok": False, "error": "Enter your birthday as DDMMYYYY (e.g. 07031990) — this is your login pass."}), 400
+        return jsonify({"ok": False, "error": "Enter your birthday as DDMMYYYY (e.g. 07031990), this is your login pass."}), 400
     if not (data.get("car_vin") or "").strip():
         return jsonify({"ok": False, "error": "Vehicle VIN is required."}), 400
     with _LOCK:
@@ -4670,7 +4700,7 @@ def api_renter_insurance_upload(rid):
     if not exp:
         return jsonify({"ok": False, "error": "Enter a valid insurance expiry date."}), 400
     if exp < datetime.date.today():
-        return jsonify({"ok": False, "error": "That policy is already expired — please upload current insurance."}), 400
+        return jsonify({"ok": False, "error": "That policy is already expired, please upload current insurance."}), 400
     saved = _save_insurance_file(rid, data.get("file") or "")
     if saved == "TOO_BIG":
         return jsonify({"ok": False, "error": "That file is too large (max 8 MB). Try a photo or smaller PDF."}), 400
@@ -4697,7 +4727,7 @@ def api_renter_insurance_upload(rid):
         except Exception:
             sz = 0
         _add_document(rid, "Proof of Insurance",
-                      "%s policy — expires %s" % (provider or "Insurance", exp.isoformat()),
+                      "%s policy, expires %s" % (provider or "Insurance", exp.isoformat()),
                       saved, "insurance_uploads", sz, "insurance",
                       "Policy %s" % policy if policy else "")
     return jsonify({"ok": True, "insurance": _insurance_status(renter)})
@@ -4965,7 +4995,7 @@ def api_contract_sign():
     The signer is taken from the session. This record is the binding proof
     that a specific driver accepted the agreement, so accepting an id from
     the request body meant anyone could file a signature in another driver's
-    name — and that signature is what unlocks accepting rides."""
+    name, and that signature is what unlocks accepting rides."""
     data = request.get_json(force=True, silent=True) or {}
     rid = (session.get("renter_id") or "").strip()
     if not rid:
@@ -4976,7 +5006,7 @@ def api_contract_sign():
     agree = bool(data.get("agree"))
     renter = next((x for x in _load(RENTERS_PATH) if x.get("id") == rid), None)
     if not renter:
-        return jsonify({"ok": False, "error": "Unknown driver — please sign in first."}), 400
+        return jsonify({"ok": False, "error": "Unknown driver, please sign in first."}), 400
     if not agree:
         return jsonify({"ok": False, "error": "Please check the box to confirm you agree."}), 400
     if not typed:
@@ -5063,7 +5093,7 @@ def _find_pro(pid):
 
 
 def _public_pro(p):
-    """What anyone may see about a professional. Never the contact details —
+    """What anyone may see about a professional. Never the contact details, 
     those belong to the platform until a sale happens."""
     return {"id": p.get("id"), "name": p.get("name"), "firm": p.get("firm"),
             "trade": p.get("trade"), "trade_label": p.get("trade_label"),
@@ -5077,7 +5107,7 @@ def api_pro_register():
 
     An account is created immediately but starts UNVERIFIED: it can be signed
     into and opinions can be drafted, but nothing publishes until the licence
-    is checked by hand. That order matters — asking someone to wait before they
+    is checked by hand. That order matters, asking someone to wait before they
     can even look loses them, and publishing an unchecked licence is the one
     mistake this platform cannot afford.
     """
@@ -5119,7 +5149,7 @@ def api_pro_register():
             pass
     session["pro_id"] = pro["id"]
     return jsonify({"ok": True, "pro": pro,
-                    "note": "Keep your code — it is how you sign in. "
+                    "note": "Keep your code, it is how you sign in. "
                             "Your licence is checked by hand before anything you write publishes."})
 
 
@@ -5152,7 +5182,7 @@ def api_pro_me():
 def api_pro_opinion():
     """Write an opinion once; it can be bought any number of times.
 
-    This is the whole economic point — the professional's effort is fixed and
+    This is the whole economic point, the professional's effort is fixed and
     their revenue is not. Price is theirs to set, in whole dollars.
     """
     d = request.get_json(force=True, silent=True) or {}
@@ -5160,7 +5190,7 @@ def api_pro_opinion():
     body = (d.get("body") or "").strip()
     if len(title) < 6 or len(body) < 120:
         return jsonify({"ok": False,
-                        "error": "A title and at least a few paragraphs are required — "
+                        "error": "A title and at least a few paragraphs are required, "
                                  "this is sold as a document, not a comment."}), 400
     try:
         price = max(0, round(float(d.get("price_usd") or 0), 2))
@@ -5195,7 +5225,7 @@ def api_pro_opinion():
 @app.route("/api/pros")
 @owner_required
 def api_pros_list():
-    """Everyone who has applied, newest first — the queue to check.
+    """Everyone who has applied, newest first, the queue to check.
 
     Owner-only, and it carries the licence numbers, which is exactly why
     it is not public: the directory shows a name and a credential, never
@@ -5208,7 +5238,7 @@ def api_pros_list():
 @app.route("/api/pros/<pid>/verify", methods=["POST"])
 @owner_required
 def api_pro_verify(pid):
-    """Mark a licence as checked — or withdraw that.
+    """Mark a licence as checked, or withdraw that.
 
     Without this the whole board dead-ends: an account can be registered
     and an opinion can be written, but publishing requires `verified`, and
@@ -5235,7 +5265,7 @@ def api_pro_verify(pid):
         _save(PROS_PATH, pros)
 
         # Anything they wrote while unverified was held back. Verifying the
-        # licence is what those drafts were waiting for, so release them —
+        # licence is what those drafts were waiting for, so release them, 
         # otherwise the professional has to notice and republish, and most
         # will simply assume the site swallowed their work.
         released = 0
@@ -5253,7 +5283,7 @@ def api_pro_verify(pid):
 
 @app.route("/api/opinions")
 def api_opinions_public():
-    """Opinions on offer — preview and price only. The body is what is sold."""
+    """Opinions on offer, preview and price only. The body is what is sold."""
     trade = (request.args.get("trade") or "").strip().lower()
     q = (request.args.get("q") or "").strip().lower()
     pros = {p["id"]: p for p in _load(PROS_PATH)}
@@ -5326,7 +5356,7 @@ def api_opinion_buy(oid):
     price = float(op.get("price_usd") or 0)
     # The split, recorded at the moment of sale rather than worked out later.
     # Square takes its cut of the whole charge before anyone is paid, so the
-    # platform's real margin is its fee MINUS processing — not its fee.
+    # platform's real margin is its fee MINUS processing, not its fee.
     fee = round(price * PLATFORM_FEE_PCT, 2)
     processing = round(price * 0.029 + 0.30, 2)
     to_pro = round(price - fee, 2)
@@ -5337,7 +5367,7 @@ def api_opinion_buy(oid):
         invoice = square_client.create_charge(
             {"name": name, "email": email, "phone": (d.get("phone") or "").strip()},
             price, "Professional opinion: " + op.get("title", "")[:60],
-            "Written by %s — %s. One-time purchase; yours to keep." % (
+            "Written by %s, %s. One-time purchase; yours to keep." % (
                 op.get("pro_name", ""), op.get("trade_label", "")))
     except Exception as e:
         invoice = {"ok": False, "error": str(e)[:160]}
@@ -5365,7 +5395,7 @@ def api_opinion_buy(oid):
             inv_err = invoice.get("error") or "Square rejected the invoice."
     if inv_err:
         return jsonify({"ok": False, "error": inv_err,
-                        "hint": "Nothing was recorded — the invoice was never raised."}), 502
+                        "hint": "Nothing was recorded, the invoice was never raised."}), 502
 
     with _LOCK:
         buys = _load(PURCHASES_PATH)
@@ -5392,12 +5422,12 @@ def api_opinion_buy(oid):
                              "nothing will be charged. Recorded as a demo sale and kept out "
                              "of earnings.") if is_demo else
                             ("Pay the invoice and the opinion unlocks for you. Nothing is "
-                             "charged here — the invoice comes from Square.")})
+                             "charged here, the invoice comes from Square.")})
 
 
 @app.route("/api/opinions/<oid>/read")
 def api_opinion_read(oid):
-    """The body — only for someone who has paid for it.
+    """The body, only for someone who has paid for it.
 
     This is the single most important gate on the platform. The preview and the
     price are public; the document is the product. If this leaks, there is
@@ -5422,8 +5452,8 @@ def api_opinion_read(oid):
 def api_purchases_reconcile():
     """Ask Square which invoices are actually paid, and unlock those.
 
-    Square invoices are paid out of band — a link in an email, minutes or days
-    later — so nothing can be unlocked at the moment of purchase. This is the
+    Square invoices are paid out of band, a link in an email, minutes or days
+    later, so nothing can be unlocked at the moment of purchase. This is the
     same reconcile-against-the-processor pattern the bookings already use:
     the processor is the source of truth, never our own record.
     """
@@ -5469,7 +5499,7 @@ def api_purchases_ledger():
 # ---------- agents (referral partners) ----------
 @app.route("/api/agents/register", methods=["POST"])
 def api_agent_register():
-    """Anyone can become an agent — individual or organization. On registration
+    """Anyone can become an agent, individual or organization. On registration
     they receive a unique agent code, which is their sign-in credential."""
     data = request.get_json(force=True, silent=True) or {}
     name = (data.get("name") or "").strip()
@@ -5517,7 +5547,7 @@ def api_agent(aid):
     total_commission = round(sum((r.get("agent") or {}).get("commission_usd", 0) for r in referrals), 2)
     paid_rides = [r for r in referrals if r.get("status") == "COMPLETED"]
     earned_commission = round(sum((r.get("agent") or {}).get("commission_usd", 0) for r in paid_rides), 2)
-    # Pending = still in play (NEW/ASSIGNED) — excludes CANCELED so a dead ride
+    # Pending = still in play (NEW/ASSIGNED), excludes CANCELED so a dead ride
     # doesn't inflate the agent's "in progress" commission total.
     open_rides = [r for r in referrals if r.get("status") not in ("COMPLETED", "CANCELED")]
     pending_commission = round(sum((r.get("agent") or {}).get("commission_usd", 0) for r in open_rides), 2)
@@ -5539,7 +5569,7 @@ def api_agent(aid):
         "referrals": list(reversed(referrals)),
         "total_commission": total_commission,      # all referrals
         "earned_commission": earned_commission,     # completed rides only (commission)
-        "pending_commission": pending_commission,   # still in play — excludes canceled rides
+        "pending_commission": pending_commission,   # still in play, excludes canceled rides
         "self_service_count": len(self_service),    # trips you referred AND drove
         "full_fare_take": full_fare_take,           # full fares kept on self-service trips
         "total_take": total_take,                   # your true earnings: full fare on self-service, commission otherwise
@@ -5552,15 +5582,15 @@ def api_agent(aid):
 
 
 # ======================================================================
-# PAYOUTS — agents/driver-agents request their earned money; the owner
-# marks it paid once sent (Zelle/cash/check — the site never moves money).
+# PAYOUTS, agents/driver-agents request their earned money; the owner
+# marks it paid once sent (Zelle/cash/check, the site never moves money).
 # payouts.json is an append-only ledger: REQUESTED → PAID / DECLINED.
 # ======================================================================
 PAYOUTS_PATH = _data_path("payouts.json")
 
 
 def _agent_take_paid(aid):
-    """(total_take, paid_out, requested_open) for an agent — the money math."""
+    """(total_take, paid_out, requested_open) for an agent, the money math."""
     referrals = [r for r in _load(RES_PATH) if (r.get("agent") or {}).get("id") == aid]
     done = [r for r in referrals if r.get("status") == "COMPLETED"]
     total_take = round(sum(
@@ -5584,7 +5614,7 @@ def api_agent_payout_request(aid):
     total_take, paid_out, requested = _agent_take_paid(aid)
     available = round(total_take - paid_out - requested, 2)
     if available <= 0:
-        return jsonify({"ok": False, "error": "Nothing available to pay out yet — commissions become payable when rides complete."}), 400
+        return jsonify({"ok": False, "error": "Nothing available to pay out yet, commissions become payable when rides complete."}), 400
     try:
         amount = round(float(data.get("amount") or available), 2)
     except Exception:
@@ -5601,7 +5631,7 @@ def api_agent_payout_request(aid):
                "requested_at": datetime.datetime.now().isoformat(timespec="seconds")}
         outs.append(rec)
         _save(PAYOUTS_PATH, outs)
-    _push_owner_alert("PAYOUT", "PAYOUT REQUEST %s — %s requests $%.2f%s. Available balance was $%.2f. Review in Dispatch → Payouts." % (
+    _push_owner_alert("PAYOUT", "PAYOUT REQUEST %s, %s requests $%.2f%s. Available balance was $%.2f. Review in Dispatch → Payouts." % (
         rec["id"], agent.get("name"), amount, (" via " + method) if method else "", available))
     return jsonify({"ok": True, "payout": rec, "available_after": round(available - amount, 2)})
 
@@ -5626,7 +5656,7 @@ def api_payouts():
 @app.route("/api/payouts/<pid>/mark-paid", methods=["POST"])
 @owner_required
 def api_payout_mark_paid(pid):
-    """Owner confirms the money was sent (outside the site) — ledger goes honest."""
+    """Owner confirms the money was sent (outside the site), ledger goes honest."""
     data = request.get_json(force=True, silent=True) or {}
     with _LOCK:
         outs = _load(PAYOUTS_PATH)
@@ -5670,7 +5700,7 @@ def api_paypal_status():
 @app.route("/api/payouts/<pid>/pay-paypal", methods=["POST"])
 @owner_required
 def api_payout_pay_paypal(pid):
-    """Owner clicks Pay — the site sends the PayPal payout, then marks PAID.
+    """Owner clicks Pay, the site sends the PayPal payout, then marks PAID.
     Idempotent: our payout id is the PayPal batch id, so a retry can't double-pay."""
     with _LOCK:
         outs = _load(PAYOUTS_PATH)
@@ -5685,7 +5715,7 @@ def api_payout_pay_paypal(pid):
     # PayPal's batch-id dedupe together prevent double sends.
     result = paypal_client.send_payout(
         pid, receiver, p.get("amount"),
-        note="Payout %s — Plateau Strategy Solution Lab" % pid)
+        note="Payout %s, Plateau Strategy Solution Lab" % pid)
     if not result.get("ok"):
         return jsonify({"ok": False, "error": result.get("error")}), 400
     with _LOCK:
@@ -5720,9 +5750,9 @@ def api_payout_decline(pid):
 
 
 # ======================================================================
-# 🤖 JARVIS — Sean's butler, embedded in the website. Owner-only.
+# 🤖 JARVIS, Sean's butler, embedded in the website. Owner-only.
 # Same engine as the Telegram Jarvis: headless `claude -p` on Haiku
-# (subscription billing — API key stripped), NO tools, answer-only.
+# (subscription billing, API key stripped), NO tools, answer-only.
 # Live business context is injected so it can talk numbers honestly.
 # ======================================================================
 JARVIS_CLAUDE_BIN = "/Users/xiaojunzhu/.local/bin/claude"
@@ -5775,8 +5805,8 @@ def api_jarvis_chat():
         "You are Claude acting as 'Jarvis', Sean's butler inside his Plateau Strategy "
         "Solution Lab website (rides, car rentals, finance). Voice: warm, concise, a touch "
         "of dry butler wit; address him as 'sir' occasionally, never every line. You have "
-        "NO tools — answer from the snapshot and conversation only; if asked to act, explain "
-        "where on the site to do it (Dispatch, Board, Archive, Books). NEVER invent numbers — "
+        "NO tools, answer from the snapshot and conversation only; if asked to act, explain "
+        "where on the site to do it (Dispatch, Board, Archive, Books). NEVER invent numbers, "
         "only use the snapshot. Keep replies under 120 words.\n\n" +
         _jarvis_context() + "\n\n" +
         ("Recent conversation:\n" + hist_txt + "\n\n" if hist_txt else "") +
@@ -5787,10 +5817,10 @@ def api_jarvis_chat():
                              capture_output=True, text=True, timeout=120, env=env, cwd="/tmp")
         reply = (out.stdout or "").strip()
         if not reply:
-            return jsonify({"ok": False, "error": "Jarvis is momentarily speechless — try again."}), 502
+            return jsonify({"ok": False, "error": "Jarvis is momentarily speechless, try again."}), 502
         return jsonify({"ok": True, "reply": reply})
     except subprocess.TimeoutExpired:
-        return jsonify({"ok": False, "error": "Jarvis took too long thinking — try again."}), 504
+        return jsonify({"ok": False, "error": "Jarvis took too long thinking, try again."}), 504
     except Exception as e:
         return jsonify({"ok": False, "error": "Jarvis engine error: %s" % e}), 500
 
@@ -5861,7 +5891,7 @@ def api_renter_login():
                     _login_failed(vin)
                     return jsonify({"ok": False, "error": "That birthday doesn't match this vehicle."}), 401
             else:
-                # legacy account with no birthday on file — enroll it now (VIN proves identity)
+                # legacy account with no birthday on file, enroll it now (VIN proves identity)
                 r["dob"] = dob
                 _save(RENTERS_PATH, renters)
             _login_ok(vin)
@@ -6078,7 +6108,7 @@ def api_partner_delete(pid):
 #
 # No annual plan until Sean picks its figure. An annual rate is normally a
 # discount on twelve months rather than 12 x monthly, so it is a decision, not
-# an arithmetic result — inventing one here would be guessing at a price.
+# an arithmetic result, inventing one here would be guessing at a price.
 #
 # This number is NOT published. The endpoint below has answered 404 to
 # everyone but the owner since 2026-08-01, and the landing page says the
@@ -6086,7 +6116,7 @@ def api_partner_delete(pid):
 # will be; it does not make an offer, which is the part that waits for the
 # attorney.
 FINANCE_PLANS = {
-    "monthly": {"amount": 34.00, "label": "AI Debt Eliminator — Monthly Plan", "billing": "$34/month"},
+    "monthly": {"amount": 34.00, "label": "AI Debt Eliminator, Monthly Plan", "billing": "$34/month"},
 }
 
 
@@ -6097,7 +6127,7 @@ def api_finance_enroll():
     🔒 CLOSED 2026-08-01 [40-agent council finding, unanimous]: this was a LIVE,
     UNAUTHENTICATED endpoint firing a real production Square charge whose
     description guarantees "Principal always protected" for a product that does
-    not exist yet — FTC/consumer-protection exposure + anyone could trigger
+    not exist yet, FTC/consumer-protection exposure + anyone could trigger
     charges. Owner-only until the product is real and lawyer-reviewed.
     Re-open by deleting the two lines below (and see the landing-page modal)."""
     if not session.get("owner"):
@@ -6123,7 +6153,7 @@ def api_finance_enroll():
         p["amount"], p["label"],
         # No safety claim in the charge description. "Principal always protected"
         # was here, and a charge description is a written representation to the
-        # customer at the moment they are billed — the worst possible place for a
+        # customer at the moment they are billed, the worst possible place for a
         # promise the product cannot keep. Removed 2026-08-08 with the landing
         # page's price cards; if this endpoint is ever reopened it must not carry
         # a guarantee back in with it.
@@ -6173,9 +6203,9 @@ def api_finance_wishlist():
     return jsonify({"wishes": list(reversed(_load(WISHLIST_PATH)))})
 
 
-# ---------- 🌟 travel wishes — what visitors WANT that the book doesn't have yet ----------
+# ---------- 🌟 travel wishes, what visitors WANT that the book doesn't have yet ----------
 # The demand side of the Destination Book: places people ask for, and the city
-# they want them in. Free-text, no account, no email required — a wish is a
+# they want them in. Free-text, no account, no email required, a wish is a
 # signal, and the counts tell us what to add (and where guides are wanted).
 TRAVEL_WISHES_PATH = _data_path("travel_wishes.json")
 
@@ -6199,7 +6229,7 @@ def api_travel_wish():
                       "wish": wish, "city": city, "kind": kind, "contact": contact,
                       "at": datetime.datetime.now().isoformat(timespec="seconds")})
         _save(TRAVEL_WISHES_PATH, items)
-        # how many people asked for something similar — the useful public signal
+        # how many people asked for something similar, the useful public signal
         w_low = wish.lower()
         same = sum(1 for x in items if (x.get("wish") or "").lower() == w_low)
     return jsonify({"ok": True, "count": same, "total": len(items)})
@@ -6282,7 +6312,7 @@ def _books_rows():
             "status": live.get("status") or "UNKNOWN",
             "amount": round(float(live.get("amount") or 0), 2),
         })
-    # Canceled invoices are mostly booking mistakes / duplicates — no money changed
+    # Canceled invoices are mostly booking mistakes / duplicates, no money changed
     # hands, so they're dropped from the books view, CSV, and tax totals. Square keeps
     # the underlying record if one is ever needed. New bookings are unaffected.
     rows = [r for r in rows if r["status"] != "CANCELED"]
@@ -6335,13 +6365,13 @@ def api_books_export():
                     headers={"Content-Disposition": "attachment; filename=plateau-books.csv"})
 
 
-# ---------- articles / proposals — the Reinvestment USA business-idea board ----------
+# ---------- articles / proposals, the Reinvestment USA business-idea board ----------
 # Open to anyone, no login: pitch a business idea, and readers can register
 # interest to invest in it or to launch/run it themselves. This is a lead
-# board only — no money or equity ever moves through the site; registering
+# board only, no money or equity ever moves through the site; registering
 # interest just leaves contact info for Plateau Strategy to follow up on.
 # ---------- the idea board is a public write, and it was unguarded ----------
-# Anyone can pitch a business idea with no account — that openness is the
+# Anyone can pitch a business idea with no account, that openness is the
 # point, and it should stay. But the endpoint accepted five posts in a row
 # from one caller in a test, with nothing to slow it and nothing to take a
 # post down afterwards. A public write on a real company's domain needs both:
@@ -6357,7 +6387,7 @@ def _idea_rate_ok(items):
     Counted per address over the stored ideas themselves rather than in a
     side table, so it survives a restart and cannot drift out of step with
     what was actually published. The address is kept only to make this
-    decision — _public_article never returns it."""
+    decision, _public_article never returns it."""
     ip = _client_ip()
     if not ip:
         return True, ""
@@ -6376,11 +6406,11 @@ def _idea_rate_ok(items):
         if age < 86400:
             day += 1
     if hour >= IDEA_MAX_PER_HOUR:
-        return False, ("That is %d ideas in an hour. Give the last one time to be read — "
+        return False, ("That is %d ideas in an hour. Give the last one time to be read, "
                        "you can post again shortly." % IDEA_MAX_PER_HOUR)
     if day >= IDEA_MAX_PER_DAY:
         return False, ("That is %d ideas today. The board is for ideas worth reading, "
-                       "not volume — try again tomorrow." % IDEA_MAX_PER_DAY)
+                       "not volume, try again tomorrow." % IDEA_MAX_PER_DAY)
     return True, ""
 
 
@@ -6399,38 +6429,75 @@ _ARTICLE_TR_PATH = os.path.join(BASE_DIR, "article_translations.json")
 _ARTICLE_TR = {"mtime": 0, "data": {}}
 
 
-def _article_translations():
-    """Translations for posted articles, keyed by lowercased title.
+def _content_hash(title, body):
+    """The fingerprint a translation is anchored to.
 
-    Kept in the repo rather than inside the article record, for a blunt
-    reason: the articles file lives on a disposable filesystem and is
-    destroyed on every deploy, so a translation stored beside its article
-    would die with it. Keyed by title so it survives the article being
-    posted again with a new id.
+    A translation is only ever shown against the exact text it translates.
+    Tonight proved why: the English on the page was one version of an
+    article while the Chinese beside it translated another, and the owner
+    was reading a mismatch with no way to know. Keying by title allowed
+    that, because a title survives an edit. A content hash does not: change
+    one character of the piece and the old translation simply stops being
+    offered, which is the honest behaviour.
     """
+    norm = (title or "").strip() + "\n" + "\n".join(
+        p.strip() for p in (body or "").split("\n") if p.strip())
+    return hashlib.sha256(norm.encode("utf-8")).hexdigest()[:16]
+
+
+_ARTICLE_TR_RUNTIME = _data_path("article_translations_runtime.json")
+_TR_CACHE = {}
+
+
+def _read_tr_file(path):
+    """One translation store, cached by mtime so reads are free."""
     try:
-        m = os.path.getmtime(_ARTICLE_TR_PATH)
-        if m != _ARTICLE_TR["mtime"]:
-            with open(_ARTICLE_TR_PATH, encoding="utf-8") as f:
-                _ARTICLE_TR["data"] = {k: v for k, v in json.load(f).items()
-                                       if not k.startswith("_")}
-            _ARTICLE_TR["mtime"] = m
-    except Exception:
-        pass
-    return _ARTICLE_TR["data"]
+        m = os.path.getmtime(path)
+    except OSError:
+        return {}
+    slot = _TR_CACHE.get(path)
+    if not slot or slot[0] != m:
+        try:
+            with open(path, encoding="utf-8") as f:
+                data = json.load(f)
+        except Exception:
+            data = {}
+        _TR_CACHE[path] = slot = (m, data)
+    return slot[1]
 
 
-def _translations_for(title):
-    return _article_translations().get((title or "").strip().lower()) or {}
+def _translations_for(title, body):
+    """Every translation anchored to THIS exact text, from both stores.
+
+    Two stores, one rule. The repo file carries hand-checked translations
+    and survives deploys. The runtime file is written by the auto
+    translator and lives wherever the site's data lives. Both are keyed by
+    content hash, and a stored translation whose paragraph count does not
+    match the source is refused, so what reaches a reader is aligned with
+    the text beside it or it is not shown at all.
+    """
+    h = _content_hash(title, body)
+    src_paras = len([p for p in (body or "").split("\n") if p.strip()])
+    out = {}
+    for path in (_ARTICLE_TR_PATH, _ARTICLE_TR_RUNTIME):
+        data = _read_tr_file(path)
+        entry = (data.get("by_hash") or {}).get(h) or {}
+        for lang, t in entry.items():
+            paras = t.get("paras") or [s for s in (t.get("body") or "").split("\n") if s.strip()]
+            if len(paras) != src_paras:
+                continue          # not anchored to this text: refuse it
+            out[lang] = {"title": t.get("title") or "", "body": "\n\n".join(paras),
+                         "paras": paras}
+    return out
 
 
 def _public_article(a):
-    """Public shape — investor/launcher emails are kept private, only counts are shown.
+    """Public shape, investor/launcher emails are kept private, only counts are shown.
 
     A LOCKED piece does not ship its body. That is the whole of the lock and
     it is the only place it can live: a paywall implemented in the page is a
     paywall a reader defeats with Ctrl-U, and one implemented by hiding an
-    element with CSS is not a paywall at all — the text is already on their
+    element with CSS is not a paywall at all, the text is already on their
     machine. So the body is replaced by the teaser here, before the JSON is
     written, and the reader's browser never receives what it has not paid for.
 
@@ -6454,19 +6521,52 @@ def _public_article(a):
         "locked_by": lock.get("by") if lock else None,
         "follower_count": len(a.get("followers", [])),
         "launcher_count": len(a.get("launchers", [])),
-        # The trades this article calls for — what goes at the foot of it.
+        # The trades this article calls for, what goes at the foot of it.
         "professionals": a.get("professionals"),
         # Whatever languages this piece has been translated into. A locked
         # article ships none of them, for the same reason it ships no body.
-        "translations": {} if locked else _translations_for(a.get("title")),
+        "translations": {} if locked else _translations_for(a.get("title"), a.get("body")),
     }
     return out
 
 
+def _rerecognize_stale(items):
+    """Re-read any article whose trades were recognised by an older engine.
+
+    This is what makes the recognizer automatic rather than a one-shot
+    stamp: improve the tables, bump PM_VERSION, and every stored post is
+    re-read on its next request. Without it, better recognition would only
+    reach articles posted after the improvement, and the owner's own post
+    would have kept its wrong trades forever.
+    """
+    try:
+        import professional_match
+        want = getattr(professional_match, "PM_VERSION", 1)
+        stale = [a for a in items
+                 if (a.get("professionals") or {}).get("version") != want]
+        if not stale:
+            return items
+        with _LOCK:
+            items = _load(ARTICLES_PATH)
+            changed = False
+            for a in items:
+                pr = a.get("professionals") or {}
+                if pr.get("version") == want:
+                    continue
+                a["professionals"] = professional_match.professionals_for(
+                    a.get("title", ""), a.get("body", ""))
+                changed = True
+            if changed:
+                _save(ARTICLES_PATH, items)
+    except Exception:
+        pass
+    return items
+
+
 @app.route("/api/articles")
 def api_articles():
-    items = _load(ARTICLES_PATH)
-    # A hidden idea is still in the file — taking one down must not destroy
+    items = _rerecognize_stale(_load(ARTICLES_PATH))
+    # A hidden idea is still in the file, taking one down must not destroy
     # what someone wrote, only stop it being published.
     return jsonify({"articles": [_public_article(a) for a in reversed(items)
                                  if not a.get("hidden")]})
@@ -6476,7 +6576,7 @@ def api_articles():
 # One idea, one address, readable by anyone
 #
 # The board lives inside a tab on the landing page and loads over JavaScript,
-# which means an idea had no address of its own — there was nothing to send
+# which means an idea had no address of its own, there was nothing to send
 # somebody. This is the missing half of "share your idea into your circle".
 #
 # Rendered on the SERVER, and that is the whole point rather than a style
@@ -6496,7 +6596,7 @@ def _og_description(text, limit=180):
     if len(s) <= limit:
         return s
     cut = s[:limit].rsplit(" ", 1)[0]
-    return (cut or s[:limit]).rstrip(",.;:—-") + "…"
+    return (cut or s[:limit]).rstrip(",.;:, -") + "…"
 
 
 @app.route("/idea/<aid>")
@@ -6514,7 +6614,7 @@ def idea_page(aid):
     locked = pub.get("locked")
 
     # The lock is enforced in _public_article, before the JSON or the HTML is
-    # built — so a locked idea's body is never in the bytes we send, and Ctrl-U
+    # built, so a locked idea's body is never in the bytes we send, and Ctrl-U
     # shows the teaser too. Said out loud because a paywall drawn in CSS is not
     # a paywall.
     when = ""
@@ -6529,10 +6629,10 @@ def idea_page(aid):
     paras = "".join("<p>%s</p>" % e(p) for p in body.split("\n") if p.strip())
 
     # What this piece has been translated into. Only languages that actually
-    # exist for THIS article are offered — a language button that changes
+    # exist for THIS article are offered, a language button that changes
     # nothing is worse than no button, because the reader concludes the site
     # is broken rather than that the work has not been done yet.
-    trs = {} if locked else _translations_for(a.get("title"))
+    trs = {} if locked else _translations_for(a.get("title"), a.get("body"))
     LANG_NAMES = {"zh": "\u4e2d\u6587", "es": "Espa\u00f1ol",
                   "ko": "\ud55c\uad6d\uc5b4", "vi": "Ti\u1ebfng Vi\u1ec7t"}
     lang_row = ""
@@ -6544,7 +6644,7 @@ def idea_page(aid):
                                % (code, LANG_NAMES[code]))
         lang_row = '<div class="lang-row" role="group" aria-label="Language">%s</div>' % "".join(buttons)
     # Paragraphs are split HERE, not in the browser. The first version passed
-    # the body whole and split it in JavaScript with "\\n" — which was written
+    # the body whole and split it in JavaScript with "\\n", which was written
     # into the page as a real line break, leaving an unterminated string. The
     # script died at parse time, so the language button rendered and did
     # nothing. Generated code should never carry an escape it does not have to.
@@ -6558,7 +6658,7 @@ def idea_page(aid):
     if locked:
         locked_note = (
             '<p class="idea-locked">This idea is locked. What you can read '
-            'above is the opening — the rest is available to unlock%s.</p>'
+            'above is the opening. The rest is available to unlock%s.</p>'
             % (" for $%g" % pub["price_usd"] if pub.get("price_usd") else ""))
 
     return Response("""<!DOCTYPE html>
@@ -6566,14 +6666,14 @@ def idea_page(aid):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>%(title)s — a business idea on Plateau Strategy</title>
+<title>%(title)s, a business idea on Plateau Strategy</title>
 <meta name="description" content="%(desc)s">
 <meta property="og:type" content="article">
 <meta property="og:title" content="%(title)s">
 <meta property="og:description" content="%(desc)s">
 <meta property="og:url" content="%(url)s">
 <meta property="og:site_name" content="Plateau Strategy Solution Lab">
-<meta property="og:image" content="%(origin)s/icon-512.png">
+<meta property="og:image" content="%(origin)s/share-card.jpg">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="%(title)s">
 <meta name="twitter:description" content="%(desc)s">
@@ -6602,7 +6702,7 @@ def idea_page(aid):
       text-decoration: none; }
   /* The language row. It sits IN the page rather than floating, because the
      floating globe on the main site is bottom-right, which is exactly where
-     WeChat's own browser puts its toolbar — so on the one page most likely to
+     WeChat's own browser puts its toolbar, so on the one page most likely to
      be shared into WeChat, the control was invisible. */
   .lang-row { display: flex; flex-wrap: wrap; gap: .2rem .4rem;
               margin: 0 0 1.4rem; }
@@ -6640,13 +6740,13 @@ def idea_page(aid):
     <button id="shareBtn">Share this idea</button>
     <a href="/#reinvestment">See every idea</a>
   </div>
-  <p class="idea-foot">Anyone can post a business idea on Plateau Strategy —
+  <p class="idea-foot">Anyone can post a business idea on Plateau Strategy:
   free, no account needed. Ideas are read, discussed and, when they are ready,
   worked up into what it would actually take to start them.</p>
 </div>
 <script>
 // Swapping the article between languages. The whole piece is already in the
-// page, so switching is instant and works with no network — which matters in
+// page, so switching is instant and works with no network, which matters in
 // an in-app browser on a phone.
 (function () {
   var TR = %(trs_json)s;
@@ -6699,6 +6799,7 @@ def idea_page(aid):
     setTimeout(function () { btn.textContent = 'Share this idea'; }, 2500);
   });
 </script>
+<script src="/i18n.js"></script>
 </body>
 </html>""" % {
         "title": e(title), "author": e(author), "desc": e(desc),
@@ -6717,8 +6818,8 @@ def idea_page(aid):
 def api_article_create():
     data = request.get_json(force=True, silent=True) or {}
     author = _no_tags((data.get("author") or "").strip())
-    title = _no_tags((data.get("title") or "").strip())
-    body = _no_tags((data.get("body") or "").strip())
+    title = _no_em_dash(_no_tags((data.get("title") or "").strip()), title=True)
+    body = _no_em_dash(_no_tags((data.get("body") or "").strip()))
     if not author or not title or not body:
         return jsonify({"ok": False, "error": "Your name, a title and body are all required."}), 400
     with _LOCK:
@@ -6754,6 +6855,13 @@ def api_article_create():
     try:
         if article.get("professionals"):
             _record_profession_demand(article["professionals"], title)
+        # translation starts now, in the background, anchored to this exact
+        # text; it appears when it is done and costs the post nothing
+        try:
+            import translator
+            translator.translate_async(title, body)
+        except Exception:
+            pass
     except Exception:
         pass
     return jsonify({"ok": True, "article": _public_article(article)})
@@ -6767,7 +6875,7 @@ def api_article_lock(aid):
     Owner-only, and that is a deliberate limit rather than a placeholder. The
     obvious next step is letting a verified attorney lock their own answer,
     and it is NOT built here because it cannot be built correctly until the
-    money question below is settled — who charges whom decides whether the
+    money question below is settled, who charges whom decides whether the
     attorney is a seller on this platform or a professional whose fee never
     touches it, and those are different systems.
 
@@ -6798,7 +6906,7 @@ def api_article_lock(aid):
     by = _no_tags((d.get("by") or "").strip())[:120]
     if not teaser:
         return jsonify({"ok": False, "error":
-                        "A teaser is required — a lock with nothing to read is not an offer."}), 400
+                        "A teaser is required, a lock with nothing to read is not an offer."}), 400
     with _LOCK:
         items = _load(ARTICLES_PATH)
         for a in items:
@@ -6816,7 +6924,7 @@ def api_article_grant(aid):
     """Give one reader access to one locked piece.
 
     Owner-only because nothing here takes payment yet. When a rail is wired in
-    it calls this after the money has actually settled — which is the reason
+    it calls this after the money has actually settled, which is the reason
     granting is its own step rather than something the checkout page does:
     a reader must never be able to reach this by asking."""
     vid = ((request.get_json(silent=True) or {}).get("vid") or "").strip()[:64]
@@ -6841,7 +6949,7 @@ def api_article_hide(aid):
 
     The board publishes instantly and on purpose, so this is the other half of
     that decision: something has to be able to remove what should not be on a
-    company's domain. It sets a flag rather than deleting — a takedown should
+    company's domain. It sets a flag rather than deleting, a takedown should
     not also destroy the record of what was posted."""
     on = bool((request.get_json(silent=True) or {}).get("hidden", True))
     with _LOCK:
@@ -6858,7 +6966,7 @@ def api_article_hide(aid):
 @owner_required
 def api_article_delete(aid):
     """Remove an idea outright. Hide and delete are different verbs on
-    purpose: hide is a TAKEDOWN — somebody else's post comes off the board
+    purpose: hide is a TAKEDOWN, somebody else's post comes off the board
     but the record of what was posted survives, which is the record you want
     if it ever has to be shown to anyone. Delete is for the owner clearing
     their own drafts and tests, where keeping a tombstone serves nobody.
@@ -6869,7 +6977,7 @@ def api_article_delete(aid):
         if len(keep) == len(items):
             return jsonify({"ok": False, "error": "No idea with that id."}), 404
         _save(ARTICLES_PATH, keep)
-    # /idea/<aid> now 404s and the sitemap drops it on next read — both come
+    # /idea/<aid> now 404s and the sitemap drops it on next read, both come
     # straight from the file, so there is nothing else to clean.
     return jsonify({"ok": True, "deleted": aid})
 
@@ -6896,7 +7004,7 @@ def api_article_vote(aid):
 
 @app.route("/api/articles/<aid>/follow", methods=["POST"])
 def api_article_follow(aid):
-    """Register interest to INVEST in this business idea — an email left here
+    """Register interest to INVEST in this business idea, an email left here
     is a lead, not a transaction; Plateau Strategy follows up directly."""
     data = request.get_json(force=True, silent=True) or {}
     email = (data.get("email") or "").strip().lower()
@@ -6916,7 +7024,7 @@ def api_article_follow(aid):
 
 @app.route("/api/articles/<aid>/launch", methods=["POST"])
 def api_article_launch(aid):
-    """Register interest to LAUNCH/run this business idea — same lead-only
+    """Register interest to LAUNCH/run this business idea, same lead-only
     contract as /follow, tracked separately so an idea's two audiences
     (capital vs. operators) don't get mixed together."""
     data = request.get_json(force=True, silent=True) or {}
@@ -6936,7 +7044,7 @@ def api_article_launch(aid):
 
 
 # ======================================================================
-# ARCHIVE — one owner-only home for every paper trail the site produces.
+# ARCHIVE, one owner-only home for every paper trail the site produces.
 # Each section aggregates a data store into flat rows so the owner can
 # browse and export (CSV) bookings, the marketing contact list, signed
 # agreements, uploaded paperwork, leads, partners, compliance and audit.
@@ -6962,7 +7070,7 @@ def _arch_bookings():
 
 
 def _arch_contacts():
-    """Every captured email/phone across the whole site, de-duped — the marketing list."""
+    """Every captured email/phone across the whole site, de-duped, the marketing list."""
     seen, out = set(), []
 
     def add(name, email, phone, source, ref, when):
@@ -7090,7 +7198,7 @@ def _arch_activity():
 
 
 def _arch_traffic():
-    """One row per day, newest first — page views, unique visitors, and the
+    """One row per day, newest first, page views, unique visitors, and the
     two tourist-facing tools (Trip Planner, Destination Book) broken out
     separately since that's usage, not just traffic."""
     data = _load_traffic()
@@ -7099,7 +7207,7 @@ def _arch_traffic():
         rec = data["days"][date]
         paths = rec.get("paths", {})
         uniq = rec.get("unique_visitors")
-        if uniq is None:  # today — still open, computed live from the raw ids
+        if uniq is None:  # today, still open, computed live from the raw ids
             uniq = len(rec.get("visitor_ids", []))
         row = {"date": date, "page_views": rec.get("pageviews", 0), "unique_visitors": uniq}
         tool_total = 0
@@ -7119,12 +7227,12 @@ CONVERSION_KINDS = [("booking", "bookings"),
 
 
 def _arch_sources():
-    """One row per day per source — where visitors came from, and what those
+    """One row per day per source, where visitors came from, and what those
     visits turned into. This is how an ad gets judged: a source with visits and
     no bookings is spend that isn't working, whichever way the pageview line
     moved.
 
-    A source can show conversions with zero visits that day — the psx_src
+    A source can show conversions with zero visits that day, the psx_src
     cookie lasts 30 days, so someone who arrived on Monday and booked on
     Thursday is credited to Monday's source on Thursday's row. That is the
     honest placement: the booking happened Thursday."""
@@ -7151,7 +7259,7 @@ def _arch_sources():
 def api_online():
     """How many travelers are on the site right now. The caller's own ping keeps
     them counted, so an open tab stays 'online' while it polls. Anonymous and
-    ephemeral — no identity, no history, nothing written to disk."""
+    ephemeral, no identity, no history, nothing written to disk."""
     if not _skip_traffic():
         _presence_touch(request.cookies.get("psx_vid"))
     n = _presence_count()
@@ -7172,7 +7280,7 @@ def _record_profession_demand(result, title):
 
     This is the collection step. An idea is posted, the trades it needs are
     recognised, and each one is written down with a count and the ideas that
-    called for it. Nobody curates the list — it is built entirely by what
+    called for it. Nobody curates the list, it is built entirely by what
     people actually ask for, so the platform only ever grows spots there is
     real demand for.
 
@@ -7182,7 +7290,9 @@ def _record_profession_demand(result, title):
     try:
         with _LOCK:
             store = _load_professions()
-            for pro in (result.get("matched") or []) + (result.get("always") or []):
+            matched = [p for p in (result.get("matched") or [])
+                       if p.get("tier", "likely") == "likely"]
+            for pro in matched + (result.get("always") or []):
                 slug = pro.get("slug")
                 if not slug:
                     continue
@@ -7204,14 +7314,14 @@ def _record_profession_demand(result, title):
 
 @app.route("/professionals")
 def professionals_page():
-    """The trades directory — generated from demand, not curated by hand."""
+    """The trades directory, generated from demand, not curated by hand."""
     return send_file(os.path.join(BASE_DIR, "professionals.html"))
 
 
 def _a_or_an(word):
     """"a IP attorney" was on screen. Acronyms are read letter by letter, so
     the article follows how the first letter SOUNDS, not how it is spelled:
-    an IP attorney, an MBA, an FBI agent — but a CPA, a HIPAA consultant."""
+    an IP attorney, an MBA, an FBI agent, but a CPA, a HIPAA consultant."""
     w = (word or "").strip()
     if not w:
         return "a"
@@ -7225,15 +7335,17 @@ def _a_or_an(word):
 
 @app.route("/trade/<slug>")
 def trade_page(slug):
-    """Every idea that needs this trade, on one page, with a link to each.
+    """Every idea that needs this trade, on one page, each one a link.
 
-    The point Sean made: the trades and the ideas were living in different
-    places. The board recognised that a post needs a real estate attorney,
-    and separately there was a list of trades, and nothing joined the two —
-    so a real estate attorney had no way to see the work waiting for them.
+    This is the join the owner asked for: a professional should land on
+    their trade and see the work waiting for them, with the evidence, not
+    a list of trades in one place and a list of ideas in another. It is a
+    plain URL on purpose, so it can be sent to a professional directly.
 
-    This is the join, and it is a plain URL, which means it is something you
-    can send to a professional directly: here are the posts that need you.
+    Ideas are grouped by how sure the engine is. "Plainly about it" is the
+    likely tier; "touches it" is the possible tier, shown dimmer, because
+    a professional's time is the scarce thing here and the page should
+    spend it on the strong matches first.
     """
     slug = (slug or "").strip().lower()
     label, why = slug.replace("-", " ").title(), ""
@@ -7241,41 +7353,60 @@ def trade_page(slug):
     if slug in store:
         label = store[slug].get("label") or label
         why = store[slug].get("why") or ""
+    is_always = slug in {s for s, _l, _w in __import__("professional_match").ALWAYS}
 
-    hits = []
-    for a in reversed(_load(ARTICLES_PATH)):
+    likely, possible = [], []
+    for a in _rerecognize_stale(_load(ARTICLES_PATH)):
         if a.get("hidden"):
             continue
         pr = a.get("professionals") or {}
-        allp = (pr.get("matched") or []) + (pr.get("always") or [])
-        me = next((x for x in allp if x.get("slug") == slug), None)
-        if not me:
+        me = next((x for x in (pr.get("matched") or []) if x.get("slug") == slug), None)
+        if me is None and is_always:
+            me = next((x for x in (pr.get("always") or []) if x.get("slug") == slug), None)
+        if me is None:
             continue
-        # the words in the post that called for this trade — so a professional
-        # can judge whether it is really their job before spending time on it
         ev = ", ".join(next((d.get("evidence") or [] for d in (pr.get("domains") or [])
-                             if d.get("name") == me.get("domain")), [])[:5])
-        hits.append((a, me, ev))
+                             if d.get("name") == me.get("domain")), [])[:4])
+        row = (a, ev)
+        (likely if me.get("tier", "likely") == "likely" or is_always else possible).append(row)
 
     e = _no_tags
-    if hits:
-        items = "".join(
-            '''<a class="tr-item" href="/idea/%s">
-                 <div class="tr-t">%s</div>
-                 <div class="tr-m">by %s%s</div>
-                 <p class="tr-x">%s</p>
-               </a>''' % (
-                e(a.get("id")), e(a.get("title") or ""), e(a.get("author") or "someone"),
-                (" · called for by: " + e(ev)) if ev else "",
-                e((_og_description(a.get("body") or "") or "")[:220]))
-            for a, me, ev in hits)
-        lede = ("%d idea%s here need%s %s %s." %
-                (len(hits), "" if len(hits) == 1 else "s",
-                 "s" if len(hits) == 1 else "", _a_or_an(label), label))
+
+    def rows(pairs):
+        out = []
+        for a, ev in pairs:
+            out.append(
+                '''<a class="tr-item" href="/idea/%s">
+                     <div class="tr-t">%s</div>
+                     <div class="tr-m">by %s%s</div>
+                     <p class="tr-x">%s</p>
+                   </a>''' % (
+                    e(a.get("id")), e(a.get("title") or ""),
+                    e(a.get("author") or "someone"),
+                    (" &middot; the words that called for you: " + e(ev)) if ev else "",
+                    e((_og_description(a.get("body") or "") or "")[:200])))
+        return "".join(out)
+
+    n = len(likely) + len(possible)
+    sections = ""
+    if likely:
+        sections += '<div class="tr-group">%s</div>' % rows(likely)
+    if possible:
+        sections += ('<div class="tr-sub">Touches it, less certain</div>'
+                     '<div class="tr-group tr-dim">%s</div>' % rows(possible))
+    if not n:
+        sections = ('''<p class="tr-empty">Nothing posted needs this yet. When
+                    somebody posts an idea that does, it appears here on its
+                    own, and this address stays the same. Worth keeping.</p>''')
+
+    if is_always:
+        lede = ("Every business posted here needs %s %s. %d idea%s on the board right now."
+                % (_a_or_an(label), label, n, "" if n == 1 else "s"))
+    elif n:
+        lede = ("%d idea%s posted here plainly need%s %s %s."
+                % (n, "" if n == 1 else "s", "s" if n == 1 else "",
+                   _a_or_an(label), label))
     else:
-        items = ('''<p class="tr-empty">No one has posted an idea needing this yet.
-                 When somebody does, it appears here, and this page keeps the
-                 same address — so it is worth keeping.</p>''')
         lede = "Nothing posted yet that needs %s %s." % (_a_or_an(label), label)
 
     return Response("""<!DOCTYPE html>
@@ -7283,13 +7414,13 @@ def trade_page(slug):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ideas that need %(an)s %(label)s — Plateau Strategy</title>
+<title>Ideas that need %(an)s %(label)s, Plateau Strategy</title>
 <meta name="description" content="%(lede)s">
 <meta property="og:title" content="Ideas that need %(an)s %(label)s">
 <meta property="og:description" content="%(lede)s">
 <meta property="og:url" content="%(origin)s/trade/%(slug)s">
 <meta property="og:site_name" content="Plateau Strategy Solution Lab">
-<meta property="og:image" content="%(origin)s/icon-512.png">
+<meta property="og:image" content="%(origin)s/share-card.jpg">
 <meta name="twitter:card" content="summary">
 <link rel="canonical" href="%(origin)s/trade/%(slug)s">
 <link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
@@ -7303,19 +7434,43 @@ def trade_page(slug):
   header .brand { font-size: 1.2rem; font-weight: 800; }
   header .right { margin-left: auto; display: flex; gap: 1.2rem; }
   .wrap { max-width: 44rem; }
-  .tr-lede { color: var(--psx-text2, #6b6459); margin: .2rem 0 2rem; }
+
+  /* the chapter opening every section of the site now gets: a hairline the
+     width of the column with a short navy mark at its centre */
+  .tr-open { position: relative; height: 1px; background: var(--m-line-firm, #d3d3da);
+             margin: 2.2rem 0 2.6rem; }
+  .tr-open::after { content: ""; position: absolute; top: -1px; left: 50%%;
+                    transform: translateX(-50%%); width: 64px; height: 3px;
+                    background: #1f3a5f; }
+
+  .tr-lede { color: var(--psx-text2, #6b6459); margin: .4rem 0 0; max-width: 58ch; }
+  .tr-why  { color: var(--psx-text2, #6b6459); margin: .4rem 0 0; font-size: .95rem; }
+
+  .tr-group { margin-top: 1.6rem; }
+  .tr-sub { font-size: .72rem; font-weight: 700; letter-spacing: .12em;
+            text-transform: uppercase; color: var(--psx-text2, #6b6459);
+            margin: 2.2rem 0 .2rem; }
+  .tr-dim .tr-t { color: var(--psx-text2, #6b6459); }
+
   .tr-item { display: block; text-decoration: none; color: inherit;
-             padding: 1.15rem 0; border-top: 1px solid var(--psx-line, #e6e2da); }
-  .tr-item:first-of-type { border-top: 0; }
-  .tr-t { font-weight: 700; font-size: 1.1rem; color: var(--psx-text, #1b1b1f); }
-  .tr-m { color: var(--psx-text2, #6b6459); font-size: .86rem; margin: .25rem 0 .5rem; }
+             padding: 1.2rem 0; border-top: 1px solid var(--psx-line, #e6e2da); }
+  .tr-group .tr-item:first-child { border-top: 0; }
+  .tr-t { font-weight: 700; font-size: 1.12rem; color: var(--psx-text, #1b1b1f);
+          line-height: 1.35; }
+  .tr-item:hover .tr-t { color: #1f3a5f; }
+  .tr-m { color: var(--psx-text2, #6b6459); font-size: .86rem; margin: .3rem 0 .55rem; }
   .tr-x { margin: 0; color: var(--psx-text2, #6b6459); font-size: .97rem; line-height: 1.6; }
-  .tr-cta { border-top: 1px solid var(--psx-line, #e6e2da); margin-top: 2.4rem;
-            padding-top: 1.4rem; }
   .tr-empty { color: var(--psx-text2, #6b6459); }
+
+  .tr-cta { border-top: 1px solid var(--psx-line, #e6e2da); margin-top: 2.6rem;
+            padding-top: 1.5rem; }
+  .tr-cta p { margin: 0 0 .8rem; }
+  .tr-cta a { font-weight: 700; }
+
   @media (max-width: 640px) {
     .wrap { padding-left: 1.1rem; padding-right: 1.1rem; }
     header .brand { font-size: 1rem; }
+    .page-title { font-size: 1.5rem; line-height: 1.22; }
   }
 </style>
 </head>
@@ -7326,19 +7481,25 @@ def trade_page(slug):
   <div class="right"><a href="/">Home</a></div>
 </header>
 <div class="wrap">
+  <div class="tr-open" role="presentation"></div>
   <div class="page-title">Ideas that need %(an)s %(label)s</div>
-  <p class="tr-lede">%(lede)s%(why)s</p>
-  %(items)s
+  <p class="tr-lede">%(lede)s</p>
+  %(why_line)s
+  %(sections)s
   <div class="tr-cta">
-    <p>Are you one? Publish an opinion against any of these and set your own
-       price — written once, sold as many times as it is worth buying.</p>
-    <p><a href="/#reinvestment">Register as a professional →</a></p>
+    <p>If this is your licence, any idea above is work you can answer once and
+       sell to everyone who needs the same answer. You set the price and keep
+       most of it.</p>
+    <p><a href="/#reinvestment">Register as a professional</a> &nbsp;&middot;&nbsp;
+       <a href="/professionals">See every trade being a<script src="/i18n.js"></script>
+sked for</a></p>
   </div>
 </div>
 </body>
-</html>""" % {"label": e(label), "lede": e(lede), "items": items, "an": _a_or_an(label),
-              "why": (" " + e(why)) if why else "",
-              "slug": e(slug), "origin": SITE_ORIGIN}, mimetype="text/html")
+</html>""" % {"label": e(label), "lede": e(lede), "sections": sections,
+              "an": _a_or_an(label), "slug": e(slug), "origin": SITE_ORIGIN,
+              "why_line": ('<p class="tr-why">%s</p>' % e(why)) if why else ""},
+        mimetype="text/html")
 
 
 @app.route("/api/professions")
@@ -7367,7 +7528,7 @@ def api_professions():
 def api_idea_professionals():
     """Which professionals an idea likely needs.
 
-    Public and stateless — it reads the text it is given and returns trades.
+    Public and stateless, it reads the text it is given and returns trades.
     Nothing is stored here; the board calls it when an idea is written and
     again when it is displayed, so editing the idea updates the list.
     """
@@ -7375,7 +7536,7 @@ def api_idea_professionals():
     try:
         import professional_match
         out = professional_match.professionals_for(d.get("title", ""), d.get("body", ""))
-        # Only count it when there is a real idea behind it — a keystroke in a
+        # Only count it when there is a real idea behind it, a keystroke in a
         # draft box should not inflate demand for an interior designer.
         if d.get("record") and len((d.get("title", "") + d.get("body", "")).strip()) > 25:
             _record_profession_demand(out, d.get("title", ""))
@@ -7456,7 +7617,7 @@ def api_persistence():
         "marker_written_now": wrote,
         "marker_on_disk": marker,
         "disk_total_gb": total_gb, "disk_free_gb": free_gb,
-        "verdict": ("Writing to a mounted disk — data should survive a deploy."
+        "verdict": ("Writing to a mounted disk, data should survive a deploy."
                     if persistent else
                     "DATA_DIR is unset, so writes go to the disposable filesystem "
                     "and are destroyed on every deploy."),
@@ -7466,7 +7627,7 @@ def api_persistence():
 @app.route("/api/traffic/places")
 @owner_required
 def api_traffic_places():
-    """Where the viewers are — owner only.
+    """Where the viewers are, owner only.
 
     Aggregate rows only: the day records hold "country|region|city": count,
     so this can say 40 people came from Seattle and can never say which 40.
@@ -7492,7 +7653,7 @@ def api_traffic_places():
             if country and region:
                 regions[country + " / " + region] = regions.get(country + " / " + region, 0) + n
             if city:
-                key = city + (", " + region if region else "") + (" — " + country if country else "")
+                key = city + (", " + region if region else "") + (", " + country if country else "")
                 cities[key] = cities.get(key, 0) + n
                 city_labels[label] = city_labels.get(label, 0) + n
 
@@ -7544,7 +7705,7 @@ PUBLIC_TRAFFIC_MIN = int(os.environ.get("PUBLIC_TRAFFIC_MIN", "100"))
 
 @app.route("/api/traffic/summary")
 def api_traffic_summary():
-    """Public, aggregate-only traffic numbers — no per-visitor detail, no
+    """Public, aggregate-only traffic numbers, no per-visitor detail, no
     owner login needed. Powers the small usage note next to the Trip
     Planner map and the Destination Book, so travelers see real numbers
     without needing the owner-only Archive."""
@@ -7565,8 +7726,8 @@ def api_traffic_summary():
         """People who opened it. Today's ids are still raw, so they can be
         counted across days without double-counting someone who came back;
         finished days keep only a per-day total, so those are summed. A visitor
-        returning on two different days is two — the honest reading of "this
-        week" — but one person refreshing thirty times is one, which is the
+        returning on two different days is two, the honest reading of "this
+        week", but one person refreshing thirty times is one, which is the
         number that used to be wrong."""
         total = 0
         for date, rec in days.items():
@@ -7582,7 +7743,7 @@ def api_traffic_summary():
         return {"today": people_path(path, today_iso),
                 "week": people_path(path, week_cutoff),
                 "all_time": people_path(path),
-                # kept separately, clearly named — this is what the old numbers were
+                # kept separately, clearly named, this is what the old numbers were
                 "views_today": sum_path(path, today_iso),
                 "views_week": sum_path(path, week_cutoff),
                 "views_all_time": sum_path(path)}
@@ -7591,7 +7752,7 @@ def api_traffic_summary():
     # Only the visitor count goes out. NOT the path breakdown, not the source
     # labels and not the conversions: which pages people open is competitive
     # information, where they came from tells anyone reading whether the ad
-    # spend is working, and the conversions are bookings — that is revenue.
+    # spend is working, and the conversions are bookings, that is revenue.
     # Those stay owner-only in the Archive. A public number can be the number
     # of people and nothing else.
     def site_people(cutoff=None):
@@ -7599,7 +7760,7 @@ def api_traffic_summary():
 
         Someone who comes back on Tuesday and Thursday counts twice. That is
         the same convention the per-tool numbers above already use and say so
-        — it is the honest reading of "this week", and the information needed
+       , it is the honest reading of "this week", and the information needed
         to do better was deliberately thrown away when each day closed.
         """
         total = 0
@@ -7633,7 +7794,7 @@ def api_traffic_summary():
 
 
 def _arch_comments():
-    """Community notes on places — newest first."""
+    """Community notes on places, newest first."""
     out = []
     for key, items in _comments_all().items():
         for m in items:
@@ -7645,7 +7806,7 @@ def _arch_comments():
 
 
 def _arch_wishes():
-    """What visitors asked us to add — the demand signal behind the book."""
+    """What visitors asked us to add, the demand signal behind the book."""
     out = []
     for w in reversed(_load(TRAVEL_WISHES_PATH)):
         out.append({"date": w.get("at", ""), "wish": w.get("wish", ""),
@@ -7657,11 +7818,11 @@ def _arch_wishes():
 # section key → (label, one-line description, builder)
 ARCHIVE_SECTIONS = [
     ("comments",   "💬 Place comments", "What travelers wrote about places in the Destination Book.", _arch_comments),
-    ("wishes",     "🌟 Traveler wishes", "Places and experiences visitors asked us to add — the demand signal.", _arch_wishes),
+    ("wishes",     "🌟 Traveler wishes", "Places and experiences visitors asked us to add, the demand signal.", _arch_wishes),
     ("traffic",    "📈 Site traffic", "Daily page views, unique visitors, and Trip Planner / Destination Book usage.", _arch_traffic),
-    ("sources",    "🎯 Where visitors came from", "Visits and bookings by source — Google, Reddit, direct, or a tagged ad. How you tell whether ad spend worked.", _arch_sources),
-    ("bookings",   "🧾 Bookings & invoices", "Every reservation — customer, trip, fare, invoice and status.", _arch_bookings),
-    ("contacts",   "📇 Contacts (marketing)", "Every captured email & phone across the whole site, de-duped — your advertising list.", _arch_contacts),
+    ("sources",    "🎯 Where visitors came from", "Visits and bookings by source, Google, Reddit, direct, or a tagged ad. How you tell whether ad spend worked.", _arch_sources),
+    ("bookings",   "🧾 Bookings & invoices", "Every reservation, customer, trip, fare, invoice and status.", _arch_bookings),
+    ("contacts",   "📇 Contacts (marketing)", "Every captured email & phone across the whole site, de-duped, your advertising list.", _arch_contacts),
     ("people",     "👤 Accounts", "Agent, driver and customer accounts.", _arch_people),
     ("agreements", "✍️ Signed agreements", "Every signed Driver Agreement with version, timestamp and IP.", _arch_agreements),
     ("paperwork",  "📎 Driver paperwork", "Uploaded documents & files (append-only paper trail).", _arch_paperwork),
@@ -7669,7 +7830,7 @@ ARCHIVE_SECTIONS = [
     ("partners",   "🏨 Partners / Atlas", "Prospect hotels and their sales contacts.", _arch_partners),
     ("compliance", "⚠️ Compliance", "Logged driver violations.", _arch_compliance),
     ("payouts",    "💸 Payouts ledger", "Every payout request and payment to agents & driver-agents.", _arch_payouts),
-    ("activity",   "🔔 Activity log", "Owner alerts — give-ups, quote requests and other events.", _arch_activity),
+    ("activity",   "🔔 Activity log", "Owner alerts, give-ups, quote requests and other events.", _arch_activity),
 ]
 _ARCHIVE_FN = {k: fn for k, _, _, fn in ARCHIVE_SECTIONS}
 
@@ -7734,10 +7895,10 @@ def api_archive_export():
 
 
 # ======================================================================
-# BOARD OF DIRECTORS — private governance vault for the managing members.
+# BOARD OF DIRECTORS, private governance vault for the managing members.
 # Keeps the company's corporate documents (bylaws, operating / shareholder
 # agreements, formation docs, board resolutions, contracts, cap table…) plus
-# a registry of the managing members. Owner-gated, append-only — nothing is
+# a registry of the managing members. Owner-gated, append-only, nothing is
 # ever overwritten, so it's a true corporate paper trail.
 # ======================================================================
 BOARD_DIR = _data_dir("board_docs")
@@ -7775,11 +7936,11 @@ def _save_board_file(data_url):
 
 
 # ------------------------------------------------------------- guide trip studio
-# A guide's product is not the sightseeing loop the planner draws — it is their
+# A guide's product is not the sightseeing loop the planner draws, it is their
 # own walk, with their own stops and their own timings. A Harvard student running
 # an hour in the Yard needs to name each stop, say how long they stand there and
 # why, and put a price on it. That is what this stores, and unlike the older
-# "offer this route" inbox — which only ever reached the owner — these listings
+# "offer this route" inbox, which only ever reached the owner, these listings
 # are meant to be READ BY THE PUBLIC. That is the whole point of selling one.
 #
 # The guide's contact details are never served publicly. A traveller registers
@@ -7806,24 +7967,24 @@ def _trip_email_body(t):
     """The whole listing as plain text, so the email is a complete copy of it."""
     lines = ["A guide listed a trip for sale.", "",
              "TRIP", "  " + str(t.get("title", "")),
-             "  %s · %s" % (t.get("city_label") or t.get("city") or "—", t.get("kind") or "—"),
+             "  %s · %s" % (t.get("city_label") or t.get("city") or ", ", t.get("kind") or ", "),
              "  price: %s %s" % (t.get("price") if t.get("price") is not None else "on request",
                                  "per " + str(t.get("price_unit", "person"))),
              "  up to %s people · %s" % (t.get("group_max"), t.get("languages") or "language not given"),
-             "  meet at: %s" % (t.get("meeting_point") or "—"),
-             "  includes: %s" % (t.get("includes") or "—"), ""]
+             "  meet at: %s" % (t.get("meeting_point") or ", "),
+             "  includes: %s" % (t.get("includes") or ", "), ""]
     if t.get("summary"):
         lines += ["WHAT THEY PROMISE", "  " + str(t["summary"]), ""]
     lines += ["STOPS (%s min in total)" % t.get("total_minutes", 0)]
     for i, s in enumerate(t.get("stops") or [], 1):
-        lines.append("  %d. %s — %s min%s"
+        lines.append("  %d. %s, %s min%s"
                      % (i, s.get("name", ""), s.get("minutes", 0),
                         ("  · " + s["note"]) if s.get("note") else ""))
     lines += ["", "GUIDE",
-              "  %s%s" % (t.get("guide_name") or "—",
+              "  %s%s" % (t.get("guide_name") or ", ",
                           (" · " + t["guide_org"]) if t.get("guide_org") else ""),
-              "  code:    %s" % (t.get("code") or "—"),
-              "  contact: %s" % (t.get("contact") or "—"),
+              "  code:    %s" % (t.get("code") or ", "),
+              "  contact: %s" % (t.get("contact") or ", "),
               "", "Listed %s · id %s" % (t.get("created_at", ""), t.get("id", "")),
               "", "Keep this email. The live site's storage is reset on every deploy,",
               "so this copy may outlast the listing itself."]
@@ -7903,9 +8064,9 @@ def api_guide_trip_create():
         trips.append(rec)
         _save(GUIDE_TRIPS_PATH, trips)
     try:
-        _push_owner_alert("guide_trip", "🎫 %s listed \"%s\" in %s — %s, %d stops."
+        _push_owner_alert("guide_trip", "🎫 %s listed \"%s\" in %s, %s, %d stops."
                           % (rec["guide_name"], rec["title"],
-                             rec["city_label"] or rec["city"] or "—", rec["kind"], len(stops)))
+                             rec["city_label"] or rec["city"] or ", ", rec["kind"], len(stops)))
         notify.email_owner(
             "🎫 New guided trip listed: %s" % rec["title"],
             _trip_email_body(rec))
@@ -7916,7 +8077,7 @@ def api_guide_trip_create():
 
 @app.route("/api/guide-trips")
 def api_guide_trips():
-    """Public. This is the shop window — anyone may browse what guides sell."""
+    """Public. This is the shop window, anyone may browse what guides sell."""
     city = str(request.args.get("city", "")).strip().lower()
     kind = str(request.args.get("kind", "")).strip().lower()
     mine = str(request.args.get("code", "")).strip().upper()
@@ -7972,16 +8133,16 @@ def api_guide_trip_interest(tid):
                       "ts": datetime.datetime.now().isoformat(timespec="seconds")})
         _save(GUIDE_INTEREST_PATH, items[-5000:])
     try:
-        _push_owner_alert("trip_interest", "🎟️ %s wants \"%s\" — reach them at %s (guide %s)."
+        _push_owner_alert("trip_interest", "🎟️ %s wants \"%s\", reach them at %s (guide %s)."
                           % (name, trip.get("title"), contact, trip.get("code")))
         notify.email_owner(
             "🎟️ %s wants the trip: %s" % (name, trip.get("title")),
             "A traveller asked about a guided trip.\n\n"
             "TRAVELLER\n  name:    %s\n  contact: %s\n  people:  %s\n  when:    %s\n  note:    %s\n\n"
-            "TRIP\n  %s (%s)\n  guide %s — reach the guide at %s\n\n"
+            "TRIP\n  %s (%s)\n  guide %s, reach the guide at %s\n\n"
             "Introduce them to each other."
-            % (name, contact, d.get("people") or "—", d.get("when") or "—",
-               d.get("note") or "—", trip.get("title"), tid,
+            % (name, contact, d.get("people") or ", ", d.get("when") or ", ",
+               d.get("note") or ", ", trip.get("title"), tid,
                trip.get("code"), trip.get("contact") or "no contact on file"))
     except Exception:
         pass
@@ -8005,7 +8166,7 @@ def guide_studio_page():
 
 
 # ------------------------------------------------------- board of directors gate
-# The board area is private, and its members are not site owners — they need a
+# The board area is private, and its members are not site owners, they need a
 # door of their own. Two boxes: your name, and the shared board password. Only
 # names on the roll may enter, so a leaked password alone is not a way in.
 # The password lives hashed in board_auth.json (gitignored) or in BOARD_PASSWORD;
@@ -8063,7 +8224,7 @@ def api_board_login():
         return _too_many_tries()
     if not (ok_pw and name and name in roll):
         _login_failed(name)
-        # One message for both failures — never reveal which half was right.
+        # One message for both failures, never reveal which half was right.
         return jsonify({"ok": False, "error": "That name and password do not match our board roll."}), 401
     _login_ok(name)
     session["board"] = name
@@ -8170,10 +8331,10 @@ def api_board_document_file(docid):
 
 
 # ======================================================================
-# UNCOVERED-RIDE REMINDER — nudge dispatch when a ride isn't being taken.
+# UNCOVERED-RIDE REMINDER, nudge dispatch when a ride isn't being taken.
 # A ride sits NEW (in the open pool) when no driver has claimed it, or after
-# a driver gives it up. If it stays uncovered too long — or its pickup is
-# approaching — we remind the owner (dashboard alert + SMS), escalating as
+# a driver gives it up. If it stays uncovered too long, or its pickup is
+# approaching, we remind the owner (dashboard alert + SMS), escalating as
 # pickup nears. Give-ups already alert immediately (see api_giveup); this
 # catches the "nobody is taking it" case.
 # ======================================================================
@@ -8185,7 +8346,7 @@ def _parse_iso(s):
 
 
 def _uncovered_since(r):
-    """When a ride became uncovered — its last give-up, else when it was created."""
+    """When a ride became uncovered, its last give-up, else when it was created."""
     gv = r.get("giveups") or []
     if gv:
         return gv[-1].get("at") or r.get("created_at")
@@ -8210,7 +8371,7 @@ def _uncovered_rides(now=None):
 def _uncovered_alert_text(r, mins, hours_left, urgent):
     t = r.get("trip", {}) or {}
     c = r.get("client", {}) or {}
-    tag = ("🚨 URGENT — pickup is close and still no driver"
+    tag = ("🚨 URGENT, pickup is close and still no driver"
            if urgent else "⚠️ No driver has taken this ride yet")
     left = (" · pickup in %.1fh" % hours_left) if hours_left is not None else ""
     return ("%s: %s (%s → %s) for %s. Open %d min%s. Assign a driver in Dispatch or cover it." % (
@@ -8241,9 +8402,9 @@ def _reservation_reminder_scan(send=True):
             hours_left = (pickup - now).total_seconds() / 3600.0 if pickup else None
             urgent = hours_left is not None and hours_left < urgent_h
             if mins < remind_after and not urgent:
-                continue  # too fresh — drivers may still claim it
+                continue  # too fresh, drivers may still claim it
             # Cap total SMS reminders per ride so a chronically-stale one can't text
-            # forever (it still shows on the dashboard banner — just stops texting).
+            # forever (it still shows on the dashboard banner, just stops texting).
             max_reminders = int(float(os.environ.get("UNCLAIMED_MAX_REMINDERS", 4)))
             if int(r.get("reminded_count", 0)) >= max_reminders:
                 continue
@@ -8268,7 +8429,7 @@ def _reservation_reminder_scan(send=True):
 # The free OpenStreetMap query servers are slow and rate-limit by IP, so every
 # visitor asking them directly meant 30-45s waits and empty layers. The server
 # asks once, holds the answer for an hour, and every later visitor gets it
-# instantly — one polite request on behalf of everyone instead of one each.
+# instantly, one polite request on behalf of everyone instead of one each.
 _OVERPASS_MIRRORS = ["https://overpass.kumi.systems/api/interpreter",
                      "https://overpass.private.coffee/api/interpreter",
                      "https://overpass-api.de/api/interpreter"]
@@ -8285,7 +8446,7 @@ _OVERPASS_DEADLINE = 60              # total upstream seconds per request
 
 
 # ----------------------------------------------------------- live road traffic
-# Nobody gives real-time traffic away without a key — it is measured from fleet
+# Nobody gives real-time traffic away without a key, it is measured from fleet
 # data, not volunteered like map geometry. TomTom's free tier is the one that
 # fits: 50,000 tiles a day, no credit card, commercial use allowed. The map
 # stays perfectly usable without it; the layer simply does not offer itself
@@ -8312,7 +8473,7 @@ def api_traffic_key():
 #
 # The current month keeps a set of browser ids so one person replanning eleven
 # times is one planner rather than eleven. When the month rolls the ids are
-# dropped and the count is all that survives — the same trade traffic.json
+# dropped and the count is all that survives, the same trade traffic.json
 # makes, for the same reason, with the same cost: a closed month cannot be
 # recounted, because the information needed to do it is gone on purpose.
 ROUTE_DEMAND_PATH = _data_path("route_demand.json")
@@ -8421,7 +8582,7 @@ def api_route_demand():
                 rec["ids"].append(vid)
                 rec["n"] = len(rec["ids"])
         else:
-            # No id to dedupe on — count it once and move on.
+            # No id to dedupe on, count it once and move on.
             rec["n"] = int(rec.get("n") or 0) + 1
         _save(ROUTE_DEMAND_PATH, data)
     return jsonify({"ok": True, "counted": True})
@@ -8528,16 +8689,16 @@ def api_ride_demand_list():
 # anyone would go, and searching it by distance in a dense city returns office
 # blocks. Two other free, keyless public sources answer that better together:
 #
-#   Wikidata  — asks by KIND ("museums, parks, monuments, castles near here"),
+#   Wikidata , asks by KIND ("museums, parks, monuments, castles near here"),
 #               so the candidate list is attractions rather than whatever is
 #               closest, and it answers in about a second.
-#   Wikipedia — says what each one is, supplies a photo, and reports how many
+#   Wikipedia, says what each one is, supplies a photo, and reports how many
 #               people look it up, which is the closest honest measure of
 #               "worth seeing" that exists for free.
 #
 # Wikidata proposes, Wikipedia ranks. A neighborhood playground and the Museum
 # of Fine Arts both come back from the first; only one of them survives the
-# second. Answers are kept for a day — landmarks do not move.
+# second. Answers are kept for a day, landmarks do not move.
 _WIKI_CACHE = {}
 _WIKI_TTL = 86400
 _WIKI_MAX = 300
@@ -8573,7 +8734,7 @@ def _wiki_get(params):
 
 def _wikidata_nearby(lat, lon, radius_km):
     """Attraction-shaped places near a point that also have an English Wikipedia
-    article — the article requirement is itself a first notability filter."""
+    article, the article requirement is itself a first notability filter."""
     import requests
     # Ordering by how many languages write about a place is what makes this
     # useful: without it the query returns an arbitrary 250 of whatever is
@@ -8709,7 +8870,7 @@ def api_mapdata():
                     continue
                 j = r.json()
                 els = j.get("elements") or []
-                # a throttled reply carries a "remark" with an empty list — that is
+                # a throttled reply carries a "remark" with an empty list, that is
                 # not "nothing here", so move on to the next mirror
                 if not els and j.get("remark"):
                     last = j["remark"][:120]
@@ -8724,7 +8885,7 @@ def api_mapdata():
                 last = str(e)[:120]
     finally:
         _OVERPASS_SEM.release()
-    # everything failed — hand back a stale answer rather than nothing
+    # everything failed, hand back a stale answer rather than nothing
     if hit:
         return jsonify({"ok": True, "elements": hit["data"], "cached": True, "stale": True})
     return jsonify({"ok": False, "error": last or "map servers busy"}), 503
@@ -8733,7 +8894,7 @@ def api_mapdata():
 @app.route("/api/dispatch/uncovered")
 @owner_required
 def api_dispatch_uncovered():
-    """The rides no driver has taken — feeds the Dispatch 'needs attention' banner.
+    """The rides no driver has taken, feeds the Dispatch 'needs attention' banner.
     Read-only; the background loop does the actual SMS/alert reminding."""
     now = datetime.datetime.now()
     uncovered = []

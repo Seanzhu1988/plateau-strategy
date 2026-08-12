@@ -1,4 +1,4 @@
-/* "Continue with Google" — one implementation, any form.
+/* "Continue with Google", one implementation, any form.
  *
  * Lifted out of booking.html, which had the only copy. Putting the same forty
  * lines into the driver and agent forms as well would have made three copies
@@ -13,8 +13,8 @@
  *
  * Nothing is stored on either side. The reply fills two fields.
  *
- * Silent about failures on purpose. Every path out of here — no client id
- * configured, Google unreachable, script blocked, verification refused —
+ * Silent about failures on purpose. Every path out of here, no client id
+ * configured, Google unreachable, script blocked, verification refused, 
  * leaves the visitor with a form they can still type into. A sign-in shortcut
  * that shouts when it breaks is worse than one that quietly is not there.
  *
@@ -68,7 +68,7 @@
     if (!loaded || !window.google || !google.accounts || !google.accounts.id) return;
 
     // The fields this button belongs to. A <form> around them is the clean
-    // answer, but only booking.html has one — the driver and agent pages are
+    // answer, but only booking.html has one, the driver and agent pages are
     // loose <label>/<input> pairs in a card, so there is no element to scope
     // to and the search has to be the whole document. That is safe because
     // both of those pages tag their fields explicitly.
@@ -91,9 +91,9 @@
           if (mailEl && d.email && !mailEl.value) mailEl.value = d.email;
           var note = box.querySelector('.gsi-note');
           if (note) note.textContent = 'Signed in as ' + d.email
-                                     + ' — check the rest and send it.';
+                                     + ', check the rest and send it.';
           // Move them to the first thing still empty, so the shortcut ends
-          // with the cursor where the work is — but only forwards. The driver
+          // with the cursor where the work is, but only forwards. The driver
           // page puts a "returning driver" sign-in box ABOVE this button, in
           // the same card and with no form between them, so "first empty field
           // on the page" is that page's VIN box: the shortcut would fill the
@@ -108,7 +108,7 @@
             // display:none block until "Agency" is picked. focus() on one of
             // those is a no-op, so it would silently swallow the jump.
             if (!el.getClientRects().length) continue;
-            // Node.DOCUMENT_POSITION_FOLLOWING — el comes after the anchor.
+            // Node.DOCUMENT_POSITION_FOLLOWING, el comes after the anchor.
             if (anchor && !(anchor.compareDocumentPosition(el) & 4)) continue;
             el.focus();
             break;

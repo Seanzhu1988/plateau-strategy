@@ -12,16 +12,16 @@ guessing which one is happening is how this gets fixed in the wrong place.
 
 So this drives a real browser: find everything that behaves like a toggle,
 click it, click it again, and compare the class list and aria-pressed against
-what they were before. Twice is the whole test — a toggle is a thing that
+what they were before. Twice is the whole test, a toggle is a thing that
 returns.
 
 Reported separately:
-  * LATCHED   — state changed on the first click and did not come back.
-  * EXCLUSIVE — it stayed on, but clicking it turned a SIBLING off, so it is
+  * LATCHED  , state changed on the first click and did not come back.
+  * EXCLUSIVE, it stayed on, but clicking it turned a SIBLING off, so it is
                 one of a radio group. Individual/Organization has no valid
                 "neither" state; staying on is the right behaviour and this is
                 listed only so the difference is visible rather than assumed.
-  * STUCK LOOK — state did come back, but the control still draws as active
+  * STUCK LOOK, state did come back, but the control still draws as active
                  because focus never left it. Read with the mouse parked away
                  from the control, or :hover would masquerade as this.
 
@@ -75,7 +75,7 @@ SIBS_JS = """(i) => {
 STATE_JS = """(i) => {
   const el = document.querySelector('[data-psx-toggle-probe="' + i + '"]');
   if (!el) return null;
-  // Class TOKENS, sorted — not the raw string. Comparing className verbatim
+  // Class TOKENS, sorted, not the raw string. Comparing className verbatim
   // reported the article vote buttons as latched when all that had changed was
   // a trailing space, which is a bug in the test, not in the page.
   const cls = (el.className || '').trim().split(/\s+/).filter(Boolean).sort().join(' ');
@@ -147,7 +147,7 @@ def main():
         b.close()
 
     print("\n  %d controls clicked twice.\n" % checked)
-    print("  LATCHED — turned on and would not turn off")
+    print("  LATCHED, turned on and would not turn off")
     if latched:
         for r, t, a, z in latched:
             print("    %-18s %-34s" % (r, t))
@@ -156,14 +156,14 @@ def main():
     else:
         print("    none")
 
-    print("\n  EXCLUSIVE — one of a radio group, so staying on is correct")
+    print("\n  EXCLUSIVE, one of a radio group, so staying on is correct")
     if exclusive:
         for r, t in exclusive:
             print("    %-18s %s" % (r, t))
     else:
         print("    none")
 
-    print("\n  STUCK LOOK — state returned, but it still draws as pressed")
+    print("\n  STUCK LOOK, state returned, but it still draws as pressed")
     if stuck:
         for r, t, a, z in stuck:
             print("    %-18s %-34s %s -> %s" % (r, t, a, z))

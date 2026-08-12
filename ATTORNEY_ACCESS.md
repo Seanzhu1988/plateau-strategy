@@ -1,4 +1,4 @@
-# Everybody's Business Attorney — what is built, and what must be answered first
+# Everybody's Business Attorney, what is built, and what must be answered first
 
 A place where attorneys read the business ideas people post and write back a
 legal view; that view is locked until it is paid for, so the attorney is paid
@@ -52,7 +52,7 @@ rather than by our checkout.
 and attorneys are paid separately.** Keeps our billing simple and never prices
 per answer, but it is further from "the attorney gets paid for this answer".
 
-I would put money on **B**, and it is the one this code is shaped for — the
+I would put money on **B**, and it is the one this code is shaped for, the
 grant step is separate from any checkout precisely so that whoever confirms
 payment can be someone other than us. But this is a question for an attorney
 in Washington, and it should cost one hour of somebody's time to answer
@@ -62,7 +62,7 @@ properly before any payment code is written.
 
 ## What is built
 
-A general lock on any piece of writing. Nothing in it knows about attorneys —
+A general lock on any piece of writing. Nothing in it knows about attorneys, 
 "other ideas locked too" is the same mechanism, not a second one.
 
 | Endpoint | Who | What |
@@ -79,7 +79,7 @@ Not hidden with CSS, not removed by a script after render, not present in the
 JSON and ignored by the page. The substitution happens in `_public_article`
 before the response is written. `test_locked_content.py` asserts it by reading
 the raw bytes of the API response and checking the protected sentence does not
-appear anywhere in them — because every weaker form of this is defeated by
+appear anywhere in them, because every weaker form of this is defeated by
 View Source or the Network tab, and each of those is how real paywalls leak.
 
 A lock also requires a teaser. A price on nothing is not an offer, and a

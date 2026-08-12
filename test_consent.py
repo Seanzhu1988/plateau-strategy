@@ -90,18 +90,18 @@ import math                                               # noqa: E402
 seattle = C.coarsen(47.6062, -122.3321)
 chk("a real point returns a cell (%s)" % seattle, bool(seattle))
 chk("the cell is declared ~11km", seattle["cell_km"] >= 10)
-chk("and the answer is not the question — the point is moved",
+chk("and the answer is not the question, the point is moved",
     seattle["lat"] != 47.6062 and seattle["lon"] != -122.3321)
 
 # The property that matters is RESOLUTION: how far apart two points must be
 # before the output can tell them apart. Comparing one pair of points does not
-# measure that — any grid splits some near pair across a boundary, which says
+# measure that, any grid splits some near pair across a boundary, which says
 # nothing about cell size. So sweep longitude, find where the output actually
 # changes, and measure the spacing. That is the resolution, black-box.
 #
 # Worth measuring rather than reasoning about, because a fixed grid in DEGREES
 # is not a fixed distance: a degree of longitude is ~111km at the equator and
-# a few metres near the pole, so 0.1 degrees at 89 north would be under 200m —
+# a few metres near the pole, so 0.1 degrees at 89 north would be under 200m, 
 # well inside the 1,750ft line this exists to clear.
 MHMDA_PRECISE_KM = 0.533          # 1,750 feet, the statutory "precise location"
 
@@ -131,7 +131,7 @@ for lat in (0.0, 47.6, 60.0, 80.0, 89.0, -89.0):
 
 # North-south needs no correction factor, but it still has to be coarse. Same
 # measurement, same reason: "these two points collapse" is not a property of a
-# grid — every grid splits some adjacent pair — so measure the spacing instead.
+# grid, every grid splits some adjacent pair, so measure the spacing instead.
 lat, prev, edges = 46.5, None, []
 while lat < 48.0 and len(edges) < 2:
     cell = (C.coarsen(lat, 0)["lat"],)

@@ -3,7 +3,7 @@
 
 A phone photo carries far more than the picture. A JPEG straight from a camera
 roll typically holds the exact GPS position it was taken at, the device model
-and serial, the software, the timestamp to the second, and — on some phones —
+and serial, the software, the timestamp to the second, and, on some phones, 
 the owner's name in the copyright field. Publishing that file as-is publishes
 all of it.
 
@@ -15,10 +15,10 @@ so nothing was checked, and the coordinates ride along inside the file.
 
 So this module does two separate jobs and keeps them separate:
 
-    read_gps(raw)          — where was this taken? Used to place the pin, and
+    read_gps(raw)         , where was this taken? Used to place the pin, and
                              passed through the same private-residence check
                              as a typed address before anything is written.
-    strip_metadata(raw)    — return the picture with every metadata block gone.
+    strip_metadata(raw)   , return the picture with every metadata block gone.
 
 The stored file is always the stripped one. The coordinates are used and then
 the file that carried them is discarded. A reader of the published photo learns
@@ -38,21 +38,21 @@ import struct
 
 JPEG_SOI = b"\xff\xd8"
 # Segments carrying identity rather than picture. APP2 (ICC colour profile) is
-# deliberately KEPT — it changes how the image renders and says nothing about
+# deliberately KEPT, it changes how the image renders and says nothing about
 # the photographer.
-_JPEG_DROP = {0xE1,  # APP1 — EXIF and XMP
-              0xE0,  # APP0 — JFIF; harmless but nothing needs it
-              0xEC,  # APP12 — Picture Info, some cameras write settings here
-              0xED,  # APP13 — Photoshop/IPTC, often author and copyright
-              0xEE,  # APP14 — Adobe
-              0xFE}  # COM — free-text comment
+_JPEG_DROP = {0xE1,  # APP1, EXIF and XMP
+              0xE0,  # APP0, JFIF; harmless but nothing needs it
+              0xEC,  # APP12, Picture Info, some cameras write settings here
+              0xED,  # APP13, Photoshop/IPTC, often author and copyright
+              0xEE,  # APP14, Adobe
+              0xFE}  # COM, free-text comment
 _PNG_DROP = {b"tEXt", b"iTXt", b"zTXt", b"eXIf", b"tIME"}
 
 
 def strip_metadata(raw, mime=""):
     """Return the image with identifying metadata removed.
 
-    Unknown or unsupported formats come back unchanged rather than mangled —
+    Unknown or unsupported formats come back unchanged rather than mangled, 
     the caller decides whether to accept a format this cannot clean, and
     returning a broken file would be worse than returning the original."""
     if not raw:
@@ -72,14 +72,14 @@ def _strip_jpeg(raw):
         if raw[i] != 0xFF:
             break                       # not a marker where one was expected
         marker = raw[i + 1]
-        if marker == 0xD9:              # end of image — nothing follows it
+        if marker == 0xD9:              # end of image, nothing follows it
             out += raw[i:i + 2]
             return bytes(out)
         if marker == 0xD8 or 0xD0 <= marker <= 0xD7 or marker == 0x01:
             out += raw[i:i + 2]         # standalone markers carry no length
             i += 2
             continue
-        if marker == 0xDA:              # start of scan — the picture itself
+        if marker == 0xDA:              # start of scan, the picture itself
             out += raw[i:]
             return bytes(out)
         if i + 4 > n:
@@ -119,7 +119,7 @@ def read_gps(raw):
     """(lat, lon) the photo was taken at, or None.
 
     Walks the EXIF TIFF header to the GPS sub-directory. Returns None for
-    anything it cannot read with confidence — a wrong coordinate would put a
+    anything it cannot read with confidence, a wrong coordinate would put a
     pin on a stranger's house, so every failure here is silent and total."""
     try:
         exif = _jpeg_exif(raw)
@@ -188,7 +188,7 @@ def _entry_bytes(exif, e, end):
 
     This is the rule that broke the first version: a value of four bytes or
     fewer is stored INLINE in the entry, and only a longer one is stored at an
-    offset. "N\\0" for a hemisphere is two bytes, so it is inline — reading it
+    offset. "N\\0" for a hemisphere is two bytes, so it is inline, reading it
     as a pointer sent the parser off to a random offset and every western
     longitude came back positive, putting Seattle in China."""
     typ, count = struct.unpack(end + "HI", exif[e + 2:e + 8])

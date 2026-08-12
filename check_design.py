@@ -3,20 +3,20 @@
 
 Four checks, one browser pass:
 
-  1. **Contrast** — every element that renders its own text, against what is
+  1. **Contrast**, every element that renders its own text, against what is
      really behind it, at both desktop and phone width.
-  2. **Gradients** — the single most recognisable tell of a generated site,
+  2. **Gradients**, the single most recognisable tell of a generated site,
      and the thing the paper redesign exists to remove.
-  3. **Arm assignment** — which of the four business hues each page resolved
+  3. **Arm assignment**, which of the four business hues each page resolved
      to, because a page tagged with the wrong arm is a bug no ratio can see.
-  4. **Off-palette colour** — text that is perfectly legible and still not a
+  4. **Off-palette colour**, text that is perfectly legible and still not a
      colour anyone chose. Passing contrast is not the same as belonging: a
      Tailwind amber on a Trip Planner link clears AA and is still a leftover,
      and the Destination Book had a link with no styling at all, rendering in
      the 1994 browser-default blue. This is the check that separates a page
      that is accessible from a page that looks designed.
 
-Why this is a rendering check and not a grep over the stylesheets — every one
+Why this is a rendering check and not a grep over the stylesheets, every one
 of these was a real mistake made on this repo:
 
   * A bulk find-and-replace left a badge dark-brown on dark-brown at 1.47:1.
@@ -57,8 +57,8 @@ except ImportError:                                          # pragma: no cover
 # :not() chain a human must remember to sync.
 #
 # Two sources, because neither alone is complete:
-#   * app.py            — what the site actually serves (catches new routes)
-#   * the .html files    — what exists on disk (catches files with no route,
+#   * app.py           , what the site actually serves (catches new routes)
+#   * the .html files   , what exists on disk (catches files with no route,
 #                          which a url_map walk can never see)
 # ---------------------------------------------------------------------------
 import os
@@ -68,16 +68,16 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Scaffolding, on purpose. Anything NOT listed here must be swept or explained.
 EXCLUDED = {
-    "contrast-audit.html": "the older in-browser tool — scaffolding, not a page",
+    "contrast-audit.html": "the older in-browser tool, scaffolding, not a page",
 }
 BACKUP_RE = re.compile(r"\.backup-\d+", re.I)
 
 
 def discover():
-    """Return (routes, dark_files). Static scan — importing app.py would start
+    """Return (routes, dark_files). Static scan, importing app.py would start
     its background threads, and a gate must not have side effects."""
     src = open(os.path.join(BASE_DIR, "app.py"), encoding="utf-8", errors="replace").read()
-    # @app.route("/x")  ...  send_file(... "y.html")   — decorator to the file
+    # @app.route("/x")  ...  send_file(... "y.html")  , decorator to the file
     # it eventually serves, allowing decorator stacks and intervening lines.
     routes, served = [], set()
     for m in re.finditer(r'@app\.route\(\s*[\'"]([^\'"]+)[\'"]', src):
@@ -87,7 +87,7 @@ def discover():
         # Bound the window to THIS decorator's own function.
         #   * unbounded, it reads the next function and credits this route with
         #     that file (/modern.css was first reported as a page this way);
-        #   * bounded at the next @app.route, it truncates STACKED decorators —
+        #   * bounded at the next @app.route, it truncates STACKED decorators, 
         #     @app.route("/renter") sits directly above @app.route("/driver"),
         #     so /renter lost its send_file and silently left the sweep. That
         #     is a coverage regression wearing the costume of a tidy fix.
@@ -117,7 +117,7 @@ ROUTES, DARK_FILES = discover()
 
 # Pages shared by link need their key before they will answer at all. The key
 # is spent once per browser context, below, rather than being carried in the
-# route — otherwise it would be printed on every result line and end up in
+# route, otherwise it would be printed on every result line and end up in
 # whatever log this gate writes to. Covered when the key is in the
 # environment; the skip is printed rather than silent, because a gate that
 # quietly stops covering a page is worse than one that fails.
@@ -128,7 +128,7 @@ _OWNER_USER = (os.environ.get("OWNER_TEST_USER") or "").strip()
 _OWNER_PASS = (os.environ.get("OWNER_TEST_PASS") or "").strip()
 if not _OWNER_USER:
     ROUTES = [r for r in ROUTES if r != "/setup"]
-    print("note: /setup not checked — set OWNER_TEST_USER/OWNER_TEST_PASS to include it")
+    print("note: /setup not checked, set OWNER_TEST_USER/OWNER_TEST_PASS to include it")
 
 _ROBOT_KEY = (os.environ.get("ROBOT_SHARE_KEY") or "").strip()
 _LAB_USER = (os.environ.get("LAB_TEST_USER") or "").strip()
@@ -136,10 +136,10 @@ _LAB_PASS = (os.environ.get("LAB_TEST_PASS") or "").strip()
 if _ROBOT_KEY:
     ROUTES.append("/robot")
     if not _LAB_USER:
-        print("note: /robot will show its sign-in page — set LAB_TEST_USER and "
+        print("note: /robot will show its sign-in page, set LAB_TEST_USER and "
               "LAB_TEST_PASS to check the page behind it")
 else:
-    print("note: /robot not checked — set ROBOT_SHARE_KEY to include it")
+    print("note: /robot not checked, set ROBOT_SHARE_KEY to include it")
 
 # The eight views stacked inside "/". Each is activated in turn.
 VIEWS = ["overview", "transportation", "operations", "realestate",
@@ -151,14 +151,14 @@ def resolve_chrome():
     Playwright installed locally.
 
     This was hardcoded to a Linux container path, which means the gate could
-    not LAUNCH on the machine the site is developed on — it did not merely miss
+    not LAUNCH on the machine the site is developed on, it did not merely miss
     findings, it never ran here at all. A gate that cannot start is the
     quietest false pass there is.
     """
     container = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
     return container if os.path.exists(container) else None
 
-# Every colour a glyph is allowed to be. Anything else is a leftover — it
+# Every colour a glyph is allowed to be. Anything else is a leftover, it
 # does not matter that it is legible. Kept as rendered rgb() strings so this
 # compares against what the browser actually resolved, tokens and all.
 PALETTE = [
@@ -168,7 +168,7 @@ PALETTE = [
     "rgb(27, 94, 67)", "rgb(138, 90, 18)", "rgb(163, 48, 42)",
     "rgb(164, 22, 26)", "rgb(193, 18, 31)",
     # modern.css's four arm hues and its ink. These are the CURRENT design's
-    # chosen colours — the four above them are paper.css's, which modern.css
+    # chosen colours, the four above them are paper.css's, which modern.css
     # supersedes. Both lists are live because both stylesheets are, and that is
     # the layering problem this gate was reporting as 967 stray colours. Listing
     # them stops the gate crying wolf; it does not make eight arm hues right,
@@ -176,11 +176,11 @@ PALETTE = [
     "rgb(29, 78, 216)", "rgb(13, 122, 111)", "rgb(168, 50, 31)", "rgb(180, 83, 9)",
     "rgb(11, 11, 12)", "rgb(61, 61, 66)", "rgb(110, 110, 118)",   # --m-body, --m-muted
     # modern.css moved again: a deeper ink and the navy taken from the owner's
-    # LLC logo. Listed for the same reason as the four above — the gate should
+    # LLC logo. Listed for the same reason as the four above, the gate should
     # measure against the palette actually in use, and say so rather than
     # reporting 696 strays every run and being ignored.
     "rgb(11, 8, 9)", "rgb(31, 58, 95)", "rgb(20, 39, 63)",   # --m-ink, --m-rose navy, --m-navy
-    # map categories — data, so they stay distinguishable from each other
+    # map categories, data, so they stay distinguishable from each other
     "rgb(15, 109, 92)", "rgb(168, 90, 8)", "rgb(107, 47, 190)", "rgb(11, 100, 128)",
     "rgb(154, 91, 6)",
     # the Real Estate blueprint sheet, which keeps its own linework colours
@@ -188,9 +188,9 @@ PALETTE = [
     # ---- modern.css :root, the CURRENT system ----
     # This list was written in the paper era and never updated when the system
     # moved to navy, so the gate reported the brand colour itself as a leftover
-    # — 1869 "off-palette" hits, nearly all of them the design system obeying
+    #, 1869 "off-palette" hits, nearly all of them the design system obeying
     # itself. A gate that cries wolf is ignored, which is its own silent pass.
-    # Exactly these tokens, read from modern.css :root — not every colour that
+    # Exactly these tokens, read from modern.css :root, not every colour that
     # happened to render, which would be papering over rather than fixing.
     "rgb(11, 8, 9)",        # --m-ink
     "rgb(61, 61, 66)",      # --m-body
@@ -225,7 +225,7 @@ CONTRAST_JS = r"""() => {
     return [ fg[0]*a + bg[0]*(1-a), fg[1]*a + bg[1]*(1-a), fg[2]*a + bg[2]*(1-a), 1 ];
   };
   // What is actually behind this element: walk up until something is opaque.
-  // Reading the element's own background-color is not enough — most of the
+  // Reading the element's own background-color is not enough, most of the
   // tints on this site are translucent and sit on a parent that is not.
   const behind = el => {
     let acc = null;
@@ -309,7 +309,7 @@ GRADIENT_JS = r"""() => {
 
 
 # ---------------------------------------------------------------------------
-# THE FILL SENSOR — the check that did not exist.
+# THE FILL SENSOR, the check that did not exist.
 #
 # "A control is a word with a rule under it, never a fill behind a word" is the
 # strongest rule in the system, stated three times, and nothing measured it.
@@ -334,7 +334,7 @@ FILL_JS = r"""() => {
     const cs = getComputedStyle(el);
     const isControl = el.matches(CONTROL) || cs.cursor === "pointer";
     if (!isControl) continue;
-    // must carry its own word — a filled wrapper around a link is a panel
+    // must carry its own word, a filled wrapper around a link is a panel
     const own = [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
     if (!own) continue;
     if (!el.getClientRects().length) continue;
@@ -353,13 +353,13 @@ FILL_JS = r"""() => {
 }"""
 
 # Focus must be an INSET BAR. Any shadow that paints OUTSIDE the element box is
-# a ring — the exact form the settled rule forbids, and the form sitting
+# a ring, the exact form the settled rule forbids, and the form sitting
 # unconditionally on every input at modern.css:576-580. Never measured, because
 # the gate never called .focus() once.
 FOCUS_JS = r"""() => {
   const out = [];
   if (!document.hasFocus()) return [{ sel: "(window)", shadow: "WINDOW NOT FOCUSED",
-                                      t: "focus styles do not render — result is meaningless" }];
+                                      t: "focus styles do not render, result is meaningless" }];
   const controls = [...document.querySelectorAll("a,button,input,select,textarea,summary,[role=button],.chip")]
                      .filter(el => el.getClientRects().length);
   for (const el of controls.slice(0, 40)) {
@@ -390,7 +390,7 @@ FOCUS_JS = r"""() => {
 # Everything a reader can open, opened. The docstring already records that
 # display:none views hid seven-eighths of the landing page; the same lesson was
 # never generalised to click-to-open widgets, so the language switcher's
-# dropdown — a solid fill behind a language word, on all 23 pages — sat at
+# dropdown, a solid fill behind a language word, on all 23 pages, sat at
 # getClientRects().length === 0 and was skipped by every pass.
 OPEN_JS = r"""() => {
   for (const sel of ["#i18nBtn", "#jvBtn", "#pollock"]) {
@@ -434,7 +434,7 @@ def main():
                 # /robot needs a password as well as the link now, so without
                 # an account this gate would only ever see the sign-in page.
                 # With one it sees the page behind it too. Credentials come
-                # from the environment for the same reason the key does — so
+                # from the environment for the same reason the key does, so
                 # they are never printed on a result line or written down here.
                 if _LAB_USER:
                     page.evaluate(
@@ -462,7 +462,7 @@ def main():
                         page.evaluate(f"showView('{view}')")
                         # The view fade is 350ms. Sampling inside it composites
                         # every colour against what is underneath at 0.9-something
-                        # opacity, and reports tokens one unit off — rgb(75,69,61)
+                        # opacity, and reports tokens one unit off, rgb(75,69,61)
                         # for body text that is rgb(74,69,61). Two false failures
                         # that look exactly like real ones.
                         page.wait_for_timeout(500)
@@ -544,7 +544,7 @@ def main():
     if fill_fails:
         print(f"FAIL  {fill_fails} control(s) with a fill behind the word"); ok = False
     else:
-        print("ok    every control is a word with a rule under it — no fills")
+        print("ok    every control is a word with a rule under it, no fills")
     if focus_fails:
         print(f"FAIL  {focus_fails} control(s) focus as a ring instead of an inset bar"); ok = False
     else:

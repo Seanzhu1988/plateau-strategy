@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Archive — Plateau Strategy Solution Lab</title>
+    <title>Archive, Plateau Strategy Solution Lab</title>
     <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -78,7 +78,7 @@
 
     <div class="wrap">
         <h1>Archive</h1>
-        <p class="sub">One place that keeps every paper trail the site produces — bookings, your customer contact list, signed agreements, uploaded paperwork, leads, partners and more. Private, owner only.</p>
+        <p class="sub">One place that keeps every paper trail the site produces, bookings, your customer contact list, signed agreements, uploaded paperwork, leads, partners and more. Private, owner only.</p>
 
         <div id="gate"></div>
         <div id="overview" class="tiles"></div>
@@ -90,7 +90,7 @@
                 </div>
                 <h2 id="secLabel"></h2>
                 <p class="sub" id="secDesc" style="margin:0.2rem 0 0;"></p>
-                <div class="mkt-note" id="mktNote">📣 <b>This is your advertising list.</b> Every email and phone your site has ever captured — booking customers, account holders, finance leads, waitlists and partner contacts — de-duplicated. Export it to CSV and load it straight into your ad platform (Google/Meta customer match, Mailchimp, etc.). Only market to people per your privacy policy &amp; applicable law.</div>
+                <div class="mkt-note" id="mktNote">📣 <b>This is your advertising list.</b> Every email and phone your site has ever captured, booking customers, account holders, finance leads, waitlists and partner contacts, de-duplicated. Export it to CSV and load it straight into your ad platform (Google/Meta customer match, Mailchimp, etc.). Only market to people per your privacy policy &amp; applicable law.</div>
                 <div class="toolbar">
                     <input id="search" placeholder="Search…" oninput="renderRows()">
                     <span class="count" id="secCount"></span>
@@ -102,7 +102,7 @@
                         <tbody id="secBody"></tbody>
                     </table>
                 </div>
-                <div class="empty" id="secEmpty" style="display:none;">Nothing here yet — records appear automatically as they happen.</div>
+                <div class="empty" id="secEmpty" style="display:none;">Nothing here yet, records appear automatically as they happen.</div>
             </div>
         </div>
 
@@ -131,7 +131,7 @@
             if (col === 'fare_usd') return '<td class="amt">$' + Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) + '</td>';
             if (col === 'status' || col === 'role') return '<td><span class="badge ' + esc(v) + '">' + esc(v) + '</span></td>';
             if (col === 'invoice' && /^https?:/.test(v)) return '<td><a href="' + esc(v) + '" target="_blank" rel="noopener">view</a></td>';
-            if (col === 'resolved') return '<td>' + (v ? '✓' : '—') + '</td>';
+            if (col === 'resolved') return '<td>' + (v ? '✓' : ', ') + '</td>';
             if ((col === 'date' || col.endsWith('_at') || col === 'joined' || col === 'at' || col === 'signed_at') && String(v).length >= 10)
                 return '<td>' + esc(String(v).slice(0,16).replace('T',' ')) + '</td>';
             return '<td>' + esc(v) + '</td>';
@@ -144,7 +144,7 @@
                 document.getElementById('overview').style.display = 'none';
                 document.getElementById('gate').innerHTML =
                     '<div class="card" style="text-align:center; max-width:520px; margin:2rem auto;">' +
-                    '<h1 style="margin-bottom:0.6rem;">🔒 Private — owner only</h1>' +
+                    '<h1 style="margin-bottom:0.6rem;">🔒 Private, owner only</h1>' +
                     '<p class="sub" style="margin-bottom:1.3rem;">The archive holds customer contacts, signed agreements and paperwork. Sign in through Dispatch to open it.</p>' +
                     '<a class="btn blue" href="/dispatch">Go to Dispatch login →</a></div>';
                 return;
@@ -156,10 +156,10 @@
                 '<div class="lbl">' + esc(c.label) + '</div>' +
                 '<div class="n">' + c.count + '</div>' +
                 '<div class="d">' + esc(c.desc) + '</div>' +
-                (c.last ? '<div class="last">latest ' + esc(c.last.slice(0,16).replace('T',' ')) + '</div>' : '<div class="last">—</div>') +
+                (c.last ? '<div class="last">latest ' + esc(c.last.slice(0,16).replace('T',' ')) + '</div>' : '<div class="last">, </div>') +
                 '</div>').join('');
             document.getElementById('footNote').textContent =
-                total + ' records across ' + cats.length + ' archives. Everything here is captured automatically — nothing to file by hand. Exports are CSV, ready for your accountant, CRM or ad platform.';
+                total + ' records across ' + cats.length + ' archives. Everything here is captured automatically, nothing to file by hand. Exports are CSV, ready for your accountant, CRM or ad platform.';
         }
 
         async function openSection(key) {
@@ -203,19 +203,19 @@
     <script src="/floatback.js"></script>
     <script src="/jarvis-widget.js"></script>
     <script src="/i18n.js">
-    // Where the viewers are. Owner-only endpoint, aggregate rows only — it can
+    // Where the viewers are. Owner-only endpoint, aggregate rows only, it can
     // say forty people came from Seattle and cannot say which forty.
     async function loadWhereFrom(){
         try {
             const r = await fetch('/api/traffic/places?days=30');
-            if (!r.ok) return;                       // not logged in — stay hidden
+            if (!r.ok) return;                       // not logged in, stay hidden
             const d = await r.json();
             if (!d.ok) return;
             const box = document.getElementById('whereFrom');
             const cols = document.getElementById('wfCols');
             document.getElementById('wfSub').textContent =
                 d.total_located ? d.total_located + ' visitors located over the last ' + d.days + ' days'
-                                : 'No located visitors yet — this fills in as people arrive.';
+                                : 'No located visitors yet, this fills in as people arrive.';
             const bar = (rows) => {
                 if (!rows.length) return '<p class="note">nothing yet</p>';
                 const max = Math.max.apply(null, rows.map(r => r.count));
@@ -244,7 +244,7 @@
             box.style.display = 'block';
 
             // The map. A circle per city, sized by how many people came from
-            // it — a pin that grows as travellers arrive rather than a heat
+            // it, a pin that grows as travellers arrive rather than a heat
             // blob that implies precision the data does not have.
             if (window.L && d.pins && d.pins.length) {
                 const el = document.getElementById('wfMap');
@@ -262,7 +262,7 @@
                     L.circleMarker([p.lat, p.lon], {
                         radius: r, color:'#1f3a5f', weight:1.5,
                         fillColor:'#1f3a5f', fillOpacity:.28
-                    }).addTo(map).bindTooltip(p.label + ' — ' + p.count +
+                    }).addTo(map).bindTooltip(p.label + ', ' + p.count +
                         (p.count === 1 ? ' visitor' : ' visitors'));
                     pts.push([p.lat, p.lon]);
                 });

@@ -18,7 +18,7 @@
  * and steady over ten.
  *
  * And the thing that decides whether this feels magic or broken: a phone in a
- * city street is routinely 20–40 m out. If the fix is 30 m out and the shop is
+ * city street is routinely 20, 40 m out. If the fix is 30 m out and the shop is
  * 15 m away, "on your left" is a coin toss, and a guide that says left when it
  * means right is worse than one that says nothing. So an announcement is
  * withheld unless the distance to the place is comfortably larger than the
@@ -53,7 +53,7 @@
    *
    * Takes the oldest fix at least MIN_RUN metres back and bearings from it to
    * now. One step is noise; ten metres is a direction. Returns null rather
-   * than a guess when they have not moved far enough — a wrong heading turns
+   * than a guess when they have not moved far enough, a wrong heading turns
    * every left into a right, so "I do not know" has to be an available
    * answer. */
   var MIN_RUN = 8;                       // metres of travel before a heading is believable
@@ -104,14 +104,14 @@
   var TOO_CLOSE = 8;               // already past it; announcing now is late
   var GAP_MS = 20000;              // one thing at a time, with room to look at it
   /* Something 80 m up the road and 30 m off it sits only 21 degrees off your
-   * nose, so it is honestly "ahead" — and announcing at the first legal
+   * nose, so it is honestly "ahead", and announcing at the first legal
    * moment therefore called EVERYTHING ahead, and the left-and-right that is
    * the whole point never happened. Found by walking a simulated street, not
    * by reading the code.
    *
    * So a place in the ahead band is held until you are close enough for the
    * side to have declared itself. Past this range "ahead" is the true answer
-   * — something dead in front stays dead in front — and it gets called. */
+   *, something dead in front stays dead in front, and it gets called. */
   var AHEAD_MAX = 45;
 
   function shouldAnnounce(place, state) {
@@ -133,7 +133,7 @@
     var rel = relativeSide(state.heading, bearingTo(state.pos, place));
     if (rel.side === 'behind') return { ok: false, why: 'behind you', distance: d };
     if (rel.side === 'ahead' && d > AHEAD_MAX) {
-      return { ok: false, why: 'still ahead — waiting to see which side it falls',
+      return { ok: false, why: 'still ahead, waiting to see which side it falls',
                distance: d };
     }
     return { ok: true, side: rel.side, angle: rel.angle, distance: d };
@@ -141,7 +141,7 @@
 
   /* The sentence. Spoken aloud, so it is written to be heard once and not
    * re-read: the place first, then where to look, then why to care. Distances
-   * are rounded hard — nobody paces out 37 metres. */
+   * are rounded hard, nobody paces out 37 metres. */
   function phrase(place, decision, opts) {
     opts = opts || {};
     var m = decision.distance;
@@ -150,14 +150,14 @@
               : (far + ' on your ' + decision.side);
     var s = place.name + ', ' + where + '.';
     if (place.blurb) s += ' ' + place.blurb.replace(/\s+/g, ' ').trim();
-    // "Have I time?" — only said when both halves are known, because a guess
+    // "Have I time?", only said when both halves are known, because a guess
     // about somebody's evening is worse than no opinion.
     if (place.typical_visit && opts.minutesLeft) {
       s += place.typical_visit <= opts.minutesLeft
         ? ' People usually spend about ' + place.typical_visit
           + ' minutes here, so you have time.'
         : ' People usually spend about ' + place.typical_visit
-          + ' minutes here — more than you have left today.';
+          + ' minutes here, more than you have left today.';
     }
     return s;
   }
@@ -165,8 +165,8 @@
   /* Metres from a position to the nearest point of a recorded footprint.
    *
    * A footprint's promise is "this line works". The useful question while
-   * following one is not "where is the next turn" — indoors there are no
-   * street names to turn onto — but "am I still on the line, and how far off
+   * following one is not "where is the next turn", indoors there are no
+   * street names to turn onto, but "am I still on the line, and how far off
    * if not". Flat projection around the position: corridors are hundreds of
    * metres, where the error in that flattening is centimetres. Accepts points
    * as [lat, lon] pairs (the stored shape) or {lat, lon} objects. */
@@ -207,13 +207,13 @@
   /* Sean's rule, verbatim: "they face correct direction shows foot prints."
    *
    * The footprints of the person who walked this corridor before you are the
-   * guidance — but only when you are FACING along the path. Turn the wrong
+   * guidance, but only when you are FACING along the path. Turn the wrong
    * way and they disappear, and the emptiness is the message: no arrows, no
    * "recalculating", nothing to read. You turn until the footprints come
    * back, which is a thing a tired traveller does without being taught.
    *
    * Returns {show, dir, trail, why}: dir is +1 walking the corridor the way
-   * it was recorded, -1 walking it home again — a corridor works both ways —
+   * it was recorded, -1 walking it home again, a corridor works both ways, 
    * and trail is the next stretch of recorded points to draw as footprints.
    */
   var TRAIL_CONE = 60;             // degrees off the path direction that still counts as "along it"

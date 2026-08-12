@@ -2,7 +2,7 @@
 """The "who counts as a visitor" panel in Dispatch, end to end in a browser.
 
 The panel exists because /api/traffic/networks was built and never given an
-interface — the only way to register a network was curl. It matters most for
+interface, the only way to register a network was curl. It matters most for
 the numbers that are smallest: a handful of our own visits is invisible in a
 thousand and decisive in twenty.
 
@@ -10,8 +10,8 @@ Three things are checked that a screenshot would not show:
 
   * the page's script still PARSES. The panel nearly shipped with a second
     `function esc()` beside the `const esc` already at the top of the file,
-    which is a SyntaxError that kills every handler on the page — assign, mark
-    paid, log out — not just the new ones.
+    which is a SyntaxError that kills every handler on the page, assign, mark
+    paid, log out, not just the new ones.
   * registering a network never sends an address. The server takes it from the
     request, so a signed-in session cannot erase traffic from somewhere it has
     never been.
@@ -84,7 +84,7 @@ with sync_playwright() as p:
         if sign_in:
             # Exactly what doAuth() does after /api/owner/login returns ok:
             # drop the overlay, then start the app. Without the first half the
-            # overlay still covers the page and swallows every click — which
+            # overlay still covers the page and swallows every click, which
             # is the correct behaviour, and worth having proved: the panel is
             # unreachable until somebody signs in.
             pg.evaluate("document.getElementById('authOverlay')"
@@ -128,7 +128,7 @@ with sync_playwright() as p:
     chk("no page errors (%s)" % (errs or "clean"), not errs)
     pg.close()
 
-    print("\nremoving one does name it — that is how an old office is dropped:")
+    print("\nremoving one does name it, that is how an old office is dropped:")
     pg, _, posted = panel(me(net=True))
     pg.get_by_role("button", name="Stop ignoring this network").click()
     pg.wait_for_timeout(400)

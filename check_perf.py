@@ -2,7 +2,7 @@
 """What a cold visit actually costs, over the wire.
 
 The first version of this measured response.body(), which Playwright hands
-back already decompressed — so it reported the same figure before and after
+back already decompressed, so it reported the same figure before and after
 gzip was switched on and made a working fix look like no fix. transferSize
 from the Resource Timing API is the number that leaves the server.
 """
@@ -36,4 +36,4 @@ with sync_playwright() as p:
         ctx.close()
     b.close()
 saved = 100 - (wire * 100 // decoded) if decoded else 0
-print(f"\n  five cold loads: {wire/1024:.0f} KB over the wire, from {decoded/1024:.0f} KB of content — {saved}% saved")
+print(f"\n  five cold loads: {wire/1024:.0f} KB over the wire, from {decoded/1024:.0f} KB of content, {saved}% saved")

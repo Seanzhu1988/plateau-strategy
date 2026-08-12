@@ -3,8 +3,8 @@
 Run the app first, then: python3 check_js.py
 
 The call-site rewrite touched 73 places by brace-matching. A syntax error in
-an inline <script> is silent in a diff and total in a browser — the whole
-block stops running — so it gets checked by loading the page, not by reading
+an inline <script> is silent in a diff and total in a browser, the whole
+block stops running, so it gets checked by loading the page, not by reading
 it. Also exercises psxJSON against a URL that cannot answer, which is the
 actual reported bug: the promise must resolve, not reject.
 """
@@ -13,7 +13,7 @@ import sys
 from playwright.sync_api import sync_playwright
 B = "http://127.0.0.1:5055"
 
-# /setup became owner-only on 2026-08-08 — it was reachable by anyone, which
+# /setup became owner-only on 2026-08-08, it was reachable by anyone, which
 # let a stranger overwrite the Square and Twilio credentials. Gating it broke
 # this gate, which is the recurring shape: locking a page silently drops it
 # from whatever was checking it. Credentials come from the environment, and
@@ -29,7 +29,7 @@ bad = 0
 with sync_playwright() as p:
     b = p.chromium.launch(executable_path="/opt/pw-browsers/chromium-1194/chrome-linux/chrome")
     if not OWNER_USER:
-        print("note: %s not checked — set OWNER_TEST_USER/OWNER_TEST_PASS to include them"
+        print("note: %s not checked, set OWNER_TEST_USER/OWNER_TEST_PASS to include them"
               % ", ".join(sorted(OWNER_ONLY)))
     for route in ROUTES:
         if route in OWNER_ONLY and not OWNER_USER:
@@ -77,8 +77,8 @@ with sync_playwright() as p:
                 print("        ", n)
             pg.close()
             continue
-        # Leaflet is loaded from unpkg. Where that CDN is unreachable — this
-        # container blocks it — the map pages raise "L is not defined" with
+        # Leaflet is loaded from unpkg. Where that CDN is unreachable, this
+        # container blocks it, the map pages raise "L is not defined" with
         # nothing wrong in our code. Reported, never counted as a failure.
         errs = [e for e in errs if "L is not defined" not in e]
         if errs or not has:

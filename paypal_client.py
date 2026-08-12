@@ -1,12 +1,12 @@
-"""PayPal Payouts client — sends a payout to an agent's PayPal email.
+"""PayPal Payouts client, sends a payout to an agent's PayPal email.
 
-Configuration (in .env — never committed):
+Configuration (in .env, never committed):
     PAYPAL_ENV=sandbox            # 'sandbox' until proven, then 'live'
     PAYPAL_CLIENT_ID=...          # from developer.paypal.com > My Apps
     PAYPAL_CLIENT_SECRET=...
 
 Safety properties:
-  * The owner explicitly clicks Pay in Dispatch — nothing pays automatically.
+  * The owner explicitly clicks Pay in Dispatch, nothing pays automatically.
   * sender_batch_id = our payout id, and PayPal de-duplicates on it, so
     retrying the same payout can never double-pay.
   * Not configured -> every call returns a clear error and nothing moves.
@@ -48,7 +48,7 @@ def _token():
 def send_payout(payout_id, receiver_email, amount_usd, note=""):
     """Send one payout. Returns {ok, batch_id, batch_status} or {ok:False, error}."""
     if not is_configured():
-        return {"ok": False, "error": "PayPal isn't connected yet — add PAYPAL_CLIENT_ID / "
+        return {"ok": False, "error": "PayPal isn't connected yet, add PAYPAL_CLIENT_ID / "
                                       "PAYPAL_CLIENT_SECRET to .env and restart."}
     if not receiver_email or "@" not in receiver_email:
         return {"ok": False, "error": "The agent hasn't added a PayPal email yet."}
@@ -67,7 +67,7 @@ def send_payout(payout_id, receiver_email, amount_usd, note=""):
                 "sender_batch_header": {
                     # our payout id = the idempotency key; PayPal rejects re-sends
                     "sender_batch_id": str(payout_id),
-                    "email_subject": "You've been paid — Plateau Strategy Solution Lab",
+                    "email_subject": "You've been paid, Plateau Strategy Solution Lab",
                     "email_message": note or "Your commission payout from Plateau Strategy Solution Lab.",
                 },
                 "items": [{

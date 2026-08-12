@@ -54,8 +54,8 @@ def top(d):
 
 print("  route                arm         button fills                       link colour")
 for r, d in rows:
-    bt = ", ".join(f"{c.replace('rgb','').replace(' ','')}x{n}" for c, n in top(d["buttons"])[:3]) or "—"
-    lk = ", ".join(f"{c.replace('rgb','').replace(' ','')}x{n}" for c, n in top(d["links"])[:2]) or "—"
+    bt = ", ".join(f"{c.replace('rgb','').replace(' ','')}x{n}" for c, n in top(d["buttons"])[:3]) or ", "
+    lk = ", ".join(f"{c.replace('rgb','').replace(' ','')}x{n}" for c, n in top(d["links"])[:2]) or ", "
     print(f"  {r:20} {str(d['arm']):11} {bt:34} {lk}")
 
 # heading colour must be one ink everywhere

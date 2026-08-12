@@ -1,6 +1,6 @@
-/* 🤖 JARVIS WIDGET — Sean's butler, floating on every page of the site.
+/* 🤖 JARVIS WIDGET, Sean's butler, floating on every page of the site.
    OWNER-ONLY: the widget asks /api/jarvis/status first and builds nothing
-   unless the owner session is live — public visitors never see it and the
+   unless the owner session is live, public visitors never see it and the
    chat endpoint is owner-gated server-side anyway. */
 (function () {
     if (window.__jarvisWidget) return;
@@ -66,7 +66,7 @@
             return d;
         }
         history.forEach(function (h) { add(h.role, h.text); });
-        if (!history.length) add('jv', 'Good day, sir. The site and I are at your service — ask me about bookings, payouts, drivers, or anything on your mind.');
+        if (!history.length) add('jv', 'Good day, sir. The site and I are at your service, ask me about bookings, payouts, drivers, or anything on your mind.');
 
         function remember(role, text) {
             history.push({ role: role, text: text });
@@ -85,7 +85,7 @@
         function placePanel() {
             var b = btn.getBoundingClientRect();
             var pw = panel.offsetWidth || 360, ph = panel.offsetHeight || 420;
-            // above the button when it fits, otherwise below — so the panel is
+            // above the button when it fits, otherwise below, so the panel is
             // never half off-screen when Jarvis is parked near an edge
             var top = (b.top - GAP - ph >= EDGE) ? (b.top - GAP - ph) : (b.bottom + GAP);
             panel.style.top = clamp(top, EDGE, Math.max(EDGE, window.innerHeight - ph - EDGE)) + 'px';
@@ -143,7 +143,7 @@
         btn.addEventListener('pointerup', endDrag);
         btn.addEventListener('pointercancel', endDrag);
 
-        btn.title = 'Jarvis — drag to move';
+        btn.title = 'Jarvis, drag to move';
         btn.addEventListener('click', function () {
             if (moved) { moved = false; return; }    // that was a drag, not a tap
             panel.classList.toggle('open');
@@ -174,7 +174,7 @@
             }).catch(function () {
                 typing.remove();
                 send.disabled = false;
-                add('jv', '⚠️ Connection problem — try again.');
+                add('jv', '⚠️ Connection problem, try again.');
             });
         });
     }

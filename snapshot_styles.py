@@ -5,13 +5,13 @@ can be taken apart and the result PROVEN identical.
 This is the piece that has been missing every previous time. Collapsing nine
 stylesheets into one means deleting hundreds of declarations that are covered
 by a later layer. Deleting the wrong one is invisible until someone opens the
-page — which is why the last attempt was reverted and why every repaint since
+page, which is why the last attempt was reverted and why every repaint since
 has been additive: adding a louder rule is safe, and removing the old one is
 the thing nobody could verify.
 
 So: walk every element on every page, resolve the properties a reader can see,
 and write them to a file keyed by the element's position in the tree. Do the
-surgery. Walk again. Diff. A collapse that changes nothing changes nothing —
+surgery. Walk again. Diff. A collapse that changes nothing changes nothing, 
 and if it does, the diff names the element and the property.
 
     python3 app.py &
@@ -66,7 +66,7 @@ COLLECT_JS = r"""() => {
   const walk = (el, path) => {
     const cs = getComputedStyle(el);
     // A property set in the element's own style="" attribute outranks every
-    // stylesheet, so no amount of collapsing them can change it — and two of
+    // stylesheet, so no amount of collapsing them can change it, and two of
     // these are driven by a running script, which is why freezing CSS
     // animations did not settle them. Out of scope, so out of the snapshot.
     const inl = el.style;
@@ -118,7 +118,7 @@ def diff(a_path, b_path):
 
     print("\n  %d elements before, %d after" % (len(a), len(b)))
     if only_a or only_b:
-        print("  %d disappeared, %d appeared — the DOM moved, so this is not a"
+        print("  %d disappeared, %d appeared, the DOM moved, so this is not a"
               % (len(only_a), len(only_b)))
         print("  pure restyle and the comparison below only covers what is in both.")
         for k in sorted(only_a)[:5]:
@@ -127,7 +127,7 @@ def diff(a_path, b_path):
             print("      new:  %s" % k[:96])
 
     if not changed:
-        print("\n  IDENTICAL — every shared element resolves to the same paint.")
+        print("\n  IDENTICAL, every shared element resolves to the same paint.")
         return 0
 
     print("\n  %d elements changed:\n" % len(changed))

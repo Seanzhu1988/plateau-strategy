@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guided Trips — in-depth walks from local guides</title>
-    <meta name="description" content="In-depth trips written by the guides who run them — campus walks, food routes, history deep dives. See every stop and how long you spend there before you book.">
+    <title>Guided Trips, in-depth walks from local guides</title>
+    <meta name="description" content="In-depth trips written by the guides who run them, campus walks, food routes, history deep dives. See every stop and how long you spend there before you book.">
     <link rel="canonical" href="https://plateaustrategy.io/trips">
     <meta name="theme-color" content="#14110c">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Plateau Strategy Solution Lab">
     <meta property="og:url" content="https://plateaustrategy.io/trips">
-    <meta property="og:title" content="Guided Trips — in-depth walks from local guides">
+    <meta property="og:title" content="Guided Trips, in-depth walks from local guides">
     <meta property="og:description" content="In-depth trips written by the guides who run them. See every stop and how long you spend there before you book.">
-    <meta property="og:image" content="https://plateaustrategy.io/icon-512.png">
+    <meta property="og:image" content="https://plateaustrategy.io/share-card.jpg">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
@@ -94,7 +94,7 @@
     <div class="wrap">
         <div class="page-title">🎫 Guided Trips</div>
         <p class="sub">
-            Not sightseeing loops — these are written by the guides who run them, stop by stop, with
+            Not sightseeing loops, these are written by the guides who run them, stop by stop, with
             how long you actually stand at each one. A student's hour in Harvard Yard is a different
             thing from a bus past the gate. <a href="/guide-studio">Guides can list their own →</a> Part of the
             <a href="/agent">agent program</a>.
@@ -155,7 +155,7 @@
             $('list').innerHTML = '<div class="empty">' +
                 (all.length ? 'No trips match that filter yet.'
                             : '<b>No trips listed yet.</b><br>The first ones are being written now. ' +
-                              'If you guide — a student, a driver, a local who knows one street properly — ' +
+                              'If you guide, a student, a driver, a local who knows one street properly, ' +
                               '<a href="/guide-studio">list yours</a> and it appears here straight away.') +
                 '</div>';
             return;
@@ -230,7 +230,7 @@
             const j = await r.json();
             if (j.ok) {
                 msg.className = 'msg ok';
-                msg.textContent = 'Sent. The guide will be introduced to you directly — usually within a day.';
+                msg.textContent = 'Sent. The guide will be introduced to you directly, usually within a day.';
                 $('f_' + id).querySelectorAll('input,textarea').forEach(i => i.value = '');
             } else { msg.className = 'msg err'; msg.textContent = j.error || 'Could not send that.'; }
         } catch (e) { msg.className = 'msg err'; msg.textContent = 'Could not reach the server.'; }

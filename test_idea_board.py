@@ -3,7 +3,7 @@
 
 Anyone can pitch a business idea with no account, and it publishes straight
 away. That openness is the whole point of the board and this test exists to
-keep it — the first case here is a stranger posting successfully, and it is
+keep it, the first case here is a stranger posting successfully, and it is
 the one that must never start failing in the name of safety.
 
 The rest is the other half. Measured before this test existed, one caller
@@ -93,7 +93,7 @@ r = own.post("/api/articles/%s/hide" % bad, json={"hidden": False})
 chk("and it can be put back (%d)" % r.status_code, r.status_code == 200)
 chk("it returns to the public board", len(public_titles(c)) == len(titles_before))
 
-print("\nand delete is the other verb — gone, not archived:")
+print("\nand delete is the other verb, gone, not archived:")
 # Hide preserves the record because a takedown of someone ELSE's post may
 # need showing later. Delete is the owner clearing their own drafts, where a
 # tombstone serves nobody. Sean's first use: his June test post.
@@ -103,7 +103,7 @@ chk("and it survived the attempt",
     any(x.get("id") == bad for x in json.load(open(A.ARTICLES_PATH))))
 r = own.post("/api/articles/%s/delete" % bad)
 chk("the owner can (%d)" % r.status_code, r.status_code == 200)
-chk("it is gone from the file entirely — no tombstone",
+chk("it is gone from the file entirely, no tombstone",
     not any(x.get("id") == bad for x in json.load(open(A.ARTICLES_PATH))))
 chk("gone from the board", len(public_titles(c)) == len(titles_before) - 1)
 chk("its share page is gone too (%d)" % c.get("/idea/%s" % bad).status_code,

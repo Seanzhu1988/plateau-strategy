@@ -110,7 +110,7 @@ d = r.get_json()
 chk(f"accepted ({r.status_code})", r.status_code == 200 and d["ok"])
 chk("returns the name to prefill", d["name"] == "Dana Whitfield")
 chk("returns the email to prefill", d["email"] == "dana@example.com")
-chk("returns nothing else — no id, no token, no picture",
+chk("returns nothing else, no id, no token, no picture",
     set(d) == {"ok", "name", "email"})
 
 # ------------------------------------------------- it must never be a barrier

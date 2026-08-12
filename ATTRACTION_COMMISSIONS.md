@@ -6,7 +6,7 @@ revenue back into the site.
 
 **Research date: 2026-08-08.** Every venue site below is blocked by this
 container's network egress policy, so nothing here was read off the venue's own
-page — it comes from search-result summaries. Treat the contact details as
+page, it comes from search-result summaries. Treat the contact details as
 leads to confirm, not as facts. Where a figure is a third party's rather than
 the venue's, it says so.
 
@@ -31,7 +31,7 @@ That is not a reason to skip it. It is a reason to **do it in the right order**:
    dollar actually comes from.
 2. **Accumulate a booking record.** Three months of real referrals is the only
    thing that changes the direct conversation.
-3. **Then approach the trade desks** — not asking for commission, but showing
+3. **Then approach the trade desks**, not asking for commission, but showing
    volume you are already sending them and asking to be paid directly for it.
 
 Step 3 with no step 2 is the version that fails.
@@ -57,14 +57,14 @@ can make. Recommend running that track alongside the New York one, not instead.
 
 Operated by Empire State Realty Trust. **Has a real trade programme.**
 
-#### The contacts — found 2026-08-09
+#### The contacts, found 2026-08-09
 
-**`sales@esbonyc.com`** — one address covers both group sales and travel
+**`sales@esbonyc.com`**, one address covers both group sales and travel
 trade. Note the domain: **esb·o·nyc**, for Observatory, not esbnyc.com. Getting
 that wrong bounces.
 
 Corroborated from two independent searches of their own group-sales and
-Travel Trade Resource Center pages. Not read first-hand — esbnyc.com is
+Travel Trade Resource Center pages. Not read first-hand, esbnyc.com is
 blocked by this container's egress proxy, so **check the address on the page
 before sending**, which takes ten seconds in a browser.
 
@@ -77,7 +77,7 @@ wrong desk is how a first approach gets forwarded to nobody.
 ESRT runs a real travel-trade sales organisation, not a shared inbox. From
 their own job posting for *Director of Sales, Travel Trade*:
 
-- reports to the **VP, Business Development (Travel Trade)** — one version of
+- reports to the **VP, Business Development (Travel Trade)**, one version of
   the posting says the SVP/General Manager of the Observatory
 - **manages roughly four sales professionals**
 - the job is targeting "group and travel trade sales" and setting sales targets
@@ -90,9 +90,9 @@ partner who asks a specific question gets a real answer.
 #### What is NOT the route
 
 - **`esbnyc.com/partnerships` and the brand-partnerships form** are for brand
-  and sponsorship deals — lighting the tower, co-marketing. Not ticket
+  and sponsorship deals, lighting the tower, co-marketing. Not ticket
   reselling. Writing there gets filed under marketing.
-- **The Ambassador programme** (launched 2024) is consumer loyalty — one point
+- **The Ambassador programme** (launched 2024) is consumer loyalty, one point
   per dollar for superfans and locals hosting guests. It is not a reseller
   commission, and it is not a business programme.
 - No public affiliate programme with a published commission was found for ESB
@@ -110,19 +110,19 @@ which a trade desk hears fifty times a week from people with no volume, it is
 gets an account manager, and an account manager is a person who can later be
 asked what the trade programme needs.
 
-So: the first real ESB relationship most likely starts with an actual group —
-a wedding party, a corporate team, a tour — not with a proposal.
+So: the first real ESB relationship most likely starts with an actual group, 
+a wedding party, a corporate team, a tour, not with a proposal.
 
-- **Travel Trade Resource Center** — `esbnyc.com/travel-trade-resource-center`.
+- **Travel Trade Resource Center**, `esbnyc.com/travel-trade-resource-center`.
   Described as resources and tools for travel professionals, including group
   planning.
 - Listed in the NYC Tourism travel-trade product directory
   (`business.nyctourism.com/travel-trade/product-directory`), which is itself a
-  route in — that directory exists to connect trade buyers to venues.
+  route in, that directory exists to connect trade buyers to venues.
 - **Travel agents do not get discounts**; agent entry runs through the
   **CityPASS Trade Pass agreement**. That is a useful signal: it says ESB
   prefers to handle trade through CityPASS rather than one-off deals.
-- Actively works the trade circuit — they exhibited at HBX Group's MarketHub
+- Actively works the trade circuit, they exhibited at HBX Group's MarketHub
   Americas 2026.
 
 **Read:** the most likely of the three to have a formal answer for you, and the
@@ -131,19 +131,19 @@ answer may well be "go through CityPASS."
 ### Top of the Rock (Rockefeller Center)
 
 Operated by Tishman Speyer. **Has a published group sales desk with a phone
-number** — the only direct human contact found for any of the three.
+number**, the only direct human contact found for any of the three.
 
 - **Group Sales**: `rockefellercenter.com/buy-tickets/group-sales/`
 - **Phone: 212-698-2000 ext. 3** · **Toll free: 877-692-7625**
 - Groups of **10 or more** get discounted pricing; there is a form and a group
   sales specialist follows up.
-- Sells through authorised resellers already — Klook, GetYourGuide, WAUG, AAA.
+- Sells through authorised resellers already, Klook, GetYourGuide, WAUG, AAA.
 
 **Read:** start here. A named phone line to a sales team that already works
 with resellers is the shortest path to a real conversation.
 
 > The group-sales email address is on that page. The search engine redacted it
-> and the site is blocked from here, so **read it off the page yourself** — I am
+> and the site is blocked from here, so **read it off the page yourself**, I am
 > not going to guess at an address and have you send a cold pitch into a
 > bounce.
 
@@ -163,7 +163,7 @@ with resellers is the shortest path to a real conversation.
 - **No commission or reseller programme surfaced in the research.**
 
 Note on a figure you may see quoted: search results mention "$55 per adult /
-$25 per child" for larger groups — that is **ART SMART's tour pricing**, a
+$25 per child" for larger groups, that is **ART SMART's tour pricing**, a
 third-party tour operator, **not the Met's group admission rate**. Do not
 repeat it as the Met's number.
 
@@ -176,7 +176,7 @@ the Met it is likelier to be a tour margin than a ticket commission.
 
 These accept small publishers, need no negotiation, and can be live in days.
 
-**CityPASS** — the strongest fit, because its New York pass *contains* both the
+**CityPASS**, the strongest fit, because its New York pass *contains* both the
 Empire State Building and Top of the Rock. One integration, two of your three
 targets.
 
@@ -203,7 +203,7 @@ times a week. Lead with **the visitor you are already moving**, because that is
 the thing you have and the affiliates do not:
 
 > We are a Seattle car service with free trip-planning tools. Our users are
-> planning actual itineraries — where they are going, on which day, in what
+> planning actual itineraries, where they are going, on which day, in what
 > order. When somebody plans a New York day around your building, we would
 > rather send them to you with a ticket in hand than leave them to find it
 > themselves.
@@ -221,14 +221,14 @@ That is true, specific, and it describes intent data rather than raw traffic.
   to say yes to; no approvals required.
 - **Do not imply you sell tickets already** if you do not.
 
-### Email — trade / partnerships
+### Email, trade / partnerships
 
-> **Subject:** Trade partnership enquiry — Seattle travel planner sending NYC visitors
+> **Subject:** Trade partnership enquiry, Seattle travel planner sending NYC visitors
 >
 > Hello,
 >
 > I run Plateau Strategy Solution Lab, a Seattle car service that publishes
-> free trip-planning tools — a day planner, a road-trip planner and a
+> free trip-planning tools, a day planner, a road-trip planner and a
 > destination guide. People use them to build real itineraries, so we see where
 > a visitor intends to go before they have booked anything.
 >
@@ -237,12 +237,12 @@ That is true, specific, and it describes intent data rather than raw traffic.
 > either of us. I would rather send them to you properly.
 >
 > Could you tell me what your travel-trade programme looks like for a
-> referring partner — whether that is an affiliate arrangement, net rates on
+> referring partner, whether that is an affiliate arrangement, net rates on
 > pre-purchased admission, or a distribution partner you would rather I work
 > through? I am equally happy to go via CityPASS or another distributor if
 > that is how you prefer this to run.
 >
-> I am starting out and not going to pretend otherwise — I would rather ask
+> I am starting out and not going to pretend otherwise, I would rather ask
 > what volume your programme needs and work towards it than waste your time.
 >
 > Best,
@@ -253,19 +253,19 @@ That is true, specific, and it describes intent data rather than raw traffic.
 Swap `[VENUE]` and drop the CityPASS sentence for Top of the Rock, where it is
 less relevant.
 
-### Email — Empire State Building, ready to send
+### Email, Empire State Building, ready to send
 
-To **`sales@esbonyc.com`** (verify on the page first — see above). This is the
+To **`sales@esbonyc.com`** (verify on the page first, see above). This is the
 trade version, not the group version; send the group version instead the day
 there is an actual group, because that one gets answered.
 
-> **Subject:** Travel trade — Seattle planner sending NYC itineraries, what does your programme need?
+> **Subject:** Travel trade, Seattle planner sending NYC itineraries, what does your programme need?
 >
 > Hello,
 >
 > I run Plateau Strategy Solution Lab in Seattle. We operate a car service and
-> publish free trip-planning tools — a day planner, a road-trip planner and a
-> destination guide — which people use to build real itineraries. That means we
+> publish free trip-planning tools, a day planner, a road-trip planner and a
+> destination guide, which people use to build real itineraries. That means we
 > see where someone intends to go before they have booked anything, and the
 > Empire State Building Observatory is on a lot of those New York itineraries.
 >
@@ -274,8 +274,8 @@ there is an actual group, because that one gets answered.
 >
 > Two questions, and I would be glad of a short answer to either:
 >
-> 1. What does your travel-trade programme need from a referring partner —
->    volume, entity, insurance — before it is worth your team's time?
+> 1. What does your travel-trade programme need from a referring partner, 
+>    volume, entity, insurance, before it is worth your team's time?
 > 2. If the answer is "go through a distributor for now", which one do you
 >    prefer to see partners come through? I am happy to work via CityPASS or
 >    another if that is how you would rather this run.
@@ -291,21 +291,21 @@ there is an actual group, because that one gets answered.
 
 Why it is shaped this way: it asks a question a salesperson can answer in two
 lines, it never claims volume that does not exist, and question 2 gives them an
-easy win — pointing you at CityPASS costs them nothing and still starts a
+easy win, pointing you at CityPASS costs them nothing and still starts a
 relationship. A "go through CityPASS" reply is a **success**, not a rejection.
 
-### Phone — Top of the Rock group sales, 877-692-7625
+### Phone, Top of the Rock group sales, 877-692-7625
 
-> "Hi — I'm calling about your group and trade programme rather than a single
+> "Hi, I'm calling about your group and trade programme rather than a single
 > booking. I run a Seattle travel-planning site and a car service, and our
 > users build New York itineraries with Top of the Rock on them. I'd like to
-> know what the options are for a referring partner — affiliate, group rates,
+> know what the options are for a referring partner, affiliate, group rates,
 > or whether you'd rather I go through a distributor you already work with."
 
 Then stop talking and let them route you. Two things to ask before hanging up:
 
-1. **Who owns this** — a name and an email beats a general enquiry form.
-2. **What the threshold is** — the volume or group size at which a direct
+1. **Who owns this**, a name and an email beats a general enquiry form.
+2. **What the threshold is**, the volume or group size at which a direct
    arrangement becomes worth their while. That number is your actual target.
 
 ### Follow-up rhythm
@@ -318,12 +318,12 @@ a reputation.
 
 ## Into the contract list
 
-The site already has a partner pipeline — `partners.json`, owner-only, with the
+The site already has a partner pipeline, `partners.json`, owner-only, with the
 statuses `to_contact → contacted → interested → signed → declined`. These three
 belong in it as `to_contact`.
 
 The file is gitignored (it is live data, and this repo is public), so the
-entries cannot be committed — add them against the running site, signed in as
+entries cannot be committed, add them against the running site, signed in as
 owner:
 
 ```bash
@@ -351,19 +351,19 @@ add '{"name":"Metropolitan Museum of Art","type":"attraction",
       "notes":"WEAKEST of the three. Non-profit, pay-what-you-wish for NY residents. Group RESERVATIONS (10+, 3wk guided / 1wk self-guided), no commission programme found. Approach as group bookings, not commission."}'
 ```
 
-Add CityPASS as a fourth once the CJ application is in — it is the one most
+Add CityPASS as a fourth once the CJ application is in, it is the one most
 likely to produce revenue first, and it covers two of the three targets.
 
 ---
 
 ## Sources
 
-- [Empire State Building — Travel Trade Resource Center](https://www.esbnyc.com/travel-trade-resource-center)
-- [Empire State Building — FAQs](https://www.esbnyc.com/visit/faq)
-- [NYC Tourism travel-trade directory — ESB Observatory](https://www.business.nyctourism.com/travel-trade/product-directory/empire-state-building-observatory)
-- [Top of the Rock — Group Sales](https://www.rockefellercenter.com/buy-tickets/group-sales/)
-- [The Met — Group Guidelines](https://www.metmuseum.org/visit/group-visits/guidelines)
-- [The Met — Adult Group Request Form](https://www.metmuseum.org/visit/group-visits/adult/adult-group-request-form)
-- [CityPASS — Affiliate Sales](https://media.citypass.com/affiliate-sales)
+- [Empire State Building, Travel Trade Resource Center](https://www.esbnyc.com/travel-trade-resource-center)
+- [Empire State Building, FAQs](https://www.esbnyc.com/visit/faq)
+- [NYC Tourism travel-trade directory, ESB Observatory](https://www.business.nyctourism.com/travel-trade/product-directory/empire-state-building-observatory)
+- [Top of the Rock, Group Sales](https://www.rockefellercenter.com/buy-tickets/group-sales/)
+- [The Met, Group Guidelines](https://www.metmuseum.org/visit/group-visits/guidelines)
+- [The Met, Adult Group Request Form](https://www.metmuseum.org/visit/group-visits/adult/adult-group-request-form)
+- [CityPASS, Affiliate Sales](https://media.citypass.com/affiliate-sales)
 - [CityPASS affiliate agreement (PDF)](https://www.citypass.com/citypass/attractions/AffiliateAgreementweb.pdf)
-- [CityPASS affiliate program — FlexOffers](https://www.flexoffers.com/affiliate-programs/citypass-affiliate-program/)
+- [CityPASS affiliate program, FlexOffers](https://www.flexoffers.com/affiliate-programs/citypass-affiliate-program/)

@@ -6,7 +6,7 @@ answered five times by rewriting strings. Two of those five turned out not to
 be a register problem at all: the Destination Book was Chinese chrome around
 85 English paragraphs, and the Road Trip Planner produced an entirely English
 answer inside a Chinese page. Both were invisible to a check that reads the
-dictionary, because the dictionary was fine — the text never reached it.
+dictionary, because the dictionary was fine, the text never reached it.
 
 So this counts, per page, the words a Chinese reader still sees in English.
 A surface that is a third English is not a quality problem, and no amount of
@@ -33,7 +33,7 @@ VIEWS = ["overview", "transportation", "operations", "realestate", "finance",
          "reinvestment", "tools", "security"]
 
 # Correctly English: brand and product names, drawing codes, units. Venue names
-# are handled separately — TRANSLATION.md keeps them in the language of the
+# are handled separately, TRANSLATION.md keeps them in the language of the
 # sign outside, so "Pike Place Market" staying English is right, not a gap.
 SKIP = re.compile(
     r"^(Plateau|Strategy|Solution|Lab|Tesla|Sea|Tac|SEA|OSRM|Overpass|Nominatim|"
@@ -43,7 +43,7 @@ SKIP = re.compile(
 def venue_names():
     """Place names from the book, which are correctly English.
 
-    TRANSLATION.md keeps venue names in the language of the sign outside —
+    TRANSLATION.md keeps venue names in the language of the sign outside, 
     a traveller has to ask for "Pike Place Market", not a translation of it.
     Counting them as untranslated buried the real gaps under 130 false ones.
     Read from the data rather than typed out, because a hand-written list is
@@ -127,7 +127,7 @@ def main():
                 print("         %r" % s)
     total = sum(r[1] for r in rows)
     print("\n  %d English words across %d Chinese surfaces" % (total, len(rows)))
-    print("  Rewriting register cannot fix these — the text never reached the dictionary.")
+    print("  Rewriting register cannot fix these, the text never reached the dictionary.")
 
 
 if __name__ == "__main__":

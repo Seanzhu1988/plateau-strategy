@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book a Reservation Ride — Plateau Strategy Solution Lab</title>
+    <title>Book a Reservation Ride, Plateau Strategy Solution Lab</title>
     <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -54,7 +54,7 @@
             width: 5px; height: 5px; border-radius: 50%; background: #1b4d8f; }
         .assure b { color: #14110c; font-weight: 700; }
 
-        /* section headings inside the form — small caps, hairline above */
+        /* section headings inside the form, small caps, hairline above */
         .fs { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em;
             text-transform: uppercase; color: #6b655b;
             margin: 2rem 0 0.2rem; padding-top: 0.9rem;
@@ -160,15 +160,15 @@
     <div class="wrap">
         <div class="card">
             <h1>Book a ride</h1>
-            <p class="sub">Tell us where you're going — we'll take care of the rest.</p>
+            <p class="sub">Tell us where you're going, we'll take care of the rest.</p>
 
             <!-- The three things a stranger wants to know before typing anything:
                  what it costs, that the number will not move, and that someone
                  will actually come. Stated once, at the top, so the form below
                  is filling in details rather than negotiating. -->
             <ul class="assure">
-                <li><b>$75</b> flat to Sea–Tac, from anywhere within 30 miles</li>
-                <li>The quote is the fare — no surge</li>
+                <li><b>$75</b> flat to Sea, Tac, from anywhere within 30 miles</li>
+                <li>The quote is the fare, no surge</li>
                 <li>Driver arrives 15 min early</li>
             </ul>
 
@@ -177,7 +177,7 @@
                  exactly the same whether it is used or ignored. -->
             <div id="gsiBox" hidden>
                 <div id="gsiBtn"></div>
-                <p class="gsi-note">Optional — fills your name and email. You can just type them instead.</p>
+                <p class="gsi-note">Optional, fills your name and email. You can just type them instead.</p>
                 <div class="gsi-or"><span>or enter your details</span></div>
             </div>
 
@@ -224,13 +224,13 @@
                 <p class="pick-note" id="locNote"></p>
 
                 <label>Drop-off location <span class="req">*</span></label>
-                <input name="dropoff" required placeholder="Seattle–Tacoma International Airport (SEA)"
+                <input name="dropoff" required placeholder="Seattle, Tacoma International Airport (SEA)"
                        autocapitalize="words" autocomplete="street-address">
                 <!-- The form asked where you are going and said nothing about
                      cost until a human answered. A rider deciding whether to
                      book should not have to guess. -->
                 <div class="quote" id="quoteBox" hidden>
-                    <div class="quote-fare"><span id="quoteAmt">—</span></div>
+                    <div class="quote-fare"><span id="quoteAmt">, </span></div>
                     <div class="quote-why" id="quoteWhy"></div>
                 </div>
 
@@ -301,7 +301,7 @@
             }
         } catch (e) {}
 
-        // Prefill from the Trip Planner — "I need a ride" carries the pickup (current
+        // Prefill from the Trip Planner, "I need a ride" carries the pickup (current
         // location) and drop-off (your destination) straight into this reservation.
         try {
             const ride = JSON.parse(localStorage.getItem('ps_ride_trip') || 'null');
@@ -311,7 +311,7 @@
                 if (ride.dropoff) f.querySelector('[name=dropoff]').value = ride.dropoff;
                 const dt = f.querySelector('[name=date]');
                 if (dt && !dt.value) {
-                    // Fall back to today rather than leaving the required field blank —
+                    // Fall back to today rather than leaving the required field blank, 
                     // a blank date silently blocks the request button.
                     const n = new Date();
                     dt.value = ride.date || (n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0')
@@ -327,7 +327,7 @@
                     const banner = document.createElement('div');
                     banner.style.cssText = 'background:var(--psx-wash-warn,#ffefdc);border:1px solid #8a5a12;color:#92400e;'
                         + 'border-radius:10px;padding:0.8rem 1rem;font-size:0.87rem;line-height:1.5;margin-bottom:1rem';
-                    banner.innerHTML = 'We drive in <b>Seattle</b> today. Send this request anyway — '
+                    banner.innerHTML = 'We drive in <b>Seattle</b> today. Send this request anyway, '
                         + 'we will confirm quickly whether we can cover your city, and your ask counts '
                         + 'toward opening it.';
                     const form = document.getElementById('bookForm');
@@ -336,15 +336,15 @@
                 const sub = document.querySelector('.sub');
                 if (sub) {
                     if (ride.pickup_accurate) {
-                        sub.innerHTML = '✓ Brought over from your Trip Planner — pickup located by GPS'
+                        sub.innerHTML = '✓ Brought over from your Trip Planner, pickup located by GPS'
                             + (ride.pickup_accuracy_m ? ' (±' + ride.pickup_accuracy_m + ' m)' : '') + '. Confirm and request your ride.';
                         sub.style.color = '#0f766e';
                     } else {
-                        sub.innerHTML = '⚠ Brought over from your Trip Planner — your pickup is approximate, please double-check the pickup address before requesting.';
+                        sub.innerHTML = '⚠ Brought over from your Trip Planner, your pickup is approximate, please double-check the pickup address before requesting.';
                         sub.style.color = '#b45309';
                     }
                 }
-                // A destination ride is categorized and priced by the destination —
+                // A destination ride is categorized and priced by the destination, 
                 // stash the extras so they ride into the reservation on submit, and let
                 // the pricing populate below show the distance-based fare.
                 window._rideExtra = {
@@ -357,7 +357,7 @@
             }
         } catch (e) {}
 
-        // Driver arrives 15 minutes before the departure time — show it live as they pick a time.
+        // Driver arrives 15 minutes before the departure time, show it live as they pick a time.
         function fmtTime(hhmm) {
             if (!hhmm) return '';
             const [h, m] = hhmm.split(':').map(Number);
@@ -375,7 +375,7 @@
             const note = document.getElementById('timeNote');
             function update() {
                 note.innerHTML = t.value
-                    ? 'Your driver will arrive at <strong>' + arrivalOf(t.value) + '</strong> — 15 minutes before your ' + fmtTime(t.value) + ' departure.'
+                    ? 'Your driver will arrive at <strong>' + arrivalOf(t.value) + '</strong>, 15 minutes before your ' + fmtTime(t.value) + ' departure.'
                     : 'Your driver will arrive <strong>15 minutes before</strong> your departure time.';
             }
             t.addEventListener('input', update);
@@ -390,23 +390,23 @@
             const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
             const presets = p.presets || [];
             let html = presets.length
-                ? presets.map(x => '<option value="' + x.price + '">' + esc(x.name) + ' — $' + x.price + '</option>').join('')
-                : '<option value="' + (p.default_fare || 75) + '">Standard ride — $' + (p.default_fare || 75) + '</option>';
-            // Destination ride carried over from the planner — priced by distance
+                ? presets.map(x => '<option value="' + x.price + '">' + esc(x.name) + ', $' + x.price + '</option>').join('')
+                : '<option value="' + (p.default_fare || 75) + '">Standard ride, $' + (p.default_fare || 75) + '</option>';
+            // Destination ride carried over from the planner, priced by distance
             const rx = window._rideExtra;
             if (rx && rx.trip_type === 'destination' && isFinite(rx.fare)) {
                 const miles = isFinite(rx.distance_mi) ? (' · ' + rx.distance_mi + ' mi') : '';
-                html = '<option value="' + rx.fare + '" selected>🎯 Destination ride — $' + rx.fare + miles + '</option>' + html;
+                html = '<option value="' + rx.fare + '" selected>🎯 Destination ride, $' + rx.fare + miles + '</option>' + html;
             }
             sel.innerHTML = html;
         }).catch(() => {});
 
         // A required field left blank stops the browser before the submit event
-        // ever fires, and the native warning is easy to miss on a phone — which
+        // ever fires, and the native warning is easy to miss on a phone, which
         // reads as a button that does nothing. Say it in the page instead.
         document.getElementById('bookForm').addEventListener('invalid', function (e) {
             const field = e.target;
-            // Say the field's own label ("your email"), not its placeholder —
+            // Say the field's own label ("your email"), not its placeholder, 
             // "please fill in jane@email.com" reads like nonsense.
             let label = '';
             const lab = field.closest('label') || document.querySelector('label[for="' + field.id + '"]');
@@ -414,7 +414,7 @@
             label = (label || field.name || 'that field').toLowerCase();
             const result = document.getElementById('result');
             result.className = 'result show err';
-            result.textContent = 'Almost there — please fill in ' + label + ' first.';
+            result.textContent = 'Almost there, please fill in ' + label + ' first.';
             field.scrollIntoView({ block: 'center', behavior: 'smooth' });
             field.focus({ preventScroll: true });
         }, true);
@@ -445,13 +445,13 @@
                 const r = j.reservation, inv = r.invoice || {};
                 let invLine;
                 if (inv.url) {
-                    invLine = '<div class="line">Invoice <strong>#' + r.id + '</strong> — <a href="' + inv.url + '" target="_blank">View &amp; pay your invoice →</a></div>' +
+                    invLine = '<div class="line">Invoice <strong>#' + r.id + '</strong>, <a href="' + inv.url + '" target="_blank">View &amp; pay your invoice →</a></div>' +
                               '<div class="line">Payment is due within 3 days (or before your ride, if sooner).</div>';
                 } else {
                     invLine = '<div class="line">Invoice <strong>#' + r.id + '</strong> will be emailed to you shortly. Payment is due within 3 days (or before your ride, if sooner).</div>';
                 }
                 const arriveLine = r.trip.time
-                    ? '<div class="line">Your driver will arrive at <strong>' + arrivalOf(r.trip.time) + '</strong> — 15 minutes before your ' + fmtTime(r.trip.time) + ' departure.</div>'
+                    ? '<div class="line">Your driver will arrive at <strong>' + arrivalOf(r.trip.time) + '</strong>, 15 minutes before your ' + fmtTime(r.trip.time) + ' departure.</div>'
                     : '<div class="line">Your driver arrives 15 minutes before your departure time.</div>';
                 window._lastBooking = { id: r.id, email: (data.email || '').trim() };
                 result.className = 'result ok';
@@ -490,7 +490,7 @@
             try {
                 const j = await doCancel(window._lastBooking.id, window._lastBooking.email);
                 if (!j.ok) throw new Error(j.error || 'Could not cancel');
-                btn.outerHTML = '<div class="line" style="color:#b91c1c;font-weight:700;">🚫 Ride canceled. Your invoice has been voided — nothing to pay.</div>';
+                btn.outerHTML = '<div class="line" style="color:#b91c1c;font-weight:700;">🚫 Ride canceled. Your invoice has been voided, nothing to pay.</div>';
             } catch (err) {
                 btn.disabled = false; btn.textContent = 'Need to cancel? Cancel this ride';
                 alert(err.message);
@@ -507,12 +507,12 @@
                 const j = await doCancel(rid, email);
                 if (!j.ok) throw new Error(j.error || 'Could not cancel');
                 msg.style.color = '#047857';
-                msg.textContent = '✅ Reservation ' + rid + ' canceled. Your invoice has been voided — nothing to pay.';
+                msg.textContent = '✅ Reservation ' + rid + ' canceled. Your invoice has been voided, nothing to pay.';
             } catch (err) {
                 msg.style.color = '#b91c1c'; msg.textContent = err.message;
             }
         }
-        /* Continue with Google now lives in /google-signin.js — one copy,
+        /* Continue with Google now lives in /google-signin.js, one copy,
            shared with the driver and agent forms. The rule it exists to keep
            is that the credential is never decoded here; three copies would be
            three chances to get that wrong. */
@@ -525,7 +525,7 @@
     // Reverse-geocodes to a real street address rather than dropping raw
     // coordinates in the box: a driver needs somewhere to go, and
     // "47.60621, -122.33207" is not an instruction. If the lookup fails the
-    // coordinates go in anyway with a note saying so — a dispatcher can work
+    // coordinates go in anyway with a note saying so, a dispatcher can work
     // with a pin, and losing the fix entirely would be worse.
     (function () {
         var btn  = document.getElementById('useLoc');
@@ -567,7 +567,7 @@
                             : T('Located. Edit it if the door is round the back.'));
                 } else {
                     box.value = la.toFixed(5) + ', ' + lo.toFixed(5);
-                    say(T('Got your position but not a street address — the coordinates are in the box, and your driver can navigate to them.'));
+                    say(T('Got your position but not a street address, the coordinates are in the box, and your driver can navigate to them.'));
                 }
                 box.dispatchEvent(new Event('input', { bubbles: true }));
                 btn.disabled = false;
@@ -641,16 +641,16 @@
                 box.classList.remove('working');
                 amt.textContent = '$' + q.fare.toFixed(0);
                 why.textContent = q.basis === 'airport_flat'
-                    ? T('Flat airport fare — {miles} miles, inside the {radius}-mile flat-rate area. This is the price; it does not move.',
+                    ? T('Flat airport fare, {miles} miles, inside the {radius}-mile flat-rate area. This is the price; it does not move.',
                         { miles: q.miles, radius: q.flat_radius_mi })
-                    : T('About {miles} miles. Estimated from the road distance — we confirm the exact fare before you pay, and it does not change after that.',
+                    : T('About {miles} miles. Estimated from the road distance, we confirm the exact fare before you pay, and it does not change after that.',
                         { miles: q.miles });
             } catch (e) {
                 box.classList.remove('working');
-                amt.textContent = '—';
+                amt.textContent = ', ';
                 // Never guess a number here. A wrong estimate is worse than none
                 // on a page whose whole promise is that the quote is the fare.
-                why.textContent = T('Could not measure that route automatically — send the request and we will quote it before you pay.');
+                why.textContent = T('Could not measure that route automatically, send the request and we will quote it before you pay.');
             }
         }
         function schedule() { clearTimeout(timer); timer = setTimeout(estimate, 700); }

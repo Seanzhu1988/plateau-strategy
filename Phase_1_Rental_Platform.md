@@ -1,14 +1,14 @@
 # Phase 1: Rental Car & Transportation Network
 
 ## Overview
-Build a Tesla-based fleet with tiered rental-to-own model. Transform the rental website into a focused, self-service funnel for rideshare and delivery drivers — with low-cost commercial insurance as the core value hook.
+Build a Tesla-based fleet with tiered rental-to-own model. Transform the rental website into a focused, self-service funnel for rideshare and delivery drivers, with low-cost commercial insurance as the core value hook.
 
 ---
 
 ## Core Strategy: Rental Platform + Driver Insurance
 
 ### The Pitch in One Line
-Turn the Tesla rental website into a focused, self-service funnel for rideshare and delivery drivers — and make low-cost commercial insurance the hook that brings them in and keeps them.
+Turn the Tesla rental website into a focused, self-service funnel for rideshare and delivery drivers, and make low-cost commercial insurance the hook that brings them in and keeps them.
 
 ---
 
@@ -18,7 +18,7 @@ Turn the Tesla rental website into a focused, self-service funnel for rideshare 
 - Design the site around one core question: **Who is this visitor and what are they here to do?**
 - Track where visitors come from and how they move through the page
 - Cut anything that doesn't move them toward renting
-- Every element has a clear, single purpose — no buttons doing five things
+- Every element has a clear, single purpose, no buttons doing five things
 - Optimize the entire experience for driver conversion
 
 ### 2. Self-Service Renting, End to End
@@ -78,7 +78,7 @@ Turn the Tesla rental website into a focused, self-service funnel for rideshare 
 ## Go-to-Market Strategy
 
 ### Growth Philosophy
-Grow share deliberately — don't chase the whole market at once. Instead:
+Grow share deliberately, don't chase the whole market at once. Instead:
 1. Get drivers onto the site
 2. Help them secure commercial insurance
 3. Sign them to rental contracts

@@ -25,7 +25,7 @@ tmp = tempfile.mkdtemp()
 # SHARE_KEYS_PATH belongs in this list because line ~148 calls _share_key(),
 # which MINTS a key and writes it if one is not on file. Left pointing at the
 # repo it created share_keys.json in the working tree, and test_share_link.py
-# — which asserts that file never appears there — then failed depending on
+#, which asserts that file never appears there, then failed depending on
 # which test ran first. A suite whose result depends on its order is not a
 # suite.
 for name in ("RES_PATH", "RENTERS_PATH", "AGENTS_PATH", "OWNER_AUTH_PATH",
@@ -57,7 +57,7 @@ board_row = A._reservation_for_board({
 chk("the agent's code is gone", "code" not in (board_row.get("agent") or {}))
 chk("and their payout address with it",
     "payout_email" not in (board_row.get("agent") or {}))
-chk("but the name stays — the board card renders 'Referred by'",
+chk("but the name stays, the board card renders 'Referred by'",
     (board_row.get("agent") or {}).get("name") == "Priya Raghavan")
 chk("the customer is still redacted",
     "phone" not in board_row["client"] and "email" not in board_row["client"])
@@ -78,7 +78,7 @@ chk("the driver login stops answering (%d of %d attempts blocked)"
 chk("and it lets a real number of tries through first",
     codes.count(429) <= 3 and len(codes) - codes.count(429) >= A.LOGIN_MAX_TRIES)
 
-# One account, many guesses at its second factor — the per-account counter.
+# One account, many guesses at its second factor, the per-account counter.
 # (Many DIFFERENT codes from one address is a different attack and is caught
 #  by the per-address counter, tested just below.)
 A._LOGIN_TRIES.clear()

@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Professionals — Plateau Strategy Solution Lab</title>
+<title>Professionals, Plateau Strategy Solution Lab</title>
 <link rel="icon" href="/plateau-logo.svg">
 <style>
     body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -44,10 +44,10 @@
     <h1>Professionals</h1>
     <p class="lede">Every trade on this page is here because somebody asked for it. People post
     what they want to build, the board works out which professionals that needs, and each one
-    gets a spot. Nothing is listed speculatively — the number beside a trade is real demand.</p>
+    gets a spot. Nothing is listed speculatively, the number beside a trade is real demand.</p>
 
     <div class="searchrow">
-        <input id="q" placeholder="Search a trade, a field, or an idea — interior designer, property, cafe…"
+        <input id="q" placeholder="Search a trade, a field, or an idea, interior designer, property, cafe…"
                oninput="render()" autocomplete="off">
     </div>
     <div class="count" id="count"></div>
@@ -64,7 +64,7 @@ function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, c =>
 function card(p){
     const ideas = (p.recent_ideas || []).slice(0, 4)
         .map(i => '<li>' + esc(i) + '</li>').join('');
-    // A trade nobody has claimed is not an empty page — it is a recruiting
+    // A trade nobody has claimed is not an empty page, it is a recruiting
     // pitch with evidence attached, so it says how much work is waiting.
     const action = p.claimed
         ? '<span class="taken">' + p.claimed + ' professional' + (p.claimed === 1 ? '' : 's') + ' here</span>'
@@ -87,7 +87,7 @@ function render(){
         + (q ? ' matching “' + q + '”' : ' asked for so far');
     document.getElementById('grid').innerHTML = rows.length
         ? rows.map(card).join('')
-        : '<p class="empty">No trade matches that yet. Every trade here comes from a posted idea — '
+        : '<p class="empty">No trade matches that yet. Every trade here comes from a posted idea, '
           + 'if nobody has asked for it, it is not listed.</p>';
 }
 
@@ -103,3 +103,5 @@ fetch('/api/professions').then(r => r.json()).then(d => {
         '<p class="empty">Could not load the trades just now.</p>';
 });
 </script>
+
+<script src="/i18n.js"></script>

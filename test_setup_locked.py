@@ -8,7 +8,7 @@ process held the caller's token.
 
 What was reachable by anyone on the internet:
 
-  * repoint SMS at a stranger's Twilio account — and because notify reads
+  * repoint SMS at a stranger's Twilio account, and because notify reads
     os.environ on every call and the service runs --workers 1, one POST
     poisons the whole process. Ride offers carry pickup address, dropoff,
     date, time, flight number and fare.
@@ -19,7 +19,7 @@ What was reachable by anyone on the internet:
     invoices silently while bookings appear to keep working.
 
 The last assertion here is the one that matters most. Naming five routes would
-pass forever while a sixth was added without a decorator — which is exactly
+pass forever while a sixth was added without a decorator, which is exactly
 how these five came to exist beside forty-eight that were gated correctly. So
 it asks the app for every /api/setup route it has and fails if ANY of them
 answers a stranger.

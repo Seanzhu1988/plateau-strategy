@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Every page's tab icon resolves.
 
-The icon hrefs were relative — href="plateau-logo.svg" with no leading
-slash — so on /trip-planner the browser asked for
+The icon hrefs were relative, href="plateau-logo.svg" with no leading
+slash, so on /trip-planner the browser asked for
 /trip-planner/plateau-logo.svg, got a 404, and showed an empty dark tab.
 Every page on the site except the home page.
 

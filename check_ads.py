@@ -3,7 +3,7 @@
 
 Google Ads counts a double-width character as two, so a Chinese or Korean
 headline gets 15 characters, not 30. Copy that fits in English and is then
-translated will be rejected at upload — which is the ordinary way a
+translated will be rejected at upload, which is the ordinary way a
 multilingual campaign fails.
 """
 import unicodedata
@@ -145,7 +145,7 @@ ASSETS = {
 
 fails = 0
 for lang, a in ASSETS.items():
-    print(f"\n{lang.upper()}  — headlines ≤{HEAD}, descriptions ≤{DESC} (double-width counts 2)")
+    print(f"\n{lang.upper()} , headlines ≤{HEAD}, descriptions ≤{DESC} (double-width counts 2)")
     for h in a["headlines"]:
         w = width(h)
         flag = "  OVER" if w > HEAD else ""
@@ -161,5 +161,5 @@ for lang, a in ASSETS.items():
     print(f"   {len(a['headlines'])} headlines, {len(a['descriptions'])} descriptions")
 
 print("\n" + "=" * 64)
-print("all assets fit" if not fails else f"{fails} asset(s) OVER the limit — fix before upload")
+print("all assets fit" if not fails else f"{fails} asset(s) OVER the limit, fix before upload")
 raise SystemExit(1 if fails else 0)

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Articles &amp; Proposals — Plateau Strategy Solution Lab</title>
+    <title>Articles &amp; Proposals, Plateau Strategy Solution Lab</title>
     <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -108,7 +108,7 @@
             </div>
             <div class="body">
                 <input id="t_author" placeholder="Your name (author)">
-                <input id="t_title" placeholder="Title — e.g. Proposal: Rent-to-own Tesla program">
+                <input id="t_title" placeholder="Title, e.g. Proposal: Rent-to-own Tesla program">
                 <textarea id="t_body" placeholder="Write your article or proposal here…"></textarea>
                 <button class="publish" onclick="publish()">Publish</button>
             </div>
@@ -139,7 +139,7 @@
             const v = myVote(a.id);
             const followed = iFollow(a.id);
             return '<div class="article" id="art_' + a.id + '">' +
-                '<h2>' + esc(a.title) + (a.stamp ? ' <span class="stamp" title="Time-proof stamp — proposed on ' + fmtStamp(a.created_at) + '">#' + esc(a.stamp) + '</span>' : '') + '</h2>' +
+                '<h2>' + esc(a.title) + (a.stamp ? ' <span class="stamp" title="Time-proof stamp, proposed on ' + fmtStamp(a.created_at) + '">#' + esc(a.stamp) + '</span>' : '') + '</h2>' +
                 '<div class="date">By <strong>' + esc(a.author || 'Anonymous') + '</strong> · ' + fmtStamp(a.created_at) + '</div>' +
                 '<div class="text">' + esc(a.body) + '</div>' +
                 '<div class="actions">' +

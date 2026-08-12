@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Destination Book — Plateau Strategy Solution Lab</title>
+    <title>Destination Book, Plateau Strategy Solution Lab</title>
     <meta name="description" content="A growing guidebook of attractions and restaurants with local tips from a licensed guide. One tap sends any place into your trip. Free, no account.">
     <link rel="canonical" href="https://plateaustrategy.io/destination-book">
     <meta name="theme-color" content="#14110c">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Plateau Strategy Solution Lab">
     <meta property="og:url" content="https://plateaustrategy.io/destination-book">
-    <meta property="og:title" content="Destination Book — attractions and restaurants, city by city">
+    <meta property="og:title" content="Destination Book, attractions and restaurants, city by city">
     <meta property="og:description" content="A growing guidebook of attractions and restaurants with local tips from a licensed guide. One tap sends any place into your trip. Free, no account.">
-    <meta property="og:image" content="https://plateaustrategy.io/icon-512.png">
+    <meta property="og:image" content="https://plateaustrategy.io/share-card.jpg">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Destination Book — attractions and restaurants, city by city">
+    <meta name="twitter:title" content="Destination Book, attractions and restaurants, city by city">
     <meta name="twitter:description" content="A growing guidebook of attractions and restaurants with local tips from a licensed guide. One tap sends any place into your trip. Free, no account.">
-    <meta name="twitter:image" content="https://plateaustrategy.io/icon-512.png">
+    <meta name="twitter:image" content="https://plateaustrategy.io/share-card.jpg">
     <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -40,7 +40,7 @@
         .frow { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 0.6rem; }
         .frow:last-child { margin-bottom: 0; }
         /* The chips are injected into bare spans, so they flowed as inline text
-           at the default line-height — and a 29px chip on a ~19px line sits on
+           at the default line-height, and a 29px chip on a ~19px line sits on
            top of the row below it. They overlapped each other on the live page.
            A chip row is a row: lay it out as one. */
         #cityChips, #typeChips, #catChips, #starFilter {
@@ -113,7 +113,7 @@
         .addbtn.added { background: #dcfce7; color: #166534; cursor: pointer; }
         .openlink { font-size: 0.82rem; font-weight: 700; color: #1b4d8f; text-decoration: none; }
         .empty { text-align: center; color: #6b655b; padding: 3rem 0; }
-        /* 🌟 wish box — the demand side of the book */
+        /* 🌟 wish box, the demand side of the book */
         .wishbox { background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da; border-radius: 16px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1.1rem 1.2rem; margin-bottom: 1.2rem; }
         .wishbox h3 { font-size: 1rem; color: #14110c; margin-bottom: 0.2rem; }
@@ -187,7 +187,7 @@
 
     <div class="wrap">
         <div class="page-title">📖 Destination Book</div>
-        <p class="page-sub">A guidebook of attractions and restaurants, city by city, with descriptions and local tips from a licensed tour guide. One tap sends any place into the <a href="/trip-planner">Trip Planner</a>. Hours shown are typical — check before you go.</p>
+        <p class="page-sub">A guidebook of attractions and restaurants, city by city, with descriptions and local tips from a licensed tour guide. One tap sends any place into the <a href="/trip-planner">Trip Planner</a>. Hours shown are typical, check before you go.</p>
 
         <div class="filters">
             <div class="frow"><span class="flab">City</span><span id="cityChips"></span></div>
@@ -195,7 +195,7 @@
             <div class="frow"><span class="flab">Category</span><span id="catChips"></span></div>
             <div class="frow"><span class="flab">Stars</span><span id="starFilter"></span><span class="star-hint">tap to cycle 5★ → 1★</span></div>
             <div class="frow"><span class="flab">Search</span>
-                <input type="text" id="q" placeholder="Search the book — or type a new place to suggest &amp; add…" oninput="render()"></div>
+                <input type="text" id="q" placeholder="Search the book, or type a new place to suggest &amp; add…" oninput="render()"></div>
             <div id="suggest"></div>
         </div>
         <div class="count" id="count"></div>
@@ -209,7 +209,7 @@
 
         <div class="wishbox">
             <h3>🌟 What do you wish was in this book?</h3>
-            <p class="sub">Tell us the place you want to see — or the kind of thing you're looking for. Every wish tells us what to add next, and where travelers want a guide. No account, no email needed.</p>
+            <p class="sub">Tell us the place you want to see, or the kind of thing you're looking for. Every wish tells us what to add next, and where travelers want a guide. No account, no email needed.</p>
             <div class="wishrow">
                 <input type="text" id="wishText" maxlength="120" placeholder="e.g. rooftop bar with a skyline view, or Space Needle"
                        onkeydown="if(event.key==='Enter')sendWish()">
@@ -224,7 +224,7 @@
             <div class="wishmsg" id="wishMsg"></div>
             <div class="wishtop" id="wishTop"></div>
         </div>
-        <div class="empty" id="empty" style="display:none">Nothing matches these filters — loosen one and the book fills back up.</div>
+        <div class="empty" id="empty" style="display:none">Nothing matches these filters, loosen one and the book fills back up.</div>
 
         <footer class="attrib">A free tool by Plateau Strategy Solution Lab · descriptions curated with a professionally licensed tour guide</footer>
     </div>
@@ -278,7 +278,7 @@
             (vals && vals[k] !== undefined) ? vals[k] : m);
     }
     // apply() re-walks text nodes, but an assembled string is already one baked
-    // node — the only way to change it is to build it again.
+    // node, the only way to change it is to build it again.
     document.addEventListener('psx:lang', function () { try { render(); } catch (e) {} });
 
     function esc(s){ return String(s == null ? '' : s).replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -289,7 +289,7 @@
         catch (e) { return new Set(); }
     }
     // Adding was one-way. A mis-tap put a place in the planner and the only
-    // way back out was to open the planner and remove it there — so the second
+    // way back out was to open the planner and remove it there, so the second
     // click on the same button, which every reader tries first, did nothing at
     // all. Same button, both directions.
     function addToPlanner(i, btn){
@@ -335,7 +335,7 @@
         // re-applying it. Category below has always worked this way; City and
         // Type did not, so a reader who tapped Seattle had no way back to
         // every city except noticing the "All cities" chip and clicking that
-        // instead — a second control to undo the first. A filter you cannot
+        // instead, a second control to undo the first. A filter you cannot
         // unpick by tapping it again reads as stuck, which is exactly what it
         // was reported as.
         const clearable = (row, key, k, b) => {
@@ -359,7 +359,7 @@
         // multi-select chips, all switched on by default. Functionally that
         // means "no filter", but it renders as five solid black chips
         // shouting for attention next to a City row where exactly one chip is
-        // lit. Same row, same grammar — an "All" chip that is on until you
+        // lit. Same row, same grammar, an "All" chip that is on until you
         // pick something. Multi-select survives: picking a second category
         // adds it rather than replacing.
         const kc = $('catChips');
@@ -395,7 +395,7 @@
         const q = $('q').value.trim().toLowerCase();
         const inPlanner = plannerNames();
         // The lede promises a book "organized by category" and the page
-        // delivered 47 cards in one flat grid — which is the thing that made
+        // delivered 47 cards in one flat grid, which is the thing that made
         // it read as a pile rather than a book. Grouped by city, because that
         // is the question a traveller actually arrives with: they are going
         // to one place, not browsing a category.
@@ -465,7 +465,7 @@
             return d || (DATA.cities[x] || x).localeCompare(DATA.cities[y] || y);
         });
         // A heading above a single group is a label for the whole page and
-        // adds nothing — only band the list when there is more than one city
+        // adds nothing, only band the list when there is more than one city
         // in it, which is exactly when a reader needs to know where they are.
         $('grid').innerHTML = order.length > 1
             ? order.map(k => {
@@ -489,7 +489,7 @@
         if (!box.querySelector('.sugbtn') || box.dataset.q !== q) {
             box.dataset.q = q;
             box.innerHTML = '<button class="sugbtn" onclick="suggestSearch()">🌱 ' +
-                (shown ? 'Missing something? ' : 'Not in the book yet — ') +
+                (shown ? 'Missing something? ' : 'Not in the book yet, ') +
                 'Suggest &amp; add “' + esc(q) + '”</button><div id="sugres"></div>';
         }
     }
@@ -501,7 +501,7 @@
         try {
             const res = await fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=' + encodeURIComponent(q));
             const j = await res.json();
-            if (!j.length) { r.innerHTML = '<div class="sugmuted">No matches — try adding the city name.</div>'; return; }
+            if (!j.length) { r.innerHTML = '<div class="sugmuted">No matches, try adding the city name.</div>'; return; }
             r.innerHTML = '';
             j.forEach(m => {
                 const d = document.createElement('div');
@@ -530,9 +530,9 @@
             render();
             $('count').textContent += resp.already_known
                 ? ' · “' + name + '” was already in the book'
-                : ' · 🌱 “' + name + '” added — the book will remember it';
+                : ' · 🌱 “' + name + '” added, the book will remember it';
         } else {
-            $('count').textContent = (resp && resp.error) || 'Could not add — try again.';
+            $('count').textContent = (resp && resp.error) || 'Could not add, try again.';
         }
     }
 
@@ -561,7 +561,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: e.name, city: e.city, minutes: minutes }) });
             if (!d || !d.ok) { wrap.innerHTML = '<div class="stay-done" style="color:#b91c1c">Could not save that.</div>'; return; }
-            wrap.innerHTML = '<div class="stay-done">✅ Thank you — ' + minutes + ' min recorded'
+            wrap.innerHTML = '<div class="stay-done">✅ Thank you, ' + minutes + ' min recorded'
                 + (d.median ? ' · travelers now say ~' + d.median + ' min' : ' · a few more answers and this becomes the published number')
                 + '</div>';
             if (d.median) { e.typical_visit = d.median; e.visit_n = d.n; }
@@ -586,7 +586,7 @@
             const list = (d.comments || []).map(m =>
                 '<div class="cmt"><span class="who">' + esc(m.author) + '</span> '
                 + '<span class="when">' + esc(String(m.at || '').slice(0, 10)) + '</span><br>' + esc(m.text) + '</div>'
-            ).join('') || '<div class="cmt" style="color:#6b655b">No notes yet — be the first to say what it\'s like.</div>';
+            ).join('') || '<div class="cmt" style="color:#6b655b">No notes yet, be the first to say what it\'s like.</div>';
             box.innerHTML = list
                 + '<div class="cmt-form">'
                 +   '<input class="who-in" id="cw_' + i + '" maxlength="40" placeholder="Your name">'
@@ -623,14 +623,14 @@
             const j = await psxJSON('/api/travel-wish', { method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ wish: wish, city: f.city === 'all' ? '' : f.city,
                                        kind: document.getElementById('wishKind').value }) });
-            if (!j.ok) { msg.className = 'wishmsg err'; msg.textContent = j.error || 'Could not save that — try again.'; return; }
+            if (!j.ok) { msg.className = 'wishmsg err'; msg.textContent = j.error || 'Could not save that, try again.'; return; }
             msg.className = 'wishmsg ok';
             msg.textContent = j.count > 1
-                ? '✅ Noted — ' + j.count + ' travelers have asked for this. That moves it up our list.'
-                : '✅ Noted — thank you. Wishes like this decide what we add next.';
+                ? '✅ Noted, ' + j.count + ' travelers have asked for this. That moves it up our list.'
+                : '✅ Noted, thank you. Wishes like this decide what we add next.';
             el.value = '';
             loadWishTop();
-        } catch (e) { msg.className = 'wishmsg err'; msg.textContent = 'Could not reach the server — try again.'; }
+        } catch (e) { msg.className = 'wishmsg err'; msg.textContent = 'Could not reach the server, try again.'; }
     }
     async function loadWishTop(){
         try {
@@ -647,7 +647,7 @@
             const r = await fetch('/api/destinations');
             DATA = await r.json();
         } catch (e) {
-            $('count').textContent = 'Could not load the book — refresh to try again.';
+            $('count').textContent = 'Could not load the book, refresh to try again.';
             return;
         }
         initFilters();

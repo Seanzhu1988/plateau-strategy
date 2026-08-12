@@ -1,6 +1,6 @@
 """Can a stranger who guesses a driver id read customer data or act as them?
 
-Driver ids are handed out in sequence — RTR_0001, RTR_0002, ... — so "guessing"
+Driver ids are handed out in sequence, RTR_0001, RTR_0002, ..., so "guessing"
 means counting. Every test below assumes the attacker knows a valid id, because
 that is the realistic case, not a hard one.
 """

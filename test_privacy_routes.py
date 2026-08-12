@@ -74,7 +74,7 @@ for must, why in [
         ("deletion", "the right to be deleted")]:
     chk("it mentions %s (%s)" % (must, why), must in low)
 # photo_intake.py exists but is wired to no route. A policy describing it would
-# be a false statement in a legal document — the exact failure mode that makes
+# be a false statement in a legal document, the exact failure mode that makes
 # privacy policies worthless.
 chk("it does NOT describe photo GPS, which is not wired to any route",
     "exif" not in low and "photo" not in low)

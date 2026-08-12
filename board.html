@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Board of Directors — Plateau Strategy Solution Lab</title>
+    <title>Board of Directors, Plateau Strategy Solution Lab</title>
     <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -60,12 +60,12 @@
 
     <div class="wrap">
         <h1>Board of Directors</h1>
-        <p class="sub">Private governance vault — for the managing members only. The company's corporate documents and ownership record, kept in one secure place.</p>
+        <p class="sub">Private governance vault, for the managing members only. The company's corporate documents and ownership record, kept in one secure place.</p>
 
         <div id="gate"></div>
 
         <div id="content" style="display:none;">
-            <div class="lock">🔐 <b>Managing members only.</b> Everything here is private corporate governance material — bylaws, agreements, resolutions and contracts. Uploads are archived permanently and never overwritten.</div>
+            <div class="lock">🔐 <b>Managing members only.</b> Everything here is private corporate governance material, bylaws, agreements, resolutions and contracts. Uploads are archived permanently and never overwritten.</div>
 
             <div class="card">
                 <h2>👔 Managing Members</h2>
@@ -76,8 +76,8 @@
                 <div class="empty" id="memEmpty">No members added yet.</div>
                 <div class="addrow">
                     <input id="m_name" placeholder="Full name" autocomplete="name">
-                    <input id="m_role" placeholder="Role — e.g. Managing Member">
-                    <input id="m_own" placeholder="Ownership % — e.g. 50">
+                    <input id="m_role" placeholder="Role, e.g. Managing Member">
+                    <input id="m_own" placeholder="Ownership %, e.g. 50">
                     <input id="m_email" type="email" placeholder="Email" autocomplete="email">
                     <input id="m_since" type="date">
                     <button class="btn blue" onclick="addMember()">+ Add member</button>
@@ -86,17 +86,17 @@
 
             <div class="card">
                 <h2>📁 Governance Vault</h2>
-                <p class="sub" style="margin:-0.5rem 0 0.4rem;">Bylaws · operating &amp; shareholder agreements · articles of formation · board resolutions · contracts · cap table · tax/EIN. Append-only — every version is kept.</p>
+                <p class="sub" style="margin:-0.5rem 0 0.4rem;">Bylaws · operating &amp; shareholder agreements · articles of formation · board resolutions · contracts · cap table · tax/EIN. Append-only, every version is kept.</p>
                 <div class="addrow">
                     <select id="d_type"></select>
-                    <input id="d_title" placeholder="Document title — e.g. Operating Agreement v2">
+                    <input id="d_title" placeholder="Document title, e.g. Operating Agreement v2">
                     <input id="d_file" type="file" accept=".pdf,.doc,.docx,image/*">
                     <input id="d_notes" placeholder="Notes (optional)">
                     <button class="btn blue" id="upBtn" onclick="uploadDoc()">⬆ Upload</button>
                 </div>
                 <div class="result" id="upResult"></div>
                 <div id="docList" style="margin-top:1rem;"></div>
-                <div class="empty" id="docEmpty">No documents yet — upload your first governance record above.</div>
+                <div class="empty" id="docEmpty">No documents yet, upload your first governance record above.</div>
             </div>
         </div>
 
@@ -124,7 +124,7 @@
         function showGate(msg) {
             document.getElementById('gate').innerHTML =
                 '<div class="card" style="max-width:440px; margin:2.5rem auto;">' +
-                '<h1 style="margin-bottom:0.5rem; text-align:center;">🔒 Private — board only</h1>' +
+                '<h1 style="margin-bottom:0.5rem; text-align:center;">🔒 Private, board only</h1>' +
                 '<p class="sub" style="text-align:center; margin-bottom:1.4rem;">' +
                 'The governance vault holds the bylaws, agreements and contracts.</p>' +
                 '<input id="bd_name" placeholder="Your name" autocomplete="name" ' +
@@ -161,8 +161,8 @@
             document.getElementById('memEmpty').style.display = list.length ? 'none' : 'block';
             document.getElementById('memBody').innerHTML = list.map(m =>
                 '<tr><td><b>' + esc(m.name) + '</b></td><td>' + esc(m.role || '') + '</td>' +
-                '<td>' + (m.ownership_pct ? esc(m.ownership_pct) + '%' : '—') + '</td>' +
-                '<td>' + (m.email ? '<a href="mailto:' + esc(m.email) + '">' + esc(m.email) + '</a>' : '—') + '</td>' +
+                '<td>' + (m.ownership_pct ? esc(m.ownership_pct) + '%' : ', ') + '</td>' +
+                '<td>' + (m.email ? '<a href="mailto:' + esc(m.email) + '">' + esc(m.email) + '</a>' : ', ') + '</td>' +
                 '<td>' + esc(m.since || '') + '</td>' +
                 '<td><button class="btn mini" onclick="removeMember(\'' + m.id + '\')">Remove</button></td></tr>').join('');
         }
@@ -220,10 +220,10 @@
                 const dataUrl = await fileToDataURL(f);
                 j = await psxJSON('/api/board/documents', { method:'POST', headers:{'Content-Type':'application/json'},
                     body: JSON.stringify({ file: dataUrl, doc_type: val('d_type'), title: val('d_title'), original_name: f.name, notes: val('d_notes') }) });
-            } catch (e) { btn.disabled = false; btn.textContent = '⬆ Upload'; out.className = 'result err'; out.textContent = 'Upload failed — try again.'; return; }
+            } catch (e) { btn.disabled = false; btn.textContent = '⬆ Upload'; out.className = 'result err'; out.textContent = 'Upload failed, try again.'; return; }
             btn.disabled = false; btn.textContent = '⬆ Upload';
             if (!j.ok) { out.className = 'result err'; out.textContent = j.error || 'Upload failed'; return; }
-            out.className = 'result ok'; out.textContent = 'Saved — ' + (j.document.title || 'document') + ' archived.';
+            out.className = 'result ok'; out.textContent = 'Saved, ' + (j.document.title || 'document') + ' archived.';
             ['d_title','d_notes'].forEach(i => document.getElementById(i).value = '');
             document.getElementById('d_file').value = '';
             loadDocs();

@@ -10,7 +10,7 @@
  * That reads as if it handles failure, and it handles exactly one kind: the
  * server answering properly with {ok:false}. Two commoner kinds kill it:
  *
- *   1. fetch() itself rejects — phone in a lift, wifi dropped, DNS blip.
+ *   1. fetch() itself rejects, phone in a lift, wifi dropped, DNS blip.
  *   2. The reply is not JSON, so .json() throws on the body. A 500 error
  *      page, a proxy timeout page, or Render restarting mid-deploy all
  *      answer with HTML, and HTML is not JSON.
@@ -61,7 +61,7 @@
         : "The server is having trouble (" + r.status + "). Please try again in a moment.");
     }
 
-    // A list is a valid reply in its own right — the discoveries feed and the
+    // A list is a valid reply in its own right, the discoveries feed and the
     // destination list both return one. Only wrap it if the status was bad.
     if (Array.isArray(j)) return r.ok ? j : fail("The server is having trouble (" + r.status + ").");
 
@@ -69,15 +69,15 @@
     return j;
   };
 
-  /* For the handful of places that want the raw Response — a file download,
-   * a HEAD check — without the throw. Returns null instead. */
+  /* For the handful of places that want the raw Response, a file download,
+   * a HEAD check, without the throw. Returns null instead. */
   w.psxFetch = async function psxFetch(url, opts) {
     try { return await fetch(url, opts); } catch (e) { return null; }
   };
 
   /* Restore a swept opt-out.
    *
-   * "Do not count this device" is a cookie, and privacy tools sweep cookies —
+   * "Do not count this device" is a cookie, and privacy tools sweep cookies, 
    * psx_nocount looks exactly like a tracker because structurally it is one.
    * When it goes, the device silently starts counting again and there is no
    * symptom; the visitor numbers just drift up. /not-a-traveler leaves a copy
@@ -89,7 +89,7 @@
    * not much of a repair.
    *
    * The cookie is httponly, so this cannot write it directly and asks the
-   * server instead. One page view is counted before the repair lands — the
+   * server instead. One page view is counted before the repair lands, the
    * request is already finished by the time this runs. One is not forever.
    *
    * Only ever restores the opt-OUT. The same trick used to respawn a cleared
@@ -101,5 +101,5 @@
         && !/(^|;\s*)psx_nocount=/.test(document.cookie)) {
       fetch('/api/traffic/optout', { credentials: 'same-origin' }).catch(function () {});
     }
-  } catch (e) { /* storage blocked, or a sandboxed frame — the cookie stands alone */ }
+  } catch (e) { /* storage blocked, or a sandboxed frame, the cookie stands alone */ }
 })(window);

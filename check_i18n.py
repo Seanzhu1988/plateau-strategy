@@ -3,7 +3,7 @@
 
 Every register problem on this site was found the same way: the owner read a
 page, was irritated, and said so. Then one page got fixed and the same fault
-sat untouched on four others — 摸得门儿清 survived three separate passes on a
+sat untouched on four others, 摸得门儿清 survived three separate passes on a
 sign-up page nobody happened to open.
 
 That is not a translation problem, it is a process problem. This is the fix:
@@ -35,7 +35,7 @@ COLLOQUIAL = {
         ("一门生意",   "market-stall talk for a line of trade; a company says 业务"),
         ("门儿清",     "Beijing street slang"),
         ("摸得",       "colloquial 'knows it inside out'"),
-        ("大白话",     "'plain speech' said colloquially — undercuts its own claim"),
+        ("大白话",     "'plain speech' said colloquially, undercuts its own claim"),
         ("一口价",     "haggling vocabulary; a service quotes 固定价格"),
         ("挣钱",       "spoken; 盈利 or 产生收入 in company prose"),
         ("挣来的钱",   "spoken; 收入"),
@@ -64,10 +64,10 @@ COLLOQUIAL = {
     "ko": [
         # Korean has now been read. These are the faults that were in it, kept
         # here so no future pass can reintroduce them.
-        ("당신", "not a neutral 'you' in Korean — commercial copy drops the pronoun"),
+        ("당신", "not a neutral 'you' in Korean, commercial copy drops the pronoun"),
         ("우리는", "the plain 'we'; a company addressing a customer says 저희"),
-        ("우리가", "same — 저희가"),
-        ("우리의", "same — 저희의"),
+        ("우리가", "same, 저희가"),
+        ("우리의", "same, 저희의"),
         ("리드", "transliterated 'lead'; the term is 잠재 고객"),
         ("여정 계획 도구", "the Trip Planner is 여행 플래너 everywhere, or it is two products"),
         ("곳바로", "misspelling of 곧바로"),
@@ -96,14 +96,14 @@ def load_dict():
     It used to be parsed straight out of i18n.js, which held all four
     languages. The dictionary now ships as one file per language so that an
     English reader does not download 265 KB of Chinese, Spanish, Korean and
-    Vietnamese to read a page in English — so this reads the packs and puts
+    Vietnamese to read a page in English, so this reads the packs and puts
     the shape back together. The checks below are unchanged; only where the
     strings live has moved."""
     D = {}
     for lang in LANGS:
         path = os.path.join(HERE, "i18n.%s.js" % lang)
         if not os.path.exists(path):
-            raise SystemExit("missing %s — run build_i18n.py first" % os.path.basename(path))
+            raise SystemExit("missing %s, run build_i18n.py first" % os.path.basename(path))
         src = open(path, encoding="utf-8").read()
         m = re.search(r'window\.psxPack\(".*?",\s*(\{.*\})\);', src, re.S)
         if not m:
@@ -132,7 +132,7 @@ def main():
         if hits:
             print(f"  {lang}: {len(hits)} colloquial phrase(s)")
             for marker, why, key, text in hits[:8]:
-                print(f"     {marker}  — {why}")
+                print(f"     {marker} , {why}")
                 print(f"       EN {key[:70]}")
                 print(f"       {lang.upper()} {text[:70]}")
             problems += hits

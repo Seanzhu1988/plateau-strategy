@@ -2,7 +2,7 @@
 """A visitor's photo must give us the place and tell nobody who they are.
 
 Built against a REAL JPEG assembled here byte by byte, with a real EXIF block
-carrying real GPS rationals, a device name and an owner name — not a mock. The
+carrying real GPS rationals, a device name and an owner name, not a mock. The
 parsing in photo_intake.py is hand-written binary walking with no library
 behind it, and the only way to trust that is to feed it the actual format.
 
@@ -59,7 +59,7 @@ def build_exif(lat_dms, lat_ref, lon_dms, lon_ref, make=b"SecretPhone X9\x00",
     ifd0 += struct.pack(">I", 0)
 
     # The hemisphere is two bytes, so TIFF stores it INLINE in the entry rather
-    # than at an offset — values of four bytes or fewer always are. Writing it
+    # than at an offset, values of four bytes or fewer always are. Writing it
     # as a pointer here is what a camera never does, and building it the wrong
     # way is what let a parser bug (west read as east) pass unnoticed.
     gps = struct.pack(">H", gps_entries)
@@ -117,7 +117,7 @@ print("\nbut it is still a usable picture:")
 chk("it still starts as a JPEG", clean[:2] == b"\xff\xd8")
 chk("it still ends as one", clean[-2:] == b"\xff\xd9")
 chk("the image data survived", b"PICTUREBYTES" in clean)
-chk("the quantisation table survived — dropping it would break decoding",
+chk("the quantisation table survived, dropping it would break decoding",
     b"\xff\xdb" in clean)
 chk("and it got smaller (%d -> %d bytes)" % (len(SPACE_NEEDLE), len(clean)),
     len(clean) < len(SPACE_NEEDLE))

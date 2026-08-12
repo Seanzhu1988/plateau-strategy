@@ -2,7 +2,7 @@
 """Route demand: count the road, never the traveller.
 
 Sean's correction, 2026-08-09: the product is not "here are fifty travellers,
-contact them". It is "this route has fifty people planning it" — the operator
+contact them". It is "this route has fifty people planning it", the operator
 learns a road is in demand and rings us. Nobody's identity is in the deal.
 
 So the storage is built so the wrong version is not available later: counts,
@@ -74,7 +74,7 @@ print("\nand what lands on disk is a count, not a diary:")
 rec = list(routes.values())[0]
 chk("the record is a number (%s)" % sorted(rec), set(rec) <= {"n", "ids"})
 raw = open(A.ROUTE_DEMAND_PATH).read()
-# Not "no colons" — JSON is made of colons, and that first version passed or
+# Not "no colons", JSON is made of colons, and that first version passed or
 # failed on punctuation rather than on what it claimed to check. What must not
 # be here is a clock: an hour and a minute against a route is a movement log
 # however few of them there are.

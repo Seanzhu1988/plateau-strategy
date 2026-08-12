@@ -17,7 +17,7 @@
    "visit": 30,
    "lat": 40.758,
    "lon": -73.9855,
-   "desc": "The neon crossroads of the world — massive digital billboards, Broadway marquees and street performers at all hours.",
+   "desc": "The neon crossroads of the world, massive digital billboards, Broadway marquees and street performers at all hours.",
    "tip": "Best after dark, when the lights do the work. Keep your wallet in a front pocket."
   },
   {
@@ -43,7 +43,7 @@
    "visit": 120,
    "lat": 40.7794,
    "lon": -73.9632,
-   "desc": "One of the world's great museums — 5,000 years of art, including a complete Egyptian temple in a glass hall.",
+   "desc": "One of the world's great museums, 5,000 years of art, including a complete Egyptian temple in a glass hall.",
    "tip": "Friday and Saturday it stays open late; the rooftop has a skyline view in season."
   },
   {
@@ -69,7 +69,7 @@
    "visit": 45,
    "lat": 40.7061,
    "lon": -73.9969,
-   "desc": "Walk the wooden promenade of the 1883 bridge — the best free view of the Manhattan skyline.",
+   "desc": "Walk the wooden promenade of the 1883 bridge, the best free view of the Manhattan skyline.",
    "tip": "Start on the Brooklyn side and walk toward the skyline."
   },
   {
@@ -108,7 +108,7 @@
    "visit": 30,
    "lat": 40.7527,
    "lon": -73.9772,
-   "desc": "A beaux-arts cathedral of transit — the turquoise celestial ceiling and the four-faced opal clock above the information booth.",
+   "desc": "A beaux-arts cathedral of transit, the turquoise celestial ceiling and the four-faced opal clock above the information booth.",
    "tip": "Try the whispering gallery on the ramp outside the Oyster Bar."
   },
   {
@@ -121,7 +121,7 @@
    "visit": 180,
    "lat": 40.7033,
    "lon": -74.017,
-   "desc": "Ferries from Battery Park to Liberty and Ellis Islands — the statue up close and the immigration museum.",
+   "desc": "Ferries from Battery Park to Liberty and Ellis Islands, the statue up close and the immigration museum.",
    "tip": "Book the first boat of the day; crown access sells out weeks ahead, and last boarding is mid-afternoon."
   },
   {
@@ -134,7 +134,7 @@
    "visit": 45,
    "lat": 40.7424,
    "lon": -74.0061,
-   "desc": "A block-long food hall in the old Nabisco factory — tacos, lobster rolls, doughnuts and thirty-five vendors.",
+   "desc": "A block-long food hall in the old Nabisco factory, tacos, lobster rolls, doughnuts and thirty-five vendors.",
    "tip": "Weekday mornings are calm; weekend afternoons are a crush."
   },
   {
@@ -148,7 +148,7 @@
    "lat": 40.7223,
    "lon": -73.9874,
    "desc": "The 1888 delicatessen that defines pastrami on rye, sliced by hand at the counter.",
-   "tip": "Take the ticket at the door and don't lose it — you pay on the way out."
+   "tip": "Take the ticket at the door and don't lose it, you pay on the way out."
   },
   {
    "name": "Joe's Pizza",
@@ -160,7 +160,7 @@
    "visit": 20,
    "lat": 40.7305,
    "lon": -74.0021,
-   "desc": "The benchmark New York slice since 1975 — thin, hot, and eaten folded, standing up."
+   "desc": "The benchmark New York slice since 1975, thin, hot, and eaten folded, standing up."
   },
   {
    "name": "Grand Central Oyster Bar",
@@ -185,7 +185,7 @@
    "visit": 20,
    "lat": 40.7796,
    "lon": -73.9803,
-   "desc": "Home of the six-ounce chocolate-chip walnut cookie — warm, half-molten in the middle, worth the line."
+   "desc": "Home of the six-ounce chocolate-chip walnut cookie, warm, half-molten in the middle, worth the line."
   },
   {
    "name": "Stone Street",
@@ -197,7 +197,7 @@
    "visit": 60,
    "lat": 40.7042,
    "lon": -74.0104,
-   "desc": "A cobblestone lane of pubs and outdoor tables in the financial district — one of Manhattan's oldest streets.",
+   "desc": "A cobblestone lane of pubs and outdoor tables in the financial district, one of Manhattan's oldest streets.",
    "tip": "On summer evenings the whole street becomes one open-air dining room."
   },
   {
@@ -210,7 +210,7 @@
    "visit": 40,
    "lat": 38.8893,
    "lon": -77.0502,
-   "desc": "The seated Lincoln above the Reflecting Pool — read the Second Inaugural carved on the north wall.",
+   "desc": "The seated Lincoln above the Reflecting Pool, read the Second Inaugural carved on the north wall.",
    "tip": "Open 24 hours; sunrise and after dark are the quiet, beautiful times."
   },
   {
@@ -224,7 +224,7 @@
    "lat": 38.8895,
    "lon": -77.0353,
    "desc": "The 555-foot obelisk at the center of the Mall; the elevator to the top gives the only 360-degree view of the city.",
-   "tip": "Same-day tickets go early — reserve online a month out if you can."
+   "tip": "Same-day tickets go early, reserve online a month out if you can."
   },
   {
    "name": "Air & Space Museum",
@@ -236,8 +236,8 @@
    "visit": 90,
    "lat": 38.8882,
    "lon": -77.0199,
-   "desc": "The Wright Flyer, Apollo 11's command module and a moon rock you can touch — the Smithsonian's biggest crowd-pleaser.",
-   "tip": "Free, but timed-entry passes are required — book before your trip."
+   "desc": "The Wright Flyer, Apollo 11's command module and a moon rock you can touch, the Smithsonian's biggest crowd-pleaser.",
+   "tip": "Free, but timed-entry passes are required, book before your trip."
   },
   {
    "name": "Museum of American History",
@@ -249,7 +249,7 @@
    "visit": 90,
    "lat": 38.8913,
    "lon": -77.03,
-   "desc": "The Star-Spangled Banner itself, Lincoln's top hat and the First Ladies' gowns — America's attic, free to enter."
+   "desc": "The Star-Spangled Banner itself, Lincoln's top hat and the First Ladies' gowns, America's attic, free to enter."
   },
   {
    "name": "National Gallery of Art",
@@ -324,8 +324,8 @@
    "visit": 90,
    "lat": 38.8783,
    "lon": -77.0687,
-   "desc": "America's most hallowed ground — the Kennedy gravesite and the Tomb of the Unknown Soldier.",
-   "tip": "Time your visit to the Changing of the Guard — every hour on the hour, every half hour in summer."
+   "desc": "America's most hallowed ground, the Kennedy gravesite and the Tomb of the Unknown Soldier.",
+   "tip": "Time your visit to the Changing of the Guard, every hour on the hour, every half hour in summer."
   },
   {
    "name": "Ben's Chili Bowl",
@@ -337,8 +337,8 @@
    "visit": 45,
    "lat": 38.917,
    "lon": -77.0281,
-   "desc": "The U Street half-smoke, unchanged since 1958 — a civil-rights landmark as much as a diner.",
-   "tip": "Order it 'all the way' — mustard, onions, chili."
+   "desc": "The U Street half-smoke, unchanged since 1958, a civil-rights landmark as much as a diner.",
+   "tip": "Order it 'all the way', mustard, onions, chili."
   },
   {
    "name": "Old Ebbitt Grill",
@@ -350,7 +350,7 @@
    "visit": 90,
    "lat": 38.8977,
    "lon": -77.0334,
-   "desc": "Washington's oldest saloon (1856), two blocks from the White House — oysters, burgers and power lunches.",
+   "desc": "Washington's oldest saloon (1856), two blocks from the White House, oysters, burgers and power lunches.",
    "tip": "The raw bar goes half-price late in the evening."
   },
   {
@@ -363,8 +363,8 @@
    "visit": 75,
    "lat": 38.9,
    "lon": -77.0442,
-   "desc": "Farm-owned American cooking — fried chicken and waffles, beignets, serious breakfasts.",
-   "tip": "It books out — reserve ahead, or come at off-hours."
+   "desc": "Farm-owned American cooking, fried chicken and waffles, beignets, serious breakfasts.",
+   "tip": "It books out, reserve ahead, or come at off-hours."
   },
   {
    "name": "The Wharf",
@@ -376,7 +376,7 @@
    "visit": 90,
    "lat": 38.8781,
    "lon": -77.0225,
-   "desc": "A mile of waterfront restaurants and music halls beside the Municipal Fish Market — the oldest continuously operating fish market in the country."
+   "desc": "A mile of waterfront restaurants and music halls beside the Municipal Fish Market, the oldest continuously operating fish market in the country."
   },
   {
    "name": "Union Market",
@@ -388,7 +388,7 @@
    "visit": 60,
    "lat": 38.9089,
    "lon": -76.9989,
-   "desc": "Forty-plus vendors in a bright Northeast market hall — dumplings, Korean tacos, local oysters."
+   "desc": "Forty-plus vendors in a bright Northeast market hall, dumplings, Korean tacos, local oysters."
   },
   {
    "name": "Pike Place Market",
@@ -400,8 +400,8 @@
    "visit": 60,
    "lat": 47.6097,
    "lon": -122.3422,
-   "desc": "Seattle's beating heart since 1907 — fish throwers, flower stalls, craft stands and the original Starbucks, stacked on a hillside over Elliott Bay.",
-   "tip": "Go before 10am to watch the fishmongers set up, and don't miss the lower levels — most visitors never find them."
+   "desc": "Seattle's beating heart since 1907, fish throwers, flower stalls, craft stands and the original Starbucks, stacked on a hillside over Elliott Bay.",
+   "tip": "Go before 10am to watch the fishmongers set up, and don't miss the lower levels, most visitors never find them."
   },
   {
    "name": "Space Needle",
@@ -413,8 +413,8 @@
    "visit": 60,
    "lat": 47.6205,
    "lon": -122.3493,
-   "desc": "The 1962 World's Fair icon — 520 feet up with a rotating glass floor and a 360° sweep of the city, the Sound, and on a clear day Mount Rainier.",
-   "tip": "Sunset slots sell out — book the golden hour online a few days ahead."
+   "desc": "The 1962 World's Fair icon, 520 feet up with a rotating glass floor and a 360° sweep of the city, the Sound, and on a clear day Mount Rainier.",
+   "tip": "Sunset slots sell out, book the golden hour online a few days ahead."
   },
   {
    "name": "Chihuly Garden and Glass",
@@ -426,7 +426,7 @@
    "visit": 60,
    "lat": 47.6206,
    "lon": -122.3504,
-   "desc": "Dale Chihuly's molten-glass dreamscapes — eight galleries and a garden where the sculptures grow among real plants, right under the Space Needle.",
+   "desc": "Dale Chihuly's molten-glass dreamscapes, eight galleries and a garden where the sculptures grow among real plants, right under the Space Needle.",
    "tip": "Pair it with the Needle on a combo ticket; the Glasshouse glows best in late-afternoon light."
   },
   {
@@ -440,7 +440,7 @@
    "lat": 47.6215,
    "lon": -122.3481,
    "desc": "Frank Gehry's shimmering blob of a building, stuffed with Nirvana and Hendrix relics, sci-fi props, horror history and a guitar tornado.",
-   "tip": "The Sound Lab lets you play real instruments — worth the last 30 minutes of your visit."
+   "tip": "The Sound Lab lets you play real instruments, worth the last 30 minutes of your visit."
   },
   {
    "name": "Seattle Aquarium",
@@ -453,7 +453,7 @@
    "lat": 47.6074,
    "lon": -122.343,
    "desc": "Sea otters, giant Pacific octopus and a diver-fed underwater dome, right on the working waterfront piers.",
-   "tip": "Otter feedings are the show — check the day's schedule at the door and plan around one."
+   "tip": "Otter feedings are the show, check the day's schedule at the door and plan around one."
   },
   {
    "name": "Kerry Park viewpoint",
@@ -465,7 +465,7 @@
    "visit": 25,
    "lat": 47.6295,
    "lon": -122.3599,
-   "desc": "The postcard shot: the whole skyline with the Space Needle front and center and Rainier floating behind it — a tiny park on Queen Anne hill.",
+   "desc": "The postcard shot: the whole skyline with the Space Needle front and center and Rainier floating behind it, a tiny park on Queen Anne hill.",
    "tip": "Come 30 minutes after sunset for the blue-hour photo every Seattle poster is made from."
   },
   {
@@ -478,8 +478,8 @@
    "visit": 40,
    "lat": 47.6456,
    "lon": -122.3344,
-   "desc": "A rusted 1900s gasification plant turned lakefront park — industrial ruins, kite hill, and seaplanes landing on Lake Union in front of the skyline.",
-   "tip": "Bring takeout and claim the hill — it's Seattle's favorite picnic view."
+   "desc": "A rusted 1900s gasification plant turned lakefront park, industrial ruins, kite hill, and seaplanes landing on Lake Union in front of the skyline.",
+   "tip": "Bring takeout and claim the hill, it's Seattle's favorite picnic view."
   },
   {
    "name": "Starbucks Reserve Roastery",
@@ -491,8 +491,8 @@
    "visit": 45,
    "lat": 47.6141,
    "lon": -122.3282,
-   "desc": "The mothership on Capitol Hill — a working roastery where beans ride copper pipes overhead and the menu goes far beyond any normal Starbucks.",
-   "tip": "Order a flight from the experience bar and watch the roaster run — skip the regular latte you can get anywhere."
+   "desc": "The mothership on Capitol Hill, a working roastery where beans ride copper pipes overhead and the menu goes far beyond any normal Starbucks.",
+   "tip": "Order a flight from the experience bar and watch the roaster run, skip the regular latte you can get anywhere."
   },
   {
    "city": "boston",
@@ -504,8 +504,8 @@
    "close": 1380,
    "visit": 120,
    "price": null,
-   "desc": "A 2.5-mile red brick line through sixteen Revolutionary sites, from Boston Common to the Bunker Hill Monument — the whole founding story laid out as a walk.",
-   "tip": "Walk it north-to-south in the afternoon so the sun is behind you, and treat the posted 90 minutes as walking time only — stopping inside sites doubles it."
+   "desc": "A 2.5-mile red brick line through sixteen Revolutionary sites, from Boston Common to the Bunker Hill Monument, the whole founding story laid out as a walk.",
+   "tip": "Walk it north-to-south in the afternoon so the sun is behind you, and treat the posted 90 minutes as walking time only, stopping inside sites doubles it."
   },
   {
    "city": "boston",
@@ -531,7 +531,7 @@
    "visit": 90,
    "price": "$$",
    "desc": "The oldest ballpark in the majors, opened 1912, with the 37-foot Green Monster still standing in left field.",
-   "tip": "On non-game days the hour-long tour walks you onto the Monster seats — book it, they sell out, and it's the only way in without a ticket."
+   "tip": "On non-game days the hour-long tour walks you onto the Monster seats, book it, they sell out, and it's the only way in without a ticket."
   },
   {
    "city": "boston",
@@ -557,7 +557,7 @@
    "visit": 90,
    "price": "$$",
    "desc": "A four-story Giant Ocean Tank spirals through a Caribbean reef with sea turtles, sharks and rays, right on the harbor.",
-   "tip": "Go at opening or in the last 90 minutes — the ramp around the tank is a single-file crush midday."
+   "tip": "Go at opening or in the last 90 minutes, the ramp around the tank is a single-file crush midday."
   },
   {
    "city": "boston",
@@ -569,7 +569,7 @@
    "close": 1020,
    "visit": 60,
    "price": null,
-   "desc": "'Old Ironsides', launched 1797 and still a commissioned Navy ship — the oldest warship afloat anywhere in the world.",
+   "desc": "'Old Ironsides', launched 1797 and still a commissioned Navy ship, the oldest warship afloat anywhere in the world.",
    "tip": "Free, but adults need photo ID to board. The museum next door is separate and worth the extra half hour."
   },
   {
@@ -583,7 +583,7 @@
    "visit": 45,
    "price": null,
    "desc": "America's oldest public park, 1634, running into the Public Garden with its swan boats and weeping willows.",
-   "tip": "Swan boats run mid-April to Labor Day only. The Common is the natural place to start any Boston day — three subway lines meet underneath it."
+   "tip": "Swan boats run mid-April to Labor Day only. The Common is the natural place to start any Boston day, three subway lines meet underneath it."
   },
   {
    "city": "boston",
@@ -596,7 +596,7 @@
    "visit": 60,
    "price": null,
    "desc": "The 1636 college green across the river, ringed by red brick halls, with Harvard Square's bookshops and cafes at the gate.",
-   "tip": "Take the Red Line to Harvard rather than driving — Cambridge parking is genuinely difficult. Student-led tours leave from the visitor center and are free."
+   "tip": "Take the Red Line to Harvard rather than driving, Cambridge parking is genuinely difficult. Student-led tours leave from the visitor center and are free."
   },
   {
    "name": "Seattle",

@@ -1,4 +1,4 @@
-/* Plateau Strategy Solution Lab — single-active-identity guard (privacy).
+/* Plateau Strategy Solution Lab, single-active-identity guard (privacy).
    A browser may hold at most ONE portal login at a time. Signing into (or
    actively entering) one portal clears the others, so a person using the site
    is never silently still logged in somewhere else. */

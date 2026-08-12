@@ -13,7 +13,7 @@ stops at the first *inner* close, abandoning the outer one:
 The browser does not complain. It silently re-parents everything after the
 orphan, so #view-overview ended one section early, every
 "#view-overview .psx-*" rule stopped matching, and the four business cards
-stacked full-width. No error, no 404, no failing test — the page just looked
+stacked full-width. No error, no 404, no failing test, the page just looked
 wrong, and it took a screenshot to notice.
 
 So: count them. HTML parsers are forgiving; this is not.
@@ -39,7 +39,7 @@ TAG = re.compile(r"<(/?)([a-zA-Z][\w-]*)([^>]*?)(/?)>")
 
 def strip_noise(src):
     """Comments and <script>/<style> bodies contain tag-like text that is not
-    markup — a template string with </div> in it, a CSS selector with >."""
+    markup, a template string with </div> in it, a CSS selector with >."""
     src = re.sub(r"<!--.*?-->", "", src, flags=re.S)
     src = re.sub(r"<(script|style)\b[^>]*>.*?</\1\s*>", r"<\1></\1>", src, flags=re.S | re.I)
     return src

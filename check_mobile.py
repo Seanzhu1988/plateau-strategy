@@ -8,7 +8,7 @@ rather than merely ugly:
   1. SIDEWAYS SCROLL. One element wider than the screen and the whole page
      slides under the thumb. It is the single most common mobile defect and it
      is invisible on a desktop, because there is always room. Checked at 320px
-     as well as 390 — a 320px screen is still out there and it is where a fixed
+     as well as 390, a 320px screen is still out there and it is where a fixed
      width first bites.
 
   2. TAP TARGETS. Apple and Google both put the floor around 44px. A 20px link
@@ -48,7 +48,7 @@ WIDTHS = [(320, "320px"), (390, "390px")]
 
 TAP_FLOOR = 44          # px, the Apple/Google guidance
 TEXT_FLOOR = 12         # px
-INPUT_FLOOR = 16        # px — below this iOS Safari zooms on focus
+INPUT_FLOOR = 16        # px, below this iOS Safari zooms on focus
 
 PROBE = """(cfg) => {
   const doc = document.documentElement;
@@ -71,7 +71,7 @@ PROBE = """(cfg) => {
     out.widest = worst;
   }
 
-  // "Can a finger actually hit this right now?" — not merely "is it in the
+  // "Can a finger actually hit this right now?", not merely "is it in the
   // layout". The first version of this checked only display and visibility and
   // duly reported the Pollock menu's bubbles as 9px targets on every page. They
   // are 64px when the menu is open; 9px is the closed state, at opacity 0 with
@@ -107,7 +107,7 @@ PROBE = """(cfg) => {
   // horizontal nav a link is as tall as its hit area and only as wide as its
   // word, and forcing "Home" to 44px wide buys nothing.
   //
-  // Everything else — links sitting inside a sentence — is counted and not
+  // Everything else, links sitting inside a sentence, is counted and not
   // gated. Inflating every prose link to 44px would wreck the line spacing of
   // the paragraph around it, and nobody navigates by stabbing at a word
   // mid-paragraph.
@@ -163,7 +163,7 @@ def main():
     key = (os.environ.get("ROBOT_SHARE_KEY") or "").strip()
     routes = list(ROUTES) + (["/robot"] if key else [])
     if not key:
-        print("note: /robot not checked — set ROBOT_SHARE_KEY to include it")
+        print("note: /robot not checked, set ROBOT_SHARE_KEY to include it")
 
     cfg = {"tap": TAP_FLOOR, "text": TEXT_FLOOR, "input": INPUT_FLOOR}
     overflow_fails, tap_fails, zoom_fails, text_fails = [], [], [], []
@@ -201,7 +201,7 @@ def main():
                                  w.get("w", "?")))
                     if r["zoomy"]:
                         zoom_fails.append((tag, label, r["zoomy"]))
-                        print("FAIL %-6s %-24s %d field(s) under %dpx — iOS will zoom: %s"
+                        print("FAIL %-6s %-24s %d field(s) under %dpx, iOS will zoom: %s"
                               % (tag, label, len(r["zoomy"]), INPUT_FLOOR,
                                  ", ".join("%s(%gpx)" % (z["el"], z["size"]) for z in r["zoomy"][:3])))
                     if r["primary"]:
@@ -236,7 +236,7 @@ def main():
     print("note  %d have text under %dpx" % (len(text_fails), TEXT_FLOOR))
     if tap_fails:
         worst = sorted(tap_fails, key=lambda x: -len(x[2]))[0]
-        print("      worst: %s %s — %d, e.g. %s"
+        print("      worst: %s %s, %d, e.g. %s"
               % (worst[0], worst[1], len(worst[2]),
                  ", ".join("%s %dx%d" % (t["el"], t["w"], t["h"]) for t in worst[2][:3])))
 

@@ -2,7 +2,7 @@
 """The road trip planner offers more than one road, and picking one redraws.
 
 OSRM, Nominatim and Overpass are all third parties, all rate-limited, and all
-blocked from this container. Stubbed — which is also the only way to assert on
+blocked from this container. Stubbed, which is also the only way to assert on
 an exact route count and an exact set of rest stops.
 """
 import json, re, sys
@@ -20,7 +20,7 @@ OSRM = {"code": "Ok", "routes": [
      "geometry": line([[-122.33,47.60],[-122.60,46.90],[-122.67,45.52]])},
     {"duration": 14400, "distance": 340000,
      "geometry": line([[-122.33,47.60],[-123.80,46.90],[-122.67,45.52]])},
-    {"duration": 10830, "distance": 280400,     # 30s and 400m apart — a dupe
+    {"duration": 10830, "distance": 280400,     # 30s and 400m apart, a dupe
      "geometry": line([[-122.33,47.60],[-122.61,46.91],[-122.67,45.52]])},
 ]}
 NOMINATIM = [{"display_name": "Seattle, Washington, United States",
@@ -40,7 +40,7 @@ CHARGERS = {"elements": [
               "socket:type2_combo:output": "150 kW", "capacity": "6", "fee": "no"}},
     {"type": "node", "id": 92, "lat": 45.80, "lon": -122.75,
      "tags": {"amenity": "charging_station", "name": "Ridgefield Lot", "socket:type2": "2"}},
-    # behind a gate at a dealership — must never be offered
+    # behind a gate at a dealership, must never be offered
     {"type": "node", "id": 93, "lat": 45.70, "lon": -122.70,
      "tags": {"amenity": "charging_station", "name": "Dealer Only", "access": "private"}},
 ]}
@@ -48,7 +48,7 @@ NEARBY = {"elements": [
     {"type": "node", "id": 80, "lat": 47.0503, "lon": -122.5002, "tags": {"amenity": "toilets"}},
     {"type": "node", "id": 81, "lat": 47.0510, "lon": -122.4995, "tags": {"amenity": "cafe", "name": "Bean"}},
     {"type": "node", "id": 82, "lat": 46.4008, "lon": -122.8805, "tags": {"amenity": "restaurant", "name": "Diner"}},
-    # 30 km from any charger — must not be attached to one
+    # 30 km from any charger, must not be attached to one
     {"type": "node", "id": 83, "lat": 46.10, "lon": -122.60, "tags": {"amenity": "toilets"}},
 ]}
 
@@ -148,7 +148,7 @@ with sync_playwright() as p:
     for want in ("Tesla", "CCS", "CHAdeMO", "250 kW", "12 stalls"):
         if want not in legs_txt:
             fails.append(f"charger detail missing: {want}")
-    # the join — amenities within a walk, attached to the right charger
+    # the join, amenities within a walk, attached to the right charger
     near = pg.evaluate("""() => {
         const out = {};
         document.querySelectorAll('#legs li').forEach(li => {
@@ -182,7 +182,7 @@ with sync_playwright() as p:
         if need not in toggles["keys"]:
             fails.append(f"category missing: {need}")
 
-    # switching one off must remove it from the QUERY, not merely hide it —
+    # switching one off must remove it from the QUERY, not merely hide it, 
     # that is what makes a narrower search a cheaper one
     before_q = len(seen_queries)
     pg.click("#groupPick button[data-g='scenic'][aria-pressed='true']")
@@ -213,7 +213,7 @@ with sync_playwright() as p:
 
 # ---- and the whole thing again in Chinese -----------------------------
 # The reason this page did not translate is that i18n.js swaps text NODES,
-# and every result here is a string built in JavaScript afterwards — the
+# and every result here is a string built in JavaScript afterwards, the
 # walker never sees it. A Chinese reader got a Chinese page with an entirely
 # English answer inside it. Guarded, because nothing about the English tests
 # above would ever notice it coming back.
@@ -237,9 +237,9 @@ with sync_playwright() as p:
     br.close()
 
 # Things that are correctly NOT translated: glyphs, bare numbers, and real
-# place names out of OpenStreetMap — TRANSLATION.md keeps venue names in the
+# place names out of OpenStreetMap, TRANSLATION.md keeps venue names in the
 # language of the sign outside.
-# Derived from the stub rather than listed by hand — hardcoding it is how
+# Derived from the stub rather than listed by hand, hardcoding it is how
 # two of the three names got left out and the test failed on its own data.
 KEEP = tuple(e["tags"]["name"] for e in OVERPASS["elements"] if e["tags"].get("name"))
 lines = [l.strip() for l in legs.split("\n") if l.strip()]
@@ -258,7 +258,7 @@ for word in ("fastest", "shortest", "min"):
 if not _re.search(r"[\u4e00-\u9fff]", pick):
     fails.append("route chooser is entirely untranslated")
 else:
-    print(f"  zh: route chooser translated — {pick[:46]}")
+    print(f"  zh: route chooser translated, {pick[:46]}")
 
 print("\n" + "=" * 68)
 if fails:

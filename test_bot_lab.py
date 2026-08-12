@@ -3,8 +3,8 @@
 
 Three properties, in the order they matter.
 
-OFF BY DEFAULT. The legal question — whether software may place orders in an
-account belonging to someone other than its owner — is with an attorney and is
+OFF BY DEFAULT. The legal question, whether software may place orders in an
+account belonging to someone other than its owner, is with an attorney and is
 not answered. Sean's instruction was that nothing ships before that answer. So
 the first assertions here are that with BOT_LAB_ENABLED unset, every route
 answers 404: not 401, not 403, which would tell a stranger there is something
@@ -18,7 +18,7 @@ fails if any of them looks like a way in that the owner did not open.
 
 TWO KEYS TO UNLOCK. A strategy opens only when the record clears the bar AND
 the owner then flips it. Each half is tested alone, and each alone must fail.
-Kalshi is locked for a different reason — it lost money — and no amount of
+Kalshi is locked for a different reason, it lost money, and no amount of
 record may reopen it.
 
     python3 test_bot_lab.py
@@ -66,7 +66,7 @@ def off():
 
 # Only the lab's own surfaces. The account routes are deliberately NOT here:
 # they moved to /api/access/* and out from behind this switch, because those
-# accounts also open /robot — gating them on the lab meant that with the lab
+# accounts also open /robot, gating them on the lab meant that with the lab
 # off the owner could not issue a credential for an unrelated page. They are
 # protected by @owner_required, which does not depend on any switch, and they
 # get their own assertions further down.
@@ -84,7 +84,7 @@ for method, path in LAB_ROUTES:
     if r.status_code != 404:
         bad.append("%s %s -> %d" % (method, path, r.status_code))
 chk("every route answers 404 (%s)" % (bad or "all %d" % len(LAB_ROUTES)), not bad)
-chk("404 rather than 401 — a refusal would confirm it is there",
+chk("404 rather than 401, a refusal would confirm it is there",
     all(c.open(p, method=m, json={}).status_code != 401 for m, p in LAB_ROUTES))
 chk("live execution is not allowed", bot_lab.live_execution_allowed() is False)
 
@@ -126,7 +126,7 @@ chk("and the password itself is not stored anywhere",
 
 # These accounts open /robot too. Gating them on BOT_LAB_ENABLED meant that
 # with the lab off the owner could not issue a credential for an unrelated
-# page — found by writing the /robot password test, not by reading the code.
+# page, found by writing the /robot password test, not by reading the code.
 print("\nthe accounts are not the lab's property:")
 off()
 r = own.post("/api/access/users", json={"username": "friend2"})
@@ -148,7 +148,7 @@ user = A.app.test_client()
 r = user.post("/api/access/login", json={"username": "friend1", "password": "wrong"})
 chk("a wrong password is refused (%d)" % r.status_code, r.status_code == 401)
 wrong_user = user.post("/api/access/login", json={"username": "nobody", "password": "x"})
-chk("an unknown user gets the SAME message — no way to enumerate accounts",
+chk("an unknown user gets the SAME message, no way to enumerate accounts",
     wrong_user.get_json().get("error") == r.get_json().get("error"))
 r = user.post("/api/access/login", json={"username": "friend1", "password": pw})
 chk("the issued password works (%d)" % r.status_code, r.status_code == 200)
@@ -202,7 +202,7 @@ chk("net-negative is not eligible (%s)" % el["blockers"], el["eligible"] is Fals
 r = own.post("/api/lab/locks/strategy/limit_order", json={"locked": False})
 chk("and the owner cannot force it (%d)" % r.status_code, r.status_code == 400)
 
-print("\nlocking is always allowed — shutting off is never the hard direction:")
+print("\nlocking is always allowed, shutting off is never the hard direction:")
 r = own.post("/api/lab/locks/strategy/farm", json={"locked": True})
 chk("farm can be shut again at once (%d)" % r.status_code, r.status_code == 200)
 chk("and it is shut", A.LAB.is_locked("strategy", "farm") is True)
@@ -231,7 +231,7 @@ chk("an unknown role is refused rather than ignored (%d)" % r.status_code,
 
 # An account written before roles existed has no role field at all. Reading a
 # missing permission as "bot" would have handed write access to every account
-# that predates the check — the exact way a security fix becomes a hole.
+# that predates the check, the exact way a security fix becomes a hole.
 raw = json.load(open(A.LAB.users_path))
 for u in raw:
     u.pop("role", None)
@@ -252,7 +252,7 @@ own.post("/api/access/users/thebot/revoke", json={"revoked": True})
 r = botc.post("/api/lab/fills", json={"strategy": "farm", "pnl_usd": 1.0})
 chk("a revoked bot stops writing (%d)" % r.status_code, r.status_code in (401, 403))
 own.post("/api/access/users/thebot/revoke", json={"revoked": False})
-# Un-revoking does NOT restore the old session — revoking now clears it, so
+# Un-revoking does NOT restore the old session, revoking now clears it, so
 # the account has to sign in again. That is the point of the fix (a revoked
 # session used to keep working), and it means this test has to log back in
 # rather than assume the cookie still means something.

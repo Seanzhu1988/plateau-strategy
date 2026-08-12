@@ -1,4 +1,4 @@
-# Phase 1: Rental Platform + Driver Insurance — Concept Brief
+# Phase 1: Rental Platform + Driver Insurance, Concept Brief
 
 **Date:** June 30, 2026  
 **Prepared for:** Plateau Strategy Holding
@@ -7,7 +7,7 @@
 
 ## The Pitch (One Line)
 
-Turn the Tesla rental website into a focused, self-service funnel for rideshare and delivery drivers — and make low-cost commercial insurance the hook that brings them in and keeps them.
+Turn the Tesla rental website into a focused, self-service funnel for rideshare and delivery drivers, and make low-cost commercial insurance the hook that brings them in and keeps them.
 
 ---
 
@@ -19,7 +19,7 @@ Design the site around one question: **who is this visitor and what are they her
 
 - Track where they come from and how they move through the page
 - Cut anything that doesn't move them toward renting
-- No buttons doing five things — every element has a clear, single purpose
+- No buttons doing five things, every element has a clear, single purpose
 - Remove friction at every conversion point
 
 **Goal:** Maximize driver acquisition through laser-focused funnel design.

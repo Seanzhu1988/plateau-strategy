@@ -3,7 +3,7 @@
 
 The complaint is "double paint layers", said more than once, and it has never
 been answered because nobody counted. The landing page loads NINE stylesheets
-in a row — seven inline <style> blocks, then paper.css, then modern.css —
+in a row, seven inline <style> blocks, then paper.css, then modern.css, 
 carrying 509 !important declarations between them. Every one of those layers
 was added to correct the layer beneath it rather than to change it.
 
@@ -13,7 +13,7 @@ them have already happened here:
   * **Dead paint.** A declaration that is overridden everywhere it matches is
     a lie in the source: it says the tab is ink, the tab is not ink, and the
     only way to find out is to open a browser. This is why "the accent isn't
-    visible" took three rounds — the rule was right and something above it won.
+    visible" took three rounds, the rule was right and something above it won.
 
   * **Nothing can be changed safely.** The fix for a wrong colour is to add a
     louder rule, because editing the real one may change nothing, or may change
@@ -32,7 +32,7 @@ paint that was applied and then covered.
     python3 check_layers.py                  # the working tree, port 5055
     python3 check_layers.py 5056             # some other port
 
-It reports, it does not pass or fail — what to delete is a judgement, and this
+It reports, it does not pass or fail, what to delete is a judgement, and this
 exists so the judgement is made from a list instead of from memory.
 """
 import collections
@@ -59,7 +59,7 @@ PROPS = ("color", "background-color", "border-top-color", "border-right-color",
 
 
 def sheet_name(sheets, sid, page_url):
-    """A human name for a stylesheet id — the file, or which inline block."""
+    """A human name for a stylesheet id, the file, or which inline block."""
     h = sheets.get(sid)
     if not h:
         return "(inline style attribute)"
@@ -120,7 +120,7 @@ def main():
                         per_prop[name].append((sid, sel, bool(d.get("important"))))
                 for name, chain in per_prop.items():
                     if len(chain) < 2:
-                        # one layer only — record the win, nothing was covered
+                        # one layer only, record the win, nothing was covered
                         if chain:
                             sid, sel, _ = chain[0]
                             won[sid] += 1; ever[sid].add(sel + "|" + name)
@@ -163,7 +163,7 @@ def main():
     for n in sorted(layers_per_prop):
         print("    %-24d %d" % (n, layers_per_prop[n]))
 
-    print("\n  DEAD PAINT — selectors whose declaration never won anywhere")
+    print("\n  DEAD PAINT, selectors whose declaration never won anywhere")
     dead_total = 0
     for sid in sorted(never, key=lambda s: -len(never[s] - ever[s])):
         d = never[sid] - ever[sid]

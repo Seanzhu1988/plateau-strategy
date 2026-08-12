@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Contrast audit — every page, measured</title>
+    <title>Contrast audit, every page, measured</title>
     <meta name="robots" content="noindex">
     <style>
         body { font-family: ui-monospace, Menlo, monospace; background: #faf8f4; color: #14110c;
@@ -29,7 +29,7 @@
     <h1>Contrast audit</h1>
     <p class="note">
         Every page is loaded and every piece of visible text measured against the background it
-        actually sits on, following WCAG AA — 4.5:1 for body text, 3:1 for large or bold headings.
+        actually sits on, following WCAG AA, 4.5:1 for body text, 3:1 for large or bold headings.
         This exists because a stylesheet can set a page's text to near-black while that page keeps
         its own dark panels, and nothing errors: the words are simply gone. Only real failures are
         listed; a page absent from the table passed.
@@ -53,7 +53,7 @@ function auditDoc(doc, win) {
         return .2126 * a[0] + .7152 * a[1] + .0722 * a[2];
     }
     // A gradient lives in background-image, not background-color. Reading only
-    // the colour made a white-on-blue button look like white-on-white — so a
+    // the colour made a white-on-blue button look like white-on-white, so a
     // painted background counts as opaque, and because a gradient's luminance
     // cannot honestly be reduced to one number, that element is skipped rather
     // than guessed at.
@@ -73,7 +73,7 @@ function auditDoc(doc, win) {
     const out = [], seen = {};
     doc.querySelectorAll('*').forEach(el => {
         if (!el.offsetParent || (el.closest && el.closest('.i18n-skip'))) return;
-        // only elements that print their OWN words — otherwise a wrapper is
+        // only elements that print their OWN words, otherwise a wrapper is
         // blamed for the colour of the text inside it
         if (!Array.from(el.childNodes).some(n => n.nodeType === 3 && n.nodeValue.trim().length > 2)) return;
         const cs = win.getComputedStyle(el);
@@ -81,7 +81,7 @@ function auditDoc(doc, win) {
         // A filled control whose label matches its own fill: the words are
         // not dim, they are gone. Checked separately because the walk below
         // climbs to the nearest opaque ancestor, and for a filled element
-        // that ancestor is itself — a case worth naming rather than scoring.
+        // that ancestor is itself, a case worth naming rather than scoring.
         const own = cs.backgroundColor.match(/[\d.]+/g);
         if (own && (own.length < 4 || parseFloat(own[3]) > 0.5)) {
             const lo = lum(cs.backgroundColor), lt = lum(cs.color);
@@ -130,7 +130,7 @@ function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&
         // Open anything that hides behind a click before measuring.
         //
         // This audit reported "all pages pass" for four straight rounds while
-        // the Sections strip carried an invisible label — because the strip is
+        // the Sections strip carried an invisible label, because the strip is
         // display:none until you open it, so offsetParent was null and every
         // element in it was skipped. An audit that only sees the default state
         // is an audit that agrees with you.

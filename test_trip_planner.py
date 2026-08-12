@@ -7,7 +7,7 @@ the first address flew and looked fixed, and any address already on the
 board did nothing. A test that adds one place proves nothing. This adds the
 same place twice.
 
-Nominatim is stubbed rather than called — the geocoder is a third party, it
+Nominatim is stubbed rather than called, the geocoder is a third party, it
 rate-limits, and it is blocked from this container entirely. Stubbing it is
 also the only way to assert on an exact coordinate.
 """
@@ -73,7 +73,7 @@ with sync_playwright() as p:
     # instead. It is a stronger check now, because the ask got more specific:
     # the control has to CONTAIN a place to type an address and a one-click
     # current-location button. A visible pin that hides its address entry
-    # behind a tap — which is what it did — would have passed the old test.
+    # behind a tap, which is what it did, would have passed the old test.
     box = pg.evaluate("""() => {
         const dest = document.querySelector('#destAdd');
         const sb   = document.querySelector('.startbox');

@@ -1,5 +1,5 @@
 /* ============================================================
-   MODERN — the site's surface layer
+   MODERN, the site's surface layer
 
    Loaded after paper.css and overrides it. Kept as its own file so the
    whole look is one <link> to remove, which matters: the last two
@@ -9,7 +9,7 @@
    The brief, in the owner's words: bold and modern, and the pale washed
    backgrounds looked cheap. So:
 
-     · The ground is white. Not cream, not tinted — white, with air.
+     · The ground is white. Not cream, not tinted, white, with air.
      · Colour appears ONLY in solid things: a filled button, a filled
        badge, an icon tile, a rule. Never as a wash behind text. A 15%
        tint of a colour is not that colour; it is a stain, and that is
@@ -32,7 +32,7 @@
 
   /* ---- the company's own navy ----
 
-     Taken from the LLC logo the owner supplied — navy type on cream, in a
+     Taken from the LLC logo the owner supplied, navy type on cream, in a
      serif, carrying the same tagline now on the hero. That is the real
      registered identity, so the website follows it rather than the reverse.
      A generated palette lost to the company's own.
@@ -41,12 +41,12 @@
      washed backgrounds was that they look cheap, and white is what made
      the type legible; cream lives inside the mark and nowhere else.
 
-     Navy carries every job the accent had — rules, underlines, links,
-     figures, section labels — at 11.48:1 on white, which is nearly triple
+     Navy carries every job the accent had, rules, underlines, links,
+     figures, section labels, at 11.48:1 on white, which is nearly triple
      what small text needs, so nothing has to be checked twice. */
-  --m-rose:      #1f3a5f;   /* navy, 11.48:1 — rules, underlines, marks   */
+  --m-rose:      #1f3a5f;   /* navy, 11.48:1, rules, underlines, marks   */
   --m-rose-deep: #1f3a5f;   /* the same navy for coloured words            */
-  --m-rose-soft: #f7f4ea;   /* the logo's cream — inside the mark only     */
+  --m-rose-soft: #f7f4ea;   /* the logo's cream, inside the mark only     */
   --m-navy:      #14273f;   /* deeper navy, for hover                      */
 
   --m-transport: var(--m-rose-deep);
@@ -79,7 +79,7 @@
 
    The cream was never written as a colour on a section. It was written
    once, as --psx-bg, and then read by dozens of rules across paper.css and
-   inside each page's own <style> block — including rules I had no way to
+   inside each page's own <style> block, including rules I had no way to
    enumerate from the outside. Overriding the sections was whack-a-mole:
    every page had one more I hadn't named.
 
@@ -127,7 +127,7 @@ main, .view,
   background: var(--m-bg) !important;
 }
 
-/* One panel may sit on the faintest grey so a call to action has an edge —
+/* One panel may sit on the faintest grey so a call to action has an edge, 
    this is the single exception, and it is grey, not a tinted colour. */
 .psx-cta-panel {
   background: var(--m-raised) !important;
@@ -140,7 +140,7 @@ footer, .psx-foot { border-top: 1px solid var(--m-line) !important; }
    background that isn't white or neutral. Each is written into one page's
    own <style>, which is why the variables above didn't reach them. */
 
-/* The map's own backdrop — what shows in the gaps while tiles load. Cream
+/* The map's own backdrop, what shows in the gaps while tiles load. Cream
    there reads as a stain on a white page; neutral reads as "loading". */
 .leaflet-container { background: #ececef !important; }
 
@@ -157,7 +157,7 @@ footer, .psx-foot { border-top: 1px solid var(--m-line) !important; }
 }
 
 /* ---------- type ---------- */
-/* The headline was set in var(--m-sans), which resolves to -apple-system —
+/* The headline was set in var(--m-sans), which resolves to -apple-system, 
    the operating system's user-interface font. Measured on the front page it
    came out 73.6px at weight 800 in a 573px column, broken over four lines,
    while --psx-display sat defined and unused: Iowan Old Style, a book serif,
@@ -166,7 +166,7 @@ footer, .psx-foot { border-top: 1px solid var(--m-line) !important; }
    A UI font is drawn to disappear behind an interface, which is the opposite
    of a headline's job. The one genuinely artistic asset already paid for is
    the typography; this switches it on. Serifs also want less weight and more
-   room than a grotesque — 800 turns a book face into a slab, and the tight
+   room than a grotesque, 800 turns a book face into a slab, and the tight
    tracking was compensating for size that is no longer there. */
 h1, .psx-h1, .page-title, .hero h1 {
   font-family: var(--psx-display) !important;
@@ -179,7 +179,7 @@ h1, .hero h1, .psx-h1 { font-size: clamp(2.2rem, 4.6vw, 3.5rem) !important; }
 .page-title { font-size: clamp(1.8rem, 3.4vw, 2.4rem) !important; }
 
 /* Four lines of headline is a wall, and a hand-set measure only breaks well
-   in one language — this page ships in five. text-wrap:balance lets the
+   in one language, this page ships in five. text-wrap:balance lets the
    browser even the lines out, which is the whole reason it exists. */
 #view-overview .psx-h1 {
   max-width: 19ch !important;
@@ -196,7 +196,7 @@ h2, .psx-h2 {
   color: var(--m-ink) !important;
 }
 /* h3 stays in the sans. A serif at 1rem on a card title reads as a mistake
-   rather than a choice — the serif earns its place at size, and the cards are
+   rather than a choice, the serif earns its place at size, and the cards are
    where the interface starts and the poster stops. */
 h3, .psx-h3 {
   font-family: var(--m-sans) !important;
@@ -213,7 +213,7 @@ p, li, .sub, .summary, .view-intro, .psx-lede {
 }
 .muted, .note, .fine, .by, .caption { color: var(--m-muted) !important; }
 
-/* The section label above a heading — small, solid, in the arm's colour.
+/* The section label above a heading, small, solid, in the arm's colour.
    This is colour as a mark, not as a background. */
 .kicker, .view-kicker, .section-label, .psx-kicker {
   color: var(--m-accent) !important;
@@ -225,7 +225,7 @@ p, li, .sub, .summary, .view-intro, .psx-lede {
 
 /* The figures were set in the paper layer's book face. Next to a tight sans
    headline that reads as two designs sharing a page, and the number is the
-   thing being read — so it gets the same voice, one size louder. */
+   thing being read, so it gets the same voice, one size louder. */
 .psx-stat-val, .tile .n, .stat-val, .figure-n {
   font-family: var(--m-sans) !important;
   font-weight: 800 !important;
@@ -256,7 +256,7 @@ p, li, .sub, .summary, .view-intro, .psx-lede {
 }
 .psx-card h3, .service-card h3, .fin-card h3, .card h2 { color: var(--m-ink) !important; }
 
-/* The icon is where a card carries its colour — a solid tile, not a tint
+/* The icon is where a card carries its colour, a solid tile, not a tint
    behind the whole card. */
 .service-card .service-icon, .psx-card .psx-card-icon, .card .icon {
   display: inline-flex; align-items: center; justify-content: center;
@@ -269,7 +269,7 @@ p, li, .sub, .summary, .view-intro, .psx-lede {
 /* ---------- buttons: an underlined word, not a coloured block ----------
 
    Two attempts sat here before this one: black fills, then rose fills. The
-   owner's read on both was the same and it is the correct one — a solid
+   owner's read on both was the same and it is the correct one, a solid
    block behind a short label buries the word. At button size the fill is
    most of what the eye receives and the text is a hole punched in it.
 
@@ -295,7 +295,7 @@ button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([
   transition: border-color .15s ease, color .15s ease, border-bottom-width .15s ease;
 }
 
-/* Hover deepens the rule and the word together — no colour swap, no fill. */
+/* Hover deepens the rule and the word together, no colour swap, no fill. */
 .btn:hover, .book-cta:hover, .psx-btn-primary:hover, .primary:hover, .cta:hover,
 a.btn:hover, a.btn.blue:hover, a.btn.dark:hover, a.cta:hover,
 .btn.blue:hover, .btn.dark:hover,
@@ -306,7 +306,7 @@ button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([
 }
 
 /* The action bar's buttons are laid out as wide flex bars. Stripped to bare
-   words they would sit marooned in all that width, so they keep a box —
+   words they would sit marooned in all that width, so they keep a box, 
    an outline in the colour, never a fill. */
 .actionbar button.act:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip):not(.here-btn) {
   border: 1.5px solid var(--m-rose) !important;
@@ -323,7 +323,7 @@ button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([
 .actionbar .act.robotaxi { opacity: 1 !important; color: var(--m-muted) !important; border-style: dashed !important; }
 
 /* Icon-sized controls keep their own shape. An underline under a map's
-   zoom button or a toolbar icon is not an affordance, it is a stray mark —
+   zoom button or a toolbar icon is not an affordance, it is a stray mark, 
    the underline treatment only makes sense under a word. */
 button.x:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
 .modal-x:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip),
@@ -351,12 +351,12 @@ button[title='Remove']:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.
 
 /* The map's starting-point control styles itself and is a pin, not a word.
    It was excluded from the button rules on purpose, which now leaves it the
-   only filled control on the page — flagged rather than quietly changed,
+   only filled control on the page, flagged rather than quietly changed,
    because its red waiting-state carries meaning the colour rules shouldn't
    overwrite without a decision. */
 
 /* A live count of other people is a note, not a panel. White ground, one
-   solid rule in the accent — the wash it used to sit on was the cheap look. */
+   solid rule in the accent, the wash it used to sit on was the cheap look. */
 .traffic-note {
   background: var(--m-surface) !important;
   border: 1px solid var(--m-line) !important;
@@ -369,8 +369,8 @@ button[title='Remove']:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.
    Measured on the hero: "Book a ride" is 86px, "Partner with us" is 112px.
    Given both the same 2px navy rule, the longer phrase ends up wider AND
    as heavy as the thing it is supposed to defer to, so the eye lands on
-   the secondary action first. Nothing is wrong with the rendering — the
-   rule hugs the text exactly — the weighting was simply equal when it
+   the secondary action first. Nothing is wrong with the rendering, the
+   rule hugs the text exactly, the weighting was simply equal when it
    should not have been.
 
    So the secondary keeps the underline language but at half the weight and
@@ -393,7 +393,7 @@ a.psx-btn-ghost:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubb
    control in a <nav>; trip-planner, articles and driver put it in a
    <div class="right">. Keying on `nav` meant the same link wore the old
    filled look on three pages and the quiet one on the fourth. Scoped to
-   <header> so the footer's "Book a ride — $75 flat to SeaTac" and the
+   <header> so the footer's "Book a ride, $75 flat to SeaTac" and the
    body-copy links stay ordinary links. */
 header a[href="/book"], header .book-cta, header a.btn {
   background: transparent !important;
@@ -416,8 +416,8 @@ header a[href="/book"]:hover, header .book-cta:hover, header a.btn:hover {
 
    paper.css carries a block commented "the last gradient buttons on the
    site" which paints `a.btn.blue` with var(--psx-ink) !important. That
-   selector is two classes plus an element — heavier than anything the
-   general button rule above can be without becoming absurd — so those
+   selector is two classes plus an element, heavier than anything the
+   general button rule above can be without becoming absurd, so those
    buttons stayed black through every previous pass while everything around
    them turned. A second block does the same to `.cta`.
 
@@ -467,7 +467,7 @@ p a, .sub a, .summary a, .note a {
   font-weight: 600 !important;
   padding: .42rem .85rem !important;
 }
-/* The selected filter chip. This was the last filled control on the site —
+/* The selected filter chip. This was the last filled control on the site, 
    a navy pill with the word sitting inside it. It measured fine (white on
    navy, 11.48:1), which is exactly why the audits kept passing it: legible
    is not the same as wanted. The owner's objection to fills was never about
@@ -484,7 +484,7 @@ p a, .sub a, .summary a, .note a {
 }
 .chip.on:hover { border-color: var(--m-navy) !important; color: var(--m-navy) !important; }
 
-/* Status keeps its own meaning and its own colours — untouched by any of
+/* Status keeps its own meaning and its own colours, untouched by any of
    the above, because a reader must never decode whether red means
    "property" or "something failed". */
 .tag.paid, .badge.paid, .status.paid       { background: #0f7b53 !important; }
@@ -501,7 +501,7 @@ header {
 
    Two things had to be set, not one. paper.css paints .logo-text with
    `-webkit-text-fill-color` as well as `color`, and text-fill-color wins
-   over colour at paint time — so setting `color` alone leaves the mark
+   over colour at paint time, so setting `color` alone leaves the mark
    exactly as it was. Both are set here. The footer mark matches the
    masthead; if you want the footer left coloured, it's the second selector. */
 header .brand, header .logo-text, .logo-text, .psx-foot-mark span {
@@ -522,7 +522,7 @@ header a:hover { color: var(--m-ink) !important; }
    The owner tabbed through the site and hit a solid navy block. It was the
    skip link: parked off-screen at left:-9999px and slid in on :focus as a
    filled bar, right beside the header. Every sweep I ran missed it for the
-   same reason the Sections strip was missed — it does not exist on screen
+   same reason the Sections strip was missed, it does not exist on screen
    until an interaction puts it there.
 
    It has to stay obvious (it is the keyboard user's shortcut past the nav),
@@ -540,7 +540,7 @@ header a:hover { color: var(--m-ink) !important; }
 
 /* And the reason it was the only thing Tab showed at all: focus was being
    removed everywhere without anything put in its place, so a keyboard user
-   had no idea where they were. A ring, never a fill — the same language as
+   had no idea where they were. A ring, never a fill, the same language as
    the rest of the site, and it satisfies the visible-focus requirement the
    old `outline: none` was quietly breaking. */
 /* And the focus indicator itself is NOT a box.
@@ -555,7 +555,7 @@ header a:hover { color: var(--m-ink) !important; }
    15 of 16 controls.
 
    This carries the same chain, so it wins on its own terms. The indicator
-   is an INSET bar along the bottom edge — the underline this site already
+   is an INSET bar along the bottom edge, the underline this site already
    speaks in. It appears on every control whether or not one is there
    already, draws nothing around or behind the word, and shifts no layout. */
 a:focus:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip),
@@ -586,7 +586,7 @@ summary:focus-visible:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.p
 }
 
 /* Icon-only controls have no word to underline, so the bar becomes a full
-   inset edge — still inside the control, still not a box around it. */
+   inset edge, still inside the control, still not a box around it. */
 .loc-btn:focus, .map-actions button:focus, .leaflet-control a:focus,
 button.x:focus, .modal-x:focus, .auth-close:focus {
   outline: none !important;
@@ -603,8 +603,8 @@ input, select, textarea {
   padding: .62rem .8rem !important;
 }
 /* Form fields focus the same way everything else does: an inset bar.
-   This rule used to paint `0 0 0 3px` — a RING, the one form the settled rule
-   forbids — unconditionally and with !important, twenty lines below the inset
+   This rule used to paint `0 0 0 3px`, a RING, the one form the settled rule
+   forbids, unconditionally and with !important, twenty lines below the inset
    bar it contradicted. It survived four audits because no audit ever called
    .focus(); the gate now does. */
 input:focus, select:focus, textarea:focus {
@@ -612,13 +612,13 @@ input:focus, select:focus, textarea:focus {
   border-color: var(--m-accent) !important;
   box-shadow: inset 0 -3px 0 0 var(--m-navy) !important;
 }
-/* 16px is not a taste decision on a touch screen — it is the threshold below
+/* 16px is not a taste decision on a touch screen, it is the threshold below
    which iOS Safari zooms the page when a field takes focus, and it does not
    zoom back out afterwards. The visitor is left on a page they now have to
    pan sideways to read, mid-form. Measured before this rule: every form on
-   the site tripped it — booking, renter, agent, partners, trip planner, road
+   the site tripped it, booking, renter, agent, partners, trip planner, road
    trip, destination book, guide studio, board, dispatch, and the give-back and
-   reinvestment boxes on the landing page — because the per-page styles set
+   reinvestment boxes on the landing page, because the per-page styles set
    0.9-0.95rem and neither shared sheet set a size at all.
 
    pointer:coarse rather than a width breakpoint, because the trigger is a
@@ -631,13 +631,13 @@ input:focus, select:focus, textarea:focus {
 
 /* ---------- touch targets ----------
    Measured on a phone before this block: 201 primary controls under the 44px
-   both Apple and Google give as the floor — including "Request this ride" at
+   both Apple and Google give as the floor, including "Request this ride" at
    26px, which is the button the whole booking page exists to have pressed,
    "Book a Ride" at 28px, and a back control at 9px. A thumb is about 45px of
    contact; a 26px button is a coin toss, and the visitor blames themselves.
 
    Only controls, and only where a finger is the pointer. Links inside a
-   sentence are excluded deliberately — inflating every prose link to 44px
+   sentence are excluded deliberately, inflating every prose link to 44px
    would wreck the line spacing of the paragraph around it and buy nothing,
    because nobody navigates by stabbing at a word mid-paragraph.
 
@@ -652,7 +652,7 @@ input:focus, select:focus, textarea:focus {
   /* .book-cta belongs here rather than with the buttons above: it is the link
      at the foot of every service card ("Book a Ride →", "Open Trip Planner →"),
      and an inline <a> ignores min-height until it is given a box. It measured
-     31px — the actual way off the landing page on a phone, on the two views
+     31px, the actual way off the landing page on a phone, on the two views
      that carry the most cards. */
   header a, nav a, .topnav a, .phase-tab, .book-cta, .fin-card-link {
     display: inline-flex !important;
@@ -677,13 +677,13 @@ td { border-bottom: 1px solid var(--m-line) !important; color: var(--m-body) !im
               border-radius: var(--m-radius) !important; box-shadow: var(--m-shadow) !important; }
 .phase-tab, .phase-tabs button { background: transparent !important; color: var(--m-muted) !important;
                                  border: 0 !important; font-weight: 650 !important; }
-/* The contents strip — the thing that was actually wrong all along.
+/* The contents strip, the thing that was actually wrong all along.
 
    paper.css already styled the current tab correctly: an accent-coloured
    word with a 2px rule under it. My rule painted a filled block behind it,
    and paper's `.phase-tab[data-arm].active` colour rule outranks mine, so
    the label stayed accent-coloured ON an accent-coloured block. The word
-   didn't go dark — it disappeared. Every repaint after that changed which
+   didn't go dark, it disappeared. Every repaint after that changed which
    colour the block was, which is why it kept reading as the same fault.
 
    The fill is gone. Same treatment as every other control on the site. */
@@ -700,11 +700,11 @@ td { border-bottom: 1px solid var(--m-line) !important; color: var(--m-body) !im
 .phase-tab:hover:not(.active) { color: var(--m-ink) !important; }
 
 /* ============================================================
-   CHAPTERS — giving each section a frame of its own
+   CHAPTERS, giving each section a frame of its own
 
    The site is one page wearing eight faces: overview, transportation,
    operations, real estate, finance, reinvestment, free tools, security.
-   Each is its own view, and — measured, not assumed — each holds exactly
+   Each is its own view, and, measured, not assumed, each holds exactly
    one section. So these are not stacked chapters separated by a seam;
    they are eight separate openings, and every one of them simply began
    under the sticky header with nothing to say a subject had started.
@@ -712,7 +712,7 @@ td { border-bottom: 1px solid var(--m-line) !important; color: var(--m-body) !im
    A chapter now opens with a rule: a hairline the width of the content
    beneath it, carrying a short heavy navy mark at its centre. Then air,
    then the title. The mark is what the eye catches; the hairline gives
-   it something to sit on. It is drawn, not filled — no band of colour
+   it something to sit on. It is drawn, not filled, no band of colour
    appears here, which is the site's standing rule.
 
    The rule is measured against the CONTENT COLUMN, not the section. A
@@ -721,7 +721,7 @@ td { border-bottom: 1px solid var(--m-line) !important; color: var(--m-body) !im
 
    The mark is centred, without exception. The first attempt set it flush
    left, which looked wrong the moment it was on screen: every heading on
-   this site is centred — measured, all seven — so a left-flush mark
+   this site is centred, measured, all seven, so a left-flush mark
    disagreed with the title directly beneath it and read as a stray
    graphic rather than the opening of a chapter.
 
@@ -741,7 +741,7 @@ td { border-bottom: 1px solid var(--m-line) !important; color: var(--m-body) !im
   scroll-margin-top: 6rem;
 }
 
-/* the line the chapter sits on — the width of the content it introduces */
+/* the line the chapter sits on, the width of the content it introduces */
 .view section.phases::before,
 #view-overview .psx-section::before {
   content: "";
@@ -778,7 +778,7 @@ section.phases + section.phases {
   content: none !important;
 }
 
-/* Room to breathe, weighted downward — a chapter should end with more
+/* Room to breathe, weighted downward, a chapter should end with more
    space than it opens with, so the gap reads as "that subject is
    finished" rather than "something is missing here". */
 .view section.phases, section.phases,
@@ -788,7 +788,7 @@ section.phases + section.phases {
 
 /* Air above the rule as well as below it. Each view opens straight into
    its chapter, so without this the opening rule landed about seven
-   pixels under the sticky header — close enough to read as part of the
+   pixels under the sticky header, close enough to read as part of the
    header's own border rather than the start of something. */
 .view > section.phases:first-child {
   margin-top: clamp(1.75rem, 3vw, 2.75rem);
@@ -804,7 +804,7 @@ section.phases + section.phases {
   max-width: 60ch;
 }
 
-/* A chapter label left over from the palette before this one — it was
+/* A chapter label left over from the palette before this one, it was
    still wearing the old blue while everything around it had moved to
    the company's navy. */
 #view-overview .psx-eyebrow {
@@ -814,14 +814,14 @@ section.phases + section.phases {
 }
 
 /* ============================================================
-   SECTION FRAMING — three candidates, judged on the real page
+   SECTION FRAMING, three candidates, judged on the real page
 
    Reached only with ?frame= in the address (see frame-preview.js), so
    the published site is untouched while these are being looked at.
    Each is written as shippable CSS rather than a mock-up: whichever is
    chosen, the others get deleted and nothing has to be rebuilt.
 
-   What is already live is the quiet one — a hairline with a small
+   What is already live is the quiet one, a hairline with a small
    centred mark. The owner's read was that he could not see it, which is
    fair: on a page you know by heart, one pixel of grey is nothing.
    ============================================================ */
@@ -840,7 +840,7 @@ html[data-frame="numbered"] #view-overview .psx-section::before { display: none;
 
 /* The name is dropped, not styled. On screen it read as
    "01 FOUR ARMS AT FOUR DIFFERENT STAGES" directly above a heading that
-   says "Four arms, at four different stages" — the same words twice, a
+   says "Four arms, at four different stages", the same words twice, a
    line apart. The number is the new information; the title is already
    doing the naming. */
 html[data-frame="numbered"] .fp-head .fp-name { display: none; }
@@ -918,7 +918,7 @@ html[data-frame="rule"] #view-overview .psx-section {
 }
 
 /* ---------- the switcher itself ----------
-   A tool, not part of the site — so it is allowed the solid fill the
+   A tool, not part of the site, so it is allowed the solid fill the
    pages are not. */
 #fp-switch {
   position: fixed; left: 16px; bottom: 16px; z-index: 99999;
@@ -950,18 +950,18 @@ html[data-frame="rule"] #view-overview .psx-section {
 #fp-switch .fp-fine { opacity: .72; margin-top: 7px; }
 
 /* ============================================================
-   REINVESTMENT USA — the section that had a machine and no face
+   REINVESTMENT USA, the section that had a machine and no face
 
    Eight endpoints shipped with no interface: trades recognised from
    posted ideas, professional accounts, published opinions, the purchase
-   gate. What the page showed instead was four lines of deck language —
-   "economic impact scaling", "long-term wealth creation" — so the only
+   gate. What the page showed instead was four lines of deck language, 
+   "economic impact scaling", "long-term wealth creation", so the only
    fair reading was that nothing had been built.
 
    Styled to the site's rules: statement rows rather than boxed tiles,
    rules rather than fills, and the numbers navy because a numeral is
    colour used as a mark. The one filled thing is the price on an
-   opinion, and that is the same exception the map pins get — the fill
+   opinion, and that is the same exception the map pins get, the fill
    is carrying information, not decoration.
    ============================================================ */
 
@@ -1006,7 +1006,7 @@ html[data-frame="rule"] #view-overview .psx-section {
 }
 .rusa-steps p { margin: 0; font-size: .97rem; }
 
-/* the live count — the section's only claim about itself, and it is measured */
+/* the live count, the section's only claim about itself, and it is measured */
 .rusa-live {
   font-family: var(--m-sans);
   font-weight: 700;
@@ -1104,7 +1104,7 @@ html[data-frame="rule"] #view-overview .psx-section {
 }
 
 /* A trade is a link, so it has to look like one you can press. Same shape as
-   before — a word inside a hairline — but it now goes somewhere: every idea
+   before, a word inside a hairline, but it now goes somewhere: every idea
    waiting for that trade. Sized for a thumb, because the person who most
    needs this link is a professional reading on a phone. */
 a.idea-pro, a.rusa-chip {
@@ -1122,3 +1122,13 @@ a.idea-pro:focus-visible, a.rusa-chip:focus-visible {
 @media (max-width: 640px) {
   a.idea-pro, a.rusa-chip { padding: .5rem .8rem; }
 }
+
+/* Tiered trade chips on an idea card. "Likely" carries full weight;
+   "maybe" and the always-four step back, so the reader's eye lands on the
+   claim the text actually supports. Same drawn shapes, nothing filled. */
+.idea-pros-t.idea-pros-maybe { margin-left: .6rem; }
+a.idea-pro-maybe {
+  color: var(--m-muted);
+  border-style: dashed;
+}
+a.idea-pro-maybe:hover { color: var(--m-rose); border-style: solid; }

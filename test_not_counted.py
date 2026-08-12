@@ -83,7 +83,7 @@ for _ in range(4):
 chk(f"the computer stopped counting without being asked {before} -> {counted_today()}",
     counted_today() == before)
 
-# and it keeps holding after the session is gone — the reason it's a cookie
+# and it keeps holding after the session is gone, the reason it's a cookie
 comp.post("/api/owner/logout")
 before = counted_today()
 comp.get("/", headers={"User-Agent": PHONE})
@@ -102,7 +102,7 @@ chk(f"login stops it counting from then on {mid} -> {counted_today()}",
 
 # The cookie is the primary mechanism and the session is the backstop, so
 # prove the backstop alone works: a browser signed in as owner whose opt-out
-# cookie has been swept (privacy extensions do exactly this — psx_not_counted
+# cookie has been swept (privacy extensions do exactly this, psx_not_counted
 # looks like a tracker) must still not count.
 print("\nowner signed in, but the opt-out cookie wiped:")
 swept = A.app.test_client()
@@ -131,7 +131,7 @@ chk(f"and it counts again {before} -> {counted_today()}",
     counted_today()[0] == before[0] + 1)
 
 # A cookie is per browser. Registering the network covers every device on it
-# at once, needs no cookie, and survives clearing anything — which is the point
+# at once, needs no cookie, and survives clearing anything, which is the point
 # for a house or an office where the same person browses from four devices.
 print("\nregistering the network Sean is sitting on:")
 A.IGNORE_NETS_PATH = os.path.join(tmp, "nets.json")
@@ -157,7 +157,7 @@ chk("but a stranger somewhere else still counts", counted_today() != before)
 r = A.app.test_client().post("/api/traffic/networks", json={}, headers=HOME)
 chk(f"a stranger cannot register anything ({r.status_code})", r.status_code == 401)
 
-# The address is read from the request, never the body — otherwise a signed-in
+# The address is read from the request, never the body, otherwise a signed-in
 # session could erase traffic from a place it has never been.
 r = boss.post("/api/traffic/networks", json={"ip": "198.51.100.7"}, headers=HOME)
 chk("and the owner cannot register a network they are not on",
@@ -228,7 +228,7 @@ with A.app.test_request_context("/", headers={"User-Agent": PHONE},
 
 # ---- the deadlock, which took the whole site down ------------------------
 #
-# _track_traffic held _LOCK and, inside it, called _geo_lookup — which takes
+# _track_traffic held _LOCK and, inside it, called _geo_lookup, which takes
 # the same lock to write its cache. threading.Lock is not reentrant, so the
 # second acquire never returned. Every visitor whose city was not already in
 # memory hung forever, and gunicorn runs one worker with eight threads, so

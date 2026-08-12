@@ -7,7 +7,7 @@ file, then asks the browser, on every page and both widths, whether ANY
 declaration in that rule ever supplies the value an element ends up with.
 
 A rule where the answer is no everywhere is doing nothing. It is not "mostly
-redundant" or "probably safe to remove" — it is text that the browser reads,
+redundant" or "probably safe to remove", it is text that the browser reads,
 resolves, and discards, and the only cost of keeping it is that the next person
 to change a colour has to read it first and cannot tell.
 
@@ -21,11 +21,11 @@ Two rules about how this is used, both learned the hard way on this repo:
   * SHORTHANDS COUNT. `border:1px solid X` is reported by the browser as a
     shorthand plus the longhands it implies, and only the shorthand carries a
     source range. An earlier version required a range and so believed those
-    rules supplied nothing — it marked four live rules dead, and the snapshot
+    rules supplied nothing, it marked four live rules dead, and the snapshot
     caught it at the border widths.
 
 Even then this is evidence, not permission. Nothing here is deleted without
-snapshot_styles.py proving the page resolves identically afterwards — the
+snapshot_styles.py proving the page resolves identically afterwards, the
 browser only reports what it saw on the pages it was pointed at.
 
     python3 app.py &
@@ -74,7 +74,7 @@ def main():
             # most of those elements are the same element: every card on every
             # page has the same tag, the same classes and the same ancestry, so
             # it matches the same rules and asking again learns nothing. Query
-            # one representative per distinct style context, globally — which
+            # one representative per distinct style context, globally, which
             # collapses twenty pages sharing a header and a footer into one ask.
             SIG_JS = """() => {
               const sig = el => {
@@ -142,8 +142,8 @@ def main():
                             # rule that writes `border:1px solid X` look as
                             # though it supplied nothing, and the first deletion
                             # run took out four such rules. The snapshot caught
-                            # it — border widths went 1px to 0px on the tabs and
-                            # the CTA — but the analyser should not have said
+                            # it, border widths went 1px to 0px on the tabs and
+                            # the CTA, but the analyser should not have said
                             # they were dead. A derived longhand is still this
                             # rule doing the work.
                             if not name or d.get("disabled"):
@@ -186,7 +186,7 @@ def main():
 
     out = TARGET + ".dead.json"
     json.dump([{"range": list(k), "selector": seen[k]} for k in dead], open(out, "w"), indent=1)
-    print("  ranges written to %s — feed to the remover, then diff the snapshot." % out)
+    print("  ranges written to %s, feed to the remover, then diff the snapshot." % out)
 
 
 if __name__ == "__main__":

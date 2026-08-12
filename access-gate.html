@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Sign in — Plateau Strategy Solution Lab</title>
+    <title>Sign in, Plateau Strategy Solution Lab</title>
     <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <link rel="stylesheet" href="/paper.css">
     <script src="/psx-net.js"></script>
@@ -74,11 +74,12 @@ async function signIn(e) {
         m.textContent = (j && j.error) || 'Those details were not accepted.';
         return false;
     }
-    // Straight back to the page they were trying to reach — they still hold
+    // Straight back to the page they were trying to reach, they still hold
     // the share cookie, so this lands rather than bouncing.
     location.reload();
     return false;
 }
 </script>
+<script src="/i18n.js"></script>
 </body>
 </html>

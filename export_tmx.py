@@ -5,14 +5,14 @@ Why this exists.
 
 There are 1146 hand-written English→zh/es/ko/vi pairs in this repo, built over
 several rounds and corrected by a reader for Chinese and Spanish. That is a
-translation memory — it has just never been in a form anything else can read.
+translation memory, it has just never been in a form anything else can read.
 
 Two things it unlocks, neither of which is possible while the strings only live
 in a Python dict:
 
   * **Training a model.** LILT's base model was measured against the
     hand-written text on three strings and lost all three. On Korean it
-    rendered "fill up and stop" as 채우고 중지 — fill and halt — where the
+    rendered "fill up and stop" as 채우고 중지, fill and halt, where the
     hand-written line says 주유하고 휴식, refuel and rest. A base model does
     not know this company's voice, and the only way it learns is by being fed
     the pairs. TMX is what it eats.
@@ -49,7 +49,7 @@ def load_pack(lang):
     """
     path = os.path.join(HERE, "i18n.%s.js" % lang)
     if not os.path.exists(path):
-        sys.exit("missing %s — run build_i18n.py first" % os.path.basename(path))
+        sys.exit("missing %s, run build_i18n.py first" % os.path.basename(path))
     src = open(path, encoding="utf-8").read()
     m = re.search(r'window\.psxPack\(".*?",\s*(\{.*\})\);', src, re.S)
     if not m:
@@ -80,7 +80,7 @@ def main():
     total = 0
     for short, full in LANGS:
         pack = load_pack(short)
-        # Skip anything that came back identical — a "translation" that equals
+        # Skip anything that came back identical, a "translation" that equals
         # the source is a gap wearing a translation's clothes, and feeding it
         # to a model teaches the model to leave English alone.
         pairs = [(en, tr) for en, tr in sorted(pack.items()) if tr and tr.strip() != en.strip()]
@@ -91,7 +91,7 @@ def main():
         note = "  (%d identical to source, left out)" % identical if identical else ""
         print("  %-28s %5d segments%s" % (os.path.relpath(path, HERE), len(pairs), note))
     print("\n  %d segments exported." % total)
-    print("  Upload these to LILT to train the models, or hand one to a reviewer —")
+    print("  Upload these to LILT to train the models, or hand one to a reviewer, ")
     print("  TMX opens in every CAT tool, which i18n_extra.py does not.")
 
 

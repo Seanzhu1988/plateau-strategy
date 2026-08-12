@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Walking guide — Plateau Strategy Solution Lab</title>
+<title>Walking guide, Plateau Strategy Solution Lab</title>
 <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
 <link rel="stylesheet" href="/paper.css">
 <script src="/psx-net.js"></script>
@@ -48,7 +48,7 @@
   <div class="wg-note">
     <p><b>It only speaks when it is sure.</b> A phone in a city street is often
     tens of metres out. When the fix is too rough to know which side of you a
-    place is on, this says nothing rather than guess — a guide that says left
+    place is on, this says nothing rather than guess, a guide that says left
     when it means right is worse than a silent one.</p>
     <p>Your location stays on this device. Places are looked up from
     OpenStreetMap by your browser; no coordinate is sent to our server.</p>
@@ -83,7 +83,7 @@
 
   /* Places come from Overpass, asked by the BROWSER, so the precise position
      never reaches our server. Fetched once for a box around where the walk
-     started and reused — one query per walk, not one per step: Overpass is
+     started and reused, one query per walk, not one per step: Overpass is
      free, rate-limited, and slow enough that per-step queries would both
      hammer it and lag the announcements. */
   async function loadPlaces(pos) {
@@ -96,7 +96,7 @@
       ');out body 200;';
     var r = await psxFetch('https://overpass-api.de/api/interpreter',
                            { method: 'POST', body: q });
-    if (!r || !r.ok) { log('Could not load places nearby — the guide needs them.', true); return; }
+    if (!r || !r.ok) { log('Could not load places nearby, the guide needs them.', true); return; }
     var j = null;
     try { j = await r.json(); } catch (e) { return; }
     places = (j.elements || []).filter(function (el) {
@@ -169,5 +169,6 @@
   window.__wgFeed = onFix;          // used by the test to walk a fake street
 })();
 </script>
+<script src="/i18n.js"></script>
 </body>
 </html>

@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dispatch — Plateau Strategy Solution Lab</title>
+    <title>Dispatch, Plateau Strategy Solution Lab</title>
     <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            /* Dash "Terminal" palette — navy, hairline borders, dimmed hierarchy */
+            /* Dash "Terminal" palette, navy, hairline borders, dimmed hierarchy */
             --bg: #0d1526; --panel: #121f38; --line: #26395c;
             --text: #dfe8f7; --head: #faf8f4; --muted: #4a453d; --muted2: #4a453d;
             --accent: #4da6ff; --accent2: #1b4d8f;
@@ -152,7 +152,7 @@
 
     <div class="wrap">
         <h1>Dispatch</h1>
-        <p class="sub">Your control center — every reservation, from every source, in one place. Assign drivers, complete rides, and keep the whole operation organized.</p>
+        <p class="sub">Your control center, every reservation, from every source, in one place. Assign drivers, complete rides, and keep the whole operation organized.</p>
 
         <div class="stats" id="stats"></div>
 
@@ -161,7 +161,7 @@
             <a class="tool" href="/agent"><div class="t">Agents →</div><div class="d">Referral partners &amp; commissions</div></a>
             <a class="tool" href="/renter"><div class="t">Drivers →</div><div class="d" id="tool-drivers">Rides, contracts &amp; rent-to-own</div></a>
             <a class="tool" href="/books"><div class="t">Books &amp; Taxes →</div><div class="d">Live Square revenue</div></a>
-            <a class="tool" href="/archive"><div class="t">Archive →</div><div class="d">Every paper trail — bookings, contacts, agreements &amp; paperwork</div></a>
+            <a class="tool" href="/archive"><div class="t">Archive →</div><div class="d">Every paper trail, bookings, contacts, agreements &amp; paperwork</div></a>
         </div>
 
         <div id="attention" style="display:none;"></div>
@@ -179,7 +179,7 @@
         <div class="board" style="padding:1.3rem 1.4rem;">
             <div style="display:flex;gap:2.4rem;flex-wrap:wrap;">
                 <div style="flex:1;min-width:300px;">
-                    <div class="small" style="margin-bottom:0.7rem;">Price presets — fill the price on the booking &amp; agent forms (still editable per ride).</div>
+                    <div class="small" style="margin-bottom:0.7rem;">Price presets, fill the price on the booking &amp; agent forms (still editable per ride).</div>
                     <div id="presetList"></div>
                     <div style="display:flex;gap:0.5rem;margin-top:0.9rem;align-items:flex-end;flex-wrap:wrap;">
                         <div style="flex:1;min-width:150px;"><div class="plabel">Service name</div><input class="pin" id="pr_name" placeholder="Cruise Port Transfer"></div>
@@ -189,7 +189,7 @@
                     </div>
                 </div>
                 <div style="flex:1;min-width:300px;">
-                    <div class="small" style="margin-bottom:0.7rem;">Per-agent rates — an agent's referrals pre-fill to their negotiated rate (blank = your default).</div>
+                    <div class="small" style="margin-bottom:0.7rem;">Per-agent rates, an agent's referrals pre-fill to their negotiated rate (blank = your default).</div>
                     <div id="agentRates"><div class="small">No agents yet.</div></div>
                 </div>
             </div>
@@ -203,7 +203,7 @@
 
         <h2>💸 Payouts</h2>
         <div class="board" style="padding:1.2rem 1.4rem;">
-            <div class="small" style="margin-bottom:0.9rem;">Agents &amp; driver-agents request their earned money here. Send it your way (Zelle / cash / check), then mark it paid — the ledger stays honest. Balances show what each agent can still request.</div>
+            <div class="small" style="margin-bottom:0.9rem;">Agents &amp; driver-agents request their earned money here. Send it your way (Zelle / cash / check), then mark it paid, the ledger stays honest. Balances show what each agent can still request.</div>
             <table style="min-width:0;">
                 <thead><tr><th>Request</th><th>Agent</th><th>Amount</th><th>Preferred method</th><th>Requested</th><th>Status</th><th></th></tr></thead>
                 <tbody id="payoutRows"></tbody>
@@ -217,7 +217,7 @@
              self-visits is invisible in a thousand and decisive in twenty.
 
              The network row is the one that scales. Opting out a device is one
-             browser — a phone on a different browser, or after a cookie sweep,
+             browser, a phone on a different browser, or after a cookie sweep,
              starts counting again. Registering the office or home network
              takes every device on it out at once, which is what "add their
              devices" actually needs.
@@ -227,13 +227,13 @@
              sent to this panel, so they get the public one-tap page instead. -->
         <h2>👣 Who counts as a visitor</h2>
         <div class="board" style="padding:1.2rem 1.4rem;">
-            <div class="small" style="margin-bottom:0.9rem;">Keep the team out of the visitor numbers. Signing in here already stops this browser being counted — the rest is for your other devices, and for anyone on the team without a dispatch login.</div>
+            <div class="small" style="margin-bottom:0.9rem;">Keep the team out of the visitor numbers. Signing in here already stops this browser being counted, the rest is for your other devices, and for anyone on the team without a dispatch login.</div>
 
             <div id="trafficMe"><div class="small">Loading…</div></div>
 
             <div style="margin-top:1.1rem;border-top:1px solid #4a453d;padding-top:1rem;">
                 <div class="plabel">Anyone else on the team</div>
-                <div class="small" style="margin:0.4rem 0 0.6rem;">Send them this. One tap on the phone, no login, nothing installed. It works for drivers, agents, family — anyone whose visits should not read as a customer's.</div>
+                <div class="small" style="margin:0.4rem 0 0.6rem;">Send them this. One tap on the phone, no login, nothing installed. It works for drivers, agents, family, anyone whose visits should not read as a customer's.</div>
                 <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
                     <input class="pin" id="optoutLink" readonly style="flex:1;min-width:220px;">
                     <button class="auth-btn" style="width:auto;margin:0;padding:0.55rem 1rem;font-size:0.85rem;" onclick="copyOptoutLink()">Copy link</button>
@@ -288,17 +288,17 @@
                       '<button class="b-cancel" onclick="declinePayout(\'' + p.id + '\')">Decline</button></div>'
                     : (p.status === 'PAID' ? '<span class="small">' + esc((p.paid_at||'').slice(0,16).replace('T',' ')) + (p.paid_method ? ' · ' + esc(p.paid_method) : '') + '</span>' : '');
                 return '<tr><td class="rid">' + esc(p.id) + '</td><td>' + esc(p.agent_name||'') + '</td>' +
-                    '<td class="fare">$' + esc(p.amount) + '</td><td class="small">' + esc(p.method||'—') + '</td>' +
+                    '<td class="fare">$' + esc(p.amount) + '</td><td class="small">' + esc(p.method||', ') + '</td>' +
                     '<td class="small">' + esc((p.requested_at||'').slice(0,16).replace('T',' ')) + '</td>' +
                     '<td><span class="badge ' + esc(p.status) + '">' + esc(p.status) + '</span></td>' +
                     '<td>' + ctrl + '</td></tr>';
             }).join('');
             const bal = (j.balances || []).filter(b => b.total_take > 0 || b.paid_out > 0);
             const ppLine = pp.configured
-                ? '🅿️ PayPal connected (' + esc(pp.env) + ') — one-click payouts on.'
-                : '🅿️ PayPal not connected — add PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET to .env to enable one-click payouts (until then, pay outside and Mark paid).';
+                ? '🅿️ PayPal connected (' + esc(pp.env) + '), one-click payouts on.'
+                : '🅿️ PayPal not connected, add PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET to .env to enable one-click payouts (until then, pay outside and Mark paid).';
             document.getElementById('payoutBalances').innerHTML =
-                (bal.length ? '<b>Balances:</b> ' + bal.map(b => esc(b.name) + ' — earned $' + b.total_take + ' · paid $' + b.paid_out + ' · available $' + b.available).join(' &nbsp;·&nbsp; ') + '<br>' : '') + ppLine;
+                (bal.length ? '<b>Balances:</b> ' + bal.map(b => esc(b.name) + ', earned $' + b.total_take + ' · paid $' + b.paid_out + ' · available $' + b.available).join(' &nbsp;·&nbsp; ') + '<br>' : '') + ppLine;
         }
 
         async function payPaypal(pid){
@@ -306,16 +306,16 @@
             const j = await psxJSON('/api/payouts/' + pid + '/pay-paypal', { method:'POST',
                 headers:{'Content-Type':'application/json'}, body: '{}' });
             if (!j.ok) { showToast(j.error || 'PayPal payout failed'); loadPayouts(); return; }
-            showToast('Paid via PayPal — batch ' + (j.paypal && j.paypal.batch_id || 'ok'));
+            showToast('Paid via PayPal, batch ' + (j.paypal && j.paypal.batch_id || 'ok'));
             loadPayouts();
         }
 
         async function markPaid(pid){
-            const method = prompt('How did you send it? (Zelle / cash / check + reference — optional)') || '';
+            const method = prompt('How did you send it? (Zelle / cash / check + reference, optional)') || '';
             const j = await psxJSON('/api/payouts/' + pid + '/mark-paid', { method:'POST',
                 headers:{'Content-Type':'application/json'}, body: JSON.stringify({ method }) });
             if (!j.ok) { showToast(j.error || 'Failed'); return; }
-            showToast('Marked paid — the agent sees it instantly'); loadPayouts();
+            showToast('Marked paid, the agent sees it instantly'); loadPayouts();
         }
 
         async function declinePayout(pid){
@@ -342,7 +342,7 @@
                     const urgent = u.hours_left != null && u.hours_left < 3;
                     const pu = (u.hours_left == null) ? '' : (u.hours_left < 0 ? 'pickup passed' : 'pickup in ' + u.hours_left.toFixed(1) + 'h');
                     return '<div class="attn-row' + (urgent?' urgent':'') + '">' + (urgent?'🚨 ':'') +
-                        '<b>' + esc(u.id) + '</b> · ' + esc(u.client||'—') + ' · ' + esc(u.pickup) + ' → ' + esc(u.dropoff) +
+                        '<b>' + esc(u.id) + '</b> · ' + esc(u.client||', ') + ' · ' + esc(u.pickup) + ' → ' + esc(u.dropoff) +
                         ' <span class="attn-age">· open ' + u.mins_open + 'm' + (u.given_up?' (given up)':'') + (pu?' · '+pu:'') + '</span>' +
                         '<button class="attn-go" onclick="document.getElementById(\'rows\').scrollIntoView({behavior:\'smooth\'})">Assign ↓</button>' +
                         '</div>';
@@ -381,14 +381,14 @@
             const when = ((t.date||'')+' '+(t.time||'')).trim();
             const agent = r.self_service
                 ? '<span class="agent-tag" style="background:#052e16;color:#1b5e43;">Driver-Agent · '+esc(r.driver||(r.agent&&r.agent.name)||'')+' · keeps full $'+esc(r.fare_usd)+'</span>'
-                : ((r.agent&&r.agent.name) ? '<span class="agent-tag">'+esc(r.agent.name)+' · $'+esc((r.agent.commission_usd)||0)+'</span>' : '<span class="small">—</span>');
+                : ((r.agent&&r.agent.name) ? '<span class="agent-tag">'+esc(r.agent.name)+' · $'+esc((r.agent.commission_usd)||0)+'</span>' : '<span class="small">, </span>');
             let ctrls;
             if (r.status==='NEW'){
                 const opts = '<option value="">Assign a driver…</option>' + DRIVERS.map(d=>'<option value="'+d.id+'">'+esc(d.name)+'</option>').join('');
                 ctrls = '<div class="ctrls"><select onchange="assign(\''+r.id+'\', this.value)">'+opts+'</select>' +
                     '<div class="btnrow"><button class="b-cancel" onclick="cancelRes(\''+r.id+'\')">Cancel</button></div></div>';
             } else if (r.status==='ASSIGNED'){
-                ctrls = '<div class="ctrls"><span class="driver-name">'+esc(r.driver||'—')+'</span>' +
+                ctrls = '<div class="ctrls"><span class="driver-name">'+esc(r.driver||', ')+'</span>' +
                     '<div class="btnrow"><button class="b-complete" onclick="complete(\''+r.id+'\')">Complete</button>' +
                     '<button class="b-release" onclick="release(\''+r.id+'\')">Release</button>' +
                     '<button class="b-cancel" onclick="cancelRes(\''+r.id+'\')">Cancel</button></div></div>';
@@ -397,7 +397,7 @@
             }
             return '<tr>' +
                 '<td><span class="rid">'+esc(r.id)+'</span>'+(when?'<div class="small">'+esc(when)+'</div>':'')+'</td>' +
-                '<td>'+esc(cl.name||'—')+(cl.phone?'<div class="small">'+esc(cl.phone)+'</div>':'')+'</td>' +
+                '<td>'+esc(cl.name||', ')+(cl.phone?'<div class="small">'+esc(cl.phone)+'</div>':'')+'</td>' +
                 '<td><span class="route">'+esc(t.pickup)+'<span class="arrow">→</span>'+esc(t.dropoff)+'</span>'+(t.flight?'<div class="small">✈ '+esc(t.flight)+'</div>':'')+'</td>' +
                 '<td><span class="fare">$'+esc(r.fare_usd)+'</span></td>' +
                 '<td>'+agent+'</td>' +
@@ -442,7 +442,7 @@
         function renderPricing(){
             document.getElementById('presetList').innerHTML = PRESETS.length
                 ? PRESETS.map((p,i)=>'<div class="preset-row"><span class="nm">'+esc(p.name)+'</span><span><span class="pr">$'+esc(p.price)+'</span> <span class="small">agent $'+esc(p.commission!=null?p.commission:0)+'</span> <button class="x" title="Remove" onclick="delPreset('+i+')">×</button></span></div>').join('')
-                : '<div class="small">No presets yet — add one below.</div>';
+                : '<div class="small">No presets yet, add one below.</div>';
             document.getElementById('agentRates').innerHTML = AGENTS.length
                 ? AGENTS.map(a=>'<div class="rate-row"><span class="an">'+esc(a.name)+' <span class="small">'+esc(a.code||'')+'</span></span><span>$ <input type="number" min="0" step="0.01" value="'+(a.default_fare!=null?a.default_fare:'')+'" placeholder="default" onblur="setRate(\''+a.id+'\', this.value)"></span></div>').join('')
                 : '<div class="small">No agents yet.</div>';
@@ -477,7 +477,7 @@
             const setup = AUTH_MODE === 'setup';
             document.getElementById('authTitle').textContent = setup ? 'Create Dispatch Login' : 'Dispatch Login';
             document.getElementById('authSub').textContent = setup
-                ? 'First time here — set the username and password for your control center.'
+                ? 'First time here, set the username and password for your control center.'
                 : 'Sign in to your control center.';
             document.getElementById('au_pass').setAttribute('autocomplete', setup ? 'new-password' : 'current-password');
             document.getElementById('authBtn').textContent = setup ? 'Create login' : 'Sign in';
@@ -492,7 +492,7 @@
             const url = AUTH_MODE === 'setup' ? '/api/owner/setup' : '/api/owner/login';
             let j;
             try { j = await psxJSON(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}); }
-            catch(e){ msg.textContent = 'Connection problem — try again.'; return; }
+            catch(e){ msg.textContent = 'Connection problem, try again.'; return; }
             if(!j.ok){ msg.textContent = j.error || 'Failed'; return; }
             document.getElementById('authOverlay').classList.add('hidden');
             document.getElementById('au_pass').value = '';
@@ -515,16 +515,16 @@
            because they undo different amounts and one of them is not
            reversible:
 
-             device   — this browser only. A cookie, so a cookie sweep or a
+             device  , this browser only. A cookie, so a cookie sweep or a
                         different browser on the same phone starts counting
                         again. psx-net.js restores a swept opt-out.
-             today    — removes this device from TODAY's number. Opting out
+             today   , removes this device from TODAY's number. Opting out
                         stops counting from now on and does nothing about a
                         visit already recorded this morning, which is exactly
                         the doubt that makes someone distrust their own
                         figures. Finished days cannot be corrected: the ids
                         were thrown away when the day closed.
-             network  — every device on this address, now and later. The one
+             network , every device on this address, now and later. The one
                         worth using for a household or an office, and the one
                         that keeps working after a phone is replaced. */
         async function loadTrafficMe(){
@@ -538,7 +538,7 @@
             if(!d || !d.ok){
                 var e = document.createElement('div');
                 e.className = 'small';
-                e.textContent = 'Could not read the current state — '
+                e.textContent = 'Could not read the current state, '
                               + ((d && d.error) || 'try again');
                 box.appendChild(e);
                 return;
@@ -565,10 +565,10 @@
             }
 
             row('This network is ' + (d.network_registered ? 'registered' : 'not registered'),
-                (d.network ? d.network + ' — ' : '')
+                (d.network ? d.network + ', ' : '')
                 + (d.network_registered
                     ? 'Every device on it is out of the numbers, including ones you have not set up yet.'
-                    : 'Register it to take every device on this wifi out at once — phones, tablets, a replaced laptop.'),
+                    : 'Register it to take every device on this wifi out at once, phones, tablets, a replaced laptop.'),
                 d.network_registered ? 'Stop ignoring this network' : 'Register this network',
                 function(){ toggleNetwork(d.network_registered, d.network); });
 
@@ -660,7 +660,7 @@
             }).join('') : '<div class="small" style="padding:.4rem 0;">No documents uploaded yet.</div>';
             if(ags.length){
                 body += '<div class="small" style="margin:.8rem 0 .3rem;text-transform:uppercase;letter-spacing:.5px;color:#1b4d8f;">Signed agreements</div>'
-                  + ags.map(function(a){ return '<div class="small" style="padding:.22rem 0;">✓ Driver Agreement v'+esc(a.version)+' — '+esc(a.typed_name||'')+' · '+pwDate(a.signed_at)+'</div>'; }).join('');
+                  + ags.map(function(a){ return '<div class="small" style="padding:.22rem 0;">✓ Driver Agreement v'+esc(a.version)+', '+esc(a.typed_name||'')+' · '+pwDate(a.signed_at)+'</div>'; }).join('');
             }
             const ins = dr.insurance||{};
             const insTag = ins.state && ins.state!=='VALID' ? ' <span style="font-size:.6rem;background:#450a0a;color:#a3302a;padding:.1rem .4rem;border-radius:3px;">insurance '+esc((ins.state||'').toLowerCase())+'</span>' : '';

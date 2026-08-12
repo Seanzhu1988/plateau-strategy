@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Footprints — see it work · Plateau Strategy</title>
+<title>Footprints, see it work · Plateau Strategy</title>
 <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
 <!-- The viewable proof. The blueprint page DESCRIBES the direction gate;
-     this page RUNS it — the same trailAhead() the walking guide uses, no
+     this page RUNS it, the same trailAhead() the walking guide uses, no
      mock geometry, deciding live which footprints to draw as the heading
      turns. If this feels right on a phone, the product feels right, because
      this IS the product's decision code with a dial attached. -->
@@ -54,7 +54,7 @@
 </head>
 <body>
 <div class="sheet">
-  <h1>Footprints — see it work</h1>
+  <h1>Footprints, see it work</h1>
   <p class="sub">Turn until the footprints appear. Then take a step.</p>
 
   <div class="stage">
@@ -63,7 +63,7 @@
   <div class="why" id="why"></div>
 
   <div class="dial">
-    <label for="hdg">Your heading — drag, or use the compass</label>
+    <label for="hdg">Your heading, drag, or use the compass</label>
     <input id="hdg" type="range" min="0" max="359" value="90" step="1">
   </div>
   <div class="row">
@@ -72,10 +72,10 @@
   </div>
 
   <p class="note">Everything deciding what you see here is the guide's real
-  code — the same <i>trailAhead()</i> that runs on a walk. The dial stands in
+  code, the same <i>trailAhead()</i> that runs on a walk. The dial stands in
   for which way your body faces; on a phone, the compass button makes it the
   real thing: turn yourself, and the prints obey.</p>
-  <p class="note">The drawn corridor is a stand-in for a recorded walk —
+  <p class="note">The drawn corridor is a stand-in for a recorded walk, 
   a bend and a straight, like a terminal hallway. The blueprint is at
   <a href="/footprints-concept">/footprints-concept</a>.</p>
 </div>
@@ -83,7 +83,7 @@
 (function () {
   "use strict";
   /* A stand-in corridor in real lat/lon so trailAhead consumes it unchanged:
-     ~90 m north, a bend, ~110 m east. A DEMO trace, not survey data — it
+     ~90 m north, a bend, ~110 m east. A DEMO trace, not survey data, it
      exists so the geometry has something to chew on screen. */
   var LAT0 = 47.60000, LON0 = -122.33300;
   var PATH = [];
@@ -117,12 +117,12 @@
 
   function draw() {
     while (svg.firstChild) svg.removeChild(svg.firstChild);
-    // the corridor's faint centreline — the recorded walk
+    // the corridor's faint centreline, the recorded walk
     var pts = PATH.map(xy).map(function (p) { return p.x + ',' + p.y; }).join(' ');
     svg.appendChild(el('polyline', { points: pts, fill: 'none',
       stroke: '#8fb4e3', 'stroke-width': 1, 'stroke-dasharray': '2 7' }));
     var me = xy(PATH[atIdx]);
-    // the decision — the guide's own code, nothing else
+    // the decision, the guide's own code, nothing else
     var d = WalkGuide.trailAhead({ lat: PATH[atIdx][0], lon: PATH[atIdx][1] },
                                  heading, PATH, { accuracy: 5 });
     if (d.show) {
@@ -140,11 +140,11 @@
         svg.appendChild(foot);
         prev = p;
       }
-      whyEl.textContent = 'FOOTPRINTS AHEAD — ' + (d.dir === 1 ? 'onward' : 'back the way it was walked');
+      whyEl.textContent = 'FOOTPRINTS AHEAD, ' + (d.dir === 1 ? 'onward' : 'back the way it was walked');
       whyEl.className = 'why on';
     } else {
       whyEl.textContent = d.why === 'facing away from the path'
-        ? 'NOTHING — THE EMPTINESS IS THE MESSAGE. KEEP TURNING.'
+        ? 'NOTHING, THE EMPTINESS IS THE MESSAGE. KEEP TURNING.'
         : d.why.toUpperCase();
       whyEl.className = 'why';
     }
@@ -171,7 +171,7 @@
     if (!d.show) return;
     atIdx = Math.max(0, Math.min(PATH.length - 1, atIdx + d.dir));
     if (atIdx === PATH.length - 1) {
-      whyEl.textContent = 'END OF THE CORRIDOR — THIS IS WHERE THE PLATFORM WOULD BE.';
+      whyEl.textContent = 'END OF THE CORRIDOR, THIS IS WHERE THE PLATFORM WOULD BE.';
       whyEl.className = 'why on';
     }
     draw();
@@ -179,7 +179,7 @@
 
   /* The real compass, where the platform allows it. iOS wants an explicit
      permission grant from inside a tap; elsewhere it just starts. Every
-     failure path leaves the dial working — same rule as everything else:
+     failure path leaves the dial working, same rule as everything else:
      a shortcut that breaks must degrade to the ordinary way, silently. */
   document.getElementById('compassBtn').addEventListener('click', function () {
     var btn = this;
@@ -193,7 +193,7 @@
         dial.value = heading;
         draw();
       });
-      btn.textContent = 'Compass on — turn yourself';
+      btn.textContent = 'Compass on, turn yourself';
       btn.disabled = true;
     }
     try {

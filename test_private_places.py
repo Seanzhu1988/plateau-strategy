@@ -39,7 +39,7 @@ for label, meta, nm in HOMES:
     private, why = A._is_private_residence(meta, nm)
     chk(f"{label} -> refused ({why or 'not refused'})", private)
 
-print("\nstill allowed in — these are public places:")
+print("\nstill allowed in, these are public places:")
 PLACES = [
     ("a museum",        {"class": "tourism", "type": "museum", "address": {"house_number": "1300"}}, "Seattle Art Museum"),
     ("a viewpoint",     {"class": "tourism", "type": "viewpoint", "address": {}}, "Kerry Park"),
@@ -178,7 +178,7 @@ chk("the reader lives in _book_raw()",
     any("with open(_data_path(\"destinations.json\"))" in o for o in opens))
 
 # Every route must go through public_book(). _book_raw() returns withheld
-# records too, so only the writer may touch it — it has to, or saving would
+# records too, so only the writer may touch it, it has to, or saving would
 # drop them. Parsed rather than grepped: splitting the file on "@app.route"
 # runs each body into the next one and blames the wrong function.
 import ast as _ast
@@ -216,7 +216,7 @@ c.post("/api/destinations/add", json={
 e = (json.load(open(book)).get("entries") or [{}])[0]
 chk("stamped visibility=public at write time", e.get("visibility") == "public")
 
-# and the stamp is what reads trust — a record stamped private stays out even
+# and the stamp is what reads trust, a record stamped private stays out even
 # if its name looks perfectly innocent.
 json.dump({"cities": {"seattle": "Seattle"}, "entries": [
     {"name": "The Quiet House", "city": "seattle", "visibility": "private",

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Favorite Places — Plateau Strategy Solution Lab</title>
+    <title>Favorite Places, Plateau Strategy Solution Lab</title>
     <meta name="description" content="Search any place you love, tell us how long you stayed, and it joins the free Destination Book for the next traveler.">
     <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
@@ -92,12 +92,12 @@
 
     <div class="wrap">
         <div class="page-title">❤️ Favorite Places</div>
-        <div class="page-sub">Search anywhere and tell us your favorite place — it joins the free Destination Book for the next traveler. The more you share, the smarter our map gets.</div>
+        <div class="page-sub">Search anywhere and tell us your favorite place, it joins the free Destination Book for the next traveler. The more you share, the smarter our map gets.</div>
         <div class="counter" id="counter" style="display:none;"></div>
 
         <div class="card">
             <div class="search-box">
-                <input id="q" type="text" placeholder="Search a place — anywhere in the world…" oninput="onType()" onkeydown="if(event.key==='Enter'){event.preventDefault();searchPlace();}">
+                <input id="q" type="text" placeholder="Search a place, anywhere in the world…" oninput="onType()" onkeydown="if(event.key==='Enter'){event.preventDefault();searchPlace();}">
                 <div class="qres" id="qres"></div>
             </div>
 
@@ -128,7 +128,7 @@
             </div>
         </div>
 
-        <div class="why">Every place you share is checked against the map for a real location, then written into the Destination Book. No account needed — this takes about 15 seconds.</div>
+        <div class="why">Every place you share is checked against the map for a real location, then written into the Destination Book. No account needed, this takes about 15 seconds.</div>
     </div>
 
     <script>
@@ -164,7 +164,7 @@
             try {
                 const url = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=6&q=' + encodeURIComponent(q);
                 const j = await psxJSON(url);
-                if (!j.length) { box.innerHTML = '<div class="muted">No results — try a different spelling.</div>'; return; }
+                if (!j.length) { box.innerHTML = '<div class="muted">No results, try a different spelling.</div>'; return; }
                 box.innerHTML = '';
                 j.forEach(res => {
                     const d = document.createElement('div');
@@ -172,12 +172,12 @@
                     d.onclick = () => choose(res);
                     box.appendChild(d);
                 });
-            } catch (e) { box.innerHTML = '<div class="muted">Search unavailable right now — try again in a moment.</div>'; }
+            } catch (e) { box.innerHTML = '<div class="muted">Search unavailable right now, try again in a moment.</div>'; }
         }
         document.addEventListener('click', e => { if (!e.target.closest('.search-box')) $('qres').style.display = 'none'; });
 
         // The rest of the site (Trip Planner, Destination Book) keys its known
-        // cities by short code — nyc / dc / seattle — not by the raw name a
+        // cities by short code, nyc / dc / seattle, not by the raw name a
         // geocoder returns. Map common variants so a shared place actually
         // lands in the SAME bucket the planner reads from, instead of a
         // same-city entry silently splitting into its own "other" pile.
@@ -228,7 +228,7 @@
                                            type: picked.meta.type, address: addr })
                 });
                 const d = await r.json();
-                if (!d.ok) { msg.className = 'msg err'; msg.textContent = d.error || 'Could not add this place — try again.'; $('submitBtn').disabled = false; return; }
+                if (!d.ok) { msg.className = 'msg err'; msg.textContent = d.error || 'Could not add this place, try again.'; $('submitBtn').disabled = false; return; }
                 if (chosenMinutes) {
                     fetch('/api/visit-time', { method: 'POST', headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ name, city, minutes: chosenMinutes }) }).catch(function(){});
@@ -240,7 +240,7 @@
                 $('submitBtn').disabled = false;
                 loadCounter();
             } catch (e) {
-                msg.className = 'msg err'; msg.textContent = 'Could not reach the server — please try again.';
+                msg.className = 'msg err'; msg.textContent = 'Could not reach the server, please try again.';
                 $('submitBtn').disabled = false;
             }
         }

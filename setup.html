@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connect Square — Plateau Strategy Solution Lab</title>
+    <title>Connect Square, Plateau Strategy Solution Lab</title>
     <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -63,7 +63,7 @@
 
             <label>Square Production Access Token</label>
             <input id="token" type="password" placeholder="Paste your Access Token here" autocomplete="off">
-            <p class="hint">Paste the token you copied from Square. It's stored privately on your machine — this page never displays it back.</p>
+            <p class="hint">Paste the token you copied from Square. It's stored privately on your machine, this page never displays it back.</p>
 
             <button class="connect" id="connectBtn" onclick="connect()">Connect Square</button>
             <div class="result" id="result"></div>
@@ -96,7 +96,7 @@
         <div class="card" style="margin-top:1.5rem;">
             <h1>Private access</h1>
             <p class="sub">Passwords for the by-link pages. You issue them here
-            and nowhere else — there is no signup, no reset and no recovery
+            and nowhere else, there is no signup, no reset and no recovery
             link anywhere on the site.</p>
 
             <div class="status off" id="acc_gate" style="display:none;">
@@ -110,16 +110,16 @@
                 <input id="acc_user" placeholder="john" autocapitalize="none">
                 <div class="hint">Lower case, at least 3 characters. Must be unique.</div>
 
-                <label for="acc_note">Note (optional — for you, not shown to them)</label>
+                <label for="acc_note">Note (optional, for you, not shown to them)</label>
                 <input id="acc_note" placeholder="college friend" style="font-family:inherit">
 
                 <label for="acc_role">What may this account do?</label>
                 <select id="acc_role" style="width:100%;padding:0.85rem 1rem;border:1.5px solid #e6e2da;border-radius:10px;font-size:1rem;background:#faf8f4;">
-                    <option value="reader">Reader — can open the pages and read the record</option>
-                    <option value="bot">Bot — can also write trades to the ledger</option>
+                    <option value="reader">Reader, can open the pages and read the record</option>
+                    <option value="bot">Bot, can also write trades to the ledger</option>
                 </select>
                 <div class="hint">Give people <b>reader</b>. Only your own bot
-                needs <b>bot</b>, and a reader account cannot file trades — that
+                needs <b>bot</b>, and a reader account cannot file trades, that
                 is what stops a stranger poisoning the record.</div>
 
                 <button class="connect" id="acc_btn" onclick="mintAccount()">Create account</button>
@@ -138,7 +138,7 @@
         //
         // The password is displayed once and never again. It is generated on
         // the server and stored only as a PBKDF2 hash, so this box is the one
-        // and only time it exists in readable form — which is why it gets the
+        // and only time it exists in readable form, which is why it gets the
         // loudest treatment on the page rather than a quiet confirmation line.
         function esc(s) {
             return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
@@ -203,7 +203,7 @@
                 if (!j.ok) throw new Error(j.error || 'Could not create the account.');
                 result.className = 'result ok';
                 result.innerHTML =
-                    '<b>Write this down now — it is shown once.</b><br>'
+                    '<b>Write this down now, it is shown once.</b><br>'
                     + 'It is stored only as a hash, so nobody can read it back, '
                     + 'including you. Lost means creating a new one.'
                     + '<div style="margin:.8rem 0;padding:.8rem 1rem;background:#fffdf9;'
@@ -212,7 +212,7 @@
                     + '<button style="padding:.4rem .9rem;border-radius:8px;cursor:pointer;border:1px solid #cef2df;'
                     + 'background:transparent;font:inherit;font-size:.85rem" onclick="copyPw()">Copy</button>'
                     + '<div style="margin-top:.8rem">Send <b>' + esc(j.username) + '</b> and this password to them '
-                    + 'separately from the link — two channels, so one intercepted message is not enough.</div>';
+                    + 'separately from the link, two channels, so one intercepted message is not enough.</div>';
                 document.getElementById('acc_user').value = '';
                 document.getElementById('acc_note').value = '';
                 loadAccounts();
@@ -238,7 +238,7 @@
                 s.innerHTML = '✅ Connected to Square (' + d.env + ')<small>Location: ' + (d.location_id || '') + ' · Bookings now send real payment requests.</small>';
             } else if (d.location_id) {
                 s.className = 'status off';
-                s.innerHTML = '⚠️ Almost there — Location ID is set, just need your Access Token below.';
+                s.innerHTML = '⚠️ Almost there, Location ID is set, just need your Access Token below.';
             } else {
                 s.className = 'status off';
                 s.innerHTML = '⚠️ Not connected yet.';
@@ -271,7 +271,7 @@
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({})
                 });
                 result.innerHTML = t.ok
-                    ? '✅ <b>Twilio connected!</b> Test text sent to ' + t.to + ' — check your phone. Drivers will now get ride texts.'
+                    ? '✅ <b>Twilio connected!</b> Test text sent to ' + t.to + ', check your phone. Drivers will now get ride texts.'
                     : '⚠️ Keys saved, but the test text failed: ' + (t.result || '') + '<br>Double-check the number format and that your Twilio number can send SMS.';
             } catch (err) {
                 result.className = 'result err'; result.textContent = err.message;

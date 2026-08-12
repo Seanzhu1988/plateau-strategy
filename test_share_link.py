@@ -7,7 +7,7 @@ else. That half is ordinary.
 The second is the half worth having a test for. The page describes automated
 trading, and the one promise made to everyone who receives it is that it takes
 nothing from them: no money, no bank details, no account. A promise like that
-decays — somebody adds a "reserve your spot" button, an email box, a Stripe
+decays, somebody adds a "reserve your spot" button, an email box, a Stripe
 link, and the sentence at the top of the page quietly stops being true. So the
 assertions below read the served bytes and refuse any form, any payment
 element, and any of the phrases that turn a description into an offer.
@@ -39,7 +39,7 @@ A.LAB = bot_lab.BotLab(os.path.join(tmp, "u.json"),
                        os.path.join(tmp, "k.json"))
 A.app.config["TESTING"] = True
 os.environ.pop("ROBOT_SHARE_KEY", None)          # exercise the generated key
-# Sign-in must work with the lab switched OFF — the accounts are shared, and
+# Sign-in must work with the lab switched OFF, the accounts are shared, and
 # turning the lab off must not lock anyone out of an unrelated page.
 os.environ.pop("BOT_LAB_ENABLED", None)
 
@@ -72,7 +72,7 @@ chk("the refusal is not indexable",
 r = c.get("/robot?k=" + KEY[:-1] + ("z" if KEY[-1] != "z" else "y"))
 chk("a wrong key is refused (%d)" % r.status_code, r.status_code == 404)
 
-print("\nthe link alone is not enough — it also takes a password:")
+print("\nthe link alone is not enough, it also takes a password:")
 r = c.get("/robot?k=" + KEY)
 chk("the key is accepted (%d)" % r.status_code, r.status_code in (301, 302))
 chk("and the key is dropped from the address bar",
@@ -80,7 +80,7 @@ chk("and the key is dropped from the address bar",
 r = c.get("/robot")
 chk("but the page is withheld pending sign-in (%d)" % r.status_code, r.status_code == 401)
 gate = r.get_data(as_text=True)
-chk("a sign-in is offered, not a false 404 — they were sent the link",
+chk("a sign-in is offered, not a false 404, they were sent the link",
     "sign in" in gate.lower())
 chk("and the protected text is NOT in the gate", "Not a prediction engine" not in gate)
 
@@ -135,8 +135,8 @@ PROMISES = [
 ]
 hits = [p for p in PROMISES if p in low]
 chk("no promise of safety (%s)" % (hits or "clean"), not hits)
-chk("no monthly return figure (%s)" % (re.findall(r"\d+\s*[-–]?\s*\d*\s*%\s*/?\s*(?:mo|month)", low) or "clean"),
-    not re.search(r"\d+\s*[-–]?\s*\d*\s*%\s*/?\s*(?:mo|month)", low))
+chk("no monthly return figure (%s)" % (re.findall(r"\d+\s*[-, ]?\s*\d*\s*%\s*/?\s*(?:mo|month)", low) or "clean"),
+    not re.search(r"\d+\s*[-, ]?\s*\d*\s*%\s*/?\s*(?:mo|month)", low))
 chk("it says outright that it is not an offer",
     "not an offer" in low)
 chk("it says outright that automated trading can lose money",
@@ -146,13 +146,13 @@ print("\nit stays off the map:")
 sm = c.get("/sitemap.xml").get_data(as_text=True)
 chk("not in the sitemap", "/robot" not in sm)
 rb = c.get("/robots.txt").get_data(as_text=True)
-chk("not named in robots.txt either — that file is public", "/robot" not in rb)
+chk("not named in robots.txt either, that file is public", "/robot" not in rb)
 
 print("\nonly the owner can read the key back:")
 r = c.get("/api/share-links")
 chk("a stranger is refused (%d)" % r.status_code, r.status_code == 401)
 # Reuse the owner client signed in above. Calling /api/owner/setup a second
-# time 401s, because setup refuses once an owner exists — so a fresh client
+# time 401s, because setup refuses once an owner exists, so a fresh client
 # calling it again was never authenticated and this read failed for a reason
 # that had nothing to do with share links.
 r = owner.get("/api/share-links")

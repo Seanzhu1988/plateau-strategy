@@ -1,4 +1,4 @@
-# Phase 1: Rental Platform + Driver Insurance — Concept Brief
+# Phase 1: Rental Platform + Driver Insurance, Concept Brief
 
 **Date:** June 30, 2026  
 **Prepared for:** Mac
@@ -7,7 +7,7 @@
 
 ## The Pitch (One Line)
 
-Turn the Tesla rental website into a focused, self-service funnel for rideshare and delivery drivers — and make low-cost commercial insurance the hook that brings them in and keeps them.
+Turn the Tesla rental website into a focused, self-service funnel for rideshare and delivery drivers, and make low-cost commercial insurance the hook that brings them in and keeps them.
 
 ---
 
@@ -15,7 +15,7 @@ Turn the Tesla rental website into a focused, self-service funnel for rideshare 
 
 ### 1. An Intent-Driven Website Where Every Element Earns Its Place
 
-Design the site around one question: **who is this visitor and what are they here to do?** Track where they come from and how they move through the page, and cut anything that doesn't move them toward renting. No buttons doing five things — every element has a clear, single purpose.
+Design the site around one question: **who is this visitor and what are they here to do?** Track where they come from and how they move through the page, and cut anything that doesn't move them toward renting. No buttons doing five things, every element has a clear, single purpose.
 
 **Implication:** Each page element must justify its existence through intent alignment and conversion impact. Navigation, CTAs, copy, and imagery all ladder to a single objective per page.
 
@@ -23,7 +23,7 @@ Design the site around one question: **who is this visitor and what are they her
 
 A driver can land on the site, apply, and rent a vehicle directly online, with the agreement handled through the platform instead of offline back-and-forth. Faster for them, less manual work for us.
 
-**Implication:** Streamline the entire funnel—identity verification, vehicle selection, agreement signing, payment processing—into a seamless digital experience. Minimize human touchpoints except where required for compliance.
+**Implication:** Streamline the entire funnel, identity verification, vehicle selection, agreement signing, payment processing, into a seamless digital experience. Minimize human touchpoints except where required for compliance.
 
 ### 3. Commercial Insurance as the Core Hook
 
@@ -31,13 +31,13 @@ Commercial coverage is the pain point every rideshare/delivery driver and rental
 
 **Referral Layer:** Layer in a referral program so users can refer others, rent through the site, and track the commissions they earn.
 
-**Implication:** Insurance is not a compliance checkbox—it's a revenue stream and a stickiness mechanism. Drivers will come for rentals but stay for affordable insurance. Referral mechanics must be transparent and frictionless.
+**Implication:** Insurance is not a compliance checkbox, it's a revenue stream and a stickiness mechanism. Drivers will come for rentals but stay for affordable insurance. Referral mechanics must be transparent and frictionless.
 
 ---
 
 ## Go-to-Market
 
-Grow share deliberately—get drivers onto the site, help them secure commercial insurance, sign them to contracts, and expand the fleet and footprint little by little rather than chasing the whole market at once.
+Grow share deliberately, get drivers onto the site, help them secure commercial insurance, sign them to contracts, and expand the fleet and footprint little by little rather than chasing the whole market at once.
 
 **Strategy Principles:**
 - Start with a narrow driver profile (e.g., active Uber/Lyft drivers in a single metro)
@@ -60,12 +60,12 @@ Grow share deliberately—get drivers onto the site, help them secure commercial
 
 ## Vehicle Tiers
 
-### Tier 1: Rent-to-Own (0–100k Miles)
+### Tier 1: Rent-to-Own (0, 100k Miles)
 - Drivers build equity toward full ownership
 - Completion of term = vehicle ownership
 - Encourages long-term commitment and reduces churn
 
-### Tier 2: Turo Public Rentals (100k–130k Miles)
+### Tier 2: Turo Public Rentals (100k, 130k Miles)
 - Same vehicles rotate to Turo public rental marketplace
 - Generates secondary income stream when not rented to committed drivers
 - Maximizes asset utilization

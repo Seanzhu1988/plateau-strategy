@@ -123,7 +123,7 @@ chk("every step says how to know it worked",
     all(s.get("confirm") for s in sl["steps"]))
 chk("and what to do when it did not",
     all(s.get("if_wrong") for s in sl["steps"]))
-chk("the wrong-direction step names the wrong destination — the thing that "
+chk("the wrong-direction step names the wrong destination, the thing that "
     "actually goes wrong",
     any("Angle Lake" in (s.get("if_wrong") or "") for s in sl["steps"]))
 held = J.problems(sl)

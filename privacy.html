@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy — Plateau Strategy Solution Lab</title>
+    <title>Privacy, Plateau Strategy Solution Lab</title>
     <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <link rel="stylesheet" href="/paper.css">
     <script src="/psx-net.js"></script>
     <link rel="stylesheet" href="/modern.css">
     <!-- Every sentence below describes something that is in the code today.
          Nothing here is aspirational, and nothing describes a feature that is
-         built but switched off — photo GPS reading exists as a module and is
+         built but switched off, photo GPS reading exists as a module and is
          NOT wired to any route, so it is not described as something the site
          does. A privacy policy that describes an intention is a false
          statement with good manners. When a feature goes live, this page
@@ -86,8 +86,8 @@
             advertising trackers. Visitor numbers are counted by our own server
             as daily totals.</p>
             <p><b>We do not track your location.</b> The visitor features that
-            use your position — the "Use my location" button on the booking
-            form and the walking-guide prototype — never send it to our
+            use your position, the "Use my location" button on the booking
+            form and the walking-guide prototype, never send it to our
             server. In both, your browser asks OpenStreetMap directly: once to
             turn your position into an address, once to ask what is near you
             (see "Who else sees any of it"). The walking guide's trail of
@@ -115,7 +115,7 @@
             <tr>
                 <th scope="row">A customer account</th>
                 <td>Name, email, phone, and your password stored as a hash. An
-                account is optional — you can book without one.</td>
+                account is optional, you can book without one.</td>
             </tr>
             <tr>
                 <th scope="row">A driver account</th>
@@ -143,7 +143,7 @@
             <tr>
                 <th scope="row">Simply visiting</th>
                 <td>A daily count of page views per page, and a one-word label
-                for where the visit came from — "google", "direct", "reddit".
+                for where the visit came from, "google", "direct", "reddit".
                 Never the full address of the page you came from.</td>
             </tr>
         </table>
@@ -174,26 +174,26 @@
         <p>Only these, and only for the job named:</p>
 
         <ul>
-            <li><b>Square</b> — card payments and invoices. They receive what a
+            <li><b>Square</b>, card payments and invoices. They receive what a
             payment needs.</li>
-            <li><b>Twilio</b> — the text messages that tell a driver about a
+            <li><b>Twilio</b>, the text messages that tell a driver about a
             job. They receive the message and the number it goes to.</li>
-            <li><b>OpenStreetMap</b> — map tiles, place search and the route
+            <li><b>OpenStreetMap</b>, map tiles, place search and the route
             tools. <b>Your browser calls them directly</b>, so OpenStreetMap
             receives your IP address and what you typed into a place search. It
             does not pass through our server, and we never see it. This is how
             every map on the site works, including the trip planner and the
             road-trip tool.</li>
-            <li><b>Wikipedia and Wikidata</b> — descriptions of places, fetched
+            <li><b>Wikipedia and Wikidata</b>, descriptions of places, fetched
             by our server. Nothing about you is sent.</li>
-            <li><b>Google</b> — only if you use a "Continue with Google" button.
+            <li><b>Google</b>, only if you use a "Continue with Google" button.
             We receive your name and verified email address to fill the form in,
             and store neither beyond what you then submit. This feature is
             currently switched off.</li>
         </ul>
 
         <p>We may also disclose information if the law requires it, or to
-        establish or defend a legal claim — for example, producing a signed
+        establish or defend a legal claim, for example, producing a signed
         driver agreement in a dispute.</p>
 
         <p class="quiet">Our own hosting provider (Render) necessarily handles
@@ -216,7 +216,7 @@
             trail stays on your device, and our server never receives your
             position from it or from the booking form. The only movement
             traces we keep are of our own team deliberately walking public
-            corridors — an airport hallway, a station platform — to map them,
+            corridors, an airport hallway, a station platform, to map them,
             recorded on our own sign-in, with no visitor and no name in
             them.</li>
         </ul>
@@ -235,7 +235,7 @@
 
         <p><b>We collect no consumer health data.</b> We do not ask about your
         health, we do not infer anything about it, and we do not collect precise
-        location information — which the Act treats as health data when it could
+        location information, which the Act treats as health data when it could
         indicate that someone sought health services.</p>
 
         <p>A pickup or drop-off address you type into a booking is used to drive
@@ -246,18 +246,18 @@
         for which we would need your authorization.</p>
 
         <p>If that ever changes, this section changes first, and we will ask for
-        your consent before collecting anything of the kind — not after.</p>
+        your consent before collecting anything of the kind, not after.</p>
 
         <hr class="rule">
 
         <h2>How long we keep things</h2>
 
         <ul>
-            <li><b>Bookings</b> — kept as business records.</li>
-            <li><b>Accounts</b> — until you ask us to delete them.</li>
-            <li><b>Signed agreements</b> — kept while they could still matter to
+            <li><b>Bookings</b>, kept as business records.</li>
+            <li><b>Accounts</b>, until you ask us to delete them.</li>
+            <li><b>Signed agreements</b>, kept while they could still matter to
             a claim.</li>
-            <li><b>Daily visitor counts</b> — the per-day totals are kept for
+            <li><b>Daily visitor counts</b>, the per-day totals are kept for
             about four months and then dropped. The browser ids behind the
             unique count are deleted at the end of each day, as above.</li>
         </ul>
@@ -270,7 +270,7 @@
             <li><b>A copy</b> of what we hold about you.</li>
             <li><b>Correction</b> of anything wrong.</li>
             <li><b>Deletion.</b> We will delete what we are not required to
-            keep, and tell you plainly what is left and why — a signed
+            keep, and tell you plainly what is left and why, a signed
             agreement, for instance, cannot be deleted while it is still
             operative.</li>
             <li><b>To stop being counted</b>, which needs no request at all:
@@ -305,7 +305,7 @@
       /* The contact address is configuration, not content: it is set once in
          the environment and rendered here, so the policy cannot go out quoting
          an address that bounces. The route serving this page refuses to serve
-         it at all until that is set — a privacy policy with no working way to
+         it at all until that is set, a privacy policy with no working way to
          reach a human is not a privacy policy. */
       (async function () {
         var el = document.getElementById('ppContact');
@@ -322,5 +322,6 @@
         }
       })();
     </script>
+<script src="/i18n.js"></script>
 </body>
 </html>

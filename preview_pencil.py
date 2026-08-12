@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """Render the Real Estate elevation at several pencil weights, side by side.
 
-Not a gate — a way to decide. "More pencil" has a direction but no scale, and
+Not a gate, a way to decide. "More pencil" has a direction but no scale, and
 guessing at it costs a round trip each time, so this prints the range on the
 same drawing and the choice gets made by looking.
 
 Edit VARIANTS and re-run. Each tuple is
     (baseFrequency, numOctaves, alpha, alphaShift, groupOpacity, label)
-against the #graphite filter in landing-page.html — the values are overridden
+against the #graphite filter in landing-page.html, the values are overridden
 in the live page rather than in the file, so nothing is written until a
 setting is actually chosen.
 

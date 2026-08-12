@@ -53,7 +53,7 @@ def _bill(client, amount_usd, line_name, title, description,
             "url": "",
             "status": "SIMULATED",
             "amount_usd": amount,
-            "note": "Demo invoice — add SQUARE_ACCESS_TOKEN + SQUARE_LOCATION_ID "
+            "note": "Demo invoice, add SQUARE_ACCESS_TOKEN + SQUARE_LOCATION_ID "
                     "to .env to send a real one.",
         }
 
@@ -65,7 +65,7 @@ def _bill(client, amount_usd, line_name, title, description,
     }
 
     try:
-        # 1) Customer — split the full name so Square shows first + last properly
+        # 1) Customer, split the full name so Square shows first + last properly
         name_parts = (client.get("name") or "Customer").strip().split()
         given = name_parts[0] if name_parts else "Customer"
         family = " ".join(name_parts[1:]) if len(name_parts) > 1 else None
@@ -271,7 +271,7 @@ def cancel_invoice(invoice_id):
         status = inv.get("status", "")
         if status in ("PAID", "REFUNDED", "PARTIALLY_REFUNDED"):
             return {"ok": False, "status": status,
-                    "error": "Invoice was already paid — issue a refund from your Square Dashboard."}
+                    "error": "Invoice was already paid, issue a refund from your Square Dashboard."}
         if status == "CANCELED":
             return {"ok": True, "status": "CANCELED"}
         r = requests.post(base + "/v2/invoices/%s/cancel" % invoice_id,

@@ -2,16 +2,16 @@
 """The walking guide's geometry, walked down a fake street in a real browser.
 
 The idea: while you walk, it says what is on your left and what is on your
-right. The hard part is not the speech and not finding the places — it is
+right. The hard part is not the speech and not finding the places, it is
 knowing which way you FACE, and knowing when the fix is too poor to say
 "left" at all.
 
-A phone in a city street is routinely 20–40 m out. If the fix is 30 m out and
+A phone in a city street is routinely 20, 40 m out. If the fix is 30 m out and
 the shop is 15 m away, "on your left" is a coin toss, and a guide that says
 left when it means right is worse than a silent one. So the assertions below
 care as much about the refusals as the announcements.
 
-Run against the dev server on :5055 — the geometry is exercised in the browser
+Run against the dev server on :5055, the geometry is exercised in the browser
 that would actually run it, with positions fed in rather than walked.
 
     python3 test_walk_guide.py
@@ -83,7 +83,7 @@ with sync_playwright() as p:
         pg.evaluate("WalkGuide.fixIsGoodEnough(30,15)") is False)
     chk("±30 m is fine for a cathedral 200 m ahead",
         pg.evaluate("WalkGuide.fixIsGoodEnough(30,200)") is True)
-    chk("±80 m is never enough — that is a lost phone",
+    chk("±80 m is never enough, that is a lost phone",
         pg.evaluate("WalkGuide.fixIsGoodEnough(80,400)") is False)
 
     print("\nthe decision to speak, with every reason not to:")
@@ -125,7 +125,7 @@ with sync_playwright() as p:
         % dec("LEFT", "{heading:null}").get("why"),
         dec("LEFT", "{heading:null}").get("ok") is False)
     rough = dec("LEFT", "{accuracy:45}")
-    chk("nor on a rough fix — the refusal that matters most (%s)" % rough.get("why"),
+    chk("nor on a rough fix, the refusal that matters most (%s)" % rough.get("why"),
         rough.get("ok") is False and "fix" in rough.get("why", ""))
 
     print("\nthe sentence is written to be heard, not read:")
@@ -180,7 +180,7 @@ with sync_playwright() as p:
     chk("the right one as right", any(x == "Right Place:right" for x in walked))
     chk("and neither was repeated", len(set(walked)) == len(walked))
 
-    print("\nfollowing a footprint — how far off the recorded line am I?")
+    print("\nfollowing a footprint, how far off the recorded line am I?")
     # A straight north line at -122.33. At 47.6°N a degree of longitude is
     # ~75.0 km (111.32 cos 47.6), so 0.0004° east is ~30 m off the line.
     PATH = "[[47.6000,-122.33],[47.6002,-122.33],[47.6004,-122.33]]"
@@ -201,14 +201,14 @@ with sync_playwright() as p:
     print("\nand 'you have left the path' is only said when it is provable:")
     chk("40 m off with a ±5 m fix is astray",
         pg.evaluate("WalkGuide.offPath(5, 40)") is True)
-    chk("40 m off with a ±35 m fix is NOT provable — the fix could be lying",
+    chk("40 m off with a ±35 m fix is NOT provable, the fix could be lying",
         pg.evaluate("WalkGuide.offPath(35, 40)") is False)
     chk("24 m off is within the floor even with a perfect fix",
         pg.evaluate("WalkGuide.offPath(0, 24)") is False)
     chk("26 m off with a perfect fix is astray",
         pg.evaluate("WalkGuide.offPath(0, 26)") is True)
 
-    print("\nfootprints appear only when you face the right way — Sean's rule:")
+    print("\nfootprints appear only when you face the right way, Sean's rule:")
     # A recorded path running due north; the walker stands on it.
     TRAIL = ("[[47.6000,-122.33],[47.6001,-122.33],[47.6002,-122.33],"
              "[47.6003,-122.33],[47.6004,-122.33],[47.6005,-122.33]]")
@@ -217,17 +217,17 @@ with sync_playwright() as p:
     t = pg.evaluate("WalkGuide.trailAhead" + ARGS % "0")
     chk("facing along the path, the footprints show (%s)" % t.get("why", "ok"),
         t.get("show") is True and t.get("dir") == 1)
-    chk("and they lead FORWARD — the next points north",
+    chk("and they lead FORWARD, the next points north",
         t["trail"][0]["lat"] > 47.6001)
     t = pg.evaluate("WalkGuide.trailAhead" + ARGS % "180")
-    chk("facing back down it also shows — a corridor works both ways (dir %s)"
+    chk("facing back down it also shows, a corridor works both ways (dir %s)"
         % t.get("dir"), t.get("show") is True and t.get("dir") == -1)
     chk("and those footprints lead south", t["trail"][0]["lat"] < 47.6001)
     t = pg.evaluate("WalkGuide.trailAhead" + ARGS % "90")
-    chk("facing across it shows NOTHING — the emptiness is the message (%s)"
+    chk("facing across it shows NOTHING, the emptiness is the message (%s)"
         % t.get("why"), t.get("show") is False and "facing" in t.get("why", ""))
     t = pg.evaluate("WalkGuide.trailAhead" + ARGS % "null")
-    chk("standing still shows nothing — no heading, no guess", t.get("show") is False)
+    chk("standing still shows nothing, no heading, no guess", t.get("show") is False)
     t = pg.evaluate("WalkGuide.trailAhead({lat:47.6001,lon:-122.325}, 0, "
                     + TRAIL + ", {accuracy:5})")
     chk("380 m off the path shows nothing (%s)" % t.get("why"),

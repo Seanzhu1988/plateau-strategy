@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Driver Portal — Plateau Strategy Solution Lab</title>
+    <title>Driver Portal, Plateau Strategy Solution Lab</title>
     <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -200,7 +200,7 @@
         .rto-paid { color: #1b6b5a; font-weight: 700; font-size: 0.66rem; letter-spacing: 0.5px; }
         @media (max-width: 640px) { .rto-stats { grid-template-columns: 1fr; } }
 
-        /* Continue with Google — a shortcut above the fields, visibly optional.
+        /* Continue with Google, a shortcut above the fields, visibly optional.
            The divider is what stops it reading as a required first step. It
            renders only when GOOGLE_CLIENT_ID is configured; otherwise the box
            stays hidden and the form behaves exactly as it always has. */
@@ -241,7 +241,7 @@
 
             <label>Renting VIN <span style="color:#a3302a">*</span></label>
             <input id="li_vin" placeholder="5YJ3E1EA7PF000000">
-            <label>Birthday <span style="color:#a3302a">*</span> <span style="color:#4a453d;font-weight:400;text-transform:none;letter-spacing:0;">DDMMYYYY — your login pass</span></label>
+            <label>Birthday <span style="color:#a3302a">*</span> <span style="color:#4a453d;font-weight:400;text-transform:none;letter-spacing:0;">DDMMYYYY, your login pass</span></label>
             <input id="li_dob" inputmode="numeric" placeholder="07031990" maxlength="10" onkeydown="if(event.key==='Enter')loginExisting()">
             <button class="primary" onclick="loginExisting()">Sign in</button>
             <div id="li_msg" style="margin-top:0.8rem;font-size:0.85rem;color:#a4161a;"></div>
@@ -274,7 +274,7 @@
             </div>
             <label>Vehicle VIN <span style="color:#a3302a">*</span> <span style="color:#4a453d;font-weight:400;text-transform:none;letter-spacing:0;">(used to sign in)</span></label>
             <input id="r_vin" placeholder="5YJ3E1EA7PF000000">
-            <label>Birthday <span style="color:#a3302a">*</span> <span style="color:#4a453d;font-weight:400;text-transform:none;letter-spacing:0;">DDMMYYYY — this becomes your login pass</span></label>
+            <label>Birthday <span style="color:#a3302a">*</span> <span style="color:#4a453d;font-weight:400;text-transform:none;letter-spacing:0;">DDMMYYYY, this becomes your login pass</span></label>
             <input id="r_dob" inputmode="numeric" placeholder="07031990" maxlength="10">
             <button class="primary" onclick="register()">Register &amp; Enter Portal</button>
         </div>
@@ -301,7 +301,7 @@
             <main class="content">
                 <div class="banner" id="contractBanner">
                     <div class="b-text">
-                        <b>Action Required — Sign Your Driver Agreement</b>
+                        <b>Action Required, Sign Your Driver Agreement</b>
                         <span id="bannerSub">You must sign your agreement before you can accept any rides.</span>
                     </div>
                     <button onclick="openSign()">Review &amp; Sign</button>
@@ -309,7 +309,7 @@
 
                 <div class="banner" id="insBanner">
                     <div class="b-text">
-                        <b>Action Required — Proof of Insurance</b>
+                        <b>Action Required, Proof of Insurance</b>
                         <span id="insBannerSub">Upload valid proof of insurance before you can accept rides.</span>
                     </div>
                     <button onclick="showPanel('insurance')">Upload Insurance</button>
@@ -330,11 +330,11 @@
 
                 <div class="panel" id="panel-refer">
                     <h2>Refer &amp; Drive</h2>
-                    <p class="section-note">Met a customer who needs a ride? Refer them here and drive them yourself — you keep the full fare.</p>
+                    <p class="section-note">Met a customer who needs a ride? Refer them here and drive them yourself, you keep the full fare.</p>
                     <div class="car" style="max-width:620px;">
                         <div style="background:rgba(34,197,94,0.10); border:1px solid #1b6b5a; color:#bbf7d0; border-radius:8px; padding:0.9rem 1rem; font-size:0.86rem; line-height:1.55; margin-bottom:1.2rem;">
                             <b style="color:#bbf7d0;">You're both the agent and the driver on this trip.</b>
-                            <div style="margin-top:0.4rem;">Normally about $15 of a $75 fare goes to a separate referring agent — but since you referred and drove it, that stays with you. You keep the full fare.</div>
+                            <div style="margin-top:0.4rem;">Normally about $15 of a $75 fare goes to a separate referring agent, but since you referred and drove it, that stays with you. You keep the full fare.</div>
                             <div style="margin-top:0.55rem; color:#1b6b5a; font-size:0.78rem;">Tax note: the full fare is your income (referral + trip) and is reportable on your 1099. The customer is charged once.</div>
                         </div>
                         <label>Customer name <span style="color:#a3302a">*</span></label>
@@ -375,7 +375,7 @@
                             <div><label>Policy number</label><input id="ins_policy" placeholder="Policy #"></div>
                             <div><label>Expiry date <span style="color:#a3302a">*</span></label><input id="ins_expires" type="date"></div>
                         </div>
-                        <label>Proof of insurance <span style="color:#4a453d;font-weight:400;text-transform:none;letter-spacing:0;">— photo or PDF</span></label>
+                        <label>Proof of insurance <span style="color:#4a453d;font-weight:400;text-transform:none;letter-spacing:0;">, photo or PDF</span></label>
                         <input id="ins_file" type="file" accept="image/*,application/pdf" style="padding:0.55rem 0.6rem;">
                         <button class="primary" onclick="submitInsurance()">Upload &amp; Save</button>
                         <div id="ins_msg" style="margin-top:0.9rem; font-size:0.88rem;"></div>
@@ -390,11 +390,11 @@
 
                 <div class="panel" id="panel-paperwork">
                     <h2>Paperwork</h2>
-                    <p class="section-note">Upload your documents — each one is archived and kept on file permanently (nothing is ever overwritten). This is your paper trail.</p>
+                    <p class="section-note">Upload your documents, each one is archived and kept on file permanently (nothing is ever overwritten). This is your paper trail.</p>
                     <div class="car" style="max-width:620px;">
                         <label>Document type</label>
                         <select id="doc_type"></select>
-                        <label>File <span style="color:#4a453d;font-weight:400;text-transform:none;letter-spacing:0;">— photo or PDF</span></label>
+                        <label>File <span style="color:#4a453d;font-weight:400;text-transform:none;letter-spacing:0;">, photo or PDF</span></label>
                         <input id="doc_file" type="file" accept="image/*,application/pdf" style="padding:0.55rem 0.6rem;">
                         <label>Note <span style="color:#4a453d;font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
                         <input id="doc_note" placeholder="e.g. front of license, 2026 renewal">
@@ -523,7 +523,7 @@
             if (dob.length !== 8) { msg.textContent = 'Enter your birthday as DDMMYYYY (8 digits).'; return; }
             let j;
             try { j = await psxJSON('/api/renters/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ vin, dob }) }); }
-            catch (e) { msg.textContent = 'Connection problem — try again.'; return; }
+            catch (e) { msg.textContent = 'Connection problem, try again.'; return; }
             if (!j.ok) { msg.textContent = j.error || 'Sign in failed.'; return; }
             RENTER = j.renter; localStorage.setItem('renter_id', RENTER.id); enterPortal();
         }
@@ -574,11 +574,11 @@
             if (s.state === 'MISSING') {
                 c += '<div class="specs" style="margin-top:.5rem;">No proof of insurance on file. Upload it below to start accepting rides.</div>';
             } else {
-                c += '<div class="specs" style="margin-top:.5rem;">Provider: ' + esc(s.provider || '—') + (s.policy_number ? ' · Policy ' + esc(s.policy_number) : '') + '</div>';
-                c += '<div class="specs">Expires: ' + esc(s.expires || '—') +
+                c += '<div class="specs" style="margin-top:.5rem;">Provider: ' + esc(s.provider || ', ') + (s.policy_number ? ' · Policy ' + esc(s.policy_number) : '') + '</div>';
+                c += '<div class="specs">Expires: ' + esc(s.expires || ', ') +
                     (s.days_left != null ? (s.days_left < 0 ? ' <span style="color:#a4161a;">(' + Math.abs(s.days_left) + ' days ago)</span>' : ' (' + s.days_left + ' days left)') : '') + '</div>';
-                if (s.state === 'EXPIRED') c += '<div class="specs" style="color:#a4161a;">Your coverage has lapsed — upload a current policy to keep driving.</div>';
-                if (s.state === 'EXPIRING') c += '<div class="specs" style="color:#a4161a;">Renew soon — your policy expires in ' + s.days_left + ' days.</div>';
+                if (s.state === 'EXPIRED') c += '<div class="specs" style="color:#a4161a;">Your coverage has lapsed, upload a current policy to keep driving.</div>';
+                if (s.state === 'EXPIRING') c += '<div class="specs" style="color:#a4161a;">Renew soon, your policy expires in ' + s.days_left + ' days.</div>';
                 if (s.has_file) c += '<div class="specs" style="color:#1b6b5a;">✓ Proof document on file' + (s.uploaded_at ? ' (uploaded ' + fmtDate(s.uploaded_at) + ')' : '') + '.</div>';
             }
             c += '</div>';
@@ -605,9 +605,9 @@
             const body = { provider: val('ins_provider'), policy_number: val('ins_policy'), expires, file: fileData };
             let j;
             try { j = await psxJSON('/api/renters/' + RENTER.id + '/insurance/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
-            catch (e) { msg.style.color = '#a4161a'; msg.textContent = 'Connection problem — try again.'; return; }
+            catch (e) { msg.style.color = '#a4161a'; msg.textContent = 'Connection problem, try again.'; return; }
             if (!j.ok) { msg.style.color = '#a4161a'; msg.textContent = j.error || 'Upload failed.'; return; }
-            msg.style.color = '#1b6b5a'; msg.textContent = 'Saved — your insurance is on file. You can now accept rides.';
+            msg.style.color = '#1b6b5a'; msg.textContent = 'Saved, your insurance is on file. You can now accept rides.';
             fileEl.value = '';
             INSURANCE = j.insurance; renderInsurance(); refresh();
             loadViolations();
@@ -632,9 +632,9 @@
             const body = { doc_type: document.getElementById('doc_type').value, original_name: fileEl.files[0].name, notes: val('doc_note'), file: fileData };
             let j;
             try { j = await psxJSON('/api/renters/' + RENTER.id + '/documents/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
-            catch (e) { msg.style.color = '#a4161a'; msg.textContent = 'Connection problem — try again.'; return; }
+            catch (e) { msg.style.color = '#a4161a'; msg.textContent = 'Connection problem, try again.'; return; }
             if (!j.ok) { msg.style.color = '#a4161a'; msg.textContent = j.error || 'Upload failed.'; return; }
-            msg.style.color = '#1b6b5a'; msg.textContent = 'Archived — kept on file permanently.';
+            msg.style.color = '#1b6b5a'; msg.textContent = 'Archived, kept on file permanently.';
             fileEl.value = ''; document.getElementById('doc_note').value = '';
             loadDocuments();
         }
@@ -672,8 +672,8 @@
             const c = { high: ['var(--psx-wash-bad,#ffeae7)', '#a4161a', '#ef4444'], medium: ['#fdf3e3', '#a4161a', '#f59e0b'],
                         low: ['#ffffff', '#4a453d', '#6b655b'] }[sev] || ['#fdf3e3', '#a4161a', '#f59e0b'];
             let fix = '';
-            if (v.kind === 'insurance') fix = '<button class="pick" style="margin-top:.7rem;width:auto;padding:.5rem 1rem;" onclick="showPanel(\'insurance\')">Fix — upload insurance</button>';
-            else if (v.kind === 'agreement') fix = '<button class="pick" style="margin-top:.7rem;width:auto;padding:.5rem 1rem;" onclick="openSign()">Fix — sign the agreement</button>';
+            if (v.kind === 'insurance') fix = '<button class="pick" style="margin-top:.7rem;width:auto;padding:.5rem 1rem;" onclick="showPanel(\'insurance\')">Fix, upload insurance</button>';
+            else if (v.kind === 'agreement') fix = '<button class="pick" style="margin-top:.7rem;width:auto;padding:.5rem 1rem;" onclick="openSign()">Fix, sign the agreement</button>';
             return '<div style="background:var(--panel);border:1px solid var(--line);border-left:3px solid ' + c[2] + ';border-radius:8px;padding:1rem 1.2rem;margin-bottom:.8rem;">' +
                 '<div style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;"><b style="color:#14110c;">' + esc(v.title || v.type || 'Violation') + '</b>' +
                 '<span style="font-size:.62rem;font-weight:700;background:' + c[0] + ';color:' + c[1] + ';padding:.15rem .55rem;border-radius:4px;text-transform:uppercase;letter-spacing:.4px;flex:0 0 auto;">' + sev + '</span></div>' +
@@ -703,7 +703,7 @@
         async function loadRto() {
             if (!RENTER) return;
             const nav = document.getElementById('nav-payments');
-            if (!RENTER.rto) { if (nav) nav.style.display = 'none'; return; }   // not rent-to-own — skip the Square call
+            if (!RENTER.rto) { if (nav) nav.style.display = 'none'; return; }   // not rent-to-own, skip the Square call
             let d;
             try { d = await psxJSON('/api/renters/' + RENTER.id + '/rto'); } catch (e) { return; }
             if (!d || !d.ok || !d.enrolled) { if (nav) nav.style.display = 'none'; return; }
@@ -712,7 +712,7 @@
             const pct = d.total_payments ? Math.round(d.payments_made / d.total_payments * 100) : 0;
             const rel = d.release_estimate
                 ? new Date(d.release_estimate + 'T00:00').toLocaleDateString([], { year:'numeric', month:'short', day:'numeric' })
-                : '—';
+                : ', ';
             const rows = (d.payments || []).slice().reverse().map(p =>
                 '<tr><td>' + esc(p.date) + '</td><td>' + usd(p.amount) + '</td><td><span class="rto-paid">PAID</span></td></tr>').join('');
             document.getElementById('rtoBody').innerHTML =
@@ -751,7 +751,7 @@
                     '<button class="done" onclick="complete(\'' + r.id + '\')">Mark Complete</button>' +
                     (w.allowed
                         ? '<button class="giveup" onclick="giveup(\'' + r.id + '\', this)">Release Ride</button>'
-                        : '<button class="giveup" disabled>Release window closed — contact dispatch</button>');
+                        : '<button class="giveup" disabled>Release window closed, contact dispatch</button>');
             }
             return '<div class="res ' + r.status + '">' +
                 '<div class="top"><span class="id">' + esc(r.id) + '</span><span class="badge ' + r.status + '">' + r.status + '</span></div>' +
@@ -775,12 +775,12 @@
             };
             let j;
             try { j = await psxJSON('/api/renters/' + RENTER.id + '/refer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
-            catch (e) { msg.style.color = '#a4161a'; msg.textContent = 'Connection problem — try again.'; return; }
+            catch (e) { msg.style.color = '#a4161a'; msg.textContent = 'Connection problem, try again.'; return; }
             if (j.contract_required) { msg.style.color = '#a4161a'; msg.textContent = j.error; openSign(); return; }
             if (j.insurance_required) { msg.style.color = '#a4161a'; msg.textContent = j.error; loadInsurance(); showPanel('insurance'); return; }
             if (!j.ok) { msg.style.color = '#a4161a'; msg.textContent = j.error || 'Could not create the ride.'; return; }
             msg.style.color = '#1b6b5a';
-            msg.textContent = 'Done — ' + j.reservation.id + ' is assigned to you. You keep the full $' + j.reservation.fare_usd + '. Complete it under “My Rides”.';
+            msg.textContent = 'Done, ' + j.reservation.id + ' is assigned to you. You keep the full $' + j.reservation.fare_usd + '. Complete it under “My Rides”.';
             ['rf_name', 'rf_email', 'rf_phone', 'rf_pickup', 'rf_dropoff'].forEach(id => document.getElementById(id).value = '');
             refresh();
         }
@@ -816,7 +816,7 @@
                 j = await r.json();
             } catch (e) {
                 if (btn) { btn.disabled = false; btn.textContent = 'Claim Ride'; }
-                showToast('Connection problem — try again'); return;
+                showToast('Connection problem, try again'); return;
             }
             if (!j.ok) {
                 if (j.contract_required) {   // server blocked: agreement not signed
@@ -831,7 +831,7 @@
                 refresh();
                 return;
             }
-            showToast('Ride secured — ' + id); refresh();
+            showToast('Ride secured, ' + id); refresh();
         }
         async function complete(id) {
             await fetch('/api/reservations/' + id + '/complete', { method:'POST' });
@@ -849,10 +849,10 @@
             if (ms > 0) {
                 const h = Math.floor(ms / 3600000), m = Math.floor((ms % 3600000) / 60000);
                 return { cls: 'ok', allowed: true,
-                    text: 'Release window open — closes ' + fmt + ' (' + h + 'h ' + m + 'm remaining, 12 hours before pickup)' };
+                    text: 'Release window open, closes ' + fmt + ' (' + h + 'h ' + m + 'm remaining, 12 hours before pickup)' };
             }
             return { cls: 'late', allowed: false,
-                text: 'Past the 12-hour mark (closed ' + fmt + ') — release locked; contact dispatch if you cannot make it' };
+                text: 'Past the 12-hour mark (closed ' + fmt + '), release locked; contact dispatch if you cannot make it' };
         }
 
         async function giveup(id, btn) {
@@ -865,7 +865,7 @@
                 j = await r.json();
             } catch (e) {
                 if (btn) { btn.disabled = false; btn.textContent = 'Release Ride'; }
-                showToast('Connection problem — try again'); return;
+                showToast('Connection problem, try again'); return;
             }
             if (!j.ok) {
                 if (btn) { btn.disabled = false; btn.textContent = 'Release Ride'; }
@@ -913,7 +913,7 @@
                     ? 'The agreement was updated to Version ' + CONTRACT.current_version + '. Please sign the new version before you can accept rides.'
                     : 'You must sign your agreement before you can accept any rides.';
             }
-            const statusLabel = need ? (CONTRACT.status === 'outdated' ? 'Update — Re-sign' : 'Not Signed') : 'Signed';
+            const statusLabel = need ? (CONTRACT.status === 'outdated' ? 'Update, Re-sign' : 'Not Signed') : 'Signed';
             const cls = need ? CONTRACT.status : 'signed';
             let sub;
             if (need) {
@@ -997,8 +997,8 @@
                 return '<span class="fill"' + (id ? ' id="' + id + '"' : '') + '>' + _escHtml(val) + '</span>';
             }
             function valueFor(kind) {          // returns HTML span, or null → leave the blank as-is
-                if (kind === 'name')    { var idn = usedName ? '' : 'fillName'; usedName = true; return span(idn, typed || '—'); }
-                if (kind === 'sig')     { var ids = usedSig ? '' : 'fillSig'; usedSig = true; return span(ids, (typed || '—') + '  (electronically signed)'); }
+                if (kind === 'name')    { var idn = usedName ? '' : 'fillName'; usedName = true; return span(idn, typed || ', '); }
+                if (kind === 'sig')     { var ids = usedSig ? '' : 'fillSig'; usedSig = true; return span(ids, (typed || ', ') + '  (electronically signed)'); }
                 if (kind === 'date')    return span('', today);
                 if (kind === 'contact') return contact ? span('', contact) : null;
                 if (kind === 'address') return addr ? span('', addr) : null;
@@ -1014,9 +1014,9 @@
                 return null;
             }
 
-            var COMPANY    = /(legal owner|lessor|landlord|plateau strategy|the company\b)/i;   // a company-side line — never fill
-            var INDIV_HD   = /^\s*(renter|driver|tenant|buyer|lessee|customer|guest)\s*([—\-:].*)?$/i;   // signer heading (line is just the role)
-            var COMPANY_HD = /^\s*(legal owner|owner|lessor|seller|landlord|the company)\s*([—\-:].*)?$/i;
+            var COMPANY    = /(legal owner|lessor|landlord|plateau strategy|the company\b)/i;   // a company-side line, never fill
+            var INDIV_HD   = /^\s*(renter|driver|tenant|buyer|lessee|customer|guest)\s*([, \-:].*)?$/i;   // signer heading (line is just the role)
+            var COMPANY_HD = /^\s*(legal owner|owner|lessor|seller|landlord|the company)\s*([, \-:].*)?$/i;
             var BARE_LBL   = /^\s*((?:renter|driver|tenant|buyer|lessee|customer|guest|authorized|your)\s+)?(signature|printed name|print name|full name|legal name|name|date(?:\s+signed)?)\s*:?\s*$/i;
 
             var mode = 'fill';                 // 'fill' = current signer's side; 'skip' = company side
@@ -1052,7 +1052,7 @@
             document.getElementById('sigText').innerHTML = out.join('\n');
         }
         function renderSignFills() {  // cheap live update of just the name-driven spans
-            var v = (document.getElementById('sigName').value || '').trim() || '—';
+            var v = (document.getElementById('sigName').value || '').trim() || ', ';
             var fn = document.getElementById('fillName'); if (fn) fn.textContent = v;
             var fs = document.getElementById('fillSig'); if (fs) fs.textContent = v + '  (electronically signed)';
         }
@@ -1074,7 +1074,7 @@
                 j = await r.json();
             } catch (e) {
                 btn.disabled = false; btn.textContent = 'Sign & Agree';
-                showToast('Connection problem — try again'); return;
+                showToast('Connection problem, try again'); return;
             }
             btn.disabled = false; btn.textContent = 'Sign & Agree';
             if (!j.ok) { showToast(j.error || 'Could not sign'); return; }

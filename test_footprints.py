@@ -3,7 +3,7 @@
 
 Two failure modes are being priced here, and they pull in opposite directions.
 Accept junk and a traveller gets guided along a GPS teleport; the whole point
-of a footprint — a line known to work — dies. Accept too freely WHO can file
+of a footprint, a line known to work, dies. Accept too freely WHO can file
 walks and where, and a coordinate store quietly becomes a movement diary,
 undoing every refusal the rest of the site is built on. So half these checks
 are about geometry and half are about the fence.
@@ -92,13 +92,13 @@ chk("the corridor is now walked (%s)" % (w and w["date"]),
 
 print("\nwhat is on disk is a survey, not a diary:")
 raw = open(store.file).read()
-chk("no clock anywhere — a date and a duration only",
+chk("no clock anywhere, a date and a duration only",
     not re.findall(r"\d{1,2}:\d{2}", raw))
 chk("no identity of any kind",
     not any(k in raw for k in ("vid", "user", "owner", "ip", "session")))
-chk("points rounded to ~1m — nothing finer on disk",
+chk("points rounded to ~1m, nothing finer on disk",
     not re.findall(r"\d\.\d{6,}", raw))
-chk("the file is gitignored — it is the one coordinate store and the repo "
+chk("the file is gitignored, it is the one coordinate store and the repo "
     "is public",
     os.system("cd %s && git check-ignore -q footprints.json"
               % os.path.dirname(os.path.abspath(__file__))) == 0)
@@ -114,7 +114,7 @@ chk("and stops being served as a path",
 store.add_walk("seatac-terminal-to-link", corridor_pts(), minutes=9,
                worst_accuracy_m=18)          # fresh again for what follows
 
-print("\nthe walk IS the verification — the journey unlocks by itself:")
+print("\nthe walk IS the verification, the journey unlocks by itself:")
 held, why = J.serve("seatac-lynnwood")
 chk("without the store the journey is held, failing closed (%s)" % why[:1],
     held is None and "footprint" in why[0])
@@ -146,7 +146,7 @@ r = owner.post("/api/footprints/nope", json={"points": corridor_pts()})
 chk("an unopened corridor is refused over HTTP too (%d)" % r.status_code,
     r.status_code == 400)
 
-print("\nthe surveyor programme — issued accounts can walk corridors too:")
+print("\nthe surveyor programme, issued accounts can walk corridors too:")
 import bot_lab                                             # noqa: E402
 A.LAB = bot_lab.BotLab(os.path.join(tmp, "u.json"),
                        os.path.join(tmp, "l.json"),
@@ -162,7 +162,7 @@ chk("and can record a walk (%d)" % r.status_code, r.status_code == 200)
 chk("of a Seattle survey corridor, which the code list now opens",
     r.get_json().get("walked") is not None)
 raw = open(store.file).read()
-chk("the trace still carries NO name — authorization is the provenance, "
+chk("the trace still carries NO name, authorization is the provenance, "
     "the record stays clean", "scout" not in raw)
 owner.post("/api/access/users/scout/revoke", json={"revoked": True})
 r = scout.post("/api/footprints/westlake-to-pike-place",
@@ -202,7 +202,7 @@ print("\nthe closed list lives in the CODE, not in the data file:")
 # The review panel's exploit: plant a corridor key straight into the store
 # file, as a restored backup or any future write path could. Before the fix,
 # add_walk accepted walks for it, corridors() listed it, and its line served
-# PUBLICLY through /api/footprints/<key>/path — "closed list" was really
+# PUBLICLY through /api/footprints/<key>/path, "closed list" was really
 # "code list union whatever the disk remembers".
 data = json.load(open(store.file))
 data["corridors"]["sean-house-to-office"] = {
@@ -223,7 +223,7 @@ chk("nor over the public path route (%d)"
     c.get("/api/footprints/sean-house-to-office/path").status_code == 404)
 
 print("\nand the write-time shadow of the store is ignored too:")
-chk("footprints.json.tmp is gitignored — a crash mid-write must not leave "
+chk("footprints.json.tmp is gitignored, a crash mid-write must not leave "
     "coordinates one `git add -A` from a public repo",
     os.system("cd %s && git check-ignore -q footprints.json.tmp"
               % os.path.dirname(os.path.abspath(__file__))) == 0)

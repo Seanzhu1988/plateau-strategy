@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guide Studio — build a trip to sell</title>
+    <title>Guide Studio, build a trip to sell</title>
     <meta name="description" content="Guides: build your own in-depth trip stop by stop, set how long you stand at each one, price it, and list it for travellers to find.">
     <link rel="canonical" href="https://plateaustrategy.io/guide-studio">
     <meta name="theme-color" content="#14110c">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://plateaustrategy.io/guide-studio">
-    <meta property="og:title" content="Guide Studio — build a trip to sell">
+    <meta property="og:title" content="Guide Studio, build a trip to sell">
     <meta property="og:description" content="Build your own in-depth trip stop by stop, set how long you stand at each one, price it, and list it for travellers to find.">
-    <meta property="og:image" content="https://plateaustrategy.io/icon-512.png">
+    <meta property="og:image" content="https://plateaustrategy.io/share-card.jpg">
     <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -86,16 +86,16 @@
     <div class="wrap">
         <div class="page-title">🎫 Guide Studio</div>
         <p class="sub">
-            The trip planner draws a sightseeing loop. This is for the other kind — the walk you
+            The trip planner draws a sightseeing loop. This is for the other kind, the walk you
             know by heart, where the point is what you say at each stop. Write it out yourself:
             your stops, your timings, your price. Travellers browse it on the
             <a href="/trips" style="color:#1b4d8f">trips page</a>.
-            Guiding is part of the <a href="/agent" style="color:#1b4d8f">agent program</a> — one code
+            Guiding is part of the <a href="/agent" style="color:#1b4d8f">agent program</a>, one code
             refers rides and sells trips.
         </p>
 
         <div class="gate" id="gate">
-            You need a code to list a trip — it is how we know a real guide wrote it.
+            You need a code to list a trip, it is how we know a real guide wrote it.
             It is the same code the <a href="/agent">Agent &amp; Guide Portal</a> issues, so if you
             already refer rides you have one. If not, registering there takes a minute.
         </div>
@@ -103,7 +103,7 @@
         <div class="card">
             <h2>Who is running it</h2>
             <p class="why">Your code identifies you. Travellers see your name, never your contact
-                details — interest comes to you through us, so your listing cannot be harvested for emails.</p>
+                details, interest comes to you through us, so your listing cannot be harvested for emails.</p>
             <div class="row">
                 <div>
                     <label for="code">Your guide code</label>
@@ -119,11 +119,11 @@
 
         <div class="card">
             <h2>What the trip is</h2>
-            <p class="why">Be specific. "Harvard Yard in depth — a student's walk" sells;
+            <p class="why">Be specific. "Harvard Yard in depth, a student's walk" sells;
                 "Boston tour" does not.</p>
             <div style="margin-bottom:0.9rem">
                 <label for="title">Title</label>
-                <input id="title" maxlength="90" placeholder="Harvard Yard in depth — a student's walk">
+                <input id="title" maxlength="90" placeholder="Harvard Yard in depth, a student's walk">
             </div>
             <div class="row">
                 <div>
@@ -154,7 +154,7 @@
             </div>
             <div>
                 <label for="summary">What travellers will get out of it</label>
-                <textarea id="summary" maxlength="900" placeholder="Two hours inside the Yard with someone who studies here — the statue that lies three times, why the gates are numbered, what the freshman dorms are actually like, and the reading room most tours never enter."></textarea>
+                <textarea id="summary" maxlength="900" placeholder="Two hours inside the Yard with someone who studies here, the statue that lies three times, why the gates are numbered, what the freshman dorms are actually like, and the reading room most tours never enter."></textarea>
             </div>
         </div>
 
@@ -193,7 +193,7 @@
             </div>
             <div>
                 <label for="includes">What is included</label>
-                <input id="includes" maxlength="400" placeholder="Guiding only — museum entry not included">
+                <input id="includes" maxlength="400" placeholder="Guiding only, museum entry not included">
             </div>
         </div>
 
@@ -201,7 +201,7 @@
         <div class="result" id="result"></div>
         <p class="note">
             Listing is free. When a traveller asks for your trip we introduce you directly.
-            You can list as many trips as you like — most guides run several versions of the same
+            You can list as many trips as you like, most guides run several versions of the same
             walk at different lengths.
         </p>
 
@@ -231,7 +231,7 @@
             '<div class="stop">' +
               '<div class="n">' + (i + 1) + '</div>' +
               '<div class="f">' +
-                '<input value="' + esc(s.name) + '" placeholder="Stop name — e.g. John Harvard Statue" ' +
+                '<input value="' + esc(s.name) + '" placeholder="Stop name, e.g. John Harvard Statue" ' +
                   'oninput="editStop(' + i + ',\'name\',this.value)">' +
                 '<input value="' + esc(s.note) + '" placeholder="Why this stop matters (optional)" ' +
                   'oninput="editStop(' + i + ',\'note\',this.value)">' +
@@ -303,7 +303,7 @@
         };
         if (!body.stops.length) {
             result.className = 'result err';
-            result.textContent = 'Add at least one stop — the stops are the trip.';
+            result.textContent = 'Add at least one stop, the stops are the trip.';
             return;
         }
         btn.disabled = true; btn.textContent = 'Listing…';

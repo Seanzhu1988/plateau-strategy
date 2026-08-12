@@ -15,13 +15,13 @@ are, and both are arithmetic rather than taste:
     exactly.
 
   * **A hue that does not belong to the family.** Warm paper with a cold
-    accent is the classic one — each colour is fine alone and the pair looks
+    accent is the classic one, each colour is fine alone and the pair looks
     dirty. Measurable as hue distance in OKLCH, which is perceptual, unlike
     HSL where "hue" lies about how things look.
 
 So this samples every painted surface on every page, weights it by how much
 of the screen it covers, and reports the neutrals ranked by area and the
-chromatic colours ranked by count — each with its OKLCH lightness, chroma and
+chromatic colours ranked by count, each with its OKLCH lightness, chroma and
 hue. Then it names the two faults where it finds them.
 
 It reports; it does not pass or fail. Which greys should merge and which hue
@@ -48,7 +48,7 @@ ROUTES = ["/", "/book", "/renter", "/driver", "/agent", "/partners", "/trips",
 VIEWS = ["overview", "transportation", "operations", "realestate", "finance",
          "reinvestment", "tools", "security"]
 
-# Below this chroma a colour is a neutral — it reads as paper, ink or grey
+# Below this chroma a colour is a neutral, it reads as paper, ink or grey
 # rather than as a colour. 0.03 in OKLCH is roughly where a warm off-white
 # stops looking white and starts looking beige.
 NEUTRAL_C = 0.030
@@ -152,13 +152,13 @@ def main():
     chromatic = sorted([(k, v) for k, v in bg.items() if v["C"] >= NEUTRAL_C],
                        key=lambda kv: -kv[1]["area"])
 
-    print("\n  SURFACES — neutral (what the site is mostly made of)")
+    print("\n  SURFACES, neutral (what the site is mostly made of)")
     print("  %-9s %6s  %5s  %6s  %6s  %s" % ("hex", "share", "L", "C", "hue", "uses"))
     for k, v in neutrals[:14]:
         print("  %-9s %5.1f%%  %.3f  %.4f  %5.1f  %d"
               % (k, 100.0 * v["area"] / total, v["L"], v["C"], v["h"], v["n"]))
 
-    print("\n  SURFACES — chromatic (blocks of actual colour)")
+    print("\n  SURFACES, chromatic (blocks of actual colour)")
     print("  %-9s %6s  %5s  %6s  %6s  %s" % ("hex", "share", "L", "C", "hue", "uses"))
     for k, v in chromatic[:12]:
         print("  %-9s %5.1f%%  %.3f  %.4f  %5.1f  %d"
@@ -184,7 +184,7 @@ def main():
                 print("    %s vs %s   dL=%.3f  dC=%.4f"
                       % (big[i][0], big[j][0], dL, abs(a["C"] - c["C"])))
     if not found:
-        print("    none — every distinct surface differs enough to look chosen")
+        print("    none, every distinct surface differs enough to look chosen")
 
     # ---- fault 2: an accent that does not belong to the paper --------------
     print("\n  DO THE ACCENTS BELONG TO THE PAPER?")

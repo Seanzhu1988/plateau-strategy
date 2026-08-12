@@ -1,8 +1,8 @@
-# PLATEAU STRATEGY LLC — VEHICLE RENTAL AGREEMENT
+# PLATEAU STRATEGY LLC, VEHICLE RENTAL AGREEMENT
 
 ---
 
-**PREAMBLE — PARTIES**
+**PREAMBLE, PARTIES**
 
 This Vehicle Rental Agreement (this "Agreement") is entered into as of the date of execution set forth in the signature block below, by and between:
 
@@ -17,15 +17,15 @@ Owner and Renter are each a "Party" and together the "Parties." This Agreement g
 
 Wherever capitalized, the following terms have the meanings below:
 
-- **"Agreement Suspension"** — a halt of Renter's right to possess and use the Vehicle (as distinct from a Fee Suspension). During an Agreement Suspension, Weekly Fees continue to accrue unless the Agreement expressly says otherwise, but Renter may not operate the Vehicle.
-- **"Business Day"** — any day other than a Saturday, Sunday, or Washington State legal holiday.
-- **"Comparable Replacement Vehicle"** — a vehicle of substantially similar class, condition, and rideshare/delivery eligibility to the Vehicle, provided by Owner at no additional Weekly Fee.
-- **"Fee Suspension"** — a pause in the accrual of the Weekly Fee only. During a Fee Suspension, Renter's good standing is unaffected and, unless stated otherwise, Renter retains possession.
-- **"Good Standing"** — Renter is current on all Weekly Fees actually paid and cleared, has maintained the required insurance without lapse, has committed no uncured material breach, and has not engaged in any holdover or unauthorized-driver violation.
-- **"Material Breach"** — a failure that goes to the essence of this Agreement, including: non-payment of a Weekly Fee after the grace period; lapse, cancellation, or non-renewal of required insurance; operation of the Vehicle by an unauthorized person; failure to return the Vehicle when required; or use of the Vehicle for an unlawful purpose. Other failures are **non-material** unless they remain uncured for five (5) Business Days after written notice, at which point they become material.
-- **"Renter Contact"** — any good-faith written or verbal communication from Renter to Owner that acknowledges the return or payment obligation at issue and provides a means to reach Renter, logged by Owner with date and time.
-- **"Shop Day"** — a calendar day on which the Vehicle is in the physical custody of a repair facility for diagnosis or repair.
-- **"Weekly Term"** — a consecutive seven (7)-day rental period as described in Section 4.
+- **"Agreement Suspension"**, a halt of Renter's right to possess and use the Vehicle (as distinct from a Fee Suspension). During an Agreement Suspension, Weekly Fees continue to accrue unless the Agreement expressly says otherwise, but Renter may not operate the Vehicle.
+- **"Business Day"**, any day other than a Saturday, Sunday, or Washington State legal holiday.
+- **"Comparable Replacement Vehicle"**, a vehicle of substantially similar class, condition, and rideshare/delivery eligibility to the Vehicle, provided by Owner at no additional Weekly Fee.
+- **"Fee Suspension"**, a pause in the accrual of the Weekly Fee only. During a Fee Suspension, Renter's good standing is unaffected and, unless stated otherwise, Renter retains possession.
+- **"Good Standing"**, Renter is current on all Weekly Fees actually paid and cleared, has maintained the required insurance without lapse, has committed no uncured material breach, and has not engaged in any holdover or unauthorized-driver violation.
+- **"Material Breach"**, a failure that goes to the essence of this Agreement, including: non-payment of a Weekly Fee after the grace period; lapse, cancellation, or non-renewal of required insurance; operation of the Vehicle by an unauthorized person; failure to return the Vehicle when required; or use of the Vehicle for an unlawful purpose. Other failures are **non-material** unless they remain uncured for five (5) Business Days after written notice, at which point they become material.
+- **"Renter Contact"**, any good-faith written or verbal communication from Renter to Owner that acknowledges the return or payment obligation at issue and provides a means to reach Renter, logged by Owner with date and time.
+- **"Shop Day"**, a calendar day on which the Vehicle is in the physical custody of a repair facility for diagnosis or repair.
+- **"Weekly Term"**, a consecutive seven (7)-day rental period as described in Section 4.
 
 ---
 
@@ -83,7 +83,7 @@ The Vehicle rented under this Agreement is:
 
 **4.3 No Right Beyond the Paid Week.** Renter has no right to possess or use the Vehicle beyond the current, fully paid Weekly Term. Continued possession is contingent on timely payment for each successive Weekly Term.
 
-**4.4 Holdover; Non-Renewal.** Retaining the Vehicle past a paid Weekly Term (the grace period in Section 7 does **not** extend the right of possession) is a **Material Breach**. To decline renewal, Renter must return the Vehicle immediately in accordance with Sections 17–18. Failure to timely return triggers the late-return charges of Section 18.3 and Owner's repossession rights under Section 13. Repeated or intentional holdover may, at Owner's discretion, bar Renter from future rentals with Owner.
+**4.4 Holdover; Non-Renewal.** Retaining the Vehicle past a paid Weekly Term (the grace period in Section 7 does **not** extend the right of possession) is a **Material Breach**. To decline renewal, Renter must return the Vehicle immediately in accordance with Sections 17, 18. Failure to timely return triggers the late-return charges of Section 18.3 and Owner's repossession rights under Section 13. Repeated or intentional holdover may, at Owner's discretion, bar Renter from future rentals with Owner.
 
 ---
 
@@ -106,7 +106,7 @@ The Vehicle rented under this Agreement is:
 
 ## 6. DRIVER RESERVE FUND; NO SECURITY DEPOSIT
 
-**6.1 Renter-Maintained Reserve.** Renter is encouraged to maintain a personal reserve fund (Owner recommends **$10–$20 per week**) to cover tolls, parking, citations, and similar out-of-pocket operating costs.
+**6.1 Renter-Maintained Reserve.** Renter is encouraged to maintain a personal reserve fund (Owner recommends **$10, $20 per week**) to cover tolls, parking, citations, and similar out-of-pocket operating costs.
 
 **6.2 Owner Does Not Hold Reserve.** This reserve is entirely Renter's own money held by Renter. **Owner never collects, holds, escrows, or manages any reserve fund**, and Owner has no obligation or liability with respect to it.
 
@@ -132,7 +132,7 @@ The Vehicle rented under this Agreement is:
 
 **8.2 Minimum Coverage.** At a minimum, Renter's policy must provide: (a) liability limits of at least **$100,000 per person / $300,000 per accident bodily injury and $50,000 property damage**; and (b) comprehensive and collision coverage on the Vehicle with a deductible not exceeding **$500**. Coverage must expressly permit commercial rideshare/delivery operation.
 
-**8.3 Insurance — No Owner Margin or Placement.** Owner does **NOT** sell, solicit, negotiate, place, bind, or recommend a specific carrier or policy for the Renter's insurance, and Owner earns **no commission, referral fee, service fee, "insurance margin," or other consideration** in connection with the Renter's insurance. Renter procures coverage independently from a licensed insurer or producer of Renter's own choosing. Nothing in this Agreement shall be construed as Owner acting as an insurance producer.
+**8.3 Insurance, No Owner Margin or Placement.** Owner does **NOT** sell, solicit, negotiate, place, bind, or recommend a specific carrier or policy for the Renter's insurance, and Owner earns **no commission, referral fee, service fee, "insurance margin," or other consideration** in connection with the Renter's insurance. Renter procures coverage independently from a licensed insurer or producer of Renter's own choosing. Nothing in this Agreement shall be construed as Owner acting as an insurance producer.
 
 **8.4 Deductible Accommodation (Discretionary).** Renter generally bears all claims, deductibles, and uncovered losses arising during the rental, allocated by fault as follows:
 
@@ -214,7 +214,7 @@ The Vehicle rented under this Agreement is:
 
 **12.1 Notice & Cooperation.** Renter shall give Owner immediate notice of any accident, damage, theft, or needed repair and shall fully cooperate with Owner and the insurer in any claim.
 
-**12.2 Inoperability — Automatic Fee Suspension.** If the Vehicle is out of service through **no fault of Renter** for more than **three (3) consecutive days** (whether from an accident-related repair or mechanical breakdown), a **Fee Suspension applies automatically, retroactive to the first day** of the verified inoperability, and continues until the Vehicle (or a Comparable Replacement Vehicle) is back in service. Owner **may** instead provide a Comparable Replacement Vehicle, in which case no Fee Suspension applies for the period a replacement is furnished. **This Section 12.2 governs all no-fault inoperability**; Section 17.1 governs only the extended-inoperability scenario stated there and does not create a conflicting or later-triggering threshold.
+**12.2 Inoperability, Automatic Fee Suspension.** If the Vehicle is out of service through **no fault of Renter** for more than **three (3) consecutive days** (whether from an accident-related repair or mechanical breakdown), a **Fee Suspension applies automatically, retroactive to the first day** of the verified inoperability, and continues until the Vehicle (or a Comparable Replacement Vehicle) is back in service. Owner **may** instead provide a Comparable Replacement Vehicle, in which case no Fee Suspension applies for the period a replacement is furnished. **This Section 12.2 governs all no-fault inoperability**; Section 17.1 governs only the extended-inoperability scenario stated there and does not create a conflicting or later-triggering threshold.
 
 **12.3 Sole Remedy for Downtime.** The Fee Suspension and/or Comparable Replacement Vehicle described in Sections 12.2 and 17.1 are Renter's **sole and exclusive remedy** for Vehicle downtime. **In no event is Owner liable for lost profits, lost rideshare/delivery earnings, or other consequential or incidental damages** arising from the Vehicle being out of service.
 
@@ -226,11 +226,11 @@ The Vehicle rented under this Agreement is:
 
 **13.1 Default Defined.** Renter is in default upon any of: (a) a missed Weekly Fee that remains unpaid after the grace period and lapse notice; (b) loss, lapse, or cancellation of required insurance; (c) any other **Material Breach** of this Agreement (a non-material breach becomes a default only if it remains uncured for five (5) Business Days after written notice); or (d) failure to return the Vehicle when required.
 
-**13.2 Civil Self-Help Repossession (Immediate).** Upon default under Section 13.1, Owner's right to recover the Vehicle by lawful self-help arises **immediately** and is subject only to the requirement that repossession occur **without a breach of the peace** (RCW 62A.9A-609). This civil right is **not delayed or conditioned** by the criminal-presumption mechanic in Section 13.3, and applies even in urgent circumstances (e.g., stated intent to abscond with the Vehicle). Owner will give Renter written notice of intent to recover, and Renter must promptly return the Vehicle under Sections 17–18.
+**13.2 Civil Self-Help Repossession (Immediate).** Upon default under Section 13.1, Owner's right to recover the Vehicle by lawful self-help arises **immediately** and is subject only to the requirement that repossession occur **without a breach of the peace** (RCW 62A.9A-609). This civil right is **not delayed or conditioned** by the criminal-presumption mechanic in Section 13.3, and applies even in urgent circumstances (e.g., stated intent to abscond with the Vehicle). Owner will give Renter written notice of intent to recover, and Renter must promptly return the Vehicle under Sections 17, 18.
 
 **13.3 Criminal-Presumption Mechanic (Separate).** Separately, and **solely** to preserve eligibility for the statutory unlawful-retention presumption under **RCW 9A.56.096**, any demand relied upon under that statute shall be a **written demand sent by certified or registered mail** to Renter's address of record, and Renter's failure to return the Vehicle within **72 hours** after such proper notice may be treated in accordance with the statute. Email, text, and regular-mail demands are supplemental only and do **not** trigger the statutory presumption. This mechanic exists **only** to facilitate lawful recovery of the Vehicle itself; **Owner will not use, or threaten to use, criminal prosecution or referral as a means of collecting a civil debt** (including unpaid fees) or of coercing a Renter who is cooperating in good faith. Any certified-mail demand will be framed as a demand to return the Vehicle, never "pay or be reported."
 
-**13.4 Remote Location & Disable — Safety Protocol.** Owner may use the connected app to **locate** the Vehicle at any time consistent with Section 11. Any **remote lock or disable** function may be triggered **only** after Owner confirms via telematics that the Vehicle is **stationary, parked, and unoccupied**, and **never** while the Vehicle is in motion, occupied, or in an unsafe or roadway location. Owner will provide advance warning to Renter where practicable and will coordinate with law enforcement and/or towing consistent with the certified-mail mechanic of Section 13.3.
+**13.4 Remote Location & Disable, Safety Protocol.** Owner may use the connected app to **locate** the Vehicle at any time consistent with Section 11. Any **remote lock or disable** function may be triggered **only** after Owner confirms via telematics that the Vehicle is **stationary, parked, and unoccupied**, and **never** while the Vehicle is in motion, occupied, or in an unsafe or roadway location. Owner will provide advance warning to Renter where practicable and will coordinate with law enforcement and/or towing consistent with the certified-mail mechanic of Section 13.3.
 
 **13.5 Recovery Costs (Capped & Documented).** Towing, storage, and recovery costs chargeable to Renter are limited to Owner's **actual, documented costs supported by receipts**, and total recovery costs under this Section shall not exceed **$750** per repossession event. No ad hoc or undocumented recovery charge will be imposed.
 
@@ -244,7 +244,7 @@ The Vehicle rented under this Agreement is:
 
 ## 14. GENERAL INDEMNIFICATION; AS-IS
 
-**14.1 Renter Indemnification.** Renter shall **defend, indemnify, and hold harmless** Owner and its members, managers, employees, and affiliates from and against any and all third-party claims, demands, losses, liabilities, fines, penalties, and expenses (including reasonable attorneys' fees) arising out of or related to Renter's use, operation, possession, or storage of the Vehicle — including bodily-injury, property-damage, negligent-entrustment, and rideshare-platform indemnity claims — **except to the extent caused by Owner's gross negligence or willful misconduct**.
+**14.1 Renter Indemnification.** Renter shall **defend, indemnify, and hold harmless** Owner and its members, managers, employees, and affiliates from and against any and all third-party claims, demands, losses, liabilities, fines, penalties, and expenses (including reasonable attorneys' fees) arising out of or related to Renter's use, operation, possession, or storage of the Vehicle, including bodily-injury, property-damage, negligent-entrustment, and rideshare-platform indemnity claims, **except to the extent caused by Owner's gross negligence or willful misconduct**.
 
 **14.2 AS-IS; Warranty Disclaimer.** The Vehicle is provided **AS-IS, WHERE-IS**, without warranty of any kind except as required by applicable law. Owner **disclaims all implied warranties of merchantability and fitness for a particular purpose** to the maximum extent permitted by law. This disclaimer does not limit Owner's maintenance obligations under Section 9 or Renter's downtime remedy under Section 12.
 
@@ -305,7 +305,7 @@ Total late-return charges under this Section (excluding separately capped Sectio
 
 ## 19. COLLECTIONS, INTEREST, AND FEE LIMITS
 
-**19.1 Late Fees vs. Interest — Classified Separately.** The flat late-return charges in Section 18.3 are **liquidated damages** reasonably estimating Owner's loss of use, **not interest**. Separately, unpaid **monetary balances** 30 or more days overdue accrue **interest** at the **lesser of (a) 1.5% per month or (b) the maximum rate permitted by Washington law (RCW 19.52)**, so the interest rate can never exceed the Washington usury ceiling. The two charge types are distinct and are not aggregated.
+**19.1 Late Fees vs. Interest, Classified Separately.** The flat late-return charges in Section 18.3 are **liquidated damages** reasonably estimating Owner's loss of use, **not interest**. Separately, unpaid **monetary balances** 30 or more days overdue accrue **interest** at the **lesser of (a) 1.5% per month or (b) the maximum rate permitted by Washington law (RCW 19.52)**, so the interest rate can never exceed the Washington usury ceiling. The two charge types are distinct and are not aggregated.
 
 **19.2 Collections & Attorney Fees (Bilateral).** Overdue accounts may be referred to a collection agency and/or credit bureau. The **prevailing Party** in any action to enforce this Agreement may recover reasonable, pre-disclosed collection costs and attorney fees to the extent permitted by law. The Parties acknowledge that under **RCW 4.84.330** any contractual attorney-fee provision is enforced bilaterally; this provision is intended to be, and is stated as, **mutual**.
 
@@ -319,7 +319,7 @@ Total late-return charges under this Section (excluding separately capped Sectio
 
 Before signing, Renter separately acknowledges, by initialing below, that Renter has read and understands the following plain-language disclosure:
 
-> **THIS IS A RENTAL. YOU WILL NEVER OWN THIS VEHICLE UNDER THIS AGREEMENT.** No payment, incentive, tenure, milestone, or deferral builds equity or credits toward buying the Vehicle. Any statement you may have heard — in marketing, in conversation, or otherwise — suggesting you can "build equity," follow a "path to ownership," or "own it when you finish" is **not part of this deal and is not true under this Agreement**.
+> **THIS IS A RENTAL. YOU WILL NEVER OWN THIS VEHICLE UNDER THIS AGREEMENT.** No payment, incentive, tenure, milestone, or deferral builds equity or credits toward buying the Vehicle. Any statement you may have heard, in marketing, in conversation, or otherwise, suggesting you can "build equity," follow a "path to ownership," or "own it when you finish" is **not part of this deal and is not true under this Agreement**.
 
 **Renter initials acknowledging this disclosure:** ________
 
@@ -353,7 +353,7 @@ Before signing, Renter separately acknowledges, by initialing below, that Renter
 
 By signing below, each Party acknowledges having read and agreed to this Agreement, and **Renter specifically acknowledges that this is a rental only and not an agreement to purchase the Vehicle.**
 
-**LEGAL OWNER — PLATEAU STRATEGY LLC**
+**LEGAL OWNER, PLATEAU STRATEGY LLC**
 
 Signature: ______________________________
 
@@ -405,7 +405,7 @@ Date: ___________________________________
 
 5. **Late-fee, interest, and liquidated-damages caps.** Confirm the **$62.14/day**, the non-stacking full-week charge, the two-Weekly-Fee late-return cap (§18.3), the **$750** recovery-cost cap (§13.5), and the classification of late fees as liquidated damages vs. interest (§19.1) are reasonable and not an unenforceable penalty under Washington law, and that fees and interest would not be aggregated or recharacterized.
 
-6. **Additional-insured / loss-payee mechanics & minimum limits.** Confirm the additional-insured (liability) + loss-payee (comp/collision) structure and the $100k/$300k/$50k and $500-max-deductible minimums (§8.1–8.2) actually protect Owner's physical-damage interest under the carriers' standard forms.
+6. **Additional-insured / loss-payee mechanics & minimum limits.** Confirm the additional-insured (liability) + loss-payee (comp/collision) structure and the $100k/$300k/$50k and $500-max-deductible minimums (§8.1, 8.2) actually protect Owner's physical-damage interest under the carriers' standard forms.
 
 7. **Reciprocal attorney fees.** Confirm the bilateral attorney-fee framing (§19.2) complies with **RCW 4.84.330** and is not misleading.
 
@@ -419,17 +419,17 @@ Date: ___________________________________
 
 12. **Tax treatment.** Confirm tax treatment of Weekly Fees, deductibles, loyalty incentives, and deferrals.
 
-13. **Future purchase-option product (if ever offered).** Any lease-purchase / rent-to-own product must be a separate, lawyer-reviewed agreement drafted against RCW 46.70 and consumer rental-purchase disclosure norms — never bolted onto this rental.
+13. **Future purchase-option product (if ever offered).** Any lease-purchase / rent-to-own product must be a separate, lawyer-reviewed agreement drafted against RCW 46.70 and consumer rental-purchase disclosure norms, never bolted onto this rental.
 
 ---
 
 # 📝 WHAT CHANGED
 
-**Structural / spine preserved.** The document remains a **pure rental and bailment** — no purchase right, no equity, no path to ownership. All execution fields (Vehicle table, payment blanks, initials) and the full signature block are intact, with added initial lines.
+**Structural / spine preserved.** The document remains a **pure rental and bailment**, no purchase right, no equity, no path to ownership. All execution fields (Vehicle table, payment blanks, initials) and the full signature block are intact, with added initial lines.
 
 **Added (new provisions):**
-- **§0 Definitions** — defines *Agreement Suspension, Fee Suspension, Good Standing, Material Breach, Renter Contact, Shop Day, Business Day, Comparable Replacement Vehicle* (resolves the "suspend" ambiguity and every undefined term).
-- **§1.4 fair-market-rent recital** and **§1.5 156-week cumulative cap** — blunt disguised-installment-sale badges.
+- **§0 Definitions**, defines *Agreement Suspension, Fee Suspension, Good Standing, Material Breach, Renter Contact, Shop Day, Business Day, Comparable Replacement Vehicle* (resolves the "suspend" ambiguity and every undefined term).
+- **§1.4 fair-market-rent recital** and **§1.5 156-week cumulative cap**, blunt disguised-installment-sale badges.
 - **§2.3 unlimited mileage** stated expressly; **§2.4 Renter representations** (valid license, insurable record, platform eligibility).
 - **§5.2 tax** (fee is tax-exclusive) and **payment-terms initial line**.
 - **§6.3 "No security deposit"** statement.
@@ -443,7 +443,7 @@ Date: ___________________________________
 
 **Changed / reconciled:**
 - **Grace period** extended 24h → **48h** with a mandatory lapse notice (§7.2) and an explicit statement that rent for a commenced week is still owed (§7.3).
-- **§12.2 vs §17.1** reconciled — fee relief is now **automatic** ("shall," retroactive to day 1) for no-fault inoperability >3 days, with §12.2 stated to control; the day-1–7 gap is closed.
+- **§12.2 vs §17.1** reconciled, fee relief is now **automatic** ("shall," retroactive to day 1) for no-fault inoperability >3 days, with §12.2 stated to control; the day-1, 7 gap is closed.
 - **Default (§13.1)** now requires a **material breach + 5-Business-Day cure** for catch-all breaches; **civil self-help repossession (§13.2) split** from the **criminal-presumption mechanic (§13.3)**, with an express no-criminal-threat-to-collect-a-civil-debt statement.
 - **Loyalty incentive** made **cash-only** (no rent credit), **vests on milestone** with proactive Owner payment, and the forfeiture window runs from award confirmation (§15, §17.3).
 - **Deferral** capped to one week per mark, ≤4-week repayment, ≤$110/week, interest-free (§16).
@@ -453,6 +453,6 @@ Date: ___________________________________
 - **Return evidence (§18.2)** now a **joint, signed condition report** with copies to Renter and a **10-day** Owner claim deadline.
 
 **Removed:**
-- All inline **[LAWYER REVIEW]** bracketed notes and any anticipatory "future purchase-option" language were stripped from the operative text and relocated to the separate LAWYER-REVIEW CHECKLIST (which itself must be deleted before signing) — so nothing in the executed copy undercuts the "no purchase, ever" position.
+- All inline **[LAWYER REVIEW]** bracketed notes and any anticipatory "future purchase-option" language were stripped from the operative text and relocated to the separate LAWYER-REVIEW CHECKLIST (which itself must be deleted before signing), so nothing in the executed copy undercuts the "no purchase, ever" position.
 
 *End of Agreement.*

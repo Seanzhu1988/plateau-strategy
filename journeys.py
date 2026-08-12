@@ -28,8 +28,8 @@ person somewhere unfamiliar, possibly at night, possibly without the language.
 That is a different category of failure from a broken button, and it is worth
 paying for in inconvenience.
 
-So every step carries `verified` — the date a human confirmed it against the
-operator's own published information — and `serve()` REFUSES to return a
+So every step carries `verified`, the date a human confirmed it against the
+operator's own published information, and `serve()` REFUSES to return a
 journey containing an unverified step. There is no flag to override it. A
 half-checked journey is not a degraded journey; it is a trap, and the correct
 thing to show is nothing at all.
@@ -48,11 +48,11 @@ MAX_AGE_DAYS = 180
 
 
 # Each step:
-#   do       — the single instruction, imperative, one action
-#   confirm  — how you know it worked. The sentence that stops the panic.
-#   if_wrong — what to do when it did not
-#   verified — ISO date a human checked this against the operator's own words
-#   source   — where they checked
+#   do      , the single instruction, imperative, one action
+#   confirm , how you know it worked. The sentence that stops the panic.
+#   if_wrong, what to do when it did not
+#   verified, ISO date a human checked this against the operator's own words
+#   source  , where they checked
 JOURNEYS = {
     "seatac-lynnwood": {
         "id": "seatac-lynnwood",
@@ -73,7 +73,7 @@ JOURNEYS = {
                 "confirm": "The signs keep saying Link. You have not needed to "
                            "leave the building yet.",
                 "if_wrong": "Ask anyone in an airport uniform for Link light "
-                            "rail — it is the question they answer most.",
+                            "rail, it is the question they answer most.",
                 # No operator page describes this walk, so prose cannot verify
                 # it. A footprint can: the step unlocks the day one of us walks
                 # terminal-to-platform with /footprint recording. The corridor
@@ -90,7 +90,7 @@ JOURNEYS = {
                 "if_wrong": "The machines take card and cash. If one is out of "
                             "order there is another on the same platform.",
                 "verified": "2026-08-09",
-                "source": "Sound Transit 1 Line schedule — adult fare $3",
+                "source": "Sound Transit 1 Line schedule, adult fare $3",
             },
             {
                 "do": "Take the 1 Line towards Lynnwood City Center.",
@@ -99,9 +99,9 @@ JOURNEYS = {
                            "you cannot overshoot.",
                 "if_wrong": "A train towards Angle Lake is the wrong way. Get "
                             "off at the next stop, cross to the other platform, "
-                            "and wait — the next one is about 15 minutes.",
+                            "and wait, the next one is about 15 minutes.",
                 "verified": "2026-08-09",
-                "source": "Sound Transit — 1 Line runs SeaTac/Airport to "
+                "source": "Sound Transit, 1 Line runs SeaTac/Airport to "
                           "Lynnwood City Center, no transfer",
             },
             {
@@ -111,7 +111,7 @@ JOURNEYS = {
                 "if_wrong": "If you fall asleep, the end of the line is where "
                             "you wanted to be anyway.",
                 "verified": "2026-08-09",
-                "source": "Sound Transit — approx 1 h 11 m SeaTac to Lynnwood",
+                "source": "Sound Transit, approx 1 h 11 m SeaTac to Lynnwood",
             },
         ],
     },
@@ -137,7 +137,7 @@ def problems(journey, today=None, walked=None):
     `walked` is how a footprint stands in for prose: a callable that answers
     "has this corridor a fresh recorded walk?" (see footprints.Store.walked).
     A step naming a corridor is satisfied by either a fresh human check OR a
-    fresh footprint. With no callable supplied, corridor steps fail closed —
+    fresh footprint. With no callable supplied, corridor steps fail closed, 
     absence of the store must read as unverified, never as fine.
     """
     out = []
@@ -171,7 +171,7 @@ def serve(jid, today=None, walked=None):
     bad = problems(j, today, walked)
     if bad:
         return None, bad
-    # A copy, annotated — the registry itself must stay clean. Where a step
+    # A copy, annotated, the registry itself must stay clean. Where a step
     # passed on a footprint rather than a written check, say so: the traveller
     # is being handed a walk somebody actually walked, and that provenance is
     # worth a line.

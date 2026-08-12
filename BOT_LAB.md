@@ -14,12 +14,12 @@ constraint that gets built over by someone who never heard it said.
 > **This system never stores, receives, or transmits another person's exchange
 > API key, OAuth token, or any other credential to their money.**
 
-The key still has to exist — Coinbase will not accept an order without one.
+The key still has to exist, Coinbase will not accept an order without one.
 The constraint is about *where it lives*: on the user's own machine, never on
 ours. Automated trading still works exactly the same; we are simply not the
 custodian.
 
-**The shape that satisfies this** — a local agent:
+**The shape that satisfies this**, a local agent:
 
 ```
 their machine                          our server
@@ -42,12 +42,12 @@ encryption at rest, key-scope verification, rotation, revocation, breach
 response. None of that has to be built correctly if the asset is never held.
 
 It does **not** answer the adviser question. If the agent auto-executes, the
-user is not deciding each trade — software is, on our instruction, and that is
+user is not deciding each trade, software is, on our instruction, and that is
 still arguably discretionary. Not holding keys removes the sharpest edge; it
 does not remove the need for the legal answer below.
 
 **The cost, which users must be told:** the agent has to be running to trade.
-That means their own always-on machine — a small VPS in their name, or a Pi at
+That means their own always-on machine, a small VPS in their name, or a Pi at
 home. A laptop that sleeps will miss trades. They own the box, the key, and
 the uptime.
 
@@ -71,7 +71,7 @@ decision.** Do not build it without Sean saying so explicitly and in writing.
 ## What it does not do, and has no code to do
 
 It does not place an order, connect to an exchange, hold an API key, read a
-balance, or move a dollar in any direction. Not "disabled" — absent. The live
+balance, or move a dollar in any direction. Not "disabled", absent. The live
 execution path has not been written, because the question of whether it may
 exist has not been answered.
 
@@ -96,7 +96,7 @@ Render and redeploy. To turn it off, remove it. Nothing else changes.
 
 ## Issuing access
 
-These accounts are **not** the lab's property — `/robot` uses them, and
+These accounts are **not** the lab's property, `/robot` uses them, and
 since 2026-08-10 the footprint recorder (`/footprint`) accepts them as the
 surveyor programme: an issued account can record corridor walks, and revoking
 it cuts that off mid-session like everything else. Minting and sign-in
@@ -112,7 +112,7 @@ POST /api/access/logout
 ```
 
 Owner-authenticated. The password is **generated, not chosen**, shown **once**,
-and stored only as a PBKDF2 hash — nobody can read it back, including you.
+and stored only as a PBKDF2 hash, nobody can read it back, including you.
 Lost means reissue. That is the correct recovery story for a system with no
 reset: the alternative is a route that can be tricked.
 
@@ -134,27 +134,27 @@ POST /api/lab/fills
 
 Every fill is recorded as `paper`. A caller asking for `"mode": "live"` is
 ignored, not obeyed. An unknown strategy is rejected rather than silently
-created. **Post the losses too** — a bot that reports only its winners builds a
+created. **Post the losses too**, a bot that reports only its winners builds a
 record that unlocks something it should not.
 
 ## Unlocking
 
 Two independent keys, and neither works alone:
 
-1. **The record clears the bar** — at least 200 fills, spanning at least 90
+1. **The record clears the bar**, at least 200 fills, spanning at least 90
    days, net positive after costs (`bot_lab.UNLOCK_RULE`).
-2. **The owner then flips it by hand** — `POST /api/lab/locks/strategy/<key>`.
+2. **The owner then flips it by hand**, `POST /api/lab/locks/strategy/<key>`.
 
 Locking is always allowed without conditions. Shutting something off should
 never be the hard direction.
 
 **Kalshi cannot be unlocked this way at all.** It is marked `hard`, because it
-is not locked for want of a record — it was losing money. Reopening it means
+is not locked for want of a record, it was losing money. Reopening it means
 editing the code deliberately, which is the point.
 
 ---
 
-## The legal question — open
+## The legal question, open
 
 The blocking question, in one sentence:
 
@@ -175,7 +175,7 @@ an engineer, not a lawyer:
 - **A disclaimer is not a shield.** Advisers Act §215, Exchange Act §29(a) and
   Securities Act §14 void agreements purporting to waive compliance. Fraud
   cannot be disclaimed. Disclosures are worth writing and are written into
-  `/lab` — but if the safety of the plan rests on them, the plan has no safety.
+  `/lab`, but if the safety of the plan rests on them, the plan has no safety.
   This matters because "no liabilities or obligations from our side" was the
   original instruction, and it is the part that does the least work.
 - **Kalshi is CFTC territory.** Event contracts raise commodity-trading-advisor
@@ -209,5 +209,5 @@ Until there are answers: the lab stays off, and the live path stays unwritten.
 | `bot-lab.html` | The console at `/lab`. |
 | `test_bot_lab.py` | 43 checks. Leads with "switched off, the lab does not exist". |
 
-Written to `/var/data` and **gitignored** — this repo is public:
+Written to `/var/data` and **gitignored**, this repo is public:
 `bot_users.json` (password hashes), `bot_ledger.json`, `bot_locks.json`.
