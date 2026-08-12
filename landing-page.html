@@ -3349,12 +3349,28 @@
                     }).join('') + '</div>';
             }
 
+            // Which language the reader has chosen, from the site's own switcher.
+            function curLang() {
+                try { return localStorage.getItem('ps_lang') || 'en'; } catch (e) { return 'en'; }
+            }
+            // The English is what was posted; a translation is used when this
+            // piece has one. Without this the switcher changed every label on
+            // the page and left the article itself in English, which reads as
+            // the button being broken.
+            function inLang(a) {
+                var l = curLang();
+                var t = l !== 'en' && a.translations ? a.translations[l] : null;
+                return t ? { title: t.title || a.title, body: t.body || a.body, translated: true }
+                         : { title: a.title, body: a.body, translated: false };
+            }
+
             function render(a) {
                 var v = myVote(a.id);
+                var txt = inLang(a);
                 return '<div class="idea-card" id="idea_' + a.id + '">' +
-                    '<h4>' + esc(a.title) + (a.stamp ? '<span class="idea-stamp" title="Time-proof stamp — pitched ' + fmtStamp(a.created_at) + '">#' + esc(a.stamp) + '</span>' : '') + '</h4>' +
+                    '<h4>' + esc(txt.title) + (a.stamp ? '<span class="idea-stamp" title="Time-proof stamp — pitched ' + fmtStamp(a.created_at) + '">#' + esc(a.stamp) + '</span>' : '') + '</h4>' +
                     '<div class="idea-meta">By <strong>' + esc(a.author || 'Anonymous') + '</strong> · ' + fmtStamp(a.created_at) + '</div>' +
-                    '<div class="idea-text">' + esc(a.body) + '</div>' +
+                    '<div class="idea-text">' + esc(txt.body) + '</div>' +
                     // The trades this idea calls for. The API has shipped them on
                     // every idea since the matcher was written; nothing displayed
                     // them, so the one feature the board exists for was invisible.
@@ -3400,7 +3416,20 @@
                 if (!feed) return;
                 if (empty) empty.style.display = items.length ? 'none' : 'block';
                 feed.innerHTML = items.map(render).join('');
+                // Keep them so a language change can redraw without refetching.
+                window.__ideaItems = items;
             };
+
+            // When the reader changes language, redraw the ideas in it. The
+            // switcher already announces the change; nothing was listening, so
+            // every label on the page translated and the articles did not.
+            document.addEventListener('psx:lang', function () {
+                var feed = document.getElementById('ideaFeed');
+                var items = window.__ideaItems;
+                if (feed && items && items.length) {
+                    feed.innerHTML = items.map(render).join('');
+                }
+            });
 
             window.ideaPublish = async function () {
                 var a = document.getElementById('idea_author'), t = document.getElementById('idea_title'), b = document.getElementById('idea_body');
