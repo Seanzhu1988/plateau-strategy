@@ -6395,6 +6395,35 @@ def _entitled(a, vid=None):
     return bool(vid) and vid in (a.get("unlocked_by") or [])
 
 
+_ARTICLE_TR_PATH = os.path.join(BASE_DIR, "article_translations.json")
+_ARTICLE_TR = {"mtime": 0, "data": {}}
+
+
+def _article_translations():
+    """Translations for posted articles, keyed by lowercased title.
+
+    Kept in the repo rather than inside the article record, for a blunt
+    reason: the articles file lives on a disposable filesystem and is
+    destroyed on every deploy, so a translation stored beside its article
+    would die with it. Keyed by title so it survives the article being
+    posted again with a new id.
+    """
+    try:
+        m = os.path.getmtime(_ARTICLE_TR_PATH)
+        if m != _ARTICLE_TR["mtime"]:
+            with open(_ARTICLE_TR_PATH, encoding="utf-8") as f:
+                _ARTICLE_TR["data"] = {k: v for k, v in json.load(f).items()
+                                       if not k.startswith("_")}
+            _ARTICLE_TR["mtime"] = m
+    except Exception:
+        pass
+    return _ARTICLE_TR["data"]
+
+
+def _translations_for(title):
+    return _article_translations().get((title or "").strip().lower()) or {}
+
+
 def _public_article(a):
     """Public shape — investor/launcher emails are kept private, only counts are shown.
 
@@ -6427,6 +6456,9 @@ def _public_article(a):
         "launcher_count": len(a.get("launchers", [])),
         # The trades this article calls for — what goes at the foot of it.
         "professionals": a.get("professionals"),
+        # Whatever languages this piece has been translated into. A locked
+        # article ships none of them, for the same reason it ships no body.
+        "translations": {} if locked else _translations_for(a.get("title")),
     }
     return out
 
@@ -6496,6 +6528,23 @@ def idea_page(aid):
     desc = _og_description(body) or ("A business idea posted by %s." % author)
     paras = "".join("<p>%s</p>" % e(p) for p in body.split("\n") if p.strip())
 
+    # What this piece has been translated into. Only languages that actually
+    # exist for THIS article are offered — a language button that changes
+    # nothing is worse than no button, because the reader concludes the site
+    # is broken rather than that the work has not been done yet.
+    trs = {} if locked else _translations_for(a.get("title"))
+    LANG_NAMES = {"zh": "\u4e2d\u6587", "es": "Espa\u00f1ol",
+                  "ko": "\ud55c\uad6d\uc5b4", "vi": "Ti\u1ebfng Vi\u1ec7t"}
+    lang_row = ""
+    if trs:
+        buttons = ['<button class="lang-opt" data-l="en" aria-current="true">English</button>']
+        for code in ("zh", "es", "ko", "vi"):
+            if code in trs:
+                buttons.append('<button class="lang-opt" data-l="%s">%s</button>'
+                               % (code, LANG_NAMES[code]))
+        lang_row = '<div class="lang-row" role="group" aria-label="Language">%s</div>' % "".join(buttons)
+    trs_json = json.dumps(trs, ensure_ascii=False)
+
     locked_note = ""
     if locked:
         locked_note = (
@@ -6542,6 +6591,25 @@ def idea_page(aid):
       border: 1px solid var(--psx-line, #e6e2da); background: none;
       color: inherit; font: inherit; font-weight: 600; cursor: pointer;
       text-decoration: none; }
+  /* The language row. It sits IN the page rather than floating, because the
+     floating globe on the main site is bottom-right, which is exactly where
+     WeChat's own browser puts its toolbar — so on the one page most likely to
+     be shared into WeChat, the control was invisible. */
+  .lang-row { display: flex; flex-wrap: wrap; gap: .2rem .4rem;
+              margin: 0 0 1.4rem; }
+  .lang-row button { background: none; border: 0; font: inherit;
+                     font-size: .95rem; font-weight: 600; cursor: pointer;
+                     color: var(--psx-text2, #6b6459);
+                     padding: .55rem .5rem; min-height: 44px;
+                     border-bottom: 2px solid transparent; }
+  .lang-row button[aria-current="true"] { color: #1f3a5f;
+                     border-bottom-color: #1f3a5f; }
+  @media (max-width: 640px) {
+    .wrap { padding-left: 1.1rem; padding-right: 1.1rem; }
+    .page-title { font-size: 1.55rem; line-height: 1.2; }
+    .idea-body p { font-size: 1.06rem; }
+    header .brand { font-size: 1rem; }
+  }
   .idea-foot { color: var(--psx-text2, #6b6459); font-size: .93rem;
                border-top: 1px solid var(--psx-line, #e6e2da);
                margin-top: 2.4rem; padding-top: 1.2rem; }
@@ -6554,9 +6622,10 @@ def idea_page(aid):
   <div class="right"><a href="/">Home</a></div>
 </header>
 <div class="wrap">
-  <div class="page-title">%(title)s</div>
+  %(lang_row)s
+  <div class="page-title" id="ideaTitle">%(title)s</div>
   <p class="idea-meta">Posted by %(author)s%(when)s · %(likes)s interested</p>
-  <div class="idea-body">%(paras)s</div>
+  <div class="idea-body" id="ideaBody">%(paras)s</div>
   %(locked_note)s
   <div class="idea-actions">
     <button id="shareBtn">Share this idea</button>
@@ -6566,6 +6635,42 @@ def idea_page(aid):
   free, no account needed. Ideas are read, discussed and, when they are ready,
   worked up into what it would actually take to start them.</p>
 </div>
+<script>
+// Swapping the article between languages. The whole piece is already in the
+// page, so switching is instant and works with no network — which matters in
+// an in-app browser on a phone.
+(function () {
+  var TR = %(trs_json)s;
+  var EN = { title: document.getElementById("ideaTitle").textContent,
+             body: document.getElementById("ideaBody").innerHTML };
+  function paras(text) {
+    return text.split("\n").filter(function (s) { return s.trim(); })
+      .map(function (s) {
+        var d = document.createElement("p"); d.textContent = s; return d.outerHTML;
+      }).join("");
+  }
+  function show(l) {
+    var t = l === "en" ? EN : TR[l];
+    if (!t) return;
+    document.getElementById("ideaTitle").textContent = t.title || EN.title;
+    document.getElementById("ideaBody").innerHTML =
+      l === "en" ? EN.body : paras(t.body || "");
+    document.documentElement.lang = l;
+    Array.prototype.forEach.call(document.querySelectorAll(".lang-row button"), function (b) {
+      b.setAttribute("aria-current", b.getAttribute("data-l") === l ? "true" : "false");
+    });
+    try { localStorage.setItem("psx_lang", l); } catch (e) {}
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".lang-row button"), function (b) {
+    b.addEventListener("click", function () { show(b.getAttribute("data-l")); });
+  });
+  // Follow the choice already made elsewhere on the site, if this piece has it.
+  try {
+    var saved = localStorage.getItem("psx_lang");
+    if (saved && saved !== "en" && TR[saved]) show(saved);
+  } catch (e) {}
+})();
+</script>
 <script>
   /* Native sheet on a phone, clipboard everywhere else. Both end with the
      link somewhere the person can paste it, which is the only job. */
@@ -6594,6 +6699,7 @@ def idea_page(aid):
         # json.dumps, not quote-wrapping: it escapes the quotes, backslashes and
         # the </script> sequence that would otherwise end the block early.
         "url_js": json.dumps(url), "title_js": json.dumps(title),
+        "lang_row": lang_row, "trs_json": trs_json,
     }, mimetype="text/html")
 
 
