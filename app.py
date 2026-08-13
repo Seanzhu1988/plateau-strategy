@@ -6898,6 +6898,17 @@ def api_article_create():
         if not ok:
             return jsonify({"ok": False, "error": why}), 429
         now = datetime.datetime.now()
+        # Posting is idempotent on content. During a deploy two instances
+        # briefly answer at once, and tonight that put the same article on
+        # the board twice. Same fingerprint, same article: the existing one
+        # is returned instead of a copy being created.
+        h_new = _content_hash(title, body)
+        for a in items:
+            if not a.get("hidden") and _content_hash(a.get("title"), a.get("body")) == h_new:
+                return jsonify({"ok": True, "article": _public_article(a),
+                                "duplicate": True,
+                                "note": "This exact text is already on the board."})
+
         article = {
             "id": _next_id(items, "ART", datestamp=False),
             "ip": _client_ip(),          # for the rate limit only; never published
