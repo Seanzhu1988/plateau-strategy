@@ -115,8 +115,11 @@
   /* ---- state ---- */
   var picked = [];        /* room keys in visit order, no stair nodes */
   var floor = 1;
-  var mode = 'flat';      /* flat | 3d, remembered per device */
-  try { if (localStorage.getItem('met_mode') === '3d') mode = '3d'; } catch (e) {}
+  /* The page always opens FLAT. Remembering 3D across visits was tried
+     and it read as a defect: the owner tapped 3D once, came back later,
+     and reported the site was crooked. A view you did not just choose
+     should never be the view you land in. */
+  var mode = 'flat';
 
   /* ---- drawing ---- */
   function center(k) {
@@ -217,8 +220,11 @@
     return svg.join('');
   }
 
-  /* The 3D view: both floors as tilted slabs. spin is the reader's hand. */
-  var spin = -24;
+  /* The 3D view: both floors as slabs. spin is the reader's hand, and it
+     starts at zero: the building stands straight until the reader turns
+     it. The first version opened pre-leaned 24 degrees, and a lean nobody
+     asked for just looks broken. */
+  var spin = 0;
 
   function worldTransform() {
     return 'rotateX(56deg) rotateZ(' + spin + 'deg)';
@@ -344,7 +350,7 @@
   document.getElementById('tabF1').addEventListener('click', function () { mode = 'flat'; floor = 1; remember(); draw(); });
   document.getElementById('tabF2').addEventListener('click', function () { mode = 'flat'; floor = 2; remember(); draw(); });
   document.getElementById('tab3D').addEventListener('click', function () { mode = '3d'; remember(); draw(); });
-  function remember() { try { localStorage.setItem('met_mode', mode); } catch (e) {} }
+  function remember() { /* deliberately nothing: the page always opens flat */ }
   document.getElementById('btnClear').addEventListener('click', function () {
     picked = []; draw(); syncUrl();
   });
