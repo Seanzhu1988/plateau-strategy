@@ -209,3 +209,16 @@ them, which is new.
 `jarvis-widget.js` only builds for an owner session, so an anonymous sweep can
 never see it, the gate needs a logged-in pass, or that component stays exactly
 as invisible as everything else on this list used to be.
+
+## The board holds each idea once
+
+Posting is idempotent, two layers deep, because one layer was beaten within
+hours. Identical text returns the existing article instead of creating a
+copy; that guard was added after a deploy overlap doubled a post, and it was
+defeated the same night by the same article pasted by hand with different
+line breaks. So a reused TITLE, whitespace and case ignored, is also treated
+as the same idea, with a note telling a genuinely different author to give
+their idea its own name.
+
+The consequence to remember: first-in wins. After a deploy wipes the board
+(no disk yet), whichever copy posts first is the one the guard defends.
