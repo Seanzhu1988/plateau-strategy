@@ -1471,6 +1471,22 @@ def site_manifest():
     })
 
 
+@app.route("/met")
+def met_page():
+    """Inside the Met, on footprints: our own schematic indoor map."""
+    return send_file(os.path.join(BASE_DIR, "met.html"))
+
+
+@app.route("/met-map.js")
+def met_map_js():
+    return send_file(os.path.join(BASE_DIR, "met-map.js"))
+
+
+@app.route("/met-cards.js")
+def met_cards_js():
+    return send_file(os.path.join(BASE_DIR, "met-cards.js"))
+
+
 @app.route("/plateau-logo.png")
 def logo():
     return send_file(os.path.join(BASE_DIR, "plateau-logo.png"))
@@ -1656,6 +1672,9 @@ def api_footprints_walked():
             p = FOOTPRINTS.path(c["key"])
             out.append({"key": c["key"], "label": c["label"],
                         "date": c["walked"]["date"],
+                        # the measured time is the footprint's whole promise;
+                        # the Met page swaps its tilde estimate for this
+                        "minutes": c["walked"].get("minutes"),
                         "length_m": p["length_m"] if p else None})
     return jsonify({"ok": True, "corridors": out})
 

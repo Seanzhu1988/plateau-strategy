@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inside the Met, a footprint map · Plateau Strategy</title>
+<meta name="description" content="A schematic indoor map of the Metropolitan Museum of Art. Tap the rooms you want, and footprints walk the route between them with honest times.">
+<meta property="og:title" content="Inside the Met, a footprint map">
+<meta property="og:description" content="Tap the rooms you want. Footprints walk the route, with honest times.">
+<meta property="og:url" content="https://plateaustrategy.io/met">
+<meta property="og:site_name" content="Plateau Strategy Solution Lab">
+<meta property="og:image" content="https://plateaustrategy.io/share-card.jpg">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://plateaustrategy.io/met">
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Plateau">
+<meta name="theme-color" content="#1f3a5f">
+<link rel="stylesheet" href="/paper.css">
+<link rel="stylesheet" href="/modern.css">
+<style>
+  /* The blueprint sheet language the site already speaks: navy line-work on
+     white, a title block, nothing filled behind a word. The map is OUR OWN
+     schematic drawing. It is deliberately not to scale and deliberately not
+     a copy of the museum's copyrighted map: rooms are named boxes in true
+     relative position, which is all a walking route needs. */
+  header img { height: 42px; width: 42px; border-radius: 50%; }
+  header .brand { font-size: 1.2rem; font-weight: 800; }
+  header .right { margin-left: auto; display: flex; gap: 1.2rem; }
+  .wrap { max-width: 60rem; }
+
+  .met-open { position: relative; height: 1px; background: var(--m-line-firm, #d3d3da);
+              margin: 2rem 0 2.2rem; }
+  .met-open::after { content: ""; position: absolute; top: -1px; left: 50%;
+                     transform: translateX(-50%); width: 64px; height: 3px;
+                     background: #1f3a5f; }
+
+  .met-lede { color: var(--psx-text2, #6b6459); max-width: 62ch; margin: .4rem 0 0; }
+  .met-honest { font-size: .9rem; color: var(--psx-text2, #6b6459);
+                border-left: 2px solid #1f3a5f; padding-left: .9rem;
+                margin: 1.2rem 0 0; max-width: 62ch; }
+
+  .sheet { border: 1px solid var(--m-line-firm, #d3d3da); border-radius: 10px;
+           margin-top: 1.6rem; overflow: hidden; background: #fff; }
+  .sheet-head { display: flex; flex-wrap: wrap; gap: .3rem 1.4rem;
+                padding: .55rem .9rem; border-bottom: 1px solid var(--m-line, #e6e6ea);
+                font-size: .68rem; font-weight: 700; letter-spacing: .12em;
+                text-transform: uppercase; color: var(--psx-text2, #6b6459); }
+  .sheet-head b { color: #1f3a5f; }
+  .floor-tabs { display: flex; gap: .2rem; padding: .5rem .9rem 0; }
+  .floor-tabs button { font: inherit; font-weight: 700; font-size: .95rem;
+                       background: none; border: 0; cursor: pointer;
+                       color: var(--psx-text2, #6b6459);
+                       padding: .5rem .7rem; min-height: 44px;
+                       border-bottom: 2px solid transparent; }
+  .floor-tabs button[aria-current="true"] { color: #1f3a5f; border-bottom-color: #1f3a5f; }
+  .sheet svg { display: block; width: 100%; height: auto; }
+  svg .room { fill: #ffffff; stroke: #1f3a5f; stroke-width: 1.6; cursor: pointer; }
+  svg .room.picked { stroke-width: 3; }
+  svg .room:hover { fill: #f6f8fb; }
+  svg .rlabel { font: 700 13px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                fill: #0b0809; pointer-events: none; }
+  svg .rsub { font: 600 10px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+              fill: #6e6e76; pointer-events: none; letter-spacing: .08em; }
+  svg .order { font: 800 12px -apple-system, sans-serif; fill: #fff; pointer-events: none; }
+  svg .order-dot { fill: #1f3a5f; pointer-events: none; }
+  svg .corridor { stroke: #d3d3da; stroke-width: 1; stroke-dasharray: 3 4; fill: none; }
+  svg .trail { stroke: none; fill: #1f3a5f; }
+  svg .park { fill: none; stroke: #9fb8a5; stroke-width: 1.2; stroke-dasharray: 2 4; }
+  svg .avenue { font: 600 10px -apple-system, sans-serif; fill: #9a9aa2; letter-spacing: .2em; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; padding: .6rem .9rem .8rem;
+            font-size: .82rem; color: var(--psx-text2, #6b6459);
+            border-top: 1px solid var(--m-line, #e6e6ea); }
+
+  .plan { margin-top: 1.8rem; }
+  .plan h2 { font-size: 1.3rem; margin: 0 0 .2rem; }
+  .plan-total { font-size: .78rem; font-weight: 700; letter-spacing: .1em;
+                text-transform: uppercase; color: var(--psx-text2, #6b6459);
+                padding: .7rem 0; border-top: 1px solid var(--m-line, #e6e6ea);
+                border-bottom: 1px solid var(--m-line, #e6e6ea); margin: .8rem 0; }
+  .leg { display: flex; gap: .9rem; align-items: baseline; padding: .85rem 0;
+         border-top: 1px solid var(--m-line, #e6e6ea); }
+  .leg:first-of-type { border-top: 0; }
+  .leg-n { font-weight: 800; color: #1f3a5f; min-width: 1.3rem; }
+  .leg-name { font-weight: 700; }
+  .leg-min { margin-left: auto; font-variant-numeric: tabular-nums;
+             color: var(--psx-text2, #6b6459); white-space: nowrap; }
+  .leg-walk { font-size: .82rem; color: var(--psx-text2, #6b6459);
+              padding: .1rem 0 .1rem 2.2rem; }
+  .leg-hl { font-size: .9rem; color: var(--psx-text2, #6b6459);
+            margin: .25rem 0 0; line-height: 1.55; }
+  .plan-empty { color: var(--psx-text2, #6b6459); }
+  .plan-actions { margin-top: 1rem; display: flex; gap: 1.4rem; }
+  .plan-actions button { font: inherit; font-weight: 700; background: none;
+                         border: 0; border-bottom: 2px solid #1f3a5f;
+                         padding: .3rem 0; cursor: pointer; color: var(--m-ink, #0b0809); }
+  .plan-actions button.quiet { border-bottom-color: var(--m-line-firm, #d3d3da);
+                               color: var(--psx-text2, #6b6459); }
+  .met-foot { color: var(--psx-text2, #6b6459); font-size: .9rem;
+              border-top: 1px solid var(--m-line, #e6e6ea);
+              margin-top: 2.2rem; padding-top: 1.2rem; }
+  @media (max-width: 640px) {
+    .wrap { padding-left: .9rem; padding-right: .9rem; }
+    .page-title { font-size: 1.5rem; line-height: 1.22; }
+  }
+</style>
+</head>
+<body data-arm="company">
+<header>
+  <img src="/icon-192.png" alt="Plateau Strategy Solution Lab">
+  <span class="brand">Plateau Strategy Solution Lab</span>
+  <div class="right"><a href="/trip-planner">Trip planner</a><a href="/">Home</a></div>
+</header>
+<div class="wrap">
+  <div class="met-open" role="presentation"></div>
+  <div class="page-title">Inside the Met, on footprints</div>
+  <p class="met-lede">The map on your phone goes grey the moment you step inside.
+    This is a schematic of the Metropolitan Museum of Art, drawn by us, not to
+    scale, with the rooms where they really sit. Tap the rooms you want in the
+    order you want them, and footprints walk the route with honest times.</p>
+  <p class="met-honest">Times marked with a tilde are estimates until one of our
+    surveyors walks that corridor with the recorder. A walked corridor shows its
+    measured minutes. That is the footprint rule: a person who knows the way
+    walks it once, and the walk becomes the map.</p>
+
+  <div class="sheet">
+    <div class="sheet-head">
+      <span>Project · <b>Footprints</b></span>
+      <span>Sheet · <b id="sheetNo">MET-01 · Floor 1</b></span>
+      <span>Scale · <b>not to scale</b></span>
+      <span>Drawn · <b>our own schematic</b></span>
+    </div>
+    <div class="floor-tabs" role="tablist">
+      <button id="tabF1" aria-current="true">Floor 1</button>
+      <button id="tabF2" aria-current="false">Floor 2</button>
+    </div>
+    <div id="svgHost"></div>
+    <div class="legend">
+      <span>▢ a named room. Tap to add it to your walk.</span>
+      <span>· · · a corridor we have opened</span>
+      <span>👣 your route</span>
+      <span>Fifth Avenue is to the right; Central Park to the left.</span>
+    </div>
+  </div>
+
+  <div class="plan">
+    <h2>Your walk</h2>
+    <div class="plan-total" id="planTotal">Nothing picked yet</div>
+    <div id="planLegs"><p class="plan-empty">Tap rooms on the sheet, in the order
+      you want to see them. The Grand Staircase is added by itself when your
+      route changes floors.</p></div>
+    <div class="plan-actions">
+      <button id="btnShare">Share this walk</button>
+      <button id="btnClear" class="quiet">Start over</button>
+    </div>
+  </div>
+
+  <p class="met-foot">This page is a drawing and a plan, not the museum. Hours,
+    tickets and closures live at metmuseum.org. Our schematic simplifies; the
+    building will always be bigger than the sheet. Gallery contents shift over
+    years, so we name wings and anchors, never gallery numbers.</p>
+</div>
+
+<script src="/i18n.js"></script>
+<script src="/met-cards.js"></script>
+<script src="/met-map.js"></script>
+</body>
+</html>

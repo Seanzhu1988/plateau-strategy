@@ -36,6 +36,12 @@ EXTRA_SKIP = {
 }
 
 EXTRA = {
+    # ---- Inside the Met, the footprint map ----
+    'Inside the Met': ['走进大都会博物馆', 'Dentro del Met', '메트로폴리탄 미술관 내부', 'Bên trong bảo tàng Met'],
+    'For museum days in New York': ['适合在纽约逛博物馆的日子', 'Para días de museo en Nueva York', '뉴욕에서 미술관을 즐기는 날을 위해', 'Cho những ngày đi bảo tàng ở New York'],
+    'A schematic indoor map of the Metropolitan Museum. Tap the rooms you want, and footprints walk the route between them with honest times.': ['一张大都会博物馆的室内示意图。点选您想去的展厅，脚印会沿着展厅之间的路线走出来，并给出诚实的时间。', 'Un plano interior esquemático del Museo Metropolitano. Toque las salas que quiera, y unas huellas recorren la ruta entre ellas con tiempos honestos.', '메트로폴리탄 미술관의 실내 개념도입니다. 가고 싶은 전시실을 누르면 발자국이 그 사이 경로를 걸어가며 정직한 소요 시간을 보여 줍니다.', 'Sơ đồ trong nhà của bảo tàng Metropolitan. Chạm vào các phòng bạn muốn, và những dấu chân sẽ đi theo lộ trình giữa chúng với thời gian trung thực.'],
+    'Walk the Met →': ['漫步大都会 →', 'Recorrer el Met →', '메트 걷기 →', 'Đi bộ trong Met →'],
+
     # ---- the Bot Lab debt, the shared-article chrome, the trade pages ----
     'Bot Lab': ['机器人实验室', 'Laboratorio de bots', '봇 연구실', 'Phòng thí nghiệm bot'],
     'Automated trading research, on paper trades only. Nothing here connects to an exchange, holds a key, or touches a balance. Access is issued directly and nothing is for sale.': ['自动化交易研究，仅使用模拟交易。这里不连接任何交易所，不保存任何密钥，也不触碰任何余额。访问权限由我们直接发放，且不出售任何东西。', 'Investigación de trading automatizado, solo con operaciones simuladas. Nada aquí se conecta a un mercado, guarda una clave ni toca un saldo. El acceso se concede directamente y nada está a la venta.', '자동 매매 연구이며, 모의 거래만 사용합니다. 이곳의 어떤 것도 거래소에 연결되지 않고, 키를 보관하지 않으며, 잔고를 건드리지 않습니다. 접근 권한은 직접 발급되며 판매되는 것은 없습니다.', 'Nghiên cứu giao dịch tự động, chỉ trên giao dịch giả lập. Không có gì ở đây kết nối với sàn, giữ khóa hay chạm vào số dư. Quyền truy cập được cấp trực tiếp và không có gì được rao bán.'],

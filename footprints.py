@@ -85,6 +85,45 @@ DEFAULT_CORRIDORS = {
         "label": "Seattle Center Monorail platform to the Space Needle entrance",
         "journey": None,
     },
+
+    # The Met, indoors. GPS in the stone wings usually fails this store's own
+    # accuracy rule, and that is fine: a refused walk is the recorder being
+    # honest. Corridors near glass (the Sackler Wing, the Great Hall doors)
+    # sometimes survey cleanly; the rest wait for the steps-and-minutes
+    # recorder. Until a corridor is walked, the /met page shows its time as
+    # an estimate with a tilde, which is the truthful state of knowledge.
+    "met-egyptian--great-hall": {
+        "label": "The Met, Great Hall to Egyptian Art", "journey": None},
+    "met-dendur--egyptian": {
+        "label": "The Met, Egyptian Art to the Temple of Dendur", "journey": None},
+    "met-american-court--dendur": {
+        "label": "The Met, Temple of Dendur to the American Wing court", "journey": None},
+    "met-arms-armor--great-hall": {
+        "label": "The Met, Great Hall to Arms and Armor", "journey": None},
+    "met-arms-armor--medieval": {
+        "label": "The Met, Arms and Armor to Medieval Art", "journey": None},
+    "met-lehman--medieval": {
+        "label": "The Met, Medieval Art to the Lehman Wing", "journey": None},
+    "met-great-hall--greek-roman": {
+        "label": "The Met, Great Hall to Greek and Roman Art", "journey": None},
+    "met-greek-roman--modern": {
+        "label": "The Met, Greek and Roman to Modern Art", "journey": None},
+    "met-medieval--modern": {
+        "label": "The Met, Medieval Art to Modern Art", "journey": None},
+    "met-grand-stair--great-hall": {
+        "label": "The Met, Great Hall to the Grand Staircase", "journey": None},
+    "met-grand-stair--grand-stair-2": {
+        "label": "The Met, Grand Staircase, floor 1 to floor 2", "journey": None},
+    "met-euro-paintings--grand-stair-2": {
+        "label": "The Met, Grand Staircase to European Paintings", "journey": None},
+    "met-euro-paintings--nineteenth-century": {
+        "label": "The Met, European Paintings to the 19th-century galleries", "journey": None},
+    "met-asian-astor--euro-paintings": {
+        "label": "The Met, European Paintings to Asian Art and the Astor Court", "journey": None},
+    "met-asian-astor--islamic": {
+        "label": "The Met, Asian Art to Islamic Art", "journey": None},
+    "met-grand-stair-2--islamic": {
+        "label": "The Met, Islamic Art to the Grand Staircase", "journey": None},
 }
 
 
