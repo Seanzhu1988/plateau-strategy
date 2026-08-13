@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>The Moment You Came For, a world guide that protects it</title>
+<link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+<!-- Self-contained blueprint, handed around as a file, so it leans on no
+     shared stylesheet. Written with no long dashes, the owner's standing rule.
+     Limited information on purpose: it says what the thing is and why it
+     matters, and names the parts that are the real work without teaching how
+     they are done. -->
+<style>
+  :root { --bp:#10305c; --bp2:#0c2749; --ink:#dcecff; --ink2:#8fb4e3;
+          --grid:rgba(220,236,255,.07); }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bp); color:var(--ink);
+         font:17px/1.65 Georgia,'Times New Roman',serif;
+         background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+           linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+         background-size:28px 28px; }
+  .sheet { max-width:52rem; margin:0 auto; padding:1.4rem 1.2rem 4rem; }
+  .tblock { border:2px solid var(--ink); padding:.9rem 1.1rem; margin:1rem 0 2.4rem;
+    display:flex; flex-wrap:wrap; gap:.4rem 2rem; align-items:baseline;
+    font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--ink2); }
+  .tblock b { color:var(--ink); font-size:.95rem; letter-spacing:.18em; }
+  h1 { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+       font-size:1.6rem; letter-spacing:.03em; line-height:1.25; margin:0 0 .4rem;
+       color:var(--ink); font-weight:700; }
+  .sub { color:var(--ink2); margin:0 0 2rem; font-style:italic; }
+  h2 { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+       font-size:.82rem; letter-spacing:.22em; text-transform:uppercase; color:var(--ink);
+       border-bottom:1px solid var(--ink2); padding-bottom:.45rem; margin:2.8rem 0 1rem; }
+  p { margin:.85rem 0; }
+  .lede { font-size:1.12rem; }
+  .quiet { color:var(--ink2); font-size:.93rem; }
+  .story { border-left:2px solid var(--ink); padding:.2rem 0 .2rem 1.1rem; margin:1.6rem 0; }
+  figure { margin:1.6rem 0 2.2rem; }
+  figure svg { width:100%; height:auto; display:block; background:var(--bp2);
+               border:1.5px solid var(--ink2); }
+  figcaption { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:var(--ink2);
+    margin-top:.55rem; }
+  .held { border:1.5px dashed var(--ink2); padding:1rem 1.2rem; margin:1.6rem 0; }
+  .held p { margin:.5rem 0; }
+  a { color:var(--ink); }
+  .foot { margin-top:3rem; padding-top:1rem; border-top:1px solid var(--ink2);
+          color:var(--ink2); font-size:.9rem; }
+  svg text { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+             fill:var(--ink2); font-size:11px; letter-spacing:.1em; }
+  svg .big { fill:var(--ink); font-size:12.5px; }
+  svg .box { fill:none; stroke:var(--ink); stroke-width:1.5; }
+  svg .faint { fill:none; stroke:var(--ink2); stroke-width:1; stroke-dasharray:5 5; }
+  svg .dim { stroke:var(--ink2); stroke-width:1; }
+  svg .fp { fill:var(--ink); }
+  svg .trace { fill:none; stroke:var(--ink2); stroke-width:1; stroke-dasharray:2 6; }
+  svg .cone { fill:rgba(220,236,255,.16); stroke:var(--ink2); stroke-width:1; }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="tblock">
+    <b>Plateau Strategy Solution Lab</b>
+    <span>Project, The Moment You Came For</span>
+    <span>Sheet, 1 of 1</span>
+    <span>Status, draft for the Reinvestment USA board</span>
+  </div>
+
+  <h1>The Moment You Came For</h1>
+  <p class="sub">A free map that works anywhere in the world, and becomes your
+  private guide the moment you need one.</p>
+
+  <div class="story">
+    <p>A man once stood at the top of Capitol Hill, seeing it for the first
+    time, and said he had wanted this moment for fifty years. The destination
+    was never the hard part. The hard part is the last hour before it: getting
+    lost, running out of time, the ticket line, the overcharge, the small
+    frictions that pile up and quietly steal the thing a person came across the
+    world for.</p>
+  </div>
+
+  <p class="lede">This is a guide whose whole job is to make sure nothing gets
+  between a traveller and the moment they have been waiting for. Not a
+  navigation app. Closer to a service that protects the reason you came.</p>
+
+  <h2>The problem, plainly</h2>
+  <p>Nearly all of the time, even a seasoned traveller struggles somewhere on a
+  trip, and a museum or a new city has no single tool that hands you one best
+  experience of it. You arrive, and you spend your first and most precious hour
+  solving logistics instead of being there. The enemy of a trip is rarely the
+  place. It is the friction in front of it.</p>
+
+  <h2>The idea, as one flow</h2>
+  <p>One free tool. Open the map and it helps you go anywhere in the world.
+  When you want a tour, you pre-select it, and it sets itself up so you make it
+  there in time. When you are nearby, it wakes and does a guide's work. You
+  never worry about being lost, because footprints show you where to go, and an
+  indoor overview lets you see the whole area. You do not worry about being
+  overcharged or losing the precious time between you and the place you came
+  for.</p>
+
+  <figure>
+    <svg viewBox="0 0 800 200" role="img" aria-label="The one flow: open the map, pick the place, be walked there in time, hear what it is at the door, and the moment is protected">
+      <text x="24" y="28" class="big">FIG. 1, THE ONE FLOW</text>
+      <rect x="24"  y="58" width="132" height="64" class="box"/>
+      <text x="40"  y="86">OPEN THE</text><text x="40" y="102">FREE MAP</text>
+      <rect x="186" y="58" width="132" height="64" class="box"/>
+      <text x="202" y="86">PICK THE</text><text x="202" y="102">PLACE</text>
+      <rect x="348" y="58" width="132" height="64" class="box"/>
+      <text x="364" y="86">WALKED THERE</text><text x="364" y="102">IN TIME</text>
+      <rect x="510" y="58" width="132" height="64" class="box"/>
+      <text x="526" y="86">AT THE DOOR,</text><text x="526" y="102">HEAR WHAT IT IS</text>
+      <rect x="672" y="58" width="104" height="64" class="box" stroke-width="2.4"/>
+      <text x="688" y="86">THE MOMENT,</text><text x="688" y="102">UNSTOLEN</text>
+      <line x1="156" y1="90" x2="186" y2="90" class="dim"/>
+      <line x1="318" y1="90" x2="348" y2="90" class="dim"/>
+      <line x1="480" y1="90" x2="510" y2="90" class="dim"/>
+      <line x1="642" y1="90" x2="672" y2="90" class="dim"/>
+      <text x="24" y="160">EACH STEP REMOVES ONE FRICTION BETWEEN THE TRAVELLER AND THE MOMENT.</text>
+      <text x="24" y="182" style="fill:#dcecff">THE GUIDE IS NOT THE PRODUCT. THE UNSTOLEN MOMENT IS.</text>
+    </svg>
+    <figcaption>Fig. 1, one spine, not ten features. Every part earns its
+    place by removing a friction.</figcaption>
+  </figure>
+
+  <h2>Indoor and outdoor, one guide</h2>
+  <p>The split is the point where GPS gives up. Outdoors, your phone knows
+  where it is, so the guide names what is around you as you pass it. Indoors,
+  where the map goes grey, the footprints of the person who walked it before
+  you become the way through, and the guide speaks each described point as you
+  reach it. Face the wrong way and the footprints vanish, so you turn until
+  they come back. No arrows to read, nothing to interpret.</p>
+
+  <figure>
+    <svg viewBox="0 0 800 240" role="img" aria-label="Two panels, outdoor where GPS names nearby places, indoor where the footprint is the guide">
+      <text x="24" y="28" class="big">FIG. 2, WHERE GPS GIVES UP</text>
+      <rect x="24" y="46" width="356" height="176" class="faint"/>
+      <circle cx="120" cy="150" r="6" class="fp"/>
+      <text x="150" y="120">"PIKE PLACE MARKET,</text>
+      <text x="150" y="136">40 METRES ON YOUR LEFT."</text>
+      <text x="60" y="210">OUTDOOR, GPS NAMES WHAT IS AROUND YOU</text>
+      <rect x="420" y="46" width="356" height="176" class="faint"/>
+      <polyline points="600,206 600,70" class="trace"/>
+      <path d="M 600 206 L 582 150 L 618 150 Z" class="cone"/>
+      <circle cx="600" cy="206" r="6" class="fp"/>
+      <ellipse class="fp" cx="595" cy="176" rx="3" ry="5.5"/>
+      <ellipse class="fp" cx="605" cy="156" rx="3" ry="5.5"/>
+      <ellipse class="fp" cx="595" cy="136" rx="3" ry="5.5"/>
+      <ellipse class="fp" cx="605" cy="116" rx="3" ry="5.5"/>
+      <text x="452" y="210">INDOOR, THE FOOTPRINT IS THE WAY THROUGH</text>
+    </svg>
+    <figcaption>Fig. 2, one guide, two environments. The footprint is the
+    position reference GPS cannot be indoors.</figcaption>
+  </figure>
+
+  <h2>Why this is Reinvestment USA</h2>
+  <p>This reinvests in a very human asset: the experience of a place, and the
+  people who make their living helping others find it. The traveller never
+  pays. The tool is free, and it takes nothing from the person using it, no
+  sold location, no bait. The revenue comes from the places that want their
+  visitors to arrive un-lost and on time, hotels off a transit stop,
+  attractions, museums, tour operators, and from the guiding trade being made
+  reachable to everyone rather than to the few who can afford a private guide.
+  A guide used to be a luxury. This makes the good part of it ordinary.</p>
+
+  <figure>
+    <svg viewBox="0 0 800 170" role="img" aria-label="How it grows: one walk becomes everyone's path, and the places partner because they want visitors not to get lost">
+      <text x="24" y="28" class="big">FIG. 3, HOW IT GROWS</text>
+      <rect x="24"  y="52" width="220" height="64" class="box"/>
+      <text x="40"  y="80">ONE PERSON WALKS IT ONCE</text>
+      <text x="40"  y="98">(a guide, a local, a surveyor)</text>
+      <rect x="290" y="52" width="220" height="64" class="box"/>
+      <text x="306" y="80">IT BECOMES EVERYONE'S</text>
+      <text x="306" y="98">PATH AND TOUR</text>
+      <rect x="556" y="52" width="220" height="64" class="box"/>
+      <text x="572" y="80">THE PLACE PARTNERS, IT</text>
+      <text x="572" y="98">WANTS VISITORS UN-LOST</text>
+      <line x1="244" y1="84" x2="290" y2="84" class="dim"/>
+      <line x1="510" y1="84" x2="556" y2="84" class="dim"/>
+      <text x="24" y="150">THE TRAVELLER NEVER PAYS. THE PLACES DO, BECAUSE A VISITOR WHO ARRIVES WELL COMES BACK.</text>
+    </svg>
+    <figcaption>Fig. 3, the loop. It grows by contribution and by partnership,
+    the same way a map grows, not by us surveying the whole world alone.</figcaption>
+  </figure>
+
+  <h2>What is already real, and what is the leap</h2>
+  <p>Most of the spine exists in pieces today: the worldwide map and trip
+  planner, the tour that gets you there in time, the proximity guide that
+  speaks a place as you near it, and the footprints with their indoor overview.
+  This is mostly an honest job of joining parts that already work.</p>
+  <p>Two things are the real leap, and it is worth naming them rather than
+  hiding them. Painting the footprints onto your live camera view is augmented
+  reality, and it is the most magical part and the hardest, and it needs a
+  proper phone app rather than a web page. And "anywhere in the world, indoors"
+  cannot come from walking every corridor ourselves, it grows from travellers
+  and from the places themselves, which is a real business to build, not just
+  a feature.</p>
+
+  <div class="held">
+    <p>This is the shareable half. The mechanics that make the guide
+    trustworthy, when it speaks and when it stays silent, how a walked line
+    verifies a route, how it refuses to guess rather than send someone the
+    wrong way, are built and tested and deliberately not described here.</p>
+    <p class="quiet">There is a working demo of the direction gate at
+    <a href="/footprints-demo">/footprints-demo</a>, and the footprints
+    blueprint at <a href="/footprints-concept">/footprints-concept</a>.
+    Interested in the idea, or in a place of your own that receives lost
+    visitors? The full blueprint follows a conversation, not a click.</p>
+  </div>
+
+  <p class="foot">Draft, Plateau Strategy Solution Lab, Seattle. A working
+  prototype of the guide exists and awaits its first real walk. This page
+  describes an idea, not an offer, and collects nothing from you.</p>
+</div>
+</body>
+</html>

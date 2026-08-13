@@ -1717,6 +1717,16 @@ def api_footprint_path(key):
     return jsonify({"ok": True, **p})
 
 
+@app.route("/guide-concept")
+def guide_concept_page():
+    """The full guiding-service vision as a blueprint, for the Reinvestment USA
+    board: the free world map that becomes a private guide, indoor and out, that
+    protects the moment a traveller came for. noindex, travels by being sent."""
+    r = send_file(os.path.join(BASE_DIR, "guide-concept.html"))
+    r.headers["X-Robots-Tag"] = "noindex, nofollow"
+    return r
+
+
 @app.route("/footprints-concept")
 def footprints_concept_page():
     """The blueprint draft of the footprints idea, for the Reinvestment USA
