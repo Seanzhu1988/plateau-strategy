@@ -6898,16 +6898,31 @@ def api_article_create():
         if not ok:
             return jsonify({"ok": False, "error": why}), 429
         now = datetime.datetime.now()
-        # Posting is idempotent on content. During a deploy two instances
-        # briefly answer at once, and tonight that put the same article on
-        # the board twice. Same fingerprint, same article: the existing one
-        # is returned instead of a copy being created.
+        # Posting is idempotent. Two layers, because the exact-hash guard
+        # alone was beaten within hours: the owner pasted the same article
+        # by hand with different line breaks, the fingerprint differed by a
+        # few bytes, and the board carried the same piece twice again.
+        #
+        # Layer 1, exact content: same fingerprint returns the existing
+        # article. Layer 2, same TITLE already visible on the board: also
+        # treated as the same piece, existing article returned. On an idea
+        # board a reused title IS the same idea; whoever genuinely has a
+        # second thing to say can give it its own name, and the note tells
+        # them so.
         h_new = _content_hash(title, body)
+        t_new = " ".join(title.lower().split())
         for a in items:
-            if not a.get("hidden") and _content_hash(a.get("title"), a.get("body")) == h_new:
+            if a.get("hidden"):
+                continue
+            same_text = _content_hash(a.get("title"), a.get("body")) == h_new
+            same_title = " ".join((a.get("title") or "").lower().split()) == t_new
+            if same_text or same_title:
                 return jsonify({"ok": True, "article": _public_article(a),
                                 "duplicate": True,
-                                "note": "This exact text is already on the board."})
+                                "note": ("This exact text is already on the board."
+                                         if same_text else
+                                         "An idea with this exact title is already on the board. "
+                                         "If yours is different, give it its own title.")})
 
         article = {
             "id": _next_id(items, "ART", datestamp=False),
