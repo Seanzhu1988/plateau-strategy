@@ -1679,6 +1679,33 @@ def api_footprints_walked():
     return jsonify({"ok": True, "corridors": out})
 
 
+@app.route("/api/footprints/<key>/notes", methods=["POST"])
+@surveyor_required
+def api_footprint_notes(key):
+    """Set the described waypoints for a corridor: the indoor announcements the
+    guide speaks as you pass them. Owner/surveyor only, like recording a walk.
+
+    Each note is {at_frac: 0..1 along the corridor, text, side}. Coordinates are
+    refused by the same guard as everywhere else: a note is a description of a
+    place on a known line, never a new fix on the ground."""
+    d = request.get_json(force=True, silent=True) or {}
+    # at_frac is a legitimate 0..1 fraction along the line, and the coordinate
+    # guard flags every fractional float, so scan with at_frac removed. A real
+    # lat/lon still trips it: the key "lat" or a value like 47.6062 survives the
+    # strip. A note describes a point on a known line, never a new fix.
+    scrub = {"notes": [{k: v for k, v in n.items() if k != "at_frac"}
+                       for n in (d.get("notes") or []) if isinstance(n, dict)]}
+    hit = consent.looks_like_coordinate(scrub)
+    if hit:
+        return jsonify({"ok": False,
+                        "error": "Notes describe points on a recorded line, "
+                                 "not coordinates (%s)." % hit}), 400
+    notes = FOOTPRINTS.set_notes(key, d.get("notes") or [])
+    if notes is None:
+        return jsonify({"ok": False, "error": "No such corridor."}), 400
+    return jsonify({"ok": True, "notes": notes})
+
+
 @app.route("/api/footprints/<key>/path")
 def api_footprint_path(key):
     """The recorded line of a walked corridor, public, because it is the

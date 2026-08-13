@@ -107,7 +107,8 @@
       var c = d.corridors[i];
       var p = await psxJSON('/api/footprints/' + encodeURIComponent(c.key) + '/path');
       if (p && p.ok && p.points) {
-        corridors.push({ key: c.key, label: c.label, points: p.points });
+        corridors.push({ key: c.key, label: c.label, points: p.points,
+                         notes: p.notes || [] });
       }
     }
   })();
@@ -157,6 +158,20 @@
         prev = d2.trail[j];
       }
       wgFollow.textContent = 'Follow the footprints.';
+      /* The indoor announcement: a described waypoint on this corridor, spoken
+         as you reach it facing the right way. Location (progress along the
+         recorded line) triggers the description; the footprint is the position
+         reference GPS cannot be indoors. Same say-once, one-at-a-time gating
+         as the outdoor announcements. */
+      var note = WalkGuide.corridorAnnounce(pos, heading, best,
+        { said: state.said, lastSpokeAt: state.lastSpokeAt, accuracy: acc, now: Date.now() });
+      if (note) {
+        state.said[note.id] = true;    // note.id is already corridor-scoped
+        state.lastSpokeAt = Date.now();
+        wgFollow.textContent = note.text;
+        say(note.text);
+        log(note.text);
+      }
     } else {
       wgFollow.textContent = d2.why === 'facing away from the path'
         ? 'Turn on the spot until the footprints appear.'

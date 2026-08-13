@@ -235,6 +235,48 @@ with sync_playwright() as p:
     t = pg.evaluate("WalkGuide.trailAhead({lat:47.6001,lon:-122.33}, 0, [], {})")
     chk("no recorded path, no footprints", t.get("show") is False)
 
+    print("\nindoor announcements: a described point spoken as you reach it,")
+    print("only while facing along the corridor:")
+    # A north line, 8 points at 8 m, with a note at index 4 on the right.
+    CORR = ("{key:'c', points:["
+            + ",".join("[%.6f,-122.33]" % (47.6000 + i * 8 / 111320.0) for i in range(8))
+            + "], notes:[{at:4, text:'The ticket machines', side:'right'}]}")
+
+    def announce(idx, heading, over=""):
+        pos = "{lat:%.6f, lon:-122.33}" % (47.6000 + idx * 8 / 111320.0)
+        st = "{said:{}, lastSpokeAt:0, accuracy:5, now:1000000%s}" % (", " + over if over else "")
+        return pg.evaluate("(function(){var r=WalkGuide.corridorAnnounce(%s,%d,%s,%s);"
+                           "return r?r.text:null;})()" % (pos, heading, CORR, st))
+
+    a = announce(4, 0)                       # standing at the note, facing north (along)
+    chk("reaching the point facing forward speaks it (%s)" % a,
+        a and "ticket machines" in a and "on your right" in a)
+    a = announce(3, 0)                       # one step before, still within reach
+    chk("it speaks just before you get there too", a and "on your right" in a)
+    chk("facing across the corridor says nothing (the gate holds)",
+        announce(4, 90) is None)
+    chk("standing before the note but facing back down the line says nothing",
+        announce(2, 180) is None)
+    a = announce(6, 180)                      # walking the corridor backwards toward the note
+    chk("walking it backwards flips the side to your LEFT (%s)" % a,
+        a and "on your left" in a)
+    chk("a point already passed is not announced",
+        announce(1, 0) is None or "ticket" not in (announce(1, 0) or ""))
+    chk("nothing is said twice",
+        pg.evaluate("(function(){var pos={lat:%.6f,lon:-122.33};"
+                    "return WalkGuide.corridorAnnounce(pos,0,%s,"
+                    "{said:{'c:note0':true},lastSpokeAt:0,accuracy:5,now:1000000});})()"
+                    % (47.6000 + 4 * 8 / 111320.0, CORR)) is None)
+    chk("nor within the gap after the last one",
+        announce(4, 0, "lastSpokeAt:999000") is None)
+    chk("a rough fix off the line says nothing",
+        pg.evaluate("WalkGuide.corridorAnnounce({lat:47.6100,lon:-122.33},0,%s,"
+                    "{said:{},accuracy:5,now:1})" % CORR) is None)
+    chk("a corridor with no notes says nothing",
+        pg.evaluate("WalkGuide.corridorAnnounce({lat:47.6000,lon:-122.33},0,"
+                    "{key:'c',points:[[47.6,-122.33],[47.6001,-122.33]],notes:[]},"
+                    "{said:{},accuracy:5,now:1})") is None)
+
     chk("no page errors across the whole run (%s)" % (errs or "clean"), not errs)
     pg.close()
     br.close()

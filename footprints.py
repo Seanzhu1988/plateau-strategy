@@ -305,9 +305,49 @@ class Store(object):
         if not fresh:
             return None
         best = max(fresh, key=lambda w: w["date"])
+        pts = best["points"]
+        # Notes are stored as a FRACTION along the corridor (0..1), not an index,
+        # so re-walking the corridor with a different number of fixes does not
+        # move every description. Convert to the nearest index of the current
+        # best walk on the way out, which is what corridorAnnounce consumes.
+        notes = []
+        for n in (rec.get("notes") or []):
+            try:
+                frac = min(1.0, max(0.0, float(n.get("at_frac"))))
+            except (TypeError, ValueError):
+                continue
+            at = int(round(frac * (len(pts) - 1)))
+            notes.append({"at": at, "at_frac": frac,
+                          "text": str(n.get("text") or "")[:200],
+                          "side": n.get("side") if n.get("side") in
+                          ("left", "right", "ahead") else "ahead"})
         return {"key": key, "label": rec.get("label", key),
                 "date": best["date"], "length_m": best["length_m"],
-                "minutes": best.get("minutes"), "points": best["points"]}
+                "minutes": best.get("minutes"), "points": pts, "notes": notes}
+
+    def set_notes(self, key, notes):
+        """Owner sets the described waypoints for a corridor. Fractions, so they
+        outlive a re-walk. Returns the stored list, or None for an unknown key."""
+        if key not in DEFAULT_CORRIDORS:
+            return None
+        clean = []
+        for n in (notes or [])[:50]:
+            try:
+                frac = min(1.0, max(0.0, float(n.get("at_frac"))))
+            except (TypeError, ValueError):
+                continue
+            text = " ".join(str(n.get("text") or "").split())[:200]
+            if not text:
+                continue
+            side = n.get("side") if n.get("side") in ("left", "right", "ahead") else "ahead"
+            clean.append({"at_frac": round(frac, 4), "text": text, "side": side})
+        with self._lock:
+            data = self._read()
+            rec = data["corridors"].setdefault(key, {"label": DEFAULT_CORRIDORS[key]["label"],
+                                                      "walks": []})
+            rec["notes"] = clean
+            self._write(data)
+        return clean
 
     def corridors(self, today=None):
         """Every corridor, walked or waiting, the work list.

@@ -173,6 +173,34 @@ chk("and the tourist corridors are in the work list",
     {"westlake-to-pike-place", "pike-place-to-waterfront",
      "monorail-to-space-needle"} <= {c["key"] for c in store.corridors()})
 
+print("\ndescribed waypoints: notes stored as a fraction, served as an index:")
+# The corridor must be walked before its path (and notes) serve.
+store.set_notes("seatac-terminal-to-link",
+                [{"at_frac": 0.5, "text": "The ticket machines", "side": "right"},
+                 {"at_frac": 1.5, "text": "clamped over-range", "side": "bad-side"}])
+p = store.path("seatac-terminal-to-link")
+chk("the path carries the notes", p and len(p.get("notes") or []) == 2)
+n0 = p["notes"][0]
+npts = len(p["points"])
+chk("frac 0.5 maps to the middle index (%s of %d)" % (n0["at"], npts),
+    n0["at"] == int(round(0.5 * (npts - 1))))
+chk("its text and side survive", n0["text"] == "The ticket machines" and n0["side"] == "right")
+chk("an over-range fraction is clamped to the last point",
+    p["notes"][1]["at"] == npts - 1)
+chk("a bad side falls back to 'ahead'", p["notes"][1]["side"] == "ahead")
+chk("notes on an UNKNOWN corridor are refused",
+    store.set_notes("not-a-corridor", [{"at_frac": 0.5, "text": "x"}]) is None)
+# Over HTTP: owner/surveyor only, and coordinates refused.
+r = c.post("/api/footprints/seatac-terminal-to-link/notes",
+           json={"notes": [{"at_frac": 0.3, "text": "Escalator down", "side": "left"}]})
+chk("a stranger cannot set notes (%d)" % r.status_code, r.status_code == 401)
+r = owner.post("/api/footprints/seatac-terminal-to-link/notes",
+               json={"notes": [{"at_frac": 0.3, "text": "Escalator down", "side": "left"}]})
+chk("the owner can (%d)" % r.status_code, r.status_code == 200)
+r = owner.post("/api/footprints/seatac-terminal-to-link/notes",
+               json={"notes": [{"at_frac": 0.3, "text": "x", "lat": 47.6}]})
+chk("a note carrying a coordinate is refused (%d)" % r.status_code, r.status_code == 400)
+
 print("\nthe walked list is public; the waiting list is not:")
 r = c.get("/api/footprints/walked")
 chk("anyone can ask what has been walked (%d)" % r.status_code,

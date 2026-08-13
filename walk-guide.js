@@ -262,6 +262,75 @@
     return { show: true, dir: dir, trail: trail, distance: d };
   }
 
+  /* Indoor announcement: a described point ON a recorded corridor, spoken as
+   * you reach it while walking the corridor the right way.
+   *
+   * This is the indoor half of the guide, and the whole reason it is separate
+   * from shouldAnnounce(). Outdoors, shouldAnnounce fires on GPS distance to an
+   * OpenStreetMap place. Indoors GPS is too rough for that and a hallway has no
+   * OSM places, so the trigger is different: snap to the recorded line, and
+   * fire a note when your progress along the line reaches its point AND you are
+   * facing along the corridor. The footprint is the position reference GPS
+   * cannot be indoors.
+   *
+   * corridor: { points: [[lat,lon],...],
+   *             notes:  [{ at:<index into points>, text:"The ticket machines",
+   *                        side:"left"|"right"|"ahead" }] }
+   * state:    { said:{}, lastSpokeAt, accuracy, now }
+   * Returns { id, text, at } to speak, or null.
+   */
+  var NOTE_WINDOW = 2;             // recorded indices either side counts as "reached"
+
+  function _asLL(p) {
+    return { lat: p.lat !== undefined ? p.lat : p[0],
+             lon: p.lon !== undefined ? p.lon : p[1] };
+  }
+
+  function corridorAnnounce(pos, heading, corridor, state) {
+    state = state || {};
+    if (!corridor || !corridor.points || corridor.points.length < 2) return null;
+    var notes = corridor.notes || [];
+    if (!notes.length) return null;
+    if (state.lastSpokeAt && state.now && (state.now - state.lastSpokeAt) < GAP_MS) {
+      return null;                 // one thing at a time, room to look at it
+    }
+    // Must be ON the line, and facing along it. trailAhead enforces both, plus
+    // the no-heading and off-path refusals, so it is the one gate to ask.
+    var t = trailAhead(pos, heading, corridor.points, { accuracy: state.accuracy });
+    if (!t.show) return null;
+    var dir = t.dir;               // +1 as recorded, -1 walking it back
+    // Progress = nearest recorded index.
+    var ni = 0, nd = Infinity;
+    for (var k = 0; k < corridor.points.length; k++) {
+      var dm = distanceM(pos, _asLL(corridor.points[k]));
+      if (dm < nd) { nd = dm; ni = k; }
+    }
+    var said = state.said || {};
+    var pfx = corridor.key ? corridor.key + ':' : '';   // so two corridors' notes never collide
+    var best = null;
+    for (var j = 0; j < notes.length; j++) {
+      var nt = notes[j];
+      var id = pfx + 'note' + (nt.id !== undefined ? nt.id : j);
+      if (said[id]) continue;
+      // How far the note is ahead of us in the direction we are actually
+      // walking. Negative means we have passed it; only announce at or just
+      // before reaching it.
+      var ahead = (nt.at - ni) * dir;
+      if (ahead < 0 || ahead > NOTE_WINDOW) continue;
+      if (!best || ahead < best.ahead) best = { nt: nt, id: id, ahead: ahead };
+    }
+    if (!best) return null;
+    // Left and right are relative to travel; walking the corridor backwards
+    // flips them, so the note recorded "on your right" is on your left going
+    // the other way.
+    var side = best.nt.side;
+    if (dir === -1 && side === 'left') side = 'right';
+    else if (dir === -1 && side === 'right') side = 'left';
+    var where = (!side || side === 'ahead') ? 'just ahead' : ('on your ' + side);
+    return { id: best.id, at: best.nt.at,
+             text: best.nt.text + ', ' + where + '.' };
+  }
+
   w.WalkGuide = {
     distanceM: distanceM,
     bearingTo: bearingTo,
@@ -273,7 +342,8 @@
     nearestOnPathM: nearestOnPathM,
     offPath: offPath,
     trailAhead: trailAhead,
+    corridorAnnounce: corridorAnnounce,
     NEAR: NEAR, GAP_MS: GAP_MS, MIN_RUN: MIN_RUN, AHEAD_MAX: AHEAD_MAX,
-    TRAIL_CONE: TRAIL_CONE, TRAIL_M: TRAIL_M
+    TRAIL_CONE: TRAIL_CONE, TRAIL_M: TRAIL_M, NOTE_WINDOW: NOTE_WINDOW
   };
 })(window);
