@@ -115,6 +115,8 @@
   /* ---- state ---- */
   var picked = [];        /* room keys in visit order, no stair nodes */
   var floor = 1;
+  var mode = 'flat';      /* flat | 3d, remembered per device */
+  try { if (localStorage.getItem('met_mode') === '3d') mode = '3d'; } catch (e) {}
 
   /* ---- drawing ---- */
   function center(k) {
@@ -144,9 +146,27 @@
     return g.join('');
   }
 
+  /* One footprint: a pad with a TOE ahead of it, so every print points the
+     way you are walking. Direction was the owner's ask, and an ellipse alone
+     cannot show it: it reads the same forwards and backwards. */
+  function onePrint(x, y, ux, uy, stepIdx) {
+    var ang = Math.atan2(uy, ux) * 180 / Math.PI + 90;
+    var tx = x + ux * 5.6, ty = y + uy * 5.6;
+    var delay = (stepIdx * 0.22).toFixed(2);
+    return '<g class="print" style="animation-delay:' + delay + 's">' +
+      '<ellipse class="trail" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) +
+        '" rx="2.5" ry="4.2" transform="rotate(' + ang.toFixed(0) + ' ' +
+        x.toFixed(1) + ' ' + y.toFixed(1) + ')"></ellipse>' +
+      '<circle class="trail" cx="' + tx.toFixed(1) + '" cy="' + ty.toFixed(1) +
+        '" r="1.5"></circle></g>';
+  }
+
+  /* The step counter runs across the WHOLE route, not per corridor, so the
+     prints appear in true walking order from the first room to the last,
+     across floors. That sequence is the direction, made visible. */
+  var stepCounter = 0;
+
   function footprintsAlong(a, b) {
-    /* Pairs of small ellipses stamped along the corridor, alternating left
-       and right of the line: the identity of the whole product, drawn. */
     var pa = center(a), pb = center(b);
     var dx = pb[0] - pa[0], dy = pb[1] - pa[1];
     var len = Math.sqrt(dx * dx + dy * dy);
@@ -158,10 +178,8 @@
       var side = (Math.floor(d / step) % 2 === 0) ? 4.5 : -4.5;
       var x = pa[0] + ux * d + px * side;
       var y = pa[1] + uy * d + py * side;
-      var ang = Math.atan2(dy, dx) * 180 / Math.PI + 90;
-      out.push('<ellipse class="trail" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) +
-               '" rx="2.6" ry="4.6" transform="rotate(' + ang.toFixed(0) + ' ' +
-               x.toFixed(1) + ' ' + y.toFixed(1) + ')"></ellipse>');
+      out.push(onePrint(x, y, ux, uy, stepCounter));
+      stepCounter += 1;
     }
     return out.join('');
   }
@@ -178,33 +196,91 @@
     return seq;
   }
 
-  function draw() {
-    var seq = fullRoute();
-    var svg = ['<svg viewBox="0 0 760 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schematic floor ' + floor + ' of the Met">'];
+  function floorSVG(f, seq) {
+    var svg = ['<svg viewBox="0 0 760 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schematic floor ' + f + ' of the Met">'];
     svg.push('<path class="park" d="M20,10 L20,550"></path>');
     svg.push('<text class="avenue" x="742" y="290" transform="rotate(90 742 290)">FIFTH AVENUE</text>');
     svg.push('<text class="avenue" x="30" y="24">CENTRAL PARK</text>');
-    /* corridors on this floor, faint */
     EDGES.forEach(function (e) {
-      if (ROOMS[e[0]].f !== floor || ROOMS[e[1]].f !== floor) return;
+      if (ROOMS[e[0]].f !== f || ROOMS[e[1]].f !== f) return;
       var a = center(e[0]), b = center(e[1]);
       svg.push('<line class="corridor" x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '"></line>');
     });
-    /* the walked trail */
     for (var i = 1; i < seq.length; i++) {
-      if (ROOMS[seq[i - 1]].f !== floor || ROOMS[seq[i]].f !== floor) continue;
+      if (ROOMS[seq[i - 1]].f !== f || ROOMS[seq[i]].f !== f) continue;
       svg.push(footprintsAlong(seq[i - 1], seq[i]));
     }
-    /* rooms on top */
     Object.keys(ROOMS).forEach(function (k) {
-      if (ROOMS[k].f === floor) svg.push(roomRect(k));
+      if (ROOMS[k].f === f) svg.push(roomRect(k));
     });
     svg.push('</svg>');
-    document.getElementById('svgHost').innerHTML = svg.join('');
-    document.getElementById('sheetNo').textContent = 'MET-0' + floor + ' · Floor ' + floor;
-    document.getElementById('tabF1').setAttribute('aria-current', floor === 1 ? 'true' : 'false');
-    document.getElementById('tabF2').setAttribute('aria-current', floor === 2 ? 'true' : 'false');
+    return svg.join('');
+  }
+
+  /* The 3D view: both floors as tilted slabs. spin is the reader's hand. */
+  var spin = -24;
+
+  function worldTransform() {
+    return 'rotateX(56deg) rotateZ(' + spin + 'deg)';
+  }
+
+  function draw() {
+    var seq = fullRoute();
+    stepCounter = 0;
+    var host = document.getElementById('svgHost');
+    if (mode === '3d') {
+      var f1 = floorSVG(1, seq);          /* walking order: floor 1 steps first */
+      var f2 = floorSVG(2, seq);
+      host.innerHTML =
+        '<div class="iso-stage" id="isoStage">' +
+          '<div class="iso-world" id="isoWorld" style="transform:' + worldTransform() + '">' +
+            '<div class="iso-plane" style="transform: translateZ(150px)">' +
+              '<div class="iso-tag">Floor 2</div>' + f2 + '</div>' +
+            '<div class="iso-plane" style="transform: translateZ(0px)">' +
+              '<div class="iso-tag">Floor 1</div>' + f1 + '</div>' +
+          '</div>' +
+        '</div>';
+      wireSpin();
+      document.getElementById('sheetNo').textContent = 'MET-3D · Both floors';
+    } else {
+      host.innerHTML = floorSVG(floor, seq);
+      document.getElementById('sheetNo').textContent = 'MET-0' + floor + ' · Floor ' + floor;
+    }
+    document.getElementById('tabF1').setAttribute('aria-current', mode === 'flat' && floor === 1 ? 'true' : 'false');
+    document.getElementById('tabF2').setAttribute('aria-current', mode === 'flat' && floor === 2 ? 'true' : 'false');
+    document.getElementById('tab3D').setAttribute('aria-current', mode === '3d' ? 'true' : 'false');
+    var hint = document.getElementById('legendHint');
+    if (hint) hint.textContent = mode === '3d'
+      ? 'Drag to turn the building. Floor 2 floats above Floor 1.'
+      : 'Fifth Avenue is to the right; Central Park to the left.';
     drawPlan(seq);
+  }
+
+  /* Dragging turns the building. A tap still picks a room: the handler
+     below only claims the gesture once the finger has clearly moved, so
+     the two do not fight. */
+  function wireSpin() {
+    var stage = document.getElementById('isoStage');
+    var world = document.getElementById('isoWorld');
+    if (!stage || !world) return;
+    var startX = null, startSpin = spin, moved = false;
+    stage.addEventListener('pointerdown', function (e) {
+      startX = e.clientX; startSpin = spin; moved = false;
+    });
+    stage.addEventListener('pointermove', function (e) {
+      if (startX === null) return;
+      var dx = e.clientX - startX;
+      if (Math.abs(dx) > 6) moved = true;
+      if (!moved) return;
+      spin = Math.max(-70, Math.min(25, startSpin + dx * 0.25));
+      world.style.transform = worldTransform();
+    });
+    stage.addEventListener('pointerup', function () { startX = null; });
+    stage.addEventListener('pointercancel', function () { startX = null; });
+    /* a drag must not also count as a tap on whatever room it ended over */
+    stage.addEventListener('click', function (e) {
+      if (moved) { e.stopPropagation(); moved = false; }
+    }, true);
   }
 
   function drawPlan(seq) {
@@ -265,8 +341,10 @@
     draw();
     syncUrl();
   });
-  document.getElementById('tabF1').addEventListener('click', function () { floor = 1; draw(); });
-  document.getElementById('tabF2').addEventListener('click', function () { floor = 2; draw(); });
+  document.getElementById('tabF1').addEventListener('click', function () { mode = 'flat'; floor = 1; remember(); draw(); });
+  document.getElementById('tabF2').addEventListener('click', function () { mode = 'flat'; floor = 2; remember(); draw(); });
+  document.getElementById('tab3D').addEventListener('click', function () { mode = '3d'; remember(); draw(); });
+  function remember() { try { localStorage.setItem('met_mode', mode); } catch (e) {} }
   document.getElementById('btnClear').addEventListener('click', function () {
     picked = []; draw(); syncUrl();
   });
