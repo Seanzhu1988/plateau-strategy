@@ -1679,6 +1679,7 @@
         background:rgba(255,255,255,.06);border:1px solid var(--psx-border);padding:.1rem .5rem;border-radius:6px;margin-left:.4rem;}
       .idea-meta{color:#6b655b;font-size:.82rem;margin-bottom:.9rem;}
       .idea-text{color:var(--psx-text2);font-size:.96rem;line-height:1.7;white-space:pre-wrap;margin-bottom:1.1rem;}
+      .idea-trnote{color:#6b655b;font-size:.8rem;font-style:italic;opacity:.75;margin:-.4rem 0 .9rem;}
 
       .idea-votes{display:flex;gap:.6rem;margin-bottom:1rem;}
       .idea-vbtn{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .9rem;border-radius:999px;
@@ -3378,12 +3379,27 @@
                          : { title: a.title, body: a.body, translated: false };
             }
 
+            // A one-line status while a translation is being fetched, or when
+            // the site has told us there is no translator behind the button.
+            // Without it, switching language on an untranslated piece leaves
+            // it in English with no explanation, which reads as broken.
+            function trNote(a) {
+                var l = curLang();
+                if (l === 'en' || (a.translations && a.translations[l])) return '';
+                var k = a.id + '|' + l;
+                if (window.__trOff || (window.__trFailed && window.__trFailed[k])) {
+                    return '<div class="idea-trnote">Shown in the original. Translation is not available right now.</div>';
+                }
+                return '<div class="idea-trnote">Translating…</div>';
+            }
+
             function render(a) {
                 var v = myVote(a.id);
                 var txt = inLang(a);
                 return '<div class="idea-card" id="idea_' + a.id + '">' +
                     '<h4>' + esc(txt.title) + (a.stamp ? '<span class="idea-stamp" title="Time-proof stamp, pitched ' + fmtStamp(a.created_at) + '">#' + esc(a.stamp) + '</span>' : '') + '</h4>' +
                     '<div class="idea-meta">By <strong>' + esc(a.author || 'Anonymous') + '</strong> · ' + fmtStamp(a.created_at) + '</div>' +
+                    trNote(a) +
                     '<div class="idea-text">' + esc(txt.body) + '</div>' +
                     // The trades this idea calls for. The API has shipped them on
                     // every idea since the matcher was written; nothing displayed
@@ -3432,7 +3448,60 @@
                 feed.innerHTML = items.map(render).join('');
                 // Keep them so a language change can redraw without refetching.
                 window.__ideaItems = items;
+                ensureTranslations();
             };
+
+            // Translate on demand, the moment the reader is looking at a piece
+            // in a language it has not been translated into yet. The server
+            // caches the result, so this is the slow path exactly once per
+            // (article, language) and free for everyone after. A redraw only
+            // happens if the reader is still in the language they asked for.
+            window.__trInflight = window.__trInflight || {};
+            window.__trFailed = window.__trFailed || {};
+            window.__trOff = window.__trOff || false;
+
+            async function ensureTranslation(a) {
+                var l = curLang();
+                if (l === 'en' || window.__trOff) return;
+                if (a.translations && a.translations[l]) return;
+                var k = a.id + '|' + l;
+                if (window.__trInflight[k] || window.__trFailed[k]) return;
+                window.__trInflight[k] = true;
+                try {
+                    var r = await fetch('/api/idea/' + encodeURIComponent(a.id) + '/translate',
+                        { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ lang: l }) });
+                    var j = await r.json();
+                    if (j && j.ok && j.translation) {
+                        a.translations = a.translations || {};
+                        a.translations[l] = j.translation;
+                        redrawCard(a, l);
+                    } else if (j && j.reason === 'no_key') {
+                        // No engine at all: stop asking, flip every note once.
+                        window.__trOff = true;
+                        var feed = document.getElementById('ideaFeed');
+                        if (feed && window.__ideaItems) feed.innerHTML = window.__ideaItems.map(render).join('');
+                    } else {
+                        window.__trFailed[k] = true;
+                        redrawCard(a, l);
+                    }
+                } catch (e) {
+                    window.__trFailed[k] = true;
+                } finally {
+                    delete window.__trInflight[k];
+                }
+            }
+
+            function redrawCard(a, l) {
+                if (curLang() !== l) return;         // reader moved on
+                var el = document.getElementById('idea_' + a.id);
+                if (el) el.outerHTML = render(a);
+            }
+
+            function ensureTranslations() {
+                if (curLang() === 'en' || window.__trOff) return;
+                (window.__ideaItems || []).forEach(function (a) { ensureTranslation(a); });
+            }
 
             // When the reader changes language, redraw the ideas in it. The
             // switcher already announces the change; nothing was listening, so
@@ -3442,6 +3511,7 @@
                 var items = window.__ideaItems;
                 if (feed && items && items.length) {
                     feed.innerHTML = items.map(render).join('');
+                    ensureTranslations();
                 }
             });
 

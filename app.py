@@ -113,6 +113,15 @@ def _pick_data_dir():
 
 
 DATA_DIR = _pick_data_dir()
+# Everything that writes data must agree on where it lives. app.py resolves
+# the disk by auto-detecting the mount; a helper module that only reads the
+# DATA_DIR env var would write somewhere else entirely, and its writes would
+# land where the app never looks and vanish on the next deploy. The auto
+# translator did exactly that: it saved translations to the repo directory
+# while the app read them from /var/data, so a posted article never showed a
+# translation. Publishing the resolved path into the environment makes every
+# module, including translator.py, resolve to this one directory.
+os.environ.setdefault("DATA_DIR", DATA_DIR)
 _SEEDED = set()
 
 
@@ -6998,6 +7007,49 @@ def api_article_create():
     except Exception:
         pass
     return jsonify({"ok": True, "article": _public_article(article)})
+
+
+@app.route("/api/idea/<aid>/translate", methods=["POST"])
+def api_idea_translate(aid):
+    """Translate one article into one language, the moment a reader needs it.
+
+    The background translator still runs on every post; this is the same
+    engine reached on demand, so a piece nobody has yet opened in Korean
+    still reads in Korean the first time someone does, instead of showing
+    English until a reload. A hit on either store is free; a miss makes one
+    model call and caches it for everyone after. A locked piece ships no
+    body and so no translation of one.
+    """
+    data = request.get_json(force=True, silent=True) or {}
+    lang = (data.get("lang") or request.args.get("lang") or "").strip().lower()
+    if not lang or lang == "en":
+        return jsonify({"ok": False, "reason": "unsupported"}), 400
+    a = next((x for x in _load(ARTICLES_PATH)
+              if x.get("id") == aid and not x.get("hidden")), None)
+    if not a:
+        return jsonify({"ok": False, "reason": "not_found"}), 404
+    if (a.get("lock") or {}) and not _entitled(a):
+        return jsonify({"ok": False, "reason": "locked"}), 403
+    title, body = a.get("title"), a.get("body")
+    try:
+        import translator
+    except Exception:
+        return jsonify({"ok": False, "reason": "no_key"}), 200
+    if lang not in getattr(translator, "LANGS", []) and \
+       lang not in getattr(translator, "LANG_NAMES", {}):
+        return jsonify({"ok": False, "reason": "unsupported"}), 400
+    # Already translated, in either store? Hand it back for free.
+    have = _translations_for(title, body).get(lang)
+    if have:
+        return jsonify({"ok": True, "translation": have, "cached": True})
+    if not translator.available():
+        return jsonify({"ok": False, "reason": "no_key"}), 200
+    res = translator.translate_now(title, body, lang)
+    if not res:
+        return jsonify({"ok": False, "reason": "failed"}), 200
+    return jsonify({"ok": True, "translation": {
+        "title": res.get("title") or "", "body": res.get("body") or "",
+        "paras": res.get("paras") or []}})
 
 
 # ---------- seeding a few articles the deploy should carry ----------

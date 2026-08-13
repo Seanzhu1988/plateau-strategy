@@ -138,3 +138,67 @@ def translate_async(title, body):
         threading.Thread(target=_run, args=(title, body), daemon=True).start()
     except Exception:
         pass
+
+
+def available():
+    """True when there is actually an engine behind the feature.
+
+    Without a key this whole module is a quiet no-op, and a reader who
+    switched language deserves to be told 'not available' rather than left
+    staring at English wondering if the button is broken. This is the one
+    fact that separates 'no translation yet' from 'no translator at all'.
+    """
+    return requests is not None and bool(os.environ.get("ANTHROPIC_API_KEY", "").strip())
+
+
+def translate_now(title, body, lang):
+    """Translate ONE language, synchronously, for a reader waiting on it.
+
+    Same contract as the background path: a hit on the store is free, a miss
+    makes one model call and caches it, and a result whose paragraph count
+    does not match the source is refused rather than shown. Returns
+    {"title", "paras", "body"} on success, or None on any failure, so the
+    caller can fall back to the original without a translation ever being
+    wrong.
+    """
+    key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+    if not key or requests is None:
+        return None
+    if lang not in LANG_NAMES and lang not in LANGS:
+        return None
+    paras = [p.strip() for p in (body or "").split("\n") if p.strip()]
+    if not paras or len(paras) > MAX_PARAS:
+        return None
+    h = content_hash(title, body)
+    path = _store_path()
+    # Already in the store? Serve it and skip the model call entirely.
+    with _LOCK:
+        try:
+            with open(path, encoding="utf-8") as f:
+                store = json.load(f)
+        except Exception:
+            store = {"by_hash": {}}
+        have = (store.get("by_hash", {}).get(h) or {}).get(lang)
+    if have and have.get("paras") and len(have["paras"]) == len(paras):
+        return {"title": have.get("title") or title, "paras": have["paras"],
+                "body": "\n\n".join(have["paras"])}
+    try:
+        got = _translate_one(key, title, paras, lang)
+    except Exception:
+        return None
+    if not got:
+        return None
+    t_title, t_paras = got
+    with _LOCK:
+        try:
+            with open(path, encoding="utf-8") as f:
+                store = json.load(f)
+        except Exception:
+            store = {"by_hash": {}}
+        store.setdefault("by_hash", {}).setdefault(h, {})[lang] = {
+            "src_title": title, "title": t_title, "paras": t_paras}
+        tmp = path + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(store, f, ensure_ascii=False)
+        os.replace(tmp, path)
+    return {"title": t_title, "paras": t_paras, "body": "\n\n".join(t_paras)}
