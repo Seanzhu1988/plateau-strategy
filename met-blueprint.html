@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>The Metropolitan Museum, an indoor guide blueprint</title>
+<link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+<!-- Self-contained blueprint, handed around as a file, so it leans on no
+     shared stylesheet. Written with no long dashes, the owner's standing rule.
+     Grounded in the sixteen Met corridors already defined in footprints.py.
+     Limited information on purpose: it shows where the guide lives and how it
+     behaves, and names the part that is the real work without teaching it. -->
+<style>
+  :root { --bp:#10305c; --bp2:#0c2749; --ink:#dcecff; --ink2:#8fb4e3;
+          --grid:rgba(220,236,255,.07); }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bp); color:var(--ink);
+         font:17px/1.65 Georgia,'Times New Roman',serif;
+         background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+           linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+         background-size:28px 28px; }
+  .sheet { max-width:52rem; margin:0 auto; padding:1.4rem 1.2rem 4rem; }
+  .tblock { border:2px solid var(--ink); padding:.9rem 1.1rem; margin:1rem 0 2.4rem;
+    display:flex; flex-wrap:wrap; gap:.4rem 2rem; align-items:baseline;
+    font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--ink2); }
+  .tblock b { color:var(--ink); font-size:.95rem; letter-spacing:.18em; }
+  h1 { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+       font-size:1.6rem; letter-spacing:.03em; line-height:1.25; margin:0 0 .4rem;
+       color:var(--ink); font-weight:700; }
+  .sub { color:var(--ink2); margin:0 0 2rem; font-style:italic; }
+  h2 { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+       font-size:.82rem; letter-spacing:.22em; text-transform:uppercase; color:var(--ink);
+       border-bottom:1px solid var(--ink2); padding-bottom:.45rem; margin:2.8rem 0 1rem; }
+  p { margin:.85rem 0; }
+  .lede { font-size:1.12rem; }
+  .quiet { color:var(--ink2); font-size:.93rem; }
+  figure { margin:1.6rem 0 2.2rem; }
+  figure svg { width:100%; height:auto; display:block; background:var(--bp2);
+               border:1.5px solid var(--ink2); }
+  figcaption { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:var(--ink2);
+    margin-top:.55rem; }
+  .held { border:1.5px dashed var(--ink2); padding:1rem 1.2rem; margin:1.6rem 0; }
+  .held p { margin:.5rem 0; }
+  .grid16 { display:grid; grid-template-columns:1fr 1fr; gap:.35rem 1.4rem;
+    font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; font-size:.8rem;
+    color:var(--ink2); margin:1.1rem 0 .4rem; }
+  .grid16 span::before { content:"› "; color:var(--ink); }
+  a { color:var(--ink); }
+  .foot { margin-top:3rem; padding-top:1rem; border-top:1px solid var(--ink2);
+          color:var(--ink2); font-size:.9rem; }
+  svg text { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+             fill:var(--ink2); font-size:11px; letter-spacing:.06em; }
+  svg .big { fill:var(--ink); font-size:12.5px; font-weight:700; }
+  svg .box { fill:var(--bp); stroke:var(--ink2); stroke-width:1.3; }
+  svg .hub { fill:var(--bp); stroke:var(--ink); stroke-width:2.4; }
+  svg .trace { fill:none; stroke:var(--ink2); stroke-width:1.4; stroke-dasharray:2 5;
+               stroke-linecap:round; }
+  svg .wall { fill:none; stroke:var(--ink2); stroke-width:1; opacity:.5; }
+  svg .fp { fill:var(--ink); }
+  svg .fpg { fill:none; stroke:var(--ink2); stroke-width:1; opacity:.5; }
+  svg .cone { fill:rgba(220,236,255,.16); stroke:var(--ink2); stroke-width:1; }
+  svg .you { fill:var(--ink); }
+  svg .tag { fill:var(--ink); font-size:10px; }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="tblock">
+    <b>Plateau Strategy Solution Lab</b>
+    <span>Project, The Met indoor guide</span>
+    <span>Sheet, 1 of 1</span>
+    <span>Status, draft</span>
+  </div>
+
+  <h1>The Metropolitan Museum,<br>an indoor guide blueprint</h1>
+  <p class="sub">Sixteen corridors mapped across two floors, the place where a map goes grey and footprints take over.</p>
+
+  <p class="lede">The Met is a mile of galleries where your phone stops knowing
+    where it is. This sheet lays the guide across it as a small network of
+    corridors. Each corridor is a short walked path between two named rooms.
+    Follow the footprints and the guide names each room as you reach it. Turn
+    the wrong way and the footprints vanish until you face the way through again.</p>
+
+  <h2>The ground floor</h2>
+  <p>The Great Hall is the hub, the room you walk into. From it the guide reaches
+    left into Egyptian Art and on to the Temple of Dendur and the American Wing
+    court, up into Arms and Armor and across to Medieval Art and the Lehman Wing,
+    and down to Greek and Roman, Modern Art, and the Grand Staircase that carries
+    you to the upper floor.</p>
+
+  <figure>
+    <svg viewBox="0 0 940 510" role="img" aria-label="Ground floor corridor map of the Met">
+      <!-- corridors (dotted traces) -->
+      <line class="trace" x1="135" y1="104" x2="135" y2="165"/>
+      <line class="trace" x1="135" y1="219" x2="135" y2="280"/>
+      <line class="trace" x1="210" y1="307" x2="300" y2="310"/>
+      <line class="trace" x1="382" y1="273" x2="376" y2="184"/>
+      <line class="trace" x1="450" y1="157" x2="520" y2="157"/>
+      <line class="trace" x1="670" y1="157" x2="740" y2="157"/>
+      <line class="trace" x1="595" y1="184" x2="595" y2="273"/>
+      <line class="trace" x1="384" y1="347" x2="376" y2="420"/>
+      <line class="trace" x1="450" y1="420" x2="520" y2="327"/>
+      <polyline class="trace" points="455,347 455,447 520,447"/>
+
+      <!-- a footprint motif on two corridors -->
+      <ellipse class="fp" cx="131" cy="132" rx="3" ry="5"/>
+      <ellipse class="fp" cx="139" cy="146" rx="3" ry="5"/>
+      <ellipse class="fp" cx="485" cy="153" rx="3" ry="5"/>
+      <ellipse class="fp" cx="485" cy="163" rx="3" ry="5"/>
+
+      <!-- galleries -->
+      <rect class="box" x="60" y="50" width="150" height="54"/>
+      <text x="135" y="73" text-anchor="middle">American Wing</text>
+      <text x="135" y="88" text-anchor="middle">court</text>
+
+      <rect class="box" x="60" y="165" width="150" height="54"/>
+      <text x="135" y="188" text-anchor="middle">Temple of</text>
+      <text x="135" y="203" text-anchor="middle">Dendur</text>
+
+      <rect class="box" x="60" y="280" width="150" height="54"/>
+      <text x="135" y="311" text-anchor="middle">Egyptian Art</text>
+
+      <rect class="hub" x="300" y="273" width="170" height="74"/>
+      <text class="big" x="385" y="306" text-anchor="middle">GREAT HALL</text>
+      <text x="385" y="323" text-anchor="middle">you start here</text>
+
+      <rect class="box" x="300" y="130" width="152" height="54"/>
+      <text x="376" y="161" text-anchor="middle">Arms &amp; Armor</text>
+
+      <rect class="box" x="520" y="130" width="150" height="54"/>
+      <text x="595" y="161" text-anchor="middle">Medieval Art</text>
+
+      <rect class="box" x="740" y="130" width="150" height="54"/>
+      <text x="815" y="161" text-anchor="middle">Lehman Wing</text>
+
+      <rect class="box" x="520" y="273" width="150" height="54"/>
+      <text x="595" y="304" text-anchor="middle">Modern Art</text>
+
+      <rect class="box" x="300" y="420" width="152" height="54"/>
+      <text x="376" y="451" text-anchor="middle">Greek &amp; Roman</text>
+
+      <rect class="box" x="520" y="420" width="150" height="54"/>
+      <text x="595" y="445" text-anchor="middle">Grand Staircase</text>
+      <text x="595" y="460" text-anchor="middle">up to floor 2 ↑</text>
+    </svg>
+    <figcaption>Figure 1, ground floor corridors, the Great Hall as the hub</figcaption>
+  </figure>
+
+  <h2>The upper floor</h2>
+  <p>The Grand Staircase arrives beside European Paintings. From there the guide
+    runs out to the nineteenth century galleries, across to Asian Art and the
+    Astor Court, and around through Islamic Art back to the stair. A loop you can
+    walk without doubling back.</p>
+
+  <figure>
+    <svg viewBox="0 0 940 320" role="img" aria-label="Upper floor corridor map of the Met">
+      <line class="trace" x1="220" y1="87" x2="330" y2="87"/>
+      <line class="trace" x1="140" y1="114" x2="140" y2="210"/>
+      <line class="trace" x1="220" y1="237" x2="330" y2="237"/>
+      <line class="trace" x1="425" y1="210" x2="425" y2="114"/>
+      <line class="trace" x1="520" y1="87" x2="640" y2="87"/>
+
+      <rect class="box" x="60" y="60" width="160" height="54"/>
+      <text x="140" y="84" text-anchor="middle">Grand Staircase</text>
+      <text x="140" y="99" text-anchor="middle">down to floor 1 ↓</text>
+
+      <rect class="box" x="60" y="210" width="160" height="54"/>
+      <text x="140" y="241" text-anchor="middle">Islamic Art</text>
+
+      <rect class="box" x="330" y="210" width="190" height="54"/>
+      <text x="425" y="234" text-anchor="middle">Asian Art /</text>
+      <text x="425" y="249" text-anchor="middle">Astor Court</text>
+
+      <rect class="box" x="330" y="60" width="190" height="54"/>
+      <text x="425" y="84" text-anchor="middle">European</text>
+      <text x="425" y="99" text-anchor="middle">Paintings</text>
+
+      <rect class="box" x="640" y="60" width="200" height="54"/>
+      <text x="740" y="84" text-anchor="middle">Nineteenth-century</text>
+      <text x="740" y="99" text-anchor="middle">galleries</text>
+    </svg>
+    <figcaption>Figure 2, upper floor corridors, a loop off the Grand Staircase</figcaption>
+  </figure>
+
+  <h2>How one corridor guides you</h2>
+  <p>A corridor is not an arrow. It is the footprints of the person who walked it
+    before you, laid on the floor ahead. When you face the way through, they light
+    the path and the guide names what is beside you. When you turn around, they
+    disappear, because a footprint pointing back the way you came is not a
+    direction, it is a distraction. That is the whole of the gate.</p>
+
+  <figure>
+    <svg viewBox="0 0 940 300" role="img" aria-label="The direction gate, footprints appear only when facing the way through">
+      <!-- Panel A: facing the way through -->
+      <text class="big" x="40" y="34">FACING THE WAY THROUGH</text>
+      <line class="wall" x1="60" y1="70" x2="420" y2="70"/>
+      <line class="wall" x1="60" y1="250" x2="420" y2="250"/>
+      <!-- footprints leading away, lit -->
+      <ellipse class="fp" cx="120" cy="205" rx="5" ry="9"/>
+      <ellipse class="fp" cx="140" cy="180" rx="5" ry="9"/>
+      <ellipse class="fp" cx="165" cy="158" rx="5" ry="9"/>
+      <ellipse class="fp" cx="190" cy="138" rx="5" ry="9"/>
+      <ellipse class="fp" cx="218" cy="120" rx="5" ry="9"/>
+      <ellipse class="fp" cx="248" cy="106" rx="5" ry="9"/>
+      <!-- you, with a heading cone pointing along -->
+      <path class="cone" d="M110 225 L150 150 L188 178 Z"/>
+      <circle class="you" cx="110" cy="225" r="7"/>
+      <!-- an announcement to the side -->
+      <circle class="fpg" cx="360" cy="120" r="6"/>
+      <line class="wall" x1="300" y1="128" x2="354" y2="122"/>
+      <text class="tag" x="300" y="150">Temple of Dendur,</text>
+      <text class="tag" x="300" y="164">on your left</text>
+
+      <!-- Panel B: turned around -->
+      <text class="big" x="500" y="34">TURNED AROUND</text>
+      <line class="wall" x1="520" y1="70" x2="880" y2="70"/>
+      <line class="wall" x1="520" y1="250" x2="880" y2="250"/>
+      <!-- same footprints, now hollow: gone -->
+      <ellipse class="fpg" cx="580" cy="205" rx="5" ry="9"/>
+      <ellipse class="fpg" cx="600" cy="180" rx="5" ry="9"/>
+      <ellipse class="fpg" cx="625" cy="158" rx="5" ry="9"/>
+      <ellipse class="fpg" cx="650" cy="138" rx="5" ry="9"/>
+      <ellipse class="fpg" cx="678" cy="120" rx="5" ry="9"/>
+      <ellipse class="fpg" cx="708" cy="106" rx="5" ry="9"/>
+      <!-- you, cone pointing back -->
+      <path class="cone" d="M580 205 L560 130 L610 150 Z" transform="rotate(150 580 205)"/>
+      <circle class="you" cx="580" cy="205" r="7"/>
+      <text class="tag" x="620" y="230">footprints gone,</text>
+      <text class="tag" x="620" y="244">turn until they return</text>
+    </svg>
+    <figcaption>Figure 3, the direction gate, footprints only when you face the way through</figcaption>
+  </figure>
+
+  <h2>What is mapped, and what awaits a walk</h2>
+  <p>The sixteen corridors are named and placed, but not one of them has been
+    walked yet. A corridor holds no footprints until a person records it once,
+    phone in hand, from the first room to the second. Until that walk this is a
+    plan of where the guide will live, not yet a guide. The first recorded
+    corridor turns one line on this sheet into something a stranger can follow.</p>
+
+  <div class="grid16">
+    <span>Great Hall to Egyptian Art</span>
+    <span>Egyptian Art to the Temple of Dendur</span>
+    <span>Temple of Dendur to the American Wing court</span>
+    <span>Great Hall to Arms and Armor</span>
+    <span>Arms and Armor to Medieval Art</span>
+    <span>Medieval Art to the Lehman Wing</span>
+    <span>Great Hall to Greek and Roman Art</span>
+    <span>Greek and Roman to Modern Art</span>
+    <span>Medieval Art to Modern Art</span>
+    <span>Great Hall to the Grand Staircase</span>
+    <span>Grand Staircase, floor 1 to floor 2</span>
+    <span>Grand Staircase to European Paintings</span>
+    <span>European Paintings to the 19th century</span>
+    <span>European Paintings to Asian Art and Astor Court</span>
+    <span>Asian Art to Islamic Art</span>
+    <span>Islamic Art to the Grand Staircase</span>
+  </div>
+
+  <h2>Why the Met</h2>
+  <p>It is the hardest easy case. Indoors, so GPS is useless, which is exactly
+    where footprints earn their keep. Enormous, so people genuinely get lost. And
+    loved, so the moment someone reaches the room they came for is worth
+    protecting. If the guide carries a stranger here, it carries one in an
+    airport, a hospital, a station.</p>
+
+  <div class="held">
+    <p>This sheet says what the thing is and where it goes. It does not publish
+      how a corridor is recorded, or how the gate decides you have turned around.
+      Those are the working parts, and they stay off the page.</p>
+  </div>
+
+  <p class="foot">Plateau Strategy Solution Lab. A draft, not an offer. It
+    collects nothing from you.</p>
+
+</div>
+</body>
+</html>
