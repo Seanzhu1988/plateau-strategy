@@ -2634,6 +2634,53 @@
                             <a class="ds-cta" href="/trip-planner">Search any place, if the map does not know it yet, you discover it →</a>
                         </div>
 
+                        <!-- Traveller contribution: add the city you are in to the public map.
+                             Hidden unless the consent gate (LOCATION_CONSENT_ENABLED) is live;
+                             the probe in the script reveals it only when /api/consent/text
+                             answers. On the live site with the gate off it stays invisible, so
+                             deploying this changes nothing a visitor can see. Nothing is
+                             collected until a traveller taps, reads the exact wording, agrees,
+                             and shares a location, and only a city name ever reaches the server. -->
+                        <style>
+                          .add-city { background:#fff; border:1px solid #e6e2da; border-radius:14px;
+                            padding:1rem 1.15rem; margin:0 0 1.2rem; }
+                          .ac-main { display:flex; gap:1rem; align-items:center;
+                            justify-content:space-between; flex-wrap:wrap; }
+                          .ac-txt b { display:block; }
+                          .ac-txt span { color:#6b655b; font-size:.9rem; }
+                          .ac-btn { background:#10305c; color:#fff; border:0; border-radius:9px;
+                            padding:.6rem 1rem; font-size:.92rem; cursor:pointer; }
+                          .ac-link { background:none; border:0; color:#6b655b; text-decoration:underline;
+                            cursor:pointer; font-size:.85rem; padding:0; }
+                          .ac-consent { margin-top:.85rem; }
+                          .ac-consent-text { white-space:pre-line; color:#3a3630; font-size:.92rem;
+                            background:#f7f5f1; border:1px solid #e6e2da; border-radius:9px;
+                            padding:.7rem .85rem; margin:0 0 .6rem; }
+                          .ac-actions { display:flex; gap:1rem; align-items:center; }
+                          .ac-status { margin-top:.7rem; color:#3a3630; font-size:.92rem; }
+                          .ac-undo { margin-top:.6rem; display:block; }
+                        </style>
+                        <div id="addCity" class="add-city" style="display:none">
+                            <div class="ac-main">
+                                <div class="ac-txt">
+                                    <b>Are you travelling right now?</b>
+                                    <span>Add the city you are in to the map, so the traveller after
+                                    you finds it. We keep the city, never your exact spot, your
+                                    address, or your name.</span>
+                                </div>
+                                <button type="button" class="ac-btn" id="acStart">Add my city</button>
+                            </div>
+                            <div class="ac-consent" id="acConsent" style="display:none">
+                                <p class="ac-consent-text" id="acText"></p>
+                                <div class="ac-actions">
+                                    <button type="button" class="ac-btn" id="acAgree">Share my city</button>
+                                    <button type="button" class="ac-link" id="acCancel">Not now</button>
+                                </div>
+                            </div>
+                            <div class="ac-status" id="acStatus" style="display:none"></div>
+                            <button type="button" class="ac-link ac-undo" id="acUndo" style="display:none">Remove my city from the map</button>
+                        </div>
+
                         <div class="service-grid">
                             <div class="service-card">
                                 <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-ticket"/></svg></div>
@@ -3633,6 +3680,92 @@
                 + (ago(r) ? ' · ' + ago(r) : '') + '</span></span>').join('');
             strip.style.display = 'block';
         }).catch(() => {});
+    })();
+    </script>
+    <script>
+    // "Add my city": a traveller puts the city they are in on the public map.
+    // The whole panel is dark until the consent gate (LOCATION_CONSENT_ENABLED)
+    // is live: the probe below asks for the exact consent wording, and a 404
+    // (gate off) leaves the panel hidden. So this ships invisible and collects
+    // nothing until the flag is set, which happens only after counsel signs off.
+    (function addCity(){
+        var box = document.getElementById('addCity');
+        if (!box) return;
+        var PURPOSE = 'map_place', version = '';
+        var el = function (id) { return document.getElementById(id); };
+        var show = function (id, on) { var n = el(id); if (n) n.style.display = on ? 'block' : 'none'; };
+        var status = function (m) { var n = el('acStatus'); if (n) { n.textContent = m; n.style.display = 'block'; } };
+
+        // Reveal only when the gate is live. The page must render THIS text, so
+        // the ledger records agreement to the words the person actually read.
+        fetch('/api/consent/text?purpose=' + PURPOSE)
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (t) {
+                if (!t || !t.ok) return;                 // gate off, stay hidden
+                version = t.version;
+                el('acText').textContent = t.text;
+                box.style.display = 'block';
+            }).catch(function () {});
+
+        el('acStart').addEventListener('click', function () { show('acConsent', true); el('acStart').style.display = 'none'; });
+        el('acCancel').addEventListener('click', function () { show('acConsent', false); el('acStart').style.display = ''; });
+
+        // Match consent.py coarsen() exactly: an ~11 km cell centre, longitude
+        // widened by 1/cos(lat). The precise fix never leaves this device; even
+        // the geocoder only ever sees the blurred cell centre.
+        function coarsen(lat, lon) {
+            var CELL = 11.0, KMDEG = 111.32;
+            var stepLat = CELL / KMDEG;
+            var shrink = Math.max(Math.cos(lat * Math.PI / 180), 1e-6);
+            var stepLon = Math.min(stepLat / shrink, 360);
+            var centre = function (v, s) { return Math.round((Math.floor(v / s) * s + s / 2) * 1e4) / 1e4; };
+            return { lat: centre(lat, stepLat), lon: stepLon < 360 ? centre(lon, stepLon) : 0 };
+        }
+
+        el('acAgree').addEventListener('click', function () {
+            show('acConsent', false);
+            status('Recording your permission…');
+            fetch('/api/consent/grant', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ purpose: PURPOSE, version: version, granted: true }) })
+                .then(function (r) { return r.json(); }).then(function (g) {
+                    if (!g || !g.ok) { status('Could not record permission. Nothing was collected.'); return; }
+                    if (!navigator.geolocation) { status('This browser cannot share a location.'); return; }
+                    status('Finding your city…');
+                    navigator.geolocation.getCurrentPosition(onPos, onErr,
+                        { enableHighAccuracy: false, timeout: 12000, maximumAge: 600000 });
+                }).catch(function () { status('Something went wrong. Nothing was collected.'); });
+        });
+
+        function onErr() { status('No location shared, and nothing was collected.'); }
+
+        function onPos(pos) {
+            var c = coarsen(pos.coords.latitude, pos.coords.longitude);
+            // Turn the BLURRED point into a city name in the browser, keyless.
+            // Only that name is sent on; the server refuses coordinates outright.
+            fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='
+                + c.lat + '&longitude=' + c.lon + '&localityLanguage=en')
+                .then(function (r) { return r.json(); }).then(function (g) {
+                    var city = (g.city || g.locality || '').trim();
+                    var region = (g.principalSubdivision || '').trim();
+                    var country = (g.countryName || '').trim();
+                    if (!city) { status('Could not name a city from here. Nothing was collected.'); return; }
+                    fetch('/api/consent/place', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ city: city, region: region, country: country }) })
+                        .then(function (r) { return r.json(); }).then(function (s) {
+                            if (s && s.ok) { status('Added ' + s.city + ' to the map. Thank you.'); show('acUndo', true); }
+                            else { status((s && s.error) || 'Could not add your city.'); }
+                        }).catch(function () { status('Could not reach the map. Nothing was saved.'); });
+                }).catch(function () { status('Could not name a city from here. Nothing was collected.'); });
+        }
+
+        el('acUndo').addEventListener('click', function () {
+            fetch('/api/consent/withdraw', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ purpose: PURPOSE }) })
+                .then(function (r) { return r.json(); }).then(function () {
+                    status('Removed. Your city is off the map and your permission is withdrawn.');
+                    show('acUndo', false);
+                }).catch(function () { status('Could not reach the server.'); });
+        });
     })();
     </script>
     <script>
