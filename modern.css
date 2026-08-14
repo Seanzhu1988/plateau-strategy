@@ -1132,3 +1132,17 @@ a.idea-pro-maybe {
   border-style: dashed;
 }
 a.idea-pro-maybe:hover { color: var(--m-rose); border-style: solid; }
+
+/* The launchpad column is 760px, and everything in it sits on the same
+   edges. The idea board was moved into the launchpad and arrived at its
+   old full-page width, 1056px in a 760px column, sticking out 148px on
+   each side. The owner saw it immediately: the frames were crooked. Every
+   block in the flow now shares one pair of edges, measured, not assumed. */
+.rusa .idea-board {
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.rusa .rusa-lede {
+  max-width: 760px;   /* was 62ch, which is 769px here: a 9px drift off the column */
+}
