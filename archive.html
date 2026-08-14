@@ -216,9 +216,13 @@
             // The sentence that makes the numbers make sense: what date the
             // count started, and why it keeps restarting while no disk is
             // attached. Without this line, 'all time: 2' just looks broken.
-            var sub = d.total_located
-                ? d.total_located + ' visitors located over the last ' + d.days + ' days'
-                : 'No located visitors yet, this fills in as people arrive.';
+            var sub = (d.raw_visitors || 0) + ' visitors · ' + (d.raw_views || 0)
+                + ' page opens over the last ' + d.days + ' days · '
+                + (d.total_located || 0) + ' located';
+            try {
+                const on = await (await fetch('/api/online')).json();
+                if (on && on.ok) sub = 'Right now: ' + on.online + ' on the site · ' + sub;
+            } catch (e) {}
             if (d.counting_since) sub += ' · counting since ' + d.counting_since;
             if (d.resets_on_deploy) sub += ' · resets on every deploy until the disk is attached';
             document.getElementById('wfSub').textContent = sub;

@@ -6749,14 +6749,17 @@ def idea_page(aid):
     trs = {} if locked else _translations_for(a.get("title"), a.get("body"))
     LANG_NAMES = {"zh": "\u4e2d\u6587", "es": "Espa\u00f1ol",
                   "ko": "\ud55c\uad6d\uc5b4", "vi": "Ti\u1ebfng Vi\u1ec7t"}
-    lang_row = ""
-    if trs:
-        buttons = ['<button class="lang-opt" data-l="en" aria-current="true">English</button>']
-        for code in ("zh", "es", "ko", "vi"):
-            if code in trs:
-                buttons.append('<button class="lang-opt" data-l="%s">%s</button>'
-                               % (code, LANG_NAMES[code]))
-        lang_row = '<div class="lang-row" role="group" aria-label="Language">%s</div>' % "".join(buttons)
+    # Every language is always offered. A missing one is not hidden, it is
+    # translated the moment a reader taps it, through the same engine and
+    # the same anchored store as the background path. Hiding the button was
+    # honest once; with live translation behind it, offering is honest.
+    buttons = ['<button class="lang-opt" data-l="en" aria-current="true">English</button>']
+    for code in ("zh", "es", "ko", "vi"):
+        buttons.append('<button class="lang-opt" data-l="%s"%s>%s</button>'
+                       % (code, "" if code in trs else ' data-missing="1"',
+                          LANG_NAMES[code]))
+    lang_row = ('<div class="lang-row" role="group" aria-label="Language">%s</div>'
+                % "".join(buttons)) if not locked else ""
     # Paragraphs are split HERE, not in the browser. The first version passed
     # the body whole and split it in JavaScript with "\\n", which was written
     # into the page as a real line break, leaving an unterminated string. The
@@ -6887,7 +6890,37 @@ def idea_page(aid):
     try { localStorage.setItem("psx_lang", l); } catch (e) {}
   }
   Array.prototype.forEach.call(document.querySelectorAll(".lang-row button"), function (b) {
-    b.addEventListener("click", function () { show(b.getAttribute("data-l")); });
+    b.addEventListener("click", function () {
+      var l = b.getAttribute("data-l");
+      if (l === "en" || TR[l]) { show(l); return; }
+      /* Not translated yet: fetch it live. The reader sees the button
+         working, then the article in their language; on failure they are
+         told plainly instead of being left staring at English. */
+      var was = b.textContent;
+      b.textContent = was + " …";
+      b.disabled = true;
+      fetch("/api/idea/" + encodeURIComponent(%(aid_js)s) + "/translate", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lang: l })
+      }).then(function (r) { return r.json(); }).then(function (j) {
+        b.disabled = false; b.textContent = was;
+        if (j.ok && j.translation) {
+          var t = j.translation;
+          var paras2 = t.paras && t.paras.length ? t.paras
+            : (t.body || "").split(String.fromCharCode(10)).filter(function (s) { return s.trim(); });
+          TR[l] = { title: t.title || "", paras: paras2 };
+          b.removeAttribute("data-missing");
+          show(l);
+        } else {
+          b.textContent = was + " (not available yet)";
+          setTimeout(function () { b.textContent = was; }, 3000);
+        }
+      }).catch(function () {
+        b.disabled = false;
+        b.textContent = was + " (not available yet)";
+        setTimeout(function () { b.textContent = was; }, 3000);
+      });
+    });
   });
   // Follow the choice already made elsewhere on the site, if this piece has it.
   try {
@@ -6925,6 +6958,7 @@ def idea_page(aid):
         # json.dumps, not quote-wrapping: it escapes the quotes, backslashes and
         # the </script> sequence that would otherwise end the block early.
         "url_js": json.dumps(url), "title_js": json.dumps(title),
+        "aid_js": json.dumps(a.get("id") or aid),
         "share_tag": _content_hash(a.get("title"), a.get("body"))[:6],
         "lang_row": lang_row, "trs_json": trs_json,
     }, mimetype="text/html")
@@ -7917,7 +7951,12 @@ def api_traffic_places():
     into "elsewhere" rather than named, because a city with one visitor in a
     small dataset is close to naming the visitor.
     """
-    MIN_SHOW = 2
+    # Cities show from the FIRST visitor. Folding under two meant that at
+    # this site's real volumes the owner opened "where are my viewers from"
+    # and saw nothing. What is stored stays a city and a count, never a
+    # person. (Restored after a merge between two working sessions quietly
+    # reverted it; the archive panel was already asking for these fields.)
+    MIN_SHOW = 1
     days_back = max(1, min(365, int(request.args.get("days", 30))))
     cutoff = (datetime.date.today() - datetime.timedelta(days=days_back - 1)).isoformat()
     days = _load_traffic()["days"]
@@ -7949,11 +7988,16 @@ def api_traffic_places():
             shown.append({"name": "elsewhere", "count": hidden, "folded": True})
         return shown[:25]
 
-    langs, devices, landings = {}, {}, {}
+    langs, devices, landings, sources = {}, {}, {}, {}
+    raw_views = raw_visitors = 0
     for date, rec in days.items():
         if date < cutoff:
             continue
-        for src, dst in (("langs", langs), ("devices", devices), ("landings", landings)):
+        raw_views += rec.get("pageviews", 0)
+        raw_visitors += (len(rec.get("visitor_ids") or [])
+                         or rec.get("unique_visitors") or 0)
+        for src, dst in (("langs", langs), ("devices", devices),
+                         ("landings", landings), ("sources", sources)):
             for k, n in (rec.get(src) or {}).items():
                 dst[k] = dst.get(k, 0) + n
 
@@ -7966,7 +8010,12 @@ def api_traffic_places():
         pins.append({"lat": xy[0], "lon": xy[1], "count": n,
                      "label": city + (", " + region if region else ""), "country": country})
 
+    all_days = sorted(days.keys())
     return jsonify({"ok": True, "days": days_back, "total_located": total, "pins": pins,
+                    "counting_since": all_days[0] if all_days else None,
+                    "resets_on_deploy": DATA_DIR == BASE_DIR,
+                    "raw_views": raw_views, "raw_visitors": raw_visitors,
+                    "sources": top(sources, keep_small=True),
                     "languages": top(langs, keep_small=True),
                     "devices": top(devices, keep_small=True),
                     "landings": top(landings, keep_small=True),
