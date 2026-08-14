@@ -8056,10 +8056,28 @@ def api_traffic_summary():
                 total += rec.get("unique_visitors") or 0
         return total
 
+    def prefix_views(prefix, cutoff=None):
+        """Opens of every path under a prefix: the shared idea pages."""
+        total = 0
+        for date, rec in days.items():
+            if cutoff and date < cutoff:
+                continue
+            for path, n in (rec.get("paths") or {}).items():
+                if path.startswith(prefix):
+                    total += n
+        return total
+
     all_time = site_people()
     return jsonify({"ok": True,
+                    # what date the count started, and the honest reason the
+                    # numbers keep restarting while there is no disk
+                    "counting_since": min(days) if days else None,
+                    "resets_on_deploy": DATA_DIR == BASE_DIR,
                     "trip_planner": tool_stats("/trip-planner"),
                     "destination_book": tool_stats("/destination-book"),
+                    "met": tool_stats("/met"),
+                    "idea_pages": {"views_all_time": prefix_views("/idea/"),
+                                   "views_week": prefix_views("/idea/", week_cutoff)},
                     "site": {
                         "today": site_people(today_iso),
                         "week": site_people(week_cutoff),

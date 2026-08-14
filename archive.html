@@ -213,9 +213,15 @@
             if (!d.ok) return;
             const box = document.getElementById('whereFrom');
             const cols = document.getElementById('wfCols');
-            document.getElementById('wfSub').textContent =
-                d.total_located ? d.total_located + ' visitors located over the last ' + d.days + ' days'
-                                : 'No located visitors yet, this fills in as people arrive.';
+            // The sentence that makes the numbers make sense: what date the
+            // count started, and why it keeps restarting while no disk is
+            // attached. Without this line, 'all time: 2' just looks broken.
+            var sub = d.total_located
+                ? d.total_located + ' visitors located over the last ' + d.days + ' days'
+                : 'No located visitors yet, this fills in as people arrive.';
+            if (d.counting_since) sub += ' · counting since ' + d.counting_since;
+            if (d.resets_on_deploy) sub += ' · resets on every deploy until the disk is attached';
+            document.getElementById('wfSub').textContent = sub;
             const bar = (rows) => {
                 if (!rows.length) return '<p class="note">nothing yet</p>';
                 const max = Math.max.apply(null, rows.map(r => r.count));
@@ -237,6 +243,7 @@
               + 'color:#6e6e76;margin:0 0 .5rem">' + title + '</h3>' + bar(rows) + '</div>';
             cols.innerHTML =
                 col('Country', d.countries) + col('State / region', d.regions) + col('City', d.cities)
+              + col('How they found you', d.sources || [])
               + col('Language asked for', pretty(d.languages || []))
               + col('Reading on', d.devices || [])
               + col('Arrived on', d.landings || []);
