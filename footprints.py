@@ -86,6 +86,22 @@ DEFAULT_CORRIDORS = {
         "journey": None,
     },
 
+    # Washington DC, opened 2026-08-14 while Sean is in the city. The Capitol
+    # corridor is the article's founding moment; the other two mirror the
+    # Seattle trio's roles (clean-sky control, indoor instrumentation).
+    "union-station-to-capitol": {
+        "label": "Union Station to the Capitol, the west front view",
+        "journey": None,
+    },
+    "smithsonian-metro-to-monument": {
+        "label": "Smithsonian Metro, Mall exit, to the Washington Monument",
+        "journey": None,
+    },
+    "union-station-hall-to-metro": {
+        "label": "Union Station, main hall to the Metro platform",
+        "journey": None,
+    },
+
     # The Met, indoors. GPS in the stone wings usually fails this store's own
     # accuracy rule, and that is fine: a refused walk is the recorder being
     # honest. Corridors near glass (the Sackler Wing, the Great Hall doors)

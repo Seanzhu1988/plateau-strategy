@@ -2074,6 +2074,9 @@ PUBLIC_PAGES = [
     ("/destination-book", "0.9", "daily"),
     ("/road-trip", "0.9", "weekly"),
     ("/factor-clock", "0.8", "weekly"),
+    ("/walk", "0.8", "weekly"),
+    ("/footprints-demo", "0.7", "monthly"),
+    ("/footprints-concept", "0.6", "monthly"),
     ("/book", "0.8", "monthly"),
     ("/articles", "0.7", "weekly"),
     ("/partners", "0.6", "monthly"),
@@ -2123,6 +2126,10 @@ def llms_txt():
   and restaurants with local tips from a licensed guide.
 - [The Factor Clock](%(o)s/factor-clock): A prediction clock scored against what
   actually happened, and honest about when it does not know.
+- [The Walking Guide](%(o)s/walk): A spoken guide that names what is around you
+  as you walk a recorded corridor, and refuses to guess when GPS is poor.
+- [The Footprints Demo](%(o)s/footprints-demo): The direction gate — footprints
+  that vanish when you face the wrong way, shown working with a real compass.
 
 ## Services
 
