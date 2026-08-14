@@ -7223,6 +7223,183 @@ def api_article_grant(aid):
     return jsonify({"ok": False, "error": "No idea with that id."}), 404
 
 
+# ---------- the blueprint deck: pay to view, a product, not an investment ----------
+# A reader unlocks a blueprint by paying, and reads it. That is the whole deal:
+# they get the document, no stake and no promise of a return. The "payee becomes
+# the investor" idea is a securities offering and is deliberately NOT here, it
+# waits for counsel, see REINVESTMENT_USA.md. A blueprint is the owner's own
+# work, so charging for it is an ordinary product sale with none of the attorney
+# fee-sharing problem that keeps the article lock from taking money. Even so,
+# nothing here captures a cent unless Square is actually connected, and access is
+# granted only after a payment settles, never by asking.
+DECK_PATH = _data_path("deck.json")
+
+
+def _payments_live():
+    return bool(os.environ.get("SQUARE_ACCESS_TOKEN")
+                and os.environ.get("SQUARE_LOCATION_ID"))
+
+
+def _deck_load():
+    d = _load(DECK_PATH)
+    return d if isinstance(d, list) else []
+
+
+def _deck_entitled(item, vid=None):
+    if session.get("owner"):
+        return True
+    vid = vid or request.cookies.get("psx_vid")
+    return bool(vid) and vid in (item.get("unlocked_by") or [])
+
+
+def _deck_public(item, entitled, owner=False):
+    out = {"id": item.get("id"), "title": item.get("title"),
+           "teaser": item.get("teaser"), "price_usd": item.get("price_usd"),
+           "locked": not entitled, "readers": len(item.get("unlocked_by") or [])}
+    if entitled:
+        out["view_url"] = "/deck/%s/view" % item.get("id")
+    if owner:
+        # The owner needs to see who is waiting so a settled payment can be
+        # turned into access. Nobody else ever receives these.
+        out["file"] = item.get("file")
+        out["pending"] = item.get("pending") or []
+        out["reader_ids"] = item.get("unlocked_by") or []
+    return out
+
+
+@app.route("/api/deck")
+def api_deck():
+    vid = request.cookies.get("psx_vid")
+    owner = bool(session.get("owner"))
+    items = [_deck_public(it, _deck_entitled(it, vid), owner)
+             for it in _deck_load() if not it.get("hidden")]
+    return jsonify({"ok": True, "items": items,
+                    "payments_live": _payments_live(), "owner": owner})
+
+
+@app.route("/api/deck", methods=["POST"])
+@owner_required
+def api_deck_upsert():
+    """Add or re-price one blueprint. Owner only, and the price is yours to move
+    at any time, the payee never gains a claim on the work by paying."""
+    d = request.get_json(silent=True) or {}
+    title = _no_em_dash(_no_tags((d.get("title") or "").strip()), title=True)[:200]
+    teaser = _no_em_dash(_no_tags((d.get("teaser") or "").strip()))[:600]
+    fname = _no_tags((d.get("file") or "").strip())[:120]
+    try:
+        price = round(float(d.get("price_usd")), 2)
+    except (TypeError, ValueError):
+        return jsonify({"ok": False, "error": "A price in dollars is required."}), 400
+    if price <= 0:
+        return jsonify({"ok": False, "error": "Price must be above zero."}), 400
+    if not title or not teaser or not fname:
+        return jsonify({"ok": False,
+                        "error": "Title, teaser, and a blueprint file are required."}), 400
+    # A named file must be a real html file that already ships, never a path.
+    if ("/" in fname) or (".." in fname) or not fname.endswith(".html") \
+            or not os.path.exists(os.path.join(BASE_DIR, fname)):
+        return jsonify({"ok": False, "error": "That blueprint file was not found."}), 400
+    with _LOCK:
+        items = _deck_load()
+        iid = (d.get("id") or "").strip()
+        if iid:
+            for it in items:
+                if it.get("id") == iid:
+                    it.update({"title": title, "teaser": teaser,
+                               "file": fname, "price_usd": price})
+                    _save(DECK_PATH, items)
+                    return jsonify({"ok": True, "id": iid})
+            return jsonify({"ok": False, "error": "No blueprint with that id."}), 404
+        item = {"id": _next_id(items, "BP", datestamp=False), "title": title,
+                "teaser": teaser, "file": fname, "price_usd": price,
+                "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
+                "unlocked_by": [], "pending": []}
+        items.append(item)
+        _save(DECK_PATH, items)
+    return jsonify({"ok": True, "id": item["id"]})
+
+
+@app.route("/api/deck/<iid>/checkout", methods=["POST"])
+def api_deck_checkout(iid):
+    """Begin a purchase. Captures nothing unless Square is connected, and never
+    grants access here, that happens only once a payment has actually settled."""
+    d = request.get_json(silent=True) or {}
+    name = _no_tags((d.get("name") or "").strip())[:120]
+    email = _no_tags((d.get("email") or "").strip())[:160]
+    item = next((x for x in _deck_load()
+                 if x.get("id") == iid and not x.get("hidden")), None)
+    if not item:
+        return jsonify({"ok": False, "error": "No blueprint with that id."}), 404
+    if _deck_entitled(item):
+        return jsonify({"ok": True, "already": True,
+                        "view_url": "/deck/%s/view" % iid})
+    if not _payments_live():
+        return jsonify({"ok": False, "reason": "no_payments",
+                        "error": "Card payment is not connected yet."}), 503
+    if not name or "@" not in email:
+        return jsonify({"ok": False,
+                        "error": "A name and email are needed to send your access."}), 400
+    try:
+        inv = square_client.create_charge(
+            {"name": name, "email": email}, item["price_usd"],
+            "Blueprint: " + item["title"],
+            "Access to a Plateau Strategy blueprint. A purchase, not an investment.")
+    except Exception as e:
+        return jsonify({"ok": False, "error": "Could not start payment.",
+                        "detail": str(e)}), 502
+    with _LOCK:
+        items = _deck_load()
+        for it in items:
+            if it.get("id") == iid:
+                it.setdefault("pending", []).append(
+                    {"vid": request.cookies.get("psx_vid"), "name": name,
+                     "email": email, "invoice": (inv or {}).get("id"),
+                     "at": datetime.datetime.now().isoformat(timespec="seconds")})
+                _save(DECK_PATH, items)
+                break
+    return jsonify({"ok": True, "invoice": inv})
+
+
+@app.route("/api/deck/<iid>/grant", methods=["POST"])
+@owner_required
+def api_deck_grant(iid):
+    """Grant one reader access. This is the step a settled payment triggers, and
+    the only way anyone joins the unlock list."""
+    vid = ((request.get_json(silent=True) or {}).get("vid") or "").strip()[:64]
+    if not vid:
+        return jsonify({"ok": False, "error": "A reader id is required."}), 400
+    with _LOCK:
+        items = _deck_load()
+        for it in items:
+            if it.get("id") == iid:
+                lst = it.setdefault("unlocked_by", [])
+                if vid not in lst:
+                    lst.append(vid)
+                    _save(DECK_PATH, items)
+                return jsonify({"ok": True, "readers": len(lst)})
+    return jsonify({"ok": False, "error": "No blueprint with that id."}), 404
+
+
+@app.route("/deck/<iid>/view")
+def deck_view(iid):
+    """Serve the full blueprint, only to a reader who owns it. The file is never
+    sent to anyone who is not on the unlock list, so the paywall is real and not
+    a screen a reader defeats with the view-source menu."""
+    from flask import redirect
+    item = next((x for x in _deck_load()
+                 if x.get("id") == iid and not x.get("hidden")), None)
+    if not item:
+        return ("No such blueprint.", 404)
+    if not _deck_entitled(item):
+        return redirect("/deck")
+    return send_file(os.path.join(BASE_DIR, item.get("file")))
+
+
+@app.route("/deck")
+def deck_page():
+    return send_file(os.path.join(BASE_DIR, "deck.html"))
+
+
 @app.route("/api/articles/<aid>/hide", methods=["POST"])
 @owner_required
 def api_article_hide(aid):

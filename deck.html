@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Blueprint Deck, Reinvestment USA</title>
+<link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+<style>
+  :root { --bp:#10305c; --bp2:#0c2749; --ink:#dcecff; --ink2:#8fb4e3;
+          --gold:#e8c15a; --grid:rgba(220,236,255,.07); }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bp); color:var(--ink);
+         font:16px/1.6 Georgia,'Times New Roman',serif;
+         background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+           linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+         background-size:28px 28px; }
+  .wrap { max-width:46rem; margin:0 auto; padding:1.4rem 1.2rem 4rem; }
+  h1 { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+       font-size:1.5rem; letter-spacing:.03em; margin:.2rem 0 .3rem; }
+  .sub { color:var(--ink2); font-style:italic; margin:0 0 1.4rem; }
+  a { color:var(--ink); }
+  .banner { border:1.5px dashed var(--ink2); color:var(--ink2); font-size:.9rem;
+    border-radius:10px; padding:.7rem .9rem; margin:0 0 1.4rem; }
+  .card { background:var(--bp2); border:1.5px solid var(--ink2); border-radius:12px;
+    padding:1.1rem 1.2rem; margin:0 0 1.2rem; }
+  .card h3 { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    font-size:1.02rem; margin:0 0 .5rem; }
+  .card p { color:var(--ink); font-size:.96rem; margin:.4rem 0 .9rem; }
+  .price { color:var(--gold); font-family:ui-monospace,monospace; font-size:1.05rem;
+    letter-spacing:.04em; }
+  .btn { background:var(--ink); color:var(--bp); border:0; border-radius:9px;
+    padding:.55rem 1rem; font-size:.95rem; font-weight:700; cursor:pointer; }
+  .btn.ghost { background:none; color:var(--ink); border:1px solid var(--ink2); font-weight:400; }
+  .row { display:flex; gap:.7rem; align-items:center; flex-wrap:wrap; margin-top:.6rem; }
+  .form { margin-top:.8rem; display:none; }
+  .form.open { display:block; }
+  input { width:100%; padding:.55rem .7rem; margin:.3rem 0; border-radius:8px;
+    border:1px solid var(--ink2); background:var(--bp); color:var(--ink);
+    font-family:inherit; font-size:.95rem; }
+  .note { color:var(--ink2); font-size:.86rem; margin-top:.6rem; }
+  .owner { border-top:1px solid var(--ink2); margin-top:1.1rem; padding-top:.9rem; }
+  .owner h4 { font-family:ui-monospace,monospace; font-size:.72rem; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--ink2); margin:.2rem 0 .5rem; }
+  .pending { font-size:.86rem; color:var(--ink2); margin:.35rem 0; }
+  .foot { color:var(--ink2); font-size:.85rem; margin-top:2.4rem;
+    border-top:1px solid var(--ink2); padding-top:1rem; }
+  code { font-family:ui-monospace,monospace; color:var(--ink2); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Blueprint Deck</h1>
+  <p class="sub">Reinvestment USA. Pay once, read the blueprint. A purchase, not an investment: you get the document, no stake and no promise of a return.</p>
+
+  <div id="banner" class="banner" style="display:none"></div>
+  <div id="deck"></div>
+
+  <div id="ownerAdd" class="card" style="display:none">
+    <h4 style="font-family:ui-monospace,monospace;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink2)">Owner, add or re-price a blueprint</h4>
+    <input id="oaTitle" placeholder="Title">
+    <input id="oaTeaser" placeholder="Teaser, what the reader sees before paying">
+    <input id="oaFile" placeholder="Blueprint file, e.g. met-blueprint.html">
+    <input id="oaPrice" placeholder="Price in dollars, e.g. 9" inputmode="decimal">
+    <div class="row"><button class="btn" id="oaSave">Save blueprint</button>
+      <span class="note" id="oaMsg"></span></div>
+  </div>
+
+  <p class="foot">Plateau Strategy Solution Lab. The price is the author's to set and change at any time. Paying buys access to the blueprint and nothing else. The investor idea, where a payment becomes a stake, is a securities matter and is not offered here.</p>
+</div>
+
+<script>
+(function () {
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g,
+    function (c) { return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]); }); };
+  var deck = document.getElementById('deck');
+  var state = { owner:false, payments:false };
+
+  function load() {
+    fetch('/api/deck').then(function (r) { return r.json(); }).then(function (d) {
+      if (!d || !d.ok) { deck.innerHTML = '<p class="note">Could not load the deck.</p>'; return; }
+      state.owner = !!d.owner; state.payments = !!d.payments_live;
+      var b = document.getElementById('banner');
+      if (!d.payments_live) {
+        b.style.display = 'block';
+        b.textContent = state.owner
+          ? 'Card payment is not connected yet. Connect Square to take real payments; until then you can grant access by hand from each card below.'
+          : 'Card payment is not connected yet. You can browse the deck now; unlocking opens shortly.';
+      }
+      document.getElementById('ownerAdd').style.display = state.owner ? 'block' : 'none';
+      deck.innerHTML = '';
+      (d.items || []).forEach(renderCard);
+      if (!(d.items || []).length) deck.innerHTML = '<p class="note">No blueprints on the deck yet.</p>';
+    }).catch(function () { deck.innerHTML = '<p class="note">Could not load the deck.</p>'; });
+  }
+
+  function renderCard(it) {
+    var c = document.createElement('div'); c.className = 'card';
+    var priceTxt = '$' + Number(it.price_usd || 0).toFixed(2);
+    var head = '<h3>' + esc(it.title) + '</h3><p>' + esc(it.teaser) + '</p>';
+    if (!it.locked && it.view_url) {
+      c.innerHTML = head + '<div class="row"><a class="btn" href="' + esc(it.view_url) + '">Open blueprint →</a>'
+        + '<span class="note">You own this one.</span></div>';
+    } else {
+      c.innerHTML = head
+        + '<div class="row"><span class="price">' + priceTxt + '</span>'
+        + '<button class="btn" data-act="unlock">Log in and unlock</button></div>'
+        + '<div class="form"><input placeholder="Your name" data-f="name">'
+        + '<input placeholder="Your email, where your access is sent" data-f="email" inputmode="email">'
+        + '<div class="row"><button class="btn" data-act="pay">Continue</button>'
+        + '<span class="note" data-f="msg"></span></div></div>';
+    }
+    if (state.owner) c.appendChild(ownerBlock(it));
+    wire(c, it);
+    deck.appendChild(c);
+  }
+
+  function ownerBlock(it) {
+    var o = document.createElement('div'); o.className = 'owner';
+    var pend = (it.pending || []).filter(function (p) {
+      return (it.reader_ids || []).indexOf(p.vid) === -1; });
+    var rows = pend.map(function (p, i) {
+      return '<div class="pending">' + esc(p.name || '(no name)') + ' · ' + esc(p.email || '')
+        + ' · <code>' + esc(p.vid || 'no id') + '</code> '
+        + '<button class="btn ghost" data-grant="' + esc(p.vid || '') + '">Grant</button></div>';
+    }).join('') || '<div class="pending">No one waiting.</div>';
+    o.innerHTML = '<h4>Owner · ' + (it.readers || 0) + ' reader(s)</h4>'
+      + '<div class="row"><input style="max-width:8rem" value="' + Number(it.price_usd || 0)
+      + '" data-f="reprice" inputmode="decimal"><button class="btn ghost" data-act="reprice">Save price</button></div>'
+      + '<h4 style="margin-top:.7rem">Waiting on a settled payment</h4>' + rows;
+    return o;
+  }
+
+  function wire(c, it) {
+    c.addEventListener('click', function (e) {
+      var act = e.target.getAttribute('data-act');
+      var grantVid = e.target.getAttribute('data-grant');
+      if (act === 'unlock') { c.querySelector('.form').classList.add('open'); }
+      if (act === 'pay') { pay(c, it); }
+      if (act === 'reprice') { reprice(c, it); }
+      if (grantVid !== null && grantVid !== undefined) { grant(it, grantVid); }
+    });
+  }
+
+  function pay(c, it) {
+    var name = (c.querySelector('[data-f=name]') || {}).value || '';
+    var email = (c.querySelector('[data-f=email]') || {}).value || '';
+    var msg = c.querySelector('[data-f=msg]');
+    msg.textContent = 'Starting…';
+    fetch('/api/deck/' + encodeURIComponent(it.id) + '/checkout',
+      { method:'POST', headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify({ name:name, email:email }) })
+      .then(function (r) { return r.json().then(function (j) { return { s:r.status, j:j }; }); })
+      .then(function (res) {
+        var j = res.j;
+        if (j.already && j.view_url) { location.href = j.view_url; return; }
+        if (res.s === 503) { msg.textContent = 'Card payment is not connected yet. Ask the owner to grant your access.'; return; }
+        if (!j.ok) { msg.textContent = j.error || 'Could not start payment.'; return; }
+        msg.textContent = 'An invoice for $' + Number(it.price_usd).toFixed(2)
+          + ' is on its way to ' + esc(email) + '. Your access opens once it is paid.';
+      }).catch(function () { msg.textContent = 'Something went wrong.'; });
+  }
+
+  function reprice(c, it) {
+    var v = (c.querySelector('[data-f=reprice]') || {}).value;
+    fetch('/api/deck', { method:'POST', headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ id: it.id, title: it.title, teaser: it.teaser,
+        file: it.file, price_usd: parseFloat(v) }) })
+      .then(function (r) { return r.json(); }).then(function (j) {
+        if (j.ok) load(); else alert(j.error || 'Could not save.');
+      });
+  }
+
+  function grant(it, vid) {
+    if (!vid) return;
+    fetch('/api/deck/' + encodeURIComponent(it.id) + '/grant',
+      { method:'POST', headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify({ vid: vid }) })
+      .then(function (r) { return r.json(); }).then(function (j) {
+        if (j.ok) load(); else alert(j.error || 'Could not grant.');
+      });
+  }
+
+  document.getElementById('oaSave').addEventListener('click', function () {
+    var m = document.getElementById('oaMsg'); m.textContent = 'Saving…';
+    fetch('/api/deck', { method:'POST', headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        title: document.getElementById('oaTitle').value,
+        teaser: document.getElementById('oaTeaser').value,
+        file: document.getElementById('oaFile').value,
+        price_usd: parseFloat(document.getElementById('oaPrice').value) })})
+      .then(function (r) { return r.json(); }).then(function (j) {
+        if (j.ok) { m.textContent = 'Saved.'; load(); }
+        else m.textContent = j.error || 'Could not save.';
+      }).catch(function () { m.textContent = 'Something went wrong.'; });
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>
