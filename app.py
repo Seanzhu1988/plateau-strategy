@@ -6694,24 +6694,17 @@ def _bp_entry(title, body):
     return entry, h
 
 
-def _bp_image_from_data_url(s):
-    """A poster's drawing, out of a data URL, or None.
+def _bp_image_from_bytes(raw, mime):
+    """A drawing, out of raw bytes, or None. The one validator every path
+    goes through, poster uploads and seeded prints alike.
 
-    Raster formats only, verified by magic bytes, never by the label the
-    browser put on it: an SVG is a script container, and nothing a poster
-    uploads may ever reach another reader's page as markup. Size capped at
-    3MB decoded; a blueprint drawing is a photo of a sketch, not a film."""
+    Raster formats only, verified by magic bytes, never by the label that
+    came with them: an SVG is a script container, and no picture may ever
+    reach another reader's page as markup. Size capped at 3MB; a blueprint
+    drawing is a photo of a sketch, not a film."""
     try:
-        if not isinstance(s, str) or not s.startswith("data:image/") or len(s) > 4_400_000:
-            return None
-        head, _, b64 = s.partition(",")
-        if ";base64" not in head:
-            return None
-        mime = head[5:head.index(";")]
         if mime not in ("image/png", "image/jpeg", "image/webp"):
             return None
-        import base64
-        raw = base64.b64decode(b64, validate=True)
         if not (100 <= len(raw) <= 3_000_000):
             return None
         ok = ((mime == "image/png" and raw[:8] == b"\x89PNG\r\n\x1a\n")
@@ -6719,21 +6712,39 @@ def _bp_image_from_data_url(s):
               or (mime == "image/webp" and raw[:4] == b"RIFF" and raw[8:12] == b"WEBP"))
         if not ok:
             return None
+        import base64
         return {"mime": mime, "b64": base64.b64encode(raw).decode()}
     except Exception:
         return None
 
 
-def _bp_attach(title, body, md, source, bp_title="", image=None, svg=""):
+def _bp_image_from_data_url(s):
+    """A poster's drawing, out of a data URL, or None."""
+    try:
+        if not isinstance(s, str) or not s.startswith("data:image/") or len(s) > 4_400_000:
+            return None
+        head, _, b64 = s.partition(",")
+        if ";base64" not in head:
+            return None
+        mime = head[5:head.index(";")]
+        import base64
+        raw = base64.b64decode(b64, validate=True)
+        return _bp_image_from_bytes(raw, mime)
+    except Exception:
+        return None
+
+
+def _bp_attach(title, body, md, source, bp_title="", images=None, svg=""):
     """Seal a blueprint under an article. Caller passes the STORED title and
     body (post-scrub, post-truncation), because the hash must match what
     readers are actually looking at.
 
-    A blueprint can be text, a picture, or both; `image` is a poster's
-    validated raster ({mime, b64}), `svg` is OUR OWN drawn sheet and is
+    A blueprint can be text, pictures, or both; `images` is a list of
+    validated rasters ({mime, b64}), `svg` is OUR OWN drawn sheet and is
     only ever set by the seeder, never from a request."""
     md = _no_em_dash((md or "").strip())[:40000]
-    if not md and not image and not svg:
+    images = [i for i in (images or []) if i][:8]
+    if not md and not images and not svg:
         return
     entry = {
         "title": _no_em_dash((bp_title or "").strip(), title=True)[:160] or "The blueprint",
@@ -6741,8 +6752,8 @@ def _bp_attach(title, body, md, source, bp_title="", image=None, svg=""):
         "source": source,
         "attached_at": datetime.datetime.now().isoformat(timespec="seconds"),
     }
-    if image:
-        entry["image"] = image
+    if images:
+        entry["images"] = images
     if svg:
         entry["svg"] = svg
     with _LOCK:
@@ -6962,13 +6973,14 @@ def api_idea_blueprint(aid):
         # seeded entry, whose SVG comes from this repo. A poster's entry
         # never carries svg out of here even if the store were poisoned.
         "svg": (bp.get("svg") or "") if bp.get("source") == "seed" else "",
-        "has_image": bool(bp.get("image")),
+        "images": len(bp.get("images") or []),
         "viewer": viewer,
         "opened": _bp_opened_count(h)}))
 
 
 @app.route("/api/idea/<aid>/blueprint/image")
-def api_idea_blueprint_image(aid):
+@app.route("/api/idea/<aid>/blueprint/image/<int:n>")
+def api_idea_blueprint_image(aid, n=0):
     """The picture half of the sealed layer, behind the same gate.
 
     Not recorded separately: the page can only reach this right after the
@@ -6978,7 +6990,8 @@ def api_idea_blueprint_image(aid):
     bp, h, viewer, err = _bp_open(aid)
     if err:
         return _bp_nostore(jsonify(err[0]), err[1])
-    img = bp.get("image") or {}
+    imgs = bp.get("images") or []
+    img = imgs[n] if 0 <= n < len(imgs) else {}
     if not img.get("b64"):
         return _bp_nostore(jsonify({"ok": False, "error": "No drawing on this blueprint."}), 404)
     try:
@@ -7198,9 +7211,14 @@ def idea_page(aid):
         bp_blocks = _md_blocks(bp.get("md") or "")
         heads = [b["s"] for b in bp_blocks if b["t"] == "h2"]
         toc = "".join("<li>%s</li>" % e(x) for x in heads[:10])
-        has_pic = bool(bp.get("image")) or (bp.get("source") == "seed"
-                                            and bool(bp.get("svg")))
-        inside = ["the drawing"] if has_pic else []
+        n_pics = len(bp.get("images") or [])
+        if bp.get("source") == "seed" and bp.get("svg"):
+            n_pics += 1
+        inside = []
+        if n_pics == 1:
+            inside.append("the drawing")
+        elif n_pics > 1:
+            inside.append("%d drawings" % n_pics)
         if heads:
             inside.append("%d sections" % len(heads))
         inside_txt = " + ".join(inside) or "sealed"
@@ -7280,18 +7298,19 @@ def idea_page(aid):
             "      ban.appendChild(so);",
             "    }",
             "    body.appendChild(ban);",
+            "    var nimg = (typeof j.images === 'number') ? j.images : 0;",
+            "    for (var k = 0; k < nimg; k++) {",
+            "      var im = document.createElement('img');",
+            "      im.className = 'bp-img';",
+            "      im.alt = 'Blueprint drawing ' + (k + 1);",
+            "      im.src = '/api/idea/' + encodeURIComponent(CFG.aid) + '/blueprint/image/' + k;",
+            "      body.appendChild(im);",
+            "    }",
             "    if (j.svg) {",
             "      var sheet = document.createElement('div');",
             "      sheet.className = 'bp-sheet';",
             "      sheet.innerHTML = j.svg;",
             "      body.appendChild(sheet);",
-            "    }",
-            "    if (j.has_image) {",
-            "      var im = document.createElement('img');",
-            "      im.className = 'bp-img';",
-            "      im.alt = 'The blueprint drawing';",
-            "      im.src = '/api/idea/' + encodeURIComponent(CFG.aid) + '/blueprint/image';",
-            "      body.appendChild(im);",
             "    }",
             "    (j.blocks || []).forEach(function (b) {",
             "      if (b.t === 'h2') body.appendChild(el('h2', b.s));",
@@ -7709,7 +7728,7 @@ def api_article_create():
     if bp_text or bp_img:
         try:
             _bp_attach(article["title"], article["body"], bp_text, "poster",
-                       image=bp_img)
+                       images=[bp_img] if bp_img else None)
         except Exception:
             pass
     # And count the demand, outside the lock the save holds.
@@ -7888,8 +7907,11 @@ def _seed_blueprint_once():
         cut = md.find("\n# THE FULL MACHINE")
         if cut > 0:
             md = md[:cut]
-        # The picture blueprint: our own drawn sheet, from this repo, the
-        # only source svg is ever accepted from.
+        # The picture blueprint. The owner's prints, lifted from his
+        # Reinvestment white paper, lead; our drawn RE-02 sheet follows.
+        # Both come from this repo, the only source markup or seeded
+        # pictures are ever accepted from, and the prints still pass the
+        # same byte validator as any poster upload.
         svg = ""
         try:
             with open(os.path.join(BASE_DIR, "reinvestment_blueprint.svg"),
@@ -7897,6 +7919,21 @@ def _seed_blueprint_once():
                 svg = f.read()
         except Exception:
             svg = ""
+        images = []
+        try:
+            pdir = os.path.join(BASE_DIR, "seed_prints")
+            for name in sorted(os.listdir(pdir)):
+                mime = {"png": "image/png", "jpg": "image/jpeg",
+                        "jpeg": "image/jpeg", "webp": "image/webp"}.get(
+                            name.rsplit(".", 1)[-1].lower())
+                if not mime:
+                    continue
+                with open(os.path.join(pdir, name), "rb") as f:
+                    img = _bp_image_from_bytes(f.read(), mime)
+                if img:
+                    images.append(img)
+        except Exception:
+            images = []
         art = next((a for a in _load(ARTICLES_PATH)
                     if a.get("stamp") == "20260811210000" and not a.get("hidden")), None)
         if not art:
@@ -7909,10 +7946,13 @@ def _seed_blueprint_once():
             # pitch of the feature is honest timestamps, and a date that
             # quietly reset on every deploy would be the opposite.
             if ((bp.get("md") or "") == _no_em_dash(md.strip())[:40000]
-                    and (bp.get("svg") or "") == svg):
+                    and (bp.get("svg") or "") == svg
+                    and [i.get("b64") for i in (bp.get("images") or [])]
+                        == [i.get("b64") for i in images]):
                 return
         _bp_attach(art.get("title"), art.get("body"), md, "seed",
-                   bp_title="Reinvestment USA, the framework", svg=svg)
+                   bp_title="Reinvestment USA, the framework",
+                   images=images, svg=svg)
     except Exception:
         return
 
