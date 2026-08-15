@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>How backing was built</title>
+<link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+<style>
+  :root { --bp:#10305c; --bp2:#0c2749; --ink:#dcecff; --ink2:#8fb4e3;
+          --gold:#e8c15a; --grid:rgba(220,236,255,.07); }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bp); color:var(--ink);
+         font:16px/1.6 Georgia,'Times New Roman',serif;
+         background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+           linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+         background-size:28px 28px; }
+  .wrap { max-width:40rem; margin:0 auto; padding:1.4rem 1.15rem 3.5rem; }
+  h1 { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+       font-size:1.45rem; letter-spacing:.02em; margin:.2rem 0 .3rem; }
+  .sub { color:var(--ink2); font-style:italic; margin:0 0 1.6rem; }
+  h2 { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+       font-size:.76rem; letter-spacing:.2em; text-transform:uppercase; color:var(--ink);
+       border-bottom:1px solid var(--ink2); padding-bottom:.4rem; margin:2.4rem 0 1.1rem; }
+  /* the flow: stacked boxes with a connector, reads top to bottom on a phone */
+  .step { background:var(--bp2); border:1.5px solid var(--ink2); border-radius:12px;
+    padding:.85rem 1rem; position:relative; }
+  .step .n { font-family:ui-monospace,monospace; color:var(--gold); font-size:.8rem;
+    letter-spacing:.1em; }
+  .step b { display:block; margin:.15rem 0 .2rem; }
+  .step p { margin:0; color:var(--ink2); font-size:.9rem; }
+  .arrow { text-align:center; color:var(--ink2); font-size:1.1rem; line-height:1; margin:.35rem 0; }
+  .rails { list-style:none; padding:0; margin:0; }
+  .rails li { border-left:2px solid var(--gold); padding:.15rem 0 .15rem .8rem; margin:.7rem 0;
+    color:var(--ink); font-size:.94rem; }
+  .rails li span { display:block; color:var(--ink2); font-size:.86rem; }
+  .switch { border:1.5px dashed var(--ink2); border-radius:10px; padding:.7rem .9rem;
+    margin:.7rem 0; color:var(--ink2); font-size:.9rem; }
+  .switch b { color:var(--ink); }
+  code { font-family:ui-monospace,monospace; color:var(--ink2); }
+  .foot { color:var(--ink2); font-size:.85rem; margin-top:2.4rem;
+    border-top:1px solid var(--ink2); padding-top:1rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>How backing was built</h1>
+  <p class="sub">Idea, to blueprint, to payment. The path a person walks, and the rails that keep it safe.</p>
+
+  <h2>The path a backer walks</h2>
+
+  <div class="step"><span class="n">1</span><b>An idea sits on the board</b>
+    <p>Anyone can pitch one, free, no account. It shows what they want to build and which trades it will take.</p></div>
+  <div class="arrow">↓</div>
+
+  <div class="step"><span class="n">2</span><b>They tap "Back this project"</b>
+    <p>The old "register to invest" and "register to launch" forms are gone. One button now: back it by getting the blueprint.</p></div>
+  <div class="arrow">↓</div>
+
+  <div class="step"><span class="n">3</span><b>The Blueprint Deck opens</b>
+    <p>The lab's blueprints, each with a short teaser anyone can read and a price the author sets.</p></div>
+  <div class="arrow">↓</div>
+
+  <div class="step"><span class="n">4</span><b>They log in and pay</b>
+    <p>Sign in with Google, which fills a name and email, then pay the price. The card is charged through Square.</p></div>
+  <div class="arrow">↓</div>
+
+  <div class="step"><span class="n">5</span><b>The payment settles, access is granted</b>
+    <p>Only a settled payment adds a reader to the unlock list. Nobody reaches a blueprint by asking.</p></div>
+  <div class="arrow">↓</div>
+
+  <div class="step"><span class="n">6</span><b>They read the full blueprint</b>
+    <p>The sheet is served only to a reader on the unlock list. That is the whole of it: backing a project is buying its blueprint.</p></div>
+
+  <h2>The rails that keep it safe</h2>
+  <ul class="rails">
+    <li>A purchase, not an investment
+      <span>You get the document, no stake and no share of profit. The "payment becomes a stake" idea is a securities matter and is deliberately left out, waiting for the lawyer.</span></li>
+    <li>The paywall is real
+      <span>The blueprint file is sent only to a buyer, never to the page, so it cannot be reached with the view-source menu.</span></li>
+    <li>No money moves by accident
+      <span>Card payment is off until Square is connected. Until then the deck still works, and the owner grants access by hand.</span></li>
+    <li>The author holds the price
+      <span>You set it and change it any time. Paying never gives a buyer a claim on your work.</span></li>
+    <li>Phone first
+      <span>Every screen here is designed narrow first and checked on a phone before it is called done.</span></li>
+  </ul>
+
+  <h2>Two switches turn it fully on</h2>
+  <div class="switch"><b>Google sign-in</b> appears once <code>GOOGLE_CLIENT_ID</code> is set. The button already ships and hides itself until then.</div>
+  <div class="switch"><b>Card payment</b> works once Square is connected (<code>SQUARE_ACCESS_TOKEN</code> and <code>SQUARE_LOCATION_ID</code>). Both are yours to set, and neither exposes a key in the code.</div>
+
+  <p class="foot">Plateau Strategy Solution Lab. Built phone first, a purchase not an investment, and nothing switched on until you say so.</p>
+</div>
+</body>
+</html>
