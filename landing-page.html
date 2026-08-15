@@ -1701,6 +1701,11 @@
       .idea-back button:hover{filter:brightness(1.1);}
       .idea-back .count{font-size:.78rem;color:#6b655b;margin-top:.35rem;}
       .idea-back .done{color:#1b5e43;font-weight:700;font-size:.88rem;}
+      .idea-back.back-one{flex:1 1 100%;}
+      .idea-back-note{font-size:.86rem;color:#6b655b;margin:.2rem 0 .7rem;}
+      .idea-back-cta{display:inline-block;background:#10305c;color:#fff;text-decoration:none;
+        border-radius:9px;padding:.55rem 1.1rem;font-size:.9rem;font-weight:700;}
+      .idea-back-cta:hover{filter:brightness(1.1);}
 
       .idea-empty{text-align:center;color:#6b655b;padding:2.4rem 1rem;}
 
@@ -2602,7 +2607,7 @@
                         <div class="idea-board">
                             <div class="idea-board-head">
                                 <h3>💡 Business Ideas</h3>
-                                <p>Anyone can pitch a business idea here, free, no account needed. Readers back an idea one of two ways: register to <strong>invest</strong>, or register to <strong>launch and run it</strong>. This is a connections board, not a transaction, no money or equity changes hands on this page; Plateau Strategy follows up directly with anyone who registers interest.</p>
+                                <p>Anyone can pitch a business idea here, free, no account needed. You back a project by getting its <strong>blueprint</strong>: log in and buy the sheet on the Blueprint Deck. That purchase is how you back the build. It buys the document, not a stake and not a share of any profit.</p>
                             </div>
 
                             <div class="idea-composer" id="ideaComposer">
@@ -3380,20 +3385,12 @@
             function invested(id) { return localStorage.getItem('idea_invest_' + id) === '1'; }
             function launched(id) { return localStorage.getItem('idea_launch_' + id) === '1'; }
 
-            function investBlock(a) {
-                return invested(a.id)
-                    ? '<span class="done">✓ You registered to invest</span><div class="count">' + a.follower_count + ' investor(s) interested</div>'
-                    : '<div class="idea-back-row"><input type="email" id="inv_' + a.id + '" placeholder="your@email.com">' +
-                      '<button onclick="ideaInvest(\'' + a.id + '\')">💰 I want to invest</button></div>' +
-                      '<div class="count">' + a.follower_count + ' investor(s) interested</div>';
-            }
-            function launchBlock(a) {
-                return launched(a.id)
-                    ? '<span class="done">✓ You registered to launch this</span><div class="count">' + a.launcher_count + ' operator(s) interested</div>'
-                    : '<div class="idea-back-row"><input type="email" id="lau_' + a.id + '" placeholder="your@email.com">' +
-                      '<button onclick="ideaLaunch(\'' + a.id + '\')">🚀 I want to launch this</button></div>' +
-                      '<div class="count">' + a.launcher_count + ' operator(s) interested</div>';
-            }
+            // The register-to-invest and register-to-launch blocks were removed.
+            // Backing a project now means buying its blueprint on the deck: a
+            // reader logs in and pays there rather than leaving an email here.
+            // The backing block in render() points them to it. This keeps money
+            // out of "register interest" entirely, a purchase of a document is
+            // an ordinary sale, not the securities offering that would be.
             function tradesBlock(a) {
                 var pr = a.professionals;
                 if (!pr) return '';
@@ -3483,8 +3480,11 @@
                             : '') +
                     '</div>' +
                     '<div class="idea-backing">' +
-                        '<div class="idea-back invest" id="ideaInv_' + a.id + '"><span class="lbl">Back it with capital</span>' + investBlock(a) + '</div>' +
-                        '<div class="idea-back launch" id="ideaLau_' + a.id + '"><span class="lbl">Back it by running it</span>' + launchBlock(a) + '</div>' +
+                        '<div class="idea-back back-one">' +
+                            '<span class="lbl">Back this project</span>' +
+                            '<p class="idea-back-note">Backing means getting the blueprint. Log in and buy the sheet, that is how you back the build. A purchase, not an investment.</p>' +
+                            '<a class="idea-back-cta" href="/deck">Log in and get the blueprint →</a>' +
+                        '</div>' +
                     '</div>' +
                 '</div>';
             }

@@ -38,6 +38,13 @@
   input { width:100%; padding:.55rem .7rem; margin:.3rem 0; border-radius:8px;
     border:1px solid var(--ink2); background:var(--bp); color:var(--ink);
     font-family:inherit; font-size:.95rem; }
+  .signin { background:var(--bp2); border:1px solid var(--ink2); border-radius:12px;
+    padding:1rem 1.1rem; margin:0 0 1.4rem; }
+  .signin input { width:100%; padding:.55rem .7rem; margin:.3rem 0; border-radius:8px;
+    border:1px solid var(--ink2); background:var(--bp); color:var(--ink);
+    font-family:inherit; font-size:.95rem; }
+  #gsiBtn { margin:.2rem 0 .5rem; }
+  .gsi-note { color:var(--ink2); font-size:.86rem; margin:.2rem 0; }
   .note { color:var(--ink2); font-size:.86rem; margin-top:.6rem; }
   .owner { border-top:1px solid var(--ink2); margin-top:1.1rem; padding-top:.9rem; }
   .owner h4 { font-family:ui-monospace,monospace; font-size:.72rem; letter-spacing:.18em;
@@ -52,6 +59,16 @@
 <div class="wrap">
   <h1>Blueprint Deck</h1>
   <p class="sub">Reinvestment USA. Pay once, read the blueprint. A purchase, not an investment: you get the document, no stake and no promise of a return.</p>
+
+  <div class="signin">
+    <div id="gsiBox" hidden>
+      <div id="gsiBtn"></div>
+      <p class="gsi-note">Sign in with Google to back a project.</p>
+    </div>
+    <input id="idName" placeholder="Your name" data-gsi-name>
+    <input id="idEmail" placeholder="Your email, where your access is sent" data-gsi-email inputmode="email">
+    <p class="note">Backing a project means buying its blueprint. Sign in or type your details, then unlock the one you want. A purchase, not an investment.</p>
+  </div>
 
   <div id="banner" class="banner" style="display:none"></div>
   <div id="deck"></div>
@@ -69,6 +86,13 @@
   <p class="foot">Plateau Strategy Solution Lab. The price is the author's to set and change at any time. Paying buys access to the blueprint and nothing else. The investor idea, where a payment becomes a stake, is a securities matter and is not offered here.</p>
 </div>
 
+<script>
+  // google-signin.js expects this helper and mounts into #gsiBox. The button
+  // stays hidden unless a Google client id is configured, so with none set the
+  // deck still works with a typed name and email.
+  async function psxJSON(url, opts) { var r = await fetch(url, opts); return r.json(); }
+</script>
+<script src="/google-signin.js"></script>
 <script>
 (function () {
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g,
@@ -104,11 +128,8 @@
     } else {
       c.innerHTML = head
         + '<div class="row"><span class="price">' + priceTxt + '</span>'
-        + '<button class="btn" data-act="unlock">Log in and unlock</button></div>'
-        + '<div class="form"><input placeholder="Your name" data-f="name">'
-        + '<input placeholder="Your email, where your access is sent" data-f="email" inputmode="email">'
-        + '<div class="row"><button class="btn" data-act="pay">Continue</button>'
-        + '<span class="note" data-f="msg"></span></div></div>';
+        + '<button class="btn" data-act="pay">Back this, get the blueprint</button></div>'
+        + '<div class="note" data-f="msg"></div>';
     }
     if (state.owner) c.appendChild(ownerBlock(it));
     wire(c, it);
@@ -135,7 +156,6 @@
     c.addEventListener('click', function (e) {
       var act = e.target.getAttribute('data-act');
       var grantVid = e.target.getAttribute('data-grant');
-      if (act === 'unlock') { c.querySelector('.form').classList.add('open'); }
       if (act === 'pay') { pay(c, it); }
       if (act === 'reprice') { reprice(c, it); }
       if (grantVid !== null && grantVid !== undefined) { grant(it, grantVid); }
@@ -143,9 +163,13 @@
   }
 
   function pay(c, it) {
-    var name = (c.querySelector('[data-f=name]') || {}).value || '';
-    var email = (c.querySelector('[data-f=email]') || {}).value || '';
+    var name = (document.getElementById('idName') || {}).value || '';
+    var email = (document.getElementById('idEmail') || {}).value || '';
     var msg = c.querySelector('[data-f=msg]');
+    if (!name.trim() || email.indexOf('@') === -1) {
+      msg.textContent = 'Add your name and email at the top to back a project.';
+      return;
+    }
     msg.textContent = 'Starting…';
     fetch('/api/deck/' + encodeURIComponent(it.id) + '/checkout',
       { method:'POST', headers:{ 'Content-Type':'application/json' },
