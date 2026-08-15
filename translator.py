@@ -35,7 +35,11 @@ except Exception:                      # pragma: no cover
     requests = None
 
 API_URL = "https://api.anthropic.com/v1/messages"
-MODEL = os.environ.get("TRANSLATE_MODEL", "claude-haiku-4-5-20251001")
+# A translation is read once by a person, not scanned by a machine, so fluency
+# is worth more than the speed and the few cents Haiku saves. Sonnet reads far
+# more naturally for prose. Overridable: TRANSLATE_MODEL=claude-opus-5 for the
+# smoothest, or claude-haiku-4-5-20251001 to go back to cheap and fast.
+MODEL = os.environ.get("TRANSLATE_MODEL", "claude-sonnet-5")
 LANGS = [l.strip() for l in os.environ.get("TRANSLATE_LANGS", "zh,es,ko,vi").split(",") if l.strip()]
 MAX_PARAS = 80                          # a post, not a book
 _LOCK = threading.Lock()
@@ -66,9 +70,12 @@ def _translate_one(key, title, paras, lang):
     """
     numbered = "\n".join("[%d] %s" % (i + 1, p) for i, p in enumerate(paras))
     prompt = (
-        "Translate this article into %s. It was written by a real person; keep "
-        "their voice, do not polish, do not summarise, do not add anything. "
-        "Do not use em dashes in the translation.\n\n"
+        "Translate this article into natural, fluent %s, the way a native "
+        "speaker would actually write it. Translate the meaning, not the words: "
+        "reorder and rephrase as the target language needs so it reads smoothly "
+        "and idiomatically, never word for word and never stiff. Keep the "
+        "author's tone and their plain, human voice. Do not summarise, do not "
+        "add anything, do not explain, do not use em dashes or en dashes.\n\n"
         "Return ONLY JSON: {\"title\": \"...\", \"paras\": [\"...\"]} with exactly "
         "%d entries in paras, one per numbered paragraph, same order. A heading "
         "stays a heading. Numbers like '1.' at the start of a paragraph stay.\n\n"
