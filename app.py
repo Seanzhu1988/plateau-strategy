@@ -1161,6 +1161,18 @@ def _compress_and_cache(resp):
             stamped = _ASSET_RE.sub(
                 lambda m: b'%s="%s?v=%s"' % (m.group(1), m.group(2), _ASSET_V.encode()),
                 body)
+            # One sign-in for the whole site, delivered the same way the
+            # asset versions are: injected here, once, instead of thirty
+            # templates each carrying a tag and drifting. The script does
+            # nothing on a page without a header; owner consoles keep
+            # their own doors and are left alone.
+            if (not path.startswith(("/dispatch", "/archive", "/access", "/setup"))
+                    and b"site-auth.js" not in stamped
+                    and b"</body>" in stamped):
+                stamped = stamped.replace(
+                    b"</body>",
+                    b'<script src="/site-auth.js?v=%s" defer></script></body>'
+                    % _ASSET_V.encode(), 1)
             if stamped != body:
                 resp.set_data(stamped)
 
@@ -1632,6 +1644,14 @@ def google_signin_js():
     the credential is never decoded in the browser has to hold everywhere, and
     three copies is three places to get that wrong."""
     return send_file(os.path.join(BASE_DIR, "google-signin.js"),
+                     mimetype="text/javascript")
+
+
+@app.route("/site-auth.js")
+def site_auth_js():
+    """The site-wide sign-in chip, one copy, injected into every page by
+    the response rewriter rather than carried by thirty templates."""
+    return send_file(os.path.join(BASE_DIR, "site-auth.js"),
                      mimetype="text/javascript")
 
 

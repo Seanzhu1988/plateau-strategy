@@ -53,6 +53,32 @@
     var box = document.getElementById('gsiBox');
     if (!box || typeof psxJSON !== 'function') return;
 
+    // One login for all: a visitor already signed in through the site-wide
+    // chip should not be asked again by a form. Their name and email fill
+    // straight from the session, never overwriting anything typed, and the
+    // button stays hidden because its job is already done.
+    try {
+      var who = await psxJSON('/api/auth/reader');
+      if (who && who.signed_in) {
+        var sscope = box.closest('form') || document;
+        var sName = field(sscope, 'name');
+        var sMail = field(sscope, 'email');
+        if (sName && who.name && !sName.value) sName.value = who.name;
+        if (sMail && who.email && !sMail.value) sMail.value = who.email;
+        var sNote = box.querySelector('.gsi-note');
+        if (sNote) {
+          sNote.textContent = 'Filled from your sign-in, '
+                            + (who.email || who.name) + '. Edit freely.';
+          box.hidden = false;
+          var orRow = box.querySelector('.gsi-or');
+          if (orRow) orRow.hidden = true;
+          var btnRow = document.getElementById('gsiBtn');
+          if (btnRow) btnRow.hidden = true;
+        }
+        return;
+      }
+    } catch (e) { /* the button below still works */ }
+
     var cfg;
     try { cfg = await psxJSON('/api/auth/google/config'); } catch (e) { return; }
     if (!cfg || !cfg.enabled || !cfg.client_id) return;      // stays hidden
