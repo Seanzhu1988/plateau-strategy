@@ -20,6 +20,7 @@ EXTRA_SKIP = {
     "Bureau of the Fiscal Service",
     "Attn Dept G · Bureau of the Fiscal Service · P.O. Box 2188 · Parkersburg, WV 26106-2188",
     "Gifts to Reduce the Public Debt",
+    "The Walks",
     "🇺🇸 Give at the U.S. Treasury (Pay.gov) →",
     "FIG 1, MIXED-USE HUB · FRONT ELEVATION (NTS)",
     "PROJECT · PLATEAU STRATEGY", "SHEET · RE-01", "SCALE · NTS", "REV · A",
@@ -932,6 +933,21 @@ EXTRA.update({
         "El plano (opcional): el detalle de trabajo que no quieres hacer público. Queda sellado; el lector debe iniciar sesión para abrirlo, y cada lector queda registrado con su nombre.",
         "블루프린트(선택): 공개하고 싶지 않은 실무 세부 내용. 봉인된 상태로 유지되며, 독자는 로그인해야 열 수 있고 열람한 독자의 이름이 기록됩니다.",
         "Bản thiết kế (tùy chọn): phần chi tiết bạn không muốn công khai. Nó được niêm phong; người đọc phải đăng nhập để mở, và mỗi người đọc đều được ghi lại kèm tên."],
+    "For every city we have walked": [
+        "为我们走过的每一座城市",
+        "Para cada ciudad que hemos caminado",
+        "저희가 걸어 본 모든 도시를 위해",
+        "Cho mỗi thành phố chúng tôi đã đi bộ qua"],
+    "Every map on this site, drawn on foot, in one index: measured corridors, honest estimates, and the walks you save under your own sign-in.": [
+        "本站所有地图都用脚步绘成，汇于一页索引：实测的通道、诚实的估算，以及你在自己的登录名下保存的路线。",
+        "Todos los mapas de este sitio, dibujados a pie, en un solo índice: pasillos medidos, estimaciones honestas y los recorridos que guardas con tu propio inicio de sesión.",
+        "이 사이트의 모든 지도를 걸어서 그려 하나의 색인에 모았습니다. 실측된 통로, 정직한 추정치, 그리고 자신의 로그인으로 저장한 산책 경로까지.",
+        "Mọi bản đồ trên trang này, vẽ bằng đôi chân, trong một mục lục: các hành lang đã đo, ước tính trung thực, và những chuyến đi bạn lưu dưới đăng nhập của mình."],
+    "Open The Walks →": [
+        "打开 The Walks →",
+        "Abrir The Walks →",
+        "The Walks 열기 →",
+        "Mở The Walks →"],
     "Attach your drawing (optional). A photo of a sketch counts. It stays sealed with the blueprint.": [
         "附上你的图纸（可选）。手绘草图的照片也可以。它会与蓝图一起封存。",
         "Adjunta tu dibujo (opcional). Una foto de un boceto cuenta. Queda sellado junto con el plano.",

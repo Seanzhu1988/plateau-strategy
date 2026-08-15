@@ -510,7 +510,8 @@ TRAFFIC_MAX_DAYS = 120  # bound file growth; older days are just dropped
 # Pages tracked individually for the "which tool" breakdown; every other
 # page rolls into a single "other" bucket so the archive table stays short.
 TRAFFIC_TOOL_PATHS = {"/trip-planner": "trip_planner", "/destination-book": "destination_book",
-                       "/favorite-place": "favorite_place"}
+                       "/favorite-place": "favorite_place",
+                       "/met": "met_map", "/walks": "walks_hub"}
 
 # ---------- traffic we should not be counting ----------
 # The number beside the map is meant to tell Sean whether strangers are using
@@ -1551,6 +1552,126 @@ def site_manifest():
 def met_page():
     """Inside the Met, on footprints: our own schematic indoor map."""
     return send_file(os.path.join(BASE_DIR, "met.html"))
+
+
+@app.route("/walks")
+def walks_page():
+    """The Walks: every map on the site, drawn on foot, in one index."""
+    return send_file(os.path.join(BASE_DIR, "walks.html"))
+
+
+# The cities of the corridor store, grouped by key prefix. A new city is a
+# new row here plus its corridors in footprints.py, nothing else.
+_WALK_CITIES = [
+    ("new-york", "New York, inside the Met", ("met-",), "/met"),
+    ("washington-dc", "Washington DC", ("union-station", "smithsonian-"), "/walk"),
+    ("seattle", "Seattle", ("seatac-", "westlake-", "pike-place-", "monorail-"), "/walk"),
+]
+
+
+@app.route("/api/walks-map")
+def api_walks_map():
+    """The index behind The Walks: every corridor, by city, honest state.
+
+    Public, and deliberately the same honesty rule as the Met sheet: a
+    corridor is either measured, with its minutes and the date somebody
+    walked it, or it is waiting, and the page says which."""
+    cors = FOOTPRINTS.corridors()
+    cities = []
+    for key, name, prefixes, link in _WALK_CITIES:
+        rows = []
+        for c in cors:
+            ck = c.get("key") or ""
+            if not any(ck.startswith(p) for p in prefixes):
+                continue
+            w = c.get("walked") or None
+            rows.append({"key": ck, "label": c.get("label") or ck,
+                         "walked": bool(w),
+                         "minutes": (w or {}).get("minutes"),
+                         "date": (w or {}).get("date")})
+        rows.sort(key=lambda r: (not r["walked"], r["label"]))
+        cities.append({"key": key, "name": name, "link": link,
+                       "corridors": rows,
+                       "walked": sum(1 for r in rows if r["walked"]),
+                       "total": len(rows)})
+    return jsonify({"ok": True, "cities": cities})
+
+
+# ---------- saved walks: your plans, under your sign-in ----------
+WALKS_PATH = _data_path("saved_walks.json")
+_WALK_ROOM_RE = re.compile(r"^[a-z0-9-]{2,40}$")
+
+
+@app.route("/api/walks", methods=["GET", "POST"])
+def api_walks():
+    """A reader's saved walks. Their own and only their own, both ways:
+    the list never shows anyone else's, and a walk saves under exactly
+    the identity the session carries. This is the first thing the
+    site-wide sign-in gives a visitor beyond the blueprint."""
+    reader = session.get("reader") or {}
+    email = (reader.get("email") or "").strip().lower()
+    if not email:
+        return _bp_nostore(jsonify({"ok": False, "need": "signin",
+                                    "error": "Sign in to keep walks."}), 401)
+    if request.method == "GET":
+        rows = _load(WALKS_PATH)
+        rows = rows if isinstance(rows, list) else []
+        mine = [{k: w.get(k) for k in ("id", "kind", "walk", "title",
+                                       "minutes", "saved_at")}
+                for w in rows if w.get("email") == email]
+        return _bp_nostore(jsonify({"ok": True, "walks": mine[::-1]}))
+    data = request.get_json(force=True, silent=True) or {}
+    if data.get("kind") != "met":
+        return _bp_nostore(jsonify({"ok": False,
+                                    "error": "Only Met walks can be saved yet."}), 400)
+    rooms = [s.strip() for s in (data.get("walk") or "").split(",") if s.strip()]
+    if not rooms or len(rooms) > 12 or not all(_WALK_ROOM_RE.match(s) for s in rooms):
+        return _bp_nostore(jsonify({"ok": False,
+                                    "error": "That walk could not be read."}), 400)
+    title = _no_em_dash(_no_tags((data.get("title") or "").strip()), title=True)[:80]
+    minutes = data.get("minutes")
+    minutes = int(minutes) if isinstance(minutes, (int, float)) and 0 < minutes < 2000 else None
+    with _LOCK:
+        rows = _load(WALKS_PATH)
+        rows = rows if isinstance(rows, list) else []
+        mine = [w for w in rows if w.get("email") == email]
+        for w in mine:
+            if w.get("kind") == "met" and w.get("walk") == ",".join(rooms):
+                return _bp_nostore(jsonify({"ok": True, "duplicate": True,
+                                            "id": w.get("id")}))
+        if len(mine) >= 50:
+            return _bp_nostore(jsonify({"ok": False,
+                                        "error": "Fifty walks is the shelf. "
+                                        "Delete one to save another."}), 400)
+        w = {"id": _next_id(rows, "WALK", datestamp=False),
+             "email": email,
+             "name": (reader.get("name") or "").strip()[:80],
+             "kind": "met",
+             "walk": ",".join(rooms),
+             "title": title,
+             "minutes": minutes,
+             "saved_at": datetime.datetime.now().isoformat(timespec="seconds")}
+        rows.append(w)
+        _save(WALKS_PATH, rows[-2000:])
+    return _bp_nostore(jsonify({"ok": True, "id": w["id"]}))
+
+
+@app.route("/api/walks/<wid>/delete", methods=["POST"])
+def api_walks_delete(wid):
+    """Drop one of your own walks. Somebody else's id does nothing."""
+    reader = session.get("reader") or {}
+    email = (reader.get("email") or "").strip().lower()
+    if not email:
+        return _bp_nostore(jsonify({"ok": False, "need": "signin"}), 401)
+    with _LOCK:
+        rows = _load(WALKS_PATH)
+        rows = rows if isinstance(rows, list) else []
+        keep = [w for w in rows
+                if not (w.get("id") == wid and w.get("email") == email)]
+        if len(keep) != len(rows):
+            _save(WALKS_PATH, keep)
+            return _bp_nostore(jsonify({"ok": True}))
+    return _bp_nostore(jsonify({"ok": False, "error": "Not one of your walks."}), 404)
 
 
 @app.route("/met-map.js")
