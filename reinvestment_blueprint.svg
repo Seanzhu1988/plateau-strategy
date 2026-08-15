@@ -1,0 +1,155 @@
+<svg viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Reinvestment USA, the machine, drawn as a blueprint sheet">
+  <!-- The picture blueprint of the launchpad itself, drawn in the site's
+       sheet language: navy line work on white, a title block, nothing
+       filled behind a word. Served ONLY inside the sealed layer. -->
+  <defs>
+    <pattern id="hatch" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="7" stroke="#1f3a5f" stroke-width="0.8" opacity="0.35"/>
+    </pattern>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9" fill="none" stroke="#1f3a5f" stroke-width="1.4"/>
+    </marker>
+  </defs>
+
+  <style>
+    .lbl { font: 700 15px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0b0809; letter-spacing: .06em; }
+    .sub { font: 600 11px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #6b6459; letter-spacing: .09em; }
+    .tiny { font: 600 10px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #6b6459; letter-spacing: .12em; }
+    .num { font: 800 12px -apple-system, sans-serif; fill: #ffffff; }
+    .box { fill: #ffffff; stroke: #1f3a5f; stroke-width: 1.8; }
+    .corridor { stroke: #1f3a5f; stroke-width: 1.4; fill: none; stroke-dasharray: 4 5; }
+    .firm { stroke: #1f3a5f; stroke-width: 1.6; fill: none; }
+    .hair { stroke: #d3d3da; stroke-width: 1; }
+  </style>
+
+  <rect x="1" y="1" width="998" height="698" fill="#ffffff" stroke="#1f3a5f" stroke-width="2"/>
+  <rect x="14" y="14" width="972" height="672" fill="none" stroke="#1f3a5f" stroke-width="0.8" opacity="0.5"/>
+
+  <text x="40" y="58" style="font: 800 24px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0b0809; letter-spacing: .04em;">REINVESTMENT USA · THE MACHINE</text>
+  <text x="40" y="80" class="sub">AN IDEA GETS PAID, PROTECTED, AND BUILT · FIG 1 · GENERAL ARRANGEMENT</text>
+
+  <!-- ============ THE POST: idea public, blueprint sealed ============ -->
+  <text x="40" y="130" class="tiny">THE POST</text>
+  <rect x="40" y="140" width="200" height="78" rx="7" class="box"/>
+  <text x="56" y="172" class="lbl">THE IDEA</text>
+  <text x="56" y="192" class="sub">PUBLIC · ON THE BOARD</text>
+
+  <rect x="40" y="238" width="200" height="94" rx="7" class="box"/>
+  <rect x="40" y="238" width="200" height="94" rx="7" fill="url(#hatch)" stroke="none"/>
+  <text x="56" y="270" class="lbl">THE BLUEPRINT</text>
+  <text x="56" y="290" class="sub">SEALED · THE DRAWING</text>
+  <text x="56" y="306" class="sub">AND THE WORKING DETAIL</text>
+  <!-- the lock -->
+  <rect x="196" y="256" width="26" height="20" rx="3" class="firm" fill="#ffffff"/>
+  <path d="M 201 256 v-6 a8 8 0 0 1 16 0 v6" class="firm"/>
+  <circle cx="209" cy="265" r="2.4" fill="#1f3a5f"/>
+
+  <text x="40" y="360" class="sub">A READER SIGNS IN TO OPEN IT.</text>
+  <text x="40" y="376" class="sub">EVERY READER IS RECORDED, NAME AND TIME.</text>
+
+  <!-- ============ THE BOARD ============ -->
+  <path d="M 240 179 H 330" class="corridor" marker-end="url(#arr)"/>
+  <path d="M 240 285 H 330" class="corridor" marker-end="url(#arr)"/>
+
+  <rect x="330" y="140" width="220" height="192" rx="7" class="box"/>
+  <text x="348" y="176" class="lbl">THE BOARD</text>
+  <text x="348" y="196" class="sub">TIMESTAMPED AT POSTING</text>
+  <rect x="348" y="208" width="132" height="22" rx="4" class="firm"/>
+  <text x="356" y="223" class="tiny">#YYYYMMDDHHMMSS</text>
+  <text x="348" y="254" class="sub">VOTES · FOLLOWERS · TRADES</text>
+  <text x="348" y="274" class="sub">THE RECOGNIZER NAMES THE</text>
+  <text x="348" y="290" class="sub">PROFESSIONS THE IDEA NEEDS</text>
+
+  <!-- ============ THE OPINION ============ -->
+  <path d="M 550 236 H 640" class="corridor" marker-end="url(#arr)"/>
+
+  <rect x="640" y="140" width="220" height="130" rx="7" class="box"/>
+  <text x="658" y="176" class="lbl">THE OPINION</text>
+  <text x="658" y="196" class="sub">A LICENSED PROFESSIONAL</text>
+  <text x="658" y="212" class="sub">WRITES IT ONCE, PRICES IT,</text>
+  <text x="658" y="228" class="sub">SIGNS IT WITH A REAL LICENCE</text>
+  <text x="658" y="254" class="tiny">WRITTEN ONCE · SOLD AGAIN AND AGAIN</text>
+
+  <!-- fan out to buyers -->
+  <path d="M 750 270 V 320 H 660 V 356" class="corridor" marker-end="url(#arr)"/>
+  <path d="M 750 270 V 356" class="corridor" marker-end="url(#arr)"/>
+  <path d="M 750 270 V 320 H 840 V 356" class="corridor" marker-end="url(#arr)"/>
+
+  <rect x="612" y="356" width="96" height="54" rx="7" class="box"/>
+  <text x="628" y="379" class="lbl">BUYER</text>
+  <text x="628" y="396" class="sub">UNLOCKS</text>
+  <rect x="702" y="356" width="96" height="54" rx="7" class="box"/>
+  <text x="718" y="379" class="lbl">BUYER</text>
+  <text x="718" y="396" class="sub">UNLOCKS</text>
+  <rect x="792" y="356" width="96" height="54" rx="7" class="box"/>
+  <text x="808" y="379" class="lbl">BUYER</text>
+  <text x="808" y="396" class="sub">UNLOCKS</text>
+
+  <!-- the split -->
+  <path d="M 750 410 V 448" class="corridor" marker-end="url(#arr)"/>
+  <rect x="612" y="448" width="276" height="46" rx="7" class="box"/>
+  <rect x="612" y="448" width="212" height="46" rx="7" fill="#1f3a5f" opacity="0.08" stroke="none"/>
+  <line x1="824" y1="448" x2="824" y2="494" class="firm"/>
+  <text x="630" y="476" class="sub">80% THE PROFESSIONAL</text>
+  <text x="832" y="468" class="tiny">20%</text>
+  <text x="832" y="482" class="tiny">PLATEAU</text>
+
+  <!-- ============ the directory compounds ============ -->
+  <rect x="330" y="380" width="220" height="114" rx="7" class="box"/>
+  <text x="348" y="412" class="lbl">THE DIRECTORY</text>
+  <text x="348" y="432" class="sub">EVERY OPINION LEAVES BEHIND</text>
+  <text x="348" y="448" class="sub">A NAMED, LICENSED PROFESSIONAL</text>
+  <text x="348" y="464" class="sub">ANYONE CAN FIND AND HIRE</text>
+  <text x="348" y="484" class="tiny">WORTH MORE EVERY MONTH IT RUNS</text>
+  <path d="M 440 332 V 380" class="corridor" marker-end="url(#arr)"/>
+
+  <!-- ============ stages strip ============ -->
+  <line x1="40" y1="540" x2="960" y2="540" class="hair"/>
+  <text x="40" y="530" class="tiny">THE STAGES</text>
+
+  <g>
+    <circle cx="70" cy="575" r="13" fill="#1f3a5f"/>
+    <text x="66" y="580" class="num">1</text>
+    <text x="92" y="571" class="lbl" style="font-size:13px">PITCHED</text>
+    <text x="92" y="587" class="tiny">PUBLIC + STAMP</text>
+
+    <circle cx="235" cy="575" r="13" fill="#1f3a5f"/>
+    <text x="231" y="580" class="num">2</text>
+    <text x="257" y="571" class="lbl" style="font-size:13px">READ</text>
+    <text x="257" y="587" class="tiny">NAMED READERS</text>
+
+    <circle cx="390" cy="575" r="13" fill="#1f3a5f"/>
+    <text x="386" y="580" class="num">3</text>
+    <text x="412" y="571" class="lbl" style="font-size:13px">FILED</text>
+    <text x="412" y="587" class="tiny">OPINION EXISTS, SEALED</text>
+
+    <circle cx="575" cy="575" r="13" fill="#1f3a5f"/>
+    <text x="571" y="580" class="num">4</text>
+    <text x="597" y="571" class="lbl" style="font-size:13px">UNLOCKED</text>
+    <text x="597" y="587" class="tiny">PAID · A ROADMAP IN HAND</text>
+
+    <circle cx="775" cy="575" r="13" fill="#1f3a5f"/>
+    <text x="771" y="580" class="num">5</text>
+    <text x="797" y="571" class="lbl" style="font-size:13px">BACKED</text>
+    <text x="797" y="587" class="tiny">INTEREST ONLY, FOR NOW</text>
+  </g>
+  <path d="M 88 575 H 217" class="corridor"/>
+  <path d="M 253 575 H 372" class="corridor"/>
+  <path d="M 408 575 H 557" class="corridor"/>
+  <path d="M 593 575 H 757" class="corridor"/>
+  <text x="40" y="620" class="tiny">STAGE 5 STAYS REGISTER-INTEREST, NO MONEY, UNTIL COUNSEL CLEARS THE FUNDING LANE.</text>
+
+  <!-- ============ title block ============ -->
+  <g>
+    <rect x="560" y="636" width="426" height="50" fill="#ffffff" stroke="#1f3a5f" stroke-width="1.4"/>
+    <line x1="560" y1="661" x2="986" y2="661" class="hair"/>
+    <line x1="788" y1="636" x2="788" y2="686" class="hair"/>
+    <line x1="884" y1="636" x2="884" y2="686" class="hair"/>
+    <text x="568" y="652" class="tiny">PROJECT · REINVESTMENT USA</text>
+    <text x="568" y="677" class="tiny">DRAWN · PLATEAU STRATEGY</text>
+    <text x="796" y="652" class="tiny">SHEET · RE-02</text>
+    <text x="796" y="677" class="tiny">SCALE · NTS</text>
+    <text x="892" y="652" class="tiny">REV · A</text>
+    <text x="892" y="677" class="tiny">SEALED COPY</text>
+  </g>
+</svg>

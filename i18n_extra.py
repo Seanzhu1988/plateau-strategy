@@ -932,6 +932,11 @@ EXTRA.update({
         "El plano (opcional): el detalle de trabajo que no quieres hacer público. Queda sellado; el lector debe iniciar sesión para abrirlo, y cada lector queda registrado con su nombre.",
         "블루프린트(선택): 공개하고 싶지 않은 실무 세부 내용. 봉인된 상태로 유지되며, 독자는 로그인해야 열 수 있고 열람한 독자의 이름이 기록됩니다.",
         "Bản thiết kế (tùy chọn): phần chi tiết bạn không muốn công khai. Nó được niêm phong; người đọc phải đăng nhập để mở, và mỗi người đọc đều được ghi lại kèm tên."],
+    "Attach your drawing (optional). A photo of a sketch counts. It stays sealed with the blueprint.": [
+        "附上你的图纸（可选）。手绘草图的照片也可以。它会与蓝图一起封存。",
+        "Adjunta tu dibujo (opcional). Una foto de un boceto cuenta. Queda sellado junto con el plano.",
+        "도면을 첨부하세요(선택). 스케치를 찍은 사진도 됩니다. 블루프린트와 함께 봉인됩니다.",
+        "Đính kèm bản vẽ của bạn (tùy chọn). Ảnh chụp bản phác thảo cũng được. Nó được niêm phong cùng bản thiết kế."],
     "What you publish here is a public disclosure. In the US that starts a twelve-month clock to file for a patent; in most other countries there is no grace period at all. If your idea is genuinely patentable, see a patent attorney before posting, not after. The sealed blueprint keeps detail off the public page and names everyone who reads it; it is not a patent filing.": [
         "在这里发布即构成公开披露。在美国，公开后你有十二个月的时间申请专利；在其他大多数国家则完全没有宽限期。如果你的点子确实可以申请专利，请在发布之前先咨询专利律师，而不是之后。封存的蓝图能让细节不出现在公开页面上，并记录每一位读者的实名；但它不是专利申请。",
         "Lo que publicas aquí es una divulgación pública. En EE. UU. eso inicia un plazo de doce meses para solicitar una patente; en la mayoría de los demás países no hay período de gracia alguno. Si tu idea es realmente patentable, consulta a un abogado de patentes antes de publicar, no después. El plano sellado mantiene el detalle fuera de la página pública y registra el nombre de cada lector; no es una solicitud de patente.",

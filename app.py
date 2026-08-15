@@ -6694,24 +6694,63 @@ def _bp_entry(title, body):
     return entry, h
 
 
-def _bp_attach(title, body, md, source, bp_title=""):
+def _bp_image_from_data_url(s):
+    """A poster's drawing, out of a data URL, or None.
+
+    Raster formats only, verified by magic bytes, never by the label the
+    browser put on it: an SVG is a script container, and nothing a poster
+    uploads may ever reach another reader's page as markup. Size capped at
+    3MB decoded; a blueprint drawing is a photo of a sketch, not a film."""
+    try:
+        if not isinstance(s, str) or not s.startswith("data:image/") or len(s) > 4_400_000:
+            return None
+        head, _, b64 = s.partition(",")
+        if ";base64" not in head:
+            return None
+        mime = head[5:head.index(";")]
+        if mime not in ("image/png", "image/jpeg", "image/webp"):
+            return None
+        import base64
+        raw = base64.b64decode(b64, validate=True)
+        if not (100 <= len(raw) <= 3_000_000):
+            return None
+        ok = ((mime == "image/png" and raw[:8] == b"\x89PNG\r\n\x1a\n")
+              or (mime == "image/jpeg" and raw[:3] == b"\xff\xd8\xff")
+              or (mime == "image/webp" and raw[:4] == b"RIFF" and raw[8:12] == b"WEBP"))
+        if not ok:
+            return None
+        return {"mime": mime, "b64": base64.b64encode(raw).decode()}
+    except Exception:
+        return None
+
+
+def _bp_attach(title, body, md, source, bp_title="", image=None, svg=""):
     """Seal a blueprint under an article. Caller passes the STORED title and
     body (post-scrub, post-truncation), because the hash must match what
-    readers are actually looking at."""
+    readers are actually looking at.
+
+    A blueprint can be text, a picture, or both; `image` is a poster's
+    validated raster ({mime, b64}), `svg` is OUR OWN drawn sheet and is
+    only ever set by the seeder, never from a request."""
     md = _no_em_dash((md or "").strip())[:40000]
-    if not md:
+    if not md and not image and not svg:
         return
+    entry = {
+        "title": _no_em_dash((bp_title or "").strip(), title=True)[:160] or "The blueprint",
+        "md": md,
+        "source": source,
+        "attached_at": datetime.datetime.now().isoformat(timespec="seconds"),
+    }
+    if image:
+        entry["image"] = image
+    if svg:
+        entry["svg"] = svg
     with _LOCK:
         store = _load(BLUEPRINTS_PATH)
         if not isinstance(store, dict):
             store = {}
         store.setdefault("by_hash", {})
-        store["by_hash"][_content_hash(title, body)] = {
-            "title": _no_em_dash((bp_title or "").strip(), title=True)[:160] or "The blueprint",
-            "md": md,
-            "source": source,
-            "attached_at": datetime.datetime.now().isoformat(timespec="seconds"),
-        }
+        store["by_hash"][_content_hash(title, body)] = entry
         _save(BLUEPRINTS_PATH, store)
 
 
@@ -6856,54 +6895,100 @@ def _bp_opened_count(h):
     return len({r.get("email") for r in rows if r.get("h") == h and r.get("email")})
 
 
+def _bp_nostore(resp, code=200):
+    """No sealed byte, and not even the fact of being asked to sign in,
+    may sit in a shared cache: a cached 200 would replay the plan to the
+    next unsigned visitor with no access record at all."""
+    resp.headers["Cache-Control"] = "private, no-store"
+    resp.headers["Vary"] = "Cookie"
+    return resp, code
+
+
+def _bp_open(aid):
+    """The one gate both blueprint doors share, JSON and image alike.
+
+    Two doors with two hand-written gates would drift apart the first time
+    one was edited, and the drifted one would be the leak. Returns
+    (bp, hash, viewer, None) when the reader may pass, else
+    (None, None, None, (payload, code))."""
+    a = next((x for x in _load(ARTICLES_PATH)
+              if x.get("id") == aid and not x.get("hidden")), None)
+    if not a:
+        return None, None, None, ({"ok": False, "error": "That idea is not here."}, 404)
+    owner = session.get("owner")
+    if (a.get("lock") or {}) and not _entitled(a) and not owner:
+        # The page treats a locked article as blueprint-less; the doors
+        # must agree, or the sealed layer becomes a side door around the
+        # article's own paywall.
+        return None, None, None, ({"ok": False,
+                                   "error": "This idea is locked; its blueprint unlocks with it."}, 403)
+    bp, h = _bp_entry(a.get("title"), a.get("body"))
+    if not bp:
+        return None, None, None, ({"ok": False,
+                                   "error": "No blueprint travels with this idea."}, 404)
+    reader = session.get("reader") or {}
+    if not owner and not reader.get("email"):
+        return None, None, None, ({"ok": False, "need": "signin",
+                                   "error": "Sign in to open the blueprint."}, 401)
+    if reader.get("email"):
+        viewer = {"email": reader.get("email"), "name": reader.get("name") or ""}
+    else:
+        # The owner reading their own board is not evidence of anything;
+        # the log stays a record of outside readers.
+        viewer = {"email": "", "name": owner, "owner": True}
+    return bp, h, viewer, None
+
+
 @app.route("/api/idea/<aid>/blueprint")
 def api_idea_blueprint(aid):
     """The sealed layer, served ONLY to a named reader.
 
     The blueprint's body is never in the page's HTML and never in the
-    public article JSON; this endpoint is the single door, and the check
-    is the server's session, not anything the page claims. An unsigned
-    request learns that it must sign in and nothing else."""
-    def _nostore(payload, code=200):
-        # The sealed body, and even the fact of being asked to sign in, must
-        # never sit in a shared cache; a cached 200 would replay the whole
-        # plan to the next unsigned visitor with no access record at all.
-        r = jsonify(payload)
-        r.headers["Cache-Control"] = "private, no-store"
-        r.headers["Vary"] = "Cookie"
-        return r, code
-
-    a = next((x for x in _load(ARTICLES_PATH)
-              if x.get("id") == aid and not x.get("hidden")), None)
-    if not a:
-        return _nostore({"ok": False, "error": "That idea is not here."}, 404)
-    owner = session.get("owner")
-    if (a.get("lock") or {}) and not _entitled(a) and not owner:
-        # The page treats a locked article as blueprint-less; the endpoint
-        # must agree, or the sealed layer becomes a side door around the
-        # article's own paywall.
-        return _nostore({"ok": False,
-                         "error": "This idea is locked; its blueprint unlocks with it."}, 403)
-    bp, h = _bp_entry(a.get("title"), a.get("body"))
-    if not bp:
-        return _nostore({"ok": False, "error": "No blueprint travels with this idea."}, 404)
-    reader = session.get("reader") or {}
-    if not owner and not reader.get("email"):
-        return _nostore({"ok": False, "need": "signin",
-                         "error": "Sign in to open the blueprint."}, 401)
-    if reader.get("email"):
-        viewer = {"email": reader.get("email"), "name": reader.get("name") or ""}
+    public article JSON; this endpoint and its image twin are the only
+    doors, and the check is the server's session, not anything the page
+    claims. An unsigned request learns that it must sign in and nothing
+    else."""
+    bp, h, viewer, err = _bp_open(aid)
+    if err:
+        return _bp_nostore(jsonify(err[0]), err[1])
+    if not viewer.get("owner"):
         _bp_record_access(h, aid, viewer)
-    else:
-        # The owner reading their own board is not evidence of anything;
-        # the log stays a record of outside readers.
-        viewer = {"email": "", "name": owner, "owner": True}
-    return _nostore({"ok": True,
-                     "title": bp.get("title") or "The blueprint",
-                     "attached_at": bp.get("attached_at"),
-                     "blocks": _md_blocks(bp.get("md") or ""),
-                     "viewer": viewer,
-                     "opened": _bp_opened_count(h)})
+    return _bp_nostore(jsonify({
+        "ok": True,
+        "title": bp.get("title") or "The blueprint",
+        "attached_at": bp.get("attached_at"),
+        "blocks": _md_blocks(bp.get("md") or ""),
+        # The drawn sheet ships as markup, so it is served ONLY for the
+        # seeded entry, whose SVG comes from this repo. A poster's entry
+        # never carries svg out of here even if the store were poisoned.
+        "svg": (bp.get("svg") or "") if bp.get("source") == "seed" else "",
+        "has_image": bool(bp.get("image")),
+        "viewer": viewer,
+        "opened": _bp_opened_count(h)}))
+
+
+@app.route("/api/idea/<aid>/blueprint/image")
+def api_idea_blueprint_image(aid):
+    """The picture half of the sealed layer, behind the same gate.
+
+    Not recorded separately: the page can only reach this right after the
+    JSON door, which already wrote the reader into the book, and two log
+    lines for one opening would double-count readers."""
+    import base64
+    bp, h, viewer, err = _bp_open(aid)
+    if err:
+        return _bp_nostore(jsonify(err[0]), err[1])
+    img = bp.get("image") or {}
+    if not img.get("b64"):
+        return _bp_nostore(jsonify({"ok": False, "error": "No drawing on this blueprint."}), 404)
+    try:
+        raw = base64.b64decode(img["b64"])
+    except Exception:
+        return _bp_nostore(jsonify({"ok": False, "error": "The drawing could not be read."}), 500)
+    mime = img.get("mime") or ""
+    if mime not in ("image/png", "image/jpeg", "image/webp"):
+        return _bp_nostore(jsonify({"ok": False, "error": "The drawing could not be read."}), 500)
+    return _bp_nostore(Response(raw, mimetype=mime))
 
 
 @app.route("/api/blueprint-access")
@@ -7113,6 +7198,12 @@ def idea_page(aid):
         bp_blocks = _md_blocks(bp.get("md") or "")
         heads = [b["s"] for b in bp_blocks if b["t"] == "h2"]
         toc = "".join("<li>%s</li>" % e(x) for x in heads[:10])
+        has_pic = bool(bp.get("image")) or (bp.get("source") == "seed"
+                                            and bool(bp.get("svg")))
+        inside = ["the drawing"] if has_pic else []
+        if heads:
+            inside.append("%d sections" % len(heads))
+        inside_txt = " + ".join(inside) or "sealed"
         reader_email = (session.get("reader") or {}).get("email") or ""
         is_owner = bool(session.get("owner"))
         signed = bool(reader_email) or is_owner
@@ -7141,7 +7232,7 @@ def idea_page(aid):
             'That is the whole of the protection: a dated record of when this was ',
             'posted, and a named record of who has read the plan since. It is not ',
             'a patent filing.</p>',
-            '<div class="bp-toc-h">Inside · ', str(len(heads)), ' sections</div>',
+            '<div class="bp-toc-h">Inside · ', e(inside_txt), '</div>',
             '<ul class="bp-toc">', toc, '</ul>',
             '<div id="bpGate"><p class="bp-gatenote" id="bpGateNote">', e(gate_note),
             '</p><div id="bpBtnMount"></div></div>',
@@ -7189,6 +7280,19 @@ def idea_page(aid):
             "      ban.appendChild(so);",
             "    }",
             "    body.appendChild(ban);",
+            "    if (j.svg) {",
+            "      var sheet = document.createElement('div');",
+            "      sheet.className = 'bp-sheet';",
+            "      sheet.innerHTML = j.svg;",
+            "      body.appendChild(sheet);",
+            "    }",
+            "    if (j.has_image) {",
+            "      var im = document.createElement('img');",
+            "      im.className = 'bp-img';",
+            "      im.alt = 'The blueprint drawing';",
+            "      im.src = '/api/idea/' + encodeURIComponent(CFG.aid) + '/blueprint/image';",
+            "      body.appendChild(im);",
+            "    }",
             "    (j.blocks || []).forEach(function (b) {",
             "      if (b.t === 'h2') body.appendChild(el('h2', b.s));",
             "      else if (b.t === 'h3') body.appendChild(el('h3', b.s));",
@@ -7380,6 +7484,11 @@ def idea_page(aid):
   .bp-signout { background: none; border: 0; padding: 0; margin-left: .3rem;
                 font: inherit; font-size: .8rem; color: #1f3a5f;
                 text-decoration: underline; cursor: pointer; }
+  .bp-sheet { margin: 1.1rem 0 .4rem; border: 1px solid var(--psx-line, #e6e2da);
+              border-radius: 8px; overflow: hidden; }
+  .bp-sheet svg { display: block; width: 100%%; height: auto; }
+  .bp-img { display: block; max-width: 100%%; margin: 1.1rem 0 .4rem;
+            border: 1px solid var(--psx-line, #e6e2da); border-radius: 8px; }
   .bp-wm { position: absolute; left: 8%%; transform: rotate(-18deg);
            opacity: .055; font-weight: 800; font-size: 1.5rem;
            white-space: nowrap; pointer-events: none; user-select: none; }
@@ -7519,8 +7628,16 @@ def api_article_create():
     body = _no_em_dash(_no_tags((data.get("body") or "").strip()))
     # The optional sealed layer. Kept aside here and attached only after the
     # article exists, keyed to the stored text, because the hash must match
-    # what actually went on the board, not what was typed.
+    # what actually went on the board, not what was typed. The picture goes
+    # through the raster validator; anything that fails it is dropped and
+    # the poster is told below, never silently.
     bp_text = (data.get("blueprint") or "").strip()
+    bp_img_raw = data.get("blueprint_image")
+    bp_img = _bp_image_from_data_url(bp_img_raw) if bp_img_raw else None
+    if bp_img_raw and not bp_img:
+        return jsonify({"ok": False, "error":
+                        "The drawing could not be used. A PNG, JPEG or WebP "
+                        "under 3 MB works."}), 400
     if not author or not title or not body:
         return jsonify({"ok": False, "error": "Your name, a title and body are all required."}), 400
     with _LOCK:
@@ -7556,7 +7673,7 @@ def api_article_create():
                 # attached to the piece already standing, that piece may be
                 # someone else's, and it is not silently dropped either; the
                 # poster is told what happened to it.
-                if bp_text:
+                if bp_text or bp_img:
                     note += (" The blueprint you attached was not saved; "
                              "post your own version under its own title to seal it.")
                 return jsonify({"ok": True, "article": _public_article(a),
@@ -7585,12 +7702,14 @@ def api_article_create():
             article["professionals"] = None
         items.append(article)
         _save(ARTICLES_PATH, items)
-    # The sealed layer, if the poster brought one. Outside the article lock,
-    # _bp_attach takes the same lock itself and threading.Lock does not
-    # re-enter. A failed attach must not un-post the idea.
-    if bp_text:
+    # The sealed layer, if the poster brought one, text, a drawing, or
+    # both. Outside the article lock, _bp_attach takes the same lock itself
+    # and threading.Lock does not re-enter. A failed attach must not
+    # un-post the idea.
+    if bp_text or bp_img:
         try:
-            _bp_attach(article["title"], article["body"], bp_text, "poster")
+            _bp_attach(article["title"], article["body"], bp_text, "poster",
+                       image=bp_img)
         except Exception:
             pass
     # And count the demand, outside the lock the save holds.
@@ -7769,6 +7888,15 @@ def _seed_blueprint_once():
         cut = md.find("\n# THE FULL MACHINE")
         if cut > 0:
             md = md[:cut]
+        # The picture blueprint: our own drawn sheet, from this repo, the
+        # only source svg is ever accepted from.
+        svg = ""
+        try:
+            with open(os.path.join(BASE_DIR, "reinvestment_blueprint.svg"),
+                      encoding="utf-8") as f:
+                svg = f.read()
+        except Exception:
+            svg = ""
         art = next((a for a in _load(ARTICLES_PATH)
                     if a.get("stamp") == "20260811210000" and not a.get("hidden")), None)
         if not art:
@@ -7780,10 +7908,11 @@ def _seed_blueprint_once():
             # Unchanged content keeps its original attached_at; the whole
             # pitch of the feature is honest timestamps, and a date that
             # quietly reset on every deploy would be the opposite.
-            if (bp.get("md") or "") == _no_em_dash(md.strip())[:40000]:
+            if ((bp.get("md") or "") == _no_em_dash(md.strip())[:40000]
+                    and (bp.get("svg") or "") == svg):
                 return
         _bp_attach(art.get("title"), art.get("body"), md, "seed",
-                   bp_title="Reinvestment USA, the framework")
+                   bp_title="Reinvestment USA, the framework", svg=svg)
     except Exception:
         return
 

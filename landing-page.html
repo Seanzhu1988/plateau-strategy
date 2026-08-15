@@ -1670,6 +1670,8 @@
       }
       .idea-composer textarea{min-height:130px;resize:vertical;line-height:1.6;}
       .idea-composer #idea_bp{min-height:90px;border-style:dashed;}
+      .idea-bp-file{display:block;color:#a9a293;font-size:.82rem;margin:.7rem 0 .3rem;line-height:1.5;}
+      .idea-composer #idea_bp_img{border:1px dashed var(--psx-border);border-radius:10px;padding:.6rem;width:100%;color:#a9a293;font-size:.82rem;background:none;}
       .idea-protect{border-left:2px solid #8fb4e3;padding-left:.9rem;margin:.9rem 0;color:#a9a293;font-size:.82rem;line-height:1.55;}
       .idea-bp-chip{color:#8fb4e3;font-weight:700;white-space:nowrap;cursor:help;}
       .idea-publish{border:none;border-radius:10px;padding:.75rem 1.5rem;font-weight:700;font-size:.92rem;cursor:pointer;
@@ -2588,6 +2590,8 @@
                                     <input id="idea_title" placeholder="Business idea, e.g. Mobile EV-detailing fleet for gig drivers">
                                     <textarea id="idea_body" placeholder="The problem, the business model, how it makes money, and what it needs to launch…"></textarea>
                                     <textarea id="idea_bp" placeholder="The blueprint (optional): the working detail you do not want public. It stays sealed; a reader must sign in to open it, and every reader is recorded by name."></textarea>
+                                    <label class="idea-bp-file" for="idea_bp_img">Attach your drawing (optional). A photo of a sketch counts. It stays sealed with the blueprint.</label>
+                                    <input type="file" id="idea_bp_img" accept="image/png,image/jpeg,image/webp">
                                     <p class="idea-protect">What you publish here is a public disclosure. In the US that starts a twelve-month clock to file for a patent; in most other countries there is no grace period at all. If your idea is genuinely patentable, see a patent attorney before posting, not after. The sealed blueprint keeps detail off the public page and names everyone who reads it; it is not a patent filing.</p>
                                     <button class="idea-publish" onclick="ideaPublish()">Publish idea</button>
                                 </div>
@@ -3527,15 +3531,38 @@
             window.ideaPublish = async function () {
                 var a = document.getElementById('idea_author'), t = document.getElementById('idea_title'), b = document.getElementById('idea_body');
                 var bp = document.getElementById('idea_bp');
+                var bpImgEl = document.getElementById('idea_bp_img');
                 var author = (a.value || '').trim(), title = (t.value || '').trim(), body = (b.value || '').trim();
                 var blueprint = bp ? (bp.value || '').trim() : '';
                 if (!author) { alert('Add your name'); return; }
                 if (!title || !body) { alert('Add a title and describe the idea'); return; }
-                var j = await (await fetch('/api/articles', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ author: author, title: title, body: body, blueprint: blueprint || undefined }) })).json();
+                // The drawing, read into a data URL. Checked here for size and
+                // type so the poster hears about a problem before the upload,
+                // and checked again on the server, which believes bytes, not
+                // this code.
+                var blueprintImage;
+                var f = bpImgEl && bpImgEl.files && bpImgEl.files[0];
+                if (f) {
+                    if (['image/png', 'image/jpeg', 'image/webp'].indexOf(f.type) < 0) {
+                        alert('The drawing must be a PNG, JPEG or WebP image.'); return;
+                    }
+                    if (f.size > 3000000) {
+                        alert('That drawing is too big. Keep it under 3 MB.'); return;
+                    }
+                    blueprintImage = await new Promise(function (done, fail) {
+                        var r = new FileReader();
+                        r.onload = function () { done(r.result); };
+                        r.onerror = function () { fail(); };
+                        r.readAsDataURL(f);
+                    }).catch(function () { return undefined; });
+                    if (!blueprintImage) { alert('The drawing could not be read.'); return; }
+                }
+                var j = await (await fetch('/api/articles', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ author: author, title: title, body: body, blueprint: blueprint || undefined, blueprint_image: blueprintImage }) })).json();
                 if (!j.ok) { alert(j.error || 'Could not publish'); return; }
                 if (j.duplicate && j.note) { alert(j.note); return; }
                 a.value = ''; t.value = ''; b.value = '';
                 if (bp) bp.value = '';
+                if (bpImgEl) bpImgEl.value = '';
                 var c = document.getElementById('ideaComposer'); if (c) c.classList.remove('open');
                 window.ideaLoad();
             };
