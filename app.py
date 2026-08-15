@@ -1168,7 +1168,7 @@ def _compress_and_cache(resp):
             # nothing on a page without a header; owner consoles keep
             # their own doors and are left alone.
             if (not path.startswith(("/dispatch", "/archive", "/access", "/setup"))
-                    and b"site-auth.js" not in stamped
+                    and b'src="/site-auth.js' not in stamped
                     and b"</body>" in stamped):
                 stamped = stamped.replace(
                     b"</body>",
@@ -1643,7 +1643,16 @@ def api_walks():
             return _bp_nostore(jsonify({"ok": False,
                                         "error": "Fifty walks is the shelf. "
                                         "Delete one to save another."}), 400)
-        w = {"id": _next_id(rows, "WALK", datestamp=False),
+        # NOT _next_id: that counts rows, and walks, unlike articles, get
+        # deleted, so a length-based id would reuse a dead walk's id and a
+        # later Remove would take two walks with one click. Max-plus-one
+        # survives any history of deletions.
+        top = 0
+        for r0 in rows:
+            m0 = re.match(r"WALK_(\d+)$", r0.get("id") or "")
+            if m0:
+                top = max(top, int(m0.group(1)))
+        w = {"id": "WALK_%04d" % (top + 1),
              "email": email,
              "name": (reader.get("name") or "").strip()[:80],
              "kind": "met",
@@ -1652,7 +1661,10 @@ def api_walks():
              "minutes": minutes,
              "saved_at": datetime.datetime.now().isoformat(timespec="seconds")}
         rows.append(w)
-        _save(WALKS_PATH, rows[-2000:])
+        # No blanket trim: a global cap would silently drop the OLDEST rows,
+        # which belong to somebody else. The fifty-per-email shelf above is
+        # the real bound.
+        _save(WALKS_PATH, rows)
     return _bp_nostore(jsonify({"ok": True, "id": w["id"]}))
 
 
@@ -6875,14 +6887,16 @@ def _bp_image_from_data_url(s):
         return None
 
 
-def _bp_attach(title, body, md, source, bp_title="", images=None, svg=""):
+def _bp_attach(title, body, md, source, bp_title="", images=None, svg="",
+               price_usd=None):
     """Seal a blueprint under an article. Caller passes the STORED title and
     body (post-scrub, post-truncation), because the hash must match what
     readers are actually looking at.
 
     A blueprint can be text, pictures, or both; `images` is a list of
     validated rasters ({mime, b64}), `svg` is OUR OWN drawn sheet and is
-    only ever set by the seeder, never from a request."""
+    only ever set by the seeder, never from a request. A `price_usd` makes
+    opening it a sale: sign in AND pay, the framework's own mechanic."""
     md = _no_em_dash((md or "").strip())[:40000]
     images = [i for i in (images or []) if i][:8]
     if not md and not images and not svg:
@@ -6897,6 +6911,11 @@ def _bp_attach(title, body, md, source, bp_title="", images=None, svg=""):
         entry["images"] = images
     if svg:
         entry["svg"] = svg
+    try:
+        if price_usd and 0 < float(price_usd) <= 10000:
+            entry["price_usd"] = round(float(price_usd), 2)
+    except Exception:
+        pass
     with _LOCK:
         store = _load(BLUEPRINTS_PATH)
         if not isinstance(store, dict):
@@ -7047,6 +7066,19 @@ def _bp_opened_count(h):
     return len({r.get("email") for r in rows if r.get("h") == h and r.get("email")})
 
 
+def _bp_paid(h, email):
+    """Has this reader bought this blueprint. Paid means Square said paid,
+    through the same reconcile the opinions use; a demo or pending row
+    unlocks nothing, exactly as it unlocks no opinion."""
+    if not email:
+        return None
+    for b in _load(PURCHASES_PATH):
+        if (b.get("kind") == "blueprint" and b.get("h") == h
+                and b.get("buyer_email") == email and b.get("status") == "paid"):
+            return b
+    return None
+
+
 def _bp_nostore(resp, code=200):
     """No sealed byte, and not even the fact of being asked to sign in,
     may sit in a shared cache: a cached 200 would replay the plan to the
@@ -7082,6 +7114,15 @@ def _bp_open(aid):
     if not owner and not reader.get("email"):
         return None, None, None, ({"ok": False, "need": "signin",
                                    "error": "Sign in to open the blueprint."}, 401)
+    # A priced blueprint is a sale, the framework's own words: the body
+    # unlocks on payment. The owner reads their own board freely; everyone
+    # else needs a paid row in the same ledger the opinions settle through.
+    price = bp.get("price_usd")
+    if price and not owner and not _bp_paid(h, (reader.get("email") or "").strip().lower()):
+        return None, None, None, ({"ok": False, "need": "unlock",
+                                   "price_usd": price,
+                                   "error": "This blueprint is priced at $%g "
+                                            "by the author." % price}, 402)
     if reader.get("email"):
         viewer = {"email": reader.get("email"), "name": reader.get("name") or ""}
     else:
@@ -7160,6 +7201,113 @@ def api_blueprint_access():
             "idea": titles.get(r.get("aid")) or r.get("aid")}
            for r in rows[-200:]]
     return jsonify({"ok": True, "opens": out[::-1], "total": len(rows)})
+
+
+@app.route("/api/idea/<aid>/blueprint/buy", methods=["POST"])
+def api_idea_blueprint_buy(aid):
+    """Buy the sealed blueprint. The same Square rails as an opinion: an
+    invoice goes to the buyer's email, the reconcile against Square flips
+    it to paid, and only paid opens the seal. The buyer is the signed-in
+    reader, so the unlock follows them to any device, and the invoice
+    goes to an address Google has verified, not one typed into a form."""
+    reader = session.get("reader") or {}
+    email = (reader.get("email") or "").strip().lower()
+    if not email:
+        return _bp_nostore(jsonify({"ok": False, "need": "signin",
+                                    "error": "Sign in first."}), 401)
+    a = next((x for x in _load(ARTICLES_PATH)
+              if x.get("id") == aid and not x.get("hidden")), None)
+    if not a:
+        return _bp_nostore(jsonify({"ok": False, "error": "That idea is not here."}), 404)
+    bp, h = _bp_entry(a.get("title"), a.get("body"))
+    price = float((bp or {}).get("price_usd") or 0)
+    if not bp or not price:
+        return _bp_nostore(jsonify({"ok": False,
+                                    "error": "This blueprint is not for sale."}), 404)
+    if _bp_paid(h, email):
+        return _bp_nostore(jsonify({"ok": True, "already_paid": True}))
+    processing = round(price * 0.029 + 0.30, 2)
+    invoice = None
+    try:
+        invoice = square_client.create_charge(
+            {"name": reader.get("name") or email, "email": email, "phone": ""},
+            price, "Blueprint: " + (a.get("title") or "")[:60],
+            "The sealed blueprint under this idea. One-time purchase; "
+            "it opens under your sign-in once the invoice is paid.")
+    except Exception as e:
+        invoice = {"ok": False, "error": str(e)[:160]}
+    is_demo = isinstance(invoice, dict) and (
+        invoice.get("mode") == "mock"
+        or str(invoice.get("status", "")).upper() == "SIMULATED")
+    inv_err = None
+    if isinstance(invoice, dict) and not is_demo:
+        if invoice.get("errors"):
+            try:
+                inv_err = invoice["errors"][0].get("detail") or str(invoice["errors"][0])
+            except Exception:
+                inv_err = "Square rejected the invoice."
+        elif invoice.get("ok") is False:
+            inv_err = invoice.get("error") or "Square rejected the invoice."
+    if inv_err:
+        return _bp_nostore(jsonify({"ok": False, "error": inv_err,
+                                    "hint": "Nothing was recorded, the invoice "
+                                            "was never raised."}), 502)
+    with _LOCK:
+        buys = _load(PURCHASES_PATH)
+        if not isinstance(buys, list):
+            buys = []
+        rec = {
+            "id": _next_id(buys, "BUY", datestamp=False),
+            "kind": "blueprint", "h": h, "aid": aid,
+            "opinion_id": None, "opinion_title": "Blueprint: " + (a.get("title") or "")[:80],
+            "pro_id": None, "buyer_key": None,
+            "buyer_name": (reader.get("name") or "")[:80], "buyer_email": email,
+            "price_usd": price, "platform_fee_usd": price,
+            "processing_usd": processing, "to_professional_usd": 0.0,
+            "platform_net_usd": round(price - processing, 2),
+            "status": "demo" if is_demo else "pending",
+            "invoice_id": (invoice or {}).get("id") or (invoice or {}).get("invoice_id"),
+            "invoice_url": (invoice or {}).get("url") or (invoice or {}).get("public_url"),
+            "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        }
+        buys.append(rec)
+        _save(PURCHASES_PATH, buys)
+    return _bp_nostore(jsonify({
+        "ok": True, "demo": is_demo, "invoice_url": rec.get("invoice_url"),
+        "note": ("Square is not connected yet, so no invoice was really sent "
+                 "and nothing will be charged. Recorded as a demo sale; the "
+                 "blueprint stays sealed because no money moved.") if is_demo else
+                ("The invoice is on its way to %s from Square. Once it is "
+                 "paid, the blueprint opens here under your sign-in." % email)}))
+
+
+@app.route("/api/idea/<aid>/blueprint/price", methods=["POST"])
+@owner_required
+def api_idea_blueprint_price(aid):
+    """The owner puts a price on a blueprint, or takes it off with 0."""
+    a = next((x for x in _load(ARTICLES_PATH)
+              if x.get("id") == aid and not x.get("hidden")), None)
+    if not a:
+        return jsonify({"ok": False, "error": "That idea is not here."}), 404
+    h = _content_hash(a.get("title"), a.get("body"))
+    data = request.get_json(force=True, silent=True) or {}
+    try:
+        price = round(float(data.get("price_usd") or 0), 2)
+    except Exception:
+        return jsonify({"ok": False, "error": "A number, in dollars."}), 400
+    if not (0 <= price <= 10000):
+        return jsonify({"ok": False, "error": "Between 0 and 10000."}), 400
+    with _LOCK:
+        store = _load(BLUEPRINTS_PATH)
+        entry = (store.get("by_hash") or {}).get(h) if isinstance(store, dict) else None
+        if not entry:
+            return jsonify({"ok": False, "error": "No blueprint on this idea."}), 404
+        if price:
+            entry["price_usd"] = price
+        else:
+            entry.pop("price_usd", None)
+        _save(BLUEPRINTS_PATH, store)
+    return jsonify({"ok": True, "price_usd": price or None})
 
 
 def _public_article(a):
@@ -7366,22 +7514,33 @@ def idea_page(aid):
         reader_email = (session.get("reader") or {}).get("email") or ""
         is_owner = bool(session.get("owner"))
         signed = bool(reader_email) or is_owner
+        bp_price = bp.get("price_usd") or 0
+        bp_paid = bool(is_owner) or bool(
+            bp_price and reader_email
+            and _bp_paid(bph, reader_email.strip().lower()))
+        price_line = (" It is priced at $%g by the author; paying the Square "
+                      "invoice opens it under your sign-in." % bp_price) if bp_price else ""
         if is_owner and not reader_email:
             gate_note = "You are signed in as the owner. Owner readings are not recorded."
+        elif signed and bp_price and not bp_paid:
+            gate_note = ("This blueprint is priced at $%g by the author. "
+                         "Unlock it and, once the Square invoice is paid, it "
+                         "opens here under your sign-in, on any device." % bp_price)
         elif signed:
             gate_note = "You are signed in. Your reading is recorded for the author."
         elif GOOGLE_CLIENT_ID:
             gate_note = ("Sign in with Google to open it. Your name and the time of "
-                         "opening are recorded for the author.")
+                         "opening are recorded for the author." + price_line)
         else:
             gate_note = ("Sign-in is not switched on yet, so the blueprint cannot "
                          "be opened here for now. It opens the moment sign-in "
-                         "arrives.")
+                         "arrives." + price_line)
         bp_section = "".join([
             '<div class="bp" id="bpBox">',
             '<div class="bp-head">',
             '<span>Attachment · <b>THE BLUEPRINT</b></span>',
             '<span>Status · <b id="bpState">SEALED</b></span>',
+            ('<span>Price · <b>$%g</b></span>' % bp_price) if bp_price else '',
             '<span>Named readers · <b id="bpOpened">', str(_bp_opened_count(bph)),
             '</b></span>',
             '</div>',
@@ -7398,7 +7557,8 @@ def idea_page(aid):
             '<div id="bpBody" hidden></div>',
             '</div>'])
         bp_cfg = json.dumps({"aid": a.get("id") or aid, "cid": GOOGLE_CLIENT_ID,
-                             "enabled": bool(GOOGLE_CLIENT_ID), "signed": signed})
+                             "enabled": bool(GOOGLE_CLIENT_ID), "signed": signed,
+                             "price": bp_price, "paid": bp_paid})
         # This block is substituted as a VALUE into the page template, so it
         # is never scanned for percent signs; and it deliberately contains no
         # backslash escapes at all, the class of bug that has killed two
@@ -7493,6 +7653,11 @@ def idea_page(aid):
             "          say('Your sign-in has expired. Sign in again to open it.');",
             "          arm(); return;",
             "        }",
+            "        if (j.need === 'unlock') {",
+            "          CFG.paid = false;",
+            "          say(j.error || 'This blueprint is priced by the author.');",
+            "          arm(); return;",
+            "        }",
             "        say(j.error || 'The blueprint could not be opened.');",
             "      })",
             "      .catch(function () { say('The blueprint could not be opened. Try again.'); });",
@@ -7501,6 +7666,42 @@ def idea_page(aid):
             "    mount.innerHTML = '';",
             "    var b = el('button', 'Open the blueprint', 'bp-open');",
             "    b.addEventListener('click', openBP);",
+            "    mount.appendChild(b);",
+            "  }",
+            "  function showUnlockButton() {",
+            "    mount.innerHTML = '';",
+            "    var b = el('button', 'Unlock for $' + CFG.price, 'bp-open');",
+            "    b.addEventListener('click', function () {",
+            "      b.disabled = true;",
+            "      b.textContent = 'One moment';",
+            "      fetch('/api/idea/' + encodeURIComponent(CFG.aid) + '/blueprint/buy',",
+            "        { method: 'POST' })",
+            "        .then(function (r) { return r.json(); })",
+            "        .then(function (j) {",
+            "          if (j.already_paid) { CFG.paid = true; openBP(); return; }",
+            "          if (j.ok) {",
+            "            say(j.note || 'The invoice is on its way.');",
+            "            mount.innerHTML = '';",
+            "            if (j.invoice_url) {",
+            "              var a2 = document.createElement('a');",
+            "              a2.href = j.invoice_url;",
+            "              a2.textContent = 'Open the invoice';",
+            "              a2.target = '_blank';",
+            "              a2.rel = 'noopener';",
+            "              mount.appendChild(a2);",
+            "            }",
+            "            return;",
+            "          }",
+            "          say(j.error || 'The invoice could not be raised.');",
+            "          b.disabled = false;",
+            "          b.textContent = 'Unlock for $' + CFG.price;",
+            "        })",
+            "        .catch(function () {",
+            "          say('The invoice could not be raised. Try again.');",
+            "          b.disabled = false;",
+            "          b.textContent = 'Unlock for $' + CFG.price;",
+            "        });",
+            "    });",
             "    mount.appendChild(b);",
             "  }",
             "  function armGoogle() {",
@@ -7530,6 +7731,7 @@ def idea_page(aid):
             "    document.head.appendChild(s);",
             "  }",
             "  function arm() {",
+            "    if (CFG.signed && CFG.price && !CFG.paid) { showUnlockButton(); return; }",
             "    if (CFG.signed) { showOpenButton(); return; }",
             "    if (CFG.enabled && CFG.cid) { armGoogle(); return; }",
             "  }",
@@ -8091,9 +8293,12 @@ def _seed_blueprint_once():
                     and [i.get("b64") for i in (bp.get("images") or [])]
                         == [i.get("b64") for i in images]):
                 return
+        # $14, Sean's price, 2026-08-15. Set at attach time only, so a
+        # price the owner changes later on a persistent disk is never
+        # overwritten by a boot.
         _bp_attach(art.get("title"), art.get("body"), md, "seed",
                    bp_title="Reinvestment USA, the framework",
-                   images=images, svg=svg)
+                   images=images, svg=svg, price_usd=14)
     except Exception:
         return
 
