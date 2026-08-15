@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Two blueprint systems</title>
+<link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+<style>
+  :root { --bp:#10305c; --bp2:#0c2749; --ink:#dcecff; --ink2:#8fb4e3;
+          --gold:#e8c15a; --grn:#6fca9a; --grid:rgba(220,236,255,.07); }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bp); color:var(--ink);
+         font:16px/1.6 Georgia,'Times New Roman',serif;
+         background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+           linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+         background-size:28px 28px; }
+  .wrap { max-width:42rem; margin:0 auto; padding:1.4rem 1.15rem 3.5rem; }
+  h1 { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+       font-size:1.4rem; letter-spacing:.02em; margin:.2rem 0 .3rem; }
+  .sub { color:var(--ink2); font-style:italic; margin:0 0 1.6rem; }
+  h2 { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+       font-size:.76rem; letter-spacing:.2em; text-transform:uppercase; color:var(--ink);
+       border-bottom:1px solid var(--ink2); padding-bottom:.4rem; margin:2.4rem 0 1.1rem; }
+  .card { background:var(--bp2); border:1.5px solid var(--ink2); border-radius:12px;
+    padding:1.1rem 1.15rem; margin:0 0 1.2rem; }
+  .card .tag { font-family:ui-monospace,monospace; font-size:.68rem; letter-spacing:.14em;
+    text-transform:uppercase; padding:.15rem .5rem; border-radius:6px; }
+  .tag.live { background:rgba(111,202,154,.16); color:var(--grn); border:1px solid var(--grn); }
+  .tag.ours { background:rgba(232,193,90,.14); color:var(--gold); border:1px solid var(--gold); }
+  .card h3 { font-family:ui-monospace,monospace; font-size:1.02rem; margin:.55rem 0 .7rem; }
+  .row { margin:.55rem 0; }
+  .row .k { font-family:ui-monospace,monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--ink2); display:block; }
+  .row .v { font-size:.95rem; }
+  .clash { border-left:2px solid var(--gold); padding:.15rem 0 .15rem .8rem; margin:.8rem 0;
+    color:var(--ink); font-size:.95rem; }
+  .clash span { display:block; color:var(--ink2); font-size:.87rem; margin-top:.15rem; }
+  .foot { color:var(--ink2); font-size:.85rem; margin-top:2.4rem;
+    border-top:1px solid var(--ink2); padding-top:1rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Two blueprint systems</h1>
+  <p class="sub">One is on the live site now. One is what we built together. They overlap, so here is each, plainly, before you choose.</p>
+
+  <h2>A · Sealed blueprint under each idea</h2>
+  <div class="card">
+    <span class="tag live">Live now</span>
+    <h3>The pitcher's own sealed detail</h3>
+    <div class="row"><span class="k">What it is</span><span class="v">When someone pitches an idea, they can attach a sealed blueprint and a drawing, the working detail they do not want public.</span></div>
+    <div class="row"><span class="k">To open it</span><span class="v">A reader signs in, and their name is recorded. Free, no payment.</span></div>
+    <div class="row"><span class="k">Money</span><span class="v">None.</span></div>
+    <div class="row"><span class="k">Backing</span><span class="v">The old buttons stayed: register to invest, or register to launch and run it.</span></div>
+    <div class="row"><span class="k">The point</span><span class="v">Protect the idea, and know exactly who has looked at the detail.</span></div>
+  </div>
+
+  <h2>B · The Blueprint Deck, pay to view</h2>
+  <div class="card">
+    <span class="tag ours">What we built</span>
+    <h3>The lab's blueprints, sold as a product</h3>
+    <div class="row"><span class="k">What it is</span><span class="v">A separate deck of the lab's own blueprints, each with a teaser anyone can read and a price you set.</span></div>
+    <div class="row"><span class="k">To open it</span><span class="v">Log in and pay. A purchase, not an investment.</span></div>
+    <div class="row"><span class="k">Money</span><span class="v">Card payment through Square, once it is connected.</span></div>
+    <div class="row"><span class="k">Backing</span><span class="v">We removed invest and launch. Backing a project now means buying its blueprint.</span></div>
+    <div class="row"><span class="k">The point</span><span class="v">Let people back a project by paying for the sheet, and fund the work.</span></div>
+  </div>
+
+  <h2>Where they clash</h2>
+  <div class="clash">The word "blueprint" means two different things.
+    <span>In A it is a pitcher's sealed detail. In B it is the lab's paid sheets. Same word, two objects.</span></div>
+  <div class="clash">Backing is the real fork.
+    <span>A keeps the free invest and launch buttons. B removes them and makes backing mean paying for the blueprint. You told me earlier you wanted B.</span></div>
+
+  <h2>They can also live together</h2>
+  <p>These are not truly enemies. A pitcher can still seal their own detail (A), while the lab sells its blueprints on the Deck (B). The only thing that cannot be both ways at once is the backing buttons: either the free invest and launch stay, or they are replaced by pay for the blueprint.</p>
+
+  <p class="foot">Nothing is pushed. Tell me which way the backing should go, and whether to keep the sealed-per-idea detail alongside the Deck, and I will make it one clean site and put it live.</p>
+</div>
+</body>
+</html>
