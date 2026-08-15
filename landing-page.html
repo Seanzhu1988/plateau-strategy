@@ -1669,6 +1669,9 @@
         outline:none;background:rgba(255,255,255,.09);border-color:var(--psx-blue);box-shadow:0 0 0 3px rgba(59,130,246,.18);
       }
       .idea-composer textarea{min-height:130px;resize:vertical;line-height:1.6;}
+      .idea-composer #idea_bp{min-height:90px;border-style:dashed;}
+      .idea-protect{border-left:2px solid #8fb4e3;padding-left:.9rem;margin:.9rem 0;color:#a9a293;font-size:.82rem;line-height:1.55;}
+      .idea-bp-chip{color:#8fb4e3;font-weight:700;white-space:nowrap;cursor:help;}
       .idea-publish{border:none;border-radius:10px;padding:.75rem 1.5rem;font-weight:700;font-size:.92rem;cursor:pointer;
         background:linear-gradient(135deg,var(--psx-blue),var(--psx-indigo));color:#fff;box-shadow:0 10px 22px -8px rgba(59,130,246,.6);}
       .idea-publish:hover{filter:brightness(1.07);}
@@ -2584,6 +2587,8 @@
                                     <input id="idea_author" placeholder="Your name">
                                     <input id="idea_title" placeholder="Business idea, e.g. Mobile EV-detailing fleet for gig drivers">
                                     <textarea id="idea_body" placeholder="The problem, the business model, how it makes money, and what it needs to launch…"></textarea>
+                                    <textarea id="idea_bp" placeholder="The blueprint (optional): the working detail you do not want public. It stays sealed; a reader must sign in to open it, and every reader is recorded by name."></textarea>
+                                    <p class="idea-protect">What you publish here is a public disclosure. In the US that starts a twelve-month clock to file for a patent; in most other countries there is no grace period at all. If your idea is genuinely patentable, see a patent attorney before posting, not after. The sealed blueprint keeps detail off the public page and names everyone who reads it; it is not a patent filing.</p>
                                     <button class="idea-publish" onclick="ideaPublish()">Publish idea</button>
                                 </div>
                             </div>
@@ -3400,7 +3405,9 @@
                 var txt = inLang(a);
                 return '<div class="idea-card" id="idea_' + a.id + '">' +
                     '<h4>' + esc(txt.title) + (a.stamp ? '<span class="idea-stamp" title="Time-proof stamp, pitched ' + fmtStamp(a.created_at) + '">#' + esc(a.stamp) + '</span>' : '') + '</h4>' +
-                    '<div class="idea-meta">By <strong>' + esc(a.author || 'Anonymous') + '</strong> · ' + fmtStamp(a.created_at) + '</div>' +
+                    '<div class="idea-meta">By <strong>' + esc(a.author || 'Anonymous') + '</strong> · ' + fmtStamp(a.created_at) +
+                        (a.has_blueprint ? ' · <span class="idea-bp-chip" title="A sealed blueprint travels with this idea. Open it from the idea page; sign-in required, every reader recorded by name.">🔒 blueprint</span>' : '') +
+                    '</div>' +
                     trNote(a) +
                     '<div class="idea-text">' + esc(txt.body) + '</div>' +
                     // The trades this idea calls for. The API has shipped them on
@@ -3519,12 +3526,16 @@
 
             window.ideaPublish = async function () {
                 var a = document.getElementById('idea_author'), t = document.getElementById('idea_title'), b = document.getElementById('idea_body');
+                var bp = document.getElementById('idea_bp');
                 var author = (a.value || '').trim(), title = (t.value || '').trim(), body = (b.value || '').trim();
+                var blueprint = bp ? (bp.value || '').trim() : '';
                 if (!author) { alert('Add your name'); return; }
                 if (!title || !body) { alert('Add a title and describe the idea'); return; }
-                var j = await (await fetch('/api/articles', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ author: author, title: title, body: body }) })).json();
+                var j = await (await fetch('/api/articles', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ author: author, title: title, body: body, blueprint: blueprint || undefined }) })).json();
                 if (!j.ok) { alert(j.error || 'Could not publish'); return; }
+                if (j.duplicate && j.note) { alert(j.note); return; }
                 a.value = ''; t.value = ''; b.value = '';
+                if (bp) bp.value = '';
                 var c = document.getElementById('ideaComposer'); if (c) c.classList.remove('open');
                 window.ideaLoad();
             };

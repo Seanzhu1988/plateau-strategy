@@ -927,6 +927,21 @@ EXTRA.update({
         "El problema, el modelo de negocio, cómo gana dinero y qué necesita para lanzarse…",
         "해결하려는 문제, 사업 모델, 수익 방식, 그리고 시작에 필요한 것…",
         "Vấn đề, mô hình kinh doanh, cách kiếm tiền, và cần gì để khởi động…"],
+    "The blueprint (optional): the working detail you do not want public. It stays sealed; a reader must sign in to open it, and every reader is recorded by name.": [
+        "蓝图（可选）：你不想公开的完整方案细节。它会被封存；读者必须登录才能打开，每位读者都会记录姓名。",
+        "El plano (opcional): el detalle de trabajo que no quieres hacer público. Queda sellado; el lector debe iniciar sesión para abrirlo, y cada lector queda registrado con su nombre.",
+        "블루프린트(선택): 공개하고 싶지 않은 실무 세부 내용. 봉인된 상태로 유지되며, 독자는 로그인해야 열 수 있고 열람한 독자의 이름이 기록됩니다.",
+        "Bản thiết kế (tùy chọn): phần chi tiết bạn không muốn công khai. Nó được niêm phong; người đọc phải đăng nhập để mở, và mỗi người đọc đều được ghi lại kèm tên."],
+    "What you publish here is a public disclosure. In the US that starts a twelve-month clock to file for a patent; in most other countries there is no grace period at all. If your idea is genuinely patentable, see a patent attorney before posting, not after. The sealed blueprint keeps detail off the public page and names everyone who reads it; it is not a patent filing.": [
+        "在这里发布即构成公开披露。在美国，公开后你有十二个月的时间申请专利；在其他大多数国家则完全没有宽限期。如果你的点子确实可以申请专利，请在发布之前先咨询专利律师，而不是之后。封存的蓝图能让细节不出现在公开页面上，并记录每一位读者的实名；但它不是专利申请。",
+        "Lo que publicas aquí es una divulgación pública. En EE. UU. eso inicia un plazo de doce meses para solicitar una patente; en la mayoría de los demás países no hay período de gracia alguno. Si tu idea es realmente patentable, consulta a un abogado de patentes antes de publicar, no después. El plano sellado mantiene el detalle fuera de la página pública y registra el nombre de cada lector; no es una solicitud de patente.",
+        "여기에 게시하는 것은 공개 공표에 해당합니다. 미국에서는 공개 후 특허 출원까지 12개월의 기한이 시작되고, 대부분의 다른 나라에는 유예 기간이 전혀 없습니다. 아이디어가 정말 특허 가능성이 있다면 게시 전에 특허 변호사와 상담하세요, 게시 후가 아니라. 봉인된 블루프린트는 세부 내용을 공개 페이지에서 제외하고 모든 열람자의 이름을 기록하지만, 특허 출원을 대신하지는 않습니다.",
+        "Những gì bạn đăng ở đây là một công bố công khai. Tại Mỹ, điều đó khởi động thời hạn mười hai tháng để nộp đơn xin cấp bằng sáng chế; ở hầu hết các nước khác thì không có thời gian ân hạn nào cả. Nếu ý tưởng của bạn thực sự có thể được cấp bằng sáng chế, hãy gặp luật sư sáng chế trước khi đăng, không phải sau. Bản thiết kế niêm phong giữ chi tiết ngoài trang công khai và ghi tên mọi người đọc; nó không phải là đơn xin cấp bằng sáng chế."],
+    "A sealed blueprint travels with this idea. Open it from the idea page; sign-in required, every reader recorded by name.": [
+        "这个点子附带一份封存的蓝图。请在点子页面打开；需要登录，每位读者都会记录姓名。",
+        "Un plano sellado acompaña esta idea. Ábrelo desde la página de la idea; requiere iniciar sesión, y cada lector queda registrado con su nombre.",
+        "이 아이디어에는 봉인된 블루프린트가 함께합니다. 아이디어 페이지에서 여세요. 로그인이 필요하며 열람한 독자의 이름이 기록됩니다.",
+        "Một bản thiết kế niêm phong đi kèm ý tưởng này. Mở nó từ trang ý tưởng; cần đăng nhập, và mỗi người đọc đều được ghi lại kèm tên."],
     "Car seat, extra luggage, meet & greet, accessibility…": ["儿童座椅、额外行李、接机举牌、无障碍需求…", "Silla infantil, equipaje extra, recepción con cartel, accesibilidad…", "카시트, 추가 수하물, 미팅 서비스, 이동 편의…", "Ghế trẻ em, hành lý thêm, đón có bảng tên, hỗ trợ tiếp cận…"],
     "Trip Planner, Plateau Strategy Solution Lab": ["行程规划, Plateau Strategy Solution Lab", "Planificador de viaje, Plateau Strategy Solution Lab", "여행 플래너, Plateau Strategy Solution Lab", "Lập kế hoạch chuyến đi, Plateau Strategy Solution Lab"],
     "Dates, group size, must-sees…": ["日期、人数、必去的地方…", "Fechas, tamaño del grupo, imprescindibles…", "날짜, 인원, 꼭 가고 싶은 곳…", "Ngày, số người, những nơi nhất định phải tới…"],

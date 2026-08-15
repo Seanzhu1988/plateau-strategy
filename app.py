@@ -397,23 +397,17 @@ def api_google_config():
                     "client_id": GOOGLE_CLIENT_ID})
 
 
-@app.route("/api/auth/google", methods=["POST"])
-def api_auth_google():
-    """Turn a Google credential into a name and an email we can believe.
+def _google_claims(token):
+    """Verify a Google credential server-side. Returns (claims, error).
 
-    The token is verified on the SERVER, against Google's own signing keys.
-    That is the entire security of this endpoint: the browser hands us a
-    signed assertion, and a browser can say anything. Decoding the token
-    client-side and trusting what it says would let anyone book as anyone, 
-    so the claims used below come only from a token whose signature,
-    audience and expiry Google's library has checked.
-
-    Nothing is stored. The reply is used to fill two form fields."""
-    if not GOOGLE_CLIENT_ID:
-        return jsonify({"ok": False, "error": "Google sign-in isn't configured."}), 503
-    token = ((request.get_json(force=True, silent=True) or {}).get("credential") or "").strip()
+    The one copy of the security-sensitive routine, shared by every endpoint
+    that accepts a Google credential (the same one-copy rule that moved the
+    button into google-signin.js). The browser hands us a signed assertion,
+    and a browser can say anything, so nothing in the token is believed
+    until google-auth has checked signature, audience and expiry against
+    Google's own signing keys."""
     if not token:
-        return jsonify({"ok": False, "error": "No credential."}), 400
+        return None, "No credential."
     try:
         from google.oauth2 import id_token as g_id_token
         from google.auth.transport import requests as g_requests
@@ -422,16 +416,77 @@ def api_auth_google():
     except Exception:
         # Bad signature, wrong audience, expired, or Google unreachable. We
         # cannot tell a forgery from an outage here, and must not guess.
-        return jsonify({"ok": False, "error": "Could not verify that sign-in."}), 401
+        return None, "Could not verify that sign-in."
     if claims.get("iss") not in ("accounts.google.com", "https://accounts.google.com"):
-        return jsonify({"ok": False, "error": "Could not verify that sign-in."}), 401
+        return None, "Could not verify that sign-in."
     if not claims.get("email_verified"):
-        # An unverified address would let someone prefill a booking under
-        # somebody else's email, and that is where the invoice goes.
-        return jsonify({"ok": False, "error": "That Google account has no verified email."}), 401
+        # An unverified address would let someone act under somebody else's
+        # email, and that address is where consequences land.
+        return None, "That Google account has no verified email."
+    return claims, None
+
+
+@app.route("/api/auth/google", methods=["POST"])
+def api_auth_google():
+    """Turn a Google credential into a name and an email we can believe.
+
+    Nothing is stored. The reply is used to fill two form fields."""
+    if not GOOGLE_CLIENT_ID:
+        return jsonify({"ok": False, "error": "Google sign-in isn't configured."}), 503
+    token = ((request.get_json(force=True, silent=True) or {}).get("credential") or "").strip()
+    if not token:
+        return jsonify({"ok": False, "error": "No credential."}), 400
+    claims, err = _google_claims(token)
+    if not claims:
+        return jsonify({"ok": False, "error": err}), 401
     return jsonify({"ok": True,
                     "name": (claims.get("name") or "").strip()[:80],
                     "email": (claims.get("email") or "").strip()[:120]})
+
+
+@app.route("/api/auth/google/session", methods=["POST"])
+def api_auth_google_session():
+    """Sign a reader in, for reading that is gated on identity.
+
+    The blueprint attached to an idea opens only for a named person, and
+    this is where the name comes from. Unlike /api/auth/google above, this
+    one DOES keep something: a session cookie carrying exactly two facts,
+    the verified email and the display name, so a reader who opened one
+    blueprint is not asked to sign in again for the next. Nothing else is
+    stored about them here; the record of WHAT they opened is written when
+    they open it, not when they sign in."""
+    if not GOOGLE_CLIENT_ID:
+        return jsonify({"ok": False, "error": "Google sign-in isn't configured."}), 503
+    token = ((request.get_json(force=True, silent=True) or {}).get("credential") or "").strip()
+    claims, err = _google_claims(token)
+    if not claims:
+        return jsonify({"ok": False, "error": err or "No credential."}), 401
+    reader = {"email": (claims.get("email") or "").strip()[:120],
+              "name": (claims.get("name") or "").strip()[:80]}
+    # Deliberately NOT a permanent session. This identity stamps an access
+    # log, and a 31-day cookie on a shared or borrowed device would keep
+    # writing the wrong name into other people's records. A browser-session
+    # cookie plus Google's one-tap makes re-signing cheap and the log honest.
+    session["reader"] = reader
+    return jsonify({"ok": True, "email": reader["email"], "name": reader["name"]})
+
+
+@app.route("/api/auth/reader/logout", methods=["POST"])
+def api_auth_reader_logout():
+    """Drop the reading identity. The door out matters as much as the door
+    in: a reader who spots someone else's name on the banner needs a way
+    to stop reading under it."""
+    session.pop("reader", None)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/auth/reader")
+def api_auth_reader():
+    """Who is reading, according to the session. Answers about self only."""
+    r = session.get("reader") or {}
+    return jsonify({"ok": True, "signed_in": bool(r.get("email")),
+                    "email": r.get("email") or "", "name": r.get("name") or "",
+                    "owner": bool(session.get("owner"))})
 
 
 # ---------- storage helpers ----------
@@ -6612,6 +6667,262 @@ def _translations_for(title, body):
     return out
 
 
+# ---------- the blueprint: the sealed layer under an idea ----------
+#
+# An idea on the board has two layers, exactly as the Reinvestment USA
+# framework drew them: the article, public, and the BLUEPRINT, the full
+# working detail, sealed. The seal is identity: opening a blueprint requires
+# a verified Google sign-in, and every opening is recorded, name, email,
+# time, for the author to see. That is what "protected" means here and it
+# is all it means: a timestamp proving who wrote it first, and a log
+# proving who has read it since. It does not stop a determined thief; it
+# makes every reader a named reader, which is what an author can actually
+# take to a lawyer.
+#
+# A blueprint is keyed by the CONTENT HASH of the article it belongs to,
+# the same anchor discipline as translations: edit the article and the
+# blueprint detaches rather than sitting under text it no longer matches.
+BLUEPRINTS_PATH = _data_path("blueprints.json")
+BLUEPRINT_ACCESS_PATH = _data_path("blueprint_access.json")
+
+
+def _bp_entry(title, body):
+    """The blueprint sealed under this exact text, or None. Returns (bp, hash)."""
+    h = _content_hash(title, body)
+    store = _read_tr_file(BLUEPRINTS_PATH)
+    entry = (store.get("by_hash") or {}).get(h) if isinstance(store, dict) else None
+    return entry, h
+
+
+def _bp_attach(title, body, md, source, bp_title=""):
+    """Seal a blueprint under an article. Caller passes the STORED title and
+    body (post-scrub, post-truncation), because the hash must match what
+    readers are actually looking at."""
+    md = _no_em_dash((md or "").strip())[:40000]
+    if not md:
+        return
+    with _LOCK:
+        store = _load(BLUEPRINTS_PATH)
+        if not isinstance(store, dict):
+            store = {}
+        store.setdefault("by_hash", {})
+        store["by_hash"][_content_hash(title, body)] = {
+            "title": _no_em_dash((bp_title or "").strip(), title=True)[:160] or "The blueprint",
+            "md": md,
+            "source": source,
+            "attached_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        }
+        _save(BLUEPRINTS_PATH, store)
+
+
+def _md_blocks(md):
+    """A drafted blueprint into typed blocks the page can render safely.
+
+    Deliberately small: headings, paragraphs, bullet lists, quotes, fenced
+    code and tables (both shown monospace), rules. Every block is rendered
+    in the browser with textContent, never innerHTML, so nothing in a
+    blueprint can script the page, and anything this parser does not
+    recognise degrades to a visible paragraph rather than vanishing."""
+    blocks = []
+    buf = []
+    mode = [None]           # None | 'ul' | 'q' | 'pre'
+
+    def _plain(s):
+        # [^*\n] keeps each match scan from crossing the next star, which is
+        # what makes this linear; the lazy .+? form went quadratic on a line
+        # full of stars, ~3.5s of CPU on a 40KB hostile blueprint, reachable
+        # by any signed reader.
+        s = re.sub(r"\*\*([^*\n]+)\*\*", r"\1", s)
+        s = re.sub(r"(?<!\w)\*([^*\n]+)\*(?!\w)", r"\1", s)
+        return s.replace("`", "").strip()
+
+    def flush():
+        if not buf:
+            mode[0] = None
+            return
+        if mode[0] == "pre":
+            blocks.append({"t": "pre", "s": "\n".join(buf)})
+        elif mode[0] == "ul":
+            blocks.append({"t": "ul", "items": [_plain(x) for x in buf]})
+        elif mode[0] == "q":
+            blocks.append({"t": "q", "s": _plain(" ".join(buf))})
+        else:
+            s = _plain(" ".join(buf))
+            if s:
+                blocks.append({"t": "p", "s": s})
+        del buf[:]
+        mode[0] = None
+
+    fenced = False
+    for raw in (md or "").split("\n"):
+        line = raw.rstrip()
+        if line.strip().startswith("```"):
+            if fenced:
+                flush()
+                fenced = False
+            else:
+                flush()
+                mode[0] = "pre"
+                fenced = True
+            continue
+        if fenced:
+            buf.append(raw)
+            continue
+        s = line.strip()
+        if not s:
+            flush()
+            continue
+        if s in ("---", "***") or set(s) == {"-"} and len(s) >= 3:
+            flush()
+            blocks.append({"t": "hr"})
+            continue
+        if s.startswith("### "):
+            flush()
+            blocks.append({"t": "h3", "s": _plain(s[4:])})
+            continue
+        if s.startswith("## "):
+            flush()
+            blocks.append({"t": "h2", "s": _plain(s[3:])})
+            continue
+        if s.startswith("# "):
+            flush()
+            blocks.append({"t": "h2", "s": _plain(s[2:])})
+            continue
+        if s.startswith("|"):
+            if mode[0] != "pre":
+                flush()
+                mode[0] = "pre"
+            buf.append(line)
+            continue
+        if s.startswith("> "):
+            if mode[0] != "q":
+                flush()
+                mode[0] = "q"
+            buf.append(s[2:])
+            continue
+        if s.startswith("- ") or s.startswith("· "):
+            if mode[0] != "ul":
+                flush()
+                mode[0] = "ul"
+            buf.append(s[2:])
+            continue
+        if mode[0] == "ul" and raw.startswith("  "):
+            buf[-1] = buf[-1] + " " + s     # a wrapped bullet stays one bullet
+            continue
+        if mode[0] in ("ul", "q", "pre"):
+            # 'pre' here can only be a table (fenced code never reaches this
+            # branch); without the flush a paragraph on the line after a
+            # table was glued into the table's monospace block.
+            flush()
+        buf.append(s)
+    flush()
+    return blocks
+
+
+def _bp_record_access(h, aid, viewer):
+    """One line in the book: who opened which blueprint, and when.
+
+    Re-opens within the hour are not re-recorded, the log is evidence of
+    WHO has seen a plan, not a click counter, and a reader flipping back
+    and forth should not read as ten people."""
+    email = (viewer.get("email") or "").strip().lower()
+    if not email:
+        return
+    now = datetime.datetime.now()
+    with _LOCK:
+        rows = _load(BLUEPRINT_ACCESS_PATH)
+        if not isinstance(rows, list):
+            rows = []
+        for r in reversed(rows[-200:]):
+            if r.get("h") == h and r.get("email") == email:
+                try:
+                    prev = datetime.datetime.fromisoformat(r.get("ts") or "")
+                    if (now - prev).total_seconds() < 3600:
+                        return
+                except Exception:
+                    pass
+                break
+        rows.append({"h": h, "aid": aid, "email": email,
+                     "name": (viewer.get("name") or "").strip()[:80],
+                     "ts": now.isoformat(timespec="seconds")})
+        _save(BLUEPRINT_ACCESS_PATH, rows[-5000:])
+
+
+def _bp_opened_count(h):
+    """How many distinct named readers have opened this blueprint."""
+    rows = _load(BLUEPRINT_ACCESS_PATH)
+    if not isinstance(rows, list):
+        return 0
+    return len({r.get("email") for r in rows if r.get("h") == h and r.get("email")})
+
+
+@app.route("/api/idea/<aid>/blueprint")
+def api_idea_blueprint(aid):
+    """The sealed layer, served ONLY to a named reader.
+
+    The blueprint's body is never in the page's HTML and never in the
+    public article JSON; this endpoint is the single door, and the check
+    is the server's session, not anything the page claims. An unsigned
+    request learns that it must sign in and nothing else."""
+    def _nostore(payload, code=200):
+        # The sealed body, and even the fact of being asked to sign in, must
+        # never sit in a shared cache; a cached 200 would replay the whole
+        # plan to the next unsigned visitor with no access record at all.
+        r = jsonify(payload)
+        r.headers["Cache-Control"] = "private, no-store"
+        r.headers["Vary"] = "Cookie"
+        return r, code
+
+    a = next((x for x in _load(ARTICLES_PATH)
+              if x.get("id") == aid and not x.get("hidden")), None)
+    if not a:
+        return _nostore({"ok": False, "error": "That idea is not here."}, 404)
+    owner = session.get("owner")
+    if (a.get("lock") or {}) and not _entitled(a) and not owner:
+        # The page treats a locked article as blueprint-less; the endpoint
+        # must agree, or the sealed layer becomes a side door around the
+        # article's own paywall.
+        return _nostore({"ok": False,
+                         "error": "This idea is locked; its blueprint unlocks with it."}, 403)
+    bp, h = _bp_entry(a.get("title"), a.get("body"))
+    if not bp:
+        return _nostore({"ok": False, "error": "No blueprint travels with this idea."}, 404)
+    reader = session.get("reader") or {}
+    if not owner and not reader.get("email"):
+        return _nostore({"ok": False, "need": "signin",
+                         "error": "Sign in to open the blueprint."}, 401)
+    if reader.get("email"):
+        viewer = {"email": reader.get("email"), "name": reader.get("name") or ""}
+        _bp_record_access(h, aid, viewer)
+    else:
+        # The owner reading their own board is not evidence of anything;
+        # the log stays a record of outside readers.
+        viewer = {"email": "", "name": owner, "owner": True}
+    return _nostore({"ok": True,
+                     "title": bp.get("title") or "The blueprint",
+                     "attached_at": bp.get("attached_at"),
+                     "blocks": _md_blocks(bp.get("md") or ""),
+                     "viewer": viewer,
+                     "opened": _bp_opened_count(h)})
+
+
+@app.route("/api/blueprint-access")
+def api_blueprint_access():
+    """The author's side of the protection: who opened what, newest first.
+    Owner only, until posters have accounts of their own."""
+    if not session.get("owner"):
+        return jsonify({"ok": False, "error": "Owner only."}), 403
+    rows = _load(BLUEPRINT_ACCESS_PATH)
+    rows = rows if isinstance(rows, list) else []
+    titles = {}
+    for a in _load(ARTICLES_PATH):
+        titles[a.get("id")] = a.get("title")
+    out = [{"when": r.get("ts"), "email": r.get("email"), "name": r.get("name"),
+            "idea": titles.get(r.get("aid")) or r.get("aid")}
+           for r in rows[-200:]]
+    return jsonify({"ok": True, "opens": out[::-1], "total": len(rows)})
+
+
 def _public_article(a):
     """Public shape, investor/launcher emails are kept private, only counts are shown.
 
@@ -6647,6 +6958,11 @@ def _public_article(a):
         # Whatever languages this piece has been translated into. A locked
         # article ships none of them, for the same reason it ships no body.
         "translations": {} if locked else _translations_for(a.get("title"), a.get("body")),
+        # Whether a sealed blueprint travels with this idea. The flag is
+        # public; the blueprint is not, it leaves only through its own
+        # sign-in-gated endpoint. A locked article shows no flag, exactly
+        # as it ships no body: the blueprint unlocks with the article.
+        "has_blueprint": (not locked) and bool(_bp_entry(a.get("title"), a.get("body"))[0]),
     }
     return out
 
@@ -6785,6 +7101,178 @@ def idea_page(aid):
             'above is the opening. The rest is available to unlock%s.</p>'
             % (" for $%g" % pub["price_usd"] if pub.get("price_usd") else ""))
 
+    # ---- the sealed blueprint, if one travels with this idea ----
+    # Only the section titles are in this page. The body leaves the server
+    # exclusively through /api/idea/<aid>/blueprint, which checks the
+    # session, so view-source shows an unsigned reader exactly what they
+    # are entitled to and nothing more.
+    bp, bph = (None, "") if locked else _bp_entry(a.get("title"), a.get("body"))
+    bp_section = ""
+    bp_script = ""
+    if bp:
+        bp_blocks = _md_blocks(bp.get("md") or "")
+        heads = [b["s"] for b in bp_blocks if b["t"] == "h2"]
+        toc = "".join("<li>%s</li>" % e(x) for x in heads[:10])
+        reader_email = (session.get("reader") or {}).get("email") or ""
+        is_owner = bool(session.get("owner"))
+        signed = bool(reader_email) or is_owner
+        if is_owner and not reader_email:
+            gate_note = "You are signed in as the owner. Owner readings are not recorded."
+        elif signed:
+            gate_note = "You are signed in. Your reading is recorded for the author."
+        elif GOOGLE_CLIENT_ID:
+            gate_note = ("Sign in with Google to open it. Your name and the time of "
+                         "opening are recorded for the author.")
+        else:
+            gate_note = ("Sign-in is not switched on yet, so the blueprint cannot "
+                         "be opened here for now. It opens the moment sign-in "
+                         "arrives.")
+        bp_section = "".join([
+            '<div class="bp" id="bpBox">',
+            '<div class="bp-head">',
+            '<span>Attachment · <b>THE BLUEPRINT</b></span>',
+            '<span>Status · <b id="bpState">SEALED</b></span>',
+            '<span>Named readers · <b id="bpOpened">', str(_bp_opened_count(bph)),
+            '</b></span>',
+            '</div>',
+            '<p class="bp-note"><b>', e(bp.get("title") or "The blueprint"), '.</b> ',
+            'The full working plan travels with this idea, sealed. Opening it requires ',
+            'signing in, and every reader is recorded, name and time, for the author. ',
+            'That is the whole of the protection: a dated record of when this was ',
+            'posted, and a named record of who has read the plan since. It is not ',
+            'a patent filing.</p>',
+            '<div class="bp-toc-h">Inside · ', str(len(heads)), ' sections</div>',
+            '<ul class="bp-toc">', toc, '</ul>',
+            '<div id="bpGate"><p class="bp-gatenote" id="bpGateNote">', e(gate_note),
+            '</p><div id="bpBtnMount"></div></div>',
+            '<div id="bpBody" hidden></div>',
+            '</div>'])
+        bp_cfg = json.dumps({"aid": a.get("id") or aid, "cid": GOOGLE_CLIENT_ID,
+                             "enabled": bool(GOOGLE_CLIENT_ID), "signed": signed})
+        # This block is substituted as a VALUE into the page template, so it
+        # is never scanned for percent signs; and it deliberately contains no
+        # backslash escapes at all, the class of bug that has killed two
+        # generated scripts on this site already.
+        bp_script = "".join([
+            "<script>",
+            "(function () {",
+            "  var CFG = ", bp_cfg, ";",
+            "  var gate = document.getElementById('bpGate');",
+            "  var note = document.getElementById('bpGateNote');",
+            "  var mount = document.getElementById('bpBtnMount');",
+            "  var body = document.getElementById('bpBody');",
+            "  var state = document.getElementById('bpState');",
+            "  if (!gate || !body || !mount) return;",
+            "  function say(t) { if (note) note.textContent = t; }",
+            "  function el(tag, text, cls) {",
+            "    var d = document.createElement(tag);",
+            "    if (text) d.textContent = text;",
+            "    if (cls) d.className = cls;",
+            "    return d;",
+            "  }",
+            "  function renderDoc(j) {",
+            "    body.innerHTML = '';",
+            "    var who = (j.viewer && j.viewer.owner) ? 'the owner' :",
+            "      (((j.viewer && j.viewer.name) ? j.viewer.name + ', ' : '') +",
+            "       ((j.viewer && j.viewer.email) || ''));",
+            "    var ban = el('div', 'Opened by ' + who + '. ' +",
+            "      ((j.viewer && j.viewer.owner) ? 'Owner readings are not recorded.'",
+            "        : 'Your reading is recorded for the author.'), 'bp-viewer');",
+            "    if (j.viewer && j.viewer.email) {",
+            "      var so = el('button', 'Not you? Sign out', 'bp-signout');",
+            "      so.addEventListener('click', function () {",
+            "        fetch('/api/auth/reader/logout', { method: 'POST' })",
+            "          .then(function () { location.reload(); })",
+            "          .catch(function () { location.reload(); });",
+            "      });",
+            "      ban.appendChild(document.createTextNode(' '));",
+            "      ban.appendChild(so);",
+            "    }",
+            "    body.appendChild(ban);",
+            "    (j.blocks || []).forEach(function (b) {",
+            "      if (b.t === 'h2') body.appendChild(el('h2', b.s));",
+            "      else if (b.t === 'h3') body.appendChild(el('h3', b.s));",
+            "      else if (b.t === 'pre') body.appendChild(el('pre', b.s));",
+            "      else if (b.t === 'hr') body.appendChild(document.createElement('hr'));",
+            "      else if (b.t === 'q') {",
+            "        var q = document.createElement('blockquote');",
+            "        q.appendChild(el('p', b.s)); body.appendChild(q);",
+            "      }",
+            "      else if (b.t === 'ul') {",
+            "        var u = document.createElement('ul');",
+            "        (b.items || []).forEach(function (it) { u.appendChild(el('li', it)); });",
+            "        body.appendChild(u);",
+            "      }",
+            "      else if (b.s) body.appendChild(el('p', b.s));",
+            "    });",
+            "    if (j.viewer && j.viewer.email) {",
+            "      for (var i = 0; i < 14; i++) {",
+            "        var w = el('div', j.viewer.email + ' · recorded', 'bp-wm');",
+            "        w.style.top = String(260 + i * 430) + 'px';",
+            "        body.appendChild(w);",
+            "      }",
+            "    }",
+            "    body.hidden = false;",
+            "    gate.hidden = true;",
+            "    if (state) state.textContent =",
+            "      (j.viewer && j.viewer.owner) ? 'OPEN · OWNER' : 'OPEN · RECORDED';",
+            "    var op = document.getElementById('bpOpened');",
+            "    if (op && typeof j.opened === 'number') op.textContent = String(j.opened);",
+            "  }",
+            "  function openBP() {",
+            "    fetch('/api/idea/' + encodeURIComponent(CFG.aid) + '/blueprint')",
+            "      .then(function (r) { return r.json(); })",
+            "      .then(function (j) {",
+            "        if (j.ok) { renderDoc(j); return; }",
+            "        if (j.need === 'signin') {",
+            "          CFG.signed = false;",
+            "          say('Your sign-in has expired. Sign in again to open it.');",
+            "          arm(); return;",
+            "        }",
+            "        say(j.error || 'The blueprint could not be opened.');",
+            "      })",
+            "      .catch(function () { say('The blueprint could not be opened. Try again.'); });",
+            "  }",
+            "  function showOpenButton() {",
+            "    mount.innerHTML = '';",
+            "    var b = el('button', 'Open the blueprint', 'bp-open');",
+            "    b.addEventListener('click', openBP);",
+            "    mount.appendChild(b);",
+            "  }",
+            "  function armGoogle() {",
+            "    var s = document.createElement('script');",
+            "    s.src = 'https://accounts.google.com/gsi/client';",
+            "    s.async = true; s.defer = true;",
+            "    s.onload = function () {",
+            "      try {",
+            "        google.accounts.id.initialize({",
+            "          client_id: CFG.cid,",
+            "          callback: function (resp) {",
+            "            fetch('/api/auth/google/session', {",
+            "              method: 'POST',",
+            "              headers: { 'Content-Type': 'application/json' },",
+            "              body: JSON.stringify({ credential: resp && resp.credential })",
+            "            }).then(function (r) { return r.json(); }).then(function (j) {",
+            "              if (j.ok) { CFG.signed = true; openBP(); }",
+            "              else say(j.error || 'Could not verify that sign-in.');",
+            "            }).catch(function () { say('Could not verify that sign-in.'); });",
+            "          }",
+            "        });",
+            "        google.accounts.id.renderButton(mount,",
+            "          { theme: 'outline', size: 'large', text: 'continue_with', shape: 'pill' });",
+            "      } catch (e) { say('Google sign-in did not load. Reload and try again.'); }",
+            "    };",
+            "    s.onerror = function () { say('Google sign-in did not load. Reload and try again.'); };",
+            "    document.head.appendChild(s);",
+            "  }",
+            "  function arm() {",
+            "    if (CFG.signed) { showOpenButton(); return; }",
+            "    if (CFG.enabled && CFG.cid) { armGoogle(); return; }",
+            "  }",
+            "  arm();",
+            "})();",
+            "</scr", "ipt>"])
+
     return Response("""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6846,6 +7334,55 @@ def idea_page(aid):
   .idea-foot { color: var(--psx-text2, #6b6459); font-size: .93rem;
                border-top: 1px solid var(--psx-line, #e6e2da);
                margin-top: 2.4rem; padding-top: 1.2rem; }
+  /* The blueprint: the sealed layer. Drawn in the site's sheet language,
+     a bordered drawing with a title block, nothing filled behind a word. */
+  .bp { border: 1px solid var(--psx-line, #e6e2da); border-radius: 10px;
+        margin-top: 2.4rem; overflow: hidden; background: #fff; }
+  .bp-head { display: flex; flex-wrap: wrap; gap: .3rem 1.4rem;
+             padding: .55rem .9rem;
+             border-bottom: 1px solid var(--psx-line, #e6e2da);
+             font-size: .68rem; font-weight: 700; letter-spacing: .12em;
+             text-transform: uppercase; color: var(--psx-text2, #6b6459); }
+  .bp-head b { color: #1f3a5f; }
+  .bp-note { padding: .9rem .9rem 0; margin: 0;
+             color: var(--psx-text2, #6b6459); font-size: .93rem; }
+  .bp-toc-h { padding: 1rem .9rem .1rem; font-size: .68rem; font-weight: 700;
+              letter-spacing: .12em; text-transform: uppercase;
+              color: var(--psx-text2, #6b6459); }
+  .bp-toc { margin: .2rem 0 1rem; padding: 0 .9rem 0 2rem;
+            color: var(--psx-text2, #6b6459); font-size: .93rem; }
+  .bp-toc li { margin: .25rem 0; }
+  #bpGate { padding: 0 .9rem 1.1rem; }
+  .bp-gatenote { color: var(--psx-text2, #6b6459); font-size: .9rem;
+                 border-left: 2px solid #1f3a5f; padding-left: .9rem; }
+  .bp-open { font: inherit; font-weight: 700; min-height: 44px;
+             padding: .6rem 1.2rem; border-radius: 999px;
+             border: 1px solid #1f3a5f; color: #1f3a5f; background: none;
+             cursor: pointer; }
+  #bpBody { position: relative; padding: .4rem 1.2rem 1.4rem; overflow: hidden; }
+  #bpBody h2 { font-size: 1.15rem; margin: 1.6rem 0 .4rem; }
+  #bpBody h3 { font-size: 1rem; margin: 1.2rem 0 .3rem; }
+  #bpBody p { margin: .7rem 0; line-height: 1.6; font-size: .98rem; }
+  #bpBody pre { overflow-x: auto; background: #f6f8fb;
+                border: 1px solid var(--psx-line, #e6e2da); border-radius: 8px;
+                padding: .7rem .8rem; font-size: .8rem; line-height: 1.5; }
+  #bpBody blockquote { border-left: 2px solid #1f3a5f; margin: .8rem 0;
+                       padding: .1rem 0 .1rem .9rem;
+                       color: var(--psx-text2, #6b6459); }
+  #bpBody ul { margin: .6rem 0 .6rem 1.4rem; }
+  #bpBody li { margin: .3rem 0; line-height: 1.55; }
+  #bpBody hr { border: 0; border-top: 1px solid var(--psx-line, #e6e2da);
+               margin: 1.4rem 0; }
+  .bp-viewer { border: 1px solid var(--psx-line, #e6e2da);
+               border-left: 3px solid #1f3a5f; border-radius: 8px;
+               padding: .6rem .8rem; font-size: .85rem;
+               color: var(--psx-text2, #6b6459); margin: .9rem 0 0; }
+  .bp-signout { background: none; border: 0; padding: 0; margin-left: .3rem;
+                font: inherit; font-size: .8rem; color: #1f3a5f;
+                text-decoration: underline; cursor: pointer; }
+  .bp-wm { position: absolute; left: 8%%; transform: rotate(-18deg);
+           opacity: .055; font-weight: 800; font-size: 1.5rem;
+           white-space: nowrap; pointer-events: none; user-select: none; }
 </style>
 </head>
 <body data-arm="company">
@@ -6861,6 +7398,7 @@ def idea_page(aid):
   <p class="idea-meta">Posted by %(author)s%(when)s · %(likes)s interested</p>
   <div class="idea-body" id="ideaBody">%(paras)s</div>
   %(locked_note)s
+  %(bp_section)s
   <div class="idea-actions">
     <button id="shareBtn">Share this idea</button>
     <a href="/#reinvestment">See every idea</a>
@@ -6954,6 +7492,7 @@ def idea_page(aid):
     setTimeout(function () { btn.textContent = 'Share this idea'; }, 2500);
   });
 </script>
+%(bp_script)s
 <script src="/i18n.js"></script>
 </body>
 </html>""" % {
@@ -6968,6 +7507,7 @@ def idea_page(aid):
         "aid_js": json.dumps(a.get("id") or aid),
         "share_tag": _content_hash(a.get("title"), a.get("body"))[:6],
         "lang_row": lang_row, "trs_json": trs_json,
+        "bp_section": bp_section, "bp_script": bp_script,
     }, mimetype="text/html")
 
 
@@ -6977,6 +7517,10 @@ def api_article_create():
     author = _no_tags((data.get("author") or "").strip())
     title = _no_em_dash(_no_tags((data.get("title") or "").strip()), title=True)
     body = _no_em_dash(_no_tags((data.get("body") or "").strip()))
+    # The optional sealed layer. Kept aside here and attached only after the
+    # article exists, keyed to the stored text, because the hash must match
+    # what actually went on the board, not what was typed.
+    bp_text = (data.get("blueprint") or "").strip()
     if not author or not title or not body:
         return jsonify({"ok": False, "error": "Your name, a title and body are all required."}), 400
     with _LOCK:
@@ -7004,12 +7548,19 @@ def api_article_create():
             same_text = _content_hash(a.get("title"), a.get("body")) == h_new
             same_title = " ".join((a.get("title") or "").lower().split()) == t_new
             if same_text or same_title:
+                note = ("This exact text is already on the board."
+                        if same_text else
+                        "An idea with this exact title is already on the board. "
+                        "If yours is different, give it its own title.")
+                # A blueprint brought along with a duplicate is NOT silently
+                # attached to the piece already standing, that piece may be
+                # someone else's, and it is not silently dropped either; the
+                # poster is told what happened to it.
+                if bp_text:
+                    note += (" The blueprint you attached was not saved; "
+                             "post your own version under its own title to seal it.")
                 return jsonify({"ok": True, "article": _public_article(a),
-                                "duplicate": True,
-                                "note": ("This exact text is already on the board."
-                                         if same_text else
-                                         "An idea with this exact title is already on the board. "
-                                         "If yours is different, give it its own title.")})
+                                "duplicate": True, "note": note})
 
         article = {
             "id": _next_id(items, "ART", datestamp=False),
@@ -7034,6 +7585,14 @@ def api_article_create():
             article["professionals"] = None
         items.append(article)
         _save(ARTICLES_PATH, items)
+    # The sealed layer, if the poster brought one. Outside the article lock,
+    # _bp_attach takes the same lock itself and threading.Lock does not
+    # re-enter. A failed attach must not un-post the idea.
+    if bp_text:
+        try:
+            _bp_attach(article["title"], article["body"], bp_text, "poster")
+        except Exception:
+            pass
     # And count the demand, outside the lock the save holds.
     try:
         if article.get("professionals"):
@@ -7187,6 +7746,46 @@ def _seed_articles_once():
             translator.translate_async(title, body)
         except Exception:
             pass
+
+
+def _seed_blueprint_once():
+    """Seal the drafted Reinvestment USA framework under its own article.
+
+    The launchpad's founding article carries the launchpad's own blueprint,
+    which makes the board's first idea a working demonstration of the
+    product: article public, plan sealed, readers named. The framework part
+    of REINVESTMENT_USA.md is the blueprint; the debate appendix after THE
+    FULL MACHINE marker is internal counsel and stays out.
+
+    Runs every boot under the same gate as the article seeder, because the
+    runtime store is wiped by every deploy until the disk is attached. The
+    repo copy is canonical for the seeded entry; a blueprint attached any
+    other way is never overwritten."""
+    if DATA_DIR == BASE_DIR and not os.environ.get("RENDER_GIT_COMMIT"):
+        return
+    try:
+        with open(os.path.join(BASE_DIR, "REINVESTMENT_USA.md"), encoding="utf-8") as f:
+            md = f.read()
+        cut = md.find("\n# THE FULL MACHINE")
+        if cut > 0:
+            md = md[:cut]
+        art = next((a for a in _load(ARTICLES_PATH)
+                    if a.get("stamp") == "20260811210000" and not a.get("hidden")), None)
+        if not art:
+            return
+        bp, _h = _bp_entry(art.get("title"), art.get("body"))
+        if bp:
+            if bp.get("source") != "seed":
+                return
+            # Unchanged content keeps its original attached_at; the whole
+            # pitch of the feature is honest timestamps, and a date that
+            # quietly reset on every deploy would be the opposite.
+            if (bp.get("md") or "") == _no_em_dash(md.strip())[:40000]:
+                return
+        _bp_attach(art.get("title"), art.get("body"), md, "seed",
+                   bp_title="Reinvestment USA, the framework")
+    except Exception:
+        return
 
 
 @app.route("/api/articles/<aid>/lock", methods=["POST"])
@@ -9281,6 +9880,7 @@ def _reservation_reminder_loop():
 # Wrapped so a seeding failure can never stop the app from starting.
 try:
     _seed_articles_once()
+    _seed_blueprint_once()
 except Exception:
     pass
 
