@@ -8324,6 +8324,53 @@ def _seed_articles_once():
             pass
 
 
+def _seed_book_fields_once():
+    """The shipped book's curated senses reach a persistent copy.
+
+    _data_path copies destinations.json to the data disk exactly once, so
+    a registry improvement in the repo, a new ferry, an admission price,
+    a spoken guide, would never reach a site already running on a disk.
+    This overlays the shipped entries' curated fields onto the live copy
+    by city and name, and adds shipped entries the copy lacks, while
+    never touching anything visitors taught the site."""
+    try:
+        shipped_path = os.path.join(BASE_DIR, "destinations.json")
+        live_path = _data_path("destinations.json")
+        if os.path.abspath(shipped_path) == os.path.abspath(live_path):
+            return                      # no disk: the repo copy IS the book
+        with open(shipped_path) as f:
+            shipped = json.load(f)
+        with _LOCK:
+            try:
+                with open(live_path) as f:
+                    live = json.load(f)
+            except Exception:
+                live = {"cities": {}, "entries": []}
+            idx = {}
+            for e in live.get("entries") or []:
+                idx[(e.get("city"), (e.get("name") or "").lower())] = e
+            changed = False
+            for srce in shipped.get("entries") or []:
+                k = (srce.get("city"), (srce.get("name") or "").lower())
+                tgt = idx.get(k)
+                if tgt is None:
+                    live.setdefault("entries", []).append(srce)
+                    changed = True
+                    continue
+                for fld in ("admission_usd", "tickets_url", "slug", "ferry", "audio"):
+                    if fld in srce and tgt.get(fld) != srce[fld]:
+                        tgt[fld] = srce[fld]
+                        changed = True
+            for ck, cv in (shipped.get("cities") or {}).items():
+                if ck not in (live.get("cities") or {}):
+                    live.setdefault("cities", {})[ck] = cv
+                    changed = True
+            if changed:
+                _save(live_path, live)
+    except Exception:
+        pass
+
+
 def _seed_blueprint_once():
     """Seal the drafted Reinvestment USA framework under its own article.
 
@@ -10491,6 +10538,7 @@ def _reservation_reminder_loop():
 try:
     _seed_articles_once()
     _seed_blueprint_once()
+    _seed_book_fields_once()
 except Exception:
     pass
 
