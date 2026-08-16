@@ -360,6 +360,13 @@
               + 'This is the page to screenshot into an affiliate application: it says how much '
               + 'real demand the free guide already sends, and to where.';
             document.getElementById('demandBoard').style.display = 'block';
+            // A link straight here, /archive#demandBoard from Dispatch, arrives
+            // before this fetch finishes, and a browser cannot scroll to an
+            // element that is still hidden. So the scroll happens HERE, once
+            // the board actually exists on the page.
+            if (location.hash === '#demandBoard') {
+                document.getElementById('demandBoard').scrollIntoView({ block: 'start' });
+            }
         } catch (e) { /* the board must never break the page */ }
     }
     loadDemandBoard();
