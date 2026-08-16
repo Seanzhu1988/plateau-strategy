@@ -1672,6 +1672,11 @@
       .idea-publish{border:none;border-radius:10px;padding:.75rem 1.5rem;font-weight:700;font-size:.92rem;cursor:pointer;
         background:linear-gradient(135deg,var(--psx-blue),var(--psx-indigo));color:#fff;box-shadow:0 10px 22px -8px rgba(59,130,246,.6);}
       .idea-publish:hover{filter:brightness(1.07);}
+      .idea-voice{display:flex;gap:.7rem;align-items:center;flex-wrap:wrap;margin:0 0 .9rem;}
+      .idea-mic{min-height:44px;border:1px solid #d9d4c9;border-radius:10px;background:#fff;
+        color:#14110c;font:inherit;font-size:.9rem;font-weight:700;padding:.5rem 1rem;cursor:pointer;}
+      .idea-mic.on{background:#7a2f2a;color:#fff;border-color:#7a2f2a;}
+      .idea-mic-note{color:#6b655b;font-size:.82rem;}
 
       .idea-card{background:var(--psx-card);border:1px solid var(--psx-border);border-radius:16px;padding:1.7rem 1.6rem;margin-bottom:1.4rem;}
       .idea-card h4{color:#f2f5fa;font-size:1.2rem;font-weight:700;margin-bottom:.25rem;}
@@ -2619,6 +2624,61 @@
                                     <input id="idea_author" placeholder="Your name">
                                     <input id="idea_title" placeholder="Business idea, e.g. Mobile EV-detailing fleet for gig drivers">
                                     <textarea id="idea_body" placeholder="The problem, the business model, how it makes money, and what it needs to launch…"></textarea>
+                                    <!-- Speak your idea instead of typing it. Uses the browser's own
+                                         speech tool, so it stays hidden on browsers that do not have one.
+                                         It dictates into the body in whatever language the site is set to.
+                                         Honest note: most browsers still send the audio to a cloud service,
+                                         the truly on-device version is the next step. -->
+                                    <div class="idea-voice" id="ideaVoice" style="display:none">
+                                        <button type="button" class="idea-mic" id="ideaMicBtn">🎤 Speak your idea</button>
+                                        <span class="idea-mic-note" id="ideaMicNote">Dictate instead of typing. Tap, talk, tap again.</span>
+                                    </div>
+                                    <script>
+                                    (function () {
+                                      var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+                                      var wrap = document.getElementById('ideaVoice'),
+                                          btn = document.getElementById('ideaMicBtn'),
+                                          note = document.getElementById('ideaMicNote'),
+                                          body = document.getElementById('idea_body');
+                                      if (!SR || !wrap || !btn || !body) return;   // no speech: stay hidden
+                                      wrap.style.display = 'flex';
+                                      var CODES = { en:'en-US', zh:'zh-CN', es:'es-ES', ko:'ko-KR', vi:'vi-VN' };
+                                      function lang() {
+                                        try { return CODES[localStorage.getItem('ps_lang') || 'en'] || 'en-US'; }
+                                        catch (e) { return 'en-US'; }
+                                      }
+                                      var rec = null, on = false;
+                                      function start() {
+                                        rec = new SR(); rec.lang = lang();
+                                        rec.continuous = true; rec.interimResults = true;
+                                        rec.onresult = function (e) {
+                                          var interim = '';
+                                          for (var i = e.resultIndex; i < e.results.length; i++) {
+                                            var t = e.results[i][0].transcript;
+                                            if (e.results[i].isFinal) {
+                                              body.value = (body.value ? body.value.replace(/\s*$/, '') + ' ' : '') + t.trim();
+                                            } else { interim += t; }
+                                          }
+                                          note.textContent = interim ? '… ' + interim : 'Listening. Tap to stop.';
+                                        };
+                                        rec.onerror = function (ev) {
+                                          note.textContent = (ev && ev.error === 'not-allowed')
+                                            ? 'Microphone blocked. Allow it in your browser to dictate.'
+                                            : 'Could not hear you. Tap to try again.';
+                                          stop();
+                                        };
+                                        rec.onend = function () { if (on) { try { rec.start(); } catch (e) {} } };
+                                        try { rec.start(); } catch (e) {}
+                                        on = true; btn.classList.add('on'); btn.textContent = '■ Stop';
+                                        note.textContent = 'Listening. Tap to stop.';
+                                      }
+                                      function stop() {
+                                        on = false; btn.classList.remove('on'); btn.textContent = '🎤 Speak your idea';
+                                        try { if (rec) rec.stop(); } catch (e) {} rec = null;
+                                      }
+                                      btn.addEventListener('click', function () { on ? stop() : start(); });
+                                    })();
+                                    </script>
                                     <button class="idea-publish" onclick="ideaPublish()">Publish idea</button>
                                 </div>
                             </div>
