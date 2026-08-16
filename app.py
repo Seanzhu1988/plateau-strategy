@@ -6528,6 +6528,108 @@ def api_partner_add():
     return jsonify({"ok": True, "partner": p})
 
 
+# Places a scout can be sent, with the point it searches from. A city
+# joins this list the day the business works there, and nothing else has
+# to change.
+SCOUT_AREAS = {
+    "seattle": ("Seattle", 47.6062, -122.3321),
+    "seatac": ("SeaTac airport", 47.4502, -122.3088),
+    "bellevue": ("Bellevue", 47.6101, -122.2015),
+    "tacoma": ("Tacoma", 47.2529, -122.4443),
+    "everett": ("Everett", 47.9790, -122.2021),
+    "nyc": ("New York", 40.7580, -73.9855),
+    "dc": ("Washington DC", 38.8977, -77.0365),
+    "boston": ("Boston", 42.3601, -71.0589),
+}
+
+
+@app.route("/api/partners/scout/areas")
+@owner_required
+def api_partner_scout_areas():
+    """Where a scout can be sent, and what it hunts. Feeds the Atlas form."""
+    import atlas_scout
+    return jsonify({"ok": True,
+                    "areas": [{"key": k, "label": v[0]} for k, v in SCOUT_AREAS.items()],
+                    "kinds": [{"key": k, "label": v["label"], "route": v["route"]}
+                              for k, v in atlas_scout.KINDS.items()]})
+
+
+@app.route("/api/partners/scout", methods=["POST"])
+@owner_required
+def api_partner_scout():
+    """Send the scout, and put what it finds in the pipeline to contact.
+
+    Atlas could only ever hold the prospects somebody had already thought
+    of. This fills it from the map: organizations of the kinds that send
+    people to a car service, each with a real way to reach them, each
+    stamped with where the fact came from.
+
+    Nothing is contacted here. Every row lands as to_contact, which is
+    the pipeline's own first column, and Dispatch does the calling."""
+    import atlas_scout
+    data = request.get_json(force=True, silent=True) or {}
+    area = (data.get("area") or "seattle").strip()
+    if area not in SCOUT_AREAS:
+        return jsonify({"ok": False, "error": "Unknown area."}), 400
+    label, lat, lon = SCOUT_AREAS[area]
+    kinds = data.get("kinds") or ["hotel", "travel_agency", "event_venue", "senior_living"]
+    try:
+        radius = float(data.get("radius_km") or 8)
+    except Exception:
+        radius = 8
+    limit = data.get("limit") or 40
+    preview = bool(data.get("preview"))
+
+    found, err = atlas_scout.scout(lat, lon, radius_km=radius, kinds=kinds, limit=limit)
+    if err:
+        return jsonify({"ok": False, "error":
+                        "The map service did not answer (%s). It load-sheds when "
+                        "busy; try again in a minute." % err}), 502
+
+    existing = _load(PARTNERS_PATH)
+    existing = existing if isinstance(existing, list) else []
+    fresh = atlas_scout.dedupe(found, existing)
+    if preview:
+        return jsonify({"ok": True, "area": label, "found": len(found),
+                        "new": len(fresh), "already_held": len(found) - len(fresh),
+                        "candidates": [{k: v for k, v in c.items() if k != "_score"}
+                                       for c in fresh]})
+
+    added = []
+    with _LOCK:
+        partners = _load(PARTNERS_PATH)
+        partners = partners if isinstance(partners, list) else []
+        for c in fresh:
+            p = {
+                "id": _next_id(partners, "PTR", datestamp=False),
+                "name": c["name"],
+                "type": c["type"],
+                "phone": c["phone"],
+                "email": c["email"],
+                "website": c["website"],
+                "address": c["address"],
+                "status": "to_contact",
+                "notes": "",
+                "added_at": datetime.datetime.now().isoformat(timespec="seconds"),
+                "last_contacted": None,
+                # what the caller needs, and where it came from
+                "sales_route": c["sales_route"],
+                "contact_confidence": c["contact_confidence"],
+                "research_notes": c["research_notes"],
+                "source": c["source"],
+                "osm_id": c["osm_id"],
+                "found_by": "scout",
+                "found_in": label,
+            }
+            partners.append(p)
+            added.append(p)
+        if added:
+            _save(PARTNERS_PATH, partners)
+    return jsonify({"ok": True, "area": label, "found": len(found),
+                    "added": len(added), "already_held": len(found) - len(fresh),
+                    "partners": added})
+
+
 @app.route("/api/partners/<pid>/update", methods=["POST"])
 @owner_required
 def api_partner_update(pid):
