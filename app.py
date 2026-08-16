@@ -2860,6 +2860,101 @@ def _may_publish(entry):
     return not _ADDRESS_LIKE.match(entry.get("name") or "")
 
 
+# ---------- the free guide earns: demand counted, doors routed ----------
+#
+# Sean's order of operations, from ATTRACTION_COMMISSIONS.md: the guide
+# stays free, the demand gets COUNTED, and the counted demand is what the
+# affiliate applications and trade desks get shown. So every outbound door
+# goes through /go, which counts and then forwards, and the audio guides
+# report a play the same way. Counts are anonymous totals per attraction
+# per day, in the same self-hosted spirit as the traffic panel: no reader
+# profiles, no third-party pixels, nothing about WHO, only HOW MANY.
+GUIDE_DEMAND_PATH = _data_path("guide_demand.json")
+EXPEDIA_AFFILIATE_ID = os.environ.get("EXPEDIA_AFFILIATE_ID", "").strip()
+
+
+def _demand_bump(kind, key, city=""):
+    try:
+        with _LOCK:
+            d = _load(GUIDE_DEMAND_PATH)
+            if not isinstance(d, dict):
+                d = {}
+            day = datetime.date.today().isoformat()
+            k = "%s|%s" % (kind, key)
+            row = d.setdefault(k, {"kind": kind, "key": key, "city": city,
+                                   "total": 0, "days": {}})
+            row["total"] = int(row.get("total") or 0) + 1
+            days = row.setdefault("days", {})
+            days[day] = int(days.get(day) or 0) + 1
+            if len(days) > 120:
+                for old in sorted(days)[:-120]:
+                    days.pop(old, None)
+            _save(GUIDE_DEMAND_PATH, d)
+    except Exception:
+        pass                    # a lost count must never cost a reader a page
+
+
+def _dest_by_slug(slug):
+    for e in public_book().get("entries") or []:
+        if e.get("slug") == slug:
+            return e
+    return None
+
+
+@app.route("/go/stay")
+def go_stay():
+    """Hotels as a resource: a stay search near the attraction in hand.
+
+    The redirect target is built HERE, from our own template, never from
+    anything in the query, so this can never be an open redirect. The
+    affiliate id joins the URL the day Expedia approves the account; until
+    then the door works, and the demand it proves is the application."""
+    from urllib.parse import quote_plus
+    near = _no_tags((request.args.get("near") or "").strip())[:80]
+    city = _no_tags((request.args.get("city") or "").strip())[:20]
+    _demand_bump("stay", near or city or "anywhere", city)
+    url = "https://www.expedia.com/Hotel-Search?destination=" + quote_plus(near or city or "")
+    if EXPEDIA_AFFILIATE_ID:
+        url += "&affcid=" + quote_plus(EXPEDIA_AFFILIATE_ID)
+    return redirect(url, code=302)
+
+
+@app.route("/go/tickets/<slug>")
+def go_tickets(slug):
+    """The admission door: counts, then forwards to the venue's own ticket
+    page. When an affiliate programme approves, the registry's tickets_url
+    becomes the deep link and this route needs no change at all."""
+    e = _dest_by_slug(slug)
+    url = (e or {}).get("tickets_url") or ""
+    if not e or not url.startswith("https://"):
+        return Response("No ticket door for that one.", status=404, mimetype="text/plain")
+    _demand_bump("tickets", slug, e.get("city") or "")
+    return redirect(url, code=302)
+
+
+@app.route("/api/guide-demand/beacon", methods=["POST"])
+def api_guide_demand_beacon():
+    """A play or a plan, counted. Anonymous by construction."""
+    data = request.get_json(force=True, silent=True) or {}
+    kind = data.get("kind")
+    key = _no_tags((data.get("key") or "").strip())[:80]
+    if kind not in ("audio", "plan") or not key:
+        return jsonify({"ok": False}), 400
+    _demand_bump(kind, key, _no_tags((data.get("city") or "").strip())[:20])
+    return jsonify({"ok": True})
+
+
+@app.route("/api/guide-demand")
+@owner_required
+def api_guide_demand():
+    """The owner's demand board: what the free guide is proving, ranked.
+    This is the page to screenshot into an affiliate application."""
+    d = _load(GUIDE_DEMAND_PATH)
+    d = d if isinstance(d, dict) else {}
+    rows = sorted(d.values(), key=lambda r: -int(r.get("total") or 0))
+    return jsonify({"ok": True, "rows": rows[:200]})
+
+
 def public_book():
     """The book as the world may see it. The only read path for routes."""
     d = _book_raw()

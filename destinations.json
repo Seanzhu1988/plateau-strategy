@@ -44,7 +44,11 @@
    "lat": 40.7794,
    "lon": -73.9632,
    "desc": "One of the world's great museums, 5,000 years of art, including a complete Egyptian temple in a glass hall.",
-   "tip": "Friday and Saturday it stays open late; the rooftop has a skyline view in season."
+   "tip": "Friday and Saturday it stays open late; the rooftop has a skyline view in season.",
+   "admission_usd": 30,
+   "tickets_url": "https://engage.metmuseum.org/admissions/",
+   "slug": "the-met-museum",
+   "audio": "/media/audio/guide-the-met-museum.mp3"
   },
   {
    "name": "Empire State Building",
@@ -57,7 +61,10 @@
    "lat": 40.7484,
    "lon": -73.9857,
    "desc": "The art-deco icon of the skyline. The open-air 86th-floor deck is the classic New York view.",
-   "tip": "Go at sunset and watch the city switch its lights on."
+   "tip": "Go at sunset and watch the city switch its lights on.",
+   "admission_usd": 44,
+   "tickets_url": "https://www.esbnyc.com/buy-tickets",
+   "slug": "empire-state-building"
   },
   {
    "name": "Brooklyn Bridge",
@@ -83,7 +90,10 @@
    "lat": 40.7115,
    "lon": -74.0134,
    "desc": "Twin reflecting pools in the footprints of the towers; the museum below tells the story with artifacts and voices.",
-   "tip": "The outdoor memorial is free and open late; the museum needs a timed ticket."
+   "tip": "The outdoor memorial is free and open late; the museum needs a timed ticket.",
+   "admission_usd": 33,
+   "tickets_url": "https://www.911memorial.org/visit",
+   "slug": "9-11-memorial-and-museum"
   },
   {
    "name": "The High Line",
@@ -122,7 +132,10 @@
    "lat": 40.7033,
    "lon": -74.017,
    "desc": "Ferries from Battery Park to Liberty and Ellis Islands, the statue up close and the immigration museum.",
-   "tip": "Book the first boat of the day; crown access sells out weeks ahead, and last boarding is mid-afternoon."
+   "tip": "Book the first boat of the day; crown access sells out weeks ahead, and last boarding is mid-afternoon.",
+   "admission_usd": 25,
+   "tickets_url": "https://www.cityexperiences.com/new-york/city-cruises/statue/",
+   "slug": "statue-of-liberty-ferry"
   },
   {
    "name": "Chelsea Market",
@@ -211,7 +224,9 @@
    "lat": 38.8893,
    "lon": -77.0502,
    "desc": "The seated Lincoln above the Reflecting Pool, read the Second Inaugural carved on the north wall.",
-   "tip": "Open 24 hours; sunrise and after dark are the quiet, beautiful times."
+   "tip": "Open 24 hours; sunrise and after dark are the quiet, beautiful times.",
+   "audio": "/media/audio/guide-lincoln-memorial.mp3",
+   "slug": "lincoln-memorial"
   },
   {
    "name": "Washington Monument",
@@ -224,7 +239,10 @@
    "lat": 38.8895,
    "lon": -77.0353,
    "desc": "The 555-foot obelisk at the center of the Mall; the elevator to the top gives the only 360-degree view of the city.",
-   "tip": "Same-day tickets go early, reserve online a month out if you can."
+   "tip": "Same-day tickets go early, reserve online a month out if you can.",
+   "admission_usd": 1,
+   "tickets_url": "https://www.recreation.gov/ticket/234635/ticket/16",
+   "slug": "washington-monument"
   },
   {
    "name": "Air & Space Museum",
@@ -401,7 +419,9 @@
    "lat": 47.6097,
    "lon": -122.3422,
    "desc": "Seattle's beating heart since 1907, fish throwers, flower stalls, craft stands and the original Starbucks, stacked on a hillside over Elliott Bay.",
-   "tip": "Go before 10am to watch the fishmongers set up, and don't miss the lower levels, most visitors never find them."
+   "tip": "Go before 10am to watch the fishmongers set up, and don't miss the lower levels, most visitors never find them.",
+   "audio": "/media/audio/guide-pike-place-market.mp3",
+   "slug": "pike-place-market"
   },
   {
    "name": "Space Needle",
@@ -414,7 +434,11 @@
    "lat": 47.6205,
    "lon": -122.3493,
    "desc": "The 1962 World's Fair icon, 520 feet up with a rotating glass floor and a 360° sweep of the city, the Sound, and on a clear day Mount Rainier.",
-   "tip": "Sunset slots sell out, book the golden hour online a few days ahead."
+   "tip": "Sunset slots sell out, book the golden hour online a few days ahead.",
+   "admission_usd": 42,
+   "tickets_url": "https://www.spaceneedle.com/tickets",
+   "slug": "space-needle",
+   "audio": "/media/audio/guide-space-needle.mp3"
   },
   {
    "name": "Chihuly Garden and Glass",
@@ -427,7 +451,10 @@
    "lat": 47.6206,
    "lon": -122.3504,
    "desc": "Dale Chihuly's molten-glass dreamscapes, eight galleries and a garden where the sculptures grow among real plants, right under the Space Needle.",
-   "tip": "Pair it with the Needle on a combo ticket; the Glasshouse glows best in late-afternoon light."
+   "tip": "Pair it with the Needle on a combo ticket; the Glasshouse glows best in late-afternoon light.",
+   "admission_usd": 35,
+   "tickets_url": "https://www.chihulygardenandglass.com/tickets",
+   "slug": "chihuly-garden-and-glass"
   },
   {
    "name": "Museum of Pop Culture",
@@ -440,7 +467,10 @@
    "lat": 47.6215,
    "lon": -122.3481,
    "desc": "Frank Gehry's shimmering blob of a building, stuffed with Nirvana and Hendrix relics, sci-fi props, horror history and a guitar tornado.",
-   "tip": "The Sound Lab lets you play real instruments, worth the last 30 minutes of your visit."
+   "tip": "The Sound Lab lets you play real instruments, worth the last 30 minutes of your visit.",
+   "admission_usd": 32,
+   "tickets_url": "https://www.mopop.org/visit",
+   "slug": "museum-of-pop-culture"
   },
   {
    "name": "Seattle Aquarium",
@@ -453,7 +483,10 @@
    "lat": 47.6074,
    "lon": -122.343,
    "desc": "Sea otters, giant Pacific octopus and a diver-fed underwater dome, right on the working waterfront piers.",
-   "tip": "Otter feedings are the show, check the day's schedule at the door and plan around one."
+   "tip": "Otter feedings are the show, check the day's schedule at the door and plan around one.",
+   "admission_usd": 35,
+   "tickets_url": "https://www.seattleaquarium.org/visit",
+   "slug": "seattle-aquarium"
   },
   {
    "name": "Kerry Park viewpoint",
@@ -531,7 +564,10 @@
    "visit": 90,
    "price": "$$",
    "desc": "The oldest ballpark in the majors, opened 1912, with the 37-foot Green Monster still standing in left field.",
-   "tip": "On non-game days the hour-long tour walks you onto the Monster seats, book it, they sell out, and it's the only way in without a ticket."
+   "tip": "On non-game days the hour-long tour walks you onto the Monster seats, book it, they sell out, and it's the only way in without a ticket.",
+   "admission_usd": 25,
+   "tickets_url": "https://www.mlb.com/redsox/ballpark/tours",
+   "slug": "fenway-park"
   },
   {
    "city": "boston",
@@ -544,7 +580,10 @@
    "visit": 120,
    "price": "$$",
    "desc": "Half a million works across an encyclopedic collection, strongest in Impressionists, Egyptian art and American painting.",
-   "tip": "Wednesday through Friday evenings are the quietest hours, and the Art of the Americas wing alone is worth the full two hours."
+   "tip": "Wednesday through Friday evenings are the quietest hours, and the Art of the Americas wing alone is worth the full two hours.",
+   "admission_usd": 27,
+   "tickets_url": "https://www.mfa.org/visit",
+   "slug": "museum-of-fine-arts"
   },
   {
    "city": "boston",
@@ -557,7 +596,10 @@
    "visit": 90,
    "price": "$$",
    "desc": "A four-story Giant Ocean Tank spirals through a Caribbean reef with sea turtles, sharks and rays, right on the harbor.",
-   "tip": "Go at opening or in the last 90 minutes, the ramp around the tank is a single-file crush midday."
+   "tip": "Go at opening or in the last 90 minutes, the ramp around the tank is a single-file crush midday.",
+   "admission_usd": 34,
+   "tickets_url": "https://www.neaq.org/visit/",
+   "slug": "new-england-aquarium"
   },
   {
    "city": "boston",
@@ -647,6 +689,65 @@
    "country": "",
    "city_label": "Seattle",
    "added_at": "2026-08-01T17:28:32"
+  },
+  {
+   "name": "Staten Island Ferry",
+   "city": "nyc",
+   "type": "ferry",
+   "cat": "views",
+   "price": null,
+   "admission_usd": 0,
+   "close": 1439,
+   "visit": 70,
+   "lat": 40.7013,
+   "lon": -74.0135,
+   "ferry": {
+    "crossing_min": 25,
+    "headway_min": 30
+   },
+   "desc": "Free, around the clock, and the best cheap boat ride in America: 25 minutes across the harbor with the Statue of Liberty and the whole skyline off the deck.",
+   "tip": "Ride out, walk off, and catch the next boat straight back. The right side going out has the Statue.",
+   "slug": "staten-island-ferry",
+   "audio": "/media/audio/guide-staten-island-ferry.mp3"
+  },
+  {
+   "name": "Bainbridge Island Ferry",
+   "city": "seattle",
+   "type": "ferry",
+   "cat": "views",
+   "price": "$",
+   "admission_usd": 10,
+   "close": 1380,
+   "visit": 120,
+   "lat": 47.6026,
+   "lon": -122.3393,
+   "ferry": {
+    "crossing_min": 35,
+    "headway_min": 50
+   },
+   "desc": "Washington State Ferries' classic run: 35 minutes across Puget Sound with the skyline behind you and the Olympics ahead. Walk on; the fare is collected westbound only, so the ride back is free.",
+   "tip": "Walk-on needs no reservation. On Bainbridge, Winslow's main street is an easy 10-minute walk from the dock.",
+   "slug": "bainbridge-island-ferry",
+   "audio": "/media/audio/guide-bainbridge-island-ferry.mp3"
+  },
+  {
+   "name": "Potomac Water Taxi",
+   "city": "dc",
+   "type": "ferry",
+   "cat": "views",
+   "price": "$$",
+   "admission_usd": 25,
+   "close": 1320,
+   "visit": 60,
+   "lat": 38.8794,
+   "lon": -77.0227,
+   "ferry": {
+    "crossing_min": 30,
+    "headway_min": 60
+   },
+   "desc": "The river route between Georgetown, The Wharf and Old Town Alexandria: monuments from the water and no traffic lights.",
+   "tip": "Check the seasonal timetable; the Wharf to Alexandria leg pairs well with a dinner in Old Town.",
+   "slug": "potomac-water-taxi"
   }
  ]
 }
