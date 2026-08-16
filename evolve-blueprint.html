@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>The self-evolving site</title>
+<link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+<style>
+  :root { --bp:#10305c; --bp2:#0c2749; --ink:#dcecff; --ink2:#8fb4e3;
+          --gold:#e8c15a; --grn:#6fca9a; --grid:rgba(220,236,255,.07); }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bp); color:var(--ink);
+         font:16px/1.6 Georgia,'Times New Roman',serif;
+         background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+           linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+         background-size:28px 28px; }
+  .wrap { max-width:42rem; margin:0 auto; padding:1.4rem 1.15rem 3.5rem; }
+  h1 { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+       font-size:1.4rem; letter-spacing:.02em; margin:.2rem 0 .3rem; }
+  .sub { color:var(--ink2); font-style:italic; margin:0 0 1.6rem; }
+  h2 { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+       font-size:.76rem; letter-spacing:.2em; text-transform:uppercase; color:var(--ink);
+       border-bottom:1px solid var(--ink2); padding-bottom:.4rem; margin:2.4rem 0 1.1rem; }
+  .step { background:var(--bp2); border:1.5px solid var(--ink2); border-radius:12px;
+    padding:.85rem 1rem; }
+  .step .n { font-family:ui-monospace,monospace; color:var(--gold); font-size:.8rem; letter-spacing:.1em; }
+  .step b { display:block; margin:.15rem 0 .2rem; }
+  .step p { margin:0; color:var(--ink2); font-size:.9rem; }
+  .arrow { text-align:center; color:var(--ink2); font-size:1.1rem; margin:.35rem 0; }
+  .loop { text-align:center; color:var(--gold); font-size:.82rem; font-family:ui-monospace,monospace;
+    letter-spacing:.1em; margin:.6rem 0 0; }
+  .tag { font-family:ui-monospace,monospace; font-size:.66rem; letter-spacing:.12em;
+    text-transform:uppercase; padding:.12rem .45rem; border-radius:6px; }
+  .tag.built { background:rgba(111,202,154,.16); color:var(--grn); border:1px solid var(--grn); }
+  .tag.next { background:rgba(232,193,90,.14); color:var(--gold); border:1px solid var(--gold); }
+  .tag.leap { background:rgba(220,236,255,.10); color:var(--ink2); border:1px solid var(--ink2); }
+  .rails { list-style:none; padding:0; margin:0; }
+  .rails li { border-left:2px solid var(--gold); padding:.15rem 0 .15rem .8rem; margin:.7rem 0;
+    color:var(--ink); font-size:.94rem; }
+  .rails li span { display:block; color:var(--ink2); font-size:.86rem; }
+  code { font-family:ui-monospace,monospace; color:var(--ink2); }
+  .foot { color:var(--ink2); font-size:.85rem; margin-top:2.4rem;
+    border-top:1px solid var(--ink2); padding-top:1rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>The self-evolving site</h1>
+  <p class="sub">A site that grows on the data it collects, instead of sitting on the build it launched with. A machine proposes, a council weighs, a person approves.</p>
+
+  <h2>The loop</h2>
+
+  <div class="step"><span class="n">1 · infuse</span><b>New data arrives</b>
+    <p>An idea posted, a corridor walked, a place searched, a route wanted, a city added. Each is stamped with what it is and when it came.</p></div>
+  <div class="arrow">↓</div>
+  <div class="step"><span class="n">2 · recognise</span><b>The builder notices and organises it <span class="tag built">built</span></b>
+    <p>It reads what came in and turns it into signals: this corridor is waiting, this idea is gaining interest, this trade keeps being asked for.</p></div>
+  <div class="arrow">↓</div>
+  <div class="step"><span class="n">3 · debate</span><b>The council weighs whether to evolve <span class="tag next">next</span></b>
+    <p>The signals become proposals. Should the site change because of them? Open the corridor, add the tool, feature the idea, answer the demand.</p></div>
+  <div class="arrow">↓</div>
+  <div class="step"><span class="n">4 · approve</span><b>A person says yes</b>
+    <p>Nothing changes on its own. Approval is the gate that keeps the site coherent and keeps an automatic change from crossing a legal line.</p></div>
+  <div class="arrow">↓</div>
+  <div class="step"><span class="n">5 · evolve</span><b>The site grows <span class="tag leap">frontier</span></b>
+    <p>The approved change is applied. The old build does not stay the whole time; the site becomes what its data is telling it to be.</p></div>
+  <p class="loop">↳ and round again, on the next data</p>
+
+  <h2>What is already true</h2>
+  <ul class="rails">
+    <li>The map grows from searches<span>Every place a traveller looks up joins it. Nobody curates the list.</span></li>
+    <li>Trades build from posted ideas<span>The recogniser reads each idea for the professions it needs, and re-reads old ones when it improves.</span></li>
+    <li>Footprints and journeys fill in<span>A journey unlocks itself the moment its corridor is walked.</span></li>
+  </ul>
+
+  <h2>What is built now</h2>
+  <ul class="rails">
+    <li>The evolution monitor <span class="tag built">built</span><span>At <code>/evolve</code>, owner only. It reads the ideas, the waiting corridors, and the trades in demand, and proposes where the site could grow. Proposals only, it changes nothing.</span></li>
+  </ul>
+
+  <h2>The frontier, held on purpose</h2>
+  <p>A site that <b>rewrites its own design with no human in the loop</b> is the frontier. It is held back deliberately, not because it cannot be done, but because unattended evolution drifts into incoherence, and because this site has legally sensitive edges (location, payment, securities) where an automatic change could cross a line. So the target is machine proposes, person approves, not machine redesigns itself.</p>
+
+  <h2>The local track: a Wispr Flow of our own</h2>
+  <p>The same vision, without leaning on online services. Wispr Flow is fast voice dictation; the goal is that kind of capability running <b>on the device</b>, so the site does not depend on a cloud key.</p>
+  <ul class="rails">
+    <li>In the browser, now, but not truly offline<span>The web speech tools exist, but usually still call a cloud service. Good for a quick start, not for real independence.</span></li>
+    <li>Truly on-device<span>A small speech model bundled in (Whisper-class, compiled to run in the browser or the app). No key, no cloud, but heavy to download and strongest in a native app.</span></li>
+    <li>The honest verdict<span>A native phone app is where real local voice and local AI live. It is the same leap as the camera footprints: the most powerful piece, and the hardest.</span></li>
+  </ul>
+
+  <p class="foot">Plateau Strategy Solution Lab. Built phone first. A machine to notice and propose, a council to weigh, a person to approve, and a local track so the site can one day stand on its own.</p>
+</div>
+</body>
+</html>

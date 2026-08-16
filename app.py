@@ -1770,6 +1770,83 @@ def api_footprint_path(key):
     return jsonify({"ok": True, **p})
 
 
+# ---------- the evolution monitor: watch new data, propose where to grow ----------
+# The first brick of a self-evolving site. It reads what has flowed in (ideas,
+# the corridors still waiting on a walk, the trades ideas keep asking for) and
+# surfaces PROPOSALS, never changes. A human, or the council, approves. Keeping
+# a person in the loop is deliberate: unattended self-redesign drifts into
+# incoherence, and this site has legally sensitive edges where an automatic
+# change could cross a line. Owner-only, because a list of unfinished edges is
+# a work map, not a public page.
+def _evolution_proposals():
+    """Signals the site could grow on, freshest first. Reads only, decides
+    nothing. Each proposal names what changed and what could follow."""
+    props = []
+    # 1. Corridors the guide has not walked yet, its unfinished edges.
+    try:
+        for c in FOOTPRINTS.corridors():
+            if not c.get("walked"):
+                props.append({
+                    "kind": "footprint",
+                    "title": "Record the corridor: " + (c.get("label") or c.get("key")),
+                    "detail": "No walk yet. Recording it once opens the journeys "
+                              "waiting on it.",
+                    "evidence": c.get("key")})
+    except Exception:
+        pass
+    try:
+        items = [a for a in _load(ARTICLES_PATH) if not a.get("hidden")]
+    except Exception:
+        items = []
+
+    # 2. Ideas drawing interest: likes plus people registering to back or run.
+    def _score(a):
+        return (len(a.get("followers", [])) + len(a.get("launchers", []))
+                + int(a.get("likes", 0)))
+    for a in sorted(items, key=_score, reverse=True)[:5]:
+        s = _score(a)
+        if s <= 0:
+            continue
+        props.append({
+            "kind": "idea",
+            "title": "Back the momentum: " + (a.get("title") or "an idea"),
+            "detail": "Drawing interest (%d signals). Consider featuring it or "
+                      "giving it a blueprint on the deck." % s,
+            "evidence": a.get("id")})
+
+    # 3. Trades that ideas keep asking for, a demand the site could answer.
+    tally = {}
+    for a in items:
+        pr = a.get("professionals")
+        for p in (pr.get("matched", []) if isinstance(pr, dict) else []):
+            lbl = p.get("label")
+            if lbl:
+                tally[lbl] = tally.get(lbl, 0) + 1
+    for lbl, n in sorted(tally.items(), key=lambda kv: kv[1], reverse=True)[:3]:
+        if n >= 2:
+            props.append({
+                "kind": "trade",
+                "title": "A trade in demand: " + lbl,
+                "detail": "%d ideas call for %s. A dedicated page or outreach "
+                          "could follow." % (n, lbl),
+                "evidence": lbl})
+    return props
+
+
+@app.route("/api/evolve")
+@owner_required
+def api_evolve():
+    """What changed, and what the site could grow into. Proposals only."""
+    return jsonify({"ok": True, "proposals": _evolution_proposals(),
+                    "scanned_at": datetime.datetime.now().isoformat(timespec="seconds")})
+
+
+@app.route("/evolve")
+def evolve_page():
+    """The evolution monitor, owner-only content behind the API it reads."""
+    return send_file(os.path.join(BASE_DIR, "evolve.html"))
+
+
 @app.route("/guide-concept")
 def guide_concept_page():
     """The full guiding-service vision as a blueprint, for the Reinvestment USA

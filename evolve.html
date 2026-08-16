@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Evolution monitor</title>
+<link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+<style>
+  :root { --bp:#10305c; --bp2:#0c2749; --ink:#dcecff; --ink2:#8fb4e3;
+          --gold:#e8c15a; --grn:#6fca9a; --grid:rgba(220,236,255,.07); }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bp); color:var(--ink);
+         font:16px/1.6 Georgia,'Times New Roman',serif;
+         background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+           linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+         background-size:28px 28px; }
+  .wrap { max-width:42rem; margin:0 auto; padding:1.4rem 1.15rem 3.5rem; }
+  h1 { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+       font-size:1.4rem; letter-spacing:.02em; margin:.2rem 0 .3rem; }
+  .sub { color:var(--ink2); font-style:italic; margin:0 0 1.4rem; }
+  a { color:var(--ink); }
+  .scan { color:var(--ink2); font-size:.82rem; font-family:ui-monospace,monospace;
+          margin:0 0 1.4rem; }
+  .grp { font-family:ui-monospace,monospace; font-size:.72rem; letter-spacing:.18em;
+         text-transform:uppercase; color:var(--ink2); border-bottom:1px solid var(--ink2);
+         padding-bottom:.35rem; margin:1.8rem 0 .9rem; }
+  .card { background:var(--bp2); border:1.5px solid var(--ink2); border-radius:12px;
+          padding:.9rem 1rem; margin:0 0 .8rem; }
+  .card.footprint { border-left:3px solid var(--grn); }
+  .card.idea { border-left:3px solid var(--gold); }
+  .card.trade { border-left:3px solid var(--ink); }
+  .card b { display:block; margin:0 0 .25rem; }
+  .card p { margin:0; color:var(--ink2); font-size:.9rem; }
+  .msg { border:1.5px dashed var(--ink2); border-radius:10px; padding:1rem 1.1rem;
+         color:var(--ink2); }
+  .foot { color:var(--ink2); font-size:.85rem; margin-top:2.4rem;
+          border-top:1px solid var(--ink2); padding-top:1rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Evolution monitor</h1>
+  <p class="sub">What flowed into the site, and where it could grow. Proposals only, nothing changes until you say so.</p>
+  <p class="scan" id="scan"></p>
+  <div id="body"><p class="msg">Loading…</p></div>
+  <p class="foot">This is the council's raw material: signals, not decisions. A person approves before the site changes, on purpose, so it grows without drifting into incoherence and without crossing a legal line on its own.</p>
+</div>
+<script>
+(function () {
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g,
+    function (c) { return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]); }); };
+  var body = document.getElementById('body');
+  var LABELS = { footprint: 'Corridors waiting on a walk', idea: 'Ideas gaining interest',
+                 trade: 'Trades in demand' };
+  fetch('/api/evolve').then(function (r) {
+    if (r.status === 401) { throw 'auth'; }
+    return r.json();
+  }).then(function (d) {
+    if (!d || !d.ok) { body.innerHTML = '<p class="msg">Could not load.</p>'; return; }
+    document.getElementById('scan').textContent =
+      'Scanned ' + (d.scanned_at || '').replace('T', ' ');
+    var groups = {};
+    (d.proposals || []).forEach(function (p) {
+      (groups[p.kind] = groups[p.kind] || []).push(p);
+    });
+    if (!(d.proposals || []).length) {
+      body.innerHTML = '<p class="msg">Nothing new to propose right now. As ideas, walks, and searches come in, they show up here.</p>';
+      return;
+    }
+    var html = '';
+    Object.keys(groups).forEach(function (k) {
+      html += '<div class="grp">' + esc(LABELS[k] || k) + '</div>';
+      groups[k].forEach(function (p) {
+        html += '<div class="card ' + esc(k) + '"><b>' + esc(p.title) + '</b><p>'
+          + esc(p.detail) + '</p></div>';
+      });
+    });
+    body.innerHTML = html;
+  }).catch(function (e) {
+    if (e === 'auth') {
+      body.innerHTML = '<p class="msg">Sign in as the owner to see the monitor. It reads the site\'s work map, which is not public.</p>';
+    } else {
+      body.innerHTML = '<p class="msg">Could not load.</p>';
+    }
+  });
+})();
+</script>
+</body>
+</html>
