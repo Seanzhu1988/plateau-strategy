@@ -2554,6 +2554,24 @@ def api_access_logout():
     return jsonify({"ok": True})
 
 
+@app.route("/record")
+def record_signin_page():
+    """The surveyor's door: sign in with an issued account, land on the recorder.
+
+    The access gate used to appear only on password-protected share links, so
+    a surveyor holding credentials but no share link had no page to sign in
+    on — the recorder told them to sign in "on the shared pages" they had
+    never been sent. This is that missing door: the owner or an already
+    signed-in account goes straight to the recorder; everyone else gets the
+    gate, and the gate's reload lands back here, which sends them on."""
+    if session.get("owner") or _access_user():
+        return redirect("/footprint")
+    r = make_response(send_file(os.path.join(BASE_DIR, "access-gate.html")))
+    r.headers["X-Robots-Tag"] = "noindex, nofollow"
+    r.headers["Cache-Control"] = "private, no-store"
+    return r
+
+
 @app.route("/robot")
 def robot_concept_page():
     """The robotic-trading concept, for people Sean sends the link to.
