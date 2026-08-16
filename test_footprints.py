@@ -29,6 +29,7 @@ tmp = tempfile.mkdtemp()
 store = F.Store(os.path.join(tmp, "footprints.json"))
 A.FOOTPRINTS = store
 A.OWNER_AUTH_PATH = os.path.join(tmp, "owner.json")
+A._FP_CONSENT_LOG = os.path.join(tmp, "fpconsent.json")
 
 fails = []
 
@@ -135,14 +136,19 @@ chk("nor read the corridor work-list (%d)" % c.get("/api/footprints").status_cod
     c.get("/api/footprints").status_code == 401)
 owner = A.app.test_client()
 owner.post("/api/owner/setup", json={"username": "sean", "password": "hunter22"})
+# Recording now needs consent taken in the moment, so every real walk carries
+# the current version, the same one the recorder is handed on load.
+_CV = owner.get("/api/footprints").get_json().get("consent", {}).get("version")
+_CONSENT = {"purpose": "record_walk", "version": _CV}
 r = owner.post("/api/footprints/seatac-terminal-to-link",
                json={"points": corridor_pts(), "minutes": 9,
-                     "worst_accuracy_m": 20})
+                     "worst_accuracy_m": 20, "consent": _CONSENT})
 chk("the owner can (%d)" % r.status_code, r.status_code == 200)
 d = r.get_json()
 chk("the reply confirms the corridor is walked", bool(d.get("walked")))
 chk("and does not echo the points back", "points" not in d.get("walk", {}))
-r = owner.post("/api/footprints/nope", json={"points": corridor_pts()})
+r = owner.post("/api/footprints/nope",
+               json={"points": corridor_pts(), "consent": _CONSENT})
 chk("an unopened corridor is refused over HTTP too (%d)" % r.status_code,
     r.status_code == 400)
 
@@ -157,7 +163,7 @@ r = scout.post("/api/access/login", json={"username": "scout", "password": PW})
 chk("the issued account signs in (%d)" % r.status_code, r.status_code == 200)
 r = scout.post("/api/footprints/westlake-to-pike-place",
                json={"points": corridor_pts(), "minutes": 7,
-                     "worst_accuracy_m": 12})
+                     "worst_accuracy_m": 12, "consent": _CONSENT})
 chk("and can record a walk (%d)" % r.status_code, r.status_code == 200)
 chk("of a Seattle survey corridor, which the code list now opens",
     r.get_json().get("walked") is not None)

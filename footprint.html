@@ -31,6 +31,12 @@
   .fp-verdict { margin: 1.2rem 0; font-size: 1rem; }
   .fp-verdict.bad { color: #a3302a; }
   .fp-verdict.good { color: #1b6b5a; font-weight: 700; }
+  .fp-consent { border: 1.5px solid var(--psx-accent, #1f3a5f); border-radius: 12px;
+                padding: 1rem 1.1rem; margin: 1rem 0; }
+  .fp-consent p { margin: 0 0 .6rem; }
+  .fp-consent label { display: flex; gap: .6rem; align-items: flex-start;
+                      min-height: 44px; cursor: pointer; font-weight: 700; }
+  .fp-consent input { width: 22px; height: 22px; margin-top: .15rem; flex: none; }
 </style>
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
@@ -66,6 +72,11 @@
   <label for="fpKey">Corridor</label>
   <select id="fpKey"></select>
 
+  <div id="fpConsent" class="fp-consent" hidden>
+    <p id="fpConsentText" style="white-space:pre-line"></p>
+    <label><input type="checkbox" id="fpAgree"> I have read this and I consent to recording this walk.</label>
+  </div>
+
   <button class="fp-btn" id="fpBtn" disabled>Start recording</button>
   <p class="fp-live" id="fpLive">Loading…</p>
   <div class="fp-verdict" id="fpVerdict"></div>
@@ -74,7 +85,19 @@
 (function () {
   var btn = document.getElementById('fpBtn'), live = document.getElementById('fpLive'),
       sel = document.getElementById('fpKey'), verdict = document.getElementById('fpVerdict');
+  var agree = document.getElementById('fpAgree'),
+      consentBox = document.getElementById('fpConsent'),
+      consentText = document.getElementById('fpConsentText');
   var watch = null, pts = [], worst = 0, dropped = 0, startedAt = 0, lengthM = 0;
+  var consentInfo = null;
+
+  /* Record stays locked until a corridor is loaded AND consent is ticked, but
+     once a walk is running the same button is Stop, so never lock it then. */
+  function updateBtn() {
+    if (watch !== null) { btn.disabled = false; return; }
+    btn.disabled = !(sel.options.length && agree.checked);
+  }
+  agree.addEventListener('change', updateBtn);
   var wakeLock = null;
 
   /* A screen that sleeps mid-recording loses the walk — the phone locks,
@@ -109,8 +132,14 @@
       o.textContent = c.label + (c.walked ? ', walked ' + c.walked.date : ', not walked yet');
       sel.appendChild(o);
     });
-    btn.disabled = !sel.options.length;
-    live.textContent = sel.options.length ? 'Ready.' : 'No corridors are open.';
+    consentInfo = d.consent || null;
+    if (consentInfo && consentInfo.text) {
+      consentText.textContent = consentInfo.text;
+      consentBox.hidden = false;
+    }
+    updateBtn();
+    live.textContent = sel.options.length
+      ? 'Ready. Tick the consent box to record.' : 'No corridors are open.';
   }
 
   function onFix(p) {
@@ -146,7 +175,9 @@
     verdict.textContent = 'Submitting ' + pts.length + ' fixes…';
     var d = await psxJSON('/api/footprints/' + encodeURIComponent(sel.value), {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ points: pts, minutes: minutes, worst_accuracy_m: worst })
+      body: JSON.stringify({ points: pts, minutes: minutes, worst_accuracy_m: worst,
+        consent: { purpose: 'record_walk',
+                   version: consentInfo && consentInfo.version } })
     });
     if (!d || !d.ok) {
       verdict.className = 'fp-verdict bad';

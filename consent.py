@@ -75,6 +75,7 @@ RETENTION_DAYS = 400      # a contribution row past this is deleted, consent or 
 # supposed to prevent.
 PURPOSES = {
     "map_place": "Add the city you are in to the public map of places to visit.",
+    "record_walk": "Record the exact path you walk as a footprint others can follow.",
 }
 
 # The exact words shown when consent was taken, kept verbatim and hashed. If
@@ -89,6 +90,23 @@ CONSENT_TEXTS = {
             "not your address, and not your name.\n"
             "Saying no changes nothing about your booking or your account, and "
             "you can undo this later."
+        ),
+    },
+    # Recording a walk stores the EXACT line of a corridor, which is far more
+    # than the city-level map_place ever keeps, so it gets its own consent, taken
+    # in the moment from the signed-in surveyor who walks it. The record still
+    # carries no name; this consent is the record that the person walking it
+    # agreed, in these words, to have that line collected and published.
+    "record_walk": {
+        "version": "2026-08-16.1",
+        "text": (
+            "Record this walk?\n"
+            "This saves the exact path you walk along this corridor, its length, "
+            "and roughly how long it takes, then publishes that line so other "
+            "travellers can follow it.\n"
+            "It keeps no name, no clock time, and no device. You are recording on "
+            "your own authority as a signed-in surveyor, and a recorded line can "
+            "be taken down on request."
         ),
     },
 }

@@ -1644,8 +1644,40 @@ def surveyor_required(fn):
 @surveyor_required
 def api_footprints():
     """Every corridor, walked or waiting, for the people doing the walking.
-    Not public: the waiting list is a map of our unfinished edges."""
-    return jsonify({"ok": True, "corridors": FOOTPRINTS.corridors()})
+    Not public: the waiting list is a map of our unfinished edges. Ships the
+    recording consent too, so the recorder can show the exact words a walk is
+    agreed under and send the version back with the walk."""
+    return jsonify({"ok": True, "corridors": FOOTPRINTS.corridors(),
+                    "consent": consent.consent_text("record_walk")})
+
+
+_FP_CONSENT_LOG = _data_path("footprint_consent_log.json")
+
+
+def _log_footprint_consent(key, version):
+    """A durable record that the walker agreed, in the current words, to record
+    this line. The walk itself carries no name, so this is where the agreement
+    lives, keyed to the signed-in surveyor. It is the difference between "we
+    asked first" as a claim and "we asked first" as a control."""
+    who = session.get("owner") or _access_user() or "surveyor"
+    row = {"who": who, "corridor": key, "version": version,
+           "at": datetime.datetime.now().isoformat(timespec="seconds")}
+    try:
+        with _LOCK:
+            try:
+                with open(_FP_CONSENT_LOG, encoding="utf-8") as f:
+                    log = json.load(f)
+            except Exception:
+                log = []
+            if not isinstance(log, list):
+                log = []
+            log.append(row)
+            tmp = _FP_CONSENT_LOG + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(log, f, ensure_ascii=False)
+            os.replace(tmp, _FP_CONSENT_LOG)
+    except Exception:
+        pass
 
 
 @app.route("/api/footprints/<key>", methods=["POST"])
@@ -1656,11 +1688,23 @@ def api_footprint_add(key):
         # A top-level JSON array is truthy, so `or {}` kept it and d.get()
         # blew up with a 500. A refusal, like every other bad input here.
         d = {}
+    # Consent, taken in the moment, before a single point is stored. A walk
+    # keeps the EXACT line, so a signed-in surveyor is not enough on its own,
+    # they must agree to this recording in the current words. The version they
+    # send must match the one on offer, or the walk is refused and nothing kept.
+    want = consent.consent_text("record_walk")
+    got = d.get("consent") or {}
+    if not want or got.get("purpose") != "record_walk" \
+            or got.get("version") != want.get("version"):
+        return jsonify({"ok": False, "need_consent": want,
+                        "error": "Recording needs your consent. Agree to the "
+                                 "recording notice, then record."}), 400
     walk, why = FOOTPRINTS.add_walk(key, d.get("points") or [],
                                     minutes=d.get("minutes"),
                                     worst_accuracy_m=d.get("worst_accuracy_m"))
     if not walk:
         return jsonify({"ok": False, "error": why}), 400
+    _log_footprint_consent(key, want["version"])
     return jsonify({"ok": True,
                     "walk": {k: v for k, v in walk.items() if k != "points"},
                     "walked": FOOTPRINTS.walked(key)})
