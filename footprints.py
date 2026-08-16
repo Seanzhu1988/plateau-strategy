@@ -154,6 +154,91 @@ def _today():
     return datetime.date.today().isoformat()
 
 
+def _slug(label):
+    """A key-safe name: letters and digits survive, everything else joins."""
+    joined = "".join(ch if ch.isalnum() else "-" for ch in (label or "").lower())
+    return "-".join(p for p in joined.split("-") if p)[:60] or "walk"
+
+
+MAX_PROPOSED = 40        # the owner's review queue is a queue, not a landfill
+
+
+def _validate_trace(points, minutes=None, worst_accuracy_m=None):
+    """The one quality law for every recorded trace. Returns (walk, "") or
+    (None, why), the refusals being sentences a person holding the phone can
+    act on.
+
+    Extracted from add_walk unchanged so that a proposed anywhere-walk obeys
+    exactly the same rules as an opened corridor: one law, two doors. If a
+    rule ever changes here it changes for both, which is the point."""
+    try:
+        pts = []
+        for p in points:
+            if isinstance(p, dict):
+                # walk-guide.js documents {lat, lon} objects as a
+                # valid point shape; honouring that here beats
+                # crashing on it, which is what a KeyError outside
+                # the except tuple used to do.
+                p = (p.get("lat"), p.get("lon"))
+            pts.append((round(float(p[0]), 5), round(float(p[1]), 5)))
+    except (TypeError, ValueError, IndexError, KeyError):
+        return None, "Points must be [lat, lon] pairs."
+    if minutes is not None:
+        try:
+            minutes = int(float(minutes))
+        except (TypeError, ValueError, OverflowError):
+            return None, "minutes must be a number."
+    if len(pts) < MIN_POINTS:
+        return None, ("Only %d fixes, a corridor needs at least %d. "
+                      "Walk it with the recorder running the whole way."
+                      % (len(pts), MIN_POINTS))
+    for lat, lon in pts:
+        if not (-90.0 <= lat <= 90.0 and -180.0 <= lon <= 180.0):
+            return None, "A point is not a place on Earth."
+    length = 0.0
+    for i in range(1, len(pts)):
+        d = _haversine_m(pts[i - 1], pts[i])
+        if d > MAX_JUMP_M:
+            return None, ("A %dm jump between two fixes, that is the "
+                          "GPS teleporting, not you walking. Try "
+                          "again, a little slower through that spot."
+                          % round(d))
+        length += d
+    if length < MIN_LEN_M:
+        return None, "The trace barely moves, %dm in total." % round(length)
+    if length > MAX_LEN_M:
+        return None, ("%dm is longer than any corridor. Record the "
+                      "corridor, not the day." % round(length))
+    if _haversine_m(pts[0], pts[-1]) < MIN_ENDS_M:
+        return None, ("Start and finish are the same place. A corridor "
+                      "connects two, record one direction, door to "
+                      "platform.")
+    worst = None
+    if worst_accuracy_m is not None:
+        try:
+            wa = float(worst_accuracy_m)
+        except (TypeError, ValueError):
+            return None, "worst_accuracy_m must be a number."
+        # "not provably fine" rather than "provably bad": NaN fails
+        # every comparison, so `wa > MAX` let a NaN sail past the gate
+        # and crash on int() below, and Infinity tripped the gate only
+        # to crash formatting the refusal. The review panel reproduced
+        # both as HTTP 500s. This shape refuses all of them.
+        if not (0 <= wa <= MAX_ACCURACY_M):
+            return None, ("The roughest fix was ±%sm, too rough to "
+                          "map a corridor. Indoors this happens; "
+                          "walking it again often gets a better run."
+                          % (round(wa) if math.isfinite(wa) else wa))
+        worst = int(round(wa))
+    return {
+        "date": _today(),                    # a date. Never a clock.
+        "minutes": minutes if minutes else None,
+        "length_m": int(round(length)),
+        "worst_accuracy_m": worst,
+        "points": [[a, b] for a, b in pts],
+    }, ""
+
+
 class Store(object):
     """The corridors and their walks, plus the rules between them."""
 
@@ -206,76 +291,64 @@ class Store(object):
                 return None, ("No such corridor. Corridors are opened in "
                               "footprints.py, deliberately, this cannot "
                               "record a walk we did not name first.")
-            try:
-                pts = []
-                for p in points:
-                    if isinstance(p, dict):
-                        # walk-guide.js documents {lat, lon} objects as a
-                        # valid point shape; honouring that here beats
-                        # crashing on it, which is what a KeyError outside
-                        # the except tuple used to do.
-                        p = (p.get("lat"), p.get("lon"))
-                    pts.append((round(float(p[0]), 5), round(float(p[1]), 5)))
-            except (TypeError, ValueError, IndexError, KeyError):
-                return None, "Points must be [lat, lon] pairs."
-            if minutes is not None:
-                try:
-                    minutes = int(float(minutes))
-                except (TypeError, ValueError, OverflowError):
-                    return None, "minutes must be a number."
-            if len(pts) < MIN_POINTS:
-                return None, ("Only %d fixes, a corridor needs at least %d. "
-                              "Walk it with the recorder running the whole way."
-                              % (len(pts), MIN_POINTS))
-            for lat, lon in pts:
-                if not (-90.0 <= lat <= 90.0 and -180.0 <= lon <= 180.0):
-                    return None, "A point is not a place on Earth."
-            length = 0.0
-            for i in range(1, len(pts)):
-                d = _haversine_m(pts[i - 1], pts[i])
-                if d > MAX_JUMP_M:
-                    return None, ("A %dm jump between two fixes, that is the "
-                                  "GPS teleporting, not you walking. Try "
-                                  "again, a little slower through that spot."
-                                  % round(d))
-                length += d
-            if length < MIN_LEN_M:
-                return None, "The trace barely moves, %dm in total." % round(length)
-            if length > MAX_LEN_M:
-                return None, ("%dm is longer than any corridor. Record the "
-                              "corridor, not the day." % round(length))
-            if _haversine_m(pts[0], pts[-1]) < MIN_ENDS_M:
-                return None, ("Start and finish are the same place. A corridor "
-                              "connects two, record one direction, door to "
-                              "platform.")
-            worst = None
-            if worst_accuracy_m is not None:
-                try:
-                    wa = float(worst_accuracy_m)
-                except (TypeError, ValueError):
-                    return None, "worst_accuracy_m must be a number."
-                # "not provably fine" rather than "provably bad": NaN fails
-                # every comparison, so `wa > MAX` let a NaN sail past the gate
-                # and crash on int() below, and Infinity tripped the gate only
-                # to crash formatting the refusal. The review panel reproduced
-                # both as HTTP 500s. This shape refuses all of them.
-                if not (0 <= wa <= MAX_ACCURACY_M):
-                    return None, ("The roughest fix was ±%sm, too rough to "
-                                  "map a corridor. Indoors this happens; "
-                                  "walking it again often gets a better run."
-                                  % (round(wa) if math.isfinite(wa) else wa))
-                worst = int(round(wa))
-            walk = {
-                "date": _today(),                    # a date. Never a clock.
-                "minutes": minutes if minutes else None,
-                "length_m": int(round(length)),
-                "worst_accuracy_m": worst,
-                "points": [[a, b] for a, b in pts],
-            }
+            walk, why = _validate_trace(points, minutes, worst_accuracy_m)
+            if walk is None:
+                return None, why
             rec = data["corridors"][key]
             rec["walks"] = (rec.get("walks") or [])[-(MAX_WALKS_KEPT - 1):] + [walk]
             self._write(data)
             return walk, ""
+
+    # ---- anywhere: the proposal queue --------------------------------------
+    # "They could be anywhere." A recorder with an issued account can walk and
+    # NAME any route on Earth; the trace obeys the exact corridor quality law
+    # (_validate_trace, one law, two doors) and then waits in a queue only the
+    # owner reads. Nothing proposed is published, served, or verified against
+    # until he approves it, so random collection cannot dilute the record —
+    # the code-list rule for corridors above stays fully intact.
+    def propose_walk(self, label, points, minutes=None, worst_accuracy_m=None):
+        """A named walk from anywhere. Returns (summary, "") or (None, why)."""
+        label = " ".join(str(label or "").replace("<", "").replace(">", "").split())
+        if not (3 <= len(label) <= 80):
+            return None, ("Name the walk first, like 'Times Square to "
+                          "Bryant Park' (3-80 characters).")
+        walk, why = _validate_trace(points, minutes, worst_accuracy_m)
+        if walk is None:
+            return None, why
+        with self._lock:
+            data = self._read()
+            prop = data.setdefault("proposed", {})
+            live = sum(1 for r in prop.values() if r.get("status") == "PROPOSED")
+            if live >= MAX_PROPOSED:
+                return None, ("The proposal queue is full. Sean reviews it "
+                              "regularly; try again after he has.")
+            key = "p-%s-%s" % (_slug(label), walk["date"])
+            if key in prop:
+                return None, "This walk was already proposed today."
+            prop[key] = {"label": label, "status": "PROPOSED",
+                         "proposed_on": walk["date"], "walk": walk}
+            self._write(data)
+            return {"key": key, "label": label,
+                    "length_m": walk["length_m"],
+                    "minutes": walk["minutes"]}, ""
+
+    def proposed(self):
+        """The queue, newest first. For the owner's eyes only (the route that
+        serves this is owner-gated); points are counted, not dumped."""
+        with self._lock:
+            data = self._read()
+        out = []
+        for key, rec in (data.get("proposed") or {}).items():
+            w = rec.get("walk") or {}
+            out.append({"key": key, "label": rec.get("label"),
+                        "status": rec.get("status"),
+                        "proposed_on": rec.get("proposed_on"),
+                        "length_m": w.get("length_m"),
+                        "minutes": w.get("minutes"),
+                        "points": len(w.get("points") or [])})
+        out.sort(key=lambda r: (r.get("proposed_on") or "", r.get("key") or ""),
+                 reverse=True)
+        return out
 
     # ---- reading ---------------------------------------------------------
     def _fresh(self, walks, today=None, max_age_days=MAX_AGE_DAYS):

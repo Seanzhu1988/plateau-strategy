@@ -1856,6 +1856,29 @@ def api_footprints():
     return jsonify({"ok": True, "corridors": FOOTPRINTS.corridors()})
 
 
+@app.route("/api/footprints/propose", methods=["POST"])
+@surveyor_required
+def api_footprints_propose():
+    """A named walk from anywhere on Earth -> the owner's approval queue.
+
+    Same quality law as a corridor walk (footprints._validate_trace); the
+    difference is what happens after: nothing is published until Sean
+    approves it. Random collection, curated record."""
+    d = request.get_json(silent=True) or {}
+    rec, why = FOOTPRINTS.propose_walk(d.get("label"), d.get("points") or [],
+                                       d.get("minutes"), d.get("worst_accuracy_m"))
+    if rec is None:
+        return jsonify({"ok": False, "error": why}), 400
+    return jsonify({"ok": True, "proposal": rec})
+
+
+@app.route("/api/footprints/proposed")
+@owner_required
+def api_footprints_proposed():
+    """The review queue, for the owner."""
+    return jsonify({"ok": True, "proposed": FOOTPRINTS.proposed()})
+
+
 @app.route("/api/footprints/<key>", methods=["POST"])
 @surveyor_required
 def api_footprint_add(key):

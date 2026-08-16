@@ -66,6 +66,13 @@
   <label for="fpKey">Corridor</label>
   <select id="fpKey"></select>
 
+  <div id="fpNewWrap" hidden>
+    <label for="fpNewLabel">Name this walk</label>
+    <input id="fpNewLabel" type="text" maxlength="80"
+           placeholder="Times Square to Bryant Park"
+           autocomplete="off">
+  </div>
+
   <button class="fp-btn" id="fpBtn" disabled>Start recording</button>
   <p class="fp-live" id="fpLive">Loading…</p>
   <div class="fp-verdict" id="fpVerdict"></div>
@@ -109,8 +116,19 @@
       o.textContent = c.label + (c.walked ? ', walked ' + c.walked.date : ', not walked yet');
       sel.appendChild(o);
     });
-    btn.disabled = !sel.options.length;
-    live.textContent = sel.options.length ? 'Ready.' : 'No corridors are open.';
+    /* "They could be anywhere." The last choice is always open: walk any
+       route on Earth, name it, and it goes to Sean's approval queue rather
+       than straight onto the atlas. Same quality rules either way. */
+    var anywhere = document.createElement('option');
+    anywhere.value = '__new__';
+    anywhere.textContent = '➕ Somewhere new — name this walk';
+    sel.appendChild(anywhere);
+    btn.disabled = false;
+    live.textContent = 'Ready.';
+    sel.onchange = function () {
+      document.getElementById('fpNewWrap').hidden = sel.value !== '__new__';
+    };
+    sel.onchange();
   }
 
   function onFix(p) {
@@ -144,9 +162,13 @@
     var minutes = Math.max(1, Math.round((Date.now() - startedAt) / 60000));
     verdict.className = 'fp-verdict';
     verdict.textContent = 'Submitting ' + pts.length + ' fixes…';
-    var d = await psxJSON('/api/footprints/' + encodeURIComponent(sel.value), {
+    var isNew = sel.value === '__new__';
+    var body = { points: pts, minutes: minutes, worst_accuracy_m: worst };
+    if (isNew) body.label = (document.getElementById('fpNewLabel').value || '').trim();
+    var d = await psxJSON(isNew ? '/api/footprints/propose'
+                                : '/api/footprints/' + encodeURIComponent(sel.value), {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ points: pts, minutes: minutes, worst_accuracy_m: worst })
+      body: JSON.stringify(body)
     });
     if (!d || !d.ok) {
       verdict.className = 'fp-verdict bad';
@@ -154,10 +176,17 @@
       return;
     }
     verdict.className = 'fp-verdict good';
-    verdict.textContent = 'Recorded: ' + d.walk.length_m + ' m in about '
-      + d.walk.minutes + ' min. This corridor is now walked'
-      + (d.walked ? ' (as of ' + d.walked.date + ')' : '') +
-      ', anything waiting on it unlocks by itself.';
+    if (isNew) {
+      verdict.textContent = 'Recorded and sent to Sean to approve: '
+        + d.proposal.label + ', ' + d.proposal.length_m + ' m in about '
+        + (d.proposal.minutes || minutes) + ' min. Thank you — this is how the map grows.';
+      document.getElementById('fpNewLabel').value = '';
+    } else {
+      verdict.textContent = 'Recorded: ' + d.walk.length_m + ' m in about '
+        + d.walk.minutes + ' min. This corridor is now walked'
+        + (d.walked ? ' (as of ' + d.walked.date + ')' : '') +
+        ', anything waiting on it unlocks by itself.';
+    }
     init2();     // refresh labels
   }
 
