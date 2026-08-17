@@ -138,6 +138,8 @@
   @media (max-width: 640px) {
     .wrap { padding-left: .9rem; padding-right: .9rem; }
     .page-title { font-size: 1.5rem; line-height: 1.22; }
+    .iso-plane + .iso-plane { margin-top: -34%; }
+    .iso-stage { perspective: 1100px; }
   }
 </style>
 </head>
@@ -188,6 +190,7 @@
       route changes floors.</p></div>
     <div class="plan-actions">
       <button id="btnShare">Share this walk</button>
+      <button id="btnSave">Save this walk</button>
       <button id="btnClear" class="quiet">Start over</button>
     </div>
   </div>
@@ -195,7 +198,9 @@
   <p class="met-foot">This page is a drawing and a plan, not the museum. Hours,
     tickets and closures live at metmuseum.org. Our schematic simplifies; the
     building will always be bigger than the sheet. Gallery contents shift over
-    years, so we name wings and anchors, never gallery numbers.</p>
+    years, so we name wings and anchors, never gallery numbers.
+    Every city's corridors live in <a href="/walks">The Walks</a>; a saved walk
+    follows your sign-in to any device.</p>
 </div>
 
 <script src="/i18n.js"></script>

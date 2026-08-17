@@ -261,3 +261,27 @@ as consumer health or location data.
    For the record, the passive version, the walking guide reporting
    travellers' movements back to the server, is a **never**, not a question.
    The policy sentence "we do not record visitors' movements" is load-bearing.
+
+## Location and consent, Sean's law, 2026-08-15
+
+Stated by the owner and binding on every future feature: **if a signed-in
+reader's location is ever tracked, explicit consent comes first**, a plain
+question, answered yes, before the first fix is stored, and everything
+collected stays within what the law allows.
+
+What this means against the code as it stands today:
+
+- The guide demand counters (`/go` doors, audio and plan beacons) carry NO
+  identity and NO location. They are anonymous totals per attraction per
+  day, and the beacon endpoint does not read the session at all. Keep it
+  that way: any future join between demand data and a signed-in identity
+  is a consent question, not a code change.
+- Saved walks and blueprint access are tied to identity BY the reader's own
+  action (pressing Save, opening a sealed document), and the page says so
+  in the sentence next to the button. That disclosure standard is the
+  floor for anything new.
+- The trip planner's start pin and follow mode, and the footprint
+  recorder's GPS, live in the browser and on the surveyor's own device.
+  No endpoint associates a reader's email with a coordinate. Before any
+  feature ever does, it needs: the consent question, a way to revoke, and
+  deletion on request.

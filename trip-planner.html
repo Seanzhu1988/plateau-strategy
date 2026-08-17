@@ -238,6 +238,11 @@
             border-radius: 10px; font-size: 0.92rem; font-family: inherit; background: #faf8f4; }
         .start-entry input:focus { outline: none; border-color: #1b4d8f; background: var(--psx-card,#fffdf9); }
         .start-hint { font-size: 0.74rem; color: #6b655b; }
+        .itin-play { font: inherit; font-size: .78rem; font-weight: 700; color: #1f3a5f;
+                     background: none; border: 1px solid #1f3a5f; border-radius: 999px;
+                     padding: .05rem .55rem; margin-left: .45rem; cursor: pointer; }
+        .ov-book { display: block; margin-top: .6rem; font-weight: 700; color: #1f3a5f;
+                   text-decoration: underline; text-underline-offset: 2px; }
         .traffic-note { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem;
             font-weight: 600; color: #1b4d8f; background: var(--psx-wash-info,#e5f3ff); border: 1px solid var(--psx-wash-info-on,#d5eaff);
             border-radius: 10px; padding: 0.55rem 0.9rem; margin-bottom: 0.6rem; }
@@ -969,10 +974,17 @@
     function trafficMult(depMin){
         const v = $('traffic').value;
         if (v !== 'auto') return +v;
+        // Modeled from typical weekday and weekend patterns, not a live
+        // feed, and the note under the controls says so. Weekends have no
+        // commuter rush; their pressure sits in the afternoon.
+        const dv = ($('departDate') || {}).value;
+        const wd = dv ? new Date(dv + 'T12:00:00').getDay() : new Date().getDay();
+        const wknd = (wd === 0 || wd === 6);
         const h = Math.floor(depMin/60) % 24;
-        if ((h >= 7 && h < 10) || (h >= 16 && h < 19)) return 1.5;   // rush hours
-        if (h >= 10 && h < 16) return 1.2;                            // daytime
-        return 1.0;                                                    // night
+        if (!wknd && ((h >= 7 && h < 10) || (h >= 16 && h < 19))) return 1.5;
+        if (wknd && h >= 12 && h < 19) return 1.3;
+        if (h >= 10 && h < 16) return 1.2;
+        return 1.0;
     }
     function havKm(a, b){
         const R = 6371, dLa = (b.lat-a.lat)*Math.PI/180, dLo = (b.lon-a.lon)*Math.PI/180;
@@ -1040,12 +1052,19 @@
     let pendingOriginRetime = false;
 
     // ---------- trip engine (the factor base) ----------
+    // A ferry is a stop with a rhythm: you wait, on average, half the
+    // headway before you board. That wait is real time and it is counted,
+    // which is what makes a ferry day sheet honest.
+    function visitOf(p){
+        return p.visit + (p.ferry && p.ferry.headway_min
+            ? Math.round(p.ferry.headway_min / 2) : 0);
+    }
     function feasibility(i){
         // factors: drive time (traffic-adjusted) → arrival; closing time; visit duration; day cap
         const t = travelMin(st.pos, i, st.now);
         const arr = st.now + t;
         const p = places[i];
-        const slack = Math.min(p.close, DAY_CAP) - p.visit - arr;
+        const slack = Math.min(p.close, DAY_CAP) - visitOf(p) - arr;
         return { t, arr, slack };
     }
     // One place → one stop in the chain. Both "Add" and tapping a pin land here.
@@ -1058,10 +1077,20 @@
         if (!st.cats.has(p.cat)) { st.cats.add(p.cat);      // adding it un-hides its category
             [].forEach.call($('chips').children, (b, k) => b.classList.toggle('on', st.cats.has(CATS[k][0]))); }
         const f = feasibility(i);
-        st.route.push({ i, day: st.day, arr: f.arr, leave: f.arr + p.visit,
+        st.route.push({ i, day: st.day, arr: f.arr, leave: f.arr + visitOf(p),
                         est: matrixMode !== 'osrm',   // honesty marker: was this leg real-road timed?
                         prev: { day: st.day, now: st.now, pos: st.pos } });
-        st.visited.add(i); st.pos = i; st.now = f.arr + p.visit;
+        st.visited.add(i); st.pos = i; st.now = f.arr + visitOf(p);
+        try {
+            window.__planBeaconed = window.__planBeaconed || new Set();
+            const bk = p.slug || p.name;
+            if (bk && !window.__planBeaconed.has(bk)) {
+                window.__planBeaconed.add(bk);
+                fetch('/api/guide-demand/beacon', { method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ kind: 'plan', key: bk, city: curCity }) });
+            }
+        } catch (e) {}
         const n = st.route.length;
         if (!retiming) {
             if (f.slack < 0)
@@ -1295,9 +1324,17 @@
             $('ovList').innerHTML = out.slice(0, 12).map(h =>
                 '<button class="ov-hotel" onclick="pickStay(' + h.lat + ',' + h.lon + ',&quot;' +
                 escj(h.name).replace(/"/g, '&quot;') + '&quot;)">🏨 ' + escj(h.name) +
-                ' <span>' + h.km.toFixed(1) + ' km</span></button>').join('');
+                ' <span>' + h.km.toFixed(1) + ' km</span></button>').join('')
+                + '<a class="ov-book" href="/go/stay?city=' + encodeURIComponent(curCity)
+                + '&near=' + encodeURIComponent(last ? last.name : '')
+                + '" target="_blank" rel="noopener">🏨 See rates and book near '
+                + escj(last ? last.name : 'your last stop') + ' ↗</a>';
         } catch (e) {
             $('ovMsg').textContent = 'The places service is busy, type where you are staying instead.';
+            $('ovList').innerHTML = '<a class="ov-book" href="/go/stay?city=' + encodeURIComponent(curCity)
+                + '&near=' + encodeURIComponent(last ? last.name : '')
+                + '" target="_blank" rel="noopener">🏨 See rates and book near '
+                + escj(last ? last.name : 'your last stop') + ' ↗</a>';
         }
     }
     function pickStay(lat, lon, name){ saveStay(lat, lon, name, false); }
@@ -1331,7 +1368,27 @@
                 + '. Nothing was lost.');
         refresh();
     }
-    function trafficChanged(){ retimeRoute('traffic changed'); }
+    function trafficChanged(){ syncTrafficNote(); retimeRoute('traffic changed'); }
+    // said once at boot too: the note must not wait for the first change
+    setTimeout(function(){ try { syncTrafficNote(); } catch (e) {} }, 0);
+    function syncTrafficNote(){
+        // its own element: #trafficNote already belongs to the social line
+        // ("N travelers planned a trip here"), and two writers on one node
+        // means one of them silently loses
+        let el = $('trafficModelNote');
+        if (!el) {
+            const host = $('trafficNote');
+            if (!host || !host.parentNode) return;
+            el = document.createElement('div');
+            el.id = 'trafficModelNote';
+            el.className = 'traffic-note';
+            host.parentNode.insertBefore(el, host);
+        }
+        if ($('traffic').value === 'auto') {
+            el.style.display = '';
+            el.textContent = 'Traffic here is a modeled pattern, weekday rush and weekend afternoons, not a live feed. Ferry stops include the average wait for the next boat.';
+        } else { el.style.display = 'none'; }
+    }
 
     function planDay(startPos, startT, avail){
         // Pick the next stop by URGENCY vs DISTANCE, not by closing time alone.
@@ -1345,14 +1402,14 @@
             avail.forEach(i => {
                 const p = places[i], drive = travelMin(pos, i, t), arr = t + drive;
                 const shut = Math.min(p.close, DAY_CAP);
-                if (arr + p.visit > shut) return;              // can't make it in time
-                const slack = shut - p.visit - arr;            // minutes of breathing room left
+                if (arr + visitOf(p) > shut) return;           // can't make it in time
+                const slack = shut - visitOf(p) - arr;         // minutes of breathing room left
                 const cost = drive + Math.min(slack, 240) * 0.5;
                 if (cost < bestCost) { bestCost = cost; best = i; bestArr = arr; }
             });
             if (best < 0) break;
             out.push({ i: best, arr: bestArr });
-            t = bestArr + places[best].visit; pos = best; avail.delete(best);
+            t = bestArr + visitOf(places[best]); pos = best; avail.delete(best);
         }
         return out;
     }
@@ -1426,9 +1483,10 @@
             const p = places[r.i]; if (!p) return;
             const prev = r.prev || { pos: -1, now: r.arr };
             const legMin = Math.max(0, Math.round(r.arr - prev.now));
-            const d = days[r.day] || (days[r.day] = { drive: 0, visit: 0, dep: null, done: null, stops: 0, est: false });
+            const d = days[r.day] || (days[r.day] = { drive: 0, visit: 0, adm: 0, dep: null, done: null, stops: 0, est: false });
             if (d.dep === null) d.dep = prev.now;
             d.drive += legMin; d.visit += (r.leave - r.arr); d.done = r.leave; d.stops++;
+            d.adm += (p.admission || 0);
             if (r.est) d.est = true;
             totalDrive += legMin;
         });
@@ -1453,7 +1511,8 @@
                    + ' <span class="jd-meta">· dep ' + fmt(d.dep) + ' → done ' + fmt(d.done)
                    + ' · ' + d.stops + ' stop' + (d.stops > 1 ? 's' : '')
                    + ' · 🚗 ' + (d.est ? '~' : '') + hm(d.drive)
-                   + ' · ⏱ ' + hm(d.visit) + ' visiting</span></div>';
+                   + ' · ⏱ ' + hm(d.visit) + ' visiting'
+                   + (d.adm ? ' · 🎟 $' + d.adm + ' admissions' : '') + '</span></div>';
                 lastDay = r.day;
             }
             const prev = r.prev || { pos: -1, now: r.arr };
@@ -1491,10 +1550,15 @@
             h += '<div class="itin-row' + rowCls + '">'
                +   '<div class="itin-time">' + fmt(r.arr) + '<span class="lv">, ' + fmt(r.leave) + '</span></div>'
                +   '<div>'
-               +     '<div class="itin-name"><span>D' + (k + 1) + ' · ' + escj(p.name) + tag + '</span>' + stars + '</div>'
+               +     '<div class="itin-name"><span>D' + (k + 1) + ' · ' + escj(p.name) + tag
+               +       (p.audio ? ' <button class="itin-play" onclick="playGuide(this, \'' + escj(p.audio) + '\', \'' + escj(p.slug || p.name) + '\')">▶ guide</button>' : '')
+               +       '</span>' + stars + '</div>'
                +     '<div class="itin-leg"' + (prev.pos === -1 ? ' title="from your start point"' : '') + '>'
                +       '<span>↓ ' + legLabel(from, p) + ' · ' + legMin + ' min · ' + trafficLabel(prev.now) + '</span>'
-               +       '<span>⏱ ' + Math.round(r.leave - r.arr) + 'm' + src + ' · 🚪 closes ' + fmt(p.close) + '</span>'
+               +       '<span>⏱ ' + Math.round(r.leave - r.arr) + 'm' + src
+               +         (p.ferry ? ' · ⛴ ' + p.ferry.crossing_min + 'm crossing, boats ~every ' + p.ferry.headway_min + 'm, wait counted' : '')
+               +         (p.admission !== null && p.admission !== undefined ? ' · 🎟 ' + (p.admission === 0 ? 'free' : '$' + p.admission) : '')
+               +         ' · 🚪 closes ' + fmt(p.close) + '</span>'
                +     '</div>'
                +     warn
                +   '</div>'
@@ -1511,6 +1575,7 @@
                 + ' · ' + st.route.length + ' stop' + (st.route.length > 1 ? 's' : '')
                 + ' · ' + nDays + ' day' + (nDays > 1 ? 's' : '')
                 + ' · 🚗 ' + (est ? '~' : '') + hm(totalDrive) + ' driving'
+                + (function(){ let a = 0; st.route.forEach(r => { const p = places[r.i]; if (p) a += (p.admission || 0); }); return a ? ' · 🎟 $' + a + ' typical admissions' : ''; })()
                 + (est ? ' <span title="drive times estimated, routing server unreachable">~est</span>' : '')
                 + (riskCount ? ' · <span class="mast-risk" onclick="jumpToRisk()">⚠ ' + riskCount + ' at risk</span>' : '');
             mast.style.display = '';
@@ -1696,6 +1761,10 @@
                                       close: e.close || 1020,
                                       visit: e.typical_visit || e.visit || 60,
                                       cat: e.cat || 'culture',
+                                      admission: (e.admission_usd === undefined ? null : e.admission_usd),
+                                      ferry: e.ferry || null,
+                                      audio: e.audio || null,
+                                      slug: e.slug || null,
                                       hoursKnown: !!e.close }));
             savePlaces();
             const lat = places.reduce((a, p) => a + p.lat, 0) / places.length;
@@ -1839,6 +1908,30 @@
         if (!risky && n >= 3)
             return 'This is a solid day. When you want someone else to drive it, the three buttons below hand it to a pro.';
         return '';
+    }
+    let GUIDE_AUDIO = null, GUIDE_BTN = null;
+    function playGuide(btn, src, key) {
+        if (GUIDE_AUDIO && GUIDE_BTN === btn && !GUIDE_AUDIO.paused) {
+            GUIDE_AUDIO.pause();
+            btn.textContent = btn.textContent.replace('❚❚', '▶');
+            return;
+        }
+        if (GUIDE_AUDIO) {
+            GUIDE_AUDIO.pause();
+            if (GUIDE_BTN) GUIDE_BTN.textContent = GUIDE_BTN.textContent.replace('❚❚', '▶');
+        }
+        GUIDE_AUDIO = new Audio(src);
+        GUIDE_BTN = btn;
+        GUIDE_AUDIO.play().catch(function () {});
+        btn.textContent = btn.textContent.replace('▶', '❚❚');
+        GUIDE_AUDIO.onended = function () {
+            btn.textContent = btn.textContent.replace('❚❚', '▶');
+        };
+        try {
+            fetch('/api/guide-demand/beacon', { method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ kind: 'audio', key: key }) });
+        } catch (err) {}
     }
     function trafficLabel(dep){
         const m = trafficMult(dep);
@@ -2114,16 +2207,37 @@
             bookStarsLoaded = true;
             const have = new Set(places.map(p => p.name.toLowerCase()));
             const gone = new Set(dropped.map(n => String(n).toLowerCase()));
-            let added = 0;
+            let added = 0, enriched = 0;
+            const byName = {};
             (d.entries || []).forEach(e => {
-                if (e.city !== city || e.source !== 'user') return;
+                if (e.city === city && e.name) byName[e.name.toLowerCase()] = e;
+            });
+            places.forEach(p => {
+                const e = byName[(p.name || '').toLowerCase()];
+                if (!e) return;
+                const adm = (e.admission_usd === undefined ? null : e.admission_usd);
+                if (p.admission !== adm || !!p.ferry !== !!e.ferry || p.audio !== (e.audio || null)) enriched++;
+                p.admission = adm;
+                p.ferry = e.ferry || null;
+                p.audio = e.audio || null;
+                p.slug = e.slug || null;
+            });
+            (d.entries || []).forEach(e => {
+                if (e.city !== city) return;
+                const isFerry = e.type === 'ferry';
+                if (e.source !== 'user' && !isFerry) return;   // ferries ship from the registry
                 if (have.has((e.name || '').toLowerCase())) return;
                 if (gone.has((e.name || '').toLowerCase())) return;   // this visitor removed it
                 places.push({ name: e.name, lat: e.lat, lon: e.lon,
-                              close: e.close || 1020, visit: e.visit || 60, cat: e.cat || 'culture' });
+                              close: e.close || 1020, visit: e.visit || 60,
+                              cat: e.cat || 'culture',
+                              admission: (e.admission_usd === undefined ? null : e.admission_usd),
+                              ferry: e.ferry || null, audio: e.audio || null,
+                              slug: e.slug || null });
                 have.add(e.name.toLowerCase());
                 added++;
             });
+            if (enriched && !added) { savePlaces(); refresh(); }
             if (added) {
                 rebuildMarkers(); renderPlaces(); savePlaces(); refresh(); fetchMatrix();
                 say(added + ' place' + (added > 1 ? 's' : '') + ' added by earlier visitors joined the board.');

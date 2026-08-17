@@ -1,0 +1,186 @@
+<svg viewBox="0 0 1000 1290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Travel maps routing: the idea rail and the build rail, balanced">
+  <defs>
+    <pattern id="wait" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="7" stroke="#1f3a5f" stroke-width="0.8" opacity="0.3"/>
+    </pattern>
+  </defs>
+  <style>
+    .h1 { font: 800 24px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0b0809; letter-spacing: .04em; }
+    .lbl { font: 700 13px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0b0809; }
+    .sub { font: 600 11px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #6b6459; }
+    .tiny { font: 600 10px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #6b6459; letter-spacing: .12em; }
+    .tag { font: 800 10px -apple-system, sans-serif; letter-spacing: .1em; }
+    .box { fill: #ffffff; stroke: #1f3a5f; stroke-width: 1.6; }
+    .rail { stroke: #1f3a5f; stroke-width: 2.2; fill: none; }
+    .rung { stroke: #1f3a5f; stroke-width: 1.2; fill: none; stroke-dasharray: 4 5; }
+    .hair { stroke: #d3d3da; stroke-width: 1; }
+  </style>
+
+  <rect x="1" y="1" width="998" height="1288" fill="#ffffff" stroke="#1f3a5f" stroke-width="2"/>
+  <rect x="14" y="14" width="972" height="1262" fill="none" stroke="#1f3a5f" stroke-width="0.8" opacity="0.5"/>
+
+  <text x="40" y="58" class="h1">TRAVEL MAPS · THE ROUTE OF ADVANCE</text>
+  <text x="40" y="80" class="sub">SEAN'S IDEA ON THE LEFT RAIL, THE BUILD ON THE RIGHT, MATCHED RUNG BY RUNG · TM-01</text>
+
+  <!-- the two rails -->
+  <line x1="250" y1="120" x2="250" y2="1105" class="rail"/>
+  <line x1="750" y1="120" x2="750" y2="1105" class="rail"/>
+  <text x="215" y="112" class="tiny">THE IDEA</text>
+  <text x="712" y="112" class="tiny">THE BUILD</text>
+
+  <!-- station rows: idea box left, build box right, rung between -->
+  <!-- 1 route time traffic -->
+  <g>
+    <rect x="45" y="135" width="410" height="92" rx="8" class="box"/>
+    <text x="60" y="160" class="lbl">Track route, time and traffic,</text>
+    <text x="60" y="178" class="lbl">in a more advanced mode</text>
+    <text x="60" y="200" class="sub">said 2026-08-15</text>
+    <line x1="455" y1="181" x2="545" y2="181" class="rung"/>
+    <circle cx="500" cy="181" r="10" fill="#1f3a5f"/>
+    <text x="479" y="205" class="tag" fill="#1f3a5f">LIVE</text>
+    <rect x="545" y="135" width="410" height="92" rx="8" class="box"/>
+    <text x="560" y="158" class="sub">Real road times on every leg. Traffic is a</text>
+    <text x="560" y="174" class="sub">modeled weekday and weekend pattern, rush</text>
+    <text x="560" y="190" class="sub">and calm by the hour, and the page says</text>
+    <text x="560" y="206" class="sub">plainly it is modeled, not a live feed.</text>
+  </g>
+
+  <!-- 2 ferries -->
+  <g>
+    <rect x="45" y="252" width="410" height="80" rx="8" class="box"/>
+    <text x="60" y="277" class="lbl">Recognize ferries</text>
+    <text x="60" y="299" class="sub">the crossing, and the waiting</text>
+    <line x1="455" y1="292" x2="545" y2="292" class="rung"/>
+    <circle cx="500" cy="292" r="10" fill="#1f3a5f"/>
+    <text x="479" y="316" class="tag" fill="#1f3a5f">LIVE</text>
+    <rect x="545" y="252" width="410" height="80" rx="8" class="box"/>
+    <text x="560" y="275" class="sub">Three ferries with crossing time and rhythm:</text>
+    <text x="560" y="291" class="sub">Staten Island, Bainbridge, the Potomac. The</text>
+    <text x="560" y="307" class="sub">average wait for the next boat is counted.</text>
+  </g>
+
+  <!-- 3 admissions -->
+  <g>
+    <rect x="45" y="357" width="410" height="80" rx="8" class="box"/>
+    <text x="60" y="382" class="lbl">Recognize attraction admissions</text>
+    <text x="60" y="404" class="sub">what a day really costs</text>
+    <line x1="455" y1="397" x2="545" y2="397" class="rung"/>
+    <circle cx="500" cy="397" r="10" fill="#1f3a5f"/>
+    <text x="479" y="421" class="tag" fill="#1f3a5f">LIVE</text>
+    <rect x="545" y="357" width="410" height="80" rx="8" class="box"/>
+    <text x="560" y="380" class="sub">Fifteen attractions priced in real dollars,</text>
+    <text x="560" y="396" class="sub">labeled typical. Every stop, every day header</text>
+    <text x="560" y="412" class="sub">and the trip total carry the admissions sum.</text>
+  </g>
+
+  <!-- 4 days + hotels -->
+  <g>
+    <rect x="45" y="462" width="410" height="92" rx="8" class="box"/>
+    <text x="60" y="487" class="lbl">If they cannot make it, more days,</text>
+    <text x="60" y="505" class="lbl">hotels around them as resources</text>
+    <line x1="455" y1="508" x2="545" y2="508" class="rung"/>
+    <circle cx="500" cy="508" r="10" fill="#1f3a5f"/>
+    <text x="479" y="532" class="tag" fill="#1f3a5f">LIVE</text>
+    <rect x="545" y="462" width="410" height="92" rx="8" class="box"/>
+    <text x="560" y="485" class="sub">A stop that cannot fit moves to the next day</text>
+    <text x="560" y="501" class="sub">with one tap. The overnight dialog finds real</text>
+    <text x="560" y="517" class="sub">hotels near the last stop, and its booking</text>
+    <text x="560" y="533" class="sub">door is counted through /go.</text>
+  </g>
+
+  <!-- 5 commissions -->
+  <g>
+    <rect x="45" y="579" width="410" height="104" rx="8" class="box"/>
+    <text x="60" y="604" class="lbl">Work with Amerilink and Expedia,</text>
+    <text x="60" y="622" class="lbl">and attractions, for commissions</text>
+    <text x="60" y="644" class="sub">the doors earn once the programmes sign</text>
+    <line x1="455" y1="631" x2="545" y2="631" class="rung"/>
+    <rect x="488" y="619" width="24" height="24" rx="4" class="box" fill="url(#wait)"/>
+    <text x="464" y="656" class="tag" fill="#8a5a00">WAITING</text>
+    <text x="464" y="670" class="tag" fill="#8a5a00">ON SEAN</text>
+    <rect x="545" y="579" width="410" height="104" rx="8" class="box"/>
+    <text x="560" y="602" class="sub">Tickets and Stay-nearby doors are live and</text>
+    <text x="560" y="618" class="sub">counting. Expedia takes one env var on the</text>
+    <text x="560" y="634" class="sub">day the affiliate account is approved. One</text>
+    <text x="560" y="650" class="sub">ticket programme joins the same way. And one</text>
+    <text x="560" y="666" class="sub">answer is needed: which company is Amerilink?</text>
+  </g>
+
+  <!-- 6 free guide, data collected -->
+  <g>
+    <rect x="45" y="708" width="410" height="92" rx="8" class="box"/>
+    <text x="60" y="733" class="lbl">The map guide is free,</text>
+    <text x="60" y="751" class="lbl">but collect the data</text>
+    <text x="60" y="773" class="sub">demand is the pitch</text>
+    <line x1="455" y1="754" x2="545" y2="754" class="rung"/>
+    <circle cx="500" cy="754" r="10" fill="#1f3a5f"/>
+    <text x="479" y="778" class="tag" fill="#1f3a5f">LIVE</text>
+    <rect x="545" y="708" width="410" height="92" rx="8" class="box"/>
+    <text x="560" y="731" class="sub">Every play, plan and click counts, anonymous</text>
+    <text x="560" y="747" class="sub">totals per attraction per day, on the owner's</text>
+    <text x="560" y="763" class="sub">demand board. This is the evidence every</text>
+    <text x="560" y="779" class="sub">affiliate application gets shown.</text>
+  </g>
+
+  <!-- 7 elevenlabs -->
+  <g>
+    <rect x="45" y="825" width="410" height="80" rx="8" class="box"/>
+    <text x="60" y="850" class="lbl">Use ElevenLabs to announce</text>
+    <text x="60" y="868" class="lbl">descriptions of the attractions</text>
+    <line x1="455" y1="865" x2="545" y2="865" class="rung"/>
+    <circle cx="500" cy="865" r="10" fill="#1f3a5f"/>
+    <text x="479" y="889" class="tag" fill="#1f3a5f">LIVE</text>
+    <rect x="545" y="825" width="410" height="80" rx="8" class="box"/>
+    <text x="560" y="848" class="sub">Six attractions speak, recorded once, served</text>
+    <text x="560" y="864" class="sub">as files, playable in the book and on the day</text>
+    <text x="560" y="880" class="sub">sheet. Next: the whole book, then languages.</text>
+  </g>
+
+  <!-- 8 the law -->
+  <g>
+    <rect x="45" y="930" width="410" height="92" rx="8" class="box"/>
+    <rect x="49" y="934" width="402" height="84" rx="6" fill="none" stroke="#1f3a5f" stroke-width="0.8"/>
+    <text x="60" y="955" class="lbl">Location consent if signed in,</text>
+    <text x="60" y="973" class="lbl">data within what the law allows</text>
+    <text x="60" y="995" class="sub">said 2026-08-15 · standing law</text>
+    <line x1="455" y1="976" x2="545" y2="976" class="rung"/>
+    <circle cx="500" cy="976" r="10" fill="#1f3a5f"/>
+    <text x="462" y="1000" class="tag" fill="#1f3a5f">WRITTEN IN</text>
+    <rect x="545" y="930" width="410" height="92" rx="8" class="box"/>
+    <rect x="549" y="934" width="402" height="84" rx="6" fill="none" stroke="#1f3a5f" stroke-width="0.8"/>
+    <text x="560" y="953" class="sub">In PRIVACY.md and binding on every future</text>
+    <text x="560" y="969" class="sub">feature: consent before any signed-in location,</text>
+    <text x="560" y="985" class="sub">revocable, deletable. Today's counters carry no</text>
+    <text x="560" y="1001" class="sub">identity and no location, by construction.</text>
+  </g>
+
+  <!-- 9 the spine -->
+  <g>
+    <rect x="45" y="1047" width="410" height="58" rx="8" class="box"/>
+    <text x="60" y="1071" class="lbl">One sign-in, walks that follow you</text>
+    <text x="60" y="1090" class="sub">the spine everything above stands on</text>
+    <line x1="455" y1="1076" x2="545" y2="1076" class="rung"/>
+    <circle cx="500" cy="1076" r="10" fill="#1f3a5f"/>
+    <rect x="545" y="1047" width="410" height="58" rx="8" class="box"/>
+    <text x="560" y="1071" class="sub">Google sign-in on every page, saved walks in</text>
+    <text x="560" y="1090" class="sub">The Walks, the Met sheet, the corridors.</text>
+  </g>
+
+  <!-- next stations -->
+  <line x1="40" y1="1130" x2="960" y2="1130" class="hair"/>
+  <text x="40" y="1122" class="tiny">NEXT STATIONS, IN ORDER OF EARNING</text>
+  <text x="40" y="1153" class="sub">1 · Affiliate ids land, the doors start paying: Expedia env var, ticket deep links replace venue pages.</text>
+  <text x="40" y="1173" class="sub">2 · The demand board becomes a pitch pack for Seattle trade desks, the play nobody else can make.</text>
+  <text x="40" y="1193" class="sub">3 · Every book entry speaks, then speaks Chinese, Spanish, Korean, Vietnamese.</text>
+  <text x="40" y="1213" class="sub">4 · More cities the day their first corridor is walked. Live traffic only if a lawful live feed exists.</text>
+
+  <!-- title block -->
+  <g>
+    <rect x="560" y="1236" width="426" height="40" fill="#ffffff" stroke="#1f3a5f" stroke-width="1.4"/>
+    <line x1="788" y1="1236" x2="788" y2="1276" class="hair"/>
+    <line x1="892" y1="1236" x2="892" y2="1276" class="hair"/>
+    <text x="568" y="1260" class="tiny">PROJECT · TRAVEL MAPS</text>
+    <text x="796" y="1260" class="tiny">SHEET · TM-01</text>
+    <text x="900" y="1260" class="tiny">2026-08-15</text>
+  </g>
+</svg>

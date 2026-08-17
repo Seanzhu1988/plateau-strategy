@@ -1669,6 +1669,11 @@
         outline:none;background:rgba(255,255,255,.09);border-color:var(--psx-blue);box-shadow:0 0 0 3px rgba(59,130,246,.18);
       }
       .idea-composer textarea{min-height:130px;resize:vertical;line-height:1.6;}
+      .idea-composer #idea_bp{min-height:90px;border-style:dashed;}
+      .idea-bp-file{display:block;color:#a9a293;font-size:.82rem;margin:.7rem 0 .3rem;line-height:1.5;}
+      .idea-composer #idea_bp_img{border:1px dashed var(--psx-border);border-radius:10px;padding:.6rem;width:100%;color:#a9a293;font-size:.82rem;background:none;}
+      .idea-protect{border-left:2px solid #8fb4e3;padding-left:.9rem;margin:.9rem 0;color:#a9a293;font-size:.82rem;line-height:1.55;}
+      .idea-bp-chip{color:#8fb4e3;font-weight:700;white-space:nowrap;cursor:help;}
       .idea-publish{border:none;border-radius:10px;padding:.75rem 1.5rem;font-weight:700;font-size:.92rem;cursor:pointer;
         background:linear-gradient(135deg,var(--psx-blue),var(--psx-indigo));color:#fff;box-shadow:0 10px 22px -8px rgba(59,130,246,.6);}
       .idea-publish:hover{filter:brightness(1.07);}
@@ -2171,6 +2176,13 @@
                                 <a href="/met" class="book-cta">Walk the Met →</a>
                             </div>
                             <div class="service-card">
+                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-map"/></svg></div>
+                                <h3>The Walks</h3>
+                                <p class="service-for">For every city we have walked</p>
+                                <p>Every map on this site, drawn on foot, in one index: measured corridors, honest estimates, and the walks you save under your own sign-in.</p>
+                                <a href="/walks" class="book-cta">Open The Walks →</a>
+                            </div>
+                            <div class="service-card">
                                 <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-book"/></svg></div>
                                 <h3>Destination Book</h3>
                                 <p class="service-for">For everyone, free, and growing</p>
@@ -2579,37 +2591,17 @@
 
                             <p class="rusa-live" id="rusaLive">Reading the board…</p>
 
-                            <div class="rusa-block">
-                                <h4>Trades being asked for</h4>
-                                <p class="rusa-note">Built from what people actually post here, not from a list somebody wrote in advance.</p>
-                                <div id="rusaTrades" class="rusa-trades"></div>
-                                <a class="rusa-more" href="/professionals">See every trade →</a>
+                            <!-- Blueprint deck: pay once to read a blueprint in full. A product
+                                 sale (access to the document), not an investment. -->
+                            <div style="background:#fff;border:1px solid #e6e2da;border-radius:14px;padding:1.1rem 1.2rem;margin:0 0 1.4rem;display:flex;gap:1rem;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+                                <div>
+                                    <h3 style="margin:0 0 .3rem;">📐 Blueprint Deck</h3>
+                                    <p style="margin:0;color:#6b655b;font-size:.92rem;">Read the lab's blueprints in full. Log in, pay once, and the sheet is yours. A purchase, not an investment.</p>
+                                </div>
+                                <a class="book-cta" href="/deck">Open the deck →</a>
                             </div>
 
-                            <div class="rusa-block">
-                                <h4>Opinions on offer</h4>
-                                <div id="rusaOpinions"></div>
-                            </div>
-
-                            <div class="rusa-block" id="rusaPro">
-                                <h4>Are you a licensed professional?</h4>
-                                <p class="rusa-note">Publish once, and be paid every time it sells. Your licence is checked by hand before anything you write goes public.</p>
-                                <div id="rusaProBody"></div>
-                            </div>
-                        </div>
-
-                        <!-- Blueprint deck: pay once to read a blueprint in full. A product
-                             sale (access to the document), not an investment. The investor
-                             mechanism is a securities matter and is deliberately not here. -->
-                        <div style="background:#fff;border:1px solid #e6e2da;border-radius:14px;padding:1.1rem 1.2rem;margin:0 0 1.4rem;display:flex;gap:1rem;align-items:center;justify-content:space-between;flex-wrap:wrap;">
-                            <div>
-                                <h3 style="margin:0 0 .3rem;">📐 Blueprint Deck</h3>
-                                <p style="margin:0;color:#6b655b;font-size:.92rem;">Read the lab's blueprints in full. Log in, pay once, and the sheet is yours. A purchase, not an investment.</p>
-                            </div>
-                            <a class="book-cta" href="/deck">Open the deck →</a>
-                        </div>
-
-                        <div class="idea-board">
+                            <div class="idea-board">
                             <div class="idea-board-head">
                                 <h3>💡 Business Ideas</h3>
                                 <p>Anyone can pitch a business idea here, free, no account needed. You back a project by getting its <strong>blueprint</strong>: log in and buy the sheet on the Blueprint Deck. That purchase is how you back the build. It buys the document, not a stake and not a share of any profit.</p>
@@ -2624,11 +2616,10 @@
                                     <input id="idea_author" placeholder="Your name">
                                     <input id="idea_title" placeholder="Business idea, e.g. Mobile EV-detailing fleet for gig drivers">
                                     <textarea id="idea_body" placeholder="The problem, the business model, how it makes money, and what it needs to launch…"></textarea>
-                                    <!-- Speak your idea instead of typing it. Uses the browser's own
-                                         speech tool, so it stays hidden on browsers that do not have one.
-                                         It dictates into the body in whatever language the site is set to.
-                                         Honest note: most browsers still send the audio to a cloud service,
-                                         the truly on-device version is the next step. -->
+                                    <!-- Speak your idea instead of typing it. Uses the browser's own speech
+                                         tool, so it stays hidden on browsers without one. Dictates into the
+                                         body in the site's language. Most browsers still send the audio to a
+                                         cloud service; the truly on-device version is the next step. -->
                                     <div class="idea-voice" id="ideaVoice" style="display:none">
                                         <button type="button" class="idea-mic" id="ideaMicBtn">🎤 Speak your idea</button>
                                         <span class="idea-mic-note" id="ideaMicNote">Dictate instead of typing. Tap, talk, tap again.</span>
@@ -2679,6 +2670,10 @@
                                       btn.addEventListener('click', function () { on ? stop() : start(); });
                                     })();
                                     </script>
+                                    <textarea id="idea_bp" placeholder="The blueprint (optional): the working detail you do not want public. It stays sealed; a reader must sign in to open it, and every reader is recorded by name."></textarea>
+                                    <label class="idea-bp-file" for="idea_bp_img">Attach your drawing (optional). A photo of a sketch counts. It stays sealed with the blueprint.</label>
+                                    <input type="file" id="idea_bp_img" accept="image/png,image/jpeg,image/webp">
+                                    <p class="idea-protect">What you publish here is a public disclosure. In the US that starts a twelve-month clock to file for a patent; in most other countries there is no grace period at all. If your idea is genuinely patentable, see a patent attorney before posting, not after. The sealed blueprint keeps detail off the public page and names everyone who reads it; it is not a patent filing.</p>
                                     <button class="idea-publish" onclick="ideaPublish()">Publish idea</button>
                                 </div>
                             </div>
@@ -2686,6 +2681,27 @@
                             <div id="ideaFeed"></div>
                             <div class="idea-empty" id="ideaEmpty" style="display:none;">No ideas posted yet, be the first to pitch one.</div>
                         </div>
+
+                            <div class="rusa-block">
+                                <h4>Trades being asked for</h4>
+                                <p class="rusa-note">Built from what people actually post here, not from a list somebody wrote in advance.</p>
+                                <div id="rusaTrades" class="rusa-trades"></div>
+                                <a class="rusa-more" href="/professionals">See every trade →</a>
+                            </div>
+
+                            <div class="rusa-block">
+                                <h4>Opinions on offer</h4>
+                                <div id="rusaOpinions"></div>
+                            </div>
+
+                            <div class="rusa-block" id="rusaPro">
+                                <h4>Are you a licensed professional?</h4>
+                                <p class="rusa-note">Publish once, and be paid every time it sells. Your licence is checked by hand before anything you write goes public.</p>
+                                <div id="rusaProBody"></div>
+                            </div>
+                        </div>
+
+                        
                     </div>
                 </section>
             </div>
@@ -3513,7 +3529,9 @@
                 var txt = inLang(a);
                 return '<div class="idea-card" id="idea_' + a.id + '">' +
                     '<h4>' + esc(txt.title) + (a.stamp ? '<span class="idea-stamp" title="Time-proof stamp, pitched ' + fmtStamp(a.created_at) + '">#' + esc(a.stamp) + '</span>' : '') + '</h4>' +
-                    '<div class="idea-meta">By <strong>' + esc(a.author || 'Anonymous') + '</strong> · ' + fmtStamp(a.created_at) + '</div>' +
+                    '<div class="idea-meta">By <strong>' + esc(a.author || 'Anonymous') + '</strong> · ' + fmtStamp(a.created_at) +
+                        (a.has_blueprint ? ' · <span class="idea-bp-chip" title="A sealed blueprint travels with this idea. Open it from the idea page; sign-in required, every reader recorded by name.">🔒 blueprint</span>' : '') +
+                    '</div>' +
                     trNote(a) +
                     '<div class="idea-text">' + esc(txt.body) + '</div>' +
                     // The trades this idea calls for. The API has shipped them on
@@ -3635,12 +3653,39 @@
 
             window.ideaPublish = async function () {
                 var a = document.getElementById('idea_author'), t = document.getElementById('idea_title'), b = document.getElementById('idea_body');
+                var bp = document.getElementById('idea_bp');
+                var bpImgEl = document.getElementById('idea_bp_img');
                 var author = (a.value || '').trim(), title = (t.value || '').trim(), body = (b.value || '').trim();
+                var blueprint = bp ? (bp.value || '').trim() : '';
                 if (!author) { alert('Add your name'); return; }
                 if (!title || !body) { alert('Add a title and describe the idea'); return; }
-                var j = await (await fetch('/api/articles', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ author: author, title: title, body: body }) })).json();
+                // The drawing, read into a data URL. Checked here for size and
+                // type so the poster hears about a problem before the upload,
+                // and checked again on the server, which believes bytes, not
+                // this code.
+                var blueprintImage;
+                var f = bpImgEl && bpImgEl.files && bpImgEl.files[0];
+                if (f) {
+                    if (['image/png', 'image/jpeg', 'image/webp'].indexOf(f.type) < 0) {
+                        alert('The drawing must be a PNG, JPEG or WebP image.'); return;
+                    }
+                    if (f.size > 3000000) {
+                        alert('That drawing is too big. Keep it under 3 MB.'); return;
+                    }
+                    blueprintImage = await new Promise(function (done, fail) {
+                        var r = new FileReader();
+                        r.onload = function () { done(r.result); };
+                        r.onerror = function () { fail(); };
+                        r.readAsDataURL(f);
+                    }).catch(function () { return undefined; });
+                    if (!blueprintImage) { alert('The drawing could not be read.'); return; }
+                }
+                var j = await (await fetch('/api/articles', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ author: author, title: title, body: body, blueprint: blueprint || undefined, blueprint_image: blueprintImage }) })).json();
                 if (!j.ok) { alert(j.error || 'Could not publish'); return; }
+                if (j.duplicate && j.note) { alert(j.note); return; }
                 a.value = ''; t.value = ''; b.value = '';
+                if (bp) bp.value = '';
+                if (bpImgEl) bpImgEl.value = '';
                 var c = document.getElementById('ideaComposer'); if (c) c.classList.remove('open');
                 window.ideaLoad();
             };

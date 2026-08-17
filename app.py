@@ -397,23 +397,17 @@ def api_google_config():
                     "client_id": GOOGLE_CLIENT_ID})
 
 
-@app.route("/api/auth/google", methods=["POST"])
-def api_auth_google():
-    """Turn a Google credential into a name and an email we can believe.
+def _google_claims(token):
+    """Verify a Google credential server-side. Returns (claims, error).
 
-    The token is verified on the SERVER, against Google's own signing keys.
-    That is the entire security of this endpoint: the browser hands us a
-    signed assertion, and a browser can say anything. Decoding the token
-    client-side and trusting what it says would let anyone book as anyone, 
-    so the claims used below come only from a token whose signature,
-    audience and expiry Google's library has checked.
-
-    Nothing is stored. The reply is used to fill two form fields."""
-    if not GOOGLE_CLIENT_ID:
-        return jsonify({"ok": False, "error": "Google sign-in isn't configured."}), 503
-    token = ((request.get_json(force=True, silent=True) or {}).get("credential") or "").strip()
+    The one copy of the security-sensitive routine, shared by every endpoint
+    that accepts a Google credential (the same one-copy rule that moved the
+    button into google-signin.js). The browser hands us a signed assertion,
+    and a browser can say anything, so nothing in the token is believed
+    until google-auth has checked signature, audience and expiry against
+    Google's own signing keys."""
     if not token:
-        return jsonify({"ok": False, "error": "No credential."}), 400
+        return None, "No credential."
     try:
         from google.oauth2 import id_token as g_id_token
         from google.auth.transport import requests as g_requests
@@ -422,16 +416,77 @@ def api_auth_google():
     except Exception:
         # Bad signature, wrong audience, expired, or Google unreachable. We
         # cannot tell a forgery from an outage here, and must not guess.
-        return jsonify({"ok": False, "error": "Could not verify that sign-in."}), 401
+        return None, "Could not verify that sign-in."
     if claims.get("iss") not in ("accounts.google.com", "https://accounts.google.com"):
-        return jsonify({"ok": False, "error": "Could not verify that sign-in."}), 401
+        return None, "Could not verify that sign-in."
     if not claims.get("email_verified"):
-        # An unverified address would let someone prefill a booking under
-        # somebody else's email, and that is where the invoice goes.
-        return jsonify({"ok": False, "error": "That Google account has no verified email."}), 401
+        # An unverified address would let someone act under somebody else's
+        # email, and that address is where consequences land.
+        return None, "That Google account has no verified email."
+    return claims, None
+
+
+@app.route("/api/auth/google", methods=["POST"])
+def api_auth_google():
+    """Turn a Google credential into a name and an email we can believe.
+
+    Nothing is stored. The reply is used to fill two form fields."""
+    if not GOOGLE_CLIENT_ID:
+        return jsonify({"ok": False, "error": "Google sign-in isn't configured."}), 503
+    token = ((request.get_json(force=True, silent=True) or {}).get("credential") or "").strip()
+    if not token:
+        return jsonify({"ok": False, "error": "No credential."}), 400
+    claims, err = _google_claims(token)
+    if not claims:
+        return jsonify({"ok": False, "error": err}), 401
     return jsonify({"ok": True,
                     "name": (claims.get("name") or "").strip()[:80],
                     "email": (claims.get("email") or "").strip()[:120]})
+
+
+@app.route("/api/auth/google/session", methods=["POST"])
+def api_auth_google_session():
+    """Sign a reader in, for reading that is gated on identity.
+
+    The blueprint attached to an idea opens only for a named person, and
+    this is where the name comes from. Unlike /api/auth/google above, this
+    one DOES keep something: a session cookie carrying exactly two facts,
+    the verified email and the display name, so a reader who opened one
+    blueprint is not asked to sign in again for the next. Nothing else is
+    stored about them here; the record of WHAT they opened is written when
+    they open it, not when they sign in."""
+    if not GOOGLE_CLIENT_ID:
+        return jsonify({"ok": False, "error": "Google sign-in isn't configured."}), 503
+    token = ((request.get_json(force=True, silent=True) or {}).get("credential") or "").strip()
+    claims, err = _google_claims(token)
+    if not claims:
+        return jsonify({"ok": False, "error": err or "No credential."}), 401
+    reader = {"email": (claims.get("email") or "").strip()[:120],
+              "name": (claims.get("name") or "").strip()[:80]}
+    # Deliberately NOT a permanent session. This identity stamps an access
+    # log, and a 31-day cookie on a shared or borrowed device would keep
+    # writing the wrong name into other people's records. A browser-session
+    # cookie plus Google's one-tap makes re-signing cheap and the log honest.
+    session["reader"] = reader
+    return jsonify({"ok": True, "email": reader["email"], "name": reader["name"]})
+
+
+@app.route("/api/auth/reader/logout", methods=["POST"])
+def api_auth_reader_logout():
+    """Drop the reading identity. The door out matters as much as the door
+    in: a reader who spots someone else's name on the banner needs a way
+    to stop reading under it."""
+    session.pop("reader", None)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/auth/reader")
+def api_auth_reader():
+    """Who is reading, according to the session. Answers about self only."""
+    r = session.get("reader") or {}
+    return jsonify({"ok": True, "signed_in": bool(r.get("email")),
+                    "email": r.get("email") or "", "name": r.get("name") or "",
+                    "owner": bool(session.get("owner"))})
 
 
 # ---------- storage helpers ----------
@@ -455,7 +510,8 @@ TRAFFIC_MAX_DAYS = 120  # bound file growth; older days are just dropped
 # Pages tracked individually for the "which tool" breakdown; every other
 # page rolls into a single "other" bucket so the archive table stays short.
 TRAFFIC_TOOL_PATHS = {"/trip-planner": "trip_planner", "/destination-book": "destination_book",
-                       "/favorite-place": "favorite_place"}
+                       "/favorite-place": "favorite_place",
+                       "/met": "met_map", "/walks": "walks_hub"}
 
 # ---------- traffic we should not be counting ----------
 # The number beside the map is meant to tell Sean whether strangers are using
@@ -1106,6 +1162,18 @@ def _compress_and_cache(resp):
             stamped = _ASSET_RE.sub(
                 lambda m: b'%s="%s?v=%s"' % (m.group(1), m.group(2), _ASSET_V.encode()),
                 body)
+            # One sign-in for the whole site, delivered the same way the
+            # asset versions are: injected here, once, instead of thirty
+            # templates each carrying a tag and drifting. The script does
+            # nothing on a page without a header; owner consoles keep
+            # their own doors and are left alone.
+            if (not path.startswith(("/dispatch", "/archive", "/access", "/setup"))
+                    and b'src="/site-auth.js' not in stamped
+                    and b"</body>" in stamped):
+                stamped = stamped.replace(
+                    b"</body>",
+                    b'<script src="/site-auth.js?v=%s" defer></script></body>'
+                    % _ASSET_V.encode(), 1)
             if stamped != body:
                 resp.set_data(stamped)
 
@@ -1486,6 +1554,138 @@ def met_page():
     return send_file(os.path.join(BASE_DIR, "met.html"))
 
 
+@app.route("/walks")
+def walks_page():
+    """The Walks: every map on the site, drawn on foot, in one index."""
+    return send_file(os.path.join(BASE_DIR, "walks.html"))
+
+
+# The cities of the corridor store, grouped by key prefix. A new city is a
+# new row here plus its corridors in footprints.py, nothing else.
+_WALK_CITIES = [
+    ("new-york", "New York, inside the Met", ("met-",), "/met"),
+    ("washington-dc", "Washington DC", ("union-station", "smithsonian-"), "/walk"),
+    ("seattle", "Seattle", ("seatac-", "westlake-", "pike-place-", "monorail-"), "/walk"),
+]
+
+
+@app.route("/api/walks-map")
+def api_walks_map():
+    """The index behind The Walks: every corridor, by city, honest state.
+
+    Public, and deliberately the same honesty rule as the Met sheet: a
+    corridor is either measured, with its minutes and the date somebody
+    walked it, or it is waiting, and the page says which."""
+    cors = FOOTPRINTS.corridors()
+    cities = []
+    for key, name, prefixes, link in _WALK_CITIES:
+        rows = []
+        for c in cors:
+            ck = c.get("key") or ""
+            if not any(ck.startswith(p) for p in prefixes):
+                continue
+            w = c.get("walked") or None
+            rows.append({"key": ck, "label": c.get("label") or ck,
+                         "walked": bool(w),
+                         "minutes": (w or {}).get("minutes"),
+                         "date": (w or {}).get("date")})
+        rows.sort(key=lambda r: (not r["walked"], r["label"]))
+        cities.append({"key": key, "name": name, "link": link,
+                       "corridors": rows,
+                       "walked": sum(1 for r in rows if r["walked"]),
+                       "total": len(rows)})
+    return jsonify({"ok": True, "cities": cities})
+
+
+# ---------- saved walks: your plans, under your sign-in ----------
+WALKS_PATH = _data_path("saved_walks.json")
+_WALK_ROOM_RE = re.compile(r"^[a-z0-9-]{2,40}$")
+
+
+@app.route("/api/walks", methods=["GET", "POST"])
+def api_walks():
+    """A reader's saved walks. Their own and only their own, both ways:
+    the list never shows anyone else's, and a walk saves under exactly
+    the identity the session carries. This is the first thing the
+    site-wide sign-in gives a visitor beyond the blueprint."""
+    reader = session.get("reader") or {}
+    email = (reader.get("email") or "").strip().lower()
+    if not email:
+        return _bp_nostore(jsonify({"ok": False, "need": "signin",
+                                    "error": "Sign in to keep walks."}), 401)
+    if request.method == "GET":
+        rows = _load(WALKS_PATH)
+        rows = rows if isinstance(rows, list) else []
+        mine = [{k: w.get(k) for k in ("id", "kind", "walk", "title",
+                                       "minutes", "saved_at")}
+                for w in rows if w.get("email") == email]
+        return _bp_nostore(jsonify({"ok": True, "walks": mine[::-1]}))
+    data = request.get_json(force=True, silent=True) or {}
+    if data.get("kind") != "met":
+        return _bp_nostore(jsonify({"ok": False,
+                                    "error": "Only Met walks can be saved yet."}), 400)
+    rooms = [s.strip() for s in (data.get("walk") or "").split(",") if s.strip()]
+    if not rooms or len(rooms) > 12 or not all(_WALK_ROOM_RE.match(s) for s in rooms):
+        return _bp_nostore(jsonify({"ok": False,
+                                    "error": "That walk could not be read."}), 400)
+    title = _no_em_dash(_no_tags((data.get("title") or "").strip()), title=True)[:80]
+    minutes = data.get("minutes")
+    minutes = int(minutes) if isinstance(minutes, (int, float)) and 0 < minutes < 2000 else None
+    with _LOCK:
+        rows = _load(WALKS_PATH)
+        rows = rows if isinstance(rows, list) else []
+        mine = [w for w in rows if w.get("email") == email]
+        for w in mine:
+            if w.get("kind") == "met" and w.get("walk") == ",".join(rooms):
+                return _bp_nostore(jsonify({"ok": True, "duplicate": True,
+                                            "id": w.get("id")}))
+        if len(mine) >= 50:
+            return _bp_nostore(jsonify({"ok": False,
+                                        "error": "Fifty walks is the shelf. "
+                                        "Delete one to save another."}), 400)
+        # NOT _next_id: that counts rows, and walks, unlike articles, get
+        # deleted, so a length-based id would reuse a dead walk's id and a
+        # later Remove would take two walks with one click. Max-plus-one
+        # survives any history of deletions.
+        top = 0
+        for r0 in rows:
+            m0 = re.match(r"WALK_(\d+)$", r0.get("id") or "")
+            if m0:
+                top = max(top, int(m0.group(1)))
+        w = {"id": "WALK_%04d" % (top + 1),
+             "email": email,
+             "name": (reader.get("name") or "").strip()[:80],
+             "kind": "met",
+             "walk": ",".join(rooms),
+             "title": title,
+             "minutes": minutes,
+             "saved_at": datetime.datetime.now().isoformat(timespec="seconds")}
+        rows.append(w)
+        # No blanket trim: a global cap would silently drop the OLDEST rows,
+        # which belong to somebody else. The fifty-per-email shelf above is
+        # the real bound.
+        _save(WALKS_PATH, rows)
+    return _bp_nostore(jsonify({"ok": True, "id": w["id"]}))
+
+
+@app.route("/api/walks/<wid>/delete", methods=["POST"])
+def api_walks_delete(wid):
+    """Drop one of your own walks. Somebody else's id does nothing."""
+    reader = session.get("reader") or {}
+    email = (reader.get("email") or "").strip().lower()
+    if not email:
+        return _bp_nostore(jsonify({"ok": False, "need": "signin"}), 401)
+    with _LOCK:
+        rows = _load(WALKS_PATH)
+        rows = rows if isinstance(rows, list) else []
+        keep = [w for w in rows
+                if not (w.get("id") == wid and w.get("email") == email)]
+        if len(keep) != len(rows):
+            _save(WALKS_PATH, keep)
+            return _bp_nostore(jsonify({"ok": True}))
+    return _bp_nostore(jsonify({"ok": False, "error": "Not one of your walks."}), 404)
+
+
 @app.route("/met-map.js")
 def met_map_js():
     return send_file(os.path.join(BASE_DIR, "met-map.js"))
@@ -1577,6 +1777,14 @@ def google_signin_js():
     the credential is never decoded in the browser has to hold everywhere, and
     three copies is three places to get that wrong."""
     return send_file(os.path.join(BASE_DIR, "google-signin.js"),
+                     mimetype="text/javascript")
+
+
+@app.route("/site-auth.js")
+def site_auth_js():
+    """The site-wide sign-in chip, one copy, injected into every page by
+    the response rewriter rather than carried by thirty templates."""
+    return send_file(os.path.join(BASE_DIR, "site-auth.js"),
                      mimetype="text/javascript")
 
 
@@ -1678,6 +1886,39 @@ def _log_footprint_consent(key, version):
             os.replace(tmp, _FP_CONSENT_LOG)
     except Exception:
         pass
+
+
+@app.route("/api/footprints/propose", methods=["POST"])
+@surveyor_required
+def api_footprints_propose():
+    """A named walk from anywhere on Earth -> the owner's approval queue.
+
+    Same quality law as a corridor walk (footprints._validate_trace); the
+    difference is what happens after: nothing is published until Sean
+    approves it. Random collection, curated record."""
+    d = request.get_json(silent=True) or {}
+    # Same consent as recording an opened corridor: a named-new walk keeps the
+    # exact line too, so the walker must agree in the current words first.
+    want = consent.consent_text("record_walk")
+    got = d.get("consent") or {}
+    if not want or got.get("purpose") != "record_walk" \
+            or got.get("version") != want.get("version"):
+        return jsonify({"ok": False, "need_consent": want,
+                        "error": "Recording needs your consent. Agree to the "
+                                 "recording notice, then record."}), 400
+    rec, why = FOOTPRINTS.propose_walk(d.get("label"), d.get("points") or [],
+                                       d.get("minutes"), d.get("worst_accuracy_m"))
+    if rec is None:
+        return jsonify({"ok": False, "error": why}), 400
+    _log_footprint_consent("proposed:" + str(d.get("label") or ""), want["version"])
+    return jsonify({"ok": True, "proposal": rec})
+
+
+@app.route("/api/footprints/proposed")
+@owner_required
+def api_footprints_proposed():
+    """The review queue, for the owner."""
+    return jsonify({"ok": True, "proposed": FOOTPRINTS.proposed()})
 
 
 @app.route("/api/footprints/<key>", methods=["POST"])
@@ -2195,6 +2436,9 @@ PUBLIC_PAGES = [
     ("/destination-book", "0.9", "daily"),
     ("/road-trip", "0.9", "weekly"),
     ("/factor-clock", "0.8", "weekly"),
+    ("/walk", "0.8", "weekly"),
+    ("/footprints-demo", "0.7", "monthly"),
+    ("/footprints-concept", "0.6", "monthly"),
     ("/book", "0.8", "monthly"),
     ("/articles", "0.7", "weekly"),
     ("/partners", "0.6", "monthly"),
@@ -2244,6 +2488,10 @@ def llms_txt():
   and restaurants with local tips from a licensed guide.
 - [The Factor Clock](%(o)s/factor-clock): A prediction clock scored against what
   actually happened, and honest about when it does not know.
+- [The Walking Guide](%(o)s/walk): A spoken guide that names what is around you
+  as you walk a recorded corridor, and refuses to guess when GPS is poor.
+- [The Footprints Demo](%(o)s/footprints-demo): The direction gate — footprints
+  that vanish when you face the wrong way, shown working with a real compass.
 
 ## Services
 
@@ -2458,6 +2706,24 @@ def api_access_logout():
     session.pop("access_user", None)
     session.pop("lab_user", None)
     return jsonify({"ok": True})
+
+
+@app.route("/record")
+def record_signin_page():
+    """The surveyor's door: sign in with an issued account, land on the recorder.
+
+    The access gate used to appear only on password-protected share links, so
+    a surveyor holding credentials but no share link had no page to sign in
+    on — the recorder told them to sign in "on the shared pages" they had
+    never been sent. This is that missing door: the owner or an already
+    signed-in account goes straight to the recorder; everyone else gets the
+    gate, and the gate's reload lands back here, which sends them on."""
+    if session.get("owner") or _access_user():
+        return redirect("/footprint")
+    r = make_response(send_file(os.path.join(BASE_DIR, "access-gate.html")))
+    r.headers["X-Robots-Tag"] = "noindex, nofollow"
+    r.headers["Cache-Control"] = "private, no-store"
+    return r
 
 
 @app.route("/robot")
@@ -2764,6 +3030,101 @@ def _may_publish(entry):
     if vis:
         return vis == VISIBILITY_PUBLIC
     return not _ADDRESS_LIKE.match(entry.get("name") or "")
+
+
+# ---------- the free guide earns: demand counted, doors routed ----------
+#
+# Sean's order of operations, from ATTRACTION_COMMISSIONS.md: the guide
+# stays free, the demand gets COUNTED, and the counted demand is what the
+# affiliate applications and trade desks get shown. So every outbound door
+# goes through /go, which counts and then forwards, and the audio guides
+# report a play the same way. Counts are anonymous totals per attraction
+# per day, in the same self-hosted spirit as the traffic panel: no reader
+# profiles, no third-party pixels, nothing about WHO, only HOW MANY.
+GUIDE_DEMAND_PATH = _data_path("guide_demand.json")
+EXPEDIA_AFFILIATE_ID = os.environ.get("EXPEDIA_AFFILIATE_ID", "").strip()
+
+
+def _demand_bump(kind, key, city=""):
+    try:
+        with _LOCK:
+            d = _load(GUIDE_DEMAND_PATH)
+            if not isinstance(d, dict):
+                d = {}
+            day = datetime.date.today().isoformat()
+            k = "%s|%s" % (kind, key)
+            row = d.setdefault(k, {"kind": kind, "key": key, "city": city,
+                                   "total": 0, "days": {}})
+            row["total"] = int(row.get("total") or 0) + 1
+            days = row.setdefault("days", {})
+            days[day] = int(days.get(day) or 0) + 1
+            if len(days) > 120:
+                for old in sorted(days)[:-120]:
+                    days.pop(old, None)
+            _save(GUIDE_DEMAND_PATH, d)
+    except Exception:
+        pass                    # a lost count must never cost a reader a page
+
+
+def _dest_by_slug(slug):
+    for e in public_book().get("entries") or []:
+        if e.get("slug") == slug:
+            return e
+    return None
+
+
+@app.route("/go/stay")
+def go_stay():
+    """Hotels as a resource: a stay search near the attraction in hand.
+
+    The redirect target is built HERE, from our own template, never from
+    anything in the query, so this can never be an open redirect. The
+    affiliate id joins the URL the day Expedia approves the account; until
+    then the door works, and the demand it proves is the application."""
+    from urllib.parse import quote_plus
+    near = _no_tags((request.args.get("near") or "").strip())[:80]
+    city = _no_tags((request.args.get("city") or "").strip())[:20]
+    _demand_bump("stay", near or city or "anywhere", city)
+    url = "https://www.expedia.com/Hotel-Search?destination=" + quote_plus(near or city or "")
+    if EXPEDIA_AFFILIATE_ID:
+        url += "&affcid=" + quote_plus(EXPEDIA_AFFILIATE_ID)
+    return redirect(url, code=302)
+
+
+@app.route("/go/tickets/<slug>")
+def go_tickets(slug):
+    """The admission door: counts, then forwards to the venue's own ticket
+    page. When an affiliate programme approves, the registry's tickets_url
+    becomes the deep link and this route needs no change at all."""
+    e = _dest_by_slug(slug)
+    url = (e or {}).get("tickets_url") or ""
+    if not e or not url.startswith("https://"):
+        return Response("No ticket door for that one.", status=404, mimetype="text/plain")
+    _demand_bump("tickets", slug, e.get("city") or "")
+    return redirect(url, code=302)
+
+
+@app.route("/api/guide-demand/beacon", methods=["POST"])
+def api_guide_demand_beacon():
+    """A play or a plan, counted. Anonymous by construction."""
+    data = request.get_json(force=True, silent=True) or {}
+    kind = data.get("kind")
+    key = _no_tags((data.get("key") or "").strip())[:80]
+    if kind not in ("audio", "plan") or not key:
+        return jsonify({"ok": False}), 400
+    _demand_bump(kind, key, _no_tags((data.get("city") or "").strip())[:20])
+    return jsonify({"ok": True})
+
+
+@app.route("/api/guide-demand")
+@owner_required
+def api_guide_demand():
+    """The owner's demand board: what the free guide is proving, ranked.
+    This is the page to screenshot into an affiliate application."""
+    d = _load(GUIDE_DEMAND_PATH)
+    d = d if isinstance(d, dict) else {}
+    rows = sorted(d.values(), key=lambda r: -int(r.get("total") or 0))
+    return jsonify({"ok": True, "rows": rows[:200]})
 
 
 def public_book():
@@ -6298,6 +6659,108 @@ def api_partner_add():
     return jsonify({"ok": True, "partner": p})
 
 
+# Places a scout can be sent, with the point it searches from. A city
+# joins this list the day the business works there, and nothing else has
+# to change.
+SCOUT_AREAS = {
+    "seattle": ("Seattle", 47.6062, -122.3321),
+    "seatac": ("SeaTac airport", 47.4502, -122.3088),
+    "bellevue": ("Bellevue", 47.6101, -122.2015),
+    "tacoma": ("Tacoma", 47.2529, -122.4443),
+    "everett": ("Everett", 47.9790, -122.2021),
+    "nyc": ("New York", 40.7580, -73.9855),
+    "dc": ("Washington DC", 38.8977, -77.0365),
+    "boston": ("Boston", 42.3601, -71.0589),
+}
+
+
+@app.route("/api/partners/scout/areas")
+@owner_required
+def api_partner_scout_areas():
+    """Where a scout can be sent, and what it hunts. Feeds the Atlas form."""
+    import atlas_scout
+    return jsonify({"ok": True,
+                    "areas": [{"key": k, "label": v[0]} for k, v in SCOUT_AREAS.items()],
+                    "kinds": [{"key": k, "label": v["label"], "route": v["route"]}
+                              for k, v in atlas_scout.KINDS.items()]})
+
+
+@app.route("/api/partners/scout", methods=["POST"])
+@owner_required
+def api_partner_scout():
+    """Send the scout, and put what it finds in the pipeline to contact.
+
+    Atlas could only ever hold the prospects somebody had already thought
+    of. This fills it from the map: organizations of the kinds that send
+    people to a car service, each with a real way to reach them, each
+    stamped with where the fact came from.
+
+    Nothing is contacted here. Every row lands as to_contact, which is
+    the pipeline's own first column, and Dispatch does the calling."""
+    import atlas_scout
+    data = request.get_json(force=True, silent=True) or {}
+    area = (data.get("area") or "seattle").strip()
+    if area not in SCOUT_AREAS:
+        return jsonify({"ok": False, "error": "Unknown area."}), 400
+    label, lat, lon = SCOUT_AREAS[area]
+    kinds = data.get("kinds") or ["hotel", "travel_agency", "event_venue", "senior_living"]
+    try:
+        radius = float(data.get("radius_km") or 8)
+    except Exception:
+        radius = 8
+    limit = data.get("limit") or 40
+    preview = bool(data.get("preview"))
+
+    found, err = atlas_scout.scout(lat, lon, radius_km=radius, kinds=kinds, limit=limit)
+    if err:
+        return jsonify({"ok": False, "error":
+                        "The map service did not answer (%s). It load-sheds when "
+                        "busy; try again in a minute." % err}), 502
+
+    existing = _load(PARTNERS_PATH)
+    existing = existing if isinstance(existing, list) else []
+    fresh = atlas_scout.dedupe(found, existing)
+    if preview:
+        return jsonify({"ok": True, "area": label, "found": len(found),
+                        "new": len(fresh), "already_held": len(found) - len(fresh),
+                        "candidates": [{k: v for k, v in c.items() if k != "_score"}
+                                       for c in fresh]})
+
+    added = []
+    with _LOCK:
+        partners = _load(PARTNERS_PATH)
+        partners = partners if isinstance(partners, list) else []
+        for c in fresh:
+            p = {
+                "id": _next_id(partners, "PTR", datestamp=False),
+                "name": c["name"],
+                "type": c["type"],
+                "phone": c["phone"],
+                "email": c["email"],
+                "website": c["website"],
+                "address": c["address"],
+                "status": "to_contact",
+                "notes": "",
+                "added_at": datetime.datetime.now().isoformat(timespec="seconds"),
+                "last_contacted": None,
+                # what the caller needs, and where it came from
+                "sales_route": c["sales_route"],
+                "contact_confidence": c["contact_confidence"],
+                "research_notes": c["research_notes"],
+                "source": c["source"],
+                "osm_id": c["osm_id"],
+                "found_by": "scout",
+                "found_in": label,
+            }
+            partners.append(p)
+            added.append(p)
+        if added:
+            _save(PARTNERS_PATH, partners)
+    return jsonify({"ok": True, "area": label, "found": len(found),
+                    "added": len(added), "already_held": len(found) - len(fresh),
+                    "partners": added})
+
+
 @app.route("/api/partners/<pid>/update", methods=["POST"])
 @owner_required
 def api_partner_update(pid):
@@ -6726,6 +7189,496 @@ def _translations_for(title, body):
     return out
 
 
+# ---------- the blueprint: the sealed layer under an idea ----------
+#
+# An idea on the board has two layers, exactly as the Reinvestment USA
+# framework drew them: the article, public, and the BLUEPRINT, the full
+# working detail, sealed. The seal is identity: opening a blueprint requires
+# a verified Google sign-in, and every opening is recorded, name, email,
+# time, for the author to see. That is what "protected" means here and it
+# is all it means: a timestamp proving who wrote it first, and a log
+# proving who has read it since. It does not stop a determined thief; it
+# makes every reader a named reader, which is what an author can actually
+# take to a lawyer.
+#
+# A blueprint is keyed by the CONTENT HASH of the article it belongs to,
+# the same anchor discipline as translations: edit the article and the
+# blueprint detaches rather than sitting under text it no longer matches.
+BLUEPRINTS_PATH = _data_path("blueprints.json")
+BLUEPRINT_ACCESS_PATH = _data_path("blueprint_access.json")
+
+
+def _bp_entry(title, body):
+    """The blueprint sealed under this exact text, or None. Returns (bp, hash)."""
+    h = _content_hash(title, body)
+    store = _read_tr_file(BLUEPRINTS_PATH)
+    entry = (store.get("by_hash") or {}).get(h) if isinstance(store, dict) else None
+    return entry, h
+
+
+def _bp_image_from_bytes(raw, mime):
+    """A drawing, out of raw bytes, or None. The one validator every path
+    goes through, poster uploads and seeded prints alike.
+
+    Raster formats only, verified by magic bytes, never by the label that
+    came with them: an SVG is a script container, and no picture may ever
+    reach another reader's page as markup. Size capped at 3MB; a blueprint
+    drawing is a photo of a sketch, not a film."""
+    try:
+        if mime not in ("image/png", "image/jpeg", "image/webp"):
+            return None
+        if not (100 <= len(raw) <= 3_000_000):
+            return None
+        ok = ((mime == "image/png" and raw[:8] == b"\x89PNG\r\n\x1a\n")
+              or (mime == "image/jpeg" and raw[:3] == b"\xff\xd8\xff")
+              or (mime == "image/webp" and raw[:4] == b"RIFF" and raw[8:12] == b"WEBP"))
+        if not ok:
+            return None
+        import base64
+        return {"mime": mime, "b64": base64.b64encode(raw).decode()}
+    except Exception:
+        return None
+
+
+def _bp_image_from_data_url(s):
+    """A poster's drawing, out of a data URL, or None."""
+    try:
+        if not isinstance(s, str) or not s.startswith("data:image/") or len(s) > 4_400_000:
+            return None
+        head, _, b64 = s.partition(",")
+        if ";base64" not in head:
+            return None
+        mime = head[5:head.index(";")]
+        import base64
+        raw = base64.b64decode(b64, validate=True)
+        return _bp_image_from_bytes(raw, mime)
+    except Exception:
+        return None
+
+
+def _bp_attach(title, body, md, source, bp_title="", images=None, svg="",
+               price_usd=None):
+    """Seal a blueprint under an article. Caller passes the STORED title and
+    body (post-scrub, post-truncation), because the hash must match what
+    readers are actually looking at.
+
+    A blueprint can be text, pictures, or both; `images` is a list of
+    validated rasters ({mime, b64}), `svg` is OUR OWN drawn sheet and is
+    only ever set by the seeder, never from a request. A `price_usd` makes
+    opening it a sale: sign in AND pay, the framework's own mechanic."""
+    md = _no_em_dash((md or "").strip())[:40000]
+    images = [i for i in (images or []) if i][:8]
+    if not md and not images and not svg:
+        return
+    entry = {
+        "title": _no_em_dash((bp_title or "").strip(), title=True)[:160] or "The blueprint",
+        "md": md,
+        "source": source,
+        "attached_at": datetime.datetime.now().isoformat(timespec="seconds"),
+    }
+    if images:
+        entry["images"] = images
+    if svg:
+        entry["svg"] = svg
+    try:
+        if price_usd and 0 < float(price_usd) <= 10000:
+            entry["price_usd"] = round(float(price_usd), 2)
+    except Exception:
+        pass
+    with _LOCK:
+        store = _load(BLUEPRINTS_PATH)
+        if not isinstance(store, dict):
+            store = {}
+        store.setdefault("by_hash", {})
+        store["by_hash"][_content_hash(title, body)] = entry
+        _save(BLUEPRINTS_PATH, store)
+
+
+def _md_blocks(md):
+    """A drafted blueprint into typed blocks the page can render safely.
+
+    Deliberately small: headings, paragraphs, bullet lists, quotes, fenced
+    code and tables (both shown monospace), rules. Every block is rendered
+    in the browser with textContent, never innerHTML, so nothing in a
+    blueprint can script the page, and anything this parser does not
+    recognise degrades to a visible paragraph rather than vanishing."""
+    blocks = []
+    buf = []
+    mode = [None]           # None | 'ul' | 'q' | 'pre'
+
+    def _plain(s):
+        # [^*\n] keeps each match scan from crossing the next star, which is
+        # what makes this linear; the lazy .+? form went quadratic on a line
+        # full of stars, ~3.5s of CPU on a 40KB hostile blueprint, reachable
+        # by any signed reader.
+        s = re.sub(r"\*\*([^*\n]+)\*\*", r"\1", s)
+        s = re.sub(r"(?<!\w)\*([^*\n]+)\*(?!\w)", r"\1", s)
+        return s.replace("`", "").strip()
+
+    def flush():
+        if not buf:
+            mode[0] = None
+            return
+        if mode[0] == "pre":
+            blocks.append({"t": "pre", "s": "\n".join(buf)})
+        elif mode[0] == "ul":
+            blocks.append({"t": "ul", "items": [_plain(x) for x in buf]})
+        elif mode[0] == "q":
+            blocks.append({"t": "q", "s": _plain(" ".join(buf))})
+        else:
+            s = _plain(" ".join(buf))
+            if s:
+                blocks.append({"t": "p", "s": s})
+        del buf[:]
+        mode[0] = None
+
+    fenced = False
+    for raw in (md or "").split("\n"):
+        line = raw.rstrip()
+        if line.strip().startswith("```"):
+            if fenced:
+                flush()
+                fenced = False
+            else:
+                flush()
+                mode[0] = "pre"
+                fenced = True
+            continue
+        if fenced:
+            buf.append(raw)
+            continue
+        s = line.strip()
+        if not s:
+            flush()
+            continue
+        if s in ("---", "***") or set(s) == {"-"} and len(s) >= 3:
+            flush()
+            blocks.append({"t": "hr"})
+            continue
+        if s.startswith("### "):
+            flush()
+            blocks.append({"t": "h3", "s": _plain(s[4:])})
+            continue
+        if s.startswith("## "):
+            flush()
+            blocks.append({"t": "h2", "s": _plain(s[3:])})
+            continue
+        if s.startswith("# "):
+            flush()
+            blocks.append({"t": "h2", "s": _plain(s[2:])})
+            continue
+        if s.startswith("|"):
+            if mode[0] != "pre":
+                flush()
+                mode[0] = "pre"
+            buf.append(line)
+            continue
+        if s.startswith("> "):
+            if mode[0] != "q":
+                flush()
+                mode[0] = "q"
+            buf.append(s[2:])
+            continue
+        if s.startswith("- ") or s.startswith("· "):
+            if mode[0] != "ul":
+                flush()
+                mode[0] = "ul"
+            buf.append(s[2:])
+            continue
+        if mode[0] == "ul" and raw.startswith("  "):
+            buf[-1] = buf[-1] + " " + s     # a wrapped bullet stays one bullet
+            continue
+        if mode[0] in ("ul", "q", "pre"):
+            # 'pre' here can only be a table (fenced code never reaches this
+            # branch); without the flush a paragraph on the line after a
+            # table was glued into the table's monospace block.
+            flush()
+        buf.append(s)
+    flush()
+    return blocks
+
+
+def _bp_record_access(h, aid, viewer):
+    """One line in the book: who opened which blueprint, and when.
+
+    Re-opens within the hour are not re-recorded, the log is evidence of
+    WHO has seen a plan, not a click counter, and a reader flipping back
+    and forth should not read as ten people."""
+    email = (viewer.get("email") or "").strip().lower()
+    if not email:
+        return
+    now = datetime.datetime.now()
+    with _LOCK:
+        rows = _load(BLUEPRINT_ACCESS_PATH)
+        if not isinstance(rows, list):
+            rows = []
+        for r in reversed(rows[-200:]):
+            if r.get("h") == h and r.get("email") == email:
+                try:
+                    prev = datetime.datetime.fromisoformat(r.get("ts") or "")
+                    if (now - prev).total_seconds() < 3600:
+                        return
+                except Exception:
+                    pass
+                break
+        rows.append({"h": h, "aid": aid, "email": email,
+                     "name": (viewer.get("name") or "").strip()[:80],
+                     "ts": now.isoformat(timespec="seconds")})
+        _save(BLUEPRINT_ACCESS_PATH, rows[-5000:])
+
+
+def _bp_opened_count(h):
+    """How many distinct named readers have opened this blueprint."""
+    rows = _load(BLUEPRINT_ACCESS_PATH)
+    if not isinstance(rows, list):
+        return 0
+    return len({r.get("email") for r in rows if r.get("h") == h and r.get("email")})
+
+
+def _bp_paid(h, email):
+    """Has this reader bought this blueprint. Paid means Square said paid,
+    through the same reconcile the opinions use; a demo or pending row
+    unlocks nothing, exactly as it unlocks no opinion."""
+    if not email:
+        return None
+    for b in _load(PURCHASES_PATH):
+        if (b.get("kind") == "blueprint" and b.get("h") == h
+                and b.get("buyer_email") == email and b.get("status") == "paid"):
+            return b
+    return None
+
+
+def _bp_nostore(resp, code=200):
+    """No sealed byte, and not even the fact of being asked to sign in,
+    may sit in a shared cache: a cached 200 would replay the plan to the
+    next unsigned visitor with no access record at all."""
+    resp.headers["Cache-Control"] = "private, no-store"
+    resp.headers["Vary"] = "Cookie"
+    return resp, code
+
+
+def _bp_open(aid):
+    """The one gate both blueprint doors share, JSON and image alike.
+
+    Two doors with two hand-written gates would drift apart the first time
+    one was edited, and the drifted one would be the leak. Returns
+    (bp, hash, viewer, None) when the reader may pass, else
+    (None, None, None, (payload, code))."""
+    a = next((x for x in _load(ARTICLES_PATH)
+              if x.get("id") == aid and not x.get("hidden")), None)
+    if not a:
+        return None, None, None, ({"ok": False, "error": "That idea is not here."}, 404)
+    owner = session.get("owner")
+    if (a.get("lock") or {}) and not _entitled(a) and not owner:
+        # The page treats a locked article as blueprint-less; the doors
+        # must agree, or the sealed layer becomes a side door around the
+        # article's own paywall.
+        return None, None, None, ({"ok": False,
+                                   "error": "This idea is locked; its blueprint unlocks with it."}, 403)
+    bp, h = _bp_entry(a.get("title"), a.get("body"))
+    if not bp:
+        return None, None, None, ({"ok": False,
+                                   "error": "No blueprint travels with this idea."}, 404)
+    reader = session.get("reader") or {}
+    if not owner and not reader.get("email"):
+        return None, None, None, ({"ok": False, "need": "signin",
+                                   "error": "Sign in to open the blueprint."}, 401)
+    # A priced blueprint is a sale, the framework's own words: the body
+    # unlocks on payment. The owner reads their own board freely; everyone
+    # else needs a paid row in the same ledger the opinions settle through.
+    price = bp.get("price_usd")
+    if price and not owner and not _bp_paid(h, (reader.get("email") or "").strip().lower()):
+        return None, None, None, ({"ok": False, "need": "unlock",
+                                   "price_usd": price,
+                                   "error": "This blueprint is priced at $%g "
+                                            "by the author." % price}, 402)
+    if reader.get("email"):
+        viewer = {"email": reader.get("email"), "name": reader.get("name") or ""}
+    else:
+        # The owner reading their own board is not evidence of anything;
+        # the log stays a record of outside readers.
+        viewer = {"email": "", "name": owner, "owner": True}
+    return bp, h, viewer, None
+
+
+@app.route("/api/idea/<aid>/blueprint")
+def api_idea_blueprint(aid):
+    """The sealed layer, served ONLY to a named reader.
+
+    The blueprint's body is never in the page's HTML and never in the
+    public article JSON; this endpoint and its image twin are the only
+    doors, and the check is the server's session, not anything the page
+    claims. An unsigned request learns that it must sign in and nothing
+    else."""
+    bp, h, viewer, err = _bp_open(aid)
+    if err:
+        return _bp_nostore(jsonify(err[0]), err[1])
+    if not viewer.get("owner"):
+        _bp_record_access(h, aid, viewer)
+    return _bp_nostore(jsonify({
+        "ok": True,
+        "title": bp.get("title") or "The blueprint",
+        "attached_at": bp.get("attached_at"),
+        "blocks": _md_blocks(bp.get("md") or ""),
+        # The drawn sheet ships as markup, so it is served ONLY for the
+        # seeded entry, whose SVG comes from this repo. A poster's entry
+        # never carries svg out of here even if the store were poisoned.
+        "svg": (bp.get("svg") or "") if bp.get("source") == "seed" else "",
+        "images": len(bp.get("images") or []),
+        "viewer": viewer,
+        "opened": _bp_opened_count(h)}))
+
+
+@app.route("/api/idea/<aid>/blueprint/image")
+@app.route("/api/idea/<aid>/blueprint/image/<int:n>")
+def api_idea_blueprint_image(aid, n=0):
+    """The picture half of the sealed layer, behind the same gate.
+
+    Not recorded separately: the page can only reach this right after the
+    JSON door, which already wrote the reader into the book, and two log
+    lines for one opening would double-count readers."""
+    import base64
+    bp, h, viewer, err = _bp_open(aid)
+    if err:
+        return _bp_nostore(jsonify(err[0]), err[1])
+    imgs = bp.get("images") or []
+    img = imgs[n] if 0 <= n < len(imgs) else {}
+    if not img.get("b64"):
+        return _bp_nostore(jsonify({"ok": False, "error": "No drawing on this blueprint."}), 404)
+    try:
+        raw = base64.b64decode(img["b64"])
+    except Exception:
+        return _bp_nostore(jsonify({"ok": False, "error": "The drawing could not be read."}), 500)
+    mime = img.get("mime") or ""
+    if mime not in ("image/png", "image/jpeg", "image/webp"):
+        return _bp_nostore(jsonify({"ok": False, "error": "The drawing could not be read."}), 500)
+    return _bp_nostore(Response(raw, mimetype=mime))
+
+
+@app.route("/api/blueprint-access")
+def api_blueprint_access():
+    """The author's side of the protection: who opened what, newest first.
+    Owner only, until posters have accounts of their own."""
+    if not session.get("owner"):
+        return jsonify({"ok": False, "error": "Owner only."}), 403
+    rows = _load(BLUEPRINT_ACCESS_PATH)
+    rows = rows if isinstance(rows, list) else []
+    titles = {}
+    for a in _load(ARTICLES_PATH):
+        titles[a.get("id")] = a.get("title")
+    out = [{"when": r.get("ts"), "email": r.get("email"), "name": r.get("name"),
+            "idea": titles.get(r.get("aid")) or r.get("aid")}
+           for r in rows[-200:]]
+    return jsonify({"ok": True, "opens": out[::-1], "total": len(rows)})
+
+
+@app.route("/api/idea/<aid>/blueprint/buy", methods=["POST"])
+def api_idea_blueprint_buy(aid):
+    """Buy the sealed blueprint. The same Square rails as an opinion: an
+    invoice goes to the buyer's email, the reconcile against Square flips
+    it to paid, and only paid opens the seal. The buyer is the signed-in
+    reader, so the unlock follows them to any device, and the invoice
+    goes to an address Google has verified, not one typed into a form."""
+    reader = session.get("reader") or {}
+    email = (reader.get("email") or "").strip().lower()
+    if not email:
+        return _bp_nostore(jsonify({"ok": False, "need": "signin",
+                                    "error": "Sign in first."}), 401)
+    a = next((x for x in _load(ARTICLES_PATH)
+              if x.get("id") == aid and not x.get("hidden")), None)
+    if not a:
+        return _bp_nostore(jsonify({"ok": False, "error": "That idea is not here."}), 404)
+    bp, h = _bp_entry(a.get("title"), a.get("body"))
+    price = float((bp or {}).get("price_usd") or 0)
+    if not bp or not price:
+        return _bp_nostore(jsonify({"ok": False,
+                                    "error": "This blueprint is not for sale."}), 404)
+    if _bp_paid(h, email):
+        return _bp_nostore(jsonify({"ok": True, "already_paid": True}))
+    processing = round(price * 0.029 + 0.30, 2)
+    invoice = None
+    try:
+        invoice = square_client.create_charge(
+            {"name": reader.get("name") or email, "email": email, "phone": ""},
+            price, "Blueprint: " + (a.get("title") or "")[:60],
+            "The sealed blueprint under this idea. One-time purchase; "
+            "it opens under your sign-in once the invoice is paid.")
+    except Exception as e:
+        invoice = {"ok": False, "error": str(e)[:160]}
+    is_demo = isinstance(invoice, dict) and (
+        invoice.get("mode") == "mock"
+        or str(invoice.get("status", "")).upper() == "SIMULATED")
+    inv_err = None
+    if isinstance(invoice, dict) and not is_demo:
+        if invoice.get("errors"):
+            try:
+                inv_err = invoice["errors"][0].get("detail") or str(invoice["errors"][0])
+            except Exception:
+                inv_err = "Square rejected the invoice."
+        elif invoice.get("ok") is False:
+            inv_err = invoice.get("error") or "Square rejected the invoice."
+    if inv_err:
+        return _bp_nostore(jsonify({"ok": False, "error": inv_err,
+                                    "hint": "Nothing was recorded, the invoice "
+                                            "was never raised."}), 502)
+    with _LOCK:
+        buys = _load(PURCHASES_PATH)
+        if not isinstance(buys, list):
+            buys = []
+        rec = {
+            "id": _next_id(buys, "BUY", datestamp=False),
+            "kind": "blueprint", "h": h, "aid": aid,
+            "opinion_id": None, "opinion_title": "Blueprint: " + (a.get("title") or "")[:80],
+            "pro_id": None, "buyer_key": None,
+            "buyer_name": (reader.get("name") or "")[:80], "buyer_email": email,
+            "price_usd": price, "platform_fee_usd": price,
+            "processing_usd": processing, "to_professional_usd": 0.0,
+            "platform_net_usd": round(price - processing, 2),
+            "status": "demo" if is_demo else "pending",
+            "invoice_id": (invoice or {}).get("id") or (invoice or {}).get("invoice_id"),
+            "invoice_url": (invoice or {}).get("url") or (invoice or {}).get("public_url"),
+            "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        }
+        buys.append(rec)
+        _save(PURCHASES_PATH, buys)
+    return _bp_nostore(jsonify({
+        "ok": True, "demo": is_demo, "invoice_url": rec.get("invoice_url"),
+        "note": ("Square is not connected yet, so no invoice was really sent "
+                 "and nothing will be charged. Recorded as a demo sale; the "
+                 "blueprint stays sealed because no money moved.") if is_demo else
+                ("The invoice is on its way to %s from Square. Once it is "
+                 "paid, the blueprint opens here under your sign-in." % email)}))
+
+
+@app.route("/api/idea/<aid>/blueprint/price", methods=["POST"])
+@owner_required
+def api_idea_blueprint_price(aid):
+    """The owner puts a price on a blueprint, or takes it off with 0."""
+    a = next((x for x in _load(ARTICLES_PATH)
+              if x.get("id") == aid and not x.get("hidden")), None)
+    if not a:
+        return jsonify({"ok": False, "error": "That idea is not here."}), 404
+    h = _content_hash(a.get("title"), a.get("body"))
+    data = request.get_json(force=True, silent=True) or {}
+    try:
+        price = round(float(data.get("price_usd") or 0), 2)
+    except Exception:
+        return jsonify({"ok": False, "error": "A number, in dollars."}), 400
+    if not (0 <= price <= 10000):
+        return jsonify({"ok": False, "error": "Between 0 and 10000."}), 400
+    with _LOCK:
+        store = _load(BLUEPRINTS_PATH)
+        entry = (store.get("by_hash") or {}).get(h) if isinstance(store, dict) else None
+        if not entry:
+            return jsonify({"ok": False, "error": "No blueprint on this idea."}), 404
+        if price:
+            entry["price_usd"] = price
+        else:
+            entry.pop("price_usd", None)
+        _save(BLUEPRINTS_PATH, store)
+    return jsonify({"ok": True, "price_usd": price or None})
+
+
 def _public_article(a):
     """Public shape, investor/launcher emails are kept private, only counts are shown.
 
@@ -6761,6 +7714,11 @@ def _public_article(a):
         # Whatever languages this piece has been translated into. A locked
         # article ships none of them, for the same reason it ships no body.
         "translations": {} if locked else _translations_for(a.get("title"), a.get("body")),
+        # Whether a sealed blueprint travels with this idea. The flag is
+        # public; the blueprint is not, it leaves only through its own
+        # sign-in-gated endpoint. A locked article shows no flag, exactly
+        # as it ships no body: the blueprint unlocks with the article.
+        "has_blueprint": (not locked) and bool(_bp_entry(a.get("title"), a.get("body"))[0]),
     }
     return out
 
@@ -6870,14 +7828,17 @@ def idea_page(aid):
     trs = {} if locked else _translations_for(a.get("title"), a.get("body"))
     LANG_NAMES = {"zh": "\u4e2d\u6587", "es": "Espa\u00f1ol",
                   "ko": "\ud55c\uad6d\uc5b4", "vi": "Ti\u1ebfng Vi\u1ec7t"}
-    lang_row = ""
-    if trs:
-        buttons = ['<button class="lang-opt" data-l="en" aria-current="true">English</button>']
-        for code in ("zh", "es", "ko", "vi"):
-            if code in trs:
-                buttons.append('<button class="lang-opt" data-l="%s">%s</button>'
-                               % (code, LANG_NAMES[code]))
-        lang_row = '<div class="lang-row" role="group" aria-label="Language">%s</div>' % "".join(buttons)
+    # Every language is always offered. A missing one is not hidden, it is
+    # translated the moment a reader taps it, through the same engine and
+    # the same anchored store as the background path. Hiding the button was
+    # honest once; with live translation behind it, offering is honest.
+    buttons = ['<button class="lang-opt" data-l="en" aria-current="true">English</button>']
+    for code in ("zh", "es", "ko", "vi"):
+        buttons.append('<button class="lang-opt" data-l="%s"%s>%s</button>'
+                       % (code, "" if code in trs else ' data-missing="1"',
+                          LANG_NAMES[code]))
+    lang_row = ('<div class="lang-row" role="group" aria-label="Language">%s</div>'
+                % "".join(buttons)) if not locked else ""
     # Paragraphs are split HERE, not in the browser. The first version passed
     # the body whole and split it in JavaScript with "\\n", which was written
     # into the page as a real line break, leaving an unterminated string. The
@@ -6895,6 +7856,257 @@ def idea_page(aid):
             '<p class="idea-locked">This idea is locked. What you can read '
             'above is the opening. The rest is available to unlock%s.</p>'
             % (" for $%g" % pub["price_usd"] if pub.get("price_usd") else ""))
+
+    # ---- the sealed blueprint, if one travels with this idea ----
+    # Only the section titles are in this page. The body leaves the server
+    # exclusively through /api/idea/<aid>/blueprint, which checks the
+    # session, so view-source shows an unsigned reader exactly what they
+    # are entitled to and nothing more.
+    bp, bph = (None, "") if locked else _bp_entry(a.get("title"), a.get("body"))
+    bp_section = ""
+    bp_script = ""
+    if bp:
+        bp_blocks = _md_blocks(bp.get("md") or "")
+        heads = [b["s"] for b in bp_blocks if b["t"] == "h2"]
+        toc = "".join("<li>%s</li>" % e(x) for x in heads[:10])
+        n_pics = len(bp.get("images") or [])
+        if bp.get("source") == "seed" and bp.get("svg"):
+            n_pics += 1
+        inside = []
+        if n_pics == 1:
+            inside.append("the drawing")
+        elif n_pics > 1:
+            inside.append("%d drawings" % n_pics)
+        if heads:
+            inside.append("%d sections" % len(heads))
+        inside_txt = " + ".join(inside) or "sealed"
+        reader_email = (session.get("reader") or {}).get("email") or ""
+        is_owner = bool(session.get("owner"))
+        signed = bool(reader_email) or is_owner
+        bp_price = bp.get("price_usd") or 0
+        bp_paid = bool(is_owner) or bool(
+            bp_price and reader_email
+            and _bp_paid(bph, reader_email.strip().lower()))
+        price_line = (" It is priced at $%g by the author; paying the Square "
+                      "invoice opens it under your sign-in." % bp_price) if bp_price else ""
+        if is_owner and not reader_email:
+            gate_note = "You are signed in as the owner. Owner readings are not recorded."
+        elif signed and bp_price and not bp_paid:
+            gate_note = ("This blueprint is priced at $%g by the author. "
+                         "Unlock it and, once the Square invoice is paid, it "
+                         "opens here under your sign-in, on any device." % bp_price)
+        elif signed:
+            gate_note = "You are signed in. Your reading is recorded for the author."
+        elif GOOGLE_CLIENT_ID:
+            gate_note = ("Sign in with Google to open it. Your name and the time of "
+                         "opening are recorded for the author." + price_line)
+        else:
+            gate_note = ("Sign-in is not switched on yet, so the blueprint cannot "
+                         "be opened here for now. It opens the moment sign-in "
+                         "arrives." + price_line)
+        bp_section = "".join([
+            '<div class="bp" id="bpBox">',
+            '<div class="bp-head">',
+            '<span>Attachment · <b>THE BLUEPRINT</b></span>',
+            '<span>Status · <b id="bpState">SEALED</b></span>',
+            ('<span>Price · <b>$%g</b></span>' % bp_price) if bp_price else '',
+            '<span>Named readers · <b id="bpOpened">', str(_bp_opened_count(bph)),
+            '</b></span>',
+            '</div>',
+            '<p class="bp-note"><b>', e(bp.get("title") or "The blueprint"), '.</b> ',
+            'The full working plan travels with this idea, sealed. Opening it requires ',
+            'signing in, and every reader is recorded, name and time, for the author. ',
+            'That is the whole of the protection: a dated record of when this was ',
+            'posted, and a named record of who has read the plan since. It is not ',
+            'a patent filing.</p>',
+            '<div class="bp-toc-h">Inside · ', e(inside_txt), '</div>',
+            '<ul class="bp-toc">', toc, '</ul>',
+            '<div id="bpGate"><p class="bp-gatenote" id="bpGateNote">', e(gate_note),
+            '</p><div id="bpBtnMount"></div></div>',
+            '<div id="bpBody" hidden></div>',
+            '</div>'])
+        bp_cfg = json.dumps({"aid": a.get("id") or aid, "cid": GOOGLE_CLIENT_ID,
+                             "enabled": bool(GOOGLE_CLIENT_ID), "signed": signed,
+                             "price": bp_price, "paid": bp_paid})
+        # This block is substituted as a VALUE into the page template, so it
+        # is never scanned for percent signs; and it deliberately contains no
+        # backslash escapes at all, the class of bug that has killed two
+        # generated scripts on this site already.
+        bp_script = "".join([
+            "<script>",
+            "(function () {",
+            "  var CFG = ", bp_cfg, ";",
+            "  var gate = document.getElementById('bpGate');",
+            "  var note = document.getElementById('bpGateNote');",
+            "  var mount = document.getElementById('bpBtnMount');",
+            "  var body = document.getElementById('bpBody');",
+            "  var state = document.getElementById('bpState');",
+            "  if (!gate || !body || !mount) return;",
+            "  function say(t) { if (note) note.textContent = t; }",
+            "  function el(tag, text, cls) {",
+            "    var d = document.createElement(tag);",
+            "    if (text) d.textContent = text;",
+            "    if (cls) d.className = cls;",
+            "    return d;",
+            "  }",
+            "  function renderDoc(j) {",
+            "    body.innerHTML = '';",
+            "    var who = (j.viewer && j.viewer.owner) ? 'the owner' :",
+            "      (((j.viewer && j.viewer.name) ? j.viewer.name + ', ' : '') +",
+            "       ((j.viewer && j.viewer.email) || ''));",
+            "    var ban = el('div', 'Opened by ' + who + '. ' +",
+            "      ((j.viewer && j.viewer.owner) ? 'Owner readings are not recorded.'",
+            "        : 'Your reading is recorded for the author.'), 'bp-viewer');",
+            "    if (j.viewer && j.viewer.email) {",
+            "      var so = el('button', 'Not you? Sign out', 'bp-signout');",
+            "      so.addEventListener('click', function () {",
+            "        fetch('/api/auth/reader/logout', { method: 'POST' })",
+            "          .then(function () { location.reload(); })",
+            "          .catch(function () { location.reload(); });",
+            "      });",
+            "      ban.appendChild(document.createTextNode(' '));",
+            "      ban.appendChild(so);",
+            "    }",
+            "    body.appendChild(ban);",
+            "    var nimg = (typeof j.images === 'number') ? j.images : 0;",
+            "    for (var k = 0; k < nimg; k++) {",
+            "      var im = document.createElement('img');",
+            "      im.className = 'bp-img';",
+            "      im.alt = 'Blueprint drawing ' + (k + 1);",
+            "      im.src = '/api/idea/' + encodeURIComponent(CFG.aid) + '/blueprint/image/' + k;",
+            "      body.appendChild(im);",
+            "    }",
+            "    if (j.svg) {",
+            "      var sheet = document.createElement('div');",
+            "      sheet.className = 'bp-sheet';",
+            "      sheet.innerHTML = j.svg;",
+            "      body.appendChild(sheet);",
+            "    }",
+            "    (j.blocks || []).forEach(function (b) {",
+            "      if (b.t === 'h2') body.appendChild(el('h2', b.s));",
+            "      else if (b.t === 'h3') body.appendChild(el('h3', b.s));",
+            "      else if (b.t === 'pre') body.appendChild(el('pre', b.s));",
+            "      else if (b.t === 'hr') body.appendChild(document.createElement('hr'));",
+            "      else if (b.t === 'q') {",
+            "        var q = document.createElement('blockquote');",
+            "        q.appendChild(el('p', b.s)); body.appendChild(q);",
+            "      }",
+            "      else if (b.t === 'ul') {",
+            "        var u = document.createElement('ul');",
+            "        (b.items || []).forEach(function (it) { u.appendChild(el('li', it)); });",
+            "        body.appendChild(u);",
+            "      }",
+            "      else if (b.s) body.appendChild(el('p', b.s));",
+            "    });",
+            "    if (j.viewer && j.viewer.email) {",
+            "      for (var i = 0; i < 14; i++) {",
+            "        var w = el('div', j.viewer.email + ' · recorded', 'bp-wm');",
+            "        w.style.top = String(260 + i * 430) + 'px';",
+            "        body.appendChild(w);",
+            "      }",
+            "    }",
+            "    body.hidden = false;",
+            "    gate.hidden = true;",
+            "    if (state) state.textContent =",
+            "      (j.viewer && j.viewer.owner) ? 'OPEN · OWNER' : 'OPEN · RECORDED';",
+            "    var op = document.getElementById('bpOpened');",
+            "    if (op && typeof j.opened === 'number') op.textContent = String(j.opened);",
+            "  }",
+            "  function openBP() {",
+            "    fetch('/api/idea/' + encodeURIComponent(CFG.aid) + '/blueprint')",
+            "      .then(function (r) { return r.json(); })",
+            "      .then(function (j) {",
+            "        if (j.ok) { renderDoc(j); return; }",
+            "        if (j.need === 'signin') {",
+            "          CFG.signed = false;",
+            "          say('Your sign-in has expired. Sign in again to open it.');",
+            "          arm(); return;",
+            "        }",
+            "        if (j.need === 'unlock') {",
+            "          CFG.paid = false;",
+            "          say(j.error || 'This blueprint is priced by the author.');",
+            "          arm(); return;",
+            "        }",
+            "        say(j.error || 'The blueprint could not be opened.');",
+            "      })",
+            "      .catch(function () { say('The blueprint could not be opened. Try again.'); });",
+            "  }",
+            "  function showOpenButton() {",
+            "    mount.innerHTML = '';",
+            "    var b = el('button', 'Open the blueprint', 'bp-open');",
+            "    b.addEventListener('click', openBP);",
+            "    mount.appendChild(b);",
+            "  }",
+            "  function showUnlockButton() {",
+            "    mount.innerHTML = '';",
+            "    var b = el('button', 'Unlock for $' + CFG.price, 'bp-open');",
+            "    b.addEventListener('click', function () {",
+            "      b.disabled = true;",
+            "      b.textContent = 'One moment';",
+            "      fetch('/api/idea/' + encodeURIComponent(CFG.aid) + '/blueprint/buy',",
+            "        { method: 'POST' })",
+            "        .then(function (r) { return r.json(); })",
+            "        .then(function (j) {",
+            "          if (j.already_paid) { CFG.paid = true; openBP(); return; }",
+            "          if (j.ok) {",
+            "            say(j.note || 'The invoice is on its way.');",
+            "            mount.innerHTML = '';",
+            "            if (j.invoice_url) {",
+            "              var a2 = document.createElement('a');",
+            "              a2.href = j.invoice_url;",
+            "              a2.textContent = 'Open the invoice';",
+            "              a2.target = '_blank';",
+            "              a2.rel = 'noopener';",
+            "              mount.appendChild(a2);",
+            "            }",
+            "            return;",
+            "          }",
+            "          say(j.error || 'The invoice could not be raised.');",
+            "          b.disabled = false;",
+            "          b.textContent = 'Unlock for $' + CFG.price;",
+            "        })",
+            "        .catch(function () {",
+            "          say('The invoice could not be raised. Try again.');",
+            "          b.disabled = false;",
+            "          b.textContent = 'Unlock for $' + CFG.price;",
+            "        });",
+            "    });",
+            "    mount.appendChild(b);",
+            "  }",
+            "  function armGoogle() {",
+            "    var s = document.createElement('script');",
+            "    s.src = 'https://accounts.google.com/gsi/client';",
+            "    s.async = true; s.defer = true;",
+            "    s.onload = function () {",
+            "      try {",
+            "        google.accounts.id.initialize({",
+            "          client_id: CFG.cid,",
+            "          callback: function (resp) {",
+            "            fetch('/api/auth/google/session', {",
+            "              method: 'POST',",
+            "              headers: { 'Content-Type': 'application/json' },",
+            "              body: JSON.stringify({ credential: resp && resp.credential })",
+            "            }).then(function (r) { return r.json(); }).then(function (j) {",
+            "              if (j.ok) { CFG.signed = true; openBP(); }",
+            "              else say(j.error || 'Could not verify that sign-in.');",
+            "            }).catch(function () { say('Could not verify that sign-in.'); });",
+            "          }",
+            "        });",
+            "        google.accounts.id.renderButton(mount,",
+            "          { theme: 'outline', size: 'large', text: 'continue_with', shape: 'pill' });",
+            "      } catch (e) { say('Google sign-in did not load. Reload and try again.'); }",
+            "    };",
+            "    s.onerror = function () { say('Google sign-in did not load. Reload and try again.'); };",
+            "    document.head.appendChild(s);",
+            "  }",
+            "  function arm() {",
+            "    if (CFG.signed && CFG.price && !CFG.paid) { showUnlockButton(); return; }",
+            "    if (CFG.signed) { showOpenButton(); return; }",
+            "    if (CFG.enabled && CFG.cid) { armGoogle(); return; }",
+            "  }",
+            "  arm();",
+            "})();",
+            "</scr", "ipt>"])
 
     return Response("""<!DOCTYPE html>
 <html lang="en">
@@ -6957,6 +8169,60 @@ def idea_page(aid):
   .idea-foot { color: var(--psx-text2, #6b6459); font-size: .93rem;
                border-top: 1px solid var(--psx-line, #e6e2da);
                margin-top: 2.4rem; padding-top: 1.2rem; }
+  /* The blueprint: the sealed layer. Drawn in the site's sheet language,
+     a bordered drawing with a title block, nothing filled behind a word. */
+  .bp { border: 1px solid var(--psx-line, #e6e2da); border-radius: 10px;
+        margin-top: 2.4rem; overflow: hidden; background: #fff; }
+  .bp-head { display: flex; flex-wrap: wrap; gap: .3rem 1.4rem;
+             padding: .55rem .9rem;
+             border-bottom: 1px solid var(--psx-line, #e6e2da);
+             font-size: .68rem; font-weight: 700; letter-spacing: .12em;
+             text-transform: uppercase; color: var(--psx-text2, #6b6459); }
+  .bp-head b { color: #1f3a5f; }
+  .bp-note { padding: .9rem .9rem 0; margin: 0;
+             color: var(--psx-text2, #6b6459); font-size: .93rem; }
+  .bp-toc-h { padding: 1rem .9rem .1rem; font-size: .68rem; font-weight: 700;
+              letter-spacing: .12em; text-transform: uppercase;
+              color: var(--psx-text2, #6b6459); }
+  .bp-toc { margin: .2rem 0 1rem; padding: 0 .9rem 0 2rem;
+            color: var(--psx-text2, #6b6459); font-size: .93rem; }
+  .bp-toc li { margin: .25rem 0; }
+  #bpGate { padding: 0 .9rem 1.1rem; }
+  .bp-gatenote { color: var(--psx-text2, #6b6459); font-size: .9rem;
+                 border-left: 2px solid #1f3a5f; padding-left: .9rem; }
+  .bp-open { font: inherit; font-weight: 700; min-height: 44px;
+             padding: .6rem 1.2rem; border-radius: 999px;
+             border: 1px solid #1f3a5f; color: #1f3a5f; background: none;
+             cursor: pointer; }
+  #bpBody { position: relative; padding: .4rem 1.2rem 1.4rem; overflow: hidden; }
+  #bpBody h2 { font-size: 1.15rem; margin: 1.6rem 0 .4rem; }
+  #bpBody h3 { font-size: 1rem; margin: 1.2rem 0 .3rem; }
+  #bpBody p { margin: .7rem 0; line-height: 1.6; font-size: .98rem; }
+  #bpBody pre { overflow-x: auto; background: #f6f8fb;
+                border: 1px solid var(--psx-line, #e6e2da); border-radius: 8px;
+                padding: .7rem .8rem; font-size: .8rem; line-height: 1.5; }
+  #bpBody blockquote { border-left: 2px solid #1f3a5f; margin: .8rem 0;
+                       padding: .1rem 0 .1rem .9rem;
+                       color: var(--psx-text2, #6b6459); }
+  #bpBody ul { margin: .6rem 0 .6rem 1.4rem; }
+  #bpBody li { margin: .3rem 0; line-height: 1.55; }
+  #bpBody hr { border: 0; border-top: 1px solid var(--psx-line, #e6e2da);
+               margin: 1.4rem 0; }
+  .bp-viewer { border: 1px solid var(--psx-line, #e6e2da);
+               border-left: 3px solid #1f3a5f; border-radius: 8px;
+               padding: .6rem .8rem; font-size: .85rem;
+               color: var(--psx-text2, #6b6459); margin: .9rem 0 0; }
+  .bp-signout { background: none; border: 0; padding: 0; margin-left: .3rem;
+                font: inherit; font-size: .8rem; color: #1f3a5f;
+                text-decoration: underline; cursor: pointer; }
+  .bp-sheet { margin: 1.1rem 0 .4rem; border: 1px solid var(--psx-line, #e6e2da);
+              border-radius: 8px; overflow: hidden; }
+  .bp-sheet svg { display: block; width: 100%%; height: auto; }
+  .bp-img { display: block; max-width: 100%%; margin: 1.1rem 0 .4rem;
+            border: 1px solid var(--psx-line, #e6e2da); border-radius: 8px; }
+  .bp-wm { position: absolute; left: 8%%; transform: rotate(-18deg);
+           opacity: .055; font-weight: 800; font-size: 1.5rem;
+           white-space: nowrap; pointer-events: none; user-select: none; }
 </style>
 </head>
 <body data-arm="company">
@@ -6972,6 +8238,7 @@ def idea_page(aid):
   <p class="idea-meta">Posted by %(author)s%(when)s · %(likes)s interested</p>
   <div class="idea-body" id="ideaBody">%(paras)s</div>
   %(locked_note)s
+  %(bp_section)s
   <div class="idea-actions">
     <button id="shareBtn">Share this idea</button>
     <a href="/#reinvestment">See every idea</a>
@@ -7008,7 +8275,37 @@ def idea_page(aid):
     try { localStorage.setItem("psx_lang", l); } catch (e) {}
   }
   Array.prototype.forEach.call(document.querySelectorAll(".lang-row button"), function (b) {
-    b.addEventListener("click", function () { show(b.getAttribute("data-l")); });
+    b.addEventListener("click", function () {
+      var l = b.getAttribute("data-l");
+      if (l === "en" || TR[l]) { show(l); return; }
+      /* Not translated yet: fetch it live. The reader sees the button
+         working, then the article in their language; on failure they are
+         told plainly instead of being left staring at English. */
+      var was = b.textContent;
+      b.textContent = was + " …";
+      b.disabled = true;
+      fetch("/api/idea/" + encodeURIComponent(%(aid_js)s) + "/translate", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lang: l })
+      }).then(function (r) { return r.json(); }).then(function (j) {
+        b.disabled = false; b.textContent = was;
+        if (j.ok && j.translation) {
+          var t = j.translation;
+          var paras2 = t.paras && t.paras.length ? t.paras
+            : (t.body || "").split(String.fromCharCode(10)).filter(function (s) { return s.trim(); });
+          TR[l] = { title: t.title || "", paras: paras2 };
+          b.removeAttribute("data-missing");
+          show(l);
+        } else {
+          b.textContent = was + " (not available yet)";
+          setTimeout(function () { b.textContent = was; }, 3000);
+        }
+      }).catch(function () {
+        b.disabled = false;
+        b.textContent = was + " (not available yet)";
+        setTimeout(function () { b.textContent = was; }, 3000);
+      });
+    });
   });
   // Follow the choice already made elsewhere on the site, if this piece has it.
   try {
@@ -7035,6 +8332,7 @@ def idea_page(aid):
     setTimeout(function () { btn.textContent = 'Share this idea'; }, 2500);
   });
 </script>
+%(bp_script)s
 <script src="/i18n.js"></script>
 </body>
 </html>""" % {
@@ -7046,8 +8344,10 @@ def idea_page(aid):
         # json.dumps, not quote-wrapping: it escapes the quotes, backslashes and
         # the </script> sequence that would otherwise end the block early.
         "url_js": json.dumps(url), "title_js": json.dumps(title),
+        "aid_js": json.dumps(a.get("id") or aid),
         "share_tag": _content_hash(a.get("title"), a.get("body"))[:6],
         "lang_row": lang_row, "trs_json": trs_json,
+        "bp_section": bp_section, "bp_script": bp_script,
     }, mimetype="text/html")
 
 
@@ -7057,6 +8357,18 @@ def api_article_create():
     author = _no_tags((data.get("author") or "").strip())
     title = _no_em_dash(_no_tags((data.get("title") or "").strip()), title=True)
     body = _no_em_dash(_no_tags((data.get("body") or "").strip()))
+    # The optional sealed layer. Kept aside here and attached only after the
+    # article exists, keyed to the stored text, because the hash must match
+    # what actually went on the board, not what was typed. The picture goes
+    # through the raster validator; anything that fails it is dropped and
+    # the poster is told below, never silently.
+    bp_text = (data.get("blueprint") or "").strip()
+    bp_img_raw = data.get("blueprint_image")
+    bp_img = _bp_image_from_data_url(bp_img_raw) if bp_img_raw else None
+    if bp_img_raw and not bp_img:
+        return jsonify({"ok": False, "error":
+                        "The drawing could not be used. A PNG, JPEG or WebP "
+                        "under 3 MB works."}), 400
     if not author or not title or not body:
         return jsonify({"ok": False, "error": "Your name, a title and body are all required."}), 400
     with _LOCK:
@@ -7084,12 +8396,19 @@ def api_article_create():
             same_text = _content_hash(a.get("title"), a.get("body")) == h_new
             same_title = " ".join((a.get("title") or "").lower().split()) == t_new
             if same_text or same_title:
+                note = ("This exact text is already on the board."
+                        if same_text else
+                        "An idea with this exact title is already on the board. "
+                        "If yours is different, give it its own title.")
+                # A blueprint brought along with a duplicate is NOT silently
+                # attached to the piece already standing, that piece may be
+                # someone else's, and it is not silently dropped either; the
+                # poster is told what happened to it.
+                if bp_text or bp_img:
+                    note += (" The blueprint you attached was not saved; "
+                             "post your own version under its own title to seal it.")
                 return jsonify({"ok": True, "article": _public_article(a),
-                                "duplicate": True,
-                                "note": ("This exact text is already on the board."
-                                         if same_text else
-                                         "An idea with this exact title is already on the board. "
-                                         "If yours is different, give it its own title.")})
+                                "duplicate": True, "note": note})
 
         article = {
             "id": _next_id(items, "ART", datestamp=False),
@@ -7114,6 +8433,16 @@ def api_article_create():
             article["professionals"] = None
         items.append(article)
         _save(ARTICLES_PATH, items)
+    # The sealed layer, if the poster brought one, text, a drawing, or
+    # both. Outside the article lock, _bp_attach takes the same lock itself
+    # and threading.Lock does not re-enter. A failed attach must not
+    # un-post the idea.
+    if bp_text or bp_img:
+        try:
+            _bp_attach(article["title"], article["body"], bp_text, "poster",
+                       images=[bp_img] if bp_img else None)
+        except Exception:
+            pass
     # And count the demand, outside the lock the save holds.
     try:
         if article.get("professionals"):
@@ -7267,6 +8596,127 @@ def _seed_articles_once():
             translator.translate_async(title, body)
         except Exception:
             pass
+
+
+def _seed_book_fields_once():
+    """The shipped book's curated senses reach a persistent copy.
+
+    _data_path copies destinations.json to the data disk exactly once, so
+    a registry improvement in the repo, a new ferry, an admission price,
+    a spoken guide, would never reach a site already running on a disk.
+    This overlays the shipped entries' curated fields onto the live copy
+    by city and name, and adds shipped entries the copy lacks, while
+    never touching anything visitors taught the site."""
+    try:
+        shipped_path = os.path.join(BASE_DIR, "destinations.json")
+        live_path = _data_path("destinations.json")
+        if os.path.abspath(shipped_path) == os.path.abspath(live_path):
+            return                      # no disk: the repo copy IS the book
+        with open(shipped_path) as f:
+            shipped = json.load(f)
+        with _LOCK:
+            try:
+                with open(live_path) as f:
+                    live = json.load(f)
+            except Exception:
+                live = {"cities": {}, "entries": []}
+            idx = {}
+            for e in live.get("entries") or []:
+                idx[(e.get("city"), (e.get("name") or "").lower())] = e
+            changed = False
+            for srce in shipped.get("entries") or []:
+                k = (srce.get("city"), (srce.get("name") or "").lower())
+                tgt = idx.get(k)
+                if tgt is None:
+                    live.setdefault("entries", []).append(srce)
+                    changed = True
+                    continue
+                for fld in ("admission_usd", "tickets_url", "slug", "ferry", "audio"):
+                    if fld in srce and tgt.get(fld) != srce[fld]:
+                        tgt[fld] = srce[fld]
+                        changed = True
+            for ck, cv in (shipped.get("cities") or {}).items():
+                if ck not in (live.get("cities") or {}):
+                    live.setdefault("cities", {})[ck] = cv
+                    changed = True
+            if changed:
+                _save(live_path, live)
+    except Exception:
+        pass
+
+
+def _seed_blueprint_once():
+    """Seal the drafted Reinvestment USA framework under its own article.
+
+    The launchpad's founding article carries the launchpad's own blueprint,
+    which makes the board's first idea a working demonstration of the
+    product: article public, plan sealed, readers named. The framework part
+    of REINVESTMENT_USA.md is the blueprint; the debate appendix after THE
+    FULL MACHINE marker is internal counsel and stays out.
+
+    Runs every boot under the same gate as the article seeder, because the
+    runtime store is wiped by every deploy until the disk is attached. The
+    repo copy is canonical for the seeded entry; a blueprint attached any
+    other way is never overwritten."""
+    if DATA_DIR == BASE_DIR and not os.environ.get("RENDER_GIT_COMMIT"):
+        return
+    try:
+        with open(os.path.join(BASE_DIR, "REINVESTMENT_USA.md"), encoding="utf-8") as f:
+            md = f.read()
+        cut = md.find("\n# THE FULL MACHINE")
+        if cut > 0:
+            md = md[:cut]
+        # The picture blueprint. The owner's prints, lifted from his
+        # Reinvestment white paper, lead; our drawn RE-02 sheet follows.
+        # Both come from this repo, the only source markup or seeded
+        # pictures are ever accepted from, and the prints still pass the
+        # same byte validator as any poster upload.
+        svg = ""
+        try:
+            with open(os.path.join(BASE_DIR, "reinvestment_blueprint.svg"),
+                      encoding="utf-8") as f:
+                svg = f.read()
+        except Exception:
+            svg = ""
+        images = []
+        try:
+            pdir = os.path.join(BASE_DIR, "seed_prints")
+            for name in sorted(os.listdir(pdir)):
+                mime = {"png": "image/png", "jpg": "image/jpeg",
+                        "jpeg": "image/jpeg", "webp": "image/webp"}.get(
+                            name.rsplit(".", 1)[-1].lower())
+                if not mime:
+                    continue
+                with open(os.path.join(pdir, name), "rb") as f:
+                    img = _bp_image_from_bytes(f.read(), mime)
+                if img:
+                    images.append(img)
+        except Exception:
+            images = []
+        art = next((a for a in _load(ARTICLES_PATH)
+                    if a.get("stamp") == "20260811210000" and not a.get("hidden")), None)
+        if not art:
+            return
+        bp, _h = _bp_entry(art.get("title"), art.get("body"))
+        if bp:
+            if bp.get("source") != "seed":
+                return
+            # Unchanged content keeps its original attached_at; the whole
+            # pitch of the feature is honest timestamps, and a date that
+            # quietly reset on every deploy would be the opposite.
+            if ((bp.get("md") or "") == _no_em_dash(md.strip())[:40000]
+                    and (bp.get("svg") or "") == svg
+                    and [i.get("b64") for i in (bp.get("images") or [])]
+                        == [i.get("b64") for i in images]):
+                return
+        # $14, Sean's price, 2026-08-15. Set at attach time only, so a
+        # price the owner changes later on a persistent disk is never
+        # overwritten by a boot.
+        _bp_attach(art.get("title"), art.get("body"), md, "seed",
+                   bp_title="Reinvestment USA, the framework",
+                   images=images, svg=svg, price_usd=14)
+    except Exception:
+        return
 
 
 @app.route("/api/articles/<aid>/lock", methods=["POST"])
@@ -8215,7 +9665,12 @@ def api_traffic_places():
     into "elsewhere" rather than named, because a city with one visitor in a
     small dataset is close to naming the visitor.
     """
-    MIN_SHOW = 2
+    # Cities show from the FIRST visitor. Folding under two meant that at
+    # this site's real volumes the owner opened "where are my viewers from"
+    # and saw nothing. What is stored stays a city and a count, never a
+    # person. (Restored after a merge between two working sessions quietly
+    # reverted it; the archive panel was already asking for these fields.)
+    MIN_SHOW = 1
     days_back = max(1, min(365, int(request.args.get("days", 30))))
     cutoff = (datetime.date.today() - datetime.timedelta(days=days_back - 1)).isoformat()
     days = _load_traffic()["days"]
@@ -8247,11 +9702,16 @@ def api_traffic_places():
             shown.append({"name": "elsewhere", "count": hidden, "folded": True})
         return shown[:25]
 
-    langs, devices, landings = {}, {}, {}
+    langs, devices, landings, sources = {}, {}, {}, {}
+    raw_views = raw_visitors = 0
     for date, rec in days.items():
         if date < cutoff:
             continue
-        for src, dst in (("langs", langs), ("devices", devices), ("landings", landings)):
+        raw_views += rec.get("pageviews", 0)
+        raw_visitors += (len(rec.get("visitor_ids") or [])
+                         or rec.get("unique_visitors") or 0)
+        for src, dst in (("langs", langs), ("devices", devices),
+                         ("landings", landings), ("sources", sources)):
             for k, n in (rec.get(src) or {}).items():
                 dst[k] = dst.get(k, 0) + n
 
@@ -8264,7 +9724,12 @@ def api_traffic_places():
         pins.append({"lat": xy[0], "lon": xy[1], "count": n,
                      "label": city + (", " + region if region else ""), "country": country})
 
+    all_days = sorted(days.keys())
     return jsonify({"ok": True, "days": days_back, "total_located": total, "pins": pins,
+                    "counting_since": all_days[0] if all_days else None,
+                    "resets_on_deploy": DATA_DIR == BASE_DIR,
+                    "raw_views": raw_views, "raw_visitors": raw_visitors,
+                    "sources": top(sources, keep_small=True),
                     "languages": top(langs, keep_small=True),
                     "devices": top(devices, keep_small=True),
                     "landings": top(landings, keep_small=True),
@@ -8354,10 +9819,28 @@ def api_traffic_summary():
                 total += rec.get("unique_visitors") or 0
         return total
 
+    def prefix_views(prefix, cutoff=None):
+        """Opens of every path under a prefix: the shared idea pages."""
+        total = 0
+        for date, rec in days.items():
+            if cutoff and date < cutoff:
+                continue
+            for path, n in (rec.get("paths") or {}).items():
+                if path.startswith(prefix):
+                    total += n
+        return total
+
     all_time = site_people()
     return jsonify({"ok": True,
+                    # what date the count started, and the honest reason the
+                    # numbers keep restarting while there is no disk
+                    "counting_since": min(days) if days else None,
+                    "resets_on_deploy": DATA_DIR == BASE_DIR,
                     "trip_planner": tool_stats("/trip-planner"),
                     "destination_book": tool_stats("/destination-book"),
+                    "met": tool_stats("/met"),
+                    "idea_pages": {"views_all_time": prefix_views("/idea/"),
+                                   "views_week": prefix_views("/idea/", week_cutoff)},
                     "site": {
                         "today": site_people(today_iso),
                         "week": site_people(week_cutoff),
@@ -9505,6 +10988,8 @@ def _reservation_reminder_loop():
 # Wrapped so a seeding failure can never stop the app from starting.
 try:
     _seed_articles_once()
+    _seed_blueprint_once()
+    _seed_book_fields_once()
 except Exception:
     pass
 

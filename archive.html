@@ -106,6 +106,13 @@
             </div>
         </div>
 
+        <div id="demandBoard" style="display:none;margin-top:1.6rem">
+            <h2 style="margin:0 0 .2rem">What the free guide is proving</h2>
+            <p class="sub" id="dbSub" style="margin:0 0 .9rem"></p>
+            <div id="dbCols" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.4rem"></div>
+            <p class="note" id="dbNote" style="margin-top:.9rem"></p>
+        </div>
+
         <div id="whereFrom" style="display:none;margin-top:1.6rem">
             <h2 style="margin:0 0 .2rem">Where your viewers are</h2>
             <p class="sub" id="wfSub" style="margin:0 0 .9rem"></p>
@@ -202,9 +209,16 @@
     </script>
     <script src="/floatback.js"></script>
     <script src="/jarvis-widget.js"></script>
-    <script src="/i18n.js">
+    <script src="/i18n.js"></script>
+    <script>
     // Where the viewers are. Owner-only endpoint, aggregate rows only, it can
     // say forty people came from Seattle and cannot say which forty.
+    //
+    // NOTE, and it cost this panel months: everything below used to live
+    // INSIDE the i18n script tag above, which carries a src. A script
+    // element with a src ignores its inline content entirely, so none of
+    // this ever ran, the panel stayed hidden, and nothing anywhere said
+    // so. A script tag either loads a file or holds code; never both.
     async function loadWhereFrom(){
         try {
             const r = await fetch('/api/traffic/places?days=30');
@@ -213,9 +227,19 @@
             if (!d.ok) return;
             const box = document.getElementById('whereFrom');
             const cols = document.getElementById('wfCols');
-            document.getElementById('wfSub').textContent =
-                d.total_located ? d.total_located + ' visitors located over the last ' + d.days + ' days'
-                                : 'No located visitors yet, this fills in as people arrive.';
+            // The sentence that makes the numbers make sense: what date the
+            // count started, and why it keeps restarting while no disk is
+            // attached. Without this line, 'all time: 2' just looks broken.
+            var sub = (d.raw_visitors || 0) + ' visitors · ' + (d.raw_views || 0)
+                + ' page opens over the last ' + d.days + ' days · '
+                + (d.total_located || 0) + ' located';
+            try {
+                const on = await (await fetch('/api/online')).json();
+                if (on && on.ok) sub = 'Right now: ' + on.online + ' on the site · ' + sub;
+            } catch (e) {}
+            if (d.counting_since) sub += ' · counting since ' + d.counting_since;
+            if (d.resets_on_deploy) sub += ' · resets on every deploy until the disk is attached';
+            document.getElementById('wfSub').textContent = sub;
             const bar = (rows) => {
                 if (!rows.length) return '<p class="note">nothing yet</p>';
                 const max = Math.max.apply(null, rows.map(r => r.count));
@@ -237,6 +261,7 @@
               + 'color:#6e6e76;margin:0 0 .5rem">' + title + '</h3>' + bar(rows) + '</div>';
             cols.innerHTML =
                 col('Country', d.countries) + col('State / region', d.regions) + col('City', d.cities)
+              + col('How they found you', d.sources || [])
               + col('Language asked for', pretty(d.languages || []))
               + col('Reading on', d.devices || [])
               + col('Arrived on', d.landings || []);
@@ -273,6 +298,78 @@
         } catch (e) { /* analytics must never break the page */ }
     }
     loadWhereFrom();
+
+    // What the free guide is proving. The demand board had an endpoint and
+    // no face, which meant the one thing an affiliate application needs to
+    // show could only be read by hand. This is that page: ranked, plain,
+    // and screenshot-ready, in four columns because a programme asks four
+    // different questions, who wants tickets, who wants a bed, what is
+    // being planned, what is being listened to.
+    async function loadDemandBoard(){
+        try {
+            const r = await fetch('/api/guide-demand');
+            if (!r.ok) return;                       // not the owner, stay hidden
+            const d = await r.json();
+            if (!d.ok || !d.rows) return;
+            const rows = d.rows;
+            if (!rows.length) {
+                document.getElementById('dbSub').textContent =
+                    'Nothing counted yet. Every ticket door, hotel door, planned stop and '
+                  + 'played guide lands here from the moment a traveller uses it.';
+                document.getElementById('demandBoard').style.display = 'block';
+                return;
+            }
+            const KIND = { tickets: 'Ticket doors opened', stay: 'Hotel searches',
+                           plan: 'Stops added to a plan', audio: 'Guides listened to' };
+            const pretty = k => String(k).replace(/-/g, ' ').replace(/\b\w/g, m => m.toUpperCase());
+            const since = new Date(); since.setDate(since.getDate() - 6);
+            const isoDay = dt => dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).slice(-2)
+                               + '-' + ('0' + dt.getDate()).slice(-2);
+            const weekFrom = isoDay(since);
+            let total = 0, week = 0;
+            rows.forEach(row => {
+                total += row.total || 0;
+                Object.keys(row.days || {}).forEach(day => {
+                    if (day >= weekFrom) week += row.days[day] || 0;
+                });
+            });
+            const bar = list => {
+                if (!list.length) return '<p class="note">nothing yet</p>';
+                const max = Math.max.apply(null, list.map(x => x.total || 0)) || 1;
+                return list.slice(0, 12).map(x =>
+                    '<div style="margin:.42rem 0">'
+                  + '<div style="display:flex;justify-content:space-between;font-size:.86rem">'
+                  + '<span>' + esc(pretty(x.key)) + '</span><b>' + (x.total || 0) + '</b></div>'
+                  + '<div style="height:4px;background:#e6e6ea;border-radius:2px;margin-top:3px">'
+                  + '<div style="height:4px;border-radius:2px;background:#1f3a5f;width:'
+                  + Math.round((x.total || 0) / max * 100) + '%"></div></div></div>').join('');
+            };
+            const col = (title, list) =>
+                '<div><h3 style="font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;'
+              + 'color:#6e6e76;margin:0 0 .5rem">' + title + '</h3>' + bar(list) + '</div>';
+            const of = kind => rows.filter(x => x.kind === kind);
+            document.getElementById('dbCols').innerHTML =
+                col(KIND.tickets, of('tickets')) + col(KIND.stay, of('stay'))
+              + col(KIND.plan, of('plan')) + col(KIND.audio, of('audio'));
+            document.getElementById('dbSub').textContent =
+                total + ' counted interest' + (total === 1 ? '' : 's') + ' across '
+              + rows.length + ' place' + (rows.length === 1 ? '' : 's') + ' · '
+              + week + ' in the last seven days';
+            document.getElementById('dbNote').textContent =
+                'Anonymous totals only, per place per day. No reader, no location, no profile. '
+              + 'This is the page to screenshot into an affiliate application: it says how much '
+              + 'real demand the free guide already sends, and to where.';
+            document.getElementById('demandBoard').style.display = 'block';
+            // A link straight here, /archive#demandBoard from Dispatch, arrives
+            // before this fetch finishes, and a browser cannot scroll to an
+            // element that is still hidden. So the scroll happens HERE, once
+            // the board actually exists on the page.
+            if (location.hash === '#demandBoard') {
+                document.getElementById('demandBoard').scrollIntoView({ block: 'start' });
+            }
+        } catch (e) { /* the board must never break the page */ }
+    }
+    loadDemandBoard();
 </script>
 </body>
 </html>

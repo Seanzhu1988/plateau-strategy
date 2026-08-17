@@ -101,6 +101,11 @@
         .b-price{ background: var(--psx-wash-good,#e1f8ec); color: #14513a; }
         .entry .desc { font-size: 0.9rem; color: #4a453d; line-height: 1.55; }
         .entry .meta { font-size: 0.8rem; color: #6b655b; }
+        .entry .meta.adv { color: #1f3a5f; font-weight: 600; }
+        .adv-links { display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; margin: .45rem 0 0; }
+        .golink { font: inherit; font-size: .86rem; font-weight: 700; color: #1f3a5f;
+                  background: none; border: 0; padding: 0; cursor: pointer;
+                  text-decoration: underline; text-underline-offset: 2px; }
         .entry .tip { font-size: 0.86rem; color: #4a453d; background: none; border: none;
             border-left: 2px solid #ddd8cd; border-radius: 0;
             padding: 0.1rem 0 0.1rem 0.75rem; margin-left: 0.1rem; line-height: 1.5;
@@ -292,6 +297,34 @@
     // way back out was to open the planner and remove it there, so the second
     // click on the same button, which every reader tries first, did nothing at
     // all. Same button, both directions.
+    // The spoken guide. One voice at a time; a play is counted, anonymously,
+    // because a played guide is demand an affiliate application can show.
+    let GUIDE_AUDIO = null, GUIDE_BTN = null;
+    function playGuide(btn, src, key) {
+        if (GUIDE_AUDIO && GUIDE_BTN === btn && !GUIDE_AUDIO.paused) {
+            GUIDE_AUDIO.pause();
+            btn.innerHTML = btn.innerHTML.replace('❚❚', '▶');
+            return;
+        }
+        if (GUIDE_AUDIO) {
+            GUIDE_AUDIO.pause();
+            if (GUIDE_BTN) GUIDE_BTN.innerHTML = GUIDE_BTN.innerHTML.replace('❚❚', '▶');
+        }
+        GUIDE_AUDIO = new Audio(src);
+        GUIDE_BTN = btn;
+        GUIDE_AUDIO.play().catch(function () {});
+        btn.innerHTML = btn.innerHTML.replace('▶', '❚❚');
+        GUIDE_AUDIO.onended = function () {
+            btn.innerHTML = btn.innerHTML.replace('❚❚', '▶');
+        };
+        try {
+            fetch('/api/guide-demand/beacon', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ kind: 'audio', key: key })
+            });
+        } catch (err) {}
+    }
+
     function addToPlanner(i, btn){
         const e = DATA.entries[i];
         let s = null;
@@ -394,6 +427,40 @@
     function render(){
         const q = $('q').value.trim().toLowerCase();
         const inPlanner = plannerNames();
+        // The advance row: admission in real dollars, a ferry's rhythm, the
+        // spoken guide, and the two doors that earn, tickets and a stay
+        // nearby. Both doors go through /go so the demand is counted; that
+        // count is what the affiliate applications get shown.
+        function advanceRow(e) {
+            const bits = [];
+            if (e.admission_usd !== undefined && e.admission_usd !== null) {
+                bits.push(e.admission_usd === 0 ? T('Free to enter')
+                    : '$' + e.admission_usd + ' ' + T('typical adult admission'));
+            }
+            if (e.ferry && e.ferry.crossing_min) {
+                bits.push('⛴ ' + T('{c} min crossing · boats about every {h} min',
+                    { c: e.ferry.crossing_min, h: e.ferry.headway_min }));
+            }
+            let row = '';
+            if (bits.length) row += '<p class="meta adv">' + bits.join(' · ') + '</p>';
+            const links = [];
+            if (e.audio) {
+                links.push('<button class="golink" onclick="playGuide(this, \''
+                    + esc(e.audio) + '\', \'' + esc(e.slug || e.name) + '\')">▶ '
+                    + T('Listen') + '</button>');
+            }
+            if (e.tickets_url && e.slug) {
+                links.push('<a class="golink" href="/go/tickets/' + encodeURIComponent(e.slug)
+                    + '" target="_blank" rel="noopener">' + T('Tickets') + ' ↗</a>');
+            }
+            if (e.admission_usd !== undefined || e.ferry) {
+                links.push('<a class="golink" href="/go/stay?city=' + encodeURIComponent(e.city || '')
+                    + '&near=' + encodeURIComponent(e.name)
+                    + '" target="_blank" rel="noopener">' + T('Stay nearby') + ' ↗</a>');
+            }
+            if (links.length) row += '<div class="adv-links">' + links.join('') + '</div>';
+            return row;
+        }
         // The lede promises a book "organized by category" and the page
         // delivered 47 cards in one flat grid, which is the thing that made
         // it read as a pile rather than a book. Grouped by city, because that
@@ -434,6 +501,7 @@
                         : T('Open till {time} · ~{mins} min visit',
                             { time: fmt(e.close), mins: e.visit }))
                 + '</p>'
+                + advanceRow(e)
                 + '<div class="stay-ask" id="stay_' + i + '">'
                 +   '<span class="lead" onclick="openStay(' + i + ')">⏱ Been here? Tell us how long you stayed →</span>'
                 +   '<div class="stay-opts" id="sopt_' + i + '">'

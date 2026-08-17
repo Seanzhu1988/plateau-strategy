@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Walks · Plateau Strategy</title>
+<meta name="description" content="Every map on this site, drawn on foot: measured corridors, honest estimates, and your own saved walks.">
+<meta property="og:title" content="The Walks">
+<meta property="og:description" content="Every map on this site, drawn on foot. A corridor is measured, or it is waiting, and the page says which.">
+<meta property="og:url" content="https://plateaustrategy.io/walks">
+<meta property="og:site_name" content="Plateau Strategy Solution Lab">
+<meta property="og:image" content="https://plateaustrategy.io/share-card.jpg">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://plateaustrategy.io/walks">
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Plateau">
+<meta name="theme-color" content="#1f3a5f">
+<link rel="stylesheet" href="/paper.css">
+<link rel="stylesheet" href="/modern.css">
+<style>
+  /* The Walks: the atlas of everything drawn on foot, in the site's sheet
+     language. Navy line work on white, nothing filled behind a word. */
+  header img { height: 42px; width: 42px; border-radius: 50%; }
+  header .brand { font-size: 1.2rem; font-weight: 800; }
+  header .right { margin-left: auto; display: flex; gap: 1.2rem; align-items: center; }
+  .wrap { max-width: 46rem; }
+
+  .wk-open { position: relative; height: 1px; background: var(--m-line-firm, #d3d3da);
+             margin: 2rem 0 2.2rem; }
+  .wk-open::after { content: ""; position: absolute; top: -1px; left: 50%;
+                    transform: translateX(-50%); width: 64px; height: 3px;
+                    background: #1f3a5f; }
+  .wk-lede { color: var(--psx-text2, #6b6459); max-width: 62ch; margin: .4rem 0 0; }
+  .wk-honest { font-size: .9rem; color: var(--psx-text2, #6b6459);
+               border-left: 2px solid #1f3a5f; padding-left: .9rem;
+               margin: 1.2rem 0 0; max-width: 62ch; }
+
+  .city { border: 1px solid var(--m-line-firm, #d3d3da); border-radius: 10px;
+          margin-top: 1.6rem; overflow: hidden; background: #fff; }
+  .city-head { display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; align-items: baseline;
+               padding: .55rem .9rem; border-bottom: 1px solid var(--m-line, #e6e6ea);
+               font-size: .68rem; font-weight: 700; letter-spacing: .12em;
+               text-transform: uppercase; color: var(--psx-text2, #6b6459); }
+  .city-head b { color: #1f3a5f; font-size: .85rem; }
+  .city-head .meter { margin-left: auto; }
+  .cor { display: flex; gap: .9rem; align-items: baseline; padding: .6rem .9rem;
+         border-top: 1px solid var(--m-line, #e6e6ea); font-size: .95rem; }
+  .cor:first-of-type { border-top: 0; }
+  .cor .lbl { min-width: 0; }
+  .cor .min { margin-left: auto; white-space: nowrap; font-variant-numeric: tabular-nums;
+              color: var(--psx-text2, #6b6459); }
+  .cor .min.walked { color: #1f3a5f; font-weight: 700; }
+  .city-foot { padding: .6rem .9rem .8rem; border-top: 1px solid var(--m-line, #e6e6ea); }
+  .city-foot a { font-weight: 700; }
+
+  .mine { margin-top: 2.2rem; }
+  .mine h2 { font-size: 1.3rem; margin: 0 0 .2rem; }
+  .mine-note { color: var(--psx-text2, #6b6459); font-size: .93rem; }
+  .mw { display: flex; gap: .9rem; align-items: baseline; padding: .8rem 0;
+        border-top: 1px solid var(--m-line, #e6e6ea); }
+  .mw:first-of-type { border-top: 1px solid var(--m-line, #e6e6ea); margin-top: .8rem; }
+  .mw .open { font-weight: 700; }
+  .mw .meta { color: var(--psx-text2, #6b6459); font-size: .9rem; }
+  .mw .drop { margin-left: auto; background: none; border: 0; font: inherit;
+              font-size: .82rem; color: var(--psx-text2, #6b6459);
+              text-decoration: underline; cursor: pointer; }
+  .wk-foot { color: var(--psx-text2, #6b6459); font-size: .9rem;
+             border-top: 1px solid var(--m-line, #e6e6ea);
+             margin-top: 2.4rem; padding-top: 1.2rem; }
+  @media (max-width: 640px) {
+    .wrap { padding-left: .9rem; padding-right: .9rem; }
+    .page-title { font-size: 1.5rem; line-height: 1.22; }
+  }
+</style>
+</head>
+<body data-arm="company">
+<header>
+  <img src="/icon-192.png" alt="Plateau Strategy Solution Lab">
+  <span class="brand">Plateau Strategy Solution Lab</span>
+  <div class="right"><a href="/met">The Met</a><a href="/trip-planner">Trip planner</a><a href="/">Home</a></div>
+</header>
+<div class="wrap">
+  <div class="wk-open" role="presentation"></div>
+  <div class="page-title">The Walks</div>
+  <p class="wk-lede">Every map on this site is drawn the same way: a person who
+    knows the way walks it once, and the walk becomes the map. This page is all
+    of them, city by city.</p>
+  <p class="wk-honest">A corridor with minutes in navy has been walked with the
+    recorder; that number is measured. A corridor with a tilde is an estimate,
+    waiting for its walk. Nothing here pretends to be measured when it is not.</p>
+
+  <div id="cities"><p class="mine-note">Loading the corridors…</p></div>
+
+  <div class="mine" id="mine">
+    <h2>Your walks</h2>
+    <p class="mine-note" id="mineNote">Sign in at the top of the page, and the
+      walks you save on the Met sheet appear here, under your name, on any
+      device you sign in from.</p>
+    <div id="mineList"></div>
+  </div>
+
+  <p class="wk-foot">The walking times marked with a tilde are estimates until a
+    surveyor walks that corridor with the recorder. Estimates are drawn from
+    the sheets; measured minutes replace them automatically. New cities join
+    this page the day their first corridor is opened.</p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  function el(tag, cls, text) {
+    var d = document.createElement(tag);
+    if (cls) d.className = cls;
+    if (text !== undefined && text !== null) d.textContent = text;
+    return d;
+  }
+
+  function jget(url) {
+    return fetch(url).then(function (r) { return r.json(); });
+  }
+
+  /* ---- the cities ---- */
+  jget('/api/walks-map').then(function (j) {
+    var host = document.getElementById('cities');
+    host.innerHTML = '';
+    if (!j.ok || !j.cities) { host.appendChild(el('p', 'mine-note', 'The corridors could not be loaded.')); return; }
+    j.cities.forEach(function (c) {
+      if (!c.total) return;
+      var box = el('div', 'city');
+      var head = el('div', 'city-head');
+      head.appendChild(el('b', '', c.name));
+      head.appendChild(el('span', 'meter',
+        c.walked + ' of ' + c.total + ' corridors walked'));
+      box.appendChild(head);
+      c.corridors.forEach(function (r) {
+        var row = el('div', 'cor');
+        row.appendChild(el('span', 'lbl', r.label));
+        var min = r.walked && r.minutes
+          ? el('span', 'min walked', r.minutes + ' min · walked ' + (r.date || ''))
+          : el('span', 'min', r.walked ? 'walked' : 'waiting for its walk');
+        row.appendChild(min);
+        box.appendChild(row);
+      });
+      var foot = el('div', 'city-foot');
+      var a = el('a', '', c.key === 'new-york' ? 'Open the Met sheet' : 'Open the walking guide');
+      a.href = c.link || '/walk';
+      foot.appendChild(a);
+      box.appendChild(foot);
+      host.appendChild(box);
+    });
+  }).catch(function () {
+    document.getElementById('cities').innerHTML =
+      '<p class="mine-note">The corridors could not be loaded.</p>';
+  });
+
+  /* ---- your walks ---- */
+  function drawMine(walks) {
+    var list = document.getElementById('mineList');
+    var note = document.getElementById('mineNote');
+    list.innerHTML = '';
+    if (!walks.length) {
+      note.textContent = 'Nothing saved yet. Plan a route on the Met sheet and '
+        + 'press Save this walk; it lands here.';
+      return;
+    }
+    note.textContent = 'Saved under your sign-in. They open on any device you sign in from.';
+    walks.forEach(function (w) {
+      var row = el('div', 'mw');
+      var stops = (w.walk || '').split(',').filter(Boolean).length;
+      var a = el('a', 'open', w.title || ('A Met walk, ' + stops + ' stops'));
+      a.href = '/met?walk=' + encodeURIComponent(w.walk || '');
+      row.appendChild(a);
+      row.appendChild(el('span', 'meta',
+        stops + ' stops' + (w.minutes ? ' · about ' + w.minutes + ' min' : '')));
+      var drop = el('button', 'drop', 'Remove');
+      drop.addEventListener('click', function () {
+        fetch('/api/walks/' + encodeURIComponent(w.id) + '/delete', { method: 'POST' })
+          .then(function (r) { return r.json(); })
+          .then(function () { loadMine(); })
+          .catch(function () {});
+      });
+      row.appendChild(drop);
+      list.appendChild(row);
+    });
+  }
+
+  function loadMine() {
+    jget('/api/auth/reader').then(function (who) {
+      if (!who || !who.signed_in) return;      // the sign-in note stands
+      jget('/api/walks').then(function (j) {
+        if (j.ok) drawMine(j.walks || []);
+      }).catch(function () {});
+    }).catch(function () {});
+  }
+  loadMine();
+})();
+</script>
+<script src="/i18n.js"></script>
+</body>
+</html>

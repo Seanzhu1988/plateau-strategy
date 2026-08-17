@@ -138,6 +138,26 @@ plateaustrategy.io</pre>
                 <div><label>Website</label><input id="p_website" placeholder="example.com"></div>
                 <button class="addbtn" onclick="addPartner()">+ Add prospect</button>
             </div>
+
+            <div class="addrow" style="margin-top:.9rem;border-top:1px solid rgba(255,255,255,.08);padding-top:.9rem;">
+                <div style="flex:0 0 100%;margin-bottom:.4rem;color:#8a8377;font-size:.82rem;">
+                    Scout: find organizations worth calling, from the map, each with a way to reach them.
+                    Everything found lands as <b>to contact</b>, nobody is contacted here.
+                </div>
+                <div style="flex:0 0 170px;"><label>Area</label>
+                    <select id="s_area"></select></div>
+                <div style="flex:0 0 130px;"><label>Radius</label>
+                    <select id="s_radius">
+                        <option value="3">3 km</option>
+                        <option value="8" selected>8 km</option>
+                        <option value="15">15 km</option>
+                        <option value="25">25 km</option>
+                    </select></div>
+                <div style="flex:1 1 320px;"><label>Looking for</label>
+                    <div id="s_kinds" style="display:flex;flex-wrap:wrap;gap:.3rem .9rem;padding-top:.35rem;"></div></div>
+                <button class="addbtn" id="s_go" onclick="runScout()">🔭 Send the scout</button>
+            </div>
+            <div id="s_out" style="margin-top:.7rem;color:#8a8377;font-size:.85rem;"></div>
         </div>
 
         <div class="filters" id="filters"></div>
@@ -246,6 +266,55 @@ plateaustrategy.io</pre>
             showToast('Removed'); load();
         }
 
+        // ---- the scout ----
+        // Fill the form from the server, so a new area or a new kind of
+        // organization appears here the day it is added there, and this
+        // page never carries a second copy of that list to drift.
+        async function scoutForm(){
+            try {
+                const d = await psxJSON('/api/partners/scout/areas');
+                if (!d.ok) return;
+                document.getElementById('s_area').innerHTML =
+                    d.areas.map(a => '<option value="'+esc(a.key)+'">'+esc(a.label)+'</option>').join('');
+                document.getElementById('s_kinds').innerHTML = d.kinds.map(k =>
+                    '<label style="display:flex;align-items:center;gap:.3rem;font-size:.82rem;color:#c9c3b8;cursor:pointer" title="'
+                    + esc(k.route) + '"><input type="checkbox" class="s_kind" value="' + esc(k.key) + '"'
+                    + (['hotel','travel_agency','event_venue','senior_living'].indexOf(k.key) >= 0 ? ' checked' : '')
+                    + '>' + esc(k.label) + '</label>').join('');
+            } catch (e) {}
+        }
+
+        async function runScout(){
+            const btn = document.getElementById('s_go'), out = document.getElementById('s_out');
+            const kinds = Array.from(document.querySelectorAll('.s_kind:checked')).map(c => c.value);
+            if (!kinds.length) { out.textContent = 'Pick at least one kind of organization.'; return; }
+            btn.disabled = true;
+            const was = btn.textContent;
+            btn.textContent = 'Looking…';
+            out.textContent = 'Reading the map. This takes a few seconds.';
+            try {
+                const j = await psxJSON('/api/partners/scout', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ area: document.getElementById('s_area').value,
+                                           radius_km: +document.getElementById('s_radius').value,
+                                           kinds: kinds })
+                });
+                if (!j.ok) { out.textContent = j.error || 'The scout came back empty handed.'; return; }
+                out.textContent = j.added
+                    ? j.added + ' new prospect' + (j.added === 1 ? '' : 's') + ' added in ' + j.area
+                      + ' · ' + j.found + ' found, ' + j.already_held + ' already in the pipeline'
+                      + ' · every one has a phone, an email or a website'
+                    : 'Nothing new in ' + j.area + '. All ' + j.found
+                      + ' the scout found are already in your pipeline.';
+                load();
+            } catch (e) {
+                out.textContent = 'The scout could not finish. Try again in a minute.';
+            } finally {
+                btn.disabled = false; btn.textContent = was;
+            }
+        }
+
+        scoutForm();
         load();
     </script>
     <script src="/floatback.js"></script>

@@ -162,6 +162,7 @@
             <a class="tool" href="/renter"><div class="t">Drivers →</div><div class="d" id="tool-drivers">Rides, contracts &amp; rent-to-own</div></a>
             <a class="tool" href="/books"><div class="t">Books &amp; Taxes →</div><div class="d">Live Square revenue</div></a>
             <a class="tool" href="/archive"><div class="t">Archive →</div><div class="d">Every paper trail, bookings, contacts, agreements &amp; paperwork</div></a>
+            <a class="tool" href="/archive#demandBoard"><div class="t">Guide demand →</div><div class="d" id="tool-demand">What the free guide is proving · the page to show an affiliate programme</div></a>
         </div>
 
         <div id="attention" style="display:none;"></div>
@@ -361,6 +362,21 @@
             const toContact = PARTNERS.filter(p=>p.status==='to_contact').length;
             document.getElementById('tool-partners').textContent = PARTNERS.length + ' prospects · ' + toContact + ' to contact';
             document.getElementById('tool-drivers').textContent = DRIVERS.length + ' drivers · rides, contracts, rent-to-own';
+
+            // The guide's demand, on the tile, so the number is readable without
+            // opening anything. It is the figure an affiliate programme asks for.
+            fetch('/api/guide-demand').then(r => r.ok ? r.json() : null).then(d => {
+                if (!d || !d.ok) return;
+                const rows = d.rows || [];
+                let total = 0;
+                rows.forEach(r => { total += r.total || 0; });
+                const el = document.getElementById('tool-demand');
+                if (el) el.textContent = total
+                    ? total + ' counted interest' + (total === 1 ? '' : 's') + ' across '
+                      + rows.length + ' place' + (rows.length === 1 ? '' : 's')
+                      + ' · the page to show an affiliate programme'
+                    : 'Counting from the first traveller who uses a door · the page to show an affiliate programme';
+            }).catch(() => {});
 
             document.getElementById('filters').innerHTML =
                 [['active','Active'],['NEW','Open'],['ASSIGNED','Assigned'],['COMPLETED','Completed'],['CANCELED','Canceled'],['all','All']]

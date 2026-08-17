@@ -282,6 +282,23 @@ n = len(json.load(open(store.file))["corridors"]["seatac-terminal-to-link"]["wal
 chk("at most %d walks are kept (%d)" % (F.MAX_WALKS_KEPT, n),
     n <= F.MAX_WALKS_KEPT)
 
+print("\nanywhere: proposals obey the same law and wait for the owner:")
+ok, why = store.propose_walk("", corridor_pts(), minutes=5)
+chk("a nameless walk is refused", ok is None and "Name" in why)
+ok, why = store.propose_walk("Times Square to Bryant Park", corridor_pts()[:3])
+chk("a too-short trace is refused by the same law", ok is None)
+ok, why = store.propose_walk("Times Square to Bryant Park", corridor_pts(), minutes=7)
+chk("a named good walk is accepted", bool(ok) and not why)
+ok2, why2 = store.propose_walk("Times Square to Bryant Park", corridor_pts(), minutes=7)
+chk("the same walk cannot be proposed twice today", ok2 is None)
+q = store.proposed()
+chk("the queue lists it as PROPOSED (%d)" % len(q),
+    len(q) == 1 and q[0]["label"] == "Times Square to Bryant Park"
+    and q[0]["status"] == "PROPOSED")
+d = json.load(open(store.file))
+chk("nothing proposed leaks into the corridors record",
+    not any(k.startswith("p-times-square") for k in d["corridors"]))
+
 shutil.rmtree(tmp, ignore_errors=True)
 print("\nPASSED" if not fails else "\nFAILED: %s" % fails)
 raise SystemExit(1 if fails else 0)
