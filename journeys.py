@@ -47,6 +47,39 @@ import datetime
 MAX_AGE_DAYS = 180
 
 
+# How a leg is covered, and whether the guide can track you on it. Walking is
+# the only trackable mode, because footprints live on the ground under your
+# feet. A ferry, a train, a bus, a car: you are a passenger being carried, there
+# is no corridor to walk and nothing to announce, so the guide steps back and
+# waits for the far end. Marking this is the difference between a guide that
+# understands a ferry and one that thinks you have gone for a very fast swim,
+# tries to track you across open water, and strands the person it is guiding.
+MODES = {
+    "walk":  {"trackable": True,  "carried": False},
+    "ride":  {"trackable": False, "carried": True},   # train, light rail, subway
+    "bus":   {"trackable": False, "carried": True},
+    "ferry": {"trackable": False, "carried": True},
+    "drive": {"trackable": False, "carried": True},
+    "wait":  {"trackable": False, "carried": False},  # buy a ticket, hold on a platform
+}
+
+
+def step_mode(step):
+    """The mode of a step. Stated wins; otherwise a step naming a corridor is a
+    walk, and anything else is a ride, until it says otherwise."""
+    m = (step.get("mode") or "").strip().lower()
+    if m in MODES:
+        return m
+    return "walk" if step.get("corridor") else "ride"
+
+
+def is_trackable(step):
+    """Can the guide follow you on this leg? Only on foot, and only where a
+    footprint corridor exists to follow. A ferry is never trackable, so it is
+    never asked to produce a footprint, only a person's checked word."""
+    return MODES[step_mode(step)]["trackable"] and bool(step.get("corridor"))
+
+
 # Each step:
 #   do      , the single instruction, imperative, one action
 #   confirm , how you know it worked. The sentence that stops the panic.
@@ -79,6 +112,7 @@ JOURNEYS = {
                 # terminal-to-platform with /footprint recording. The corridor
                 # key names which trace counts.
                 "corridor": "seatac-terminal-to-link",
+                "mode": "walk",
                 "verified": None,
                 "source": "awaiting a walked footprint",
             },
@@ -89,6 +123,7 @@ JOURNEYS = {
                            "showed a balance.",
                 "if_wrong": "The machines take card and cash. If one is out of "
                             "order there is another on the same platform.",
+                "mode": "wait",
                 "verified": "2026-08-09",
                 "source": "Sound Transit 1 Line schedule, adult fare $3",
             },
@@ -100,6 +135,7 @@ JOURNEYS = {
                 "if_wrong": "A train towards Angle Lake is the wrong way. Get "
                             "off at the next stop, cross to the other platform, "
                             "and wait, the next one is about 15 minutes.",
+                "mode": "ride",
                 "verified": "2026-08-09",
                 "source": "Sound Transit, 1 Line runs SeaTac/Airport to "
                           "Lynnwood City Center, no transfer",
@@ -110,6 +146,7 @@ JOURNEYS = {
                 "confirm": "Everyone gets off. So do you.",
                 "if_wrong": "If you fall asleep, the end of the line is where "
                             "you wanted to be anyway.",
+                "mode": "ride",
                 "verified": "2026-08-09",
                 "source": "Sound Transit, approx 1 h 11 m SeaTac to Lynnwood",
             },
@@ -144,11 +181,14 @@ def problems(journey, today=None, walked=None):
     for i, s in enumerate(journey.get("steps") or []):
         if s.get("verified") and not _stale(s, today):
             continue
-        key = s.get("corridor")
-        if key and walked and walked(key):
+        # A footprint can only stand in for prose on a leg you actually walk. A
+        # ferry or a train step is never satisfied by a walk; it needs a
+        # person's checked word, because there is no ground to record.
+        if is_trackable(s) and walked and walked(s["corridor"]):
             continue
-        if key:
-            out.append("step %d awaits a walked footprint of %s" % (i + 1, key))
+        if is_trackable(s):
+            out.append("step %d awaits a walked footprint of %s"
+                       % (i + 1, s["corridor"]))
         elif not s.get("verified"):
             out.append("step %d has never been verified" % (i + 1))
         else:
@@ -177,9 +217,18 @@ def serve(jid, today=None, walked=None):
     # worth a line.
     out = copy.deepcopy(j)
     for s in out["steps"]:
-        key = s.get("corridor")
-        if key and walked and (not s.get("verified") or _stale(s, today)):
-            w = walked(key)
+        # Say plainly, on every leg, how it is covered and whether the guide can
+        # follow you on it. This is what lets a phone stop pretending to track a
+        # passenger across water and instead say "sit tight, I will pick you up
+        # at the terminal".
+        s["mode"] = step_mode(s)
+        s["trackable"] = is_trackable(s)
+        if not s["trackable"] and MODES[s["mode"]]["carried"]:
+            s["guide_note"] = ("You are a passenger on this leg. The guide "
+                               "cannot follow you here; it waits, and picks you "
+                               "up when you arrive.")
+        if s["trackable"] and walked and (not s.get("verified") or _stale(s, today)):
+            w = walked(s["corridor"])
             if isinstance(w, dict) and w.get("date"):
                 s["verified_by"] = "walked on %s" % w["date"]
     return out, []
