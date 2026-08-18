@@ -37,6 +37,32 @@ EXTRA_SKIP = {
 }
 
 EXTRA = {
+    # ---- Atlas scout + the demand board (2026-08-17) ----
+    "Guide demand →": ["指南需求 →", "Demanda de la guía →", "가이드 수요 →", "Nhu cầu từ hướng dẫn →"],
+    "What the free guide is proving · the page to show an affiliate programme": [
+        "免费指南正在证明什么 · 拿给联盟计划看的页面",
+        "Lo que la guía gratuita está demostrando · la página para enseñar a un programa de afiliados",
+        "무료 가이드가 증명하고 있는 것 · 제휴 프로그램에 보여줄 페이지",
+        "Điều hướng dẫn miễn phí đang chứng minh · trang để trình bày với một chương trình liên kết"],
+    "What the free guide is proving": ["免费指南正在证明什么", "Lo que la guía gratuita está demostrando",
+        "무료 가이드가 증명하고 있는 것", "Điều hướng dẫn miễn phí đang chứng minh"],
+    "Scout: find organizations worth calling, from the map, each with a way to reach them. Everything found lands as": [
+        "探路：从地图上找出值得致电的机构，每一家都有联系方式。找到的都会先列为",
+        "Explorador: encuentra en el mapa organizaciones que merece la pena llamar, cada una con una forma de contacto. Todo lo encontrado queda como",
+        "스카우트: 지도에서 전화할 가치가 있는 조직을 찾습니다. 모두 연락할 방법이 있으며, 찾은 것은 모두 다음 상태로 들어갑니다",
+        "Trinh sát: tìm trên bản đồ những tổ chức đáng gọi, mỗi nơi đều có cách liên hệ. Tất cả tìm được sẽ nằm ở trạng thái"],
+    "to contact": ["待联系", "por contactar", "연락 예정", "cần liên hệ"],
+    ", nobody is contacted here.": ["，这里不会替您联系任何人。", ", aquí no se contacta a nadie.",
+        ", 여기서는 아무에게도 연락하지 않습니다.", ", ở đây không ai bị liên hệ cả."],
+    "Area": ["区域", "Zona", "지역", "Khu vực"],
+    "Radius": ["范围", "Radio", "반경", "Bán kính"],
+    "3 km": ["3 公里", "3 km", "3 km", "3 km"],
+    "8 km": ["8 公里", "8 km", "8 km", "8 km"],
+    "15 km": ["15 公里", "15 km", "15 km", "15 km"],
+    "25 km": ["25 公里", "25 km", "25 km", "25 km"],
+    "Looking for": ["寻找对象", "Qué buscar", "찾는 대상", "Tìm loại nào"],
+    "\U0001F52D Send the scout": ["\U0001F52D 派出探路", "\U0001F52D Enviar el explorador",
+        "\U0001F52D 스카우트 보내기", "\U0001F52D Cử trinh sát đi"],
     # ---- Inside the Met, the footprint map ----
     'Inside the Met': ['走进大都会博物馆', 'Dentro del Met', '메트로폴리탄 미술관 내부', 'Bên trong bảo tàng Met'],
     'For museum days in New York': ['适合在纽约逛博物馆的日子', 'Para días de museo en Nueva York', '뉴욕에서 미술관을 즐기는 날을 위해', 'Cho những ngày đi bảo tàng ở New York'],

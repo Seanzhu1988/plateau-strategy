@@ -462,17 +462,33 @@ if missing:
     sys.exit(1)
 
 # ---- build DICT + engine ----
-LANGS_ORDER = ["zh","es","ko","vi"]
+# Japanese arrives as its own file rather than a fifth column in twelve
+# hundred rows. A language that lives in one file can be added, reviewed
+# and corrected without touching a single existing translation, and the
+# next language after it costs one more file, not another edit everywhere.
+LANGS_ORDER = ["zh", "es", "ko", "vi", "ja"]
+SIDE_LANGS = {}
+for side in ("ja",):
+    try:
+        with open(os.path.join(PROJ, "i18n_%s.json" % side), encoding="utf-8") as f:
+            SIDE_LANGS[side] = json.load(f)
+    except Exception:
+        SIDE_LANGS[side] = {}
+
 DICT = {}
 for k, vals in TR.items():
     DICT[k] = {LANGS_ORDER[i]: vals[i] for i in range(4)}
+    for side, table in SIDE_LANGS.items():
+        v = table.get(k)
+        if v:
+            DICT[k][side] = v
 
 ENGINE = r'''/* Plateau Strategy Solution Lab -- site-wide line-by-line translation.
    Zero markup changes: walks text nodes + placeholders/titles keyed by English.
    Persists the reader's choice and re-translates dynamically-injected content. */
 (function () {
   var DICT = __DICT__;   // kept for shape; the real strings arrive in a pack
-  var LANGS = [["en", "English"], ["zh", "中文"], ["es", "Español"], ["ko", "한국어"], ["vi", "Tiếng Việt"]];
+  var LANGS = [["en", "English"], ["zh", "中文"], ["es", "Español"], ["ko", "한국어"], ["vi", "Tiếng Việt"], ["ja", "日本語"]];
   var KEY = "ps_lang";
   // ?lang=zh wins over the stored choice, and is then stored, so a
   // language-targeted ad lands on the page already in that language instead of

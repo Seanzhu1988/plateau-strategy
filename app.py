@@ -1727,6 +1727,72 @@ def frame_preview_js():
     return send_file(os.path.join(BASE_DIR, "frame-preview.js"))
 
 
+@app.route("/guide-player.js")
+def guide_player_js():
+    return send_file(os.path.join(BASE_DIR, "guide-player.js"))
+
+
+@app.route("/api/guide-script/<slug>")
+def api_guide_script(slug):
+    """The written narration, in the reader's language if we have it.
+
+    The player falls back to reading this aloud with the device's own voice
+    when no recording exists yet, so this route is what makes a guide speak
+    Japanese the day the Japanese script is written, months before anybody
+    books studio time. It returns the language actually served, never the
+    language asked for, because a device voice given the wrong language reads
+    English words with foreign phonetics and sounds like a fault.
+    """
+    slug = re.sub(r"[^a-z0-9\-]", "", (slug or "").lower())[:80]
+    if not slug:
+        return jsonify({"ok": False}), 404
+    want = (request.args.get("lang") or "en").lower()
+    if not re.fullmatch(r"[a-z]{2}(-[a-z]{2})?", want):
+        want = "en"
+    for lang in ([want, "en"] if want != "en" else ["en"]):
+        name = "guide_scripts.json" if lang == "en" else "guide_scripts.%s.json" % lang
+        try:
+            with open(os.path.join(BASE_DIR, name), encoding="utf-8") as f:
+                text = (json.load(f) or {}).get(slug)
+        except Exception:
+            text = None
+        if text:
+            return jsonify({"ok": True, "slug": slug, "lang": lang, "text": text})
+    return jsonify({"ok": False, "slug": slug}), 404
+
+
+@app.route("/api/guide-languages")
+def api_guide_languages():
+    """Which languages have written scripts, and how far along each one is.
+
+    Sean asked for guides that talk in more than English; this is the honest
+    progress bar for that, counted off disk rather than promised.
+    """
+    try:
+        with open(os.path.join(BASE_DIR, "guide_scripts.json"), encoding="utf-8") as f:
+            base = {k: v for k, v in (json.load(f) or {}).items() if not k.startswith("_")}
+    except Exception:
+        base = {}
+    out = []
+    for lang in ("en", "zh", "es", "ko", "vi", "ja"):
+        name = "guide_scripts.json" if lang == "en" else "guide_scripts.%s.json" % lang
+        try:
+            with open(os.path.join(BASE_DIR, name), encoding="utf-8") as f:
+                got = {k: v for k, v in (json.load(f) or {}).items() if not k.startswith("_")}
+        except Exception:
+            got = {}
+        if not got:
+            continue
+        recorded = 0
+        for slug in got:
+            fn = "guide-%s.mp3" % slug if lang == "en" else "guide-%s.%s.mp3" % (slug, lang)
+            if os.path.exists(os.path.join(BASE_DIR, "media", "audio", fn)):
+                recorded += 1
+        out.append({"lang": lang, "written": len(got), "of": len(base) or len(got),
+                    "recorded": recorded})
+    return jsonify({"ok": True, "languages": out, "slugs": sorted(base)})
+
+
 @app.route("/basemap.js")
 def basemap_js():
     return send_file(os.path.join(BASE_DIR, "basemap.js"))
@@ -1747,7 +1813,13 @@ def i18n_pack(lang):
     none of it. The engine is 11 KB now and asks for the single pack it
     needs; English asks for nothing, because English is the text already on
     the page."""
-    if lang not in ("zh", "es", "ko", "vi"):
+    # The guard is a SHAPE check, not a list of languages. It used to name
+    # the four that existed, so adding Japanese produced a pack the build
+    # wrote, the switcher offered, and this route answered with 404 and an
+    # empty body: a language that looked installed and translated nothing.
+    # Existence on disk is the real gate, and the pattern keeps the path
+    # from being used to reach anything else.
+    if not re.fullmatch(r"[a-z]{2}(-[a-z]{2})?", lang or ""):
         return ("", 404)
     path = os.path.join(BASE_DIR, "i18n.%s.js" % lang)
     if not os.path.exists(path):
@@ -7827,13 +7899,14 @@ def idea_page(aid):
     # is broken rather than that the work has not been done yet.
     trs = {} if locked else _translations_for(a.get("title"), a.get("body"))
     LANG_NAMES = {"zh": "\u4e2d\u6587", "es": "Espa\u00f1ol",
-                  "ko": "\ud55c\uad6d\uc5b4", "vi": "Ti\u1ebfng Vi\u1ec7t"}
+                  "ko": "\ud55c\uad6d\uc5b4", "vi": "Ti\u1ebfng Vi\u1ec7t",
+                  "ja": "\u65e5\u672c\u8a9e"}
     # Every language is always offered. A missing one is not hidden, it is
     # translated the moment a reader taps it, through the same engine and
     # the same anchored store as the background path. Hiding the button was
     # honest once; with live translation behind it, offering is honest.
     buttons = ['<button class="lang-opt" data-l="en" aria-current="true">English</button>']
-    for code in ("zh", "es", "ko", "vi"):
+    for code in ("zh", "es", "ko", "vi", "ja"):
         buttons.append('<button class="lang-opt" data-l="%s"%s>%s</button>'
                        % (code, "" if code in trs else ' data-missing="1"',
                           LANG_NAMES[code]))

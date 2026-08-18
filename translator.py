@@ -35,17 +35,22 @@ except Exception:                      # pragma: no cover
     requests = None
 
 API_URL = "https://api.anthropic.com/v1/messages"
+<<<<<<< HEAD
 # A translation is read once by a person, not scanned by a machine, so fluency
 # is worth more than the speed and the few cents Haiku saves. Sonnet reads far
 # more naturally for prose. Overridable: TRANSLATE_MODEL=claude-opus-5 for the
 # smoothest, or claude-haiku-4-5-20251001 to go back to cheap and fast.
 MODEL = os.environ.get("TRANSLATE_MODEL", "claude-sonnet-5")
 LANGS = [l.strip() for l in os.environ.get("TRANSLATE_LANGS", "zh,es,ko,vi").split(",") if l.strip()]
+=======
+MODEL = os.environ.get("TRANSLATE_MODEL", "claude-haiku-4-5-20251001")
+LANGS = [l.strip() for l in os.environ.get("TRANSLATE_LANGS", "zh,es,ko,vi,ja").split(",") if l.strip()]
+>>>>>>> 9702f9e (Japanese joins the site, and the pack route stops naming languages)
 MAX_PARAS = 80                          # a post, not a book
 _LOCK = threading.Lock()
 
 LANG_NAMES = {"zh": "Simplified Chinese", "es": "Spanish",
-              "ko": "Korean", "vi": "Vietnamese"}
+              "ko": "Korean", "vi": "Vietnamese", "ja": "Japanese"}
 
 
 def content_hash(title, body):

@@ -3,7 +3,7 @@
    Persists the reader's choice and re-translates dynamically-injected content. */
 (function () {
   var DICT = {};   // kept for shape; the real strings arrive in a pack
-  var LANGS = [["en", "English"], ["zh", "中文"], ["es", "Español"], ["ko", "한국어"], ["vi", "Tiếng Việt"]];
+  var LANGS = [["en", "English"], ["zh", "中文"], ["es", "Español"], ["ko", "한국어"], ["vi", "Tiếng Việt"], ["ja", "日本語"]];
   var KEY = "ps_lang";
   // ?lang=zh wins over the stored choice, and is then stored, so a
   // language-targeted ad lands on the page already in that language instead of

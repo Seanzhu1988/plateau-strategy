@@ -540,7 +540,13 @@
         .tp-lit   .tp-dot::after { color: var(--tp-good); }
         .tp-tight .tp-dot { background: var(--tp-warn); }
         .tp-tight .tp-dot::after { color: var(--tp-warn); }
-        .tp-off   { opacity: .55; }
+        /* Not reachable today, but fine on a fresh morning. Drawn as a real
+           state rather than the same grey as unreachable: a traveller should
+           be able to see at a glance which pins are a tomorrow problem. */
+        .tp-tomorrow { opacity: .8; }
+        .tp-tomorrow .tp-dot { background: #fff; border: 2px dashed var(--tp-warn); color: var(--tp-warn); }
+        .tp-tomorrow .tp-dot::after { color: var(--tp-warn); }
+        .tp-off   { opacity: .45; }
         .tp-off   .tp-dot { background: var(--tp-off); }
         .tp-off   .tp-dot::after { color: var(--tp-off); }
         .tp-catoff { opacity: .2; }
@@ -713,6 +719,7 @@
                             <button onclick="copyItinerary()" title="Copy the itinerary as text, send it to anyone">⧉ Copy</button>
                             <button id="shareBtn" onclick="shareItinerary()" style="display:none;" title="Share the itinerary">📤 Share</button>
                             <button onclick="printItinerary()" title="Print the day sheet (or save as PDF)">🖨 Print</button>
+                            <button id="optBtn" onclick="applyOptimize()" style="display:none;" title="Reorder today's stops for less driving, same places">⚡ Tidy the order</button>
                             <button onclick="undoStop()" title="Remove the last stop">↩ Undo</button>
                         </span>
                     </div>
@@ -1065,7 +1072,9 @@
         const arr = st.now + t;
         const p = places[i];
         const slack = Math.min(p.close, DAY_CAP) - visitOf(p) - arr;
-        return { t, arr, slack };
+        // which wall: the door closing, or the end of the planning day
+        const leaveCap = (arr + visitOf(p) > DAY_CAP) && (arr + visitOf(p) <= p.close);
+        return { t, arr, slack, leaveCap };
     }
     // One place → one stop in the chain. Both "Add" and tapping a pin land here.
     // Feasibility is CHECKED (Sean: keep the engine) but does not BLOCK, the chain is
@@ -1390,6 +1399,89 @@
         } else { el.style.display = 'none'; }
     }
 
+    // ---------- a better order for the stops you already chose ----------
+    // The greedy pass picks a decent order; it does not look back. This does:
+    // it takes the day you have and tries swapping the middle of every pair of
+    // stops (the classic 2-opt move), keeping any swap that saves driving and
+    // still gets you through every door before it closes. It never adds or
+    // drops a stop, so the day stays yours, only tidier.
+    function dayCost(seq, startPos, startT){
+        // Returns {drive, ok}. ok is false if the order misses a closing time.
+        let pos = startPos, t = startT, drive = 0, ok = true;
+        for (var k = 0; k < seq.length; k++) {
+            var p = places[seq[k]];
+            if (!p) continue;
+            var leg = travelMin(pos, seq[k], t);
+            drive += leg;
+            var arr = t + leg;
+            if (arr + visitOf(p) > Math.min(p.close, DAY_CAP)) ok = false;
+            t = arr + visitOf(p);
+            pos = seq[k];
+        }
+        return { drive: drive, end: t, ok: ok };
+    }
+
+    function betterOrder(seq, startPos, startT){
+        if (seq.length < 3) return null;
+        var best = seq.slice();
+        var bestCost = dayCost(best, startPos, startT);
+        var improved = true, guard = 0;
+        while (improved && guard++ < 40) {
+            improved = false;
+            for (var a = 0; a < best.length - 1; a++) {
+                for (var b = a + 1; b < best.length; b++) {
+                    var trial = best.slice(0, a).concat(best.slice(a, b + 1).reverse(), best.slice(b + 1));
+                    var c = dayCost(trial, startPos, startT);
+                    // a valid order always beats an invalid one, then fewer minutes
+                    var better = (c.ok && !bestCost.ok) ||
+                                 (c.ok === bestCost.ok && c.drive < bestCost.drive - 0.5);
+                    if (better) { best = trial; bestCost = c; improved = true; }
+                }
+            }
+        }
+        var same = best.every(function (v, i) { return v === seq[i]; });
+        return same ? null : { order: best, cost: bestCost };
+    }
+
+    // What the current first day would save if reordered. Used by Jarvis to
+    // offer the swap, and by the button to perform it.
+    function optimizeLook(){
+        if (st.route.length < 3) return null;
+        var day1 = st.route[0].day;
+        var seq = st.route.filter(function (r) { return r.day === day1; }).map(function (r) { return r.i; });
+        if (seq.length < 3) return null;
+        var startT = parseTime($('leaveAt').value) || 570;
+        var now = dayCost(seq, -1, startT);
+        var b = betterOrder(seq, -1, startT);
+        if (!b) return null;
+        var saved = Math.round(now.drive - b.cost.drive);
+        var fixes = (!now.ok && b.cost.ok);
+        if (saved < 4 && !fixes) return null;
+        return { saved: saved, fixes: fixes, order: b.order, day: day1 };
+    }
+
+    window.applyOptimize = function (){
+        var look = optimizeLook();
+        if (!look) { say('Your order is already the tidy one.'); return; }
+        // rebuild the chain: optimized first day, later days untouched
+        var rest = st.route.filter(function (r) { return r.day !== look.day; })
+                           .map(function (r) { return { i: r.i, day: r.day }; });
+        var chain = look.order.map(function (i) { return { i: i, day: look.day }; }).concat(rest);
+        st.route = []; st.visited = new Set();
+        st.day = 1; st.now = parseTime($('leaveAt').value) || 570; st.pos = -1;
+        var curDay = 1;
+        retiming = true;
+        chain.forEach(function (sN) {
+            if (!places[sN.i]) return;
+            while (curDay < sN.day) { st.day++; st.now = DAY_START; st.pos = -1; curDay = st.day; }
+            addToRoute(sN.i);
+        });
+        retiming = false;
+        jarvisSay('Reordered day ' + look.day + ', <b>' + look.saved + ' min less driving</b>'
+                + (look.fixes ? ', and everything now fits before closing' : '') + '. Same stops, tighter road.');
+        refresh();
+    };
+
     function planDay(startPos, startT, avail){
         // Pick the next stop by URGENCY vs DISTANCE, not by closing time alone.
         // (Bug 2: ranking purely on the earliest close sent the day zigzagging across
@@ -1418,7 +1510,7 @@
     // Every state gets a glyph as well as a colour, so the map still reads in
     // greyscale, in print, and for colour-blind users.
     const TP_GLYPH = { 'tp-lit': '✓', 'tp-tight': '!', 'tp-off': '✕',
-                       'tp-catoff': '✕', 'tp-vis': '★' };
+                       'tp-tomorrow': '›', 'tp-catoff': '✕', 'tp-vis': '★' };
     function pinHtml(i, cls){
         const glyph = TP_GLYPH[cls] || '';
         // only a chosen stop carries its name on the map; the rest stay compact
@@ -1440,8 +1532,26 @@
             else if (!st.cats.has(p.cat)) { cls = 'tp-catoff'; tip = nm + ', category off'; }
             else {
                 const f = feasibility(i);
-                if (f.slack < 0) { cls = 'tp-off'; off++;
-                    tip = nm + ', out of reach: arrive ' + fmt(f.arr) + ', closes ' + fmt(p.close); }
+                if (f.slack < 0) {
+                    // WHY it does not fit decides how it is drawn. A place that
+                    // simply needs a fresh morning is not the same as one you
+                    // cannot reach at all, and greying them identically was the
+                    // planner's least honest pixel.
+                    const fresh = DAY_START + travelMin(-1, i, DAY_START);
+                    const fitsTomorrow = fresh + visitOf(p) <= Math.min(p.close, DAY_CAP);
+                    if (f.arr > Math.min(p.close, DAY_CAP) && fitsTomorrow) {
+                        cls = 'tp-tomorrow'; off++;
+                        tip = nm + ', too late today, arrive ' + fmt(f.arr) + ' and it closes '
+                            + fmt(p.close) + '. Fits first thing tomorrow.';
+                    } else if (f.leaveCap) {
+                        cls = 'tp-off'; off++;
+                        tip = nm + ', would run past the ' + fmt(DAY_CAP) + ' day cap.';
+                    } else {
+                        cls = 'tp-off'; off++;
+                        tip = nm + ', out of reach: ' + Math.round(f.t) + ' min away, arrive '
+                            + fmt(f.arr) + ', closes ' + fmt(p.close);
+                    }
+                }
                 else if (f.slack < 35) { cls = 'tp-tight'; tight++;
                     tip = nm + ', tight: ' + Math.round(f.t) + ' min drive, arrive ' + fmt(f.arr) + ', closes ' + fmt(p.close); }
                 else { cls = 'tp-lit'; lit++;
@@ -1551,7 +1661,7 @@
                +   '<div class="itin-time">' + fmt(r.arr) + '<span class="lv">, ' + fmt(r.leave) + '</span></div>'
                +   '<div>'
                +     '<div class="itin-name"><span>D' + (k + 1) + ' · ' + escj(p.name) + tag
-               +       (p.audio ? ' <button class="itin-play" onclick="playGuide(this, \'' + escj(p.audio) + '\', \'' + escj(p.slug || p.name) + '\')">▶ guide</button>' : '')
+               +       (p.audio ? ' <button class="itin-play" onclick="playGuide(this, \'' + escj(p.audio) + '\', \'' + escj(p.slug || p.name) + '\', \'' + escj(p.slug || '') + '\')">▶ guide</button>' : '')
                +       '</span>' + stars + '</div>'
                +     '<div class="itin-leg"' + (prev.pos === -1 ? ' title="from your start point"' : '') + '>'
                +       '<span>↓ ' + legLabel(from, p) + ' · ' + legMin + ' min · ' + trafficLabel(prev.now) + '</span>'
@@ -1582,6 +1692,17 @@
         }
         if (ja) ja.style.display = 'flex';
         if (tools) tools.style.display = 'flex';
+        // The tidy button appears only when it would actually change something,
+        // so pressing it is never a no-op and its absence is information too.
+        try {
+            const ob = $('optBtn'), look = optimizeLook();
+            if (ob) {
+                ob.style.display = look ? '' : 'none';
+                if (look) ob.title = look.fixes
+                    ? 'Reorder today: everything fits before closing, and ' + look.saved + ' min less driving'
+                    : 'Reorder today: ' + look.saved + ' min less driving, same stops';
+            }
+        } catch (e) {}
         fillLegMiles();
     }
     function jumpToRisk(){
@@ -1872,6 +1993,18 @@
     // real plan, never filler, and offers the action, not just an observation.
     function jarvisAdvice(risky){
         if (!st.route.length) return '';
+        // The most useful thing an organizer can say is "I can make this
+        // better, shall I", so it goes first when it is true.
+        try {
+            const look = optimizeLook();
+            if (look) {
+                return (look.fixes
+                    ? 'Reordering today makes everything fit before closing'
+                    : 'I can save you ' + look.saved + ' min of driving')
+                    + ' with the same stops. '
+                    + '<span class="fixlink" onclick="applyOptimize()">Tidy the order →</span>';
+            }
+        } catch (e) {}
         const n = st.route.length;
         const last = st.route[n - 1];
         const first = st.route[0];
@@ -1909,30 +2042,8 @@
             return 'This is a solid day. When you want someone else to drive it, the three buttons below hand it to a pro.';
         return '';
     }
-    let GUIDE_AUDIO = null, GUIDE_BTN = null;
-    function playGuide(btn, src, key) {
-        if (GUIDE_AUDIO && GUIDE_BTN === btn && !GUIDE_AUDIO.paused) {
-            GUIDE_AUDIO.pause();
-            btn.textContent = btn.textContent.replace('❚❚', '▶');
-            return;
-        }
-        if (GUIDE_AUDIO) {
-            GUIDE_AUDIO.pause();
-            if (GUIDE_BTN) GUIDE_BTN.textContent = GUIDE_BTN.textContent.replace('❚❚', '▶');
-        }
-        GUIDE_AUDIO = new Audio(src);
-        GUIDE_BTN = btn;
-        GUIDE_AUDIO.play().catch(function () {});
-        btn.textContent = btn.textContent.replace('▶', '❚❚');
-        GUIDE_AUDIO.onended = function () {
-            btn.textContent = btn.textContent.replace('❚❚', '▶');
-        };
-        try {
-            fetch('/api/guide-demand/beacon', { method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ kind: 'audio', key: key }) });
-        } catch (err) {}
-    }
+    // The spoken guide lives in /guide-player.js, shared with the book:
+    // it now picks a language and a voice, and that is not worth two copies.
     function trafficLabel(dep){
         const m = trafficMult(dep);
         return m >= 1.45 ? 'heavy' : (m >= 1.15 ? 'moderate' : 'light');
@@ -3956,6 +4067,7 @@
     })();
     loadDiscoveryFeed();
     </script>
+    <script src="/guide-player.js"></script>
     <script src="/floatback.js"></script>
     <script src="/jarvis-widget.js"></script>
     <script src="/i18n.js"></script>
