@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Everything here · Plateau Strategy</title>
+<meta name="description" content="Every page on this site, grouped by what it is for: trip tools, ideas and the professionals who price them, rides, and how the whole thing was built.">
+<meta property="og:title" content="Everything here">
+<meta property="og:description" content="Every page on this site, grouped by what it is for.">
+<meta property="og:url" content="https://plateaustrategy.io/map">
+<meta property="og:site_name" content="Plateau Strategy Solution Lab">
+<meta property="og:image" content="https://plateaustrategy.io/share-card.jpg">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://plateaustrategy.io/map">
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Plateau">
+<meta name="theme-color" content="#1f3a5f">
+<link rel="stylesheet" href="/paper.css">
+<link rel="stylesheet" href="/modern.css">
+<style>
+  /* The index. Statement rows, navy line work on white, nothing filled behind
+     a word, in the sheet language the rest of the site is written in. */
+  header img { height: 42px; width: 42px; border-radius: 50%; }
+  header .brand { font-size: 1.2rem; font-weight: 800; }
+  header .right { margin-left: auto; display: flex; gap: 1.2rem; align-items: center; }
+  .wrap { max-width: 46rem; }
+
+  .sm-open { position: relative; height: 1px; background: var(--m-line-firm, #d3d3da);
+             margin: 2rem 0 2.2rem; }
+  .sm-open::after { content: ""; position: absolute; top: -1px; left: 50%;
+                    transform: translateX(-50%); width: 64px; height: 3px;
+                    background: #1f3a5f; }
+  .sm-lede { color: var(--psx-text2, #6b6459); max-width: 62ch; margin: .4rem 0 0; }
+
+  .grp { margin-top: 2.4rem; }
+  .grp-head { display: flex; flex-wrap: wrap; gap: .3rem 1rem; align-items: baseline;
+              padding-bottom: .5rem; border-bottom: 1px solid var(--m-line-firm, #d3d3da); }
+  .grp-head h2 { margin: 0; font-size: 1.15rem; color: #1f3a5f; }
+  .grp-head .note { font-size: .88rem; color: var(--psx-text2, #6b6459); }
+  .row { display: flex; gap: 1rem; align-items: baseline; padding: .75rem 0;
+         border-bottom: 1px solid var(--m-line, #e6e6ea); }
+  .row .nm { font-weight: 700; white-space: nowrap; }
+  .row .nm a { text-decoration: none; }
+  .row .nm a:hover { text-decoration: underline; }
+  .row .what { color: var(--psx-text2, #6b6459); font-size: .93rem; }
+  @media (max-width: 34rem) {
+    .row { display: block; }
+    .row .what { display: block; margin-top: .15rem; }
+  }
+
+  .own { margin-top: 2.6rem; border-left: 2px solid #1f3a5f; padding-left: .9rem; }
+  .own h2 { font-size: 1rem; margin: 0 0 .2rem; letter-spacing: .06em;
+            text-transform: uppercase; color: var(--psx-text2, #6b6459); }
+  .own .row { border-bottom: 0; padding: .45rem 0; }
+  .sm-foot { margin: 2.6rem 0 3rem; font-size: .9rem; color: var(--psx-text2, #6b6459); }
+</style>
+</head>
+<body data-arm="company">
+<header>
+  <img src="/icon-192.png" alt="Plateau Strategy Solution Lab">
+  <span class="brand">Plateau Strategy Solution Lab</span>
+  <div class="right"><a href="/trip-planner">Trip planner</a><a href="/articles">Ideas</a><a href="/">Home</a></div>
+</header>
+<div class="wrap">
+  <div class="sm-open" role="presentation"></div>
+  <div class="page-title">Everything here</div>
+  <p class="sm-lede">One page, every part of this site, grouped by what it is
+    for. The trip tools are free and need no account. The ideas are posted in
+    the open. The rides are the business that pays for the rest.</p>
+
+  <div id="groups"><p class="sm-lede">Loading…</p></div>
+
+  <div class="own" id="own" hidden>
+    <h2>Yours only</h2>
+    <div id="ownRows"></div>
+  </div>
+
+  <p class="sm-foot">Something missing from this page is something we have not
+    decided to show yet, not something we forgot.<span id="privLink"></span></p>
+</div>
+
+<script src="/floatback.js"></script>
+<script src="/jarvis-widget.js"></script>
+<script src="/i18n.js"></script>
+<script>
+  function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g,
+          c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function rows(list) {
+      return list.map(p => '<div class="row"><span class="nm"><a href="' + esc(p.href)
+          + '">' + esc(p.name) + '</a></span><span class="what">' + esc(p.what)
+          + '</span></div>').join('');
+  }
+  fetch('/api/site-map').then(r => r.json()).then(d => {
+      if (!d || !d.ok) throw new Error('no map');
+      document.getElementById('groups').innerHTML = d.groups.map(g =>
+          '<div class="grp"><div class="grp-head"><h2>' + esc(g.title)
+          + '</h2><span class="note">' + esc(g.note) + '</span></div>'
+          + rows(g.pages) + '</div>').join('');
+      // The owner half is only ever sent to Sean, so its presence in the
+      // response is the whole permission check.
+      // Only offer privacy when the server says it is published.
+      var pub = d.groups.some(g => g.pages.some(p => p.href === '/privacy'));
+      if (pub) document.getElementById('privLink').innerHTML =
+          ' <a href="/privacy">Privacy</a>.';
+      if (d.private && d.private.length) {
+          document.getElementById('ownRows').innerHTML = rows(d.private);
+          document.getElementById('own').hidden = false;
+      }
+  }).catch(() => {
+      document.getElementById('groups').innerHTML =
+          '<p class="sm-lede">The index could not load. '
+          + '<a href="/">Home</a> still works.</p>';
+  });
+</script>
+</body>
+</html>

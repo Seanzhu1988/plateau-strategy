@@ -2525,6 +2525,105 @@ SITE_ORIGIN = os.environ.get("SITE_ORIGIN", "https://plateaustrategy.io").rstrip
 SITE_HOSTS = ("plateaustrategy.io", "plateau-strategy.onrender.com")
 
 
+@app.route("/rent-a-tesla")
+def rent_a_tesla():
+    """A finished page selling weekly rentals that had no route at all, so the
+    only way to it was to know the filename. Found while building the index."""
+    return send_file(os.path.join(BASE_DIR, "rent-a-tesla.html"))
+
+
+@app.route("/how-built")
+def how_built():
+    return send_file(os.path.join(BASE_DIR, "how-built.html"))
+
+
+# ---------- the site index ----------
+# Thirty six public routes had grown here, and most of them were reachable
+# only by someone who already knew the URL. This one declaration is the whole
+# map: what each page is, who it is for, and which family it belongs to. The
+# index page, the sitemap and the footer link all read it, so a page added
+# without an entry here is a page that has decided to stay hidden, which is a
+# choice rather than an accident.
+SITE_MAP = [
+    ("Plan a trip", "Free, no account, nothing to install.", [
+        ("/trip-planner", "Trip Planner",
+         "Build a day, and it works out the driving, the traffic by hour, the "
+         "ferries and the opening times, then offers a tighter order."),
+        ("/destination-book", "Destination Book",
+         "The places worth the detour, with a spoken guide for each in your "
+         "own language."),
+        ("/walks", "The Walks",
+         "Short walks worth doing on foot, timed and saved to your account."),
+        ("/met", "The Met, corridor by corridor",
+         "A museum too big to wander, laid out as routes you can finish."),
+        ("/favorite-place", "Favourite Place",
+         "Tell us where you love, and it goes on the map for the next visitor."),
+        ("/road-trip", "Road Trip",
+         "Longer distances, with the overnight stops worked out."),
+    ]),
+    ("Ideas and the people behind them", "Reinvestment USA.", [
+        ("/articles", "Business Ideas",
+         "Ideas posted in the open, with the blueprint sealed until it is bought."),
+        ("/professionals", "Professionals",
+         "The people who price an opinion on an idea, and how to become one."),
+        ("/board", "Board of Directors",
+         "Who stands behind the company."),
+    ]),
+    ("Ride with us", "Licensed, insured, and driven by a licensed guide.", [
+        ("/book", "Book a Ride", "Airport runs, tours, and long distance."),
+        ("/rent-a-tesla", "Rent a Tesla", "The car, the rates and the rules."),
+        ("/driver", "For Drivers", "Drive with us."),
+        ("/renter", "For Renters", "Rent from us."),
+    ]),
+    ("How this works", "The parts we are willing to show.", [
+        ("/how-built", "How this was built", "The tools, in plain language."),
+        ("/deck", "The deck", "The company, on one screen."),
+        ("/privacy", "Privacy", "What is collected, what is not, and why."),
+    ]),
+]
+
+# Owner pages. Listed so Sean can find them, never linked to visitors.
+SITE_MAP_PRIVATE = [
+    ("/dispatch", "Dispatch", "Bookings, demand and who to call."),
+    ("/partners", "Partners and Atlas", "The prospect pipeline and the scout."),
+    ("/archive", "Archive", "Traffic, viewers and where they came from."),
+    ("/setup", "Setup", "Keys, connections and the state of each."),
+    ("/books", "Books and Taxes", "What came in, what went out, what is owed."),
+    ("/agent", "Agent Portal", "For agents booking on behalf of a client."),
+    ("/guide-studio", "Guide Studio", "The spoken guides and their scripts."),
+]
+
+
+@app.route("/map")
+def site_map_page():
+    return send_file(os.path.join(BASE_DIR, "site-map.html"))
+
+
+@app.route("/api/site-map")
+def api_site_map():
+    """The index, and whether the reader is the owner.
+
+    The private half is only ever sent to Sean, so a visitor who calls this
+    directly gets exactly what a visitor is meant to see.
+    """
+    # A page the environment has switched off is not listed. /privacy answers
+    # 404 until PRIVACY_CONTACT names a working address, and an index that
+    # links to a 404 is worse than one that waits.
+    def live(href):
+        if href == "/privacy":
+            return bool(os.environ.get("PRIVACY_CONTACT", "").strip())
+        return True
+    groups = [{"title": t, "note": n,
+               "pages": [{"href": h, "name": nm, "what": w}
+                         for h, nm, w in ps if live(h)]}
+              for t, n, ps in SITE_MAP]
+    out = {"ok": True, "groups": groups}
+    if session.get("owner"):
+        out["private"] = [{"href": h, "name": nm, "what": w}
+                          for h, nm, w in SITE_MAP_PRIVATE]
+    return jsonify(out)
+
+
 @app.route("/robots.txt")
 def robots_txt():
     lines = ["User-agent: *"]
