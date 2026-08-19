@@ -4841,6 +4841,20 @@ def _create_reservation(data, agent=None, self_driver=None):
     else:
         reservation["notified"] = notify.notify_driver(reservation, invoice,
                                                        renters=_load(RENTERS_PATH))
+        # A booking nobody was told about is an emergency, not a detail. The
+        # customer has been given a confirmation and is expecting a car, and
+        # until somebody opens Dispatch, no human knows. Say so where it will
+        # be seen: the log, and the reservation itself so the desk can show it.
+        if not reservation["notified"].get("reached"):
+            reservation["undelivered"] = True
+            print("[BOOKING NOT DELIVERED] %s %s -> %s at %s %s. "
+                  "No channel reached anyone: %r"
+                  % (reservation.get("id"),
+                     reservation.get("trip", {}).get("pickup", ""),
+                     reservation.get("trip", {}).get("dropoff", ""),
+                     reservation.get("trip", {}).get("date", ""),
+                     reservation.get("trip", {}).get("time", ""),
+                     reservation["notified"]), flush=True)
     return reservation, None
 
 

@@ -200,7 +200,33 @@ def notify_driver(reservation, invoice, renters=None):
         if result != "not_configured":
             channels["sms"] = result
 
+    # ---- Did any of that actually reach a human? ----
+    # This block exists because the answer used to be unrecorded. The result
+    # always carried "dashboard": True, so a booking that reached nobody at
+    # all was stored looking exactly like one that had been delivered three
+    # ways. The customer got a confirmation, and the ride sat unseen until
+    # somebody happened to open Dispatch.
+    #
+    # "dashboard" is not delivery. It means the row exists in a page nobody is
+    # necessarily looking at. Only a channel that actually pushed counts.
+    channels["reached"] = _delivered(channels)
     return channels
+
+
+def _delivered(channels):
+    """True when at least one channel really delivered.
+
+    A channel value is "sent", an error string, None when unconfigured, or,
+    for SMS to several drivers, a dict of {phone: result}. Only "sent" counts:
+    an error is a failure, and not_configured never gets stored at all.
+    """
+    for key in ("telegram", "email", "sms"):
+        v = channels.get(key)
+        if v == "sent":
+            return True
+        if isinstance(v, dict) and any(r == "sent" for r in v.values()):
+            return True
+    return False
 
 
 def email_owner(subject, body):
