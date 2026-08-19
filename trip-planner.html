@@ -2745,7 +2745,9 @@
                                     + path + '?overview=false');
             const rt = j && j.code === 'Ok' && j.routes && j.routes[0];
             if (rt && isFinite(rt.distance))
-                return { mi: rt.distance / 1609.344, road: true, legs: points.length - 1 };
+                return { mi: rt.distance / 1609.344,
+                         driveMin: isFinite(rt.duration) ? rt.duration / 60 : null,
+                         road: true, legs: points.length - 1 };
         } catch (e) {}
         // Routing down: fall back leg by leg on the same straight line
         // estimate a single leg already uses, so an outage degrades the same
@@ -2753,7 +2755,7 @@
         let mi = 0;
         for (var i = 1; i < points.length; i++)
             mi += havKm(points[i - 1], points[i]) * 0.621371 * 1.3;
-        return { mi: mi, road: false, legs: points.length - 1 };
+        return { mi: mi, driveMin: null, road: false, legs: points.length - 1 };
     }
 
     function initChips(){
@@ -2831,11 +2833,36 @@
         const leg = await routeMiles([pk].concat(
             stopList.map(function (s2) { return { lat: s2.lat, lon: s2.lon }; })));
         const miles = leg.mi;
-        let base = 15, perMile = 2.5;
-        try { const p = await psxJSON('/api/pricing');
-              if (p) { if (isFinite(p.base_fare)) base = p.base_fare; if (isFinite(p.per_mile)) perMile = p.per_mile; } } catch (e) {}
         const distance_mi = Math.round(miles * 100) / 100;
-        const fare = Math.round((base + perMile * miles) * 100) / 100;
+
+        // How long the driver is held. Driving, plus the wait at every stop
+        // EXCEPT the last, because the party is dropped there and the driver
+        // goes home from it. Every visit length is already known from the
+        // destination data, so this is exact rather than an estimate, which
+        // is what lets a multi-stop day be quoted precisely instead of sent
+        // off as an enquiry.
+        let engagedMin = null;
+        if (stopList.length > 1) {
+            const drive = isFinite(leg.driveMin) && leg.driveMin != null
+                        ? leg.driveMin
+                        : miles * 3;          // ~20 mph city average if routing is down
+            let wait = 0;
+            for (var wi = 0; wi < stopList.length - 1; wi++) wait += visitOf(stopList[wi]) || 0;
+            engagedMin = Math.round(drive + wait);
+        }
+
+        // One price, computed in one place. The server owns the rates, and a
+        // second calculator here would be a second price, which is the one
+        // thing "the quote is the fare" promises not to do.
+        let fare = null, basis = null, engagedH = null;
+        try {
+            const q = await psxJSON('/api/quote?miles=' + distance_mi
+                + (engagedMin != null ? '&stops=' + stopList.length + '&engaged_min=' + engagedMin : ''));
+            if (q && q.ok) { fare = q.fare; basis = q.basis; engagedH = q.engaged_h; }
+        } catch (e) {}
+        if (fare == null) {          // quote unreachable: ask rather than invent
+            fare = 0; basis = 'quote_requested';
+        }
         const ride = {
             pickup,
             dropoff: drop.name,
@@ -2849,6 +2876,8 @@
             dest_category: drop.cat || '',         // history / culture / nature / food / views
             distance_mi, fare,                     // the whole route drove this price
             stops_count: stopList.length,          // drops in this one journey
+            engaged_min: engagedMin,               // how long the driver is held
+            engaged_h: engagedH, price_basis: basis,
             drops: stopList.map(function (s2) { return s2.name; }),
             routed: leg.road,                      // real road distance, or an estimate
             notes: (st.route.length > 1 ? 'Trip Planner route, ' + t.text : 'Via Trip Planner')

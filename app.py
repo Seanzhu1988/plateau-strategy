@@ -4530,6 +4530,50 @@ def _distance_fare(miles):
     return round(_ride_base_fare() + _ride_per_mile() * m, 2)
 
 
+def _ride_hourly():
+    """The chauffeured hourly rate, matching the "Hourly (per hour)" preset."""
+    try:
+        return round(float(os.environ.get("RIDE_HOURLY_USD", 65)), 2)
+    except Exception:
+        return 65.0
+
+
+def _ride_min_hours():
+    try:
+        return max(0.0, float(os.environ.get("RIDE_MIN_CHARTER_H", 2)))
+    except Exception:
+        return 2.0
+
+
+def _charter_fare(miles, engaged_min):
+    """A day with several drops is a charter, not a transfer.
+
+    Per-mile pricing cannot see time, and time is the whole cost of a
+    multi-stop day: the driver waits outside the museum and can take no other
+    work. A Manhattan day of four drops is fifteen miles, which prices at
+    about fifty dollars, while the driver is committed for more than four
+    hours. Charging that would fill the calendar with trips that lose money,
+    which is why this takes whichever is higher, the hours or the miles.
+
+    Engaged time is the driving plus the waiting at every stop EXCEPT the
+    last, because the party is dropped at the last one and the driver goes
+    home from there.
+
+    Returns (fare, basis, hours) so the customer can be told which rule
+    applied and why, rather than shown a number to take on faith.
+    """
+    dist = _distance_fare(miles)
+    try:
+        hours = max(0.0, float(engaged_min)) / 60.0
+    except (TypeError, ValueError):
+        return (dist, "distance", None)
+    hours = max(hours, _ride_min_hours())
+    hourly = round(_ride_hourly() * hours, 2)
+    if dist is None or hourly >= dist:
+        return (hourly, "charter_hourly", round(hours, 2))
+    return (dist, "distance", round(hours, 2))
+
+
 # The flat airport fare, and the radius it holds inside. Stated on the site
 # as "$75 flat to Sea-Tac" with no distance attached, which is a promise the
 # fare cannot keep from ninety miles out, so the boundary is written down
@@ -4570,11 +4614,25 @@ def api_quote():
     if miles < 0 or miles > 3000:
         return jsonify({"ok": False, "error": "miles out of range"}), 400
     to_airport = (request.args.get("airport") or "").lower() in ("1", "true", "yes")
-    fare, basis = _airport_or_distance_fare(miles, to_airport)
+    # A multi-stop day is quoted as a charter. The caller passes how long the
+    # driver is held, which the planner knows exactly from the visit length of
+    # each stop, so this is the same arithmetic the reservation will run.
+    try:
+        stops = int(request.args.get("stops") or 0)
+    except (TypeError, ValueError):
+        stops = 0
+    engaged = request.args.get("engaged_min")
+    hours = None
+    if stops > 1 and engaged not in (None, ""):
+        fare, basis, hours = _charter_fare(miles, engaged)
+    else:
+        fare, basis = _airport_or_distance_fare(miles, to_airport)
     if fare is None:
         return jsonify({"ok": False, "error": "could not price that"}), 400
     return jsonify({
         "ok": True, "fare": fare, "basis": basis,
+        "engaged_h": hours, "hourly_usd": _ride_hourly(),
+        "min_charter_h": _ride_min_hours(), "stops": stops,
         "miles": round(miles, 1),
         "flat_radius_mi": AIRPORT_FLAT_RADIUS_MI,
         "flat_usd": AIRPORT_FLAT_USD,
@@ -4614,7 +4672,20 @@ def _create_reservation(data, agent=None, self_driver=None):
     elif trip_type == "destination" and distance_mi is not None:
         # the destination drives the price, recompute server-side so the rate is
         # authoritative (the client can't dictate the fare, only the distance)
-        fare = _distance_fare(distance_mi)
+        # A day with several drops is a charter: the driver waits between them,
+        # so it is priced on the hours held or the miles driven, whichever is
+        # higher. Time and mileage both come from the planner, which knows the
+        # visit length of every stop, so this is a precise quote and not an
+        # estimate. Single drop rides never reach this branch's charter half.
+        try:
+            _stops = int(data.get("stops_count") or 0)
+        except (TypeError, ValueError):
+            _stops = 0
+        _engaged = data.get("engaged_min")
+        if _stops > 1 and _engaged not in (None, ""):
+            fare, _basis, _hours = _charter_fare(distance_mi, _engaged)
+        else:
+            fare = _distance_fare(distance_mi)
     else:
         try:
             fare = float(data.get("fare") or os.environ.get("DEFAULT_FARE_USD", 45))
@@ -4657,6 +4728,14 @@ def _create_reservation(data, agent=None, self_driver=None):
             n_stops = 0
         if n_stops > 1:
             trip["stops_count"] = n_stops
+            try:
+                eng = float(data.get("engaged_min"))
+                trip["engaged_min"] = round(eng)
+                trip["engaged_h"] = round(max(eng / 60.0, _ride_min_hours()), 2)
+                trip["hourly_usd"] = _ride_hourly()
+                trip["price_basis"] = _charter_fare(distance_mi, eng)[1]
+            except (TypeError, ValueError):
+                pass
             drops = data.get("drops")
             if isinstance(drops, list):
                 trip["drops"] = [str(d)[:120] for d in drops[:12]]
