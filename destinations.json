@@ -18,7 +18,8 @@
    "lat": 40.758,
    "lon": -73.9855,
    "desc": "The neon crossroads of the world, massive digital billboards, Broadway marquees and street performers at all hours.",
-   "tip": "Best after dark, when the lights do the work. Keep your wallet in a front pocket."
+   "tip": "Best after dark, when the lights do the work. Keep your wallet in a front pocket.",
+   "slug": "times-square"
   },
   {
    "name": "Central Park",
@@ -31,7 +32,8 @@
    "lat": 40.774,
    "lon": -73.9708,
    "desc": "843 acres of lakes, lawns and woodland in the middle of Manhattan. Bethesda Terrace, Bow Bridge and the Mall make the classic loop.",
-   "tip": "Rent a rowboat at the Loeb Boathouse in warm months."
+   "tip": "Rent a rowboat at the Loeb Boathouse in warm months.",
+   "slug": "central-park"
   },
   {
    "name": "The Met Museum",
@@ -77,7 +79,8 @@
    "lat": 40.7061,
    "lon": -73.9969,
    "desc": "Walk the wooden promenade of the 1883 bridge, the best free view of the Manhattan skyline.",
-   "tip": "Start on the Brooklyn side and walk toward the skyline."
+   "tip": "Start on the Brooklyn side and walk toward the skyline.",
+   "slug": "brooklyn-bridge"
   },
   {
    "name": "9/11 Memorial & Museum",
@@ -106,7 +109,8 @@
    "lat": 40.748,
    "lon": -74.0048,
    "desc": "A freight rail line reborn as an elevated garden walk from Gansevoort Street to 34th, with Hudson views and public art.",
-   "tip": "Enter at the south end and exit straight into Chelsea Market for lunch."
+   "tip": "Enter at the south end and exit straight into Chelsea Market for lunch.",
+   "slug": "the-high-line"
   },
   {
    "name": "Grand Central Terminal",
@@ -119,7 +123,8 @@
    "lat": 40.7527,
    "lon": -73.9772,
    "desc": "A beaux-arts cathedral of transit, the turquoise celestial ceiling and the four-faced opal clock above the information booth.",
-   "tip": "Try the whispering gallery on the ramp outside the Oyster Bar."
+   "tip": "Try the whispering gallery on the ramp outside the Oyster Bar.",
+   "slug": "grand-central-terminal"
   },
   {
    "name": "Statue of Liberty ferry",
@@ -255,7 +260,8 @@
    "lat": 38.8882,
    "lon": -77.0199,
    "desc": "The Wright Flyer, Apollo 11's command module and a moon rock you can touch, the Smithsonian's biggest crowd-pleaser.",
-   "tip": "Free, but timed-entry passes are required, book before your trip."
+   "tip": "Free, but timed-entry passes are required, book before your trip.",
+   "slug": "air-and-space-museum"
   },
   {
    "name": "Museum of American History",
@@ -280,7 +286,8 @@
    "lat": 38.8913,
    "lon": -77.0198,
    "desc": "The only Leonardo da Vinci painting in the Americas, plus Vermeer, Monet and a sculpture garden.",
-   "tip": "The lit walkway between the two wings is a work of art itself."
+   "tip": "The lit walkway between the two wings is a work of art itself.",
+   "slug": "national-gallery-of-art"
   },
   {
    "name": "US Capitol Visitor Center",
@@ -318,7 +325,8 @@
    "lat": 38.8814,
    "lon": -77.0365,
    "desc": "The domed rotunda on the Tidal Basin, ringed by cherry trees that explode into bloom around late March.",
-   "tip": "Walk the Tidal Basin loop to catch the MLK and FDR memorials while you're there."
+   "tip": "Walk the Tidal Basin loop to catch the MLK and FDR memorials while you're there.",
+   "slug": "jefferson-memorial"
   },
   {
    "name": "Georgetown Waterfront",
@@ -343,7 +351,8 @@
    "lat": 38.8783,
    "lon": -77.0687,
    "desc": "America's most hallowed ground, the Kennedy gravesite and the Tomb of the Unknown Soldier.",
-   "tip": "Time your visit to the Changing of the Guard, every hour on the hour, every half hour in summer."
+   "tip": "Time your visit to the Changing of the Guard, every hour on the hour, every half hour in summer.",
+   "slug": "arlington-national-cemetery"
   },
   {
    "name": "Ben's Chili Bowl",
@@ -499,7 +508,8 @@
    "lat": 47.6295,
    "lon": -122.3599,
    "desc": "The postcard shot: the whole skyline with the Space Needle front and center and Rainier floating behind it, a tiny park on Queen Anne hill.",
-   "tip": "Come 30 minutes after sunset for the blue-hour photo every Seattle poster is made from."
+   "tip": "Come 30 minutes after sunset for the blue-hour photo every Seattle poster is made from.",
+   "slug": "kerry-park-viewpoint"
   },
   {
    "name": "Gas Works Park",
@@ -512,7 +522,8 @@
    "lat": 47.6456,
    "lon": -122.3344,
    "desc": "A rusted 1900s gasification plant turned lakefront park, industrial ruins, kite hill, and seaplanes landing on Lake Union in front of the skyline.",
-   "tip": "Bring takeout and claim the hill, it's Seattle's favorite picnic view."
+   "tip": "Bring takeout and claim the hill, it's Seattle's favorite picnic view.",
+   "slug": "gas-works-park"
   },
   {
    "name": "Starbucks Reserve Roastery",
@@ -525,7 +536,8 @@
    "lat": 47.6141,
    "lon": -122.3282,
    "desc": "The mothership on Capitol Hill, a working roastery where beans ride copper pipes overhead and the menu goes far beyond any normal Starbucks.",
-   "tip": "Order a flight from the experience bar and watch the roaster run, skip the regular latte you can get anywhere."
+   "tip": "Order a flight from the experience bar and watch the roaster run, skip the regular latte you can get anywhere.",
+   "slug": "starbucks-reserve-roastery"
   },
   {
    "city": "boston",

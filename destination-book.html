@@ -187,7 +187,7 @@
         <div class="right">
             <a href="/">Home</a>
             <a href="/trip-planner">Trip Planner</a>
-        </div>
+        <a href="/map">Everything here</a></div>
     </header>
 
     <div class="wrap">
@@ -297,34 +297,19 @@
     // way back out was to open the planner and remove it there, so the second
     // click on the same button, which every reader tries first, did nothing at
     // all. Same button, both directions.
-    // The spoken guide. One voice at a time; a play is counted, anonymously,
-    // because a played guide is demand an affiliate application can show.
-    let GUIDE_AUDIO = null, GUIDE_BTN = null;
-    function playGuide(btn, src, key) {
-        if (GUIDE_AUDIO && GUIDE_BTN === btn && !GUIDE_AUDIO.paused) {
-            GUIDE_AUDIO.pause();
-            btn.innerHTML = btn.innerHTML.replace('❚❚', '▶');
-            return;
+    // Which destinations have something to say. Filled once, and the cards
+    // re-render when it lands so nothing waits on it.
+    let SPOKEN = new Set();
+    fetch('/api/guide-languages').then(r => r.json()).then(d => {
+        if (d && d.slugs && d.slugs.length) {
+            SPOKEN = new Set(d.slugs);
+            try { render(); } catch (err) {}
         }
-        if (GUIDE_AUDIO) {
-            GUIDE_AUDIO.pause();
-            if (GUIDE_BTN) GUIDE_BTN.innerHTML = GUIDE_BTN.innerHTML.replace('❚❚', '▶');
-        }
-        GUIDE_AUDIO = new Audio(src);
-        GUIDE_BTN = btn;
-        GUIDE_AUDIO.play().catch(function () {});
-        btn.innerHTML = btn.innerHTML.replace('▶', '❚❚');
-        GUIDE_AUDIO.onended = function () {
-            btn.innerHTML = btn.innerHTML.replace('❚❚', '▶');
-        };
-        try {
-            fetch('/api/guide-demand/beacon', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ kind: 'audio', key: key })
-            });
-        } catch (err) {}
-    }
+    }).catch(() => {});
 
+    // The spoken guide lives in /guide-player.js, shared with the planner,
+    // because it now has to pick a language and a voice and there is no
+    // version of that worth writing twice.
     function addToPlanner(i, btn){
         const e = DATA.entries[i];
         let s = null;
@@ -444,9 +429,14 @@
             let row = '';
             if (bits.length) row += '<p class="meta adv">' + bits.join(' · ') + '</p>';
             const links = [];
-            if (e.audio) {
+            // A guide is offered when there is anything to say, a recording or
+            // a written script the device can read aloud. Gating this on the
+            // recording alone hid the guide from every language we have not
+            // been into a studio for.
+            if (e.audio || (e.slug && SPOKEN.has(e.slug))) {
                 links.push('<button class="golink" onclick="playGuide(this, \''
-                    + esc(e.audio) + '\', \'' + esc(e.slug || e.name) + '\')">▶ '
+                    + esc(e.audio || '') + '\', \'' + esc(e.slug || e.name) + '\', \''
+                    + esc(e.slug || '') + '\')">▶ '
                     + T('Listen') + '</button>');
             }
             if (e.tickets_url && e.slug) {
@@ -724,6 +714,7 @@
         loadWishTop();
     })();
     </script>
+    <script src="/guide-player.js"></script>
     <script src="/floatback.js"></script>
     <script src="/jarvis-widget.js"></script>
     <script src="/i18n.js"></script>

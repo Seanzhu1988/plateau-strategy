@@ -1727,6 +1727,72 @@ def frame_preview_js():
     return send_file(os.path.join(BASE_DIR, "frame-preview.js"))
 
 
+@app.route("/guide-player.js")
+def guide_player_js():
+    return send_file(os.path.join(BASE_DIR, "guide-player.js"))
+
+
+@app.route("/api/guide-script/<slug>")
+def api_guide_script(slug):
+    """The written narration, in the reader's language if we have it.
+
+    The player falls back to reading this aloud with the device's own voice
+    when no recording exists yet, so this route is what makes a guide speak
+    Japanese the day the Japanese script is written, months before anybody
+    books studio time. It returns the language actually served, never the
+    language asked for, because a device voice given the wrong language reads
+    English words with foreign phonetics and sounds like a fault.
+    """
+    slug = re.sub(r"[^a-z0-9\-]", "", (slug or "").lower())[:80]
+    if not slug:
+        return jsonify({"ok": False}), 404
+    want = (request.args.get("lang") or "en").lower()
+    if not re.fullmatch(r"[a-z]{2}(-[a-z]{2})?", want):
+        want = "en"
+    for lang in ([want, "en"] if want != "en" else ["en"]):
+        name = "guide_scripts.json" if lang == "en" else "guide_scripts.%s.json" % lang
+        try:
+            with open(os.path.join(BASE_DIR, name), encoding="utf-8") as f:
+                text = (json.load(f) or {}).get(slug)
+        except Exception:
+            text = None
+        if text:
+            return jsonify({"ok": True, "slug": slug, "lang": lang, "text": text})
+    return jsonify({"ok": False, "slug": slug}), 404
+
+
+@app.route("/api/guide-languages")
+def api_guide_languages():
+    """Which languages have written scripts, and how far along each one is.
+
+    Sean asked for guides that talk in more than English; this is the honest
+    progress bar for that, counted off disk rather than promised.
+    """
+    try:
+        with open(os.path.join(BASE_DIR, "guide_scripts.json"), encoding="utf-8") as f:
+            base = {k: v for k, v in (json.load(f) or {}).items() if not k.startswith("_")}
+    except Exception:
+        base = {}
+    out = []
+    for lang in ("en", "zh", "es", "ko", "vi", "ja"):
+        name = "guide_scripts.json" if lang == "en" else "guide_scripts.%s.json" % lang
+        try:
+            with open(os.path.join(BASE_DIR, name), encoding="utf-8") as f:
+                got = {k: v for k, v in (json.load(f) or {}).items() if not k.startswith("_")}
+        except Exception:
+            got = {}
+        if not got:
+            continue
+        recorded = 0
+        for slug in got:
+            fn = "guide-%s.mp3" % slug if lang == "en" else "guide-%s.%s.mp3" % (slug, lang)
+            if os.path.exists(os.path.join(BASE_DIR, "media", "audio", fn)):
+                recorded += 1
+        out.append({"lang": lang, "written": len(got), "of": len(base) or len(got),
+                    "recorded": recorded})
+    return jsonify({"ok": True, "languages": out, "slugs": sorted(base)})
+
+
 @app.route("/basemap.js")
 def basemap_js():
     return send_file(os.path.join(BASE_DIR, "basemap.js"))
@@ -1747,7 +1813,13 @@ def i18n_pack(lang):
     none of it. The engine is 11 KB now and asks for the single pack it
     needs; English asks for nothing, because English is the text already on
     the page."""
-    if lang not in ("zh", "es", "ko", "vi"):
+    # The guard is a SHAPE check, not a list of languages. It used to name
+    # the four that existed, so adding Japanese produced a pack the build
+    # wrote, the switcher offered, and this route answered with 404 and an
+    # empty body: a language that looked installed and translated nothing.
+    # Existence on disk is the real gate, and the pattern keeps the path
+    # from being used to reach anything else.
+    if not re.fullmatch(r"[a-z]{2}(-[a-z]{2})?", lang or ""):
         return ("", 404)
     path = os.path.join(BASE_DIR, "i18n.%s.js" % lang)
     if not os.path.exists(path):
@@ -2451,6 +2523,105 @@ OWNER_ONLY_PATHS = ["/dispatch", "/setup", "/archive", "/api/", "/deflator"]
 SITE_ORIGIN = os.environ.get("SITE_ORIGIN", "https://plateaustrategy.io").rstrip("/")
 # Referrers from our own pages are not a traffic source, they are navigation.
 SITE_HOSTS = ("plateaustrategy.io", "plateau-strategy.onrender.com")
+
+
+@app.route("/rent-a-tesla")
+def rent_a_tesla():
+    """A finished page selling weekly rentals that had no route at all, so the
+    only way to it was to know the filename. Found while building the index."""
+    return send_file(os.path.join(BASE_DIR, "rent-a-tesla.html"))
+
+
+@app.route("/how-built")
+def how_built():
+    return send_file(os.path.join(BASE_DIR, "how-built.html"))
+
+
+# ---------- the site index ----------
+# Thirty six public routes had grown here, and most of them were reachable
+# only by someone who already knew the URL. This one declaration is the whole
+# map: what each page is, who it is for, and which family it belongs to. The
+# index page, the sitemap and the footer link all read it, so a page added
+# without an entry here is a page that has decided to stay hidden, which is a
+# choice rather than an accident.
+SITE_MAP = [
+    ("Plan a trip", "Free, no account, nothing to install.", [
+        ("/trip-planner", "Trip Planner",
+         "Build a day, and it works out the driving, the traffic by hour, the "
+         "ferries and the opening times, then offers a tighter order."),
+        ("/destination-book", "Destination Book",
+         "The places worth the detour, with a spoken guide for each in your "
+         "own language."),
+        ("/walks", "The Walks",
+         "Short walks worth doing on foot, timed and saved to your account."),
+        ("/met", "The Met, corridor by corridor",
+         "A museum too big to wander, laid out as routes you can finish."),
+        ("/favorite-place", "Favourite Place",
+         "Tell us where you love, and it goes on the map for the next visitor."),
+        ("/road-trip", "Road Trip",
+         "Longer distances, with the overnight stops worked out."),
+    ]),
+    ("Ideas and the people behind them", "Reinvestment USA.", [
+        ("/articles", "Business Ideas",
+         "Ideas posted in the open, with the blueprint sealed until it is bought."),
+        ("/professionals", "Professionals",
+         "The people who price an opinion on an idea, and how to become one."),
+        ("/board", "Board of Directors",
+         "Who stands behind the company."),
+    ]),
+    ("Ride with us", "Licensed, insured, and driven by a licensed guide.", [
+        ("/book", "Book a Ride", "Airport runs, tours, and long distance."),
+        ("/rent-a-tesla", "Rent a Tesla", "The car, the rates and the rules."),
+        ("/driver", "For Drivers", "Drive with us."),
+        ("/renter", "For Renters", "Rent from us."),
+    ]),
+    ("How this works", "The parts we are willing to show.", [
+        ("/how-built", "How this was built", "The tools, in plain language."),
+        ("/deck", "The deck", "The company, on one screen."),
+        ("/privacy", "Privacy", "What is collected, what is not, and why."),
+    ]),
+]
+
+# Owner pages. Listed so Sean can find them, never linked to visitors.
+SITE_MAP_PRIVATE = [
+    ("/dispatch", "Dispatch", "Bookings, demand and who to call."),
+    ("/partners", "Partners and Atlas", "The prospect pipeline and the scout."),
+    ("/archive", "Archive", "Traffic, viewers and where they came from."),
+    ("/setup", "Setup", "Keys, connections and the state of each."),
+    ("/books", "Books and Taxes", "What came in, what went out, what is owed."),
+    ("/agent", "Agent Portal", "For agents booking on behalf of a client."),
+    ("/guide-studio", "Guide Studio", "The spoken guides and their scripts."),
+]
+
+
+@app.route("/map")
+def site_map_page():
+    return send_file(os.path.join(BASE_DIR, "site-map.html"))
+
+
+@app.route("/api/site-map")
+def api_site_map():
+    """The index, and whether the reader is the owner.
+
+    The private half is only ever sent to Sean, so a visitor who calls this
+    directly gets exactly what a visitor is meant to see.
+    """
+    # A page the environment has switched off is not listed. /privacy answers
+    # 404 until PRIVACY_CONTACT names a working address, and an index that
+    # links to a 404 is worse than one that waits.
+    def live(href):
+        if href == "/privacy":
+            return bool(os.environ.get("PRIVACY_CONTACT", "").strip())
+        return True
+    groups = [{"title": t, "note": n,
+               "pages": [{"href": h, "name": nm, "what": w}
+                         for h, nm, w in ps if live(h)]}
+              for t, n, ps in SITE_MAP]
+    out = {"ok": True, "groups": groups}
+    if session.get("owner"):
+        out["private"] = [{"href": h, "name": nm, "what": w}
+                          for h, nm, w in SITE_MAP_PRIVATE]
+    return jsonify(out)
 
 
 @app.route("/robots.txt")
@@ -4359,6 +4530,50 @@ def _distance_fare(miles):
     return round(_ride_base_fare() + _ride_per_mile() * m, 2)
 
 
+def _ride_hourly():
+    """The chauffeured hourly rate, matching the "Hourly (per hour)" preset."""
+    try:
+        return round(float(os.environ.get("RIDE_HOURLY_USD", 65)), 2)
+    except Exception:
+        return 65.0
+
+
+def _ride_min_hours():
+    try:
+        return max(0.0, float(os.environ.get("RIDE_MIN_CHARTER_H", 2)))
+    except Exception:
+        return 2.0
+
+
+def _charter_fare(miles, engaged_min):
+    """A day with several drops is a charter, not a transfer.
+
+    Per-mile pricing cannot see time, and time is the whole cost of a
+    multi-stop day: the driver waits outside the museum and can take no other
+    work. A Manhattan day of four drops is fifteen miles, which prices at
+    about fifty dollars, while the driver is committed for more than four
+    hours. Charging that would fill the calendar with trips that lose money,
+    which is why this takes whichever is higher, the hours or the miles.
+
+    Engaged time is the driving plus the waiting at every stop EXCEPT the
+    last, because the party is dropped at the last one and the driver goes
+    home from there.
+
+    Returns (fare, basis, hours) so the customer can be told which rule
+    applied and why, rather than shown a number to take on faith.
+    """
+    dist = _distance_fare(miles)
+    try:
+        hours = max(0.0, float(engaged_min)) / 60.0
+    except (TypeError, ValueError):
+        return (dist, "distance", None)
+    hours = max(hours, _ride_min_hours())
+    hourly = round(_ride_hourly() * hours, 2)
+    if dist is None or hourly >= dist:
+        return (hourly, "charter_hourly", round(hours, 2))
+    return (dist, "distance", round(hours, 2))
+
+
 # The flat airport fare, and the radius it holds inside. Stated on the site
 # as "$75 flat to Sea-Tac" with no distance attached, which is a promise the
 # fare cannot keep from ninety miles out, so the boundary is written down
@@ -4399,11 +4614,25 @@ def api_quote():
     if miles < 0 or miles > 3000:
         return jsonify({"ok": False, "error": "miles out of range"}), 400
     to_airport = (request.args.get("airport") or "").lower() in ("1", "true", "yes")
-    fare, basis = _airport_or_distance_fare(miles, to_airport)
+    # A multi-stop day is quoted as a charter. The caller passes how long the
+    # driver is held, which the planner knows exactly from the visit length of
+    # each stop, so this is the same arithmetic the reservation will run.
+    try:
+        stops = int(request.args.get("stops") or 0)
+    except (TypeError, ValueError):
+        stops = 0
+    engaged = request.args.get("engaged_min")
+    hours = None
+    if stops > 1 and engaged not in (None, ""):
+        fare, basis, hours = _charter_fare(miles, engaged)
+    else:
+        fare, basis = _airport_or_distance_fare(miles, to_airport)
     if fare is None:
         return jsonify({"ok": False, "error": "could not price that"}), 400
     return jsonify({
         "ok": True, "fare": fare, "basis": basis,
+        "engaged_h": hours, "hourly_usd": _ride_hourly(),
+        "min_charter_h": _ride_min_hours(), "stops": stops,
         "miles": round(miles, 1),
         "flat_radius_mi": AIRPORT_FLAT_RADIUS_MI,
         "flat_usd": AIRPORT_FLAT_USD,
@@ -4443,7 +4672,20 @@ def _create_reservation(data, agent=None, self_driver=None):
     elif trip_type == "destination" and distance_mi is not None:
         # the destination drives the price, recompute server-side so the rate is
         # authoritative (the client can't dictate the fare, only the distance)
-        fare = _distance_fare(distance_mi)
+        # A day with several drops is a charter: the driver waits between them,
+        # so it is priced on the hours held or the miles driven, whichever is
+        # higher. Time and mileage both come from the planner, which knows the
+        # visit length of every stop, so this is a precise quote and not an
+        # estimate. Single drop rides never reach this branch's charter half.
+        try:
+            _stops = int(data.get("stops_count") or 0)
+        except (TypeError, ValueError):
+            _stops = 0
+        _engaged = data.get("engaged_min")
+        if _stops > 1 and _engaged not in (None, ""):
+            fare, _basis, _hours = _charter_fare(distance_mi, _engaged)
+        else:
+            fare = _distance_fare(distance_mi)
     else:
         try:
             fare = float(data.get("fare") or os.environ.get("DEFAULT_FARE_USD", 45))
@@ -4477,6 +4719,26 @@ def _create_reservation(data, agent=None, self_driver=None):
             trip["dest_category"] = dc
         if distance_mi is not None:
             trip["distance_mi"] = distance_mi
+        # A journey with several drops is one reservation at one fare, so the
+        # stops have to travel with it or the driver arrives knowing only the
+        # last address and the customer's other drops are a surprise.
+        try:
+            n_stops = int(data.get("stops_count") or 0)
+        except (TypeError, ValueError):
+            n_stops = 0
+        if n_stops > 1:
+            trip["stops_count"] = n_stops
+            try:
+                eng = float(data.get("engaged_min"))
+                trip["engaged_min"] = round(eng)
+                trip["engaged_h"] = round(max(eng / 60.0, _ride_min_hours()), 2)
+                trip["hourly_usd"] = _ride_hourly()
+                trip["price_basis"] = _charter_fare(distance_mi, eng)[1]
+            except (TypeError, ValueError):
+                pass
+            drops = data.get("drops")
+            if isinstance(drops, list):
+                trip["drops"] = [str(d)[:120] for d in drops[:12]]
 
     reservation = {
         "id": None,
@@ -7869,13 +8131,14 @@ def idea_page(aid):
     # is broken rather than that the work has not been done yet.
     trs = {} if locked else _translations_for(a.get("title"), a.get("body"))
     LANG_NAMES = {"zh": "\u4e2d\u6587", "es": "Espa\u00f1ol",
-                  "ko": "\ud55c\uad6d\uc5b4", "vi": "Ti\u1ebfng Vi\u1ec7t"}
+                  "ko": "\ud55c\uad6d\uc5b4", "vi": "Ti\u1ebfng Vi\u1ec7t",
+                  "ja": "\u65e5\u672c\u8a9e"}
     # Every language is always offered. A missing one is not hidden, it is
     # translated the moment a reader taps it, through the same engine and
     # the same anchored store as the background path. Hiding the button was
     # honest once; with live translation behind it, offering is honest.
     buttons = ['<button class="lang-opt" data-l="en" aria-current="true">English</button>']
-    for code in ("zh", "es", "ko", "vi"):
+    for code in ("zh", "es", "ko", "vi", "ja"):
         buttons.append('<button class="lang-opt" data-l="%s"%s>%s</button>'
                        % (code, "" if code in trs else ' data-missing="1"',
                           LANG_NAMES[code]))
