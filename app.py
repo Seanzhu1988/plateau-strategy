@@ -4144,6 +4144,15 @@ def api_config():
     return jsonify({
         "square_mode": (os.environ.get("SQUARE_ENV", "sandbox") if has_sq else "demo"),
         "email_configured": bool(os.environ.get("RESEND_API_KEY") and os.environ.get("DRIVER_EMAIL")),
+        # Whether a new booking reaches a human at all. Email needs a verified
+        # sending domain before Resend delivers anything, so this is the honest
+        # answer to "will I hear about it", not "is email set up".
+        "telegram_configured": bool(os.environ.get("TELEGRAM_BOT_TOKEN")
+                                    and os.environ.get("TELEGRAM_CHAT_ID")),
+        "notified_somehow": bool(
+            (os.environ.get("RESEND_API_KEY") and os.environ.get("DRIVER_EMAIL"))
+            or (os.environ.get("TELEGRAM_BOT_TOKEN") and os.environ.get("TELEGRAM_CHAT_ID"))
+            or (os.environ.get("TWILIO_ACCOUNT_SID") and os.environ.get("DRIVER_PHONE"))),
         "sms_configured": bool(os.environ.get("TWILIO_ACCOUNT_SID") and os.environ.get("DRIVER_PHONE")),
         "default_fare": os.environ.get("DEFAULT_FARE_USD", "45"),
         "default_commission_pct": float(os.environ.get("DEFAULT_COMMISSION_PCT", 0.10)),
