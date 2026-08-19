@@ -6423,6 +6423,48 @@ def jarvis_widget_js():
     return send_file(os.path.join(BASE_DIR, "jarvis-widget.js"))
 
 
+# ---------- public feedback ("tell Jarvis what is not working") ----------
+# The Jarvis CHAT above is owner-only. This is the opposite: anyone, signed in
+# or not, can leave a note, and the person most worth hearing from is usually
+# the one who never made an account. We keep what they choose to give us, the
+# message, an optional way to reach back, and the page they were on, and we ping
+# the owner so it is read. We do not store their IP; the point is the words, and
+# a feedback box that quietly logs your address is not one people trust.
+FEEDBACK_PATH = _data_path("feedback.json")
+
+
+@app.route("/api/feedback", methods=["POST"])
+def api_feedback():
+    data = request.get_json(force=True, silent=True) or {}
+    msg = _no_tags((data.get("message") or "").strip())[:4000]
+    if not msg:
+        return jsonify({"ok": False, "error": "Tell us something first."}), 400
+    entry = {
+        "at": datetime.datetime.now().isoformat(timespec="seconds"),
+        "message": msg,
+        "contact": _no_tags((data.get("contact") or "").strip())[:200],
+        "page": _no_tags((data.get("page") or "").strip())[:200],
+        "agent": (request.headers.get("User-Agent") or "")[:300],
+    }
+    with _LOCK:
+        items = _load(FEEDBACK_PATH)
+        items.append(entry)
+        _save(FEEDBACK_PATH, items)
+    try:
+        short = msg[:140] + ("..." if len(msg) > 140 else "")
+        _push_owner_alert("feedback", "New feedback: " + short)
+    except Exception:
+        pass
+    return jsonify({"ok": True})
+
+
+@app.route("/api/feedback/list")
+@owner_required
+def api_feedback_list():
+    """The owner reads what came in, newest first."""
+    return jsonify({"ok": True, "items": list(reversed(_load(FEEDBACK_PATH)))})
+
+
 # ---------- role-based login (from the main page) ----------
 @app.route("/api/customers/auth", methods=["POST"])
 def api_customer_auth():

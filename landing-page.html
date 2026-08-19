@@ -2058,18 +2058,48 @@
                 <section class="psx-hero">
                     <div class="psx-hero-inner">
                         <span class="psx-eyebrow-pill">Plateau Strategy Solution Lab · Seattle</span>
-                        <h1 class="psx-h1">Your professional business companion</h1>
-                        <p class="psx-sub">Transportation operates today and funds what follows: flat-rate Tesla service across Seattle, a vehicle rental programme for drivers, and trip-planning tools available free to anyone. The property development is at drawing stage and the trading research is in private verification. Each business is set out below with the stage it has actually reached.</p>
+                        <h1 class="psx-h1">A financial institution, built to grow businesses and ideas.</h1>
+                        <p class="psx-sub">We started with nothing but our own ideas, and built the ground under them from scratch: real services that people use and that earn their own way. Now we put that to work growing other businesses and other ideas, new ones and fresh ones, at the same time as our own. What is the economic moat you want to build? Tell us, and let us help you sink it deep.</p>
                         <div class="psx-cta-row">
-                            <a href="/book" class="psx-btn psx-btn-primary">Book a ride</a>
-                            <a href="/agent" class="psx-btn psx-btn-ghost">Partner with us</a>
+                            <a href="#" onclick="showView('reinvestment', event)" class="psx-btn psx-btn-primary">Share your idea</a>
+                            <a href="#psx-try" class="psx-btn psx-btn-ghost">Try our services</a>
                         </div>
                         <!-- Real visitor numbers, counted by our own server.
-                             Hidden entirely until the endpoint says show:true, 
+                             Hidden entirely until the endpoint says show:true,
                              a homepage announcing "9 travellers" argues against
                              the site. Also hidden if the request fails, so a
                              blip never leaves a half-sentence on the page. -->
                         <p class="psx-usage" id="psxUsage" hidden></p>
+                    </div>
+                </section>
+
+                <!-- ============ TRY OUR SERVICES ============
+                     The three things a visitor can use today, in the words the
+                     owner asked for: free trip mapping, a ride, a rental. This
+                     is "the ground we built", the services that earn their own
+                     way, offered plainly and up front. -->
+                <section class="psx-section" id="psx-try">
+                    <div class="psx-head">
+                        <span class="psx-eyebrow">TRY OUR SERVICES</span>
+                        <h2 class="psx-h2">Real tools, free to start</h2>
+                        <p class="psx-section-sub">The ground we built. Use any of it right now, no account needed.</p>
+                    </div>
+                    <div class="psx-cards">
+                        <div class="psx-card" data-arm="operations">
+                            <h3 class="psx-card-title">Free trip mapping</h3>
+                            <p class="psx-card-desc">Map your next trip on a real map: every stop lights up or dims by drive time, traffic and closing hours. Free to anyone, no sign-in.</p>
+                            <a class="psx-card-link" href="/trip-planner">Map your trip →</a>
+                        </div>
+                        <div class="psx-card" data-arm="transportation">
+                            <h3 class="psx-card-title">Book a ride</h3>
+                            <p class="psx-card-desc">Flat-rate Tesla service across Seattle, booked online in seconds, with your invoice sent automatically. No app, no surge games.</p>
+                            <a class="psx-card-link" href="/book">Book a ride →</a>
+                        </div>
+                        <div class="psx-card" data-arm="transportation">
+                            <h3 class="psx-card-title">Rental car</h3>
+                            <p class="psx-card-desc">Rent a Tesla from us and earn from a shared pool of rides, with a path to owning the car you drive.</p>
+                            <a class="psx-card-link" href="/rent-a-tesla">See the rental →</a>
+                        </div>
                     </div>
                 </section>
 
@@ -2118,17 +2148,73 @@
                     </div>
                 </section>
 
-                <section class="psx-cta" id="cta">
-                    <div class="psx-cta-panel">
-                        <div class="psx-cta-glow"></div>
-                        <h2 class="psx-cta-title">Join us in building the future</h2>
-                        <p class="psx-cta-text">We're validating the market and preparing to launch. Early partners, investors, and team members are critical to our success.</p>
-                        <form class="psx-form" onsubmit="handleSubmit(event)">
-                            <input type="email" placeholder="your@email.com" required>
-                            <button type="submit">Get Early Access</button>
-                        </form>
-                        <p class="psx-cta-note">We're building something ambitious. Join our community of early believers.</p>
+                <!-- ============ FEEDBACK, at the very bottom ============
+                     Public, no login (the owner-only Jarvis chat lives elsewhere).
+                     This just collects: the message, an optional way to reach
+                     back, and the page they were on. It posts to /api/feedback,
+                     which stores it and pings the owner. "Literally anything
+                     helps us grow" is the whole point, so the box is plain and
+                     the field is empty and waiting. -->
+                <section class="psx-section" id="psx-feedback" data-arm="company">
+                    <div class="psx-head">
+                        <span class="psx-eyebrow">TELL JARVIS</span>
+                        <h2 class="psx-h2">What is not working?</h2>
+                        <p class="psx-section-sub">Tell us what is broken, clumsy, or missing. Anything on your mind, literally anything, helps us grow. We read all of it.</p>
                     </div>
+                    <style>
+                        #psx-feedback .fb-form{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:0.8rem;}
+                        #psx-feedback textarea,#psx-feedback input{width:100%;font:inherit;font-size:16px;
+                            padding:0.8rem 0.9rem;border:1px solid var(--psx-border,#ddd8cd);border-radius:11px;
+                            background:var(--psx-card,#fffdf9);color:var(--psx-ink,#14110c);line-height:1.5;}
+                        #psx-feedback textarea{min-height:120px;resize:vertical;}
+                        /* paper.css paints every bare <button> ink with an accent
+                           underline, via a blanket rule lifted with !important.
+                           This is the feedback section's own action, so it takes
+                           the filled accent, the same way the page's other form
+                           buttons override that rule. id-scoped + !important to
+                           win against the blanket rule cleanly. */
+                        #psx-feedback .fb-send{min-height:48px;font-family:inherit;font-size:1rem;cursor:pointer;
+                            align-self:flex-start;padding:0.85rem 1.5rem !important;border:none !important;
+                            border-radius:11px !important;font-weight:700 !important;
+                            background:var(--psx-accent,#1b4d8f) !important;color:#fff !important;}
+                        #psx-feedback .fb-send:hover:not(:disabled){filter:brightness(1.06);}
+                        #psx-feedback .fb-send:disabled{opacity:0.55 !important;cursor:default;}
+                        #psx-feedback .fb-note{font-size:0.88rem;line-height:1.5;margin:0;min-height:1.2rem;}
+                        #psx-feedback .fb-note.ok{color:#1b5e43;}
+                        #psx-feedback .fb-note.err{color:#a3302a;}
+                    </style>
+                    <form class="fb-form" onsubmit="sendFeedback(event)">
+                        <textarea id="fbMessage" maxlength="4000" placeholder="What went wrong, or what would you love to see? Any idea at all." required></textarea>
+                        <input id="fbContact" type="text" maxlength="200" placeholder="Email or phone, only if you want a reply (optional)" autocomplete="off">
+                        <button type="submit" class="fb-send" id="fbBtn">Send to Jarvis</button>
+                        <p class="fb-note" id="fbNote" role="status" aria-live="polite"></p>
+                    </form>
+                    <script>
+                        function sendFeedback(e){
+                            e.preventDefault();
+                            var btn=document.getElementById('fbBtn'),note=document.getElementById('fbNote');
+                            var msg=(document.getElementById('fbMessage').value||'').trim();
+                            var contact=(document.getElementById('fbContact').value||'').trim();
+                            if(!msg){note.className='fb-note err';note.textContent='Tell us something first.';return;}
+                            btn.disabled=true;btn.textContent='Sending...';note.className='fb-note';note.textContent='';
+                            fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},
+                                body:JSON.stringify({message:msg,contact:contact,page:location.pathname})})
+                              .then(function(r){return r.json();})
+                              .then(function(j){
+                                if(j&&j.ok){
+                                    note.className='fb-note ok';
+                                    note.textContent='Got it. Thank you, this is exactly how we grow.';
+                                    document.getElementById('fbMessage').value='';
+                                    document.getElementById('fbContact').value='';
+                                }else{
+                                    note.className='fb-note err';
+                                    note.textContent=(j&&j.error)||'That did not send. Please try again.';
+                                }
+                              })
+                              .catch(function(){note.className='fb-note err';note.textContent='Could not reach us. Please try again.';})
+                              .finally(function(){btn.disabled=false;btn.textContent='Send to Jarvis';});
+                        }
+                    </script>
                 </section>
             </div>
 
