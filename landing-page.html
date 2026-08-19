@@ -2058,8 +2058,8 @@
                 <section class="psx-hero">
                     <div class="psx-hero-inner">
                         <span class="psx-eyebrow-pill">Plateau Strategy Solution Lab · Seattle</span>
-                        <h1 class="psx-h1">A financial institution, built to grow businesses and ideas.</h1>
-                        <p class="psx-sub">We built this from nothing but our own ideas, and laid the ground under them from scratch: real services people use, each one earning its own way. Now that same ground goes to work for others, growing new businesses and fresh ideas at the same time as our own. So tell us, what is the economic moat you want to build? Let us help you sink it deep.</p>
+                        <h1 class="psx-h1">A financial institution built to grow businesses and ideas.</h1>
+                        <p class="psx-sub">We started with our own ideas and no outside money, and built services that pay for themselves: rides, rentals, and free trip tools. Now we put what they earn into backing other people's businesses and ideas. What is the economic moat you want to build? Let's sink it.</p>
                         <div class="psx-cta-row">
                             <a href="#" onclick="showView('reinvestment', event)" class="psx-btn psx-btn-primary">Share your idea</a>
                             <a href="#psx-try" class="psx-btn psx-btn-ghost">Try our services</a>
@@ -2082,7 +2082,7 @@
                     <div class="psx-head">
                         <span class="psx-eyebrow">TRY OUR SERVICES</span>
                         <h2 class="psx-h2">Real tools, free to start</h2>
-                        <p class="psx-section-sub">The ground we built, and yours to use. Start now, no account needed.</p>
+                        <p class="psx-section-sub">Use any of these right now. Free, and no account needed.</p>
                     </div>
                     <div class="psx-cards">
                         <div class="psx-card" data-arm="operations">
@@ -2159,7 +2159,7 @@
                     <div class="psx-head">
                         <span class="psx-eyebrow">TELL JARVIS</span>
                         <h2 class="psx-h2">What is not working?</h2>
-                        <p class="psx-section-sub">Tell us what is broken, clumsy, or missing. Anything on your mind, literally anything, helps us grow. We read all of it.</p>
+                        <p class="psx-section-sub">Tell us what is not working, or anything else on your mind. Literally anything helps us grow, and we read all of it.</p>
                     </div>
                     <style>
                         #psx-feedback .fb-form{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:0.8rem;}
@@ -2184,7 +2184,7 @@
                         #psx-feedback .fb-note.err{color:#a3302a;}
                     </style>
                     <form class="fb-form" onsubmit="sendFeedback(event)">
-                        <textarea id="fbMessage" maxlength="4000" placeholder="What went wrong, or what would you love to see? Any idea at all." required></textarea>
+                        <textarea id="fbMessage" maxlength="4000" placeholder="What is not working, or what would you want? Anything at all." required></textarea>
                         <input id="fbContact" type="text" maxlength="200" placeholder="Email or phone, only if you want a reply (optional)" autocomplete="off">
                         <button type="submit" class="fb-send" id="fbBtn">Send to Jarvis</button>
                         <p class="fb-note" id="fbNote" role="status" aria-live="polite"></p>
@@ -2203,7 +2203,7 @@
                               .then(function(j){
                                 if(j&&j.ok){
                                     note.className='fb-note ok';
-                                    note.textContent='Got it. Thank you, this is exactly how we grow.';
+                                    note.textContent='Got it. Thank you, this really helps.';
                                     document.getElementById('fbMessage').value='';
                                     document.getElementById('fbContact').value='';
                                 }else{
