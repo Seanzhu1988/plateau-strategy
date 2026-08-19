@@ -4648,6 +4648,18 @@ def _create_reservation(data, agent=None, self_driver=None):
             trip["dest_category"] = dc
         if distance_mi is not None:
             trip["distance_mi"] = distance_mi
+        # A journey with several drops is one reservation at one fare, so the
+        # stops have to travel with it or the driver arrives knowing only the
+        # last address and the customer's other drops are a surprise.
+        try:
+            n_stops = int(data.get("stops_count") or 0)
+        except (TypeError, ValueError):
+            n_stops = 0
+        if n_stops > 1:
+            trip["stops_count"] = n_stops
+            drops = data.get("drops")
+            if isinstance(drops, list):
+                trip["drops"] = [str(d)[:120] for d in drops[:12]]
 
     reservation = {
         "id": None,

@@ -2726,6 +2726,36 @@
         } catch (e) {}
         return { mi: havKm(from, to) * 0.621371 * 1.3, road: false };
     }
+    // The whole journey, not one leg of it.
+    //
+    // A customer who plans five stops and asks for a ride is buying one
+    // journey with five drops, so it is priced as one: the base fare once,
+    // and the mileage measured through every stop in order. Pricing only
+    // pickup to the final stop, which is what this used to do, silently
+    // dropped every drop in between out of both the quote and the fare.
+    //
+    // OSRM takes every waypoint in a single request, so a five stop day
+    // still costs one call and comes back with the real road distance
+    // through all of them.
+    async function routeMiles(points){
+        if (!points || points.length < 2) return { mi: 0, road: false, legs: 0 };
+        try {
+            const path = points.map(p => p.lon.toFixed(6) + ',' + p.lat.toFixed(6)).join(';');
+            const j = await psxJSON('https://router.project-osrm.org/route/v1/driving/'
+                                    + path + '?overview=false');
+            const rt = j && j.code === 'Ok' && j.routes && j.routes[0];
+            if (rt && isFinite(rt.distance))
+                return { mi: rt.distance / 1609.344, road: true, legs: points.length - 1 };
+        } catch (e) {}
+        // Routing down: fall back leg by leg on the same straight line
+        // estimate a single leg already uses, so an outage degrades the same
+        // way everywhere rather than producing a different kind of number.
+        let mi = 0;
+        for (var i = 1; i < points.length; i++)
+            mi += havKm(points[i - 1], points[i]) * 0.621371 * 1.3;
+        return { mi: mi, road: false, legs: points.length - 1 };
+    }
+
     function initChips(){
         const c = $('chips');
         CATS.forEach(cat => {
@@ -2783,7 +2813,10 @@
         // customer's real address, not the city's default start point.
         if (!currentLoc) { say('Getting your exact pickup location…'); await detectLocation(); }
         say('Preparing your ride…');
-        const drop = places[st.route[st.route.length - 1].i];      // the stop you want to reach
+        // Every stop in order, not just the last one: the whole set is what
+        // the driver actually drives, and what the customer is quoted for.
+        const stopList = st.route.map(r => places[r.i]).filter(Boolean);
+        const drop = stopList[stopList.length - 1];                // where the journey ends
         const pickup = await accuratePickup();
         const t = tripSummary();
         const gps = !!(currentLoc && currentLoc.address);          // true GPS fix vs map-pin guess
@@ -2792,7 +2825,12 @@
         // The destination sets the price: real drive miles × the owner's rate.
         const pk = currentLoc ? { lat: currentLoc.lat, lon: currentLoc.lon }
                               : (function(){ const ll = startMarker.getLatLng(); return { lat: ll.lat, lon: ll.lng }; })();
-        const miles = (await driveMiles(pk, { lat: drop.lat, lon: drop.lon })).mi;
+        // Priced as a group: pickup, then every drop in order. With one stop
+        // this is exactly the old single leg, so nothing changes for a
+        // straightforward ride.
+        const leg = await routeMiles([pk].concat(
+            stopList.map(function (s2) { return { lat: s2.lat, lon: s2.lon }; })));
+        const miles = leg.mi;
         let base = 15, perMile = 2.5;
         try { const p = await psxJSON('/api/pricing');
               if (p) { if (isFinite(p.base_fare)) base = p.base_fare; if (isFinite(p.per_mile)) perMile = p.per_mile; } } catch (e) {}
@@ -2809,7 +2847,10 @@
             county: m.county || '', state: m.state || '', city: t.cityLabel,
             trip_type: 'destination',              // filed under where it concludes
             dest_category: drop.cat || '',         // history / culture / nature / food / views
-            distance_mi, fare,                     // the destination drove this price
+            distance_mi, fare,                     // the whole route drove this price
+            stops_count: stopList.length,          // drops in this one journey
+            drops: stopList.map(function (s2) { return s2.name; }),
+            routed: leg.road,                      // real road distance, or an estimate
             notes: (st.route.length > 1 ? 'Trip Planner route, ' + t.text : 'Via Trip Planner')
         };
         ride.covered = covered;                // the booking page says so if we do not drive here yet

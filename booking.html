@@ -351,7 +351,12 @@
                     trip_type: ride.trip_type || '',
                     distance_mi: ride.distance_mi,
                     dest_category: ride.dest_category || '',
-                    fare: ride.fare
+                    fare: ride.fare,
+                    // Several drops on one journey. This is a whitelist, so a
+                    // field left out here never reaches the reservation no
+                    // matter what the planner sent.
+                    stops_count: ride.stops_count,
+                    drops: ride.drops
                 };
                 localStorage.removeItem('ps_ride_trip');   // one-shot: don't stick to future visits
             }
@@ -396,7 +401,12 @@
             const rx = window._rideExtra;
             if (rx && rx.trip_type === 'destination' && isFinite(rx.fare)) {
                 const miles = isFinite(rx.distance_mi) ? (' · ' + rx.distance_mi + ' mi') : '';
-                html = '<option value="' + rx.fare + '" selected>🎯 Destination ride, $' + rx.fare + miles + '</option>' + html;
+                // A journey with several drops is one fare, not one per drop,
+                // and it should say so on the line that shows the price.
+                const n = rx.stops_count;
+                const drops = (isFinite(n) && n > 1) ? (' · ' + n + ' stops, one fare') : '';
+                html = '<option value="' + rx.fare + '" selected>🎯 Destination ride, $'
+                     + rx.fare + miles + drops + '</option>' + html;
             }
             sel.innerHTML = html;
         }).catch(() => {});
@@ -431,6 +441,12 @@
                 data.trip_type = rx.trip_type;
                 if (isFinite(rx.distance_mi)) data.distance_mi = rx.distance_mi;
                 if (rx.dest_category) data.dest_category = rx.dest_category;
+                // Several drops on one journey: the count and the addresses go
+                // with the reservation, or the driver only learns the last one.
+                if (isFinite(rx.stops_count) && rx.stops_count > 1) {
+                    data.stops_count = rx.stops_count;
+                    if (Array.isArray(rx.drops)) data.drops = rx.drops;
+                }
             }
             btn.disabled = true; btn.textContent = 'Booking…';
             result.className = 'result';
