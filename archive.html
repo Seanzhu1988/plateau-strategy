@@ -116,7 +116,8 @@
         <div id="whereFrom" style="display:none;margin-top:1.6rem">
             <h2 style="margin:0 0 .2rem">Where your viewers are</h2>
             <p class="sub" id="wfSub" style="margin:0 0 .9rem"></p>
-            <div id="wfMap" style="height:340px;border:1px solid #e6e6ea;border-radius:10px;margin-bottom:1.2rem;display:none"></div>
+            <div id="wfMap" style="height:340px;border:1px solid #e6e6ea;border-radius:10px;margin-bottom:.5rem;display:none"></div>
+            <div id="wfMapNote" style="display:none;margin:0 0 1.2rem;font-size:.82rem;color:#6e6e76">No visitor cities have been located yet since the last deploy. As people visit, their cities appear on the map here.</div>
             <div id="wfCols" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.4rem"></div>
             <p class="note" id="wfNote" style="margin-top:.9rem"></p>
         </div>
@@ -270,8 +271,11 @@
 
             // The map. A circle per city, sized by how many people came from
             // it, a pin that grows as travellers arrive rather than a heat
-            // blob that implies precision the data does not have.
-            if (window.L && d.pins && d.pins.length) {
+            // blob that implies precision the data does not have. It shows
+            // whenever you are signed in, even before a single city is located,
+            // so it never just disappears: an empty world map with a plain note
+            // is the honest state right after a deploy, when counts restart.
+            if (window.L) {
                 const el = document.getElementById('wfMap');
                 el.style.display = 'block';
                 if (!window.__wfMap) {
@@ -286,20 +290,34 @@
                 }
                 const map = window.__wfMap;
                 window.__wfPins.clearLayers();
-                const max = Math.max.apply(null, d.pins.map(p => p.count));
-                const pts = [];
-                d.pins.forEach(p => {
-                    const r = 7 + Math.sqrt(p.count / max) * 15;
-                    L.circleMarker([p.lat, p.lon], {
-                        radius: r, color:'#1f3a5f', weight:1.5,
-                        fillColor:'#1f3a5f', fillOpacity:.28
-                    }).addTo(window.__wfPins).bindTooltip(p.label + ', ' + p.count +
-                        (p.count === 1 ? ' visitor' : ' visitors'));
-                    pts.push([p.lat, p.lon]);
-                });
-                if (pts.length === 1) map.setView(pts[0], 7);
-                else map.fitBounds(pts, {padding:[35,35]});
+                const pins = d.pins || [];
+                const note = document.getElementById('wfMapNote');
+                if (pins.length) {
+                    if (note) note.style.display = 'none';
+                    const max = Math.max.apply(null, pins.map(p => p.count));
+                    const pts = [];
+                    pins.forEach(p => {
+                        const r = 7 + Math.sqrt(p.count / max) * 15;
+                        L.circleMarker([p.lat, p.lon], {
+                            radius: r, color:'#1f3a5f', weight:1.5,
+                            fillColor:'#1f3a5f', fillOpacity:.28
+                        }).addTo(window.__wfPins).bindTooltip(p.label + ', ' + p.count +
+                            (p.count === 1 ? ' visitor' : ' visitors'));
+                        pts.push([p.lat, p.lon]);
+                    });
+                    if (pts.length === 1) map.setView(pts[0], 7);
+                    else map.fitBounds(pts, {padding:[35,35]});
+                } else {
+                    map.setView([20, 0], 1);
+                    if (note) note.style.display = 'block';
+                }
                 setTimeout(() => map.invalidateSize(), 60);
+            }
+            // Arrived through the "Where travellers came from" door on Dispatch?
+            // The section was hidden when the browser tried to jump to it, so
+            // jump now that it is on screen.
+            if (location.hash === '#whereFrom') {
+                setTimeout(() => box.scrollIntoView({behavior:'smooth', block:'start'}), 120);
             }
         } catch (e) { /* analytics must never break the page */ }
     }
