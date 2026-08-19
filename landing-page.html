@@ -1207,8 +1207,16 @@
         color:#b9c6de;font-size:.72rem;font-weight:600;letter-spacing:.14em;
       }
       #view-overview .psx-dot{width:7px;height:7px;border-radius:50%;background:#49e3c4;box-shadow:0 0 12px #49e3c4;}
+      /* The warm line the owner asked for, sitting above the big statement:
+         the brand, then who we are to the visitor, then what we are. */
+      #view-overview .psx-tagline{
+        margin:1.5rem 0 0;font-weight:600;line-height:1.3;letter-spacing:.01em;
+        font-size:clamp(1.05rem,2.6vw,1.4rem);
+        background:linear-gradient(120deg,#7da2ff,#a78bfa);
+        -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+      }
       #view-overview .psx-h1{
-        margin:1.6rem 0 0;font-weight:800;color:var(--psx-text);
+        margin:.7rem 0 0;font-weight:800;color:var(--psx-text);
         font-size:clamp(2.3rem,5vw,3.75rem);line-height:1.06;letter-spacing:-.02em;max-width:14ch;
       }
       #view-overview .psx-accent{
@@ -2059,6 +2067,7 @@
                 <section class="psx-hero">
                     <div class="psx-hero-inner">
                         <span class="psx-eyebrow-pill">Plateau Strategy Solution Lab · Seattle</span>
+                        <p class="psx-tagline">Your professional business companion</p>
                         <h1 class="psx-h1">A financial institution built to grow businesses and ideas.</h1>
                         <p class="psx-sub">We built this from scratch, out of our own ideas: rides, rentals, and free trip tools that people use. Now we use what we have built to back other people's businesses and ideas. What is the economic moat you want to build? Let's sink it.</p>
                         <div class="psx-cta-row">
