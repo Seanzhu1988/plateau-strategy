@@ -72,9 +72,14 @@
 
         /* Sean's layout: content on the LEFT, the map large on the RIGHT */
         /* The map is the tool; everything else floats over it or tucks away. */
-        .layout { display: block; position: relative; }
-        .layout .side { position: absolute; z-index: 950; top: 118px; left: 58px;
-            width: 320px; max-height: calc(78vh - 140px); overflow-y: auto;
+        /* Two columns on desktop: Jarvis sits in its own column on the left,
+           the map keeps the rest, so the panel no longer floats on top of the
+           map and eats its corner. Collapses to one stacked column on a phone
+           (the media query below), where the map is already full width. */
+        .layout { display: grid; grid-template-columns: auto minmax(0, 1fr);
+            gap: 1rem; align-items: start; position: relative; }
+        .layout .side { position: sticky; top: 1rem; z-index: 950;
+            width: 320px; max-height: calc(100vh - 2rem); overflow-y: auto;
             box-shadow: 0 10px 30px rgba(15,23,42,0.26); border-radius: 14px; }
         .layout .side .card.jarvis { margin: 0; border-radius: 14px;
             background: rgba(255,255,255,0.97); }
