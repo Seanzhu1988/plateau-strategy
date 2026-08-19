@@ -974,6 +974,15 @@ def _load_geo_cache():
 
 
 GEO_CACHE_TTL_DAYS = 30
+# A lookup that FAILED is not an answer, so it must not be remembered like one.
+# It used to be: a timeout or a rate-limit stored place=None against the
+# visitor's key with today's date, and for the next thirty days that key was
+# served the cached None without ever asking again. One bad minute silently
+# deleted a city for a month, and after a deploy wipes the cache every visitor
+# is looked up again at once, which is exactly when a free endpoint rate-limits
+# and exactly when the most keys get poisoned. That is why new cities stopped
+# appearing. Failures now expire in hours, so the next visit re-asks.
+GEO_FAIL_TTL_H = 6
 _GEO_MEM = {}
 
 
@@ -1014,10 +1023,24 @@ def _geo_lookup(ip):
     cache = _load_geo_cache()
     hit = cache.get(key)
     now = datetime.date.today().isoformat()
-    if hit and hit.get("seen", "") >= (datetime.date.today()
-                                       - datetime.timedelta(days=GEO_CACHE_TTL_DAYS)).isoformat():
-        _GEO_MEM[key] = hit.get("place")
-        return hit.get("place")
+    if hit:
+        got = hit.get("place")
+        if got:
+            fresh = hit.get("seen", "") >= (datetime.date.today()
+                    - datetime.timedelta(days=GEO_CACHE_TTL_DAYS)).isoformat()
+            if fresh:
+                _GEO_MEM[key] = got
+                return got
+        else:
+            # A remembered failure, held only for hours. Older rows have no
+            # timestamp, which means they predate this and are treated as
+            # expired rather than trusted.
+            try:
+                held_h = (time.time() - float(hit.get("at") or 0)) / 3600.0
+            except (TypeError, ValueError):
+                held_h = 1e9
+            if held_h < GEO_FAIL_TTL_H:
+                return None
     place = None
     try:
         import requests as _rq
@@ -1044,14 +1067,20 @@ def _geo_lookup(ip):
     try:
         with _LOCK:
             cache = _load_geo_cache()
-            cache[key] = {"place": place, "seen": now}
+            cache[key] = {"place": place, "seen": now, "at": time.time()}
             if len(cache) > 5000:
                 for k in sorted(cache, key=lambda k: cache[k].get("seen", ""))[:1000]:
                     del cache[k]
             _save(_data_path("geo_cache.json"), cache)
     except Exception:
         pass
-    _GEO_MEM[key] = place
+    # Same rule in memory: only a real answer is remembered. A failure left
+    # here would outlive the disk cache and keep the city missing until the
+    # next restart, which on a free plan can be days.
+    if place:
+        _GEO_MEM[key] = place
+    else:
+        _GEO_MEM.pop(key, None)
     return place
 
 
