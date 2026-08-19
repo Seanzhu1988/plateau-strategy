@@ -10022,8 +10022,6 @@ def api_traffic_places():
             if country and region:
                 regions[country + " / " + region] = regions.get(country + " / " + region, 0) + n
             if city:
-                key = city + (", " + region if region else "") + (", " + country if country else "")
-                cities[key] = cities.get(key, 0) + n
                 city_labels[label] = city_labels.get(label, 0) + n
 
     coords = _load_traffic().get("place_coords", {})
@@ -10049,14 +10047,40 @@ def api_traffic_places():
             for k, n in (rec.get(src) or {}).items():
                 dst[k] = dst.get(k, 0) + n
 
-    pins = []
-    for label, n in sorted(city_labels.items(), key=lambda kv: -kv[1]):
-        xy = coords.get(label)
-        if not xy or n < MIN_SHOW:
-            continue
+    # One place, one row, one pin, not one per spelling. The geolocator returns
+    # the same city under slightly different region or city strings ("Washington"
+    # one week, "WA" the next), each a different "country|region|city" label,
+    # which used to show as two rows in the City column and two circles stacked
+    # on the same dot on the map: the duplicated pins. Fold every label into a
+    # single group, keyed by its ~10km coordinate cell when a coordinate is
+    # known and by the label text otherwise, summing the counts and keeping the
+    # busiest spelling's name. The City column and the map are then built from
+    # the same groups, so they can never disagree.
+    groups = {}
+    for label, n in city_labels.items():
         country, region, city = (label.split("|") + ["", "", ""])[:3]
-        pins.append({"lat": xy[0], "lon": xy[1], "count": n,
-                     "label": city + (", " + region if region else ""), "country": country})
+        xy = coords.get(label)
+        gkey = (round(xy[0], 1), round(xy[1], 1)) if xy else "txt:" + label
+        full = city + (", " + region if region else "") + (", " + country if country else "")
+        short = city + (", " + region if region else "")
+        g = groups.get(gkey)
+        if g is None:
+            groups[gkey] = {"count": n, "top": n, "full": full, "short": short,
+                            "country": country,
+                            "lat": (xy[0] if xy else None), "lon": (xy[1] if xy else None)}
+        else:
+            g["count"] += n
+            if n > g["top"]:
+                g["top"], g["full"], g["short"], g["country"] = n, full, short, country
+                if xy:
+                    g["lat"], g["lon"] = xy[0], xy[1]
+
+    cities = {g["full"]: g["count"] for g in groups.values()}
+    pins = sorted(({"lat": g["lat"], "lon": g["lon"], "count": g["count"],
+                    "label": g["short"], "country": g["country"]}
+                   for g in groups.values()
+                   if g["lat"] is not None and g["count"] >= MIN_SHOW),
+                  key=lambda p: -p["count"])
 
     all_days = sorted(days.keys())
     return jsonify({"ok": True, "days": days_back, "total_located": total, "pins": pins,

@@ -278,8 +278,14 @@
                     window.__wfMap = L.map(el, {scrollWheelZoom:false, attributionControl:true});
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                         {maxZoom:12, attribution:'© OpenStreetMap'}).addTo(window.__wfMap);
+                    // The circles live in their own layer, wiped and refilled on
+                    // every load. Adding them straight to the map meant a second
+                    // call laid a fresh set on top of the first, so a city read
+                    // as two overlapping pins. Clearing the layer keeps it to one.
+                    window.__wfPins = L.layerGroup().addTo(window.__wfMap);
                 }
                 const map = window.__wfMap;
+                window.__wfPins.clearLayers();
                 const max = Math.max.apply(null, d.pins.map(p => p.count));
                 const pts = [];
                 d.pins.forEach(p => {
@@ -287,7 +293,7 @@
                     L.circleMarker([p.lat, p.lon], {
                         radius: r, color:'#1f3a5f', weight:1.5,
                         fillColor:'#1f3a5f', fillOpacity:.28
-                    }).addTo(map).bindTooltip(p.label + ', ' + p.count +
+                    }).addTo(window.__wfPins).bindTooltip(p.label + ', ' + p.count +
                         (p.count === 1 ? ' visitor' : ' visitors'));
                     pts.push([p.lat, p.lon]);
                 });
