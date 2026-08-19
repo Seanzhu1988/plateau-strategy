@@ -1256,6 +1256,12 @@ EXTRA.update({
     "Book any hour": ["任何时段都能预约", "Reserva a cualquier hora", "언제든 예약 가능", "Đặt bất kỳ giờ nào"],
     "Every vehicle": ["每一辆车", "Todos los vehículos", "모든 차량", "Mọi xe"],
     "THE COMPANY": ["公司", "LA EMPRESA", "회사", "CÔNG TY"],
+    "Flat-rate Tesla service across Seattle, a vehicle rental programme for drivers, and trip-planning tools that are free to anyone, with no account and nothing to install.": [
+        "覆盖西雅图全城的特斯拉固定价格接送服务、面向司机的车辆租赁计划，以及任何人都能免费使用的行程规划工具，无需注册账号，无需安装任何软件。",
+        "Servicio Tesla con tarifa fija en todo Seattle, un programa de alquiler de vehículos para conductores y herramientas de planificación de viajes gratuitas para cualquiera, sin cuenta y sin nada que instalar.",
+        "시애틀 전역의 테슬라 정액 운송 서비스, 기사를 위한 차량 렌탈 프로그램, 그리고 누구나 무료로 쓸 수 있는 여행 계획 도구입니다. 계정도 설치도 필요 없습니다.",
+        "Dịch vụ Tesla giá cố định trên khắp Seattle, chương trình cho tài xế thuê xe, và các công cụ lập kế hoạch chuyến đi miễn phí cho tất cả mọi người, không cần tài khoản và không phải cài đặt gì.",
+    ],
     "Four arms, at four different stages": ["四块业务，四个不同阶段", "Cuatro ramas, en cuatro etapas distintas", "네 개의 부문, 네 개의 서로 다른 단계", "Bốn nhánh, ở bốn giai đoạn khác nhau"],
     "One business pays for the next. That only means something if we say plainly which ones are earning today and which are still being built, so we do.": [
         "一门生意养下一门。但这句话只有在我们如实说出哪些今天在赚钱、哪些还在搭建时才有意义，所以我们照实说。",
@@ -1443,6 +1449,12 @@ EXTRA.update({
         "지금 실제로 운영 중인 것은 교통 사업입니다. 시애틀 전역의 정액 요금 테슬라 이동, 기사에게 대여하는 차량, 그리고 누구나 무료로 쓸 수 있는 여행 계획 도구입니다. 이 사업이 다음 단계의 자금을 댑니다. 나머지 사업은 아래에 각자 실제로 놓인 단계와 함께 정리해 두었습니다, 아직 끝나지 않은 것들까지 포함해서.",
         "Mảng thực sự đang vận hành hôm nay là vận tải: các chuyến Tesla giá cố định khắp Seattle, xe cho tài xế thuê để kiếm thu nhập, và công cụ lập kế hoạch chuyến đi ai cũng dùng được miễn phí. Nó cấp vốn cho những gì đến sau. Mỗi mảng còn lại được liệt kê bên dưới kèm giai đoạn thực tế của nó, kể cả những mảng chưa hoàn thành."],
 
+    "Flat-rate Tesla service across Seattle, a vehicle rental programme for drivers, and trip-planning tools that are free to anyone, with no account and nothing to install.": [
+        "覆盖西雅图全城的特斯拉固定价格接送服务、面向司机的车辆租赁计划，以及任何人都能免费使用的行程规划工具，无需注册账号，无需安装任何软件。",
+        "Servicio Tesla con tarifa fija en todo Seattle, un programa de alquiler de vehículos para conductores y herramientas de planificación de viajes gratuitas para cualquiera, sin cuenta y sin nada que instalar.",
+        "시애틀 전역의 테슬라 정액 운송 서비스, 기사를 위한 차량 렌탈 프로그램, 그리고 누구나 무료로 쓸 수 있는 여행 계획 도구입니다. 계정도 설치도 필요 없습니다.",
+        "Dịch vụ Tesla giá cố định trên khắp Seattle, chương trình cho tài xế thuê xe, và các công cụ lập kế hoạch chuyến đi miễn phí cho tất cả mọi người, không cần tài khoản và không phải cài đặt gì.",
+    ],
     "Four arms, at four different stages": [
         "四项业务，四个不同阶段",
         "Cuatro áreas, en cuatro etapas distintas",
@@ -1558,6 +1570,12 @@ EXTRA.update({
         "지금 실제로 돌아가는 건 교통 하나입니다. 시애틀 전역을 다니는 정액 요금 테슬라, 기사에게 빌려주는 차, 그리고 누구나 공짜로 쓰는 여행 계획 도구. 여기서 번 돈이 다음 사업으로 갑니다. 나머지는 아래에 지금 서 있는 자리를 그대로 적어 두었습니다, 아직 끝나지 않은 것까지.",
         "Hiện chỉ có một mảng thực sự chạy: vận tải. Những chuyến Tesla giá cố định khắp Seattle, xe cho tài xế thuê để sống bằng nghề, và bộ công cụ lập kế hoạch ai cũng dùng miễn phí. Tiền nó kiếm được đổ vào những mảng sau. Mỗi mảng còn lại đều ghi rõ đang ở đâu, kể cả mảng chưa xong."],
 
+    "Flat-rate Tesla service across Seattle, a vehicle rental programme for drivers, and trip-planning tools that are free to anyone, with no account and nothing to install.": [
+        "覆盖西雅图全城的特斯拉固定价格接送服务、面向司机的车辆租赁计划，以及任何人都能免费使用的行程规划工具，无需注册账号，无需安装任何软件。",
+        "Servicio Tesla con tarifa fija en todo Seattle, un programa de alquiler de vehículos para conductores y herramientas de planificación de viajes gratuitas para cualquiera, sin cuenta y sin nada que instalar.",
+        "시애틀 전역의 테슬라 정액 운송 서비스, 기사를 위한 차량 렌탈 프로그램, 그리고 누구나 무료로 쓸 수 있는 여행 계획 도구입니다. 계정도 설치도 필요 없습니다.",
+        "Dịch vụ Tesla giá cố định trên khắp Seattle, chương trình cho tài xế thuê xe, và các công cụ lập kế hoạch chuyến đi miễn phí cho tất cả mọi người, không cần tài khoản và không phải cài đặt gì.",
+    ],
     "Four arms, at four different stages": [
         "四项业务，四个阶段",
         "Cuatro áreas, cuatro etapas",
@@ -1717,6 +1735,12 @@ EXTRA.update({
         "현재 운영 중인 사업은 '교통' 부문입니다. 시애틀 전역에서 정액제로 운영되는 테슬라 차량, 이를 통해 수익을 창출하는 운전자들에게 대여되는 차량, 그리고 누구나 무료로 이용할 수 있는 경로 계획 도구 등이 이에 해당합니다. 이 사업에서 창출된 수익은 향후 사업을 위한 자금으로 사용됩니다. 그 외의 모든 사업 부문은 아래에 현재 단계와 함께 솔직하게 나열되어 있습니다. 아직 완성되지 않은 사업도 포함됩니다.",
         "Mảng vận tải là mảng đang hoạt động hiện nay: dịch vụ đi xe Tesla với giá cố định trên khắp Seattle, cho thuê xe cho các tài xế để họ kiếm thu nhập từ đó, và các công cụ lập kế hoạch hành trình mà ai cũng có thể sử dụng miễn phí. Mảng này tạo ra nguồn thu để tài trợ cho những dự án tiếp theo. Tất cả các mảng kinh doanh khác được liệt kê dưới đây kèm theo giai đoạn phát triển thực tế của từng mảng, bao gồm cả những mảng chưa hoàn thiện."
     ],
+    "Flat-rate Tesla service across Seattle, a vehicle rental programme for drivers, and trip-planning tools that are free to anyone, with no account and nothing to install.": [
+        "覆盖西雅图全城的特斯拉固定价格接送服务、面向司机的车辆租赁计划，以及任何人都能免费使用的行程规划工具，无需注册账号，无需安装任何软件。",
+        "Servicio Tesla con tarifa fija en todo Seattle, un programa de alquiler de vehículos para conductores y herramientas de planificación de viajes gratuitas para cualquiera, sin cuenta y sin nada que instalar.",
+        "시애틀 전역의 테슬라 정액 운송 서비스, 기사를 위한 차량 렌탈 프로그램, 그리고 누구나 무료로 쓸 수 있는 여행 계획 도구입니다. 계정도 설치도 필요 없습니다.",
+        "Dịch vụ Tesla giá cố định trên khắp Seattle, chương trình cho tài xế thuê xe, và các công cụ lập kế hoạch chuyến đi miễn phí cho tất cả mọi người, không cần tài khoản và không phải cài đặt gì.",
+    ],
     "Four arms, at four different stages": [
         "四项业务，四个阶段",
         "Cuatro áreas, cuatro etapas",
@@ -1801,6 +1825,12 @@ EXTRA.update({
         "교통 사업은 현재 운영 중이며 이후 사업의 자금을 조달합니다. 시애틀 전역의 테슬라 정액 운송 서비스, 운전자를 위한 차량 대여 프로그램, 그리고 누구나 무료로 이용할 수 있는 여행 플래너가 이에 해당합니다. 부동산 개발은 설계 단계에 있으며, 거래 연구는 비공개 검증 단계에 있습니다. 각 사업이 실제로 도달한 단계를 아래에 정리하였습니다.",
         "Mảng vận tải hiện đã đi vào hoạt động và cấp vốn cho các mảng tiếp theo: dịch vụ Tesla giá cố định trên toàn Seattle, chương trình cho tài xế thuê xe, và các công cụ lập kế hoạch hành trình miễn phí cho mọi người. Dự án bất động sản đang ở giai đoạn thiết kế, còn nghiên cứu giao dịch đang trong quá trình kiểm chứng nội bộ. Từng mảng được trình bày dưới đây kèm giai đoạn thực tế đã đạt được."],
 
+    "Flat-rate Tesla service across Seattle, a vehicle rental programme for drivers, and trip-planning tools that are free to anyone, with no account and nothing to install.": [
+        "覆盖西雅图全城的特斯拉固定价格接送服务、面向司机的车辆租赁计划，以及任何人都能免费使用的行程规划工具，无需注册账号，无需安装任何软件。",
+        "Servicio Tesla con tarifa fija en todo Seattle, un programa de alquiler de vehículos para conductores y herramientas de planificación de viajes gratuitas para cualquiera, sin cuenta y sin nada que instalar.",
+        "시애틀 전역의 테슬라 정액 운송 서비스, 기사를 위한 차량 렌탈 프로그램, 그리고 누구나 무료로 쓸 수 있는 여행 계획 도구입니다. 계정도 설치도 필요 없습니다.",
+        "Dịch vụ Tesla giá cố định trên khắp Seattle, chương trình cho tài xế thuê xe, và các công cụ lập kế hoạch chuyến đi miễn phí cho tất cả mọi người, không cần tài khoản và không phải cài đặt gì.",
+    ],
     "Four arms, at four different stages": [
         "四项业务，各处不同阶段",
         "Cuatro negocios, en cuatro etapas distintas",
