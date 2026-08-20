@@ -257,11 +257,15 @@
          extruded. A photograph was tried here and looked wrong, not because
          the picture was bad but because every other mark on this sheet is a
          drawing, and the photograph was the only thing pretending to be real. */
-      window.Met3D.attach(host, { route: seq, walked: walkedFlags, current: spotlight });
+      _opts3d = { route: seq, walked: walkedFlags, current: spotlight };
+      window.Met3D.attach(host, _opts3d);
 
       var out = document.getElementById('btnOutside');
       if (out) out.hidden = !window.Met3D.isOpen();
-      document.getElementById('sheetNo').textContent = 'MET-3D · Both floors';
+      var fk = window.Met3D.focusedRoom && window.Met3D.focusedRoom();
+      var fc = fk ? ((window.MET_CARDS || {})[fk] || {}) : null;
+      document.getElementById('sheetNo').textContent =
+        fk ? 'MET-3D · ' + (fc.name || fk) : 'MET-3D · Both floors';
     } else {
       host.innerHTML = floorSVG(floor, seq);
       document.getElementById('sheetNo').textContent = 'MET-0' + floor + ' · Floor ' + floor;
@@ -352,8 +356,11 @@
       (anyEstimate ? ' · times with ~ are estimates' : ' · all corridors walked');
   }
 
+  var _opts3d = null;   /* what the 3D view was last attached with */
+
   /* ---- interaction ---- */
   document.getElementById('svgHost').addEventListener('click', function (e) {
+    if (mode === '3d') return;   /* in 3D a tap dives into the room instead */
     var g = e.target.closest('[data-room]');
     if (!g) return;
     var k = g.getAttribute('data-room');
@@ -363,8 +370,55 @@
     draw();
     syncUrl();
   });
-  document.getElementById('tabF1').addEventListener('click', function () { mode = 'flat'; floor = 1; remember(); draw(); });
-  document.getElementById('tabF2').addEventListener('click', function () { mode = 'flat'; floor = 2; remember(); draw(); });
+
+  /* ---- the room overview: bar, guide, and sheet number follow the dive ---- */
+  var roomBar = document.getElementById('roomBar');
+  function roomBarSync(k) {
+    var c = (window.MET_CARDS || {})[k] || {};
+    document.getElementById('roomBarName').textContent =
+      (c.name || k.replace(/-/g, ' ')) + (c.minutes ? ' · ' + c.minutes + ' min' : '');
+    document.getElementById('roomBarAdd').textContent =
+      picked.indexOf(k) >= 0 ? '✓ In your walk · tap to remove' : '+ Add to my walk';
+    document.getElementById('roomBarHear').hidden = !(c.one_line || (c.highlights || []).length);
+  }
+  function roomBarHide() {
+    if (roomBar) roomBar.hidden = true;
+    document.getElementById('sheetNo').textContent = 'MET-3D · Both floors';
+  }
+  document.getElementById('svgHost').addEventListener('met3d:room', function (e) {
+    if (!roomBar) return;
+    var k = e.detail.room;
+    if (e.detail.focused) {
+      roomBar.hidden = false;
+      roomBar.dataset.room = k;
+      roomBarSync(k);
+      var c = (window.MET_CARDS || {})[k] || {};
+      document.getElementById('sheetNo').textContent = 'MET-3D · ' + (c.name || k);
+      if (window.MetGuide && !MetGuide.isPlaying()) MetGuide.preview(k);
+    } else {
+      roomBarHide();
+    }
+  });
+  if (roomBar) {
+    document.getElementById('roomBarBack').addEventListener('click', function () {
+      window.Met3D.clearFocus(document.getElementById('svgHost'), _opts3d);
+      roomBarHide();
+    });
+    document.getElementById('roomBarAdd').addEventListener('click', function () {
+      var k = roomBar.dataset.room;
+      if (!k) return;
+      var i = picked.indexOf(k);
+      if (i >= 0) picked.splice(i, 1); else picked.push(k);
+      draw();
+      syncUrl();
+      roomBarSync(k);
+    });
+    document.getElementById('roomBarHear').addEventListener('click', function () {
+      if (window.MetGuide && roomBar.dataset.room) MetGuide.playRoom(roomBar.dataset.room);
+    });
+  }
+  document.getElementById('tabF1').addEventListener('click', function () { mode = 'flat'; floor = 1; if (roomBar) roomBar.hidden = true; remember(); draw(); });
+  document.getElementById('tabF2').addEventListener('click', function () { mode = 'flat'; floor = 2; if (roomBar) roomBar.hidden = true; remember(); draw(); });
   /* Going in: from the photograph outside to the model inside. */
   function enterBuilding() {
     var host = document.getElementById('svgHost');
@@ -387,6 +441,7 @@
   if (outBtn) outBtn.addEventListener('click', function () {
     var host = document.getElementById('svgHost');
     if (window.MetGuide) MetGuide.stop();
+    if (roomBar) roomBar.hidden = true;
     window.Met3D.closeToExterior(host, { route: fullRoute(), walked: {}, current: null });
     outBtn.hidden = true;
   });

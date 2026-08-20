@@ -156,6 +156,25 @@
     step();
   }
 
+  /* The room overview, in the panel: when the model dives into a gallery,
+     the guide turns to face it. preview only paints, so looking never makes
+     sound; playRoom narrates that one gallery, skipping the museum opening,
+     because you are already standing in front of the room you asked about. */
+  function preview(key) {
+    if (playing) return;
+    var c = cards()[key];
+    paint(nameOf(key), key, (c && c.one_line) || '');
+  }
+
+  function playRoom(key) {
+    stop();
+    if (!segmentsFor(key).length) return;
+    seq = [key];
+    playing = true; at = 0; seg = 0;
+    setBtn(true);
+    step();
+  }
+
   function setBtn(on) {
     if (!host) return;
     var b = host.querySelector('[data-guide-play]');
@@ -192,5 +211,6 @@
   }
 
   window.MetGuide = { mount: mount, start: start, stop: stop, skip: skip,
+                      preview: preview, playRoom: playRoom,
                       isPlaying: function () { return playing; } };
 })();
