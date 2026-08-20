@@ -1721,12 +1721,6 @@ def met_guide_js():
     return send_file(os.path.join(BASE_DIR, "met-guide.js"))
 
 
-@app.route("/met-facade.js")
-def met_facade_js():
-    """The Fifth Avenue front, drawn: the outside layer of the Met model."""
-    return send_file(os.path.join(BASE_DIR, "met-facade.js"))
-
-
 @app.route("/met-3d.js")
 def met_3d_js():
     """The Met as a solid: real footprint, extruded galleries, turnable."""
