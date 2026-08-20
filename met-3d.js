@@ -44,6 +44,15 @@
 
   var yaw = -0.62, pitch = 0.95, exploded = true;
 
+  /* Two layers, and the journey between them. A museum is a building before
+     it is a floor plan: you see the outside, you go in, and only then do the
+     galleries mean anything. openT runs 0 (closed, exterior) to 1 (open,
+     both storeys apart), and everything below reads from it, so the two
+     layers are one drawing at two moments rather than two drawings. */
+  var EXT_H = 96;            /* the massing, in plan units */
+  var openT = 0;
+  var anim = null;
+
   function rooms() {
     var G = window.MET_GEOMETRY;
     return (G && G.ROOMS) || null;
@@ -187,12 +196,15 @@
     var R = rooms();
     if (!R) return "";
     var o = opts || {}, route = o.route || [], walked = o.walked || {};
+    var current = o.current || null;      /* the gallery being narrated now */
     var onRoute = {}, pairs = {};
     route.forEach(function (k) { onRoute[k] = true; });
     for (var i = 1; i < route.length; i++) {
       pairs["met-" + [route[i - 1], route[i]].sort().join("--")] = true;
     }
-    function zOf(r) { return r.f === 2 ? (exploded ? WALL + GAP : WALL) : 0; }
+    var gap = GAP * openT;                       /* the storeys draw apart */
+    function zOf(r) { return r.f === 2 ? (exploded ? WALL + gap : WALL) : 0; }
+    var shellH = EXT_H + (WALL - EXT_H) * openT; /* the shell settles as it opens */
 
     BB = [1e9, 1e9, -1e9, -1e9];
     var items = [];        /* each carries its storey, see the sort below */
@@ -204,26 +216,38 @@
     svg.push(shellFloor(0, "#efece3"));
     svg.push(shellSolid(0, 3));
 
-    /* floor 1 shell wall, low, so the galleries read as being inside it */
-    items.push({ svg: shellSolid(0, WALL) + shellFloor(WALL, "rgba(233,229,219,.30)", "0.5"),
-                 depth: -1e8, floor: 1 });
+    /* The outer wall. Closed it is the building; opened it settles down to
+       one storey's height and the galleries appear inside it. */
+    items.push({ svg: shellSolid(0, shellH), depth: -1e8, floor: 1 });
+    if (openT < 0.99) {
+      /* the roof, which lifts away as the building opens */
+      items.push({ svg: shellFloor(shellH, "#ded7c8", (0.35 + 0.65 * (1 - openT)).toFixed(2)),
+                   depth: 1e8, floor: 3 });
+    }
+    if (openT > 0.02) {
+      items.push({ svg: shellFloor(WALL, "rgba(233,229,219,.30)", (0.5 * openT).toFixed(2)),
+                   depth: -1e8, floor: 1 });
+    }
 
-    Object.keys(R).forEach(function (k) {
+    if (openT > 0.02) Object.keys(R).forEach(function (k) {
       var r = R[k];
       var b = box(r.x * KX, r.y, (r.x + r.w) * KX, r.y + r.h, zOf(r), WALL,
-                  onRoute[k] ? "#a9c4e6" : (r.f === 2 ? "#f2ece0" : "#e6dfd0"),
+                  k === current ? "#7ea9dd"
+                    : (onRoute[k] ? "#a9c4e6" : (r.f === 2 ? "#f2ece0" : "#e6dfd0")),
                   { label: labelFor(k), sub: r.sub, room: k });
       b.floor = r.f;
+      if (openT < 0.98) b.svg = '<g opacity="' + openT.toFixed(2) + '">' + b.svg + "</g>";
       items.push(b);
     });
 
-    if (exploded) {
+    if (exploded && openT > 0.02) {
       /* the slab floor 2 stands on, so the upper storey has ground of its own */
-      items.push({ svg: shellFloor(WALL + GAP, "#e9e4d9", "0.62") +
-                        shellSolid(WALL + GAP, 4), depth: -1e8, floor: 2 });
+      items.push({ svg: '<g opacity="' + (0.62 * openT).toFixed(2) + '">' +
+                        shellFloor(WALL + gap, "#e9e4d9", "1") +
+                        shellSolid(WALL + gap, 4) + "</g>", depth: -1e8, floor: 2 });
     }
 
-    edges().forEach(function (e) {
+    if (openT > 0.02) edges().forEach(function (e) {
       var key = "met-" + [e[0], e[1]].sort().join("--");
       var c = corridorSvg(e[0], e[1], R, zOf, !!walked[key], !!pairs[key]);
       if (c) {
@@ -242,11 +266,24 @@
     });
     items.forEach(function (it) { svg.push(it.svg); });
 
-    var lblY1 = project(CX, 620, 0)[1], lblY2 = project(CX, 620, WALL + GAP)[1];
+    if (openT < 0.5) {
+      var cap = project(CX, 660, 0), capX = cap[0], capY = cap[1] + 26;
+      svg.push('<text class="m3-title" x="' + capX.toFixed(0) + '" y="' +
+               capY.toFixed(0) + '" text-anchor="middle">The Metropolitan Museum of Art</text>');
+      svg.push('<text class="m3-sub2" x="' + capX.toFixed(0) + '" y="' +
+               (capY + 22).toFixed(0) + '" text-anchor="middle">' +
+               'Eleven and a half acres. Tap the building to go inside.</text>');
+      /* The frame is fitted to what was drawn, and a centred caption is wider
+         than the point it is anchored at; without this it hangs off the sheet. */
+      if (capX - 250 < BB[0]) BB[0] = capX - 250;
+      if (capX + 250 > BB[2]) BB[2] = capX + 250;
+      if (capY + 34 > BB[3]) BB[3] = capY + 34;
+    }
+    var lblY1 = project(CX, 620, 0)[1], lblY2 = project(CX, 620, WALL + gap)[1];
     var labelX = BB[0] - 96;
-    svg.push('<text class="m3-floorlbl" x="' + labelX.toFixed(0) + '" y="' +
+    if (openT > 0.5) svg.push('<text class="m3-floorlbl" x="' + labelX.toFixed(0) + '" y="' +
              lblY1.toFixed(0) + '">FLOOR 1</text>');
-    if (exploded) {
+    if (exploded && openT > 0.5) {
       svg.push('<text class="m3-floorlbl" x="' + labelX.toFixed(0) + '" y="' +
                lblY2.toFixed(0) + '">FLOOR 2</text>');
     }
@@ -282,7 +319,14 @@
     var startX = null, startY = null, y0 = yaw, p0 = pitch, moved = false;
     /* a drag that ends over a gallery must not also count as picking it */
     host.addEventListener("click", function (e) {
-      if (moved) { e.stopPropagation(); moved = false; }
+      if (moved) { e.stopPropagation(); moved = false; return; }
+      /* Closed, the whole building is one button: tap it and you go inside. */
+      if (openT < 0.5) {
+        e.stopPropagation();
+        animateTo(1, host, opts);
+        host.dispatchEvent(new CustomEvent("met3d:layer",
+          { detail: { layer: "interior" }, bubbles: true }));
+      }
     }, true);
     host.addEventListener("pointerdown", function (e) {
       startX = e.clientX; startY = e.clientY; y0 = yaw; p0 = pitch; moved = false;
@@ -302,9 +346,27 @@
     host.addEventListener("pointerleave", end);
   }
 
+  function animateTo(target, host, opts, done) {
+    if (anim) { cancelAnimationFrame(anim); anim = null; }
+    var from = openT, t0 = null, dur = 620;
+    function frame(ts) {
+      if (t0 === null) t0 = ts;
+      var k = Math.min(1, (ts - t0) / dur);
+      var e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;   /* ease in-out */
+      openT = from + (target - from) * e;
+      render(host, opts);
+      if (k < 1) anim = requestAnimationFrame(frame);
+      else { anim = null; openT = target; render(host, opts); if (done) done(); }
+    }
+    anim = requestAnimationFrame(frame);
+  }
+
   window.Met3D = {
     render: render,
     attach: attach,
+    openInterior: function (host, opts, done) { animateTo(1, host, opts, done); },
+    closeToExterior: function (host, opts, done) { animateTo(0, host, opts, done); },
+    isOpen: function () { return openT > 0.5; },
     setExploded: function (v) { exploded = !!v; },
     isExploded: function () { return exploded; },
     reset: function () { yaw = -0.62; pitch = 0.95; }
