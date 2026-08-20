@@ -1,6 +1,11 @@
 """Driver notifications for new ride reservations.
 
 Channels (each enabled by environment variables):
+  - Telegram          (TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID)
+    The one that needs no domain, no sender verification and no per-message
+    cost, which is why it is tried first. A booking that reaches nobody is a
+    booking lost, and email needs a verified sending domain before it delivers
+    anything at all.
   - Email via Resend  (RESEND_API_KEY + DRIVER_EMAIL)
   - SMS   via Twilio  (TWILIO_ACCOUNT_SID + TWILIO_AUTH_TOKEN + TWILIO_FROM)
     New rides are texted to EVERY registered driver with a phone number.
@@ -127,11 +132,41 @@ def _summary(res, trip, client, invoice):
     )
 
 
+def send_telegram(text):
+    """Push a message to the owner's Telegram. Returns a short status string.
+
+    Never raises: a notification channel must not be able to break a booking.
+    A reservation that is saved but unannounced is recoverable; a reservation
+    that failed to save because the announcement threw is not.
+    """
+    token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
+    chat = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
+    if not token or not chat:
+        return "not_configured"
+    try:
+        r = requests.post("https://api.telegram.org/bot%s/sendMessage" % token,
+                          timeout=10,
+                          json={"chat_id": chat, "text": text[:4000],
+                                "disable_web_page_preview": True})
+        if r.status_code < 300 and (r.json() or {}).get("ok"):
+            return "sent"
+        return "error: %s" % r.text[:160]
+    except Exception as e:
+        return "error: %s" % e
+
+
 def notify_driver(reservation, invoice, renters=None):
     trip = reservation.get("trip", {})
     client = reservation.get("client", {})
     body = _summary(reservation, trip, client, invoice)
-    channels = {"dashboard": True, "email": None, "sms": None}
+    channels = {"dashboard": True, "email": None, "sms": None, "telegram": None}
+
+    # ---- Telegram first: it is the channel that actually delivers today ----
+    # body already opens with "New ride reservation <id>", so it is sent as is
+    # rather than with a heading repeated on top of its own heading.
+    tg = send_telegram(body)
+    if tg != "not_configured":
+        channels["telegram"] = tg
 
     # ---- SMS ride offer to ALL registered drivers (reply YES to claim) ----
     if renters:
@@ -165,7 +200,33 @@ def notify_driver(reservation, invoice, renters=None):
         if result != "not_configured":
             channels["sms"] = result
 
+    # ---- Did any of that actually reach a human? ----
+    # This block exists because the answer used to be unrecorded. The result
+    # always carried "dashboard": True, so a booking that reached nobody at
+    # all was stored looking exactly like one that had been delivered three
+    # ways. The customer got a confirmation, and the ride sat unseen until
+    # somebody happened to open Dispatch.
+    #
+    # "dashboard" is not delivery. It means the row exists in a page nobody is
+    # necessarily looking at. Only a channel that actually pushed counts.
+    channels["reached"] = _delivered(channels)
     return channels
+
+
+def _delivered(channels):
+    """True when at least one channel really delivered.
+
+    A channel value is "sent", an error string, None when unconfigured, or,
+    for SMS to several drivers, a dict of {phone: result}. Only "sent" counts:
+    an error is a failure, and not_configured never gets stored at all.
+    """
+    for key in ("telegram", "email", "sms"):
+        v = channels.get(key)
+        if v == "sent":
+            return True
+        if isinstance(v, dict) and any(r == "sent" for r in v.values()):
+            return True
+    return False
 
 
 def email_owner(subject, body):

@@ -1715,6 +1715,18 @@ def api_walks_delete(wid):
     return _bp_nostore(jsonify({"ok": False, "error": "Not one of your walks."}), 404)
 
 
+@app.route("/met-guide.js")
+def met_guide_js():
+    """The narrator beside the model: it speaks the walk the reader picked."""
+    return send_file(os.path.join(BASE_DIR, "met-guide.js"))
+
+
+@app.route("/met-3d.js")
+def met_3d_js():
+    """The Met as a solid: real footprint, extruded galleries, turnable."""
+    return send_file(os.path.join(BASE_DIR, "met-3d.js"))
+
+
 @app.route("/met-map.js")
 def met_map_js():
     return send_file(os.path.join(BASE_DIR, "met-map.js"))
@@ -4144,6 +4156,15 @@ def api_config():
     return jsonify({
         "square_mode": (os.environ.get("SQUARE_ENV", "sandbox") if has_sq else "demo"),
         "email_configured": bool(os.environ.get("RESEND_API_KEY") and os.environ.get("DRIVER_EMAIL")),
+        # Whether a new booking reaches a human at all. Email needs a verified
+        # sending domain before Resend delivers anything, so this is the honest
+        # answer to "will I hear about it", not "is email set up".
+        "telegram_configured": bool(os.environ.get("TELEGRAM_BOT_TOKEN")
+                                    and os.environ.get("TELEGRAM_CHAT_ID")),
+        "notified_somehow": bool(
+            (os.environ.get("RESEND_API_KEY") and os.environ.get("DRIVER_EMAIL"))
+            or (os.environ.get("TELEGRAM_BOT_TOKEN") and os.environ.get("TELEGRAM_CHAT_ID"))
+            or (os.environ.get("TWILIO_ACCOUNT_SID") and os.environ.get("DRIVER_PHONE"))),
         "sms_configured": bool(os.environ.get("TWILIO_ACCOUNT_SID") and os.environ.get("DRIVER_PHONE")),
         "default_fare": os.environ.get("DEFAULT_FARE_USD", "45"),
         "default_commission_pct": float(os.environ.get("DEFAULT_COMMISSION_PCT", 0.10)),
@@ -4832,6 +4853,20 @@ def _create_reservation(data, agent=None, self_driver=None):
     else:
         reservation["notified"] = notify.notify_driver(reservation, invoice,
                                                        renters=_load(RENTERS_PATH))
+        # A booking nobody was told about is an emergency, not a detail. The
+        # customer has been given a confirmation and is expecting a car, and
+        # until somebody opens Dispatch, no human knows. Say so where it will
+        # be seen: the log, and the reservation itself so the desk can show it.
+        if not reservation["notified"].get("reached"):
+            reservation["undelivered"] = True
+            print("[BOOKING NOT DELIVERED] %s %s -> %s at %s %s. "
+                  "No channel reached anyone: %r"
+                  % (reservation.get("id"),
+                     reservation.get("trip", {}).get("pickup", ""),
+                     reservation.get("trip", {}).get("dropoff", ""),
+                     reservation.get("trip", {}).get("date", ""),
+                     reservation.get("trip", {}).get("time", ""),
+                     reservation["notified"]), flush=True)
     return reservation, None
 
 

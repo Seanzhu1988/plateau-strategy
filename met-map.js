@@ -60,6 +60,18 @@
     ['islamic', 'grand-stair-2', 2]
   ];
 
+  /* One source of truth for the building's shape: met-3d.js extrudes these
+     same rooms and corridors into a solid, so the flat sheet and the 3D
+     view can never quietly disagree about where a gallery sits. */
+  window.MET_GEOMETRY = { ROOMS: ROOMS, EDGES: EDGES };
+
+  /* The narrator next door needs two things: the walk the reader picked, and
+     a way to light the gallery it is describing. Both go through here so the
+     drawing stays the one thing that knows how to draw. */
+  var spotlight = null;
+  window.MET_ROUTE = function () { return picked.slice(); };
+  window.MET_SPOTLIGHT = function (key) { spotlight = key || null; draw(); };
+
   var CARDS = window.MET_CARDS || {};
   var walkedMinutes = {};   /* corridor key -> measured minutes, when surveyed */
 
@@ -236,18 +248,19 @@
     stepCounter = 0;
     var host = document.getElementById('svgHost');
     if (mode === '3d') {
-      var f1 = floorSVG(1, seq);          /* walking order: floor 1 steps first */
-      var f2 = floorSVG(2, seq);
-      host.innerHTML =
-        '<div class="iso-stage" id="isoStage">' +
-          '<div class="iso-world" id="isoWorld" style="transform:' + worldTransform() + '">' +
-            '<div class="iso-plane" style="transform: translateZ(150px)">' +
-              '<div class="iso-tag">Floor 2</div>' + f2 + '</div>' +
-            '<div class="iso-plane" style="transform: translateZ(0px)">' +
-              '<div class="iso-tag">Floor 1</div>' + f1 + '</div>' +
-          '</div>' +
-        '</div>';
-      wireSpin();
+      /* The solid, not the sheets under a tilt: met-3d.js extrudes the same
+         rooms into volumes inside the museum's real footprint, and projects
+         them itself so the building can be turned. */
+      var walkedFlags = {};
+      Object.keys(walkedMinutes).forEach(function (k) { walkedFlags[k] = true; });
+      /* Closed, this is the building's own massing: its real footprint,
+         extruded. A photograph was tried here and looked wrong, not because
+         the picture was bad but because every other mark on this sheet is a
+         drawing, and the photograph was the only thing pretending to be real. */
+      window.Met3D.attach(host, { route: seq, walked: walkedFlags, current: spotlight });
+
+      var out = document.getElementById('btnOutside');
+      if (out) out.hidden = !window.Met3D.isOpen();
       document.getElementById('sheetNo').textContent = 'MET-3D · Both floors';
     } else {
       host.innerHTML = floorSVG(floor, seq);
@@ -352,7 +365,31 @@
   });
   document.getElementById('tabF1').addEventListener('click', function () { mode = 'flat'; floor = 1; remember(); draw(); });
   document.getElementById('tabF2').addEventListener('click', function () { mode = 'flat'; floor = 2; remember(); draw(); });
+  /* Going in: from the photograph outside to the model inside. */
+  function enterBuilding() {
+    var host = document.getElementById('svgHost');
+    var walkedFlags = {};
+    Object.keys(walkedMinutes).forEach(function (k) { walkedFlags[k] = true; });
+    host.innerHTML = '';
+    window.Met3D.attach(host, { route: fullRoute(), walked: walkedFlags, current: null });
+    window.Met3D.openInterior(host, { route: fullRoute(), walked: walkedFlags, current: null });
+    var o = document.getElementById('btnOutside');
+    if (o) o.hidden = false;
+  }
+
   document.getElementById('tab3D').addEventListener('click', function () { mode = '3d'; remember(); draw(); });
+  /* Entering the building is a tap on it; leaving needs a way back. */
+  document.getElementById('svgHost').addEventListener('met3d:layer', function () {
+    var out = document.getElementById('btnOutside');
+    if (out) out.hidden = false;
+  });
+  var outBtn = document.getElementById('btnOutside');
+  if (outBtn) outBtn.addEventListener('click', function () {
+    var host = document.getElementById('svgHost');
+    if (window.MetGuide) MetGuide.stop();
+    window.Met3D.closeToExterior(host, { route: fullRoute(), walked: {}, current: null });
+    outBtn.hidden = true;
+  });
   function remember() { /* deliberately nothing: the page always opens flat */ }
   document.getElementById('btnClear').addEventListener('click', function () {
     picked = []; draw(); syncUrl();

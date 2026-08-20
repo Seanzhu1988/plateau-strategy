@@ -121,6 +121,43 @@
      building open. No library: the flat SVG sheets already exist, and a
      CSS perspective transform is all a slab is. Taps keep working because
      a transformed SVG still routes pointer events to its rooms. */
+  /* the model and the guide, side by side where there is room for both */
+  .sheet-body { display: grid; grid-template-columns: minmax(0, 1fr) 300px;
+                gap: 1.2rem; align-items: start; }
+  @media (max-width: 900px) { .sheet-body { grid-template-columns: 1fr; } }
+  .mg { border-left: 2px solid var(--psx-accent, #1f3a5f); padding: .2rem 0 .2rem 1rem; }
+  @media (max-width: 900px) { .mg { border-left: 0; border-top: 2px solid var(--psx-accent, #1f3a5f);
+                                    padding: 1rem 0 0; } }
+  .mg-kicker { font-size: .66rem; font-weight: 800; letter-spacing: .16em;
+               text-transform: uppercase; color: var(--psx-text2, #6b6459); }
+  .mg h3 { margin: .2rem 0 .6rem; font-size: 1.05rem; }
+  .mg-text { font-size: .95rem; line-height: 1.55; color: var(--psx-text, #2b2620);
+             min-height: 5.4rem; }
+  .mg-controls { display: flex; gap: .5rem; flex-wrap: wrap; margin: .8rem 0 .6rem; }
+  .mg-controls button { min-height: 44px; padding: .6rem 1rem; border-radius: 999px;
+                        border: 0; background: var(--psx-accent, #1f3a5f); color: #fff;
+                        font: inherit; font-weight: 700; cursor: pointer; }
+  .mg-controls button.quiet { background: transparent; color: var(--psx-accent, #1f3a5f);
+                              border: 1.5px solid currentColor; }
+  .mg-note { font-size: .8rem; color: var(--psx-text2, #6b6459); line-height: 1.5; }
+
+  /* the solid view: labels and storey tags drawn inside the SVG */
+  .m3-room { cursor: pointer; }
+  .m3-room:hover polygon { filter: brightness(1.04); }
+  .m3-room:focus { outline: none; }
+  .m3-room:focus polygon { stroke: #1f3a5f; stroke-width: 2; }
+  /* Halos: a hair of paper behind every label, so text never fights the
+     geometry it sits on. paint-order draws the stroke underneath the fill. */
+  .m3-lbl { font: 700 12px Inter, system-ui, sans-serif; fill: #1f2a3a; pointer-events: none;
+            paint-order: stroke; stroke: #faf8f4; stroke-width: 3px; stroke-linejoin: round; }
+  .m3-sub { font: 800 8.5px Inter, system-ui, sans-serif; fill: #6b6459;
+            letter-spacing: .1em; pointer-events: none;
+            paint-order: stroke; stroke: #faf8f4; stroke-width: 2.5px; stroke-linejoin: round; }
+  .m3-floorlbl { font: 800 15px Inter, system-ui, sans-serif; fill: #b3aa97;
+                 letter-spacing: .16em; pointer-events: none; }
+  .m3-title { font: 800 15px Inter, system-ui, sans-serif; fill: #1f2a3a; pointer-events: none; }
+  .m3-sub2 { font: 600 11px Inter, system-ui, sans-serif; fill: #6b6459; pointer-events: none; }
+  #svgHost { touch-action: none; }
   .iso-stage { perspective: 1500px; perspective-origin: 50% 42%;
                padding: 1rem 0 2.4rem; touch-action: none; cursor: grab;
                background:
@@ -172,8 +209,12 @@
       <button id="tabF1" aria-current="true">Floor 1</button>
       <button id="tabF2" aria-current="false">Floor 2</button>
       <button id="tab3D" aria-current="false">3D</button>
+      <button id="btnOutside" hidden>← Outside</button>
     </div>
-    <div id="svgHost"></div>
+    <div class="sheet-body">
+      <div id="svgHost"></div>
+      <aside id="metGuide" class="mg"></aside>
+    </div>
     <div class="legend">
       <span>▢ a named room. Tap to add it to your walk.</span>
       <span>· · · a corridor we have opened</span>
@@ -205,6 +246,18 @@
 
 <script src="/i18n.js"></script>
 <script src="/met-cards.js"></script>
+<script src="/met-3d.js"></script>
+<script src="/met-guide.js"></script>
 <script src="/met-map.js"></script>
+<script>
+  /* The guide reads the walk the reader picked, and lights each gallery on
+     the model as it describes it. */
+  if (window.MetGuide && document.getElementById('metGuide')) {
+    MetGuide.mount(document.getElementById('metGuide'), {
+      route: function () { return window.MET_ROUTE ? window.MET_ROUTE() : []; },
+      onRoom: function (key) { if (window.MET_SPOTLIGHT) window.MET_SPOTLIGHT(key); }
+    });
+  }
+</script>
 </body>
 </html>

@@ -1216,16 +1216,27 @@
         -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
       }
       #view-overview .psx-h1{
-        margin:.7rem 0 0;font-weight:800;color:var(--psx-text);
-        font-size:clamp(2.3rem,5vw,3.75rem);line-height:1.06;letter-spacing:-.02em;max-width:14ch;
+        margin:.7rem auto 0;font-weight:800;color:var(--psx-text);
+        /* Size, face and measure are owned by modern.css with !important,
+           which is where the phone-size fix lives. This is the fallback for
+           a page rendered without that sheet, matched to the same shape so
+           the two never disagree visibly. */
+        font-size:clamp(1.7rem,4.6vw,3.5rem);line-height:1.12;letter-spacing:-.015em;
+        max-width:24ch;text-wrap:balance;
       }
       #view-overview .psx-accent{
         background:linear-gradient(120deg,#7da2ff,#a78bfa);
         -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
       }
       #view-overview .psx-sub{
-        margin:1.5rem 0 0;max-width:640px;color:var(--psx-text2);
-        font-size:1.12rem;line-height:1.62;
+        margin:1.5rem auto 0;max-width:640px;color:var(--psx-text2);
+        font-size:1.12rem;line-height:1.62;text-wrap:pretty;
+      }
+      @media (max-width: 640px){
+        /* Seven centred lines of 18px under a 30px headline read as a wall.
+           A step down and the same paragraph sets in five quieter lines. */
+        #view-overview .psx-sub{font-size:1.02rem;line-height:1.58;}
+        #view-overview .psx-tagline{font-size:1rem;}
       }
       #view-overview .psx-cta-row{display:flex;gap:.85rem;flex-wrap:wrap;justify-content:center;margin-top:2.2rem;}
       /* Deliberately quiet. This is a footnote that happens to be a number,

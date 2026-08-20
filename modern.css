@@ -175,7 +175,11 @@ h1, .psx-h1, .page-title, .hero h1 {
   line-height: 1.08 !important;
   color: var(--m-ink) !important;
 }
-h1, .hero h1, .psx-h1 { font-size: clamp(2.2rem, 4.6vw, 3.5rem) !important; }
+/* The floor was 2.2rem, which on a 375px phone is 35px: a nine word
+   headline set as four screen-wide serif lines, the "front size is a bit
+   crooked" report. 1.7rem lets a phone breathe; desktop still reaches
+   3.5rem through the vw term, unchanged. [SEAN] */
+h1, .hero h1, .psx-h1 { font-size: clamp(1.7rem, 4.6vw, 3.5rem) !important; }
 .page-title { font-size: clamp(1.8rem, 3.4vw, 2.4rem) !important; }
 
 /* Four lines of headline is a wall, and a hand-set measure only breaks well
