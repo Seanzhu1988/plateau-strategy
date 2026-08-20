@@ -253,18 +253,34 @@
          them itself so the building can be turned. */
       var walkedFlags = {};
       Object.keys(walkedMinutes).forEach(function (k) { walkedFlags[k] = true; });
-      if (!window.Met3D.isOpen() && window.MetFacade) {
-        /* Closed, this is the front on Fifth Avenue rather than a grey mass:
-           a footprint from above could be any building, and the point of the
-           outside layer is recognising the one you are standing in front of. */
-        host.innerHTML = '<div class="met-facade">' + window.MetFacade.build() + '</div>';
-        host.querySelector('.met-facade').addEventListener('click', function () {
-          host.innerHTML = '';
-          window.Met3D.attach(host, { route: fullRoute(), walked: walkedFlags, current: null });
-          window.Met3D.openInterior(host, { route: fullRoute(), walked: walkedFlags, current: null });
-          var o = document.getElementById('btnOutside');
-          if (o) o.hidden = false;
+      if (!window.Met3D.isOpen()) {
+        /* Outside, this is a photograph of the building, because the point of
+           the outside layer is recognising the place you are standing in
+           front of, and no drawing of ours does that as well as the thing
+           itself. The elevation we drew stays as the fallback if the picture
+           cannot load. Credit is not decoration here: the licence requires it. */
+        host.innerHTML =
+          '<figure class="met-photo">' +
+            '<img src="/media/met-facade.jpg" alt="The Fifth Avenue front of the ' +
+              'Metropolitan Museum of Art: the grand staircase, the paired columns, ' +
+              'and the uncarved blocks along the roofline." />' +
+            '<figcaption>' +
+              '<b>The Metropolitan Museum of Art</b>' +
+              '<span>Fifth Avenue at 82nd Street · tap to go inside</span>' +
+              '<small>Photograph by Arad, ' +
+                '<a href="https://commons.wikimedia.org/wiki/File:Metropolitan_Museum_of_Art_entrance_NYC.JPG" ' +
+                'target="_blank" rel="noopener">Wikimedia Commons</a>, ' +
+                '<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" ' +
+                'rel="noopener">CC BY-SA 3.0</a></small>' +
+            '</figcaption>' +
+          '</figure>';
+        var img = host.querySelector('.met-photo img');
+        img.addEventListener('error', function () {
+          if (!window.MetFacade) return;
+          host.innerHTML = '<div class="met-facade">' + window.MetFacade.build() + '</div>';
+          host.querySelector('.met-facade').addEventListener('click', enterBuilding);
         });
+        host.querySelector('.met-photo').addEventListener('click', enterBuilding);
       } else {
         window.Met3D.attach(host, { route: seq, walked: walkedFlags, current: spotlight });
       }
@@ -374,6 +390,18 @@
   });
   document.getElementById('tabF1').addEventListener('click', function () { mode = 'flat'; floor = 1; remember(); draw(); });
   document.getElementById('tabF2').addEventListener('click', function () { mode = 'flat'; floor = 2; remember(); draw(); });
+  /* Going in: from the photograph outside to the model inside. */
+  function enterBuilding() {
+    var host = document.getElementById('svgHost');
+    var walkedFlags = {};
+    Object.keys(walkedMinutes).forEach(function (k) { walkedFlags[k] = true; });
+    host.innerHTML = '';
+    window.Met3D.attach(host, { route: fullRoute(), walked: walkedFlags, current: null });
+    window.Met3D.openInterior(host, { route: fullRoute(), walked: walkedFlags, current: null });
+    var o = document.getElementById('btnOutside');
+    if (o) o.hidden = false;
+  }
+
   document.getElementById('tab3D').addEventListener('click', function () { mode = '3d'; remember(); draw(); });
   /* Entering the building is a tap on it; leaving needs a way back. */
   document.getElementById('svgHost').addEventListener('met3d:layer', function () {

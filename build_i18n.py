@@ -76,6 +76,7 @@ SKIP = {
 
 # ---- translations: english -> [zh, es, ko, vi] ----
 TR = {
+"Fifth Avenue at 82nd Street · tap to go inside": ["第五大道与82街 · 点按进入内部","Quinta Avenida con la calle 82 · toca para entrar","5번가 82번가 · 눌러서 안으로","Đại lộ số Năm giao phố 82 · chạm để vào trong"],
 "Fifth Avenue at 82nd Street · our elevation, not to scale · tap to go inside": ["第五大道与82街 · 我们自绘的立面图，非按比例 · 点按进入内部","Quinta Avenida con la calle 82 · nuestro alzado, sin escala · toca para entrar","5번가 82번가 · 자체 제작 입면도, 축척 없음 · 눌러서 안으로","Đại lộ số Năm giao phố 82 · bản vẽ mặt đứng của chúng tôi, không theo tỷ lệ · chạm để vào trong"],
 "MET-3D · Both floors": ["MET-3D · 两层","MET-3D · Ambas plantas","MET-3D · 두 개 층","MET-3D · Cả hai tầng"],
 "The guide at the table": ["桌上的导览","La guía en la mesa","탁상 가이드","Hướng dẫn viên tại bàn"],
