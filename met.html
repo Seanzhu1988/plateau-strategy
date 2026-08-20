@@ -146,10 +146,14 @@
   .m3-room:hover polygon { filter: brightness(1.04); }
   .m3-room:focus { outline: none; }
   .m3-room:focus polygon { stroke: #1f3a5f; stroke-width: 2; }
-  .m3-lbl { font: 700 12px Inter, system-ui, sans-serif; fill: #1f2a3a; pointer-events: none; }
+  /* Halos: a hair of paper behind every label, so text never fights the
+     geometry it sits on. paint-order draws the stroke underneath the fill. */
+  .m3-lbl { font: 700 12px Inter, system-ui, sans-serif; fill: #1f2a3a; pointer-events: none;
+            paint-order: stroke; stroke: #faf8f4; stroke-width: 3px; stroke-linejoin: round; }
   .m3-sub { font: 800 8.5px Inter, system-ui, sans-serif; fill: #6b6459;
-            letter-spacing: .1em; pointer-events: none; }
-  .m3-floorlbl { font: 800 15px Inter, system-ui, sans-serif; fill: #9a9384;
+            letter-spacing: .1em; pointer-events: none;
+            paint-order: stroke; stroke: #faf8f4; stroke-width: 2.5px; stroke-linejoin: round; }
+  .m3-floorlbl { font: 800 15px Inter, system-ui, sans-serif; fill: #b3aa97;
                  letter-spacing: .16em; pointer-events: none; }
   .m3-title { font: 800 15px Inter, system-ui, sans-serif; fill: #1f2a3a; pointer-events: none; }
   .m3-sub2 { font: 600 11px Inter, system-ui, sans-serif; fill: #6b6459; pointer-events: none; }
