@@ -121,6 +121,17 @@
      building open. No library: the flat SVG sheets already exist, and a
      CSS perspective transform is all a slab is. Taps keep working because
      a transformed SVG still routes pointer events to its rooms. */
+  /* the solid view: labels and storey tags drawn inside the SVG */
+  .m3-room { cursor: pointer; }
+  .m3-room:hover polygon { filter: brightness(1.04); }
+  .m3-room:focus { outline: none; }
+  .m3-room:focus polygon { stroke: #1f3a5f; stroke-width: 2; }
+  .m3-lbl { font: 700 12px Inter, system-ui, sans-serif; fill: #1f2a3a; pointer-events: none; }
+  .m3-sub { font: 800 8.5px Inter, system-ui, sans-serif; fill: #6b6459;
+            letter-spacing: .1em; pointer-events: none; }
+  .m3-floorlbl { font: 800 15px Inter, system-ui, sans-serif; fill: #9a9384;
+                 letter-spacing: .16em; pointer-events: none; }
+  #svgHost { touch-action: none; }
   .iso-stage { perspective: 1500px; perspective-origin: 50% 42%;
                padding: 1rem 0 2.4rem; touch-action: none; cursor: grab;
                background:
@@ -205,6 +216,7 @@
 
 <script src="/i18n.js"></script>
 <script src="/met-cards.js"></script>
+<script src="/met-3d.js"></script>
 <script src="/met-map.js"></script>
 </body>
 </html>

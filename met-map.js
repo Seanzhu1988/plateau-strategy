@@ -60,6 +60,11 @@
     ['islamic', 'grand-stair-2', 2]
   ];
 
+  /* One source of truth for the building's shape: met-3d.js extrudes these
+     same rooms and corridors into a solid, so the flat sheet and the 3D
+     view can never quietly disagree about where a gallery sits. */
+  window.MET_GEOMETRY = { ROOMS: ROOMS, EDGES: EDGES };
+
   var CARDS = window.MET_CARDS || {};
   var walkedMinutes = {};   /* corridor key -> measured minutes, when surveyed */
 
@@ -236,18 +241,12 @@
     stepCounter = 0;
     var host = document.getElementById('svgHost');
     if (mode === '3d') {
-      var f1 = floorSVG(1, seq);          /* walking order: floor 1 steps first */
-      var f2 = floorSVG(2, seq);
-      host.innerHTML =
-        '<div class="iso-stage" id="isoStage">' +
-          '<div class="iso-world" id="isoWorld" style="transform:' + worldTransform() + '">' +
-            '<div class="iso-plane" style="transform: translateZ(150px)">' +
-              '<div class="iso-tag">Floor 2</div>' + f2 + '</div>' +
-            '<div class="iso-plane" style="transform: translateZ(0px)">' +
-              '<div class="iso-tag">Floor 1</div>' + f1 + '</div>' +
-          '</div>' +
-        '</div>';
-      wireSpin();
+      /* The solid, not the sheets under a tilt: met-3d.js extrudes the same
+         rooms into volumes inside the museum's real footprint, and projects
+         them itself so the building can be turned. */
+      var walkedFlags = {};
+      Object.keys(walkedMinutes).forEach(function (k) { walkedFlags[k] = true; });
+      window.Met3D.attach(host, { route: seq, walked: walkedFlags });
       document.getElementById('sheetNo').textContent = 'MET-3D · Both floors';
     } else {
       host.innerHTML = floorSVG(floor, seq);

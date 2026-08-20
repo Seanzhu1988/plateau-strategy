@@ -1715,6 +1715,12 @@ def api_walks_delete(wid):
     return _bp_nostore(jsonify({"ok": False, "error": "Not one of your walks."}), 404)
 
 
+@app.route("/met-3d.js")
+def met_3d_js():
+    """The Met as a solid: real footprint, extruded galleries, turnable."""
+    return send_file(os.path.join(BASE_DIR, "met-3d.js"))
+
+
 @app.route("/met-map.js")
 def met_map_js():
     return send_file(os.path.join(BASE_DIR, "met-map.js"))
