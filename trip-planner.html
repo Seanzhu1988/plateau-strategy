@@ -37,6 +37,26 @@
         header .right { margin-left: auto; display: flex; gap: 1.2rem; }
         header a { color: #6b655b; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
         header a:hover { color: #fff; }
+        /* The phone header. There was no rule at all below 640px, so the
+           desktop flex row simply ran out of road: the brand wrapped to four
+           lines THROUGH the nav links, and the links themselves ran 50px past
+           the right edge, cutting "Book a Ride" to "Boo". Two rows fix both:
+           the brand owns the first, the links own the second and scroll
+           sideways in their own row instead of pushing off the page. */
+        @media (max-width: 640px) {
+            header { display: grid; grid-template-columns: auto 1fr; align-items: center;
+                     gap: 0.25rem 0.6rem; padding: 0.6rem 0.9rem; }
+            header img { height: 34px; width: 34px; }
+            header .brand { font-size: 0.98rem; line-height: 1.25;
+                            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            header .right { grid-column: 1 / -1; margin-left: 0; gap: 0;
+                            overflow-x: auto; -webkit-overflow-scrolling: touch;
+                            scrollbar-width: none; }
+            header .right::-webkit-scrollbar { display: none; }
+            /* Each link becomes a real thumb target instead of bare text. */
+            header .right a { flex: 0 0 auto; padding: 0.5rem 0.7rem; font-size: 0.84rem;
+                              white-space: nowrap; }
+        }
 
         .wrap { max-width: 1180px; margin: 1.6rem auto; padding: 0 1.2rem; }
         .page-title { font-size: 1.9rem; font-weight: 800; color: #14110c; }
@@ -56,6 +76,13 @@
             .controls .field { flex-direction: column; align-items: stretch; gap: 0.2rem; }
             .controls .field label { font-size: 0.78rem; }
             .controls .field select, .controls .field input { width: 100%; }
+            /* Category chips were 30px tall, under any honest thumb size.
+               44px is the size a finger actually hits. */
+            .chip { padding: 0.62rem 1rem; font-size: 0.88rem; }
+            /* Inputs join them: a 44px control also stops iOS Safari zooming
+               the whole page on focus, which needs a 16px font to not fire. */
+            .controls input[type=time], .controls input[type=date],
+            .controls select { font-size: 16px; padding: 0.55rem 0.6rem; }
         }
         .controls input[type=time], .controls select { padding: 0.4rem 0.6rem; border: 1.5px solid #e6e2da;
             border-radius: 8px; font-size: 0.9rem; font-family: inherit; background: #faf8f4; }
@@ -176,6 +203,35 @@
            It sits below it now, where it can do its job. */
         @media (max-width: 900px) {
             .map-searchbar { left: 10px; right: 10px; max-width: none; top: 54px; }
+        }
+        /* Docked panels: the phone versions live in the page, not on the map.
+           The card styling goes, because a panel in normal flow pretending to
+           float over something reads as broken rather than styled. */
+        .map-searchbar.docked { position: static; max-width: none; background: none;
+            box-shadow: none; border-radius: 0; padding: 0 0 0.7rem; }
+        .map-cats.docked { position: static; background: none; box-shadow: none;
+            padding: 0.6rem 0 0; max-width: none; display: flex; gap: 0.4rem;
+            overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .map-cats.docked::-webkit-scrollbar { display: none; }
+        /* Outweighs the desktop overlay's .map-cats .chip shrink rule, which
+           otherwise wins on specificity and keeps the chips at 30px. */
+        .map-cats.docked .chip { font-size: 0.9rem; padding: 0.62rem 1.05rem; }
+        @media (max-width: 640px) {
+            /* With search above and chips below, the map earns its own screen
+               height honestly instead of being tall and mostly covered. */
+            #map { height: 56vh; min-height: 380px; }
+            /* The docked destination input is the page's main control now,
+               so it gets the full-size treatment: 16px also stops iOS Safari
+               zooming the page every time it is focused. */
+            .map-searchbar.docked .build-row input,
+            .map-searchbar.docked .startbox input { font-size: 16px; padding: 0.6rem 0.7rem; }
+            /* The amenity icon strip was nine 44px bubbles across a 375px
+               map. One row, scrollable, half the height. */
+            /* 130px, not 90: the zoom control owns the top-left corner and
+               the strip must stop before it, not lie over the + button. */
+            .map-layers .achip-row { max-width: calc(100vw - 130px); overflow-x: auto;
+                -webkit-overflow-scrolling: touch; scrollbar-width: none; flex-wrap: nowrap; }
+            .map-layers .achip-row::-webkit-scrollbar { display: none; }
         }
         .map-searchbar .build-row input { flex: 1 1 170px; min-width: 0; border: 1.5px solid #e6e2da;
             border-radius: 9px; padding: 0.5rem 0.75rem; font-size: 0.9rem; font-family: inherit; }
@@ -3992,7 +4048,19 @@
     (function joinMap(){
         const mc = map.getContainer();
 
-        // search bar, floating top-centre
+        // On a phone the floating panels ARE the crookedness: the search
+        // card buried the top third of a 375px map, hid the zoom control
+        // behind itself, and the chips covered the bottom. So on a phone they
+        // dock: search above the map, chips below it, and the map is pure map.
+        //
+        // The choice follows the media query rather than being taken once,
+        // because "measure at mount" turned out to have a hole: a tab that
+        // loads hidden or prerendered measures width 0, which reads as phone,
+        // and a desktop visitor would have kept the phone layout forever.
+        // The query listener also covers a tablet rotating across the line.
+        const mq = window.matchMedia('(max-width: 640px)');
+        const mapEl = document.getElementById('map');
+
         const bar = document.createElement('div');
         bar.className = 'map-searchbar';
         // .build-row carries the start box with it, do not move that
@@ -4001,10 +4069,38 @@
         bar.appendChild(document.querySelector('.build-row'));
         bar.appendChild(document.getElementById('curLocInfo'));
         bar.appendChild(document.getElementById('farNote'));
-        mc.appendChild(bar);
         L.DomEvent.disableClickPropagation(bar);
         L.DomEvent.disableScrollPropagation(bar);
         bar.addEventListener('keydown', e => e.stopPropagation());   // typing must never pan the map
+
+        const catsBox = document.createElement('div');
+        catsBox.className = 'map-cats';
+        catsBox.appendChild(document.getElementById('chips'));
+        L.DomEvent.disableClickPropagation(catsBox);
+        L.DomEvent.disableScrollPropagation(catsBox);
+        const Cats = L.Control.extend({ options: { position: 'bottomleft' }, onAdd: function(){
+            return catsBox;
+        }});
+        const catsCtl = new Cats();
+
+        let dockedNow = null;
+        function dock(phone){
+            if (phone === dockedNow) return;
+            dockedNow = phone;
+            bar.classList.toggle('docked', phone);
+            catsBox.classList.toggle('docked', phone);
+            if (phone) {
+                try { map.removeControl(catsCtl); } catch (e) {}
+                mapEl.parentNode.insertBefore(bar, mapEl);
+                mapEl.parentNode.insertBefore(catsBox, mapEl.nextSibling);
+            } else {
+                mc.appendChild(bar);
+                map.addControl(catsCtl);
+            }
+        }
+        dock(mq.matches);
+        try { mq.addEventListener('change', e => dock(e.matches)); }
+        catch (e) { mq.addListener(e2 => dock(e2.matches)); }   // older Safari
 
         // trip actions, top-left under the zoom control
         const Actions = L.Control.extend({ options: { position: 'topleft' }, onAdd: function(){
@@ -4021,15 +4117,8 @@
         }});
         map.addControl(new Actions());
 
-        // category chips + legend, bottom-left
-        const Cats = L.Control.extend({ options: { position: 'bottomleft' }, onAdd: function(){
-            const d = L.DomUtil.create('div', 'map-cats');
-            d.appendChild(document.getElementById('chips'));
-            L.DomEvent.disableClickPropagation(d);
-            L.DomEvent.disableScrollPropagation(d);
-            return d;
-        }});
-        map.addControl(new Cats());
+        // category chips are handled by dock() above, beside the search bar,
+        // because the two must always move together.
         const Legend = L.Control.extend({ options: { position: 'bottomleft' }, onAdd: function(){
             const d = L.DomUtil.create('div', 'map-legend');
             const t = document.createElement('span');
