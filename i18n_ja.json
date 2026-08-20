@@ -647,5 +647,7 @@
  "~30 MIN INSIDE": "館内 約30分",
  "~35 MIN INSIDE": "館内 約35分",
  "~40 MIN INSIDE": "館内 約40分",
- "~45 MIN INSIDE": "館内 約45分"
+ "~45 MIN INSIDE": "館内 約45分",
+ "Recorded voice where we have one, your phone's voice otherwise. Inside the Met the map goes grey, so this is the guide at the table; the one that knows where you are standing lives on": "録音した音声があればそれで、なければお使いのスマホの音声でお届けします。メットの館内では地図が灰色になるので、これは机の前で聞く案内です。今どこに立っているかまで分かるのは",
+ "the walking guide": "徒歩ガイド"
 }

@@ -2701,3 +2701,8 @@ EXTRA.update({
     "~40 MIN INSIDE": ["馆内约 40 分钟", "~40 MIN DENTRO", "관람 약 40분", "~40 phút bên trong"],
     "~45 MIN INSIDE": ["馆内约 45 分钟", "~45 MIN DENTRO", "관람 약 45분", "~45 phút bên trong"],
 })
+
+# ---- The Met narrated-guide note (2026-08-19) ----
+EXTRA.update({
+    "Recorded voice where we have one, your phone's voice otherwise. Inside the Met the map goes grey, so this is the guide at the table; the one that knows where you are standing lives on": ["有录音的时候就用录音，没有就用你手机自带的语音。在大都会馆内地图会变灰，所以这是坐在桌前的讲解；真正知道你此刻站在哪里的那位，就在", "Voz grabada cuando la tenemos, y la de tu teléfono cuando no. Dentro del Met el mapa se pone gris, así que esta es la guía en la mesa; la que sabe dónde estás parado vive en", "녹음된 목소리가 있으면 그 목소리로, 없으면 휴대폰 목소리로 들려드려요. 메트 안에서는 지도가 회색으로 바뀌어서, 이건 책상 앞에서 듣는 안내예요. 지금 어디에 서 있는지 아는 안내는 바로", "Có bản thu âm thì chúng mình dùng bản thu, không thì dùng giọng đọc của điện thoại bạn nhé. Bên trong Met bản đồ chuyển sang xám, nên đây là người hướng dẫn ngồi ở bàn; còn người biết bạn đang đứng ở đâu thì nằm ở"],
+})
