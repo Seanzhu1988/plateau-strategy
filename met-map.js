@@ -200,13 +200,20 @@
     return out.join('');
   }
 
+  var routeGaps = [];   /* picks no drawn corridor can reach, latest plan */
+
   function fullRoute() {
-    /* the picked rooms joined by shortest paths, stairs inserted free */
+    /* The picked rooms joined by shortest paths, stairs inserted free.
+       A pick that no corridor reaches used to be dropped in silence, which
+       is a plan quietly losing a destination; now it is recorded and the
+       walk list says so out loud. The route itself still leaves it out,
+       because footprints only walk corridors that exist. */
+    routeGaps = [];
     if (picked.length < 1) return [];
     var seq = [picked[0]];
     for (var i = 1; i < picked.length; i++) {
       var part = shortestPath(seq[seq.length - 1], picked[i]);
-      if (!part) continue;
+      if (!part) { routeGaps.push(picked[i]); continue; }
       seq = seq.concat(part.slice(1));
     }
     return seq;
@@ -319,7 +326,9 @@
       return;
     }
     var mins = 0, walkMins = 0, anyEstimate = false, html = [];
-    var n = 0;
+    var n = 0, counted = {};   /* a stop is visited once; walking back
+                                  through it later is passage, not a
+                                  second visit with a second bill */
     for (var i = 0; i < seq.length; i++) {
       var k = seq[i];
       var card = CARDS[k] || {};
@@ -331,8 +340,9 @@
         html.push('<div class="leg-walk">👣 ' + (measured ? wm + ' min, walked by a surveyor'
                   : '~' + wm + ' min, estimate') + '</div>');
       }
-      var isStop = picked.indexOf(k) >= 0;
+      var isStop = picked.indexOf(k) >= 0 && !counted[k];
       if (isStop) {
+        counted[k] = true;
         n += 1;
         var dwell = card.minutes || 10;
         mins += dwell;
@@ -347,13 +357,21 @@
         html.push('<div class="leg-walk">through ' + ((CARDS[k] || {}).name || k) + '</div>');
       }
     }
+    routeGaps.forEach(function (gk) {
+      var gname = (CARDS[gk] || {}).name || gk.replace(/-/g, ' ');
+      html.push('<div class="leg-impossible">⚠ <b>' + gname + '</b><span>' +
+        'no drawn corridor reaches it yet · kept in your picks, left out of the plan and the times' +
+        '</span></div>');
+    });
     host.innerHTML = html.join('');
     var t = mins + walkMins;
     lastTotalMin = t;
     var hrs = Math.floor(t / 60), rem = t % 60;
     total.textContent = n + ' stop' + (n === 1 ? '' : 's') + ' · ' +
       (hrs ? hrs + ' h ' : '') + rem + ' min total · ' + walkMins + ' of it walking' +
-      (anyEstimate ? ' · times with ~ are estimates' : ' · all corridors walked');
+      (anyEstimate ? ' · times with ~ are estimates' : ' · all corridors walked') +
+      (routeGaps.length ? ' · ' + routeGaps.length + ' pick' +
+        (routeGaps.length === 1 ? '' : 's') + ' unreachable' : '');
   }
 
   var _opts3d = null;   /* what the 3D view was last attached with */
