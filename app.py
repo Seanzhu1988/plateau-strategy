@@ -3556,6 +3556,7 @@ def api_destinations():
         comments = _comments_all()
         prices = _prices_all()
         views = _views_all()
+        cards = _recorded_cards()
         for e in data.get("entries", []):
             # Stay times are stored split by source (public crowd vs verified
             # guide). This read used to assume the OLD flat shape, so it silently
@@ -3600,9 +3601,55 @@ def api_destinations():
                     e["days_old"] = age
                 except Exception:
                     pass
+            # A thirty second card, for the great many places that will never
+            # have a three minute guide. A deep recording always wins if one
+            # exists; the card only fills the silence. [SEAN]
+            if not e.get("audio"):
+                slug = e.get("slug") or _card_slug(e.get("name"))
+                if slug in cards:
+                    e["audio"] = "/media/audio/card-%s.mp3" % slug
+                    e["audio_kind"] = "card"
+                    e.setdefault("slug", slug)
         return jsonify(data)
     except Exception as e:
         return jsonify({"cities": {}, "entries": [], "error": str(e)}), 500
+
+
+def _card_slug(name):
+    """The book's slug rule, in one place.
+
+    The seed entries carry a hand written "slug", but the places the Scout finds
+    do not, and there are now four times more of those than of seeds. Deriving
+    the slug from the name means a discovered place can hold a recording the day
+    it is discovered, with nobody editing a data file to give it a name twice.
+    Matches the seeds exactly, ampersand read as the word, then anything that is
+    not a letter or a number becomes a hyphen."""
+    t = (name or "").lower().replace("&", " and ")
+    return re.sub(r"[^a-z0-9]+", "-", t).strip("-")[:80]
+
+
+_CARD_CACHE = {"at": 0.0, "set": frozenset()}
+
+
+def _recorded_cards():
+    """Slugs with a thirty second card on disk, refreshed at most once a minute.
+
+    Read from the filesystem rather than a field in destinations.json, because
+    the recorder writes the mp3 and the book should start offering it without a
+    second edit that somebody has to remember. The listing is cached because it
+    would otherwise run on every request for every reader."""
+    now = time.time()
+    if now - _CARD_CACHE["at"] < 60:
+        return _CARD_CACHE["set"]
+    found = set()
+    try:
+        for fn in os.listdir(os.path.join(BASE_DIR, "media", "audio")):
+            if fn.startswith("card-") and fn.endswith(".mp3") and fn.count(".") == 1:
+                found.add(fn[5:-4])
+    except Exception:
+        pass
+    _CARD_CACHE["at"], _CARD_CACHE["set"] = now, frozenset(found)
+    return _CARD_CACHE["set"]
 
 
 def _local_iso_epoch(s):

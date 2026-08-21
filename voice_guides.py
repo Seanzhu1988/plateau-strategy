@@ -5,6 +5,8 @@
     python3 voice_guides.py --dry         # say what it would record, spend nothing
     python3 voice_guides.py --lang ja     # record the Japanese narrations
     python3 voice_guides.py --voice NAME  # use a different reader
+    python3 voice_guides.py --cards       # record the thirty second cards
+    python3 voice_guides.py --force       # redo even adopted recordings
 
 Languages. English scripts live in guide_scripts.json; every other language
 lives in guide_scripts.<lang>.json with the same slugs, and records to
@@ -75,19 +77,35 @@ DEFAULT_VOICE = "6nukEV6JAgCcOkdtH5FM"
 # why other languages are not word-counted.
 MIN_WORDS = 450
 
+# THE SECOND TIER: CARDS. A deep guide is for a place you travel to and settle
+# into. The book now holds a hundred places nobody will stand still for three
+# minutes at, a pizza counter, a viewpoint, a ferry dock, and for those the
+# choice is not "three minutes or nothing", it is thirty seconds or silence.
+# So a card is its own kind of recording with its own band: long enough to say
+# what the place is, what to notice and what to do, short enough that a person
+# on a sidewalk hears it out. The band is enforced at BOTH ends, because a card
+# that sprawls has quietly become a bad guide, and the deep tier's own floor is
+# left exactly where it was. [SEAN "maybe 30 seconds per destination"]
+CARD_MIN_WORDS = 60         # ~24 seconds
+CARD_MAX_WORDS = 110        # ~44 seconds
+
 PAUSE_S = 4                 # spacing: the API rate-limits a fast loop
 
 
-def scripts_path(lang):
-    return os.path.join(BASE, "guide_scripts.json" if lang == "en"
-                        else "guide_scripts.%s.json" % lang)
+def scripts_path(lang, tier="guide"):
+    stem = "guide_scripts" if tier == "guide" else "guide_cards"
+    return os.path.join(BASE, "%s.json" % stem if lang == "en"
+                        else "%s.%s.json" % (stem, lang))
 
 
-def out_path(slug, lang):
+def out_path(slug, lang, tier="guide"):
     """English keeps the plain name, so every guide recorded before this file
-    learned about languages still plays."""
-    return os.path.join(OUTDIR, "guide-%s.mp3" % slug if lang == "en"
-                        else "guide-%s.%s.mp3" % (slug, lang))
+    learned about languages still plays. Cards are a separate prefix so a place
+    can hold both: the card plays today, and the day someone writes it a real
+    three minute guide the deep recording takes over without a rename."""
+    stem = "guide" if tier == "guide" else "card"
+    return os.path.join(OUTDIR, "%s-%s.mp3" % (stem, slug) if lang == "en"
+                        else "%s-%s.%s.mp3" % (stem, slug, lang))
 
 
 def voice_for(lang):
@@ -101,9 +119,9 @@ def voice_for(lang):
             or DEFAULT_VOICE)
 
 
-def load_scripts(lang):
+def load_scripts(lang, tier="guide"):
     try:
-        with open(scripts_path(lang), encoding="utf-8") as f:
+        with open(scripts_path(lang, tier), encoding="utf-8") as f:
             data = json.load(f)
     except FileNotFoundError:
         return {}
@@ -128,23 +146,47 @@ def sig(text):
     return hashlib.sha1(text.encode("utf-8")).hexdigest()[:12]
 
 
-def too_short(text, lang):
-    """An English guide under three minutes is unfinished. A language without
-    spaces cannot be word-counted, so it is never held back on length."""
-    return lang == "en" and len(text.split()) < MIN_WORDS
+def off_band(text, lang, tier="guide"):
+    """Why a script is not ready to record, or None.
+
+    A deep guide under three minutes is unfinished. A card is wrong in two
+    directions: too thin to be worth a tap, or so long it has stopped being a
+    card. A language without spaces cannot be word-counted, so translations are
+    never held back on length."""
+    if lang != "en":
+        return None
+    w = len(text.split())
+    if tier == "card":
+        if w < CARD_MIN_WORDS:
+            return "thin"
+        if w > CARD_MAX_WORDS:
+            return "long"
+        return None
+    return "short" if w < MIN_WORDS else None
 
 
-def status(slug, text, voice, lang, manifest):
-    """'short' (English, under three minutes), 'have' (already recorded in this
-    voice from this exact script), or 'record' (missing, or the voice or words
-    changed). The manifest is keyed by the output filename, so English and each
-    language are tracked separately."""
-    if too_short(text, lang):
-        return "short"
-    p = out_path(slug, lang)
+def status(slug, text, voice, lang, manifest, tier="guide"):
+    """'thin'/'long'/'short' (out of band for its tier), 'have' (already
+    recorded in this voice from this exact script), or 'record' (missing, or the
+    voice or words changed). The manifest is keyed by the output filename, so
+    each tier and language is tracked separately."""
+    bad = off_band(text, lang, tier)
+    if bad:
+        return bad
+    p = out_path(slug, lang, tier)
     if not os.path.exists(p):
         return "record"
     m = manifest.get(os.path.basename(p)) or {}
+    if not m:
+        # A recording with no ledger row. This happens on any fresh checkout,
+        # because _recorded.json is written at record time and was never
+        # committed: the mp3s ship in git, the ledger did not. Treating that as
+        # "unrecorded" would spend real money re-reading files we already own,
+        # so an orphan recording is ADOPTED rather than redone. It is stamped
+        # with today's voice and words, which is a guess, and the honest cost of
+        # the guess is that a script edited before adoption keeps its old audio.
+        # Use --force to overrule it.
+        return "adopt"
     if m.get("voice") != voice or m.get("sig") != sig(text):
         return "record"
     return "have"
@@ -183,6 +225,7 @@ def main():
             lang = sys.argv[sys.argv.index("--lang") + 1].strip().lower()
         except Exception:
             pass
+    tier = "card" if "--cards" in sys.argv else "guide"
     key = os.environ.get("ELEVENLABS_API_KEY", "").strip()
     voice = voice_for(lang)
     if "--voice" in sys.argv:
@@ -190,37 +233,51 @@ def main():
             voice = sys.argv[sys.argv.index("--voice") + 1].strip()
         except Exception:
             pass
-    scripts = load_scripts(lang)
+    scripts = load_scripts(lang, tier)
     manifest = load_manifest()
     os.makedirs(OUTDIR, exist_ok=True)
     if not scripts:
-        print("No scripts for %s. Write %s first."
-              % (lang, os.path.basename(scripts_path(lang))))
+        print("No %s scripts for %s. Write %s first."
+              % (tier, lang, os.path.basename(scripts_path(lang, tier))))
         return 1
 
-    have, short, todo = [], [], []
+    force = "--force" in sys.argv
+    have, bad, todo, adopted = [], [], [], []
     for slug, text in scripts.items():
-        st = status(slug, text, voice, lang, manifest)
-        if st == "have":
+        st = status(slug, text, voice, lang, manifest, tier)
+        if st == "adopt" and not force:
+            adopted.append(slug)
+            manifest[os.path.basename(out_path(slug, lang, tier))] = {
+                "voice": voice, "sig": sig(text), "words": len(text.split()),
+                "chars": len(text), "adopted": True}
             have.append(slug)
-        elif st == "short":
-            short.append((slug, len(text.split())))
-        else:
+        elif st == "have":
+            have.append(slug)
+        elif st == "record" or (st == "adopt" and force):
             todo.append((slug, text))
+        else:
+            bad.append((slug, len(text.split()), st))
+    if adopted:
+        save_manifest(manifest)
+        print("adopted %d recording(s) already on disk with no ledger row: %s"
+              % (len(adopted), ", ".join(sorted(adopted))))
 
     chars = sum(len(t) for _, t in todo)
-    print("%s | voice %s | %d guides: %d current, %d to record, %d too short"
-          % (lang, voice, len(scripts), len(have), len(todo), len(short)))
+    print("%s | %ss | voice %s | %d scripts: %d current, %d to record, %d off band"
+          % (lang, tier, voice, len(scripts), len(have), len(todo), len(bad)))
 
-    if short:
-        print("\nToo short to be a three minute guide, expand these first:")
-        for slug, w in sorted(short):
-            print("  %-32s %4d words  (~%.1f min, needs ~%d)"
-                  % (slug, w, w / 150.0, MIN_WORDS))
+    if bad:
+        print("\nOff band for a %s, fix these first:" % tier)
+        for slug, w, why in sorted(bad):
+            want = ("at least %d words" % MIN_WORDS if why == "short" else
+                    "at least %d words" % CARD_MIN_WORDS if why == "thin" else
+                    "at most %d words" % CARD_MAX_WORDS)
+            print("  %-34s %4d words  (~%2.0fs, %s: needs %s)"
+                  % (slug, w, w / 150.0 * 60, why, want))
 
     if not todo:
-        print("\nEverything long enough already has this voice." if not short
-              else "\nNothing ready to record until the short ones are expanded.")
+        print("\nEverything in band already has this voice." if not bad
+              else "\nNothing ready to record until the off-band ones are fixed.")
         return 0
 
     print("\nReady to record (%d characters):" % chars)
@@ -248,7 +305,7 @@ def main():
             failed.append((slug, why))
             print("  failed  %-32s %s" % (slug, why))
             continue
-        p = out_path(slug, lang)
+        p = out_path(slug, lang, tier)
         with open(p, "wb") as f:
             f.write(audio)
         manifest[os.path.basename(p)] = {"voice": voice, "sig": sig(text),
@@ -259,7 +316,10 @@ def main():
         time.sleep(PAUSE_S)
 
     print("\nrecorded %d, failed %d" % (len(made), len(failed)))
-    if made and lang == "en":
+    if made and lang == "en" and tier == "card":
+        print("Nothing to wire: /api/destinations finds card-<slug>.mp3 on disk "
+              "and offers the button itself.")
+    elif made and lang == "en":
         print("New slugs need an \"audio\": \"/media/audio/guide-<slug>.mp3\" line in "
               "destinations.json so the book and the planner play them.")
     elif made:

@@ -1,0 +1,44 @@
+{
+ "guide-bainbridge-island-ferry.mp3": {
+  "adopted": true,
+  "chars": 2641,
+  "sig": "6df829a70542",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 526
+ },
+ "guide-lincoln-memorial.mp3": {
+  "adopted": true,
+  "chars": 2727,
+  "sig": "fa66e20eccb1",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 515
+ },
+ "guide-pike-place-market.mp3": {
+  "adopted": true,
+  "chars": 2888,
+  "sig": "8794e9530db4",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 547
+ },
+ "guide-space-needle.mp3": {
+  "adopted": true,
+  "chars": 2747,
+  "sig": "5ceb3799ff9b",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 531
+ },
+ "guide-staten-island-ferry.mp3": {
+  "adopted": true,
+  "chars": 2735,
+  "sig": "6a76f4fa62fd",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 527
+ },
+ "guide-the-met-museum.mp3": {
+  "adopted": true,
+  "chars": 2803,
+  "sig": "76d225b75ea1",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 531
+ }
+}
