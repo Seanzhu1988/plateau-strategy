@@ -648,7 +648,7 @@
                   + 'Add “' + esc(label) + '” to the book</button><div id="sugres"></div>'
                 // nothing at all: say so plainly and offer one obvious button
                 : '<div class="sugmiss"><span class="mline">'
-                  + T('Not in the book yet') + ' — <b>' + esc(label) + '</b></span>'
+                  + T('Not in the book yet') + ': <b>' + esc(label) + '</b></span>'
                   + '<button class="createbtn" onclick="suggestSearch()">＋ '
                   + T('Create this destination') + '</button></div><div id="sugres"></div>';
         }
