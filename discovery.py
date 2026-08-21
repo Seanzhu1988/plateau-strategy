@@ -391,6 +391,11 @@ def get_state():
     return {"ok": True, "enabled": ENABLED, "every_h": EVERY_H,
             "last_run": s["last_run"], "running": _RUNNING[0],
             "proposals": s["proposals"], "runs": s["runs"][-10:],
+            "voice": {"queued": len(s.get("voice_queue") or []),
+                      "sample": (s.get("voice_queue") or [])[:6],
+                      "recorded": len(s.get("voiced") or []),
+                      "key_present": bool(os.environ.get("ELEVENLABS_API_KEY", "").strip()),
+                      "last": s.get("last_voice", 0)},
             "keyed_off": [n for n in ("NPS_API_KEY",) if not os.environ.get(n)]}
 
 
@@ -412,6 +417,105 @@ def decide(pid, action):
     return hit
 
 
+def record_search_miss(q, city, outcome):
+    """A book search that found nothing IS discovery data [SEAN]: the crowd
+    telling us, in its own words, what the book is missing. Stored as a lead
+    for the owner's queue; the auto-create flow usually fills the gap on the
+    spot, and this remembers it either way."""
+    q = re.sub(r"<[^>]*>", "", (q or "")).strip()[:80]
+    if len(q) < 3:
+        return False
+    with _LOCK:
+        s = _load()
+        k = "search#" + _slug(q)
+        if k in s["seen"]:
+            return True
+        s["seen"][k] = int(time.time())
+        s["proposals"].append({
+            "id": k, "kind": "lead", "src": "book-search", "name": q,
+            "city": (city or "other")[:24], "cat": "views",
+            "note": "searched in the book · %s" % (outcome or "miss")[:40],
+            "url": "https://www.google.com/maps/search/" + urllib.parse.quote(q),
+            "found": int(time.time()),
+        })
+        _save(s)
+    return True
+
+
+# ---------------- the hourly refine: new destinations get their voice ----
+# [SEAN "the hourly refine would do such a refining of adding the guiding
+# voices into the destination"] Every hour, book entries without a recording
+# queue up; with an ElevenLabs key in the environment each pass records a
+# couple of them in Jason's voice and the Listen button appears on its own.
+# Without the key the queue still builds, visible on /discovery, so the
+# moment a key exists the site starts speaking by itself.
+VOICE_PER_PASS = int(os.environ.get("DISCOVERY_VOICE_PER_PASS", "2"))
+VOICE_MAX_CHARS = 700
+
+_book_list = None      # callback: () -> [{name, city, slug, desc, tip}]
+_book_set_audio = None  # callback: (city, name, url) -> bool
+
+
+def set_book_bridge(list_unvoiced, set_audio):
+    global _book_list, _book_set_audio
+    _book_list, _book_set_audio = list_unvoiced, set_audio
+
+
+def _narration(e):
+    bits = [e.get("name", "").strip().rstrip(".") + "."]
+    for f in ("desc", "tip"):
+        t = (e.get(f) or "").strip()
+        if t:
+            if not t.endswith((".", "!", "?")):
+                t += "."
+            bits.append(t)
+    return " ".join(bits)[:VOICE_MAX_CHARS]
+
+
+def voice_refine():
+    """One refine pass. Returns an honest summary either way."""
+    if not _book_list:
+        return {"ok": False, "error": "no book bridge"}
+    queue = []
+    for e in _book_list():
+        text = _narration(e)
+        if len(text) >= 60 and e.get("slug"):
+            queue.append((e, text))
+    key = os.environ.get("ELEVENLABS_API_KEY", "").strip()
+    with _LOCK:
+        s = _load()
+        s["voice_queue"] = [e["name"] for e, _ in queue][:40]
+        s["last_voice"] = int(time.time())
+        _save(s)
+    if not key:
+        return {"ok": True, "queued": len(queue), "recorded": 0,
+                "note": "no ELEVENLABS_API_KEY; queue waits"}
+    made = []
+    try:
+        from met_voices import record, JASON
+    except Exception as ex:
+        return {"ok": False, "error": "recorder unavailable: %s" % ex}
+    outdir = os.path.join(os.environ.get("DATA_DIR", BASE_DIR), "media", "audio")
+    os.makedirs(outdir, exist_ok=True)
+    voice = os.environ.get("GUIDE_VOICE_ID", "").strip() or JASON
+    for e, text in queue[:VOICE_PER_PASS]:
+        path = os.path.join(outdir, "guide-%s.mp3" % e["slug"])
+        try:
+            record(e["slug"], voice, text, path)
+        except Exception:
+            continue          # quota or transient: the queue holds it
+        url = "/media/audio/guide-%s.mp3" % e["slug"]
+        if _book_set_audio and _book_set_audio(e.get("city"), e.get("name"), url):
+            made.append(e["name"])
+        time.sleep(2)
+    with _LOCK:
+        s = _load()
+        s["voiced"] = (s.get("voiced") or []) + made
+        s["voiced"] = s["voiced"][-200:]
+        _save(s)
+    return {"ok": True, "queued": len(queue), "recorded": len(made), "made": made}
+
+
 def start_thread():
     if not ENABLED:
         return
@@ -420,9 +524,10 @@ def start_thread():
         while True:
             try:
                 s = _load()
-                due = (time.time() - s.get("last_run", 0)) >= EVERY_H * 3600
-                if due:
+                if (time.time() - s.get("last_run", 0)) >= EVERY_H * 3600:
                     run_discovery()
+                if (time.time() - s.get("last_voice", 0)) >= 3600:
+                    voice_refine()
             except Exception:
                 pass
             time.sleep(600)

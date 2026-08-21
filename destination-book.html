@@ -533,37 +533,83 @@
     }
 
     // ---------- suggest & add: the book remembers what visitors teach it ----------
+    // [SEAN] A search that misses is not a dead end, it is the book learning
+    // what it lacks: after a short pause the site searches the map ITSELF,
+    // creates the best match on the spot, and reports the miss to discovery
+    // so the demand is collected either way. The button stays for the
+    // impatient and for adding on top of partial matches.
+    let autoTimer = null, lastAutoQ = '';
     function renderSuggest(q, shown){
         const box = $('suggest');
         if (!box) return;
-        if (!q || q.length < 3) { box.innerHTML = ''; return; }
+        if (!q || q.length < 3) { box.innerHTML = ''; clearTimeout(autoTimer); return; }
         if (!box.querySelector('.sugbtn') || box.dataset.q !== q) {
             box.dataset.q = q;
             box.innerHTML = '<button class="sugbtn" onclick="suggestSearch()">🌱 ' +
                 (shown ? 'Missing something? ' : 'Not in the book yet, ') +
                 'Suggest &amp; add “' + esc(q) + '”</button><div id="sugres"></div>';
         }
+        clearTimeout(autoTimer);
+        if (!shown && q.length >= 4 && q !== lastAutoQ) {
+            autoTimer = setTimeout(() => {
+                lastAutoQ = q;
+                const r = document.getElementById('sugres');
+                if (r) r.innerHTML = '<div class="sugmuted">Not in the book yet — creating it for you…</div>';
+                suggestSearch(true);
+            }, 900);
+        }
     }
-    async function suggestSearch(){
+    function missBeacon(q, outcome){
+        try {
+            fetch('/api/discovery/search-miss', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ q: q, city: f.city !== 'all' ? f.city : '', outcome: outcome })
+            });
+        } catch (e) {}
+    }
+    async function suggestSearch(auto){
         const q = $('q').value.trim();
         if (!q) return;
         const r = document.getElementById('sugres');
-        r.innerHTML = '<div class="sugmuted">Searching the map…</div>';
+        if (!auto) r.innerHTML = '<div class="sugmuted">Searching the map…</div>';
         try {
             const res = await fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=' + encodeURIComponent(q));
             const j = await res.json();
-            if (!j.length) { r.innerHTML = '<div class="sugmuted">No matches, try adding the city name.</div>'; return; }
-            r.innerHTML = '';
-            j.forEach(m => {
+            if (!j.length) {
+                missBeacon(q, 'nothing on the map either');
+                r.innerHTML = '<div class="sugmuted">No matches, try adding the city name.</div>';
+                return;
+            }
+            // Auto-create only what is CLEARLY a public place. The first
+            // live test typed "Flatiron Building" and the map's top match
+            // was an apartment tower in Miami by the same name; the privacy
+            // gate refused it, correctly. So the site picks the best PUBLIC
+            // candidate by the map's own class and importance, and when
+            // nothing looks clearly public it asks a human finger instead.
+            const PUB = ['tourism','historic','leisure','amenity','natural',
+                         'man_made','railway','aeroway','waterway','shop',
+                         'office','bridge','boundary'];
+            const pubs = j.filter(m => PUB.indexOf(m.class) >= 0)
+                          .sort((a, b) => (b.importance || 0) - (a.importance || 0));
+            const pick = auto ? pubs[0] : null;
+            missBeacon(q, pick ? 'auto-created from search'
+                                : (auto ? 'no clearly public match, offered candidates'
+                                        : 'candidates shown'));
+            const rest = pick ? j.filter(m => m !== pick) : j;
+            if (pick) addCommunity(pick, true);
+            r.innerHTML = auto && !pick
+                ? '<div class="sugmuted">The map\u2019s matches don\u2019t look clearly public \u2014 tap the right one if it is.</div>'
+                : '';
+            rest.forEach(m => {
                 const d = document.createElement('div');
                 d.className = 'sugitem';
                 d.textContent = m.display_name;
                 d.onclick = () => addCommunity(m);
                 r.appendChild(d);
             });
-        } catch (e) { r.innerHTML = '<div class="sugmuted">Map search unavailable right now.</div>'; }
+        } catch (e) { if (r) r.innerHTML = '<div class="sugmuted">Map search unavailable right now.</div>'; }
     }
-    async function addCommunity(m){
+    async function addCommunity(m, auto){
         const name = m.display_name.split(',')[0].slice(0, 60);
         const city = f.city !== 'all' ? f.city : 'other';
         let resp = null;
@@ -581,7 +627,8 @@
             render();
             $('count').textContent += resp.already_known
                 ? ' · “' + name + '” was already in the book'
-                : ' · 🌱 “' + name + '” added, the book will remember it';
+                : (auto ? ' · 🌱 “' + name + '” created from your search — the book will remember it'
+                        : ' · 🌱 “' + name + '” added, the book will remember it');
         } else {
             $('count').textContent = (resp && resp.error) || 'Could not add, try again.';
         }

@@ -1617,6 +1617,16 @@ def api_discovery_run():
     return jsonify({"ok": True, "started": True})
 
 
+@app.route("/api/discovery/search-miss", methods=["POST"])
+def api_discovery_search_miss():
+    # Public on purpose: a miss in the book's search IS the discovery data
+    # Sean asked to collect. Sanitised and deduped inside discovery.
+    data = request.get_json(force=True, silent=True) or {}
+    ok = discovery_mod.record_search_miss(data.get("q"), data.get("city"),
+                                          data.get("outcome"))
+    return jsonify({"ok": bool(ok)})
+
+
 @app.route("/api/discovery/act", methods=["POST"])
 @owner_required
 def api_discovery_act():
@@ -2357,7 +2367,12 @@ def paper_css():
 @app.route("/media/<path:filename>")
 def media_file(filename):
     from flask import send_from_directory
-    return send_from_directory(os.path.join(BASE_DIR, "media"), filename)
+    repo = os.path.join(BASE_DIR, "media")
+    if os.path.exists(os.path.join(repo, filename)):
+        return send_from_directory(repo, filename)
+    # Runtime-made media (the hourly voice refine) lives on the persistent
+    # disk, because the repo copy is replaced on every deploy.
+    return send_from_directory(os.path.join(DATA_DIR, "media"), filename)
 
 
 @app.route("/book")
@@ -11448,7 +11463,40 @@ except Exception:
 
 # The discovery routine lives at import scope on purpose: production is
 # gunicorn (one worker), which never executes the __main__ block below.
+def _book_unvoiced():
+    """Entries the hourly voice refine may speak: public, no recording yet,
+    with enough written about them that Jason has something true to say."""
+    try:
+        with _LOCK:
+            d = _book_raw()
+        out = []
+        for e in d.get("entries", []):
+            if e.get("audio") or e.get("withheld"):
+                continue
+            out.append({"name": e.get("name"), "city": e.get("city"),
+                        "slug": e.get("slug"), "desc": e.get("desc"),
+                        "tip": e.get("tip")})
+        return out
+    except Exception:
+        return []
+
+
+def _book_set_audio(city, name, url):
+    try:
+        with _LOCK:
+            d = _book_raw()
+            for e in d.get("entries", []):
+                if e.get("city") == city and e.get("name") == name:
+                    e["audio"] = url
+                    _save(_data_path("destinations.json"), d)
+                    return True
+    except Exception:
+        pass
+    return False
+
+
 try:
+    discovery_mod.set_book_bridge(_book_unvoiced, _book_set_audio)
     discovery_mod.start_thread()
 except Exception:
     pass

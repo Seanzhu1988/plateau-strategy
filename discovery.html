@@ -86,6 +86,9 @@
       '<span><b>' + st.proposals.length + '</b> waiting</span>' +
       (st.running ? '<span><b>sweeping now…</b></span>'
                   : '<button id="runNow">Run a sweep now</button>') +
+      (st.voice ? '<span>🎙 <b>' + st.voice.queued + '</b> awaiting a voice · <b>' +
+          st.voice.recorded + '</b> voiced' +
+          (st.voice.key_present ? '' : ' · needs ELEVENLABS_API_KEY') + '</span>' : '') +
       (st.keyed_off && st.keyed_off.length
         ? '<span class="note">more sources unlock with free keys: ' +
           st.keyed_off.join(', ') + '</span>' : '');
