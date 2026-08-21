@@ -89,6 +89,11 @@
         .sugbtn { margin: 0.5rem 0 0 0; background: var(--psx-wash-good,#e1f8ec); border: 1px solid var(--psx-wash-good-on,#cef2df); color: #047857;
             border-radius: 9px; padding: 0.55rem 0.9rem; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
         .sugbtn:hover { background: #d1fae5; }
+        .livecount { font-size: .88rem; color: #6b655b; margin: .15rem 0 .2rem;
+            display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; }
+        .livecount .dot { width: 7px; height: 7px; border-radius: 50%;
+            background: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,.16); }
+        .livecount b { color: #14110c; }
         /* A search that finds nothing gets a real button, not a hint. [SEAN:
            "i searched mount rushmore... can you add bottom for add this
            destination"] The whole row reads as an offer: big label, the
@@ -218,6 +223,12 @@
             <div id="suggest"></div>
         </div>
         <div class="count" id="count"></div>
+        <!-- Who else is here. Real presence from /api/online (anonymous, five
+             minute window, nothing written down), never a manufactured number:
+             plenty of sites invent "247 people viewing" and a traveler can
+             smell it. When nobody else is on, it says so, and points at what
+             IS growing: the book itself. [SEAN "how many travelers online"] -->
+        <div class="livecount" id="livecount" hidden></div>
         <div class="grid" id="grid"></div>
 
         <!-- Asking "what do you wish was here?" made sense; asking it before
@@ -545,6 +556,53 @@
             + (f.minStars ? ' · showing ' + '★'.repeat(f.minStars) + ' & up' : '');
         renderSuggest(q, shown);
     }
+
+    // ---------- who else is here, honestly ----------
+    // Three true things, in falling order of interest: other travelers on the
+    // page right now, how many opened the book this week, and how fast the
+    // book itself is growing. If none of those is worth saying, the line
+    // hides rather than pad itself out.
+    (function liveCount(){
+        var weekPeople = 0;
+        function addedThisWeek(){
+            var wk = Date.now() - 7 * 86400000, n = 0;
+            (DATA.entries || []).forEach(function (e) {
+                var t = Date.parse(e.added_at || '');
+                if (t && t > wk) n += 1;
+            });
+            return n;
+        }
+        function paint(online){
+            var el = $('livecount');
+            if (!el) return;
+            var bits = [];
+            if (online > 1) {
+                bits.push('<span class="dot"></span><span>' +
+                    T('{n} travellers reading the book right now', { n: '<b>' + online + '</b>' }) +
+                    '</span>');
+            } else if (weekPeople > 1) {
+                bits.push('<span>' + T('{n} travellers opened the book this week',
+                    { n: '<b>' + weekPeople + '</b>' }) + '</span>');
+            }
+            var grew = addedThisWeek();
+            if (grew) {
+                bits.push('<span>🌱 ' + T('{n} new places added this week',
+                    { n: '<b>' + grew + '</b>' }) + '</span>');
+            }
+            el.innerHTML = bits.join('<span style="color:#c6bfae">·</span>');
+            el.hidden = !bits.length;
+        }
+        fetch('/api/traffic/summary').then(function (r) { return r.json(); })
+            .then(function (d) {
+                if (d && d.ok) weekPeople = ((d.destination_book || {}).week) || 0;
+            }).catch(function () {}).then(ping);
+        function ping(){
+            fetch('/api/online').then(function (r) { return r.json(); })
+                .then(function (d) { paint((d && d.ok) ? d.online : 0); })
+                .catch(function () { paint(0); });
+        }
+        setInterval(ping, 60000);   // an open tab keeps itself counted
+    })();
 
     // A ?q= in the address prefills the search, so a search result is a
     // shareable link (and a filmable state). Nothing else reads the URL.
