@@ -532,6 +532,13 @@
         renderSuggest(q, shown);
     }
 
+    // A ?q= in the address prefills the search, so a search result is a
+    // shareable link (and a filmable state). Nothing else reads the URL.
+    try {
+        var _q0 = new URLSearchParams(location.search).get('q');
+        if (_q0) { var _el = $('q'); if (_el) { _el.value = _q0; } }
+    } catch (e) {}
+
     // ---------- suggest & add: the book remembers what visitors teach it ----------
     // [SEAN] A search that misses is not a dead end, it is the book learning
     // what it lacks: after a short pause the site searches the map ITSELF,
