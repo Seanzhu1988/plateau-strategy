@@ -38,6 +38,20 @@
   var LANGS = { zh: ['egyptian'] };
   var OPENING_URL = '/media/audio/met-opening.mp3';
 
+  /* The opening is a doorman, not a parrot: it greets each visit once.
+     Sean picked room after room and heard "five thousand years of human
+     making" before every one of them. sessionStorage remembers within the
+     visit (and across reloads); the fallback flag covers browsers that
+     refuse storage. */
+  var introFlag = false;
+  function introHeard() {
+    try { return sessionStorage.getItem('metIntroHeard') === '1'; } catch (e) { return introFlag; }
+  }
+  function markIntro() {
+    introFlag = true;
+    try { sessionStorage.setItem('metIntroHeard', '1'); } catch (e) {}
+  }
+
   function audioFor(key) {
     var lang = (document.documentElement.lang || 'en').slice(0, 2);
     if (lang !== 'en' && LANGS[lang] && LANGS[lang].indexOf(key) >= 0) {
@@ -143,12 +157,16 @@
     if (!playing) return;
     if (at < 0) {                         /* the opening, in Jason's voice */
       at = 0; seg = 0;
-      paint('The Metropolitan Museum of Art', null,
-            'Five thousand years of art, in a building of eleven and a half acres.');
-      speak('The Metropolitan Museum of Art. Five thousand years of human ' +
-            'making, in a building that covers eleven and a half acres. ' +
-            'Here is the walk you picked.', OPENING_URL, step);
-      return;
+      if (!introHeard()) {
+        markIntro();
+        paint('The Metropolitan Museum of Art', null,
+              'Five thousand years of art, in a building of eleven and a half acres.');
+        speak('The Metropolitan Museum of Art. Five thousand years of human ' +
+              'making, in a building that covers eleven and a half acres. ' +
+              'Here is the walk you picked.', OPENING_URL, step);
+        return;
+      }
+      /* already greeted this visit: straight to the first room */
     }
     if (at >= seq.length) { stop(); return; }
     var key = seq[at];
