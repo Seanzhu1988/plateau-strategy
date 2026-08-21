@@ -11418,6 +11418,24 @@ def _reservation_reminder_loop():
         time.sleep(interval)
 
 
+_REMINDER_THREAD = None
+
+
+def _start_reminder_thread():
+    """Start the dispatch reminder loop, at most once per process.
+    Honors DISPATCH_REMINDERS=false, which every test in this directory
+    sets before importing app so no background loop touches its board."""
+    global _REMINDER_THREAD
+    if os.environ.get("DISPATCH_REMINDERS", "true").lower() != "true":
+        return None
+    if _REMINDER_THREAD is not None and _REMINDER_THREAD.is_alive():
+        return _REMINDER_THREAD
+    _REMINDER_THREAD = threading.Thread(target=_reservation_reminder_loop,
+                                        daemon=True, name="dispatch-reminders")
+    _REMINDER_THREAD.start()
+    return _REMINDER_THREAD
+
+
 # Put the shipped-in articles on the board once, at boot, on a real disk only.
 # Wrapped so a seeding failure can never stop the app from starting.
 try:
@@ -11436,12 +11454,20 @@ except Exception:
     pass
 
 
+# Same constraint, learned the hard way: the dispatch reminder thread used to
+# start only in the __main__ block, so under gunicorn it never existed and no
+# uncovered-ride reminder ever fired on the real site. It starts here now.
+try:
+    _start_reminder_thread()
+except Exception:
+    pass
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
     print("Plateau Strategy Solution Lab booking app -> http://localhost:%d" % port)
-    # Background reminder: nudge dispatch about rides no driver has taken.
-    if os.environ.get("DISPATCH_REMINDERS", "true").lower() == "true":
-        threading.Thread(target=_reservation_reminder_loop, daemon=True).start()
+    # The dispatch reminder thread starts at import scope above, same as
+    # discovery, so production (gunicorn) gets it too, not only this block.
     # host="::" dual-stacks on macOS so both localhost (IPv6 ::1) and 127.0.0.1
     # (IPv4) work. threaded=True so concurrent polling requests never block.
     app.run(host="::", port=port, debug=False, threaded=True)
