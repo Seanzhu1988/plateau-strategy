@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>The Scout · Plateau Strategy</title>
+<link rel="stylesheet" href="/modern.css">
+<style>
+  body { background: #faf8f4; color: #14110c; font-family: Inter, system-ui, sans-serif; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 2rem 1.2rem 5rem; }
+  .eyebrow { font: 700 12px Inter, sans-serif; letter-spacing: .18em; color: #1f3a5f; }
+  h1 { font-family: Georgia, serif; font-weight: 400; font-size: 2rem; margin: .3rem 0 .4rem; }
+  .sub { color: #6b6459; line-height: 1.55; max-width: 620px; }
+  .statline { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; align-items: baseline;
+              border-top: 1px solid #eee9dd; border-bottom: 1px solid #eee9dd;
+              padding: .8rem 0; margin: 1.4rem 0; font-size: .92rem; color: #6b6459; }
+  .statline b { color: #14110c; }
+  button { font: 700 .9rem Inter, sans-serif; background: none; border: 0; cursor: pointer;
+           color: #1f3a5f; text-decoration: underline; text-underline-offset: 3px;
+           padding: .45rem 0; min-height: 40px; }
+  .row { display: flex; flex-wrap: wrap; gap: .3rem .9rem; align-items: baseline;
+         padding: .75rem 0; border-bottom: 1px solid #eee9dd; }
+  .row .nm { font-weight: 700; }
+  .row .nm a { color: inherit; text-decoration-color: #c6bfae; }
+  .chip { font: 700 10px Inter, sans-serif; letter-spacing: .1em; color: #1f3a5f;
+          border: 1px solid #d8d2c4; border-radius: 10px; padding: .15rem .5rem;
+          text-transform: uppercase; }
+  .note { color: #6b6459; font-size: .88rem; flex-basis: 100%; }
+  .row .did { color: #1b5e43; font-weight: 700; }
+  select { font: inherit; font-size: .85rem; border: 1px solid #d8d2c4; border-radius: 8px;
+           background: #fff; padding: .2rem .3rem; }
+  .locked { border: 1px solid #eee9dd; border-radius: 12px; padding: 1.2rem;
+            margin-top: 1.6rem; color: #6b6459; }
+  .locked a { color: #1f3a5f; }
+  h2 { font-size: 1.05rem; margin: 1.8rem 0 .2rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="eyebrow">PROJECT · DISCOVERY</span>
+  <h1>The Scout</h1>
+  <p class="sub">New places, found on a routine from public sources that were each
+  probed and licensed before they were trusted: newly mapped OSM points, Wikipedia's
+  geography, Wikivoyage listings, the cities' own open data, and leads worth reading.
+  Nothing you see here is public. A place enters the Destination Book only when you
+  add it, through the same door every community place uses.</p>
+
+  <div class="statline" id="statline">Loading…</div>
+  <div id="queue"></div>
+  <div class="locked" id="locked" hidden>
+    Owner sign-in required — this queue is yours alone.
+    <a href="/setup">Sign in at /setup</a>, then come back.
+  </div>
+</div>
+<script>
+(function () {
+  'use strict';
+  var CATS = ['history', 'culture', 'nature', 'food', 'views'];
+
+  function fmtAgo(ts) {
+    if (!ts) return 'never';
+    var h = (Date.now() / 1000 - ts) / 3600;
+    return h < 1 ? Math.round(h * 60) + ' min ago'
+         : h < 48 ? Math.round(h) + ' h ago' : Math.round(h / 24) + ' d ago';
+  }
+
+  function load() {
+    fetch('/api/discovery').then(function (r) {
+      if (r.status === 401) { throw 'auth'; }
+      return r.json();
+    }).then(render).catch(function (e) {
+      if (e === 'auth') {
+        document.getElementById('locked').hidden = false;
+        document.getElementById('statline').textContent = '';
+        document.getElementById('queue').innerHTML = '';
+      }
+    });
+  }
+
+  function render(st) {
+    var sl = document.getElementById('statline');
+    sl.innerHTML =
+      '<span>last sweep <b>' + fmtAgo(st.last_run) + '</b></span>' +
+      '<span>every <b>' + st.every_h + ' h</b></span>' +
+      '<span><b>' + st.proposals.length + '</b> waiting</span>' +
+      (st.running ? '<span><b>sweeping now…</b></span>'
+                  : '<button id="runNow">Run a sweep now</button>') +
+      (st.keyed_off && st.keyed_off.length
+        ? '<span class="note">more sources unlock with free keys: ' +
+          st.keyed_off.join(', ') + '</span>' : '');
+    var run = document.getElementById('runNow');
+    if (run) run.addEventListener('click', function () {
+      fetch('/api/discovery/run', { method: 'POST' }).then(function () {
+        sl.innerHTML = '<span><b>sweeping…</b> (about a minute; this page refreshes itself)</span>';
+        setTimeout(load, 25000); setTimeout(load, 70000);
+      });
+    });
+
+    var q = document.getElementById('queue'), html = [];
+    var places = st.proposals.filter(function (p) { return p.kind === 'place'; });
+    var leads = st.proposals.filter(function (p) { return p.kind !== 'place'; });
+    if (places.length) html.push('<h2>Places, ready to add</h2>');
+    places.forEach(function (p) { html.push(rowPlace(p)); });
+    if (leads.length) html.push('<h2>Leads, worth a read</h2>');
+    leads.forEach(function (p) { html.push(rowLead(p)); });
+    if (!st.proposals.length) html.push('<p class="sub">Queue is empty. The next sweep refills it.</p>');
+    q.innerHTML = html.join('');
+
+    q.querySelectorAll('[data-add]').forEach(function (b) {
+      b.addEventListener('click', function () { addPlace(b.getAttribute('data-add'), st, b); });
+    });
+    q.querySelectorAll('[data-dismiss]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        act(b.getAttribute('data-dismiss'), 'dismiss').then(function () {
+          b.closest('.row').remove();
+        });
+      });
+    });
+  }
+
+  function esc(x) {
+    return String(x == null ? '' : x).replace(/[<>&"]/g, function (c) {
+      return { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c];
+    });
+  }
+
+  function rowPlace(p) {
+    return '<div class="row" data-row="' + esc(p.id) + '">' +
+      '<span class="nm">' + (p.url ? '<a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc(p.name) + '</a>' : esc(p.name)) + '</span>' +
+      '<span class="chip">' + esc(p.src) + '</span>' +
+      '<span class="chip">' + esc(p.city) + '</span>' +
+      '<select data-cat>' + CATS.map(function (c) {
+        return '<option' + (c === p.cat ? ' selected' : '') + '>' + c + '</option>';
+      }).join('') + '</select>' +
+      '<button data-add="' + esc(p.id) + '">Add to the book</button>' +
+      '<button data-dismiss="' + esc(p.id) + '">Dismiss</button>' +
+      '<span class="note">' + esc(p.note || '') + ' · ' +
+        (p.lat != null ? p.lat.toFixed(4) + ', ' + p.lon.toFixed(4) : '') + '</span>' +
+      '</div>';
+  }
+
+  function rowLead(p) {
+    return '<div class="row" data-row="' + esc(p.id) + '">' +
+      '<span class="nm"><a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc(p.name) + '</a></span>' +
+      '<span class="chip">' + esc(p.src) + '</span>' +
+      '<button data-dismiss="' + esc(p.id) + '">Dismiss</button>' +
+      '<span class="note">' + esc(p.note || '') + ' · a lead: read it, and if it names a real place, add that place from the Trip Planner.</span>' +
+      '</div>';
+  }
+
+  function act(id, action) {
+    return fetch('/api/discovery/act', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: id, action: action })
+    }).then(function (r) { return r.json(); });
+  }
+
+  function addPlace(id, st, btn) {
+    var p = null;
+    st.proposals.forEach(function (x) { if (x.id === id) p = x; });
+    if (!p) return;
+    var row = btn.closest('.row');
+    var cat = (row.querySelector('[data-cat]') || {}).value || p.cat;
+    btn.disabled = true; btn.textContent = 'Adding…';
+    /* through the same audited door every community place enters by */
+    fetch('/api/destinations/add', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: p.name, lat: p.lat, lon: p.lon,
+                             city: p.city, cat: cat })
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      return act(id, 'keep').then(function () {
+        row.innerHTML = '<span class="did">✓ ' + esc(p.name) + '</span> <span class="note">' +
+          (j.ok ? 'in the book' : esc(j.error || 'the book declined it')) + '</span>';
+      });
+    }).catch(function () { btn.disabled = false; btn.textContent = 'Add to the book'; });
+  }
+
+  load();
+})();
+</script>
+</body>
+</html>

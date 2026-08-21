@@ -25,6 +25,8 @@ import secrets
 import threading
 import subprocess
 import datetime
+
+import discovery as discovery_mod
 import urllib.parse
 import shutil
 import html
@@ -1589,6 +1591,45 @@ def walks_page():
     return send_file(os.path.join(BASE_DIR, "walks.html"))
 
 
+# ---------------- discovery: the site's own scout ----------------
+# New places, found on a routine from lawful public sources, queued for the
+# owner. Nothing enters the public book without a person: approval walks
+# through /api/destinations/add, the same audited door as every community
+# place. discovery.py documents each source and its live probe.
+
+@app.route("/discovery")
+def discovery_page():
+    return send_file(os.path.join(BASE_DIR, "discovery.html"))
+
+
+@app.route("/api/discovery")
+@owner_required
+def api_discovery():
+    return jsonify(discovery_mod.get_state())
+
+
+@app.route("/api/discovery/run", methods=["POST"])
+@owner_required
+def api_discovery_run():
+    # A full sweep takes a minute; the request should not. The state
+    # endpoint's `running` flag is the progress bar.
+    threading.Thread(target=discovery_mod.run_discovery, daemon=True).start()
+    return jsonify({"ok": True, "started": True})
+
+
+@app.route("/api/discovery/act", methods=["POST"])
+@owner_required
+def api_discovery_act():
+    data = request.get_json(force=True, silent=True) or {}
+    action = data.get("action")
+    if action not in ("keep", "dismiss"):
+        return jsonify({"ok": False, "error": "action must be keep or dismiss"}), 400
+    hit = discovery_mod.decide((data.get("id") or "")[:200], action)
+    if not hit:
+        return jsonify({"ok": False, "error": "no such proposal"}), 404
+    return jsonify({"ok": True, "proposal": hit})
+
+
 # The cities of the corridor store, grouped by key prefix. A new city is a
 # new row here plus its corridors in footprints.py, nothing else.
 _WALK_CITIES = [
@@ -2560,7 +2601,7 @@ PUBLIC_PAGES = [
     ("/deflator", "0.5", "monthly"),
     ("/board", "0.4", "monthly"),
 ]
-OWNER_ONLY_PATHS = ["/dispatch", "/setup", "/archive", "/api/", "/deflator"]
+OWNER_ONLY_PATHS = ["/dispatch", "/setup", "/archive", "/api/", "/deflator", "/discovery"]
 SITE_ORIGIN = os.environ.get("SITE_ORIGIN", "https://plateaustrategy.io").rstrip("/")
 # Referrers from our own pages are not a traffic source, they are navigation.
 SITE_HOSTS = ("plateaustrategy.io", "plateau-strategy.onrender.com")
@@ -11383,6 +11424,14 @@ try:
     _seed_articles_once()
     _seed_blueprint_once()
     _seed_book_fields_once()
+except Exception:
+    pass
+
+
+# The discovery routine lives at import scope on purpose: production is
+# gunicorn (one worker), which never executes the __main__ block below.
+try:
+    discovery_mod.start_thread()
 except Exception:
     pass
 
