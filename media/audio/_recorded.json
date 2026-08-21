@@ -1,4 +1,256 @@
 {
+ "card-ben-s-chili-bowl.mp3": {
+  "chars": 477,
+  "sig": "ddb128addddf",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 87
+ },
+ "card-boston-common-and-public-garden.mp3": {
+  "chars": 491,
+  "sig": "bf7ac121a057",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 90
+ },
+ "card-carnegie-hall.mp3": {
+  "chars": 498,
+  "sig": "42bae5153298",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 90
+ },
+ "card-chelsea-market.mp3": {
+  "chars": 512,
+  "sig": "2f9ea8af079b",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 87
+ },
+ "card-children-s-museum-of-the-arts.mp3": {
+  "chars": 529,
+  "sig": "c082539f291c",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 96
+ },
+ "card-chrysler-building.mp3": {
+  "chars": 579,
+  "sig": "0f2056605796",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 105
+ },
+ "card-faneuil-hall-marketplace.mp3": {
+  "chars": 545,
+  "sig": "bb913b775c46",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 94
+ },
+ "card-fenway-park.mp3": {
+  "chars": 531,
+  "sig": "9ce51149a5eb",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 98
+ },
+ "card-founding-farmers.mp3": {
+  "chars": 464,
+  "sig": "0433b5a30e64",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 90
+ },
+ "card-freedom-trail-start.mp3": {
+  "chars": 494,
+  "sig": "7b975a81ed21",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 93
+ },
+ "card-frick-collection.mp3": {
+  "chars": 523,
+  "sig": "4c59e6134b5c",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 94
+ },
+ "card-georgetown-waterfront.mp3": {
+  "chars": 484,
+  "sig": "9544479b6e79",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 97
+ },
+ "card-grand-central-oyster-bar.mp3": {
+  "chars": 471,
+  "sig": "98e57c3f1615",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 83
+ },
+ "card-greenacre-park.mp3": {
+  "chars": 484,
+  "sig": "7bc79c7b75b3",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 91
+ },
+ "card-harvard-yard-cambridge.mp3": {
+  "chars": 491,
+  "sig": "48bf11c2f052",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 91
+ },
+ "card-joe-s-pizza.mp3": {
+  "chars": 477,
+  "sig": "5771760a05b5",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 90
+ },
+ "card-katz-s-delicatessen.mp3": {
+  "chars": 467,
+  "sig": "b6b09e48d921",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 93
+ },
+ "card-leslie-lohman-museum-of-art.mp3": {
+  "chars": 487,
+  "sig": "7c420765a4fe",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 92
+ },
+ "card-levain-bakery.mp3": {
+  "chars": 467,
+  "sig": "963e2bed1ffd",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 89
+ },
+ "card-mount-rushmore-national-memorial.mp3": {
+  "chars": 562,
+  "sig": "ebd770002953",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 98
+ },
+ "card-museum-of-american-history.mp3": {
+  "chars": 525,
+  "sig": "ca5888c8cbc4",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 99
+ },
+ "card-museum-of-fine-arts.mp3": {
+  "chars": 475,
+  "sig": "b43795d00a60",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 86
+ },
+ "card-museum-of-natural-history-and-planetarium.mp3": {
+  "chars": 518,
+  "sig": "ad42f90b8162",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 94
+ },
+ "card-new-england-aquarium.mp3": {
+  "chars": 484,
+  "sig": "22948f46aadd",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 87
+ },
+ "card-old-ebbitt-grill.mp3": {
+  "chars": 481,
+  "sig": "bf54990ff289",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 94
+ },
+ "card-paley-park.mp3": {
+  "chars": 474,
+  "sig": "2b7bc48270da",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 93
+ },
+ "card-peter-luger-steak-house.mp3": {
+  "chars": 474,
+  "sig": "b4af75be4407",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 92
+ },
+ "card-potomac-water-taxi.mp3": {
+  "chars": 511,
+  "sig": "dd8c9dafe27f",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 94
+ },
+ "card-rose-museum.mp3": {
+  "chars": 504,
+  "sig": "102040e9b7e2",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 87
+ },
+ "card-russian-tea-room.mp3": {
+  "chars": 496,
+  "sig": "0e2d6d61757d",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 89
+ },
+ "card-st-patrick-s-cathedral.mp3": {
+  "chars": 516,
+  "sig": "36a3b8ae5388",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 95
+ },
+ "card-statue-of-liberty-ferry.mp3": {
+  "chars": 534,
+  "sig": "6340c73f8c23",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 98
+ },
+ "card-stone-street.mp3": {
+  "chars": 486,
+  "sig": "4e11ba022b00",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 91
+ },
+ "card-the-morgan-library.mp3": {
+  "chars": 523,
+  "sig": "ab6e3eff1fa9",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 92
+ },
+ "card-the-renee-and-chaim-gross-foundation.mp3": {
+  "chars": 482,
+  "sig": "4cd02cbcdb39",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 92
+ },
+ "card-the-wharf.mp3": {
+  "chars": 508,
+  "sig": "f68ef238f915",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 91
+ },
+ "card-union-market.mp3": {
+  "chars": 471,
+  "sig": "f4f229ac2f27",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 82
+ },
+ "card-united-nations-headquarters.mp3": {
+  "chars": 480,
+  "sig": "47ccabfb03f6",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 89
+ },
+ "card-us-capitol-visitor-center.mp3": {
+  "chars": 513,
+  "sig": "fdac83cf8f87",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 91
+ },
+ "card-uss-constitution.mp3": {
+  "chars": 521,
+  "sig": "9e89deebeadb",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 91
+ },
+ "card-waldorf-astoria-hotel.mp3": {
+  "chars": 531,
+  "sig": "347983c19098",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 94
+ },
+ "card-white-house-lafayette-sq.mp3": {
+  "chars": 508,
+  "sig": "369eb0f00711",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 95
+ },
  "guide-bainbridge-island-ferry.mp3": {
   "adopted": true,
   "chars": 2641,
