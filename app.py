@@ -11726,6 +11726,70 @@ def _book_unvoiced():
         return []
 
 
+def _scout_plant(payload):
+    """Plant one discovered place in the book, through the SAME door a
+    traveller's search uses.
+
+    [SEAN, 2026-08-21: "we want to grow it ourselves too, not just from the
+    traveler... create a routine of destination discovery"] The temptation
+    here is to write straight into destinations.json, which would skip the
+    private-residence refusal, the dedupe, the chapter heal and the Wikipedia
+    description. Dispatching the real route instead means the scout can never
+    have privileges a visitor does not, and there is exactly one place where
+    a place enters the book."""
+    try:
+        with app.test_client() as c:
+            r = c.post("/api/destinations/add", json=payload)
+            return r.get_json() or {}
+    except Exception as e:
+        return {"ok": False, "error": str(e)[:80]}
+
+
+def _book_thin():
+    """Entries the data refine can still improve: no description worth the
+    name, or none of the map's dining detail."""
+    try:
+        with _LOCK:
+            d = _book_raw()
+        out = []
+        for e in d.get("entries", []):
+            desc = (e.get("desc") or "").strip()
+            thin_desc = len(desc) < 60 or e.get("desc_from") == "map data"
+            if thin_desc or not e.get("dining"):
+                out.append({"name": e.get("name"), "city": e.get("city"),
+                            "lat": e.get("lat"), "lon": e.get("lon"),
+                            "thin_desc": thin_desc, "no_dining": not e.get("dining")})
+        return out
+    except Exception:
+        return []
+
+
+def _book_enrich(city, name, desc=None, dining=None):
+    """Fill in what a place was missing. Never overwrites a human's words."""
+    try:
+        with _LOCK:
+            d = _book_raw()
+            for e in d.get("entries", []):
+                if e.get("city") != city or e.get("name") != name:
+                    continue
+                changed = False
+                if desc and (e.get("auto_desc") or not (e.get("desc") or "").strip()):
+                    e["desc"] = desc[:400]
+                    e["auto_desc"] = True
+                    e["desc_from"] = "wikipedia"
+                    changed = True
+                if dining and not e.get("dining"):
+                    e["dining"] = dining
+                    changed = True
+                if changed:
+                    e["updated_at"] = datetime.datetime.now().isoformat(timespec="seconds")
+                    _save(_data_path("destinations.json"), d)
+                return changed
+    except Exception:
+        pass
+    return False
+
+
 def _book_set_audio(city, name, url):
     try:
         with _LOCK:
@@ -11741,7 +11805,9 @@ def _book_set_audio(city, name, url):
 
 
 try:
-    discovery_mod.set_book_bridge(_book_unvoiced, _book_set_audio)
+    discovery_mod.set_book_bridge(_book_unvoiced, _book_set_audio,
+                                  plant=_scout_plant, thin=_book_thin,
+                                  enrich=_book_enrich)
     discovery_mod.start_thread()
 except Exception:
     pass

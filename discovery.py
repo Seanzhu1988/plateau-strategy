@@ -391,6 +391,10 @@ def get_state():
     return {"ok": True, "enabled": ENABLED, "every_h": EVERY_H,
             "last_run": s["last_run"], "running": _RUNNING[0],
             "proposals": s["proposals"], "runs": s["runs"][-10:],
+            "planted": len(s.get("planted") or []),
+            "planted_recent": (s.get("planted") or [])[-6:],
+            "refined": len(s.get("refined") or []),
+            "thin_left": s.get("thin_left"),
             "voice": {"queued": len(s.get("voice_queue") or []),
                       "sample": (s.get("voice_queue") or [])[:6],
                       "recorded": len(s.get("voiced") or []),
@@ -454,11 +458,15 @@ VOICE_MAX_CHARS = 700
 
 _book_list = None      # callback: () -> [{name, city, slug, desc, tip}]
 _book_set_audio = None  # callback: (city, name, url) -> bool
+_book_plant = None     # callback: (payload) -> add-route result
+_book_thin = None      # callback: () -> entries that could still be improved
+_book_enrich = None    # callback: (city, name, desc, dining) -> bool
 
 
-def set_book_bridge(list_unvoiced, set_audio):
-    global _book_list, _book_set_audio
+def set_book_bridge(list_unvoiced, set_audio, plant=None, thin=None, enrich=None):
+    global _book_list, _book_set_audio, _book_plant, _book_thin, _book_enrich
     _book_list, _book_set_audio = list_unvoiced, set_audio
+    _book_plant, _book_thin, _book_enrich = plant, thin, enrich
 
 
 def _narration(e):
@@ -516,6 +524,193 @@ def voice_refine():
     return {"ok": True, "queued": len(queue), "recorded": len(made), "made": made}
 
 
+# ---------------- the book grows itself ----------------
+# [SEAN, 2026-08-21: "we want to grow it ourselves too, not just from the
+# traveler... the book of destinations can be grown instead of just waiting
+# for the data"] The scout already finds places; this plants them. Only from
+# sources that name a real, mapped, public place, and always through the
+# site's own add route, so the private-residence refusal, the dedupe and the
+# Wikipedia description all still apply. Leads (a Reddit thread, an Atlas
+# Obscura article) are never planted: a headline is not a place.
+PLANT_SOURCES = ("osm-new", "wikipedia", "wikivoyage", "dc-open-data", "nps")
+PLANT_PER_RUN = int(os.environ.get("DISCOVERY_PLANT_PER_RUN", "8"))
+PLANT_ENABLED = os.environ.get("DISCOVERY_PLANT", "true").strip().lower() != "false"
+
+
+def plant_discoveries():
+    """Move what we have discovered into the book. Returns an honest tally."""
+    if not (_book_plant and PLANT_ENABLED):
+        return {"ok": False, "error": "planting off"}
+    with _LOCK:
+        s = _load()
+        queue = [p for p in s["proposals"]
+                 if p.get("kind") == "place" and p.get("src") in PLANT_SOURCES
+                 and p.get("lat") is not None][:PLANT_PER_RUN]
+    planted, refused, known = [], [], 0
+    for p in queue:
+        res = _book_plant({
+            "name": p.get("name"), "lat": p.get("lat"), "lon": p.get("lon"),
+            "city": p.get("city"), "cat": p.get("cat"),
+            "found_via": "scout:" + (p.get("src") or ""),
+            "osm_class": p.get("osm_class"), "type": p.get("osm_type"),
+            "extratags": p.get("extratags"),
+        })
+        if res.get("ok") and res.get("already_known"):
+            known += 1
+        elif res.get("ok"):
+            planted.append(p.get("name"))
+        else:
+            # a refusal is information, not a failure: it is usually the
+            # private-residence gate doing its job
+            refused.append({"name": p.get("name"),
+                            "why": (res.get("error") or "refused")[:60]})
+        with _LOCK:
+            s = _load()
+            s["proposals"] = [q for q in s["proposals"] if q.get("id") != p.get("id")]
+            s.setdefault("planted", [])
+            if res.get("ok") and not res.get("already_known"):
+                s["planted"].append({"name": p.get("name"), "src": p.get("src"),
+                                     "at": int(time.time())})
+                s["planted"] = s["planted"][-300:]
+            s["last_plant"] = int(time.time())
+            _save(s)
+        time.sleep(0.4)
+    return {"ok": True, "planted": len(planted), "already_known": known,
+            "refused": refused, "names": planted}
+
+
+# ---------------- and the book improves what it already has ----------------
+# [SEAN: "we also want to work on the data too"] A thin entry is a real cost:
+# a row that says "a museum in Boston" teaches a traveller nothing. Each pass
+# takes a few of the thinnest and asks Wikipedia what the place actually is,
+# and the map what it is like to eat there.
+REFINE_PER_PASS = int(os.environ.get("DISCOVERY_REFINE_PER_PASS", "5"))
+REFINE_RETRY_DAYS = int(os.environ.get("DISCOVERY_REFINE_RETRY_DAYS", "30"))
+
+
+def _wiki_desc(name, lat, lon):
+    try:
+        u = ("https://en.wikipedia.org/w/api.php?action=query&list=geosearch"
+             "&gscoord=%f|%f&gsradius=800&gslimit=8&format=json" % (lat, lon))
+        found = json.loads(_get(u)).get("query", {}).get("geosearch", [])
+    except Exception:
+        return None
+    # Match on the REAL title, not a stripped key. Two earlier versions of
+    # this test were wrong in the same direction, and each would have printed
+    # something false on a traveller's card: a substring test matched "2017
+    # Times Square car attack" to Times Square, and a prefix test then matched
+    # "Times Squared 3015" and "Central Park Hospital". Wikipedia's own
+    # qualifiers are always parenthetical, so that is the only extra allowed.
+    def norm(x):
+        return " ".join(str(x or "").lower().replace("'", "'").split())
+    want = norm(name)
+    hit = None
+    for f in found:
+        t = norm(f.get("title"))
+        if t == want or t.startswith(want + " ("):
+            hit = f
+            break
+    if not hit:
+        return None
+    try:
+        u2 = ("https://en.wikipedia.org/api/rest_v1/page/summary/%s"
+              % urllib.parse.quote((hit.get("title") or "").replace(" ", "_")))
+        j = json.loads(_get(u2))
+        txt = (j.get("extract") or "").strip()
+        return txt[:400] or None
+    except Exception:
+        return None
+
+
+def _osm_dining(name, lat, lon):
+    """The map's own tags for this spot, if it knows it."""
+    try:
+        # 90 metres and a generous cap: in a dense block the right building
+        # was being truncated away by a limit of twelve.
+        q = ('[out:json][timeout:25];(node["name"](around:90,%f,%f);'
+             'way["name"](around:90,%f,%f););out tags 60;' % (lat, lon, lat, lon))
+        els = json.loads(_get("https://overpass-api.de/api/interpreter",
+                              data=urllib.parse.urlencode({"data": q}).encode())
+                         ).get("elements", [])
+    except Exception:
+        return None
+    def key(x):
+        return "".join(ch for ch in str(x).lower() if ch.isalnum())
+    want = key(name)
+    for e in els:
+        t = e.get("tags", {})
+        if key(t.get("name")) == want:
+            return t
+    return None
+
+
+def data_refine():
+    """One pass of making existing entries better."""
+    if not (_book_thin and _book_enrich):
+        return {"ok": False, "error": "no book bridge"}
+    # Most entries the pass cannot improve, because neither Wikipedia nor the
+    # map knows anything more about them. Without a memory of what has been
+    # tried, the routine would ask the same fifty questions every hour
+    # forever, and be a bad citizen of two free APIs for nothing.
+    with _LOCK:
+        tried = (_load().get("refine_tried") or {})
+    cutoff = time.time() - REFINE_RETRY_DAYS * 86400
+    thin = [e for e in _book_thin()
+            if e.get("lat") is not None
+            and tried.get("%s|%s" % (e.get("city"), e.get("name")), 0) < cutoff]
+    done = []
+    for e in thin[:REFINE_PER_PASS]:
+        tried["%s|%s" % (e.get("city"), e.get("name"))] = int(time.time())
+        desc = _wiki_desc(e["name"], e["lat"], e["lon"]) if e.get("thin_desc") else None
+        dining = None
+        if e.get("no_dining"):
+            tags = _osm_dining(e["name"], e["lat"], e["lon"])
+            if tags:
+                dining = _dining_from_tags(tags)
+        if desc or dining:
+            if _book_enrich(e["city"], e["name"], desc=desc, dining=dining):
+                done.append(e["name"])
+    with _LOCK:
+        s = _load()
+        if len(tried) > 8000:                 # bound the memory
+            for k in sorted(tried, key=tried.get)[:len(tried) - 8000]:
+                tried.pop(k, None)
+        s["refine_tried"] = tried
+        s["refined"] = (s.get("refined") or []) + done
+        s["refined"] = s["refined"][-300:]
+        s["thin_left"] = max(0, len(thin) - len(done))
+        s["last_refine"] = int(time.time())
+        _save(s)
+    return {"ok": True, "improved": len(done), "names": done,
+            "still_thin": max(0, len(thin) - len(done))}
+
+
+_DINING_FLAGS = {"takeaway": "takeaway", "delivery": "delivery",
+                 "outdoor_seating": "outdoor seating", "reservation": "reservations",
+                 "wheelchair": "step-free", "diet:vegetarian": "vegetarian",
+                 "diet:vegan": "vegan", "diet:kosher": "kosher",
+                 "diet:halal": "halal", "air_conditioning": "air conditioned"}
+
+
+def _dining_from_tags(t):
+    """Same shape the add route builds, so both paths agree."""
+    prof = {}
+    cuisine = (t.get("cuisine") or "").strip()[:60]
+    if cuisine:
+        prof["cuisine"] = cuisine.replace("_", " ").replace(";", ", ")
+    menu = (t.get("website:menu") or t.get("menu") or "").strip()
+    if menu.startswith("http") and len(menu) < 300:
+        prof["menu_url"] = menu
+    hours = (t.get("opening_hours") or "").strip()[:120]
+    if hours:
+        prof["hours_text"] = hours
+    flags = [lbl for tag, lbl in _DINING_FLAGS.items()
+             if (t.get(tag) or "").strip().lower() in ("yes", "only", "designated", "limited")]
+    if flags:
+        prof["flags"] = flags[:6]
+    return prof or None
+
+
 def start_thread():
     if not ENABLED:
         return
@@ -528,6 +723,10 @@ def start_thread():
                     run_discovery()
                 if (time.time() - s.get("last_voice", 0)) >= 3600:
                     voice_refine()
+                if (time.time() - s.get("last_plant", 0)) >= 3600:
+                    plant_discoveries()          # the book grows itself
+                if (time.time() - s.get("last_refine", 0)) >= 3600:
+                    data_refine()                # and improves what it has
             except Exception:
                 pass
             time.sleep(600)

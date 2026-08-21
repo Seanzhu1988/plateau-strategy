@@ -86,6 +86,9 @@
       '<span><b>' + st.proposals.length + '</b> waiting</span>' +
       (st.running ? '<span><b>sweeping now…</b></span>'
                   : '<button id="runNow">Run a sweep now</button>') +
+      '<span>🌱 <b>' + (st.planted || 0) + '</b> planted by the scout</span>' +
+      '<span>✨ <b>' + (st.refined || 0) + '</b> entries improved' +
+        (st.thin_left ? ' · ' + st.thin_left + ' still thin' : '') + '</span>' +
       (st.voice ? '<span>🎙 <b>' + st.voice.queued + '</b> awaiting a voice · <b>' +
           st.voice.recorded + '</b> voiced' +
           (st.voice.key_present ? '' : ' · needs ELEVENLABS_API_KEY') + '</span>' : '') +
@@ -108,6 +111,15 @@
     if (leads.length) html.push('<h2>Leads, worth a read</h2>');
     leads.forEach(function (p) { html.push(rowLead(p)); });
     if (!st.proposals.length) html.push('<p class="sub">Queue is empty. The next sweep refills it.</p>');
+    if (st.planted_recent && st.planted_recent.length) {
+      html.push('<h2>Planted by the scout, already in the book</h2>');
+      st.planted_recent.slice().reverse().forEach(function (p) {
+        html.push('<div class="row"><span class="nm">' + esc(p.name) + '</span>' +
+          '<span class="chip">' + esc(p.src) + '</span>' +
+          '<span class="note">added to the Destination Book automatically · ' +
+          'refuse it there if it does not belong</span></div>');
+      });
+    }
     q.innerHTML = html.join('');
 
     q.querySelectorAll('[data-add]').forEach(function (b) {
