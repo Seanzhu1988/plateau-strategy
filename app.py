@@ -3415,6 +3415,7 @@ def api_destinations():
         times = _visit_all()
         ratings = _ratings_all()
         comments = _comments_all()
+        prices = _prices_all()
         for e in data.get("entries", []):
             # Stay times are stored split by source (public crowd vs verified
             # guide). This read used to assume the OLD flat shape, so it silently
@@ -3430,6 +3431,19 @@ def api_destinations():
                     e["typical_visit"] = pub["median"]
                     e["visit_n"] = pub["n"]
                     e["visit_source"] = "public"
+            # what travellers report paying, on the same guide-outranks-crowd rule
+            pr = prices.get(_visit_key(e.get("city"), e.get("name")))
+            if pr:
+                gp = _price_summary(_price_side(pr, "guide"))
+                pp = _price_summary(_price_side(pr, "public"))
+                best = gp if (gp and gp["n"] >= PRICE_GUIDE_MIN_N) else (
+                       pp if (pp and pp["n"] >= PRICE_MIN_N) else None)
+                if best:
+                    e["paid"] = {"median": best["median"], "n": best["n"],
+                                 "low": best["low"], "high": best["high"],
+                                 "stale": best["stale"], "age_days": best["age_days"],
+                                 "source": "guide" if best is gp else "public",
+                                 "kind": pr.get("kind") or "other"}
             r = ratings.get(_visit_key(e.get("city"), e.get("name")))
             if r and r.get("n", 0) >= 1:
                 e["stars"] = r["avg"]           # community average, 1, 5
@@ -3635,6 +3649,121 @@ def _median(nums):
     return float(s[mid]) if n % 2 else (s[mid - 1] + s[mid]) / 2.0
 
 
+# ---------- what people actually paid ----------
+#
+# [SEAN, 2026-08-21] Menus and live prices are not for sale: OpenStreetMap
+# carries no price data at all (probed: zero price tags across 3,000
+# Manhattan restaurants), the menu APIs are paid and chain-only, and the
+# terms of the ones that know prices forbid us storing them. So the book
+# asks the only people who actually know, the travellers who just paid,
+# exactly as it already asks how long they stayed.
+#
+# What makes this worth more than a stale API: every sample carries its
+# date, and a price nobody has confirmed in a year is reported as old
+# rather than quietly presented as today's. A guide's figure outranks the
+# crowd, same rule as visit times.
+PRICES_PATH = _data_path("place_prices.json")
+PRICE_MIN_N = 2            # two strangers agreeing is a signal; one is an anecdote
+PRICE_GUIDE_MIN_N = 1      # a verified guide's figure stands alone
+PRICE_MAX_SAMPLES = 200
+PRICE_MIN_USD, PRICE_MAX_USD = 1, 2000
+PRICE_FRESH_DAYS = 365     # older than this is reported, but marked old
+PRICE_KINDS = ("meal", "entry", "drink", "other")
+
+
+def _prices_all():
+    d = _load(PRICES_PATH)
+    return d if isinstance(d, dict) else {}
+
+
+def _price_side(rec, role):
+    side = rec.get(role)
+    if not isinstance(side, dict):
+        side = {"samples": [], "n": 0}
+    return side
+
+
+def _price_summary(side):
+    """Median, count, and how fresh the evidence is."""
+    samples = [x for x in (side.get("samples") or []) if isinstance(x, dict)]
+    amounts = [x.get("usd") for x in samples if isinstance(x.get("usd"), (int, float))]
+    if not amounts:
+        return None
+    newest = max((x.get("at") or 0) for x in samples)
+    age_days = int((time.time() - newest) / 86400) if newest else None
+    return {"median": round(_median(amounts), 2), "n": len(amounts),
+            "low": min(amounts), "high": max(amounts),
+            "age_days": age_days,
+            "stale": bool(age_days is not None and age_days > PRICE_FRESH_DAYS)}
+
+
+@app.route("/api/place-prices")
+def api_place_prices():
+    """What travellers report paying, per city. A place appears only once
+    enough people have said the same thing."""
+    city = (request.args.get("city") or "").strip().lower()
+    out = {}
+    for k, rec in _prices_all().items():
+        c, _, nm = k.partition("|")
+        if city and c != city:
+            continue
+        row = {}
+        pub = _price_summary(_price_side(rec, "public"))
+        gd = _price_summary(_price_side(rec, "guide"))
+        if pub and pub["n"] >= PRICE_MIN_N:
+            row["public"] = pub
+        if gd and gd["n"] >= PRICE_GUIDE_MIN_N:
+            row["guide"] = gd
+        if row:
+            best = row.get("guide") or row["public"]
+            row["median"] = best["median"]
+            row["n"] = best["n"]
+            row["low"], row["high"] = best["low"], best["high"]
+            row["stale"] = best["stale"]
+            row["age_days"] = best["age_days"]
+            row["source"] = "guide" if "guide" in row else "public"
+            row["kind"] = rec.get("kind") or "other"
+            out[nm] = row
+    return jsonify({"ok": True, "city": city, "min_n": PRICE_MIN_N,
+                    "currency": "USD", "fresh_days": PRICE_FRESH_DAYS,
+                    "places": out})
+
+
+@app.route("/api/place-price", methods=["POST"])
+def api_place_price_record():
+    """Someone reports what they paid. Anonymous, no account, one number."""
+    d = request.get_json(silent=True) or {}
+    name = _no_tags((d.get("name") or "").strip())[:80]
+    city = _no_tags((d.get("city") or "").strip())[:40]
+    kind = (d.get("kind") or "other").strip().lower()
+    if kind not in PRICE_KINDS:
+        kind = "other"
+    try:
+        usd = round(float(d.get("usd")), 2)
+    except (TypeError, ValueError):
+        return jsonify({"ok": False, "error": "usd required"}), 400
+    if len(name) < 2:
+        return jsonify({"ok": False, "error": "name required"}), 400
+    if not (PRICE_MIN_USD <= usd <= PRICE_MAX_USD):
+        return jsonify({"ok": False, "error": "out of range"}), 400
+
+    role = _visit_role(d.get("guide_code"))     # the same verified-guide test
+    key = _visit_key(city, name)
+    with _LOCK:
+        allp = _prices_all()
+        rec = allp.setdefault(key, {})
+        rec["kind"] = kind
+        side = rec.setdefault(role, {"samples": [], "n": 0})
+        side.setdefault("samples", []).append({"usd": usd, "at": int(time.time())})
+        side["samples"] = side["samples"][-PRICE_MAX_SAMPLES:]
+        side["n"] = len(side["samples"])
+        _save(PRICES_PATH, allp)
+        summary = _price_summary(side)
+    return jsonify({"ok": True, "role": role, "summary": summary,
+                    "enough": bool(summary and summary["n"] >=
+                                   (PRICE_GUIDE_MIN_N if role == "guide" else PRICE_MIN_N))})
+
+
 # ---------- star ratings (real, community-driven) ----------
 # Visitors rate a place 1, 5 stars anywhere in the planner; we keep the average and
 # the count. No fabricated stars, a place shows stars only once someone rates it.
@@ -3768,6 +3897,48 @@ def _same_chapter(cities, key, label):
         if (lbl or "").strip().lower() == want:
             return k
     return key
+
+
+# ---------- the dining profile ----------
+# [SEAN, 2026-08-21] Menus are not buyable data: only 1.2% of Manhattan
+# restaurants publish a menu link and none publish prices (probed against
+# 3,000 of them). What OpenStreetMap DOES know is what kind of food, when
+# they open, whether you can sit outside, get in with a wheelchair, book a
+# table, or eat vegetarian, and occasionally a link to the restaurant's own
+# menu. That is a real dining profile, free and ODbL, and it is what the
+# book keeps. The menu itself stays where it belongs: on the restaurant's
+# own page, one tap away.
+_DINING_FLAGS = {
+    "takeaway": "takeaway", "delivery": "delivery",
+    "outdoor_seating": "outdoor seating", "reservation": "reservations",
+    "wheelchair": "step-free", "diet:vegetarian": "vegetarian",
+    "diet:vegan": "vegan", "diet:kosher": "kosher", "diet:halal": "halal",
+    "air_conditioning": "air conditioned",
+}
+
+
+def _dining_profile(extratags):
+    """What the map knows about eating here. Absent tags simply stay absent:
+    a blank profile is honest, an invented one is not."""
+    t = extratags if isinstance(extratags, dict) else {}
+    prof = {}
+    cuisine = (t.get("cuisine") or "").strip()[:60]
+    if cuisine:
+        prof["cuisine"] = cuisine.replace("_", " ").replace(";", ", ")
+    menu = (t.get("website:menu") or t.get("menu") or t.get("contact:website:menu") or "").strip()
+    if menu.startswith("http") and len(menu) < 300:
+        prof["menu_url"] = menu
+    hours = (t.get("opening_hours") or "").strip()[:120]
+    if hours:
+        prof["hours_text"] = hours
+    flags = []
+    for tag, label in _DINING_FLAGS.items():
+        v = (t.get(tag) or "").strip().lower()
+        if v in ("yes", "only", "designated", "limited"):
+            flags.append(label)
+    if flags:
+        prof["flags"] = flags[:6]
+    return prof or None
 
 
 def _heal_chapters(d):
@@ -4028,6 +4199,7 @@ def api_destinations_add():
             raise ValueError
     except Exception:
         return jsonify({"ok": False, "error": "Valid coordinates required."}), 400
+    dining = _dining_profile(data.get("extratags"))
     # Describe it from the map's own classification so the book never gains a blank row
     auto_desc, auto_cat, auto_type = _describe_osm(data)
     auto_desc = _no_tags(auto_desc)          # built from client-supplied OSM fields
@@ -4079,6 +4251,9 @@ def api_destinations_add():
                 updated = False
                 thin = (not (e.get("desc") or "").strip()
                         or (e.get("desc_from") == "map data" and not given_desc))
+                if dining and not e.get("dining"):
+                    e["dining"] = dining        # a re-search taught us more
+                    updated = True
                 if thin:
                     w_desc, w_photo, w_url = (None, None, None)
                     if not given_desc:
@@ -4123,6 +4298,8 @@ def api_destinations_add():
                "state": state, "county": county, "country": country,
                "city_label": _no_tags(city_lbl or "")[:60] or cities.get(city, city.title()),
                "added_at": datetime.datetime.now().isoformat(timespec="seconds")}
+        if dining:
+            rec["dining"] = dining
         d.setdefault("entries", []).append(rec)
         with open(path, "w") as f:
             json.dump(d, f, indent=1, ensure_ascii=False)

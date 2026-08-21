@@ -1236,7 +1236,7 @@
         try {
             const b = map.getBounds();
             const vb = viewboxParam(b);
-            const base = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=' + encodeURIComponent(q);
+            const base = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&extratags=1&limit=1&q=' + encodeURIComponent(q);
             // psxJSON hands back the array on success and {ok:false} when the
             // geocoder could not be reached, so ask what it actually is rather
             // than trusting .length on either. main's geocode() was a bare
@@ -2429,7 +2429,8 @@
                                        city_label: ((CITIES[curCity] || {}).label || curCity),
                                        close: p.close, visit: p.visit, found_via: 'planner',
                                        osm_class: (meta || {}).class, type: (meta || {}).type,
-                                       address: (meta || {}).address })
+                                       address: (meta || {}).address,
+                                       extratags: (meta || {}).extratags })
             }).then(r => r.json()).then(d => {
                 if (d && d.private) {
                     // Refused on purpose, it looks like somewhere a person lives.
@@ -3313,7 +3314,7 @@
         try {
             const b = map.getBounds();
             const vb = viewboxParam(b);
-            const base = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=' + encodeURIComponent(q);
+            const base = 'https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&extratags=1&limit=1&q=' + encodeURIComponent(q);
             let j = await psxJSON(base + vb);          // nearby first
             if (!j.length) j = await psxJSON(base);     // then anywhere
             if (!j.length) { setLocInfo('Couldn\'t find “' + q + '”, try adding the city.', true); return; }
