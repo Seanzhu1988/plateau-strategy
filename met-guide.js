@@ -51,8 +51,28 @@
   var at = -1;           /* which gallery */
   var seg = 0;           /* which segment inside it */
   var playing = false;
-  var audio = null;
   var host = null, onChange = null;
+
+  /* ONE reusable player, created inside the user's tap. iPhone Safari only
+     trusts audio born of a gesture: a fresh Audio() made later, in an
+     'ended' callback, plays nothing. So the button's tap creates this
+     element once, and every recording after that is just a new src on the
+     already-blessed player. */
+  var player = null, playerDone = null, playerFail = null;
+  function ensurePlayer() {
+    if (player) return player;
+    player = new window.Audio();
+    player.preload = 'auto';
+    player.addEventListener('ended', function () {
+      var d = playerDone; playerDone = null; playerFail = null;
+      if (d) d();
+    });
+    player.addEventListener('error', function () {
+      var f = playerFail; playerFail = null; playerDone = null;
+      if (f) f();
+    });
+    return player;
+  }
 
   function cards() { return window.MET_CARDS || {}; }
 
@@ -77,21 +97,23 @@
   /* ---- speaking ---- */
   function stopSound() {
     try { window.speechSynthesis.cancel(); } catch (e) {}
-    if (audio) { try { audio.pause(); } catch (e) {} audio = null; }
+    playerDone = null; playerFail = null;
+    if (player) { try { player.pause(); } catch (e) {} }
   }
 
   function speak(text, url, done) {
     stopSound();
     if (url) {
       try {
-        var a = new Audio(url);
-        audio = a;
-        var fell = false;
-        var fallback = function () { if (fell) return; fell = true; audio = null; speakPlain(text, done); };
-        a.addEventListener('ended', function () { audio = null; done(); });
-        a.addEventListener('error', fallback);
+        var a = ensurePlayer();
+        playerFail = function () { speakPlain(text, done); };
+        playerDone = done;
+        a.src = url;
         var pr = a.play();
-        if (pr && pr.catch) pr.catch(fallback);
+        if (pr && pr.catch) pr.catch(function () {
+          var f = playerFail; playerFail = null; playerDone = null;
+          if (f) f();
+        });
         return;
       } catch (e) { /* fall through */ }
     }
@@ -156,6 +178,7 @@
   }
 
   function start(keys) {
+    ensurePlayer();               /* born inside the tap: iOS blesses it here */
     seq = (keys || []).filter(function (k) { return segmentsFor(k).length; });
     if (!seq.length) {
       paint('Nothing picked yet', null,
@@ -193,6 +216,7 @@
   }
 
   function playRoom(key) {
+    ensurePlayer();
     stop();
     if (!segmentsFor(key).length) return;
     seq = [key];
