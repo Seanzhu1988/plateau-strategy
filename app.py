@@ -25,6 +25,8 @@ import secrets
 import threading
 import subprocess
 import datetime
+
+import discovery as discovery_mod
 import urllib.parse
 import shutil
 import html
@@ -1589,6 +1591,55 @@ def walks_page():
     return send_file(os.path.join(BASE_DIR, "walks.html"))
 
 
+# ---------------- discovery: the site's own scout ----------------
+# New places, found on a routine from lawful public sources, queued for the
+# owner. Nothing enters the public book without a person: approval walks
+# through /api/destinations/add, the same audited door as every community
+# place. discovery.py documents each source and its live probe.
+
+@app.route("/discovery")
+def discovery_page():
+    return send_file(os.path.join(BASE_DIR, "discovery.html"))
+
+
+@app.route("/api/discovery")
+@owner_required
+def api_discovery():
+    return jsonify(discovery_mod.get_state())
+
+
+@app.route("/api/discovery/run", methods=["POST"])
+@owner_required
+def api_discovery_run():
+    # A full sweep takes a minute; the request should not. The state
+    # endpoint's `running` flag is the progress bar.
+    threading.Thread(target=discovery_mod.run_discovery, daemon=True).start()
+    return jsonify({"ok": True, "started": True})
+
+
+@app.route("/api/discovery/search-miss", methods=["POST"])
+def api_discovery_search_miss():
+    # Public on purpose: a miss in the book's search IS the discovery data
+    # Sean asked to collect. Sanitised and deduped inside discovery.
+    data = request.get_json(force=True, silent=True) or {}
+    ok = discovery_mod.record_search_miss(data.get("q"), data.get("city"),
+                                          data.get("outcome"))
+    return jsonify({"ok": bool(ok)})
+
+
+@app.route("/api/discovery/act", methods=["POST"])
+@owner_required
+def api_discovery_act():
+    data = request.get_json(force=True, silent=True) or {}
+    action = data.get("action")
+    if action not in ("keep", "dismiss"):
+        return jsonify({"ok": False, "error": "action must be keep or dismiss"}), 400
+    hit = discovery_mod.decide((data.get("id") or "")[:200], action)
+    if not hit:
+        return jsonify({"ok": False, "error": "no such proposal"}), 404
+    return jsonify({"ok": True, "proposal": hit})
+
+
 # The cities of the corridor store, grouped by key prefix. A new city is a
 # new row here plus its corridors in footprints.py, nothing else.
 _WALK_CITIES = [
@@ -2316,7 +2367,12 @@ def paper_css():
 @app.route("/media/<path:filename>")
 def media_file(filename):
     from flask import send_from_directory
-    return send_from_directory(os.path.join(BASE_DIR, "media"), filename)
+    repo = os.path.join(BASE_DIR, "media")
+    if os.path.exists(os.path.join(repo, filename)):
+        return send_from_directory(repo, filename)
+    # Runtime-made media (the hourly voice refine) lives on the persistent
+    # disk, because the repo copy is replaced on every deploy.
+    return send_from_directory(os.path.join(DATA_DIR, "media"), filename)
 
 
 @app.route("/book")
@@ -2560,7 +2616,7 @@ PUBLIC_PAGES = [
     ("/deflator", "0.5", "monthly"),
     ("/board", "0.4", "monthly"),
 ]
-OWNER_ONLY_PATHS = ["/dispatch", "/setup", "/archive", "/api/", "/deflator"]
+OWNER_ONLY_PATHS = ["/dispatch", "/setup", "/archive", "/api/", "/deflator", "/discovery"]
 SITE_ORIGIN = os.environ.get("SITE_ORIGIN", "https://plateaustrategy.io").rstrip("/")
 # Referrers from our own pages are not a traffic source, they are navigation.
 SITE_HOSTS = ("plateaustrategy.io", "plateau-strategy.onrender.com")
@@ -3359,6 +3415,7 @@ def api_destinations():
         times = _visit_all()
         ratings = _ratings_all()
         comments = _comments_all()
+        prices = _prices_all()
         for e in data.get("entries", []):
             # Stay times are stored split by source (public crowd vs verified
             # guide). This read used to assume the OLD flat shape, so it silently
@@ -3374,6 +3431,19 @@ def api_destinations():
                     e["typical_visit"] = pub["median"]
                     e["visit_n"] = pub["n"]
                     e["visit_source"] = "public"
+            # what travellers report paying, on the same guide-outranks-crowd rule
+            pr = prices.get(_visit_key(e.get("city"), e.get("name")))
+            if pr:
+                gp = _price_summary(_price_side(pr, "guide"))
+                pp = _price_summary(_price_side(pr, "public"))
+                best = gp if (gp and gp["n"] >= PRICE_GUIDE_MIN_N) else (
+                       pp if (pp and pp["n"] >= PRICE_MIN_N) else None)
+                if best:
+                    e["paid"] = {"median": best["median"], "n": best["n"],
+                                 "low": best["low"], "high": best["high"],
+                                 "stale": best["stale"], "age_days": best["age_days"],
+                                 "source": "guide" if best is gp else "public",
+                                 "kind": pr.get("kind") or "other"}
             r = ratings.get(_visit_key(e.get("city"), e.get("name")))
             if r and r.get("n", 0) >= 1:
                 e["stars"] = r["avg"]           # community average, 1, 5
@@ -3579,6 +3649,121 @@ def _median(nums):
     return float(s[mid]) if n % 2 else (s[mid - 1] + s[mid]) / 2.0
 
 
+# ---------- what people actually paid ----------
+#
+# [SEAN, 2026-08-21] Menus and live prices are not for sale: OpenStreetMap
+# carries no price data at all (probed: zero price tags across 3,000
+# Manhattan restaurants), the menu APIs are paid and chain-only, and the
+# terms of the ones that know prices forbid us storing them. So the book
+# asks the only people who actually know, the travellers who just paid,
+# exactly as it already asks how long they stayed.
+#
+# What makes this worth more than a stale API: every sample carries its
+# date, and a price nobody has confirmed in a year is reported as old
+# rather than quietly presented as today's. A guide's figure outranks the
+# crowd, same rule as visit times.
+PRICES_PATH = _data_path("place_prices.json")
+PRICE_MIN_N = 2            # two strangers agreeing is a signal; one is an anecdote
+PRICE_GUIDE_MIN_N = 1      # a verified guide's figure stands alone
+PRICE_MAX_SAMPLES = 200
+PRICE_MIN_USD, PRICE_MAX_USD = 1, 2000
+PRICE_FRESH_DAYS = 365     # older than this is reported, but marked old
+PRICE_KINDS = ("meal", "entry", "drink", "other")
+
+
+def _prices_all():
+    d = _load(PRICES_PATH)
+    return d if isinstance(d, dict) else {}
+
+
+def _price_side(rec, role):
+    side = rec.get(role)
+    if not isinstance(side, dict):
+        side = {"samples": [], "n": 0}
+    return side
+
+
+def _price_summary(side):
+    """Median, count, and how fresh the evidence is."""
+    samples = [x for x in (side.get("samples") or []) if isinstance(x, dict)]
+    amounts = [x.get("usd") for x in samples if isinstance(x.get("usd"), (int, float))]
+    if not amounts:
+        return None
+    newest = max((x.get("at") or 0) for x in samples)
+    age_days = int((time.time() - newest) / 86400) if newest else None
+    return {"median": round(_median(amounts), 2), "n": len(amounts),
+            "low": min(amounts), "high": max(amounts),
+            "age_days": age_days,
+            "stale": bool(age_days is not None and age_days > PRICE_FRESH_DAYS)}
+
+
+@app.route("/api/place-prices")
+def api_place_prices():
+    """What travellers report paying, per city. A place appears only once
+    enough people have said the same thing."""
+    city = (request.args.get("city") or "").strip().lower()
+    out = {}
+    for k, rec in _prices_all().items():
+        c, _, nm = k.partition("|")
+        if city and c != city:
+            continue
+        row = {}
+        pub = _price_summary(_price_side(rec, "public"))
+        gd = _price_summary(_price_side(rec, "guide"))
+        if pub and pub["n"] >= PRICE_MIN_N:
+            row["public"] = pub
+        if gd and gd["n"] >= PRICE_GUIDE_MIN_N:
+            row["guide"] = gd
+        if row:
+            best = row.get("guide") or row["public"]
+            row["median"] = best["median"]
+            row["n"] = best["n"]
+            row["low"], row["high"] = best["low"], best["high"]
+            row["stale"] = best["stale"]
+            row["age_days"] = best["age_days"]
+            row["source"] = "guide" if "guide" in row else "public"
+            row["kind"] = rec.get("kind") or "other"
+            out[nm] = row
+    return jsonify({"ok": True, "city": city, "min_n": PRICE_MIN_N,
+                    "currency": "USD", "fresh_days": PRICE_FRESH_DAYS,
+                    "places": out})
+
+
+@app.route("/api/place-price", methods=["POST"])
+def api_place_price_record():
+    """Someone reports what they paid. Anonymous, no account, one number."""
+    d = request.get_json(silent=True) or {}
+    name = _no_tags((d.get("name") or "").strip())[:80]
+    city = _no_tags((d.get("city") or "").strip())[:40]
+    kind = (d.get("kind") or "other").strip().lower()
+    if kind not in PRICE_KINDS:
+        kind = "other"
+    try:
+        usd = round(float(d.get("usd")), 2)
+    except (TypeError, ValueError):
+        return jsonify({"ok": False, "error": "usd required"}), 400
+    if len(name) < 2:
+        return jsonify({"ok": False, "error": "name required"}), 400
+    if not (PRICE_MIN_USD <= usd <= PRICE_MAX_USD):
+        return jsonify({"ok": False, "error": "out of range"}), 400
+
+    role = _visit_role(d.get("guide_code"))     # the same verified-guide test
+    key = _visit_key(city, name)
+    with _LOCK:
+        allp = _prices_all()
+        rec = allp.setdefault(key, {})
+        rec["kind"] = kind
+        side = rec.setdefault(role, {"samples": [], "n": 0})
+        side.setdefault("samples", []).append({"usd": usd, "at": int(time.time())})
+        side["samples"] = side["samples"][-PRICE_MAX_SAMPLES:]
+        side["n"] = len(side["samples"])
+        _save(PRICES_PATH, allp)
+        summary = _price_summary(side)
+    return jsonify({"ok": True, "role": role, "summary": summary,
+                    "enough": bool(summary and summary["n"] >=
+                                   (PRICE_GUIDE_MIN_N if role == "guide" else PRICE_MIN_N))})
+
+
 # ---------- star ratings (real, community-driven) ----------
 # Visitors rate a place 1, 5 stars anywhere in the planner; we keep the average and
 # the count. No fabricated stars, a place shows stars only once someone rates it.
@@ -3688,6 +3873,108 @@ _OSM_TYPE_CAT = {
     "aquarium": "culture", "zoo": "culture", "monument": "history", "memorial": "history",
     "castle": "history", "ruins": "history", "archaeological_site": "history",
 }
+
+
+# Cities the book has always known by a short key, plus the names a geocoder
+# uses for them. Anything not listed still matches by label.
+_CITY_ALIASES = {
+    "nyc": ("new york", "new york city", "manhattan", "brooklyn", "queens",
+            "the bronx", "bronx", "staten island"),
+    "dc": ("washington", "washington dc", "washington, d.c.",
+           "district of columbia"),
+}
+
+
+def _same_chapter(cities, key, label):
+    """The existing chapter this city belongs to, or the key unchanged."""
+    if not key or key in cities:
+        return key
+    for short, names in _CITY_ALIASES.items():
+        if short in cities and key in names:
+            return short
+    want = (label or key).strip().lower()
+    for k, lbl in cities.items():
+        if (lbl or "").strip().lower() == want:
+            return k
+    return key
+
+
+# ---------- the dining profile ----------
+# [SEAN, 2026-08-21] Menus are not buyable data: only 1.2% of Manhattan
+# restaurants publish a menu link and none publish prices (probed against
+# 3,000 of them). What OpenStreetMap DOES know is what kind of food, when
+# they open, whether you can sit outside, get in with a wheelchair, book a
+# table, or eat vegetarian, and occasionally a link to the restaurant's own
+# menu. That is a real dining profile, free and ODbL, and it is what the
+# book keeps. The menu itself stays where it belongs: on the restaurant's
+# own page, one tap away.
+_DINING_FLAGS = {
+    "takeaway": "takeaway", "delivery": "delivery",
+    "outdoor_seating": "outdoor seating", "reservation": "reservations",
+    "wheelchair": "step-free", "diet:vegetarian": "vegetarian",
+    "diet:vegan": "vegan", "diet:kosher": "kosher", "diet:halal": "halal",
+    "air_conditioning": "air conditioned",
+}
+
+
+def _dining_profile(extratags):
+    """What the map knows about eating here. Absent tags simply stay absent:
+    a blank profile is honest, an invented one is not."""
+    t = extratags if isinstance(extratags, dict) else {}
+    prof = {}
+    cuisine = (t.get("cuisine") or "").strip()[:60]
+    if cuisine:
+        prof["cuisine"] = cuisine.replace("_", " ").replace(";", ", ")
+    menu = (t.get("website:menu") or t.get("menu") or t.get("contact:website:menu") or "").strip()
+    if menu.startswith("http") and len(menu) < 300:
+        prof["menu_url"] = menu
+    hours = (t.get("opening_hours") or "").strip()[:120]
+    if hours:
+        prof["hours_text"] = hours
+    flags = []
+    for tag, label in _DINING_FLAGS.items():
+        v = (t.get(tag) or "").strip().lower()
+        if v in ("yes", "only", "designated", "limited"):
+            flags.append(label)
+    if flags:
+        prof["flags"] = flags[:6]
+    return prof or None
+
+
+def _heal_chapters(d):
+    """Fold chapters that are the same city under two keys. Older books were
+    written before _same_chapter existed, so the split already on disk has to
+    be repaired rather than merely prevented.
+
+    WHICH KEY SURVIVES matters: the first version of this folded the city's
+    seventeen places into the newer, uglier key because it merged in whatever
+    order the dict happened to be in. The canonical short key wins, then the
+    key holding more places, then the shorter one. Returns True if anything
+    moved."""
+    cities = d.get("cities") or {}
+    entries = d.get("entries") or []
+    counts = {}
+    for e in entries:
+        counts[e.get("city")] = counts.get(e.get("city"), 0) + 1
+
+    groups = {}
+    for k, lbl in cities.items():
+        groups.setdefault((lbl or k).strip().lower(), []).append(k)
+
+    moved = False
+    for _, keys in groups.items():
+        if len(keys) < 2:
+            continue
+        keys.sort(key=lambda k: (k not in _CITY_ALIASES, -counts.get(k, 0), len(k)))
+        winner, losers = keys[0], keys[1:]
+        for e in entries:
+            if e.get("city") in losers:
+                e["city"] = winner
+                moved = True
+        for k in losers:
+            cities.pop(k, None)
+            moved = True
+    return moved
 
 
 def _derive_city(meta, fallback=""):
@@ -3912,6 +4199,7 @@ def api_destinations_add():
             raise ValueError
     except Exception:
         return jsonify({"ok": False, "error": "Valid coordinates required."}), 400
+    dining = _dining_profile(data.get("extratags"))
     # Describe it from the map's own classification so the book never gains a blank row
     auto_desc, auto_cat, auto_type = _describe_osm(data)
     auto_desc = _no_tags(auto_desc)          # built from client-supplied OSM fields
@@ -3936,6 +4224,14 @@ def api_destinations_add():
         # to search a place there names the city, and it joins the book for good.
         city, city_lbl = _derive_city(data, data.get("city"))
         cities = d.setdefault("cities", {})
+        # One city, one chapter. The geocoder says "New York" and the book
+        # already keeps that city under "nyc", so a derived key that means
+        # the same place must JOIN the existing chapter, not open a rival
+        # one beside it. Without this the filter row grew two identical
+        # "New York" chips with the city's places split between them.
+        city = _same_chapter(cities, city, city_lbl)
+        _heal_chapters(d)          # repair any split already on disk
+        cities = d.setdefault("cities", {})
         if not city:
             city = "other"
             cities.setdefault("other", "Other")
@@ -3955,6 +4251,9 @@ def api_destinations_add():
                 updated = False
                 thin = (not (e.get("desc") or "").strip()
                         or (e.get("desc_from") == "map data" and not given_desc))
+                if dining and not e.get("dining"):
+                    e["dining"] = dining        # a re-search taught us more
+                    updated = True
                 if thin:
                     w_desc, w_photo, w_url = (None, None, None)
                     if not given_desc:
@@ -3999,6 +4298,8 @@ def api_destinations_add():
                "state": state, "county": county, "country": country,
                "city_label": _no_tags(city_lbl or "")[:60] or cities.get(city, city.title()),
                "added_at": datetime.datetime.now().isoformat(timespec="seconds")}
+        if dining:
+            rec["dining"] = dining
         d.setdefault("entries", []).append(rec)
         with open(path, "w") as f:
             json.dump(d, f, indent=1, ensure_ascii=False)
@@ -11377,6 +11678,24 @@ def _reservation_reminder_loop():
         time.sleep(interval)
 
 
+_REMINDER_THREAD = None
+
+
+def _start_reminder_thread():
+    """Start the dispatch reminder loop, at most once per process.
+    Honors DISPATCH_REMINDERS=false, which every test in this directory
+    sets before importing app so no background loop touches its board."""
+    global _REMINDER_THREAD
+    if os.environ.get("DISPATCH_REMINDERS", "true").lower() != "true":
+        return None
+    if _REMINDER_THREAD is not None and _REMINDER_THREAD.is_alive():
+        return _REMINDER_THREAD
+    _REMINDER_THREAD = threading.Thread(target=_reservation_reminder_loop,
+                                        daemon=True, name="dispatch-reminders")
+    _REMINDER_THREAD.start()
+    return _REMINDER_THREAD
+
+
 # Put the shipped-in articles on the board once, at boot, on a real disk only.
 # Wrapped so a seeding failure can never stop the app from starting.
 try:
@@ -11387,12 +11706,127 @@ except Exception:
     pass
 
 
+# The discovery routine lives at import scope on purpose: production is
+# gunicorn (one worker), which never executes the __main__ block below.
+def _book_unvoiced():
+    """Entries the hourly voice refine may speak: public, no recording yet,
+    with enough written about them that Jason has something true to say."""
+    try:
+        with _LOCK:
+            d = _book_raw()
+        out = []
+        for e in d.get("entries", []):
+            if e.get("audio") or e.get("withheld"):
+                continue
+            out.append({"name": e.get("name"), "city": e.get("city"),
+                        "slug": e.get("slug"), "desc": e.get("desc"),
+                        "tip": e.get("tip")})
+        return out
+    except Exception:
+        return []
+
+
+def _scout_plant(payload):
+    """Plant one discovered place in the book, through the SAME door a
+    traveller's search uses.
+
+    [SEAN, 2026-08-21: "we want to grow it ourselves too, not just from the
+    traveler... create a routine of destination discovery"] The temptation
+    here is to write straight into destinations.json, which would skip the
+    private-residence refusal, the dedupe, the chapter heal and the Wikipedia
+    description. Dispatching the real route instead means the scout can never
+    have privileges a visitor does not, and there is exactly one place where
+    a place enters the book."""
+    try:
+        with app.test_client() as c:
+            r = c.post("/api/destinations/add", json=payload)
+            return r.get_json() or {}
+    except Exception as e:
+        return {"ok": False, "error": str(e)[:80]}
+
+
+def _book_thin():
+    """Entries the data refine can still improve: no description worth the
+    name, or none of the map's dining detail."""
+    try:
+        with _LOCK:
+            d = _book_raw()
+        out = []
+        for e in d.get("entries", []):
+            desc = (e.get("desc") or "").strip()
+            thin_desc = len(desc) < 60 or e.get("desc_from") == "map data"
+            if thin_desc or not e.get("dining"):
+                out.append({"name": e.get("name"), "city": e.get("city"),
+                            "lat": e.get("lat"), "lon": e.get("lon"),
+                            "thin_desc": thin_desc, "no_dining": not e.get("dining")})
+        return out
+    except Exception:
+        return []
+
+
+def _book_enrich(city, name, desc=None, dining=None):
+    """Fill in what a place was missing. Never overwrites a human's words."""
+    try:
+        with _LOCK:
+            d = _book_raw()
+            for e in d.get("entries", []):
+                if e.get("city") != city or e.get("name") != name:
+                    continue
+                changed = False
+                if desc and (e.get("auto_desc") or not (e.get("desc") or "").strip()):
+                    e["desc"] = desc[:400]
+                    e["auto_desc"] = True
+                    e["desc_from"] = "wikipedia"
+                    changed = True
+                if dining and not e.get("dining"):
+                    e["dining"] = dining
+                    changed = True
+                if changed:
+                    e["updated_at"] = datetime.datetime.now().isoformat(timespec="seconds")
+                    _save(_data_path("destinations.json"), d)
+                return changed
+    except Exception:
+        pass
+    return False
+
+
+def _book_set_audio(city, name, url):
+    try:
+        with _LOCK:
+            d = _book_raw()
+            for e in d.get("entries", []):
+                if e.get("city") == city and e.get("name") == name:
+                    e["audio"] = url
+                    _save(_data_path("destinations.json"), d)
+                    return True
+    except Exception:
+        pass
+    return False
+
+
+try:
+    discovery_mod.set_book_bridge(_book_unvoiced, _book_set_audio,
+                                  plant=_scout_plant, thin=_book_thin,
+                                  enrich=_book_enrich)
+    discovery_mod.start_thread()
+except Exception:
+    pass
+
+
+# Same constraint, learned the hard way: the dispatch reminder thread used to
+# start only in the __main__ block, so under gunicorn it never existed and no
+# uncovered-ride reminder ever fired on the real site. It starts here now.
+try:
+    _start_reminder_thread()
+except Exception:
+    pass
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
     print("Plateau Strategy Solution Lab booking app -> http://localhost:%d" % port)
-    # Background reminder: nudge dispatch about rides no driver has taken.
-    if os.environ.get("DISPATCH_REMINDERS", "true").lower() == "true":
-        threading.Thread(target=_reservation_reminder_loop, daemon=True).start()
+    # The dispatch reminder thread starts at import scope above, same as
+    # discovery, so production (gunicorn) gets it too, not only this block.
     # host="::" dual-stacks on macOS so both localhost (IPv6 ::1) and 127.0.0.1
     # (IPv4) work. threaded=True so concurrent polling requests never block.
     app.run(host="::", port=port, debug=False, threaded=True)

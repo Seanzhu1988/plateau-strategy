@@ -91,8 +91,12 @@ def out_path(slug, lang):
 
 
 def voice_for(lang):
-    """A per-language reader if one is set, then the house override, then Jason."""
+    """A per-language reader if one is set, then the guide's own voice, then
+    the house override, then Jason. GUIDE_VOICE_ID exists because the guide is
+    a stranger walking beside a traveller, not the butler answering Sean, and
+    the two should not be forced to share a throat."""
     return (os.environ.get("ELEVENLABS_VOICE_ID_%s" % lang.upper(), "").strip()
+            or os.environ.get("GUIDE_VOICE_ID", "").strip()
             or os.environ.get("ELEVENLABS_VOICE_ID", "").strip()
             or DEFAULT_VOICE)
 

@@ -54,6 +54,19 @@
                        padding: .5rem .7rem; min-height: 44px;
                        border-bottom: 2px solid transparent; }
   .floor-tabs button[aria-current="true"] { color: #1f3a5f; border-bottom-color: #1f3a5f; }
+  .room-bar { display: flex; align-items: center; flex-wrap: wrap; gap: .2rem .9rem;
+              padding: .35rem .9rem 0; border-top: 1px solid #eee9dd; margin-top: .3rem; }
+  .room-bar[hidden] { display: none; }
+  .room-bar button { font: inherit; font-weight: 700; font-size: .88rem;
+                     background: none; border: 0; cursor: pointer; color: #1f3a5f;
+                     padding: .45rem 0; min-height: 40px; text-decoration: underline;
+                     text-underline-offset: 3px; }
+  .room-bar .rb-name { font-weight: 700; font-size: .95rem; color: #14110c; }
+  .leg-impossible { display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap;
+                    padding: .7rem 0; border-top: 1px solid #eee9dd;
+                    font-size: .92rem; color: #8a5a1e; }
+  .leg-impossible b { color: #14110c; }
+  .leg-impossible span { color: #8a5a1e; }
   .sheet svg { display: block; width: 100%; height: auto; }
   svg .room { fill: #ffffff; stroke: #1f3a5f; stroke-width: 1.6; cursor: pointer; }
   svg .room.picked { stroke-width: 3; }
@@ -153,6 +166,11 @@
   .m3-sub { font: 800 8.5px Inter, system-ui, sans-serif; fill: #6b6459;
             letter-spacing: .1em; pointer-events: none;
             paint-order: stroke; stroke: #faf8f4; stroke-width: 2.5px; stroke-linejoin: round; }
+  .m3-stopnum { font: 800 10px Inter, system-ui, sans-serif; fill: #faf8f4;
+                pointer-events: none; }
+  .m3-stoplbl { font: 700 10.5px Inter, system-ui, sans-serif; fill: #1f3a5f;
+                paint-order: stroke; stroke: #faf8f4; stroke-width: 3px;
+                pointer-events: none; }
   .m3-floorlbl { font: 800 15px Inter, system-ui, sans-serif; fill: #b3aa97;
                  letter-spacing: .16em; pointer-events: none; }
   .m3-title { font: 800 15px Inter, system-ui, sans-serif; fill: #1f2a3a; pointer-events: none; }
@@ -210,6 +228,15 @@
       <button id="tab3D" aria-current="false">3D</button>
       <button id="btnOutside" hidden>← Outside</button>
     </div>
+    <!-- The room bar: appears only while the model is diving in one gallery.
+         Looking closer and editing the walk are now separate gestures, so
+         the walk can never be rewritten by curiosity. -->
+    <div class="room-bar" id="roomBar" hidden>
+      <button id="roomBarBack" type="button">← All rooms</button>
+      <span class="rb-name" id="roomBarName"></span>
+      <button id="roomBarAdd" type="button"></button>
+      <button id="roomBarHear" type="button">▶ Hear this room</button>
+    </div>
     <div class="sheet-body">
       <div id="svgHost"></div>
       <aside id="metGuide" class="mg"></aside>
@@ -244,10 +271,10 @@
 </div>
 
 <script src="/i18n.js"></script>
-<script src="/met-cards.js"></script>
-<script src="/met-3d.js"></script>
-<script src="/met-guide.js"></script>
-<script src="/met-map.js"></script>
+<script src="/met-cards.js?v=jason3"></script>
+<script src="/met-3d.js?v=jason3"></script>
+<script src="/met-guide.js?v=jason3"></script>
+<script src="/met-map.js?v=jason3"></script>
 <script>
   /* The guide reads the walk the reader picked, and lights each gallery on
      the model as it describes it. */

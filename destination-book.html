@@ -89,6 +89,31 @@
         .sugbtn { margin: 0.5rem 0 0 0; background: var(--psx-wash-good,#e1f8ec); border: 1px solid var(--psx-wash-good-on,#cef2df); color: #047857;
             border-radius: 9px; padding: 0.55rem 0.9rem; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
         .sugbtn:hover { background: #d1fae5; }
+        .livecount { font-size: .88rem; color: #6b655b; margin: .15rem 0 .2rem;
+            display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; }
+        .livecount .dot { width: 7px; height: 7px; border-radius: 50%;
+            background: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,.16); }
+        .livecount b { color: #14110c; }
+        .paid-line { margin: .35rem 0 0; font-size: .86rem; color: #4a453d; }
+        .paid-line b { color: #14110c; }
+        .paid-old { color: #8a5a1e; }
+        .dining-line { margin: .35rem 0 0; font-size: .86rem; color: #4a453d; }
+        .dining-line b { color: #14110c; text-transform: capitalize; }
+        .menulink { color: #1f3a5f; font-weight: 700; white-space: nowrap; }
+        /* A search that finds nothing gets a real button, not a hint. [SEAN:
+           "i searched mount rushmore... can you add bottom for add this
+           destination"] The whole row reads as an offer: big label, the
+           place named back, and one obvious thing to press. */
+        .sugmiss { margin: .7rem 0 0; padding: .9rem 1rem; border-radius: 12px;
+            background: var(--psx-wash-good,#e1f8ec); border: 1px solid var(--psx-wash-good-on,#cef2df);
+            display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .9rem; }
+        .sugmiss .mline { font-size: .92rem; color: #065f46; }
+        .sugmiss .mline b { color: #14110c; }
+        .sugmiss .createbtn { background: #047857; border: 0; color: #fff; border-radius: 10px;
+            padding: .7rem 1.1rem; font-size: .95rem; font-weight: 700; cursor: pointer;
+            min-height: 44px; font-family: inherit; }
+        .sugmiss .createbtn:hover { filter: brightness(1.08); }
+        .sugmiss .createbtn:disabled { opacity: .6; cursor: default; }
         .sugitem { padding: 0.5rem 0.7rem; border: 1px solid #e6e2da; border-top: none; font-size: 0.82rem;
             cursor: pointer; background: var(--psx-card,#fffdf9); color: #4a453d; }
         .sugitem:first-of-type { border-top: 1px solid #e6e2da; border-radius: 8px 8px 0 0; margin-top: 0.4rem; }
@@ -204,6 +229,12 @@
             <div id="suggest"></div>
         </div>
         <div class="count" id="count"></div>
+        <!-- Who else is here. Real presence from /api/online (anonymous, five
+             minute window, nothing written down), never a manufactured number:
+             plenty of sites invent "247 people viewing" and a traveler can
+             smell it. When nobody else is on, it says so, and points at what
+             IS growing: the book itself. [SEAN "how many travelers online"] -->
+        <div class="livecount" id="livecount" hidden></div>
         <div class="grid" id="grid"></div>
 
         <!-- Asking "what do you wish was here?" made sense; asking it before
@@ -297,15 +328,8 @@
     // way back out was to open the planner and remove it there, so the second
     // click on the same button, which every reader tries first, did nothing at
     // all. Same button, both directions.
-    // Which destinations have something to say. Filled once, and the cards
-    // re-render when it lands so nothing waits on it.
-    let SPOKEN = new Set();
-    fetch('/api/guide-languages').then(r => r.json()).then(d => {
-        if (d && d.slugs && d.slugs.length) {
-            SPOKEN = new Set(d.slugs);
-            try { render(); } catch (err) {}
-        }
-    }).catch(() => {});
+    // The script-only "spoken" set is retired with the device voice:
+    // a Listen button now means a real recording, nothing else.
 
     // The spoken guide lives in /guide-player.js, shared with the planner,
     // because it now has to pick a language and a voice and there is no
@@ -431,9 +455,9 @@
             const links = [];
             // A guide is offered when there is anything to say, a recording or
             // a written script the device can read aloud. Gating this on the
-            // recording alone hid the guide from every language we have not
-            // been into a studio for.
-            if (e.audio || (e.slug && SPOKEN.has(e.slug))) {
+            // Jason's recording or no button at all [SEAN]: the device
+            // voice that used to cover unrecorded places is gone.
+            if (e.audio) {
                 links.push('<button class="golink" onclick="playGuide(this, \''
                     + esc(e.audio || '') + '\', \'' + esc(e.slug || e.name) + '\', \''
                     + esc(e.slug || '') + '\')">▶ '
@@ -492,6 +516,17 @@
                             { time: fmt(e.close), mins: e.visit }))
                 + '</p>'
                 + advanceRow(e)
+                + diningRow(e)
+                + paidRow(e)
+                + '<div class="stay-ask" id="paid_' + i + '">'
+                +   '<span class="lead" onclick="openPaid(' + i + ')">💵 '
+                +     T('Been here? Tell us what you paid') + ' →</span>'
+                +   '<div class="stay-opts" id="popt_' + i + '">'
+                +     priceChips(e).map(v => '<span onclick="sendPaid(' + i + ',' + v + ')">$'
+                          + v + '</span>').join('')
+                +     '<span onclick="askPaid(' + i + ')">$…</span>'
+                +   '</div>'
+                + '</div>'
                 + '<div class="stay-ask" id="stay_' + i + '">'
                 +   '<span class="lead" onclick="openStay(' + i + ')">⏱ Been here? Tell us how long you stayed →</span>'
                 +   '<div class="stay-opts" id="sopt_' + i + '">'
@@ -539,38 +574,156 @@
         renderSuggest(q, shown);
     }
 
+    // ---------- who else is here, honestly ----------
+    // Three true things, in falling order of interest: other travelers on the
+    // page right now, how many opened the book this week, and how fast the
+    // book itself is growing. If none of those is worth saying, the line
+    // hides rather than pad itself out.
+    (function liveCount(){
+        var weekPeople = 0;
+        function addedThisWeek(){
+            var wk = Date.now() - 7 * 86400000, n = 0;
+            (DATA.entries || []).forEach(function (e) {
+                var t = Date.parse(e.added_at || '');
+                if (t && t > wk) n += 1;
+            });
+            return n;
+        }
+        function paint(online){
+            var el = $('livecount');
+            if (!el) return;
+            var bits = [];
+            if (online > 1) {
+                bits.push('<span class="dot"></span><span>' +
+                    T('{n} travellers reading the book right now', { n: '<b>' + online + '</b>' }) +
+                    '</span>');
+            } else if (weekPeople > 1) {
+                bits.push('<span>' + T('{n} travellers opened the book this week',
+                    { n: '<b>' + weekPeople + '</b>' }) + '</span>');
+            }
+            var grew = addedThisWeek();
+            if (grew) {
+                bits.push('<span>🌱 ' + T('{n} new places added this week',
+                    { n: '<b>' + grew + '</b>' }) + '</span>');
+            }
+            el.innerHTML = bits.join('<span style="color:#c6bfae">·</span>');
+            el.hidden = !bits.length;
+        }
+        fetch('/api/traffic/summary').then(function (r) { return r.json(); })
+            .then(function (d) {
+                if (d && d.ok) weekPeople = ((d.destination_book || {}).week) || 0;
+            }).catch(function () {}).then(ping);
+        function ping(){
+            fetch('/api/online').then(function (r) { return r.json(); })
+                .then(function (d) { paint((d && d.ok) ? d.online : 0); })
+                .catch(function () { paint(0); });
+        }
+        setInterval(ping, 60000);   // an open tab keeps itself counted
+    })();
+
+    // A ?q= in the address prefills the search, so a search result is a
+    // shareable link (and a filmable state). Nothing else reads the URL.
+    try {
+        var _q0 = new URLSearchParams(location.search).get('q');
+        if (_q0) { var _el = $('q'); if (_el) { _el.value = _q0; } }
+    } catch (e) {}
+
     // ---------- suggest & add: the book remembers what visitors teach it ----------
+    // [SEAN] A search that misses is not a dead end, it is the book learning
+    // what it lacks: after a short pause the site searches the map ITSELF,
+    // creates the best match on the spot, and reports the miss to discovery
+    // so the demand is collected either way. The button stays for the
+    // impatient and for adding on top of partial matches.
+    let autoTimer = null, lastAutoQ = '';
     function renderSuggest(q, shown){
         const box = $('suggest');
         if (!box) return;
-        if (!q || q.length < 3) { box.innerHTML = ''; return; }
-        if (!box.querySelector('.sugbtn') || box.dataset.q !== q) {
+        if (!q || q.length < 3) { box.innerHTML = ''; clearTimeout(autoTimer); return; }
+        if (box.dataset.q !== q) {
             box.dataset.q = q;
-            box.innerHTML = '<button class="sugbtn" onclick="suggestSearch()">🌱 ' +
-                (shown ? 'Missing something? ' : 'Not in the book yet, ') +
-                'Suggest &amp; add “' + esc(q) + '”</button><div id="sugres"></div>';
+            const label = $('q').value.trim();
+            box.innerHTML = shown
+                // partial matches: a quiet offer, the results are the point
+                ? '<button class="sugbtn" onclick="suggestSearch()">🌱 Missing something? '
+                  + 'Add “' + esc(label) + '” to the book</button><div id="sugres"></div>'
+                // nothing at all: say so plainly and offer one obvious button
+                : '<div class="sugmiss"><span class="mline">'
+                  + T('Not in the book yet') + ' — <b>' + esc(label) + '</b></span>'
+                  + '<button class="createbtn" onclick="suggestSearch()">＋ '
+                  + T('Create this destination') + '</button></div><div id="sugres"></div>';
+        }
+        clearTimeout(autoTimer);
+        if (!shown && q.length >= 4 && q !== lastAutoQ) {
+            autoTimer = setTimeout(() => {
+                lastAutoQ = q;
+                const b = document.querySelector('.sugmiss .createbtn');
+                if (b) { b.disabled = true; b.textContent = T('Creating it for you…'); }
+                suggestSearch(true);
+            }, 900);
         }
     }
-    async function suggestSearch(){
+    function missBeacon(q, outcome){
+        try {
+            fetch('/api/discovery/search-miss', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ q: q, city: f.city !== 'all' ? f.city : '', outcome: outcome })
+            });
+        } catch (e) {}
+    }
+    // A button that says "Creating it for you..." forever is a dead control.
+    // Whatever happens next, the offer comes back.
+    function resetCreateBtn(){
+        const b = document.querySelector('.sugmiss .createbtn');
+        if (b) { b.disabled = false; b.textContent = '＋ ' + T('Create this destination'); }
+    }
+    async function suggestSearch(auto){
         const q = $('q').value.trim();
         if (!q) return;
         const r = document.getElementById('sugres');
-        r.innerHTML = '<div class="sugmuted">Searching the map…</div>';
+        if (!auto) r.innerHTML = '<div class="sugmuted">Searching the map…</div>';
         try {
-            const res = await fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=' + encodeURIComponent(q));
+            const res = await fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&extratags=1&limit=5&q=' + encodeURIComponent(q));
             const j = await res.json();
-            if (!j.length) { r.innerHTML = '<div class="sugmuted">No matches, try adding the city name.</div>'; return; }
-            r.innerHTML = '';
-            j.forEach(m => {
+            if (!j.length) {
+                missBeacon(q, 'nothing on the map either');
+                resetCreateBtn();
+                r.innerHTML = '<div class="sugmuted">' + T('No matches, try adding the city name.') + '</div>';
+                return;
+            }
+            // Auto-create only what is CLEARLY a public place. The first
+            // live test typed "Flatiron Building" and the map's top match
+            // was an apartment tower in Miami by the same name; the privacy
+            // gate refused it, correctly. So the site picks the best PUBLIC
+            // candidate by the map's own class and importance, and when
+            // nothing looks clearly public it asks a human finger instead.
+            const PUB = ['tourism','historic','leisure','amenity','natural',
+                         'man_made','railway','aeroway','waterway','shop',
+                         'office','bridge','boundary'];
+            const pubs = j.filter(m => PUB.indexOf(m.class) >= 0)
+                          .sort((a, b) => (b.importance || 0) - (a.importance || 0));
+            const pick = auto ? pubs[0] : null;
+            missBeacon(q, pick ? 'auto-created from search'
+                                : (auto ? 'no clearly public match, offered candidates'
+                                        : 'candidates shown'));
+            const rest = pick ? j.filter(m => m !== pick) : j;
+            if (pick) addCommunity(pick, true);
+            if (auto && !pick) resetCreateBtn();
+            r.innerHTML = auto && !pick
+                ? '<div class="sugmuted">The map\u2019s matches don\u2019t look clearly public \u2014 tap the right one if it is.</div>'
+                : '';
+            rest.forEach(m => {
                 const d = document.createElement('div');
                 d.className = 'sugitem';
                 d.textContent = m.display_name;
                 d.onclick = () => addCommunity(m);
                 r.appendChild(d);
             });
-        } catch (e) { r.innerHTML = '<div class="sugmuted">Map search unavailable right now.</div>'; }
+        } catch (e) {
+            resetCreateBtn();
+            if (r) r.innerHTML = '<div class="sugmuted">Map search unavailable right now.</div>';
+        }
     }
-    async function addCommunity(m){
+    async function addCommunity(m, auto){
         const name = m.display_name.split(',')[0].slice(0, 60);
         const city = f.city !== 'all' ? f.city : 'other';
         let resp = null;
@@ -579,7 +732,7 @@
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: name, lat: +m.lat, lon: +m.lon, city: city,
                                        found_via: 'book', osm_class: m.class, type: m.type,
-                                       address: m.address }) });
+                                       address: m.address, extratags: m.extratags }) });
         } catch (e) {}
         $('suggest').innerHTML = ''; $('suggest').dataset.q = '';
         if (resp && resp.ok) {
@@ -588,7 +741,8 @@
             render();
             $('count').textContent += resp.already_known
                 ? ' · “' + name + '” was already in the book'
-                : ' · 🌱 “' + name + '” added, the book will remember it';
+                : (auto ? ' · 🌱 “' + name + '” created from your search — the book will remember it'
+                        : ' · 🌱 “' + name + '” added, the book will remember it');
         } else {
             $('count').textContent = (resp && resp.error) || 'Could not add, try again.';
         }
@@ -607,6 +761,86 @@
         const d = m / 1440;
         return d + (d === 1 ? ' day' : ' days');
     }
+    // ---------- 🍽 the dining profile, from the map's own tags ----------
+    // Not a menu: only about one restaurant in eighty publishes a menu link,
+    // and none publish prices. What the map does know is the useful half,
+    // and where a menu link exists it goes straight to the restaurant's own
+    // page rather than a copy of it here.
+    function diningRow(e){
+        const d = e.dining;
+        // Hours alone are not a dining profile: the card already prints them
+        // one line up, and a lone fork emoji over nothing looks broken.
+        if (!d || (!d.cuisine && !d.menu_url && !(d.flags || []).length)) return '';
+        const bits = [];
+        if (d.cuisine) bits.push('<b>' + esc(d.cuisine) + '</b>');
+        (d.flags || []).forEach(f => bits.push(esc(T(f))));
+        let html = '<p class="dining-line">🍽 ' + bits.join(' · ');
+        if (d.menu_url) {
+            html += ' <a class="menulink" href="' + esc(d.menu_url) + '" target="_blank"'
+                 + ' rel="noopener nofollow">' + T('See the menu') + ' ↗</a>';
+        }
+        return html + '</p>';
+    }
+
+    // ---------- 💵 what travellers actually paid ----------
+    // No API sells live prices (OSM has none, the menu APIs are paid and
+    // chain-only, and the ones that know forbid storing it), so the book asks
+    // the people who just paid. Every figure carries its age: a price nobody
+    // has confirmed in a year is shown as old, never dressed up as today's.
+    function paidRow(e){
+        const p = e.paid;
+        if (!p) return '';
+        const range = (p.low !== p.high) ? ' ($' + p.low + '–$' + p.high + ')' : '';
+        const who = p.source === 'guide' ? T('reported by a guide')
+                  : T('{n} travellers reported', { n: p.n });
+        const age = p.stale
+            ? ' · <span class="paid-old">' + T('not confirmed in over a year') + '</span>'
+            : (p.age_days !== null && p.age_days !== undefined && p.age_days <= 60
+                 ? ' · ' + T('confirmed recently') : '');
+        return '<p class="paid-line">💵 <b>' + T('travellers paid about ${n}', { n: p.median })
+             + '</b>' + range + ' · ' + who + age + '</p>';
+    }
+    function priceChips(e){
+        // sensible first guesses by what kind of place it is, so the common
+        // answer is one tap rather than typing
+        if (e.cat === 'food' || e.type === 'restaurant') return [10, 20, 35, 60];
+        if (e.admission_usd) return [Math.round(e.admission_usd), 20, 30, 50];
+        return [5, 15, 25, 45];
+    }
+    function openPaid(i){
+        const box = document.getElementById('popt_' + i);
+        if (box) box.classList.toggle('on');
+    }
+    function askPaid(i){
+        const v = prompt(T('What did you pay, in US dollars?'));
+        const n = parseFloat((v || '').replace(/[^0-9.]/g, ''));
+        if (n > 0) sendPaid(i, n);
+    }
+    async function sendPaid(i, usd){
+        const e = DATA.entries[i];
+        const wrap = document.getElementById('paid_' + i);
+        const kind = (e.cat === 'food' || e.type === 'restaurant') ? 'meal'
+                   : (e.admission_usd !== undefined ? 'entry' : 'other');
+        try {
+            const d = await psxJSON('/api/place-price', { method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: e.name, city: e.city, usd: usd, kind: kind }) });
+            if (!d || !d.ok) { wrap.innerHTML = '<div class="stay-done" style="color:#b91c1c">'
+                + T('Could not save that.') + '</div>'; return; }
+            const sm = d.summary || {};
+            wrap.innerHTML = '<div class="stay-done">✅ '
+                + T('Thank you, ${n} recorded', { n: usd })
+                + (d.enough ? ' · ' + T('travellers now say about ${n}', { n: sm.median })
+                            : ' · ' + T('one more answer and this becomes the published price'))
+                + '</div>';
+            if (d.enough) { e.paid = { median: sm.median, n: sm.n, low: sm.low, high: sm.high,
+                                       stale: false, age_days: 0, source: d.role, kind: kind }; }
+        } catch (err) {
+            wrap.innerHTML = '<div class="stay-done" style="color:#b91c1c">'
+                + T('Could not reach the server.') + '</div>';
+        }
+    }
+
     function openStay(i){
         const box = document.getElementById('sopt_' + i);
         if (box) box.classList.toggle('on');

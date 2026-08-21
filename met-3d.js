@@ -62,9 +62,23 @@
     stair: "#a9a294"
   };
 
-  var LIGHT = [-0.62, -0.38, 0.68];
+  /* One sun, front-right: the Fifth Avenue face is limestone in daylight,
+     which is the whole point of standing before it. Tops stay brightest. */
+  var LIGHT = [0.60, 0.30, 0.68];
+  /* Closed, the model presents its Fifth Avenue front (the facade's outward
+     normal faces the camera at yaw -2.05); open, it sits at the reading
+     angle the floor plan was composed for. FRONT_TURN is the difference,
+     blended by openT, so entering the museum literally turns the building
+     from its face to its plan. */
+  var FRONT_TURN = 1.71;
+  var FRONT_DIP = -0.19;         /* closed, the camera drops toward street level */
   var yaw = -0.62, pitch = 0.70, exploded = true;
+  var vYaw = yaw, vPitch = pitch;
   var openT = 0, anim = null;
+  /* The third layer: one room, held close. focusKey is which gallery the
+     camera has dived into, focusT its animation, exactly as openT is the
+     building's. Nothing about the drawing changes when it is off. */
+  var focusKey = null, focusT = 0, animF = null;
 
   function rooms() { var G = window.MET_GEOMETRY; return (G && G.ROOMS) || null; }
   function edges() { var G = window.MET_GEOMETRY; return (G && G.EDGES) || []; }
@@ -73,24 +87,29 @@
   var CX = SHELL_W / 2, CY = 560 / 2, OX = 470, OY = 430, SC = 0.80;
   var BB = null;
 
-  function project(x, y, z) {
+  function projRaw(x, y, z) {
     var dx = (x - CX), dy = (y - CY);
-    var c = Math.cos(yaw), s = Math.sin(yaw);
+    var c = Math.cos(vYaw), s = Math.sin(vYaw);
     var rx = dx * c - dy * s;
     var ry = dx * s + dy * c;
-    var sx = OX + rx * SC;
-    var sy = OY + (ry * Math.sin(pitch) - (z || 0) * Math.cos(pitch)) * SC;
+    return [OX + rx * SC,
+            OY + (ry * Math.sin(vPitch) - (z || 0) * Math.cos(vPitch)) * SC, ry];
+  }
+
+  function project(x, y, z) {
+    var p = projRaw(x, y, z);
+    var sx = p[0], sy = p[1];
     if (BB) {
       if (sx < BB[0]) BB[0] = sx;
       if (sy < BB[1]) BB[1] = sy;
       if (sx > BB[2]) BB[2] = sx;
       if (sy > BB[3]) BB[3] = sy;
     }
-    return [sx, sy, ry];
+    return p;
   }
 
   function faceVisible(nx, ny) {
-    return (nx * Math.sin(yaw) + ny * Math.cos(yaw)) > 0.001;
+    return (nx * Math.sin(vYaw) + ny * Math.cos(vYaw)) > 0.001;
   }
 
   function shade(hex, nx, ny, nz) {
@@ -225,6 +244,164 @@
              depth: Math.max(p[2], q[2]) };
   }
 
+  /* ---- the Fifth Avenue front, taken seriously ----
+   *
+   * Measured, not invented: the front line is the chord of the shell's
+   * south-east run, whose jogs stay within 2.7 units of it, and the
+   * pavilion is anchored where the Great Hall's centre projects onto that
+   * line, because the door and the hall are the same fact. What stands on
+   * it is what stands on the building: the grand staircase, the pavilion
+   * higher than the wings, four pairs of columns, three arches, and the
+   * four blocks above the pairs that were never carved.
+   */
+  var FR = {
+    A: [414.8, 202.9],           /* the run's north end */
+    u: [-0.462, 0.887],          /* along the front, toward the south end */
+    /* Outward was measured by point-in-polygon against the real shell, not
+       by which side the schematic Great Hall sits on: the schematic room
+       overhangs the true wall slightly (the sheet says not to scale), and
+       trusting it flipped this normal once. */
+    n: [0.887, 0.462],           /* outward, toward the avenue */
+    L: 197.2,
+    tC: 77.6                     /* where the Great Hall projects: the door */
+  };
+  function fp(t, d) {
+    return [FR.A[0] + FR.u[0] * t + FR.n[0] * d,
+            FR.A[1] + FR.u[1] * t + FR.n[1] * d];
+  }
+  /* a quad standing on the front plane: t-range along, d out, z-range up */
+  function frontQuad(t1, t2, d, z1, z2, fill, edge, sw) {
+    if (!faceVisible(FR.n[0], FR.n[1])) return null;
+    var a = fp(t1, d), b = fp(t2, d);
+    var pa = project(a[0], a[1], z2), pb = project(b[0], b[1], z2),
+        pc = project(b[0], b[1], z1), pd = project(a[0], a[1], z1);
+    return { svg: poly([pa, pb, pc, pd], fill, edge, sw || 0.6),
+             depth: Math.max(pa[2], pb[2]) };
+  }
+  function facade(fade) {
+    var out = [];
+    /* The facade is the outermost thing on the street side, so the whole of
+       it paints after the roof: push order is paint order. */
+    function push(part) {
+      if (!part) return;
+      out.push({ svg: '<g opacity="' + fade.toFixed(2) + '">' + part + "</g>",
+                 depth: 1e8 + 10 + out.length, floor: 3 });
+    }
+    var PAV_H = 113, PAV_D = 10, PAV_HW = 37, PLAT_Z = 18;
+    var shadeN = function (c) { return shade(c, FR.n[0], FR.n[1], 0); };
+    var shadeU = function (c, sgn) { return shade(c, FR.u[0] * sgn, FR.u[1] * sgn, 0); };
+
+    /* the pavilion: a taller block standing proud of the wall */
+    var pavParts = [], pavDepth = -1e9;
+    [[-1, 0], [1, 0]].forEach(function (side) {
+      var sgn = side[0];
+      if (!faceVisible(FR.u[0] * sgn, FR.u[1] * sgn)) return;
+      var t = FR.tC + PAV_HW * sgn;
+      var a = fp(t, 0), b = fp(t, PAV_D);
+      var pa = project(a[0], a[1], PAV_H), pb = project(b[0], b[1], PAV_H),
+          pc = project(b[0], b[1], 0), pd = project(a[0], a[1], 0);
+      pavDepth = Math.max(pavDepth, pa[2], pb[2]);
+      pavParts.push(poly([pa, pb, pc, pd], shadeU(C.shellWall, sgn), C.shellEdge, 0.7));
+    });
+    var fq = frontQuad(FR.tC - PAV_HW, FR.tC + PAV_HW, PAV_D, 0, PAV_H,
+                       shadeN(C.shellWall), C.shellEdge, 0.8);
+    if (fq) { pavParts.push(fq.svg); pavDepth = Math.max(pavDepth, fq.depth); }
+    /* its flat cap */
+    var capPts = [fp(FR.tC - PAV_HW, 0), fp(FR.tC + PAV_HW, 0),
+                  fp(FR.tC + PAV_HW, PAV_D), fp(FR.tC - PAV_HW, PAV_D)]
+      .map(function (q) { return project(q[0], q[1], PAV_H); });
+    pavParts.push(poly(capPts, shade(C.roof, 0, 0, 1), C.shellEdge, 1));
+    capPts.forEach(function (q) { pavDepth = Math.max(pavDepth, q[2]); });
+    push(pavParts.join(""));
+
+    /* the grand staircase, descending to the avenue and widening as it goes */
+    for (var st = 0; st < 5; st++) {
+      var hw = 30 + st * 3.5;
+      var d1 = PAV_D + st * 4.4, d2 = PAV_D + (st + 1) * 4.4;
+      var zt = PLAT_Z - (PLAT_Z / 5) * st;
+      var q1 = fp(FR.tC - hw, d1), q2 = fp(FR.tC + hw, d1),
+          q3 = fp(FR.tC + hw, d2), q4 = fp(FR.tC - hw, d2);
+      var t1 = project(q1[0], q1[1], zt), t2 = project(q2[0], q2[1], zt),
+          t3 = project(q3[0], q3[1], zt), t4 = project(q4[0], q4[1], zt);
+      var stepParts = [poly([t1, t2, t3, t4], shade(C.f2Top, 0, 0, 1), C.shellEdge, 0.5)];
+      var riser = frontQuad(FR.tC - hw, FR.tC + hw, d2, zt - PLAT_Z / 5, zt,
+                            shadeN(C.f1Top), C.shellEdge, 0.4);
+      var sd = Math.max(t3[2], t4[2]);
+      if (riser) { stepParts.push(riser.svg); sd = Math.max(sd, riser.depth); }
+      push(stepParts.join(""));        /* each step nearer the street */
+    }
+
+    /* the three arches, glass in shadow behind the colonnade */
+    [-18.5, 0, 18.5].forEach(function (ac) {
+      var t = FR.tC + ac, r = 8.2, spring = 58, base = PLAT_Z;
+      var pts = [];
+      pts.push(project.apply(null, fp(t - r, PAV_D + 0.15).concat([base])));
+      pts.push(project.apply(null, fp(t - r, PAV_D + 0.15).concat([spring])));
+      for (var ai = 1; ai < 8; ai++) {
+        var th = Math.PI - (Math.PI * ai) / 8;
+        var q = fp(t + Math.cos(th) * r, PAV_D + 0.15);
+        pts.push(project(q[0], q[1], spring + Math.sin(th) * r));
+      }
+      pts.push(project.apply(null, fp(t + r, PAV_D + 0.15).concat([spring])));
+      pts.push(project.apply(null, fp(t + r, PAV_D + 0.15).concat([base])));
+      if (faceVisible(FR.n[0], FR.n[1])) {
+        push(poly(pts, C.glass, C.glassEdge, 0.9, ' opacity="0.85"'));
+      }
+    });
+
+    /* four pairs of columns, platform to entablature */
+    var pairs = [-27.75, -9.25, 9.25, 27.75];
+    pairs.forEach(function (pc) {
+      [-3.2, 3.2].forEach(function (off) {
+        var t = FR.tC + pc + off;
+        var col = frontQuad(t - 1.1, t + 1.1, PAV_D + 0.3, PLAT_Z, 92,
+                            shadeN(C.f2Top), C.shellEdge, 0.45);
+        if (col) push(col.svg);
+        var cap = frontQuad(t - 1.8, t + 1.8, PAV_D + 0.35, 88, 92,
+                            shadeN(C.f1Top), C.shellEdge, 0.4);
+        if (cap) push(cap.svg);
+      });
+    });
+    /* the entablature they carry */
+    var ent = frontQuad(FR.tC - PAV_HW + 1.5, FR.tC + PAV_HW - 1.5, PAV_D + 0.4,
+                        92, 100, shadeN(C.f2Top), C.shellEdge, 0.6);
+    if (ent) push(ent.svg);
+
+    /* the four blocks that were never carved, one above each pair */
+    pairs.forEach(function (pc) {
+      var bParts = [], bd = -1e9;
+      var bq = frontQuad(FR.tC + pc - 4.5, FR.tC + pc + 4.5, 8, PAV_H, PAV_H + 8,
+                         shadeN(C.shellWall), C.shellEdge, 0.6);
+      if (bq) { bParts.push(bq.svg); bd = Math.max(bd, bq.depth); }
+      var bt = [fp(FR.tC + pc - 4.5, 2), fp(FR.tC + pc + 4.5, 2),
+                fp(FR.tC + pc + 4.5, 8), fp(FR.tC + pc - 4.5, 8)]
+        .map(function (q) { return project(q[0], q[1], PAV_H + 8); });
+      bParts.push(poly(bt, shade(C.roof, 0, 0, 1), C.shellEdge, 0.6));
+      bt.forEach(function (q) { bd = Math.max(bd, q[2]); });
+      push(bParts.join(""));
+    });
+
+    /* the wings' cornice, drawn on the true wall either side of the pavilion */
+    [[2, FR.tC - PAV_HW - 2], [FR.tC + PAV_HW + 2, FR.L - 2]].forEach(function (w) {
+      if (w[1] - w[0] < 8 || !faceVisible(FR.n[0], FR.n[1])) return;
+      var a = fp(w[0], 0.6), b = fp(w[1], 0.6);
+      var pa = project(a[0], a[1], 62), pb = project(b[0], b[1], 62);
+      var line = '<line x1="' + pa[0].toFixed(1) + '" y1="' + pa[1].toFixed(1) +
+                 '" x2="' + pb[0].toFixed(1) + '" y2="' + pb[1].toFixed(1) +
+                 '" stroke="' + C.shellEdge + '" stroke-width="1"/>';
+      var pil = [];
+      for (var pt = w[0] + 8; pt < w[1] - 6; pt += 14) {
+        var g1 = fp(pt, 0.6);
+        var v1 = project(g1[0], g1[1], 14), v2 = project(g1[0], g1[1], 56);
+        pil.push('<line x1="' + v1[0].toFixed(1) + '" y1="' + v1[1].toFixed(1) +
+                 '" x2="' + v2[0].toFixed(1) + '" y2="' + v2[1].toFixed(1) +
+                 '" stroke="' + C.shellEdge + '" stroke-width="0.8" opacity="0.7"/>');
+      }
+      push(line + pil.join(""));
+    });
+    return out;
+  }
+
   /* ---- the roof, with the skylight banks ---- */
   function roof(shellH) {
     var parts = [shellRing(shellH, C.roof, null, C.shellEdge, 1.4)];
@@ -264,17 +441,19 @@
     }
 
     BB = [1e9, 1e9, -1e9, -1e9];
+    vYaw = yaw + FRONT_TURN * (1 - openT);
+    vPitch = Math.max(0.4, pitch + FRONT_DIP * (1 - openT));
     var gap = GAP * openT;
     function zOf(r) { return r.f === 2 ? (exploded ? WALL + gap : WALL) : 0; }
     var shellH = EXT_H + (WALL - EXT_H) * openT;
 
     var items = [];
-    var svg = ['<svg viewBox="0 0 940 660" xmlns="http://www.w3.org/2000/svg" role="img" ' +
+    var svg = ['<svg viewBox="0 0 940 660" data-met3d="1" xmlns="http://www.w3.org/2000/svg" role="img" ' +
       'aria-label="The Metropolitan Museum of Art as a turnable model: the real building ' +
       'outline, and inside it both gallery floors, their corridors drawn as footprints.">'];
 
     /* the shadow the building throws, then the ground it stands on */
-    svg.push('<g transform="translate(17,11)">' +
+    svg.push('<g transform="translate(-15,11)">' +
              shellRing(0, C.ink, "0.07", "none", 0) + "</g>");
     svg.push(shellRing(0, C.ground, null, C.shellEdge, 1));
 
@@ -283,6 +462,7 @@
     if (openT < 0.99) {
       items.push({ svg: '<g opacity="' + (1 - openT).toFixed(2) + '">' + roof(shellH) + "</g>",
                    depth: 1e8, floor: 3 });
+      facade(1 - openT).forEach(function (it) { items.push(it); });
     }
 
     /* floor 1 galleries */
@@ -295,12 +475,12 @@
                   isCur ? C.litTop : (isRt ? C.routeTop : C.f1Top),
                   isRt || isCur ? C.routeEdge : C.f1Edge,
                   { label: labelFor(k, r), sub: r.sub, room: k });
-      b.floor = 1;
+      b.floor = 1; b.room = k;
       if (openT < 0.98) b.svg = '<g opacity="' + openT.toFixed(2) + '">' + b.svg + "</g>";
       items.push(b);
       if (b.labelSvg) {
         var lb1 = openT < 0.98 ? '<g opacity="' + openT.toFixed(2) + '">' + b.labelSvg + "</g>" : b.labelSvg;
-        items.push({ svg: lb1, depth: 2e7, floor: 1 });
+        items.push({ svg: lb1, depth: 2e7, floor: 1, room: k, lbl: true });
       }
     });
 
@@ -318,7 +498,7 @@
 
     /* the slab floor 2 stands on, its shadow first */
     if (exploded && openT > 0.02) {
-      items.push({ svg: '<g transform="translate(10,7)" opacity="' + (0.06 * openT).toFixed(3) +
+      items.push({ svg: '<g transform="translate(-9,7)" opacity="' + (0.06 * openT).toFixed(3) +
                    '">' + shellRing(WALL, C.ink, null, "none", 0) + "</g>",
                    depth: 1e7 + 1, floor: 1 });
       /* Floor 2's ground is a whisper, not a slab: the full ring filled
@@ -341,12 +521,12 @@
                     isCur ? C.litTop : (isRt ? C.routeTop : C.f2Top),
                     isRt || isCur ? C.routeEdge : C.f2Edge,
                     { label: labelFor(k, r), sub: r.sub, room: k });
-        b.floor = 2;
+        b.floor = 2; b.room = k;
         if (openT < 0.98) b.svg = '<g opacity="' + openT.toFixed(2) + '">' + b.svg + "</g>";
         items.push(b);
         if (b.labelSvg) {
           var lb2 = openT < 0.98 ? '<g opacity="' + openT.toFixed(2) + '">' + b.labelSvg + "</g>" : b.labelSvg;
-          items.push({ svg: lb2, depth: 2e7, floor: 2 });
+          items.push({ svg: lb2, depth: 2e7, floor: 2, room: k, lbl: true });
         }
       });
       edges().forEach(function (e) {
@@ -371,30 +551,70 @@
       });
     }
 
+    /* The room overview: the focused gallery's highlight works stand on its
+       roof as numbered stops, in walking order. Their positions along the
+       room are spacing, not surveying; the caption below says so, because
+       this sheet never pretends to know more than it does. */
+    if (focusKey && openT > 0.02 && focusT > 0.02 && R[focusKey]) {
+      var fr = R[focusKey];
+      var fCards = window.MET_CARDS || {};
+      var hl = ((fCards[focusKey] || {}).highlights || []).slice(0, 4);
+      if (hl.length) {
+        var fzTop = (fr.f === 2 ? (exploded ? WALL + gap : WALL) : 0) + WALL + 0.5;
+        var fx1 = fr.x * KX, fx2 = (fr.x + fr.w) * KX, fy1 = fr.y, fy2 = fr.y + fr.h;
+        var horiz = (fx2 - fx1) >= (fy2 - fy1);
+        var sp = [], spDepth = -1e9;
+        for (var si = 0; si < hl.length; si++) {
+          var ft = (si + 1) / (hl.length + 1);
+          var sxp = horiz ? fx1 + (fx2 - fx1) * ft : (fx1 + fx2) / 2;
+          var syp = horiz ? (fy1 + fy2) / 2 : fy1 + (fy2 - fy1) * ft;
+          var pp = project(sxp, syp, fzTop);
+          spDepth = Math.max(spDepth, pp[2]);
+          sp.push('<circle cx="' + pp[0].toFixed(1) + '" cy="' + pp[1].toFixed(1) +
+                  '" r="9" fill="' + C.navy + '" stroke="#faf8f4" stroke-width="1.6"/>');
+          sp.push('<text class="m3-stopnum" x="' + pp[0].toFixed(1) + '" y="' +
+                  (pp[1] + 3.5).toFixed(1) + '" text-anchor="middle">' + (si + 1) + "</text>");
+          var wk = hl[si].work || "";
+          if (wk.length > 26) wk = wk.slice(0, 25) + "…";
+          sp.push('<text class="m3-stoplbl" x="' + (pp[0] + 15).toFixed(1) + '" y="' +
+                  (pp[1] + 4).toFixed(1) + '" text-anchor="start">' + esc(wk) + "</text>");
+        }
+        items.push({ svg: '<g opacity="' + focusT.toFixed(2) + '">' + sp.join("") + "</g>",
+                     depth: 2.6e7, floor: fr.f, room: focusKey });
+      }
+    }
+
     items.sort(function (a, b) {
       var fa = a.floor || 1, fb = b.floor || 1;
       if (fa !== fb) return fa - fb;
       return a.depth - b.depth;
     });
-    items.forEach(function (it) { svg.push(it.svg); });
+    /* When one room is held close, everything that is not it steps back:
+       the same building, remembered rather than shouted. */
+    var dim = (focusKey && focusT > 0.02) ? (1 - 0.8 * focusT) : 1;
+    items.forEach(function (it) {
+      if (dim < 1 && it.room !== focusKey) {
+        svg.push('<g opacity="' + dim.toFixed(2) + '">' + it.svg + "</g>");
+      } else if (dim < 1 && it.lbl) {
+        /* the focused room's own name steps aside: the caption below carries
+           it, and the roof is now the stops' stage */
+        svg.push('<g opacity="' + (1 - focusT).toFixed(2) + '">' + it.svg + "</g>");
+      } else {
+        svg.push(it.svg);
+      }
+    });
 
-    /* captions */
-    if (openT < 0.5) {
-      var cap = project(CX, 660, 0), capX = cap[0], capY = cap[1] + 26;
-      svg.push('<text class="m3-title" x="' + capX.toFixed(0) + '" y="' + capY.toFixed(0) +
-               '" text-anchor="middle">The Metropolitan Museum of Art</text>');
-      svg.push('<text class="m3-sub2" x="' + capX.toFixed(0) + '" y="' + (capY + 22).toFixed(0) +
-               '" text-anchor="middle">Eleven and a half acres. Tap the building to go inside.</text>');
-      if (capX - 250 < BB[0]) BB[0] = capX - 250;
-      if (capX + 250 > BB[2]) BB[2] = capX + 250;
-      if (capY + 34 > BB[3]) BB[3] = capY + 34;
-    }
+    /* the closed caption is appended in screen space after the fit, so it
+       holds still while the building turns beneath it */
+    var closedCaption = openT < 0.5;
+    if (closedCaption) BB[3] += 44;   /* leave it room under the model */
     if (openT > 0.5) {
       var l1 = project(CX, 620, 0)[1], l2 = project(CX, 620, WALL + gap)[1];
       var lx = BB[0] - 96;
-      svg.push('<text class="m3-floorlbl" x="' + lx.toFixed(0) + '" y="' + l1.toFixed(0) +
+      var flo = focusT > 0.02 ? ' opacity="' + (1 - focusT).toFixed(2) + '"' : "";
+      svg.push('<text class="m3-floorlbl"' + flo + ' x="' + lx.toFixed(0) + '" y="' + l1.toFixed(0) +
                '">FLOOR 1</text>');
-      if (exploded) svg.push('<text class="m3-floorlbl" x="' + lx.toFixed(0) + '" y="' +
+      if (exploded) svg.push('<text class="m3-floorlbl"' + flo + ' x="' + lx.toFixed(0) + '" y="' +
                l2.toFixed(0) + '">FLOOR 2</text>');
       BB[0] = lx - 8;
     }
@@ -403,9 +623,82 @@
     var VW = 940, VH = 660, PAD = 26;
     var k = Math.min((VW - PAD * 2) / w, (VH - PAD * 2) / h);
     var tx = (VW - w * k) / 2 - BB[0] * k, ty = (VH - h * k) / 2 - BB[1] * k;
+
+    /* Closed, the camera stands on Fifth Avenue: the fit is blended toward
+       the front itself, and the eleven acres behind recede out of frame the
+       way a building does when you are standing before its door. Opening
+       hands the frame back to the whole plan. */
+    if (openT < 0.999) {
+      var fb = [1e9, 1e9, -1e9, -1e9];
+      [[-8, -6], [FR.L + 8, -6], [-8, 46], [FR.L + 8, 46]].forEach(function (td) {
+        [0, 132].forEach(function (zz) {
+          var q3 = fp(td[0], td[1]);
+          var p3 = projRaw(q3[0], q3[1], zz);
+          if (p3[0] < fb[0]) fb[0] = p3[0];
+          if (p3[1] < fb[1]) fb[1] = p3[1];
+          if (p3[0] > fb[2]) fb[2] = p3[0];
+          if (p3[1] > fb[3]) fb[3] = p3[1];
+        });
+      });
+      fb[0] -= 12; fb[1] -= 10; fb[2] += 12; fb[3] += 40;   /* caption ground */
+      var wf = fb[2] - fb[0], hf = fb[3] - fb[1];
+      var kf = Math.min((VW - PAD * 2) / wf, (VH - PAD * 2) / hf);
+      var txf = (VW - wf * kf) / 2 - fb[0] * kf, tyf = (VH - hf * kf) / 2 - fb[1] * kf;
+      var fBlend = 1 - openT;
+      k = k + (kf - k) * fBlend;
+      tx = tx + (txf - tx) * fBlend;
+      ty = ty + (tyf - ty) * fBlend;
+    }
+
+    /* The dive: the frame the camera fits is blended from the whole
+       building's bounding box toward the focused room's, so the zoom is the
+       same autofit the drawing has always used, aimed at less of it. */
+    if (focusKey && focusT > 0.001 && R[focusKey]) {
+      var zr = R[focusKey];
+      var zb = zr.f === 2 ? (exploded ? WALL + GAP * openT : WALL) : 0;
+      var rb = [1e9, 1e9, -1e9, -1e9];
+      [[zr.x * KX, zr.y], [(zr.x + zr.w) * KX, zr.y],
+       [(zr.x + zr.w) * KX, zr.y + zr.h], [zr.x * KX, zr.y + zr.h]].forEach(function (c2) {
+        [zb, zb + WALL].forEach(function (zz) {
+          var p2 = projRaw(c2[0], c2[1], zz);
+          if (p2[0] < rb[0]) rb[0] = p2[0];
+          if (p2[1] < rb[1]) rb[1] = p2[1];
+          if (p2[0] > rb[2]) rb[2] = p2[0];
+          if (p2[1] > rb[3]) rb[3] = p2[1];
+        });
+      });
+      rb[0] -= 52; rb[1] -= 56; rb[2] += 185; rb[3] += 64;  /* labels hang right of the discs */
+      var w2 = rb[2] - rb[0], h2 = rb[3] - rb[1];
+      var k2 = Math.min((VW - PAD * 2) / w2, (VH - PAD * 2) / h2);
+      k2 = Math.min(k2, k * 3.4);                            /* a dive, not a microscope */
+      var tx2 = (VW - w2 * k2) / 2 - rb[0] * k2, ty2 = (VH - h2 * k2) / 2 - rb[1] * k2;
+      k = k + (k2 - k) * focusT;
+      tx = tx + (tx2 - tx) * focusT;
+      ty = ty + (ty2 - ty) * focusT;
+    }
+
     var body = svg.slice(1).join("");
-    return svg[0] + '<g transform="translate(' + tx.toFixed(1) + "," + ty.toFixed(1) +
-           ") scale(" + k.toFixed(4) + ')">' + body + "</g></svg>";
+    var out = svg[0] + '<g transform="translate(' + tx.toFixed(1) + "," + ty.toFixed(1) +
+           ") scale(" + k.toFixed(4) + ')">' + body + "</g>";
+    if (closedCaption) {
+      var capO2 = (1 - openT * 2).toFixed(2);
+      out += '<text class="m3-title" x="470" y="620" text-anchor="middle" opacity="' + capO2 +
+             '">The Metropolitan Museum of Art</text>' +
+             '<text class="m3-sub2" x="470" y="641" text-anchor="middle" opacity="' + capO2 +
+             '">Eleven and a half acres. Tap the building to go inside.</text>';
+    }
+    /* the focused room's caption lives in screen space, steady under the dive */
+    if (focusKey && focusT > 0.5) {
+      var capC = (window.MET_CARDS || {})[focusKey] || {};
+      var capN = capC.name || focusKey.replace(/-/g, " ");
+      if (capC.minutes) capN += " · " + capC.minutes + " min";
+      var capO = ((focusT - 0.5) * 2).toFixed(2);
+      out += '<text class="m3-title" x="470" y="620" text-anchor="middle" opacity="' + capO +
+             '">' + esc(capN) + "</text>" +
+             '<text class="m3-sub2" x="470" y="641" text-anchor="middle" opacity="' + capO +
+             '">stops in walking order · positions approximate</text>';
+    }
+    return out + "</svg>";
   }
 
   /* ---- public ---- */
@@ -426,20 +719,81 @@
     anim = requestAnimationFrame(frame);
   }
 
+  function animateFocus(target, host, opts, done) {
+    if (animF) { cancelAnimationFrame(animF); animF = null; }
+    var from = focusT, t0 = null, dur = 560;
+    function frame(ts) {
+      if (t0 === null) t0 = ts;
+      var k = Math.min(1, (ts - t0) / dur);
+      var e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      focusT = from + (target - from) * e;
+      render(host, opts);
+      if (k < 1) animF = requestAnimationFrame(frame);
+      else { animF = null; focusT = target; render(host, opts); if (done) done(); }
+    }
+    animF = requestAnimationFrame(frame);
+  }
+
+  /* Which rooms the camera will not dive into: the stairs are plumbing. */
+  function focusable(k) {
+    return k && k !== "grand-stair" && k !== "grand-stair-2";
+  }
+
   function attach(host, opts) {
     render(host, opts);
     if (host.__met3dBound) return;
     host.__met3dBound = true;
     var startX = null, startY = null, y0 = yaw, p0 = pitch, moved = false;
+
+    /* Open, a tap is navigation: a room pulls the camera down into its
+       overview, a second tap (or empty ground) lets the building back in.
+       The walk itself is edited from the room bar or the flat sheets, so
+       looking closer never accidentally rewrites the plan. */
+    function roomTap(k, e) {
+      e.stopPropagation();
+      if (focusable(k) && k !== focusKey) {
+        focusKey = k;
+        animateFocus(1, host, opts);
+        host.dispatchEvent(new CustomEvent("met3d:room",
+          { detail: { room: k, focused: true }, bubbles: true }));
+      } else if (focusKey) {
+        var was = focusKey;
+        animateFocus(0, host, opts, function () { focusKey = null; render(host, opts); });
+        host.dispatchEvent(new CustomEvent("met3d:room",
+          { detail: { room: was, focused: false }, bubbles: true }));
+      }
+    }
+
     host.addEventListener("click", function (e) {
+      /* The host also carries the flat floor sheets; this layer only owns
+         clicks that land on its own drawing, or the flat sheets' room
+         picking would be swallowed by a model that is not on screen. */
+      if (!(e.target && e.target.closest && e.target.closest('svg[data-met3d]'))) return;
       if (moved) { e.stopPropagation(); moved = false; return; }
       if (openT < 0.5) {
         e.stopPropagation();
         animateTo(1, host, opts);
         host.dispatchEvent(new CustomEvent("met3d:layer",
           { detail: { layer: "interior" }, bubbles: true }));
+        return;
       }
+      var g = e.target && e.target.closest ? e.target.closest("[data-room]") : null;
+      roomTap(g ? g.getAttribute("data-room") : null, e);
     }, true);
+    host.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      if (!(e.target && e.target.closest && e.target.closest('svg[data-met3d]'))) return;
+      var g = e.target.closest("[data-room]");
+      if (!g) return;
+      e.preventDefault();
+      if (openT < 0.5) {
+        animateTo(1, host, opts);
+        host.dispatchEvent(new CustomEvent("met3d:layer",
+          { detail: { layer: "interior" }, bubbles: true }));
+        return;
+      }
+      roomTap(g.getAttribute("data-room"), e);
+    });
     host.addEventListener("pointerdown", function (e) {
       startX = e.clientX; startY = e.clientY; y0 = yaw; p0 = pitch; moved = false;
     });
@@ -462,8 +816,22 @@
     render: render,
     attach: attach,
     openInterior: function (host, opts, done) { animateTo(1, host, opts, done); },
-    closeToExterior: function (host, opts, done) { animateTo(0, host, opts, done); },
+    closeToExterior: function (host, opts, done) {
+      if (animF) { cancelAnimationFrame(animF); animF = null; }
+      focusKey = null; focusT = 0;                 /* leaving the building leaves the room */
+      animateTo(0, host, opts, done);
+    },
     isOpen: function () { return openT > 0.5; },
+    focusRoom: function (host, opts, key, done) {
+      if (!focusable(key) || !rooms() || !rooms()[key]) { if (done) done(); return; }
+      focusKey = key;
+      animateFocus(1, host, opts, done);
+    },
+    clearFocus: function (host, opts, done) {
+      if (!focusKey) { if (done) done(); return; }
+      animateFocus(0, host, opts, function () { focusKey = null; render(host, opts); if (done) done(); });
+    },
+    focusedRoom: function () { return focusKey; },
     setExploded: function (v) { exploded = !!v; },
     isExploded: function () { return exploded; },
     reset: function () { yaw = -0.62; pitch = 0.70; }

@@ -195,12 +195,61 @@
     while (logEl.children.length > 40) logEl.removeChild(logEl.lastChild);
   }
 
-  function say(text) {
+  /* THE VOICE. A landmark we have actually recorded is spoken in the guide's
+     real voice, a file already on the phone's side of the network, so it costs
+     nothing per play and works where the signal does not. Everything else
+     falls back to the phone's own speech, which is plain but always there.
+     One rule: the recording is a nicety, never a dependency, so any failure
+     to load or play drops straight through to speech rather than silence. */
+  var wgAudio = null;
+  function say(text, audioUrl) {
+    try { speechSynthesis.cancel(); } catch (e) {}
+    try { if (wgAudio) { wgAudio.pause(); wgAudio = null; } } catch (e) {}
+    if (audioUrl) {
+      try {
+        var a = new Audio(audioUrl);
+        wgAudio = a;
+        var fellBack = false;
+        var fallback = function () {
+          if (fellBack) return;
+          fellBack = true; wgAudio = null; speak(text);
+        };
+        a.addEventListener('error', fallback);
+        var pr = a.play();
+        if (pr && pr.catch) pr.catch(fallback);
+        return;
+      } catch (e) { /* fall through to speech */ }
+    }
+    speak(text);
+  }
+
+  function speak(text) {
     try {
       var u = new SpeechSynthesisUtterance(text);
       u.rate = 1.0; u.lang = document.documentElement.lang || 'en-US';
       speechSynthesis.speak(u);
     } catch (e) { /* the text is on screen either way */ }
+  }
+
+  /* Which landmarks have a recorded voice: name -> mp3, loaded once from the
+     book the site already publishes. If this fetch fails the guide simply
+     speaks everything itself. */
+  var wgVoices = null;
+  async function loadVoices() {
+    if (wgVoices) return wgVoices;
+    wgVoices = {};
+    try {
+      var d = await (await fetch('/api/destinations')).json();
+      (d.entries || []).forEach(function (e) {
+        var url = e.audio || e.audio_url;
+        if (url && e.name) wgVoices[String(e.name).trim().toLowerCase()] = url;
+      });
+    } catch (e) { /* leaves the map empty, speech handles it */ }
+    return wgVoices;
+  }
+  function voiceFor(name) {
+    if (!wgVoices || !name) return null;
+    return wgVoices[String(name).trim().toLowerCase()] || null;
   }
 
   /* Places come from Overpass, asked by the BROWSER, so the precise position
@@ -259,7 +308,7 @@
       state.said[best.place.id] = true;
       state.lastSpokeAt = now;
       log(text);
-      say(text);
+      say(text, voiceFor(best.place.name));
     }
   }
 
@@ -283,6 +332,7 @@
     // Spoken once from inside the click, because iOS will not let a page speak
     // later unless speech started from a real tap. The wake lock also has to
     // be requested from a user gesture, so it lives here too.
+    loadVoices();
     say('Guide started.');
     keepAwake();
     btn.textContent = 'Stop';
