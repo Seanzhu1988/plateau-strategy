@@ -2133,59 +2133,18 @@
                     <style>
                         #psx-met-feature{max-width:1180px;margin:1.5rem auto 0;background:var(--psx-card);
                             border:1px solid var(--psx-border);border-radius:18px;overflow:hidden;
-                            display:grid;grid-template-columns:minmax(260px,380px) 1fr;align-items:center;
                             box-shadow:0 18px 44px -22px rgba(20,17,12,.25);
                             transition:transform .25s,border-color .25s,box-shadow .25s;}
                         #psx-met-feature:hover{transform:translateY(-4px);border-color:var(--psx-accent,#1b4d8f);
                             box-shadow:0 26px 60px -24px rgba(20,17,12,.3);}
-                        #psx-met-feature .mfx-draw{padding:1.6rem 0 1.6rem 1.6rem;}
-                        #psx-met-feature .mfx-draw svg{width:100%;height:auto;display:block;}
                         #psx-met-feature .mfx-body{padding:2rem 1.9rem;}
                         #psx-met-feature .mfx-eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.14em;
                             color:var(--psx-accent,#1b4d8f);}
                         #psx-met-feature .mfx-title{margin:.55rem 0 0;font-size:1.28rem;font-weight:700;
                             color:var(--psx-ink,#14110c);letter-spacing:-.01em;}
                         #psx-met-feature .mfx-desc{margin:.7rem 0 0;font-size:.98rem;line-height:1.6;color:#6b655b;}
-                        @media (max-width:760px){#psx-met-feature{grid-template-columns:1fr;}
-                            #psx-met-feature .mfx-draw{padding:1.6rem 1.6rem 0;}}
                     </style>
                     <div id="psx-met-feature" data-arm="operations">
-                        <div class="mfx-draw" aria-hidden="true">
-                            <!-- A tiny echo of the real model: two floors of the
-                                 museum as drawn volumes, footprints crossing the
-                                 great hall, one gallery lit. -->
-                            <svg viewBox="0 0 340 210" xmlns="http://www.w3.org/2000/svg">
-                                <ellipse cx="170" cy="176" rx="128" ry="20" fill="rgba(0,0,0,.35)"/>
-                                <g stroke="#5b6d86" stroke-width="1.3" fill="#243247">
-                                    <polygon points="42,150 170,124 298,150 170,176"/>
-                                    <polygon points="42,150 42,166 170,192 170,176" fill="#1c2a3d"/>
-                                    <polygon points="298,150 298,166 170,192 170,176" fill="#162334"/>
-                                </g>
-                                <g stroke="#7fa6d9" stroke-width="1.2" fill="#2c3d57">
-                                    <polygon points="96,138 170,124 244,138 170,152"/>
-                                    <polygon points="96,138 96,108 170,122 170,152" fill="#243349"/>
-                                    <polygon points="244,138 244,108 170,122 170,152" fill="#1d2b3f"/>
-                                    <polygon points="96,108 170,94 244,108 170,122" fill="#33465f"/>
-                                </g>
-                                <g stroke="#9cc0ea" stroke-width="1.2" fill="#3a5070">
-                                    <polygon points="128,100 170,92 212,100 170,108"/>
-                                    <polygon points="128,100 128,78 170,86 170,108" fill="#2f4361"/>
-                                    <polygon points="212,100 212,78 170,86 170,108" fill="#273a55"/>
-                                    <polygon points="128,78 170,70 212,78 170,86" fill="#dbe7f6"/>
-                                </g>
-                                <g fill="#e8eef7" opacity=".85">
-                                    <ellipse cx="120" cy="160" rx="3.4" ry="1.7"/>
-                                    <ellipse cx="136" cy="156" rx="3.4" ry="1.7"/>
-                                    <ellipse cx="152" cy="152" rx="3.4" ry="1.7"/>
-                                    <ellipse cx="168" cy="148" rx="3.4" ry="1.7"/>
-                                    <ellipse cx="184" cy="144" rx="3.4" ry="1.7"/>
-                                </g>
-                                <circle cx="170" cy="70" r="3.2" fill="#9cc0ea"/>
-                                <line x1="170" y1="70" x2="170" y2="52" stroke="#9cc0ea" stroke-width="1"/>
-                                <text x="178" y="52" font-family="Inter,system-ui,sans-serif" font-size="11"
-                                      font-weight="700" fill="#9cc0ea" letter-spacing=".08em">THE MET</text>
-                            </svg>
-                        </div>
                         <div class="mfx-body">
                             <span class="mfx-eyebrow">NEW · THE INDOOR GUIDE</span>
                             <h3 class="mfx-title">Walk the Met before you arrive</h3>
