@@ -171,6 +171,24 @@ def main():
     else:
         print("  every {placeholder} survives translation")
 
+    # --- 4. no long dashes (em/en) in reader-facing translations ------------
+    # The site's copy rule forbids em and en dashes anywhere a person reads.
+    # A translation that carries one, usually mirrored from the source, is an
+    # error a rule can catch with certainty, so the gate catches it.
+    print("\nlong dashes")
+    dashes = []
+    for key, val in D.items():
+        for lang, t in (val or {}).items():
+            if t and ("—" in t or "–" in t):
+                dashes.append((lang, key, t))
+    if dashes:
+        print(f"  {len(dashes)} translation(s) use an em/en dash (use a comma or period):")
+        for lang, key, t in dashes[:8]:
+            print(f"     [{lang}] {t[:60]}")
+        problems += dashes
+    else:
+        print("  no em or en dashes")
+
     print("\n" + ("-" * 62))
     if problems:
         print(f"{len(problems)} finding(s)")
