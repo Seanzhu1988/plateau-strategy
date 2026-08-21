@@ -89,6 +89,20 @@
         .sugbtn { margin: 0.5rem 0 0 0; background: var(--psx-wash-good,#e1f8ec); border: 1px solid var(--psx-wash-good-on,#cef2df); color: #047857;
             border-radius: 9px; padding: 0.55rem 0.9rem; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
         .sugbtn:hover { background: #d1fae5; }
+        /* A search that finds nothing gets a real button, not a hint. [SEAN:
+           "i searched mount rushmore... can you add bottom for add this
+           destination"] The whole row reads as an offer: big label, the
+           place named back, and one obvious thing to press. */
+        .sugmiss { margin: .7rem 0 0; padding: .9rem 1rem; border-radius: 12px;
+            background: var(--psx-wash-good,#e1f8ec); border: 1px solid var(--psx-wash-good-on,#cef2df);
+            display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .9rem; }
+        .sugmiss .mline { font-size: .92rem; color: #065f46; }
+        .sugmiss .mline b { color: #14110c; }
+        .sugmiss .createbtn { background: #047857; border: 0; color: #fff; border-radius: 10px;
+            padding: .7rem 1.1rem; font-size: .95rem; font-weight: 700; cursor: pointer;
+            min-height: 44px; font-family: inherit; }
+        .sugmiss .createbtn:hover { filter: brightness(1.08); }
+        .sugmiss .createbtn:disabled { opacity: .6; cursor: default; }
         .sugitem { padding: 0.5rem 0.7rem; border: 1px solid #e6e2da; border-top: none; font-size: 0.82rem;
             cursor: pointer; background: var(--psx-card,#fffdf9); color: #4a453d; }
         .sugitem:first-of-type { border-top: 1px solid #e6e2da; border-radius: 8px 8px 0 0; margin-top: 0.4rem; }
@@ -550,18 +564,25 @@
         const box = $('suggest');
         if (!box) return;
         if (!q || q.length < 3) { box.innerHTML = ''; clearTimeout(autoTimer); return; }
-        if (!box.querySelector('.sugbtn') || box.dataset.q !== q) {
+        if (box.dataset.q !== q) {
             box.dataset.q = q;
-            box.innerHTML = '<button class="sugbtn" onclick="suggestSearch()">🌱 ' +
-                (shown ? 'Missing something? ' : 'Not in the book yet, ') +
-                'Suggest &amp; add “' + esc(q) + '”</button><div id="sugres"></div>';
+            const label = $('q').value.trim();
+            box.innerHTML = shown
+                // partial matches: a quiet offer, the results are the point
+                ? '<button class="sugbtn" onclick="suggestSearch()">🌱 Missing something? '
+                  + 'Add “' + esc(label) + '” to the book</button><div id="sugres"></div>'
+                // nothing at all: say so plainly and offer one obvious button
+                : '<div class="sugmiss"><span class="mline">'
+                  + T('Not in the book yet') + ' — <b>' + esc(label) + '</b></span>'
+                  + '<button class="createbtn" onclick="suggestSearch()">＋ '
+                  + T('Create this destination') + '</button></div><div id="sugres"></div>';
         }
         clearTimeout(autoTimer);
         if (!shown && q.length >= 4 && q !== lastAutoQ) {
             autoTimer = setTimeout(() => {
                 lastAutoQ = q;
-                const r = document.getElementById('sugres');
-                if (r) r.innerHTML = '<div class="sugmuted">Not in the book yet — creating it for you…</div>';
+                const b = document.querySelector('.sugmiss .createbtn');
+                if (b) { b.disabled = true; b.textContent = T('Creating it for you…'); }
                 suggestSearch(true);
             }, 900);
         }
@@ -574,6 +595,12 @@
             });
         } catch (e) {}
     }
+    // A button that says "Creating it for you..." forever is a dead control.
+    // Whatever happens next, the offer comes back.
+    function resetCreateBtn(){
+        const b = document.querySelector('.sugmiss .createbtn');
+        if (b) { b.disabled = false; b.textContent = '＋ ' + T('Create this destination'); }
+    }
     async function suggestSearch(auto){
         const q = $('q').value.trim();
         if (!q) return;
@@ -584,7 +611,8 @@
             const j = await res.json();
             if (!j.length) {
                 missBeacon(q, 'nothing on the map either');
-                r.innerHTML = '<div class="sugmuted">No matches, try adding the city name.</div>';
+                resetCreateBtn();
+                r.innerHTML = '<div class="sugmuted">' + T('No matches, try adding the city name.') + '</div>';
                 return;
             }
             // Auto-create only what is CLEARLY a public place. The first
@@ -604,6 +632,7 @@
                                         : 'candidates shown'));
             const rest = pick ? j.filter(m => m !== pick) : j;
             if (pick) addCommunity(pick, true);
+            if (auto && !pick) resetCreateBtn();
             r.innerHTML = auto && !pick
                 ? '<div class="sugmuted">The map\u2019s matches don\u2019t look clearly public \u2014 tap the right one if it is.</div>'
                 : '';
@@ -614,7 +643,10 @@
                 d.onclick = () => addCommunity(m);
                 r.appendChild(d);
             });
-        } catch (e) { if (r) r.innerHTML = '<div class="sugmuted">Map search unavailable right now.</div>'; }
+        } catch (e) {
+            resetCreateBtn();
+            if (r) r.innerHTML = '<div class="sugmuted">Map search unavailable right now.</div>';
+        }
     }
     async function addCommunity(m, auto){
         const name = m.display_name.split(',')[0].slice(0, 60);
