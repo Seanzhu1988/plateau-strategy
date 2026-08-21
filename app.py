@@ -3746,6 +3746,66 @@ _OSM_TYPE_CAT = {
 }
 
 
+# Cities the book has always known by a short key, plus the names a geocoder
+# uses for them. Anything not listed still matches by label.
+_CITY_ALIASES = {
+    "nyc": ("new york", "new york city", "manhattan", "brooklyn", "queens",
+            "the bronx", "bronx", "staten island"),
+    "dc": ("washington", "washington dc", "washington, d.c.",
+           "district of columbia"),
+}
+
+
+def _same_chapter(cities, key, label):
+    """The existing chapter this city belongs to, or the key unchanged."""
+    if not key or key in cities:
+        return key
+    for short, names in _CITY_ALIASES.items():
+        if short in cities and key in names:
+            return short
+    want = (label or key).strip().lower()
+    for k, lbl in cities.items():
+        if (lbl or "").strip().lower() == want:
+            return k
+    return key
+
+
+def _heal_chapters(d):
+    """Fold chapters that are the same city under two keys. Older books were
+    written before _same_chapter existed, so the split already on disk has to
+    be repaired rather than merely prevented.
+
+    WHICH KEY SURVIVES matters: the first version of this folded the city's
+    seventeen places into the newer, uglier key because it merged in whatever
+    order the dict happened to be in. The canonical short key wins, then the
+    key holding more places, then the shorter one. Returns True if anything
+    moved."""
+    cities = d.get("cities") or {}
+    entries = d.get("entries") or []
+    counts = {}
+    for e in entries:
+        counts[e.get("city")] = counts.get(e.get("city"), 0) + 1
+
+    groups = {}
+    for k, lbl in cities.items():
+        groups.setdefault((lbl or k).strip().lower(), []).append(k)
+
+    moved = False
+    for _, keys in groups.items():
+        if len(keys) < 2:
+            continue
+        keys.sort(key=lambda k: (k not in _CITY_ALIASES, -counts.get(k, 0), len(k)))
+        winner, losers = keys[0], keys[1:]
+        for e in entries:
+            if e.get("city") in losers:
+                e["city"] = winner
+                moved = True
+        for k in losers:
+            cities.pop(k, None)
+            moved = True
+    return moved
+
+
 def _derive_city(meta, fallback=""):
     """Where a place ACTUALLY is, taken from the geocoder's address rather than
     whichever city board the traveler happened to be looking at. This is what
@@ -3991,6 +4051,14 @@ def api_destinations_add():
         # error to be swept into "Other", it is a new chapter. The first traveler
         # to search a place there names the city, and it joins the book for good.
         city, city_lbl = _derive_city(data, data.get("city"))
+        cities = d.setdefault("cities", {})
+        # One city, one chapter. The geocoder says "New York" and the book
+        # already keeps that city under "nyc", so a derived key that means
+        # the same place must JOIN the existing chapter, not open a rival
+        # one beside it. Without this the filter row grew two identical
+        # "New York" chips with the city's places split between them.
+        city = _same_chapter(cities, city, city_lbl)
+        _heal_chapters(d)          # repair any split already on disk
         cities = d.setdefault("cities", {})
         if not city:
             city = "other"
