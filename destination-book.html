@@ -297,15 +297,8 @@
     // way back out was to open the planner and remove it there, so the second
     // click on the same button, which every reader tries first, did nothing at
     // all. Same button, both directions.
-    // Which destinations have something to say. Filled once, and the cards
-    // re-render when it lands so nothing waits on it.
-    let SPOKEN = new Set();
-    fetch('/api/guide-languages').then(r => r.json()).then(d => {
-        if (d && d.slugs && d.slugs.length) {
-            SPOKEN = new Set(d.slugs);
-            try { render(); } catch (err) {}
-        }
-    }).catch(() => {});
+    // The script-only "spoken" set is retired with the device voice:
+    // a Listen button now means a real recording, nothing else.
 
     // The spoken guide lives in /guide-player.js, shared with the planner,
     // because it now has to pick a language and a voice and there is no
@@ -431,9 +424,9 @@
             const links = [];
             // A guide is offered when there is anything to say, a recording or
             // a written script the device can read aloud. Gating this on the
-            // recording alone hid the guide from every language we have not
-            // been into a studio for.
-            if (e.audio || (e.slug && SPOKEN.has(e.slug))) {
+            // Jason's recording or no button at all [SEAN]: the device
+            // voice that used to cover unrecorded places is gone.
+            if (e.audio) {
                 links.push('<button class="golink" onclick="playGuide(this, \''
                     + esc(e.audio || '') + '\', \'' + esc(e.slug || e.name) + '\', \''
                     + esc(e.slug || '') + '\')">▶ '

@@ -454,6 +454,8 @@
   document.getElementById('svgHost').addEventListener('met3d:layer', function () {
     var out = document.getElementById('btnOutside');
     if (out) out.hidden = false;
+    /* the doorman: greets on entry, once per visit, and never again */
+    if (window.MetGuide && MetGuide.greet) MetGuide.greet();
   });
   var outBtn = document.getElementById('btnOutside');
   if (outBtn) outBtn.addEventListener('click', function () {

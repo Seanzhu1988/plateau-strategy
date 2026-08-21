@@ -14,9 +14,10 @@
  * hears the real voice rather than the phone's; otherwise the phone's own
  * speech, which is plain but always there and costs nothing. The recording is
  * a nicety, never a dependency: any failure to load falls through to speech
- * rather than to silence. Every gallery is recorded in Jason's voice
- * (met_voices.py reads the cards aloud, ~$1.30 a full museum), the Egyptian
- * Wing pilots Chinese, and the phone remains the net under all of it.
+ * Every gallery is recorded in Jason's voice (met_voices.py reads the
+ * cards aloud, ~$1.30 a full museum), the Egyptian Wing pilots Chinese,
+ * and where a recording cannot play the panel shows the words silently:
+ * Jason or silence, never the device voice [SEAN].
  *
  * WHAT IT WILL NOT DO. It does not claim to know where you are standing. The
  * proximity trigger belongs to /walk, which has GPS and a footprint to follow;
@@ -135,39 +136,18 @@
   }
 
   function speakPlain(text, done) {
-    /* A speech engine that never fires onend is common enough — a locked
-       screen, a browser with no installed voice — and a tour that waits
-       forever for it looks broken. One watchdog, roughly reading speed, and
-       the guide keeps walking whatever the phone does. */
-    var fired = false;
-    function once() { if (fired) return; fired = true; clearTimeout(guard); done(); }
-    var guard = setTimeout(once, Math.min(22000, 2200 + (text || '').length * 62));
-    try {
-      var u = new SpeechSynthesisUtterance(text);
-      u.rate = 0.98;
-      u.lang = document.documentElement.lang || 'en-US';
-      u.onend = once;
-      u.onerror = once;
-      window.speechSynthesis.speak(u);
-    } catch (e) { once(); }
+    /* Jason or silence [SEAN]: the device voice that used to read here was
+       the embarrassment. If a recording cannot play, the panel shows the
+       words for about reading speed, silently, then walks on. */
+    setTimeout(done, Math.min(22000, 2200 + (text || '').length * 62));
   }
 
   /* ---- the tour ---- */
   function step() {
     if (!playing) return;
-    if (at < 0) {                         /* the opening, in Jason's voice */
-      at = 0; seg = 0;
-      if (!introHeard()) {
-        markIntro();
-        paint('The Metropolitan Museum of Art', null,
-              'Five thousand years of art, in a building of eleven and a half acres.');
-        speak('The Metropolitan Museum of Art. Five thousand years of human ' +
-              'making, in a building that covers eleven and a half acres. ' +
-              'Here is the walk you picked.', OPENING_URL, step);
-        return;
-      }
-      /* already greeted this visit: straight to the first room */
-    }
+    if (at < 0) { at = 0; seg = 0; }    /* straight to the first room: the
+                                           greeting belongs to the front door
+                                           (greet below), never to Play */
     if (at >= seq.length) { stop(); return; }
     var key = seq[at];
     var parts = segmentsFor(key);
@@ -233,6 +213,23 @@
     paint(nameOf(key), key, (c && c.one_line) || '');
   }
 
+  /* The greeting, at the main entrance [SEAN "put this introduction into
+     the main entrance... make sure the introduction doesn't play again"]:
+     it plays the moment the building is tapped open, once per visit, and
+     no other path in this file can ever replay it. */
+  function greet() {
+    if (introHeard()) return;
+    markIntro();
+    ensurePlayer();               /* the tap that opened the building */
+    if (playing) return;          /* never talk over a running tour */
+    paint('The Metropolitan Museum of Art', null,
+          'Five thousand years of art, in a building of eleven and a half acres.');
+    speak('The Metropolitan Museum of Art. Five thousand years of human ' +
+          'making, in a building that covers eleven and a half acres. ' +
+          'Pick your galleries, and I will walk them with you.', OPENING_URL,
+          function () {});
+  }
+
   function playRoom(key) {
     ensurePlayer();
     stop();
@@ -279,6 +276,6 @@
   }
 
   window.MetGuide = { mount: mount, start: start, stop: stop, skip: skip,
-                      preview: preview, playRoom: playRoom,
+                      preview: preview, playRoom: playRoom, greet: greet,
                       isPlaying: function () { return playing; } };
 })();
