@@ -118,3 +118,10 @@ purchases.json
 # One-time seed marker: which shipped articles have been placed and must not
 # resurrect after deletion. Runtime state, lives on the data disk.
 seeded_articles.json
+
+# The discovery crawler's store: what it has seen, proposed, and decided, plus
+# a log of each run. Runtime state that lives on the data disk on Render; a
+# local run writes it to the repo root instead. The .tmp twin is the atomic
+# write's staging file, same as footprints above, and must be ignored too.
+discovery_store.json
+discovery_store.json.tmp
