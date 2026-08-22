@@ -80,7 +80,7 @@
         .rate-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.3rem 0 0.5rem; }
         /* A quiet view count: a fact about the place, not a question put to the
            reader, so it sits as a small label under the stars. */
-        .place-views { display: inline-flex; align-items: center; gap: 0.35rem; margin: 0 0 0.5rem;
+        .place-views { display: block; margin: 0 0 0.5rem;
             font-size: 0.82rem; font-weight: 700; color: #6b655b; }
         .place-views b { color: #1b4d8f; font-variant-numeric: tabular-nums; }
         .stars { font-size: 1.15rem; letter-spacing: 1px; cursor: pointer; }
@@ -512,7 +512,7 @@
                 + '<div class="rate-row">' + starWidget(e, i) + '</div>'
                 + '<div class="place-views" data-vname="' + esc(e.name) + '" data-vcity="'
                 +   esc(e.city || '') + '" title="How many travelers have looked at this place">'
-                +   '👁 <b>' + (e.views || 0) + '</b></div>'
+                +   '<b>' + (e.views || 0) + '</b> viewed</div>'
                 + '<p class="desc">' + esc(e.desc) + '</p>'
                 + '<p class="meta">'
                 +   (e.typical_visit

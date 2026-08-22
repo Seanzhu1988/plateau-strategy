@@ -9061,7 +9061,7 @@ def idea_page(aid):
 <div class="wrap">
   %(lang_row)s
   <div class="page-title" id="ideaTitle">%(title)s</div>
-  <p class="idea-meta">Posted by %(author)s%(when)s · 👁 %(views)s</p>
+  <p class="idea-meta">Posted by %(author)s%(when)s · <b>%(views)s</b> viewed</p>
   <div class="idea-body" id="ideaBody">%(paras)s</div>
   %(locked_note)s
   %(bp_section)s

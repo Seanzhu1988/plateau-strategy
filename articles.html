@@ -58,10 +58,9 @@
 
         .actions { margin-top: 1.6rem; padding-top: 1.2rem; border-top: 1px solid var(--psx-wash-info,#e5f3ff); }
         /* A quiet read count, not a vote. It states a fact rather than asking
-           for an opinion, so it is a plain label, not a button. */
-        .views { display: inline-flex; align-items: center; gap: 0.4rem; margin-bottom: 1rem;
+           for an opinion, so it is a plain label in words, not a button. */
+        .views { display: inline-block; margin-bottom: 1rem;
             font-weight: 700; font-size: 0.9rem; color: #4a453d; }
-        .views .eye { font-size: 1rem; }
         .views b { color: #1b4d8f; font-variant-numeric: tabular-nums; }
 
         .follow { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
@@ -170,7 +169,7 @@
                 '<div class="text">' + esc(a.body) + '</div>' +
                 '<div class="actions">' +
                   '<div class="views" data-vid="' + a.id + '" title="How many people have opened this idea">' +
-                    '<span class="eye" aria-hidden="true">👁</span> <b id="vw_' + a.id + '">' + (a.views || 0) + '</b>' +
+                    '<b id="vw_' + a.id + '">' + (a.views || 0) + '</b> viewed' +
                   '</div>' +
                   '<div class="follow" id="fl_' + a.id + '">' +
                     (followed

@@ -1713,8 +1713,7 @@
       .idea-votes{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap;}
       /* A read count, not a vote: a plain fact, so it sits as a label beside the
          actions rather than as another button. */
-      .idea-views{display:inline-flex;align-items:center;gap:.35rem;margin-right:.2rem;
-        font-weight:700;font-size:.9rem;color:#6b7787;}
+      .idea-views{margin-right:.3rem;font-weight:700;font-size:.9rem;color:#6b7787;}
       .idea-views b{color:#7da2ff;font-variant-numeric:tabular-nums;}
       .idea-vbtn{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .9rem;border-radius:999px;
         border:1px solid var(--psx-border);background:rgba(255,255,255,.04);color:#4a453d;font-weight:700;font-size:.85rem;cursor:pointer;}
@@ -3654,7 +3653,7 @@
                         // A quiet read count in place of the up/down vote: what
                         // people did, not an opinion asked of them. More eyes on
                         // an idea is the honest signal of pull.
-                        '<span class="idea-views" data-vid="' + a.id + '" title="How many people have opened this idea">👁 <b id="ivw_' + a.id + '">' + (a.views || 0) + '</b></span>' +
+                        '<span class="idea-views" data-vid="' + a.id + '" title="How many people have opened this idea"><b id="ivw_' + a.id + '">' + (a.views || 0) + '</b> viewed</span>' +
                         // The board lives inside a tab and loads over JS, so an idea had
                         // no address anybody could send. /idea/<id> is that address, and
                         // it is server-rendered so the link preview works, a paste into

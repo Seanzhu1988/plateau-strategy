@@ -651,5 +651,6 @@
  "Recorded voice where we have one, your phone's voice otherwise. Inside the Met the map goes grey, so this is the guide at the table; the one that knows where you are standing lives on": "録音した音声があればそれで、なければお使いのスマホの音声でお届けします。メットの館内では地図が灰色になるので、これは机の前で聞く案内です。今どこに立っているかまで分かるのは",
  "the walking guide": "徒歩ガイド",
  "Remove this stop": "この立ち寄り先を外す",
- "Tap the ✕ on a stop to remove it. Add another by typing above or tapping a pin.": "各立ち寄り先の ✕ をタップすると削除できます。上部で入力するか、地図のピンをタップして別の場所を追加してください。"
+ "Tap the ✕ on a stop to remove it. Add another by typing above or tapping a pin.": "各立ち寄り先の ✕ をタップすると削除できます。上部で入力するか、地図のピンをタップして別の場所を追加してください。",
+ "viewed": "ビュー"
 }

@@ -2745,3 +2745,11 @@ EXTRA.update({
         "방문지의 ✕ 를 누르면 삭제됩니다. 위에 입력하거나 지도의 핀을 눌러 다른 곳을 추가하세요.",
         "Chạm vào dấu ✕ trên một điểm dừng để xoá. Thêm điểm khác bằng cách gõ ở trên hoặc chạm vào ghim trên bản đồ."],
 })
+
+# ---- The read count on ideas and destinations. Rendered as "42 viewed", the
+# number in bold and this word beside it, so a plain audience reads a fact
+# rather than an icon. One word, its own text node, so the engine translates
+# it in place and it survives a language switch (2026-08-22). ----
+EXTRA.update({
+    "viewed": ["次浏览", "vistas", "조회", "lượt xem"],
+})
