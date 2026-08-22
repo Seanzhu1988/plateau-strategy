@@ -68,6 +68,12 @@
         .city-band:first-child { margin-top: .2rem; }
         .city-band span { font-family: var(--psx-sans, sans-serif); font-size: .74rem;
             font-weight: 600; letter-spacing: .1em; color: var(--psx-muted, #6b655b); }
+        /* modern.css forces every h2 to clamp(1.6,3vw,2.2rem), which blew this
+           city divider up to ~35px, almost the page-title size and twice the
+           place names beneath it, the "very unbalanced" look. The #grid id
+           beats that !important so the band reads as a divider: a clear step
+           below the title, a clear step above the cards. Only this page. */
+        #grid .city-band { font-size: clamp(1.35rem, 2.2vw, 1.6rem) !important; line-height: 1.2 !important; }
         .entry { background: var(--psx-card,#fffdf9); border: 1px solid #e6e2da; border-radius: 4px;
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1.1rem 1.2rem;
             display: flex; flex-direction: column; gap: 0.5rem; }
