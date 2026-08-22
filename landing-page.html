@@ -1216,18 +1216,20 @@
            midnight metallic grey, the Tesla "Midnight Silver Metallic" paint:
            a deep charcoal body with a lighter satin sheen at the edges,
            clipped to the text. Dark, so it reads with strong contrast on the
-           page's light ground. */
-        font-size:clamp(2rem,6vw,4.2rem);
+           page's light ground. Eased down 17% from clamp(2,6vw,4.2rem) at the
+           owner's request, still a clear step above the h1. */
+        font-size:clamp(1.66rem,4.98vw,3.49rem);
         background:linear-gradient(180deg,#5b6069 0%,#363a41 42%,#24272c 56%,#4e535c 100%);
         -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
       }
       #view-overview .psx-h1{
         margin:.7rem auto 0;font-weight:800;color:var(--psx-text);
-        /* Size, face and measure are owned by modern.css with !important,
-           which is where the phone-size fix lives. This is the fallback for
-           a page rendered without that sheet, matched to the same shape so
-           the two never disagree visibly. */
-        font-size:clamp(1.7rem,4.6vw,3.5rem);line-height:1.12;letter-spacing:-.015em;
+        /* Size is normally owned by modern.css with !important. The owner
+           asked for this statement 17% smaller, so the hero copy overrides it
+           here (id gives the specificity to beat that !important), down from
+           clamp(1.7,4.6vw,3.5rem). Only the hero h1 changes; other pages keep
+           modern.css's size. */
+        font-size:clamp(1.41rem,3.82vw,2.91rem) !important;line-height:1.12;letter-spacing:-.015em;
         max-width:24ch;text-wrap:balance;
       }
       #view-overview .psx-accent{
@@ -1245,7 +1247,7 @@
         /* Still the biggest line on the phone, a step above the h1's 1.7rem
            floor, just eased down from the desktop size so it does not fill the
            screen. */
-        #view-overview .psx-tagline{font-size:clamp(2rem,6.8vw,2.8rem);}
+        #view-overview .psx-tagline{font-size:clamp(1.66rem,5.64vw,2.32rem);}
       }
       #view-overview .psx-cta-row{display:flex;gap:.85rem;flex-wrap:wrap;justify-content:center;margin-top:2.2rem;}
       /* Deliberately quiet. This is a footnote that happens to be a number,
