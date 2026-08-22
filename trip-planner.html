@@ -494,10 +494,20 @@
         .loc-info { font-size: 0.8rem; color: #0f6d5c; margin-top: 0.35rem; line-height: 1.4; }
         .loc-info.warn { color: #b45309; }
         .build-row .to { color: #6b655b; font-weight: 800; }
-        .build-row #destAdd { flex: 1; min-width: 200px; border: 1px solid #ddd8cd; border-radius: 9px;
+        /* flex-basis, not a hard min-width: on a narrow phone the input shrinks
+           so the Add button always stays on screen instead of spilling off the
+           right edge. The row also wraps as a last resort. */
+        .map-searchbar .build-row { flex-wrap: wrap; }
+        .build-row #destAdd { flex: 1 1 8rem; min-width: 0; border: 1px solid #ddd8cd; border-radius: 9px;
             padding: 0.55rem 0.8rem; font-size: 0.92rem; }
         .btn.add { background: linear-gradient(135deg,#1b4d8f,#1b4d8f); color: #fff; border: none;
-            border-radius: 9px; padding: 0.55rem 1rem; font-weight: 800; cursor: pointer; white-space: nowrap; }
+            border-radius: 9px; padding: 0.6rem 1rem; min-height: 40px; font-weight: 800; cursor: pointer; white-space: nowrap; }
+        /* a remove control on every stop in the route strip, always visible */
+        .chain .dnode { display: inline-flex; align-items: center; }
+        .chain .dnode-x { margin-left: .4rem; border: none; background: none; color: #1b4d8f;
+            font-weight: 800; cursor: pointer; font-size: .95rem; line-height: 1; padding: .1rem .25rem;
+            border-radius: 6px; }
+        .chain .dnode-x:hover { color: var(--psx-red,#a3302a); background: rgba(163,48,42,.08); }
         .btn.add:hover { filter: brightness(1.08); }
         .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-top: 0.6rem; }
         .chain .dnode { background: #eef4ff; border: 1px solid #c7d7f5; color: #1b4d8f; font-weight: 700;
@@ -1634,7 +1644,9 @@
         if (!st.route.length) { el.innerHTML = '<span class="muted">' + T('Your route builds here: D1 → D2 → D3 …') + '</span>'; return; }
         el.innerHTML = st.route.map((r, k) =>
             '<span class="dnode" title="' + escj(places[r.i].name) + '">D' + (k + 1) + ' · '
-             + escj(places[r.i].name.split(' ').slice(0, 2).join(' ')) + '</span>'
+             + escj(places[r.i].name.split(' ').slice(0, 2).join(' '))
+             + '<button type="button" class="dnode-x x" onclick="removeStopFromRoute(' + r.i + ')"'
+             + ' title="' + escj(T('Remove this stop')) + '" aria-label="' + escj(T('Remove this stop')) + '">✕</button></span>'
         ).join('<span class="darrow">→</span>');
     }
     function renderTrip(){

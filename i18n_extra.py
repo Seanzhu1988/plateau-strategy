@@ -2732,3 +2732,8 @@ EXTRA.update({
 EXTRA.update({
     "Not in the book yet — creating it for you…": ["书里还没有它，正在为你创建…", "Aún no está en el libro, lo estamos creando para ti…", "아직 책에 없어요. 지금 만들어 드릴게요…", "Chưa có trong sách, đang tạo cho bạn…"],
 })
+
+# ---- Trip planner: remove-a-stop control on the route strip (2026-08-22) ----
+EXTRA.update({
+    "Remove this stop": ["移除这一站", "Quitar esta parada", "이 방문지 빼기", "Bỏ điểm dừng này"],
+})
