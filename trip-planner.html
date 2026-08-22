@@ -500,15 +500,30 @@
         .map-searchbar .build-row { flex-wrap: wrap; }
         .build-row #destAdd { flex: 1 1 8rem; min-width: 0; border: 1px solid #ddd8cd; border-radius: 9px;
             padding: 0.55rem 0.8rem; font-size: 0.92rem; }
-        .btn.add { background: linear-gradient(135deg,#1b4d8f,#1b4d8f); color: #fff; border: none;
-            border-radius: 9px; padding: 0.6rem 1rem; min-height: 40px; font-weight: 800; cursor: pointer; white-space: nowrap; }
-        /* a remove control on every stop in the route strip, always visible */
+        /* Add is the primary action of this row, so it reads as a filled button,
+           not a faint word. The site-wide stylesheet paints every <button> as an
+           underlined label; an id beats that rule's specificity so this one
+           control can stand out, since a stranger has to find it to build a trip. */
+        #destAddBtn.btn.add { background: #1b4d8f !important; background-image: none !important;
+            color: #fff !important; border: 0 !important; border-bottom: 0 !important;
+            border-radius: 10px !important; padding: 0 1.15rem !important; min-height: 44px !important;
+            box-shadow: 0 1px 2px rgba(27,77,143,.25) !important; font-weight: 800 !important;
+            font-size: .95rem !important; white-space: nowrap !important; cursor: pointer;
+            display: inline-flex !important; align-items: center; justify-content: center; }
+        #destAddBtn.btn.add:hover { background: #163f75 !important; }
+        /* A remove control on every stop, drawn as a real round button so it is
+           unmistakably tappable, and it turns red on touch so its job is plain.
+           Addressed by #chain so it outranks the site-wide "every button is an
+           underlined word" rule, which is otherwise too specific to beat. */
         .chain .dnode { display: inline-flex; align-items: center; }
-        .chain .dnode-x { margin-left: .4rem; border: none; background: none; color: #1b4d8f;
-            font-weight: 800; cursor: pointer; font-size: .95rem; line-height: 1; padding: .1rem .25rem;
-            border-radius: 6px; }
-        .chain .dnode-x:hover { color: var(--psx-red,#a3302a); background: rgba(163,48,42,.08); }
-        .btn.add:hover { filter: brightness(1.08); }
+        #chain .dnode-x { box-sizing: border-box !important; margin-left: .45rem; width: 26px !important;
+            height: 26px !important; flex: 0 0 auto; display: inline-flex !important; align-items: center;
+            justify-content: center; border: 0 !important; background: #d7e3fa !important; color: #1b4d8f !important;
+            border-radius: 999px !important; font-size: .82rem !important; line-height: 1 !important;
+            padding: 0 !important; cursor: pointer; }
+        #chain .dnode-x:hover, #chain .dnode-x:focus-visible { background: var(--psx-red,#a3302a) !important; color: #fff !important; }
+        /* One line under the strip so the add and remove gestures are spelled out. */
+        .chain-hint { margin: .55rem .2rem 0; font-size: .8rem; line-height: 1.45; color: #6b655b; }
         .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-top: 0.6rem; }
         .chain .dnode { background: #eef4ff; border: 1px solid #c7d7f5; color: #1b4d8f; font-weight: 700;
             font-size: 0.8rem; border-radius: 999px; padding: 2px 10px; }
@@ -765,11 +780,12 @@
                 <span class="to">→</span>
                 <input id="destAdd" placeholder="Type a destination and press Add, or tap a pin on the map"
                        autocomplete="off" onkeydown="if(event.key==='Enter')addDestination()">
-                <button class="btn add" onclick="addDestination()">＋ Add</button>
+                <button class="btn add" id="destAddBtn" onclick="addDestination()">＋ Add</button>
             </div>
             <div id="curLocInfo" class="loc-info"></div>
             <div id="farNote" class="far-note" style="display:none;"></div>
             <div id="chain" class="chain"></div>
+            <p id="chainHint" class="chain-hint" style="display:none;"></p>
         </div>
 
         <div class="actionbar flat" id="actionbar">
@@ -1641,13 +1657,22 @@
     }
     function renderChain(){                 // the D1 → D2 → D3 strip from the sketch
         const el = $('chain'); if (!el) return;
-        if (!st.route.length) { el.innerHTML = '<span class="muted">' + T('Your route builds here: D1 → D2 → D3 …') + '</span>'; return; }
+        const hint = $('chainHint');
+        if (!st.route.length) {
+            el.innerHTML = '<span class="muted">' + T('Your route builds here: D1 → D2 → D3 …') + '</span>';
+            if (hint) hint.style.display = 'none';
+            return;
+        }
         el.innerHTML = st.route.map((r, k) =>
             '<span class="dnode" title="' + escj(places[r.i].name) + '">D' + (k + 1) + ' · '
              + escj(places[r.i].name.split(' ').slice(0, 2).join(' '))
              + '<button type="button" class="dnode-x x" onclick="removeStopFromRoute(' + r.i + ')"'
              + ' title="' + escj(T('Remove this stop')) + '" aria-label="' + escj(T('Remove this stop')) + '">✕</button></span>'
         ).join('<span class="darrow">→</span>');
+        if (hint) {
+            hint.textContent = T('Tap the ✕ on a stop to remove it. Add another by typing above or tapping a pin.');
+            hint.style.display = '';
+        }
     }
     function renderTrip(){
         const el = $('trip'); if (!el) return;

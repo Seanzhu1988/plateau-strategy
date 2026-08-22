@@ -491,6 +491,117 @@ def api_auth_reader():
                     "owner": bool(session.get("owner"))})
 
 
+# ---------- "Continue with Apple" (Sign in with Apple) ----------
+# The same shape as the Google block above, and the same rule: the button only
+# exists when it is configured, the credential is verified on the SERVER against
+# Apple's own signing keys, and nothing the browser sends is believed until that
+# check passes. APPLE_CLIENT_ID is the Services ID registered with Apple, which
+# is the token's audience; it is public configuration, not a secret, so it lives
+# in the environment and the feature simply stays off until it is set.
+APPLE_CLIENT_ID = os.environ.get("APPLE_CLIENT_ID", "").strip()
+_APPLE_KEYS = {"at": 0.0, "keys": None}     # small cache of Apple's public keys
+
+
+@app.route("/api/auth/apple/config")
+def api_apple_config():
+    """Whether the button should be drawn at all, and with which Services ID."""
+    return jsonify({"ok": True, "enabled": bool(APPLE_CLIENT_ID),
+                    "client_id": APPLE_CLIENT_ID})
+
+
+def _apple_keys():
+    """Apple's current signing keys, cached for an hour.
+
+    Fetched from Apple over the same trust anchor a browser uses. On a fetch
+    failure the last good set is returned if we have one, otherwise None, and
+    the caller refuses the sign-in rather than guessing."""
+    now = time.time()
+    if _APPLE_KEYS["keys"] and now - _APPLE_KEYS["at"] < 3600:
+        return _APPLE_KEYS["keys"]
+    try:
+        import requests as _rq
+        keys = _rq.get("https://appleid.apple.com/auth/keys", timeout=10).json().get("keys")
+        if keys:
+            _APPLE_KEYS.update(at=now, keys=keys)
+    except Exception:
+        pass
+    return _APPLE_KEYS["keys"]
+
+
+def _apple_claims(token):
+    """Verify an Apple identity token server-side. Returns (claims, error).
+
+    The one security-sensitive routine, shared by both Apple endpoints, the
+    same one-copy rule as _google_claims. The browser hands us a signed
+    assertion; signature is checked against Apple's published keys, audience
+    against our Services ID, issuer against Apple, and expiry by the library.
+    A browser can say anything, so nothing in the token is believed until this
+    passes."""
+    if not token:
+        return None, "No credential."
+    keys = _apple_keys()
+    if not keys:
+        return None, "Could not verify that sign-in."
+    try:
+        import jwt
+        from jwt.algorithms import RSAAlgorithm
+        header = jwt.get_unverified_header(token)
+        jwk = next((k for k in keys if k.get("kid") == header.get("kid")), None)
+        if not jwk:
+            return None, "Could not verify that sign-in."
+        pub = RSAAlgorithm.from_jwk(json.dumps(jwk))
+        claims = jwt.decode(token, pub, algorithms=["RS256"],
+                            audience=APPLE_CLIENT_ID,
+                            issuer="https://appleid.apple.com")
+    except Exception:
+        # Bad signature, wrong audience, expired, or a library that cannot
+        # read the key. We cannot tell a forgery from an outage, and must
+        # not guess.
+        return None, "Could not verify that sign-in."
+    if not claims.get("email"):
+        # Without an address there is nothing to fill or to stamp a log with.
+        return None, "That Apple sign-in returned no email."
+    return claims, None
+
+
+@app.route("/api/auth/apple", methods=["POST"])
+def api_auth_apple():
+    """Turn an Apple credential into a name and an email we can believe.
+
+    Nothing is stored. Apple sends the name only on the very first
+    authorisation and never inside the token, so the browser passes along
+    whatever it was given, and the email is taken from the verified token."""
+    if not APPLE_CLIENT_ID:
+        return jsonify({"ok": False, "error": "Apple sign-in isn't configured."}), 503
+    body = request.get_json(force=True, silent=True) or {}
+    claims, err = _apple_claims((body.get("id_token") or "").strip())
+    if not claims:
+        return jsonify({"ok": False, "error": err}), 401
+    return jsonify({"ok": True,
+                    "name": (body.get("name") or "").strip()[:80],
+                    "email": (claims.get("email") or "").strip()[:120]})
+
+
+@app.route("/api/auth/apple/session", methods=["POST"])
+def api_auth_apple_session():
+    """Sign a reader in with Apple, the same session shape as Google.
+
+    A browser-session cookie carrying exactly two facts, the verified email
+    and the display name. Not permanent, for the same reason as Google: this
+    identity stamps an access log, and a long-lived cookie on a shared device
+    would keep writing the wrong name into other people's records."""
+    if not APPLE_CLIENT_ID:
+        return jsonify({"ok": False, "error": "Apple sign-in isn't configured."}), 503
+    body = request.get_json(force=True, silent=True) or {}
+    claims, err = _apple_claims((body.get("id_token") or "").strip())
+    if not claims:
+        return jsonify({"ok": False, "error": err or "No credential."}), 401
+    reader = {"email": (claims.get("email") or "").strip()[:120],
+              "name": (body.get("name") or "").strip()[:80]}
+    session["reader"] = reader
+    return jsonify({"ok": True, "email": reader["email"], "name": reader["name"]})
+
+
 # ---------- storage helpers ----------
 def _load(path):
     try:
@@ -1941,6 +2052,16 @@ def google_signin_js():
     the credential is never decoded in the browser has to hold everywhere, and
     three copies is three places to get that wrong."""
     return send_file(os.path.join(BASE_DIR, "google-signin.js"),
+                     mimetype="text/javascript")
+
+
+@app.route("/apple-signin.js")
+def apple_signin_js():
+    """"Continue with Apple", one implementation, any form. The Apple sibling
+    of google-signin.js, kept in one file for the same reason: the credential
+    is verified on the server and never decoded here, and that rule has to hold
+    everywhere it is used."""
+    return send_file(os.path.join(BASE_DIR, "apple-signin.js"),
                      mimetype="text/javascript")
 
 

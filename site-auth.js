@@ -40,6 +40,8 @@
       "background:none;border:1px solid currentColor;border-radius:999px;",
       "padding:.3rem .85rem;min-height:34px;cursor:pointer;opacity:.85}",
       ".psx-auth-btn:hover{opacity:1}",
+      ".psx-auth-apple{display:inline-flex;align-items:center;gap:.35rem}",
+      ".psx-auth-apple svg{display:block}",
       ".psx-auth-name{font-size:.85rem;opacity:.8;max-width:11ch;overflow:hidden;text-overflow:ellipsis}",
       ".psx-auth-out{background:none;border:0;padding:0;font:inherit;font-size:.78rem;",
       "color:inherit;opacity:.7;text-decoration:underline;cursor:pointer}",
@@ -72,8 +74,7 @@
     box.appendChild(out);
   }
 
-  function renderSignin(box, clientId) {
-    box.innerHTML = "";
+  function renderGoogleSignin(box, clientId) {
     var btn = el("button", "psx-auth-btn", "Sign in");
     btn.addEventListener("click", function () {
       btn.textContent = "One moment";
@@ -121,6 +122,65 @@
     box.appendChild(btn);
   }
 
+  // The Apple logo as a drawn mark, so the button reads the same on every
+  // platform (the  glyph only renders on Apple devices, a tofu box on the rest).
+  var APPLE_MARK = '<svg viewBox="0 0 384 512" width="13" height="13" fill="currentColor"'
+    + ' aria-hidden="true" focusable="false"><path d="M318.7 268.7c-.2-36.7 16.4-64.4'
+    + ' 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7'
+    + '-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2'
+    + ' 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5'
+    + ' 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5'
+    + '-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>';
+
+  function resetApple(btn) {
+    btn.innerHTML = APPLE_MARK + "<span>Apple</span>";
+    btn.disabled = false;
+  }
+
+  function renderAppleSignin(box, clientId) {
+    var btn = el("button", "psx-auth-btn psx-auth-apple", "");
+    btn.setAttribute("aria-label", "Sign in with Apple");
+    btn.innerHTML = APPLE_MARK + "<span>Apple</span>";
+    btn.addEventListener("click", function () {
+      btn.textContent = "One moment";
+      btn.disabled = true;
+      var s = document.createElement("script");
+      s.src = "https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
+      s.async = true; s.defer = true;
+      s.onload = function () {
+        try {
+          // redirectURI must be a Return URL registered on the Services ID,
+          // https, and match this origin. Apple rejects anything else, which
+          // is why this stays dormant until the domain is configured there.
+          AppleID.auth.init({
+            clientId: clientId, scope: "name email",
+            redirectURI: location.origin + "/", usePopup: true
+          });
+          AppleID.auth.signIn().then(function (data) {
+            var idt = data && data.authorization && data.authorization.id_token;
+            var nm = "";
+            if (data && data.user && data.user.name) {
+              nm = ((data.user.name.firstName || "") + " "
+                  + (data.user.name.lastName || "")).trim();
+            }
+            fetch("/api/auth/apple/session", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id_token: idt, name: nm })
+            }).then(function (r) { return r.json(); }).then(function (j) {
+              if (j.ok) { location.reload(); return; }
+              resetApple(btn);
+              alert(j.error || "Could not verify that sign-in.");
+            }).catch(function () { resetApple(btn); });
+          }).catch(function () { resetApple(btn); });   // closed the popup, or refused
+        } catch (e) { resetApple(btn); }
+      };
+      s.onerror = function () { resetApple(btn); };
+      document.head.appendChild(s);
+    });
+    box.appendChild(btn);
+  }
+
   async function init() {
     var mount = mountPoint();
     if (!mount) return;
@@ -134,10 +194,17 @@
       renderSigned(box, who);
       return;
     }
-    var cfg = await jget("/api/auth/google/config");
-    if (!cfg || !cfg.enabled || !cfg.client_id) return;
+    // A button for each provider that is actually configured. A button that
+    // cannot work should not exist, so an unset provider adds nothing, and if
+    // neither is set the chip stays away entirely.
+    var g = await jget("/api/auth/google/config");
+    var a = await jget("/api/auth/apple/config");
+    var gOn = g && g.enabled && g.client_id;
+    var aOn = a && a.enabled && a.client_id;
+    if (!gOn && !aOn) return;
     mount.appendChild(box);
-    renderSignin(box, cfg.client_id);
+    if (gOn) renderGoogleSignin(box, g.client_id);
+    if (aOn) renderAppleSignin(box, a.client_id);
   }
 
   if (document.readyState === "loading") {

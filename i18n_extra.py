@@ -1956,9 +1956,12 @@ EXTRA_SKIP |= {
     "Plateau Strategy Deflator",
 }
 
-# The company name plus its city reads the same in Spanish and Vietnamese, 
+# The company name plus its city reads the same in Spanish and Vietnamese,
 # identical output there is correct, not a missed translation.
 EXTRA_SKIP |= {"Plateau Strategy Solution Lab · Seattle"}
+
+# The contact address in the footer. An email is the same in every language.
+EXTRA_SKIP |= {"plateaustrategy@gmail.com"}
 
 # The Pollock companion's new option.
 EXTRA.update({
@@ -2736,4 +2739,9 @@ EXTRA.update({
 # ---- Trip planner: remove-a-stop control on the route strip (2026-08-22) ----
 EXTRA.update({
     "Remove this stop": ["移除这一站", "Quitar esta parada", "이 방문지 빼기", "Bỏ điểm dừng này"],
+    "Tap the ✕ on a stop to remove it. Add another by typing above or tapping a pin.": [
+        "点击某一站上的 ✕ 即可移除。在上方输入或点按地图上的图钉可添加新的一站。",
+        "Toca la ✕ de una parada para quitarla. Añade otra escribiendo arriba o tocando un pin en el mapa.",
+        "방문지의 ✕ 를 누르면 삭제됩니다. 위에 입력하거나 지도의 핀을 눌러 다른 곳을 추가하세요.",
+        "Chạm vào dấu ✕ trên một điểm dừng để xoá. Thêm điểm khác bằng cách gõ ở trên hoặc chạm vào ghim trên bản đồ."],
 })
