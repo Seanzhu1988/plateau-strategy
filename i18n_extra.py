@@ -2753,3 +2753,13 @@ EXTRA.update({
 EXTRA.update({
     "viewed": ["次浏览", "vistas", "조회", "lượt xem"],
 })
+
+# ---- The confirm shown when someone taps the brand logo, which resets the
+# page. Native confirm() text, translated through psxT (2026-08-22). ----
+EXTRA.update({
+    "Reset the page? Anything you have not saved will be lost.": [
+        "重置页面？尚未保存的内容将会丢失。",
+        "¿Restablecer la página? Se perderá todo lo que no hayas guardado.",
+        "페이지를 초기화할까요? 저장하지 않은 내용은 사라집니다.",
+        "Đặt lại trang? Mọi thứ bạn chưa lưu sẽ mất."],
+})

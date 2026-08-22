@@ -1316,6 +1316,16 @@ def _compress_and_cache(resp):
                     b"</body>",
                     b'<script src="/site-auth.js?v=%s" defer></script></body>'
                     % _ASSET_V.encode(), 1)
+            # Tapping the brand logo resets the page, after a yes, so an
+            # accidental thumb on the corner does not throw away a half-built
+            # trip. One script, injected like the sign-in chip above.
+            if (not path.startswith(("/dispatch", "/archive", "/access", "/setup"))
+                    and b'src="/logo-reset.js' not in stamped
+                    and b"</body>" in stamped):
+                stamped = stamped.replace(
+                    b"</body>",
+                    b'<script src="/logo-reset.js?v=%s" defer></script></body>'
+                    % _ASSET_V.encode(), 1)
             if stamped != body:
                 resp.set_data(stamped)
 
@@ -2070,6 +2080,14 @@ def site_auth_js():
     """The site-wide sign-in chip, one copy, injected into every page by
     the response rewriter rather than carried by thirty templates."""
     return send_file(os.path.join(BASE_DIR, "site-auth.js"),
+                     mimetype="text/javascript")
+
+
+@app.route("/logo-reset.js")
+def logo_reset_js():
+    """Tapping the brand logo resets the page, after a confirm. One copy,
+    injected into every page the same way the sign-in chip is."""
+    return send_file(os.path.join(BASE_DIR, "logo-reset.js"),
                      mimetype="text/javascript")
 
 

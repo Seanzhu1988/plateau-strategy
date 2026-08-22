@@ -652,5 +652,6 @@
  "the walking guide": "徒歩ガイド",
  "Remove this stop": "この立ち寄り先を外す",
  "Tap the ✕ on a stop to remove it. Add another by typing above or tapping a pin.": "各立ち寄り先の ✕ をタップすると削除できます。上部で入力するか、地図のピンをタップして別の場所を追加してください。",
- "viewed": "ビュー"
+ "viewed": "ビュー",
+ "Reset the page? Anything you have not saved will be lost.": "ページをリセットしますか？保存していない内容は失われます。"
 }
