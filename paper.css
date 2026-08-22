@@ -770,7 +770,22 @@
     gap: 0.75rem !important;
     flex: 0 0 auto !important;
     flex-wrap: nowrap !important;
+    /* Refusing to shrink is what stopped "Book a Ride" being clipped, and it
+       is also what pushed whole pages sideways: a nav with four links wants
+       425px and a phone is 390px, so the page itself scrolled off its axis and
+       the site read as crooked. These three lines keep the links at full width
+       and unclipped, but make the strip scroll INSIDE its own row instead of
+       dragging the page with it. Measured on the trip planner: 425px to 350px,
+       page overflow 55px to zero, all four links still reachable. */
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
+  header .right::-webkit-scrollbar,
+  header .links::-webkit-scrollbar,
+  header nav::-webkit-scrollbar { display: none; }
   header .right a, header .links a, header nav a {
     white-space: nowrap !important;    /* "Book a Ride" is three words, not three lines */
     font-size: 0.82rem !important;

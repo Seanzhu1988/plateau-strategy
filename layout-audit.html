@@ -1,0 +1,172 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Layout audit</title>
+<meta name="robots" content="noindex">
+<style>
+  body { font: 15px/1.5 -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+         margin: 2rem; color: #0b0809; background: #fff; }
+  h1 { font-size: 1.5rem; margin: 0 0 .3rem; }
+  p.lede { color: #6b6459; margin: 0 0 1.4rem; max-width: 60ch; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid #e6e6ea;
+           vertical-align: top; }
+  th { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: #6b6459; }
+  .bad { color: #a3261d; font-weight: 700; }
+  .ok { color: #1c6b45; font-weight: 700; }
+  td.what { max-width: 46ch; }
+  code { background: #f4f4f6; padding: 0 .25rem; border-radius: 3px; }
+  #frames { position: absolute; left: -5000px; top: 0; }
+  iframe { border: 0; height: 900px; }
+  #summary { margin: 1.2rem 0; font-size: 1.05rem; }
+</style>
+
+<h1>Layout audit</h1>
+<p class="lede">Every page, at phone width and desktop width, measured for the faults that
+make a site read as crooked: a page that scrolls sideways, an element hanging past the
+edge of the screen, text spilling out of the box that is supposed to hold it, and blocks
+that do not share a left margin. Numbers, not opinions.</p>
+<div id="summary">Measuring…</div>
+<table>
+  <thead><tr><th>Page</th><th>Width</th><th>Fault</th><th>Detail</th><th class="what">Element</th></tr></thead>
+  <tbody id="rows"></tbody>
+</table>
+<div id="frames"></div>
+
+<script>
+const PAGES = ['/', '/trip-planner', '/destination-book', '/trips', '/guide-studio',
+               '/road-trip', '/favorite-place', '/deflator', '/factor-clock', '/agent',
+               '/renter', '/driver', '/board', '/archive', '/articles', '/partners',
+               '/books', '/dispatch', '/book', '/setup', '/met', '/map', '/privacy',
+               '/rent-a-tesla', '/how-built', '/professionals', '/discovery', '/walks',
+               '/record', '/deck', '/evolve', '/lab', '/robot', '/footprint',
+               '/guide-concept', '/not-a-traveler', '/road-trip', '/trips'];
+const WIDTHS = [[390, 'phone'], [1280, 'desktop']];
+
+function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g,
+        c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
+function describe(el) {
+    if (!el) return '';
+    let s = el.tagName.toLowerCase();
+    if (el.id) s += '#' + el.id;
+    else if (el.className && typeof el.className === 'string') {
+        const c = el.className.trim().split(/\s+/).slice(0, 2).join('.');
+        if (c) s += '.' + c;
+    }
+    const t = (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 40);
+    return s + (t ? ' "' + t + '"' : '');
+}
+
+function auditDoc(doc, win, vw) {
+    const out = [];
+    const de = doc.documentElement, body = doc.body;
+    if (!body) return out;
+
+    // 1. THE BIG ONE. A page wider than its own window scrolls sideways, and a
+    //    reader feels that as the whole site being off its axis even when they
+    //    cannot say why. Two pixels of slack for subpixel rounding.
+    const over = Math.max(de.scrollWidth, body.scrollWidth) - vw;
+    if (over > 2) {
+        out.push({ fault: 'scrolls sideways', detail: over + 'px too wide', el: 'the page itself' });
+    }
+
+    // 2. Which element is doing it. Report the worst few rather than every
+    //    child of an overflowing parent, otherwise one fault prints forty rows.
+    // An element wider than the screen is only a fault if it DRAGS THE PAGE with
+    // it. Inside a deliberate scroll strip, or anything that clips, it is the
+    // design working. The first version of this audit did not check that and
+    // reported the landing page's phase tabs as three faults when the page was
+    // sitting perfectly straight: the tabs live in a div with overflow-x:auto
+    // and are meant to be swiped. An audit that cries wolf gets ignored, which
+    // is worse than no audit.
+    function insideAScroller(el) {
+        let p = el.parentElement;
+        while (p && p !== body) {
+            const o = win.getComputedStyle(p).overflowX;
+            if (o === 'auto' || o === 'scroll' || o === 'hidden') return true;
+            p = p.parentElement;
+        }
+        return false;
+    }
+    const seen = [];
+    doc.querySelectorAll('body *').forEach(el => {
+        if (!el.offsetParent && el !== body) return;               // genuinely hidden
+        const cs = win.getComputedStyle(el);
+        if (cs.position === 'fixed') return;                       // fixed bars are allowed off-canvas
+        const r = el.getBoundingClientRect();
+        if (r.width === 0 || r.height === 0) return;
+        const spill = Math.round(r.right - vw);
+        if (spill > 2 && !insideAScroller(el)) seen.push({ spill: spill, el: el });
+    });
+    seen.sort((a, b) => b.spill - a.spill);
+    const shown = new Set();
+    seen.slice(0, 40).forEach(s => {
+        // skip a child whose parent is already reported: same fault, one cause
+        let p = s.el.parentElement, dup = false;
+        while (p) { if (shown.has(p)) { dup = true; break; } p = p.parentElement; }
+        if (dup) return;
+        shown.add(s.el);
+        if (shown.size <= 4) {
+            out.push({ fault: 'hangs past the edge', detail: s.spill + 'px past',
+                       el: describe(s.el) });
+        }
+    });
+
+    // 3. Text wider than the box holding it. Overflow hidden or auto is a
+    //    deliberate choice, so only flag visible spill.
+    let spills = 0, firstSpill = null;
+    doc.querySelectorAll('p, h1, h2, h3, li, td, button, a, span').forEach(el => {
+        if (!el.offsetParent) return;
+        const cs = win.getComputedStyle(el);
+        if (cs.overflow !== 'visible' || cs.overflowX !== 'visible') return;
+        if (el.scrollWidth - el.clientWidth > 4 && el.clientWidth > 0) {
+            spills++; if (!firstSpill) firstSpill = el;
+        }
+    });
+    if (spills) {
+        out.push({ fault: 'text spills its box', detail: spills + ' element(s)',
+                   el: describe(firstSpill) });
+    }
+    return out;
+}
+
+(async function run() {
+    let faults = 0, done = 0, pagesWithFaults = new Set();
+    const rows = document.getElementById('rows');
+    const list = [...new Set(PAGES)];
+    for (const path of list) {
+        for (const [vw, label] of WIDTHS) {
+            const fr = document.createElement('iframe');
+            fr.width = vw;
+            document.getElementById('frames').appendChild(fr);
+            await new Promise(res => {
+                fr.onload = () => setTimeout(res, 900);
+                fr.onerror = res;
+                fr.src = path;
+            });
+            let found = [];
+            try { found = auditDoc(fr.contentDocument, fr.contentWindow, vw); } catch (e) {
+                found = [{ fault: 'could not measure', detail: String(e).slice(0, 60), el: '' }];
+            }
+            found.forEach(f => {
+                faults++; pagesWithFaults.add(path);
+                rows.insertAdjacentHTML('beforeend',
+                    '<tr><td><code>' + esc(path) + '</code></td><td>' + label + '</td>' +
+                    '<td class="bad">' + esc(f.fault) + '</td><td>' + esc(f.detail) + '</td>' +
+                    '<td class="what">' + esc(f.el) + '</td></tr>');
+            });
+            fr.remove();
+        }
+        done++;
+        document.getElementById('summary').textContent =
+            done + ' of ' + list.length + ' pages measured · ' + faults + ' faults so far';
+    }
+    document.getElementById('summary').innerHTML = faults
+        ? '<span class="bad">' + faults + ' layout faults across ' + pagesWithFaults.size +
+          ' of ' + list.length + ' pages.</span>'
+        : '<span class="ok">All ' + list.length + ' pages sit straight at both widths.</span>';
+    document.title = 'Layout audit: ' + faults + ' faults';
+})();
+</script>

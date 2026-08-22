@@ -3660,6 +3660,19 @@ def _local_iso_epoch(s):
         return None
 
 
+@app.route("/layout-audit")
+@owner_required
+def layout_audit_page():
+    """Owner-only: loads every page at phone and desktop width and measures
+    whether it sits straight.
+
+    The sibling of /contrast-audit. That one asks whether the words can be read;
+    this one asks whether the page is on its axis. A page two hundred pixels
+    wider than the phone holding it scrolls sideways, and a reader feels that as
+    the whole site being crooked without being able to name it. [SEAN]"""
+    return send_file(os.path.join(BASE_DIR, "layout-audit.html"))
+
+
 @app.route("/contrast-audit")
 @owner_required
 def contrast_audit_page():

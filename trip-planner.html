@@ -49,7 +49,18 @@
             header img { height: 34px; width: 34px; }
             header .brand { font-size: 0.98rem; line-height: 1.25;
                             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            /* max-width is doing the real work here, and it needs !important.
+               The rule above was written to make this strip scroll instead of
+               pushing the page sideways, and it never worked: paper.css forces
+               "flex: 0 0 auto !important" on header .right below 560px, so the
+               strip sized itself to its own content, 425px of links inside a
+               390px screen, and shoved the WHOLE PAGE 55px off its axis. That
+               is the sideways scroll on a phone. Capping it at the width of its
+               grid area lets overflow-x finally have something to scroll inside:
+               measured 425px to 350px, page overflow 55px to 0, and all four
+               links still reachable by swiping the strip. */
             header .right { grid-column: 1 / -1; margin-left: 0; gap: 0;
+                            min-width: 0; max-width: 100% !important;
                             overflow-x: auto; -webkit-overflow-scrolling: touch;
                             scrollbar-width: none; }
             header .right::-webkit-scrollbar { display: none; }
