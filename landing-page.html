@@ -1210,9 +1210,15 @@
       /* The warm line the owner asked for, sitting above the big statement:
          the brand, then who we are to the visitor, then what we are. */
       #view-overview .psx-tagline{
-        margin:1.5rem 0 0;font-weight:600;line-height:1.3;letter-spacing:.01em;
-        font-size:clamp(1.05rem,2.6vw,1.4rem);
-        background:linear-gradient(120deg,#7da2ff,#a78bfa);
+        margin:1.5rem 0 0;font-weight:700;line-height:1.22;letter-spacing:.004em;
+        /* Bigger than the statement below it, on the owner's instruction, so
+           it clears the h1's clamp(1.7,4.6vw,3.5rem) at every width. And a
+           brushed metallic grey rather than the accent: a gunmetal run,
+           lighter at the edges and darker through the middle, clipped to the
+           text for the metal sheen. Kept dark enough to read on the page's
+           light ground (large text, so it clears the 3:1 AA floor). */
+        font-size:clamp(2rem,6vw,4.2rem);
+        background:linear-gradient(180deg,#7f8899 0%,#525a69 42%,#383f4c 55%,#6d7686 100%);
         -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
       }
       #view-overview .psx-h1{
@@ -1236,7 +1242,10 @@
         /* Seven centred lines of 18px under a 30px headline read as a wall.
            A step down and the same paragraph sets in five quieter lines. */
         #view-overview .psx-sub{font-size:1.02rem;line-height:1.58;}
-        #view-overview .psx-tagline{font-size:1rem;}
+        /* Still the biggest line on the phone, a step above the h1's 1.7rem
+           floor, just eased down from the desktop size so it does not fill the
+           screen. */
+        #view-overview .psx-tagline{font-size:clamp(2rem,6.8vw,2.8rem);}
       }
       #view-overview .psx-cta-row{display:flex;gap:.85rem;flex-wrap:wrap;justify-content:center;margin-top:2.2rem;}
       /* Deliberately quiet. This is a footnote that happens to be a number,
