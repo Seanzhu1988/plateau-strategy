@@ -67,6 +67,7 @@ app.log
 booking_app.log
 zibS3LVQ
 place_ratings.json
+place_views.json
 travel_wishes.json
 destination_comments.json
 ride_demand.json

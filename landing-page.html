@@ -1710,12 +1710,15 @@
       .idea-text{color:var(--psx-text2);font-size:.96rem;line-height:1.7;white-space:pre-wrap;margin-bottom:1.1rem;}
       .idea-trnote{color:#6b655b;font-size:.8rem;font-style:italic;opacity:.75;margin:-.4rem 0 .9rem;}
 
-      .idea-votes{display:flex;gap:.6rem;margin-bottom:1rem;}
+      .idea-votes{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap;}
+      /* A read count, not a vote: a plain fact, so it sits as a label beside the
+         actions rather than as another button. */
+      .idea-views{display:inline-flex;align-items:center;gap:.35rem;margin-right:.2rem;
+        font-weight:700;font-size:.9rem;color:#6b7787;}
+      .idea-views b{color:#7da2ff;font-variant-numeric:tabular-nums;}
       .idea-vbtn{display:inline-flex;align-items:center;gap:.35rem;padding:.45rem .9rem;border-radius:999px;
         border:1px solid var(--psx-border);background:rgba(255,255,255,.04);color:#4a453d;font-weight:700;font-size:.85rem;cursor:pointer;}
       .idea-vbtn:hover{border-color:rgba(255,255,255,.25);}
-      .idea-vbtn.like.active{background:rgba(16,185,129,.14);border-color:rgba(16,185,129,.4);color:#1b5e43;}
-      .idea-vbtn.unlike.active{background:rgba(239,68,68,.14);border-color:rgba(239,68,68,.4);color:#a3302a;}
 
       .idea-backing{display:flex;gap:1.2rem;flex-wrap:wrap;padding-top:1rem;border-top:1px solid var(--psx-border);}
       .idea-back{flex:1 1 220px;min-width:220px;}
@@ -3566,7 +3569,6 @@
         (function () {
             function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
             function fmtStamp(s) { return s ? String(s).replace('T', ' ') : ''; }
-            function myVote(id) { return localStorage.getItem('idea_vote_' + id) || 'none'; }
             function invested(id) { return localStorage.getItem('idea_invest_' + id) === '1'; }
             function launched(id) { return localStorage.getItem('idea_launch_' + id) === '1'; }
 
@@ -3634,7 +3636,6 @@
             }
 
             function render(a) {
-                var v = myVote(a.id);
                 var txt = inLang(a);
                 return '<div class="idea-card" id="idea_' + a.id + '">' +
                     '<h4>' + esc(txt.title) + (a.stamp ? '<span class="idea-stamp" title="Time-proof stamp, pitched ' + fmtStamp(a.created_at) + '">#' + esc(a.stamp) + '</span>' : '') + '</h4>' +
@@ -3650,8 +3651,10 @@
                     // trade was suggested can tell when it has guessed wrong.
                     tradesBlock(a) +
                     '<div class="idea-votes">' +
-                        '<button class="idea-vbtn like ' + (v === 'like' ? 'active' : '') + '" onclick="ideaVote(\'' + a.id + '\',\'like\')">👍 <span id="ilk_' + a.id + '">' + a.likes + '</span></button>' +
-                        '<button class="idea-vbtn unlike ' + (v === 'unlike' ? 'active' : '') + '" onclick="ideaVote(\'' + a.id + '\',\'unlike\')">👎 <span id="iul_' + a.id + '">' + a.unlikes + '</span></button>' +
+                        // A quiet read count in place of the up/down vote: what
+                        // people did, not an opinion asked of them. More eyes on
+                        // an idea is the honest signal of pull.
+                        '<span class="idea-views" data-vid="' + a.id + '" title="How many people have opened this idea">👁 <b id="ivw_' + a.id + '">' + (a.views || 0) + '</b></span>' +
                         // The board lives inside a tab and loads over JS, so an idea had
                         // no address anybody could send. /idea/<id> is that address, and
                         // it is server-rendered so the link preview works, a paste into
@@ -3694,7 +3697,37 @@
                 // Keep them so a language change can redraw without refetching.
                 window.__ideaItems = items;
                 ensureTranslations();
+                observeIdeaViews();
             };
+
+            // A read is counted when the idea scrolls into view, once per browser
+            // (the key is shared with the idea's own /idea/<id> page), so the
+            // number is distinct readers, not reloads or cards nobody reached.
+            function markIdeaViewed(id, countEl) {
+                var key = 'psx_art_viewed_' + id;
+                try { if (localStorage.getItem(key)) return; localStorage.setItem(key, '1'); } catch (e) {}
+                fetch('/api/articles/' + encodeURIComponent(id) + '/view', { method: 'POST' })
+                    .then(function (r) { return r.json(); })
+                    .then(function (j) { if (j && j.ok && countEl) countEl.textContent = j.views; })
+                    .catch(function () {});
+            }
+            var _ideaViewObs;
+            function observeIdeaViews() {
+                var cards = document.querySelectorAll('.idea-views[data-vid]');
+                if (!('IntersectionObserver' in window)) {
+                    cards.forEach(function (el) { markIdeaViewed(el.getAttribute('data-vid'), el.querySelector('b')); });
+                    return;
+                }
+                if (_ideaViewObs) _ideaViewObs.disconnect();
+                _ideaViewObs = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (en) {
+                        if (!en.isIntersecting) return;
+                        _ideaViewObs.unobserve(en.target);
+                        markIdeaViewed(en.target.getAttribute('data-vid'), en.target.querySelector('b'));
+                    });
+                }, { threshold: 0.4 });
+                cards.forEach(function (el) { _ideaViewObs.observe(el); });
+            }
 
             // Translate on demand, the moment the reader is looking at a piece
             // in a language it has not been translated into yet. The server
@@ -3836,19 +3869,6 @@
                                            { method: 'POST' })).json();
                 if (!j.ok) { alert(j.error || 'Could not delete'); return; }
                 window.ideaLoad();
-            };
-
-            window.ideaVote = async function (id, choice) {
-                var prev = myVote(id);
-                var next = (prev === choice) ? 'none' : choice;
-                var j = await (await fetch('/api/articles/' + id + '/vote', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prev: prev, vote: next }) })).json();
-                if (!j.ok) return;
-                localStorage.setItem('idea_vote_' + id, next);
-                var card = document.getElementById('idea_' + id); if (!card) return;
-                document.getElementById('ilk_' + id).textContent = j.likes;
-                document.getElementById('iul_' + id).textContent = j.unlikes;
-                card.querySelector('.idea-vbtn.like').classList.toggle('active', next === 'like');
-                card.querySelector('.idea-vbtn.unlike').classList.toggle('active', next === 'unlike');
             };
 
             window.ideaInvest = async function (id) {

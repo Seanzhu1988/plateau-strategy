@@ -2325,10 +2325,10 @@ def _evolution_proposals():
     except Exception:
         items = []
 
-    # 2. Ideas drawing interest: likes plus people registering to back or run.
+    # 2. Ideas drawing interest: views plus people registering to back or run.
     def _score(a):
         return (len(a.get("followers", [])) + len(a.get("launchers", []))
-                + int(a.get("likes", 0)))
+                + int(a.get("views", 0)))
     for a in sorted(items, key=_score, reverse=True)[:5]:
         s = _score(a)
         if s <= 0:
@@ -3537,6 +3537,7 @@ def api_destinations():
         ratings = _ratings_all()
         comments = _comments_all()
         prices = _prices_all()
+        views = _views_all()
         for e in data.get("entries", []):
             # Stay times are stored split by source (public crowd vs verified
             # guide). This read used to assume the OLD flat shape, so it silently
@@ -3571,6 +3572,7 @@ def api_destinations():
                 e["rating_count"] = r["n"]
             k = _visit_key(e.get("city"), e.get("name"))
             e["comment_count"] = len(comments.get(k, []))
+            e["views"] = int(views.get(k, 0))
             # a place a traveler discovered in the last 30 days is NEW to the book
             if e.get("source") == "user" and e.get("added_at"):
                 try:
@@ -3714,6 +3716,37 @@ def api_destination_comment_add():
         _save(COMMENTS_PATH, allc)
         n = len(items)
     return jsonify({"ok": True, "count": n})
+
+
+# ---------- how many people have looked at a place (quiet popularity) -------
+# The traveller-facing twin of the idea view count. No stars asked for, no
+# opinion, just a running tally of how many people opened this place, because
+# a place more people look at is, on its face, the more attractive one. Keyed
+# like every other place store; no identity, a count and nothing else. The
+# browser fires it once per place (it remembers locally), so the number tracks
+# distinct viewers rather than reloads.
+VIEWS_PATH = _data_path("place_views.json")
+
+
+def _views_all():
+    d = _load(VIEWS_PATH)
+    return d if isinstance(d, dict) else {}
+
+
+@app.route("/api/destinations/view", methods=["POST"])
+def api_destination_view():
+    d = request.get_json(force=True, silent=True) or {}
+    name = _no_tags((d.get("name") or "").strip())[:80]
+    city = _no_tags((d.get("city") or "").strip().lower())[:40]
+    if len(name) < 2:
+        return jsonify({"ok": False, "error": "Which place?"}), 400
+    key = _visit_key(city, name)
+    with _LOCK:
+        allv = _views_all()
+        allv[key] = int(allv.get(key, 0)) + 1
+        _save(VIEWS_PATH, allv)
+        n = allv[key]
+    return jsonify({"ok": True, "views": n})
 
 
 # ---------- how long people actually stay (crowd memory) ----------
@@ -8492,8 +8525,10 @@ def _public_article(a):
         "stamp": a.get("stamp", ""),
         "title": a.get("title"),
         "body": (lock.get("teaser") or "") if locked else a.get("body"),
-        "likes": a.get("likes", 0),
-        "unlikes": a.get("unlikes", 0),
+        # How many people have opened this idea. A quiet popularity signal that
+        # replaced the up/down vote: a view is something a reader DID, not an
+        # opinion we asked them for, and more eyes is the honest measure of pull.
+        "views": a.get("views", 0),
         "locked": locked,
         "price_usd": lock.get("price_usd") if locked else None,
         "locked_by": lock.get("by") if lock else None,
@@ -9026,7 +9061,7 @@ def idea_page(aid):
 <div class="wrap">
   %(lang_row)s
   <div class="page-title" id="ideaTitle">%(title)s</div>
-  <p class="idea-meta">Posted by %(author)s%(when)s · %(likes)s interested</p>
+  <p class="idea-meta">Posted by %(author)s%(when)s · 👁 %(views)s</p>
   <div class="idea-body" id="ideaBody">%(paras)s</div>
   %(locked_note)s
   %(bp_section)s
@@ -9123,6 +9158,19 @@ def idea_page(aid):
     setTimeout(function () { btn.textContent = 'Share this idea'; }, 2500);
   });
 </script>
+<script>
+  /* Count this open once per browser. The board and this page share the key,
+     so opening an idea, then its own page, is one reader, not two. */
+  (function () {
+    var aid = %(aid_js)s;
+    try {
+      var k = 'psx_art_viewed_' + aid;
+      if (localStorage.getItem(k)) return;
+      localStorage.setItem(k, '1');
+    } catch (e) { /* private mode: still worth one count */ }
+    fetch('/api/articles/' + encodeURIComponent(aid) + '/view', { method: 'POST' }).catch(function () {});
+  })();
+</script>
 %(bp_script)s
 <script src="/i18n.js"></script>
 </body>
@@ -9131,7 +9179,7 @@ def idea_page(aid):
         "url": url, "origin": SITE_ORIGIN, "paras": paras,
         "locked_note": locked_note,
         "when": (" on " + when) if when else "",
-        "likes": pub.get("likes", 0),
+        "views": pub.get("views", 0),
         # json.dumps, not quote-wrapping: it escapes the quotes, backslashes and
         # the </script> sequence that would otherwise end the block early.
         "url_js": json.dumps(url), "title_js": json.dumps(title),
@@ -9802,23 +9850,23 @@ def api_article_delete(aid):
     return jsonify({"ok": True, "deleted": aid})
 
 
-@app.route("/api/articles/<aid>/vote", methods=["POST"])
-def api_article_vote(aid):
-    """Adjust like/unlike counts. Client sends its previous vote and new vote
-    (each: like | unlike | none) so toggling is handled cleanly."""
-    data = request.get_json(force=True, silent=True) or {}
-    prev = (data.get("prev") or "none").lower()
-    vote = (data.get("vote") or "none").lower()
-    like_d = (1 if vote == "like" else 0) - (1 if prev == "like" else 0)
-    unlike_d = (1 if vote == "unlike" else 0) - (1 if prev == "unlike" else 0)
+@app.route("/api/articles/<aid>/view", methods=["POST"])
+def api_article_view(aid):
+    """Count one reader opening this idea.
+
+    This replaced the up/down vote. The old buttons asked a stranger for an
+    opinion; this records something they actually did, which is the number the
+    owner asked for, more eyes means more pull. No identity is stored, just a
+    running total. The browser fires this once per idea (it remembers locally
+    that it already counted), so the number tracks distinct readers rather than
+    reloads."""
     with _LOCK:
         items = _load(ARTICLES_PATH)
         for a in items:
-            if a.get("id") == aid:
-                a["likes"] = max(0, a.get("likes", 0) + like_d)
-                a["unlikes"] = max(0, a.get("unlikes", 0) + unlike_d)
+            if a.get("id") == aid and not a.get("hidden"):
+                a["views"] = int(a.get("views", 0)) + 1
                 _save(ARTICLES_PATH, items)
-                return jsonify({"ok": True, "likes": a["likes"], "unlikes": a["unlikes"]})
+                return jsonify({"ok": True, "views": a["views"]})
     return jsonify({"ok": False, "error": "not found"}), 404
 
 

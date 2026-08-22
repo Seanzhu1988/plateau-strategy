@@ -57,13 +57,12 @@
         .article .text { color: #4a453d; font-size: 1rem; line-height: 1.75; white-space: pre-wrap; }
 
         .actions { margin-top: 1.6rem; padding-top: 1.2rem; border-top: 1px solid var(--psx-wash-info,#e5f3ff); }
-        .votes { display: flex; gap: 0.7rem; align-items: center; margin-bottom: 1rem; }
-        .vbtn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem;
-            border: 1.5px solid #e6e2da; background: #faf8f4; border-radius: 999px; cursor: pointer;
-            font-weight: 700; font-size: 0.9rem; color: #4a453d; transition: all 0.18s; }
-        .vbtn:hover { border-color: #6b655b; }
-        .vbtn.like.active { background: var(--psx-wash-good,#e1f8ec); border-color: #1b5e43; color: #047857; }
-        .vbtn.unlike.active { background: #fef2f2; border-color: #a3302a; color: #b91c1c; }
+        /* A quiet read count, not a vote. It states a fact rather than asking
+           for an opinion, so it is a plain label, not a button. */
+        .views { display: inline-flex; align-items: center; gap: 0.4rem; margin-bottom: 1rem;
+            font-weight: 700; font-size: 0.9rem; color: #4a453d; }
+        .views .eye { font-size: 1rem; }
+        .views b { color: #1b4d8f; font-variant-numeric: tabular-nums; }
 
         .follow { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
         .follow .lbl { font-size: 0.88rem; color: #4a453d; font-weight: 600; }
@@ -125,7 +124,6 @@
         function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.style.display='block';
             clearTimeout(t._h); t._h=setTimeout(()=>t.style.display='none',2600); }
         function fmtStamp(s){ return s ? String(s).replace('T', ' ') : ''; }
-        const myVote = id => localStorage.getItem('article_vote_' + id) || 'none';
         const iFollow = id => localStorage.getItem('article_follow_' + id) === '1';
 
         async function load() {
@@ -133,19 +131,46 @@
             try { items = ((await psxJSON('/api/articles')).articles) || []; } catch(e){ return; }
             document.getElementById('empty').style.display = items.length ? 'none' : 'block';
             document.getElementById('feed').innerHTML = items.map(render).join('');
+            observeViews();
+        }
+
+        // A read is counted when the idea actually scrolls into view, once per
+        // browser (the key is shared with the idea's own page), so the number is
+        // distinct readers, not reloads or cards nobody looked at.
+        function markViewed(id, countEl) {
+            const key = 'psx_art_viewed_' + id;
+            try { if (localStorage.getItem(key)) return; localStorage.setItem(key, '1'); } catch (e) {}
+            psxJSON('/api/articles/' + id + '/view', { method: 'POST' })
+                .then(j => { if (j && j.ok && countEl) countEl.textContent = j.views; })
+                .catch(() => {});
+        }
+        let _viewObs;
+        function observeViews() {
+            const cards = document.querySelectorAll('.views[data-vid]');
+            if (!('IntersectionObserver' in window)) {
+                cards.forEach(el => markViewed(el.getAttribute('data-vid'), el.querySelector('b')));
+                return;
+            }
+            if (_viewObs) _viewObs.disconnect();
+            _viewObs = new IntersectionObserver((entries) => {
+                entries.forEach(en => {
+                    if (!en.isIntersecting) return;
+                    _viewObs.unobserve(en.target);
+                    markViewed(en.target.getAttribute('data-vid'), en.target.querySelector('b'));
+                });
+            }, { threshold: 0.4 });
+            cards.forEach(el => _viewObs.observe(el));
         }
 
         function render(a) {
-            const v = myVote(a.id);
             const followed = iFollow(a.id);
             return '<div class="article" id="art_' + a.id + '">' +
                 '<h2>' + esc(a.title) + (a.stamp ? ' <span class="stamp" title="Time-proof stamp, proposed on ' + fmtStamp(a.created_at) + '">#' + esc(a.stamp) + '</span>' : '') + '</h2>' +
                 '<div class="date">By <strong>' + esc(a.author || 'Anonymous') + '</strong> · ' + fmtStamp(a.created_at) + '</div>' +
                 '<div class="text">' + esc(a.body) + '</div>' +
                 '<div class="actions">' +
-                  '<div class="votes">' +
-                    '<button class="vbtn like ' + (v==='like'?'active':'') + '" onclick="vote(\'' + a.id + '\',\'like\')">👍 <span id="lk_' + a.id + '">' + a.likes + '</span></button>' +
-                    '<button class="vbtn unlike ' + (v==='unlike'?'active':'') + '" onclick="vote(\'' + a.id + '\',\'unlike\')">👎 <span id="ul_' + a.id + '">' + a.unlikes + '</span></button>' +
+                  '<div class="views" data-vid="' + a.id + '" title="How many people have opened this idea">' +
+                    '<span class="eye" aria-hidden="true">👁</span> <b id="vw_' + a.id + '">' + (a.views || 0) + '</b>' +
                   '</div>' +
                   '<div class="follow" id="fl_' + a.id + '">' +
                     (followed
@@ -169,19 +194,6 @@
             document.getElementById('t_author').value = ''; document.getElementById('t_title').value = ''; document.getElementById('t_body').value = '';
             document.getElementById('composer').classList.remove('open');
             showToast('✅ Published'); load();
-        }
-
-        async function vote(id, choice) {
-            const prev = myVote(id);
-            const next = (prev === choice) ? 'none' : choice;
-            const j = await psxJSON('/api/articles/' + id + '/vote', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({prev, vote: next}) });
-            if (!j.ok) return;
-            localStorage.setItem('article_vote_' + id, next);
-            document.getElementById('lk_' + id).textContent = j.likes;
-            document.getElementById('ul_' + id).textContent = j.unlikes;
-            const card = document.getElementById('art_' + id);
-            card.querySelector('.vbtn.like').classList.toggle('active', next === 'like');
-            card.querySelector('.vbtn.unlike').classList.toggle('active', next === 'unlike');
         }
 
         async function follow(id) {

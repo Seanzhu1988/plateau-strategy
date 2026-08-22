@@ -78,6 +78,11 @@
         .b-city { background: #f5f1e8; color: #4a453d; }
         .b-comm { background: var(--psx-wash-good,#e1f8ec); color: #1b5e43; }
         .rate-row { display: flex; align-items: center; gap: 0.5rem; margin: 0.3rem 0 0.5rem; }
+        /* A quiet view count: a fact about the place, not a question put to the
+           reader, so it sits as a small label under the stars. */
+        .place-views { display: inline-flex; align-items: center; gap: 0.35rem; margin: 0 0 0.5rem;
+            font-size: 0.82rem; font-weight: 700; color: #6b655b; }
+        .place-views b { color: #1b4d8f; font-variant-numeric: tabular-nums; }
         .stars { font-size: 1.15rem; letter-spacing: 1px; cursor: pointer; }
         .stars .star { color: #6b655b; transition: color 0.1s; }
         .stars .star.on { color: #8a5a12; }
@@ -505,6 +510,9 @@
                 +   (e.is_new ? '<span class="badge b-new">🆕 Just discovered</span>' : '')
                 + '</div>'
                 + '<div class="rate-row">' + starWidget(e, i) + '</div>'
+                + '<div class="place-views" data-vname="' + esc(e.name) + '" data-vcity="'
+                +   esc(e.city || '') + '" title="How many travelers have looked at this place">'
+                +   '👁 <b>' + (e.views || 0) + '</b></div>'
                 + '<p class="desc">' + esc(e.desc) + '</p>'
                 + '<p class="meta">'
                 +   (e.typical_visit
@@ -572,6 +580,39 @@
         $('count').textContent = T('{shown} of {total} destinations', { shown: shown, total: DATA.entries.length })
             + (f.minStars ? ' · showing ' + '★'.repeat(f.minStars) + ' & up' : '');
         renderSuggest(q, shown);
+        observeDestViews();
+    }
+
+    // A place a traveler actually looks at is counted once per browser. More
+    // eyes on a place is, on its face, the more attractive one, which is the
+    // signal this shows instead of asking anyone what they thought.
+    function markDestViewed(el) {
+        const name = el.getAttribute('data-vname') || '';
+        const city = el.getAttribute('data-vcity') || '';
+        const key = 'psx_place_viewed_' + city.toLowerCase() + '|' + name.toLowerCase();
+        try { if (localStorage.getItem(key)) return; localStorage.setItem(key, '1'); } catch (e) {}
+        psxJSON('/api/destinations/view', { method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name, city: city }) })
+            .then(j => { if (j && j.ok) { const b = el.querySelector('b'); if (b) b.textContent = j.views; } })
+            .catch(() => {});
+    }
+    let _destViewObs;
+    function observeDestViews() {
+        const cards = document.querySelectorAll('.place-views[data-vname]');
+        if (!('IntersectionObserver' in window)) {
+            cards.forEach(markDestViewed);
+            return;
+        }
+        if (_destViewObs) _destViewObs.disconnect();
+        _destViewObs = new IntersectionObserver((entries) => {
+            entries.forEach(en => {
+                if (!en.isIntersecting) return;
+                _destViewObs.unobserve(en.target);
+                markDestViewed(en.target);
+            });
+        }, { threshold: 0.4 });
+        cards.forEach(el => _destViewObs.observe(el));
     }
 
     // ---------- who else is here, honestly ----------
