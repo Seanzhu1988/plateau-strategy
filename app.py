@@ -3660,6 +3660,68 @@ def _local_iso_epoch(s):
         return None
 
 
+@app.route("/api/name/reveal", methods=["POST"])
+@owner_required
+def api_name_reveal():
+    """THE ONLY DOOR to a whole customer name, and it always leaves a mark.
+
+    A reason is required, and not as a formality: an access log that records
+    who and when but never why is nearly useless when you are looking back at
+    it months later trying to work out whether a lookup was legitimate."""
+    if not _vault_on():
+        return jsonify({"ok": False, "error": "The name vault is not configured."}), 400
+    d = request.get_json(silent=True) or {}
+    rid = str(d.get("id") or "").strip()
+    reason = (d.get("reason") or "").strip()
+    if not rid:
+        return jsonify({"ok": False, "error": "Which booking?"}), 400
+    if len(reason) < 4:
+        return jsonify({"ok": False, "error": "Say why you need it. This is recorded."}), 400
+    for r in _load(RES_PATH):
+        if str(r.get("id")) == rid:
+            c = r.get("client") or {}
+            if c.get("name"):
+                return jsonify({"ok": True, "name": c["name"], "legacy": True,
+                                "note": "Booked before the vault; not sealed yet."})
+            if not c.get("sealed"):
+                return jsonify({"ok": False, "error": "No name on this booking."}), 404
+            try:
+                who = session.get("owner_email") or session.get("owner") or "owner"
+                name, entry = name_vault.reveal(c["sealed"], str(who), reason, rid)
+            except Exception as e:
+                return jsonify({"ok": False, "error": "Could not open: %s" % e}), 500
+            try:
+                notify.send_telegram(
+                    "\U0001F513 A customer name was opened.\nBooking %s\nBy %s\nReason: %s"
+                    % (rid, who, reason))
+            except Exception:
+                pass
+            return jsonify({"ok": True, "name": name, "logged_at": entry["ts"],
+                            "entry_hash": entry["hash"]})
+    return jsonify({"ok": False, "error": "No such booking."}), 404
+
+
+@app.route("/api/name/log")
+@owner_required
+def api_name_log():
+    """The access history, and proof it has not been edited."""
+    if not name_vault:
+        return jsonify({"ok": False, "error": "Vault module missing."}), 500
+    ok, count, bad = name_vault.verify_chain()
+    rows = []
+    try:
+        with open(name_vault.audit_path(), encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    rows.append(json.loads(line))
+    except FileNotFoundError:
+        pass
+    return jsonify({"ok": True, "intact": ok, "entries": count,
+                    "first_bad_line": bad, "configured": _vault_on(),
+                    "log": rows[-200:]})
+
+
 @app.route("/layout-audit")
 @owner_required
 def layout_audit_page():
@@ -5223,6 +5285,61 @@ def api_quote():
     })
 
 
+# ---- customer names: sealed in two vaults, opened through one audited door ----
+try:
+    import name_vault
+except Exception:                       # pragma: no cover
+    name_vault = None
+
+
+def _vault_on():
+    return bool(name_vault and name_vault.configured())
+
+
+def _seal_client(client, plain_name):
+    """Put the name away. The plain text is REMOVED from the record, so what
+    lands on disk cannot be read by anyone holding the file.
+
+    Called at the end of booking, deliberately after the invoice and the
+    confirmation email have already used the name they were typed. Those two
+    need the real thing exactly once, at a moment when we legitimately have it
+    in hand, and never again."""
+    if not _vault_on():
+        return client                   # unconfigured: today's behaviour, honestly unchanged
+    try:
+        client["sealed"] = name_vault.seal(plain_name)
+        client["mask"] = client["sealed"]["mask"]
+        client.pop("name", None)
+    except Exception as e:
+        app.logger.warning("name vault could not seal a booking: %s", e)
+    return client
+
+
+def _client_display(r):
+    """What a screen shows when nobody has asked to see the name. Falls back to
+    the plain name for bookings taken before the vault existed."""
+    c = (r or {}).get("client") or {}
+    return c.get("name") or c.get("mask") or "Client"
+
+
+def _client_given(r, who="system", reason="ride in progress"):
+    """The FIRST NAME ONLY, for the driver going to collect somebody.
+
+    This opens vault A and leaves vault B shut, which is the point of splitting
+    them: the person doing the pickup gets what they need to say hello and
+    never the half that identifies a household."""
+    c = (r or {}).get("client") or {}
+    if c.get("name"):
+        return (c["name"].split(" ") or ["Client"])[0]
+    if not (_vault_on() and c.get("sealed")):
+        return c.get("mask") or "Client"
+    try:
+        name_vault.record_access(who, reason, str(r.get("id") or ""), action="given-only")
+        return name_vault._open_one(c["sealed"]["a"], "NAME_KEY_A") or "Client"
+    except Exception:
+        return c.get("mask") or "Client"
+
+
 def _create_reservation(data, agent=None, self_driver=None):
     """Build, invoice, persist and notify a reservation. Returns the record.
     If self_driver is set, this is a Driver-Agent self-referral: the driver both
@@ -5373,6 +5490,13 @@ def _create_reservation(data, agent=None, self_driver=None):
         if not quote_requested:          # no price yet on a quote request → no invoice
             invoice = square_client.create_invoice(reservation)
             reservation["invoice"] = invoice
+        # SEAL BEFORE THE WRITE, not after. The first version of this sealed the
+        # name at the very end of the function, which read correctly and was
+        # useless: the record had already been saved three steps earlier, so the
+        # plain name was sitting in reservations.json the whole time and only
+        # the API response looked protected. Caught by reading the file on disk
+        # rather than the response body.
+        _seal_client(reservation.get("client") or {}, name)
         items.append(reservation)
         _save(RES_PATH, items)
 
@@ -5384,7 +5508,14 @@ def _create_reservation(data, agent=None, self_driver=None):
         _push_owner_alert("QUOTE", _quote_alert_text(reservation))
         reservation["notified"] = {"ok": True, "quote": True, "owner_alerted": True}
     else:
-        reservation["notified"] = notify.notify_driver(reservation, invoice,
+        # The alert still names the customer, because it goes to the owner and to
+        # the driver who has to collect them, and because changing what Sean's
+        # own booking alerts say is his decision, not a side effect of this.
+        # The name is handed over in memory only: what was written to disk a
+        # moment ago is sealed, and stays sealed.
+        _alert_copy = dict(reservation)
+        _alert_copy["client"] = dict(reservation.get("client") or {}, name=name)
+        reservation["notified"] = notify.notify_driver(_alert_copy, invoice,
                                                        renters=_load(RENTERS_PATH))
         # A booking nobody was told about is an emergency, not a detail. The
         # customer has been given a confirmation and is expecting a car, and
@@ -5400,6 +5531,7 @@ def _create_reservation(data, agent=None, self_driver=None):
                      reservation.get("trip", {}).get("date", ""),
                      reservation.get("trip", {}).get("time", ""),
                      reservation["notified"]), flush=True)
+
     return reservation, None
 
 
@@ -5441,8 +5573,10 @@ def _reservation_for_board(r):
     the fare, not the customer's phone, email or full name. Contact details
     are released by /claim, to the one driver who actually took the ride."""
     out = dict(r)
-    name = ((r.get("client") or {}).get("name") or "").strip()
-    out["client"] = {"name": (name.split(" ")[0] if name else "Client")}
+    # The driver is told a first name and nothing else. That is vault A on its
+    # own; vault B, the half that identifies a household, stays shut for an
+    # ordinary ride and only the owner can open it.
+    out["client"] = {"name": _client_given(r, who="driver view")}
     # The agent block used to pass through whole, and it carries `code`, the
     # agent's entire sign-in credential. Agent login needs only that code and a
     # last name, and this board printed both, to anyone, with no session. The
@@ -7874,7 +8008,7 @@ def _books_rows():
             "date": (r.get("created_at") or "")[:10],
             "paid_date": live.get("updated_at", ""),
             "number": rid,
-            "customer": r.get("client", {}).get("name", ""),
+            "customer": _client_display(r),
             "description": "%s -> %s" % (r.get("trip", {}).get("pickup", ""), r.get("trip", {}).get("dropoff", "")),
             "stream": "Rides",
             "status": status,
@@ -10005,7 +10139,7 @@ def _arch_bookings():
         out.append({
             "id": r.get("id", ""), "date": r.get("created_at", ""),
             "type": r.get("trip_type", "airport"),
-            "client": c.get("name", ""), "email": c.get("email", ""), "phone": c.get("phone", ""),
+            "client": _client_display(r), "email": c.get("email", ""), "phone": c.get("phone", ""),
             "pickup": t.get("pickup", ""), "dropoff": t.get("dropoff", ""),
             "when": ("%s %s" % (t.get("date", ""), t.get("time", ""))).strip(),
             "fare_usd": r.get("fare_usd", 0), "status": r.get("status", ""),
@@ -11905,7 +12039,7 @@ def api_dispatch_uncovered():
     for u in _uncovered_rides(now):
         r, t = u["r"], (u["r"].get("trip") or {})
         uncovered.append({
-            "id": r.get("id"), "client": (r.get("client") or {}).get("name", ""),
+            "id": r.get("id"), "client": _client_display(r),
             "pickup": t.get("pickup", ""), "dropoff": t.get("dropoff", ""),
             "when": ("%s %s" % (t.get("date", ""), t.get("time", ""))).strip(),
             "mins_open": int(u["mins_open"]), "hours_left": u["hours_left"],
