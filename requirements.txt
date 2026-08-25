@@ -5,3 +5,10 @@ requests>=2.31
 google-auth>=2.30
 python-dotenv>=1.0
 gunicorn>=21.0
+
+# AES-GCM for name_vault.py, which encrypts customer names at rest. It was
+# already present as a transitive dependency of google-auth, which is not the
+# same as being guaranteed: pinned here because we now depend on it directly,
+# and a privacy feature must not vanish because somebody else's package tree
+# changed.
+cryptography>=42.0
