@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How your name is protected, Plateau Strategy Solution Lab</title>
+    <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+    <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
+    <link rel="stylesheet" href="/modern.css">
+    <!-- The same rule as privacy.html: every sentence here describes something
+         that is in the code today. This page goes further and CHECKS, on load,
+         whether the vault is actually running, and says so either way. A
+         security page written once and never revisited is how a true claim
+         quietly becomes a false one. -->
+    <style>
+        header img { height: 42px; width: 42px; border-radius: 50%; }
+        header .brand { font-size: 1.2rem; font-weight: 800; }
+        .np-wrap { max-width: 760px; margin: 2rem auto 4rem; padding: 0 1.2rem; }
+        .np-title { font-size: 2rem; font-weight: 800; line-height: 1.15;
+                    color: #14110c; margin: 0 0 .6rem; }
+        .np-lede { font-size: 1.05rem; color: #4a453d; margin: 0 0 1.6rem; }
+        .np-state { border: 1px solid #d3d3da; border-left: 3px solid #1f3a5f;
+                    border-radius: 0; padding: .8rem 1rem; margin: 0 0 2rem;
+                    font-size: .95rem; color: #14110c; }
+        .np-state b { font-weight: 700; }
+        .np-fig { margin: 2rem 0; }
+        .np-fig svg { width: 100%; height: auto; display: block; }
+        .np-h { font-size: 1.15rem; font-weight: 800; color: #14110c;
+                margin: 2.2rem 0 .5rem; }
+        .np-p { color: #33302a; margin: 0 0 1rem; }
+        .np-list { color: #33302a; padding-left: 1.1rem; margin: 0 0 1rem; }
+        .np-list li { margin: .35rem 0; }
+        .np-audio { margin: 1.6rem 0 0; }
+        .np-audio audio { width: 100%; }
+        .np-note { font-size: .9rem; color: #6b655b; }
+        .np-foot { border-top: 1px solid #e6e6ea; margin-top: 3rem;
+                   padding-top: 1.2rem; font-size: .9rem; color: #6b655b; }
+        @media (max-width: 640px) { .np-title { font-size: 1.55rem; } }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="right">
+            <a href="/privacy">Privacy</a>
+            <a href="/">Home</a>
+        </div>
+    </header>
+
+    <div class="np-wrap">
+        <h1 class="np-title">Your name is not one secret. It is two.</h1>
+        <p class="np-lede">When you book a ride, you give us your name. Most companies
+           write that down and keep it. Here is what we do instead, and how you can
+           tell whether we are actually doing it.</p>
+
+        <div class="np-state" id="npState">Checking whether this is switched on…</div>
+
+        <div class="np-fig">
+            <svg viewBox="0 0 680 300" role="img" aria-labelledby="figTitle figDesc">
+                <title id="figTitle">A name split into two vaults</title>
+                <desc id="figDesc">A booked name divides into a given name held in one
+                    vault and a family name held in another, each with its own key. A
+                    thief who takes one vault holds only a surname.</desc>
+                <rect x="270" y="16" width="140" height="46" rx="4" fill="#fff" stroke="#1f3a5f" stroke-width="1.5"/>
+                <text x="340" y="44" text-anchor="middle" font-size="15" font-weight="700" fill="#14110c">Sarah Chen</text>
+                <path d="M340,62 V84 H150 V108" fill="none" stroke="#8a857c" stroke-width="1.4"/>
+                <path d="M340,62 V84 H530 V108" fill="none" stroke="#8a857c" stroke-width="1.4"/>
+                <rect x="40" y="110" width="220" height="70" rx="4" fill="#fff" stroke="#1f3a5f" stroke-width="1.5"/>
+                <text x="150" y="140" text-anchor="middle" font-size="14" font-weight="700" fill="#14110c">Vault A</text>
+                <text x="150" y="162" text-anchor="middle" font-size="13" fill="#4a453d">given name, key A</text>
+                <rect x="420" y="110" width="220" height="70" rx="4" fill="#fff" stroke="#1f3a5f" stroke-width="1.5"/>
+                <text x="530" y="140" text-anchor="middle" font-size="14" font-weight="700" fill="#14110c">Vault B</text>
+                <text x="530" y="162" text-anchor="middle" font-size="13" fill="#4a453d">family name, key B</text>
+                <text x="150" y="212" text-anchor="middle" font-size="13" fill="#4a453d">your driver is told</text>
+                <text x="150" y="231" text-anchor="middle" font-size="15" font-weight="700" fill="#14110c">Sarah</text>
+                <text x="530" y="212" text-anchor="middle" font-size="13" fill="#4a453d">a thief who takes this holds</text>
+                <text x="530" y="231" text-anchor="middle" font-size="15" font-weight="700" fill="#14110c">Chen</text>
+                <text x="340" y="278" text-anchor="middle" font-size="13" fill="#6b655b">The two keys are never kept in the same place.</text>
+            </svg>
+        </div>
+
+        <div class="np-audio" id="npAudio" hidden>
+            <audio controls preload="none" id="npPlayer">
+                <source src="/media/audio/security-parameter-jason.mp3" type="audio/mpeg">
+            </audio>
+            <p class="np-note">Ninety seconds, read aloud.</p>
+        </div>
+
+        <h2 class="np-h">Why splitting it works</h2>
+        <p class="np-p">A surname on its own belongs to millions of people and points at
+           none of them. Chen. Alvarez. Okafor. It is only when a family name is joined
+           to a first name, a phone number, and the address where you will not be home
+           on Tuesday, that it becomes you. So the two halves are encrypted separately,
+           under two different keys, and the keys are never held together. Somebody who
+           steals one vault is holding a list of surnames.</p>
+
+        <h2 class="np-h">Your driver still knows who to meet</h2>
+        <p class="np-p">They are told your first name and nothing else. That is one vault
+           opened on its own. The half that identifies a household stays shut for an
+           ordinary ride.</p>
+
+        <h2 class="np-h">Looking you up leaves a mark</h2>
+        <p class="np-p">To see a whole name, the owner has to sign in and write down why.
+           That is not a formality:</p>
+        <ul class="np-list">
+            <li>The reason is recorded, with the time and who asked.</li>
+            <li>An alert goes out when it happens.</li>
+            <li>Each record is locked to the one before it, so a record cannot be
+                quietly changed or removed later without the break showing.</li>
+        </ul>
+
+        <h2 class="np-h">What we are not claiming</h2>
+        <p class="np-p">We are not saying nobody can ever see your name. The owner can,
+           under a recorded reason, because a car service that cannot look up a booking
+           cannot run. We are not saying nobody will try to break in. What we can say is
+           that if they do, what they get is half a name, and that every time somebody
+           looks, it leaves a mark that cannot be rubbed out.</p>
+
+        <p class="np-p"><a href="/privacy">The full privacy policy</a> covers everything
+           else we hold and why.</p>
+
+        <div class="np-foot">
+            Plateau Strategy Solution Lab, Seattle. This page describes the code that is
+            running. If the protection is ever switched off, the notice at the top of
+            this page says so.
+        </div>
+    </div>
+
+<script>
+(function () {
+    // The page reads its own status rather than asserting one. If the vault is
+    // not running, this says so plainly instead of leaving a claim standing
+    // that the code no longer backs.
+    var el = document.getElementById('npState');
+    fetch('/api/name/status', { cache: 'no-store' })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+            if (d && d.active) {
+                el.innerHTML = '<b>This is switched on.</b> Names given at booking are ' +
+                    'split and encrypted as described below.';
+            } else {
+                el.innerHTML = '<b>Not switched on yet.</b> This describes protection we ' +
+                    'have built and are rolling out. Until the notice above changes, ' +
+                    'assume your name is stored the ordinary way.';
+            }
+        })
+        .catch(function () {
+            el.innerHTML = '<b>Could not check.</b> Reload to try again.';
+        });
+    // The narration appears only once it exists, so there is never a dead player.
+    fetch('/media/audio/security-parameter-jason.mp3', { method: 'HEAD' })
+        .then(function (r) { if (r.ok) document.getElementById('npAudio').hidden = false; })
+        .catch(function () {});
+})();
+</script>
+</body>
+</html>

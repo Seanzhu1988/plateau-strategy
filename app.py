@@ -3660,6 +3660,27 @@ def _local_iso_epoch(s):
         return None
 
 
+@app.route("/name-protection")
+def name_protection_page():
+    return send_file(os.path.join(BASE_DIR, "name-protection.html"))
+
+
+@app.route("/api/name/status")
+def api_name_status():
+    """Whether the name vault is actually running, for the page that describes it.
+
+    The explainer reads this and changes tense: it says names ARE split only
+    while they really are, and says the work is being rolled out when it is not.
+    That way the public claim cannot drift away from the code, which is the
+    usual way security pages start lying: the page is written once, the feature
+    is turned off later, and nobody edits the page.
+
+    Deliberately says nothing about the keys themselves, only that three of the
+    right shape are present."""
+    return jsonify({"ok": True,
+                    "active": bool(name_vault and name_vault.configured())})
+
+
 @app.route("/api/name/reveal", methods=["POST"])
 @owner_required
 def api_name_reveal():
