@@ -90,8 +90,20 @@
                   display: inline-flex !important; align-items: center; justify-content: center; }
         /* [hidden] must beat the flex display above, or the locked button lingers. */
         #ftWalk[hidden] { display: none !important; }
-        #ftMap { height: 62vh; min-height: 340px; border-radius: 10px; overflow: hidden;
-                 margin: 1rem 0 .7rem; border: 1px solid #d3d3da; }
+        /* The mini map that shadows the walk: pinned in the top corner, small,
+           moving with the walker while each stop is read and played below it.
+           Fixed, so it stays put as the descriptions scroll past. */
+        #ftMini { position: fixed; top: 70px; right: 10px; width: 158px; z-index: 900;
+                  background: #fff; border: 1px solid #cfcfd6; border-radius: 10px;
+                  box-shadow: 0 8px 24px rgba(20,17,12,.28); overflow: hidden; }
+        .ft-mini-head { display: flex; align-items: center; justify-content: space-between;
+                  padding: .28rem .25rem .28rem .55rem; font-size: .68rem; font-weight: 800;
+                  letter-spacing: .04em; text-transform: uppercase; color: #1f3a5f; background: #f2efe7; }
+        #ftMiniClose { font: inherit !important; font-size: .95rem !important; cursor: pointer;
+                  border: none !important; background: transparent !important; color: #6b655b !important;
+                  padding: .05rem .4rem !important; min-height: 0 !important; line-height: 1; }
+        #ftMap { width: 100%; height: 150px; }
+        @media (min-width: 700px) { #ftMini { width: 210px; } #ftMap { height: 200px; } }
         .ft-mapbar { display: flex; gap: .6rem; flex-wrap: wrap; }
         #ftFollow, #ftEdit { font: inherit !important; font-weight: 700 !important; cursor: pointer;
                   border: 1px solid #1f3a5f !important; padding: .65rem 1rem !important;
@@ -105,10 +117,10 @@
         /* Leaflet chrome, matched to the page, muted basemap so the route reads. */
         .leaflet-container { background: #f5f1e8; font: inherit; }
         .basemap-muted { filter: saturate(.35) contrast(.95) brightness(1.03); }
-        .ft-pin { background: #1f3a5f; color: #fff; width: 26px; height: 26px; border-radius: 50%;
+        .ft-pin { background: #1f3a5f; color: #fff; width: 20px; height: 20px; border-radius: 50%;
                   display: flex; align-items: center; justify-content: center; font-weight: 800;
-                  font-size: .8rem; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
-        .ft-you { width: 18px; height: 18px; border-radius: 50%; background: #2f9d54;
+                  font-size: .64rem; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.4); }
+        .ft-you { width: 16px; height: 16px; border-radius: 50%; background: #2f9d54;
                   border: 3px solid #fff; box-shadow: 0 0 0 4px rgba(47,157,84,.3); }
         @media (max-width: 640px) { .ft-title { font-size: 1.55rem; } }
     </style>
@@ -144,15 +156,24 @@
         <div id="ftStops"></div>
 
         <div class="ft-walk">
-            <button id="ftWalk">Lock these stops and walk with the map</button>
-            <div id="ftMapWrap" hidden>
-                <div id="ftMap"></div>
+            <button id="ftWalk">Lock these stops and walk</button>
+            <div id="ftConfirm" hidden>
+                <p class="ft-loc">Your route is locked. Share your location and a small map will
+                   ride in the top corner, moving with you, while you read and play each stop below.</p>
                 <div class="ft-mapbar">
-                    <button id="ftFollow" aria-pressed="false">Follow me on foot</button>
+                    <button id="ftFollow" aria-pressed="false">Follow me with the mini map</button>
                     <button id="ftEdit">Edit the stops</button>
                 </div>
-                <p class="ft-loc" id="ftLoc">Your route is locked. Tap Follow me to walk it with the map moving as you go.</p>
+                <p class="ft-loc" id="ftLoc"></p>
             </div>
+        </div>
+
+        <!-- The mini map that shadows the walk, pinned in the corner. It appears
+             only after the route is locked and the walker shares their location. -->
+        <div id="ftMini" hidden>
+            <div class="ft-mini-head"><span>You on the trail</span><button id="ftMiniClose"
+                 aria-label="Stop the map">&#10005;</button></div>
+            <div id="ftMap"></div>
         </div>
 
         <div class="ft-actions">
@@ -340,46 +361,45 @@
         setTimeout(function () { location.href = "/trip-planner"; }, 700);
     });
 
-    // ---- the walking map: lock the stops, then walk with the line ----
-    // The map lives on this page so the trail can be walked from it, not just
-    // consulted and forgotten. Following your position is OFF until you ask:
-    // a page that quietly watches where you are is not something to switch on
-    // for somebody. Nothing about your location leaves the browser.
+    // ---- lock the route, then a mini map shadows the walk in the corner ----
+    // The flow the trail was asking for: pick the stops, lock them, and once
+    // you are on your feet and have shared your location, a small map rides in
+    // the top corner and moves WITH you while you read and play each stop. The
+    // map is never shown until you ask for it, and nothing about your location
+    // ever leaves the browser, so it points at no one but the walk.
     function buildMap() {
         if (!map) {
-            map = L.map("ftMap", { zoomControl: true });
+            // An initial centre before tiles load, or Leaflet tries to fetch an
+            // infinite number of them; the first fix recentres it on the walker.
+            map = L.map("ftMap", { zoomControl: false }).setView([42.3601, -71.0589], 14);
             L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
                 maxZoom: 19, className: "basemap-muted",
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OSM</a>'
             }).addTo(map);
             routeLayer = L.layerGroup().addTo(map);
         }
         routeLayer.clearLayers();
-        var kept = selected(), pts = kept.map(function (s) { return [s.lat, s.lon]; });
-        if (pts.length > 1) L.polyline(pts, { color: "#1f3a5f", weight: 5, opacity: .8 }).addTo(routeLayer);
+        var kept = selected();
+        var pts = kept.map(function (s) { return [s.lat, s.lon]; });
+        if (pts.length > 1) L.polyline(pts, { color: "#1f3a5f", weight: 4, opacity: .85 }).addTo(routeLayer);
         kept.forEach(function (s) {
-            L.marker([s.lat, s.lon], { icon: L.divIcon({ className: "", iconSize: [26, 26],
-                iconAnchor: [13, 13], html: '<div class="ft-pin">' + s.n + "</div>" }) })
-             .addTo(routeLayer).bindTooltip(s.name);
+            L.marker([s.lat, s.lon], { icon: L.divIcon({ className: "", iconSize: [20, 20],
+                iconAnchor: [10, 10], html: '<div class="ft-pin">' + s.n + "</div>" }) }).addTo(routeLayer);
         });
-        if (pts.length > 1) map.fitBounds(L.latLngBounds(pts).pad(0.18));
-        else if (pts.length === 1) map.setView(pts[0], 15);
-        setTimeout(function () { map.invalidateSize(); }, 60);
     }
 
-    function openWalk() {
+    function openWalk() {          // confirm the route: lock it, then offer the walk
         if (!trail) return;
         locked = true;
         document.getElementById("ftWalk").hidden = true;
-        document.getElementById("ftMapWrap").hidden = false;
+        document.getElementById("ftConfirm").hidden = false;
         render();                 // ticks lock (disabled), rows read "locked"
-        buildMap();
-        document.getElementById("ftMapWrap").scrollIntoView({ behavior: "smooth", block: "start" });
+        document.getElementById("ftConfirm").scrollIntoView({ behavior: "smooth", block: "center" });
     }
-    function editWalk() {
+    function editWalk() {          // back to choosing stops
         stopFollow("");
         locked = false;
-        document.getElementById("ftMapWrap").hidden = true;
+        document.getElementById("ftConfirm").hidden = true;
         document.getElementById("ftWalk").hidden = false;
         render();
     }
@@ -387,39 +407,49 @@
     function stopFollow(msg) {
         if (followId !== null) { navigator.geolocation.clearWatch(followId); followId = null; }
         if (youMarker && map) { map.removeLayer(youMarker); youMarker = null; }
+        document.getElementById("ftMini").hidden = true;
         var b = document.getElementById("ftFollow");
-        b.setAttribute("aria-pressed", "false"); b.textContent = "Follow me on foot";
+        b.setAttribute("aria-pressed", "false"); b.textContent = "Follow me with the mini map";
         if (msg) document.getElementById("ftLoc").textContent = msg;
     }
     function toggleFollow() {
-        if (followId !== null) { stopFollow("Stopped following. Your route stays locked."); return; }
+        if (followId !== null) { stopFollow("The mini map is off. Your route stays locked."); return; }
         if (!navigator.geolocation) {
             document.getElementById("ftLoc").textContent = "This browser cannot share a location."; return;
         }
-        var b = document.getElementById("ftFollow");
-        b.setAttribute("aria-pressed", "true"); b.textContent = "Following you";
-        document.getElementById("ftLoc").textContent = "Asking for your location…";
+        document.getElementById("ftLoc").textContent = "Asking to use your location…";
+        // The browser's own permission prompt is the consent. Only once it is
+        // granted and a first fix arrives does the mini map appear.
         followId = navigator.geolocation.watchPosition(function (pos) {
             var lat = pos.coords.latitude, lon = pos.coords.longitude, acc = Math.round(pos.coords.accuracy || 0);
+            var mini = document.getElementById("ftMini");
+            if (mini.hidden) {                       // first fix: raise the corner map
+                mini.hidden = false;
+                buildMap();
+                var b = document.getElementById("ftFollow");
+                b.setAttribute("aria-pressed", "true"); b.textContent = "Hide the mini map";
+                setTimeout(function () { map.invalidateSize(); map.setView([lat, lon], 15); }, 60);
+            }
             if (!youMarker) {
-                youMarker = L.marker([lat, lon], { icon: L.divIcon({ className: "", iconSize: [18, 18],
-                    iconAnchor: [9, 9], html: '<div class="ft-you"></div>' }) }).addTo(map);
+                youMarker = L.marker([lat, lon], { icon: L.divIcon({ className: "", iconSize: [16, 16],
+                    iconAnchor: [8, 8], html: '<div class="ft-you"></div>' }) }).addTo(map);
             } else { youMarker.setLatLng([lat, lon]); }
-            // Keep you in view without fighting you: recentre only once you have
-            // walked off the screen, never on every reading.
-            if (!map.getBounds().pad(-0.25).contains([lat, lon])) map.panTo([lat, lon]);
+            if (map) map.panTo([lat, lon]);          // the corner map shadows you
             document.getElementById("ftLoc").textContent =
-                "The map is moving with you, within " + acc + " m. Tap Following you to stop.";
+                "The corner map is moving with you, within " + acc + " m.";
         }, function (err) {
             stopFollow(err && err.code === 1
-                ? "Location is blocked for this site, so following is off."
-                : "The location signal dropped, following is off.");
+                ? "Location is blocked for this site, so the map cannot follow you."
+                : "The location signal dropped, the map cannot follow you.");
         }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
     }
 
     document.getElementById("ftWalk").addEventListener("click", openWalk);
     document.getElementById("ftEdit").addEventListener("click", editWalk);
     document.getElementById("ftFollow").addEventListener("click", toggleFollow);
+    document.getElementById("ftMiniClose").addEventListener("click", function () {
+        stopFollow("The mini map is off. Your route stays locked.");
+    });
 
     // Yiki appears when she has been recorded, never as a dead player.
     fetch("/media/audio/trail-freedom-yiki.mp3", { method: "HEAD" })
