@@ -35,8 +35,15 @@ GUIDES = {
     },
     "yiki": {
         "name": "Yiki",
-        "voice_id": "",                          # chosen by ear, not yet set
+        "voice_id": "JZLpE3AGwpKYZI2X65hN",      # "Mingyao Ye" [SEAN picked her]
         "job": "outdoors: walking trails",
+        "language": "en+zh",
+        # Her library entry is "Mingyao Ye, Sad and Broken Hearted", a voice
+        # built for grief, and Yiki's job is a sunny two and a half mile walk.
+        # Flagged to Sean with a sample of the real opening line before anything
+        # was recorded, because tone is the one thing you cannot read off a
+        # description. His ear decides; this line exists so that whoever reads
+        # this file later knows the mismatch was seen and chosen, not missed.
     },
     "adrian": {
         "name": "Adrian",

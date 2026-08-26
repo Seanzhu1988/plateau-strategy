@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Gallery, Plateau Strategy Solution Lab</title>
+    <meta name="description" content="Search any artwork by name, or by the item number printed on its label, and find out where it hangs and what to notice when you get there.">
+    <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+    <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
+    <link rel="stylesheet" href="/modern.css">
+    <style>
+        header img { height: 42px; width: 42px; border-radius: 50%; }
+        header .brand { font-size: 1.2rem; font-weight: 800; }
+        .ug-wrap { max-width: 900px; margin: 2rem auto 4rem; padding: 0 1.2rem; }
+        .ug-title { font-size: 2rem; font-weight: 800; color: #14110c; margin: 0 0 .4rem; line-height: 1.15; }
+        .ug-lede { color: #4a453d; margin: 0 0 1.4rem; }
+        #ugFind { width: 100%; font: inherit; padding: .8rem .9rem !important; min-height: 48px;
+                  border: 1px solid #d3d3da !important; border-radius: 6px !important;
+                  box-sizing: border-box; background: #fff !important; color: #14110c !important; }
+        .ug-hint { font-size: .85rem; color: #6b655b; margin: .5rem 0 1.2rem; }
+        .ug-sec { font-size: .72rem; font-weight: 800; letter-spacing: .14em;
+                  text-transform: uppercase; color: #6b655b; margin: 1.8rem 0 .6rem; }
+        .ug-card { border: 1px solid #e6e6ea; border-radius: 10px; padding: 1rem 1.1rem;
+                   margin: 0 0 .8rem; background: #fff; }
+        .ug-h { font-weight: 800; color: #14110c; }
+        .ug-by { color: #4a453d; font-size: .95rem; margin: .1rem 0 .5rem; }
+        .ug-tags { display: flex; gap: .4rem; flex-wrap: wrap; margin: 0 0 .55rem; }
+        .ug-tag { font-size: .72rem; font-weight: 700; letter-spacing: .06em;
+                  text-transform: uppercase; color: #1f3a5f; border: 1px solid #d3d3da;
+                  border-radius: 999px; padding: .18rem .55rem; }
+        .ug-tag.num { color: #14110c; font-family: ui-monospace, Menlo, monospace;
+                      text-transform: none; letter-spacing: 0; }
+        .ug-teas { color: #33302a; }
+        .ug-read { font: inherit !important; font-weight: 700 !important; cursor: pointer;
+                   margin-top: .7rem; padding: .5rem .9rem !important; min-height: 40px;
+                   border: 1px solid #1f3a5f !important; border-radius: 4px !important;
+                   background: #fff !important; color: #1f3a5f !important; }
+        .ug-text { white-space: pre-wrap; color: #33302a; margin-top: .8rem;
+                   border-top: 1px solid #e6e6ea; padding-top: .8rem; line-height: 1.75; }
+        .ug-none { color: #6b655b; }
+        .ug-foot { border-top: 1px solid #e6e6ea; margin-top: 2.4rem; padding-top: 1rem;
+                   font-size: .88rem; color: #6b655b; }
+        @media (max-width: 640px) { .ug-title { font-size: 1.55rem; } }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="right">
+            <a href="/destination-book">Destination Book</a>
+            <a href="/trip-planner">Trip Planner</a>
+            <a href="/">Home</a>
+        </div>
+    </header>
+
+    <div class="ug-wrap">
+        <h1 class="ug-title">Universal Gallery</h1>
+        <p class="ug-lede">Every exhibition, one artwork at a time. What it is, where it
+           hangs, and what to notice while you are standing there.</p>
+
+        <input id="ugFind" placeholder="A name, or the number on the label…" autocomplete="off"
+               aria-label="Search by artwork name or item number">
+        <p class="ug-hint">You do not have to spell it. Every museum prints an item number on
+           the label, and that number is enough. Try <b>49.30</b> or <b>1942.51</b>.</p>
+
+        <div id="ugWritten"></div>
+        <div id="ugFound"></div>
+    </div>
+
+<script>
+(function () {
+    var written = {}, timer = null;
+
+    function esc(s) {
+        return String(s == null ? "" : s).replace(/[&<>"]/g,
+            function (c) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; });
+    }
+    function card(it, key) {
+        return '<div class="ug-card" data-k="' + esc(key || "") + '">' +
+            '<div class="ug-h">' + esc(it.title) + '</div>' +
+            '<div class="ug-by">' + esc(it.artist || "Maker unrecorded") +
+            (it.date ? ", " + esc(it.date) : "") + '</div>' +
+            '<div class="ug-tags">' +
+              (it.museum || it.source ? '<span class="ug-tag">' + esc(it.museum || it.source) + '</span>' : '') +
+              (it.where ? '<span class="ug-tag">' + esc(it.where) + '</span>' : '') +
+              (it.item_number ? '<span class="ug-tag num">' + esc(it.item_number) + '</span>' : '') +
+            '</div>' +
+            (it.teaser ? '<div class="ug-teas">' + esc(it.teaser) + '</div>' : '') +
+            (key && it.has_narrative
+                ? '<button class="ug-read">Read the guide, ' + (it.minutes || 3) + ' min</button>' +
+                  '<div class="ug-text" hidden></div>'
+                : '') +
+            '</div>';
+    }
+
+    fetch("/api/gallery/items").then(function (r) { return r.json(); }).then(function (d) {
+        written = d.items || {};
+        var keys = Object.keys(written);
+        if (!keys.length) return;
+        document.getElementById("ugWritten").innerHTML =
+            '<div class="ug-sec">Written by us</div>' +
+            keys.map(function (k) { return card(written[k], k); }).join("");
+    }).catch(function () {});
+
+    // One handler for the whole page: the cards are rebuilt on every search, and
+    // rebinding a listener per card is how you end up with four of them.
+    document.addEventListener("click", function (e) {
+        var b = e.target.closest(".ug-read"); if (!b) return;
+        var host = b.parentElement, box = host.querySelector(".ug-text");
+        var key = host.getAttribute("data-k");
+        if (!box.hidden) { box.hidden = true; b.textContent = "Read the guide, " +
+            ((written[key] || {}).minutes || 3) + " min"; return; }
+        if (box.dataset.loaded) { box.hidden = false; b.textContent = "Hide"; return; }
+        b.textContent = "Opening…";
+        fetch("/api/gallery/narrative/" + encodeURIComponent(key))
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                box.textContent = d.ok ? d.text : "That one is not written yet.";
+                box.dataset.loaded = "1"; box.hidden = false; b.textContent = "Hide";
+            })
+            .catch(function () { b.textContent = "Could not open it"; });
+    });
+
+    function search(q) {
+        var host = document.getElementById("ugFound");
+        if (q.length < 2) { host.innerHTML = ""; return; }
+        host.innerHTML = '<div class="ug-sec">Searching the collections</div>';
+        fetch("/api/gallery/search?q=" + encodeURIComponent(q))
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                var rs = d.results || [];
+                if (!rs.length) {
+                    host.innerHTML = '<div class="ug-sec">Found in the collections</div>' +
+                        '<p class="ug-none">Nothing matching that. We can search the Met and ' +
+                        'the Art Institute of Chicago, which publish their collections openly. ' +
+                        (d.not_covered ? esc(d.not_covered.join(", ")) + ' do not, so their ' +
+                         'works only appear here once we have written them ourselves.' : '') +
+                        '</p>';
+                    return;
+                }
+                host.innerHTML = '<div class="ug-sec">Found in the collections, ' +
+                    rs.length + '</div>' + rs.map(function (r) { return card(r, null); }).join("");
+            })
+            .catch(function () { host.innerHTML = '<p class="ug-none">Search failed. Try again.</p>'; });
+    }
+    document.getElementById("ugFind").addEventListener("input", function () {
+        var v = this.value.trim();
+        clearTimeout(timer);
+        timer = setTimeout(function () { search(v); }, 350);   // one request per pause, not per keystroke
+    });
+})();
+</script>
+</body>
+</html>

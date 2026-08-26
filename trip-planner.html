@@ -692,6 +692,20 @@
         .book-sub { display: block; font-weight: 500; color: #6b655b; font-size: 0.78rem; margin-top: 0.15rem; }
         .book-chev { color: #6b655b; font-size: 0.9rem; transition: transform 0.2s; flex: 0 0 auto; }
         .bookcard.open .book-chev { transform: rotate(180deg); }
+        .bk-filter { padding: .6rem 0 .5rem; }
+        .bk-filter input { width: 100%; font: inherit; padding: .55rem .7rem !important;
+                           min-height: 44px; border: 1px solid #d3d3da; border-radius: 6px;
+                           box-sizing: border-box; }
+        .bk-chips { display: flex; gap: .4rem; flex-wrap: wrap; margin: .5rem 0 0; }
+        .bk-chips button { font: inherit !important; font-size: .82rem !important;
+                           font-weight: 700 !important; cursor: pointer;
+                           padding: .35rem .7rem !important; min-height: 32px;
+                           border: 1px solid #d3d3da !important; border-radius: 999px !important;
+                           background: #fff !important; color: #4a453d !important; }
+        .bk-chips button[aria-pressed="true"] { background: #14110c !important;
+                           color: #fff !important; border-color: #14110c !important; }
+        .bk-count { font-size: .82rem; color: #6b655b; margin: .5rem 0 0; }
+        .bk-count a { color: #1f3a5f; cursor: pointer; text-decoration: underline; }
         .book-body { display: none; padding: 0 1.1rem 1.1rem; }
         .bookcard.open .book-body { display: block; }
 
@@ -861,6 +875,16 @@
                 <span class="book-chev">▾</span>
             </div>
           <div class="book-body">
+            <!-- The book was a flat list of every place in the city. That was
+                 fine at ten and unusable at sixty, and the Scout adds more every
+                 day, so it was only ever going one way. Filter first, list
+                 second, and never more than a dozen rows unless asked. -->
+            <div class="bk-filter">
+                <input id="bkFind" placeholder="Narrow this list…" autocomplete="off"
+                       aria-label="Narrow the list of places">
+                <div class="bk-chips" id="bkChips"></div>
+                <div class="bk-count" id="bkCount"></div>
+            </div>
             <div class="place-row" style="border-top:none">
                 <span style="width:26px"></span>
                 <span class="nm col-lab">Place</span>
@@ -1906,10 +1930,52 @@
             + ' verified tour guide' + (c.guide.n > 1 ? 's' : '') + '">🎓 ' + c.guide.median + 'm guide</em>';
         return h;
     }
+    // What the book is currently showing. Kept out of renderPlaces so typing in
+    // the filter does not disturb anything else on the page.
+    var bkFind = "", bkCat = "", bkAll = false;
+    var BK_CAP = 12;
+
+    function bkChips(){
+        var host = $('bkChips'); if (!host || host.dataset.built) return;
+        host.dataset.built = "1";
+        host.innerHTML = '<button data-c="" aria-pressed="true">All</button>' +
+            CATS.map(function(c){ return '<button data-c="' + c[0] + '" aria-pressed="false">' +
+                                          c[1] + '</button>'; }).join('');
+        host.addEventListener('click', function(e){
+            var b = e.target.closest('button'); if (!b) return;
+            bkCat = b.dataset.c; bkAll = false;
+            [].forEach.call(host.children, function(x){
+                x.setAttribute('aria-pressed', x.dataset.c === bkCat); });
+            renderPlaces();
+        });
+        var f = $('bkFind');
+        if (f) f.addEventListener('input', function(){
+            bkFind = this.value.trim().toLowerCase(); bkAll = false; renderPlaces(); });
+    }
+
     function renderPlaces(){
         $('pcount').textContent = places.length;
         const bc = $('bookCity'); if (bc) bc.textContent = (CITIES[curCity] || {}).label || curCity;
-        $('places').innerHTML = places.map((p, i) =>
+        bkChips();
+        // Filter on a COPY that remembers each place's real index, because every
+        // row action, add, edit, remove, addresses places[] by position. Losing
+        // that index is how a filtered list deletes the wrong place.
+        var rows = places.map(function(p, i){ return { p: p, i: i }; }).filter(function(r){
+            if (bkCat && r.p.cat !== bkCat) return false;
+            if (bkFind && (r.p.name || '').toLowerCase().indexOf(bkFind) === -1) return false;
+            return true;
+        });
+        var total = rows.length, shown = (bkAll || total <= BK_CAP) ? rows : rows.slice(0, BK_CAP);
+        var cEl = $('bkCount');
+        if (cEl) {
+            cEl.innerHTML = !total
+                ? 'Nothing matches. <a onclick="bkClear()">Clear the filter</a>'
+                : (shown.length < total
+                    ? 'Showing ' + shown.length + ' of ' + total +
+                      '. <a onclick="bkShowAll()">Show all ' + total + '</a>'
+                    : total + (total === 1 ? ' place' : ' places'));
+        }
+        $('places').innerHTML = shown.map(function(r){ var p = r.p, i = r.i; return
             '<div class="place-row' + (st.visited.has(i) ? ' in-route' : '') + '">'
             + (st.visited.has(i)
                 ? '<span class="addbtn done" title="Already in your route">✓</span>'
@@ -1921,8 +1987,16 @@
             + CATS.map(c => '<option value="' + c[0] + '"' + (p.cat === c[0] ? ' selected' : '') + '>' + c[1] + '</option>').join('')
             + '</select>'
             + '<span class="rm" title="Remove" onclick="removePlace(' + i + ')">✕</span>'
-            + '</div>').join('');
+            + '</div>'; }).join('');
     }
+    function bkShowAll(){ bkAll = true; renderPlaces(); }
+    function bkClear(){ bkFind = ""; bkCat = ""; bkAll = false;
+        var f = $('bkFind'); if (f) f.value = "";
+        var host = $('bkChips');
+        if (host) [].forEach.call(host.children, function(x){
+            x.setAttribute('aria-pressed', x.dataset.c === ""); });
+        renderPlaces(); }
+    window.bkShowAll = bkShowAll; window.bkClear = bkClear;
     function editPlace(i, k, v){
         if (k === 'close') places[i].close = parseTime(v);
         else if (k === 'visit') {

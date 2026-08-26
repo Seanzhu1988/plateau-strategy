@@ -3696,6 +3696,224 @@ def name_protection_page():
     return send_file(os.path.join(BASE_DIR, "name-protection.html"))
 
 
+# ======================================================================
+#  THE UNIVERSAL GALLERY
+#  One artwork at a time: what it is, where it hangs, and the number on
+#  its placard. Searchable by name OR by that number, because a visitor
+#  standing in a foreign museum can read the digits off a label without
+#  being able to spell, or even read, the words beside them. [SEAN]
+# ======================================================================
+
+_GAL_CACHE = {}
+
+
+def _gal_get(url, timeout=12):
+    """Fetch one collection API, or None.
+
+    TWO BUGS LIVED IN THE FIRST VERSION OF THESE ELEVEN LINES, and the second
+    was the dangerous one. It reached for urllib.request, which this file has
+    never imported. Corrected to requests, which every other fetch here uses,
+    except that requests is imported LOCALLY inside each of those functions and
+    not at module level, so the bare name raised NameError too.
+
+    Both were invisible, because the bare `except Exception` below caught the
+    NameError and returned None, so the endpoint answered 200 with an empty
+    list in a few milliseconds and looked like a museum with nothing to say.
+    A silent except is how a bug stops being a bug and starts being a feature
+    nobody can find. It now says what went wrong, in the log, once."""
+    import requests as _rq                       # local, like every other fetch here
+    try:
+        r = _rq.get(url, timeout=timeout,
+                    headers={"User-Agent": "PlateauStrategySolutionLab/1.0"})
+        return r.json() if r.ok else None
+    except Exception as e:
+        app.logger.warning("gallery fetch failed: %s (%s)", url[:70], e)
+        return None
+
+
+def _gal_met(q, limit=8):
+    """The Met's open access collection. Free, no key, CC0 on public domain."""
+    out = []
+    s = _gal_get("https://collectionapi.metmuseum.org/public/collection/v1/search?q="
+                 + urllib.parse.quote(q))
+    for oid in (s or {}).get("objectIDs") or []:
+        if len(out) >= limit:
+            break
+        o = _gal_get("https://collectionapi.metmuseum.org/public/collection/v1/objects/%s" % oid)
+        if not o or not o.get("title"):
+            continue
+        out.append({
+            "source": "The Met, New York",
+            "title": o.get("title"),
+            "artist": o.get("artistDisplayName") or "",
+            "date": o.get("objectDate") or "",
+            "item_number": o.get("accessionNumber") or "",
+            "where": ("Gallery %s" % o["GalleryNumber"]) if o.get("GalleryNumber") else
+                     (o.get("department") or ""),
+            "on_view": bool(o.get("GalleryNumber")),
+            "image": o.get("primaryImageSmall") if o.get("isPublicDomain") else "",
+            "city": "New York",
+        })
+    return out
+
+
+def _gal_aic(q, limit=8):
+    """The Art Institute of Chicago. Free, no key."""
+    d = _gal_get("https://api.artic.edu/api/v1/artworks/search?q=" + urllib.parse.quote(q)
+                 + "&limit=%d&fields=id,title,artist_title,date_display,"
+                   "main_reference_number,gallery_title,is_on_view,image_id" % limit)
+    out = []
+    for x in (d or {}).get("data") or []:
+        if not x.get("title"):
+            continue
+        out.append({
+            "source": "Art Institute of Chicago",
+            "title": x.get("title"),
+            "artist": x.get("artist_title") or "",
+            "date": x.get("date_display") or "",
+            "item_number": x.get("main_reference_number") or "",
+            "where": x.get("gallery_title") or "",
+            "on_view": bool(x.get("is_on_view")),
+            "image": ("https://www.artic.edu/iiif/2/%s/full/400,/0/default.jpg" % x["image_id"])
+                     if x.get("image_id") else "",
+            "city": "Chicago",
+        })
+    return out
+
+
+@app.route("/api/gallery/search")
+def api_gallery_search():
+    """Search every collection we can reach, by name or by item number.
+
+    The museums are asked in parallel would be nicer; they are asked in turn
+    because two sources is not slow and a thread pool here would be the most
+    complicated part of the file for no gain. Cached for an hour: these
+    collections change on the timescale of exhibitions, not seconds."""
+    q = (request.args.get("q") or "").strip()[:80]
+    if len(q) < 2:
+        return jsonify({"ok": False, "error": "Type at least two characters.", "results": []})
+    ck = q.lower()
+    hit = _GAL_CACHE.get(ck)
+    if hit and time.time() - hit[0] < 3600:
+        return jsonify({"ok": True, "cached": True, **hit[1]})
+    results = []
+    for fn in (_gal_met, _gal_aic):
+        try:
+            results.extend(fn(q))
+        except Exception:
+            pass
+    # RANKING, and why one rule is not enough.
+    #
+    # An exact item number is the strongest signal there is: somebody is standing
+    # in front of the thing, reading the label. That always wins.
+    #
+    # Then relevance, because one of these museums will answer ANYTHING. The Met
+    # correctly returns nothing for gibberish; the Art Institute returns eight
+    # arbitrary artworks for a search of "zzzqqxnotathing". A gallery that
+    # answers nonsense with a Self-Portrait and a Remembrance of Italy looks
+    # broken even though every row in it is a real object, so a title that
+    # actually contains the words asked for outranks one that does not, and if
+    # NOTHING contains them the honest answer is nothing.
+    ql = q.lower().replace(" ", "")
+    words = [w for w in q.lower().split() if len(w) > 2]
+
+    def _rank(r):
+        num = (r.get("item_number") or "").lower().replace(" ", "")
+        if num and num == ql:
+            return (0, 0, 0)
+        title = (r.get("title") or "").lower()
+        return (1, -sum(1 for w in words if w in title), 0 if r.get("on_view") else 1)
+
+    results.sort(key=_rank)
+    if words and results:
+        exact = any((r.get("item_number") or "").lower().replace(" ", "") == ql for r in results)
+        if not exact and not any(w in (results[0].get("title") or "").lower() for w in words):
+            results = []
+    # EVERY SEARCH TEACHES THE BOOK SOMETHING. A hit tells us a museum and a
+    # city somebody cares about, which may be a city the book has never heard
+    # of; a miss tells us, in the searcher's own words, what is not covered.
+    # Both go to Discovery. Wrapped, and after the results are assembled, so a
+    # discovery failure can never cost somebody their search. [SEAN]
+    try:
+        if results:
+            seen_museums = set()
+            for r in results[:6]:
+                m = r.get("source") or ""
+                if m and m not in seen_museums:
+                    seen_museums.add(m)
+                    discovery_mod.record_gallery(m, r.get("city") or "", r.get("title") or "")
+        else:
+            discovery_mod.record_gallery_miss(q)
+    except Exception as e:
+        app.logger.warning("gallery discovery hook failed: %s", e)
+
+    payload = {"query": q, "results": results[:16],
+               "sources": ["The Met, New York", "Art Institute of Chicago"],
+               # Said out loud, because a gallery that silently lacks MoMA looks
+               # like a gallery that cannot find The Starry Night.
+               "not_covered": ["MoMA", "the Louvre", "the Vatican Museums",
+                               "the Uffizi", "the Prado"]}
+    _GAL_CACHE[ck] = (time.time(), payload)
+    if len(_GAL_CACHE) > 300:
+        _GAL_CACHE.clear()
+    return jsonify({"ok": True, "cached": False, **payload})
+
+
+@app.route("/api/gallery/items")
+def api_gallery_items():
+    """The artworks we have WRITTEN, as opposed to the ones we can look up.
+
+    The collection APIs give a title, an artist and a gallery number, and anyone
+    can get those. What a visitor cannot get anywhere else is somebody telling
+    them what to notice in the two minutes they are standing there. That writing
+    is the product, so it lives here, keyed by the museum's own item number, and
+    the API fills in facts around it rather than the other way round."""
+    try:
+        with open(os.path.join(BASE_DIR, "gallery_items.json"), encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as e:
+        return jsonify({"ok": False, "items": {}, "error": str(e)}), 500
+    out = {}
+    for k, v in (data.get("items") or {}).items():
+        row = dict(v)
+        row.pop("script", None)                       # the words are fetched one at a time
+        row["has_narrative"] = os.path.exists(
+            os.path.join(BASE_DIR, v.get("script", "")))
+        out[k] = row
+    return jsonify({"ok": True, "items": out})
+
+
+@app.route("/api/gallery/narrative/<path:key>")
+def api_gallery_narrative(key):
+    """One artwork's written narrative. Read from disk each time; these are a
+    few kilobytes and editing one should not need a restart."""
+    try:
+        with open(os.path.join(BASE_DIR, "gallery_items.json"), encoding="utf-8") as f:
+            items = (json.load(f).get("items") or {})
+    except Exception:
+        return jsonify({"ok": False, "error": "No gallery."}), 500
+    it = items.get(key)
+    if not it:
+        return jsonify({"ok": False, "error": "No such item."}), 404
+    rel = it.get("script") or ""
+    # The key comes off a URL, so the path it maps to must be checked, not trusted.
+    full = os.path.normpath(os.path.join(BASE_DIR, rel))
+    if not full.startswith(os.path.join(BASE_DIR, "gallery_scripts")):
+        return jsonify({"ok": False, "error": "Bad path."}), 400
+    try:
+        with open(full, encoding="utf-8") as f:
+            text = f.read()
+    except Exception:
+        return jsonify({"ok": False, "error": "Not written yet."}), 404
+    return jsonify({"ok": True, "key": key, "title": it.get("title"),
+                    "minutes": it.get("minutes"), "text": text})
+
+
+@app.route("/universal-gallery")
+def universal_gallery_page():
+    return send_file(os.path.join(BASE_DIR, "universal-gallery.html"))
+
+
 @app.route("/api/trails")
 def api_trails():
     """The walkable trails, as data. One file, read fresh, no cache to go stale."""

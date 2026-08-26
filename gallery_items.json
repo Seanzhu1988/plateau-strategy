@@ -1,0 +1,40 @@
+{
+ "items": {
+  "moma:472.1941": {
+   "title": "The Starry Night",
+   "artist": "Vincent van Gogh",
+   "date": "1889",
+   "museum": "Museum of Modern Art",
+   "city": "New York",
+   "item_number": "472.1941",
+   "where": "Floor 5, the collection galleries",
+   "script": "gallery_scripts/the-starry-night.txt",
+   "teaser": "He painted it from a barred window in an asylum, the hills and the star are real, the village is not, and he thought it was a failure.",
+   "minutes": 3
+  },
+  "met:49.30": {
+   "title": "Cypresses",
+   "artist": "Vincent van Gogh",
+   "date": "1889",
+   "museum": "The Metropolitan Museum of Art",
+   "city": "New York",
+   "item_number": "49.30",
+   "where": "Gallery 825",
+   "script": "gallery_scripts/cypresses.txt",
+   "teaser": "Painted the same summer, from the same asylum, and the tree he moved into The Starry Night stands here on its own.",
+   "minutes": 3
+  },
+  "aic:1942.51": {
+   "title": "Nighthawks",
+   "artist": "Edward Hopper",
+   "date": "1942",
+   "museum": "Art Institute of Chicago",
+   "city": "Chicago",
+   "item_number": "1942.51",
+   "where": "Gallery 262",
+   "script": "gallery_scripts/nighthawks.txt",
+   "teaser": "There is no door. Look for the way out of that diner and you will not find one, which is the whole painting.",
+   "minutes": 3
+  }
+ }
+}

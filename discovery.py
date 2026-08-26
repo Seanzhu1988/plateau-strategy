@@ -446,6 +446,62 @@ def record_search_miss(q, city, outcome):
     return True
 
 
+def record_gallery(museum, city, example=""):
+    """A museum somebody reached through the Universal Gallery.
+
+    Every gallery search is a person telling us where they are, or where they
+    are about to be. If they look up a painting at the Art Institute, Chicago is
+    a city worth having in the book, and the Art Institute is a place worth
+    having in it, whether or not anyone has been there yet. The book cannot
+    guess that; a search says it out loud. [SEAN "make sure any search will
+    create a discovery that we might not have"]
+
+    Deduped forever on the museum, so a hundred searches of the same collection
+    make one proposal and not a hundred."""
+    museum = re.sub(r"<[^>]*>", "", (museum or "")).strip()[:80]
+    if len(museum) < 4:
+        return False
+    with _LOCK:
+        s = _load()
+        k = "gallery#" + _slug(museum)
+        if k in s["seen"]:
+            return True
+        s["seen"][k] = int(time.time())
+        s["proposals"].append({
+            "id": k, "kind": "place", "src": "universal-gallery", "name": museum,
+            "city": _slug(city or "other")[:24] or "other", "cat": "culture",
+            "note": ("reached through the gallery" +
+                     (" while looking up %s" % example[:40] if example else "")),
+            "url": "https://www.google.com/maps/search/" + urllib.parse.quote(museum),
+            "found": int(time.time()),
+        })
+        _save(s)
+    return True
+
+
+def record_gallery_miss(q):
+    """An artwork search nobody could answer. Same principle as a book miss:
+    the words a person typed are the clearest statement of what is missing."""
+    q = re.sub(r"<[^>]*>", "", (q or "")).strip()[:80]
+    if len(q) < 3:
+        return False
+    with _LOCK:
+        s = _load()
+        k = "artmiss#" + _slug(q)
+        if k in s["seen"]:
+            return True
+        s["seen"][k] = int(time.time())
+        s["proposals"].append({
+            "id": k, "kind": "lead", "src": "gallery-search", "name": q,
+            "city": "other", "cat": "culture",
+            "note": "searched in the gallery, nothing found",
+            "url": "https://www.google.com/search?q=" + urllib.parse.quote(q + " museum"),
+            "found": int(time.time()),
+        })
+        _save(s)
+    return True
+
+
 # ---------------- the hourly refine: new destinations get their voice ----
 # [SEAN "the hourly refine would do such a refining of adding the guiding
 # voices into the destination"] Every hour, book entries without a recording
