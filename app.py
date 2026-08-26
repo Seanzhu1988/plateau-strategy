@@ -1277,6 +1277,37 @@ def _compress_and_cache(resp):
         elif (resp.mimetype or "").startswith("text/html"):
             resp.headers["Cache-Control"] = "no-cache"
 
+            # WHO YOU ARE IS PART OF THE PAGE, SO IT MUST BE PART OF THE ETAG.
+            #
+            # send_file builds the ETag from the file's modification time and
+            # size, and Flask adds "Vary: Cookie" the moment a page touches the
+            # session. Those two together are a trap. The browser keeps a copy
+            # per cookie, but on the next visit it revalidates with the ETag it
+            # already has, and the server, which only looked at the file,
+            # answers 304 Not Modified. The browser then re-displays the body
+            # it had, which is the SIGNED-OUT page.
+            #
+            # That is the "I log in and get the old site, then refresh and it
+            # comes right" report: sign-in reloads the page, the reload
+            # revalidates, the server says nothing changed, and the reload shows
+            # the pre-login page back again.
+            #
+            # Salting the ETag with the signed-in identity fixes it without
+            # giving up caching: the same person still gets 304s, and a change
+            # of identity is a different ETag, so the server must send the real
+            # page. The salt is a short digest, never the session itself.
+            et = resp.headers.get("ETag")
+            if et:
+                try:
+                    who = "|".join(str(session.get(k) or "") for k in
+                                   ("owner", "owner_email", "reader", "reader_email",
+                                    "driver", "agent", "renter", "pro"))
+                except Exception:
+                    who = ""
+                if who.strip("|"):
+                    salt = hashlib.sha256(who.encode("utf-8")).hexdigest()[:10]
+                    resp.headers["ETag"] = '%s-%s"' % (et.rstrip('"'), salt)
+
         # Stamp the version onto our own stylesheets and scripts.
         #
         # Static files are held for ten minutes, which is the right call for
