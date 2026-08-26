@@ -41,6 +41,16 @@
         .ft-name { font-weight: 800; color: #14110c; }
         .ft-meta { font-size: .85rem; color: #6b655b; margin: .15rem 0 .35rem; }
         .ft-desc { color: #33302a; font-size: .95rem; }
+        /* Two guides, no overlap: Jason speaks the three stops the Destination
+           Book already records, Yiki introduces the rest in writing. A small
+           name tag says who, the same way it will read across the book. */
+        .ft-byline { display: flex; align-items: center; gap: .5rem; margin: .15rem 0 .35rem; }
+        #ftStops .ft-byline .ft-play { margin: 0 !important; }
+        .ft-guide { display: inline-block; font-size: .66rem; font-weight: 800; letter-spacing: .1em;
+                    text-transform: uppercase; color: #1f3a5f; border: 1px solid #d3d3da;
+                    border-radius: 999px; padding: .08rem .5rem; }
+        .ft-yiki { margin-top: .55rem; color: #4a453d; font-size: .93rem; line-height: 1.6; }
+        .ft-yiki .ft-guide { margin-right: .5rem; }
         /* Hung off the list's id: modern.css strips padding and background from
            every button behind a selector with eight :not() clauses, and a class
            cannot outrank it. Fifth time on this site. */
@@ -205,10 +215,15 @@
                    '<div class="ft-n">' + s.n + '</div><div class="ft-b">' +
                    '<div class="ft-name">' + s.name + '</div>' +
                    (s.book_slug
-                     ? '<button class="ft-play" data-slug="' + s.book_slug + '">Play</button>'
+                     ? '<div class="ft-byline"><span class="ft-guide">Jason</span>' +
+                       '<button class="ft-play" data-slug="' + s.book_slug + '">Play</button></div>'
                      : '') +
                    '<div class="ft-meta">' + meta + '</div>' +
-                   '<div class="ft-desc">' + s.desc + '</div></div></div>';
+                   '<div class="ft-desc">' + s.desc + '</div>' +
+                   (s.yiki
+                     ? '<div class="ft-yiki"><span class="ft-guide">Yiki</span>' + s.yiki + '</div>'
+                     : '') +
+                   '</div></div>';
         }).join("");
         document.getElementById("ftAll").setAttribute("aria-pressed", mode === "all");
         document.getElementById("ftHalf").setAttribute("aria-pressed", mode === "half");
@@ -257,8 +272,8 @@
     function verifyPlays() {
         [].forEach.call(document.querySelectorAll(".ft-play"), function (b) {
             fetch("/media/audio/card-" + b.dataset.slug + ".mp3", { method: "HEAD" })
-                .then(function (r) { if (!r.ok) b.remove(); })
-                .catch(function () { b.remove(); });
+                .then(function (r) { if (!r.ok) (b.closest(".ft-byline") || b).remove(); })
+                .catch(function () { (b.closest(".ft-byline") || b).remove(); });
         });
     }
 
