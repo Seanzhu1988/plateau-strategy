@@ -23,6 +23,9 @@
                   text-transform: uppercase; color: #6b655b; margin: 1.8rem 0 .6rem; }
         .ug-card { border: 1px solid #e6e6ea; border-radius: 10px; padding: 1rem 1.1rem;
                    margin: 0 0 .8rem; background: #fff; }
+        .ug-img { display: block; width: 100%; max-width: 260px; height: auto;
+                  border-radius: 6px; margin: 0 0 .7rem; background: #f4f4f6; }
+        .ug-src { font-size: .74rem; color: #6b655b; margin: -.4rem 0 .6rem; }
         .ug-h { font-weight: 800; color: #14110c; }
         .ug-by { color: #4a453d; font-size: .95rem; margin: .1rem 0 .5rem; }
         .ug-tags { display: flex; gap: .4rem; flex-wrap: wrap; margin: 0 0 .55rem; }
@@ -93,6 +96,16 @@
     }
     function card(it, key) {
         return '<div class="ug-card" data-k="' + esc(key || "") + '">' +
+            // The photograph is the point of this page for somebody standing in
+            // a gallery: it is how they confirm they are in front of the right
+            // object. It is always a REAL photograph from the museum's own open
+            // collection or Wikimedia Commons, never a generated one, because
+            // an image that is confidently almost-right would defeat exactly
+            // the thing it is here to do.
+            (it.image
+              ? '<img class="ug-img" src="' + esc(it.image) + '" alt="' + esc(it.title) +
+                '" loading="lazy" onerror="this.remove()">'
+              : '') +
             '<div class="ug-h">' + esc(it.title) + '</div>' +
             '<div class="ug-by">' + esc(it.artist || "Maker unrecorded") +
             (it.date ? ", " + esc(it.date) : "") + '</div>' +
@@ -101,6 +114,9 @@
               (it.where ? '<span class="ug-tag">' + esc(it.where) + '</span>' : '') +
               (it.item_number ? '<span class="ug-tag num">' + esc(it.item_number) + '</span>' : '') +
             '</div>' +
+            (it.image ? '<div class="ug-src">Photograph from ' +
+                        esc(it.wikidata ? "Wikimedia Commons" : (it.source || "the museum")) +
+                        '</div>' : '') +
             (it.teaser ? '<div class="ug-teas">' + esc(it.teaser) + '</div>' : '') +
             (key && it.has_narrative
                 ? '<div class="ug-actions">' +

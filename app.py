@@ -3781,6 +3781,99 @@ def _gal_aic(q, limit=8):
     return out
 
 
+def _gal_wikidata(q, limit=8):
+    """The whole world's art, through Wikidata and Wikimedia Commons.
+
+    The Met and the Art Institute publish their collections openly and most
+    great museums do not: MoMA, the Louvre, the British Museum, the Uffizi, the
+    Prado, none of them have an open API. So the gallery could not find The
+    Starry Night, which is the first thing anybody types.
+
+    Wikidata knows all of them, free and without a key, and it carries the two
+    things this gallery is built on: the museum's own INVENTORY NUMBER (P217,
+    which is "472.1941" for The Starry Night, "INV 779" for the Mona Lisa,
+    "EA24" for the Rosetta Stone) and a real photograph on Commons (P18).
+
+    THE PICTURE IS A REAL PHOTOGRAPH, NEVER A GENERATED ONE. The point of
+    showing it is that somebody in a museum can check they are in front of the
+    right object. An image that is confidently almost-right would defeat that
+    exactly, and it would be worse than showing nothing. [SEAN]
+    """
+    import requests as _rq
+    H = {"User-Agent": "PlateauStrategySolutionLab/1.0 (universal gallery)"}
+    try:
+        r = _rq.get("https://www.wikidata.org/w/api.php", timeout=12, headers=H,
+                    params={"action": "wbsearchentities", "format": "json",
+                            "language": "en", "limit": limit, "search": q})
+        ids = [x["id"] for x in (r.json().get("search") or [])]
+        if not ids:
+            return []
+        r2 = _rq.get("https://www.wikidata.org/w/api.php", timeout=15, headers=H,
+                     params={"action": "wbgetentities", "format": "json",
+                             "languages": "en", "props": "labels|claims",
+                             "ids": "|".join(ids)})
+        ents = r2.json().get("entities") or {}
+    except Exception as e:
+        app.logger.warning("wikidata search failed: %s", e)
+        return []
+
+    def first(cl, prop):
+        try:
+            dv = cl[prop][0]["mainsnak"]["datavalue"]["value"]
+            return dv["id"] if isinstance(dv, dict) and "id" in dv else dv
+        except Exception:
+            return None
+
+    rows, need_labels = [], set()
+    for qid, ent in ents.items():
+        cl = ent.get("claims") or {}
+        img, inv = first(cl, "P18"), first(cl, "P217")
+        coll, maker = first(cl, "P195"), first(cl, "P170")
+        # Something is an ARTWORK OR ARTIFACT here if a museum holds it, it has
+        # an inventory number, or somebody made it. A person, a town or a film
+        # has none of those, which keeps the results to things you can stand in
+        # front of without needing a list of every type in the world.
+        if not (img and (coll or inv or maker)):
+            continue
+        for x in (coll, maker):
+            if isinstance(x, str) and x.startswith("Q"):
+                need_labels.add(x)
+        rows.append({"qid": qid, "title": (ent.get("labels", {}).get("en") or {}).get("value", ""),
+                     "image_file": img, "inv": inv, "coll_qid": coll, "maker_qid": maker,
+                     "date": (first(cl, "P571") or {}).get("time", "")[1:5]
+                             if isinstance(first(cl, "P571"), dict) else ""})
+    labels = {}
+    if need_labels:
+        try:
+            r3 = _rq.get("https://www.wikidata.org/w/api.php", timeout=12, headers=H,
+                         params={"action": "wbgetentities", "format": "json",
+                                 "languages": "en", "props": "labels",
+                                 "ids": "|".join(list(need_labels)[:40])})
+            for k, v in (r3.json().get("entities") or {}).items():
+                labels[k] = (v.get("labels", {}).get("en") or {}).get("value", "")
+        except Exception:
+            pass
+
+    out = []
+    for r in rows:
+        if not r["title"]:
+            continue
+        out.append({
+            "source": labels.get(r["coll_qid"], "") or "Wikidata",
+            "title": r["title"],
+            "artist": labels.get(r["maker_qid"], "") or "",
+            "date": r["date"] or "",
+            "item_number": r["inv"] or "",
+            "where": labels.get(r["coll_qid"], "") or "",
+            "on_view": bool(r["coll_qid"]),
+            "image": ("https://commons.wikimedia.org/wiki/Special:FilePath/"
+                      + urllib.parse.quote(r["image_file"]) + "?width=420"),
+            "city": "",
+            "wikidata": r["qid"],
+        })
+    return out
+
+
 @app.route("/api/gallery/search")
 def api_gallery_search():
     """Search every collection we can reach, by name or by item number.
@@ -3797,7 +3890,7 @@ def api_gallery_search():
     if hit and time.time() - hit[0] < 3600:
         return jsonify({"ok": True, "cached": True, **hit[1]})
     results = []
-    for fn in (_gal_met, _gal_aic):
+    for fn in (_gal_met, _gal_aic, _gal_wikidata):
         try:
             results.extend(fn(q))
         except Exception:
@@ -3842,13 +3935,22 @@ def api_gallery_search():
                 if m and m not in seen_museums:
                     seen_museums.add(m)
                     discovery_mod.record_gallery(m, r.get("city") or "", r.get("title") or "")
+            # The museums are discovered as places; the objects are the other
+            # half. What people keep looking up becomes the writing queue, so
+            # the guides get written for things somebody actually stood in
+            # front of rather than for whatever we happened to think of.
+            for r in results[:4]:
+                discovery_mod.record_artwork(r.get("title"), r.get("source"), r.get("city"),
+                                             r.get("item_number"), r.get("image"),
+                                             r.get("wikidata"))
         else:
             discovery_mod.record_gallery_miss(q)
     except Exception as e:
         app.logger.warning("gallery discovery hook failed: %s", e)
 
     payload = {"query": q, "results": results[:16],
-               "sources": ["The Met, New York", "Art Institute of Chicago"],
+               "sources": ["The Met, New York", "Art Institute of Chicago",
+                           "Wikidata and Wikimedia Commons, worldwide"],
                # Said out loud, because a gallery that silently lacks MoMA looks
                # like a gallery that cannot find The Starry Night.
                "not_covered": ["MoMA", "the Louvre", "the Vatican Museums",
@@ -3907,6 +4009,19 @@ def api_gallery_narrative(key):
         return jsonify({"ok": False, "error": "Not written yet."}), 404
     return jsonify({"ok": True, "key": key, "title": it.get("title"),
                     "minutes": it.get("minutes"), "text": text})
+
+
+@app.route("/api/gallery/queue")
+@owner_required
+def api_gallery_queue():
+    """What travellers keep looking up and nobody has written yet.
+
+    The writing is the product, so this is the list that decides what to write
+    next: most asked for, first."""
+    try:
+        return jsonify({"ok": True, "queue": discovery_mod.artwork_queue(60)})
+    except Exception as e:
+        return jsonify({"ok": False, "queue": [], "error": str(e)}), 500
 
 
 @app.route("/universal-gallery")

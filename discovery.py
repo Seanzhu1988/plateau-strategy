@@ -495,6 +495,53 @@ def record_gallery(museum, city, example=""):
     return True
 
 
+def record_artwork(title, museum, city, item_number="", image="", qid=""):
+    """An artwork somebody looked up, kept so the gallery builds its own index.
+
+    The museums are discovered as PLACES; this is the other half. Every search
+    that lands on a real object with a real inventory number is a vote that the
+    object is worth writing about, and the written guide is the product. So the
+    gallery accumulates a queue of things people actually stood in front of,
+    ranked by how often they were asked for, instead of us guessing which
+    paintings matter.
+
+    Deduped on the museum's own inventory number where there is one, because
+    that is the only identifier that is stable across languages and spellings.
+    Counts repeats, since the count IS the signal. [SEAN]"""
+    title = re.sub(r"<[^>]*>", "", (title or "")).strip()[:120]
+    if len(title) < 2:
+        return False
+    key = "art#" + _slug((item_number or "") + "|" + (museum or "") + "|" + title)
+    with _LOCK:
+        s = _load()
+        arts = s.setdefault("artworks", {})
+        row = arts.get(key)
+        if row:
+            row["asked"] = row.get("asked", 1) + 1
+            row["last"] = int(time.time())
+        else:
+            arts[key] = {"title": title, "museum": (museum or "")[:80],
+                         "city": _slug(city or "")[:24], "item_number": (item_number or "")[:40],
+                         "image": (image or "")[:300], "qid": (qid or "")[:16],
+                         "asked": 1, "written": False,
+                         "first": int(time.time()), "last": int(time.time())}
+        if len(arts) > 3000:
+            # keep the most asked-for, drop the long tail
+            keep = sorted(arts.items(), key=lambda kv: -kv[1].get("asked", 1))[:2000]
+            s["artworks"] = dict(keep)
+        _save(s)
+    return True
+
+
+def artwork_queue(limit=40):
+    """What people keep looking up and nobody has written yet, most asked first.
+    This is the writing queue for the Universal Gallery."""
+    s = _load()
+    rows = [dict(v, key=k) for k, v in (s.get("artworks") or {}).items() if not v.get("written")]
+    rows.sort(key=lambda r: (-r.get("asked", 1), r.get("title", "")))
+    return rows[:limit]
+
+
 def record_gallery_miss(q):
     """An artwork search nobody could answer. Same principle as a book miss:
     the words a person typed are the clearest statement of what is missing."""
