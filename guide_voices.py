@@ -42,15 +42,44 @@ GUIDES = {
         "name": "Adrian",
         "voice_id": "agczkAUlHLowaNnL72Cc",      # "Adrian | Chinese Mandarin Narration"
         "job": "the Universal Gallery: one artwork at a time",
+        "language": "en+zh",                     # both, and ONLY the gallery [SEAN]
+    },
+    "pangge": {
+        "name": "Pangge",
+        "voice_id": "hFamrilbAE6WDMtWgKvu",      # "pangge, chinese radio voice"
+        "job": "the guides, in Chinese",
         "language": "zh",
-        # NOTE, and it needs Sean's word before a single recording is made:
-        # the voice he picked is a MANDARIN narrator, not an English one. It is
-        # a good voice and the choice may be deliberate, the site already speaks
-        # five languages and already has Chinese recordings of the Met. But if
-        # the Universal Gallery was meant to greet an English speaker, this is
-        # the wrong throat, and nobody would notice until the audio existed.
     },
 }
+
+# WHO READS A GUIDE IN WHICH LANGUAGE.
+#
+# The guides are already written in five languages; only English has ever been
+# recorded. A Chinese reader arriving at a Chinese page and hearing an American
+# accent reading English is not a translation, it is a shrug. Pangge is the
+# Chinese voice for the guide job. [SEAN]
+#
+# Jason has no entry for zh on purpose. He can physically read Mandarin, the
+# model is multilingual, and the result is an American speaking Chinese, which
+# is worse than useless for the one listener it is meant to serve.
+#
+# Adrian is the deliberate exception, and Sean's call: he reads the gallery in
+# BOTH languages. His library entry is a Mandarin narrator, so his English
+# carries an accent. That is a choice, not an accident, and a gallery guide who
+# sounds like a person from somewhere is not obviously worse than one who
+# sounds like nowhere. He does the gallery and nothing else.
+BY_LANGUAGE = {
+    "guide":   {"en": "jason",  "zh": "pangge"},
+    "trail":   {"en": "yiki"},
+    "gallery": {"en": "adrian", "zh": "adrian"},
+}
+
+
+def reader_for(job, lang="en"):
+    """The guide whose turn it is, or None if nobody has that job in that
+    language yet. None means the recorder must refuse, never substitute."""
+    who = (BY_LANGUAGE.get(job) or {}).get(lang)
+    return who if (who and ready(who)) else None
 
 
 def voice_id(guide):
