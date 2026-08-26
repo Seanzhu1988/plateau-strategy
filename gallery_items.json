@@ -10,7 +10,8 @@
    "where": "Floor 5, the collection galleries",
    "script": "gallery_scripts/the-starry-night.txt",
    "teaser": "He painted it from a barred window in an asylum, the hills and the star are real, the village is not, and he thought it was a failure.",
-   "minutes": 3
+   "minutes": 3,
+   "audio": "/media/audio/gallery-the-starry-night.mp3"
   },
   "met:49.30": {
    "title": "Cypresses",
@@ -22,7 +23,8 @@
    "where": "Gallery 825",
    "script": "gallery_scripts/cypresses.txt",
    "teaser": "Painted the same summer, from the same asylum, and the tree he moved into The Starry Night stands here on its own.",
-   "minutes": 3
+   "minutes": 3,
+   "audio": "/media/audio/gallery-cypresses.mp3"
   },
   "aic:1942.51": {
    "title": "Nighthawks",
@@ -34,7 +36,8 @@
    "where": "Gallery 262",
    "script": "gallery_scripts/nighthawks.txt",
    "teaser": "There is no door. Look for the way out of that diner and you will not find one, which is the whole painting.",
-   "minutes": 3
+   "minutes": 3,
+   "audio": "/media/audio/gallery-nighthawks.mp3"
   }
  }
 }

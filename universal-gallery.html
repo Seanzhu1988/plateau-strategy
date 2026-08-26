@@ -32,10 +32,24 @@
         .ug-tag.num { color: #14110c; font-family: ui-monospace, Menlo, monospace;
                       text-transform: none; letter-spacing: 0; }
         .ug-teas { color: #33302a; }
-        .ug-read { font: inherit !important; font-weight: 700 !important; cursor: pointer;
-                   margin-top: .7rem; padding: .5rem .9rem !important; min-height: 40px;
+        /* The container carries an id so these can outrank modern.css, whose
+           site-wide button rule sits behind eight :not() clauses and no
+           class-based selector can beat it. Written with a class first, which
+           left the button 48px wide and 82px tall with the label wrapped
+           inside it: it did not look like a button and did not click like one.
+           Fourth page today to hit this. */
+        #ugWritten .ug-read, #ugFound .ug-read {
+                   font: inherit !important; font-weight: 700 !important; cursor: pointer;
+                   margin-top: .7rem; padding: .55rem 1rem !important; min-height: 44px;
                    border: 1px solid #1f3a5f !important; border-radius: 4px !important;
-                   background: #fff !important; color: #1f3a5f !important; }
+                   background: #fff !important; color: #1f3a5f !important;
+                   display: inline-flex !important; align-items: center;
+                   white-space: nowrap; }
+        #ugWritten .ug-read:hover, #ugFound .ug-read:hover {
+                   background: #1f3a5f !important; color: #fff !important; }
+        .ug-actions { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+        .ug-player { margin-top: .8rem; }
+        .ug-player audio { width: 100%; max-width: 460px; }
         .ug-text { white-space: pre-wrap; color: #33302a; margin-top: .8rem;
                    border-top: 1px solid #e6e6ea; padding-top: .8rem; line-height: 1.75; }
         .ug-none { color: #6b655b; }
@@ -89,7 +103,11 @@
             '</div>' +
             (it.teaser ? '<div class="ug-teas">' + esc(it.teaser) + '</div>' : '') +
             (key && it.has_narrative
-                ? '<button class="ug-read">Read the guide, ' + (it.minutes || 3) + ' min</button>' +
+                ? '<div class="ug-actions">' +
+                    '<button class="ug-read">Read it, ' + (it.minutes || 3) + ' min</button>' +
+                    (it.audio ? '<button class="ug-read ug-listen">Listen</button>' : '') +
+                  '</div>' +
+                  '<div class="ug-player" hidden></div>' +
                   '<div class="ug-text" hidden></div>'
                 : '') +
             '</div>';
@@ -106,11 +124,25 @@
 
     // One handler for the whole page: the cards are rebuilt on every search, and
     // rebinding a listener per card is how you end up with four of them.
+    // Listen: built on first press, so a page of twenty artworks does not open
+    // twenty audio connections nobody asked for.
     document.addEventListener("click", function (e) {
+        var L = e.target.closest(".ug-listen");
+        if (L) {
+            var host = L.closest(".ug-card"), key = host.getAttribute("data-k");
+            var pl = host.querySelector(".ug-player"), it = written[key] || {};
+            if (!pl.dataset.built) {
+                pl.innerHTML = '<audio controls preload="none" src="' + it.audio + '"></audio>';
+                pl.dataset.built = "1";
+            }
+            pl.hidden = !pl.hidden;
+            L.textContent = pl.hidden ? "Listen" : "Hide the audio";
+            return;
+        }
         var b = e.target.closest(".ug-read"); if (!b) return;
-        var host = b.parentElement, box = host.querySelector(".ug-text");
+        var host = b.closest(".ug-card"), box = host.querySelector(".ug-text");
         var key = host.getAttribute("data-k");
-        if (!box.hidden) { box.hidden = true; b.textContent = "Read the guide, " +
+        if (!box.hidden) { box.hidden = true; b.textContent = "Read it, " +
             ((written[key] || {}).minutes || 3) + " min"; return; }
         if (box.dataset.loaded) { box.hidden = false; b.textContent = "Hide"; return; }
         b.textContent = "Opening…";
