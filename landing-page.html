@@ -2563,7 +2563,6 @@
                 <section class="phases">
                     <div class="container">
                         <div class="nd-stage" id="ndStage">
-                            <div class="nd-box nd-zero" style="left:44%;top:12%"><span class="nd-val" id="ndZero">0</span></div>
                             <div class="nd-box" style="left:72%;top:13%"><span class="nd-val" data-seg="0">00</span></div>
                             <div class="nd-box" style="left:18%;top:41%"><span class="nd-val" data-seg="1">000</span></div>
                             <div class="nd-box" style="left:82%;top:46%"><span class="nd-val" data-seg="2">000</span></div>
@@ -2654,48 +2653,6 @@
                         <!-- Future finance product panes go here:
                         <div class="fin-pane" id="fin-savings"> ... </div> -->
 
-                        <!-- ===== DO YOUR PART, gifts straight to the U.S. Treasury =====
-                             Sean's rule: the tools get people out of poverty; when they
-                             make it, we ask them to do their part for the country. We
-                             never touch a cent, every dollar goes direct to Treasury. -->
-                        <div class="giveback" id="giveBack">
-                            <p class="gb-eyebrow">★ ★ ★ &nbsp;DO YOUR PART&nbsp; ★ ★ ★</p>
-                            <h3>When you make it, give a little back.</h3>
-                            <p class="gb-lede">Everything on this site is here to get people out of a hole and into a fortune, the free tools, the work, the trading research. If it works for you, we ask one thing, and only if you want to: <strong>give something to your country.</strong></p>
-
-                            <div class="gb-how">
-                                <div class="gb-step">
-                                    <span class="gb-n">1</span>
-                                    <div><b>You give directly to the U.S. Treasury.</b> The federal government runs a real program for this, <i>Gifts to Reduce the Public Debt</i>, at the Bureau of the Fiscal Service. Card, bank, or PayPal on Pay.gov.</div>
-                                </div>
-                                <div class="gb-step">
-                                    <span class="gb-n">2</span>
-                                    <div><b>We never touch the money.</b> No account of ours is involved, no cut, no processing, nothing held. The button below leaves this site and lands on the government's own payment page.</div>
-                                </div>
-                                <div class="gb-step">
-                                    <span class="gb-n">3</span>
-                                    <div><b>Then come back and tell us.</b> That's what moves the green zero at the top of this page, the number that counts what this community has given back.</div>
-                                </div>
-                            </div>
-
-                            <a class="gb-cta" href="https://www.pay.gov/public/form/start/23779454" target="_blank" rel="noopener noreferrer">🇺🇸 Give at the U.S. Treasury (Pay.gov) →</a>
-                            <p class="gb-mail">Prefer a check? Make it payable to the <b>Bureau of the Fiscal Service</b>, write <i>“gift to reduce the debt held by the public”</i> in the memo, and mail to:<br>
-                                <span class="gb-addr">Attn Dept G · Bureau of the Fiscal Service · P.O. Box 2188 · Parkersburg, WV 26106-2188</span></p>
-
-                            <div class="gb-log">
-                                <h4>I gave, count it</h4>
-                                <p class="gb-sub">Self-reported, on your honor. We can't verify a payment we deliberately never see, and we'd rather be honest about that than fake a number.</p>
-                                <div class="gb-form">
-                                    <input id="gb_name" placeholder="Name or initials (optional)" maxlength="60">
-                                    <input id="gb_amt" type="number" min="1" step="1" placeholder="Amount you gave ($)">
-                                    <button class="gb-btn" onclick="logGiveBack()">Move the zero →</button>
-                                </div>
-                                <p class="gb-msg" id="gb_msg"></p>
-                                <div class="gb-tally" id="gb_tally"></div>
-                            </div>
-
-                            <p class="gb-fine">The national debt is measured in trillions; no single gift changes that arithmetic. That isn't the point, the point is the act, and that it's real, voluntary, and goes where we say it goes. Gifts to the United States for exclusively public purposes are generally tax-deductible, but we're not tax advisors, ask yours. Plateau Strategy Solution Lab is not affiliated with, and does not represent, the U.S. Treasury or any government agency.</p>
-                        </div>
                     </div>
                 </section>
             </div>
@@ -3026,12 +2983,6 @@
                                 <h3>Your data stays yours</h3>
                                 <p class="service-for">The free tools</p>
                                 <p>The Trip Planner and Destination Book store only place names and typical visit times, no personal tracking. Your planned trip stays on your own device until you choose to book.</p>
-                            </div>
-                            <div class="service-card">
-                                <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-flag"/></svg></div>
-                                <h3>Give-back goes straight to Treasury</h3>
-                                <p class="service-for">The national-debt donation</p>
-                                <p>Any gift to reduce the national debt goes directly to the U.S. Treasury's own program. We never touch a cent, the button leaves our site for the government's payment page.</p>
                             </div>
                         </div>
 
@@ -3468,76 +3419,6 @@
                     .catch(function () { });
             }
 
-            /* ---- the green zero: what this community has given back to the country.
-                   It sits at zero until somebody actually gives, then it moves, and
-                   never moves back down. Money goes straight to the U.S. Treasury;
-                   this only counts what people report. ---- */
-            var zeroEl = document.getElementById('ndZero');
-            var zeroShown = 0;
-            function paintZero(target, animate) {
-                if (!zeroEl) return;
-                var t = Math.round(target || 0);
-                function land() {   // the number must ALWAYS end up correct, animation or not
-                    zeroShown = t;
-                    zeroEl.textContent = t.toLocaleString('en-US');
-                    setTimeout(function () { zeroEl.classList.remove('tick'); }, 200);
-                }
-                // A hidden tab freezes requestAnimationFrame, animating there would strand
-                // the count-up mid-way and show a wrong total. Set it straight instead.
-                if (!animate || document.hidden) { land(); return; }
-                var from = zeroShown, t0 = Date.now(), dur = 1100, done = false;
-                setTimeout(function () { if (!done) { done = true; land(); } }, dur + 400);   // safety net
-                (function tickUp() {
-                    if (done) return;
-                    var k = Math.min(1, (Date.now() - t0) / dur);
-                    var v = Math.round(from + (t - from) * (1 - Math.pow(1 - k, 3)));   // ease-out
-                    zeroEl.textContent = v.toLocaleString('en-US');
-                    zeroEl.classList.add('tick');
-                    if (k < 1) requestAnimationFrame(tickUp);
-                    else { done = true; land(); }
-                })();
-            }
-            window.refreshGiveBack = function (animate) {
-                return fetch('/api/give-back').then(function (r) { return r.json(); }).then(function (d) {
-                    if (!d || !d.ok) return null;
-                    paintZero(d.total, !!animate);
-                    var box = document.getElementById('gb_tally');
-                    if (box) {
-                        box.innerHTML = d.count
-                            ? '<div class="gb-row"><span><b>' + d.count + '</b> ' + (d.count === 1 ? 'person has' : 'people have') +
-                              ' given back</span><span class="gb-amt">$' + Number(d.total).toLocaleString('en-US') + '</span></div>' +
-                              d.recent.map(function (g) {
-                                  return '<div class="gb-row"><span>' + esc(g.name) + '</span><span class="gb-amt">$' +
-                                         Number(g.amount).toLocaleString('en-US') + '</span></div>';
-                              }).join('')
-                            : '<div class="gb-row"><span>Nobody has reported a gift yet, the zero is honest.</span><span class="gb-amt">$0</span></div>';
-                    }
-                    return d;
-                }).catch(function () { return null; });
-            };
-            function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
-            window.logGiveBack = function () {
-                var amt = document.getElementById('gb_amt'), nm = document.getElementById('gb_name'),
-                    msg = document.getElementById('gb_msg');
-                msg.className = 'gb-msg'; msg.textContent = '';
-                fetch('/api/give-back/log', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount: amt.value, name: nm.value })
-                }).then(function (r) { return r.json(); }).then(function (d) {
-                    if (d && d.ok) {
-                        msg.textContent = '🇺🇸 Thank you, counted. The zero just moved.';
-                        amt.value = ''; nm.value = '';
-                        window.refreshGiveBack(true);
-                    } else {
-                        msg.className = 'gb-msg err';
-                        msg.textContent = '⚠ ' + ((d && d.error) || 'Could not record that, please try again.');
-                    }
-                }).catch(function () {
-                    msg.className = 'gb-msg err';
-                    msg.textContent = '⚠ Could not reach the server, please try again.';
-                });
-            };
-            window.refreshGiveBack(false);
 
             // ---- center slideshow (auto-advances only when slides exist) ----
             // The center video sits inside a hidden view at page load, so the browser
