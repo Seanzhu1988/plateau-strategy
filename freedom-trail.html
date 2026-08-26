@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Freedom Trail, walked honestly, Plateau Strategy Solution Lab</title>
-    <meta name="description" content="All sixteen Freedom Trail sites in walking order, with the real time each one takes. The trail is sold as ninety minutes. Done properly it is a six hour day, and here is how to pick your version.">
+    <title>The Freedom Trail, Plateau Strategy Solution Lab</title>
+    <meta name="description" content="All sixteen Freedom Trail sites in walking order, with the real time each one takes, and the downtown half if you have an afternoon rather than a day.">
     <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
     <link rel="stylesheet" href="/paper.css">
     <script src="/psx-net.js"></script>
@@ -69,10 +69,7 @@
     </header>
 
     <div class="ft-wrap">
-        <h1 class="ft-title">The Freedom Trail, walked honestly</h1>
-        <p class="ft-lede">All sixteen sites in walking order, with the time each one actually
-           takes. Guided by Yiki.</p>
-
+        <h1 class="ft-title">The Freedom Trail</h1>
         <div class="ft-truth" id="ftTruth">Measuring the walk…</div>
 
         <div class="ft-audio" id="ftAudio" hidden>
@@ -146,11 +143,11 @@
             if (!trail) throw new Error("no trail");
             var mi = (trail.length_m / 1609.34).toFixed(1);
             document.getElementById("ftTruth").innerHTML =
-                "<b>It is sold as ninety minutes. That is the walking.</b> The sixteen sites are " +
-                mi + " miles apart and only " + fmt(trail.walk_min_total) +
-                " of actual walking. What takes the day is standing inside them: about " +
-                fmt(trail.inside_min_total) + " if you do all sixteen properly. " +
-                "Pick your version below rather than starting all sixteen at two in the afternoon.";
+                "<b>" + fmt(trail.walk_min_total) + " of walking, " +
+                fmt(trail.inside_min_total) + " inside.</b> The sixteen sites are " + mi +
+                " miles apart. All sixteen is about " +
+                fmt(trail.walk_min_total + trail.inside_min_total) +
+                " altogether, so pick your version below.";
             render();
         })
         .catch(function () {
