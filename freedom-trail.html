@@ -40,7 +40,18 @@
         .ft-name { font-weight: 800; color: #14110c; }
         .ft-meta { font-size: .85rem; color: #6b655b; margin: .15rem 0 .35rem; }
         .ft-desc { color: #33302a; font-size: .95rem; }
-        .ft-has { font-size: .78rem; font-weight: 700; color: #1c6b45; }
+        /* Hung off the list's id: modern.css strips padding and background from
+           every button behind a selector with eight :not() clauses, and a class
+           cannot outrank it. Fifth time on this site. */
+        #ftStops .ft-play { font: inherit !important; font-size: .82rem !important;
+                   font-weight: 700 !important; cursor: pointer;
+                   padding: .3rem .75rem !important; min-height: 34px;
+                   margin: .1rem 0 .35rem; display: inline-flex !important;
+                   align-items: center; white-space: nowrap;
+                   border: 1px solid #1f3a5f !important; border-radius: 999px !important;
+                   background: #fff !important; color: #1f3a5f !important; }
+        #ftStops .ft-play[aria-pressed="true"] { background: #1f3a5f !important;
+                   color: #fff !important; }
         .ft-audio { margin: 1.4rem 0; }
         .ft-audio audio { width: 100%; }
         .ft-note { font-size: .9rem; color: #6b655b; }
@@ -125,15 +136,53 @@
             var on = i < list.length;
             return '<div class="ft-stop' + (on ? '' : ' off') + '">' +
                    '<div class="ft-n">' + s.n + '</div><div class="ft-b">' +
-                   '<div class="ft-name">' + s.name +
-                   (s.book_slug ? ' <span class="ft-has">in the book, with audio</span>' : '') +
-                   '</div><div class="ft-meta">' +
+                   '<div class="ft-name">' + s.name + '</div>' +
+                   (s.book_slug
+                     ? '<button class="ft-play" data-slug="' + s.book_slug + '">Play</button>'
+                     : '') +
+                   '<div class="ft-meta">' +
                    (i ? s.walk_min_from_prev + " min walk · " : "start · ") +
                    s.inside_min + ' min here</div>' +
                    '<div class="ft-desc">' + s.desc + '</div></div></div>';
         }).join("");
         document.getElementById("ftAll").setAttribute("aria-pressed", mode === "all");
         document.getElementById("ftHalf").setAttribute("aria-pressed", mode !== "all");
+        stopAudio();            // the list just changed under whatever was playing
+        verifyPlays();
+    }
+
+    // The three stops already in the Destination Book have Jason's thirty second
+    // card recorded. The page knew that and only said so; now it plays it. One
+    // at a time, because two guides talking over each other on a street corner
+    // is worse than silence.
+    var playing = null, playingBtn = null;
+    function stopAudio() {
+        if (playing) { playing.pause(); playing = null; }
+        if (playingBtn) { playingBtn.setAttribute("aria-pressed", "false");
+                          playingBtn.textContent = "Play"; playingBtn = null; }
+    }
+    document.addEventListener("click", function (e) {
+        var b = e.target.closest(".ft-play"); if (!b) return;
+        var src = "/media/audio/card-" + b.dataset.slug + ".mp3";
+        if (playingBtn === b) { stopAudio(); return; }
+        stopAudio();
+        var a = new Audio(src);
+        a.onended = function () { stopAudio(); };
+        a.onerror = function () { b.textContent = "Not recorded"; b.disabled = true; };
+        a.play().then(function () {
+            playing = a; playingBtn = b;
+            b.setAttribute("aria-pressed", "true"); b.textContent = "Stop";
+        }).catch(function () { b.textContent = "Could not play"; });
+    });
+
+    // A button that does nothing is worse than no button, so each one is checked
+    // against the file before it is left on screen.
+    function verifyPlays() {
+        [].forEach.call(document.querySelectorAll(".ft-play"), function (b) {
+            fetch("/media/audio/card-" + b.dataset.slug + ".mp3", { method: "HEAD" })
+                .then(function (r) { if (!r.ok) b.remove(); })
+                .catch(function () { b.remove(); });
+        });
     }
 
     fetch("/api/trails", { cache: "no-store" })

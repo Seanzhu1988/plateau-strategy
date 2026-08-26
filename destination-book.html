@@ -206,7 +206,15 @@
         .stay-done { color: #047857; font-weight: 700; font-size: 0.78rem; margin-top: 0.35rem; }
 
         footer.attrib { text-align: center; color: #6b655b; font-size: 0.75rem; padding: 1.6rem 0 2rem; }
-    </style>
+        .tier-band { font-size: .74rem; font-weight: 800; letter-spacing: .12em;
+                 text-transform: uppercase; color: #6b655b; margin: 1.4rem 0 .6rem;
+                 display: flex; align-items: center; gap: .5rem; }
+    .tier-band span { font-weight: 700; color: #14110c; background: #f1efe8;
+                      border-radius: 999px; padding: .1rem .5rem; letter-spacing: 0; }
+    .tier-door { border: 1px dashed #b4b2a9; border-radius: 10px; padding: .8rem 1rem;
+                 margin: .2rem 0 .4rem; color: #4a453d; cursor: pointer; font-size: .95rem; }
+    .tier-door:hover { border-color: #1f3a5f; color: #1f3a5f; }
+</style>
     <link rel="stylesheet" href="/paper.css">
     <script src="/psx-net.js"></script>
     <link rel="stylesheet" href="/modern.css">
@@ -444,6 +452,10 @@
         paintCats();
     }
 
+    const tierOpen = {};
+    function openTier(city, t){ tierOpen[city + '|' + t] = true; render(); }
+    window.openTier = openTier;
+
     function render(){
         const q = $('q').value.trim().toLowerCase();
         const inPlanner = plannerNames();
@@ -491,6 +503,29 @@
         // it read as a pile rather than a book. Grouped by city, because that
         // is the question a traveller actually arrives with: they are going
         // to one place, not browsing a category.
+        // THREE TIERS, BECAUSE 82% OF THIS BOOK IS NOW MACHINE FOUND. [SEAN]
+        //
+        // The Scout adds roughly sixteen entries an hour and files 72% of them
+        // as "culture", so a flat list buries the places we wrote and recorded
+        // among hundreds nobody has checked. Length is the symptom; the cause
+        // is that everything is presented as equal. It is not.
+        //
+        //   1  we wrote it and recorded it
+        //   2  it has a real description somebody can use
+        //   3  the Scout found it and no person has looked yet
+        //
+        // Tier 3 is judged on the description, because that is what the raw
+        // finds actually lack: every one of New York's twenty two says "Place."
+        function tierOf(e) {
+            if (e.audio) return 1;
+            const d = (e.desc || '').trim();
+            const real = d.length > 60 && d !== 'Place.' && d !== 'Administrative.';
+            return real ? 2 : 3;
+        }
+        const TIER_LABEL = { 1: 'Written by us', 2: 'Proven finds',
+                             3: 'Found by the Scout, not checked yet' };
+        const TIER_CAP = { 1: 999, 2: 6, 3: 0 };   // tier 3 stays behind its door
+
         const groups = new Map();
         let shown = 0;
         DATA.entries.forEach((e, i) => {
@@ -504,7 +539,7 @@
             const added = inPlanner.has(e.name);
             const gk = e.city || 'other';
             if (!groups.has(gk)) groups.set(gk, []);
-            groups.get(gk).push('<div class="entry">'
+            groups.get(gk).push({ t: tierOf(e), html: '<div class="entry">'
                 + '<h3>' + esc(e.name) + '</h3>'
                 + '<div class="badges">'
                 +   '<span class="badge b-city">' + esc(T(DATA.cities[e.city] || e.city)) + '</span>'
@@ -561,27 +596,53 @@
                 +   '</span>'
                 +   '<div class="cmt-body" id="cmt_' + i + '"></div>'
                 + '</div>'
-                + '</div>');
+                + '</div>' });
         });
         // One city per section, largest first, "Other" always last so the
         // bucket does not sit between two real places.
+        groups.forEach(list => list.sort((a, b) => a.t - b.t));
         const order = Array.from(groups.keys()).sort((x, y) => {
             if (x === 'other') return 1;
             if (y === 'other') return -1;
             const d = groups.get(y).length - groups.get(x).length;
             return d || (DATA.cities[x] || x).localeCompare(DATA.cities[y] || y);
         });
+
+        // Paint one city: each tier gets a heading, a cap and, when there is
+        // more behind the cap, a door that says how much. The door is the part
+        // that keeps working when this book is two thousand places.
+        function paintCity(k) {
+            const list = groups.get(k);
+            let out = '';
+            [1, 2, 3].forEach(t => {
+                const rows = list.filter(r => r.t === t);
+                if (!rows.length) return;
+                const open = tierOpen[k + '|' + t];
+                const cap = open ? 999 : TIER_CAP[t];
+                out += '<h3 class="tier-band">' + T(TIER_LABEL[t])
+                     + ' <span>' + rows.length + '</span></h3>';
+                if (cap > 0) {
+                    out += '<div class="city-grid">'
+                         + rows.slice(0, cap).map(r => r.html).join('') + '</div>';
+                }
+                if (rows.length > cap) {
+                    out += '<div class="tier-door" onclick="openTier(\'' + k + '\',' + t + ')">'
+                         + (cap === 0
+                            ? T('Show the {n} the Scout found here', { n: rows.length })
+                            : T('Show all {n}', { n: rows.length }))
+                         + '</div>';
+                }
+            });
+            return out;
+        }
         // A heading above a single group is a label for the whole page and
         // adds nothing, only band the list when there is more than one city
         // in it, which is exactly when a reader needs to know where they are.
         $('grid').innerHTML = order.length > 1
-            ? order.map(k => {
-                const list = groups.get(k);
-                return '<h2 class="city-band">' + esc(T(DATA.cities[k] || k))
-                     + ' <span>' + list.length + '</span></h2>'
-                     + '<div class="city-grid">' + list.join('') + '</div>';
-              }).join('')
-            : order.map(k => '<div class="city-grid">' + groups.get(k).join('') + '</div>').join('');
+            ? order.map(k => '<h2 class="city-band">' + esc(T(DATA.cities[k] || k))
+                     + ' <span>' + groups.get(k).length + '</span></h2>'
+                     + paintCity(k)).join('')
+            : order.map(k => paintCity(k)).join('');
         $('empty').style.display = shown ? 'none' : 'block';
         $('count').textContent = T('{shown} of {total} destinations', { shown: shown, total: DATA.entries.length })
             + (f.minStars ? ' · showing ' + '★'.repeat(f.minStars) + ' & up' : '');

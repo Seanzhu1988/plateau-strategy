@@ -446,6 +446,22 @@ def record_search_miss(q, city, outcome):
     return True
 
 
+def record_refusal(name, city, why):
+    """A place the gate turned away, kept so the refusal is visible.
+
+    A gate that silently drops things is indistinguishable from a gate that is
+    broken. These sit in their own list, capped, so /discovery can show what is
+    being refused and somebody can notice if the rule is too tight."""
+    with _LOCK:
+        s = _load()
+        s.setdefault("refused", [])
+        s["refused"].append({"name": (name or "")[:80], "city": (city or "")[:24],
+                             "why": (why or "")[:80], "at": int(time.time())})
+        s["refused"] = s["refused"][-200:]
+        _save(s)
+    return True
+
+
 def record_gallery(museum, city, example=""):
     """A museum somebody reached through the Universal Gallery.
 

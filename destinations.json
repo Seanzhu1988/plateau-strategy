@@ -388,8 +388,8 @@
    "price": "$$",
    "close": 1320,
    "visit": 75,
-   "lat": 38.9,
-   "lon": -77.0442,
+   "lat": 38.90026,
+   "lon": -77.04456,
    "desc": "Farm-owned American cooking, fried chicken and waffles, beignets, serious breakfasts.",
    "tip": "It books out, reserve ahead, or come at off-hours."
   },
@@ -555,8 +555,8 @@
   {
    "city": "boston",
    "name": "Faneuil Hall Marketplace",
-   "lat": 42.36,
-   "lon": -71.0568,
+   "lat": 42.36003,
+   "lon": -71.05623,
    "cat": "food",
    "type": "attraction",
    "close": 1260,

@@ -4863,6 +4863,31 @@ def api_destinations_add():
         wiki_desc, wiki_photo, wiki_url = (None, None, None)
         if not given_desc:
             wiki_desc, wiki_photo, wiki_url = _wiki_describe(name, lat, lon)
+
+        # THE GATE. A place has to be able to say what it is. [SEAN "gate the scout"]
+        #
+        # The Scout adds roughly sixteen entries an hour. When OpenStreetMap has
+        # neither a classification nor an address for a point, _describe_osm
+        # falls back to the bare word "Place.", and that is what most of the junk
+        # in this book is: New York alone held twenty two rows whose entire
+        # description was "Place." Fifteen DC branch libraries arrived the same
+        # way. A row that cannot say what it is teaches a traveller nothing and
+        # costs every other row a place in the list.
+        #
+        # So: a machine-found place needs a real description from somewhere,
+        # Wikipedia or the map's own tags. A PERSON's submission is never gated,
+        # because a human typing a name is a recommendation and the description
+        # can follow. The refusal is recorded, not swallowed, so the queue on
+        # /discovery shows what was turned away and why.
+        _final_desc = (given_desc or wiki_desc or auto_desc or "").strip()
+        _machine = not given_desc and str(data.get("found_via") or "").startswith("scout")
+        if _machine and (len(_final_desc) < 25 or _final_desc in ("Place.", "Administrative.")):
+            try:
+                discovery_mod.record_refusal(name, city, "no description: %r" % _final_desc[:40])
+            except Exception:
+                pass
+            return jsonify({"ok": False, "error": "no description, not planted",
+                            "gated": True}), 200
         rec = {"name": name, "city": city, "type": auto_type, "cat": cat, "price": None,
                "close": close, "visit": visit, "lat": round(lat, 5), "lon": round(lon, 5),
                "desc": given_desc or wiki_desc or auto_desc, "tip": "",
