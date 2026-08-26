@@ -2833,6 +2833,12 @@ def trip_planner_page():
     return send_file(os.path.join(BASE_DIR, "trip-planner.html"))
 
 
+@app.route("/tours")
+def tours_page():
+    """Licensed Seattle walking tours: cruise-terminal, downtown, and private."""
+    return send_file(os.path.join(BASE_DIR, "tours.html"))
+
+
 # ---------------------------------------------------------------------------
 # Search engines
 #
