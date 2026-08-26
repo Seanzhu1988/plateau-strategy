@@ -81,7 +81,7 @@
             </svg>
         </div>
 
-        <div class="np-audio" id="npAudio" hidden>
+        <div class="np-audio" id="npAudio">
             <audio controls preload="none" id="npPlayer">
                 <source src="/media/audio/security-parameter-jason.mp3" type="audio/mpeg">
             </audio>
@@ -155,9 +155,12 @@
     fetch('/privacy', { method: 'HEAD' })
         .then(function (r) { if (r.ok) document.getElementById('npPrivacyLine').hidden = false; })
         .catch(function () {});
-    // The narration appears only once it exists, so there is never a dead player.
+    // The narration ships with the site as a committed file, so the player is
+    // shown by default. It is only pulled if the file is CONFIRMED missing (a
+    // real 404), never on a slow or flaky check: hiding a present recording on
+    // a laggy phone is the "the audio is gone" report this exists to prevent.
     fetch('/media/audio/security-parameter-jason.mp3', { method: 'HEAD' })
-        .then(function (r) { if (r.ok) document.getElementById('npAudio').hidden = false; })
+        .then(function (r) { if (!r.ok && r.status === 404) document.getElementById('npAudio').hidden = true; })
         .catch(function () {});
 })();
 </script>
