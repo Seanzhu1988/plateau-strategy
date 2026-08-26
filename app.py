@@ -3912,15 +3912,37 @@ def _gal_wikidata(q, limit=8):
                      "inv": inv, "coll_qid": coll, "maker_qid": maker,
                      "date": (first(cl, "P571") or {}).get("time", "")[1:5]
                              if isinstance(first(cl, "P571"), dict) else ""})
-    labels = {}
+    labels, coll_loc = {}, {}
     if need_labels:
         try:
             r3 = _rq.get("https://www.wikidata.org/w/api.php", timeout=12, headers=H,
                          params={"action": "wbgetentities", "format": "json",
-                                 "languages": "en", "props": "labels",
+                                 "languages": "en", "props": "labels|claims",
                                  "ids": "|".join(list(need_labels)[:40])})
             for k, v in (r3.json().get("entities") or {}).items():
                 labels[k] = (v.get("labels", {}).get("en") or {}).get("value", "")
+                # The city the institution sits in: its headquarters first, then
+                # the administrative area it is in, then a plain location. This
+                # is the CITY around the museum, and a gallery search is somebody
+                # telling us it is worth the book even if we have never heard of
+                # it. Offered to Discovery as a new city. [SEAN]
+                vcl = v.get("claims") or {}
+                loc = first(vcl, "P159") or first(vcl, "P131") or first(vcl, "P276")
+                if isinstance(loc, str) and loc.startswith("Q"):
+                    coll_loc[k] = loc
+        except Exception:
+            pass
+    # One more hop turns those location ids into city names.
+    city_names = {}
+    loc_ids = list(set(coll_loc.values()))
+    if loc_ids:
+        try:
+            r4 = _rq.get("https://www.wikidata.org/w/api.php", timeout=12, headers=H,
+                         params={"action": "wbgetentities", "format": "json",
+                                 "languages": "en", "props": "labels",
+                                 "ids": "|".join(loc_ids[:40])})
+            for k, v in (r4.json().get("entities") or {}).items():
+                city_names[k] = (v.get("labels", {}).get("en") or {}).get("value", "")
         except Exception:
             pass
 
@@ -3940,7 +3962,7 @@ def _gal_wikidata(q, limit=8):
                       + urllib.parse.quote(r["image_file"]) + "?width=420"),
             "images": ["https://commons.wikimedia.org/wiki/Special:FilePath/"
                        + urllib.parse.quote(f) + "?width=1000" for f in r["image_files"]],
-            "city": "",
+            "city": city_names.get(coll_loc.get(r["coll_qid"], ""), ""),
             "wikidata": r["qid"],
         })
     return out
@@ -4001,12 +4023,18 @@ def api_gallery_search():
     # discovery failure can never cost somebody their search. [SEAN]
     try:
         if results:
-            seen_museums = set()
+            seen_museums, seen_cities = set(), set()
             for r in results[:6]:
                 m = r.get("source") or ""
                 if m and m not in seen_museums:
                     seen_museums.add(m)
                     discovery_mod.record_gallery(m, r.get("city") or "", r.get("title") or "")
+                # The city the museum sits in, on its own, so a search can bring
+                # a whole new city into the book. Deduped per search too. [SEAN]
+                c = (r.get("city") or "").strip()
+                if c and c.lower() not in seen_cities:
+                    seen_cities.add(c.lower())
+                    discovery_mod.record_gallery_city(c, m, r.get("title") or "")
             # The museums are discovered as places; the objects are the other
             # half. What people keep looking up becomes the writing queue, so
             # the guides get written for things somebody actually stood in

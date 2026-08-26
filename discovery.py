@@ -495,6 +495,50 @@ def record_gallery(museum, city, example=""):
     return True
 
 
+# The pilot cities are the ones we already run, so a search that lands in one of
+# them is not a NEW city. Matched on the slug of the key and of the label, since
+# the gallery says "New York", not "nyc".
+_PILOT_CITY_SLUGS = set(CITIES.keys()) | {_slug(c["label"]) for c in CITIES.values()}
+
+
+def record_gallery_city(city, museum="", example=""):
+    """The CITY a gallery search points at, proposed as a new place to discover.
+
+    [SEAN "i want this search of the location of the museum to be discovered as
+    new city to be discovered"] Somebody looking up a painting at the Prado is
+    telling us Madrid is worth the book, even if the book has never heard of it.
+    The museum is recorded as a place next door to this; this records the city
+    around it, on its own, so a whole new city can enter through one search.
+
+    Deduped forever on the city, and the pilot cities we already run are skipped
+    because they are not new. A lead only: it waits on /discovery for the owner,
+    and a city is never planted into the book automatically."""
+    name = re.sub(r"<[^>]*>", "", (city or "")).strip()[:60]
+    slug = _slug(name)
+    if len(slug) < 3 or slug in _PILOT_CITY_SLUGS:
+        return False
+    with _LOCK:
+        s = _load()
+        k = "city#" + slug
+        if k in s["seen"]:
+            return True
+        s["seen"][k] = int(time.time())
+        museum = re.sub(r"<[^>]*>", "", (museum or "")).strip()[:80]
+        note = "a new city, reached through the gallery"
+        if example:
+            note += " while looking up %s" % example[:40]
+        if museum:
+            note += " at %s" % museum
+        s["proposals"].append({
+            "id": k, "kind": "city", "src": "universal-gallery", "name": name,
+            "city": slug, "cat": "city", "note": note,
+            "url": "https://www.google.com/maps/search/" + urllib.parse.quote(name),
+            "found": int(time.time()),
+        })
+        _save(s)
+    return True
+
+
 def record_artwork(title, museum, city, item_number="", image="", qid=""):
     """An artwork somebody looked up, kept so the gallery builds its own index.
 
