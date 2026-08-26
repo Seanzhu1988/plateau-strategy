@@ -3771,6 +3771,7 @@ def api_name_log():
         pass
     return jsonify({"ok": True, "intact": ok, "entries": count,
                     "first_bad_line": bad, "configured": _vault_on(),
+                    "keys": name_vault.key_report(),
                     "log": rows[-200:]})
 
 
@@ -5346,6 +5347,21 @@ except Exception:                       # pragma: no cover
 
 def _vault_on():
     return bool(name_vault and name_vault.configured())
+
+
+# Say at startup whether the vault came up, and if not, which key is wrong.
+# A silent "off" is the failure mode this whole feature cannot afford: the
+# page keeps its promise on screen while nothing is being protected.
+try:
+    if name_vault:
+        if name_vault.configured():
+            print("[NAME VAULT] active: names will be split and encrypted.", flush=True)
+        else:
+            print("[NAME VAULT] NOT ACTIVE. %s" % name_vault.key_report(), flush=True)
+    else:
+        print("[NAME VAULT] module unavailable: is cryptography installed?", flush=True)
+except Exception as _e:                                   # never break boot
+    print("[NAME VAULT] check failed: %s" % _e, flush=True)
 
 
 def _seal_client(client, plain_name):

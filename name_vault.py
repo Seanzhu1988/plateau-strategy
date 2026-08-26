@@ -83,6 +83,37 @@ def configured():
     return all(_key(n) for n in ("NAME_KEY_A", "NAME_KEY_B", "NAME_INDEX_KEY"))
 
 
+def key_report():
+    """Why the vault is not running, WITHOUT printing any key.
+
+    A key that is present but the wrong shape looks exactly like a key that is
+    working: the variable is set, the dashboard shows dots, and the vault
+    silently stays off. This says which of the three is wrong and how, using
+    only its length and whether it decodes. It never returns key material, so
+    it is safe to log at startup and to show the owner.
+
+    The likely mistakes it catches: pasting the whole NAME_KEY_A=... line
+    instead of the part after the equals sign, and using the host's own
+    "Generate" button, which makes a secret of some other shape entirely."""
+    out = {}
+    for n in ("NAME_KEY_A", "NAME_KEY_B", "NAME_INDEX_KEY"):
+        raw = (os.environ.get(n) or "").strip()
+        if not raw:
+            out[n] = "missing"
+            continue
+        try:
+            k = base64.b64decode(raw)
+        except Exception:
+            out[n] = "set, but not valid base64 (%d characters)" % len(raw)
+            continue
+        if len(k) == 32:
+            out[n] = "ok"
+        else:
+            out[n] = ("set, but decodes to %d bytes and 32 are needed "
+                      "(%d characters given; a good key is 44)" % (len(k), len(raw)))
+    return out
+
+
 def split_name(full):
     """'Sarah Chen' -> ('Sarah', 'Chen'). One word is a given name with no
     family name, which is a real way for a person to be called and not an
