@@ -307,6 +307,9 @@ EXTRA = {
         "Tác phẩm này vẫn còn bản quyền, nên chúng tôi không thể hiển thị ở đây."],
     "See the original →": [
         "查看原作 →", "Ver el original →", "원본 보기 →", "Xem bản gốc →"],
+    "travellers are exploring right now": [
+        "位旅客正在探索", "viajeros están explorando ahora mismo",
+        "명의 여행자가 지금 둘러보는 중", "khách đang khám phá ngay bây giờ"],
     "🗽 New York sample": ["🗽 纽约示例", "🗽 Ejemplo de Nueva York", "🗽 뉴욕 예시", "🗽 Mẫu New York"],
     "🏛️ Washington DC sample": ["🏛️ 华盛顿特区示例", "🏛️ Ejemplo de Washington DC", "🏛️ 워싱턴 DC 예시", "🏛️ Mẫu Washington DC"],
     "🌲 Seattle sample": ["🌲 西雅图示例", "🌲 Ejemplo de Seattle", "🌲 시애틀 예시", "🌲 Mẫu Seattle"],

@@ -36,6 +36,22 @@
             border-color: #1f3a5f !important; }
         .ug-tab-n { margin-left: .4rem; font-weight: 700; opacity: .75;
                     font-variant-numeric: tabular-nums; }
+        /* A quiet live line, shown only when two or more travellers are here,
+           so it never announces a lonely one. The dot pulses to say "now", and
+           stops for anyone who asked their device to reduce motion. */
+        .ug-live { display: inline-flex; align-items: center; gap: .5rem;
+                   margin: 0 0 1.1rem; font-size: .9rem; font-weight: 600; color: #2f7d4a; }
+        /* [hidden] sets display:none, but the flex rule above would override it,
+           so say it plainly: hidden means gone. */
+        .ug-live[hidden] { display: none; }
+        .ug-live-dot { flex: 0 0 auto; width: 9px; height: 9px; border-radius: 50%;
+                       background: #35a85f; box-shadow: 0 0 0 0 rgba(53,168,95,.45);
+                       animation: ug-pulse 2.2s infinite; }
+        @keyframes ug-pulse {
+            0%   { box-shadow: 0 0 0 0 rgba(53,168,95,.45); }
+            70%  { box-shadow: 0 0 0 8px rgba(53,168,95,0); }
+            100% { box-shadow: 0 0 0 0 rgba(53,168,95,0); } }
+        @media (prefers-reduced-motion: reduce) { .ug-live-dot { animation: none; } }
         .ug-sec { font-size: .72rem; font-weight: 800; letter-spacing: .14em;
                   text-transform: uppercase; color: #6b655b; margin: 1.8rem 0 .6rem; }
         .ug-card { border: 1px solid #e6e6ea; border-radius: 10px; padding: 1rem 1.1rem;
@@ -134,6 +150,9 @@
         <h1 class="ug-title">Universal Gallery</h1>
         <p class="ug-lede">Every exhibition, one artwork at a time. What it is, where it
            hangs, and what to notice while you are standing there.</p>
+
+        <p class="ug-live" id="ugLive" hidden><span class="ug-live-dot" aria-hidden="true"></span>
+           <span><b id="ugLiveN">0</b> <span class="ug-live-txt">travellers are exploring right now</span></span></p>
 
         <input id="ugFind" placeholder="A name, or the number on the label…" autocomplete="off"
                aria-label="Search by artwork name or item number">
@@ -404,6 +423,22 @@
         else if (!v.length && !document.getElementById("ugTabW").hidden) { showTab("written"); }
         timer = setTimeout(function () { search(v); }, 350);   // one request per pause, not per keystroke
     });
+
+    // The live line: how many travellers are here right now, shown only when
+    // that is two or more. Polling also keeps this reader counted while the tab
+    // stays open, so a quiet page does not empty out the moment nobody clicks.
+    function live() {
+        fetch("/api/gallery/here", { headers: { "Accept": "application/json" } })
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                var n = (d && d.here) || 0, box = document.getElementById("ugLive");
+                if (n >= 2) { document.getElementById("ugLiveN").textContent = n; box.hidden = false; }
+                else { box.hidden = true; }
+            })
+            .catch(function () {});
+    }
+    live();
+    setInterval(live, 40000);
 })();
 </script>
 </body>

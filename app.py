@@ -4139,6 +4139,24 @@ def api_gallery_queue():
         return jsonify({"ok": False, "queue": [], "error": str(e)}), 500
 
 
+@app.route("/api/gallery/here")
+def api_gallery_here():
+    """How many travellers are around right now, for the gallery's live line.
+
+    A live fact, not a record: it reuses the anonymous presence set, which
+    holds only cookie ids with a last-seen stamp, keeps nothing on disk, and
+    forgets everyone after a few quiet minutes. Polling it also marks the
+    caller present, so somebody sitting on the page reading stays counted
+    while the tab is open. The page only shows the number when it is two or
+    more, so it never announces a lonely one. [SEAN "how many traveller is
+    reading or live ... above 2+ travelers are exploring"]"""
+    vid = request.cookies.get("psx_vid")
+    if vid:
+        _presence_touch(vid)
+    resp, code = _bp_nostore(jsonify({"ok": True, "here": _presence_count()}))
+    return resp, code
+
+
 @app.route("/universal-gallery")
 def universal_gallery_page():
     return send_file(os.path.join(BASE_DIR, "universal-gallery.html"))
