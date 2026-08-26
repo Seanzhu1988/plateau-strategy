@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/paper.css">
     <script src="/psx-net.js"></script>
     <link rel="stylesheet" href="/modern.css">
+    <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
     <style>
         header img { height: 42px; width: 42px; border-radius: 50%; }
         header .brand { font-size: 1.2rem; font-weight: 800; }
@@ -65,6 +66,40 @@
         .ft-actions a.quiet { background: #fff !important; color: #1f3a5f !important; }
         .ft-foot { border-top: 1px solid #e6e6ea; margin-top: 2.6rem; padding-top: 1.1rem;
                    font-size: .9rem; color: #6b655b; }
+        /* Pick which stops you want (a tick beside each), then lock them and walk
+           with the map. The tick is a real tap target; the whole row already
+           reads as one thing, so the box sits to its left. */
+        .ft-inc { flex: 0 0 auto; display: flex; align-items: flex-start; margin-top: .2rem; }
+        .ft-inc input { width: 22px; height: 22px; cursor: pointer; accent-color: #1f3a5f; }
+        .ft-stop.locked .ft-inc input { cursor: default; }
+        .ft-walk { margin: 1.8rem 0 0; }
+        #ftWalk { font: inherit !important; font-weight: 700 !important; cursor: pointer;
+                  border: 1px solid #1f3a5f !important; background: #1f3a5f !important;
+                  color: #fff !important; padding: .8rem 1.1rem !important; min-height: 46px;
+                  border-radius: 6px !important; width: 100%;
+                  display: inline-flex !important; align-items: center; justify-content: center; }
+        /* [hidden] must beat the flex display above, or the locked button lingers. */
+        #ftWalk[hidden] { display: none !important; }
+        #ftMap { height: 62vh; min-height: 340px; border-radius: 10px; overflow: hidden;
+                 margin: 1rem 0 .7rem; border: 1px solid #d3d3da; }
+        .ft-mapbar { display: flex; gap: .6rem; flex-wrap: wrap; }
+        #ftFollow, #ftEdit { font: inherit !important; font-weight: 700 !important; cursor: pointer;
+                  border: 1px solid #1f3a5f !important; padding: .65rem 1rem !important;
+                  min-height: 44px; border-radius: 6px !important; flex: 1 1 8rem;
+                  display: inline-flex !important; align-items: center; justify-content: center !important;
+                  white-space: nowrap; }
+        #ftFollow { background: #1f3a5f !important; color: #fff !important; }
+        #ftFollow[aria-pressed="true"] { background: #2f9d54 !important; border-color: #2f9d54 !important; }
+        #ftEdit { background: #fff !important; color: #1f3a5f !important; }
+        .ft-loc { font-size: .88rem; color: #4a453d; margin: .6rem 0 0; min-height: 1.2em; }
+        /* Leaflet chrome, matched to the page, muted basemap so the route reads. */
+        .leaflet-container { background: #f5f1e8; font: inherit; }
+        .basemap-muted { filter: saturate(.35) contrast(.95) brightness(1.03); }
+        .ft-pin { background: #1f3a5f; color: #fff; width: 26px; height: 26px; border-radius: 50%;
+                  display: flex; align-items: center; justify-content: center; font-weight: 800;
+                  font-size: .8rem; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+        .ft-you { width: 18px; height: 18px; border-radius: 50%; background: #2f9d54;
+                  border: 3px solid #fff; box-shadow: 0 0 0 4px rgba(47,157,84,.3); }
         @media (max-width: 640px) { .ft-title { font-size: 1.55rem; } }
     </style>
 </head>
@@ -98,6 +133,18 @@
 
         <div id="ftStops"></div>
 
+        <div class="ft-walk">
+            <button id="ftWalk">Lock these stops and walk with the map</button>
+            <div id="ftMapWrap" hidden>
+                <div id="ftMap"></div>
+                <div class="ft-mapbar">
+                    <button id="ftFollow" aria-pressed="false">Follow me on foot</button>
+                    <button id="ftEdit">Edit the stops</button>
+                </div>
+                <p class="ft-loc" id="ftLoc">Your route is locked. Tap Follow me to walk it with the map moving as you go.</p>
+            </div>
+        </div>
+
         <div class="ft-actions">
             <button id="ftDrop">Drop this walk on my map</button>
             <a class="quiet" href="/destination-book?city=boston">More in Boston</a>
@@ -112,44 +159,74 @@
         </div>
     </div>
 
+<script src="/vendor/leaflet/leaflet.js"></script>
 <script>
 (function () {
-    var trail = null, mode = "all";
+    var trail = null, mode = "all", included = null, locked = false;
     var HALF = 11;              // stops 1 to 11 sit downtown; 12 onward crosses to Charlestown
+    var map = null, routeLayer = null, youMarker = null, followId = null;
 
     function fmt(m) {
         var h = Math.floor(m / 60), r = m % 60;
         return h ? (h + " hr " + (r ? r + " min" : "").trim()).trim() : (m + " min");
     }
-    function shown() {
-        return mode === "all" ? trail.stops : trail.stops.slice(0, HALF);
+    function selected() {
+        return trail.stops.filter(function (s) { return included.has(s.n); });
     }
     function render() {
-        var list = shown(), walk = 0, inside = 0;
-        list.forEach(function (s, i) { if (i) walk += s.walk_min_from_prev; inside += s.inside_min; });
+        // One pass: the leg to each kept stop is the ground from the previous
+        // kept stop, so skipping a middle stop still counts the walk past it,
+        // and the summary matches the route you would actually walk.
+        var legOf = {}, prevIdx = -1, walk = 0, inside = 0, count = 0;
+        trail.stops.forEach(function (s, i) {
+            if (!included.has(s.n)) return;
+            count++; inside += s.inside_min || 0;
+            if (prevIdx < 0) { legOf[s.n] = { first: true, leg: 0 }; }
+            else {
+                var leg = 0;
+                for (var k = prevIdx + 1; k <= i; k++) leg += trail.stops[k].walk_min_from_prev || 0;
+                legOf[s.n] = { first: false, leg: leg }; walk += leg;
+            }
+            prevIdx = i;
+        });
         document.getElementById("ftSum").textContent =
-            list.length + " stops · " + fmt(walk) + " walking · " + fmt(inside) +
+            count + " stops · " + fmt(walk) + " walking · " + fmt(inside) +
             " inside · about " + fmt(walk + inside) + " altogether";
 
         var host = document.getElementById("ftStops");
-        host.innerHTML = trail.stops.map(function (s, i) {
-            var on = i < list.length;
-            return '<div class="ft-stop' + (on ? '' : ' off') + '">' +
+        host.innerHTML = trail.stops.map(function (s) {
+            var on = included.has(s.n), L = legOf[s.n];
+            var meta = (on && L.first ? "start · " : (on ? L.leg + " min walk · " : "")) +
+                       s.inside_min + " min here";
+            return '<div class="ft-stop' + (on ? '' : ' off') + (locked ? ' locked' : '') + '">' +
+                   '<label class="ft-inc"><input type="checkbox" class="ft-cb" data-n="' + s.n + '"' +
+                     (on ? ' checked' : '') + (locked ? ' disabled' : '') +
+                     ' aria-label="Include ' + s.name + '"></label>' +
                    '<div class="ft-n">' + s.n + '</div><div class="ft-b">' +
                    '<div class="ft-name">' + s.name + '</div>' +
                    (s.book_slug
                      ? '<button class="ft-play" data-slug="' + s.book_slug + '">Play</button>'
                      : '') +
-                   '<div class="ft-meta">' +
-                   (i ? s.walk_min_from_prev + " min walk · " : "start · ") +
-                   s.inside_min + ' min here</div>' +
+                   '<div class="ft-meta">' + meta + '</div>' +
                    '<div class="ft-desc">' + s.desc + '</div></div></div>';
         }).join("");
         document.getElementById("ftAll").setAttribute("aria-pressed", mode === "all");
-        document.getElementById("ftHalf").setAttribute("aria-pressed", mode !== "all");
+        document.getElementById("ftHalf").setAttribute("aria-pressed", mode === "half");
         stopAudio();            // the list just changed under whatever was playing
         verifyPlays();
     }
+
+    // Tick a stop in or out of the walk, until it is locked. All and Downtown
+    // half are just presets that set the ticks; from there you can add or drop
+    // any single stop. Never lets you empty the list to nothing.
+    document.addEventListener("change", function (e) {
+        var cb = e.target.closest(".ft-cb"); if (!cb || locked) return;
+        var n = +cb.getAttribute("data-n");
+        if (cb.checked) included.add(n); else included.delete(n);
+        if (!included.size) { included.add(n); }     // keep at least one
+        mode = "custom";
+        render();
+    });
 
     // The three stops already in the Destination Book have Jason's thirty second
     // card recorded. The page knew that and only said so; now it plays it. One
@@ -190,6 +267,7 @@
         .then(function (d) {
             trail = (d.trails || []).filter(function (t) { return t.id === "freedom-trail"; })[0];
             if (!trail) throw new Error("no trail");
+            included = new Set(trail.stops.map(function (s) { return s.n; }));   // all, to begin
             var mi = (trail.length_m / 1609.34).toFixed(1);
             document.getElementById("ftTruth").innerHTML =
                 "<b>" + fmt(trail.walk_min_total) + " of walking, " +
@@ -204,8 +282,17 @@
                 "Could not load the trail just now. Reload to try again.";
         });
 
-    document.getElementById("ftAll").addEventListener("click", function () { mode = "all"; render(); });
-    document.getElementById("ftHalf").addEventListener("click", function () { mode = "half"; render(); });
+    document.getElementById("ftAll").addEventListener("click", function () {
+        if (locked) return;
+        mode = "all"; included = new Set(trail.stops.map(function (s) { return s.n; })); render();
+    });
+    document.getElementById("ftHalf").addEventListener("click", function () {
+        if (locked) return;
+        mode = "half";
+        included = new Set(trail.stops.filter(function (s) { return s.n <= HALF; })
+                                      .map(function (s) { return s.n; }));
+        render();
+    });
 
     // Drop the walk onto the planner's map. It reads its own saved shape from
     // localStorage on boot, so this writes THAT shape rather than inventing a
@@ -220,7 +307,7 @@
             if (!confirm("Your planner currently holds a " + (had.city || "saved") +
                          " day. Replace it with the Freedom Trail?")) return;
         }
-        var places = shown().map(function (s) {
+        var places = selected().map(function (s) {
             return { name: s.name, lat: s.lat, lon: s.lon, close: 1020,
                      visit: s.inside_min, cat: "history" };
         });
@@ -237,6 +324,87 @@
             places.length + " stops dropped. Opening your map…";
         setTimeout(function () { location.href = "/trip-planner"; }, 700);
     });
+
+    // ---- the walking map: lock the stops, then walk with the line ----
+    // The map lives on this page so the trail can be walked from it, not just
+    // consulted and forgotten. Following your position is OFF until you ask:
+    // a page that quietly watches where you are is not something to switch on
+    // for somebody. Nothing about your location leaves the browser.
+    function buildMap() {
+        if (!map) {
+            map = L.map("ftMap", { zoomControl: true });
+            L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                maxZoom: 19, className: "basemap-muted",
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            routeLayer = L.layerGroup().addTo(map);
+        }
+        routeLayer.clearLayers();
+        var kept = selected(), pts = kept.map(function (s) { return [s.lat, s.lon]; });
+        if (pts.length > 1) L.polyline(pts, { color: "#1f3a5f", weight: 5, opacity: .8 }).addTo(routeLayer);
+        kept.forEach(function (s) {
+            L.marker([s.lat, s.lon], { icon: L.divIcon({ className: "", iconSize: [26, 26],
+                iconAnchor: [13, 13], html: '<div class="ft-pin">' + s.n + "</div>" }) })
+             .addTo(routeLayer).bindTooltip(s.name);
+        });
+        if (pts.length > 1) map.fitBounds(L.latLngBounds(pts).pad(0.18));
+        else if (pts.length === 1) map.setView(pts[0], 15);
+        setTimeout(function () { map.invalidateSize(); }, 60);
+    }
+
+    function openWalk() {
+        if (!trail) return;
+        locked = true;
+        document.getElementById("ftWalk").hidden = true;
+        document.getElementById("ftMapWrap").hidden = false;
+        render();                 // ticks lock (disabled), rows read "locked"
+        buildMap();
+        document.getElementById("ftMapWrap").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    function editWalk() {
+        stopFollow("");
+        locked = false;
+        document.getElementById("ftMapWrap").hidden = true;
+        document.getElementById("ftWalk").hidden = false;
+        render();
+    }
+
+    function stopFollow(msg) {
+        if (followId !== null) { navigator.geolocation.clearWatch(followId); followId = null; }
+        if (youMarker && map) { map.removeLayer(youMarker); youMarker = null; }
+        var b = document.getElementById("ftFollow");
+        b.setAttribute("aria-pressed", "false"); b.textContent = "Follow me on foot";
+        if (msg) document.getElementById("ftLoc").textContent = msg;
+    }
+    function toggleFollow() {
+        if (followId !== null) { stopFollow("Stopped following. Your route stays locked."); return; }
+        if (!navigator.geolocation) {
+            document.getElementById("ftLoc").textContent = "This browser cannot share a location."; return;
+        }
+        var b = document.getElementById("ftFollow");
+        b.setAttribute("aria-pressed", "true"); b.textContent = "Following you";
+        document.getElementById("ftLoc").textContent = "Asking for your location…";
+        followId = navigator.geolocation.watchPosition(function (pos) {
+            var lat = pos.coords.latitude, lon = pos.coords.longitude, acc = Math.round(pos.coords.accuracy || 0);
+            if (!youMarker) {
+                youMarker = L.marker([lat, lon], { icon: L.divIcon({ className: "", iconSize: [18, 18],
+                    iconAnchor: [9, 9], html: '<div class="ft-you"></div>' }) }).addTo(map);
+            } else { youMarker.setLatLng([lat, lon]); }
+            // Keep you in view without fighting you: recentre only once you have
+            // walked off the screen, never on every reading.
+            if (!map.getBounds().pad(-0.25).contains([lat, lon])) map.panTo([lat, lon]);
+            document.getElementById("ftLoc").textContent =
+                "The map is moving with you, within " + acc + " m. Tap Following you to stop.";
+        }, function (err) {
+            stopFollow(err && err.code === 1
+                ? "Location is blocked for this site, so following is off."
+                : "The location signal dropped, following is off.");
+        }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+    }
+
+    document.getElementById("ftWalk").addEventListener("click", openWalk);
+    document.getElementById("ftEdit").addEventListener("click", editWalk);
+    document.getElementById("ftFollow").addEventListener("click", toggleFollow);
 
     // Yiki appears when she has been recorded, never as a dead player.
     fetch("/media/audio/trail-freedom-yiki.mp3", { method: "HEAD" })
