@@ -69,16 +69,21 @@
            left the button 48px wide and 82px tall with the label wrapped
            inside it: it did not look like a button and did not click like one.
            Fourth page today to hit this. */
+        /* One matched pair, not two labels of different lengths. Each button
+           takes an equal share of the row and centres its text, so Read it and
+           Listen line up with each other and with the card, and the left one
+           does not jump when it flips to Hide. */
         #ugWritten .ug-read, #ugFound .ug-read {
                    font: inherit !important; font-weight: 700 !important; cursor: pointer;
-                   margin-top: .7rem; padding: .55rem 1rem !important; min-height: 44px;
-                   border: 1px solid #1f3a5f !important; border-radius: 4px !important;
+                   flex: 1 1 8rem !important; padding: .55rem 1rem !important; min-height: 44px;
+                   border: 1px solid #1f3a5f !important; border-radius: 6px !important;
                    background: #fff !important; color: #1f3a5f !important;
                    display: inline-flex !important; align-items: center;
-                   white-space: nowrap; }
+                   justify-content: center !important; white-space: nowrap; }
         #ugWritten .ug-read:hover, #ugFound .ug-read:hover {
                    background: #1f3a5f !important; color: #fff !important; }
-        .ug-actions { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+        .ug-actions { display: flex; gap: .5rem; flex-wrap: wrap;
+                      align-items: stretch; margin-top: .8rem; }
         .ug-player { margin-top: .8rem; }
         .ug-player audio { width: 100%; max-width: 460px; }
         .ug-text { white-space: pre-wrap; color: #33302a; margin-top: .8rem;
