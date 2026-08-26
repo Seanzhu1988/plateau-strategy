@@ -118,8 +118,8 @@
            that if they do, what they get is half a name, and that every time somebody
            looks, it leaves a mark that cannot be rubbed out.</p>
 
-        <p class="np-p"><a href="/privacy">The full privacy policy</a> covers everything
-           else we hold and why.</p>
+        <p class="np-p" id="npPrivacyLine" hidden><a href="/privacy">The full privacy
+           policy</a> covers everything else we hold and why.</p>
 
         <div class="np-foot">
             Plateau Strategy Solution Lab, Seattle. This page describes the code that is
@@ -149,6 +149,12 @@
         .catch(function () {
             el.innerHTML = '<b>Could not check.</b> Reload to try again.';
         });
+    // The privacy policy is published only when PRIVACY_CONTACT is set, and it
+    // answers 404 until then. Linking to it regardless would put a dead link on
+    // the one page whose whole argument is that we say only what is true.
+    fetch('/privacy', { method: 'HEAD' })
+        .then(function (r) { if (r.ok) document.getElementById('npPrivacyLine').hidden = false; })
+        .catch(function () {});
     // The narration appears only once it exists, so there is never a dead player.
     fetch('/media/audio/security-parameter-jason.mp3', { method: 'HEAD' })
         .then(function (r) { if (r.ok) document.getElementById('npAudio').hidden = false; })
