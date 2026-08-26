@@ -11,7 +11,10 @@
    "script": "gallery_scripts/the-starry-night.txt",
    "teaser": "He painted it from a barred window in an asylum, the hills and the star are real, the village is not, and he thought it was a failure.",
    "minutes": 3,
-   "audio": "/media/audio/gallery-the-starry-night.mp3"
+   "audio": "/media/audio/gallery-the-starry-night.mp3",
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg?width=1100"
+   ]
   },
   "met:49.30": {
    "title": "Cypresses",
@@ -24,7 +27,10 @@
    "script": "gallery_scripts/cypresses.txt",
    "teaser": "Painted the same summer, from the same asylum, and the tree he moved into The Starry Night stands here on its own.",
    "minutes": 3,
-   "audio": "/media/audio/gallery-cypresses.mp3"
+   "audio": "/media/audio/gallery-cypresses.mp3",
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Vincent_van_Gogh_-_Cypresses_-_Google_Art_Project.jpg?width=1100"
+   ]
   },
   "aic:1942.51": {
    "title": "Nighthawks",
@@ -37,7 +43,10 @@
    "script": "gallery_scripts/nighthawks.txt",
    "teaser": "There is no door. Look for the way out of that diner and you will not find one, which is the whole painting.",
    "minutes": 3,
-   "audio": "/media/audio/gallery-nighthawks.mp3"
+   "audio": "/media/audio/gallery-nighthawks.mp3",
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Nighthawks_by_Edward_Hopper_1942.jpg?width=1100"
+   ]
   }
  }
 }

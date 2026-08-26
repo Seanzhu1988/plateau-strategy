@@ -3778,6 +3778,16 @@ def _gal_met(q, limit=8):
         o = _gal_get("https://collectionapi.metmuseum.org/public/collection/v1/objects/%s" % oid)
         if not o or not o.get("title"):
             continue
+        # Every public-domain view the Met holds of this object: the main one,
+        # then the detail shots and reverse. That is the slideshow, made of the
+        # museum's own photographs, so a phone can flick through them while the
+        # narrative plays. The small one stays the thumbnail on the row.
+        pub = bool(o.get("isPublicDomain"))
+        shots = []
+        if pub:
+            for u in [o.get("primaryImage")] + (o.get("additionalImages") or []):
+                if u and u not in shots:
+                    shots.append(u)
         out.append({
             "source": "The Met, New York",
             "title": o.get("title"),
@@ -3787,7 +3797,8 @@ def _gal_met(q, limit=8):
             "where": ("Gallery %s" % o["GalleryNumber"]) if o.get("GalleryNumber") else
                      (o.get("department") or ""),
             "on_view": bool(o.get("GalleryNumber")),
-            "image": o.get("primaryImageSmall") if o.get("isPublicDomain") else "",
+            "image": o.get("primaryImageSmall") if pub else "",
+            "images": shots,
             "city": "New York",
         })
     return out
@@ -3797,11 +3808,18 @@ def _gal_aic(q, limit=8):
     """The Art Institute of Chicago. Free, no key."""
     d = _gal_get("https://api.artic.edu/api/v1/artworks/search?q=" + urllib.parse.quote(q)
                  + "&limit=%d&fields=id,title,artist_title,date_display,"
-                   "main_reference_number,gallery_title,is_on_view,image_id" % limit)
+                   "main_reference_number,gallery_title,is_on_view,image_id,alt_image_ids" % limit)
     out = []
     for x in (d or {}).get("data") or []:
         if not x.get("title"):
             continue
+        # The main image, then any alternate views the Institute holds, each
+        # built as its own IIIF url at a size worth looking at on a phone.
+        ids, seen = [], set()
+        for i in [x.get("image_id")] + list(x.get("alt_image_ids") or []):
+            if i and i not in seen:
+                seen.add(i)
+                ids.append(i)
         out.append({
             "source": "Art Institute of Chicago",
             "title": x.get("title"),
@@ -3810,8 +3828,10 @@ def _gal_aic(q, limit=8):
             "item_number": x.get("main_reference_number") or "",
             "where": x.get("gallery_title") or "",
             "on_view": bool(x.get("is_on_view")),
-            "image": ("https://www.artic.edu/iiif/2/%s/full/400,/0/default.jpg" % x["image_id"])
-                     if x.get("image_id") else "",
+            "image": ("https://www.artic.edu/iiif/2/%s/full/400,/0/default.jpg" % ids[0])
+                     if ids else "",
+            "images": ["https://www.artic.edu/iiif/2/%s/full/843,/0/default.jpg" % i
+                       for i in ids],
             "city": "Chicago",
         })
     return out
@@ -3860,10 +3880,23 @@ def _gal_wikidata(q, limit=8):
         except Exception:
             return None
 
+    def allvals(cl, prop):
+        vals = []
+        for c in cl.get(prop) or []:
+            try:
+                dv = c["mainsnak"]["datavalue"]["value"]
+                v = dv["id"] if isinstance(dv, dict) and "id" in dv else dv
+                if v and v not in vals:
+                    vals.append(v)
+            except Exception:
+                pass
+        return vals
+
     rows, need_labels = [], set()
     for qid, ent in ents.items():
         cl = ent.get("claims") or {}
-        img, inv = first(cl, "P18"), first(cl, "P217")
+        img_files = allvals(cl, "P18")
+        img, inv = (img_files[0] if img_files else None), first(cl, "P217")
         coll, maker = first(cl, "P195"), first(cl, "P170")
         # Something is an ARTWORK OR ARTIFACT here if a museum holds it, it has
         # an inventory number, or somebody made it. A person, a town or a film
@@ -3875,7 +3908,8 @@ def _gal_wikidata(q, limit=8):
             if isinstance(x, str) and x.startswith("Q"):
                 need_labels.add(x)
         rows.append({"qid": qid, "title": (ent.get("labels", {}).get("en") or {}).get("value", ""),
-                     "image_file": img, "inv": inv, "coll_qid": coll, "maker_qid": maker,
+                     "image_file": img, "image_files": img_files,
+                     "inv": inv, "coll_qid": coll, "maker_qid": maker,
                      "date": (first(cl, "P571") or {}).get("time", "")[1:5]
                              if isinstance(first(cl, "P571"), dict) else ""})
     labels = {}
@@ -3904,6 +3938,8 @@ def _gal_wikidata(q, limit=8):
             "on_view": bool(r["coll_qid"]),
             "image": ("https://commons.wikimedia.org/wiki/Special:FilePath/"
                       + urllib.parse.quote(r["image_file"]) + "?width=420"),
+            "images": ["https://commons.wikimedia.org/wiki/Special:FilePath/"
+                       + urllib.parse.quote(f) + "?width=1000" for f in r["image_files"]],
             "city": "",
             "wikidata": r["qid"],
         })

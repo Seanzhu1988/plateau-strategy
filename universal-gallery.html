@@ -66,6 +66,25 @@
         .ug-player audio { width: 100%; max-width: 460px; }
         .ug-text { white-space: pre-wrap; color: #33302a; margin-top: .8rem;
                    border-top: 1px solid #e6e6ea; padding-top: .8rem; line-height: 1.75; }
+        /* THE PICTURE, shown large while you read or listen. It sizes to the
+           column and never pushes the page sideways: the image is width 100%,
+           the frame is a single grid cell so several photographs of the same
+           object stack in place and cross-fade rather than making the card
+           taller. On a phone this is the full width of the text column. */
+        .ug-stage { margin-top: .9rem; max-width: 560px; }
+        .ug-frame { display: grid; border-radius: 8px; overflow: hidden;
+                    background: #f1efe8; }
+        .ug-shot { grid-area: 1 / 1; width: 100%; height: auto; display: block;
+                   opacity: 0; transition: opacity .45s ease; }
+        .ug-shot.on { opacity: 1; }
+        .ug-dots { display: flex; gap: .35rem; justify-content: center;
+                   flex-wrap: wrap; margin: .55rem 0 .1rem; }
+        .ug-dot { width: 34px; height: 34px; display: inline-flex; cursor: pointer;
+                  align-items: center; justify-content: center; }
+        .ug-dot::before { content: ""; width: 9px; height: 9px; border-radius: 50%;
+                          background: #c7c3b8; transition: background .2s, transform .2s; }
+        .ug-dot.on::before { background: #1f3a5f; transform: scale(1.4); }
+        .ug-img.ug-tap { cursor: pointer; }
         .ug-none { color: #6b655b; }
         .ug-foot { border-top: 1px solid #e6e6ea; margin-top: 2.4rem; padding-top: 1rem;
                    font-size: .88rem; color: #6b655b; }
@@ -106,15 +125,41 @@
             function (c) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; });
     }
     function card(it, key) {
+        // Every real photograph the museum published of this object. A single
+        // painting has one; the Met and the Art Institute often hold several
+        // (a detail, the reverse), and those become the slideshow.
+        var pics = (it.images && it.images.length) ? it.images
+                   : (it.image ? [it.image] : []);
+        var stage = pics.length
+            ? '<div class="ug-stage" hidden>' +
+                '<div class="ug-frame">' +
+                  pics.map(function (u, i) {
+                      return '<img class="ug-shot' + (i === 0 ? ' on' : '') + '" src="' +
+                             esc(u) + '" alt="' + esc(it.title) +
+                             '" loading="lazy" onerror="__ugShot(this)">';
+                  }).join("") +
+                '</div>' +
+                (pics.length > 1
+                  ? '<div class="ug-dots" aria-hidden="true">' +
+                      pics.map(function (u, i) {
+                          return '<span class="ug-dot' + (i === 0 ? ' on' : '') +
+                                 '" data-i="' + i + '"></span>';
+                      }).join("") +
+                    '</div>'
+                  : '') +
+              '</div>'
+            : '';
         return '<div class="ug-card" data-k="' + esc(key || "") + '">' +
             // The photograph is the point of this page for somebody standing in
             // a gallery: it is how they confirm they are in front of the right
             // object. It is always a REAL photograph from the museum's own open
             // collection or Wikimedia Commons, never a generated one, because
             // an image that is confidently almost-right would defeat exactly
-            // the thing it is here to do.
+            // the thing it is here to do. Tapping it opens the same picture
+            // large, so the little thumbnail is a way in, not the whole view.
             (it.image
-              ? '<img class="ug-img" src="' + esc(it.image) + '" alt="' + esc(it.title) +
+              ? '<img class="ug-img' + (pics.length ? ' ug-tap' : '') + '" src="' +
+                esc(it.image) + '" alt="' + esc(it.title) +
                 '" loading="lazy" onerror="this.remove()">'
               : '') +
             '<div class="ug-body">' +
@@ -142,8 +187,11 @@
                 ? '<div class="ug-actions">' +
                     '<button class="ug-read">Read it, ' + (it.minutes || 3) + ' min</button>' +
                     (it.audio ? '<button class="ug-read ug-listen">Listen</button>' : '') +
-                  '</div>' +
-                  '<div class="ug-player" hidden></div>' +
+                  '</div>'
+                : '') +
+            stage +
+            (key && it.has_narrative
+                ? '<div class="ug-player" hidden></div>' +
                   '<div class="ug-text" hidden></div>'
                 : '') +
             '</div></div>';
@@ -158,11 +206,74 @@
             keys.map(function (k) { return card(written[k], k); }).join("");
     }).catch(function () {});
 
+    // THE PICTURE, and when it is on show. It appears whenever the narrative is
+    // being read or heard, and can also be opened on its own by tapping the
+    // thumbnail. One rule decides it: show the stage if the reader wants it, or
+    // if either the text or the audio is open; otherwise put it away and stop
+    // the slideshow so it is not cycling in a card nobody is looking at.
+    function slide(stage, idx) {
+        var shots = stage.querySelectorAll(".ug-shot"),
+            dots = stage.querySelectorAll(".ug-dot");
+        if (!shots.length) return;
+        idx = ((idx % shots.length) + shots.length) % shots.length;
+        shots.forEach(function (s, i) { s.classList.toggle("on", i === idx); });
+        dots.forEach(function (d, i) { d.classList.toggle("on", i === idx); });
+        stage.dataset.idx = idx;
+    }
+    function startShow(stage) {
+        if (stage.querySelectorAll(".ug-shot").length < 2 || stage.dataset.timer) return;
+        stage.dataset.timer = String(setInterval(function () {
+            slide(stage, (parseInt(stage.dataset.idx || "0", 10) + 1));
+        }, 5000));
+    }
+    function stopShow(stage) {
+        if (stage.dataset.timer) { clearInterval(+stage.dataset.timer); stage.dataset.timer = ""; }
+    }
+    function syncStage(host) {
+        var stage = host.querySelector(".ug-stage"); if (!stage) return;
+        var text = host.querySelector(".ug-text"), pl = host.querySelector(".ug-player");
+        var open = host.dataset.pic === "1" ||
+                   (text && !text.hidden) || (pl && !pl.hidden);
+        stage.hidden = !open;
+        if (open) { startShow(stage); } else { stopShow(stage); }
+    }
+    // A picture whose url fails is dropped, itself and its dot, so a broken link
+    // never leaves a torn image on the page: the same graceful-failure rule the
+    // thumbnail already used, extended to the slideshow.
+    window.__ugShot = function (img) {
+        var stage = img.closest(".ug-stage"); if (!stage) return;
+        var shots = Array.prototype.slice.call(stage.querySelectorAll(".ug-shot"));
+        var i = shots.indexOf(img), dot = stage.querySelectorAll(".ug-dot")[i];
+        if (dot) dot.remove();
+        img.remove();
+        var left = stage.querySelectorAll(".ug-shot");
+        if (!left.length) { stopShow(stage); stage.remove(); return; }
+        if (!stage.querySelector(".ug-shot.on")) slide(stage, 0);
+        if (left.length < 2) {
+            var dc = stage.querySelector(".ug-dots"); if (dc) dc.remove();
+            stopShow(stage);
+        }
+    };
+
     // One handler for the whole page: the cards are rebuilt on every search, and
     // rebinding a listener per card is how you end up with four of them.
     // Listen: built on first press, so a page of twenty artworks does not open
     // twenty audio connections nobody asked for.
     document.addEventListener("click", function (e) {
+        var dot = e.target.closest(".ug-dot");
+        if (dot) {
+            var st = dot.closest(".ug-stage");
+            slide(st, parseInt(dot.getAttribute("data-i"), 10) || 0);
+            stopShow(st); startShow(st);          // restart the clock from the reader's pick
+            return;
+        }
+        var thumb = e.target.closest(".ug-img.ug-tap");
+        if (thumb) {
+            var th = thumb.closest(".ug-card");
+            th.dataset.pic = th.dataset.pic === "1" ? "" : "1";
+            syncStage(th);
+            return;
+        }
         var L = e.target.closest(".ug-listen");
         if (L) {
             var host = L.closest(".ug-card"), key = host.getAttribute("data-k");
@@ -173,20 +284,22 @@
             }
             pl.hidden = !pl.hidden;
             L.textContent = pl.hidden ? "Listen" : "Hide the audio";
+            syncStage(host);
             return;
         }
         var b = e.target.closest(".ug-read"); if (!b) return;
         var host = b.closest(".ug-card"), box = host.querySelector(".ug-text");
         var key = host.getAttribute("data-k");
         if (!box.hidden) { box.hidden = true; b.textContent = "Read it, " +
-            ((written[key] || {}).minutes || 3) + " min"; return; }
-        if (box.dataset.loaded) { box.hidden = false; b.textContent = "Hide"; return; }
+            ((written[key] || {}).minutes || 3) + " min"; syncStage(host); return; }
+        if (box.dataset.loaded) { box.hidden = false; b.textContent = "Hide"; syncStage(host); return; }
         b.textContent = "Opening…";
         fetch("/api/gallery/narrative/" + encodeURIComponent(key))
             .then(function (r) { return r.json(); })
             .then(function (d) {
                 box.textContent = d.ok ? d.text : "That one is not written yet.";
                 box.dataset.loaded = "1"; box.hidden = false; b.textContent = "Hide";
+                syncStage(host);
             })
             .catch(function () { b.textContent = "Could not open it"; });
     });
