@@ -1238,6 +1238,42 @@ _ASSET_RE = re.compile(rb'\b(href|src)="(/[\w./-]+\.(?:css|js))"')
 _ASSET_V = (os.environ.get("RENDER_GIT_COMMIT") or "")[:8] or str(int(time.time()))
 
 
+# Page bodies not being asset paths: no extension, or a page-like one. Used to
+# decide, in the before_request below, what may be a signed-in visitor's page.
+_ASSET_TAIL = re.compile(r"\.(js|mjs|css|png|jpe?g|svg|webp|gif|ico|mp4|webm|"
+                         r"woff2?|ttf|otf|json|map|webmanifest|xml|txt|pdf)$", re.I)
+
+
+@app.before_request
+def _no_stale_login_page():
+    """Never hand a signed-in visitor a cached signed-out page.
+
+    A page's body depends on who is signed in, Flask stamps "Vary: Cookie" the
+    moment it touches the session, but send_file answers a conditional request
+    from the FILE's own ETag, which knows nothing about identity. So the reload
+    that sign-in triggers revalidates with the pre-login ETag, send_file finds
+    the file unchanged and returns 304, and the browser re-shows the signed-out
+    page. That is the "I log in and still get the old site, a refresh fixes it"
+    report. Salting the ETag afterward cannot help: send_file has already
+    decided the 304 before any after_request runs.
+
+    So stop the 304 from being possible on a PAGE request that could belong to a
+    signed-in visitor. When the request carries our session cookie, drop the
+    conditional headers and the page is rendered fresh every time. Assets carry
+    no identity and keep their conditional caching; a visitor with no session
+    cookie keeps normal page caching too."""
+    if request.method not in ("GET", "HEAD"):
+        return
+    name = app.config.get("SESSION_COOKIE_NAME") or "session"
+    if not request.cookies.get(name):
+        return
+    p = request.path
+    if p.startswith(("/media/", "/vendor/", "/static/")) or _ASSET_TAIL.search(p):
+        return
+    request.environ.pop("HTTP_IF_NONE_MATCH", None)
+    request.environ.pop("HTTP_IF_MODIFIED_SINCE", None)
+
+
 @app.after_request
 def _compress_and_cache(resp):
     """Two things nothing else was doing: squeeze the bytes, and let the
