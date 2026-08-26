@@ -19,6 +19,23 @@
                   border: 1px solid #d3d3da !important; border-radius: 6px !important;
                   box-sizing: border-box; background: #fff !important; color: #14110c !important; }
         .ug-hint { font-size: .85rem; color: #6b655b; margin: .5rem 0 1.2rem; }
+        /* Two ways in, one at a time. The guides we wrote sit behind their own
+           tab so they no longer stand between the search box and its results:
+           type anything and the page is already showing you the search. The id
+           on the row lets these pills outrank modern.css's site-wide button
+           rule, the same trick the Read it button needs. */
+        #ugTabs { display: flex; gap: .5rem; flex-wrap: wrap; margin: 0 0 1.3rem; }
+        #ugTabs .ug-tab {
+            font: inherit !important; font-weight: 700 !important; cursor: pointer;
+            padding: .5rem 1.05rem !important; min-height: 44px;
+            border: 1px solid #d3d3da !important; border-radius: 999px !important;
+            background: #fff !important; color: #4a453d !important;
+            display: inline-flex !important; align-items: center; white-space: nowrap; }
+        #ugTabs .ug-tab.is-on {
+            background: #1f3a5f !important; color: #fff !important;
+            border-color: #1f3a5f !important; }
+        .ug-tab-n { margin-left: .4rem; font-weight: 700; opacity: .75;
+                    font-variant-numeric: tabular-nums; }
         .ug-sec { font-size: .72rem; font-weight: 800; letter-spacing: .14em;
                   text-transform: uppercase; color: #6b655b; margin: 1.8rem 0 .6rem; }
         .ug-card { border: 1px solid #e6e6ea; border-radius: 10px; padding: 1rem 1.1rem;
@@ -112,8 +129,16 @@
         <p class="ug-hint">You do not have to spell it. Every museum prints an item number on
            the label, and that number is enough. Try <b>49.30</b> or <b>1942.51</b>.</p>
 
-        <div id="ugWritten"></div>
-        <div id="ugFound"></div>
+        <div class="ug-tabs" id="ugTabs" role="tablist">
+            <button class="ug-tab is-on" id="ugTabW" type="button" role="tab"
+                    aria-selected="true" data-tab="written">Written by us<span
+                    class="ug-tab-n" id="ugWrittenN"></span></button>
+            <button class="ug-tab" id="ugTabF" type="button" role="tab"
+                    aria-selected="false" data-tab="found">Search</button>
+        </div>
+
+        <div id="ugWritten" role="tabpanel"></div>
+        <div id="ugFound" role="tabpanel" hidden></div>
     </div>
 
 <script>
@@ -123,6 +148,15 @@
     function esc(s) {
         return String(s == null ? "" : s).replace(/[&<>"]/g,
             function (c) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; });
+    }
+    var FOUND_HINT = '<p class="ug-none">Type a name, or the number on the label, to search.</p>';
+    function showTab(which) {
+        var found = which === "found";
+        document.getElementById("ugWritten").hidden = found;
+        document.getElementById("ugFound").hidden = !found;
+        var bW = document.getElementById("ugTabW"), bF = document.getElementById("ugTabF");
+        bW.classList.toggle("is-on", !found); bW.setAttribute("aria-selected", String(!found));
+        bF.classList.toggle("is-on", found); bF.setAttribute("aria-selected", String(found));
     }
     function card(it, key) {
         // Every real photograph the museum published of this object. A single
@@ -197,12 +231,19 @@
             '</div></div>';
     }
 
+    document.getElementById("ugFound").innerHTML = FOUND_HINT;   // ready before the first search
+
     fetch("/api/gallery/items").then(function (r) { return r.json(); }).then(function (d) {
         written = d.items || {};
         var keys = Object.keys(written);
-        if (!keys.length) return;
+        if (!keys.length) {
+            // Nothing written yet: no tab to offer, so the search stands alone.
+            document.getElementById("ugTabW").hidden = true;
+            showTab("found");
+            return;
+        }
+        document.getElementById("ugWrittenN").textContent = "· " + keys.length;
         document.getElementById("ugWritten").innerHTML =
-            '<div class="ug-sec">Written by us</div>' +
             keys.map(function (k) { return card(written[k], k); }).join("");
     }).catch(function () {});
 
@@ -260,6 +301,13 @@
     // Listen: built on first press, so a page of twenty artworks does not open
     // twenty audio connections nobody asked for.
     document.addEventListener("click", function (e) {
+        var tab = e.target.closest(".ug-tab");
+        if (tab) {
+            var which = tab.getAttribute("data-tab");
+            showTab(which);
+            if (which === "found") document.getElementById("ugFind").focus();
+            return;
+        }
         var dot = e.target.closest(".ug-dot");
         if (dot) {
             var st = dot.closest(".ug-stage");
@@ -306,7 +354,7 @@
 
     function search(q) {
         var host = document.getElementById("ugFound");
-        if (q.length < 2) { host.innerHTML = ""; return; }
+        if (q.length < 2) { host.innerHTML = FOUND_HINT; return; }
         host.innerHTML = '<div class="ug-sec">Searching the collections</div>';
         fetch("/api/gallery/search?q=" + encodeURIComponent(q))
             .then(function (r) { return r.json(); })
@@ -329,6 +377,10 @@
     document.getElementById("ugFind").addEventListener("input", function () {
         var v = this.value.trim();
         clearTimeout(timer);
+        // Typing takes you straight to the search: the guides never sit in the
+        // way. Empty the box and you are back among them.
+        if (v.length >= 2) { showTab("found"); }
+        else if (!v.length && !document.getElementById("ugTabW").hidden) { showTab("written"); }
         timer = setTimeout(function () { search(v); }, 350);   // one request per pause, not per keystroke
     });
 })();

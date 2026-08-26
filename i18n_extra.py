@@ -294,6 +294,12 @@ EXTRA = {
     "Visit min": ["建议停留（分钟）", "Visita min", "관람 시간(분)", "Thời gian ghé (phút)"],
     "Category": ["类别", "Categoría", "분류", "Danh mục"],
     "Search": ["搜索", "Buscar", "검색", "Tìm kiếm"],
+    "Written by us": ["我们亲手写的", "Escrito por nosotros", "우리가 직접 쓴 것", "Do chúng tôi viết"],
+    "Type a name, or the number on the label, to search.": [
+        "输入名称，或标签上的编号即可搜索。",
+        "Escribe un nombre, o el número de la etiqueta, para buscar.",
+        "이름이나 라벨에 적힌 번호를 입력해 검색하세요.",
+        "Nhập tên, hoặc số trên nhãn, để tìm kiếm."],
     "🗽 New York sample": ["🗽 纽约示例", "🗽 Ejemplo de Nueva York", "🗽 뉴욕 예시", "🗽 Mẫu New York"],
     "🏛️ Washington DC sample": ["🏛️ 华盛顿特区示例", "🏛️ Ejemplo de Washington DC", "🏛️ 워싱턴 DC 예시", "🏛️ Mẫu Washington DC"],
     "🌲 Seattle sample": ["🌲 西雅图示例", "🌲 Ejemplo de Seattle", "🌲 시애틀 예시", "🌲 Mẫu Seattle"],
