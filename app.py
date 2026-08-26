@@ -3696,6 +3696,21 @@ def name_protection_page():
     return send_file(os.path.join(BASE_DIR, "name-protection.html"))
 
 
+@app.route("/api/trails")
+def api_trails():
+    """The walkable trails, as data. One file, read fresh, no cache to go stale."""
+    try:
+        with open(os.path.join(BASE_DIR, "trails.json"), encoding="utf-8") as f:
+            return jsonify({"ok": True, **json.load(f)})
+    except Exception as e:
+        return jsonify({"ok": False, "trails": [], "error": str(e)}), 500
+
+
+@app.route("/freedom-trail")
+def freedom_trail_page():
+    return send_file(os.path.join(BASE_DIR, "freedom-trail.html"))
+
+
 @app.route("/api/name/status")
 def api_name_status():
     """Whether the name vault is actually running, for the page that describes it.

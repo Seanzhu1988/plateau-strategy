@@ -1,0 +1,191 @@
+{
+ "trails": [
+  {
+   "id": "freedom-trail",
+   "city": "boston",
+   "name": "The Freedom Trail",
+   "summary": "Two and a half miles of red brick through sixteen Revolutionary sites, from Boston Common to the Bunker Hill Monument. The line is painted and inlaid into the pavement, so you cannot get lost, and you can join or leave it anywhere.",
+   "length_m": 3537,
+   "walk_min_total": 44,
+   "inside_min_total": 330,
+   "stops": [
+    {
+     "n": 1,
+     "name": "Boston Common",
+     "lat": 42.35504,
+     "lon": -71.06607,
+     "inside_min": 20,
+     "walk_m_from_prev": 0,
+     "walk_min_from_prev": 0,
+     "book_slug": "boston-common-and-public-garden",
+     "desc": "Where the trail starts, and America's oldest public park. Militia drilled here, cows grazed here until 1830, and the redcoats camped here before Lexington."
+    },
+    {
+     "n": 2,
+     "name": "Massachusetts State House",
+     "lat": 42.3586,
+     "lon": -71.06388,
+     "inside_min": 15,
+     "walk_m_from_prev": 435,
+     "walk_min_from_prev": 5,
+     "book_slug": null,
+     "desc": "The gold dome above the Common, finished 1798 on John Hancock's cow pasture. The dome was wood, then copper rolled by Paul Revere, and it is gold leaf now."
+    },
+    {
+     "n": 3,
+     "name": "Park Street Church",
+     "lat": 42.35686,
+     "lon": -71.06204,
+     "inside_min": 10,
+     "walk_m_from_prev": 246,
+     "walk_min_from_prev": 3,
+     "book_slug": null,
+     "desc": "The corner was once the town granary, then a powder store in 1812, which is why locals called it Brimstone Corner. America Is My Country was first sung here in 1831."
+    },
+    {
+     "n": 4,
+     "name": "Granary Burying Ground",
+     "lat": 42.35713,
+     "lon": -71.06179,
+     "inside_min": 20,
+     "walk_m_from_prev": 36,
+     "walk_min_from_prev": 0,
+     "book_slug": null,
+     "desc": "Samuel Adams, John Hancock, Paul Revere and the five who died in the Boston Massacre are all in this one small yard. The headstones were rearranged for lawnmowers, so the stones and the graves no longer match."
+    },
+    {
+     "n": 5,
+     "name": "King's Chapel",
+     "lat": 42.35801,
+     "lon": -71.06003,
+     "inside_min": 15,
+     "walk_m_from_prev": 175,
+     "walk_min_from_prev": 2,
+     "book_slug": null,
+     "desc": "The first Anglican church in Puritan Boston, deeply unwelcome, so it was built around the old wooden one and the timber was thrown out the windows. The bell is Revere's largest."
+    },
+    {
+     "n": 6,
+     "name": "Boston Latin School site",
+     "lat": 42.35781,
+     "lon": -71.05969,
+     "inside_min": 10,
+     "walk_m_from_prev": 36,
+     "walk_min_from_prev": 0,
+     "book_slug": null,
+     "desc": "The first public school in America, 1635. Benjamin Franklin went here and did not graduate. His statue stands on the spot."
+    },
+    {
+     "n": 7,
+     "name": "Old Corner Bookstore",
+     "lat": 42.35754,
+     "lon": -71.05842,
+     "inside_min": 5,
+     "walk_m_from_prev": 109,
+     "walk_min_from_prev": 1,
+     "book_slug": null,
+     "desc": "The oldest commercial building downtown, 1718, and the publishing house that printed Hawthorne, Emerson, Longfellow and Stowe. It is a Chipotle now, which locals will tell you about at length."
+    },
+    {
+     "n": 8,
+     "name": "Old South Meeting House",
+     "lat": 42.35698,
+     "lon": -71.05838,
+     "inside_min": 25,
+     "walk_m_from_prev": 62,
+     "walk_min_from_prev": 1,
+     "book_slug": null,
+     "desc": "Five thousand colonists packed in here on 16 December 1773, could not get the tea sent back, and walked out to the harbour. The Tea Party started in this room."
+    },
+    {
+     "n": 9,
+     "name": "Old State House",
+     "lat": 42.35873,
+     "lon": -71.05747,
+     "inside_min": 30,
+     "walk_m_from_prev": 208,
+     "walk_min_from_prev": 3,
+     "book_slug": null,
+     "desc": "The oldest surviving public building in Boston, 1713, with the lion and unicorn still on the gable. The Declaration of Independence was read from that balcony in 1776 and is read from it every Fourth of July."
+    },
+    {
+     "n": 10,
+     "name": "Boston Massacre Site",
+     "lat": 42.35878,
+     "lon": -71.05717,
+     "inside_min": 10,
+     "walk_m_from_prev": 25,
+     "walk_min_from_prev": 0,
+     "book_slug": null,
+     "desc": "A ring of cobblestones in a traffic island. Five men died here on 5 March 1770, and John Adams defended the soldiers in court because he thought the trial mattered more than the verdict."
+    },
+    {
+     "n": 11,
+     "name": "Faneuil Hall",
+     "lat": 42.36003,
+     "lon": -71.05623,
+     "inside_min": 30,
+     "walk_m_from_prev": 159,
+     "walk_min_from_prev": 2,
+     "book_slug": "faneuil-hall-marketplace",
+     "desc": "The meeting hall where the argument for revolution was made out loud, 1742, with the grasshopper weather vane still on top. Food stalls downstairs, the hall itself upstairs and free."
+    },
+    {
+     "n": 12,
+     "name": "Paul Revere House",
+     "lat": 42.36374,
+     "lon": -71.05368,
+     "inside_min": 25,
+     "walk_m_from_prev": 463,
+     "walk_min_from_prev": 6,
+     "book_slug": null,
+     "desc": "The oldest house in downtown Boston, about 1680, and he owned it on the night of the ride. Small, dark, low ceilings, and the most convincing room on the whole trail."
+    },
+    {
+     "n": 13,
+     "name": "Old North Church",
+     "lat": 42.36632,
+     "lon": -71.05445,
+     "inside_min": 25,
+     "walk_m_from_prev": 294,
+     "walk_min_from_prev": 4,
+     "book_slug": null,
+     "desc": "One if by land, two if by sea. The two lanterns were hung in this steeple for about a minute on 18 April 1775, long enough to be seen across the water and not long enough to be caught."
+    },
+    {
+     "n": 14,
+     "name": "Copp's Hill Burying Ground",
+     "lat": 42.36737,
+     "lon": -71.05591,
+     "inside_min": 15,
+     "walk_m_from_prev": 167,
+     "walk_min_from_prev": 2,
+     "book_slug": null,
+     "desc": "The high ground the British used to shell Charlestown during Bunker Hill. Headstones here still carry musket damage from redcoats using them as targets."
+    },
+    {
+     "n": 15,
+     "name": "USS Constitution",
+     "lat": 42.37244,
+     "lon": -71.05655,
+     "inside_min": 45,
+     "walk_m_from_prev": 566,
+     "walk_min_from_prev": 7,
+     "book_slug": "uss-constitution",
+     "desc": "Old Ironsides, launched 1797, still a commissioned Navy ship and the oldest warship afloat anywhere. Active duty sailors give the tours. Bring photo identification."
+    },
+    {
+     "n": 16,
+     "name": "Bunker Hill Monument",
+     "lat": 42.37635,
+     "lon": -71.06077,
+     "inside_min": 30,
+     "walk_m_from_prev": 556,
+     "walk_min_from_prev": 7,
+     "book_slug": null,
+     "desc": "The end of the trail, and 294 steps with no lift. The battle was actually fought on Breed's Hill, the colonists lost, and it still convinced everyone the war was winnable."
+    }
+   ]
+  }
+ ]
+}
