@@ -3788,7 +3788,7 @@ def _gal_met(q, limit=8):
             for u in [o.get("primaryImage")] + (o.get("additionalImages") or []):
                 if u and u not in shots:
                     shots.append(u)
-        out.append({
+        row = {
             "source": "The Met, New York",
             "title": o.get("title"),
             "artist": o.get("artistDisplayName") or "",
@@ -3800,7 +3800,12 @@ def _gal_met(q, limit=8):
             "image": o.get("primaryImageSmall") if pub else "",
             "images": shots,
             "city": "New York",
-        })
+        }
+        if not pub:
+            # Not cleared as public domain: show nothing, point at the original.
+            row["copyright"] = True
+            row["source_url"] = o.get("objectURL") or ""
+        out.append(row)
     return out
 
 
@@ -3808,19 +3813,25 @@ def _gal_aic(q, limit=8):
     """The Art Institute of Chicago. Free, no key."""
     d = _gal_get("https://api.artic.edu/api/v1/artworks/search?q=" + urllib.parse.quote(q)
                  + "&limit=%d&fields=id,title,artist_title,date_display,"
-                   "main_reference_number,gallery_title,is_on_view,image_id,alt_image_ids" % limit)
+                   "main_reference_number,gallery_title,is_on_view,image_id,alt_image_ids,"
+                   "is_public_domain" % limit)
     out = []
     for x in (d or {}).get("data") or []:
         if not x.get("title"):
             continue
-        # The main image, then any alternate views the Institute holds, each
-        # built as its own IIIF url at a size worth looking at on a phone.
+        # Only public-domain works get their pictures. When the Institute has
+        # not cleared a work, we show no image and point at the original instead,
+        # rather than reproduce something still under copyright. [SEAN "if there
+        # is us copyright show nothing and mention there is copyright give the
+        # original link"]
+        pd = bool(x.get("is_public_domain"))
         ids, seen = [], set()
-        for i in [x.get("image_id")] + list(x.get("alt_image_ids") or []):
-            if i and i not in seen:
-                seen.add(i)
-                ids.append(i)
-        out.append({
+        if pd:
+            for i in [x.get("image_id")] + list(x.get("alt_image_ids") or []):
+                if i and i not in seen:
+                    seen.add(i)
+                    ids.append(i)
+        row = {
             "source": "Art Institute of Chicago",
             "title": x.get("title"),
             "artist": x.get("artist_title") or "",
@@ -3833,7 +3844,11 @@ def _gal_aic(q, limit=8):
             "images": ["https://www.artic.edu/iiif/2/%s/full/843,/0/default.jpg" % i
                        for i in ids],
             "city": "Chicago",
-        })
+        }
+        if not pd:
+            row["copyright"] = True
+            row["source_url"] = "https://www.artic.edu/artworks/%s" % x.get("id")
+        out.append(row)
     return out
 
 

@@ -44,9 +44,8 @@
    "teaser": "There is no door. Look for the way out of that diner and you will not find one, which is the whole painting.",
    "minutes": 3,
    "audio": "/media/audio/gallery-nighthawks.mp3",
-   "images": [
-    "https://commons.wikimedia.org/wiki/Special:FilePath/Nighthawks_by_Edward_Hopper_1942.jpg?width=1100"
-   ]
+   "copyright": true,
+   "source_url": "https://www.artic.edu/artworks/111628/nighthawks"
   }
  }
 }

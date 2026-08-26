@@ -300,6 +300,13 @@ EXTRA = {
         "Escribe un nombre, o el número de la etiqueta, para buscar.",
         "이름이나 라벨에 적힌 번호를 입력해 검색하세요.",
         "Nhập tên, hoặc số trên nhãn, để tìm kiếm."],
+    "This work is still under copyright, so we cannot show it here.": [
+        "这件作品仍受版权保护，因此我们无法在此展示。",
+        "Esta obra sigue con derechos de autor, así que no podemos mostrarla aquí.",
+        "이 작품은 아직 저작권이 있어 여기에 보여드릴 수 없습니다.",
+        "Tác phẩm này vẫn còn bản quyền, nên chúng tôi không thể hiển thị ở đây."],
+    "See the original →": [
+        "查看原作 →", "Ver el original →", "원본 보기 →", "Xem bản gốc →"],
     "🗽 New York sample": ["🗽 纽约示例", "🗽 Ejemplo de Nueva York", "🗽 뉴욕 예시", "🗽 Mẫu New York"],
     "🏛️ Washington DC sample": ["🏛️ 华盛顿特区示例", "🏛️ Ejemplo de Washington DC", "🏛️ 워싱턴 DC 예시", "🏛️ Mẫu Washington DC"],
     "🌲 Seattle sample": ["🌲 西雅图示例", "🌲 Ejemplo de Seattle", "🌲 시애틀 예시", "🌲 Mẫu Seattle"],
