@@ -3767,6 +3767,16 @@ def _gal_get(url, timeout=12):
         return None
 
 
+# The two museums we query directly are single fixed buildings, so their
+# coordinates are a constant rather than a lookup. Without them their rows
+# cannot be planted into the book, and the Art Institute is a city the book
+# does not otherwise hold.
+_GAL_HOMES = {
+    "The Met, New York": (40.77943, -73.96324, "New York"),
+    "Art Institute of Chicago": (41.87958, -87.62376, "Chicago"),
+}
+
+
 def _gal_met(q, limit=8):
     """The Met's open access collection. Free, no key, CC0 on public domain."""
     out = []
@@ -3930,10 +3940,11 @@ def _gal_wikidata(q, limit=8):
     labels, coll_loc = {}, {}
     if need_labels:
         try:
-            r3 = _rq.get("https://www.wikidata.org/w/api.php", timeout=12, headers=H,
+            r3 = _rq.get("https://www.wikidata.org/w/api.php", timeout=15, headers=H,
                          params={"action": "wbgetentities", "format": "json",
                                  "languages": "en", "props": "labels|claims",
                                  "ids": "|".join(list(need_labels)[:40])})
+            city_qids = set()
             for k, v in (r3.json().get("entities") or {}).items():
                 labels[k] = (v.get("labels", {}).get("en") or {}).get("value", "")
                 # The city the institution sits in: its headquarters first, then

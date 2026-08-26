@@ -462,7 +462,7 @@ def record_refusal(name, city, why):
     return True
 
 
-def record_gallery(museum, city, example=""):
+def record_gallery(museum, city, example="", lat=None, lon=None):
     """A museum somebody reached through the Universal Gallery.
 
     Every gallery search is a person telling us where they are, or where they
@@ -483,14 +483,29 @@ def record_gallery(museum, city, example=""):
         if k in s["seen"]:
             return True
         s["seen"][k] = int(time.time())
-        s["proposals"].append({
+        prop = {
             "id": k, "kind": "place", "src": "universal-gallery", "name": museum,
             "city": _slug(city or "other")[:24] or "other", "cat": "culture",
             "note": ("reached through the gallery" +
                      (" while looking up %s" % example[:40] if example else "")),
             "url": "https://www.google.com/maps/search/" + urllib.parse.quote(museum),
             "found": int(time.time()),
-        })
+        }
+        # WITHOUT A COORDINATE A PROPOSAL CAN NEVER BE PLANTED. plant_discoveries
+        # filters on "lat is not None", so the first version of this recorded
+        # MoMA and the Prado into a queue that could not reach the book, which is
+        # a discovery that discovers nothing. Wikidata has a coordinate for
+        # essentially every museum on earth; it travels with the search result
+        # now and lands here.
+        if lat is not None and lon is not None:
+            prop["lat"], prop["lon"] = lat, lon
+            # Not "Museo del Prado. A museum, found through the Universal
+            # Gallery." A book entry should read like a book entry, and how we
+            # came to know about a place is our business, not the traveller's.
+            prop["desc"] = ("A museum%s. Found because a traveller looked up %s."
+                            % ((" in " + city) if city else "", example[:60])
+                            if example else "A museum%s." % ((" in " + city) if city else ""))
+        s["proposals"].append(prop)
         _save(s)
     return True
 
@@ -695,7 +710,13 @@ def voice_refine():
 # site's own add route, so the private-residence refusal, the dedupe and the
 # Wikipedia description all still apply. Leads (a Reddit thread, an Atlas
 # Obscura article) are never planted: a headline is not a place.
-PLANT_SOURCES = ("osm-new", "wikipedia", "wikivoyage", "dc-open-data", "nps")
+# "universal-gallery" is here because a museum somebody reached by looking up a
+# painting is a place they may well walk to, and the book is where places live.
+# It was the last missing link: the gallery was recording MoMA and the Prado
+# with coordinates into a queue this list would not read from. [SEAN "the
+# location of the museum shared with destination book"]
+PLANT_SOURCES = ("osm-new", "wikipedia", "wikivoyage", "dc-open-data", "nps",
+                 "universal-gallery")
 PLANT_PER_RUN = int(os.environ.get("DISCOVERY_PLANT_PER_RUN", "8"))
 PLANT_ENABLED = os.environ.get("DISCOVERY_PLANT", "true").strip().lower() != "false"
 
@@ -717,6 +738,11 @@ def plant_discoveries():
             "found_via": "scout:" + (p.get("src") or ""),
             "osm_class": p.get("osm_class"), "type": p.get("osm_type"),
             "extratags": p.get("extratags"),
+            # A proposal that already knows what it is must be able to SAY so.
+            # This was dropped here, so a named museum arrived at the gate
+            # looking exactly like a nameless point and was refused as junk.
+            # The gate was right; the plumbing was not.
+            "desc": p.get("desc") or "",
         })
         if res.get("ok") and res.get("already_known"):
             known += 1
