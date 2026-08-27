@@ -1,0 +1,94 @@
+name: Record trail narration
+
+# Records the deep, five minute per-stop narration for the Freedom Trail and
+# commits the audio back to the repo, so it deploys with everything else. This
+# runs here, on a GitHub runner, because that is a place that has both the
+# ElevenLabs key and the ability to commit; a sandboxed session has neither.
+#
+# One time setup: add the ElevenLabs key as a repository secret named
+# ELEVENLABS_API_KEY (Settings, Secrets and variables, Actions, New repository
+# secret). Nothing runs on its own; start a run by hand from the Actions tab, or
+# have it started for you.
+
+on:
+  workflow_dispatch:
+    inputs:
+      language:
+        description: "Which language to record"
+        type: choice
+        default: both
+        options: [both, en, zh]
+      force:
+        description: "Re-record even stops that are already current"
+        type: boolean
+        default: false
+
+# The job commits the recorded audio, so it needs write access to the repo.
+permissions:
+  contents: write
+
+concurrency:
+  group: record-trail
+  cancel-in-progress: false
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the site
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Fail early if the key is missing
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: |
+          if [ -z "$ELEVENLABS_API_KEY" ]; then
+            echo "::error::No ELEVENLABS_API_KEY secret set. Add it under Settings, Secrets and variables, Actions."
+            exit 1
+          fi
+
+      - name: Preview what will record
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: |
+          FORCE=""
+          [ "${{ inputs.force }}" = "true" ] && FORCE="--force"
+          case "${{ inputs.language }}" in
+            en) python3 trail_voices.py --dry $FORCE ;;
+            zh) python3 trail_voices.py --dry --lang zh $FORCE ;;
+            *)  python3 trail_voices.py --dry $FORCE
+                python3 trail_voices.py --dry --lang zh $FORCE ;;
+          esac
+
+      - name: Record
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: |
+          FORCE=""
+          [ "${{ inputs.force }}" = "true" ] && FORCE="--force"
+          case "${{ inputs.language }}" in
+            en) python3 trail_voices.py $FORCE ;;
+            zh) python3 trail_voices.py --lang zh $FORCE ;;
+            *)  python3 trail_voices.py $FORCE
+                python3 trail_voices.py --lang zh $FORCE ;;
+          esac
+
+      - name: Commit the audio
+        run: |
+          git config user.name "plateau-recorder"
+          git config user.email "actions@users.noreply.github.com"
+          git add media/audio
+          if git diff --cached --quiet; then
+            echo "Nothing new to commit. Either it was already recorded, or the run hit quota before writing."
+            exit 0
+          fi
+          COUNT=$(git diff --cached --name-only | grep -c '\.mp3$' || true)
+          git commit -m "Record Freedom Trail narration ($COUNT audio files)"
+          # Land it on top of whatever arrived while recording, then push.
+          git pull --rebase origin ${{ github.ref_name }}
+          git push origin HEAD:${{ github.ref_name }}
