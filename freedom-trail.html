@@ -74,6 +74,7 @@
             padding: .7rem 1.1rem !important; min-height: 44px; border-radius: 4px !important;
             display: inline-flex; align-items: center; }
         .ft-actions a.quiet { background: #fff !important; color: #1f3a5f !important; }
+        #ftDrop[hidden] { display: none !important; }   /* only after the route is locked */
         .ft-foot { border-top: 1px solid #e6e6ea; margin-top: 2.6rem; padding-top: 1.1rem;
                    font-size: .9rem; color: #6b655b; }
         /* Pick which stops you want (a tick beside each), then lock them and walk
@@ -262,7 +263,7 @@
         </div>
 
         <div class="ft-actions">
-            <button id="ftDrop">Drop this walk on my map</button>
+            <button id="ftDrop" hidden>Drop this walk on my map</button>
             <a class="quiet" href="/destination-book?city=boston">More in Boston</a>
         </div>
         <p class="ft-note" id="ftDropped" style="margin-top:.7rem"></p>
@@ -315,6 +316,14 @@
         document.getElementById("ftSum").textContent =
             count + " stops · " + fmt(walk) + " walking · " + fmt(inside) +
             " inside · about " + fmt(walk + inside) + " altogether";
+
+        // The drop-to-planner label says exactly what it will move, so "all
+        // sixteen" reads honestly when the whole trail is on, "these 11" when
+        // it is the downtown half, and so on.
+        var drop = document.getElementById("ftDrop");
+        if (drop) drop.textContent = "Drop " +
+            (count === trail.stops.length ? "all " + count : "these " + count) +
+            (count === 1 ? " stop" : " stops") + " on my map";
 
         var host = document.getElementById("ftStops");
         host.innerHTML = trail.stops.map(function (s) {
@@ -509,6 +518,7 @@
         locked = true;
         document.getElementById("ftWalk").hidden = true;
         document.getElementById("ftConfirm").hidden = false;
+        document.getElementById("ftDrop").hidden = false;   // dropping is a locked-route action
         render();                 // ticks lock (disabled), rows read "locked"
         document.getElementById("ftConfirm").scrollIntoView({ behavior: "smooth", block: "center" });
     }
@@ -517,6 +527,8 @@
         locked = false;
         document.getElementById("ftConfirm").hidden = true;
         document.getElementById("ftWalk").hidden = false;
+        document.getElementById("ftDrop").hidden = true;    // back to choosing, hide the drop
+        document.getElementById("ftDropped").textContent = "";
         render();
     }
 
