@@ -3810,6 +3810,8 @@ def _gal_met(q, limit=8):
             "image": o.get("primaryImageSmall") if pub else "",
             "images": shots,
             "city": "New York",
+            "museum_lat": _GAL_HOMES["The Met, New York"][0],
+            "museum_lon": _GAL_HOMES["The Met, New York"][1],
         }
         if not pub:
             # Not cleared as public domain: show nothing, point at the original.
@@ -3854,6 +3856,8 @@ def _gal_aic(q, limit=8):
             "images": ["https://www.artic.edu/iiif/2/%s/full/843,/0/default.jpg" % i
                        for i in ids],
             "city": "Chicago",
+            "museum_lat": _GAL_HOMES["Art Institute of Chicago"][0],
+            "museum_lon": _GAL_HOMES["Art Institute of Chicago"][1],
         }
         if not pd:
             row["copyright"] = True
@@ -3937,7 +3941,7 @@ def _gal_wikidata(q, limit=8):
                      "inv": inv, "coll_qid": coll, "maker_qid": maker,
                      "date": (first(cl, "P571") or {}).get("time", "")[1:5]
                              if isinstance(first(cl, "P571"), dict) else ""})
-    labels, coll_loc = {}, {}
+    labels, coll_loc, coll_pos = {}, {}, {}
     if need_labels:
         try:
             r3 = _rq.get("https://www.wikidata.org/w/api.php", timeout=15, headers=H,
@@ -3956,6 +3960,12 @@ def _gal_wikidata(q, limit=8):
                 loc = first(vcl, "P159") or first(vcl, "P131") or first(vcl, "P276")
                 if isinstance(loc, str) and loc.startswith("Q"):
                     coll_loc[k] = loc
+                # The city name alone cannot be planted: plant_discoveries
+                # filters on "lat is not None", so a museum with a city and no
+                # coordinate sits in the queue forever. P625 is the position.
+                pt = first(vcl, "P625")
+                if isinstance(pt, dict) and pt.get("latitude") is not None:
+                    coll_pos[k] = (round(pt["latitude"], 5), round(pt["longitude"], 5))
         except Exception:
             pass
     # One more hop turns those location ids into city names.
@@ -3989,6 +3999,8 @@ def _gal_wikidata(q, limit=8):
             "images": ["https://commons.wikimedia.org/wiki/Special:FilePath/"
                        + urllib.parse.quote(f) + "?width=1000" for f in r["image_files"]],
             "city": city_names.get(coll_loc.get(r["coll_qid"], ""), ""),
+            "museum_lat": (coll_pos.get(r["coll_qid"]) or (None, None))[0],
+            "museum_lon": (coll_pos.get(r["coll_qid"]) or (None, None))[1],
             "wikidata": r["qid"],
         })
     return out
