@@ -134,12 +134,21 @@
                        background: linear-gradient(transparent, rgba(11,8,9,.82));
                        color: #fff; padding: 2.2rem .9rem .7rem; font-size: .95rem; }
         .ft-show-cap b { font-weight: 800; }
-        .ft-show-nav { position: absolute; top: 50%; transform: translateY(-50%);
-                       width: 40px; height: 40px; border-radius: 50%;
-                       border: 0 !important; background: rgba(255,255,255,.9) !important;
-                       color: #14110c !important; font-size: 1.1rem !important;
-                       cursor: pointer; padding: 0 !important; }
-        #ftPrev { left: .6rem; } #ftNext { right: .6rem; }
+        /* Sixth time: modern.css has button:not(...) eight deep with !important,
+           and a class cannot outrank eight :not() clauses. An id can, so the
+           whole look lives on the ids or the arrows come out as bare glyphs. */
+        #ftPrev, #ftNext { position: absolute !important; top: 50% !important;
+                       transform: translateY(-50%) !important;
+                       width: 44px !important; height: 44px !important;
+                       min-width: 0 !important; border-radius: 50% !important;
+                       border: 0 !important; background: rgba(255,255,255,.92) !important;
+                       box-shadow: 0 1px 4px rgba(11,8,9,.3) !important;
+                       color: #14110c !important; font-size: 1.3rem !important;
+                       line-height: 1 !important; text-decoration: none !important;
+                       cursor: pointer !important; padding: 0 !important;
+                       display: flex !important; align-items: center;
+                       justify-content: center; }
+        #ftPrev { left: .6rem !important; } #ftNext { right: .6rem !important; }
         .ft-dots { display: flex; gap: .3rem; justify-content: center; margin: .5rem 0 0;
                    flex-wrap: wrap; }
         .ft-dots span { width: 7px; height: 7px; border-radius: 50%; background: #d3d3da;
@@ -395,7 +404,13 @@
                 if (c === "yes") { document.getElementById("ftConsent").hidden = true;
                                    document.getElementById("ftMapbar").hidden = false;
                                    paintPrints(); }
-                else if (c === "no") { document.getElementById("ftConsent").hidden = true; }
+                else if (c === "no") {
+                    // No is remembered and nothing follows them. The buttons stay
+                    // reachable so changing their mind is possible, and tapping
+                    // follow puts the same question back rather than starting.
+                    document.getElementById("ftConsent").hidden = true;
+                    document.getElementById("ftMapbar").hidden = false;
+                }
             } catch (e) {}
         })
         .catch(function () {
