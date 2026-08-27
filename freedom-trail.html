@@ -294,6 +294,22 @@
     function selected() {
         return trail.stops.filter(function (s) { return included.has(s.n); });
     }
+
+    // Who narrates the trail, and in which file, depends on the language the
+    // reader is on: Jason walks it in English, Yiki walks it in Chinese, the
+    // same arrangement as the rest of the site. A language with no trail voice
+    // recorded gets no play button rather than someone else's voice.
+    function pageLang() {
+        var l = document.documentElement.lang || "en";
+        try { l = localStorage.getItem("ps_lang") || l; } catch (e) {}
+        return (l || "en").toLowerCase().slice(0, 2);
+    }
+    function trailGuide(lang) {
+        if (lang === "en") return { name: "Jason", suffix: "" };
+        if (lang === "zh") return { name: "Yiki", suffix: ".zh" };
+        return null;                    // es, ko, vi: no trail voice yet
+    }
+
     function render() {
         // One pass: the leg to each kept stop is the ground from the previous
         // kept stop, so skipping a middle stop still counts the walk past it,
@@ -315,29 +331,44 @@
             " inside · about " + fmt(walk + inside) + " altogether";
 
 
+        var lang = pageLang(), G = trailGuide(lang);
         var host = document.getElementById("ftStops");
         host.innerHTML = trail.stops.map(function (s) {
             var on = included.has(s.n), L = legOf[s.n];
             var meta = (on && L.first ? "start · " : (on ? L.leg + " min walk · " : "")) +
                        s.inside_min + " min here";
+            // The deep five minute narration for this stop, in the reader's own
+            // language. Before it is recorded the button falls back to Jason's
+            // book card on the three stops that have one, and drops itself where
+            // there is nothing yet, so the page upgrades on its own as the
+            // recordings land. verifyPlays resolves which file is really there.
+            var narr = "";
+            if (G) {
+                var primary = "/media/audio/trail-stop-" + s.n + G.suffix + ".mp3";
+                var fallback = (lang === "en" && s.book_slug)
+                    ? "/media/audio/card-" + s.book_slug + ".mp3" : "";
+                narr = '<div class="ft-byline"><span class="ft-guide">' + G.name + '</span>' +
+                       '<button class="ft-play" data-audio="' + primary + '"' +
+                       (fallback ? ' data-fallback="' + fallback + '"' : '') +
+                       '>Play</button></div>';
+            }
+            // Yiki's written aside stays as text. Her name is dropped only when
+            // she is also the one narrating aloud, so it never reads twice.
+            var note = s.yiki
+                ? '<div class="ft-yiki">' +
+                  ((G && G.name === "Yiki") ? "" : '<span class="ft-guide">Yiki</span>') +
+                  s.yiki + '</div>'
+                : "";
             return '<div class="ft-stop' + (on ? '' : ' off') + (locked ? ' locked' : '') + '">' +
                    '<label class="ft-inc"><input type="checkbox" class="ft-cb" data-n="' + s.n + '"' +
                      (on ? ' checked' : '') + (locked ? ' disabled' : '') +
                      ' aria-label="Include ' + s.name + '"></label>' +
                    '<div class="ft-n">' + s.n + '</div><div class="ft-b">' +
                    '<div class="ft-name">' + s.name + '</div>' +
-                   (s.book_slug
-                     ? '<div class="ft-byline"><span class="ft-guide">Jason</span>' +
-                       '<button class="ft-play" data-audio="/media/audio/card-' + s.book_slug + '.mp3">Play</button></div>'
-                     : '') +
+                   narr +
                    '<div class="ft-meta">' + meta + '</div>' +
                    '<div class="ft-desc">' + s.desc + '</div>' +
-                   (s.yiki
-                     ? '<div class="ft-yiki">' +
-                       '<div class="ft-byline"><span class="ft-guide">Yiki</span>' +
-                       '<button class="ft-play" data-audio="/media/audio/trail-stop-' + s.n + '.mp3">Play</button></div>' +
-                       s.yiki + '</div>'
-                     : '') +
+                   note +
                    '</div></div>';
         }).join("");
         document.getElementById("ftAll").setAttribute("aria-pressed", mode === "all");
@@ -358,10 +389,10 @@
         render();
     });
 
-    // Every stop plays its guide: Jason's three carry his Destination Book card,
-    // and each of Yiki's stops carries her own recording for that spot. The page
-    // used to only name the guide; now it plays them. One at a time, because two
-    // guides talking over each other on a street corner is worse than silence.
+    // Every stop plays its guide, in the reader's own language: Jason reads the
+    // trail in English, Yiki in Chinese, each stop its own five minute
+    // narration. One at a time, because two guides talking over each other on a
+    // street corner is worse than silence.
     var playing = null, playingBtn = null;
     function stopAudio() {
         if (playing) { playing.pause(); playing = null; }
@@ -383,12 +414,26 @@
     });
 
     // A button that does nothing is worse than no button, so each one is checked
-    // against the file before it is left on screen.
+    // against the file before it is left on screen. It prefers the deep
+    // narration, falls back to the book card where one exists, and removes
+    // itself only when neither is really there. This is what lets the same
+    // markup work before and after the recordings land.
+    function head(url, cb) {
+        fetch(url, { method: "HEAD" })
+            .then(function (r) { cb(r.ok); })
+            .catch(function () { cb(false); });
+    }
     function verifyPlays() {
         [].forEach.call(document.querySelectorAll(".ft-play"), function (b) {
-            fetch(b.dataset.audio, { method: "HEAD" })
-                .then(function (r) { if (!r.ok) (b.closest(".ft-byline") || b).remove(); })
-                .catch(function () { (b.closest(".ft-byline") || b).remove(); });
+            var drop = function () { (b.closest(".ft-byline") || b).remove(); };
+            head(b.dataset.audio, function (ok) {
+                if (ok) return;                       // the narration is there
+                var fb = b.dataset.fallback || "";
+                if (!fb) return drop();
+                head(fb, function (ok2) {
+                    if (ok2) { b.dataset.audio = fb; } else { drop(); }
+                });
+            });
         });
     }
 
@@ -407,6 +452,10 @@
                 " altogether, so pick your version below.";
             render();
             buildShow();                 // the photographs, once the stops exist
+            // Switching language re-reads the stops so the guide who speaks, and
+            // the file that plays, follow the reader: Jason in English, Yiki in
+            // Chinese.
+            document.addEventListener("psx:lang", function () { if (trail) render(); });
             // Somebody who already said yes should not be asked again every
             // visit; somebody who said no should not be nagged.
             try {
