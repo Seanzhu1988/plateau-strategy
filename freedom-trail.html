@@ -90,18 +90,23 @@
                   display: inline-flex !important; align-items: center; justify-content: center; }
         /* [hidden] must beat the flex display above, or the locked button lingers. */
         #ftWalk[hidden] { display: none !important; }
-        /* The map is not a thing ON the page. While you walk it IS the page's
-           own surface: a live map fixed behind everything, sunk back and muted
-           into the paper, so the stops are read straight off it. Your route and
-           your dot stay the clearest marks on it. It follows you, taps fall
+        /* A patch of the live map fused into the TOP-RIGHT CORNER of the page,
+           not the whole page. It sits BEHIND the words (the reading is layered
+           above it), faint and sunk into the paper, and its edge dissolves
+           toward the middle of the page so there is no box, no border, no corner
+           to it, it just fades into the surface. It follows you, taps fall
            through to the words, and one small button puts it away. */
-        #ftMini { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-        /* The whole map sinks back into the page as one faint layer, so the
-           reading always wins; the tiles go fainter still, and the route and
-           your dot are the marks that carry. */
-        #ftMap { width: 100%; height: 100%; background: transparent; opacity: .5; }
+        #ftMini { position: fixed; top: 54px; right: 0; z-index: 0; pointer-events: none;
+                  width: min(58vw, 300px); height: min(52vw, 300px); }
+        #ftMap { width: 100%; height: 100%; background: transparent; opacity: .55;
+                 /* strongest in the top-right corner, feathered to nothing as it
+                    reaches toward the page, so the patch fuses in without an edge */
+                 -webkit-mask-image: radial-gradient(140% 140% at 100% 0%, #000 36%,
+                     rgba(0,0,0,.35) 66%, transparent 100%);
+                 mask-image: radial-gradient(140% 140% at 100% 0%, #000 36%,
+                     rgba(0,0,0,.35) 66%, transparent 100%); }
         #ftMap, #ftMap * { pointer-events: none !important; }
-        #ftMap .leaflet-tile-pane { opacity: .5; }           /* the map imagery, deepest back */
+        #ftMap .leaflet-tile-pane { opacity: .55; }          /* the map imagery, deepest back */
         .ft-wrap { position: relative; z-index: 1; }          /* the reading lives above the map */
         body > header { position: relative; z-index: 2; }
         #ftMiniClose { position: fixed; top: 66px; right: 12px; z-index: 950; pointer-events: auto;
