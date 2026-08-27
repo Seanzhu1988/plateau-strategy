@@ -3,7 +3,12 @@
 
     python3 accent_bakeoff.py
 
-WHY THIS EXISTS. Sean said Yiki's Chinese sounds Americanized. The scripts are
+SETTLED. Sean answered this question by casting instead of testing: Yiki took
+the English and Pangge took the Chinese (see guide_voices.py). The four takes
+below are kept because they are still the cheapest way to audition any future
+voice against the incumbents; nothing on the site depends on them.
+
+WHY THIS EXISTED. Sean said Yiki's Chinese sounds Americanized. The scripts are
 not the cause: they are written in Chinese rather than translated into it, with
 transliterated names, Chinese numerals and full-width punctuation. The cause is
 upstream of the words.
@@ -55,7 +60,7 @@ PINNED_MODEL = "eleven_turbo_v2_5"
 
 TAKES = [
     ("1-yiki-now", "yiki", None, None, None,
-     "what is on the site today"),
+     "Yiki reading Chinese, the sound that prompted the recast"),
     ("2-yiki-pinned", "yiki", PINNED_MODEL, "zh",
      {"stability": 0.5, "similarity_boost": 0.3, "style": 0.0},
      "Yiki, Chinese phonetics pinned, pulled off her English recordings"),

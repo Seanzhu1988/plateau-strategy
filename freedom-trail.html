@@ -495,9 +495,9 @@
                 " altogether, so pick your version below.";
             render();
             wireMiniShows();             // the stop pictures, once the stops exist
-            // Switching language re-reads the stops so the guide who speaks, and
-            // the file that plays, follow the reader: Jason in English, Yiki in
-            // Chinese.
+            // Switching language re-reads the stops so the guide who speaks,
+            // and the file that plays, follow the reader: Yiki in English,
+            // Pangge in Chinese.
             document.addEventListener("psx:lang", function () { if (trail) render(); });
             // Somebody who already said yes should not be asked again every
             // visit; somebody who said no should not be nagged.

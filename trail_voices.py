@@ -3,7 +3,7 @@
 
     python3 trail_voices.py               # record the stops that are missing or changed
     python3 trail_voices.py --dry         # say what it would record, spend nothing
-    python3 trail_voices.py --lang zh     # record Yiki's Chinese stops
+    python3 trail_voices.py --lang zh     # record the Chinese stops (Pangge)
     python3 trail_voices.py --force       # redo everything, even unchanged stops
 
 Where the words live. One plain text file per stop, in trail_scripts/freedom-trail/,
@@ -11,11 +11,12 @@ named stop-01.txt through stop-16.txt for English, and stop-01.zh.txt and so on
 for another language. One file, one stop, so a rewrite is a small readable diff
 and not a needle in a JSON haystack.
 
-Who reads it. The trail has two voices and they are not interchangeable: Jason
-walks it in English, Yiki walks it in Chinese. This script does not choose; it
-asks guide_voices.py, the one place that record is kept, so the trail sounds the
-same here as everywhere else on the site. A language with no reader chosen yet is
-refused, never quietly handed to Jason.
+Who reads it. The trail has two voices and they are not interchangeable: Yiki
+walks it in English, Pangge walks it in Chinese, Sean's recast by ear after her
+Chinese came out Americanized. This script does not choose; it asks
+guide_voices.py, the one place that record is kept, so the trail sounds the
+same here as everywhere else on the site. A language with no reader chosen yet
+is refused, never quietly handed to someone else's voice.
 
 How long a stop has to be. A stop on this trail is a deep guide, something you
 settle into standing in front of the place, not a thirty second card. So an
@@ -101,9 +102,9 @@ def main():
 
     manifest = vg.load_manifest()
     have, todo, thin, missing = [], [], [], []
-    # item 0 is the overview; 1..16 are the stops. Labels print as "over" or
-    # the stop number, and the overview skips the five-minute floor because it
-    # is an introduction, not a stop guide.
+    # item 0 is the overview; 1..16 are the stops. Labels print as "overview"
+    # or the stop number, and the overview skips the five-minute floor because
+    # it is an introduction, not a stop guide.
     for n in range(0, STOPS + 1):
         sp = script_path(n, lang) if n else overview_paths(lang)[0]
         try:
@@ -126,12 +127,13 @@ def main():
             have.append(n)
 
     chars = sum(len(t) for _, t, _ in todo)
-    print("%s | %s | reader %s (%s) | %d stops: %d current, %d to record, "
-          "%d under five minutes, %d without a script"
+    print("%s | %s | reader %s (%s) | overview + %d stops: %d current, "
+          "%d to record, %d under five minutes, %d without a script"
           % (lang, TRAIL, reader, voice, STOPS, len(have), len(todo),
              len(thin), len(missing)))
     if missing:
-        print("  no script yet: stop %s" % ", ".join(map(str, missing)))
+        print("  no script yet: %s" % ", ".join(
+            "overview" if n == 0 else "stop %d" % n for n in missing))
     if thin:
         print("  under five minutes, write more before recording:")
         for n, w in thin:

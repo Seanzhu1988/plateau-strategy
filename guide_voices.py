@@ -36,14 +36,15 @@ GUIDES = {
     "yiki": {
         "name": "Yiki",
         "voice_id": "JZLpE3AGwpKYZI2X65hN",      # "Mingyao Ye" [SEAN picked her]
-        "job": "the trails, in Chinese",
-        "language": "zh",
-        # Her library entry is "Mingyao Ye, Sad and Broken Hearted", a voice
-        # built for grief, and Yiki's job is a sunny two and a half mile walk.
-        # Flagged to Sean with a sample of the real opening line before anything
-        # was recorded, because tone is the one thing you cannot read off a
-        # description. His ear decides; this line exists so that whoever reads
-        # this file later knows the mismatch was seen and chosen, not missed.
+        "job": "the trail, in English",
+        "language": "en",
+        # Her library entry is "Mingyao Ye, Sad and Broken Hearted", an
+        # English-market voice built for grief. She started on the trail's
+        # Chinese; Sean heard the accent (an English voice reading hanzi) and
+        # recast her onto the English, the language she does not strain in.
+        # The tone mismatch, a grief voice on a sunny walk, was flagged before
+        # anything was recorded. Both rulings were his, made by ear, which is
+        # the only instrument that has ever predicted how a voice sounds.
     },
     "adrian": {
         "name": "Adrian",
@@ -54,7 +55,7 @@ GUIDES = {
     "pangge": {
         "name": "Pangge",
         "voice_id": "hFamrilbAE6WDMtWgKvu",      # "pangge, chinese radio voice"
-        "job": "the guides, in Chinese",
+        "job": "the guides and the trail, in Chinese",
         "language": "zh",
     },
 }
