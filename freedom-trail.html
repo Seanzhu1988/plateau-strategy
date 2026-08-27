@@ -67,14 +67,13 @@
         .ft-audio audio { width: 100%; }
         .ft-note { font-size: .9rem; color: #6b655b; }
         .ft-actions { margin: 1.8rem 0 0; display: flex; gap: .6rem; flex-wrap: wrap; }
-        #ftDrop, .ft-actions a {
+        .ft-actions a {
             font: inherit !important; font-weight: 700 !important; cursor: pointer;
             text-decoration: none; border: 1px solid #1f3a5f !important;
             background: #1f3a5f !important; color: #fff !important;
             padding: .7rem 1.1rem !important; min-height: 44px; border-radius: 4px !important;
             display: inline-flex; align-items: center; }
         .ft-actions a.quiet { background: #fff !important; color: #1f3a5f !important; }
-        #ftDrop[hidden] { display: none !important; }   /* only after the route is locked */
         .ft-foot { border-top: 1px solid #e6e6ea; margin-top: 2.6rem; padding-top: 1.1rem;
                    font-size: .9rem; color: #6b655b; }
         /* Pick which stops you want (a tick beside each), then lock them and walk
@@ -263,10 +262,8 @@
         </div>
 
         <div class="ft-actions">
-            <button id="ftDrop" hidden>Drop this walk on my map</button>
             <a class="quiet" href="/destination-book?city=boston">More in Boston</a>
         </div>
-        <p class="ft-note" id="ftDropped" style="margin-top:.7rem"></p>
 
         <div class="ft-foot">
             Distances measured between the sites themselves, so the walk on the ground is a
@@ -317,13 +314,6 @@
             count + " stops · " + fmt(walk) + " walking · " + fmt(inside) +
             " inside · about " + fmt(walk + inside) + " altogether";
 
-        // This one opens the full Trip Planner, a different thing from the
-        // follow map on this page, so the label names the Trip Planner and the
-        // count, "all 16" when the whole trail is on, "these 11" for the half.
-        var drop = document.getElementById("ftDrop");
-        if (drop) drop.textContent = "Open " +
-            (count === trail.stops.length ? "all " + count : "these " + count) +
-            (count === 1 ? " stop" : " stops") + " in the Trip Planner";
 
         var host = document.getElementById("ftStops");
         host.innerHTML = trail.stops.map(function (s) {
@@ -447,37 +437,6 @@
         render();
     });
 
-    // Drop the walk onto the planner's map. It reads its own saved shape from
-    // localStorage on boot, so this writes THAT shape rather than inventing a
-    // second one: same key, same fields, city switched to Boston. Anything the
-    // planner already held for another city would be overwritten, so it asks.
-    document.getElementById("ftDrop").addEventListener("click", function () {
-        if (!trail) return;
-        var KEY = "ps_tripplanner_v2";
-        var had = null;
-        try { had = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) {}
-        if (had && had.places && had.places.length && had.city !== "boston") {
-            if (!confirm("Your planner currently holds a " + (had.city || "saved") +
-                         " day. Replace it with the Freedom Trail?")) return;
-        }
-        var places = selected().map(function (s) {
-            return { name: s.name, lat: s.lat, lon: s.lon, close: 1020,
-                     visit: s.inside_min, cat: "history" };
-        });
-        try {
-            localStorage.setItem(KEY, JSON.stringify({
-                city: "boston", places: places, dropped: [], departDate: ""
-            }));
-        } catch (e) {
-            document.getElementById("ftDropped").textContent =
-                "Could not save to this browser. Private browsing blocks it.";
-            return;
-        }
-        document.getElementById("ftDropped").textContent =
-            places.length + " stops sent. Opening the Trip Planner…";
-        setTimeout(function () { location.href = "/trip-planner"; }, 700);
-    });
-
     // ---- lock the route, then a map on the page stays with the walk ----
     // The flow the trail was asking for: pick the stops, lock them, and once
     // you are on your feet and have shared your location, a small map rides in
@@ -529,7 +488,6 @@
         locked = true;
         document.getElementById("ftWalk").hidden = true;
         document.getElementById("ftConfirm").hidden = false;
-        document.getElementById("ftDrop").hidden = false;   // dropping is a locked-route action
         render();                 // ticks lock (disabled), rows read "locked"
         document.getElementById("ftConfirm").scrollIntoView({ behavior: "smooth", block: "center" });
     }
@@ -538,8 +496,6 @@
         locked = false;
         document.getElementById("ftConfirm").hidden = true;
         document.getElementById("ftWalk").hidden = false;
-        document.getElementById("ftDrop").hidden = true;    // back to choosing, hide the drop
-        document.getElementById("ftDropped").textContent = "";
         render();
     }
 
