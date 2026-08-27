@@ -58,8 +58,32 @@
                 .catch(fail);
     }
 
-    // src is the English recording from the registry, and may be absent.
-    // slug is what the per-language recording is found by.
+    // WHICH FILE TO PLAY IS DECIDED BEFORE THE TAP, NEVER DURING IT.
+    //
+    // This used to check the file existed with fetch and then call play() in the
+    // callback. On a desktop that is fine. On a phone it is silence: iOS and
+    // Android only allow audio to start from a handler that calls play()
+    // SYNCHRONOUSLY, and awaiting a network round trip spends the permission the
+    // tap granted. play() is then rejected, the failure path tried the English
+    // file the same way and was rejected again, and the button did nothing at
+    // all. WeChat's browser is stricter still. [SEAN "i used the cellphone and
+    // the audio didnt work"]
+    //
+    // So the language check happens once, in the background, and the answer is
+    // stamped on the button. The tap itself does nothing but play.
+    var resolved = {};                    // url asked for -> url to actually play
+
+    function pick(b, src, slug, l) {
+        var k = (slug || "") + "|" + l;
+        if (resolved[k] !== undefined) return Promise.resolve(resolved[k]);
+        if (l === "en" || !slug) { resolved[k] = src || null; return Promise.resolve(resolved[k]); }
+        var mine = "/media/audio/guide-" + slug + "." + l + ".mp3";
+        return exists(mine).then(function (ok) {
+            resolved[k] = ok ? mine : (src || null);
+            return resolved[k];
+        }).catch(function () { resolved[k] = src || null; return resolved[k]; });
+    }
+
     window.playGuide = function (b, src, key, slug) {
         var same = (btn === b) && el;
         stop();
@@ -76,21 +100,26 @@
         } catch (e) {}
 
         function quiet() { face(b, false); btn = null; }
-        function english() {
-            if (!src) return quiet();
-            exists(src).then(function (ok) {
-                if (ok) start(src, b, quiet);
-                else quiet();
-            });
+
+        // Already know the answer: play right now, inside the tap.
+        var k = (slug || "") + "|" + l;
+        if (resolved[k] !== undefined) {
+            if (!resolved[k]) return quiet();
+            return start(resolved[k], b, quiet);
         }
-        if (l !== "en" && slug) {
-            var mine = "/media/audio/guide-" + slug + "." + l + ".mp3";
-            exists(mine).then(function (ok) {
-                if (ok) start(mine, b, english);
-                else english();
-            });
-        } else {
-            english();
-        }
+        // First tap for this language: play the English immediately so the tap
+        // is never wasted, and learn the better file for next time.
+        if (src) start(src, b, quiet); else face(b, true);
+        pick(b, src, slug, l);
+    };
+
+    // Warm the answer for whatever is on screen, so the FIRST tap is already
+    // right rather than the second.
+    window.warmGuides = function () {
+        var l = lang();
+        if (l === "en") return;
+        [].forEach.call(document.querySelectorAll("[data-guide-slug]"), function (n) {
+            pick(null, n.getAttribute("data-guide-src") || "", n.getAttribute("data-guide-slug"), l);
+        });
     };
 })();
