@@ -328,12 +328,15 @@
                    '<div class="ft-name">' + s.name + '</div>' +
                    (s.book_slug
                      ? '<div class="ft-byline"><span class="ft-guide">Jason</span>' +
-                       '<button class="ft-play" data-slug="' + s.book_slug + '">Play</button></div>'
+                       '<button class="ft-play" data-audio="/media/audio/card-' + s.book_slug + '.mp3">Play</button></div>'
                      : '') +
                    '<div class="ft-meta">' + meta + '</div>' +
                    '<div class="ft-desc">' + s.desc + '</div>' +
                    (s.yiki
-                     ? '<div class="ft-yiki"><span class="ft-guide">Yiki</span>' + s.yiki + '</div>'
+                     ? '<div class="ft-yiki">' +
+                       '<div class="ft-byline"><span class="ft-guide">Yiki</span>' +
+                       '<button class="ft-play" data-audio="/media/audio/trail-stop-' + s.n + '.mp3">Play</button></div>' +
+                       s.yiki + '</div>'
                      : '') +
                    '</div></div>';
         }).join("");
@@ -355,10 +358,10 @@
         render();
     });
 
-    // The three stops already in the Destination Book have Jason's thirty second
-    // card recorded. The page knew that and only said so; now it plays it. One
-    // at a time, because two guides talking over each other on a street corner
-    // is worse than silence.
+    // Every stop plays its guide: Jason's three carry his Destination Book card,
+    // and each of Yiki's stops carries her own recording for that spot. The page
+    // used to only name the guide; now it plays them. One at a time, because two
+    // guides talking over each other on a street corner is worse than silence.
     var playing = null, playingBtn = null;
     function stopAudio() {
         if (playing) { playing.pause(); playing = null; }
@@ -367,7 +370,7 @@
     }
     document.addEventListener("click", function (e) {
         var b = e.target.closest(".ft-play"); if (!b) return;
-        var src = "/media/audio/card-" + b.dataset.slug + ".mp3";
+        var src = b.dataset.audio;
         if (playingBtn === b) { stopAudio(); return; }
         stopAudio();
         var a = new Audio(src);
@@ -383,7 +386,7 @@
     // against the file before it is left on screen.
     function verifyPlays() {
         [].forEach.call(document.querySelectorAll(".ft-play"), function (b) {
-            fetch("/media/audio/card-" + b.dataset.slug + ".mp3", { method: "HEAD" })
+            fetch(b.dataset.audio, { method: "HEAD" })
                 .then(function (r) { if (!r.ok) (b.closest(".ft-byline") || b).remove(); })
                 .catch(function () { (b.closest(".ft-byline") || b).remove(); });
         });
