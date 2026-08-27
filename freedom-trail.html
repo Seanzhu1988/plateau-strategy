@@ -111,7 +111,7 @@
            dots come right up so they read boldly. Splitting them across panes is
            what lets each hold its own weight, and the mask above is untouched, so
            the patch still has no edge and dissolves toward the page. */
-        #ftMap .leaflet-tile-pane { opacity: .30; }          /* streets, faint */
+        #ftMap .leaflet-tile-pane { opacity: .6; }           /* streets, clear enough to read */
         #ftMap .leaflet-overlay-pane,
         #ftMap .leaflet-marker-pane { opacity: .98; }        /* route and dots, bold */
         .ft-wrap { position: relative; z-index: 1; }          /* the reading lives above the map */
@@ -185,13 +185,13 @@
         .ft-loc { font-size: .88rem; color: #4a453d; margin: .6rem 0 0; min-height: 1.2em; }
         /* Leaflet chrome, matched to the page, muted basemap so the route reads. */
         .leaflet-container { background: #f5f1e8; font: inherit; }
-        .basemap-muted { filter: saturate(.35) contrast(.95) brightness(1.03); }
+        .basemap-muted { filter: saturate(.6) contrast(1) brightness(1.02); }
         .ft-pin { background: #1f3a5f; color: #fff; width: 24px; height: 24px; border-radius: 50%;
                   display: flex; align-items: center; justify-content: center; font-weight: 800;
                   font-size: .72rem; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
-        .ft-you { width: 22px; height: 22px; border-radius: 50%; background: #12a150;
-                  border: 3px solid #fff;
-                  box-shadow: 0 0 0 5px rgba(18,161,80,.4), 0 2px 7px rgba(0,0,0,.4); }
+        .ft-you { width: 14px; height: 14px; border-radius: 50%; background: #12a150;
+                  border: 2px solid #fff;
+                  box-shadow: 0 0 0 3px rgba(18,161,80,.4), 0 1px 4px rgba(0,0,0,.4); }
         @media (max-width: 640px) { .ft-title { font-size: 1.55rem; } }
     </style>
 </head>
@@ -537,8 +537,8 @@
                 setTimeout(function () { map.invalidateSize(); fitWalk(lat, lon); }, 60);
             }
             if (!youMarker) {
-                youMarker = L.marker([lat, lon], { icon: L.divIcon({ className: "", iconSize: [22, 22],
-                    iconAnchor: [11, 11], html: '<div class="ft-you"></div>' }) }).addTo(map);
+                youMarker = L.marker([lat, lon], { icon: L.divIcon({ className: "", iconSize: [14, 14],
+                    iconAnchor: [7, 7], html: '<div class="ft-you"></div>' }) }).addTo(map);
             } else { youMarker.setLatLng([lat, lon]); }
             addPrint(lat, lon);                      // the trail you actually walked
             // The view holds the whole trail; your dot moves on it as you walk,
