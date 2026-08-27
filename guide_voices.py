@@ -36,8 +36,8 @@ GUIDES = {
     "yiki": {
         "name": "Yiki",
         "voice_id": "JZLpE3AGwpKYZI2X65hN",      # "Mingyao Ye" [SEAN picked her]
-        "job": "outdoors: walking trails",
-        "language": "en+zh",
+        "job": "the trails, in Chinese",
+        "language": "zh",
         # Her library entry is "Mingyao Ye, Sad and Broken Hearted", a voice
         # built for grief, and Yiki's job is a sunny two and a half mile walk.
         # Flagged to Sean with a sample of the real opening line before anything
@@ -75,9 +75,16 @@ GUIDES = {
 # carries an accent. That is a choice, not an accident, and a gallery guide who
 # sounds like a person from somewhere is not obviously worse than one who
 # sounds like nowhere. He does the gallery and nothing else.
+# Jason walks the trail in English, Yiki walks it in Chinese. [SEAN]
+#
+# This is the arrangement the voices were always asking for. Yiki is Mingyao Ye,
+# a Mandarin narrator, so English was the language she had an accent in and
+# Chinese is the one she does not. Jason is an American narrator doing the
+# reverse. Each guide now reads in the language their voice was made for, and
+# the site sounds like two people rather than one person straining.
 BY_LANGUAGE = {
     "guide":   {"en": "jason",  "zh": "pangge"},
-    "trail":   {"en": "yiki"},
+    "trail":   {"en": "jason",  "zh": "yiki"},
     "gallery": {"en": "adrian", "zh": "adrian"},
 }
 

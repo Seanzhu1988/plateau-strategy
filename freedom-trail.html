@@ -94,11 +94,11 @@
            not the whole page, and kept clear of the title and header. It sits
            BEHIND the words (the reading is layered above it), faint and sunk
            into the paper, and its edge dissolves toward the middle of the page
-           so there is no box, no border, no corner to it, it just fades into the
-           surface. It follows you, taps fall through, one button puts it away. */
+           so there is no box, no border, no corner to it. It follows you, taps
+           fall through, one button puts it away. */
         #ftMini { position: fixed; bottom: 0; right: 0; z-index: 0; pointer-events: none;
                   width: min(60vw, 320px); height: min(56vw, 320px); }
-        #ftMap { width: 100%; height: 100%; background: transparent; opacity: .62;
+        #ftMap { width: 100%; height: 100%; background: transparent;
                  /* strongest in the bottom-right corner, feathered to nothing as
                     it reaches toward the page, so the patch fuses in without an edge */
                  -webkit-mask-image: radial-gradient(140% 140% at 100% 100%, #000 40%,
@@ -106,7 +106,14 @@
                  mask-image: radial-gradient(140% 140% at 100% 100%, #000 40%,
                      rgba(0,0,0,.4) 68%, transparent 100%); }
         #ftMap, #ftMap * { pointer-events: none !important; }
-        #ftMap .leaflet-tile-pane { opacity: .45; }          /* the map imagery, deepest back */
+        /* Streets and route are different jobs, so they carry different strength.
+           The streets stay faint so the reading always wins; the route and the
+           dots come right up so they read boldly. Splitting them across panes is
+           what lets each hold its own weight, and the mask above is untouched, so
+           the patch still has no edge and dissolves toward the page. */
+        #ftMap .leaflet-tile-pane { opacity: .30; }          /* streets, faint */
+        #ftMap .leaflet-overlay-pane,
+        #ftMap .leaflet-marker-pane { opacity: .98; }        /* route and dots, bold */
         .ft-wrap { position: relative; z-index: 1; }          /* the reading lives above the map */
         body > header { position: relative; z-index: 2; }
         #ftMiniClose { position: fixed; bottom: 18px; right: 66px; z-index: 950; pointer-events: auto;
@@ -119,6 +126,54 @@
                        box-shadow: 0 4px 12px rgba(20,17,12,.3); }
         #ftMiniClose[hidden] { display: none !important; }
         .ft-mapbar { display: flex; gap: .6rem; flex-wrap: wrap; }
+        /* Same trap as ftWalk above: the flex beats [hidden], so the buttons
+           would sit there while the consent panel is still asking. */
+        #ftMapbar[hidden] { display: none !important; }
+        /* THE SLIDESHOW. One photograph at a time, big enough to recognise the
+           building from across a street, which is the job: a walker looks up
+           from the phone and knows they are at the right door. Real photographs
+           from Wikimedia Commons, never generated ones, for the same reason the
+           gallery uses real ones. */
+        .ft-show { position: relative; margin: 1.2rem 0 1.6rem; border-radius: 12px;
+                   overflow: hidden; background: #f1efe8; }
+        .ft-show img { display: block; width: 100%; height: 300px; object-fit: cover; }
+        .ft-show-cap { position: absolute; left: 0; right: 0; bottom: 0;
+                       background: linear-gradient(transparent, rgba(11,8,9,.82));
+                       color: #fff; padding: 2.2rem .9rem .7rem; font-size: .95rem; }
+        .ft-show-cap b { font-weight: 800; }
+        /* Sixth time: modern.css has button:not(...) eight deep with !important,
+           and a class cannot outrank eight :not() clauses. An id can, so the
+           whole look lives on the ids or the arrows come out as bare glyphs. */
+        #ftPrev, #ftNext { position: absolute !important; top: 50% !important;
+                       transform: translateY(-50%) !important;
+                       width: 44px !important; height: 44px !important;
+                       min-width: 0 !important; border-radius: 50% !important;
+                       border: 0 !important; background: rgba(255,255,255,.92) !important;
+                       box-shadow: 0 1px 4px rgba(11,8,9,.3) !important;
+                       color: #14110c !important; font-size: 1.3rem !important;
+                       line-height: 1 !important; text-decoration: none !important;
+                       cursor: pointer !important; padding: 0 !important;
+                       display: flex !important; align-items: center;
+                       justify-content: center; }
+        #ftPrev { left: .6rem !important; } #ftNext { right: .6rem !important; }
+        .ft-dots { display: flex; gap: .3rem; justify-content: center; margin: .5rem 0 0;
+                   flex-wrap: wrap; }
+        .ft-dots span { width: 7px; height: 7px; border-radius: 50%; background: #d3d3da;
+                        cursor: pointer; }
+        .ft-dots span.on { background: #1f3a5f; }
+        @media (max-width: 640px) { .ft-show img { height: 210px; } }
+        /* THE CONSENT PANEL. Location is the one thing on this site that can
+           follow a person, so it is asked for in words before the browser asks
+           in a dialog, and what happens to it is stated plainly. */
+        .ft-consent { border: 1px solid #d3d3da; border-left: 3px solid #1f3a5f;
+                      padding: .9rem 1.1rem; margin: .8rem 0; }
+        .ft-consent h4 { margin: 0 0 .4rem; font-size: .98rem; font-weight: 800; color: #14110c; }
+        .ft-consent ul { margin: .4rem 0 .7rem; padding-left: 1.1rem; color: #33302a;
+                         font-size: .93rem; }
+        .ft-consent li { margin: .2rem 0; }
+        .ft-consent .row { display: flex; gap: .5rem; flex-wrap: wrap; }
+        #ftAgree { background: #1f3a5f !important; color: #fff !important; }
+        .ft-print { font-size: .85rem; color: #6b655b; margin: .5rem 0 0; }
         #ftFollow, #ftEdit { font: inherit !important; font-weight: 700 !important; cursor: pointer;
                   border: 1px solid #1f3a5f !important; padding: .65rem 1rem !important;
                   min-height: 44px; border-radius: 6px !important; flex: 1 1 8rem;
@@ -156,11 +211,17 @@
         <div class="ft-truth" id="ftTruth">Measuring the walk…</div>
 
         <div class="ft-audio" id="ftAudio" hidden>
-            <audio controls preload="none" id="ftPlayer">
-                <source src="/media/audio/trail-freedom-yiki.mp3" type="audio/mpeg">
-            </audio>
+            <audio controls preload="none" id="ftPlayer"></audio>
             <p class="ft-note">Yiki, on what the trail is and how to walk it.</p>
         </div>
+
+        <div class="ft-show" id="ftShow" hidden>
+            <img id="ftShowImg" alt="">
+            <button class="ft-show-nav" id="ftPrev" aria-label="Previous stop">&#8249;</button>
+            <button class="ft-show-nav" id="ftNext" aria-label="Next stop">&#8250;</button>
+            <div class="ft-show-cap" id="ftShowCap"></div>
+        </div>
+        <div class="ft-dots" id="ftDots"></div>
 
         <div class="ft-pick">
             <button id="ftAll" aria-pressed="true">All sixteen</button>
@@ -175,10 +236,27 @@
             <div id="ftConfirm" hidden>
                 <p class="ft-loc">Your route is locked. Share your location and the page itself becomes
                    the map, moving with you, while you read and play each stop over it.</p>
-                <div class="ft-mapbar">
+                <div class="ft-consent" id="ftConsent">
+                    <h4>Before the map follows you</h4>
+                    <ul>
+                        <li>Your position is read by your own browser and drawn on the map
+                            in front of you.</li>
+                        <li>It is <b>never sent to us</b>. No position leaves this phone.</li>
+                        <li>Your footprints are kept in this browser so you can see the walk
+                            you did, and you can erase them at any time.</li>
+                        <li>Close the page and the following stops.</li>
+                    </ul>
+                    <div class="row">
+                        <button id="ftAgree">I agree, follow me</button>
+                        <button id="ftDecline">No thanks</button>
+                    </div>
+                </div>
+                <div class="ft-mapbar" id="ftMapbar" hidden>
                     <button id="ftFollow" aria-pressed="false">Follow me with the map</button>
                     <button id="ftEdit">Edit the stops</button>
+                    <button id="ftForget">Erase my footprints</button>
                 </div>
+                <p class="ft-print" id="ftPrints"></p>
                 <p class="ft-loc" id="ftLoc"></p>
             </div>
         </div>
@@ -326,6 +404,22 @@
                 fmt(trail.walk_min_total + trail.inside_min_total) +
                 " altogether, so pick your version below.";
             render();
+            buildShow();                 // the photographs, once the stops exist
+            // Somebody who already said yes should not be asked again every
+            // visit; somebody who said no should not be nagged.
+            try {
+                var c = localStorage.getItem(CONSENT_KEY);
+                if (c === "yes") { document.getElementById("ftConsent").hidden = true;
+                                   document.getElementById("ftMapbar").hidden = false;
+                                   paintPrints(); }
+                else if (c === "no") {
+                    // No is remembered and nothing follows them. The buttons stay
+                    // reachable so changing their mind is possible, and tapping
+                    // follow puts the same question back rather than starting.
+                    document.getElementById("ftConsent").hidden = true;
+                    document.getElementById("ftMapbar").hidden = false;
+                }
+            } catch (e) {}
         })
         .catch(function () {
             document.getElementById("ftTruth").textContent =
@@ -395,7 +489,13 @@
         routeLayer.clearLayers();
         var kept = selected();
         var pts = kept.map(function (s) { return [s.lat, s.lon]; });
-        if (pts.length > 1) L.polyline(pts, { color: "#12305b", weight: 7, opacity: 1 }).addTo(routeLayer);
+        if (pts.length > 1) {
+            // A pale casing under the navy keeps the line legible over grey
+            // streets, green parks and water without darkening the line itself.
+            // Both run bold, so the route reads at a glance.
+            L.polyline(pts, { color: "#fff", weight: 12, opacity: .9 }).addTo(routeLayer);
+            L.polyline(pts, { color: "#12305b", weight: 6, opacity: 1 }).addTo(routeLayer);
+        }
         // Quiet dots at the stops, not numbered pins: the numbers already live
         // in the list, and a second set on the backdrop only fights the words.
         kept.forEach(function (s) {
@@ -431,12 +531,17 @@
     }
     function toggleFollow() {
         if (followId !== null) { stopFollow("The map is off. Your route stays locked."); return; }
+        if (!hasConsent()) {                       // the gate, not a formality
+            document.getElementById("ftConsent").hidden = false;
+            document.getElementById("ftMapbar").hidden = true;
+            return;
+        }
         if (!navigator.geolocation) {
             document.getElementById("ftLoc").textContent = "This browser cannot share a location."; return;
         }
         document.getElementById("ftLoc").textContent = "Asking to use your location…";
-        // The browser's own permission prompt is the consent. Only once it is
-        // granted and a first fix arrives does the map appear.
+        // Consent was asked in words above. The browser prompt is only the switch
+        // that follows it, and the map appears once a first fix arrives.
         followId = navigator.geolocation.watchPosition(function (pos) {
             var lat = pos.coords.latitude, lon = pos.coords.longitude, acc = Math.round(pos.coords.accuracy || 0);
             var mini = document.getElementById("ftMini");
@@ -444,6 +549,7 @@
                 mini.hidden = false;
                 document.getElementById("ftMiniClose").hidden = false;
                 buildMap();
+                drawPrints();                        // last walk's prints, if any
                 var b = document.getElementById("ftFollow");
                 b.setAttribute("aria-pressed", "true"); b.textContent = "Put the map away";
                 setTimeout(function () { map.invalidateSize(); map.setView([lat, lon], 15); }, 60);
@@ -452,6 +558,7 @@
                 youMarker = L.marker([lat, lon], { icon: L.divIcon({ className: "", iconSize: [22, 22],
                     iconAnchor: [11, 11], html: '<div class="ft-you"></div>' }) }).addTo(map);
             } else { youMarker.setLatLng([lat, lon]); }
+            addPrint(lat, lon);                      // the trail you actually walked
             if (map) map.panTo([lat, lon]);          // the map stays with you
             document.getElementById("ftLoc").textContent =
                 "The map is moving with you, within " + acc + " m.";
@@ -462,6 +569,106 @@
         }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
     }
 
+    // ---------------------------------------------------------------- slideshow
+    // One photograph per stop, in walking order, so a reader can see the whole
+    // trail before deciding and recognise each building when they reach it.
+    var showI = 0, showList = [];
+    function paintShow() {
+        if (!showList.length) return;
+        var st = showList[showI];
+        document.getElementById("ftShowImg").src = st.photos[0];
+        document.getElementById("ftShowImg").alt = st.name;
+        document.getElementById("ftShowCap").innerHTML =
+            "<b>" + st.n + ". " + st.name + "</b>";
+        [].forEach.call(document.getElementById("ftDots").children, function (d, k) {
+            d.className = (k === showI) ? "on" : "";
+        });
+    }
+    function buildShow() {
+        showList = trail.stops.filter(function (s) { return (s.photos || []).length; });
+        if (!showList.length) return;
+        var dots = document.getElementById("ftDots");
+        dots.innerHTML = showList.map(function (s, k) {
+            return '<span title="' + s.name.replace(/"/g, "") + '" data-k="' + k + '"></span>';
+        }).join("");
+        dots.addEventListener("click", function (e) {
+            var d = e.target.closest("span[data-k]"); if (!d) return;
+            showI = +d.dataset.k; paintShow();
+        });
+        document.getElementById("ftPrev").addEventListener("click", function () {
+            showI = (showI - 1 + showList.length) % showList.length; paintShow(); });
+        document.getElementById("ftNext").addEventListener("click", function () {
+            showI = (showI + 1) % showList.length; paintShow(); });
+        document.getElementById("ftShow").hidden = false;
+        paintShow();
+    }
+
+    // ---------------------------------------------------------------- consent
+    // The browser's own permission dialog is not consent, it is a switch. It
+    // says "wants to know your location" and nothing about what happens next.
+    // Location is the one thing here that can follow a person, so we say in
+    // words what we do with it BEFORE the dialog appears, and the honest answer
+    // is that it never leaves the phone. [SEAN "ask consent from people whoever
+    // uses the trail, this could be the key to foot print"]
+    var CONSENT_KEY = "ps_trail_consent", PRINTS_KEY = "ps_trail_prints";
+    function hasConsent() {
+        try { return localStorage.getItem(CONSENT_KEY) === "yes"; } catch (e) { return false; }
+    }
+    function showMapbar() {
+        document.getElementById("ftConsent").hidden = true;
+        document.getElementById("ftMapbar").hidden = false;
+        paintPrints();
+    }
+    document.getElementById("ftAgree").addEventListener("click", function () {
+        try { localStorage.setItem(CONSENT_KEY, "yes"); } catch (e) {}
+        showMapbar();
+        toggleFollow();                       // they just asked for it, so start
+    });
+    document.getElementById("ftDecline").addEventListener("click", function () {
+        try { localStorage.setItem(CONSENT_KEY, "no"); } catch (e) {}
+        document.getElementById("ftConsent").hidden = true;
+        document.getElementById("ftLoc").textContent =
+            "No map following. Everything else on this page works exactly the same.";
+    });
+
+    // -------------------------------------------------------------- footprints
+    // Kept in this browser and nowhere else, which is what the consent panel
+    // promises and what the privacy policy already says about the walking guide.
+    var prints = [];
+    try { prints = JSON.parse(localStorage.getItem(PRINTS_KEY) || "[]"); } catch (e) { prints = []; }
+    function savePrints() {
+        try { localStorage.setItem(PRINTS_KEY, JSON.stringify(prints.slice(-500))); } catch (e) {}
+    }
+    function paintPrints() {
+        var el = document.getElementById("ftPrints");
+        if (!el) return;
+        el.textContent = prints.length
+            ? prints.length + " footprints saved on this phone."
+            : "";
+    }
+    function addPrint(lat, lon) {
+        var last = prints[prints.length - 1];
+        // one print every twenty five metres or so, not one per fix, or the map
+        // fills with a hundred dots standing at a traffic light
+        if (last && Math.abs(last[0] - lat) < 0.00022 && Math.abs(last[1] - lon) < 0.00028) return;
+        prints.push([+lat.toFixed(5), +lon.toFixed(5)]);
+        savePrints(); paintPrints(); drawPrints();
+    }
+    var printLayer = null;
+    function drawPrints() {
+        if (!map) return;
+        if (printLayer) { map.removeLayer(printLayer); printLayer = null; }
+        if (!prints.length) return;
+        printLayer = L.layerGroup(prints.map(function (p, i) {
+            return L.circleMarker(p, { radius: 3, weight: 1.5, color: "#fff", fillColor: "#1f3a5f",
+                                       fillOpacity: i === prints.length - 1 ? 0.9 : 0.42 });
+        })).addTo(map);
+    }
+    document.getElementById("ftForget").addEventListener("click", function () {
+        prints = []; savePrints(); drawPrints(); paintPrints();
+        document.getElementById("ftLoc").textContent = "Your footprints are erased.";
+    });
+
     document.getElementById("ftWalk").addEventListener("click", openWalk);
     document.getElementById("ftEdit").addEventListener("click", editWalk);
     document.getElementById("ftFollow").addEventListener("click", toggleFollow);
@@ -471,9 +678,33 @@
 
 
     // Yiki appears when she has been recorded, never as a dead player.
-    fetch("/media/audio/trail-freedom-yiki.mp3", { method: "HEAD" })
-        .then(function (r) { if (r.ok) document.getElementById("ftAudio").hidden = false; })
-        .catch(function () {});
+    // JASON WALKS IT IN ENGLISH, YIKI WALKS IT IN CHINESE. [SEAN]
+    //
+    // Each reads in the language their voice was made for: Yiki is a Mandarin
+    // narrator, so Chinese is the language she does not have an accent in, and
+    // Jason is the reverse. The file is chosen from the reader's own language
+    // before anything is shown, so the player never appears for a recording
+    // that does not exist and never offers the wrong voice.
+    (function () {
+        var l = (document.documentElement.lang || "en").toLowerCase().slice(0, 2);
+        try { l = (localStorage.getItem("ps_lang") || l).toLowerCase().slice(0, 2); } catch (e) {}
+        var files = l === "zh"
+            ? ["/media/audio/trail-freedom.zh.mp3", "/media/audio/trail-freedom.mp3"]
+            : ["/media/audio/trail-freedom.mp3"];
+        (function tryNext(i) {
+            if (i >= files.length) return;
+            fetch(files[i], { method: "HEAD" }).then(function (r) {
+                if (!r.ok) return tryNext(i + 1);
+                var a = document.getElementById("ftPlayer");
+                a.src = files[i];
+                document.getElementById("ftAudio").hidden = false;
+                var note = document.querySelector(".ft-audio .ft-note");
+                if (note) note.textContent = (files[i].indexOf(".zh.") > -1)
+                    ? "Yiki, in Chinese. Seven minutes on the whole walk."
+                    : "Jason, five minutes on the whole walk.";
+            }).catch(function () { tryNext(i + 1); });
+        })(0);
+    })();
 })();
 </script>
 <script src="/i18n.js"></script>
