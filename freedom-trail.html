@@ -90,34 +90,37 @@
                   display: inline-flex !important; align-items: center; justify-content: center; }
         /* [hidden] must beat the flex display above, or the locked button lingers. */
         #ftWalk[hidden] { display: none !important; }
-        /* The map hung like a mirror on the wall of the page: a framed panel in
-           the top corner, always in view, with a metal surround, a faint glass
-           sheen across it, and a deep shadow so it reads as mounted, not
-           floating. Fixed, so it stays on the wall as the page scrolls past. */
-        #ftMini { position: fixed; top: 78px; right: 14px; z-index: 900; width: 190px;
-                  padding: 8px; border-radius: 16px;
-                  background: linear-gradient(150deg, #efece3 0%, #c3bdae 30%, #918c7d 54%,
-                              #d3cdc0 76%, #a9a294 100%);
-                  box-shadow: 0 22px 44px -14px rgba(20,17,12,.55), 0 4px 10px rgba(20,17,12,.30),
-                              inset 0 1px 0 rgba(255,255,255,.75), inset 0 -1px 0 rgba(0,0,0,.28); }
-        .ft-mirror { position: relative; border-radius: 9px; overflow: hidden;
-                     box-shadow: inset 0 0 0 1px rgba(0,0,0,.30), inset 0 0 16px rgba(0,0,0,.20); }
-        #ftMap { width: 100%; height: 172px; }
-        /* the reflection: a diagonal band of light across the glass */
+        /* A small pane of glass set into the page, top corner. No frame: a
+           frosted, translucent body that blurs whatever is behind it, a
+           hairline glass edge, a soft shadow. It fuses with the site instead of
+           sitting on top, so where it overlaps the text neither bothers the
+           other. Fixed, so the glass follows as the page scrolls. */
+        #ftMini { position: fixed; top: 76px; right: 14px; z-index: 900; width: 172px;
+                  border-radius: 15px; overflow: hidden;
+                  background: rgba(247,244,236,.34);
+                  -webkit-backdrop-filter: blur(9px) saturate(1.2);
+                  backdrop-filter: blur(9px) saturate(1.2);
+                  border: 1px solid rgba(255,255,255,.5);
+                  box-shadow: 0 14px 36px -10px rgba(20,17,12,.30),
+                              inset 0 1px 0 rgba(255,255,255,.65); }
+        .ft-mirror { position: relative; }
+        /* the map itself, a touch see-through so it reads as glass, and its own
+           background transparent so the frosted page shows where no tile is */
+        #ftMap { width: 100%; height: 150px; opacity: .9; background: transparent; }
+        /* the sheen of light that says glass */
         .ft-glass { position: absolute; inset: 0; z-index: 450; pointer-events: none;
-                    background: linear-gradient(125deg, rgba(255,255,255,.32) 0%,
-                                rgba(255,255,255,.06) 20%, rgba(255,255,255,0) 44%,
-                                rgba(255,255,255,0) 72%, rgba(255,255,255,.14) 100%); }
-        .ft-mini-cap { position: absolute; left: 7px; top: 7px; z-index: 460; pointer-events: none;
-                       font-size: .6rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
-                       color: #fff; background: rgba(20,17,12,.55); padding: .1rem .45rem; border-radius: 999px; }
+                    background: linear-gradient(130deg, rgba(255,255,255,.30) 0%,
+                                rgba(255,255,255,.04) 30%, rgba(255,255,255,0) 55%,
+                                rgba(255,255,255,0) 80%, rgba(255,255,255,.12) 100%); }
         #ftMiniClose { position: absolute; top: 5px; right: 5px; z-index: 470;
-                       width: 26px; height: 26px; border-radius: 50% !important;
-                       font: inherit !important; font-size: .8rem !important; line-height: 1; cursor: pointer;
-                       border: none !important; background: rgba(20,17,12,.55) !important; color: #fff !important;
+                       width: 24px; height: 24px; border-radius: 50% !important;
+                       font: inherit !important; font-size: .72rem !important; line-height: 1; cursor: pointer;
+                       border: 1px solid rgba(255,255,255,.5) !important;
+                       background: rgba(20,17,12,.38) !important; color: #fff !important;
+                       -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
                        padding: 0 !important; min-height: 0 !important; display: flex !important;
                        align-items: center; justify-content: center; }
-        @media (min-width: 700px) { #ftMini { width: 244px; } #ftMap { height: 208px; } }
+        @media (min-width: 700px) { #ftMini { width: 208px; } #ftMap { height: 176px; } }
         .ft-mapbar { display: flex; gap: .6rem; flex-wrap: wrap; }
         #ftFollow, #ftEdit { font: inherit !important; font-weight: 700 !important; cursor: pointer;
                   border: 1px solid #1f3a5f !important; padding: .65rem 1rem !important;
@@ -174,7 +177,6 @@
             <div class="ft-mirror">
                 <div id="ftMap"></div>
                 <div class="ft-glass" aria-hidden="true"></div>
-                <span class="ft-mini-cap">You on the trail</span>
                 <button id="ftMiniClose" aria-label="Put the map away">&#10005;</button>
             </div>
         </div>
