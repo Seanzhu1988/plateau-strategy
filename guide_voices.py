@@ -75,16 +75,18 @@ GUIDES = {
 # carries an accent. That is a choice, not an accident, and a gallery guide who
 # sounds like a person from somewhere is not obviously worse than one who
 # sounds like nowhere. He does the gallery and nothing else.
-# Jason walks the trail in English, Yiki walks it in Chinese. [SEAN]
+# Yiki walks the trail in English, Pangge walks it in Chinese. [SEAN]
 #
-# This is the arrangement the voices were always asking for. Yiki is Mingyao Ye,
-# a Mandarin narrator, so English was the language she had an accent in and
-# Chinese is the one she does not. Jason is an American narrator doing the
-# reverse. Each guide now reads in the language their voice was made for, and
-# the site sounds like two people rather than one person straining.
+# The previous arrangement had Yiki on the Chinese, reasoned from her being
+# listed as a Mandarin narrator. Sean listened and heard her Chinese as
+# Americanized, and the library agrees with his ear: her entry, Mingyao Ye
+# "Sad and Broken Hearted", is an English-market voice, so English is the
+# language she does not strain in. Pangge is a native Mandarin radio voice, so
+# the Chinese goes home to him. A description of a voice has never once
+# predicted how it sounds; his ear recast it, and this file records the ruling.
 BY_LANGUAGE = {
     "guide":   {"en": "jason",  "zh": "pangge"},
-    "trail":   {"en": "jason",  "zh": "yiki"},
+    "trail":   {"en": "yiki",   "zh": "pangge"},
     "gallery": {"en": "adrian", "zh": "adrian"},
 }
 

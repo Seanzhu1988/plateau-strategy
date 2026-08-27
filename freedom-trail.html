@@ -34,11 +34,6 @@
         .ft-sum { font-size: .95rem; color: #4a453d; margin: 0 0 1.4rem; }
         .ft-stop { display: flex; gap: .9rem; padding: .9rem 0; border-top: 1px solid #e6e6ea; }
         .ft-stop.off { opacity: .38; }
-        .ft-n[data-show] { cursor: pointer; }
-        /* The stop the slideshow is on, marked in the list, so the photograph
-           and the words are never describing two different places. */
-        .ft-stop.showing { background: #f4f6fa; border-radius: 10px; }
-        .ft-stop.showing .ft-n { box-shadow: 0 0 0 3px #c8d4e6; }
         .ft-n { flex: 0 0 30px; height: 30px; border-radius: 50%; background: #1f3a5f; color: #fff;
                 font-weight: 800; font-size: .85rem; display: flex; align-items: center;
                 justify-content: center; margin-top: .15rem; }
@@ -187,39 +182,6 @@
         /* Same trap as ftWalk above: the flex beats [hidden], so the buttons
            would sit there while the consent panel is still asking. */
         #ftMapbar[hidden] { display: none !important; }
-        /* THE SLIDESHOW. One photograph at a time, big enough to recognise the
-           building from across a street, which is the job: a walker looks up
-           from the phone and knows they are at the right door. Real photographs
-           from Wikimedia Commons, never generated ones, for the same reason the
-           gallery uses real ones. */
-        .ft-show { position: relative; margin: 1.2rem 0 1.6rem; border-radius: 12px;
-                   overflow: hidden; background: #f1efe8; }
-        .ft-show img { display: block; width: 100%; height: 300px; object-fit: cover; }
-        .ft-show-cap { position: absolute; left: 0; right: 0; bottom: 0;
-                       background: linear-gradient(transparent, rgba(11,8,9,.82));
-                       color: #fff; padding: 2.2rem .9rem .7rem; font-size: .95rem; }
-        .ft-show-cap b { font-weight: 800; }
-        /* Sixth time: modern.css has button:not(...) eight deep with !important,
-           and a class cannot outrank eight :not() clauses. An id can, so the
-           whole look lives on the ids or the arrows come out as bare glyphs. */
-        #ftPrev, #ftNext { position: absolute !important; top: 50% !important;
-                       transform: translateY(-50%) !important;
-                       width: 44px !important; height: 44px !important;
-                       min-width: 0 !important; border-radius: 50% !important;
-                       border: 0 !important; background: rgba(255,255,255,.92) !important;
-                       box-shadow: 0 1px 4px rgba(11,8,9,.3) !important;
-                       color: #14110c !important; font-size: 1.3rem !important;
-                       line-height: 1 !important; text-decoration: none !important;
-                       cursor: pointer !important; padding: 0 !important;
-                       display: flex !important; align-items: center;
-                       justify-content: center; }
-        #ftPrev { left: .6rem !important; } #ftNext { right: .6rem !important; }
-        .ft-dots { display: flex; gap: .3rem; justify-content: center; margin: .5rem 0 0;
-                   flex-wrap: wrap; }
-        .ft-dots span { width: 7px; height: 7px; border-radius: 50%; background: #d3d3da;
-                        cursor: pointer; }
-        .ft-dots span.on { background: #1f3a5f; }
-        @media (max-width: 640px) { .ft-show img { height: 210px; } }
         /* THE CONSENT PANEL. Location is the one thing on this site that can
            follow a person, so it is asked for in words before the browser asks
            in a dialog, and what happens to it is stated plainly. */
@@ -286,18 +248,11 @@
             <audio controls preload="none" id="ftPlayer"></audio>
             <p class="ft-note" id="ftNote"></p>
             <div class="ft-voices" id="ftVoices" hidden>
-                <button id="ftVoiceEn" aria-pressed="true">Jason, in English</button>
-                <button id="ftVoiceZh" aria-pressed="false">Yiki, &#20013;&#25991;</button>
+                <button id="ftVoiceEn" aria-pressed="true">In English</button>
+                <button id="ftVoiceZh" aria-pressed="false">&#20013;&#25991;</button>
             </div>
         </div>
 
-        <div class="ft-show" id="ftShow" hidden>
-            <img id="ftShowImg" alt="">
-            <button class="ft-show-nav" id="ftPrev" aria-label="Previous stop">&#8249;</button>
-            <button class="ft-show-nav" id="ftNext" aria-label="Next stop">&#8250;</button>
-            <div class="ft-show-cap" id="ftShowCap"></div>
-        </div>
-        <div class="ft-dots" id="ftDots"></div>
 
         <div class="ft-pick">
             <button id="ftAll" aria-pressed="true">All sixteen</button>
@@ -374,17 +329,19 @@
     }
 
     // Who narrates the trail, and in which file, depends on the language the
-    // reader is on: Jason walks it in English, Yiki walks it in Chinese, the
-    // same arrangement as the rest of the site. A language with no trail voice
-    // recorded gets no play button rather than someone else's voice.
+    // reader is on: Yiki walks it in English, Pangge walks it in Chinese.
+    // [SEAN recast it by ear: Yiki is an English-market voice, so English is
+    // the language she does not strain in; Pangge is native Mandarin radio.]
+    // A language with no trail voice recorded gets no play button rather than
+    // someone else's voice.
     function pageLang() {
         var l = document.documentElement.lang || "en";
         try { l = localStorage.getItem("ps_lang") || l; } catch (e) {}
         return (l || "en").toLowerCase().slice(0, 2);
     }
     function trailGuide(lang) {
-        if (lang === "en") return { name: "Jason", suffix: "" };
-        if (lang === "zh") return { name: "Yiki", suffix: ".zh" };
+        if (lang === "en") return { name: "Yiki", suffix: "" };
+        if (lang === "zh") return { name: "Pangge", suffix: ".zh" };
         return null;                    // es, ko, vi: no trail voice yet
     }
 
@@ -430,8 +387,9 @@
                        (fallback ? ' data-fallback="' + fallback + '"' : '') +
                        '>Play</button></div>';
             }
-            // Yiki's written aside stays as text. Her name is dropped only when
-            // she is also the one narrating aloud, so it never reads twice.
+            // Yiki's written aside stays as text. Her name chip is dropped when
+            // she is also the one narrating aloud (the English page, after the
+            // recast), so it never reads twice.
             var note = s.yiki
                 ? '<div class="ft-yiki">' +
                   ((G && G.name === "Yiki") ? "" : '<span class="ft-guide">Yiki</span>') +
@@ -441,7 +399,7 @@
                    '<label class="ft-inc"><input type="checkbox" class="ft-cb" data-n="' + s.n + '"' +
                      (on ? ' checked' : '') + (locked ? ' disabled' : '') +
                      ' aria-label="Include ' + s.name + '"></label>' +
-                   '<div class="ft-n" data-show="' + s.n + '" title="Show this one">' + s.n + '</div><div class="ft-b">' +
+                   '<div class="ft-n">' + s.n + '</div><div class="ft-b">' +
                    '<div class="ft-name">' + s.name + '</div>' +
                    narr +
                    '<div class="ft-meta">' + meta + '</div>' +
@@ -459,7 +417,6 @@
                    note +
                    '</div></div>';
         }).join("");
-        if (typeof markShowing === "function") markShowing();   // the rebuild wipes it
         if (typeof feedMiniShows === "function") feedMiniShows(); // fresh imgs, fresh queue
         document.getElementById("ftAll").setAttribute("aria-pressed", mode === "all");
         document.getElementById("ftHalf").setAttribute("aria-pressed", mode === "half");
@@ -521,7 +478,14 @@
                 var fb = b.dataset.fallback || "";
                 if (!fb) return drop();
                 head(fb, function (ok2) {
-                    if (ok2) { b.dataset.audio = fb; } else { drop(); }
+                    if (!ok2) return drop();
+                    b.dataset.audio = fb;
+                    // The cards are Jason's voice. The label follows the audio,
+                    // never the roster: a name over someone else's voice is the
+                    // exact mislabeling this page was just cleaned of.
+                    var chip = (b.closest(".ft-byline") || {}).querySelector
+                        ? b.closest(".ft-byline").querySelector(".ft-guide") : null;
+                    if (chip) chip.textContent = "Jason";
                 });
             });
         });
@@ -541,7 +505,7 @@
                 fmt(trail.walk_min_total + trail.inside_min_total) +
                 " altogether, so pick your version below.";
             render();
-            buildShow();                 // the photographs, once the stops exist
+            wireMiniShows();             // the stop pictures, once the stops exist
             // Switching language re-reads the stops so the guide who speaks, and
             // the file that plays, follow the reader: Jason in English, Yiki in
             // Chinese.
@@ -737,49 +701,20 @@
         })(0);
     }
 
-    // ---------------------------------------------------------------- slideshow
-    // One photograph per stop, in walking order, so a reader can see the whole
-    // trail before deciding and recognise each building when they reach it.
-    var showI = 0, showList = [];
-    function paintShow() {
-        if (!showList.length) return;
-        var st = showList[showI];
-        document.getElementById("ftShowImg").src = pic(st.photos[0], 1200);
-        document.getElementById("ftShowImg").alt = st.name;
-        document.getElementById("ftShowCap").innerHTML =
-            "<b>" + st.n + ". " + st.name + "</b>";
-        [].forEach.call(document.getElementById("ftDots").children, function (d, k) {
-            d.className = (k === showI) ? "on" : "";
-        });
-        markShowing();
-    }
-    // Mark the stop the slideshow is on. Called from paintShow, so arrows, dots
-    // and taps all keep the list in step without each having to remember to.
-    function markShowing() {
-        var cur = showList[showI]; if (!cur) return;
-        document.querySelectorAll("#ftStops .ft-stop").forEach(function (el) {
-            var n = el.querySelector("[data-show]");
-            el.classList.toggle("showing", !!n && n.dataset.show === String(cur.n));
-        });
-    }
-    function buildShow() {
-        showList = trail.stops.filter(function (s) { return (s.photos || []).length; });
-        if (!showList.length) return;
-        var dots = document.getElementById("ftDots");
-        dots.innerHTML = showList.map(function (s, k) {
-            return '<span title="' + s.name.replace(/"/g, "") + '" data-k="' + k + '"></span>';
-        }).join("");
-        // Tapping a stop's number brings its photograph up. The list and the
-        // slideshow are two views of one thing, so they hold one position
-        // between them rather than each keeping its own. [SEAN "i want slide
-        // show to be aligned to each of 16"]
-        // Each stop's own pictures. One delegated handler for all sixteen, and
-        // the position lives on the element rather than in a variable, so a
-        // list rebuild cannot leave sixteen counters pointing at the wrong
-        // photographs.
+    // ------------------------------------------------------- stop pictures
+    // The big overview slideshow that used to sit at the top is gone. [SEAN
+    // "the very top slide show became unnecessary take it off"] He is right:
+    // once every stop carries its own pictures beside its own words, a second
+    // copy of the same photographs above them is repetition, not orientation.
+    // What remains is the per-stop wiring: one delegated handler for all
+    // sixteen, with the position living on the element itself so a list
+    // rebuild cannot leave sixteen counters pointing at the wrong photographs.
+    var miniWired = false;
+    function wireMiniShows() {
+        if (miniWired) return;                       // render() runs again on every toggle
+        miniWired = true;
         document.getElementById("ftStops").addEventListener("click", function (e) {
             var nav = e.target.closest(".ft-mini-nav"); if (!nav) return;
-            e.stopPropagation();                       // not a request to move the big one
             var box = nav.closest(".ft-mini-show");
             var stop = (trail.stops || []).find(function (st) {
                 return String(st.n) === box.dataset.stop; });
@@ -791,23 +726,6 @@
             im.src = pic(pics[at], 560);
             box.querySelector(".ft-mini-count").textContent = (at + 1) + "/" + pics.length;
         });
-        document.getElementById("ftStops").addEventListener("click", function (e) {
-            var n = e.target.closest("[data-show]"); if (!n) return;
-            var k = showList.findIndex(function (st) { return String(st.n) === n.dataset.show; });
-            if (k < 0) return;                       // a stop with no photograph
-            showI = k; paintShow();
-            document.getElementById("ftShow").scrollIntoView({ behavior: "smooth", block: "center" });
-        });
-        dots.addEventListener("click", function (e) {
-            var d = e.target.closest("span[data-k]"); if (!d) return;
-            showI = +d.dataset.k; paintShow();
-        });
-        document.getElementById("ftPrev").addEventListener("click", function () {
-            showI = (showI - 1 + showList.length) % showList.length; paintShow(); });
-        document.getElementById("ftNext").addEventListener("click", function () {
-            showI = (showI + 1) % showList.length; paintShow(); });
-        document.getElementById("ftShow").hidden = false;
-        paintShow();
     }
 
     // ---------------------------------------------------------------- consent
@@ -968,12 +886,43 @@
     // different acts. The one matching the reader is loaded for them, the other
     // is one tap away, and a voice not yet recorded never gets a button.
     (function () {
+        // The names come from the recorder's own ledger, not from the roster.
+        // The roster says who records NEXT; the ledger says whose voice is in
+        // the file on disk, and those disagree exactly while a recast waits
+        // for its recording run. A name over someone else's voice is the
+        // mislabeling this page was cleaned of twice, so an unledgered file
+        // gets no name at all rather than a guessed one. When the new
+        // recordings land, their ledger rows put the right names up without
+        // anyone touching this page.
+        var VOICE_NAMES = { "6nukEV6JAgCcOkdtH5FM": "Jason",
+                            "JZLpE3AGwpKYZI2X65hN": "Yiki",
+                            "hFamrilbAE6WDMtWgKvu": "Pangge",
+                            "agczkAUlHLowaNnL72Cc": "Adrian" };
         var VOICES = {
             en: { file: "/media/audio/trail-freedom.mp3",
-                  note: "Jason, five minutes on the whole walk.", btn: "ftVoiceEn" },
+                  note: "The whole walk, in English.", btn: "ftVoiceEn",
+                  label: "In English" },
             zh: { file: "/media/audio/trail-freedom.zh.mp3",
-                  note: "Yiki, in Chinese. Seven minutes on the whole walk.", btn: "ftVoiceZh" }
+                  note: "\u4e2d\u6587\uff0c\u5168\u7a0b\u3002", btn: "ftVoiceZh",
+                  label: "\u4e2d\u6587" }
         };
+        fetch("/media/audio/_recorded.json", { cache: "no-store" })
+            .then(function (r) { return r.ok ? r.json() : {}; })
+            .then(function (m) {
+                Object.keys(VOICES).forEach(function (k) {
+                    var row = m[VOICES[k].file.split("/").pop()];
+                    var who = row && VOICE_NAMES[row.voice];
+                    if (!who) return;
+                    VOICES[k].note = who + (k === "en"
+                        ? ", the whole walk in English." : "\uff0c\u4e2d\u6587\u5168\u7a0b\u3002");
+                    VOICES[k].label = who + (k === "en" ? ", in English" : "\uff0c\u4e2d\u6587");
+                    var btn = document.getElementById(VOICES[k].btn);
+                    if (btn) btn.textContent = VOICES[k].label;
+                    var a = document.getElementById("ftPlayer");
+                    if (a && a.dataset.voice === k)
+                        document.getElementById("ftNote").textContent = VOICES[k].note;
+                });
+            }).catch(function () {});
         function lang() {
             var l = (document.documentElement.lang || "en").toLowerCase().slice(0, 2);
             try { l = (localStorage.getItem("ps_lang") || l).toLowerCase().slice(0, 2); } catch (e) {}

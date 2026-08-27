@@ -69,6 +69,18 @@ def out_path(n, lang):
     return os.path.join(OUTDIR, name)
 
 
+# The whole-walk overview rides the same run. It used to be recorded by hand,
+# which is how trail-freedom.mp3 ended up on disk with no manifest row, the
+# same unledgered disease the stop placeholders had. In here it gets a row
+# like everything else, so a change of words OR of voice makes it stale and
+# the next run remakes it without anyone having to remember.
+def overview_paths(lang):
+    script = os.path.join(BASE, "trail_scripts", "freedom-trail-%s.txt" % lang)
+    out = os.path.join(OUTDIR, "trail-freedom.mp3" if lang == "en"
+                       else "trail-freedom.%s.mp3" % lang)
+    return script, out
+
+
 def main():
     dry = "--dry" in sys.argv
     force = "--force" in sys.argv
@@ -89,16 +101,20 @@ def main():
 
     manifest = vg.load_manifest()
     have, todo, thin, missing = [], [], [], []
-    for n in range(1, STOPS + 1):
+    # item 0 is the overview; 1..16 are the stops. Labels print as "over" or
+    # the stop number, and the overview skips the five-minute floor because it
+    # is an introduction, not a stop guide.
+    for n in range(0, STOPS + 1):
+        sp = script_path(n, lang) if n else overview_paths(lang)[0]
         try:
-            text = open(script_path(n, lang), encoding="utf-8").read().strip()
+            text = open(sp, encoding="utf-8").read().strip()
         except FileNotFoundError:
             missing.append(n)
             continue
-        if lang == "en" and len(text.split()) < MIN_WORDS:
+        if n and lang == "en" and len(text.split()) < MIN_WORDS:
             thin.append((n, len(text.split())))
             continue
-        op = out_path(n, lang)
+        op = out_path(n, lang) if n else overview_paths(lang)[1]
         row = manifest.get(os.path.basename(op)) or {}
         # Record when missing, when the words or voice changed, or when a file is
         # on disk with no ledger row, that last one being the short placeholders
@@ -128,7 +144,7 @@ def main():
     print("Ready to record %d stop(s), %d characters. A paid ElevenLabs plan; "
           "the free tier is 10,000 characters a month." % (len(todo), chars))
     for n, t, _ in todo:
-        print("  stop %2d  %5d chars" % (n, len(t)))
+        print("  %s  %5d chars" % ("overview" if n == 0 else "stop %2d" % n, len(t)))
 
     if dry:
         return 0
@@ -149,7 +165,7 @@ def main():
             break
         if why:
             failed.append((n, why))
-            print("  failed  stop %2d  %s" % (n, why))
+            print("  failed  %s  %s" % ("overview" if n == 0 else "stop %2d" % n, why))
             continue
         with open(op, "wb") as f:
             f.write(audio)
@@ -157,7 +173,8 @@ def main():
                                           "words": len(text.split()), "chars": len(text)}
         vg.save_manifest(manifest)
         made.append(n)
-        print("  voiced  stop %2d  %6d bytes" % (n, len(audio)))
+        print("  voiced  %s  %6d bytes"
+              % ("overview" if n == 0 else "stop %2d" % n, len(audio)))
         time.sleep(vg.PAUSE_S)
 
     print("\nrecorded %d, failed %d." % (len(made), len(failed)))
