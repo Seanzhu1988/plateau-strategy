@@ -34,6 +34,11 @@
         .ft-sum { font-size: .95rem; color: #4a453d; margin: 0 0 1.4rem; }
         .ft-stop { display: flex; gap: .9rem; padding: .9rem 0; border-top: 1px solid #e6e6ea; }
         .ft-stop.off { opacity: .38; }
+        .ft-n[data-show] { cursor: pointer; }
+        /* The stop the slideshow is on, marked in the list, so the photograph
+           and the words are never describing two different places. */
+        .ft-stop.showing { background: #f4f6fa; border-radius: 10px; }
+        .ft-stop.showing .ft-n { box-shadow: 0 0 0 3px #c8d4e6; }
         .ft-n { flex: 0 0 30px; height: 30px; border-radius: 50%; background: #1f3a5f; color: #fff;
                 font-weight: 800; font-size: .85rem; display: flex; align-items: center;
                 justify-content: center; margin-top: .15rem; }
@@ -66,6 +71,19 @@
         .ft-audio { margin: 1.4rem 0; }
         .ft-audio audio { width: 100%; }
         .ft-note { font-size: .9rem; color: #6b655b; }
+        /* Both readings sit on the page. Picking a voice is not the same act as
+           changing the language of the whole site, and somebody who wants the
+           Chinese should not have to do the second to get the first. */
+        .ft-voices { display: flex; gap: .5rem; flex-wrap: wrap; margin: .5rem 0 0; }
+        #ftVoiceEn, #ftVoiceZh { font: inherit !important; font-size: .85rem !important;
+                   font-weight: 700 !important; cursor: pointer;
+                   border: 1px solid #d3d3da !important; border-radius: 999px !important;
+                   background: #fff !important; color: #1f3a5f !important;
+                   padding: .32rem .8rem !important; min-height: 0 !important; }
+        #ftVoiceEn[aria-pressed="true"], #ftVoiceZh[aria-pressed="true"] {
+                   background: #1f3a5f !important; color: #fff !important;
+                   border-color: #1f3a5f !important; }
+        #ftVoices[hidden] { display: none !important; }
         .ft-actions { margin: 1.8rem 0 0; display: flex; gap: .6rem; flex-wrap: wrap; }
         .ft-actions a {
             font: inherit !important; font-weight: 700 !important; cursor: pointer;
@@ -116,7 +134,13 @@
         #ftMap .leaflet-marker-pane { opacity: .98; }        /* route and dots, bold */
         .ft-wrap { position: relative; z-index: 1; }          /* the reading lives above the map */
         body > header { position: relative; z-index: 2; }
-        #ftMiniClose { position: fixed; bottom: 18px; right: 66px; z-index: 950; pointer-events: auto;
+        /* The map moved to the bottom-right corner, which is where the language
+           pill already lives, and at bottom:18px/right:66px this button landed
+           on top of it and covered the word. Moved to the map patch's own top
+           edge, which is empty, so the switcher stays readable and tappable.
+           The pill is the control Sean was already having trouble finding. */
+        #ftMiniClose { position: fixed; bottom: calc(min(56vw, 320px) - 34px); right: 12px;
+                       z-index: 950; pointer-events: auto;
                        width: 30px; height: 30px; border-radius: 50% !important;
                        font: inherit !important; font-size: .8rem !important; line-height: 1; cursor: pointer;
                        border: none !important; background: rgba(20,17,12,.5) !important; color: #fff !important;
@@ -189,6 +213,18 @@
         .ft-pin { background: #1f3a5f; color: #fff; width: 24px; height: 24px; border-radius: 50%;
                   display: flex; align-items: center; justify-content: center; font-weight: 800;
                   font-size: .72rem; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+        /* Direction. A dot says you were here, which the walker already knew;
+           an arrow says which way the walk goes, which is what somebody standing
+           at a corner actually needs. The white halo is the same idea as the
+           route's casing, so a small mark holds over parks, streets and water
+           without being drawn any heavier. Navy matched to the route. */
+        .ft-arrow { color: #12305b; font-weight: 900; line-height: 1;
+                    filter: drop-shadow(0 0 1.7px #fff) drop-shadow(0 0 1.7px #fff)
+                            drop-shadow(0 0 1.7px #fff);
+                    display: flex; align-items: center; justify-content: center; }
+        .ft-arrow.route { font-size: 16px; }
+        .ft-arrow.step  { font-size: 11px; opacity: .75; }
+        .ft-arrow.step.last { opacity: 1; font-size: 14px; }
         .ft-you { width: 14px; height: 14px; border-radius: 50%; background: #12a150;
                   border: 2px solid #fff;
                   box-shadow: 0 0 0 3px rgba(18,161,80,.4), 0 1px 4px rgba(0,0,0,.4); }
@@ -212,7 +248,11 @@
 
         <div class="ft-audio" id="ftAudio" hidden>
             <audio controls preload="none" id="ftPlayer"></audio>
-            <p class="ft-note">Yiki, on what the trail is and how to walk it.</p>
+            <p class="ft-note" id="ftNote"></p>
+            <div class="ft-voices" id="ftVoices" hidden>
+                <button id="ftVoiceEn" aria-pressed="true">Jason, in English</button>
+                <button id="ftVoiceZh" aria-pressed="false">Yiki, &#20013;&#25991;</button>
+            </div>
         </div>
 
         <div class="ft-show" id="ftShow" hidden>
@@ -363,7 +403,7 @@
                    '<label class="ft-inc"><input type="checkbox" class="ft-cb" data-n="' + s.n + '"' +
                      (on ? ' checked' : '') + (locked ? ' disabled' : '') +
                      ' aria-label="Include ' + s.name + '"></label>' +
-                   '<div class="ft-n">' + s.n + '</div><div class="ft-b">' +
+                   '<div class="ft-n" data-show="' + s.n + '" title="Show this one">' + s.n + '</div><div class="ft-b">' +
                    '<div class="ft-name">' + s.name + '</div>' +
                    narr +
                    '<div class="ft-meta">' + meta + '</div>' +
@@ -371,6 +411,7 @@
                    note +
                    '</div></div>';
         }).join("");
+        if (typeof markShowing === "function") markShowing();   // the rebuild wipes it
         document.getElementById("ftAll").setAttribute("aria-pressed", mode === "all");
         document.getElementById("ftHalf").setAttribute("aria-pressed", mode === "half");
         stopAudio();            // the list just changed under whatever was playing
@@ -522,6 +563,13 @@
             L.circleMarker([s.lat, s.lon], { radius: 5, color: "#12305b", weight: 3,
                 fillColor: "#fff", fillOpacity: 1, opacity: 1 }).addTo(routeLayer);
         });
+        // One arrow at the middle of each leg, pointing at the stop after it, so
+        // the line says which way to walk and not merely where the walk goes.
+        for (var k = 0; k + 1 < pts.length; k++) {
+            var mid = [(pts[k][0] + pts[k + 1][0]) / 2, (pts[k][1] + pts[k + 1][1]) / 2];
+            L.marker(mid, { icon: arrowIcon(bearing(pts[k], pts[k + 1]), "route", 20),
+                            interactive: false, keyboard: false }).addTo(routeLayer);
+        }
     }
 
     // Fit the whole locked walk into the follow map (all stops, plus where you
@@ -618,6 +666,16 @@
         [].forEach.call(document.getElementById("ftDots").children, function (d, k) {
             d.className = (k === showI) ? "on" : "";
         });
+        markShowing();
+    }
+    // Mark the stop the slideshow is on. Called from paintShow, so arrows, dots
+    // and taps all keep the list in step without each having to remember to.
+    function markShowing() {
+        var cur = showList[showI]; if (!cur) return;
+        document.querySelectorAll("#ftStops .ft-stop").forEach(function (el) {
+            var n = el.querySelector("[data-show]");
+            el.classList.toggle("showing", !!n && n.dataset.show === String(cur.n));
+        });
     }
     function buildShow() {
         showList = trail.stops.filter(function (s) { return (s.photos || []).length; });
@@ -626,6 +684,17 @@
         dots.innerHTML = showList.map(function (s, k) {
             return '<span title="' + s.name.replace(/"/g, "") + '" data-k="' + k + '"></span>';
         }).join("");
+        // Tapping a stop's number brings its photograph up. The list and the
+        // slideshow are two views of one thing, so they hold one position
+        // between them rather than each keeping its own. [SEAN "i want slide
+        // show to be aligned to each of 16"]
+        document.getElementById("ftStops").addEventListener("click", function (e) {
+            var n = e.target.closest("[data-show]"); if (!n) return;
+            var k = showList.findIndex(function (st) { return String(st.n) === n.dataset.show; });
+            if (k < 0) return;                       // a stop with no photograph
+            showI = k; paintShow();
+            document.getElementById("ftShow").scrollIntoView({ behavior: "smooth", block: "center" });
+        });
         dots.addEventListener("click", function (e) {
             var d = e.target.closest("span[data-k]"); if (!d) return;
             showI = +d.dataset.k; paintShow();
@@ -689,14 +758,46 @@
         prints.push([+lat.toFixed(5), +lon.toFixed(5)]);
         savePrints(); paintPrints(); drawPrints();
     }
+    // Screen bearing between two lat/lon points. Longitude degrees shrink with
+    // latitude, so they are scaled before the angle is taken, otherwise every
+    // arrow in Boston points about fifteen degrees wrong.
+    function bearing(from, to) {
+        var dy = to[0] - from[0];
+        var dx = (to[1] - from[1]) * Math.cos(from[0] * Math.PI / 180);
+        return Math.atan2(dx, dy) * 180 / Math.PI;      // 0 = north, clockwise
+    }
+    function arrowIcon(deg, cls, px) {
+        return L.divIcon({
+            className: "", iconSize: [px, px], iconAnchor: [px / 2, px / 2],
+            html: '<div class="ft-arrow ' + cls + '" style="width:' + px + 'px;height:' + px +
+                  'px;transform:rotate(' + deg.toFixed(1) + 'deg)">&#10148;</div>'
+        });
+    }
+
     var printLayer = null;
     function drawPrints() {
         if (!map) return;
         if (printLayer) { map.removeLayer(printLayer); printLayer = null; }
         if (!prints.length) return;
+        // The walk leaves a print every twenty five metres, so the full trail is
+        // about a hundred and forty of them. That many arrows is a mess on a
+        // 320px map, and an arrow every few dots reads as direction just as
+        // well. So: dots record where you went, and one in six carries the
+        // heading, plus the latest one, which is the only heading that answers
+        // "which way am I facing right now".
+        var EVERY = 6;
         printLayer = L.layerGroup(prints.map(function (p, i) {
-            return L.circleMarker(p, { radius: 3, weight: 1.5, color: "#fff", fillColor: "#1f3a5f",
-                                       fillOpacity: i === prints.length - 1 ? 0.9 : 0.42 });
+            var last = i === prints.length - 1;
+            // The first print has nothing behind it to take a heading from, so
+            // it stays a dot rather than pointing somewhere invented.
+            if (i > 0 && (last || i % EVERY === 0)) {
+                return L.marker(p, { icon: arrowIcon(bearing(prints[i - 1], p),
+                                     "step" + (last ? " last" : ""), last ? 18 : 14),
+                                     interactive: false, keyboard: false });
+            }
+            return L.circleMarker(p, { radius: 3, weight: 1.5, color: "#fff",
+                                       fillColor: "#12305b",
+                                       fillOpacity: last ? .9 : .42 });
         })).addTo(map);
     }
     document.getElementById("ftForget").addEventListener("click", function () {
@@ -717,28 +818,56 @@
     //
     // Each reads in the language their voice was made for: Yiki is a Mandarin
     // narrator, so Chinese is the language she does not have an accent in, and
-    // Jason is the reverse. The file is chosen from the reader's own language
-    // before anything is shown, so the player never appears for a recording
-    // that does not exist and never offers the wrong voice.
+    // Jason is the reverse.
+    //
+    // BOTH are put on the page, not one. [SEAN] The page used to choose a
+    // reading from the site language and show only that, so a tap on the
+    // language pill that did not reach this page meant Yiki was never offered
+    // at all. Choosing a voice and changing the language of the site are
+    // different acts. The one matching the reader is loaded for them, the other
+    // is one tap away, and a voice not yet recorded never gets a button.
     (function () {
-        var l = (document.documentElement.lang || "en").toLowerCase().slice(0, 2);
-        try { l = (localStorage.getItem("ps_lang") || l).toLowerCase().slice(0, 2); } catch (e) {}
-        var files = l === "zh"
-            ? ["/media/audio/trail-freedom.zh.mp3", "/media/audio/trail-freedom.mp3"]
-            : ["/media/audio/trail-freedom.mp3"];
-        (function tryNext(i) {
-            if (i >= files.length) return;
-            fetch(files[i], { method: "HEAD" }).then(function (r) {
-                if (!r.ok) return tryNext(i + 1);
-                var a = document.getElementById("ftPlayer");
-                a.src = files[i];
-                document.getElementById("ftAudio").hidden = false;
-                var note = document.querySelector(".ft-audio .ft-note");
-                if (note) note.textContent = (files[i].indexOf(".zh.") > -1)
-                    ? "Yiki, in Chinese. Seven minutes on the whole walk."
-                    : "Jason, five minutes on the whole walk.";
-            }).catch(function () { tryNext(i + 1); });
-        })(0);
+        var VOICES = {
+            en: { file: "/media/audio/trail-freedom.mp3",
+                  note: "Jason, five minutes on the whole walk.", btn: "ftVoiceEn" },
+            zh: { file: "/media/audio/trail-freedom.zh.mp3",
+                  note: "Yiki, in Chinese. Seven minutes on the whole walk.", btn: "ftVoiceZh" }
+        };
+        function lang() {
+            var l = (document.documentElement.lang || "en").toLowerCase().slice(0, 2);
+            try { l = (localStorage.getItem("ps_lang") || l).toLowerCase().slice(0, 2); } catch (e) {}
+            return VOICES[l] ? l : "en";
+        }
+        function pick(code, andPlay) {
+            var v = VOICES[code]; if (!v || !v.ok) return;
+            var a = document.getElementById("ftPlayer");
+            if (a.dataset.voice === code) return;
+            a.dataset.voice = code; a.src = v.file;
+            document.getElementById("ftNote").textContent = v.note;
+            Object.keys(VOICES).forEach(function (k) {
+                var b = document.getElementById(VOICES[k].btn);
+                if (b) b.setAttribute("aria-pressed", String(k === code));
+            });
+            if (andPlay) a.play().catch(function () {});   // a tap is a gesture, so allowed
+        }
+        Promise.all(Object.keys(VOICES).map(function (k) {
+            return fetch(VOICES[k].file, { method: "HEAD" })
+                .then(function (r) { VOICES[k].ok = r.ok; })
+                .catch(function () { VOICES[k].ok = false; });
+        })).then(function () {
+            var have = Object.keys(VOICES).filter(function (k) { return VOICES[k].ok; });
+            if (!have.length) return;                     // never a player over a dead file
+            Object.keys(VOICES).forEach(function (k) {
+                var b = document.getElementById(VOICES[k].btn); if (!b) return;
+                if (VOICES[k].ok) b.addEventListener("click", function () { pick(k, true); });
+                else b.hidden = true;
+            });
+            document.getElementById("ftAudio").hidden = false;
+            document.getElementById("ftVoices").hidden = have.length < 2;
+            pick(VOICES[lang()].ok ? lang() : have[0], false);
+        });
+        // The site language changing should move this player too.
+        document.addEventListener("psx:lang", function () { pick(lang(), false); });
     })();
 })();
 </script>
