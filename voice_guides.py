@@ -192,11 +192,36 @@ def status(slug, text, voice, lang, manifest, tier="guide"):
     return "have"
 
 
-def record(key, voice, text):
-    """One guide. Returns (bytes, None) or (None, reason)."""
+def record(key, voice, text, model=None, language=None, settings=None):
+    """One guide. Returns (bytes, None) or (None, reason).
+
+    model/language/settings are optional and default to exactly what this
+    function always sent, so every existing caller is unchanged.
+
+    WHY THEY EXIST. eleven_multilingual_v2 has no language parameter: it infers
+    the language from the characters and then speaks them in the accent the
+    voice was trained in. Give it Chinese in a voice built for an English
+    market and you get Chinese with an American mouth, which is what Sean
+    heard. Two knobs help, and neither is a substitute for casting a voice
+    that is actually Mandarin:
+
+      language  pins the phonetics, but ONLY on the models that accept it
+                (the turbo and flash 2.5 families). Passing it to
+                multilingual_v2 is ignored at best, so it is only sent when
+                a model is named alongside it.
+      settings  similarity_boost pulls the output back toward the voice's
+                original recordings. For an English-sourced voice that means
+                pulling it back toward an English mouth, so lowering it is
+                what lets the model drift to the target language.
+    """
+    body = {"text": text, "model_id": model or MODEL}
+    if language and model:
+        body["language_code"] = language
+    if settings:
+        body["voice_settings"] = settings
     req = urllib.request.Request(
         "https://api.elevenlabs.io/v1/text-to-speech/%s?output_format=mp3_44100_64" % voice,
-        data=json.dumps({"text": text, "model_id": MODEL}).encode(),
+        data=json.dumps(body).encode(),
         headers={"xi-api-key": key, "Content-Type": "application/json"})
     try:
         with urllib.request.urlopen(req, timeout=300) as r:

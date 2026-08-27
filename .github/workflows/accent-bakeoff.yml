@@ -1,0 +1,74 @@
+# Four takes of one Chinese paragraph, so the accent can be judged by ear.
+#
+# Sean said Yiki's Chinese sounds Americanized. The scripts are written in
+# Chinese rather than translated into it, so the words are not the cause. Yiki
+# is Mingyao Ye, an English-market voice, and eleven_multilingual_v2 reads
+# Chinese characters in whatever accent the voice was trained in.
+#
+# Run this from the Actions tab. It records the SAME paragraph four ways and
+# commits them under media/audio/bakeoff, so they can be played straight off
+# the site at /media/audio/bakeoff/1-yiki-now.mp3 and so on. Nothing else on
+# the site changes and no existing recording is touched.
+#
+# Needs the same ELEVENLABS_API_KEY repository secret the recording job uses.
+name: Accent bakeoff
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: accent-bakeoff
+  cancel-in-progress: false
+
+jobs:
+  bakeoff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # full history, so the commit rebases cleanly
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Check the key is set
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: |
+          if [ -z "$ELEVENLABS_API_KEY" ]; then
+            echo "::error::No ELEVENLABS_API_KEY secret set. Add it under Settings, Secrets and variables, Actions."
+            exit 1
+          fi
+
+      - name: Record the four takes
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: python3 accent_bakeoff.py
+
+      - name: Commit them
+        run: |
+          git config user.name  "Claude"
+          git config user.email "noreply@anthropic.com"
+          git add media/audio/bakeoff
+          if git diff --cached --quiet; then
+            echo "Nothing new to commit."
+            exit 0
+          fi
+          git commit -m "Accent bakeoff: one Chinese paragraph, four voices, to be judged by ear"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - name: Where to listen
+        run: |
+          echo "### Listen and pick one" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Once the deploy is up:" >> "$GITHUB_STEP_SUMMARY"
+          for f in 1-yiki-now 2-yiki-pinned 3-pangge 4-adrian; do
+            echo "- https://plateaustrategy.io/media/audio/bakeoff/$f.mp3" >> "$GITHUB_STEP_SUMMARY"
+          done
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Take 1 is today's site, the reference point." >> "$GITHUB_STEP_SUMMARY"
