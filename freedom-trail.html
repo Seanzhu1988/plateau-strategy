@@ -373,19 +373,15 @@
             var meta = (on && L.first ? "start · " : (on ? L.leg + " min walk · " : "")) +
                        s.inside_min + " min here";
             // The deep five minute narration for this stop, in the reader's own
-            // language. Before it is recorded the button falls back to Jason's
-            // book card on the three stops that have one, and drops itself where
-            // there is nothing yet, so the page upgrades on its own as the
-            // recordings land. verifyPlays resolves which file is really there.
+            // language: Yiki reads the English, Pangge the Chinese. Every stop is
+            // the same, the three that once carried a book card included, so the
+            // button plays that stop's own recording or nothing at all, never a
+            // card in a different voice. verifyPlays drops it until the file lands.
             var narr = "";
             if (G) {
                 var primary = "/media/audio/trail-stop-" + s.n + G.suffix + ".mp3";
-                var fallback = (lang === "en" && s.book_slug)
-                    ? "/media/audio/card-" + s.book_slug + ".mp3" : "";
                 narr = '<div class="ft-byline"><span class="ft-guide">' + G.name + '</span>' +
-                       '<button class="ft-play" data-audio="' + primary + '"' +
-                       (fallback ? ' data-fallback="' + fallback + '"' : '') +
-                       '>Play</button></div>';
+                       '<button class="ft-play" data-audio="' + primary + '">Play</button></div>';
             }
             // Yiki's written aside stays as text. Her name chip is dropped when
             // she is also the one narrating aloud (the English page, after the
@@ -471,22 +467,12 @@
             .catch(function () { cb(false); });
     }
     function verifyPlays() {
+        // One voice per stop now, so this is show-or-drop: the stop's own
+        // recording is there and the button stays, or it is not and the byline
+        // goes. No card in another voice to fall back to, nothing to relabel.
         [].forEach.call(document.querySelectorAll(".ft-play"), function (b) {
-            var drop = function () { (b.closest(".ft-byline") || b).remove(); };
             head(b.dataset.audio, function (ok) {
-                if (ok) return;                       // the narration is there
-                var fb = b.dataset.fallback || "";
-                if (!fb) return drop();
-                head(fb, function (ok2) {
-                    if (!ok2) return drop();
-                    b.dataset.audio = fb;
-                    // The cards are Jason's voice. The label follows the audio,
-                    // never the roster: a name over someone else's voice is the
-                    // exact mislabeling this page was just cleaned of.
-                    var chip = (b.closest(".ft-byline") || {}).querySelector
-                        ? b.closest(".ft-byline").querySelector(".ft-guide") : null;
-                    if (chip) chip.textContent = "Jason";
-                });
+                if (!ok) (b.closest(".ft-byline") || b).remove();
             });
         });
     }
