@@ -98,7 +98,7 @@
            through to the words, and one small button puts it away. */
         #ftMini { position: fixed; top: 54px; right: 0; z-index: 0; pointer-events: none;
                   width: min(58vw, 300px); height: min(52vw, 300px); }
-        #ftMap { width: 100%; height: 100%; background: transparent; opacity: .55;
+        #ftMap { width: 100%; height: 100%; background: transparent;
                  /* strongest in the top-right corner, feathered to nothing as it
                     reaches toward the page, so the patch fuses in without an edge */
                  -webkit-mask-image: radial-gradient(140% 140% at 100% 0%, #000 36%,
@@ -106,7 +106,15 @@
                  mask-image: radial-gradient(140% 140% at 100% 0%, #000 36%,
                      rgba(0,0,0,.35) 66%, transparent 100%); }
         #ftMap, #ftMap * { pointer-events: none !important; }
-        #ftMap .leaflet-tile-pane { opacity: .55; }          /* the map imagery, deepest back */
+        /* One opacity used to cover the whole patch, so the streets and the route
+           faded together at .55 x .55 and the route lost. They are different jobs.
+           The streets stay exactly where they were, near .30, because nobody
+           complained about those; only the route comes up, from .52 to .96. The
+           mask above is untouched, so the patch still has no edge and still
+           dissolves toward the page. */
+        #ftMap .leaflet-tile-pane { opacity: .30; }          /* streets, unchanged */
+        #ftMap .leaflet-overlay-pane,
+        #ftMap .leaflet-marker-pane { opacity: .96; }        /* the route, meant to be read */
         .ft-wrap { position: relative; z-index: 1; }          /* the reading lives above the map */
         body > header { position: relative; z-index: 2; }
         #ftMiniClose { position: fixed; top: 66px; right: 12px; z-index: 950; pointer-events: auto;
@@ -481,11 +489,17 @@
         routeLayer.clearLayers();
         var kept = selected();
         var pts = kept.map(function (s) { return [s.lat, s.lon]; });
-        if (pts.length > 1) L.polyline(pts, { color: "#1f3a5f", weight: 5, opacity: .95 }).addTo(routeLayer);
+        if (pts.length > 1) {
+            // A pale casing under the navy. It costs nothing, adds no visual
+            // weight, and is what keeps a thin line legible over grey streets,
+            // green parks and water without having to darken the line itself.
+            L.polyline(pts, { color: "#fff", weight: 9, opacity: .85 }).addTo(routeLayer);
+            L.polyline(pts, { color: "#1f3a5f", weight: 4.5, opacity: 1 }).addTo(routeLayer);
+        }
         // Quiet dots at the stops, not numbered pins: the numbers already live
         // in the list, and a second set on the backdrop only fights the words.
         kept.forEach(function (s) {
-            L.circleMarker([s.lat, s.lon], { radius: 4, color: "#1f3a5f", weight: 2,
+            L.circleMarker([s.lat, s.lon], { radius: 4.5, color: "#1f3a5f", weight: 2.5,
                 fillColor: "#fff", fillOpacity: 1, opacity: 1 }).addTo(routeLayer);
         });
     }
@@ -646,7 +660,7 @@
         if (printLayer) { map.removeLayer(printLayer); printLayer = null; }
         if (!prints.length) return;
         printLayer = L.layerGroup(prints.map(function (p, i) {
-            return L.circleMarker(p, { radius: 3, weight: 0, fillColor: "#1f3a5f",
+            return L.circleMarker(p, { radius: 3, weight: 1.5, color: "#fff", fillColor: "#1f3a5f",
                                        fillOpacity: i === prints.length - 1 ? 0.9 : 0.42 });
         })).addTo(map);
     }
