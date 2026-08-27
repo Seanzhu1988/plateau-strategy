@@ -34,11 +34,6 @@
         .ft-sum { font-size: .95rem; color: #4a453d; margin: 0 0 1.4rem; }
         .ft-stop { display: flex; gap: .9rem; padding: .9rem 0; border-top: 1px solid #e6e6ea; }
         .ft-stop.off { opacity: .38; }
-        .ft-n[data-show] { cursor: pointer; }
-        /* The stop the slideshow is on, marked in the list, so the photograph
-           and the words are never talking about two different places. */
-        .ft-stop.showing { background: #f4f6fa; border-radius: 10px; }
-        .ft-stop.showing .ft-n { box-shadow: 0 0 0 3px #c8d4e6; }
         .ft-n { flex: 0 0 30px; height: 30px; border-radius: 50%; background: #1f3a5f; color: #fff;
                 font-weight: 800; font-size: .85rem; display: flex; align-items: center;
                 justify-content: center; margin-top: .15rem; }
@@ -71,23 +66,8 @@
         .ft-audio { margin: 1.4rem 0; }
         .ft-audio audio { width: 100%; }
         .ft-note { font-size: .9rem; color: #6b655b; }
-        /* Both readings sit on the page. Picking a voice is not the same act as
-           changing the language of the whole site, and a Chinese speaker who
-           lands on the English page should not have to do the second to get
-           the first. Whichever matches the reader's language is chosen for
-           them; the other is one tap away. */
-        .ft-voices { display: flex; gap: .5rem; flex-wrap: wrap; margin: .5rem 0 0; }
-        #ftVoiceEn, #ftVoiceZh { font: inherit !important; font-size: .85rem !important;
-                   font-weight: 700 !important; cursor: pointer;
-                   border: 1px solid #d3d3da !important; border-radius: 999px !important;
-                   background: #fff !important; color: #1f3a5f !important;
-                   padding: .32rem .8rem !important; min-height: 0 !important; }
-        #ftVoiceEn[aria-pressed="true"], #ftVoiceZh[aria-pressed="true"] {
-                   background: #1f3a5f !important; color: #fff !important;
-                   border-color: #1f3a5f !important; }
-        #ftVoices[hidden] { display: none !important; }
         .ft-actions { margin: 1.8rem 0 0; display: flex; gap: .6rem; flex-wrap: wrap; }
-        #ftDrop, .ft-actions a {
+        .ft-actions a {
             font: inherit !important; font-weight: 700 !important; cursor: pointer;
             text-decoration: none; border: 1px solid #1f3a5f !important;
             background: #1f3a5f !important; color: #fff !important;
@@ -110,35 +90,33 @@
                   display: inline-flex !important; align-items: center; justify-content: center; }
         /* [hidden] must beat the flex display above, or the locked button lingers. */
         #ftWalk[hidden] { display: none !important; }
-        /* A patch of the live map fused into the TOP-RIGHT CORNER of the page,
-           not the whole page. It sits BEHIND the words (the reading is layered
-           above it), faint and sunk into the paper, and its edge dissolves
-           toward the middle of the page so there is no box, no border, no corner
-           to it, it just fades into the surface. It follows you, taps fall
-           through to the words, and one small button puts it away. */
-        #ftMini { position: fixed; top: 54px; right: 0; z-index: 0; pointer-events: none;
-                  width: min(58vw, 300px); height: min(52vw, 300px); }
+        /* A patch of the live map fused into the BOTTOM-RIGHT CORNER of the page,
+           not the whole page, and kept clear of the title and header. It sits
+           BEHIND the words (the reading is layered above it), faint and sunk
+           into the paper, and its edge dissolves toward the middle of the page
+           so there is no box, no border, no corner to it. It follows you, taps
+           fall through, one button puts it away. */
+        #ftMini { position: fixed; bottom: 0; right: 0; z-index: 0; pointer-events: none;
+                  width: min(60vw, 320px); height: min(56vw, 320px); }
         #ftMap { width: 100%; height: 100%; background: transparent;
-                 /* strongest in the top-right corner, feathered to nothing as it
-                    reaches toward the page, so the patch fuses in without an edge */
-                 -webkit-mask-image: radial-gradient(140% 140% at 100% 0%, #000 52%,
-                     rgba(0,0,0,.72) 74%, transparent 100%);
-                 mask-image: radial-gradient(140% 140% at 100% 0%, #000 52%,
-                     rgba(0,0,0,.72) 74%, transparent 100%); }
+                 /* strongest in the bottom-right corner, feathered to nothing as
+                    it reaches toward the page, so the patch fuses in without an edge */
+                 -webkit-mask-image: radial-gradient(140% 140% at 100% 100%, #000 40%,
+                     rgba(0,0,0,.4) 68%, transparent 100%);
+                 mask-image: radial-gradient(140% 140% at 100% 100%, #000 40%,
+                     rgba(0,0,0,.4) 68%, transparent 100%); }
         #ftMap, #ftMap * { pointer-events: none !important; }
-        /* Streets and route are different jobs and no longer share one number.
-           The route was lifted first, .52 to .96, and that was not enough on its
-           own: the streets it runs over were still at .30, so the whole patch
-           read as fog with a line in it. They come up to .66. The mask still
-           does its job, the patch still has no edge and still dissolves toward
-           the words, it just no longer starts dissolving at a third of the way
-           across. */
-        #ftMap .leaflet-tile-pane { opacity: .66; }          /* streets, legible */
+        /* Streets and route are different jobs, so they carry different strength.
+           The streets stay faint so the reading always wins; the route and the
+           dots come right up so they read boldly. Splitting them across panes is
+           what lets each hold its own weight, and the mask above is untouched, so
+           the patch still has no edge and dissolves toward the page. */
+        #ftMap .leaflet-tile-pane { opacity: .6; }           /* streets, clear enough to read */
         #ftMap .leaflet-overlay-pane,
-        #ftMap .leaflet-marker-pane { opacity: .96; }        /* the route, meant to be read */
+        #ftMap .leaflet-marker-pane { opacity: .98; }        /* route and dots, bold */
         .ft-wrap { position: relative; z-index: 1; }          /* the reading lives above the map */
         body > header { position: relative; z-index: 2; }
-        #ftMiniClose { position: fixed; top: 66px; right: 12px; z-index: 950; pointer-events: auto;
+        #ftMiniClose { position: fixed; bottom: 18px; right: 66px; z-index: 950; pointer-events: auto;
                        width: 30px; height: 30px; border-radius: 50% !important;
                        font: inherit !important; font-size: .8rem !important; line-height: 1; cursor: pointer;
                        border: none !important; background: rgba(20,17,12,.5) !important; color: #fff !important;
@@ -207,24 +185,13 @@
         .ft-loc { font-size: .88rem; color: #4a453d; margin: .6rem 0 0; min-height: 1.2em; }
         /* Leaflet chrome, matched to the page, muted basemap so the route reads. */
         .leaflet-container { background: #f5f1e8; font: inherit; }
-        .basemap-muted { filter: saturate(.72) contrast(1.06) brightness(1.0); }
-        /* Direction. A dot says you were here, which you already knew; an arrow
-           says which way the walk goes, which is the thing a person standing at
-           a corner actually needs. The white halo is the same trick as the
-           line's casing, so a small mark holds over parks, streets and water
-           without being drawn heavier. */
-        .ft-arrow { color: #1f3a5f; font-weight: 900; line-height: 1;
-                    filter: drop-shadow(0 0 1.6px #fff) drop-shadow(0 0 1.6px #fff)
-                            drop-shadow(0 0 1.6px #fff);
-                    display: flex; align-items: center; justify-content: center; }
-        .ft-arrow.route { font-size: 15px; }
-        .ft-arrow.step  { font-size: 11px; opacity: .75; }
-        .ft-arrow.step.last { opacity: 1; font-size: 14px; }
+        .basemap-muted { filter: saturate(.6) contrast(1) brightness(1.02); }
         .ft-pin { background: #1f3a5f; color: #fff; width: 24px; height: 24px; border-radius: 50%;
                   display: flex; align-items: center; justify-content: center; font-weight: 800;
                   font-size: .72rem; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
-        .ft-you { width: 18px; height: 18px; border-radius: 50%; background: #2f9d54;
-                  border: 3px solid #fff; box-shadow: 0 0 0 4px rgba(47,157,84,.3); }
+        .ft-you { width: 14px; height: 14px; border-radius: 50%; background: #12a150;
+                  border: 2px solid #fff;
+                  box-shadow: 0 0 0 3px rgba(18,161,80,.4), 0 1px 4px rgba(0,0,0,.4); }
         @media (max-width: 640px) { .ft-title { font-size: 1.55rem; } }
     </style>
 </head>
@@ -245,11 +212,7 @@
 
         <div class="ft-audio" id="ftAudio" hidden>
             <audio controls preload="none" id="ftPlayer"></audio>
-            <p class="ft-note" id="ftNote"></p>
-            <div class="ft-voices" id="ftVoices" hidden>
-                <button id="ftVoiceEn" aria-pressed="true">Jason, in English</button>
-                <button id="ftVoiceZh" aria-pressed="false">Yiki, &#20013;&#25991;</button>
-            </div>
+            <p class="ft-note">Yiki, on what the trail is and how to walk it.</p>
         </div>
 
         <div class="ft-show" id="ftShow" hidden>
@@ -299,10 +262,8 @@
         </div>
 
         <div class="ft-actions">
-            <button id="ftDrop">Drop this walk on my map</button>
             <a class="quiet" href="/destination-book?city=boston">More in Boston</a>
         </div>
-        <p class="ft-note" id="ftDropped" style="margin-top:.7rem"></p>
 
         <div class="ft-foot">
             Distances measured between the sites themselves, so the walk on the ground is a
@@ -333,6 +294,22 @@
     function selected() {
         return trail.stops.filter(function (s) { return included.has(s.n); });
     }
+
+    // Who narrates the trail, and in which file, depends on the language the
+    // reader is on: Jason walks it in English, Yiki walks it in Chinese, the
+    // same arrangement as the rest of the site. A language with no trail voice
+    // recorded gets no play button rather than someone else's voice.
+    function pageLang() {
+        var l = document.documentElement.lang || "en";
+        try { l = localStorage.getItem("ps_lang") || l; } catch (e) {}
+        return (l || "en").toLowerCase().slice(0, 2);
+    }
+    function trailGuide(lang) {
+        if (lang === "en") return { name: "Jason", suffix: "" };
+        if (lang === "zh") return { name: "Yiki", suffix: ".zh" };
+        return null;                    // es, ko, vi: no trail voice yet
+    }
+
     function render() {
         // One pass: the leg to each kept stop is the ground from the previous
         // kept stop, so skipping a middle stop still counts the walk past it,
@@ -353,29 +330,47 @@
             count + " stops · " + fmt(walk) + " walking · " + fmt(inside) +
             " inside · about " + fmt(walk + inside) + " altogether";
 
+
+        var lang = pageLang(), G = trailGuide(lang);
         var host = document.getElementById("ftStops");
         host.innerHTML = trail.stops.map(function (s) {
             var on = included.has(s.n), L = legOf[s.n];
             var meta = (on && L.first ? "start · " : (on ? L.leg + " min walk · " : "")) +
                        s.inside_min + " min here";
+            // The deep five minute narration for this stop, in the reader's own
+            // language. Before it is recorded the button falls back to Jason's
+            // book card on the three stops that have one, and drops itself where
+            // there is nothing yet, so the page upgrades on its own as the
+            // recordings land. verifyPlays resolves which file is really there.
+            var narr = "";
+            if (G) {
+                var primary = "/media/audio/trail-stop-" + s.n + G.suffix + ".mp3";
+                var fallback = (lang === "en" && s.book_slug)
+                    ? "/media/audio/card-" + s.book_slug + ".mp3" : "";
+                narr = '<div class="ft-byline"><span class="ft-guide">' + G.name + '</span>' +
+                       '<button class="ft-play" data-audio="' + primary + '"' +
+                       (fallback ? ' data-fallback="' + fallback + '"' : '') +
+                       '>Play</button></div>';
+            }
+            // Yiki's written aside stays as text. Her name is dropped only when
+            // she is also the one narrating aloud, so it never reads twice.
+            var note = s.yiki
+                ? '<div class="ft-yiki">' +
+                  ((G && G.name === "Yiki") ? "" : '<span class="ft-guide">Yiki</span>') +
+                  s.yiki + '</div>'
+                : "";
             return '<div class="ft-stop' + (on ? '' : ' off') + (locked ? ' locked' : '') + '">' +
                    '<label class="ft-inc"><input type="checkbox" class="ft-cb" data-n="' + s.n + '"' +
                      (on ? ' checked' : '') + (locked ? ' disabled' : '') +
                      ' aria-label="Include ' + s.name + '"></label>' +
-                   '<div class="ft-n" data-show="' + s.n + '" title="Show this one">' + s.n + '</div><div class="ft-b">' +
+                   '<div class="ft-n">' + s.n + '</div><div class="ft-b">' +
                    '<div class="ft-name">' + s.name + '</div>' +
-                   (s.book_slug
-                     ? '<div class="ft-byline"><span class="ft-guide">Jason</span>' +
-                       '<button class="ft-play" data-slug="' + s.book_slug + '">Play</button></div>'
-                     : '') +
+                   narr +
                    '<div class="ft-meta">' + meta + '</div>' +
                    '<div class="ft-desc">' + s.desc + '</div>' +
-                   (s.yiki
-                     ? '<div class="ft-yiki"><span class="ft-guide">Yiki</span>' + s.yiki + '</div>'
-                     : '') +
+                   note +
                    '</div></div>';
         }).join("");
-        if (typeof markShowing === "function") markShowing();   // the rebuild wipes it
         document.getElementById("ftAll").setAttribute("aria-pressed", mode === "all");
         document.getElementById("ftHalf").setAttribute("aria-pressed", mode === "half");
         stopAudio();            // the list just changed under whatever was playing
@@ -394,10 +389,10 @@
         render();
     });
 
-    // The three stops already in the Destination Book have Jason's thirty second
-    // card recorded. The page knew that and only said so; now it plays it. One
-    // at a time, because two guides talking over each other on a street corner
-    // is worse than silence.
+    // Every stop plays its guide, in the reader's own language: Jason reads the
+    // trail in English, Yiki in Chinese, each stop its own five minute
+    // narration. One at a time, because two guides talking over each other on a
+    // street corner is worse than silence.
     var playing = null, playingBtn = null;
     function stopAudio() {
         if (playing) { playing.pause(); playing = null; }
@@ -406,7 +401,7 @@
     }
     document.addEventListener("click", function (e) {
         var b = e.target.closest(".ft-play"); if (!b) return;
-        var src = "/media/audio/card-" + b.dataset.slug + ".mp3";
+        var src = b.dataset.audio;
         if (playingBtn === b) { stopAudio(); return; }
         stopAudio();
         var a = new Audio(src);
@@ -419,12 +414,26 @@
     });
 
     // A button that does nothing is worse than no button, so each one is checked
-    // against the file before it is left on screen.
+    // against the file before it is left on screen. It prefers the deep
+    // narration, falls back to the book card where one exists, and removes
+    // itself only when neither is really there. This is what lets the same
+    // markup work before and after the recordings land.
+    function head(url, cb) {
+        fetch(url, { method: "HEAD" })
+            .then(function (r) { cb(r.ok); })
+            .catch(function () { cb(false); });
+    }
     function verifyPlays() {
         [].forEach.call(document.querySelectorAll(".ft-play"), function (b) {
-            fetch("/media/audio/card-" + b.dataset.slug + ".mp3", { method: "HEAD" })
-                .then(function (r) { if (!r.ok) (b.closest(".ft-byline") || b).remove(); })
-                .catch(function () { (b.closest(".ft-byline") || b).remove(); });
+            var drop = function () { (b.closest(".ft-byline") || b).remove(); };
+            head(b.dataset.audio, function (ok) {
+                if (ok) return;                       // the narration is there
+                var fb = b.dataset.fallback || "";
+                if (!fb) return drop();
+                head(fb, function (ok2) {
+                    if (ok2) { b.dataset.audio = fb; } else { drop(); }
+                });
+            });
         });
     }
 
@@ -443,6 +452,10 @@
                 " altogether, so pick your version below.";
             render();
             buildShow();                 // the photographs, once the stops exist
+            // Switching language re-reads the stops so the guide who speaks, and
+            // the file that plays, follow the reader: Jason in English, Yiki in
+            // Chinese.
+            document.addEventListener("psx:lang", function () { if (trail) render(); });
             // Somebody who already said yes should not be asked again every
             // visit; somebody who said no should not be nagged.
             try {
@@ -476,37 +489,6 @@
         render();
     });
 
-    // Drop the walk onto the planner's map. It reads its own saved shape from
-    // localStorage on boot, so this writes THAT shape rather than inventing a
-    // second one: same key, same fields, city switched to Boston. Anything the
-    // planner already held for another city would be overwritten, so it asks.
-    document.getElementById("ftDrop").addEventListener("click", function () {
-        if (!trail) return;
-        var KEY = "ps_tripplanner_v2";
-        var had = null;
-        try { had = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) {}
-        if (had && had.places && had.places.length && had.city !== "boston") {
-            if (!confirm("Your planner currently holds a " + (had.city || "saved") +
-                         " day. Replace it with the Freedom Trail?")) return;
-        }
-        var places = selected().map(function (s) {
-            return { name: s.name, lat: s.lat, lon: s.lon, close: 1020,
-                     visit: s.inside_min, cat: "history" };
-        });
-        try {
-            localStorage.setItem(KEY, JSON.stringify({
-                city: "boston", places: places, dropped: [], departDate: ""
-            }));
-        } catch (e) {
-            document.getElementById("ftDropped").textContent =
-                "Could not save to this browser. Private browsing blocks it.";
-            return;
-        }
-        document.getElementById("ftDropped").textContent =
-            places.length + " stops dropped. Opening your map…";
-        setTimeout(function () { location.href = "/trip-planner"; }, 700);
-    });
-
     // ---- lock the route, then a map on the page stays with the walk ----
     // The flow the trail was asking for: pick the stops, lock them, and once
     // you are on your feet and have shared your location, a small map rides in
@@ -528,25 +510,29 @@
         var kept = selected();
         var pts = kept.map(function (s) { return [s.lat, s.lon]; });
         if (pts.length > 1) {
-            // A pale casing under the navy. It costs nothing, adds no visual
-            // weight, and is what keeps a thin line legible over grey streets,
-            // green parks and water without having to darken the line itself.
-            L.polyline(pts, { color: "#fff", weight: 9, opacity: .85 }).addTo(routeLayer);
-            L.polyline(pts, { color: "#1f3a5f", weight: 4.5, opacity: 1 }).addTo(routeLayer);
+            // A pale casing under the navy keeps the line legible over grey
+            // streets, green parks and water without darkening the line itself.
+            // Both run bold, so the route reads at a glance.
+            L.polyline(pts, { color: "#fff", weight: 12, opacity: .9 }).addTo(routeLayer);
+            L.polyline(pts, { color: "#12305b", weight: 6, opacity: 1 }).addTo(routeLayer);
         }
         // Quiet dots at the stops, not numbered pins: the numbers already live
         // in the list, and a second set on the backdrop only fights the words.
         kept.forEach(function (s) {
-            L.circleMarker([s.lat, s.lon], { radius: 4.5, color: "#1f3a5f", weight: 2.5,
+            L.circleMarker([s.lat, s.lon], { radius: 5, color: "#12305b", weight: 3,
                 fillColor: "#fff", fillOpacity: 1, opacity: 1 }).addTo(routeLayer);
         });
-        // One arrow at the middle of each leg, pointing at the stop after it, so
-        // the line says which way to walk and not merely where the walk goes.
-        for (var k = 0; k + 1 < pts.length; k++) {
-            var m = [(pts[k][0] + pts[k + 1][0]) / 2, (pts[k][1] + pts[k + 1][1]) / 2];
-            L.marker(m, { icon: arrowIcon(bearing(pts[k], pts[k + 1]), "route", 20),
-                          interactive: false, keyboard: false }).addTo(routeLayer);
-        }
+    }
+
+    // Fit the whole locked walk into the follow map (all stops, plus where you
+    // are), so every stop is dropped in and visible at once, not just the few
+    // beside your feet.
+    function fitWalk(lat, lon) {
+        if (!map) return;
+        var lls = selected().map(function (s) { return [s.lat, s.lon]; });
+        if (lat != null && lon != null) lls.push([lat, lon]);
+        if (lls.length > 1) map.fitBounds(L.latLngBounds(lls).pad(0.12));
+        else if (lls.length === 1) map.setView(lls[0], 15);
     }
 
     function openWalk() {          // confirm the route: lock it, then offer the walk
@@ -597,16 +583,20 @@
                 drawPrints();                        // last walk's prints, if any
                 var b = document.getElementById("ftFollow");
                 b.setAttribute("aria-pressed", "true"); b.textContent = "Put the map away";
-                setTimeout(function () { map.invalidateSize(); map.setView([lat, lon], 15); }, 60);
+                // Drop the WHOLE walk onto the follow map: fit all the locked
+                // stops in, so you see the entire trail at once with your place
+                // on it, not just a tight zoom around your feet.
+                setTimeout(function () { map.invalidateSize(); fitWalk(lat, lon); }, 60);
             }
             if (!youMarker) {
-                youMarker = L.marker([lat, lon], { icon: L.divIcon({ className: "", iconSize: [18, 18],
-                    iconAnchor: [9, 9], html: '<div class="ft-you"></div>' }) }).addTo(map);
+                youMarker = L.marker([lat, lon], { icon: L.divIcon({ className: "", iconSize: [14, 14],
+                    iconAnchor: [7, 7], html: '<div class="ft-you"></div>' }) }).addTo(map);
             } else { youMarker.setLatLng([lat, lon]); }
             addPrint(lat, lon);                      // the trail you actually walked
-            if (map) map.panTo([lat, lon]);          // the map stays with you
+            // The view holds the whole trail; your dot moves on it as you walk,
+            // so the map follows your PLACE rather than sliding the streets.
             document.getElementById("ftLoc").textContent =
-                "The map is moving with you, within " + acc + " m.";
+                "The whole trail is on the map, your place on it moving as you go. Within " + acc + " m.";
         }, function (err) {
             stopFollow(err && err.code === 1
                 ? "Location is blocked for this site, so the map cannot follow you."
@@ -628,7 +618,6 @@
         [].forEach.call(document.getElementById("ftDots").children, function (d, k) {
             d.className = (k === showI) ? "on" : "";
         });
-        markShowing();
     }
     function buildShow() {
         showList = trail.stops.filter(function (s) { return (s.photos || []).length; });
@@ -646,27 +635,7 @@
         document.getElementById("ftNext").addEventListener("click", function () {
             showI = (showI + 1) % showList.length; paintShow(); });
         document.getElementById("ftShow").hidden = false;
-        // Tapping a stop's number brings its photograph up. The list and the
-        // slideshow are two views of one thing, so they hold one position
-        // between them rather than each keeping its own. [SEAN "aligned to
-        // each of 16"]
-        document.getElementById("ftStops").addEventListener("click", function (e) {
-            var n = e.target.closest("[data-show]"); if (!n) return;
-            var k = showList.findIndex(function (s) { return String(s.n) === n.dataset.show; });
-            if (k < 0) return;                       // a stop with no photograph
-            showI = k; paintShow();
-            document.getElementById("ftShow").scrollIntoView({ behavior: "smooth", block: "center" });
-        });
         paintShow();
-    }
-    // Mark the stop the slideshow is on. Called from paintShow, so arrows, dots
-    // and taps all keep the list in step without each having to remember to.
-    function markShowing() {
-        var cur = showList[showI]; if (!cur) return;
-        document.querySelectorAll("#ftStops .ft-stop").forEach(function (el) {
-            var n = el.querySelector("[data-show]");
-            el.classList.toggle("showing", !!n && n.dataset.show === String(cur.n));
-        });
     }
 
     // ---------------------------------------------------------------- consent
@@ -720,38 +689,14 @@
         prints.push([+lat.toFixed(5), +lon.toFixed(5)]);
         savePrints(); paintPrints(); drawPrints();
     }
-    // Screen bearing between two lat/lon points. Longitude degrees shrink with
-    // latitude, so they are scaled before the angle is taken, otherwise every
-    // arrow in Boston points about fifteen degrees wrong.
-    function bearing(from, to) {
-        var dy = to[0] - from[0];
-        var dx = (to[1] - from[1]) * Math.cos(from[0] * Math.PI / 180);
-        return Math.atan2(dx, dy) * 180 / Math.PI;      // 0 = north, clockwise
-    }
-    function arrowIcon(deg, cls, px) {
-        return L.divIcon({
-            className: "", iconSize: [px, px], iconAnchor: [px / 2, px / 2],
-            html: '<div class="ft-arrow ' + cls + '" style="width:' + px + 'px;height:' + px +
-                  'px;transform:rotate(' + deg.toFixed(1) + 'deg)">&#10148;</div>'
-        });
-    }
-
     var printLayer = null;
     function drawPrints() {
         if (!map) return;
         if (printLayer) { map.removeLayer(printLayer); printLayer = null; }
         if (!prints.length) return;
         printLayer = L.layerGroup(prints.map(function (p, i) {
-            // The first print has nothing behind it to take a heading from, so
-            // it stays a dot rather than pointing somewhere invented.
-            if (i === 0) {
-                return L.circleMarker(p, { radius: 3, weight: 1.5, color: "#fff",
-                                           fillColor: "#1f3a5f", fillOpacity: .42 });
-            }
-            var last = i === prints.length - 1;
-            return L.marker(p, { icon: arrowIcon(bearing(prints[i - 1], p),
-                                 "step" + (last ? " last" : ""), last ? 18 : 14),
-                                 interactive: false, keyboard: false });
+            return L.circleMarker(p, { radius: 3, weight: 1.5, color: "#fff", fillColor: "#1f3a5f",
+                                       fillOpacity: i === prints.length - 1 ? 0.9 : 0.42 });
         })).addTo(map);
     }
     document.getElementById("ftForget").addEventListener("click", function () {
@@ -772,56 +717,28 @@
     //
     // Each reads in the language their voice was made for: Yiki is a Mandarin
     // narrator, so Chinese is the language she does not have an accent in, and
-    // Jason is the reverse.
-    //
-    // BOTH are put on the page, not one. [SEAN] Choosing a voice and changing
-    // the language of the site are different acts, and somebody who wants to
-    // hear the Chinese should not have to do the second to get the first. The
-    // one matching the reader's language is loaded for them, the other is one
-    // tap away, and a voice that has not been recorded never gets a button.
+    // Jason is the reverse. The file is chosen from the reader's own language
+    // before anything is shown, so the player never appears for a recording
+    // that does not exist and never offers the wrong voice.
     (function () {
-        var VOICES = {
-            en: { file: "/media/audio/trail-freedom.mp3",
-                  note: "Jason, five minutes on the whole walk.",
-                  btn: "ftVoiceEn" },
-            zh: { file: "/media/audio/trail-freedom.zh.mp3",
-                  note: "Yiki, in Chinese. Seven minutes on the whole walk.",
-                  btn: "ftVoiceZh" }
-        };
-        function lang() {
-            var l = (document.documentElement.lang || "en").toLowerCase().slice(0, 2);
-            try { l = (localStorage.getItem("ps_lang") || l).toLowerCase().slice(0, 2); } catch (e) {}
-            return VOICES[l] ? l : "en";
-        }
-        function play(code, andPlay) {
-            var v = VOICES[code]; if (!v || !v.ok) return;
-            var a = document.getElementById("ftPlayer");
-            if (a.dataset.voice === code) return;
-            a.dataset.voice = code; a.src = v.file;
-            document.getElementById("ftNote").textContent = v.note;
-            Object.keys(VOICES).forEach(function (k) {
-                var b = document.getElementById(VOICES[k].btn);
-                if (b) b.setAttribute("aria-pressed", String(k === code));
-            });
-            if (andPlay) a.play().catch(function () {});   // a tap is a gesture, so this is allowed
-        }
-        // Ask for every recording at once, then show only the ones that exist.
-        Promise.all(Object.keys(VOICES).map(function (k) {
-            return fetch(VOICES[k].file, { method: "HEAD" })
-                .then(function (r) { VOICES[k].ok = r.ok; })
-                .catch(function () { VOICES[k].ok = false; });
-        })).then(function () {
-            var have = Object.keys(VOICES).filter(function (k) { return VOICES[k].ok; });
-            if (!have.length) return;                     // no player over a dead file
-            Object.keys(VOICES).forEach(function (k) {
-                var b = document.getElementById(VOICES[k].btn);
-                if (b && !VOICES[k].ok) b.hidden = true;
-                if (b && VOICES[k].ok) b.addEventListener("click", function () { play(k, true); });
-            });
-            document.getElementById("ftAudio").hidden = false;
-            document.getElementById("ftVoices").hidden = have.length < 2;
-            play(VOICES[lang()].ok ? lang() : have[0], false);
-        });
+        var l = (document.documentElement.lang || "en").toLowerCase().slice(0, 2);
+        try { l = (localStorage.getItem("ps_lang") || l).toLowerCase().slice(0, 2); } catch (e) {}
+        var files = l === "zh"
+            ? ["/media/audio/trail-freedom.zh.mp3", "/media/audio/trail-freedom.mp3"]
+            : ["/media/audio/trail-freedom.mp3"];
+        (function tryNext(i) {
+            if (i >= files.length) return;
+            fetch(files[i], { method: "HEAD" }).then(function (r) {
+                if (!r.ok) return tryNext(i + 1);
+                var a = document.getElementById("ftPlayer");
+                a.src = files[i];
+                document.getElementById("ftAudio").hidden = false;
+                var note = document.querySelector(".ft-audio .ft-note");
+                if (note) note.textContent = (files[i].indexOf(".zh.") > -1)
+                    ? "Yiki, in Chinese. Seven minutes on the whole walk."
+                    : "Jason, five minutes on the whole walk.";
+            }).catch(function () { tryNext(i + 1); });
+        })(0);
     })();
 })();
 </script>
