@@ -54,6 +54,38 @@
         .ft-guide { display: inline-block; font-size: .66rem; font-weight: 800; letter-spacing: .1em;
                     text-transform: uppercase; color: #1f3a5f; border: 1px solid #d3d3da;
                     border-radius: 999px; padding: .08rem .5rem; }
+        /* Each stop carries its own pictures. The one at the top of the page is
+           for deciding whether to walk at all; this one is for the person who
+           is already standing there, so it lives next to that stop's words and
+           nowhere else. [SEAN "a slideshow for each one of them"] */
+        #ftStops .ft-mini-show { position: relative; margin: .6rem 0 .2rem; border-radius: 10px;
+                        overflow: hidden; background: #f1efe8; max-width: 420px; }
+        #ftStops .ft-mini-show img { display: block; width: 100%; height: 170px; object-fit: cover; }
+        /* Seventh time. A class with !important STILL loses to modern.css,
+           because its button rule is eight :not() clauses deep and specificity
+           is compared before !important between two important declarations.
+           There are sixteen of these so an id per button is out, but the list
+           has an id, and #ftStops beats nine classes. This file already solved
+           it exactly this way for .ft-play twenty lines up; I wrote the class
+           version first anyway and the arrows came out as bare underlined
+           glyphs, which is what the comment I replaced claimed to prevent. */
+        #ftStops .ft-mini-nav { position: absolute !important; top: 50% !important;
+                       transform: translateY(-50%) !important;
+                       width: 32px !important; height: 32px !important;
+                       min-width: 0 !important; min-height: 0 !important;
+                       border: 0 !important; border-radius: 50% !important;
+                       background: rgba(255,255,255,.92) !important; color: #14110c !important;
+                       font-size: 1.1rem !important; line-height: 1 !important;
+                       text-decoration: none !important; padding: 0 !important;
+                       cursor: pointer !important; display: flex !important;
+                       align-items: center; justify-content: center;
+                       box-shadow: 0 1px 4px rgba(11,8,9,.3) !important; }
+        #ftStops .ft-mini-nav.prev { left: 6px !important; }
+        #ftStops .ft-mini-nav.next { right: 6px !important; }
+        #ftStops .ft-mini-count { position: absolute; right: 8px; bottom: 8px; font-size: .72rem;
+                         font-weight: 700; color: #fff; background: rgba(11,8,9,.6);
+                         border-radius: 999px; padding: .1rem .45rem; }
+        @media (max-width: 640px) { #ftStops .ft-mini-show img { height: 140px; } }
         .ft-yiki { margin-top: .55rem; color: #4a453d; font-size: .93rem; line-height: 1.6; }
         .ft-yiki .ft-guide { margin-right: .5rem; }
         /* Hung off the list's id: modern.css strips padding and background from
@@ -71,6 +103,8 @@
         .ft-audio { margin: 1.4rem 0; }
         .ft-audio audio { width: 100%; }
         .ft-note { font-size: .9rem; color: #6b655b; }
+        .ft-pulse { font-size: .9rem; color: #6b655b; margin: -.6rem 0 1.2rem; }
+        .ft-pulse b { color: #1f3a5f; font-weight: 800; }
         /* Both readings sit on the page. Picking a voice is not the same act as
            changing the language of the whole site, and somebody who wants the
            Chinese should not have to do the second to get the first. */
@@ -246,6 +280,8 @@
         <h1 class="ft-title">The Freedom Trail</h1>
         <div class="ft-truth" id="ftTruth">Measuring the walk…</div>
 
+        <p class="ft-pulse" id="ftPulse" hidden></p>
+
         <div class="ft-audio" id="ftAudio" hidden>
             <audio controls preload="none" id="ftPlayer"></audio>
             <p class="ft-note" id="ftNote"></p>
@@ -284,6 +320,8 @@
                         <li>It is <b>never sent to us</b>. No position leaves this phone.</li>
                         <li>Your footprints are kept in this browser so you can see the walk
                             you did, and you can erase them at any time.</li>
+                        <li>The page counts steps for the trail's public total, as a plain
+                            number. Where you are is never part of it.</li>
                         <li>Close the page and the following stops.</li>
                     </ul>
                     <div class="row">
@@ -408,10 +446,21 @@
                    narr +
                    '<div class="ft-meta">' + meta + '</div>' +
                    '<div class="ft-desc">' + s.desc + '</div>' +
+                   ((s.photos || []).length
+                     ? '<div class="ft-mini-show" data-stop="' + s.n + '">' +
+                       '<img data-src="' + pic(s.photos[0], 560) + '" alt="' + s.name.replace(/"/g, "") + '">' +
+                       ((s.photos.length > 1)
+                         ? '<button class="ft-mini-nav prev" data-d="-1" aria-label="Previous picture">&#8249;</button>' +
+                           '<button class="ft-mini-nav next" data-d="1" aria-label="Next picture">&#8250;</button>' +
+                           '<span class="ft-mini-count">1/' + s.photos.length + '</span>'
+                         : '') +
+                       '</div>'
+                     : '') +
                    note +
                    '</div></div>';
         }).join("");
         if (typeof markShowing === "function") markShowing();   // the rebuild wipes it
+        if (typeof feedMiniShows === "function") feedMiniShows(); // fresh imgs, fresh queue
         document.getElementById("ftAll").setAttribute("aria-pressed", mode === "all");
         document.getElementById("ftHalf").setAttribute("aria-pressed", mode === "half");
         stopAudio();            // the list just changed under whatever was playing
@@ -652,6 +701,42 @@
         }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
     }
 
+    // Commons serves the ORIGINAL behind Special:FilePath, and these are three
+    // and four thousand pixels wide. FilePath takes a width, so ask for the
+    // size actually being drawn; the stored URL stays canonical.
+    function pic(url, w) {
+        if (!url) return url;
+        return url + (url.indexOf("?") > -1 ? "&" : "?") + "width=" + w;
+    }
+    // Sixteen stop pictures requested in one burst is exactly what Commons
+    // throttles. Measured, not guessed: the burst loads ten of sixteen, then
+    // zero of sixteen on a cold reload, while ANY single one retried alone
+    // loads instantly. And an <img> that errors stays errored forever. So the
+    // list's pictures are fed one at a time in walking order, a polite beat
+    // apart, and whatever failed gets one second pass. The big slideshow is a
+    // single image and stays out of this queue.
+    function feedMiniShows() {
+        var imgs = [].slice.call(document.querySelectorAll("#ftStops .ft-mini-show img[data-src]"));
+        var again = [];
+        (function next(i) {
+            if (i >= imgs.length) {
+                if (again.length) { imgs = again.slice(); again = []; setTimeout(function () { next(0); }, 1500); }
+                return;
+            }
+            var im = imgs[i];
+            var done = false;
+            var go = function (ok) {
+                if (done) return; done = true;
+                if (!ok && again.indexOf(im) < 0) again.push(im);
+                setTimeout(function () { next(i + 1); }, 220);
+            };
+            im.onload = function () { go(true); };
+            im.onerror = function () { go(false); };
+            im.src = im.dataset.src;
+            setTimeout(function () { go(im.naturalWidth > 0); }, 9000);
+        })(0);
+    }
+
     // ---------------------------------------------------------------- slideshow
     // One photograph per stop, in walking order, so a reader can see the whole
     // trail before deciding and recognise each building when they reach it.
@@ -659,7 +744,7 @@
     function paintShow() {
         if (!showList.length) return;
         var st = showList[showI];
-        document.getElementById("ftShowImg").src = st.photos[0];
+        document.getElementById("ftShowImg").src = pic(st.photos[0], 1200);
         document.getElementById("ftShowImg").alt = st.name;
         document.getElementById("ftShowCap").innerHTML =
             "<b>" + st.n + ". " + st.name + "</b>";
@@ -688,6 +773,24 @@
         // slideshow are two views of one thing, so they hold one position
         // between them rather than each keeping its own. [SEAN "i want slide
         // show to be aligned to each of 16"]
+        // Each stop's own pictures. One delegated handler for all sixteen, and
+        // the position lives on the element rather than in a variable, so a
+        // list rebuild cannot leave sixteen counters pointing at the wrong
+        // photographs.
+        document.getElementById("ftStops").addEventListener("click", function (e) {
+            var nav = e.target.closest(".ft-mini-nav"); if (!nav) return;
+            e.stopPropagation();                       // not a request to move the big one
+            var box = nav.closest(".ft-mini-show");
+            var stop = (trail.stops || []).find(function (st) {
+                return String(st.n) === box.dataset.stop; });
+            var pics = (stop && stop.photos) || []; if (pics.length < 2) return;
+            var at = ((+box.dataset.at || 0) + (+nav.dataset.d) + pics.length) % pics.length;
+            box.dataset.at = at;
+            var im = box.querySelector("img");
+            im.removeAttribute("data-src");          // it is out of the feed queue now
+            im.src = pic(pics[at], 560);
+            box.querySelector(".ft-mini-count").textContent = (at + 1) + "/" + pics.length;
+        });
         document.getElementById("ftStops").addEventListener("click", function (e) {
             var n = e.target.closest("[data-show]"); if (!n) return;
             var k = showList.findIndex(function (st) { return String(st.n) === n.dataset.show; });
@@ -750,6 +853,41 @@
             ? prints.length + " footprints saved on this phone."
             : "";
     }
+    // Sean: total steps made, and how many travellers are on the trail now.
+    // The consent promise is that POSITION never leaves the phone, and this
+    // keeps it: what goes out is a bare count of new footprints, no
+    // coordinates, no name, nothing that survives the day. Steps are an
+    // estimate from distance walked and the page says so.
+    var pulseSent = 0, pulseFresh = true, pulseTimer = null;
+    function sendPulse() {
+        var delta = prints.length - pulseSent;
+        if (delta <= 0) return;
+        var body = { prints: Math.min(delta, 40), fresh: pulseFresh };
+        pulseFresh = false;
+        pulseSent = prints.length;
+        fetch("/api/trail/pulse", { method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body) })
+            .then(function (r) { return r.json(); })
+            .then(paintPulse).catch(function () {});
+    }
+    function paintPulse(d) {
+        if (!d || !d.ok) return;
+        var el = document.getElementById("ftPulse");
+        var bits = [];
+        if (d.walking_now > 0)
+            bits.push("<b>" + d.walking_now + "</b> " +
+                      (d.walking_now === 1 ? "traveller" : "travellers") + " on the trail right now");
+        if (d.total_steps_est > 0)
+            bits.push("about <b>" + d.total_steps_est.toLocaleString() + "</b> steps walked here so far");
+        if (!bits.length) return;
+        el.innerHTML = bits.join(" · ");
+        el.hidden = false;
+    }
+    // Everyone sees the counter; only consented walkers add to it.
+    fetch("/api/trail/pulse").then(function (r) { return r.json(); })
+        .then(paintPulse).catch(function () {});
+
     function addPrint(lat, lon) {
         var last = prints[prints.length - 1];
         // one print every twenty five metres or so, not one per fix, or the map
@@ -757,6 +895,9 @@
         if (last && Math.abs(last[0] - lat) < 0.00022 && Math.abs(last[1] - lon) < 0.00028) return;
         prints.push([+lat.toFixed(5), +lon.toFixed(5)]);
         savePrints(); paintPrints(); drawPrints();
+        // batched a minute at a time, so a walk is a handful of tiny pings
+        if (!pulseTimer) pulseTimer = setTimeout(function () {
+            pulseTimer = null; sendPulse(); }, 60000);
     }
     // Screen bearing between two lat/lon points. Longitude degrees shrink with
     // latitude, so they are scaled before the angle is taken, otherwise every

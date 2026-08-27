@@ -4195,6 +4195,67 @@ def api_trails():
         return jsonify({"ok": False, "trails": [], "error": str(e)}), 500
 
 
+# ---------------------------------------------------------------- trail pulse
+# Sean: count the total steps made and how many travellers are walking now.
+#
+# The consent panel promises that POSITION never leaves the phone, and this
+# keeps that promise by never accepting one. A walking phone sends a bare
+# count of new footprints, nothing else: no coordinates, no id, no cookie
+# read. Steps are estimated from prints (one print per ~25 m, a walking pace
+# runs ~1,320 steps a kilometre, so ~33 steps a print) and the estimate is
+# labelled as one. "Walking now" is how many distinct pings landed in the
+# last 15 minutes, keyed by a hash that changes every day so yesterday's
+# walker cannot be recognised today.
+_PULSE_PATH = os.path.join(DATA_DIR, "trail_pulse.json")
+_PULSE_LOCK = threading.Lock()
+_STEPS_PER_PRINT = 33
+
+
+def _pulse_load():
+    try:
+        with open(_PULSE_PATH, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {"total_prints": 0, "walks": 0, "recent": {}}
+
+
+@app.route("/api/trail/pulse", methods=["POST", "GET"])
+def api_trail_pulse():
+    now = time.time()
+    with _PULSE_LOCK:
+        d = _pulse_load()
+        # everyone reads; only a POST with a sane delta writes
+        if request.method == "POST":
+            body = request.get_json(silent=True) or {}
+            delta = body.get("prints", 0)
+            fresh = bool(body.get("fresh"))
+            if isinstance(delta, int) and 0 < delta <= 40:   # ~1 km of prints max per ping
+                d["total_prints"] = int(d.get("total_prints", 0)) + delta
+                if fresh:
+                    d["walks"] = int(d.get("walks", 0)) + 1
+                # the day-salted hash: same phone pings once per window, and
+                # nothing about it survives to tomorrow
+                salt = time.strftime("%Y-%m-%d")
+                tok = hashlib.sha256((salt + "|" + request.remote_addr).encode()).hexdigest()[:16]
+                rec = d.get("recent") or {}
+                rec[tok] = now
+                d["recent"] = {k: v for k, v in rec.items() if now - v < 900}
+                try:
+                    tmp = _PULSE_PATH + ".tmp"
+                    with open(tmp, "w", encoding="utf-8") as f:
+                        json.dump(d, f)
+                    os.replace(tmp, _PULSE_PATH)
+                except Exception:
+                    pass
+        rec = d.get("recent") or {}
+        return jsonify({
+            "ok": True,
+            "walking_now": sum(1 for v in rec.values() if now - v < 900),
+            "total_steps_est": int(d.get("total_prints", 0)) * _STEPS_PER_PRINT,
+            "total_walks": int(d.get("walks", 0)),
+        })
+
+
 @app.route("/freedom-trail")
 def freedom_trail_page():
     return send_file(os.path.join(BASE_DIR, "freedom-trail.html"))
