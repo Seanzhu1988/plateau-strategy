@@ -219,8 +219,11 @@
                             drop-shadow(0 0 1.7px #fff);
                     display: flex; align-items: center; justify-content: center; }
         .ft-arrow.route { font-size: 16px; }
-        .ft-arrow.step  { font-size: 11px; opacity: .75; }
-        .ft-arrow.step.last { opacity: 1; font-size: 14px; }
+        /* Route arrows stay navy (the plan); footprint arrows take the walker's
+           green, so the path you have walked is never mistaken for the one drawn
+           for you. */
+        .ft-arrow.step  { font-size: 11px; opacity: .8; color: #12a150; }
+        .ft-arrow.step.last { opacity: 1; font-size: 14px; color: #12a150; }
         .ft-you { width: 14px; height: 14px; border-radius: 50%; background: #12a150;
                   border: 2px solid #fff;
                   box-shadow: 0 0 0 3px rgba(18,161,80,.4), 0 1px 4px rgba(0,0,0,.4); }
@@ -831,19 +834,31 @@
         // heading, plus the latest one, which is the only heading that answers
         // "which way am I facing right now".
         var EVERY = 6;
-        printLayer = L.layerGroup(prints.map(function (p, i) {
+        printLayer = L.layerGroup().addTo(map);
+        // Thread the prints into one continuous line first, so the walk reads as
+        // a path from stop to stop and not a scatter of dots. It is the walker's
+        // green over a white casing, laid on top of the navy plan, so between,
+        // say, Boston Common and the State House you can see exactly how far
+        // along that leg your own feet have carried you. Green is walked, navy is
+        // still ahead.
+        if (prints.length > 1) {
+            L.polyline(prints, { color: "#fff", weight: 6, opacity: .85 }).addTo(printLayer);
+            L.polyline(prints, { color: "#12a150", weight: 3.5, opacity: .95 }).addTo(printLayer);
+        }
+        prints.forEach(function (p, i) {
             var last = i === prints.length - 1;
             // The first print has nothing behind it to take a heading from, so
             // it stays a dot rather than pointing somewhere invented.
             if (i > 0 && (last || i % EVERY === 0)) {
-                return L.marker(p, { icon: arrowIcon(bearing(prints[i - 1], p),
-                                     "step" + (last ? " last" : ""), last ? 18 : 14),
-                                     interactive: false, keyboard: false });
+                L.marker(p, { icon: arrowIcon(bearing(prints[i - 1], p),
+                              "step" + (last ? " last" : ""), last ? 18 : 14),
+                              interactive: false, keyboard: false }).addTo(printLayer);
+            } else {
+                L.circleMarker(p, { radius: 3, weight: 1.5, color: "#fff",
+                                    fillColor: "#12a150",
+                                    fillOpacity: last ? .95 : .5 }).addTo(printLayer);
             }
-            return L.circleMarker(p, { radius: 3, weight: 1.5, color: "#fff",
-                                       fillColor: "#12305b",
-                                       fillOpacity: last ? .9 : .42 });
-        })).addTo(map);
+        });
     }
     document.getElementById("ftForget").addEventListener("click", function () {
         prints = []; savePrints(); drawPrints(); paintPrints();
