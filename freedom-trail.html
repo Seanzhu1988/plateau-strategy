@@ -317,13 +317,13 @@
             count + " stops · " + fmt(walk) + " walking · " + fmt(inside) +
             " inside · about " + fmt(walk + inside) + " altogether";
 
-        // The drop-to-planner label says exactly what it will move, so "all
-        // sixteen" reads honestly when the whole trail is on, "these 11" when
-        // it is the downtown half, and so on.
+        // This one opens the full Trip Planner, a different thing from the
+        // follow map on this page, so the label names the Trip Planner and the
+        // count, "all 16" when the whole trail is on, "these 11" for the half.
         var drop = document.getElementById("ftDrop");
-        if (drop) drop.textContent = "Drop " +
+        if (drop) drop.textContent = "Open " +
             (count === trail.stops.length ? "all " + count : "these " + count) +
-            (count === 1 ? " stop" : " stops") + " on my map";
+            (count === 1 ? " stop" : " stops") + " in the Trip Planner";
 
         var host = document.getElementById("ftStops");
         host.innerHTML = trail.stops.map(function (s) {
@@ -474,7 +474,7 @@
             return;
         }
         document.getElementById("ftDropped").textContent =
-            places.length + " stops dropped. Opening your map…";
+            places.length + " stops sent. Opening the Trip Planner…";
         setTimeout(function () { location.href = "/trip-planner"; }, 700);
     });
 
@@ -511,6 +511,17 @@
             L.circleMarker([s.lat, s.lon], { radius: 5, color: "#12305b", weight: 3,
                 fillColor: "#fff", fillOpacity: 1, opacity: 1 }).addTo(routeLayer);
         });
+    }
+
+    // Fit the whole locked walk into the follow map (all stops, plus where you
+    // are), so every stop is dropped in and visible at once, not just the few
+    // beside your feet.
+    function fitWalk(lat, lon) {
+        if (!map) return;
+        var lls = selected().map(function (s) { return [s.lat, s.lon]; });
+        if (lat != null && lon != null) lls.push([lat, lon]);
+        if (lls.length > 1) map.fitBounds(L.latLngBounds(lls).pad(0.12));
+        else if (lls.length === 1) map.setView(lls[0], 15);
     }
 
     function openWalk() {          // confirm the route: lock it, then offer the walk
@@ -564,16 +575,20 @@
                 drawPrints();                        // last walk's prints, if any
                 var b = document.getElementById("ftFollow");
                 b.setAttribute("aria-pressed", "true"); b.textContent = "Put the map away";
-                setTimeout(function () { map.invalidateSize(); map.setView([lat, lon], 15); }, 60);
+                // Drop the WHOLE walk onto the follow map: fit all the locked
+                // stops in, so you see the entire trail at once with your place
+                // on it, not just a tight zoom around your feet.
+                setTimeout(function () { map.invalidateSize(); fitWalk(lat, lon); }, 60);
             }
             if (!youMarker) {
                 youMarker = L.marker([lat, lon], { icon: L.divIcon({ className: "", iconSize: [22, 22],
                     iconAnchor: [11, 11], html: '<div class="ft-you"></div>' }) }).addTo(map);
             } else { youMarker.setLatLng([lat, lon]); }
             addPrint(lat, lon);                      // the trail you actually walked
-            if (map) map.panTo([lat, lon]);          // the map stays with you
+            // The view holds the whole trail; your dot moves on it as you walk,
+            // so the map follows your PLACE rather than sliding the streets.
             document.getElementById("ftLoc").textContent =
-                "The map is moving with you, within " + acc + " m.";
+                "The whole trail is on the map, your place on it moving as you go. Within " + acc + " m.";
         }, function (err) {
             stopFollow(err && err.code === 1
                 ? "Location is blocked for this site, so the map cannot follow you."
