@@ -150,7 +150,11 @@
         .ft-inc { flex: 0 0 auto; display: flex; align-items: flex-start; margin-top: .2rem; }
         .ft-inc input { width: 22px; height: 22px; cursor: pointer; accent-color: #1f3a5f; }
         .ft-stop.locked .ft-inc input { cursor: default; }
-        .ft-walk { margin: 1.8rem 0 0; }
+        .ft-walk { margin: 0; }
+        #ftWalk { font: inherit !important; font-weight: 700 !important; cursor: pointer;
+                  border: 1px solid #1f3a5f !important; border-radius: 4px !important;
+                  background: #1f3a5f !important; color: #fff !important;
+                  padding: .6rem 1rem !important; min-height: 44px; }
         #ftWalk { font: inherit !important; font-weight: 700 !important; cursor: pointer;
                   border: 1px solid #1f3a5f !important; background: #1f3a5f !important;
                   color: #fff !important; padding: .8rem 1.1rem !important; min-height: 46px;
@@ -287,20 +291,17 @@
         <div class="ft-pick">
             <button id="ftAll" aria-pressed="true">All sixteen</button>
             <button id="ftHalf" aria-pressed="false">Downtown half</button>
+            <button id="ftWalk">Lock the map</button>
         </div>
         <p class="ft-sum" id="ftSum"></p>
 
-
-
-        <div id="ftStops"></div>
-
-        <!-- The walk block came up top for a day and went back down. [SEAN
-             "maybe its better to move them back to the bottom, we might add
-             some other things later"] Reading the sixteen stops IS the way a
-             person decides, so the button belongs where the deciding ends,
-             and the top of the page stays clear for what comes next. -->
+        <!-- The lock button lives IN the pick row, beside Downtown half, and
+             says Lock the map. [SEAN "can you change it to lock the map...
+             move it next to down half so its not taking up spaces"] Pick a
+             version, lock it, one line. What unfolds on locking sits right
+             here under that line, where the tap just happened, not at the
+             bottom of sixteen stops. -->
         <div class="ft-walk">
-            <button id="ftWalk">Lock these stops and walk</button>
             <div id="ftConfirm" hidden>
                 <p class="ft-loc">Your route is locked. Share your location and the page itself becomes
                    the map, moving with you, while you read and play each stop over it.</p>
@@ -332,6 +333,13 @@
         </div>
 
     </div>
+
+
+
+
+        <div id="ftStops"></div>
+
+
 
         <div class="ft-actions">
             <a class="quiet" href="/destination-book?city=boston">More in Boston</a>
