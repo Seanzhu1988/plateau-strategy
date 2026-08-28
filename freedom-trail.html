@@ -151,15 +151,17 @@
         .ft-inc input { width: 22px; height: 22px; cursor: pointer; accent-color: #1f3a5f; }
         .ft-stop.locked .ft-inc input { cursor: default; }
         .ft-walk { margin: 0; }
+        /* ONE rule, and small. There were two: the compact pick-row rule and,
+           below it, the old full-width banner styling from when this button
+           was its own section, whose width:100% quietly won the cascade. That
+           is the "too big" Sean called out three times. Content width now, no
+           exceptions. */
         #ftWalk { font: inherit !important; font-weight: 700 !important; cursor: pointer;
                   border: 1px solid #1f3a5f !important; border-radius: 4px !important;
                   background: #1f3a5f !important; color: #fff !important;
-                  padding: .6rem 1rem !important; min-height: 44px; }
-        #ftWalk { font: inherit !important; font-weight: 700 !important; cursor: pointer;
-                  border: 1px solid #1f3a5f !important; background: #1f3a5f !important;
-                  color: #fff !important; padding: .8rem 1.1rem !important; min-height: 46px;
-                  border-radius: 6px !important; width: 100%;
-                  display: inline-flex !important; align-items: center; justify-content: center; }
+                  padding: .6rem 1rem !important; min-height: 44px;
+                  width: auto !important; flex: 0 0 auto !important;
+                  display: inline-flex !important; align-items: center; }
         /* [hidden] must beat the flex display above, or the locked button lingers. */
         #ftWalk[hidden] { display: none !important; }
         /* A patch of the live map fused into the BOTTOM-RIGHT CORNER of the page,
