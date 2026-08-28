@@ -57,8 +57,20 @@ GUIDES = {
         "voice_id": "hFamrilbAE6WDMtWgKvu",      # "pangge, chinese radio voice"
         "job": "the guides and the trail, in Chinese",
         "language": "zh",
+        # [SEAN, after hearing the first three trail recordings: "pangge
+        # slowdown little bit maybe 5%"] A radio voice reads at radio pace;
+        # a walking guide talks to somebody on their feet in the street.
+        "settings": {"speed": 0.95},
     },
 }
+
+
+def settings_for(guide):
+    """The guide's voice settings, or None. Recorded into the ledger alongside
+    the voice and the words, so changing a setting makes every file that guide
+    recorded stale, and the next run remakes them without anyone remembering."""
+    g = GUIDES.get(guide) or {}
+    return g.get("settings") or None
 
 # WHO READS A GUIDE IN WHICH LANGUAGE.
 #

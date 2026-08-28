@@ -99,6 +99,7 @@ def main():
         return 1
     voice = gv.voice_id(who)
     reader = gv.GUIDES[who]["name"]
+    tuning = gv.settings_for(who)
 
     manifest = vg.load_manifest()
     have, todo, thin, missing = [], [], [], []
@@ -120,7 +121,8 @@ def main():
         # Record when missing, when the words or voice changed, or when a file is
         # on disk with no ledger row, that last one being the short placeholders
         # these deep scripts are here to replace. Never adopt a placeholder.
-        stale = row.get("voice") != voice or row.get("sig") != vg.sig(text)
+        stale = (row.get("voice") != voice or row.get("sig") != vg.sig(text)
+                 or row.get("settings") != tuning)
         if force or not os.path.exists(op) or stale:
             todo.append((n, text, op))
         else:
@@ -159,7 +161,7 @@ def main():
 
     made, failed = [], []
     for n, text, op in todo:
-        audio, why = vg.record(key, voice, text)
+        audio, why = vg.record(key, voice, text, settings=tuning)
         if why == "QUOTA":
             print("\nOut of characters at ElevenLabs. %d recorded this run, %d still "
                   "waiting. Run again to pick up where this stopped."
@@ -172,6 +174,7 @@ def main():
         with open(op, "wb") as f:
             f.write(audio)
         manifest[os.path.basename(op)] = {"voice": voice, "sig": vg.sig(text),
+                                          "settings": tuning,
                                           "words": len(text.split()), "chars": len(text)}
         vg.save_manifest(manifest)
         made.append(n)
