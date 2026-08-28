@@ -156,11 +156,14 @@
            was its own section, whose width:100% quietly won the cascade. That
            is the "too big" Sean called out three times. Content width now, no
            exceptions. */
-        #ftWalk { font: inherit !important; font-weight: 700 !important; cursor: pointer;
+        #ftWalk { font: inherit !important; font-size: .85rem !important;
+                  font-weight: 700 !important; cursor: pointer;
                   border: 1px solid #1f3a5f !important; border-radius: 4px !important;
                   background: #1f3a5f !important; color: #fff !important;
-                  padding: .6rem 1rem !important; min-height: 44px;
-                  width: auto !important; flex: 0 0 auto !important;
+                  padding: .35rem .75rem !important;
+                  min-height: 0 !important; height: auto !important;
+                  width: auto !important; max-width: none;
+                  flex: 0 0 auto !important; align-self: center;
                   display: inline-flex !important; align-items: center; }
         /* [hidden] must beat the flex display above, or the locked button lingers. */
         #ftWalk[hidden] { display: none !important; }
