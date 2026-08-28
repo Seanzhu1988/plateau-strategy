@@ -21,6 +21,31 @@
 (function () {
     "use strict";
 
+    // modern.css flattens every button behind a selector eight :not() clauses
+    // deep, marked !important, and an inline style LOSES to a stylesheet
+    // !important. Ids outrank the clause pile, so the three buttons this file
+    // creates get their look from one injected sheet. Eighth encounter with
+    // this rule; the pattern is always ids, never classes, never inline.
+    (function css() {
+        if (document.getElementById("psxInstallCss")) return;
+        var st = document.createElement("style");
+        st.id = "psxInstallCss";
+        st.textContent =
+            "#psxShare, #psxInstallYes, #psxInstallClose {" +
+            "  font: inherit !important; font-weight: 700 !important;" +
+            "  border-radius: 999px !important; text-decoration: none !important;" +
+            "  cursor: pointer !important; min-height: 0 !important; min-width: 0 !important;" +
+            "  display: inline-flex !important; align-items: center; gap: .3rem; }" +
+            "#psxShare { font-size: .82rem !important; border: 1px solid #d3d3da !important;" +
+            "  background: #fff !important; color: #1f3a5f !important;" +
+            "  padding: .28rem .75rem !important; margin-left: .6rem; vertical-align: middle; }" +
+            "#psxInstallYes { border: 0 !important; background: #1f3a5f !important;" +
+            "  color: #fff !important; padding: .4rem 1.1rem !important; margin-right: .5rem; }" +
+            "#psxInstallClose { border: 1px solid #d3d3da !important; background: #fff !important;" +
+            "  color: #1f3a5f !important; padding: .4rem 1rem !important; }";
+        document.head.appendChild(st);
+    })();
+
     var stash = null;                    // the browser's install offer, held for the click
 
     window.addEventListener("beforeinstallprompt", function (e) {
@@ -71,27 +96,50 @@
         });
     }
 
-    function sheet(html) {
+    function sheet(html, opts) {
+        opts = opts || {};
+        var old = document.getElementById("psxInstallSheet");
+        if (old) old.remove();                       // one sheet at a time
         var host = document.createElement("div");
         host.id = "psxInstallSheet";
         host.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(11,8,9,.45);" +
             "display:flex;align-items:flex-end;justify-content:center;";
+        var yes = opts.onYes
+            ? '<button id="psxInstallYes" style="font:inherit;font-weight:700;border:0;' +
+              'border-radius:999px;background:#1f3a5f;color:#fff;padding:.4rem 1.1rem;' +
+              'cursor:pointer;margin-right:.5rem">' + (opts.yesLabel || "Yes, add it") + "</button>"
+            : "";
         host.innerHTML =
             '<div style="background:#fff;color:#14110c;border-radius:14px 14px 0 0;' +
             'max-width:480px;width:100%;padding:1.1rem 1.2rem 1.4rem;font-size:.95rem;' +
             'line-height:1.55;box-shadow:0 -4px 24px rgba(11,8,9,.25)">' + html +
-            '<div style="margin-top:.9rem;text-align:right">' +
+            '<div style="margin-top:.9rem;text-align:right">' + yes +
             '<button id="psxInstallClose" style="font:inherit;font-weight:700;border:1px solid #d3d3da;' +
-            'border-radius:999px;background:#fff;color:#1f3a5f;padding:.4rem 1rem;cursor:pointer">Close</button>' +
+            'border-radius:999px;background:#fff;color:#1f3a5f;padding:.4rem 1rem;cursor:pointer">' +
+            (opts.closeLabel || "Close") + "</button>" +
             "</div></div>";
         host.addEventListener("click", function (e) {
             if (e.target === host || e.target.id === "psxInstallClose") host.remove();
+            if (e.target.id === "psxInstallYes") { host.remove(); opts.onYes(); }
         });
         document.body.appendChild(host);
     }
 
     function clicked() {
         if (standalone()) return;                      // already on the home screen
+        // The question comes first, in every branch. [SEAN "i want it to do
+        // are you sure you want to add this on to your home screen?"] The
+        // logo sits exactly where a thumb lands by accident, the same reason
+        // its previous tenant, the reset, asked before acting. A tap on Yes
+        // is itself a user gesture, so the browser's install prompt is still
+        // allowed to fire from inside it.
+        sheet("<b>Are you sure you want to add this to your home screen?</b><br>" +
+              "<span style=\"color:#6b655b\">One tap on your home screen brings you " +
+              "straight back here.</span>",
+              { onYes: proceed, closeLabel: "Not now" });
+    }
+
+    function proceed() {
         if (stash) {                                   // the real one-click path
             var p = stash; stash = null;
             p.prompt();
