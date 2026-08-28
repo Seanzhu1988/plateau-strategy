@@ -17,7 +17,7 @@ COVERED = ["landing-page.html", "booking.html", "renter.html", "agent.html",
            "trip-planner.html", "trips.html", "guide-studio.html",
            "destination-book.html", "road-trip.html", "favorite-place.html",
            "met.html", "board.html", "archive.html", "driver.html",
-           "deflator.html", "factor-clock.html"]
+           "deflator.html", "factor-clock.html", "freedom-trail.html"]
 
 class _Extract(HTMLParser):
     def __init__(s):
