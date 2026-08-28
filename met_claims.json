@@ -1,0 +1,266 @@
+{
+ "about": "Every checkable work the /met cards name, resolved against the Met collection API and proven by title and artist, never pinned from memory. gallery is the museum-confirmed location on the day of resolution; check_met_cards.py re-asks the museum weekly.",
+ "resolved": "2026-08-28",
+ "claims": [
+  {
+   "room": "american-court",
+   "work": "Saint-Gaudens, Diana",
+   "object_id": 11999,
+   "accession": "1985.353",
+   "title": "Diana",
+   "artist": "Augustus Saint-Gaudens",
+   "gallery": "766",
+   "department": "The American Wing"
+  },
+  {
+   "room": "american-court",
+   "work": "The Tiffany loggia",
+   "object_id": 133,
+   "accession": "1978.10.1",
+   "title": "Architectural Elements from Laurelton Hall, Oyster Bay, New York",
+   "artist": "Louis C. Tiffany",
+   "gallery": "701",
+   "department": "The American Wing"
+  },
+  {
+   "room": "american-court",
+   "work": "Washington Crossing the Delaware",
+   "object_id": 11417,
+   "accession": "97.34",
+   "title": "Washington Crossing the Delaware",
+   "artist": "Emanuel Leutze",
+   "gallery": "760",
+   "department": "The American Wing"
+  },
+  {
+   "room": "arms-armor",
+   "work": "The armor of Henry VIII",
+   "object_id": 22741,
+   "accession": "19.131.1a–r, t–w, .2a–f, l",
+   "title": "Armor Garniture, Probably of King Henry VIII of England (reigned 1509–47)",
+   "artist": "Royal Workshops at Greenwich",
+   "gallery": "371",
+   "department": "Arms and Armor"
+  },
+  {
+   "room": "asian-astor",
+   "work": "The Buddha of Medicine wall mural",
+   "object_id": 42716,
+   "accession": "65.29.2",
+   "title": "Buddha of Medicine Bhaishajyaguru (Yaoshi fo)",
+   "artist": "",
+   "gallery": "206",
+   "department": "Asian Art"
+  },
+  {
+   "room": "dendur",
+   "work": "The Temple of Dendur",
+   "object_id": 547802,
+   "accession": "68.154",
+   "title": "The Temple of Dendur",
+   "artist": "",
+   "gallery": "131",
+   "department": "Egyptian Art"
+  },
+  {
+   "room": "egyptian",
+   "work": "The Tomb of Perneb",
+   "object_id": 543937,
+   "accession": "13.183.3",
+   "title": "Mastaba Tomb of Perneb",
+   "artist": "",
+   "gallery": "100",
+   "department": "Egyptian Art"
+  },
+  {
+   "room": "egyptian",
+   "work": "The statues of Hatshepsut",
+   "object_id": 548519,
+   "accession": "27.3.163",
+   "title": "Large Seated Statue of Hatshepsut",
+   "artist": "",
+   "gallery": "115",
+   "department": "Egyptian Art"
+  },
+  {
+   "room": "egyptian",
+   "work": "William the hippopotamus",
+   "object_id": 544227,
+   "accession": "17.9.1",
+   "title": "Hippopotamus (\"William\")",
+   "artist": "",
+   "gallery": "111",
+   "department": "Egyptian Art"
+  },
+  {
+   "room": "euro-paintings",
+   "work": "Bruegel, The Harvesters",
+   "object_id": 435809,
+   "accession": "19.164",
+   "title": "The Harvesters",
+   "artist": "Pieter Bruegel the Elder",
+   "gallery": "638",
+   "department": "European Paintings"
+  },
+  {
+   "room": "euro-paintings",
+   "work": "David, The Death of Socrates",
+   "object_id": 436105,
+   "accession": "31.45",
+   "title": "The Death of Socrates",
+   "artist": "Jacques Louis David",
+   "gallery": "634",
+   "department": "European Paintings"
+  },
+  {
+   "room": "euro-paintings",
+   "work": "Rembrandt, Aristotle with a Bust of Homer",
+   "object_id": 437394,
+   "accession": "61.198",
+   "title": "Aristotle with a Bust of Homer",
+   "artist": "Rembrandt (Rembrandt van Rijn)",
+   "gallery": "616",
+   "department": "European Paintings"
+  },
+  {
+   "room": "grand-stair",
+   "work": "Tiepolo, The Triumph of Marius",
+   "object_id": 437788,
+   "accession": "65.183.1",
+   "title": "The Triumph of Marius",
+   "artist": "Giovanni Battista Tiepolo",
+   "gallery": "600",
+   "department": "European Paintings"
+  },
+  {
+   "room": "greek-roman",
+   "work": "The New York Kouros",
+   "object_id": 253370,
+   "accession": "32.11.1",
+   "title": "Marble statue of a kouros (youth)",
+   "artist": "",
+   "gallery": "154",
+   "department": "Greek and Roman Art"
+  },
+  {
+   "room": "greek-roman",
+   "work": "The column from the Temple of Artemis at Sardis",
+   "object_id": 252453,
+   "accession": "26.59.1",
+   "title": "Marble column from the Temple of Artemis at Sardis",
+   "artist": "",
+   "gallery": "160",
+   "department": "Greek and Roman Art"
+  },
+  {
+   "room": "islamic",
+   "work": "The Damascus Room",
+   "object_id": 452102,
+   "accession": "1970.170",
+   "title": "Damascus Room",
+   "artist": "",
+   "gallery": "461",
+   "department": "Islamic Art"
+  },
+  {
+   "room": "islamic",
+   "work": "The mihrab from Isfahan",
+   "object_id": 449537,
+   "accession": "39.20",
+   "title": "Mihrab (Prayer Niche)",
+   "artist": "",
+   "gallery": "455",
+   "department": "Islamic Art"
+  },
+  {
+   "room": "lehman",
+   "work": "Botticelli, The Annunciation",
+   "object_id": 459016,
+   "accession": "1975.1.74",
+   "title": "The Annunciation",
+   "artist": "Botticelli (Alessandro di Mariano Filipepi)",
+   "gallery": "952",
+   "department": "Robert Lehman Collection"
+  },
+  {
+   "room": "lehman",
+   "work": "Ingres, Portrait of the Princesse de Broglie",
+   "object_id": 459106,
+   "accession": "1975.1.186",
+   "title": "Joséphine-Éléonore-Marie-Pauline de Galard de Brassac de Béarn (1825–1860), Princesse de Broglie",
+   "artist": "Jean Auguste Dominique Ingres",
+   "gallery": "957",
+   "department": "Robert Lehman Collection"
+  },
+  {
+   "room": "medieval",
+   "work": "The choir screen from Valladolid Cathedral",
+   "object_id": 201926,
+   "accession": "56.234.1",
+   "title": "Choir screen from the Cathedral of Valladolid",
+   "artist": "Rafal Amezúa",
+   "gallery": "305",
+   "department": "European Sculpture and Decorative Arts"
+  },
+  {
+   "room": "modern",
+   "work": "Balthus, The Mountain",
+   "object_id": 482598,
+   "accession": "1982.530",
+   "title": "The Mountain",
+   "artist": "Balthus (Balthasar Klossowski)",
+   "gallery": "955",
+   "department": "Modern and Contemporary Art"
+  },
+  {
+   "room": "modern",
+   "work": "Jackson Pollock, Autumn Rhythm (Number 30)",
+   "object_id": 488978,
+   "accession": "57.92",
+   "title": "Autumn Rhythm: Number 30, 1950",
+   "artist": "Jackson Pollock",
+   "gallery": "851",
+   "department": "Modern and Contemporary Art"
+  },
+  {
+   "room": "modern",
+   "work": "Picasso, Gertrude Stein",
+   "object_id": 488221,
+   "accession": "47.106",
+   "title": "Gertrude Stein",
+   "artist": "Pablo Picasso",
+   "gallery": "965",
+   "department": "Modern and Contemporary Art"
+  },
+  {
+   "room": "nineteenth-century",
+   "work": "Degas, The Little Fourteen-Year-Old Dancer",
+   "object_id": 196439,
+   "accession": "29.100.370",
+   "title": "The Little Fourteen-Year-Old Dancer",
+   "artist": "Edgar Degas",
+   "gallery": "815",
+   "department": "European Sculpture and Decorative Arts"
+  },
+  {
+   "room": "nineteenth-century",
+   "work": "Monet, Bridge over a Pond of Water Lilies",
+   "object_id": 437127,
+   "accession": "29.100.113",
+   "title": "Bridge over a Pond of Water Lilies",
+   "artist": "Claude Monet",
+   "gallery": "819",
+   "department": "European Paintings"
+  },
+  {
+   "room": "nineteenth-century",
+   "work": "Van Gogh, Wheat Field with Cypresses",
+   "object_id": 436535,
+   "accession": "1993.132",
+   "title": "Wheat Field with Cypresses",
+   "artist": "Vincent van Gogh",
+   "gallery": "822",
+   "department": "European Paintings"
+  }
+ ]
+}

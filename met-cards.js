@@ -1,7 +1,12 @@
 /* The gallery cards for /met. Written by one model, fact-checked by two
  * adversaries, and corrected where they caught errors: the Diana here is
  * a smaller cast (the Madison Square Garden original is in Philadelphia),
- * and Autumn Rhythm hangs one level up in the modern wing. Content only:
+ * and Autumn Rhythm hangs one level up in the modern wing. Re-verified
+ * against the Met's own collection API on 2026-08-28, which caught two
+ * silent drifts: America Today and I Saw the Figure 5 in Gold are both
+ * off view per the museum, so the modern card now names Gertrude Stein
+ * and The Mountain, both confirmed hanging. check_met_cards.py repeats
+ * that check weekly so the next rehang cannot lie through us. Content only:
  * geometry and behaviour live in met-map.js, so a fact fix never touches
  * the drawing. */
 window.MET_CARDS = {
@@ -172,12 +177,12 @@ window.MET_CARDS = {
     "note": "Pollock made this drip painting on the floor of his Long Island barn in 1950. It hangs upstairs in this wing, one level up."
    },
    {
-    "work": "Thomas Hart Benton, America Today",
-    "note": "This ten-panel mural wraps around the room the way it did in its original 1930s boardroom."
+    "work": "Picasso, Gertrude Stein",
+    "note": "Picasso painted her through some ninety sittings in 1905-06, then wiped the face and repainted it from memory. Stein left it to the Met herself."
    },
    {
-    "work": "Charles Demuth, I Saw the Figure 5 in Gold",
-    "note": "Demuth painted it as a portrait of his friend the poet William Carlos Williams, built from his poem about a fire engine."
+    "work": "Balthus, The Mountain",
+    "note": "A wall-sized alpine scene from 1937, hikers frozen mid-gesture in strange bright stillness. People stop in front of it without knowing why."
    }
   ]
  },

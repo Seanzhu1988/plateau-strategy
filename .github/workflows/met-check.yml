@@ -1,0 +1,40 @@
+# Ask the Met, weekly, whether the /met cards still tell the truth.
+#
+# The twin of moma-refresh.yml, shaped for a different museum: MoMA publishes
+# a dataset we rebuild an index from, the Met publishes a live API we simply
+# ask. Nothing is rebuilt or committed here; the job reads met_claims.json,
+# asks the museum where each named work hangs today, and says so LOUDLY in
+# the run summary when the answer has changed. The first manual run of this
+# check caught two works our cards promised that the museum had taken down.
+#
+# No secrets needed: the Met's API is public, free, keyless.
+name: Check Met cards
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "50 9 * * 1"     # Mondays 09:50 UTC, right after the MoMA refresh
+
+permissions:
+  contents: read
+
+concurrency:
+  group: met-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Ask the museum
+        run: |
+          echo '### Met card check, museum API vs our page' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          python3 check_met_cards.py | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
