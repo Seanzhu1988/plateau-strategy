@@ -14,6 +14,7 @@ Data persists in JSON files: reservations.json, renters.json, agents.json.
 Run:  python3 app.py   ->  http://localhost:5060
 """
 import os
+import sqlite3
 import re
 import json
 import time
@@ -3822,6 +3823,7 @@ def _gal_get(url, timeout=12):
 _GAL_HOMES = {
     "The Met, New York": (40.77943, -73.96324, "New York"),
     "Art Institute of Chicago": (41.87958, -87.62376, "Chicago"),
+    "Museum of Modern Art": (40.76143, -73.97760, "New York"),
 }
 
 
@@ -3911,6 +3913,58 @@ def _gal_aic(q, limit=8):
             row["copyright"] = True
             row["source_url"] = "https://www.artic.edu/artworks/%s" % x.get("id")
         out.append(row)
+    return out
+
+
+def _gal_moma(q, limit=8):
+    """MoMA, from the museum's own open dataset (CC0), built into moma.sqlite
+    by build_moma_index.py and refreshed weekly by CI.
+
+    api.moma.org is staff and partners only, so this is the honest road: all
+    160,705 works searchable by name or label number, and OnView carrying the
+    museum's own location string, "MoMA, Floor 5, 501", which updates when
+    they rehang. No network at request time; the file answers in microseconds
+    and a missing file simply contributes no rows."""
+    path = os.path.join(BASE_DIR, "moma.sqlite")
+    if not os.path.exists(path):
+        return []
+    out = []
+    db = sqlite3.connect("file:" + path + "?mode=ro", uri=True)
+    try:
+        meta = dict(db.execute("SELECT k, v FROM meta"))
+        rows = db.execute(
+            "SELECT title, artist, date, accession, on_view, image, object_id "
+            "FROM works WHERE accession = ? LIMIT ?", (q, limit)).fetchall()
+        if not rows:
+            # FTS5 treats punctuation as syntax; quote each term instead of
+            # handing user text to the query parser.
+            terms = " ".join('"%s"' % t.replace('"', "") for t in q.split()[:6])
+            try:
+                rows = db.execute(
+                    "SELECT w.title, w.artist, w.date, w.accession, w.on_view, "
+                    "w.image, w.object_id FROM works_fts f "
+                    "JOIN works w ON w.object_id = f.rowid "
+                    "WHERE works_fts MATCH ? ORDER BY rank LIMIT ?",
+                    (terms, limit)).fetchall()
+            except sqlite3.OperationalError:
+                rows = []
+        for t, a2, dt, acc, ov, img, oid in rows:
+            out.append({
+                "source": "Museum of Modern Art",
+                "title": t, "artist": a2 or "", "date": dt or "",
+                "item_number": acc or "",
+                "where": ov or "",
+                "on_view": bool(ov),
+                "image": img or "",
+                "images": [img] if img else [],
+                "city": "New York",
+                "museum_lat": _GAL_HOMES["Museum of Modern Art"][0],
+                "museum_lon": _GAL_HOMES["Museum of Modern Art"][1],
+                "source_url": "https://www.moma.org/collection/works/%d" % oid,
+                "dataset_date": meta.get("dataset_date", ""),
+            })
+    finally:
+        db.close()
     return out
 
 
@@ -4070,11 +4124,26 @@ def api_gallery_search():
     if hit and time.time() - hit[0] < 3600:
         return jsonify({"ok": True, "cached": True, **hit[1]})
     results = []
-    for fn in (_gal_met, _gal_aic, _gal_wikidata):
+    for fn in (_gal_met, _gal_aic, _gal_moma, _gal_wikidata):
         try:
             results.extend(fn(q))
         except Exception:
             pass
+    # THE MUSEUM'S OWN WORD BEATS SECOND-HAND KNOWLEDGE. Wikidata knows which
+    # collection holds a work but not whether it hangs today, so for MoMA works
+    # it answered "on view at the Museum of Modern Art" for a painting the
+    # museum's own dataset marks off view. When the dataset (rows carrying
+    # dataset_date) has a work, any other row claiming the same title at MoMA
+    # is the same object known less well, and it is dropped.
+    _moma_titles = set()
+    for r in results:
+        if r.get("dataset_date"):
+            _moma_titles.add((r.get("title") or "").strip().lower())
+    if _moma_titles:
+        results = [r for r in results
+                   if r.get("dataset_date")
+                   or "modern art" not in (r.get("source") or "").lower()
+                   or (r.get("title") or "").strip().lower() not in _moma_titles]
     # RANKING, and why one rule is not enough.
     #
     # An exact item number is the strongest signal there is: somebody is standing

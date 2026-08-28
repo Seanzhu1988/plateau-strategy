@@ -1,0 +1,87 @@
+# Refresh moma.sqlite from MoMA's own open dataset, weekly.
+#
+# The museum updates its GitHub dataset automatically; this job rebuilds our
+# committed index from it so a rehang reaches the site without anyone
+# remembering to. It also checks the /moma page's own gallery claims against
+# the fresh data and says so LOUDLY in the run summary when the museum has
+# moved a painting our cards still promise somewhere else. That is the whole
+# reason guides go stale, and this one refuses to.
+#
+# No secrets needed: the dataset is public, CC0.
+name: Refresh MoMA index
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "40 9 * * 1"     # Mondays 09:40 UTC, after MoMA's own auto-updates
+
+permissions:
+  contents: write
+
+concurrency:
+  group: moma-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Rebuild the index
+        run: python3 build_moma_index.py
+
+      - name: Check our cards against the museum's own data
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import sqlite3
+          # The claims our /moma cards make, as accession -> expected gallery.
+          CLAIMS = {
+              "472.1941": ("The Starry Night", "501"),
+              "333.1939": ("Les Demoiselles d'Avignon", "502"),
+              "162.1934": ("The Persistence of Memory", "517"),
+              "666.1959.a-c": ("Water Lilies", "515"),
+              "201.1963": ("Dance (I)", "506"),
+              "16.1949": ("Christina's World", "521"),
+              "7.1968": ("One: Number 31, 1950", "401"),
+              "476.1996.1-32": ("Campbell's Soup Cans", "412"),
+          }
+          db = sqlite3.connect("moma.sqlite")
+          print("### MoMA card check, museum data vs our page")
+          moved = 0
+          for acc, (name, gal) in CLAIMS.items():
+              row = db.execute("SELECT title, on_view FROM works WHERE accession=?",
+                               (acc,)).fetchone()
+              if not row:
+                  print("- UNKNOWN ACCESSION %s (%s): not in the dataset, check the number" % (acc, name))
+                  moved += 1
+              elif not row[1]:
+                  print("- OFF VIEW: %s, our page says gallery %s" % (name, gal))
+                  moved += 1
+              elif gal not in row[1]:
+                  print("- MOVED: %s is now at '%s', our page says %s. Update moma-cards.js." % (name, row[1], gal))
+                  moved += 1
+              else:
+                  print("- ok: %s at %s" % (name, row[1]))
+          print()
+          print("**%d change(s) need a human look**" % moved if moved else "**All card claims match the museum's data.**")
+          PY
+
+      - name: Commit if changed
+        run: |
+          git config user.name  "Claude"
+          git config user.email "noreply@anthropic.com"
+          git add moma.sqlite
+          if git diff --cached --quiet; then
+            echo "Dataset unchanged; nothing to commit."
+            exit 0
+          fi
+          git commit -m "MoMA index refreshed from the museum's dataset"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
