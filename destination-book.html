@@ -481,10 +481,12 @@
             // Jason's recording or no button at all [SEAN]: the device
             // voice that used to cover unrecorded places is gone.
             if (e.audio) {
-                links.push('<button class="golink" onclick="playGuide(this, \''
+                // The earbuds on the button, the ask in its tooltip. [SEAN "in every
+                // audio we ask them to carry headset to respect the general public"]
+                links.push('<button class="golink" title="Headphones, please, for the people around you." onclick="playGuide(this, \''
                     + esc(e.audio || '') + '\', \'' + esc(e.slug || e.name) + '\', \''
                     + esc(e.slug || '') + '\')">▶ '
-                    + T('Listen') + '</button>');
+                    + T('Listen') + ' <svg class="hs-ear" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true" style="vertical-align:-1px"><path d="M7.2 2.5a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66A4.1 4.1 0 0 0 7.2 2.5zm9.6 0a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66a4.1 4.1 0 0 0-1.7-8.34z"/></svg></button>');
             }
             if (e.tickets_url && e.slug) {
                 links.push('<a class="golink" href="/go/tickets/' + encodeURIComponent(e.slug)

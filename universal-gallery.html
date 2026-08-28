@@ -367,7 +367,8 @@
             var host = L.closest(".ug-card"), key = host.getAttribute("data-k");
             var pl = host.querySelector(".ug-player"), it = written[key] || {};
             if (!pl.dataset.built) {
-                pl.innerHTML = '<audio controls preload="none" src="' + it.audio + '"></audio>';
+                pl.innerHTML = '<audio controls preload="none" src="' + it.audio + '"></audio>' +
+                    '<div style="display:flex;gap:.4rem;align-items:center;color:#6b655b;font-size:.82rem;margin:.35rem 0 0"><svg class="hs-ear" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true" style="vertical-align:-1px"><path d="M7.2 2.5a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66A4.1 4.1 0 0 0 7.2 2.5zm9.6 0a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66a4.1 4.1 0 0 0-1.7-8.34z"/></svg> Headphones, please, for the people around you.</div>';
                 pl.dataset.built = "1";
             }
             pl.hidden = !pl.hidden;

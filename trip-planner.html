@@ -1796,7 +1796,7 @@
                +   '<div class="itin-time">' + fmt(r.arr) + '<span class="lv">, ' + fmt(r.leave) + '</span></div>'
                +   '<div>'
                +     '<div class="itin-name"><span>D' + (k + 1) + ' · ' + escj(p.name) + tag
-               +       (p.audio ? ' <button class="itin-play" onclick="playGuide(this, \'' + escj(p.audio) + '\', \'' + escj(p.slug || p.name) + '\', \'' + escj(p.slug || '') + '\')">▶ guide</button>' : '')
+               +       (p.audio ? ' <button class="itin-play" title="Headphones, please, for the people around you." onclick="playGuide(this, \'' + escj(p.audio) + '\', \'' + escj(p.slug || p.name) + '\', \'' + escj(p.slug || '') + '\')">▶ guide <svg class="hs-ear" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true" style="vertical-align:-1px"><path d="M7.2 2.5a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66A4.1 4.1 0 0 0 7.2 2.5zm9.6 0a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66a4.1 4.1 0 0 0-1.7-8.34z"/></svg></button>' : '')
                +       '</span>' + stars + '</div>'
                +     '<div class="itin-leg"' + (prev.pos === -1 ? ' title="from your start point"' : '') + '>'
                +       '<span>↓ ' + legLabel(from, p) + ' · ' + legMin + ' min · ' + trafficLabel(prev.now) + '</span>'

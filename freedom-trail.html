@@ -14,7 +14,17 @@
         header img { height: 42px; width: 42px; border-radius: 50%; }
         header .brand { font-size: 1.2rem; font-weight: 800; }
         .ft-wrap { max-width: 820px; margin: 2rem auto 4rem; padding: 0 1.2rem; }
-        .ft-title { font-size: 2rem; font-weight: 800; line-height: 1.15; color: #14110c; margin: 0 0 .5rem; }
+        /* The bronze sidewalk medallion beside the name. [SEAN "put similar
+           picture next to the name we have without water mark ... so people
+           will able to find it"] This is the marker set into the pavement
+           along the whole line, so the picture by the title is the exact
+           thing a walker's eyes should hunt for on the ground. A real
+           photograph from Commons, no watermark, checked by eye. */
+        .ft-titlerow { display: flex; align-items: center; gap: .9rem; margin: 0 0 .5rem; }
+        .ft-medal { width: 64px; height: 64px; border-radius: 50%; object-fit: cover;
+                    flex: 0 0 auto; box-shadow: 0 1px 5px rgba(11,8,9,.28); }
+        @media (max-width: 640px) { .ft-medal { width: 52px; height: 52px; } }
+        .ft-title { font-size: 2rem; font-weight: 800; line-height: 1.15; color: #14110c; margin: 0; }
         .ft-lede { font-size: 1.05rem; color: #4a453d; margin: 0 0 1.4rem; }
         .ft-truth { border: 1px solid #d3d3da; border-left: 3px solid #1f3a5f;
                     padding: .9rem 1.1rem; margin: 0 0 1.6rem; color: #14110c; }
@@ -113,6 +123,15 @@
                    background: #1f3a5f !important; color: #fff !important;
                    border-color: #1f3a5f !important; }
         #ftVoices[hidden] { display: none !important; }
+        /* The headphone ask. [SEAN "in every audio we ask them to carry
+           headset to respect the general public"] The full line sits by the
+           big player, and every stop's Play carries the small earbuds so the
+           ask travels with the sound. Muted, not scolding. */
+        .hs-note { display: flex; gap: .45rem; align-items: center; color: #6b655b;
+                   font-size: .85rem; margin: .5rem 0 0; }
+        .hs-note .hs-ear { flex: 0 0 auto; }
+        .hs-mini { display: inline-flex; color: #a9a294; margin-left: .3rem;
+                   vertical-align: middle; }
         .ft-actions { margin: 1.8rem 0 0; display: flex; gap: .6rem; flex-wrap: wrap; }
         .ft-actions a {
             font: inherit !important; font-weight: 700 !important; cursor: pointer;
@@ -242,7 +261,12 @@
     </header>
 
     <div class="ft-wrap">
-        <h1 class="ft-title">The Freedom Trail</h1>
+        <div class="ft-titlerow">
+            <img class="ft-medal" src="https://commons.wikimedia.org/wiki/Special:FilePath/Freedom_Trail_Marker%2C_Boston%2C_MA%2C_2023-02-21.jpg?width=160"
+                 alt="The bronze Freedom Trail marker set into the sidewalk"
+                 title="This bronze marker is set into the sidewalk along the red brick line. When you see it underfoot, you are on the trail.">
+            <h1 class="ft-title">The Freedom Trail</h1>
+        </div>
         <div class="ft-truth" id="ftTruth">Measuring the walk…</div>
 
         <p class="ft-pulse" id="ftPulse" hidden></p>
@@ -254,6 +278,7 @@
                 <button id="ftVoiceEn" aria-pressed="true">In English</button>
                 <button id="ftVoiceZh" aria-pressed="false">&#20013;&#25991;</button>
             </div>
+            <p class="hs-note"><svg class="hs-ear" viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M7.2 2.5a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66A4.1 4.1 0 0 0 7.2 2.5zm9.6 0a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66a4.1 4.1 0 0 0-1.7-8.34z"/></svg> Headphones, please, for the people around you.</p>
         </div>
 
 
@@ -384,7 +409,7 @@
             if (G) {
                 var primary = "/media/audio/trail-stop-" + s.n + G.suffix + ".mp3";
                 narr = '<div class="ft-byline"><span class="ft-guide">' + G.name + '</span>' +
-                       '<button class="ft-play" data-audio="' + primary + '">Play</button></div>';
+                       '<button class="ft-play" data-audio="' + primary + '">Play</button><span class="hs-mini" title="Headphones, please, for the people around you."><svg class="hs-ear" viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M7.2 2.5a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66A4.1 4.1 0 0 0 7.2 2.5zm9.6 0a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66a4.1 4.1 0 0 0-1.7-8.34z"/></svg></span></div>';
             }
             // Yiki's written aside stays as text. Her name chip is dropped when
             // she is also the one narrating aloud (the English page, after the
