@@ -150,7 +150,7 @@
         .ft-inc { flex: 0 0 auto; display: flex; align-items: flex-start; margin-top: .2rem; }
         .ft-inc input { width: 22px; height: 22px; cursor: pointer; accent-color: #1f3a5f; }
         .ft-stop.locked .ft-inc input { cursor: default; }
-        .ft-walk { margin: 1.8rem 0 0; }
+        .ft-walk { margin: .4rem 0 1.6rem; }
         #ftWalk { font: inherit !important; font-weight: 700 !important; cursor: pointer;
                   border: 1px solid #1f3a5f !important; background: #1f3a5f !important;
                   color: #fff !important; padding: .8rem 1.1rem !important; min-height: 46px;
@@ -290,8 +290,11 @@
         </div>
         <p class="ft-sum" id="ftSum"></p>
 
-        <div id="ftStops"></div>
-
+        <!-- The walk button lives ABOVE the sixteen stops. [SEAN "lock walk to
+             be moved above not bottom"] Sixteen five-minute stops make a long
+             page, and a button below them is a button nobody finds; the person
+             ready to walk should not have to scroll past the whole trail to
+             say so. The list stays below for reading and unticking. -->
         <div class="ft-walk">
             <button id="ftWalk">Lock these stops and walk</button>
             <div id="ftConfirm" hidden>
@@ -335,6 +338,8 @@
             you go.
         </div>
     </div>
+
+        <div id="ftStops"></div>
 
     <!-- The live map lives OUTSIDE the reading, a direct child of the page, so
          it sits behind the words (the reading is z-indexed above it) and the
