@@ -1383,15 +1383,18 @@ def _compress_and_cache(resp):
                     b"</body>",
                     b'<script src="/site-auth.js?v=%s" defer></script></body>'
                     % _ASSET_V.encode(), 1)
-            # Tapping the brand logo resets the page, after a yes, so an
-            # accidental thumb on the corner does not throw away a half-built
-            # trip. One script, injected like the sign-in chip above.
+            # The brand logo used to reset the page after a confirm. [SEAN
+            # 2026-08-27] reassigned the tap: one click on the site's icon now
+            # offers Add to Home Screen, and a visible Share button rides on
+            # every page, because the share control in the browser chrome is
+            # furniture nobody notices. Same injection slot, new tenant;
+            # logo-reset.js stays on disk as history but nothing loads it.
             if (not path.startswith(("/dispatch", "/archive", "/access", "/setup"))
-                    and b'src="/logo-reset.js' not in stamped
+                    and b'src="/install.js' not in stamped
                     and b"</body>" in stamped):
                 stamped = stamped.replace(
                     b"</body>",
-                    b'<script src="/logo-reset.js?v=%s" defer></script></body>'
+                    b'<script src="/install.js?v=%s" defer></script></body>'
                     % _ASSET_V.encode(), 1)
             if stamped != body:
                 resp.set_data(stamped)
@@ -2076,6 +2079,14 @@ def api_guide_languages():
 @app.route("/basemap.js")
 def basemap_js():
     return send_file(os.path.join(BASE_DIR, "basemap.js"))
+
+
+@app.route("/install.js")
+def install_js():
+    """The one-click add-to-home-screen on the logo, and the visible Share
+    button on every page. One file so every page needs exactly one tag."""
+    return send_file(os.path.join(BASE_DIR, "install.js"),
+                     mimetype="application/javascript")
 
 
 @app.route("/i18n.js")
