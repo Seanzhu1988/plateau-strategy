@@ -591,6 +591,10 @@
             transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
         }
         .service-card:nth-child(2) { border-top-color: #10b981; }
+        .reconstruction-badge { display: inline-block; font-size: .68rem; font-weight: 800;
+            letter-spacing: .12em; color: #92400e; background: #fef3c7;
+            border: 1px solid #f59e0b; border-radius: 999px;
+            padding: .18rem .6rem; margin: 0 0 .6rem; }
         .service-card:nth-child(3) { border-top-color: #f59e0b; }
         .service-card:hover { transform: translateY(-5px); box-shadow: 0 16px 32px rgba(15,23,42,0.12); }
         .service-icon { font-size: 2.4rem; margin-bottom: 0.6rem; }
@@ -2319,12 +2323,17 @@
                                 <p>Affordable, reliable Tesla rides, booked online in seconds, with your invoice sent automatically. No app to download, no surge-pricing games.</p>
                                 <a href="/book" class="book-cta">Book a Ride →</a>
                             </div>
-                            <div class="service-card">
+                            <div class="service-card" style="opacity:.62;filter:grayscale(.85)">
                                 <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-key"/></svg></div>
                                 <h3>Car Rentals</h3>
                                 <p class="service-for">For drivers</p>
+                                <!-- Grayed and marked at Sean's word ("gray the
+                                     rental car mark it as reconstructing").
+                                     The card stays so the offer stays visible;
+                                     the door is closed while it is rebuilt. -->
+                                <p class="reconstruction-badge">UNDER RECONSTRUCTION</p>
                                 <p>Rent a Tesla from us and earn from a shared pool of client rides. Low-cost entry and steady income.</p>
-                                <a href="/renter" class="book-cta">Driver Portal →</a>
+                                <span class="book-cta" aria-disabled="true" style="opacity:.55;pointer-events:none;filter:grayscale(1)">Driver Portal →</span>
                             </div>
                             <div class="service-card">
                                 <div class="service-icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-people"/></svg></div>

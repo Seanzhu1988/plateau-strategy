@@ -1776,6 +1776,24 @@ def met_page():
     return send_file(os.path.join(BASE_DIR, "met.html"))
 
 
+@app.route("/moma")
+def moma_page():
+    """Inside MoMA, on footprints: the Met's pattern, MoMA's verified hang."""
+    return send_file(os.path.join(BASE_DIR, "moma.html"))
+
+
+@app.route("/moma-map.js")
+def moma_map_js():
+    return send_file(os.path.join(BASE_DIR, "moma-map.js"),
+                     mimetype="application/javascript")
+
+
+@app.route("/moma-cards.js")
+def moma_cards_js():
+    return send_file(os.path.join(BASE_DIR, "moma-cards.js"),
+                     mimetype="application/javascript")
+
+
 @app.route("/walks")
 def walks_page():
     """The Walks: every map on the site, drawn on foot, in one index."""
