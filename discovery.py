@@ -481,6 +481,20 @@ def record_gallery(museum, city, example="", lat=None, lon=None):
         s = _load()
         k = "gallery#" + _slug(museum)
         if k in s["seen"]:
+            # THE DEDUPE MUST NOT PRESERVE THE BUG. Museums recorded in the
+            # coordinate-less days sit in this queue unplantable forever, and
+            # returning early here is what kept them that way even after the
+            # caller learned to pass coordinates. If the stored proposal still
+            # lacks a coordinate and this search brought one, backfill it, and
+            # the next hourly plant lifts it into the book at last.
+            if lat is not None and lon is not None:
+                for p in s["proposals"]:
+                    if p.get("id") == k and p.get("lat") is None:
+                        p["lat"], p["lon"] = lat, lon
+                        if not p.get("desc"):
+                            p["desc"] = ("A museum%s." % ((" in " + city) if city else ""))
+                        _save(s)
+                        break
             return True
         s["seen"][k] = int(time.time())
         prop = {
@@ -727,9 +741,15 @@ def plant_discoveries():
         return {"ok": False, "error": "planting off"}
     with _LOCK:
         s = _load()
-        queue = [p for p in s["proposals"]
-                 if p.get("kind") == "place" and p.get("src") in PLANT_SOURCES
-                 and p.get("lat") is not None][:PLANT_PER_RUN]
+        # A museum a PERSON searched for outranks a tower the crawler found:
+        # gallery proposals were drowning behind dozens of queued osm finds,
+        # eight plants an hour, first come first served, so the thing Sean
+        # watched for never surfaced. Human signal first, then the crawl.
+        queue = sorted([p for p in s["proposals"]
+                        if p.get("kind") == "place" and p.get("src") in PLANT_SOURCES
+                        and p.get("lat") is not None],
+                       key=lambda p: 0 if p.get("src") == "universal-gallery" else 1
+                       )[:PLANT_PER_RUN]
     planted, refused, known = [], [], 0
     for p in queue:
         res = _book_plant({

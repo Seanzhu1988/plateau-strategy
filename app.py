@@ -4122,6 +4122,18 @@ def api_gallery_search():
     ck = q.lower()
     hit = _GAL_CACHE.get(ck)
     if hit and time.time() - hit[0] < 3600:
+        # A cache hit is still a person in a museum. The recorder dedupes on
+        # the museum forever, so teaching from the cache costs nothing and
+        # keeps the hour after a popular search from being a learning blackout.
+        try:
+            for r in (hit[1].get("results") or [])[:6]:
+                m = r.get("source") or ""
+                if m:
+                    discovery_mod.record_gallery(m, r.get("city") or "",
+                                                 r.get("title") or "",
+                                                 r.get("museum_lat"), r.get("museum_lon"))
+        except Exception:
+            pass
         return jsonify({"ok": True, "cached": True, **hit[1]})
     results = []
     for fn in (_gal_met, _gal_aic, _gal_moma, _gal_wikidata):
@@ -4183,7 +4195,15 @@ def api_gallery_search():
                 m = r.get("source") or ""
                 if m and m not in seen_museums:
                     seen_museums.add(m)
-                    discovery_mod.record_gallery(m, r.get("city") or "", r.get("title") or "")
+                    # THE COORDINATE MUST TRAVEL. record_gallery's own comment
+                    # warns that a proposal without lat/lon can never be
+                    # planted, and this call site was still not passing them:
+                    # every museum a search found queued forever and the book
+                    # learned nothing. [SEAN "we should have discovery going
+                    # on nothing is happening"] The row has carried the
+                    # museum's coordinates all along.
+                    discovery_mod.record_gallery(m, r.get("city") or "", r.get("title") or "",
+                                                 r.get("museum_lat"), r.get("museum_lon"))
                 # The city the museum sits in, on its own, so a search can bring
                 # a whole new city into the book. Deduped per search too. [SEAN]
                 c = (r.get("city") or "").strip()
