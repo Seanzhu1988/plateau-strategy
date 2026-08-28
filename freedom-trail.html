@@ -178,11 +178,22 @@
         #ftMap { width: 100%; height: 100%; background: transparent;
                  /* strongest in the bottom-right corner, feathered to nothing as
                     it reaches toward the page, so the patch fuses in without an edge */
-                 -webkit-mask-image: radial-gradient(140% 140% at 100% 100%, #000 40%,
-                     rgba(0,0,0,.4) 68%, transparent 100%);
-                 mask-image: radial-gradient(140% 140% at 100% 100%, #000 40%,
-                     rgba(0,0,0,.4) 68%, transparent 100%); }
+                 /* The fade must hit ZERO inside the element, or the patch ends
+                    in a hard straight line at its top and left, a faint printed
+                    rectangle that reads as crooked. With radii of 140% the old
+                    gradient was still ~25% opaque where the element stopped.
+                    Radii 120%, transparent by 82%: the top and left edge centres
+                    sit at r=0.83 of the ellipse, just past the zero stop. */
+                 -webkit-mask-image: radial-gradient(120% 120% at 100% 100%, #000 40%,
+                     rgba(0,0,0,.45) 62%, transparent 82%);
+                 mask-image: radial-gradient(120% 120% at 100% 100%, #000 40%,
+                     rgba(0,0,0,.45) 62%, transparent 82%); }
         #ftMap, #ftMap * { pointer-events: none !important; }
+        /* Leaflet's credit line inherited the page's body size and ran as a
+           full-width text row across the patch. It is map furniture: small,
+           quiet, still legible, still credited. */
+        #ftMap .leaflet-control-attribution { font-size: .58rem !important;
+                 background: rgba(255,255,255,.6) !important; padding: 0 .3rem !important; }
         /* Streets and route are different jobs, so they carry different strength.
            The streets stay faint so the reading always wins; the route and the
            dots come right up so they read boldly. Splitting them across panes is
@@ -224,14 +235,14 @@
         .ft-consent .row { display: flex; gap: .5rem; flex-wrap: wrap; }
         #ftAgree { background: #1f3a5f !important; color: #fff !important; }
         .ft-print { font-size: .85rem; color: #6b655b; margin: .5rem 0 0; }
-        #ftFollow, #ftEdit { font: inherit !important; font-weight: 700 !important; cursor: pointer;
+        #ftFollow, #ftEdit, #ftForget { font: inherit !important; font-weight: 700 !important; cursor: pointer;
                   border: 1px solid #1f3a5f !important; padding: .65rem 1rem !important;
                   min-height: 44px; border-radius: 6px !important; flex: 1 1 8rem;
                   display: inline-flex !important; align-items: center; justify-content: center !important;
                   white-space: nowrap; }
         #ftFollow { background: #1f3a5f !important; color: #fff !important; }
         #ftFollow[aria-pressed="true"] { background: #2f9d54 !important; border-color: #2f9d54 !important; }
-        #ftEdit { background: #fff !important; color: #1f3a5f !important; }
+        #ftEdit, #ftForget { background: #fff !important; color: #1f3a5f !important; }
         .ft-loc { font-size: .88rem; color: #4a453d; margin: .6rem 0 0; min-height: 1.2em; }
         /* Leaflet chrome, matched to the page, muted basemap so the route reads. */
         .leaflet-container { background: #f5f1e8; font: inherit; }
