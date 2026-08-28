@@ -417,6 +417,15 @@
             })
             .catch(function () { host.innerHTML = '<p class="ug-none">Search failed. Try again.</p>'; });
     }
+    // Arriving with ?q= (from a museum page's embedded search bar) starts
+    // the search already typed, so the hand-off loses nothing.
+    (function () {
+        try {
+            var q = new URLSearchParams(location.search).get("q");
+            if (q) { var f = document.getElementById("ugFind"); f.value = q;
+                     f.dispatchEvent(new Event("input", { bubbles: true })); }
+        } catch (e) {}
+    })();
     document.getElementById("ugFind").addEventListener("input", function () {
         var v = this.value.trim();
         clearTimeout(timer);

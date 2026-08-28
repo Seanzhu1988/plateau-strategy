@@ -2081,6 +2081,13 @@ def basemap_js():
     return send_file(os.path.join(BASE_DIR, "basemap.js"))
 
 
+@app.route("/gallery-search.js")
+def gallery_search_js():
+    """The Universal Gallery's search bar, mountable on any museum page."""
+    return send_file(os.path.join(BASE_DIR, "gallery-search.js"),
+                     mimetype="application/javascript")
+
+
 @app.route("/install.js")
 def install_js():
     """The one-click add-to-home-screen on the logo, and the visible Share
