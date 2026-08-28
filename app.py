@@ -1981,6 +1981,12 @@ def met_guide_js():
     return send_file(os.path.join(BASE_DIR, "met-guide.js"))
 
 
+@app.route("/met-art.js")
+def met_art_js():
+    """Real works per gallery, baked from the Met's CC0 Open Access API."""
+    return send_file(os.path.join(BASE_DIR, "met-art.js"))
+
+
 @app.route("/met-3d.js")
 def met_3d_js():
     """The Met as a solid: real footprint, extruded galleries, turnable."""

@@ -73,6 +73,20 @@
   window.MET_SPOTLIGHT = function (key) { spotlight = key || null; draw(); };
 
   var CARDS = window.MET_CARDS || {};
+  /* Real works from the Met's Open Access program (CC0), baked at build time
+     by bake_met_art.py — the API has no CORS so live fetch was never an
+     option. A stop with no matched art renders nothing: absence over guess. */
+  function artStrip(k) {
+    var arts = (window.MET_ART || {})[k] || [];
+    if (!arts.length) return '';
+    return '<div class="leg-art">' + arts.map(function (a) {
+      var cap = a.artist ? a.artist.split(',')[0] : a.title;
+      return '<a href="' + a.href + '" target="_blank" rel="noopener">' +
+        '<img src="' + a.img + '" alt="' + (a.title || a.work).replace(/"/g, '&quot;') +
+        '" loading="lazy">' +
+        '<span class="la-t">' + cap + '</span></a>';
+    }).join('') + '</div>';
+  }
   var walkedMinutes = {};   /* corridor key -> measured minutes, when surveyed */
 
   function corridorKey(a, b) {
@@ -352,6 +366,7 @@
           (card.highlights ? '<p class="leg-hl">' + card.highlights.map(function (h) {
               return '<b>' + h.work + '.</b> ' + h.note;
             }).join(' ') + '</p>' : '') +
+          artStrip(k) +
           '</div><span class="leg-min">~' + dwell + ' min</span></div>');
       } else {
         html.push('<div class="leg-walk">through ' + ((CARDS[k] || {}).name || k) + '</div>');
