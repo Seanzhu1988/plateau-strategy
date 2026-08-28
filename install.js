@@ -42,7 +42,10 @@
             "#psxInstallYes { border: 0 !important; background: #1f3a5f !important;" +
             "  color: #fff !important; padding: .4rem 1.1rem !important; margin-right: .5rem; }" +
             "#psxInstallClose { border: 1px solid #d3d3da !important; background: #fff !important;" +
-            "  color: #1f3a5f !important; padding: .4rem 1rem !important; }";
+            "  color: #1f3a5f !important; padding: .4rem 1rem !important; }" +
+            "@media (max-width: 560px) {" +
+            "  #psxShareWord { display: none; }" +
+            "  #psxShare { padding: .3rem .55rem !important; margin-left: .45rem; } }";
         document.head.appendChild(st);
     })();
 
@@ -204,7 +207,11 @@
         if (document.getElementById("psxShare")) return;
         var b = document.createElement("button");
         b.id = "psxShare";
-        b.innerHTML = shareGlyph() + " Share";
+        // The word hides on phones. paper.css makes the nav strip scroll
+        // sideways inside its own row below 560px, so anything too wide is
+        // not wrapped but parked in invisible overflow, which is where this
+        // button spent its first hour. The glyph alone fits beside the links.
+        b.innerHTML = shareGlyph() + '<span id="psxShareWord"> Share</span>';
         b.title = "Share this page";
         b.style.cssText = "font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;" +
             "border:1px solid #d3d3da;border-radius:999px;background:#fff;color:#1f3a5f;" +

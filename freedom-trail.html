@@ -150,7 +150,7 @@
         .ft-inc { flex: 0 0 auto; display: flex; align-items: flex-start; margin-top: .2rem; }
         .ft-inc input { width: 22px; height: 22px; cursor: pointer; accent-color: #1f3a5f; }
         .ft-stop.locked .ft-inc input { cursor: default; }
-        .ft-walk { margin: .4rem 0 1.6rem; }
+        .ft-walk { margin: 1.8rem 0 0; }
         #ftWalk { font: inherit !important; font-weight: 700 !important; cursor: pointer;
                   border: 1px solid #1f3a5f !important; background: #1f3a5f !important;
                   color: #fff !important; padding: .8rem 1.1rem !important; min-height: 46px;
@@ -290,11 +290,15 @@
         </div>
         <p class="ft-sum" id="ftSum"></p>
 
-        <!-- The walk button lives ABOVE the sixteen stops. [SEAN "lock walk to
-             be moved above not bottom"] Sixteen five-minute stops make a long
-             page, and a button below them is a button nobody finds; the person
-             ready to walk should not have to scroll past the whole trail to
-             say so. The list stays below for reading and unticking. -->
+
+
+        <div id="ftStops"></div>
+
+        <!-- The walk block came up top for a day and went back down. [SEAN
+             "maybe its better to move them back to the bottom, we might add
+             some other things later"] Reading the sixteen stops IS the way a
+             person decides, so the button belongs where the deciding ends,
+             and the top of the page stays clear for what comes next. -->
         <div class="ft-walk">
             <button id="ftWalk">Lock these stops and walk</button>
             <div id="ftConfirm" hidden>
@@ -328,8 +332,6 @@
         </div>
 
     </div>
-
-        <div id="ftStops"></div>
 
         <div class="ft-actions">
             <a class="quiet" href="/destination-book?city=boston">More in Boston</a>
