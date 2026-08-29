@@ -301,6 +301,9 @@
  },
  "trail-freedom.zh.mp3": {
   "chars": 1695,
+  "settings": {
+   "speed": 0.95
+  },
   "sig": "9008a24cb388",
   "voice": "hFamrilbAE6WDMtWgKvu",
   "words": 19
@@ -313,7 +316,73 @@
  },
  "trail-stop-1.zh.mp3": {
   "chars": 1286,
+  "settings": {
+   "speed": 0.95
+  },
   "sig": "0568b06743e2",
+  "voice": "hFamrilbAE6WDMtWgKvu",
+  "words": 7
+ },
+ "trail-stop-10.zh.mp3": {
+  "chars": 1426,
+  "settings": {
+   "speed": 0.95
+  },
+  "sig": "6a350e21ec91",
+  "voice": "hFamrilbAE6WDMtWgKvu",
+  "words": 7
+ },
+ "trail-stop-11.zh.mp3": {
+  "chars": 1388,
+  "settings": {
+   "speed": 0.95
+  },
+  "sig": "057805bff2c0",
+  "voice": "hFamrilbAE6WDMtWgKvu",
+  "words": 7
+ },
+ "trail-stop-12.zh.mp3": {
+  "chars": 1459,
+  "settings": {
+   "speed": 0.95
+  },
+  "sig": "ac6e871a8c0c",
+  "voice": "hFamrilbAE6WDMtWgKvu",
+  "words": 7
+ },
+ "trail-stop-13.zh.mp3": {
+  "chars": 1367,
+  "settings": {
+   "speed": 0.95
+  },
+  "sig": "008febbffc43",
+  "voice": "hFamrilbAE6WDMtWgKvu",
+  "words": 8
+ },
+ "trail-stop-14.zh.mp3": {
+  "chars": 1354,
+  "settings": {
+   "speed": 0.95
+  },
+  "sig": "07383bd0da4b",
+  "voice": "hFamrilbAE6WDMtWgKvu",
+  "words": 6
+ },
+ "trail-stop-15.zh.mp3": {
+  "chars": 1408,
+  "settings": {
+   "speed": 0.95
+  },
+  "sig": "1e8843089acc",
+  "voice": "hFamrilbAE6WDMtWgKvu",
+  "words": 7
+ },
+ "trail-stop-16.zh.mp3": {
+  "chars": 1449,
+  "settings": {
+   "speed": 0.95
+  },
+  "sig": "9474b97e043a",
   "voice": "hFamrilbAE6WDMtWgKvu",
   "words": 7
  },
@@ -325,6 +394,9 @@
  },
  "trail-stop-2.zh.mp3": {
   "chars": 1359,
+  "settings": {
+   "speed": 0.95
+  },
   "sig": "ec73ddbfa32f",
   "voice": "hFamrilbAE6WDMtWgKvu",
   "words": 8
@@ -335,16 +407,79 @@
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 763
  },
+ "trail-stop-3.zh.mp3": {
+  "chars": 1403,
+  "settings": {
+   "speed": 0.95
+  },
+  "sig": "7937390e40ba",
+  "voice": "hFamrilbAE6WDMtWgKvu",
+  "words": 7
+ },
  "trail-stop-4.mp3": {
   "chars": 4189,
   "sig": "168122851822",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 787
  },
+ "trail-stop-4.zh.mp3": {
+  "chars": 1396,
+  "settings": {
+   "speed": 0.95
+  },
+  "sig": "cc2e5d534290",
+  "voice": "hFamrilbAE6WDMtWgKvu",
+  "words": 7
+ },
  "trail-stop-5.mp3": {
   "chars": 4135,
   "sig": "fd8efd8fe16c",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 773
+ },
+ "trail-stop-5.zh.mp3": {
+  "chars": 1314,
+  "settings": {
+   "speed": 0.95
+  },
+  "sig": "b982bd69d53a",
+  "voice": "hFamrilbAE6WDMtWgKvu",
+  "words": 8
+ },
+ "trail-stop-6.zh.mp3": {
+  "chars": 1296,
+  "settings": {
+   "speed": 0.95
+  },
+  "sig": "a0cd56ffbde0",
+  "voice": "hFamrilbAE6WDMtWgKvu",
+  "words": 7
+ },
+ "trail-stop-7.zh.mp3": {
+  "chars": 1383,
+  "settings": {
+   "speed": 0.95
+  },
+  "sig": "452df1142d7e",
+  "voice": "hFamrilbAE6WDMtWgKvu",
+  "words": 8
+ },
+ "trail-stop-8.zh.mp3": {
+  "chars": 1374,
+  "settings": {
+   "speed": 0.95
+  },
+  "sig": "842de2984455",
+  "voice": "hFamrilbAE6WDMtWgKvu",
+  "words": 7
+ },
+ "trail-stop-9.zh.mp3": {
+  "chars": 1352,
+  "settings": {
+   "speed": 0.95
+  },
+  "sig": "2473e7ecd798",
+  "voice": "hFamrilbAE6WDMtWgKvu",
+  "words": 7
  }
 }
