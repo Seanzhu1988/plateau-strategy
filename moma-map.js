@@ -269,7 +269,11 @@
         var dwell = card.minutes || 10;
         mins += dwell;
         html.push('<div class="leg"><span class="leg-n">' + n + '</span><div>' +
-          '<div class="leg-name">' + (card.name || k) + '</div>' +
+          '<div class="leg-name">' + (card.name || k) +
+          /* Jason's five minute room narration. Hidden until the mp3 really
+             exists; moma.html verifies each one and unhides it, so this same
+             markup is correct before and after the recordings land. */
+          ' <button class="mg-play" data-room="' + k + '" hidden>Play</button></div>' +
           (card.one_line ? '<p class="leg-hl">' + card.one_line + '</p>' : '') +
           (card.highlights ? '<p class="leg-hl">' + card.highlights.map(function (h) {
               return '<b>' + h.work + '.</b> ' + h.note;

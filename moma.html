@@ -196,6 +196,15 @@
     .iso-plane + .iso-plane { margin-top: -34%; }
     .iso-stage { perspective: 1100px; }
   }
+  /* The room narration button. modern.css flattens every bare button behind
+     eight :not() clauses of !important; an id-prefixed selector outranks the
+     pile, the same trick #ftStops uses on the trail. Ninth encounter. */
+  #planLegs .mg-play { font: inherit !important; font-size: .78rem !important;
+    font-weight: 700 !important; padding: .12rem .6rem !important;
+    border: 1px solid #1f3a5f !important; border-radius: 999px !important;
+    background: #fff !important; color: #1f3a5f !important; cursor: pointer !important;
+    min-height: 0 !important; min-width: 0 !important; margin-left: .45rem;
+    vertical-align: middle; }
 </style>
 </head>
 <body data-arm="company">
@@ -287,6 +296,78 @@ and the chronology starts at the Sculpture Garden end of Floor 5. Tap the rooms 
       onRoom: function (key) { if (window.MET_SPOTLIGHT) window.MET_SPOTLIGHT(key); }
     });
   }
+</script>
+<script>
+  /* Jason's five minute room narrations. [SEAN "can you create 5 mins of moma
+     descriptions" · "by jason"] The scripts live in museum_scripts/moma/, the
+     recordings land as /media/audio/moma-<room>.mp3, and these buttons stay
+     hidden until each file really exists, so the page is honest before and
+     after the recordings land. Same interruption rule as the trail: position
+     is bookmarked per recording, the button comes back as "Continue m:ss",
+     and only finishing a room clears it. */
+  (function () {
+    "use strict";
+    var STORE = "moma_resume";
+    function posLoad() { try { return JSON.parse(localStorage.getItem(STORE) || "{}"); } catch (e) { return {}; } }
+    function posSave(m) { try { localStorage.setItem(STORE, JSON.stringify(m)); } catch (e) {} }
+    function posSet(key, t) { if (!key) return; var m = posLoad(); if (t > 8) m[key] = Math.floor(t); else delete m[key]; posSave(m); }
+    function posClear(key) { var m = posLoad(); delete m[key]; posSave(m); }
+    function mmss(t) { t = Math.floor(t); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); }
+    function srcOf(b) { return "/media/audio/moma-" + b.dataset.room + ".mp3"; }
+    function label(b) { var t = posLoad()[srcOf(b)]; return t ? "Continue " + mmss(t) : "Play"; }
+
+    var known = {};                       // url -> true/false, so HEADs run once
+    function verify() {
+      [].forEach.call(document.querySelectorAll(".mg-play[hidden]"), function (b) {
+        var u = srcOf(b);
+        if (known[u] === true) { b.hidden = false; b.textContent = label(b); return; }
+        if (known[u] === false) return;
+        fetch(u, { method: "HEAD" }).then(function (r) {
+          known[u] = r.ok;
+          if (r.ok) { b.hidden = false; b.textContent = label(b); }
+        }).catch(function () { known[u] = false; });
+      });
+    }
+    var legs = document.getElementById("planLegs");
+    if (legs) { new MutationObserver(verify).observe(legs, { childList: true }); verify(); }
+
+    var playing = null, playingBtn = null, playingKey = null;
+    function stopAudio() {
+      if (playing) { posSet(playingKey, playing.currentTime); playing.pause(); playing = null; }
+      if (playingBtn) {
+        var t = playingKey ? posLoad()[playingKey] : null;
+        playingBtn.textContent = t ? "Continue " + mmss(t) : "Play";
+        playingBtn = null;
+      }
+      playingKey = null;
+    }
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest(".mg-play"); if (!b) return;
+      if (playingBtn === b) { stopAudio(); return; }
+      stopAudio();
+      var src = srcOf(b);
+      var a = new Audio(src);
+      a.addEventListener("loadedmetadata", function () {
+        var t = posLoad()[src];
+        if (t && a.duration && t < a.duration - 8) { try { a.currentTime = t; } catch (err) {} }
+        else if (t) { posClear(src); }
+      });
+      var lastMark = 0;
+      a.ontimeupdate = function () {
+        if (a.currentTime - lastMark > 4 || a.currentTime < lastMark) {
+          lastMark = a.currentTime; posSet(src, a.currentTime);
+        }
+      };
+      a.onended = function () { stopAudio(); posClear(src); };
+      a.onerror = function () { b.textContent = "Not recorded"; b.disabled = true; };
+      a.play().then(function () {
+        playing = a; playingBtn = b; playingKey = src; b.textContent = "Stop";
+      }).catch(function () { b.textContent = "Could not play"; });
+    });
+    window.addEventListener("pagehide", function () {
+      if (playing && playingKey) { posSet(playingKey, playing.currentTime); }
+    });
+  })();
 </script>
 <script src="/gallery-search.js" defer></script>
 </body>

@@ -1,0 +1,70 @@
+# Record Jason's five minute narration for the MoMA rooms and commit the
+# audio, the trail recorder's twin for the building. Same secret, same
+# resume-on-quota behavior: run it again after a top-up and it continues.
+name: Record MoMA narration
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Re-record even rooms that are already current"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: record-moma
+  cancel-in-progress: false
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Fail early if the key is missing
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: |
+          if [ -z "$ELEVENLABS_API_KEY" ]; then
+            echo "::error::No ELEVENLABS_API_KEY secret set."
+            exit 1
+          fi
+
+      - name: Preview what will record
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: |
+          FORCE=""
+          [ "${{ inputs.force }}" = "true" ] && FORCE="--force"
+          python3 moma_voices.py --dry $FORCE
+
+      - name: Record
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: |
+          FORCE=""
+          [ "${{ inputs.force }}" = "true" ] && FORCE="--force"
+          python3 moma_voices.py $FORCE
+
+      - name: Commit the audio
+        run: |
+          git config user.name "plateau-recorder"
+          git config user.email "actions@users.noreply.github.com"
+          git add media/audio
+          if git diff --cached --quiet; then
+            echo "Nothing new to commit. Either it was already recorded, or the run hit quota before writing."
+            exit 0
+          fi
+          COUNT=$(git diff --cached --name-only | grep -c '\.mp3$' || true)
+          git commit -m "Record MoMA narration ($COUNT audio files)"
+          git pull --rebase origin ${{ github.ref_name }}
+          git push origin HEAD:${{ github.ref_name }}

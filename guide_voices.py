@@ -101,6 +101,11 @@ BY_LANGUAGE = {
     "guide":   {"en": "jason",  "zh": "pangge"},
     "trail":   {"en": "yiki",   "zh": "pangge"},
     "gallery": {"en": "adrian", "zh": "adrian"},
+    # MoMA's rooms are indoors, so the house voice reads them. [SEAN "by
+    # jason"] No zh entry yet on purpose: when the Chinese scripts are
+    # written, Pangge presumably takes them, but that is Sean's ear's call
+    # to make, and until he makes it the recorder refuses rather than guesses.
+    "moma":    {"en": "jason"},
 }
 
 
