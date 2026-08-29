@@ -1,0 +1,65 @@
+# Record Jason's narration for the Universal Gallery film and commit it.
+#
+# One script, one mp3: video_scripts/universal-gallery.txt becomes
+# media/audio/film-universal-gallery.mp3 in Jason's voice. About 2,250
+# characters, the smallest recording job on the site, sized to fit the
+# last credits of a cycle. The mp3 is not served by any page; it exists
+# to be muxed onto media/universal-gallery-film.mp4.
+name: Record film narration
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: record-film
+  cancel-in-progress: false
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Record
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: |
+          python3 - <<'PY'
+          import os, sys
+          import voice_guides as vg
+          import guide_voices as gv
+          key = os.environ.get("ELEVENLABS_API_KEY", "").strip()
+          if not key:
+              print("::error::No ELEVENLABS_API_KEY secret."); sys.exit(1)
+          text = open("video_scripts/universal-gallery.txt", encoding="utf-8").read().strip()
+          voice = gv.voice_id("jason")
+          print("recording %d characters in Jason's voice (%s)" % (len(text), voice))
+          audio, why = vg.record(key, voice, text)
+          if why:
+              print("::error::recording failed: %s" % why); sys.exit(1)
+          out = "media/audio/film-universal-gallery.mp3"
+          open(out, "wb").write(audio)
+          print("voiced %s, %d bytes" % (out, len(audio)))
+          PY
+
+      - name: Commit the audio
+        run: |
+          git config user.name "plateau-recorder"
+          git config user.email "actions@users.noreply.github.com"
+          git add media/audio/film-universal-gallery.mp3
+          if git diff --cached --quiet; then
+            echo "Nothing new to commit."
+            exit 0
+          fi
+          git commit -m "Record the Universal Gallery film narration (Jason)"
+          git pull --rebase origin ${{ github.ref_name }}
+          git push origin HEAD:${{ github.ref_name }}
