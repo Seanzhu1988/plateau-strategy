@@ -522,6 +522,12 @@
             if (e.audio) return 1;
             const d = (e.desc || '').trim();
             const real = d.length > 60 && d !== 'Place.' && d !== 'Administrative.';
+            // A written tip only ever comes from the curated book, no scout or
+            // community entry carries one, so tip + real description IS
+            // "written by us", audio or not. Without this, the thirteen new
+            // Boston and Cambridge entries sat six-visible behind the tier-2
+            // door on the very shelf they were written to fill.
+            if (real && (e.tip || '').trim()) return 1;
             return real ? 2 : 3;
         }
         const TIER_LABEL = { 1: 'Written by us', 2: 'Proven finds',
