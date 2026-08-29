@@ -17,6 +17,14 @@
         .ug-wrap { max-width: 900px; margin: 2rem auto 4rem; padding: 0 1.2rem; }
         .ug-title { font-size: 2rem; font-weight: 800; color: #14110c; margin: 0 0 .4rem; line-height: 1.15; }
         .ug-lede { color: #4a453d; margin: 0 0 1.4rem; }
+        /* The film row: an id outranks modern.css's button flattener. */
+        #ugFilmRow { margin: .6rem 0 0; }
+        #ugFilmBtn { font: inherit !important; font-size: .85rem !important; font-weight: 700 !important;
+            border: 1px solid #d3d3da !important; border-radius: 999px !important;
+            background: #fff !important; color: #1f3a5f !important; cursor: pointer !important;
+            padding: .35rem .9rem !important; min-height: 0 !important; min-width: 0 !important; }
+        #ugFilm { display: block; width: 100%; max-width: 720px; border-radius: 12px;
+            margin: .7rem 0 .3rem; background: #14161f; }
         #ugFind { width: 100%; font: inherit; padding: .8rem .9rem !important; min-height: 48px;
                   border: 1px solid #d3d3da !important; border-radius: 6px !important;
                   box-sizing: border-box; background: #fff !important; color: #14110c !important; }
@@ -160,6 +168,17 @@
                aria-label="Search by artwork name or item number">
         <p class="ug-hint">You do not have to spell it. Every museum prints an item number on
            the label, and that number is enough. Try <b>49.30</b> or <b>1942.51</b>.</p>
+
+        <!-- The three minute film, cut from real screens of this very page.
+             [SEAN "what i mean is in the site"] Folded behind one quiet row so
+             the search stays the hero and nobody downloads 2MB of video they
+             did not ask for: preload none, plays on the tap that reveals it. -->
+        <p id="ugFilmRow"><button id="ugFilmBtn" type="button">&#9654; Watch how it works, 3 minutes</button></p>
+        <div id="ugFilmBox" hidden>
+            <video id="ugFilm" controls preload="none" playsinline
+                   poster="/media/universal-gallery-poster.jpg"
+                   src="/media/universal-gallery-film.mp4"></video>
+        </div>
 
         <div class="ug-tabs" id="ugTabs" role="tablist">
             <button class="ug-tab is-on" id="ugTabW" type="button" role="tab"
@@ -452,6 +471,15 @@
     live();
     setInterval(live, 40000);
 })();
+</script>
+<script>
+/* One tap reveals the film and starts it; the button steps aside. The tap is
+   a user gesture, so play() is allowed to make sound. */
+document.getElementById("ugFilmBtn").addEventListener("click", function () {
+    document.getElementById("ugFilmBox").hidden = false;
+    this.parentNode.hidden = true;
+    document.getElementById("ugFilm").play().catch(function () {});
+});
 </script>
 <script src="/i18n.js"></script>
 </body>
