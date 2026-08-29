@@ -1,19 +1,15 @@
-You are standing in a museum, in front of something that stops you. There is a name you cannot pronounce, or just a number on the label.
+You are standing in a museum, in front of something that stops you.
 
-This is the Universal Gallery. One search bar, every museum we cover. Type a name, half a name, or the number on the label, and it answers from the museums' own records.
+This is the Universal Gallery. One search bar, every museum we cover. Type a name, or the number printed on the label.
 
-Ask it for the starry night. The Met, the Museum of Modern Art and the Art Institute of Chicago answer together, with the museum's own photographs, and where each painting actually hangs today.
+Ask for the starry night, and the Met, MoMA and the Art Institute answer together, with their own photographs, and where each painting hangs today.
 
-Numbers work even better than names. Type sixty one point one nine eight, exactly as printed on the label, and back comes Rembrandt's Aristotle with a Bust of Homer, Gallery six sixteen at the Met, from the museum's live records.
+Type sixty one point one nine eight, and back comes Rembrandt's Aristotle, Gallery six sixteen at the Met, from the museum's live records.
 
-When a work is in the public domain, you get every photograph the museum has released. When it is still under copyright, we show nothing, say so, and point you at the museum instead. Honesty is a feature.
+Under copyright? We show nothing, say so, and point you at the museum. Honesty is a feature.
 
-The same bar travels. It sits on our Met guide, on our MoMA guide, and on every museum we build next.
+The same bar lives on our Met and MoMA guides, and for MoMA we carry the museum's own dataset, one hundred sixty thousand works, refreshed weekly.
 
-For MoMA we carry the museum's own dataset, one hundred sixty thousand works, refreshed every week. Any label number answers in an instant, with the room it hangs in right now.
+And every search teaches the site: the Destination Book grows a page for whatever people look for.
 
-And every search teaches the site. When people look for a museum we have not written up yet, the Destination Book grows a new page for it. That is exactly how MoMA entered our book.
-
-One bar. Every museum. A guide that grows every time somebody asks.
-
-Plateau Strategy. plateaustrategy dot io.
+One bar. Every museum. Plateau Strategy. plateaustrategy dot io.
