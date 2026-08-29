@@ -62,7 +62,37 @@ LANG_NAMES = {"en": "English", "zh": "Simplified Chinese", "es": "Spanish",
 # enough that a genuinely busy month of new works never touches it.
 MONTHLY_CAP = int(os.environ.get("GALLERY_MONTHLY_CAP", "1500"))
 
+BASE = os.path.dirname(os.path.abspath(__file__))
+# The reading written on the spot must sound like the ones written by hand, or
+# the gallery has two voices and the seam shows. Rather than describe that voice
+# in the abstract, the generator is handed an actual hand-written reading to
+# match, so the two builds are aligned to the same real example and stay aligned
+# when the house style is edited. Two anchors so the one work a reader happens to
+# be searching is never used as the sample for itself. Public domain both, so
+# nothing under copyright rides along in a prompt.
+_ANCHOR_FILES = ["gallery_scripts/the-great-wave.txt",
+                 "gallery_scripts/la-grande-jatte.txt"]
+
 _LOCK = threading.Lock()
+
+
+def _style_anchor(title):
+    """One hand-written reading, to show the model the house voice by example.
+    Skips the anchor whose own subject is the work being read, so a search for
+    The Great Wave is not handed The Great Wave as its sample."""
+    t = (title or "").strip().lower()
+    for rel in _ANCHOR_FILES:
+        stem = os.path.splitext(os.path.basename(rel))[0].replace("-", " ")
+        if stem and stem in t:
+            continue
+        try:
+            with open(os.path.join(BASE, rel), encoding="utf-8") as f:
+                text = f.read().strip()
+            if text:
+                return text
+        except Exception:
+            pass
+    return ""
 
 
 def available():
@@ -167,17 +197,34 @@ def _prompt(facts, lang):
         "reading helps the traveller find and look at the real object in front "
         "of them.\n\n"
         if facts.get("copyright") else "")
+    anchor = _style_anchor(facts.get("title"))
+    anchor_block = (
+        "HERE IS ONE OF OUR READINGS, for a different work, so you match its "
+        "voice and its shape. Do not reuse its facts or its sentences, only its "
+        "manner.\n\n" + anchor + "\n\n" if anchor else "")
     return (
         "You are the voice of a museum guide speaking to one traveller who is "
         "standing in front of this artwork right now, phone in hand, in a museum "
-        "that may not be in their language. Write them a reading of it.\n\n"
-        "Open by naming the work, its maker, where it hangs and the number on "
-        "its label, so they can confirm they are in front of the right object. "
-        "Then guide their looking: what to notice first, the story or the "
-        "meaning behind it, one honest complication if there is a real one, and "
-        "close by sending them back to the object with something to look for. "
-        "Warm, plain, human, spoken aloud. About 450 to 550 words, roughly three "
-        "minutes read.\n\n"
+        "that may not be in their language. Write them a reading of it that "
+        "sounds like the example below.\n\n"
+        + anchor_block +
+        "Follow the same shape, in this order:\n"
+        "1. Name the work and its maker, say where it hangs and the number on "
+        "its label, so they can confirm they are in front of the right object.\n"
+        "2. One line to help them find it or ready them for it: how big it is, "
+        "whether it may not be on the wall, that there is usually a crowd, "
+        "whatever is true and useful.\n"
+        "3. What it shows, plainly.\n"
+        "4. Guide the looking with their body: step close and see one thing, "
+        "then stand back and see another. Point at something specific to find.\n"
+        "5. The idea underneath it, or the thing most people get wrong about it.\n"
+        "6. One fact that opens the world a little, if you know a real one.\n"
+        "7. Close by sending them back to the object with a concrete thing or "
+        "two to do while they stand there.\n\n"
+        "Voice: warm, plain, human, present tense, speaking to 'you'. Short "
+        "sentences. Spell numbers and years as words, because this is read "
+        "aloud, so 'eighteen thirty one', not '1831'. About 450 to 550 words, "
+        "roughly three minutes.\n\n"
         "Do not invent specific facts. If you are not certain of a particular "
         "detail about this exact work, guide what to notice instead of stating "
         "something you are unsure of. Never claim a number, a date or an event "
@@ -186,7 +233,7 @@ def _prompt(facts, lang):
         "Write entirely in %s. Do not use em dashes or en dashes; use commas and "
         "periods. Return only the reading itself, no title line, no headings, no "
         "markdown, no preamble.\n\n"
-        "THE OBJECT:\n%s" % (lang_name, _facts_block(facts)))
+        "THE OBJECT TO READ:\n%s" % (lang_name, _facts_block(facts)))
 
 
 def _spend_ok(store):
