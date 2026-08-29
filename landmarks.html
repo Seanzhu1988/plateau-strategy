@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New York, standing up · Brooklyn Bridge and the Empire State Building</title>
+<meta name="description" content="Two New York landmarks as models you can turn, with the practical questions answered: how long the bridge walk really takes, which side to start from, and whether the 86th floor or the 102nd is the one you want.">
+<link rel="canonical" href="https://plateaustrategy.io/landmarks">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+<link rel="stylesheet" href="/paper.css">
+<script src="/psx-net.js"></script>
+<link rel="stylesheet" href="/modern.css">
+<style>
+  /* The other pages all size the header mark; this one did not, so the logo
+     drew 1,224 pixels tall and pushed the models off the screen. */
+  header img { height: 42px; width: 42px; border-radius: 50%; }
+  header .brand { font-size: 1.2rem; font-weight: 800; }
+  .lm-wrap { max-width: 1000px; margin: 2rem auto 4rem; padding: 0 1.2rem; }
+  .lm-title { font-size: 2rem; font-weight: 800; color: #14110c; margin: 0 0 .4rem; line-height: 1.15; }
+  .lm-lede { color: #4a453d; margin: 0 0 2rem; max-width: 62ch; }
+  .lm-sec { margin: 0 0 3.2rem; }
+  .lm-h { font-size: 1.35rem; font-weight: 800; color: #14110c; margin: 0 0 .3rem; }
+  .lm-sub { color: #6b655b; font-size: .93rem; margin: 0 0 .9rem; }
+  .lm-stage { touch-action: pan-y; cursor: grab; user-select: none; }
+  .lm-stage:active { cursor: grabbing; }
+  .lm-turn { font-size: .78rem; color: #6b655b; margin: .45rem 0 1.1rem; }
+  .lm-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+              gap: .8rem; margin: 0 0 1.2rem; }
+  .lm-fact { border: 1px solid #e6e6ea; border-radius: 10px; padding: .75rem .9rem; background: #fff; }
+  .lm-fact b { display: block; font-size: 1.15rem; color: #1f3a5f; }
+  .lm-fact span { font-size: .82rem; color: #6b655b; }
+  .lm-know { border-left: 3px solid #1f3a5f; padding: .1rem 0 .1rem 1rem; margin: 0 0 1rem; }
+  .lm-know p { margin: .5rem 0; }
+  .lm-honest { font-size: .85rem; color: #6b655b; border-top: 1px solid #e6e6ea;
+               padding-top: .8rem; margin-top: 1.4rem; }
+  #lmTipsRow a { font-weight: 700; color: #1f3a5f; }
+</style>
+</head>
+<body>
+<header>
+  <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab">
+  <span class="brand">Plateau Strategy Solution Lab</span>
+</header>
+
+<div class="lm-wrap">
+  <h1 class="lm-title">New York, standing up</h1>
+  <p class="lm-lede">Two landmarks drawn as models you can take hold of and turn,
+     with the questions a visitor actually has answered underneath. Every
+     dimension here is the real one, in feet.</p>
+
+  <section class="lm-sec">
+    <h2 class="lm-h">The Brooklyn Bridge</h2>
+    <p class="lm-sub">Opened 1883, and for a while the longest suspension bridge in the world.</p>
+    <div class="lm-stage" id="bridgeStage"></div>
+    <p class="lm-turn">Drag it to turn. It turns by itself until you take hold.</p>
+
+    <div class="lm-facts">
+      <div class="lm-fact"><b>1,595.5 ft</b><span>the main span, tower to tower</span></div>
+      <div class="lm-fact"><b>278 ft</b><span>tower height above the water</span></div>
+      <div class="lm-fact"><b>1.1 miles</b><span>the whole walk, end to end</span></div>
+      <div class="lm-fact"><b>30 to 40 min</b><span>what it really takes, with stops</span></div>
+    </div>
+
+    <div class="lm-know">
+      <p><b>Walk it from Brooklyn toward Manhattan.</b> Same bridge either way, but
+         going west the Manhattan skyline stands in front of you the whole
+         crossing instead of behind your shoulder.</p>
+      <p><b>The promenade is yours now.</b> It runs between the two roadways and
+         eighteen feet above them, and since September 2021 it is pedestrians
+         only: the bikes moved down to a protected lane on the Manhattan-bound
+         roadway. The old shouting match on the boards is over.</p>
+      <p><b>The web of diagonals is the point.</b> Roughly four hundred stays run
+         from the towers down to the deck, and they are what makes the deck
+         stiff. Stand under a tower and look up through them.</p>
+    </div>
+  </section>
+
+  <section class="lm-sec">
+    <h2 class="lm-h">The Empire State Building</h2>
+    <p class="lm-sub">1931, and still the shape everyone draws when they draw a skyscraper.</p>
+    <div class="lm-stage" id="empireStage"></div>
+    <p class="lm-turn">Drag it to turn.</p>
+
+    <div class="lm-facts">
+      <div class="lm-fact"><b>1,250 ft</b><span>to the roof</span></div>
+      <div class="lm-fact"><b>1,454 ft</b><span>to the tip of the antenna</span></div>
+      <div class="lm-fact"><b>102</b><span>floors</span></div>
+      <div class="lm-fact"><b>1931</b><span>finished in one year and 45 days</span></div>
+    </div>
+
+    <div class="lm-know">
+      <p><b>The 86th floor is the one people mean.</b> Open air, wind, the parapet
+         you have seen in every film, at about 1,050 feet. Most visitors go up,
+         stand there, and come down happy.</p>
+      <p><b>The 102nd is higher, smaller and enclosed.</b> About 1,224 feet, behind
+         glass, and it costs more. Worth it if you want the altitude and quiet;
+         skip it if you want the wind in your face.</p>
+      <p><b>The steps in the silhouette are law, not taste.</b> New York's 1916
+         zoning made towers step back as they rose so light could reach the
+         street. The setbacks at the 21st, 25th and 30th floors, and again at
+         the 72nd, 81st and 85th, are that rule made of limestone.</p>
+    </div>
+  </section>
+
+  <p class="lm-honest">Honest about the drawing: the heights, the spans, the
+     setback floors and the arch dimensions are the real published ones, so the
+     proportions on your screen are the proportions in the air. The window
+     bands and the stone colour are indicative, not a survey. Nothing here is
+     traced from a copyrighted plan.</p>
+  <p id="lmTipsRow"><a href="/tips">More travel tips</a> ·
+     <a href="/destination-book?city=nyc">New York in the Destination Book</a> ·
+     <a href="/trip-planner">Plan the day</a></p>
+</div>
+
+<script src="/nyc-3d.js"></script>
+<script>
+  NYC3D.bridge(document.getElementById('bridgeStage'));
+  NYC3D.empire(document.getElementById('empireStage'));
+</script>
+</body>
+</html>
