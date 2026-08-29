@@ -46,6 +46,79 @@
    "audio": "/media/audio/gallery-nighthawks.mp3",
    "copyright": true,
    "source_url": "https://www.artic.edu/artworks/111628/nighthawks"
+  },
+  "met:57.92": {
+   "title": "Autumn Rhythm (Number 30)",
+   "artist": "Jackson Pollock",
+   "date": "1950",
+   "museum": "The Metropolitan Museum of Art",
+   "city": "New York",
+   "item_number": "57.92",
+   "where": "The modern and contemporary galleries",
+   "script": "gallery_scripts/autumn-rhythm.txt",
+   "teaser": "He poured and flung the paint onto a canvas on the floor, the brush never touching it, and up close it is chaos. Step back and the whole wall begins to move.",
+   "minutes": 3,
+   "copyright": true,
+   "source_url": "https://www.metmuseum.org/art/collection/search/488978"
+  },
+  "met:JP1847": {
+   "title": "Under the Wave off Kanagawa (The Great Wave)",
+   "artist": "Katsushika Hokusai",
+   "date": "about 1831",
+   "museum": "The Metropolitan Museum of Art",
+   "city": "New York",
+   "item_number": "JP1847",
+   "where": "The Japanese galleries, when it is on view",
+   "script": "gallery_scripts/the-great-wave.txt",
+   "teaser": "The most famous wave in the world is a print the size of a placemat, and the small calm triangle it is about to swallow is Mount Fuji.",
+   "minutes": 3,
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Tsunami_by_hokusai_19th_century.jpg?width=1100"
+   ]
+  },
+  "aic:1926.224": {
+   "title": "A Sunday on La Grande Jatte, 1884",
+   "artist": "Georges Seurat",
+   "date": "1884",
+   "museum": "Art Institute of Chicago",
+   "city": "Chicago",
+   "item_number": "1926.224",
+   "where": "Gallery 240",
+   "script": "gallery_scripts/la-grande-jatte.txt",
+   "teaser": "Two years of tiny dots, no lines anywhere. Up close it is confetti, step back and a whole Sunday afternoon snaps into focus.",
+   "minutes": 3,
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Georges_Seurat_-_A_Sunday_on_La_Grande_Jatte_--_1884_-_Google_Art_Project.jpg?width=1100"
+   ]
+  },
+  "met:97.34": {
+   "title": "Washington Crossing the Delaware",
+   "artist": "Emanuel Leutze",
+   "date": "1851",
+   "museum": "The Metropolitan Museum of Art",
+   "city": "New York",
+   "item_number": "97.34",
+   "where": "The American Wing",
+   "script": "gallery_scripts/washington-crossing-the-delaware.txt",
+   "teaser": "Twelve feet tall and full of things that never happened, the flag not yet designed, the ice all wrong. It became the way a nation pictures its own founding anyway.",
+   "minutes": 3,
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Washington_Crossing_the_Delaware_by_Emanuel_Leutze,_MMA-NYC,_1851.jpg?width=1100"
+   ]
+  },
+  "aic:1930.934": {
+   "title": "American Gothic",
+   "artist": "Grant Wood",
+   "date": "1930",
+   "museum": "Art Institute of Chicago",
+   "city": "Chicago",
+   "item_number": "1930.934",
+   "where": "Gallery 263",
+   "script": "gallery_scripts/american-gothic.txt",
+   "teaser": "A farmer, a pitchfork, and a face the whole country has argued about since 1930. He meant it kindly. Nobody has ever been sure.",
+   "minutes": 3,
+   "copyright": true,
+   "source_url": "https://www.artic.edu/artworks/6565/american-gothic"
   }
  }
 }
