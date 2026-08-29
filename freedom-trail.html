@@ -53,6 +53,13 @@
         .ft-name { font-weight: 800; color: #14110c; }
         .ft-meta { font-size: .85rem; color: #6b655b; margin: .15rem 0 .35rem; }
         .ft-desc { color: #33302a; font-size: .95rem; }
+        /* The numbers past sixteen: same rows, grey chip, so the eye reads
+           "the tour keeps going" and never mistakes them for the trail. */
+        .ft-beyond { margin-top: 2.2rem; }
+        .ft-beyond-head { font-size: .74rem; font-weight: 700; letter-spacing: .14em;
+                          color: #1b4d8f; }
+        .ft-beyond-sub { font-size: .92rem; color: #6b655b; margin: .45rem 0 .6rem; }
+        .ft-beyond .ft-n.bn { background: #6b655b; }
         /* Two guides, no overlap: Jason speaks the three stops the Destination
            Book already records, Yiki introduces the rest in writing. A small
            name tag says who, the same way it will read across the book. */
@@ -355,7 +362,49 @@
 
         <div id="ftStops"></div>
 
-
+        <!-- The tour keeps going. [SEAN "can we have tour to be listed after
+             the 16 tour there says more in boston, to expand the tour like 17
+             18 19 20 we want to keep building it"] The sixteen above are the
+             official trail; these are the numbers we keep adding after it.
+             Deliberately OUTSIDE the walking machinery: no checkbox, no
+             minutes in the total, no red line on the map, because the trail's
+             route and timing must stay the trail's. Grey chip, not navy, for
+             the same reason. To add number 22, copy a row. -->
+        <div class="ft-beyond">
+            <div class="ft-beyond-head">THE TOUR KEEPS GOING</div>
+            <p class="ft-beyond-sub">Boston does not end at Bunker Hill. We keep numbering
+               past sixteen, and every one of these lives as a full card in the
+               <a href="/destination-book?city=boston">Destination Book</a>.</p>
+            <div class="ft-stop"><div class="ft-n bn">17</div><div class="ft-b">
+                <div class="ft-name">Beacon Hill &amp; Acorn Street</div>
+                <div class="ft-desc">Gas-lit brick lanes under the gold State House dome, and
+                    Acorn Street's 1820s cobblestones. Steps from stops 2 and 3, best in
+                    early morning light.</div>
+            </div></div>
+            <div class="ft-stop"><div class="ft-n bn">18</div><div class="ft-b">
+                <div class="ft-name">The North End, eating this time</div>
+                <div class="ft-desc">The trail already walks these streets at stops 12 and 13;
+                    come back hungry. Modern Pastry since 1930, Mike's since 1946, one block
+                    apart on Hanover Street, and Mike's takes only cash.</div>
+            </div></div>
+            <div class="ft-stop"><div class="ft-n bn">19</div><div class="ft-b">
+                <div class="ft-name">Boston Tea Party Ships &amp; Museum</div>
+                <div class="ft-desc">The night the whole trail leads up to: replica ships
+                    floating at Griffin's Wharf, the only surviving original tea chest, and
+                    you throw a chest overboard yourself.</div>
+            </div></div>
+            <div class="ft-stop"><div class="ft-n bn">20</div><div class="ft-b">
+                <div class="ft-name">View Boston</div>
+                <div class="ft-desc">The walk you just did, seen from the top of the
+                    Prudential: an open-air deck wrapping the whole 51st floor, open late.</div>
+            </div></div>
+            <div class="ft-stop"><div class="ft-n bn">21</div><div class="ft-b">
+                <div class="ft-name">A Day in Cambridge</div>
+                <div class="ft-desc">A second day across the river: Harvard Yard, the free
+                    Harvard Art Museums, the Glass Flowers, Mount Auburn's garden cemetery,
+                    then MIT's Great Dome and the Kendall Square museum.</div>
+            </div></div>
+        </div>
 
         <div class="ft-actions">
             <a class="quiet" href="/destination-book?city=boston">More in Boston</a>
@@ -444,7 +493,7 @@
             if (G) {
                 var primary = "/media/audio/trail-stop-" + s.n + G.suffix + ".mp3";
                 narr = '<div class="ft-byline"><span class="ft-guide">' + G.name + '</span>' +
-                       '<button class="ft-play" data-audio="' + primary + '">Play</button><span class="hs-mini" title="Headphones, please, for the people around you."><svg class="hs-ear" viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M7.2 2.5a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66A4.1 4.1 0 0 0 7.2 2.5zm9.6 0a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66a4.1 4.1 0 0 0-1.7-8.34z"/></svg></span></div>';
+                       '<button class="ft-play" data-audio="' + primary + '">' + resumeLabel(primary) + '</button><span class="hs-mini" title="Headphones, please, for the people around you."><svg class="hs-ear" viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M7.2 2.5a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66A4.1 4.1 0 0 0 7.2 2.5zm9.6 0a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66a4.1 4.1 0 0 0-1.7-8.34z"/></svg></span></div>';
             }
             // Yiki's written aside stays as text. Her name chip is dropped when
             // she is also the one narrating aloud (the English page, after the
@@ -499,11 +548,30 @@
     // trail in English, Yiki in Chinese, each stop its own five minute
     // narration. One at a time, because two guides talking over each other on a
     // street corner is worse than silence.
-    var playing = null, playingBtn = null;
+    //
+    // And an interruption is a bookmark, never a reset. [SEAN "when the play
+    // got interrupted it stopped and disappeared, can you build like continue
+    // from the moment it got interrupted"] These are five minute recordings
+    // listened to on a street; a phone call, a reload, a language switch or a
+    // tap on another stop used to throw the listener back to zero. Now the
+    // position is saved per recording (localStorage, every few seconds and on
+    // every stop), the button comes back as "Continue m:ss", and only actually
+    // finishing a stop clears its bookmark. Under 8 seconds in counts as not
+    // started; within 8 seconds of the end counts as finished.
+    function posLoad() { try { return JSON.parse(localStorage.getItem("ft_resume") || "{}"); } catch (err) { return {}; } }
+    function posSave(m) { try { localStorage.setItem("ft_resume", JSON.stringify(m)); } catch (err) {} }
+    function posSet(key, t) { if (!key) return; var m = posLoad(); if (t > 8) m[key] = Math.floor(t); else delete m[key]; posSave(m); }
+    function posClear(key) { var m = posLoad(); delete m[key]; posSave(m); }
+    function mmss(t) { t = Math.floor(t); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); }
+    function resumeLabel(key) { var t = posLoad()[key]; return t ? "Continue " + mmss(t) : "Play"; }
+
+    var playing = null, playingBtn = null, playingKey = null;
     function stopAudio() {
-        if (playing) { playing.pause(); playing = null; }
+        if (playing) { posSet(playingKey, playing.currentTime); playing.pause(); playing = null; }
         if (playingBtn) { playingBtn.setAttribute("aria-pressed", "false");
-                          playingBtn.textContent = "Play"; playingBtn = null; }
+                          playingBtn.textContent = playingKey ? resumeLabel(playingKey) : "Play";
+                          playingBtn = null; }
+        playingKey = null;
     }
     document.addEventListener("click", function (e) {
         var b = e.target.closest(".ft-play"); if (!b) return;
@@ -511,12 +579,27 @@
         if (playingBtn === b) { stopAudio(); return; }
         stopAudio();
         var a = new Audio(src);
-        a.onended = function () { stopAudio(); };
+        a.addEventListener("loadedmetadata", function () {
+            var t = posLoad()[src];
+            if (t && a.duration && t < a.duration - 8) { try { a.currentTime = t; } catch (err) {} }
+            else if (t) { posClear(src); }        // bookmarked at the very end: done
+        });
+        var lastMark = 0;
+        a.ontimeupdate = function () {            // the bookmark, every few seconds
+            if (a.currentTime - lastMark > 4 || a.currentTime < lastMark) {
+                lastMark = a.currentTime; posSet(src, a.currentTime);
+            }
+        };
+        a.onended = function () { stopAudio(); posClear(src); };
         a.onerror = function () { b.textContent = "Not recorded"; b.disabled = true; };
         a.play().then(function () {
-            playing = a; playingBtn = b;
+            playing = a; playingBtn = b; playingKey = src;
             b.setAttribute("aria-pressed", "true"); b.textContent = "Stop";
         }).catch(function () { b.textContent = "Could not play"; });
+    });
+    // Locking the phone or leaving the page is an interruption like any other.
+    window.addEventListener("pagehide", function () {
+        if (playing && playingKey) { posSet(playingKey, playing.currentTime); }
     });
 
     // A button that does nothing is worse than no button, so each one is checked
