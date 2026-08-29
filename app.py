@@ -2846,6 +2846,81 @@ def tours_page():
     return send_file(os.path.join(BASE_DIR, "tours.html"))
 
 
+def _social_lib():
+    """The hand-written post library, or an empty one."""
+    try:
+        with open(os.path.join(BASE_DIR, "social", "posts.json"), encoding="utf-8") as f:
+            return json.load(f).get("posts") or []
+    except Exception:
+        return []
+
+
+@app.route("/tips")
+def tips_index():
+    """The travel tips, published on ground nobody gates.
+
+    [SEAN "i need automation of you doing it"] Every third-party channel ends
+    at a human or a wait: Meta needs an app review and a business
+    verification, and xiaohongshu and WeChat have no posting API at all. This
+    does not. Each hand-written post also publishes itself here as a real
+    page with a real address, in the sitemap, crawlable, in the language it
+    was written in. The Chinese pages are the point: they answer Chinese
+    searches that our English pages never could, and they go up the moment
+    the library changes, with nobody's permission.
+    """
+    import html as _html
+    rows = []
+    for p in _social_lib():
+        first = p["text"].split("." if p["lang"] == "en" else "。")[0][:150]
+        rows.append('<li><a href="/tips/%s"><b>%s</b></a><br><span>%s</span></li>'
+                    % (_html.escape(p["id"]), _html.escape(p["pain"]),
+                       _html.escape(first)))
+    return """<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Travel tips for the hard parts · Plateau Strategy</title>
+<meta name="description" content="Practical answers for the parts of travel that go wrong: labels you cannot read, museums you get lost in, audio guides your parents cannot understand.">
+<link rel="canonical" href="%s/tips"><link rel="stylesheet" href="/paper.css">
+<style>body{font:17px/1.6 Georgia,serif;max-width:720px;margin:2rem auto;padding:0 1.1rem;color:#14110c}
+h1{font-size:1.7rem}ul{list-style:none;padding:0}li{border-top:1px solid #e6e6ea;padding:.9rem 0}
+a{color:#1f3a5f}span{color:#6b655b;font-size:.92rem}</style></head><body>
+<h1>Travel tips for the hard parts</h1>
+<p>Every one of these started as a problem a traveller actually has, and every
+one ends at a free tool that answers it.</p>
+<ul>%s</ul>
+<p><a href="/">Plateau Strategy Solution Lab</a></p></body></html>""" % (
+        SITE_ORIGIN, "".join(rows))
+
+
+@app.route("/tips/<pid>")
+def tip_page(pid):
+    """One tip, one address, in the language it was written in."""
+    import html as _html
+    post = next((p for p in _social_lib() if p["id"] == pid), None)
+    if not post:
+        return "No such tip.", 404
+    zh = post["lang"] == "zh"
+    return """<!DOCTYPE html><html lang="%s"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>%s · Plateau Strategy</title>
+<meta name="description" content="%s">
+<link rel="canonical" href="%s/tips/%s"><link rel="stylesheet" href="/paper.css">
+<style>body{font:18px/1.7 Georgia,serif;max-width:680px;margin:2rem auto;padding:0 1.1rem;color:#14110c}
+h1{font-size:1.5rem;line-height:1.3}.cta{display:inline-block;font-weight:700;
+border:1px solid #1f3a5f;border-radius:999px;padding:.5rem 1.1rem;color:#1f3a5f;
+text-decoration:none;margin:1.1rem 0}.tags{color:#6b655b;font-size:.85rem}</style></head><body>
+<h1>%s</h1><p>%s</p>
+<a class="cta" href="%s?utm_source=tips">%s</a>
+<p class="tags">%s</p>
+<p><a href="/tips">%s</a></p></body></html>""" % (
+        "zh" if zh else "en", _html.escape(post["pain"]),
+        _html.escape(post["text"][:155]), SITE_ORIGIN, _html.escape(pid),
+        _html.escape(post["pain"]), _html.escape(post["text"]),
+        _html.escape(post["page"]),
+        "打开这个免费工具 →" if zh else "Open the free tool →",
+        _html.escape(post["tags"]),
+        "更多旅行提示" if zh else "More travel tips")
+
+
 @app.route("/social-pack")
 def social_pack_page():
     """This week's ready-to-paste social posts, for Sean's thumb.
@@ -2921,6 +2996,7 @@ PUBLIC_PAGES = [
     ("/footprints-concept", "0.6", "monthly"),
     ("/book", "0.8", "monthly"),
     ("/articles", "0.7", "weekly"),
+    ("/tips", "0.8", "weekly"),
     ("/partners", "0.6", "monthly"),
     ("/agent", "0.6", "monthly"),
     ("/renter", "0.6", "monthly"),
@@ -3117,6 +3193,16 @@ def sitemap_xml():
                 "    <lastmod>%s</lastmod>" % ((a.get("created_at") or today)[:10]),
                 "    <changefreq>weekly</changefreq>",
                 "    <priority>0.6</priority>",
+                "  </url>"]
+    # Every travel tip, each in its own language. These are the pages that go
+    # out looking for people: a Chinese search about 大都会博物馆 can land on
+    # ours, which no English page of ours could ever answer.
+    for p in _social_lib():
+        out += ["  <url>",
+                "    <loc>%s/tips/%s</loc>" % (SITE_ORIGIN, html.escape(p["id"])),
+                "    <lastmod>%s</lastmod>" % today,
+                "    <changefreq>monthly</changefreq>",
+                "    <priority>0.7</priority>",
                 "  </url>"]
     out.append("</urlset>")
     return Response("\n".join(out), mimetype="application/xml")
