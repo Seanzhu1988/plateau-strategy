@@ -929,6 +929,19 @@
    "price": "$$$",
    "desc": "The top three floors of the Prudential Tower since 2023: an open-air deck wrapping the whole 51st floor, a projection-mapped model of the entire city, and cocktails at Stratus.",
    "tip": "Book online, walk-ups pay more, and there is no re-entry once your ticket is scanned. Green Line E to Prudential, doors at 800 Boylston."
+  },
+  {
+   "city": "boston",
+   "name": "A Day in Cambridge (loop)",
+   "lat": 42.3744,
+   "lon": -71.1169,
+   "cat": "culture",
+   "type": "attraction",
+   "close": 1020,
+   "visit": 360,
+   "price": null,
+   "desc": "A one-day loop across the river, six stops in walking-and-Red-Line order: Harvard Yard and the free Harvard Art Museums in the morning, the Glass Flowers next door, Mount Auburn's garden cemetery, then MIT's Great Dome, the Infinite Corridor and the Kendall Square museum to close the afternoon.",
+   "tip": "Ride the Red Line: start at Harvard, take bus 71 or 73 out to Mount Auburn, then two stops to Kendall/MIT. The museums close around 5, so walk the free outdoor pieces last."
   }
  ]
 }
