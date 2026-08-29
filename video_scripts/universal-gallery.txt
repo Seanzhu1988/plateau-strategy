@@ -1,19 +1,19 @@
-You are standing in a museum, in front of something that stops you. There is a name on the label you cannot pronounce, or a number, and a room full of people between you and the placard.
+You are standing in a museum, in front of something that stops you. There is a name you cannot pronounce, or just a number on the label.
 
-This is the Universal Gallery. One search bar, every museum we cover. Type a name, half a name, or just the number printed on the label, and it answers from the museums' own records.
+This is the Universal Gallery. One search bar, every museum we cover. Type a name, half a name, or the number on the label, and it answers from the museums' own records.
 
-Ask it for the starry night. The Met, the Museum of Modern Art and the Art Institute of Chicago answer together, with the museum's own photographs, and the answer tells you where the painting actually hangs today, not where a guidebook left it years ago.
+Ask it for the starry night. The Met, the Museum of Modern Art and the Art Institute of Chicago answer together, with the museum's own photographs, and where each painting actually hangs today.
 
-Numbers work even better than names. Every label in a museum carries an accession number, the little code most visitors ignore. Type it in exactly as printed. Sixty one point one nine eight brings back Rembrandt's Aristotle with a Bust of Homer, Gallery six sixteen at the Met, straight from the museum's live records.
+Numbers work even better than names. Type sixty one point one nine eight, exactly as printed on the label, and back comes Rembrandt's Aristotle with a Bust of Homer, Gallery six sixteen at the Met, from the museum's live records.
 
-When a work is in the public domain, the gallery shows you every photograph the museum has released, the details, the reverse, the corners you cannot get close to in the room. When a work is still under copyright, it shows you nothing and says so, and points you at the museum's own page instead. Honesty is a feature.
+When a work is in the public domain, you get every photograph the museum has released. When it is still under copyright, we show nothing, say so, and point you at the museum instead. Honesty is a feature.
 
-The same search bar travels. It sits on our Met guide and our MoMA guide, and it will sit on every museum we build next, so wherever you are standing, the answer is one tap down the page.
+The same bar travels. It sits on our Met guide, on our MoMA guide, and on every museum we build next.
 
-For the Museum of Modern Art we went one step further. The museum publishes its entire collection, one hundred sixty thousand works, and we carry a copy, refreshed every week. Type any MoMA label number and the answer comes back in an instant, including whether it is on the wall right now, and in which room.
+For MoMA we carry the museum's own dataset, one hundred sixty thousand works, refreshed every week. Any label number answers in an instant, with the room it hangs in right now.
 
-And here is the part we like best. Every search teaches the site. When people look for a museum we have not written up yet, the gallery remembers, and the Destination Book grows a new page for it. The Museum of Modern Art entered our book exactly that way, because someone searched for it.
+And every search teaches the site. When people look for a museum we have not written up yet, the Destination Book grows a new page for it. That is exactly how MoMA entered our book.
 
-One bar. Every museum. The museum's own words, the museum's own photographs, and a guide that gets bigger every time somebody asks it a question.
+One bar. Every museum. A guide that grows every time somebody asks.
 
 Plateau Strategy. plateaustrategy dot io.
