@@ -194,7 +194,14 @@
 
 <script>
 (function () {
-    var written = {}, timer = null;
+    var written = {}, timer = null, canGen = false, found = {};
+
+    // The reader's language, for a reading written on the spot in it. The
+    // i18n runtime is the source of truth; the html lang is the fallback.
+    function curLang() {
+        try { if (window.psxLang) return psxLang(); } catch (e) {}
+        return (document.documentElement.lang || "en").slice(0, 2) || "en";
+    }
 
     function esc(s) {
         return String(s == null ? "" : s).replace(/[&<>"]/g,
@@ -209,7 +216,7 @@
         bW.classList.toggle("is-on", !found); bW.setAttribute("aria-selected", String(!found));
         bF.classList.toggle("is-on", found); bF.setAttribute("aria-selected", String(found));
     }
-    function card(it, key) {
+    function card(it, key, fk) {
         // Every real photograph the museum published of this object. A single
         // painting has one; the Met and the Art Institute often hold several
         // (a detail, the reverse), and those become the slideshow. A work still
@@ -243,7 +250,15 @@
                   : '') +
               '</div>'
             : '';
-        return '<div class="ug-card" data-k="' + esc(key || "") + '">' +
+        // A curated work has a written narrative to read or hear. A searched
+        // work has none, but when there is an engine behind it we can write one
+        // on the spot, in the reader's language, for a work nobody here has
+        // ever written about. That reading, for anything you can point at, is
+        // the thing the facts alone are not.
+        var curated = key && it.has_narrative;
+        var canRead = curated || (!key && canGen && it.title);
+        return '<div class="ug-card" data-k="' + esc(key || "") +
+               '" data-fk="' + esc(fk || "") + '">' +
             // The photograph is the point of this page for somebody standing in
             // a gallery: it is how they confirm they are in front of the right
             // object. It is always a REAL photograph from the museum's own open
@@ -278,17 +293,19 @@
                         '</div>' : '') +
             (it.teaser ? '<div class="ug-teas">' + esc(it.teaser) + '</div>' : '') +
             rights +
-            (key && it.has_narrative
+            (curated
                 ? '<div class="ug-actions">' +
                     '<button class="ug-read">Read it, ' + (it.minutes || 3) + ' min</button>' +
                     (it.audio ? '<button class="ug-read ug-listen">Listen</button>' : '') +
                   '</div>'
-                : '') +
+                : (canRead
+                    ? '<div class="ug-actions">' +
+                        '<button class="ug-read ug-gen">Read this work</button>' +
+                      '</div>'
+                    : '')) +
             stage +
-            (key && it.has_narrative
-                ? '<div class="ug-player" hidden></div>' +
-                  '<div class="ug-text" hidden></div>'
-                : '') +
+            (curated ? '<div class="ug-player" hidden></div>' : '') +
+            (canRead ? '<div class="ug-text" hidden></div>' : '') +
             '</div></div>';
     }
 
@@ -397,6 +414,38 @@
             syncStage(host);
             return;
         }
+        // A searched work with no written guide: write one on the spot. The
+        // gen button also carries the ug-read class, so it is caught here first,
+        // before the curated reader below tries to look it up by a key it has
+        // not got.
+        var G = e.target.closest(".ug-gen");
+        if (G) {
+            var gh = G.closest(".ug-card"), gbox = gh.querySelector(".ug-text");
+            var it = found[gh.getAttribute("data-fk")] || {};
+            if (!gbox.hidden) { gbox.hidden = true; G.textContent = "Read this work"; syncStage(gh); return; }
+            if (gbox.dataset.loaded) { gbox.hidden = false; G.textContent = "Hide"; syncStage(gh); return; }
+            G.textContent = "Writing a reading…"; G.disabled = true;
+            fetch("/api/gallery/generate", {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    title: it.title, artist: it.artist, date: it.date,
+                    museum: it.museum || it.source, where: it.where,
+                    item_number: it.item_number, city: it.city,
+                    copyright: !!it.copyright, source_url: it.source_url,
+                    lang: curLang()
+                })
+            }).then(function (r) { return r.json(); }).then(function (d) {
+                G.disabled = false;
+                if (d && d.ok) {
+                    gbox.textContent = d.text; gbox.dataset.loaded = "1";
+                    gbox.hidden = false; G.textContent = "Hide"; syncStage(gh);
+                } else {
+                    G.textContent = (d && d.reason === "no_engine")
+                        ? "Reading not available here" : "Could not write it, try again";
+                }
+            }).catch(function () { G.disabled = false; G.textContent = "Could not write it, try again"; });
+            return;
+        }
         var b = e.target.closest(".ug-read"); if (!b) return;
         var host = b.closest(".ug-card"), box = host.querySelector(".ug-text");
         var key = host.getAttribute("data-k");
@@ -422,6 +471,7 @@
             .then(function (r) { return r.json(); })
             .then(function (d) {
                 var rs = d.results || [];
+                canGen = !!d.can_generate;
                 if (!rs.length) {
                     host.innerHTML = '<div class="ug-sec">Found in the collections</div>' +
                         '<p class="ug-none">Nothing matching that. We can search the Met and ' +
@@ -431,20 +481,16 @@
                         '</p>';
                     return;
                 }
+                // Stash each row so the reading button can hand its facts back
+                // to the server without smuggling them through the DOM.
+                found = {};
                 host.innerHTML = '<div class="ug-sec">Found in the collections, ' +
-                    rs.length + '</div>' + rs.map(function (r) { return card(r, null); }).join("");
+                    rs.length + '</div>' + rs.map(function (r, i) {
+                        var fk = "f" + i; found[fk] = r; return card(r, null, fk);
+                    }).join("");
             })
             .catch(function () { host.innerHTML = '<p class="ug-none">Search failed. Try again.</p>'; });
     }
-    // Arriving with ?q= (from a museum page's embedded search bar) starts
-    // the search already typed, so the hand-off loses nothing.
-    (function () {
-        try {
-            var q = new URLSearchParams(location.search).get("q");
-            if (q) { var f = document.getElementById("ugFind"); f.value = q;
-                     f.dispatchEvent(new Event("input", { bubbles: true })); }
-        } catch (e) {}
-    })();
     document.getElementById("ugFind").addEventListener("input", function () {
         var v = this.value.trim();
         clearTimeout(timer);
@@ -454,6 +500,18 @@
         else if (!v.length && !document.getElementById("ugTabW").hidden) { showTab("written"); }
         timer = setTimeout(function () { search(v); }, 350);   // one request per pause, not per keystroke
     });
+    // Arriving with ?q= (from a museum page's embedded search bar) starts the
+    // search already typed, so the hand-off loses nothing. This has to run
+    // AFTER the input listener above is attached: it works by firing that same
+    // input event, and dispatching it into a box nobody is listening to yet is
+    // how the hand-off used to arrive and quietly do nothing.
+    (function () {
+        try {
+            var q = new URLSearchParams(location.search).get("q");
+            if (q) { var f = document.getElementById("ugFind"); f.value = q;
+                     f.dispatchEvent(new Event("input", { bubbles: true })); }
+        } catch (e) {}
+    })();
 
     // The live line: how many travellers are here right now, shown only when
     // that is two or more. Polling also keeps this reader counted while the tab

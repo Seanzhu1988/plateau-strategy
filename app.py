@@ -4226,6 +4226,10 @@ def api_gallery_search():
     payload = {"query": q, "results": results[:16],
                "sources": ["The Met, New York", "Art Institute of Chicago",
                            "Wikidata and Wikimedia Commons, worldwide"],
+               # Whether a searched work can be READ, not just listed. The page
+               # offers the reading button only when there is an engine behind
+               # it, so it never shows one that would fail.
+               "can_generate": _gallery_can_generate(),
                # Said out loud, because a gallery that silently lacks MoMA looks
                # like a gallery that cannot find The Starry Night.
                "not_covered": ["MoMA", "the Louvre", "the Vatican Museums",
@@ -4284,6 +4288,64 @@ def api_gallery_narrative(key):
         return jsonify({"ok": False, "error": "Not written yet."}), 404
     return jsonify({"ok": True, "key": key, "title": it.get("title"),
                     "minutes": it.get("minutes"), "text": text})
+
+
+def _gallery_can_generate():
+    """Is there an engine behind the on-demand reading? Constant per process, so
+    the search can tell the page whether to offer the button at all rather than
+    show one that fails."""
+    try:
+        import gallery_reader
+        return gallery_reader.available()
+    except Exception:
+        return False
+
+
+@app.route("/api/gallery/generate", methods=["POST"])
+def api_gallery_generate():
+    """Write a reading of ANY searched work, on demand, in the reader's language.
+
+    The curated narratives above are the few works somebody wrote by hand. This
+    is the moat: a traveller reads the label number off a work nobody here has
+    written about, and gets a real guide to it on the spot, not just the facts
+    the search already showed. Same engine as the article translator, the
+    Render-safe Anthropic API road, so it runs where the site runs. Cache-first
+    and capped, so the second reader of a work pays nothing and no runaway can
+    become a bill. Without a key it says so honestly and the search still shows
+    every fact it always did."""
+    data = request.get_json(force=True, silent=True) or {}
+
+    def clean(k, n=200):
+        return _no_tags(str(data.get(k) or "").strip())[:n]
+
+    facts = {
+        "title": clean("title", 200),
+        "artist": clean("artist", 200),
+        "date": clean("date", 80),
+        "museum": clean("museum", 160),
+        "where": clean("where", 160),
+        "item_number": clean("item_number", 60),
+        "city": clean("city", 120),
+        "source_url": clean("source_url", 400),
+        "copyright": bool(data.get("copyright")),
+    }
+    lang = (data.get("lang") or "en").strip().lower()[:5]
+    # Tie generation to a real object: a title and the museum that holds it. A
+    # search row always carries both; this keeps the endpoint from being a free
+    # essay generator for arbitrary prompts.
+    if len(facts["title"]) < 2 or len(facts["museum"]) < 2:
+        return jsonify({"ok": False, "reason": "need_work"}), 400
+    try:
+        import gallery_reader
+    except Exception:
+        return jsonify({"ok": False, "reason": "no_engine"}), 200
+    if not gallery_reader.available():
+        return jsonify({"ok": False, "reason": "no_engine"}), 200
+    res = gallery_reader.read_for(facts, lang)
+    if not res:
+        return jsonify({"ok": False, "reason": "failed"}), 200
+    return jsonify({"ok": True, "text": res["text"], "minutes": res.get("minutes"),
+                    "cached": bool(res.get("cached"))})
 
 
 @app.route("/api/gallery/queue")
