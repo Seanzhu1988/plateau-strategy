@@ -1,0 +1,108 @@
+{
+ "year": 2026,
+ "week": 35,
+ "posts": [
+  {
+   "id": "ug-label-en",
+   "lang": "en",
+   "pain": "cannot read the label",
+   "page": "/universal-gallery",
+   "channels": [
+    "facebook",
+    "instagram"
+   ],
+   "text": "Standing in a museum, staring at a label you cannot read? Type the little number printed on it into our free Universal Gallery and it tells you what the piece is, who made it, and where it hangs today. Works for the Met, MoMA and the Art Institute of Chicago. No app, no account.",
+   "tags": "#travelTips #museum #NYC #artmuseum",
+   "visual": "Attach the Universal Gallery film (media/universal-gallery-film.mp4) or a screenshot of the 61.198 Rembrandt result.",
+   "links": {
+    "facebook": "https://plateaustrategy.io/universal-gallery?utm_source=facebook",
+    "instagram": "https://plateaustrategy.io/universal-gallery?utm_source=instagram"
+   }
+  },
+  {
+   "id": "met-lost-en",
+   "lang": "en",
+   "pain": "lost inside the museum",
+   "page": "/met",
+   "channels": [
+    "facebook",
+    "instagram"
+   ],
+   "text": "The map on your phone goes grey the moment you step inside the Met. Ours does not. Pick the rooms you want and footprints walk you room to room with honest times, measured on foot by a person, not estimated. Free, in your browser.",
+   "tags": "#TheMet #NYCtravel #museumday",
+   "visual": "Screenshot of the Met footprint sheet with a route drawn.",
+   "links": {
+    "facebook": "https://plateaustrategy.io/met?utm_source=facebook",
+    "instagram": "https://plateaustrategy.io/met?utm_source=instagram"
+   }
+  },
+  {
+   "id": "met-zh",
+   "lang": "zh",
+   "pain": "大都会太大会迷路",
+   "page": "/met",
+   "channels": [
+    "xiaohongshu",
+    "wechat"
+   ],
+   "text": "大都会博物馆一进门,手机地图就变灰了。我们画了一张脚印地图:先选好想看的展厅,它会一间一间带你走,每段路的时间都是真人走出来量的,不是拍脑袋估的。中文界面,免费,网页打开就能用。",
+   "tags": "#大都会博物馆 #纽约攻略 #博物馆逛展",
+   "visual": "脚印路线图截屏,配一张星空展厅照片。",
+   "links": {
+    "xiaohongshu": "https://plateaustrategy.io/met?utm_source=xiaohongshu",
+    "wechat": "https://plateaustrategy.io/met?utm_source=wechat"
+   }
+  },
+  {
+   "id": "trail-zh",
+   "lang": "zh",
+   "pain": "父母听不懂英文讲解",
+   "page": "/freedom-trail",
+   "channels": [
+    "xiaohongshu",
+    "wechat"
+   ],
+   "text": "波士顿自由之路,全程中文语音讲解来了。16个景点,每个都有5分钟的深度讲解,是地道的普通话配音,不是那种机器翻译腔。全程走路其实只要44分钟,可以走全程,也可以只走市中心一半。免费,不用下载App,打开网页就能听。带爸妈来玩的,先收藏。",
+   "tags": "#波士顿旅游 #自由之路 #美国东部 #带父母旅行 #博物馆",
+   "visual": "小红书首图用步道铜牌照片,第二张放中文讲解播放界面截图。",
+   "links": {
+    "xiaohongshu": "https://plateaustrategy.io/freedom-trail?utm_source=xiaohongshu",
+    "wechat": "https://plateaustrategy.io/freedom-trail?utm_source=wechat"
+   }
+  },
+  {
+   "id": "tours-cruise-en",
+   "lang": "en",
+   "pain": "cruise stop, afraid to wander",
+   "page": "/tours",
+   "channels": [
+    "facebook",
+    "instagram"
+   ],
+   "text": "Visiting Seattle by cruise ship and afraid to wander far from the pier? A licensed local guide walks you through the city on routes timed against your all-aboard, so you see Seattle and still make the ship. Small groups, real stories.",
+   "tags": "#Seattle #cruise #AlaskaCruise #shoreexcursion",
+   "visual": "A real photo of Seattle waterfront or Pike Place, no stock.",
+   "links": {
+    "facebook": "https://plateaustrategy.io/tours?utm_source=facebook",
+    "instagram": "https://plateaustrategy.io/tours?utm_source=instagram"
+   }
+  },
+  {
+   "id": "tours-zh",
+   "lang": "zh",
+   "pain": "邮轮停靠时间紧",
+   "page": "/tours",
+   "channels": [
+    "xiaohongshu",
+    "wechat"
+   ],
+   "text": "坐邮轮到西雅图,停靠时间短,不敢走远?持照导游带你走市区精华路线,行程按你的开船时间倒推安排,保证准时回船。小团,中文服务,派克市场、海滨、市中心一次走到位。",
+   "tags": "#西雅图 #阿拉斯加邮轮 #邮轮旅行 #华人导游",
+   "visual": "派克市场或海滨实拍,不用素材图。",
+   "links": {
+    "xiaohongshu": "https://plateaustrategy.io/tours?utm_source=xiaohongshu",
+    "wechat": "https://plateaustrategy.io/tours?utm_source=wechat"
+   }
+  }
+ ]
+}

@@ -1,0 +1,45 @@
+# Assemble the week's social pack every Monday morning and commit it, so
+# /social-pack always shows a fresh set ready to paste. Assembly only: the
+# posts are hand-written in social/posts.json; this just rotates and tags.
+# No secrets needed.
+name: Weekly social pack
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 15 * * 1"    # Mondays 15:30 UTC = morning in Seattle
+
+permissions:
+  contents: write
+
+concurrency:
+  group: social-pack
+  cancel-in-progress: false
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Assemble the pack
+        run: python3 social_pack.py
+
+      - name: Commit
+        run: |
+          git config user.name "plateau-social"
+          git config user.email "actions@users.noreply.github.com"
+          git add social/packs
+          if git diff --cached --quiet; then
+            echo "Pack unchanged."
+            exit 0
+          fi
+          git commit -m "This week's social pack"
+          git pull --rebase origin ${{ github.ref_name }}
+          git push origin HEAD:${{ github.ref_name }}

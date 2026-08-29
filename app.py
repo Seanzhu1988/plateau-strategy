@@ -2846,6 +2846,62 @@ def tours_page():
     return send_file(os.path.join(BASE_DIR, "tours.html"))
 
 
+@app.route("/social-pack")
+def social_pack_page():
+    """This week's ready-to-paste social posts, for Sean's thumb.
+
+    An owner convenience, not a public page: unlisted, noindex, absent from
+    the sitemap. The pack itself ships with the repo (social/packs/latest.json,
+    assembled Mondays by the social-pack workflow), so this never depends on
+    the data disk. Nothing secret lives here, the posts are marketing copy,
+    which is why it needs no login: the cost of someone finding it is that
+    they read our ads early.
+    """
+    import html as _html
+    try:
+        with open(os.path.join(BASE_DIR, "social", "packs", "latest.json"),
+                  encoding="utf-8") as f:
+            pack = json.load(f)
+    except Exception:
+        return "No pack assembled yet. Run social_pack.py.", 404
+    cards = []
+    for p in pack.get("posts", []):
+        links = "".join('<div class="lk"><b>%s</b> <span>%s</span></div>'
+                        % (_html.escape(c), _html.escape(u))
+                        for c, u in (p.get("links") or {}).items())
+        cards.append(
+            '<div class="card"><div class="meta">%s · %s</div>'
+            '<textarea readonly rows="6">%s</textarea>'
+            '<button onclick="copyIt(this)">Copy the post</button>'
+            '%s<div class="meta">tags: %s</div><div class="meta">visual: %s</div></div>'
+            % (_html.escape(p["id"]), _html.escape(" / ".join(p["channels"])),
+               _html.escape(p["text"] + "\n\n" + next(iter((p.get("links") or {}).values()), "")
+                            + "\n" + p["tags"]),
+               links, _html.escape(p["tags"]), _html.escape(p["visual"])))
+    return ("""<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow"><title>This week's social pack</title>
+<style>body{font:16px/1.5 -apple-system,sans-serif;max-width:680px;margin:1.5rem auto;
+padding:0 1rem;color:#14110c}h1{font-size:1.3rem}
+.card{border:1px solid #d3d3da;border-radius:10px;padding:1rem;margin:0 0 1rem}
+.meta{font-size:.78rem;color:#6b655b;margin:.3rem 0}
+textarea{width:100%%;font:inherit;font-size:.92rem;border:1px solid #e6e6ea;
+border-radius:6px;padding:.6rem;box-sizing:border-box}
+.lk{font-size:.78rem;margin:.25rem 0;word-break:break-all}.lk span{color:#1b4d8f}
+button{font:inherit;font-weight:700;border:1px solid #1f3a5f;border-radius:999px;
+background:#fff;color:#1f3a5f;padding:.35rem .9rem;margin:.4rem 0;cursor:pointer}
+</style></head><body>
+<h1>Social pack · %d week %02d</h1>
+<p class="meta">Copy, attach the visual, post. The Chinese posts go out AS
+WRITTEN. Each copy includes the first channel's tagged link; swap in the other
+channel's link when posting there.</p>
+%s
+<script>function copyIt(b){var t=b.parentNode.querySelector('textarea');
+t.select();document.execCommand('copy');b.textContent='Copied';
+setTimeout(function(){b.textContent='Copy the post';},1500);}</script>
+</body></html>""" % (pack.get("year", 0), pack.get("week", 0), "".join(cards)))
+
+
 # ---------------------------------------------------------------------------
 # Search engines
 #
