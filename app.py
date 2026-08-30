@@ -3022,6 +3022,7 @@ PUBLIC_PAGES = [
     ("/book", "0.8", "monthly"),
     ("/articles", "0.7", "weekly"),
     ("/tips", "0.8", "weekly"),
+    ("/gallery-guides", "0.8", "weekly"),
     ("/landmarks", "0.8", "monthly"),
     ("/partners", "0.6", "monthly"),
     ("/agent", "0.6", "monthly"),
@@ -3066,6 +3067,9 @@ SITE_MAP = [
          "Short walks worth doing on foot, timed and saved to your account."),
         ("/met", "The Met, corridor by corridor",
          "A museum too big to wander, laid out as routes you can finish."),
+        ("/gallery-guides", "Gallery Guides",
+         "Short guides to single works of art, what to notice and where each "
+         "one hangs, built from what travellers look up most."),
         ("/favorite-place", "Favourite Place",
          "Tell us where you love, and it goes on the map for the next visitor."),
         ("/road-trip", "Road Trip",
@@ -3230,6 +3234,21 @@ def sitemap_xml():
                 "    <changefreq>monthly</changefreq>",
                 "    <priority>0.7</priority>",
                 "  </url>"]
+    # Every artwork travellers keep looking up, each its own guide page. Demand
+    # written by the searchers themselves: a work earns a sitemap row once more
+    # than one person has asked for it, so a Chinese or English search for that
+    # exact piece can land on ours.
+    try:
+        for g in discovery_mod.gallery_guides(min_asked=2, limit=1000):
+            out += ["  <url>",
+                    "    <loc>%s/gallery-guides/%s</loc>" % (SITE_ORIGIN,
+                                                            html.escape(g.get("slug") or "")),
+                    "    <lastmod>%s</lastmod>" % today,
+                    "    <changefreq>monthly</changefreq>",
+                    "    <priority>0.6</priority>",
+                    "  </url>"]
+    except Exception:
+        pass
     out.append("</urlset>")
     return Response("\n".join(out), mimetype="application/xml")
 
@@ -4385,7 +4404,7 @@ def api_gallery_search():
             for r in results[:4]:
                 discovery_mod.record_artwork(r.get("title"), r.get("source"), r.get("city"),
                                              r.get("item_number"), r.get("image"),
-                                             r.get("wikidata"))
+                                             r.get("wikidata"), r.get("artist"))
         else:
             discovery_mod.record_gallery_miss(q)
     except Exception as e:
@@ -4527,6 +4546,167 @@ def api_gallery_queue():
         return jsonify({"ok": True, "queue": discovery_mod.artwork_queue(60)})
     except Exception as e:
         return jsonify({"ok": False, "queue": [], "error": str(e)}), 500
+
+
+# ======================================================================
+#  GALLERY GUIDES: the demand the visitors write themselves becomes pages.
+#  Every gallery search is a person saying what they want to read about.
+#  When the same work is asked for more than once it stops being noise and
+#  earns a permanent, crawlable page that answers exactly the search that
+#  keeps arriving, carrying the real reading. This is how the site goes out
+#  and finds the people who need it: by being the answer when they look. [SEAN]
+# ======================================================================
+_GUIDE_CSS = (
+    "body{font:17px/1.7 Georgia,serif;max-width:720px;margin:0 auto;"
+    "padding:1.4rem 1.1rem 3rem;color:#14110c;background:#faf8f4}"
+    "a{color:#1d4c4f}h1{font-size:1.6rem;line-height:1.25;margin:.2rem 0 .3rem}"
+    ".by{color:#4a453d;margin:0 0 .7rem}"
+    ".tags{display:flex;flex-wrap:wrap;gap:.4rem;margin:.2rem 0 1.1rem}"
+    ".tag{font:600 .74rem/1 -apple-system,sans-serif;color:#4a453d;background:#f5f1e8;"
+    "border:1px solid #ddd8cd;border-radius:999px;padding:.28rem .6rem}"
+    ".tag.num{color:#1d4c4f}"
+    "img.hero{display:block;width:100%;max-width:520px;height:auto;border-radius:10px;margin:0 0 1.1rem}"
+    ".reading p{margin:0 0 .9rem}.reading .pending{color:#6b655b}"
+    ".src{color:#6b655b;font-size:.85rem;margin:.2rem 0 1.2rem}"
+    ".cta{display:inline-block;font-weight:700;border:1px solid #1d4c4f;border-radius:999px;"
+    "padding:.55rem 1.1rem;color:#1d4c4f;text-decoration:none;margin:.4rem 0}"
+    ".nav{margin:1.4rem 0 0;font-size:.92rem}ul.g{list-style:none;padding:0}"
+    "ul.g li{border-top:1px solid #e6e2da;padding:.85rem 0}ul.g .m{color:#6b655b;font-size:.9rem;margin-top:.15rem}"
+    "ul.g .none{color:#6b655b;border:0}h1.idx{margin-bottom:.2rem}.lead{color:#4a453d;margin:0 0 1.2rem}")
+
+
+def _guide_facts(g):
+    return {"title": g.get("title") or "", "artist": g.get("artist") or "",
+            "museum": g.get("museum") or "", "item_number": g.get("item_number") or "",
+            "city": (g.get("city") or "").replace("-", " ").strip(), "lang": "en"}
+
+
+@app.route("/gallery-guides")
+def gallery_guides_index():
+    """A directory of the works travellers keep looking up, each a real page.
+
+    Public and crawlable, so the internal links let a search engine reach every
+    guide, and linked from the gallery so a visitor browsing finds them too."""
+    import html as _html
+    try:
+        guides = discovery_mod.gallery_guides(min_asked=2, limit=300)
+    except Exception:
+        guides = []
+    items = []
+    for g in guides:
+        artist = _html.escape(g.get("artist") or "")
+        museum = _html.escape(g.get("museum") or "")
+        num = _html.escape(g.get("item_number") or "")
+        items.append(
+            '<li><a href="/gallery-guides/%s"><b>%s</b></a><div class="m">%s%s%s</div></li>'
+            % (_html.escape(g.get("slug") or ""), _html.escape(g.get("title") or ""),
+               (artist + " &middot; ") if artist else "", museum,
+               (" &middot; " + num) if num else ""))
+    body = "".join(items) or ('<li class="none">Nothing here yet. As travellers search '
+                              'the gallery, the works they look up most gather here, each '
+                              'with its own guide.</li>')
+    return ("""<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gallery guides, one artwork at a time · Plateau Strategy</title>
+<meta name="description" content="Short spoken guides to individual artworks, what to notice and where each one hangs. Built from the works travellers look up most.">
+<link rel="canonical" href="%s/gallery-guides"><style>%s</style></head><body>
+<h1 class="idx">Gallery guides</h1>
+<p class="lead">One artwork at a time. What it is, what to notice in the few minutes you are standing there, and the number on its label so you know you are in front of the right thing. These are the works travellers look up most.</p>
+<ul class="g">%s</ul>
+<p class="nav"><a href="/universal-gallery">Search any work in the Universal Gallery &rarr;</a></p>
+</body></html>""" % (SITE_ORIGIN, _GUIDE_CSS, body))
+
+
+@app.route("/gallery-guides/<slug>")
+def gallery_guide_page(slug):
+    """One artwork's own page: the facts, the picture where there is one, and a
+    reading. The reading is server rendered when we already have it, so a crawler
+    sees real prose; otherwise the page names and shows the work and fetches the
+    reading on the client, which caches it so the next crawl is rich."""
+    import html as _html
+    try:
+        g = discovery_mod.gallery_guide(slug)
+    except Exception:
+        g = None
+    if not g:
+        return "No such guide.", 404
+    facts = _guide_facts(g)
+    title, artist = g.get("title") or "", g.get("artist") or ""
+    museum, num, image = g.get("museum") or "", g.get("item_number") or "", g.get("image") or ""
+
+    reading = None
+    try:
+        import gallery_reader
+        reading = gallery_reader.cached_reading(facts, "en")
+    except Exception:
+        reading = None
+
+    if reading and reading.get("text"):
+        reading_html = "".join("<p>%s</p>" % _html.escape(x.strip())
+                               for x in reading["text"].split("\n\n") if x.strip())
+        reading_html = '<div class="reading">%s</div>' % reading_html
+        desc = reading["text"].strip().replace("\n", " ")[:155]
+        gen_script = ""
+    else:
+        reading_html = ('<div class="reading" id="rd"><p class="pending">'
+                        'Opening a reading of this work.</p></div>')
+        desc = ("%s%s at %s. What to notice, and where to find it."
+                % (title, (" by " + artist) if artist else "", museum))
+        payload = json.dumps(facts).replace("</", "<\\/")
+        gen_script = ("<script>(function(){var el=document.getElementById('rd');"
+                      "if(!el)return;var f=%s;"
+                      "fetch('/api/gallery/generate',{method:'POST',"
+                      "headers:{'Content-Type':'application/json'},body:JSON.stringify(f)})"
+                      ".then(function(r){return r.json()}).then(function(d){"
+                      "if(d&&d.ok&&d.text){el.innerHTML=d.text.split('\\n\\n').map(function(p){"
+                      "var e=document.createElement('p');e.textContent=p.trim();"
+                      "return e.outerHTML}).join('')}else{el.innerHTML="
+                      "'<p><a href=\"/universal-gallery?q='+encodeURIComponent(f.title)+"
+                      "'\">Open it in the Universal Gallery to hear it read aloud &rarr;</a></p>'}})"
+                      ".catch(function(){el.innerHTML='<p><a href=\"/universal-gallery?q='"
+                      "+encodeURIComponent(f.title)+'\">Open it in the Universal Gallery &rarr;</a></p>'})"
+                      "})();</script>" % payload)
+
+    ld = {"@context": "https://schema.org", "@type": "VisualArtwork", "name": title,
+          "url": "%s/gallery-guides/%s" % (SITE_ORIGIN, slug), "description": desc}
+    if artist:
+        ld["creator"] = {"@type": "Person", "name": artist}
+    if image:
+        ld["image"] = image
+    ld_script = '<script type="application/ld+json">%s</script>' % (
+        json.dumps(ld, ensure_ascii=False).replace("</", "<\\/"))
+
+    tags = '<div class="tags">'
+    if museum:
+        tags += '<span class="tag">%s</span>' % _html.escape(museum)
+    if num:
+        tags += '<span class="tag num">%s</span>' % _html.escape(num)
+    tags += "</div>"
+    hero = ('<img class="hero" src="%s" alt="%s" loading="lazy">'
+            % (_html.escape(image), _html.escape(title))) if image else ""
+
+    return ("""<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>%s%s, a guide · Plateau Strategy</title>
+<meta name="description" content="%s">
+<link rel="canonical" href="%s/gallery-guides/%s">
+<meta property="og:title" content="%s"><meta property="og:description" content="%s">
+%s<style>%s</style></head><body>
+<h1>%s</h1>
+<p class="by">%s</p>
+%s%s%s
+<p class="src">A free guide from the Universal Gallery. Read it aloud in your own language on the tool.</p>
+<a class="cta" href="/universal-gallery?q=%s">Open it in the Universal Gallery &rarr;</a>
+<p class="nav"><a href="/gallery-guides">More gallery guides</a></p>
+%s</body></html>""" % (
+        _html.escape(title), (" by " + _html.escape(artist)) if artist else "",
+        _html.escape(desc), SITE_ORIGIN, _html.escape(slug),
+        _html.escape(title), _html.escape(desc),
+        ld_script, _GUIDE_CSS,
+        _html.escape(title),
+        _html.escape((artist + ", ") if artist else "") + _html.escape(museum),
+        tags, hero, reading_html,
+        _html.escape(title), gen_script))
 
 
 @app.route("/api/gallery/here")

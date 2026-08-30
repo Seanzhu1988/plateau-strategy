@@ -248,6 +248,28 @@ def _spend_add(store):
     store.setdefault("spend", {})[month] = int(store.get("spend", {}).get(month, 0)) + 1
 
 
+def cached_reading(facts, lang="en"):
+    """The stored reading for this work and language, or None, WITHOUT ever
+    calling the model. Lets a guide page server render a reading it already has,
+    so a crawler sees real text on every work that has been read once, and fall
+    back to generating client side only when it does not exist yet."""
+    if lang not in LANG_NAMES:
+        lang = "en"
+    if len((facts.get("title") or "").strip()) < 2:
+        return None
+    key = work_key(facts)
+    try:
+        with _LOCK:
+            store = _load_store()
+            have = (store.get("by_key", {}).get(key) or {}).get(lang)
+        if have and have.get("text"):
+            return {"text": have["text"],
+                    "minutes": have.get("minutes") or _minutes(have["text"])}
+    except Exception:
+        pass
+    return None
+
+
 def read_for(facts, lang):
     """One reading, one work, one language. Returns {"text","minutes","cached"}
     on success or None on any failure, so the caller can fall back to showing

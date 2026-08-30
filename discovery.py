@@ -568,7 +568,7 @@ def record_gallery_city(city, museum="", example=""):
     return True
 
 
-def record_artwork(title, museum, city, item_number="", image="", qid=""):
+def record_artwork(title, museum, city, item_number="", image="", qid="", artist=""):
     """An artwork somebody looked up, kept so the gallery builds its own index.
 
     The museums are discovered as PLACES; this is the other half. Every search
@@ -592,8 +592,13 @@ def record_artwork(title, museum, city, item_number="", image="", qid=""):
         if row:
             row["asked"] = row.get("asked", 1) + 1
             row["last"] = int(time.time())
+            # An early search may have logged the work before we captured the
+            # maker; fill it in the first time a later search carries one.
+            if artist and not row.get("artist"):
+                row["artist"] = re.sub(r"<[^>]*>", "", artist).strip()[:80]
         else:
-            arts[key] = {"title": title, "museum": (museum or "")[:80],
+            arts[key] = {"title": title, "artist": re.sub(r"<[^>]*>", "", (artist or "")).strip()[:80],
+                         "museum": (museum or "")[:80],
                          "city": _slug(city or "")[:24], "item_number": (item_number or "")[:40],
                          "image": (image or "")[:300], "qid": (qid or "")[:16],
                          "asked": 1, "written": False,
@@ -613,6 +618,36 @@ def artwork_queue(limit=40):
     rows = [dict(v, key=k) for k, v in (s.get("artworks") or {}).items() if not v.get("written")]
     rows.sort(key=lambda r: (-r.get("asked", 1), r.get("title", "")))
     return rows[:limit]
+
+
+def gallery_guides(min_asked=2, limit=300):
+    """The artworks that have earned a permanent guide page, most asked first.
+
+    Every search is a person telling us what they want to read about. When the
+    same object is asked for more than once it stops being noise and becomes
+    demand, so it gets its own crawlable page that answers exactly the search
+    that keeps arriving. Demand written by the visitors themselves, not guessed
+    by us. The slug is the object's own key, stable across languages because it
+    is built from the museum's inventory number."""
+    s = _load()
+    rows = []
+    for k, v in (s.get("artworks") or {}).items():
+        if v.get("asked", 1) < min_asked or len((v.get("title") or "").strip()) < 2:
+            continue
+        if not (v.get("museum") or "").strip():
+            continue                       # the reading needs the holding museum
+        rows.append(dict(v, slug=k[4:] if k.startswith("art#") else k))
+    rows.sort(key=lambda r: (-r.get("asked", 1), r.get("title", "")))
+    return rows[:limit]
+
+
+def gallery_guide(slug):
+    """One artwork by its guide slug, or None."""
+    s = _load()
+    v = (s.get("artworks") or {}).get("art#" + (slug or ""))
+    if not v:
+        return None
+    return dict(v, slug=slug)
 
 
 def record_gallery_miss(q):
