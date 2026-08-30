@@ -2881,6 +2881,14 @@ def landmarks_page():
     return send_file(os.path.join(BASE_DIR, "landmarks.html"))
 
 
+@app.route("/styles-3d.js")
+def styles_3d_js():
+    """The styles book, the half a model can execute. Loaded BEFORE any model
+    script, because a model declares the style it is drawn in and this is what
+    that declaration means. STYLES.md is the same book written for a person."""
+    return send_file(os.path.join(BASE_DIR, "styles-3d.js"), mimetype="application/javascript")
+
+
 @app.route("/nyc-3d.js")
 def nyc_3d_js():
     return send_file(os.path.join(BASE_DIR, "nyc-3d.js"), mimetype="application/javascript")

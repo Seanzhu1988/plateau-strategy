@@ -145,7 +145,7 @@
   /* ==================== BROOKLYN BRIDGE ==================== */
   /* Feet, origin at the Manhattan tower's centre, x runs to Brooklyn. */
   var BB = {
-    span: 1595.5, side: 930, towerH: 278, deckH: 127,
+    span: 1595.5, side: 930, towerH: 276.5, deckH: 127,
     archH: 117, archW: 33.75, deckW: 85, towerW: 140, towerT: 53
   };
 
@@ -204,15 +204,64 @@
       f = f.concat(box(P(tx - tt, 0, 0)[0], P(tx + tt, 0, 0)[0],
                        P(0, -w, 0)[1], P(0, w, 0)[1],
                        0, P(0, 0, dz - 9)[2], C.stoneTop));
-      /* the point of each arch, drawn on the face so the Gothic reads */
+      /* THE ARCHES. These were drawn as two straight lines meeting at a
+         point, which is a triangle, not a Gothic arch. A Gothic arch is
+         TWO-CENTRED: each side is a circular arc struck from a centre on
+         the far side of the centreline, so the curve is steep at the
+         springing and flat at the apex. The geometry comes from the styles
+         book, where the offset is forced by d = (h*h - a*a) / 2a. At this
+         opening, 33.75 ft wide with a 44.5 ft rise, that formula returns a
+         LANCET, which is what the photographs show.
+
+         Two things are drawn per opening. The SPANDREL is the stone that
+         sits above the curve and below the square head of the opening; fill
+         it and the hole is pointed, leave it out and the hole is a rectangle
+         with a line scratched on it, which is what it was. The VOUSSOIRS are
+         the joints between the wedge stones, and because each is a true
+         radius from the arc centre they FAN rather than staying parallel.
+         That fan is the difference between cut stone and a cut hole. */
+      var ST = window.STYLES3D;
       [-1, 1].forEach(function (sd) {
-        var c = sd * (aw / 2 + pier / 2 + aw / 2);   /* centre of that opening */
-        var top = dz + BB.archH, spring = dz + BB.archH * 0.62;
+        var c = sd * (aw + pier);                    /* centre of that opening */
+        var top = dz + BB.archH;
+        var spring = dz + BB.archH * 0.62;
+        var rise = top - spring;
+        var arc = ST.pointedArch(aw, rise, 22);      /* [u across, v up] */
+
         [-tt, tt].forEach(function (xf) {
-          lines.push({ a: P(tx + xf, c - aw / 2, spring), b: P(tx + xf, c, top),
-                       colour: C.stoneEdge, width: 1.2 });
-          lines.push({ a: P(tx + xf, c + aw / 2, spring), b: P(tx + xf, c, top),
-                       colour: C.stoneEdge, width: 1.2 });
+          /* spandrel, left half then right half, each closing against the
+             square head so the opening reads as an arch cut in a wall. */
+          [-1, 1].forEach(function (half) {
+            /* Walk the OUTLINE of the spandrel, in order, or the fill closes
+               across the opening and bricks up the arch. Start at the square
+               top corner, drop down the jamb to the springing, ride the arc up
+               to the apex, and let the close run back along the head. */
+            var poly = [P(tx + xf, c + half * aw / 2, top)];
+            arc.forEach(function (pt) {
+              if (half * pt[0] >= -1e-9) poly.push(P(tx + xf, c + pt[0], spring + pt[1]));
+            });
+            f.push(face(poly, C.stoneTop, { flat: true }));
+          });
+
+          /* the arc itself, as the line where stone meets sky */
+          for (var i = 1; i < arc.length; i++) {
+            lines.push({ a: P(tx + xf, c + arc[i - 1][0], spring + arc[i - 1][1]),
+                         b: P(tx + xf, c + arc[i][0], spring + arc[i][1]),
+                         colour: C.stoneEdge, width: 1.1 });
+          }
+          /* and the jambs below the springing */
+          [-1, 1].forEach(function (half) {
+            lines.push({ a: P(tx + xf, c + half * aw / 2, dz),
+                         b: P(tx + xf, c + half * aw / 2, spring),
+                         colour: C.stoneEdge, width: 1.1 });
+          });
+
+          /* radiating joints */
+          ST.voussoirs(aw, rise, aw * 0.34, 7).forEach(function (v) {
+            lines.push({ a: P(tx + xf, c + v[0][0], spring + v[0][1]),
+                         b: P(tx + xf, c + v[1][0], spring + v[1][1]),
+                         colour: C.stoneEdge, width: 0.7 });
+          });
         });
       });
     });

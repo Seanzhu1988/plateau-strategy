@@ -72,6 +72,18 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
 
 ## Done
 
+- **2026-08-30 · the styles book.** The Brooklyn Bridge towers are Gothic
+  Revival and their openings had been drawn as triangles. A Gothic arch is
+  two-centred: two circular arcs struck from centres on the far side of the
+  springing line. Built `STYLES.md` and `styles-3d.js` so the rule is written
+  once for every model that follows, then rebuilt the bridge on it. Against
+  the straight line it replaced the true arc bulges 4.36 ft. Added the
+  spandrel (without it a pointed opening is a rectangle with a line on it)
+  and radiating voussoir joints. Tower height corrected 278 to 276.5 ft.
+  Caught in the screenshot: the first spandrel had its outline out of order
+  and bricked up all four openings while every number in the file was right.
+
+
 ### 2026-08-30
 Trimmed: the front page's second rental card was still bright and linked while
 its twin was greyed, so the page advertised a product under reconstruction;
