@@ -135,6 +135,51 @@
    "links": {
     "rednote": "https://plateaustrategy.io/universal-gallery?utm_source=rednote"
    }
+  },
+  {
+   "id": "x-ug-label",
+   "lang": "en",
+   "pain": "cannot read the label",
+   "page": "/universal-gallery",
+   "channels": [
+    "x"
+   ],
+   "text": "Standing in a museum, staring at a label you cannot read? Type the number on it into our free Universal Gallery: what it is, who made it, where it hangs, in your language. No app, no account.",
+   "tags": "#travel #museums",
+   "visual": "The Universal Gallery film, or a screenshot of a result.",
+   "links": {
+    "x": "https://plateaustrategy.io/universal-gallery?utm_source=x"
+   }
+  },
+  {
+   "id": "x-ug-reading",
+   "lang": "en",
+   "pain": "wants a real reading, not just facts",
+   "page": "/universal-gallery",
+   "channels": [
+    "x"
+   ],
+   "text": "New in our free gallery: point it at ANY artwork and it writes you a real guide on the spot, in your language. Not just the label, a proper reading of what to notice while you stand there.",
+   "tags": "#arttravel #museums",
+   "visual": "Screenshot of a generated reading on a searched work.",
+   "links": {
+    "x": "https://plateaustrategy.io/universal-gallery?utm_source=x"
+   }
+  },
+  {
+   "id": "x-met",
+   "lang": "en",
+   "pain": "lost inside the museum",
+   "page": "/met",
+   "channels": [
+    "x"
+   ],
+   "text": "Your phone map goes grey the moment you step inside the Met. Ours does not. Pick the rooms you want and footprints walk you room to room, with times measured on foot by a person. Free.",
+   "tags": "#TheMet #NYC",
+   "visual": "Screenshot of the Met footprint sheet with a route drawn.",
+   "links": {
+    "x": "https://plateaustrategy.io/met?utm_source=x"
+   }
   }
  ]
 }

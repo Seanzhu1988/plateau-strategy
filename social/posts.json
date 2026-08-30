@@ -157,6 +157,66 @@
    "text": "波士顿自由之路,一直想带爸妈走,但英文讲解他们听不懂,就一直没敢安排。\n\n最近发现一个免费网页,把这条路做成了全程中文语音讲解🎧\n16 个景点,每个都有大概 5 分钟的深度讲解,是地道的普通话配音,不是那种机器翻译腔。\n\n最贴心的是时间。全程走路其实只要 44 分钟,是真人一步一步走出来量的,不是拍脑袋估的。走累了可以只走市中心那一半,随时停。\n\n手机打开网页就能听,不用下载 App。脚印地图还会一个点一个点带着你走,不怕迷路。\n\n带爸妈,或者第一次来波士顿的,先收藏📌",
    "tags": "#波士顿旅游 #自由之路 #美国东部攻略 #带父母旅行 #中文讲解",
    "visual": "首图用步道铜牌的实拍照片;第二张放中文讲解的播放界面,或者脚印路线图截屏。"
+  },
+  {
+   "id": "x-ug-label",
+   "lang": "en",
+   "pain": "cannot read the label",
+   "page": "/universal-gallery",
+   "channels": [
+    "x"
+   ],
+   "text": "Standing in a museum, staring at a label you cannot read? Type the number on it into our free Universal Gallery: what it is, who made it, where it hangs, in your language. No app, no account.",
+   "tags": "#travel #museums",
+   "visual": "The Universal Gallery film, or a screenshot of a result."
+  },
+  {
+   "id": "x-ug-reading",
+   "lang": "en",
+   "pain": "wants a real reading, not just facts",
+   "page": "/universal-gallery",
+   "channels": [
+    "x"
+   ],
+   "text": "New in our free gallery: point it at ANY artwork and it writes you a real guide on the spot, in your language. Not just the label, a proper reading of what to notice while you stand there.",
+   "tags": "#arttravel #museums",
+   "visual": "Screenshot of a generated reading on a searched work."
+  },
+  {
+   "id": "x-met",
+   "lang": "en",
+   "pain": "lost inside the museum",
+   "page": "/met",
+   "channels": [
+    "x"
+   ],
+   "text": "Your phone map goes grey the moment you step inside the Met. Ours does not. Pick the rooms you want and footprints walk you room to room, with times measured on foot by a person. Free.",
+   "tags": "#TheMet #NYC",
+   "visual": "Screenshot of the Met footprint sheet with a route drawn."
+  },
+  {
+   "id": "x-trail",
+   "lang": "en",
+   "pain": "the walk feels too big",
+   "page": "/freedom-trail",
+   "channels": [
+    "x"
+   ],
+   "text": "Boston's Freedom Trail is 16 stops and most people quit halfway. We measured it: 44 minutes of real walking, and every stop has a 5 minute audio guide, now in Chinese too. Free.",
+   "tags": "#Boston #FreedomTrail",
+   "visual": "Screenshot of the trail page with the medallion and the pick row."
+  },
+  {
+   "id": "x-planner",
+   "lang": "en",
+   "pain": "planning overwhelm",
+   "page": "/trip-planner",
+   "channels": [
+    "x"
+   ],
+   "text": "Planning a New York or DC day should not take a day. Drop your stops on our free planner and each one lights up or dims by drive time, traffic and closing hours, before you hit a locked door.",
+   "tags": "#tripplanning #travel",
+   "visual": "Screenshot of the planner with a lit and dimmed route."
   }
  ]
 }

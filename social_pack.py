@@ -19,6 +19,10 @@ caption. A note there is image first, carries a short hook title above the body,
 and its body links are not clickable, so the site link lives in the profile bio.
 Those posts are hand-written in RedNote's own register, marked with the "rednote"
 channel, and laid out here with their title, cover and topics ready to paste.
+
+X is its own lane too, marked with the "x" channel: short, a clickable link
+inline, written to fit 280 with the link counted as 23. X is the one channel
+here with a real posting API, so these are the posts an auto-poster would send.
 """
 import datetime
 import json
@@ -37,24 +41,29 @@ def main():
     posts = lib["posts"]
     year, week, _ = datetime.date.today().isocalendar()
 
-    def is_rednote(p):
-        return "rednote" in p.get("channels", [])
+    def has(p, ch):
+        return ch in p.get("channels", [])
 
+    # RedNote and X are their own lanes, kept out of the generic pools so they
+    # are not rendered twice in the wrong shape.
     en = [p for p in posts if p["lang"] == "en" and not p["id"].startswith("tours")
-          and not is_rednote(p)]
+          and not has(p, "rednote") and not has(p, "x")]
     zh = [p for p in posts if p["lang"] == "zh" and not p["id"].startswith("tours")
-          and not is_rednote(p)]
-    tours = [p for p in posts if p["id"].startswith("tours") and not is_rednote(p)]
-    rednote = [p for p in posts if is_rednote(p)]
+          and not has(p, "rednote") and not has(p, "x")]
+    tours = [p for p in posts if p["id"].startswith("tours")
+             and not has(p, "rednote") and not has(p, "x")]
+    rednote = [p for p in posts if has(p, "rednote")]
+    xposts = [p for p in posts if has(p, "x")]
 
     picked = []
     for pool, n in ((en, 2), (zh, 2)):
         for i in range(n):
             picked.append(pool[(week + i) % len(pool)])
     picked += tours                                   # the money, every week
-    # RedNote rotates on the same week clock, up to two a week, and never the
-    # same note twice in one pack even when the pool is small.
+    # RedNote and X rotate on the same week clock, a few a week, never the same
+    # one twice in a pack even when the pool is small.
     rn_pick = [rednote[(week + i) % len(rednote)] for i in range(min(2, len(rednote)))]
+    x_pick = [xposts[(week + i) % len(xposts)] for i in range(min(3, len(xposts)))]
 
     lines = ["# Social pack · %d week %02d" % (year, week), "",
              "Copy, attach the visual, post. Every link is tagged per channel so",
@@ -93,15 +102,31 @@ def main():
                       "- 主页链接 bio link: %s" % biolink, ""]
             latest["posts"].append({**p, "links": {"rednote": biolink}})
 
+    # The X lane. X allows a clickable link and, unlike RedNote, a real posting
+    # API, so these are written to stand alone with the tagged link inline. X
+    # counts any link as 23 characters, so the length shown here is the true one
+    # against the 280 limit, link included.
+    if x_pick:
+        lines += ["---", "", "# X lane", "",
+                  "One tap, or auto-posted once the X API key is set. The count is the"
+                  " real X length, link included (X counts a link as 23).", ""]
+        for p in x_pick:
+            u = link(p["page"], "x")
+            xlen = len(p["text"]) + 1 + 23 + (1 + len(p["tags"]) if p["tags"] else 0)
+            lines += ["## %s  (%d/280)" % (p["id"], xlen), "",
+                      "%s %s %s" % (p["text"], u, p["tags"]), "",
+                      "- visual: %s" % p["visual"], ""]
+            latest["posts"].append({**p, "links": {"x": u}})
+
     packs = os.path.join(BASE, "social", "packs")
     os.makedirs(packs, exist_ok=True)
     md = os.path.join(packs, "%d-W%02d.md" % (year, week))
     open(md, "w", encoding="utf-8").write("\n".join(lines))
     json.dump(latest, open(os.path.join(packs, "latest.json"), "w", encoding="utf-8"),
               indent=1, ensure_ascii=False)
-    print("pack: %s · %d posts (%d zh) + %d RedNote" % (
+    print("pack: %s · %d posts (%d zh) + %d RedNote + %d X" % (
           os.path.basename(md), len(picked),
-          sum(1 for p in picked if p["lang"] == "zh"), len(rn_pick)))
+          sum(1 for p in picked if p["lang"] == "zh"), len(rn_pick), len(x_pick)))
     return 0
 
 
