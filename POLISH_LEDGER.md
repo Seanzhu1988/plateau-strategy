@@ -48,6 +48,27 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
 - [ ] Empire State: the base is 424 by 187 ft, so from some angles it reads
       as square. Verify the footprint proportion on screen against the number.
 
+## Also on the list
+
+- [ ] The 3D models' own labels (Manhattan tower, the promenade, 86th floor)
+      are drawn inside the SVG by nyc-3d.js, so build_i18n never sees them and
+      they stay English on a translated page. Adding them to i18n_extra.py is
+      easy; the care needed is that the models re-render on every animation
+      frame, so a naive fix makes the translator re-walk the DOM sixty times a
+      second. Translate the labels at draw time instead.
+- [ ] Japanese is a long way behind the others (654 entries against 1,747).
+      It lives in its own file, i18n_ja.json. One page per day.
+- [ ] Pages still below 80% in the main four: universal-gallery 75%,
+      articles 75%. Small gaps, quick wins.
+
 ## Done
 
-(nothing yet, the ledger starts today)
+### 2026-08-30
+Trimmed: the front page's second rental card was still bright and linked while
+its twin was greyed, so the page advertised a product under reconstruction;
+both now match and the page carries zero live rental links. The film button
+promised "3 minutes" over a 73 second film.
+3D: built the two New York models and caught two of my own defects by looking,
+towers drawn as two posts rather than three piers with two arches, and a
+header logo rendering 1,224 pixels tall that pushed both models off screen.
+Translation: found why the globe kept looking broken, see below.

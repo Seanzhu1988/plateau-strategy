@@ -2864,3 +2864,455 @@ EXTRA.update({
         "페이지를 초기화할까요? 저장하지 않은 내용은 사라집니다.",
         "Đặt lại trang? Mọi thứ bạn chưa lưu sẽ mất."],
 })
+
+# ---------------------------------------------------------------------------
+# 2026-08-30. The pages the generator could not see.
+#
+# These lines were never untranslatable; they were never COLLECTED. build_i18n
+# read a stale copy of the site, so the Freedom Trail, MoMA, the Universal
+# Gallery, the walks index and the landmarks were invisible to it and stayed
+# in English while the globe turned. The generator now reads its own repo, and
+# these are the words it found waiting.
+EXTRA.update({
+ # ---- landmarks.html, the two New York models ----
+ "New York, standing up": [
+     "纽约，立起来看",
+     "Nueva York, en pie",
+     "뉴욕, 세워서 보기",
+     "New York, dựng đứng"],
+ "New York, standing up · Brooklyn Bridge and the Empire State Building": [
+     "纽约，立起来看 · 布鲁克林大桥与帝国大厦",
+     "Nueva York en pie · El puente de Brooklyn y el Empire State",
+     "뉴욕, 세워서 보기 · 브루클린 브리지와 엠파이어 스테이트 빌딩",
+     "New York dựng đứng · Cầu Brooklyn và tòa Empire State"],
+ "Two landmarks drawn as models you can take hold of and turn, with the questions a visitor actually has answered underneath. Every dimension here is the real one, in feet.": [
+     "两座地标做成可以用手转动的模型，下面回答游客真正会问的问题。这里的每一个尺寸都是真实数据，单位为英尺。",
+     "Dos monumentos dibujados como maquetas que puedes agarrar y girar, con las preguntas que un visitante se hace de verdad respondidas debajo. Cada medida es la real, en pies.",
+     "직접 잡고 돌릴 수 있는 모형으로 그린 두 랜드마크. 그 아래에는 방문객이 실제로 묻는 질문에 대한 답이 있습니다. 여기 모든 치수는 실제 수치이며 피트 단위입니다.",
+     "Hai công trình được dựng thành mô hình bạn có thể cầm và xoay, bên dưới là lời giải đáp cho những câu hỏi mà khách tham quan thực sự quan tâm. Mọi kích thước ở đây đều là số liệu thật, tính bằng foot."],
+ "The Brooklyn Bridge": ["布鲁克林大桥", "El puente de Brooklyn", "브루클린 브리지", "Cầu Brooklyn"],
+ "Opened 1883, and for a while the longest suspension bridge in the world.": [
+     "1883年通车，曾有一段时间是世界上最长的悬索桥。",
+     "Inaugurado en 1883, y durante un tiempo el puente colgante más largo del mundo.",
+     "1883년 개통했고, 한동안 세계에서 가장 긴 현수교였습니다.",
+     "Khánh thành năm 1883, và trong một thời gian là cầu treo dài nhất thế giới."],
+ "Drag it to turn. It turns by itself until you take hold.": [
+     "拖动可以旋转。你不碰它的时候，它会自己慢慢转。",
+     "Arrástralo para girarlo. Gira solo hasta que lo agarras.",
+     "끌어서 돌려 보세요. 손을 대기 전까지는 스스로 천천히 회전합니다.",
+     "Kéo để xoay. Nó tự xoay cho đến khi bạn chạm vào."],
+ "1,595.5 ft": ["1,595.5 英尺", "1.595,5 pies", "1,595.5 피트", "1.595,5 foot"],
+ "the main span, tower to tower": [
+     "主跨，从一座桥塔到另一座", "el vano principal, de torre a torre",
+     "주경간, 탑에서 탑까지", "nhịp chính, từ tháp này sang tháp kia"],
+ "278 ft": ["278 英尺", "278 pies", "278 피트", "278 foot"],
+ "tower height above the water": [
+     "桥塔高出水面的高度", "altura de la torre sobre el agua",
+     "수면 위 탑 높이", "chiều cao tháp tính từ mặt nước"],
+ "1.1 miles": ["1.1 英里", "1,1 millas", "1.1 마일", "1,1 dặm"],
+ "the whole walk, end to end": [
+     "整段步行，从头走到尾", "el paseo entero, de punta a punta",
+     "처음부터 끝까지 걷는 전체 거리", "toàn bộ quãng đi bộ, từ đầu đến cuối"],
+ "30 to 40 min": ["30 到 40 分钟", "de 30 a 40 min", "30~40분", "30 đến 40 phút"],
+ "what it really takes, with stops": [
+     "算上停下来的时间，实际需要多久", "lo que cuesta de verdad, con paradas",
+     "멈춰 서는 시간까지 넣은 실제 소요 시간", "thời gian thực tế, kể cả lúc dừng lại"],
+ "Walk it from Brooklyn toward Manhattan.": [
+     "从布鲁克林往曼哈顿方向走。",
+     "Recórrelo desde Brooklyn hacia Manhattan.",
+     "브루클린에서 맨해튼 쪽으로 걸으세요.",
+     "Hãy đi từ phía Brooklyn về phía Manhattan."],
+ "Same bridge either way, but going west the Manhattan skyline stands in front of you the whole crossing instead of behind your shoulder.": [
+     "两个方向走的是同一座桥，但往西走，曼哈顿的天际线会一路正对着你，而不是留在你身后。",
+     "Es el mismo puente en cualquier sentido, pero hacia el oeste el perfil de Manhattan queda delante de ti durante todo el cruce, y no a tu espalda.",
+     "어느 방향이든 같은 다리지만, 서쪽으로 걸으면 맨해튼 스카이라인이 등 뒤가 아니라 건너는 내내 눈앞에 펼쳐집니다.",
+     "Vẫn là cây cầu đó dù đi hướng nào, nhưng đi về phía tây thì đường chân trời Manhattan nằm ngay trước mặt bạn suốt chặng, thay vì ở sau lưng."],
+ "The promenade is yours now.": [
+     "步行道现在是行人的了。", "El paseo ahora es tuyo.",
+     "이제 산책로는 보행자의 것입니다.", "Lối đi bộ bây giờ là của người đi bộ."],
+ "It runs between the two roadways and eighteen feet above them, and since September 2021 it is pedestrians only: the bikes moved down to a protected lane on the Manhattan-bound roadway. The old shouting match on the boards is over.": [
+     "它夹在两条车道中间，高出车道十八英尺。2021年9月起只允许行人通行，自行车被移到了通往曼哈顿那侧车道上的专用道。木板路上那种互相喊话的日子结束了。",
+     "Va entre las dos calzadas y a dieciocho pies por encima de ellas, y desde septiembre de 2021 es solo para peatones: las bicicletas bajaron a un carril protegido en la calzada hacia Manhattan. Se acabaron los gritos sobre los tablones.",
+     "두 차로 사이, 그 위 18피트 높이로 나 있습니다. 2021년 9월부터는 보행자 전용이 되었고, 자전거는 맨해튼 방향 차로의 보호 차선으로 내려갔습니다. 널빤지 위에서 서로 소리치던 시절은 끝났습니다.",
+     "Nó nằm giữa hai làn xe và cao hơn chúng mười tám foot, và từ tháng 9 năm 2021 chỉ dành cho người đi bộ: xe đạp đã chuyển xuống làn riêng có rào chắn trên phần đường hướng về Manhattan. Cảnh cãi vã trên mặt ván gỗ đã chấm dứt."],
+ "The web of diagonals is the point.": [
+     "那张斜拉索织成的网才是看点。", "La red de tirantes diagonales es lo que hay que mirar.",
+     "사선으로 뻗은 케이블의 그물이 이 다리의 핵심입니다.", "Mạng lưới dây văng chéo mới là điều đáng xem."],
+ "Roughly four hundred stays run from the towers down to the deck, and they are what makes the deck stiff. Stand under a tower and look up through them.": [
+     "大约四百根拉索从桥塔一直拉到桥面，正是它们让桥面不晃。站到桥塔下面，抬头透过它们往上看。",
+     "Unos cuatrocientos tirantes bajan de las torres al tablero, y son los que le dan rigidez. Ponte bajo una torre y mira hacia arriba a través de ellos.",
+     "약 사백 개의 케이블이 탑에서 상판까지 내려오며, 상판을 단단하게 잡아 주는 것이 바로 이것들입니다. 탑 아래 서서 그 사이로 올려다보세요.",
+     "Khoảng bốn trăm dây văng chạy từ tháp xuống mặt cầu, và chính chúng giữ cho mặt cầu vững. Hãy đứng dưới chân tháp và ngước nhìn xuyên qua chúng."],
+ "The Empire State Building": ["帝国大厦", "El Empire State Building", "엠파이어 스테이트 빌딩", "Tòa nhà Empire State"],
+ "1931, and still the shape everyone draws when they draw a skyscraper.": [
+     "1931年落成，至今人们画摩天大楼时，画的还是它的轮廓。",
+     "De 1931, y sigue siendo la silueta que todo el mundo dibuja cuando dibuja un rascacielos.",
+     "1931년에 지어졌고, 지금도 사람들이 마천루를 그릴 때 떠올리는 바로 그 형태입니다.",
+     "Xây năm 1931, và đến nay vẫn là hình dáng mà ai cũng vẽ khi vẽ một tòa chọc trời."],
+ "Drag it to turn.": ["拖动可以旋转。", "Arrástralo para girarlo.", "끌어서 돌려 보세요.", "Kéo để xoay."],
+ "1,250 ft": ["1,250 英尺", "1.250 pies", "1,250 피트", "1.250 foot"],
+ "to the roof": ["到屋顶", "hasta el tejado", "옥상까지", "tính đến mái"],
+ "1,454 ft": ["1,454 英尺", "1.454 pies", "1,454 피트", "1.454 foot"],
+ "to the tip of the antenna": ["到天线尖顶", "hasta la punta de la antena", "안테나 끝까지", "tính đến đỉnh ăng-ten"],
+ "floors": ["层", "plantas", "층", "tầng"],
+ "finished in one year and 45 days": [
+     "一年零45天建成", "terminado en un año y 45 días",
+     "1년 45일 만에 완공", "hoàn thành trong một năm 45 ngày"],
+ "The 86th floor is the one people mean.": [
+     "人们说的观景台，指的是86层。", "El piso 86 es el que la gente quiere decir.",
+     "사람들이 말하는 전망대는 86층입니다.", "Tầng 86 mới là nơi mọi người muốn nói đến."],
+ "Open air, wind, the parapet you have seen in every film, at about 1,050 feet. Most visitors go up, stand there, and come down happy.": [
+     "露天，有风，还有你在每部电影里都见过的那圈护墙，高约1,050英尺。大多数人上去站一会儿，就心满意足地下来了。",
+     "Al aire libre, con viento, y el pretil que has visto en todas las películas, a unos 1.050 pies. La mayoría sube, se queda un rato y baja contenta.",
+     "탁 트인 야외, 바람, 그리고 영화마다 나오는 그 난간이 약 1,050피트 높이에 있습니다. 대부분은 올라가 잠시 서 있다가 만족스럽게 내려옵니다.",
+     "Ngoài trời, có gió, và lan can bạn đã thấy trong mọi bộ phim, ở độ cao khoảng 1.050 foot. Phần lớn khách lên đó, đứng một lúc, rồi xuống trong sự hài lòng."],
+ "The 102nd is higher, smaller and enclosed.": [
+     "102层更高、更小，而且是封闭的。", "El 102 está más alto, es más pequeño y está cerrado.",
+     "102층은 더 높고, 더 좁고, 실내입니다.", "Tầng 102 cao hơn, nhỏ hơn và kín."],
+ "About 1,224 feet, behind glass, and it costs more. Worth it if you want the altitude and quiet; skip it if you want the wind in your face.": [
+     "约1,224英尺，隔着玻璃，票价更贵。想要那个高度和安静，值得上去；想要风吹在脸上，就不必了。",
+     "Unos 1.224 pies, tras un cristal, y cuesta más. Merece la pena si buscas altura y calma; sáltatelo si quieres el viento en la cara.",
+     "약 1,224피트 높이이고 유리 안쪽이며 요금이 더 비쌉니다. 높이와 고요함을 원하면 올라갈 만하고, 얼굴에 바람을 맞고 싶다면 건너뛰세요.",
+     "Khoảng 1.224 foot, sau lớp kính, và vé đắt hơn. Đáng lên nếu bạn muốn độ cao và sự yên tĩnh; bỏ qua nếu bạn muốn gió táp vào mặt."],
+ "The steps in the silhouette are law, not taste.": [
+     "轮廓上那些退台是法规，不是审美。", "Los escalones de la silueta son ley, no estética.",
+     "실루엣의 계단 모양은 취향이 아니라 법입니다.", "Những bậc giật cấp trên hình dáng tòa nhà là luật, không phải thẩm mỹ."],
+ "New York's 1916 zoning made towers step back as they rose so light could reach the street. The setbacks at the 21st, 25th and 30th floors, and again at the 72nd, 81st and 85th, are that rule made of limestone.": [
+     "纽约1916年的区划法规定高楼越往上越要后退，好让阳光照到街上。21层、25层、30层，以及72层、81层、85层的那几处退台，就是这条法规用石灰岩砌出来的样子。",
+     "La normativa urbanística de Nueva York de 1916 obligó a las torres a retranquearse a medida que subían para que la luz llegara a la calle. Los retranqueos de los pisos 21, 25 y 30, y de nuevo en el 72, el 81 y el 85, son esa norma hecha de piedra caliza.",
+     "1916년 뉴욕의 조닝 법은 빛이 거리까지 닿도록 건물이 올라갈수록 뒤로 물러서게 했습니다. 21층, 25층, 30층에서, 그리고 다시 72층, 81층, 85층에서 들어간 부분은 그 법이 석회암으로 구현된 모습입니다.",
+     "Qua quy định phân vùng năm 1916 của New York, các tòa tháp phải lùi vào khi lên cao để ánh sáng còn xuống được mặt đường. Những chỗ giật cấp ở tầng 21, 25, 30, rồi lại ở tầng 72, 81 và 85, chính là quy định ấy được dựng bằng đá vôi."],
+ "Honest about the drawing: the heights, the spans, the setback floors and the arch dimensions are the real published ones, so the proportions on your screen are the proportions in the air. The window bands and the stone colour are indicative, not a survey. Nothing here is traced from a copyrighted plan.": [
+     "关于这幅图，说实话：高度、跨度、退台所在楼层和拱券尺寸都取自公开的真实数据，所以屏幕上的比例就是空中的比例。窗带和石材颜色只是示意，不是测绘。这里没有任何内容是照着受版权保护的图纸描下来的。",
+     "Con franqueza sobre el dibujo: las alturas, los vanos, los pisos de retranqueo y las dimensiones de los arcos son los datos reales publicados, así que las proporciones de tu pantalla son las del aire. Las franjas de ventanas y el color de la piedra son indicativos, no un levantamiento. Nada de esto está calcado de un plano con derechos de autor.",
+     "그림에 대해 솔직히 말하면: 높이, 경간, 물러선 층수, 아치 치수는 모두 공개된 실제 수치라서 화면 속 비례가 곧 실제 공중의 비례입니다. 창 띠와 석재 색은 참고용이지 실측이 아닙니다. 저작권이 있는 도면을 베낀 부분은 전혀 없습니다.",
+     "Nói thật về bản vẽ: chiều cao, nhịp, các tầng giật cấp và kích thước vòm đều là số liệu thật đã công bố, nên tỷ lệ trên màn hình chính là tỷ lệ ngoài đời. Các dải cửa sổ và màu đá chỉ mang tính minh họa, không phải khảo sát. Không có chi tiết nào ở đây được can lại từ bản vẽ có bản quyền."],
+ "More travel tips": ["更多旅行提示", "Más consejos de viaje", "여행 팁 더 보기", "Thêm mẹo du lịch"],
+ "New York in the Destination Book": [
+     "《目的地手册》里的纽约", "Nueva York en el Libro de Destinos",
+     "목적지 책 속의 뉴욕", "New York trong Sổ tay Điểm đến"],
+ "Plan the day": ["规划这一天", "Planifica el día", "하루 일정 짜기", "Lên kế hoạch cho ngày"],
+})
+
+EXTRA.update({
+ # ---- universal-gallery.html ----
+ "Universal Gallery, Plateau Strategy Solution Lab": [
+     "环球展厅 · Plateau Strategy Solution Lab",
+     "Galería Universal, Plateau Strategy Solution Lab",
+     "유니버설 갤러리, Plateau Strategy Solution Lab",
+     "Phòng trưng bày Toàn cầu, Plateau Strategy Solution Lab"],
+ "Every exhibition, one artwork at a time. What it is, where it hangs, and what to notice while you are standing there.": [
+     "每一场展览，一次讲一件作品：它是什么，挂在哪里，以及你站在它面前时该看什么。",
+     "Cada exposición, una obra cada vez. Qué es, dónde cuelga y en qué fijarte mientras estás delante.",
+     "모든 전시를, 한 번에 한 작품씩. 무엇인지, 어디에 걸려 있는지, 그 앞에 섰을 때 무엇을 볼지 알려 드립니다.",
+     "Mỗi cuộc triển lãm, mỗi lần một tác phẩm. Nó là gì, treo ở đâu, và nên để ý điều gì khi bạn đứng trước nó."],
+ "A name, or the number on the label…": [
+     "作品名，或者标签上的编号…", "Un nombre, o el número de la cartela…",
+     "작품 이름, 또는 라벨의 번호…", "Một cái tên, hoặc con số trên nhãn…"],
+ "You do not have to spell it. Every museum prints an item number on the label, and that number is enough. Try": [
+     "不必拼对名字。每家博物馆都会在标签上印一个编号，有那个编号就够了。试试",
+     "No hace falta que lo escribas bien. Cada museo imprime un número en la cartela, y ese número basta. Prueba con",
+     "철자를 몰라도 됩니다. 모든 미술관은 라벨에 작품 번호를 인쇄하고, 그 번호면 충분합니다. 예를 들어",
+     "Bạn không cần viết đúng tên. Mọi bảo tàng đều in một mã số trên nhãn, và con số đó là đủ. Hãy thử"],
+ "or": ["或", "o", "또는", "hoặc"],
+ "▶ Watch how it works, 1 minute": [
+     "▶ 看它怎么用，1分钟", "▶ Mira cómo funciona, 1 minuto",
+     "▶ 사용법 보기, 1분", "▶ Xem cách hoạt động, 1 phút"],
+ "Browse the works travellers look up most →": [
+     "看看旅行者查得最多的作品 →", "Mira las obras que más buscan los viajeros →",
+     "여행자들이 가장 많이 찾는 작품 보기 →", "Xem những tác phẩm khách du lịch tra cứu nhiều nhất →"],
+
+ # ---- walks.html ----
+ "The Walks · Plateau Strategy": [
+     "步行地图 · Plateau Strategy", "Los Paseos · Plateau Strategy",
+     "워크 · Plateau Strategy", "Các Lối Đi Bộ · Plateau Strategy"],
+ "The Met": ["大都会博物馆", "El Met", "메트로폴리탄 미술관", "Bảo tàng Met"],
+ "Every map on this site is drawn the same way: a person who knows the way walks it once, and the walk becomes the map. This page is all of them, city by city.": [
+     "本站每一张地图都是同一种画法：一个认路的人先走一遍，这一趟就成了地图。这个页面按城市把它们都收在一起。",
+     "Todos los mapas de este sitio se dibujan igual: alguien que conoce el camino lo recorre una vez, y ese recorrido se convierte en el mapa. Esta página los reúne todos, ciudad por ciudad.",
+     "이 사이트의 모든 지도는 같은 방식으로 만들어집니다. 길을 아는 사람이 한 번 걷고, 그 걸음이 지도가 됩니다. 이 페이지는 그 지도들을 도시별로 모은 것입니다.",
+     "Mọi bản đồ trên trang này đều được vẽ theo cùng một cách: một người thuộc đường đi bộ qua một lần, và chuyến đi ấy trở thành bản đồ. Trang này gom tất cả lại, theo từng thành phố."],
+ "A corridor with minutes in navy has been walked with the recorder; that number is measured. A corridor with a tilde is an estimate, waiting for its walk. Nothing here pretends to be measured when it is not.": [
+     "用深蓝色标出分钟数的通道，是有人带着记录器实地走过的，那个数字是量出来的。带波浪号的是估算，还等着人去走一趟。这里不会把没量过的说成量过的。",
+     "Un pasillo con los minutos en azul marino ya se ha recorrido con el registrador; ese número está medido. Un pasillo con una tilde es una estimación que aún espera su recorrido. Aquí nada finge estar medido cuando no lo está.",
+     "분이 감청색으로 표시된 통로는 기록 장치를 들고 실제로 걸어 본 곳이며, 그 숫자는 측정값입니다. 물결표가 붙은 통로는 아직 걸어 보지 않은 추정값입니다. 이 페이지는 측정하지 않은 것을 측정한 척하지 않습니다.",
+     "Hành lang có số phút màu xanh đậm là đã có người đi bộ qua cùng thiết bị ghi; con số đó là số đo thật. Hành lang có dấu ngã là ước lượng, còn chờ được đi qua. Ở đây không có gì giả vờ là đã đo khi chưa đo."],
+ "Loading the corridors…": ["正在载入通道…", "Cargando los pasillos…", "통로를 불러오는 중…", "Đang tải các hành lang…"],
+ "Your walks": ["你保存的路线", "Tus paseos", "내가 저장한 경로", "Các lối đi của bạn"],
+ "Sign in at the top of the page, and the walks you save on the Met sheet appear here, under your name, on any device you sign in from.": [
+     "在页面顶部登录，你在大都会图纸上保存的路线就会出现在这里，挂在你的名字下，任何设备登录都能看到。",
+     "Inicia sesión arriba y los paseos que guardes en la hoja del Met aparecerán aquí, a tu nombre, en cualquier dispositivo desde el que entres.",
+     "페이지 상단에서 로그인하면, 메트 도면에서 저장한 경로가 여기에 내 이름으로 표시되고, 로그인하는 어떤 기기에서든 볼 수 있습니다.",
+     "Đăng nhập ở đầu trang, và những lối đi bạn lưu trên bản vẽ Met sẽ hiện ở đây, dưới tên bạn, trên bất kỳ thiết bị nào bạn đăng nhập."],
+ "The walking times marked with a tilde are estimates until a surveyor walks that corridor with the recorder. Estimates are drawn from the sheets; measured minutes replace them automatically. New cities join this page the day their first corridor is opened.": [
+     "带波浪号的步行时间都是估算，直到有测量员带着记录器走过那条通道为止。估算值取自图纸；一旦量出真实分钟数，就会自动替换。新城市在第一条通道开通的当天就会出现在这个页面上。",
+     "Los tiempos marcados con una tilde son estimaciones hasta que un topógrafo recorra ese pasillo con el registrador. Las estimaciones salen de los planos; los minutos medidos las sustituyen automáticamente. Las ciudades nuevas aparecen en esta página el mismo día en que se abre su primer pasillo.",
+     "물결표가 붙은 도보 시간은 측량자가 기록 장치를 들고 그 통로를 걸을 때까지는 추정값입니다. 추정값은 도면에서 뽑아내며, 실제 측정된 시간이 나오면 자동으로 대체됩니다. 새로운 도시는 첫 통로가 열리는 날 이 페이지에 추가됩니다.",
+     "Thời gian đi bộ có dấu ngã là ước lượng, cho đến khi một người khảo sát đi qua hành lang đó cùng thiết bị ghi. Ước lượng được lấy từ bản vẽ; số phút đo được sẽ tự động thay thế chúng. Thành phố mới xuất hiện trên trang này ngay ngày hành lang đầu tiên của nó được mở."],
+
+ # ---- moma.html ----
+ "Inside MoMA, a footprint map · Plateau Strategy": [
+     "MoMA内部，足迹地图 · Plateau Strategy",
+     "Dentro del MoMA, un mapa de huellas · Plateau Strategy",
+     "MoMA 내부, 발자국 지도 · Plateau Strategy",
+     "Bên trong MoMA, bản đồ dấu chân · Plateau Strategy"],
+ "Inside MoMA, on footprints": [
+     "循着足迹走进MoMA", "Dentro del MoMA, sobre huellas",
+     "발자국을 따라 MoMA 안으로", "Bên trong MoMA, theo dấu chân"],
+ "The map on your phone goes grey the moment you step inside. This is a schematic of the Museum of Modern Art, drawn by us, not to scale, with the rooms where they really sit. Floors 5, 4 and 2 are the collection's one long story, 1880 to today, and the chronology starts at the Sculpture Garden end of Floor 5. Tap the rooms you want in the order you want them, and footprints walk the route with honest times.": [
+     "你一走进大门，手机上的地图就变成一片灰。这是我们自己画的现代艺术博物馆示意图，不按比例，但每个展厅都在它真正的位置上。五层、四层和二层连起来就是这批藏品的一条长长的故事线，从1880年讲到今天，而这条时间线从五层雕塑花园那一端开始。按你想去的顺序点选展厅，足迹会带你走完这条路线，并给出诚实的时间。",
+     "El mapa del móvil se vuelve gris en cuanto entras. Este es un esquema del Museo de Arte Moderno, dibujado por nosotros, sin escala, con las salas donde de verdad están. Las plantas 5, 4 y 2 son una sola historia larga de la colección, de 1880 a hoy, y la cronología empieza en el extremo del Jardín de Esculturas de la planta 5. Toca las salas que quieras en el orden que quieras, y las huellas recorren la ruta con tiempos honestos.",
+     "안으로 들어서는 순간 휴대폰 지도는 회색이 됩니다. 이것은 우리가 직접 그린 현대미술관 도면으로, 축척은 맞지 않지만 각 전시실은 실제 위치에 있습니다. 5층, 4층, 2층은 1880년부터 오늘까지 이어지는 소장품의 긴 이야기 하나이고, 그 연대기는 5층 조각 정원 쪽 끝에서 시작합니다. 원하는 순서대로 전시실을 누르면 발자국이 그 경로를 걸으며 정직한 소요 시간을 보여 줍니다.",
+     "Bản đồ trên điện thoại của bạn xám đi ngay khi bạn bước vào. Đây là sơ đồ Bảo tàng Nghệ thuật Hiện đại do chúng tôi vẽ, không theo tỷ lệ, nhưng các phòng nằm đúng vị trí thật. Tầng 5, 4 và 2 là một câu chuyện dài liền mạch của bộ sưu tập, từ năm 1880 đến hôm nay, và dòng thời gian bắt đầu ở phía Vườn Điêu khắc của tầng 5. Chạm vào các phòng bạn muốn theo thứ tự bạn muốn, và những dấu chân sẽ đi hết lộ trình với thời gian trung thực."],
+ "The facts, checked on the museum's own pages: 11 West 53rd Street, between Fifth and Sixth. Open daily 10:30 to 5:30, Fridays to 8:30. Adults $30, seniors $22, students $17, sixteen and under free. Friday evenings 5:30 to 8:30 are free for New York State residents only, reserved ahead with proof of residency; everyone else pays. Tickets are timed; the Sculpture Garden is included. The E or M train to 5 Av/53 St stops at the door.": [
+     "以下信息核对自博物馆官网：西53街11号，位于第五大道与第六大道之间。每天10:30至17:30开放，周五延长至20:30。成人30美元，长者22美元，学生17美元，16岁及以下免费。周五傍晚17:30至20:30仅对纽约州居民免费，需提前预约并出示居住证明，其他人照常付费。门票为分时段入场，含雕塑花园。地铁E线或M线到5 Av/53 St站，出站即到。",
+     "Los datos, verificados en las páginas del propio museo: 11 West 53rd Street, entre la Quinta y la Sexta. Abierto todos los días de 10:30 a 17:30, los viernes hasta las 20:30. Adultos 30 $, mayores 22 $, estudiantes 17 $, gratis hasta los dieciséis. Los viernes de 17:30 a 20:30 la entrada es gratuita solo para residentes del estado de Nueva York, con reserva previa y prueba de residencia; los demás pagan. Las entradas son por franja horaria e incluyen el Jardín de Esculturas. El metro E o M hasta 5 Av/53 St para en la puerta.",
+     "미술관 공식 페이지에서 확인한 정보입니다. 주소는 West 53rd Street 11번지, 5번가와 6번가 사이. 매일 10:30~17:30 개관, 금요일은 20:30까지. 성인 30달러, 경로 22달러, 학생 17달러, 16세 이하 무료. 금요일 저녁 17:30~20:30은 뉴욕주 거주자에 한해 무료이며 거주 증명과 사전 예약이 필요하고, 그 외에는 요금을 냅니다. 티켓은 시간 지정제이며 조각 정원이 포함됩니다. 지하철 E 또는 M선 5 Av/53 St역이 바로 앞입니다.",
+     "Thông tin đã đối chiếu trên chính trang của bảo tàng: số 11 West 53rd Street, giữa Đại lộ 5 và Đại lộ 6. Mở cửa hằng ngày 10:30 đến 17:30, thứ Sáu đến 20:30. Người lớn 30 đô, người cao tuổi 22 đô, sinh viên 17 đô, từ mười sáu tuổi trở xuống miễn phí. Tối thứ Sáu từ 17:30 đến 20:30 miễn phí nhưng chỉ dành cho cư dân bang New York, phải đặt trước và có giấy tờ chứng minh cư trú; những người khác vẫn trả tiền. Vé theo khung giờ và đã bao gồm Vườn Điêu khắc. Tàu điện ngầm tuyến E hoặc M đến ga 5 Av/53 St dừng ngay trước cửa."],
+ "MOMA-05 · Floor 5": ["MOMA-05 · 五层", "MOMA-05 · Planta 5", "MOMA-05 · 5층", "MOMA-05 · Tầng 5"],
+ "Floor 5": ["五层", "Planta 5", "5층", "Tầng 5"],
+ "Floor 4": ["四层", "Planta 4", "4층", "Tầng 4"],
+ "The Sculpture Garden is along the top; 53rd Street along the bottom.": [
+     "雕塑花园在上方，53街在下方。",
+     "El Jardín de Esculturas queda arriba; la calle 53 abajo.",
+     "위쪽이 조각 정원, 아래쪽이 53번가입니다.",
+     "Vườn Điêu khắc nằm ở phía trên; phố 53 ở phía dưới."],
+})
+
+EXTRA.update({
+ # ---- freedom-trail.html: the medallion, the headphones, the numbers past 16 ----
+ "This bronze marker is set into the sidewalk along the red brick line. When you see it underfoot, you are on the trail.": [
+     "这块铜牌嵌在红砖线沿途的人行道上。看到脚下有它，就说明你走在这条步道上。",
+     "Esta placa de bronce está incrustada en la acera junto a la línea de ladrillo rojo. Cuando la veas bajo tus pies, estás en el sendero.",
+     "이 청동 표식은 붉은 벽돌 선을 따라 보도에 박혀 있습니다. 발밑에 이것이 보이면 트레일 위에 있는 것입니다.",
+     "Tấm bảng đồng này được gắn vào vỉa hè dọc theo vạch gạch đỏ. Khi thấy nó dưới chân, nghĩa là bạn đang đi đúng tuyến."],
+ "Headphones, please, for the people around you.": [
+     "请戴耳机，照顾一下周围的人。",
+     "Auriculares, por favor, por consideración a quienes te rodean.",
+     "주변 사람들을 위해 이어폰을 사용해 주세요.",
+     "Vui lòng dùng tai nghe, vì những người xung quanh bạn."],
+ "Lock the map": ["锁定地图", "Fijar el mapa", "지도 고정", "Khóa bản đồ"],
+ "THE TOUR KEEPS GOING": ["这趟行程还没走完", "EL RECORRIDO SIGUE", "여정은 계속됩니다", "HÀNH TRÌNH VẪN TIẾP TỤC"],
+ "Boston does not end at Bunker Hill. We keep numbering past sixteen, and every one of these lives as a full card in the": [
+     "波士顿不是走到邦克山就结束了。我们把编号一直往十六号之后排，下面每一个都在这里有完整的一页：",
+     "Boston no termina en Bunker Hill. Seguimos numerando más allá del dieciséis, y cada uno de estos tiene su ficha completa en el",
+     "보스턴은 벙커힐에서 끝나지 않습니다. 우리는 16번 이후로도 번호를 이어 가며, 아래 각각은 다음 책에 온전한 카드로 실려 있습니다:",
+     "Boston không kết thúc ở Bunker Hill. Chúng tôi tiếp tục đánh số sau số mười sáu, và mỗi mục dưới đây đều có một thẻ đầy đủ trong"],
+ "Beacon Hill & Acorn Street": ["灯塔山与橡子街", "Beacon Hill y Acorn Street", "비컨힐과 에이콘 스트리트", "Beacon Hill và phố Acorn"],
+ "Gas-lit brick lanes under the gold State House dome, and Acorn Street's 1820s cobblestones. Steps from stops 2 and 3, best in early morning light.": [
+     "金色州议会大厦穹顶下的煤气灯砖巷，还有橡子街1820年代的鹅卵石路面。距第2、第3站只有几步路，清晨的光线下最好看。",
+     "Callejones de ladrillo con farolas de gas bajo la cúpula dorada del State House, y los adoquines de la década de 1820 de Acorn Street. A un paso de las paradas 2 y 3, mejor con la luz de primera hora.",
+     "황금빛 주 의사당 돔 아래 가스등이 켜진 벽돌 골목, 그리고 1820년대에 깔린 에이콘 스트리트의 자갈길. 2번과 3번 정류지에서 몇 걸음 거리이며, 이른 아침 빛에 가장 아름답습니다.",
+     "Những con hẻm gạch thắp đèn khí dưới mái vòm vàng của tòa State House, và mặt đường đá cuội thập niên 1820 của phố Acorn. Chỉ cách điểm dừng 2 và 3 vài bước, đẹp nhất dưới ánh sáng sớm."],
+ "The North End, eating this time": ["北角，这次是来吃的", "El North End, esta vez a comer", "노스엔드, 이번엔 먹으러", "North End, lần này để ăn"],
+ "The trail already walks these streets at stops 12 and 13; come back hungry. Modern Pastry since 1930, Mike's since 1946, one block apart on Hanover Street, and Mike's takes only cash.": [
+     "步道在第12、13站已经走过这几条街，这次饿着肚子再来一趟。Modern Pastry开于1930年，Mike's开于1946年，在汉诺威街上只隔一个街区，而且Mike's只收现金。",
+     "El sendero ya recorre estas calles en las paradas 12 y 13; vuelve con hambre. Modern Pastry desde 1930, Mike's desde 1946, a una manzana de distancia en Hanover Street, y Mike's solo acepta efectivo.",
+     "트레일은 12번과 13번 정류지에서 이미 이 거리를 지나갑니다. 이번엔 배고픈 채로 다시 오세요. 1930년 문을 연 Modern Pastry와 1946년 문을 연 Mike's가 하노버 스트리트에서 한 블록 거리에 있고, Mike's는 현금만 받습니다.",
+     "Tuyến đường đã đi qua những con phố này ở điểm 12 và 13; hãy quay lại khi bụng đói. Modern Pastry từ năm 1930, Mike's từ năm 1946, cách nhau một dãy nhà trên phố Hanover, và Mike's chỉ nhận tiền mặt."],
+ "Boston Tea Party Ships & Museum": ["波士顿倾茶事件船只与博物馆", "Barcos y Museo del Motín del Té de Boston", "보스턴 차 사건 선박 박물관", "Tàu và Bảo tàng Tiệc trà Boston"],
+ "The night the whole trail leads up to: replica ships floating at Griffin's Wharf, the only surviving original tea chest, and you throw a chest overboard yourself.": [
+     "整条步道所指向的就是那一夜：格里芬码头停着复原的船只，馆里有唯一幸存的原件茶箱，而你可以亲手把一只茶箱扔进水里。",
+     "La noche a la que apunta todo el sendero: barcos réplica a flote en Griffin's Wharf, el único cofre de té original que se conserva, y tú mismo lanzas un cofre por la borda.",
+     "이 트레일 전체가 향하는 그날 밤: 그리핀 부두에 떠 있는 복원 선박, 유일하게 남아 있는 원본 차 상자, 그리고 당신이 직접 상자를 배 밖으로 던져 봅니다.",
+     "Cái đêm mà cả tuyến đường dẫn tới: những con tàu phục dựng neo ở bến Griffin, chiếc hòm trà nguyên bản duy nhất còn sót lại, và chính bạn ném một hòm xuống nước."],
+ "View Boston": ["View Boston 观景台", "View Boston", "뷰 보스턴 전망대", "Đài quan sát View Boston"],
+ "The walk you just did, seen from the top of the Prudential: an open-air deck wrapping the whole 51st floor, open late.": [
+     "站在保诚大厦顶上，回头看你刚走过的那条路：51层整整一圈的露天平台，开放到很晚。",
+     "El paseo que acabas de hacer, visto desde lo alto del Prudential: una terraza al aire libre que rodea toda la planta 51, abierta hasta tarde.",
+     "방금 걸어온 그 길을 프루덴셜 타워 꼭대기에서 내려다보세요. 51층 전체를 두르는 야외 전망대이고, 늦게까지 엽니다.",
+     "Chặng đường bạn vừa đi, nhìn từ đỉnh tòa Prudential: một sàn ngoài trời bao quanh trọn tầng 51, mở đến khuya."],
+ "A Day in Cambridge": ["剑桥一日", "Un día en Cambridge", "케임브리지에서의 하루", "Một ngày ở Cambridge"],
+ "A second day across the river: Harvard Yard, the free Harvard Art Museums, the Glass Flowers, Mount Auburn's garden cemetery, then MIT's Great Dome and the Kendall Square museum.": [
+     "过河再走一天：哈佛园、免费的哈佛艺术博物馆、玻璃花标本、奥本山园林墓园，然后是麻省理工的大穹顶和肯德尔广场的博物馆。",
+     "Un segundo día al otro lado del río: Harvard Yard, los gratuitos Harvard Art Museums, las Flores de Cristal, el cementerio ajardinado de Mount Auburn, y luego la Gran Cúpula del MIT y el museo de Kendall Square.",
+     "강 건너에서 보내는 둘째 날: 하버드 야드, 무료인 하버드 미술관, 유리 꽃 표본, 마운트오번 정원 묘지, 그리고 MIT의 그레이트 돔과 켄들 스퀘어 박물관.",
+     "Ngày thứ hai bên kia sông: Harvard Yard, các bảo tàng nghệ thuật Harvard miễn phí, bộ sưu tập Hoa Thủy tinh, nghĩa trang vườn Mount Auburn, rồi Mái vòm Lớn của MIT và bảo tàng ở Kendall Square."],
+
+ # ---- landing-page.html: the MoMA and landmarks cards ----
+ "The Destination Book, but for exhibitions. Search any artwork by name, or by the number on its label when you cannot read the language. It tells you where the piece hangs and what to notice.": [
+     "《目的地手册》的展览版。按名字搜任何一件作品，看不懂当地文字时，直接输标签上的编号也行。它会告诉你这件作品挂在哪里，以及该看什么。",
+     "El Libro de Destinos, pero para exposiciones. Busca cualquier obra por su nombre, o por el número de su cartela cuando no puedas leer el idioma. Te dice dónde cuelga la pieza y en qué fijarte.",
+     "목적지 책의 전시 버전입니다. 작품을 이름으로 찾거나, 언어를 읽을 수 없을 때는 라벨의 번호로 찾으세요. 그 작품이 어디에 걸려 있고 무엇을 볼지 알려 줍니다.",
+     "Sổ tay Điểm đến, nhưng dành cho triển lãm. Tìm bất kỳ tác phẩm nào theo tên, hoặc theo con số trên nhãn khi bạn không đọc được ngôn ngữ đó. Nó cho bạn biết tác phẩm treo ở đâu và nên để ý điều gì."],
+ "UNDER RECONSTRUCTION": ["改建中", "EN REFORMA", "재정비 중", "ĐANG XÂY DỰNG LẠI"],
+ "NEW · THE MODERN MUSEUM": ["新品 · 现代艺术馆", "NUEVO · EL MUSEO MODERNO", "신규 · 현대미술관", "MỚI · BẢO TÀNG HIỆN ĐẠI"],
+ "Inside MoMA, floor by floor": ["走进MoMA，一层一层看", "Dentro del MoMA, planta por planta", "MoMA 내부, 층층이", "Bên trong MoMA, từng tầng một"],
+ "The Museum of Modern Art with the same footprint map: The Starry Night, the Demoiselles and Monet's Water Lilies room on Floor 5, Pollock and Warhol on Floor 4. Pick your galleries and the route walks itself, and the search bar answers any label number in the building, checked weekly against the museum's own collection data.": [
+     "现代艺术博物馆，用的是同一套足迹地图：《星夜》、《亚维农的少女》和莫奈《睡莲》展厅都在五层，波洛克和沃霍尔在四层。选好展厅，路线自己走出来；搜索栏能查馆内任何一个标签编号，每周与博物馆自己的藏品数据核对一次。",
+     "El Museo de Arte Moderno con el mismo mapa de huellas: La noche estrellada, Las señoritas de Avignon y la sala de los Nenúfares de Monet en la planta 5, Pollock y Warhol en la 4. Elige tus salas y la ruta se recorre sola, y el buscador responde a cualquier número de cartela del edificio, contrastado cada semana con los propios datos del museo.",
+     "같은 발자국 지도로 보는 현대미술관: 5층에 별이 빛나는 밤, 아비뇽의 처녀들, 모네의 수련 방이 있고, 4층에 폴록과 워홀이 있습니다. 전시실을 고르면 경로가 알아서 그려지고, 검색창은 건물 안 어떤 라벨 번호든 답해 줍니다. 매주 미술관 자체 소장품 데이터와 대조합니다.",
+     "Bảo tàng Nghệ thuật Hiện đại với cùng bản đồ dấu chân: Đêm đầy sao, Những cô nàng Avignon và phòng Hoa súng của Monet ở tầng 5, Pollock và Warhol ở tầng 4. Chọn các phòng bạn muốn và lộ trình tự hình thành, còn ô tìm kiếm trả lời bất kỳ mã nhãn nào trong tòa nhà, được đối chiếu hằng tuần với dữ liệu sưu tập của chính bảo tàng."],
+ "Open MoMA →": ["打开MoMA →", "Abrir el MoMA →", "MoMA 열기 →", "Mở MoMA →"],
+ "The Brooklyn Bridge and the Empire State Building as models you can turn in your hand, drawn at their real dimensions, with the questions answered underneath: which way to walk the bridge, and which observatory is the one people mean.": [
+     "布鲁克林大桥和帝国大厦做成可以在手里转动的模型，按真实尺寸绘制，下面还回答了那些问题：桥该往哪个方向走，以及人们说的观景台到底是哪一个。",
+     "El puente de Brooklyn y el Empire State como maquetas que puedes girar en la mano, dibujadas a sus medidas reales, con las preguntas respondidas debajo: en qué sentido cruzar el puente y cuál es el mirador del que habla la gente.",
+     "브루클린 브리지와 엠파이어 스테이트 빌딩을 손안에서 돌려 볼 수 있는 모형으로, 실제 치수대로 그렸습니다. 그 아래에는 다리를 어느 방향으로 걸을지, 사람들이 말하는 전망대가 어느 쪽인지에 대한 답이 있습니다.",
+     "Cầu Brooklyn và tòa Empire State thành những mô hình bạn có thể xoay trong tay, vẽ đúng kích thước thật, bên dưới là lời giải đáp: nên đi bộ qua cầu theo hướng nào, và đài quan sát mà mọi người nhắc đến là cái nào."],
+ "Turn the landmarks →": ["转动这些地标 →", "Gira los monumentos →", "랜드마크 돌려 보기 →", "Xoay các công trình →"],
+ "Inside MoMA": ["走进MoMA", "Dentro del MoMA", "MoMA 내부", "Bên trong MoMA"],
+ "For modern art days in New York": [
+     "适合在纽约看现代艺术的日子", "Para días de arte moderno en Nueva York",
+     "뉴욕에서 현대미술을 보는 날에", "Cho những ngày xem nghệ thuật hiện đại ở New York"],
+ "The Museum of Modern Art, floor by floor: The Starry Night, the Demoiselles, Monet's Water Lilies room. Tap the galleries you want, and footprints walk the route, checked weekly against the museum's own collection data.": [
+     "现代艺术博物馆，一层一层看：《星夜》、《亚维农的少女》、莫奈《睡莲》展厅。点选你想去的展厅，足迹会带你走完路线，每周与博物馆自己的藏品数据核对。",
+     "El Museo de Arte Moderno, planta por planta: La noche estrellada, Las señoritas de Avignon, la sala de los Nenúfares de Monet. Toca las salas que quieras y las huellas recorren la ruta, contrastada cada semana con los datos del propio museo.",
+     "현대미술관을 층층이: 별이 빛나는 밤, 아비뇽의 처녀들, 모네의 수련 방. 원하는 전시실을 누르면 발자국이 경로를 걸으며, 매주 미술관 자체 소장품 데이터와 대조합니다.",
+     "Bảo tàng Nghệ thuật Hiện đại, từng tầng một: Đêm đầy sao, Những cô nàng Avignon, phòng Hoa súng của Monet. Chạm vào các phòng bạn muốn, và những dấu chân sẽ đi hết lộ trình, được đối chiếu hằng tuần với dữ liệu sưu tập của chính bảo tàng."],
+ "Walk MoMA →": ["走一遍MoMA →", "Recorre el MoMA →", "MoMA 걸어 보기 →", "Đi bộ trong MoMA →"],
+})
+
+EXTRA.update({
+ # ---- tours.html. The money page, and it was 4% translated: a Chinese or
+ # Korean visitor off an Alaska cruise met an English wall on the one page
+ # that asks for their business.
+ "Seattle Walking Tours with a Licensed Guide · Cruise Terminal & Downtown | Plateau Strategy": [
+     "西雅图持照导游徒步游 · 邮轮码头与市中心 | Plateau Strategy",
+     "Tours a pie por Seattle con guía licenciado · Terminal de cruceros y centro | Plateau Strategy",
+     "면허 가이드와 함께하는 시애틀 도보 투어 · 크루즈 터미널과 다운타운 | Plateau Strategy",
+     "Tour đi bộ Seattle cùng hướng dẫn viên có giấy phép · Bến tàu và trung tâm | Plateau Strategy"],
+ "Seattle · Licensed guide · Walking tours": [
+     "西雅图 · 持照导游 · 徒步游", "Seattle · Guía licenciado · Tours a pie",
+     "시애틀 · 면허 가이드 · 도보 투어", "Seattle · Hướng dẫn viên có giấy phép · Tour đi bộ"],
+ "See Seattle on foot, with a guide who is licensed to show it to you": [
+     "用双脚认识西雅图，带路的是一位持照导游",
+     "Descubre Seattle a pie, con un guía licenciado para enseñártela",
+     "면허를 갖춘 가이드와 함께 두 발로 시애틀을 둘러보세요",
+     "Khám phá Seattle bằng đôi chân, cùng một hướng dẫn viên có giấy phép"],
+ "Small-group and private walking tours of Seattle. If you are off a cruise ship, the whole tour is built around one promise:": [
+     "西雅图的小团和私人徒步游。如果你是从邮轮上下来的，整趟行程都围绕一个承诺来安排：",
+     "Tours a pie por Seattle, en grupo reducido o privados. Si vienes de un crucero, todo el recorrido se construye sobre una promesa:",
+     "소규모 및 프라이빗 시애틀 도보 투어. 크루즈에서 내리셨다면, 투어 전체가 단 하나의 약속을 중심으로 짜입니다:",
+     "Tour đi bộ Seattle theo nhóm nhỏ hoặc riêng tư. Nếu bạn vừa xuống từ tàu du lịch, toàn bộ hành trình được xây quanh một lời hứa:"],
+ "you get back to your ship with time to spare.": [
+     "让你留有余裕地回到船上。", "vuelves a tu barco con tiempo de sobra.",
+     "여유 있게 배로 돌아가실 수 있습니다.", "bạn quay lại tàu với thời gian dư dả."],
+ "Departures from": ["出发地点", "Salidas desde", "출발 장소", "Khởi hành từ"],
+ "Pier 66": ["66号码头", "Muelle 66", "66번 부두", "Bến 66"],
+ "Pier 91": ["91号码头", "Muelle 91", "91번 부두", "Bến 91"],
+ "Washington-licensed tour guide": [
+     "华盛顿州持照导游", "Guía turístico licenciado en Washington",
+     "워싱턴주 면허 관광 가이드", "Hướng dẫn viên có giấy phép bang Washington"],
+ "Registered Seattle LLC": [
+     "在西雅图注册的有限责任公司", "Sociedad registrada en Seattle",
+     "시애틀에 등록된 법인", "Công ty đã đăng ký tại Seattle"],
+ "Small groups, never a crowd of forty": [
+     "小团出行，绝不是四十人的大队伍", "Grupos pequeños, nunca una multitud de cuarenta",
+     "소규모 그룹, 마흔 명씩 몰려다니는 일은 없습니다", "Nhóm nhỏ, không bao giờ là đoàn bốn mươi người"],
+ "The tours": ["行程", "Los tours", "투어 종류", "Các tour"],
+ "Cruise Terminal Walking Tour": [
+     "邮轮码头徒步游", "Tour a pie desde la terminal de cruceros",
+     "크루즈 터미널 도보 투어", "Tour đi bộ từ bến tàu du lịch"],
+ "$75 / person": ["每人 75 美元", "75 $ por persona", "1인당 75달러", "75 đô/người"],
+ "2.5 hours · starts at Pier 66 or Pier 91 · 2 people minimum": [
+     "2.5小时 · 从66号或91号码头出发 · 最少2人",
+     "2,5 horas · sale del Muelle 66 o del 91 · mínimo 2 personas",
+     "2.5시간 · 66번 또는 91번 부두 출발 · 최소 2인",
+     "2,5 giờ · khởi hành từ Bến 66 hoặc Bến 91 · tối thiểu 2 người"],
+ "You have one afternoon in Seattle and a hard deadline. We start at your terminal, walk the waterfront and the parts of downtown worth your only afternoon, and I have you back at the gangway": [
+     "你在西雅图只有一个下午，而且时间卡得很死。我们从你的码头出发，走海滨，再走市中心里值得你把这唯一一个下午花在上面的那几段，然后我把你送回舷梯口，",
+     "Tienes una tarde en Seattle y una hora límite estricta. Empezamos en tu terminal, recorremos el paseo marítimo y las partes del centro que merecen tu única tarde, y te devuelvo a la pasarela",
+     "시애틀에서 보낼 시간은 오후 한나절뿐이고, 마감 시간은 절대적입니다. 당신의 터미널에서 출발해 해안가와 그 한나절을 쓸 가치가 있는 다운타운 구간을 걷고, 승선 통로까지 다시 모셔다드립니다,",
+     "Bạn chỉ có một buổi chiều ở Seattle và một hạn chót không thể trễ. Chúng ta bắt đầu từ bến của bạn, đi dọc bờ nước và những phần trung tâm xứng đáng với buổi chiều duy nhất ấy, rồi tôi đưa bạn về tận cầu tàu"],
+ "at least an hour before all-aboard": [
+     "至少在开船集合时间前一小时", "al menos una hora antes del embarque final",
+     "최종 승선 시각보다 최소 한 시간 앞서", "ít nhất một giờ trước giờ lên tàu cuối"],
+ ". I plan the route backwards from your ship's time, not forwards from the start.": [
+     "。我是从你船的时间往回倒着排路线的，而不是从出发时间往前排。",
+     ". Planifico la ruta hacia atrás desde la hora de tu barco, no hacia adelante desde el inicio.",
+     ". 저는 출발 시각부터 앞으로 짜는 대신, 배의 시각에서 거꾸로 되짚어 경로를 만듭니다.",
+     ". Tôi lên lộ trình bằng cách tính ngược từ giờ tàu của bạn, chứ không tính xuôi từ lúc bắt đầu."],
+ "Downtown Seattle & Pike Place Half-Day": [
+     "西雅图市中心与派克市场 半日游", "Medio día por el centro de Seattle y Pike Place",
+     "시애틀 다운타운과 파이크 플레이스 반일 투어", "Nửa ngày ở trung tâm Seattle và Pike Place"],
+ "$89 / person": ["每人 89 美元", "89 $ por persona", "1인당 89달러", "89 đô/người"],
+ "3 hours · starts at Pike Place Market · 2 people minimum": [
+     "3小时 · 从派克市场出发 · 最少2人",
+     "3 horas · sale del Mercado de Pike Place · mínimo 2 personas",
+     "3시간 · 파이크 플레이스 마켓 출발 · 최소 2인",
+     "3 giờ · khởi hành từ Chợ Pike Place · tối thiểu 2 người"],
+ "Pike Place beyond the fish throwers, the waterfront, and Pioneer Square, the original city, and why it sits one storey below the current one. For visitors with a full day and locals who never did the tour.": [
+     "派克市场里不只有扔鱼那一幕，还有海滨，以及先锋广场：最早的那座城，以及它为什么比今天的城低一层。适合有一整天的游客，也适合从没走过这一趟的本地人。",
+     "Pike Place más allá de los lanzadores de pescado, el paseo marítimo y Pioneer Square, la ciudad original, y por qué queda una planta por debajo de la actual. Para visitantes con un día entero y para locales que nunca hicieron el tour.",
+     "생선 던지기 너머의 파이크 플레이스, 해안가, 그리고 파이어니어 스퀘어. 원래의 도시가 왜 지금 도시보다 한 층 아래에 있는지까지. 하루를 온전히 쓸 수 있는 방문객과, 한 번도 이 투어를 해 보지 않은 현지인을 위한 코스입니다.",
+     "Pike Place ngoài màn ném cá, khu bờ nước, và Pioneer Square, thành phố nguyên bản, cùng lý do nó nằm thấp hơn thành phố hiện tại một tầng. Dành cho khách có trọn một ngày và cả người bản địa chưa từng đi tour này."],
+ "Private Group Walking Tour": [
+     "私人团徒步游", "Tour a pie para grupo privado",
+     "프라이빗 그룹 도보 투어", "Tour đi bộ nhóm riêng"],
+ "$395 flat": ["一口价 395 美元", "395 $ fijos", "정액 395달러", "trọn gói 395 đô"],
+ "3 hours · up to 6 people · route built with you": [
+     "3小时 · 最多6人 · 路线和你一起定",
+     "3 horas · hasta 6 personas · ruta diseñada contigo",
+     "3시간 · 최대 6인 · 경로는 함께 짭니다",
+     "3 giờ · tối đa 6 người · lộ trình lên cùng bạn"],
+ "One group, one guide, no strangers. Tell me what the group actually cares about: history, food stops, photographs, or getting the kids through it without a mutiny. and the route gets built around that.": [
+     "一个团，一位导游，没有陌生人。告诉我你们这一行人真正在意什么：历史、吃的、拍照，还是让孩子们一路不闹翻，路线就照着这个来定。",
+     "Un grupo, un guía, ningún desconocido. Dime qué le importa de verdad a tu grupo: historia, paradas para comer, fotografías, o llevar a los niños hasta el final sin un motín. Y la ruta se construye alrededor de eso.",
+     "한 팀, 한 명의 가이드, 낯선 사람은 없습니다. 일행이 정말 원하는 것을 말씀해 주세요. 역사인지, 먹거리인지, 사진인지, 아니면 아이들이 폭발하지 않게 무사히 마치는 것인지. 경로는 그것을 중심으로 짭니다.",
+     "Một nhóm, một hướng dẫn viên, không có người lạ. Hãy cho tôi biết nhóm bạn thực sự quan tâm điều gì: lịch sử, các điểm ăn uống, chụp ảnh, hay đưa lũ trẻ đi hết chặng mà không nổi loạn. Lộ trình sẽ được dựng quanh điều đó."],
+ "Every tour on this page is": ["本页所有行程都是", "Todos los tours de esta página son", "이 페이지의 모든 투어는", "Mọi tour trên trang này đều là"],
+ "on foot": ["徒步", "a pie", "도보로 진행됩니다", "đi bộ"],
+ ". Comfortable shoes, Seattle hills, and rain that locals ignore. Transport between points is not included and is not part of the tour.": [
+     "。请穿舒服的鞋，西雅图有坡，还有本地人根本不当回事的雨。各点之间的交通不包含在内，也不属于行程的一部分。",
+     ". Calzado cómodo, las cuestas de Seattle y una lluvia que los locales ignoran. El transporte entre puntos no está incluido ni forma parte del tour.",
+     ". 편한 신발, 시애틀의 언덕, 그리고 현지인들은 신경도 쓰지 않는 비. 지점 간 이동 수단은 포함되지 않으며 투어의 일부가 아닙니다.",
+     ". Giày thoải mái, những con dốc Seattle, và cơn mưa mà dân địa phương chẳng bận tâm. Việc di chuyển giữa các điểm không bao gồm và không thuộc tour."],
+ "Booking, plainly": ["预订流程，说清楚", "Reservar, en pocas palabras", "예약 절차, 간단히", "Đặt chỗ, nói thẳng"],
+ "Send the form below or email": ["填下面的表格，或者发邮件到", "Envía el formulario de abajo o escribe a", "아래 양식을 보내시거나 이메일 주세요:", "Gửi mẫu bên dưới hoặc email tới"],
+ "hello@plateaustrategy.io": ["hello@plateaustrategy.io", "hello@plateaustrategy.io", "hello@plateaustrategy.io", "hello@plateaustrategy.io"],
+ ". Tell me your date and, if you are sailing, your ship and its all-aboard time.": [
+     "。告诉我你的日期；如果你是坐船来的，再告诉我船名和最晚登船时间。",
+     ". Dime tu fecha y, si vienes en crucero, el barco y su hora de embarque final.",
+     ". 날짜를 알려 주시고, 배로 오신다면 선박명과 최종 승선 시각도 함께 알려 주세요.",
+     ". Cho tôi biết ngày của bạn và, nếu bạn đi tàu, tên tàu cùng giờ lên tàu cuối."],
+ "I confirm the time and the meeting point in writing.": [
+     "我会用书面方式确认时间和集合地点。",
+     "Confirmo por escrito la hora y el punto de encuentro.",
+     "시간과 만나는 장소는 서면으로 확인해 드립니다.",
+     "Tôi xác nhận giờ và điểm hẹn bằng văn bản."],
+ "You get an invoice from": ["你会收到一张账单，开票方是", "Recibes una factura de", "다음 명의로 청구서를 보내 드립니다:", "Bạn sẽ nhận hóa đơn từ"],
+ "Plateau Strategy LLC": ["Plateau Strategy LLC", "Plateau Strategy LLC", "Plateau Strategy LLC", "Plateau Strategy LLC"],
+ "and pay by card. No deposit is taken before the date is confirmed.": [
+     "，用信用卡付款。日期确认之前不收任何定金。",
+     "y pagas con tarjeta. No se cobra ningún depósito antes de confirmar la fecha.",
+     "결제는 카드로 하시면 됩니다. 날짜가 확정되기 전에는 보증금을 받지 않습니다.",
+     "và thanh toán bằng thẻ. Không thu bất kỳ khoản đặt cọc nào trước khi ngày được xác nhận."],
+ "Cruise dates in August and September fill first. That is peak season on the Alaska run. If your date is tight, say so in the message and I will tell you straight away whether it works.": [
+     "八月和九月的邮轮档期最先排满，那是阿拉斯加航线的旺季。如果你的日期很紧，在留言里说一声，我会马上告诉你行不行。",
+     "Las fechas de crucero de agosto y septiembre se llenan primero: es temporada alta en la ruta de Alaska. Si tu fecha va justa, dilo en el mensaje y te digo enseguida si es posible.",
+     "8월과 9월 크루즈 날짜가 가장 먼저 찹니다. 알래스카 노선의 성수기이기 때문입니다. 일정이 빠듯하시면 메시지에 적어 주세요. 가능한지 바로 알려 드리겠습니다.",
+     "Các ngày tàu du lịch trong tháng Tám và tháng Chín kín trước tiên, vì đó là cao điểm của tuyến Alaska. Nếu ngày của bạn eo hẹp, hãy nói trong tin nhắn và tôi sẽ trả lời ngay là có được hay không."],
+ "Ask about a date": ["咨询某个日期", "Consulta una fecha", "날짜 문의하기", "Hỏi về một ngày cụ thể"],
+ "Which tour": ["选择行程", "Qué tour", "어떤 투어", "Tour nào"],
+ "Cruise Terminal Walking Tour: $75/person": [
+     "邮轮码头徒步游：每人75美元", "Tour desde la terminal de cruceros: 75 $/persona",
+     "크루즈 터미널 도보 투어: 1인당 75달러", "Tour đi bộ từ bến tàu: 75 đô/người"],
+ "Downtown & Pike Place Half-Day: $89/person": [
+     "市中心与派克市场半日游：每人89美元", "Medio día centro y Pike Place: 89 $/persona",
+     "다운타운과 파이크 플레이스 반일: 1인당 89달러", "Nửa ngày trung tâm và Pike Place: 89 đô/người"],
+ "Private Group Walking Tour: $395 flat": [
+     "私人团徒步游：一口价395美元", "Tour privado a pie: 395 $ fijos",
+     "프라이빗 그룹 도보 투어: 정액 395달러", "Tour đi bộ nhóm riêng: trọn gói 395 đô"],
+ "Not sure yet, tell me what fits": [
+     "还没想好，帮我看看哪个合适", "Aún no lo sé, dime qué encaja",
+     "아직 정하지 못했어요, 맞는 걸 추천해 주세요", "Chưa chắc, hãy tư vấn giúp tôi"],
+ "Date in Seattle": ["在西雅图的日期", "Fecha en Seattle", "시애틀 방문 날짜", "Ngày ở Seattle"],
+ "How many people": ["几位", "Cuántas personas", "인원 수", "Bao nhiêu người"],
+ "Ship name and all-aboard time, or anything else": [
+     "船名和最晚登船时间，或其他任何情况",
+     "Nombre del barco y hora de embarque, o cualquier otra cosa",
+     "선박명과 최종 승선 시각, 그 밖에 알려 주실 내용",
+     "Tên tàu và giờ lên tàu cuối, hoặc bất cứ điều gì khác"],
+ "Send the question →": ["发送咨询 →", "Enviar la consulta →", "문의 보내기 →", "Gửi câu hỏi →"],
+ "This sends a question, not a booking. Nothing is charged and no date is held until I write back and confirm it with you.": [
+     "这只是发送一条咨询，不是下单。在我回信并与你确认之前，不会收费，也不会占用日期。",
+     "Esto envía una consulta, no una reserva. No se cobra nada ni se bloquea ninguna fecha hasta que te responda y lo confirme contigo.",
+     "이것은 문의를 보내는 것이지 예약이 아닙니다. 제가 답장을 드리고 함께 확정하기 전까지는 요금이 청구되지 않고 날짜도 잡히지 않습니다.",
+     "Đây là gửi một câu hỏi, không phải đặt chỗ. Không có khoản nào bị tính và không ngày nào được giữ cho đến khi tôi hồi âm và xác nhận cùng bạn."],
+ "Plateau Strategy LLC · Seattle, WA": [
+     "Plateau Strategy LLC · 华盛顿州西雅图", "Plateau Strategy LLC · Seattle, WA",
+     "Plateau Strategy LLC · 워싱턴주 시애틀", "Plateau Strategy LLC · Seattle, WA"],
+ "Licensed guided walking tours ·": [
+     "持照导游带队的徒步游 ·", "Tours a pie con guía licenciado ·",
+     "면허 가이드 동행 도보 투어 ·", "Tour đi bộ có hướng dẫn viên được cấp phép ·"],
+})

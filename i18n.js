@@ -17,22 +17,7 @@
       try { localStorage.setItem(KEY, want); } catch (e) {}
       return want;
     }
-    var saved = null;
-    try { saved = localStorage.getItem(KEY); } catch (e) {}
-    if (saved) return saved;                 // a choice the visitor made always wins
-    // First visit, nothing chosen: meet the visitor in the language their phone
-    // is set to, when it is one we publish. Two reasons. It is what a traveller
-    // expects, their phone is in Korean, so the site is. And the phone's own
-    // "translate this page" prompt fires off that same setting and fights our
-    // switcher, DOM node against DOM node, so the globe looks broken; landing
-    // already in their language leaves the browser nothing to translate. NOT
-    // stored: a stored value means an explicit choice, this is our guess, so it
-    // stays live and one tap on the globe (including English) still overrides it.
-    var nav = ((navigator.languages && navigator.languages[0])
-               || navigator.language || navigator.userLanguage || "")
-              .toLowerCase().split("-")[0];
-    if (nav && LANGS.some(function (l) { return l[0] === nav; })) return nav;
-    return "en";
+    return localStorage.getItem(KEY) || "en";
   })();
   function norm(s) { return s.replace(/\s+/g, " ").trim(); }
   function tr(k) {

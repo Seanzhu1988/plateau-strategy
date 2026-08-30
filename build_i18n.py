@@ -7,17 +7,74 @@ SCRATCH = os.path.dirname(os.path.abspath(__file__))
 # Was hardcoded to one laptop, so the generator could not be run anywhere
 # else, including from the repo itself. Falls back to the directory this
 # file sits in, which is the repo in every case that matters.
-_MAC = "/Users/xiaojunzhu/Claude/Projects/Plateau Strategy"
-PROJ = os.environ.get("PROJ_DIR") or (_MAC if os.path.isdir(_MAC) else SCRATCH)
+# THE DIRECTORY THIS READS IS THE ONE IT LIVES IN.
+#
+# It used to prefer a hardcoded path, ~/Claude/Projects/Plateau Strategy, and
+# fall back to its own directory only if that path was missing. The path was
+# not missing: it is a stale copy of the site from months ago. So every page
+# written since then, the Freedom Trail, MoMA, the Universal Gallery, the
+# landmarks, was invisible to this generator. Their words were never
+# collected, so they were never translated, so tapping the globe on those
+# pages did nothing at all. That is the whole of "the language tab is not
+# able to translate", and it survived a first round of fixes because the
+# fallback made the bug look like a safety net.
+#
+# The script now reads the repo it is part of. PROJ_DIR still overrides, for
+# anyone deliberately pointing it elsewhere.
+PROJ = os.environ.get("PROJ_DIR") or SCRATCH
 
-# ---- pages whose visible text we translate (add more here to extend coverage) ----
-COVERED = ["landing-page.html", "booking.html", "renter.html", "agent.html",
-           "dispatch.html", "partners.html", "books.html", "articles.html",
-           # second pass: the free tools and everything else a visitor can open
-           "trip-planner.html", "trips.html", "guide-studio.html",
-           "destination-book.html", "road-trip.html", "favorite-place.html",
-           "met.html", "board.html", "archive.html", "driver.html",
-           "deflator.html", "factor-clock.html", "freedom-trail.html"]
+# ---- pages whose visible text we translate ----
+#
+# THIS LIST IS FOUND, NOT WRITTEN. It used to be typed by hand, and that is
+# the whole reason the globe kept looking broken to Sean: build a new page,
+# forget to add its filename here, and its words are never collected, never
+# reported missing, never translated. The page then sits in English while the
+# switcher turns, which reads as "the language tab does not work". It happened
+# to moma, tours, the universal gallery, walks and landmarks, five pages, none
+# of them noticed until a reader complained.
+#
+# So coverage is now discovered: every page in the project except the ones
+# named below. A new public page is covered the moment it exists, and because
+# this build REFUSES to write a pack while any covered line is untranslated,
+# forgetting is no longer possible. The failure moved from silent to loud,
+# which is the only durable fix.
+EXCLUDED = {
+    # owner and private surfaces: whoever opens these already reads English
+    "dispatch.html", "setup.html", "archive.html", "discovery.html",
+    "pulse.html", "room.html", "room-locked.html", "books.html",
+    # internal notes, drafts and one-off audits, not visitor pages
+    "compare-blueprints.html", "contrast-audit.html", "layout-audit.html",
+    "evolve.html", "evolve-blueprint.html", "met-blueprint.html", "deck.html",
+    "guide-concept.html", "how-built.html", "name-protection.html",
+    "footprints-demo.html", "footprints-concept.html",
+}
+
+
+# The pages a traveller opens. These are the ones the switcher exists for, so
+# a missing line here STOPS the build. Everything else discovered below is
+# still collected and still translated when we have the words, but it only
+# warns: an agent reading their own commission page in English is a smaller
+# harm than a build nobody can run.
+VISITOR = {
+    "landing-page.html", "booking.html", "trip-planner.html",
+    "destination-book.html", "road-trip.html", "trips.html", "walks.html",
+    "met.html", "moma.html", "universal-gallery.html", "freedom-trail.html",
+    "landmarks.html", "tours.html", "articles.html",
+}
+
+
+def _covered():
+    out = []
+    for f in sorted(os.listdir(PROJ)):
+        if not f.endswith(".html"):
+            continue
+        if f in EXCLUDED or ".backup-" in f or f.startswith("_"):
+            continue
+        out.append(f)
+    return out
+
+
+COVERED = _covered()
 
 class _Extract(HTMLParser):
     def __init__(s):
@@ -35,11 +92,15 @@ class _Extract(HTMLParser):
         if v: s.out.append(v)
 
 strings = []
+PAGE_STRINGS = {}          # page -> the lines it shows, so the gate knows where a miss lives
 for page in COVERED:
     p = _Extract(); p.feed(open(os.path.join(PROJ, page), encoding="utf-8").read())
+    here = set()
     for v in p.out:
         if not re.search("[A-Za-z]", v): continue
+        here.add(v)
         if v not in strings: strings.append(v)
+    PAGE_STRINGS[page] = here
 
 # ---- strings intentionally left in English (brand / example values) ----
 SKIP = {
@@ -537,6 +598,12 @@ TR.update(EXTRA)
 SKIP |= EXTRA_SKIP
 
 # ---- coverage report ----
+
+def _page_of(text):
+    """Which covered pages show this line. Used to decide whether a missing
+    translation blocks the build or merely warns."""
+    return {f for f, lines in PAGE_STRINGS.items() if text in lines}
+
 missing = [s for s in strings if s not in TR and s not in SKIP]
 unknown = [k for k in TR if k not in strings]
 print("strings on page:", len(strings))
@@ -551,9 +618,19 @@ if missing:
 # stops for missing and merely mentions unknown.
 if unknown:
     print("\n(%d dictionary entries no longer appear on any page, kept, harmless)" % len(unknown))
+# A missing line on a VISITOR page stops the build; that is the page a
+# traveller opens and the reason the switcher exists. A missing line on an
+# agent or board page only warns, so one untranslated internal sentence can
+# never block shipping a fix to the pages the public reads.
 if missing:
-    print("\nNOT writing i18n.js until every visible line has a translation.")
-    sys.exit(1)
+    blocking = [s for s in missing if _page_of(s) & VISITOR]
+    if blocking:
+        print("\n%d of those are on visitor pages. NOT writing the packs until "
+              "every visible visitor line has a translation." % len(blocking))
+        for s in blocking[:400]:
+            print("   VISITOR:", repr(s))
+        sys.exit(1)
+    print("\nAll missing lines are on internal pages, writing the packs anyway.")
 
 # ---- build DICT + engine ----
 # Japanese arrives as its own file rather than a fifth column in twelve
