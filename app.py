@@ -2914,7 +2914,10 @@ text-decoration:none;margin:1.1rem 0}.tags{color:#6b655b;font-size:.85rem}</styl
 <p><a href="/tips">%s</a></p></body></html>""" % (
         "zh" if zh else "en", _html.escape(post["pain"]),
         _html.escape(post["text"][:155]), SITE_ORIGIN, _html.escape(pid),
-        _html.escape(post["pain"]), _html.escape(post["text"]),
+        _html.escape(post["pain"]),
+        # A RedNote note carries its own line breaks; keep them as paragraphs so
+        # the auto-published page reads the way it was written, not as one block.
+        _html.escape(post["text"]).replace("\n\n", "</p><p>").replace("\n", "<br>"),
         _html.escape(post["page"]),
         "打开这个免费工具 →" if zh else "Open the free tool →",
         _html.escape(post["tags"]),
@@ -2944,12 +2947,17 @@ def social_pack_page():
         links = "".join('<div class="lk"><b>%s</b> <span>%s</span></div>'
                         % (_html.escape(c), _html.escape(u))
                         for c, u in (p.get("links") or {}).items())
+        # A RedNote note has a separate hook title that goes in its own field in
+        # the app, so it gets its own copyable line above the body.
+        title_row = ('<div class="meta">标题 title: <b>%s</b></div>'
+                     % _html.escape(p["title"])) if p.get("title") else ""
         cards.append(
-            '<div class="card"><div class="meta">%s · %s</div>'
+            '<div class="card"><div class="meta">%s · %s</div>%s'
             '<textarea readonly rows="6">%s</textarea>'
             '<button onclick="copyIt(this)">Copy the post</button>'
             '%s<div class="meta">tags: %s</div><div class="meta">visual: %s</div></div>'
             % (_html.escape(p["id"]), _html.escape(" / ".join(p["channels"])),
+               title_row,
                _html.escape(p["text"] + "\n\n" + next(iter((p.get("links") or {}).values()), "")
                             + "\n" + p["tags"]),
                links, _html.escape(p["tags"]), _html.escape(p["visual"])))

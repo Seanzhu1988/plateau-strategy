@@ -131,6 +131,32 @@
    "text": "MoMA is three floors of the last 140 years of art, and The Starry Night has a crowd at any hour. Our free footprint guide walks you floor by floor, room by room, checked every week against the museum's own collection data, so it never sends you to a painting that moved.",
    "tags": "#MoMA #NYCart #StarryNight",
    "visual": "Screenshot of the /moma sheet with rooms picked."
+  },
+  {
+   "id": "rednote-ug-reading",
+   "lang": "zh",
+   "pain": "看不懂的作品也想听讲解",
+   "page": "/universal-gallery",
+   "channels": [
+    "rednote"
+   ],
+   "title": "看展神器｜对着任何一幅画都能听讲解",
+   "text": "在美国逛博物馆,很多画连标签都是英文,看得一头雾水。\n\n分享一个一直在用的免费网页。它不只是帮你查资料,是真的现场给你写一段讲解。\n\n比如站在 MoMA 的星夜前面,把标签上的编号 472.1941 输进去,它就用中文讲给你听:先看整幅画的尺寸,其实比你想的小很多;再走近看笔触,全是一道道厚厚的颜料;然后退后几步,那片天空就开始转起来了。\n\n重点是不只是名画。你在任何一家博物馆,对着任何一件看不懂的作品,它都能现场写一段给你,用你自己的语言。\n\n大都会 MoMA 芝加哥艺术博物馆都能用,不用下载 App,也不用注册。看展前先收藏一下📌",
+   "tags": "#纽约旅游 #看展攻略 #MoMA #星夜 #博物馆打卡 #美国旅行",
+   "visual": "首图放输入 472.1941 查出星夜、下面生成中文讲解的那一屏;第二张放讲解正在播放的截图。也可以用 media/universal-gallery-film.mp4 的封面。"
+  },
+  {
+   "id": "rednote-trail",
+   "lang": "zh",
+   "pain": "带爸妈走自由之路,英文讲解听不懂",
+   "page": "/freedom-trail",
+   "channels": [
+    "rednote"
+   ],
+   "title": "波士顿自由之路 全程中文讲解🎧",
+   "text": "波士顿自由之路,一直想带爸妈走,但英文讲解他们听不懂,就一直没敢安排。\n\n最近发现一个免费网页,把这条路做成了全程中文语音讲解🎧\n16 个景点,每个都有大概 5 分钟的深度讲解,是地道的普通话配音,不是那种机器翻译腔。\n\n最贴心的是时间。全程走路其实只要 44 分钟,是真人一步一步走出来量的,不是拍脑袋估的。走累了可以只走市中心那一半,随时停。\n\n手机打开网页就能听,不用下载 App。脚印地图还会一个点一个点带着你走,不怕迷路。\n\n带爸妈,或者第一次来波士顿的,先收藏📌",
+   "tags": "#波士顿旅游 #自由之路 #美国东部攻略 #带父母旅行 #中文讲解",
+   "visual": "首图用步道铜牌的实拍照片;第二张放中文讲解的播放界面,或者脚印路线图截屏。"
   }
  ]
 }
