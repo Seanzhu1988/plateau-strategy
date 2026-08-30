@@ -1,0 +1,59 @@
+# Post the social library by itself, on a schedule, to the channels that have a
+# posting API and whose keys are set. Today that is X; without the X secrets the
+# run is a clean no-op, so this workflow is safe to have on from day one and
+# switches on the moment the secrets exist. RedNote and WeChat are NOT here:
+# they have no API and cannot be automated.
+name: Auto post
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Twice a day, spread. The ledger caps how many actually go out per day
+    # (X_MAX_PER_DAY, default 1), so the second run is mostly a retry if the
+    # first failed. Add more times and raise the cap to post more often.
+    - cron: "0 16 * * *"    # ~morning in the US
+    - cron: "0 23 * * *"    # ~evening in the US
+
+permissions:
+  contents: write
+
+concurrency:
+  group: auto-post
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install the X client
+        run: pip install --quiet tweepy
+
+      - name: Post the day's picks
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          X_MAX_PER_DAY: ${{ vars.X_MAX_PER_DAY || '1' }}
+        run: python3 auto_post.py
+
+      - name: Commit the ledger
+        run: |
+          git config user.name "plateau-social"
+          git config user.email "actions@users.noreply.github.com"
+          git add social/posted.json
+          if git diff --cached --quiet; then
+            echo "Nothing posted, ledger unchanged."
+            exit 0
+          fi
+          git commit -m "Auto post ledger"
+          git pull --rebase origin ${{ github.ref_name }}
+          git push origin HEAD:${{ github.ref_name }}
