@@ -6633,6 +6633,7 @@ def _create_reservation(data, agent=None, self_driver=None):
     except (TypeError, ValueError):
         distance_mi = None
 
+    price_overridden = False
     if quote_requested:
         fare = 0.0                       # priced later by the owner
     elif trip_type == "destination" and distance_mi is not None:
@@ -6653,10 +6654,40 @@ def _create_reservation(data, agent=None, self_driver=None):
         else:
             fare = _distance_fare(distance_mi)
     else:
+        # THE PRICE IS OURS TO SET, NOT THE CALLER'S. This used to take
+        # data["fare"] on trust, which the booking page fills from a select
+        # whose options we render, so the form was always honest. The API was
+        # not: a crafted POST with {"fare": 0.01} came back with a real Square
+        # invoice for one cent on an airport run, verified by test. The
+        # destination branch above already knew better, and says so in its own
+        # comment, so this is that rule applied everywhere.
+        #
+        # A fare is now accepted only if it is one WE publish: a pricing
+        # preset, the airport flat rate, or the default. Anything else falls
+        # back to the default rather than being honoured, and the reservation
+        # carries a flag so the dashboard can see it happened.
+        allowed = set()
         try:
-            fare = float(data.get("fare") or os.environ.get("DEFAULT_FARE_USD", 45))
+            for _p in (_load_pricing().get("presets") or []):
+                allowed.add(round(float(_p.get("price")), 2))
         except Exception:
-            fare = float(os.environ.get("DEFAULT_FARE_USD", 45))
+            pass
+        try:
+            _default = float(os.environ.get("DEFAULT_FARE_USD", 45))
+        except Exception:
+            _default = 45.0
+        allowed.add(round(_default, 2))
+        allowed.add(round(float(AIRPORT_FLAT_USD), 2))
+        try:
+            asked = round(float(data.get("fare")), 2) if data.get("fare") not in (None, "") else None
+        except (TypeError, ValueError):
+            asked = None
+        if asked is not None and asked in allowed:
+            fare = asked
+        else:
+            fare = _default
+            if asked is not None:
+                price_overridden = True
     fare = round(fare, 2)
 
     trip = {
@@ -6717,6 +6748,7 @@ def _create_reservation(data, agent=None, self_driver=None):
         },
         "trip": trip,
         "fare_usd": fare,
+        "price_refused": price_overridden,   # a caller asked for a price we do not publish
         "quote_requested": quote_requested,
         "status": "QUOTE" if quote_requested else "NEW",
         "renter_id": None,
