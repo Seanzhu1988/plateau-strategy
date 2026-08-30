@@ -2855,6 +2855,23 @@ def _social_lib():
         return []
 
 
+@app.route("/landmarks")
+def landmarks_page():
+    """Brooklyn Bridge and the Empire State Building, as models you can turn.
+
+    The Met's model taught the idiom: no 3D library, real dimensions, one sun,
+    because the reader is on a phone. These two are outdoor landmarks, so the
+    questions underneath are the outdoor ones, how long the bridge walk really
+    takes and which observatory is the one people mean.
+    """
+    return send_file(os.path.join(BASE_DIR, "landmarks.html"))
+
+
+@app.route("/nyc-3d.js")
+def nyc_3d_js():
+    return send_file(os.path.join(BASE_DIR, "nyc-3d.js"), mimetype="application/javascript")
+
+
 @app.route("/tips")
 def tips_index():
     """The travel tips, published on ground nobody gates.
@@ -3005,6 +3022,7 @@ PUBLIC_PAGES = [
     ("/book", "0.8", "monthly"),
     ("/articles", "0.7", "weekly"),
     ("/tips", "0.8", "weekly"),
+    ("/landmarks", "0.8", "monthly"),
     ("/partners", "0.6", "monthly"),
     ("/agent", "0.6", "monthly"),
     ("/renter", "0.6", "monthly"),
