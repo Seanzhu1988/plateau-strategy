@@ -166,6 +166,9 @@ WISHLIST_PATH = _data_path("finance_wishlist.json")
 PARTNERS_PATH = _data_path("partners.json")
 PRICING_PATH = _data_path("pricing.json")
 OWNER_AUTH_PATH = _data_path("owner_auth.json")
+# The partner room's passcode, kept apart from the owner login on purpose:
+# handing an attorney a way in must never hand them dispatch as well.
+ROOM_AUTH_PATH = _data_path("room_auth.json")
 SECRET_PATH = _data_path(".flask_secret")
 CONTRACT_PATH = _data_path("contract.json")
 SIGNATURES_PATH = _data_path("contract_signatures.json")
@@ -3034,6 +3037,119 @@ OWNER_ONLY_PATHS = ["/dispatch", "/setup", "/archive", "/api/", "/deflator", "/d
 SITE_ORIGIN = os.environ.get("SITE_ORIGIN", "https://plateaustrategy.io").rstrip("/")
 # Referrers from our own pages are not a traffic source, they are navigation.
 SITE_HOSTS = ("plateaustrategy.io", "plateau-strategy.onrender.com")
+
+
+# ---------------------------------------------------------------------------
+# THE PARTNER ROOM
+#
+# [SEAN 2026-08-30: "I need the website to have a locked room thats for test
+# site not supposed to show to the public but the partners like everybodys
+# attorney ... with passcode like dispatch. so i can show to the attorney
+# without leak to anyone."]
+#
+# One passcode, deliberately NOT the owner login. An attorney needs to see
+# work; an attorney does not need dispatch, the reservation book, or the
+# customer names behind it. Two locks, two keys, and the room's key opens
+# only the room.
+#
+# The gate is on the SERVER. A page that ships its contents and hides them
+# with JavaScript has not hidden anything: the material is already on the
+# reader's machine and View Source shows it. Unlocked, this route returns the
+# lock screen and nothing else.
+#
+# It is not in the sitemap, not in the site index, and NOT listed in
+# robots.txt, because that file is public and a Disallow line advertises the
+# path to exactly the people it is meant to keep out. It carries
+# X-Robots-Tag: noindex instead, which is the same reasoning the share-link
+# pages below already use.
+#
+# Honest about the strength: this is a shared passcode, so it is as private as
+# the people holding it. Good for showing work in confidence. Not a vault, and
+# nothing here should be anything whose leak would be a catastrophe.
+def _load_room():
+    try:
+        with open(ROOM_AUTH_PATH) as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+def _room_open():
+    """Owner always; anyone who has entered the passcode this session."""
+    return bool(session.get("owner") or session.get("room"))
+
+
+def room_required(fn):
+    @wraps(fn)
+    def wrapper(*a, **k):
+        if not _room_open():
+            return jsonify({"ok": False, "auth_required": True,
+                            "error": "The room is locked."}), 401
+        return fn(*a, **k)
+    return wrapper
+
+
+@app.route("/api/room/set", methods=["POST"])
+@owner_required
+def api_room_set():
+    """The owner sets or changes the room passcode. Owner only, always: if a
+    partner could change the code they could lock the owner out of his own
+    room, or quietly hand it to somebody else."""
+    data = request.get_json(force=True, silent=True) or {}
+    code = (data.get("passcode") or "").strip()
+    if len(code) < 6:
+        return jsonify({"ok": False, "error": "Use at least six characters."}), 400
+    salt, h = _hash_pw(code)
+    with open(ROOM_AUTH_PATH, "w") as f:
+        json.dump({"salt": salt, "hash": h, "note": (data.get("note") or "").strip()[:120],
+                   "set_at": datetime.datetime.now().isoformat(timespec="seconds")}, f, indent=2)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/room/enter", methods=["POST"])
+def api_room_enter():
+    room = _load_room()
+    code = ((request.get_json(force=True, silent=True) or {}).get("passcode") or "")
+    if _login_blocked("__room__"):
+        return _too_many_tries()
+    if not room:
+        return jsonify({"ok": False, "error": "No passcode has been set yet."}), 403
+    ok = hmac.compare_digest(
+        hashlib.sha256((room.get("salt", "") + code).encode()).hexdigest(),
+        room.get("hash", ""))
+    if not ok:
+        _login_failed("__room__")
+        return jsonify({"ok": False, "error": "That passcode does not open this room."}), 401
+    _login_ok("__room__")
+    session["room"] = True
+    return _set_not_counted(jsonify({"ok": True}))
+
+
+@app.route("/api/room/leave", methods=["POST"])
+def api_room_leave():
+    session.pop("room", None)
+    return jsonify({"ok": True})
+
+
+@app.route("/room")
+def room_page():
+    """Locked: the lock screen. Open: the work."""
+    page = "room.html" if _room_open() else "room-locked.html"
+    resp = send_file(os.path.join(BASE_DIR, page))
+    resp.headers["X-Robots-Tag"] = "noindex, nofollow"
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
+
+
+@app.route("/api/room/items")
+@room_required
+def api_room_items():
+    """What is on the shelves. Read only, and only from inside the room."""
+    try:
+        with open(os.path.join(BASE_DIR, "room_items.json"), encoding="utf-8") as f:
+            return jsonify({"ok": True, "items": json.load(f).get("items") or []})
+    except Exception:
+        return jsonify({"ok": True, "items": []})
 
 
 @app.route("/rent-a-tesla")

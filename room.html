@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>The room</title>
+<link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+<link rel="stylesheet" href="/paper.css">
+<style>
+  header img { height: 42px; width: 42px; border-radius: 50%; }
+  header .brand { font-size: 1.2rem; font-weight: 800; }
+  .rm { max-width: 860px; margin: 2rem auto 4rem; padding: 0 1.2rem; }
+  .rm-title { font-size: 1.9rem; font-weight: 800; margin: 0 0 .3rem; color: #14110c; }
+  .rm-lede { color: #4a453d; margin: 0 0 .6rem; max-width: 60ch; }
+  .rm-seal { display: inline-block; font-size: .7rem; font-weight: 800; letter-spacing: .12em;
+             color: #7a5a12; background: #fdf3d7; border: 1px solid #e3c76a;
+             border-radius: 999px; padding: .2rem .7rem; margin: 0 0 1.6rem; }
+  .rm-item { border: 1px solid #e6e6ea; border-radius: 12px; padding: 1.1rem 1.2rem;
+             margin: 0 0 1rem; background: #fff; }
+  .rm-item h3 { margin: 0 0 .2rem; font-size: 1.1rem; color: #14110c; }
+  .rm-state { font-size: .72rem; font-weight: 800; letter-spacing: .1em;
+              text-transform: uppercase; color: #1b4d8f; }
+  .rm-item p { margin: .5rem 0 .7rem; color: #33302a; font-size: .96rem; }
+  .rm-open { display: inline-block; font-weight: 700; color: #1f3a5f;
+             text-decoration: none; border: 1px solid #1f3a5f; border-radius: 999px;
+             padding: .35rem .95rem; font-size: .88rem; }
+  .rm-foot { font-size: .85rem; color: #6b655b; border-top: 1px solid #e6e6ea;
+             padding-top: 1rem; margin-top: 2rem; }
+  #rmOut { font: inherit; font-weight: 700; border: 1px solid #d3d3da; border-radius: 999px;
+           background: #fff; color: #6b655b; padding: .3rem .9rem; cursor: pointer;
+           font-size: .82rem; }
+</style>
+</head>
+<body>
+<header>
+  <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab">
+  <span class="brand">Plateau Strategy Solution Lab</span>
+</header>
+<div class="rm">
+  <h1 class="rm-title">The room</h1>
+  <p class="rm-lede">Work in progress, shared in confidence with partners and
+     counsel. Nothing here is public, nothing here is indexed, and several of
+     these are unfinished on purpose.</p>
+  <div class="rm-seal">PRIVATE · SHARED BY PASSCODE</div>
+  <div id="rmItems"></div>
+  <p class="rm-foot">Please do not forward the passcode or the links.
+     <button id="rmOut" type="button">Lock it behind me</button></p>
+</div>
+<script>
+  fetch('/api/room/items').then(function (r) { return r.json(); }).then(function (d) {
+    var host = document.getElementById('rmItems');
+    var esc = function (t) { var e = document.createElement('div'); e.textContent = t == null ? '' : t; return e.innerHTML; };
+    var items = (d && d.items) || [];
+    if (!items.length) { host.innerHTML = '<p>The shelves are empty for now.</p>'; return; }
+    host.innerHTML = items.map(function (i) {
+      return '<div class="rm-item"><span class="rm-state">' + esc(i.state || 'in progress') + '</span>' +
+        '<h3>' + esc(i.title) + '</h3><p>' + esc(i.note) + '</p>' +
+        (i.link ? '<a class="rm-open" href="' + esc(i.link) + '">' + esc(i.action || 'Open it') + ' →</a>' : '') +
+        '</div>';
+    }).join('');
+  });
+  document.getElementById('rmOut').addEventListener('click', function () {
+    fetch('/api/room/leave', { method: 'POST' }).then(function () { location.reload(); });
+  });
+</script>
+</body>
+</html>
