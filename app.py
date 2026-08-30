@@ -3030,7 +3030,7 @@ PUBLIC_PAGES = [
     ("/deflator", "0.5", "monthly"),
     ("/board", "0.4", "monthly"),
 ]
-OWNER_ONLY_PATHS = ["/dispatch", "/setup", "/archive", "/api/", "/deflator", "/discovery"]
+OWNER_ONLY_PATHS = ["/dispatch", "/setup", "/archive", "/api/", "/deflator", "/discovery", "/pulse"]
 SITE_ORIGIN = os.environ.get("SITE_ORIGIN", "https://plateaustrategy.io").rstrip("/")
 # Referrers from our own pages are not a traffic source, they are navigation.
 SITE_HOSTS = ("plateaustrategy.io", "plateau-strategy.onrender.com")
@@ -12296,6 +12296,214 @@ def api_archive_export():
         w.writerow(r)
     return Response(buf.getvalue(), mimetype="text/csv",
                     headers={"Content-Disposition": "attachment; filename=archive_%s.csv" % section})
+
+
+# ======================================================================
+# PULSE, the owner's one-screen traffic view. Everything about how the site
+# is doing, on a single glanceable page built to be saved to a phone's home
+# screen and opened in one tap. It reads the same self-hosted traffic store
+# the Archive does, no third-party analytics, and shows the numbers that
+# actually answer "is the work reaching anyone": who is on now, today and
+# the last week, and above all WHICH CHANNEL is bringing them, so the social
+# push can be judged instead of guessed. [SEAN "one tab to view the traffic
+# i can save on the screen, avoid unnecessary steps"]
+# ======================================================================
+_PULSE_HTML = r"""<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Traffic Pulse</title>
+<meta name="theme-color" content="#1d4c4f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pulse">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/pulse.webmanifest">
+<style>
+:root{--paper:#faf8f4;--card:#fffdf9;--band:#f5f1e8;--ink:#14110c;--body:#4a453d;--muted:#6b655b;--line:#e6e2da;--accent:#1d4c4f;--good:#1b5e43}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--body);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+ padding:calc(env(safe-area-inset-top) + 1rem) 1rem calc(env(safe-area-inset-bottom) + 2rem);-webkit-font-smoothing:antialiased}
+.wrap{max-width:560px;margin:0 auto}
+.top{display:flex;align-items:baseline;justify-content:space-between;gap:.6rem;margin:0 0 1rem}
+h1{font-size:1.5rem;color:var(--ink);margin:0;letter-spacing:-.01em}
+.upd{font-size:.76rem;color:var(--muted);text-align:right}
+.live{display:inline-flex;align-items:center;gap:.4rem;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;font-size:.85rem;color:var(--ink);font-weight:600}
+.dot{width:.5rem;height:.5rem;border-radius:50%;background:var(--good);box-shadow:0 0 0 0 rgba(27,94,67,.5);animation:p 2s infinite}
+@keyframes p{0%{box-shadow:0 0 0 0 rgba(27,94,67,.5)}70%{box-shadow:0 0 0 .5rem rgba(27,94,67,0)}100%{box-shadow:0 0 0 0 rgba(27,94,67,0)}}
+@media (prefers-reduced-motion:reduce){.dot{animation:none}}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin:0 0 .9rem}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.1rem}
+.tile .n{font-size:2rem;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1}
+.tile .l{font-size:.78rem;color:var(--muted);margin-top:.35rem;text-transform:uppercase;letter-spacing:.04em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.1rem;margin:0 0 .9rem}
+.hd{font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin:0 0 .7rem}
+.spark{display:flex;align-items:flex-end;gap:3px;height:64px}
+.spark div{flex:1;background:var(--accent);border-radius:2px 2px 0 0;min-height:2px;opacity:.85}
+.spark div:last-child{background:var(--good)}
+.two{display:flex;gap:1.4rem}
+.two>div{flex:1}.two .n{font-size:1.4rem;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}.two .l{font-size:.76rem;color:var(--muted)}
+.rw{display:flex;align-items:center;gap:.6rem;margin:.5rem 0}
+.rw .nm{width:38%;font-size:.9rem;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rw .bar{flex:1;height:.55rem;background:var(--band);border-radius:999px;overflow:hidden}
+.rw .bar i{display:block;height:100%;background:var(--accent);border-radius:999px}
+.rw .v{width:2.6rem;text-align:right;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.empty{color:var(--muted);font-size:.9rem}
+.foot{text-align:center;color:var(--muted);font-size:.78rem;margin-top:.4rem}
+.foot button{font:inherit;color:var(--accent);background:none;border:none;font-weight:600;cursor:pointer;padding:.4rem}
+#login{max-width:340px;margin:12vh auto 0;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.4rem}
+#login h2{color:var(--ink);font-size:1.2rem;margin:0 0 1rem}
+#login input{width:100%;padding:.7rem .8rem;border:1px solid var(--line);border-radius:9px;font:inherit;margin:0 0 .7rem;background:var(--paper);color:var(--ink)}
+#login button{width:100%;padding:.75rem;border:none;border-radius:999px;background:var(--accent);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+#login .err{color:#a3302a;font-size:.85rem;min-height:1.1rem;margin:.2rem 0 0}
+[hidden]{display:none!important}
+</style></head><body>
+<div class="wrap">
+ <div id="login" hidden>
+   <h2>Owner sign in</h2>
+   <input id="u" placeholder="Username" autocomplete="username" autocapitalize="none">
+   <input id="p" type="password" placeholder="Password" autocomplete="current-password">
+   <button onclick="doLogin()">Sign in</button>
+   <p class="err" id="lerr"></p>
+ </div>
+ <div id="app" hidden>
+   <div class="top">
+     <h1>Traffic</h1>
+     <div style="text-align:right"><span class="live"><span class="dot"></span><b id="online">0</b>&nbsp;online</span><div class="upd" id="upd"></div></div>
+   </div>
+   <div class="tiles">
+     <div class="tile"><div class="n" id="tvis">0</div><div class="l">Visitors today</div></div>
+     <div class="tile"><div class="n" id="tviews">0</div><div class="l">Views today</div></div>
+   </div>
+   <div class="card"><p class="hd">Last 14 days</p><div class="spark" id="spark"></div></div>
+   <div class="card"><p class="hd">The stretch</p><div class="two">
+     <div><div class="n" id="v7">0</div><div class="l">visitors, 7 days</div></div>
+     <div><div class="n" id="v30">0</div><div class="l">visitors, 30 days</div></div>
+   </div></div>
+   <div class="card"><p class="hd">Where they come from, 7 days</p><div id="channels"></div></div>
+   <div class="card"><p class="hd">What pulls them in, 7 days</p><div id="landings"></div></div>
+   <div class="card"><p class="hd">Most read, 7 days</p><div id="pages"></div></div>
+   <div class="card"><p class="hd">Where they are, 7 days</p><div id="places"></div></div>
+   <p class="foot">Updates itself. <button onclick="load()">Refresh now</button></p>
+ </div>
+</div>
+<script>
+var CH={direct:'Direct',internal:'Internal',google:'Google',bing:'Bing',x:'X',twitter:'X',rednote:'RedNote',xiaohongshu:'RedNote',
+ facebook:'Facebook',instagram:'Instagram',tips:'Tips pages',reddit:'Reddit',youtube:'YouTube',tiktok:'TikTok',linkedin:'LinkedIn',
+ chatgpt:'ChatGPT',perplexity:'Perplexity',claude:'Claude',wechat:'WeChat',yelp:'Yelp',tripadvisor:'Tripadvisor'};
+function num(x){return (x||0).toLocaleString();}
+function chName(s){return CH[s]||(s.charAt(0).toUpperCase()+s.slice(1));}
+function place(s){var p=(s||'').split('|');return p[2]||p[1]||p[0]||'Somewhere';}
+function pageName(p){return p==='/'?'Home':p;}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];});}
+function rows(el,items,kind){
+  el=document.getElementById(el);
+  if(!items||!items.length){el.innerHTML='<p class="empty">Nothing yet.</p>';return;}
+  var max=items[0].n||1;
+  el.innerHTML=items.map(function(it){
+    var nm=kind==='ch'?chName(it.name):kind==='pl'?place(it.name):pageName(it.name);
+    var w=Math.max(3,Math.round((it.n/max)*100));
+    return '<div class="rw"><span class="nm">'+esc(nm)+'</span><span class="bar"><i style="width:'+w+'%"></i></span><span class="v">'+num(it.n)+'</span></div>';
+  }).join('');
+}
+function render(d){
+  document.getElementById('login').hidden=true;document.getElementById('app').hidden=false;
+  document.getElementById('online').textContent=num(d.online);
+  document.getElementById('upd').textContent=d.updated||'';
+  document.getElementById('tvis').textContent=num(d.today.visitors);
+  document.getElementById('tviews').textContent=num(d.today.pageviews);
+  document.getElementById('v7').textContent=num(d.d7.visits);
+  document.getElementById('v30').textContent=num(d.d30.visits);
+  var mx=Math.max.apply(null,d.spark.concat([1]));
+  document.getElementById('spark').innerHTML=d.spark.map(function(v){
+    return '<div title="'+v+'" style="height:'+Math.max(2,Math.round((v/mx)*64))+'px"></div>';}).join('');
+  rows('channels',d.channels,'ch');rows('landings',d.landings,'pg');
+  rows('pages',d.pages,'pg');rows('places',d.places,'pl');
+}
+function showLogin(){document.getElementById('app').hidden=true;document.getElementById('login').hidden=false;}
+function load(){
+  fetch('/api/pulse',{headers:{'Accept':'application/json'}}).then(function(r){
+    if(r.status===401){showLogin();return null;}return r.json();
+  }).then(function(d){if(d&&d.ok)render(d);}).catch(function(){});
+}
+function doLogin(){
+  var u=document.getElementById('u').value.trim(),p=document.getElementById('p').value;
+  document.getElementById('lerr').textContent='';
+  fetch('/api/owner/login',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({username:u,password:p})}).then(function(r){return r.json();}).then(function(d){
+    if(d&&d.ok){load();}else{document.getElementById('lerr').textContent=(d&&d.error)||'Try again.';}
+  }).catch(function(){document.getElementById('lerr').textContent='Try again.';});
+}
+document.addEventListener('keydown',function(e){if(e.key==='Enter'&&!document.getElementById('login').hidden)doLogin();});
+load();setInterval(load,45000);
+</script></body></html>"""
+
+
+@app.route("/api/pulse")
+@owner_required
+def api_pulse():
+    data = _load_traffic()
+    days = data.get("days", {})
+    today = datetime.date.today()
+
+    def key(n):
+        return (today - datetime.timedelta(days=n)).isoformat()
+
+    def visitors(rec):
+        return rec.get("unique_visitors", len(rec.get("visitor_ids", [])))
+
+    def window(n):
+        pv = vs = 0
+        for i in range(n):
+            r = days.get(key(i))
+            if r:
+                pv += r.get("pageviews", 0)
+                vs += visitors(r)
+        return pv, vs
+
+    def agg(field, n=7, top=8):
+        m = {}
+        for i in range(n):
+            for k, v in ((days.get(key(i)) or {}).get(field) or {}).items():
+                m[k] = m.get(k, 0) + v
+        return [{"name": k, "n": v} for k, v in
+                sorted(m.items(), key=lambda kv: -kv[1])[:top]]
+
+    trec = days.get(key(0), {})
+    pv7, vs7 = window(7)
+    pv30, vs30 = window(30)
+    spark = [(days.get(key(13 - i)) or {}).get("pageviews", 0) for i in range(14)]
+    return jsonify({
+        "ok": True,
+        "online": _presence_count(),
+        "today": {"pageviews": trec.get("pageviews", 0), "visitors": visitors(trec)},
+        "d7": {"pageviews": pv7, "visits": vs7},
+        "d30": {"pageviews": pv30, "visits": vs30},
+        "channels": agg("sources", 7, 8),
+        "pages": agg("paths", 7, 8),
+        "landings": agg("landings", 7, 6),
+        "places": agg("places", 7, 6),
+        "spark": spark,
+        "updated": datetime.datetime.now().strftime("%b %-d, %-I:%M %p"),
+    })
+
+
+@app.route("/pulse.webmanifest")
+def pulse_manifest():
+    return jsonify({
+        "name": "Traffic Pulse", "short_name": "Pulse",
+        "start_url": "/pulse", "scope": "/pulse", "display": "standalone",
+        "background_color": "#faf8f4", "theme_color": "#1d4c4f",
+        "icons": [{"src": "/icon-32.png", "sizes": "32x32", "type": "image/png"},
+                  {"src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png"}],
+    })
+
+
+@app.route("/pulse")
+def pulse_page():
+    """The one screen. Owner-gated at the data layer: this shell loads for
+    anyone, but every number comes from /api/pulse, which is owner only, so a
+    stranger who guesses the address sees a sign-in box and nothing else."""
+    return Response(_PULSE_HTML, mimetype="text/html")
 
 
 # ======================================================================
