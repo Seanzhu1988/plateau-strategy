@@ -816,10 +816,12 @@
         <div class="actionbar flat" id="actionbar">
             <button class="act ride" onclick="doorRide()" title="Book a ride to your stop">🚗 I need a ride</button>
             <button class="act robotaxi" onclick="doorRobotaxi()" title="Self-driving pickup, under research">🤖 Robotaxi <span class="soon-badge">RESEARCH</span></button>
+            <!-- RETIRED for the moment (per Sean): the guide handoff, driver-guide hire, offer-route-for-sale and write-your-own CTAs. The doorGuide machinery is left intact; restore by removing this comment wrapper.
             <button class="act guide" onclick="doorGuide('prefer')" title="Hand it off, a local guide reaches out">🙋 Drop to a guide</button>
             <button class="act hire" onclick="doorGuide('hire')" title="One person drives and guides you">🚕 Hire a driver-guide</button>
             <a class="act-link" onclick="doorGuide('sale')">🏷️ Guide? Offer this route for sale →</a>
             <a class="act-link" href="/guide-studio">🎫 Or write your own in-depth trip and sell it →</a>
+            -->
         </div>
 
         <div class="layout">
@@ -840,8 +842,10 @@
                     <div id="trip"></div>
                     <div class="jarvis-actions" id="jarvisActions">
                         <button class="ja-ride" onclick="doorRide()">🚗 Get a ride</button>
+                        <!-- RETIRED for the moment (per Sean): drop-to-a-guide and driver-guide. Restore by removing this comment wrapper.
                         <button class="ja-guide" onclick="doorGuide('prefer')">🙋 Drop to a guide</button>
                         <button class="ja-hire" onclick="doorGuide('hire')">🚕 Driver-guide</button>
+                        -->
                     </div>
                     <div class="jarvis-sec" id="sugHead">✨ Jarvis suggests</div>
                     <div id="auto"><p class="muted">Calculating…</p></div>
