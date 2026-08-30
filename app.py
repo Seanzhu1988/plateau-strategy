@@ -4556,6 +4556,49 @@ def api_gallery_queue():
 #  keeps arriving, carrying the real reading. This is how the site goes out
 #  and finds the people who need it: by being the answer when they look. [SEAN]
 # ======================================================================
+# ---- the monetization layer: partner links, off until a real one is pasted ----
+# The guides pull people who are about to stand in front of a specific work, so
+# the one honest thing to offer is the ticket to that exact museum. Affiliate
+# links live in affiliates.json and are empty by default: nothing shows, no
+# placeholder and no broken link, until a real trackable link exists. Marked
+# rel=sponsored so a paid link never touches our own search ranking, and carried
+# with a plain disclosure because a partner link a reader cannot see is not one
+# we would want. [SEAN "get involved with the providers, met, moma ticketing"]
+_AFFIL_CACHE = {}
+
+
+def _affiliates():
+    """The affiliate config, cached a minute so editing the file needs no
+    restart and a page is not a disk read."""
+    now = time.time()
+    hit = _AFFIL_CACHE.get("v")
+    if hit and now - hit[0] < 60:
+        return hit[1]
+    try:
+        with open(os.path.join(BASE_DIR, "affiliates.json"), encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:
+        data = {}
+    _AFFIL_CACHE["v"] = (now, data)
+    return data
+
+
+def _ticket_offer(museum):
+    """A (label, url) ticket link for this museum, or None. Only ever returns a
+    link that is actually filled in, so the feature is invisible until it earns."""
+    t = (_affiliates().get("tickets") or {})
+    m = (museum or "").lower()
+    if ("modern art" in m or m == "moma") and t.get("moma"):
+        return ("Book tickets to MoMA", t["moma"])
+    if ("metropolitan" in m or "the met" in m) and t.get("met"):
+        return ("Book tickets to the Met", t["met"])
+    if "art institute" in m and t.get("art_institute_chicago"):
+        return ("Book tickets to the Art Institute", t["art_institute_chicago"])
+    if t.get("default"):
+        return ("Book a ticket", t["default"])
+    return None
+
+
 _GUIDE_CSS = (
     "body{font:17px/1.7 Georgia,serif;max-width:720px;margin:0 auto;"
     "padding:1.4rem 1.1rem 3rem;color:#14110c;background:#faf8f4}"
@@ -4570,6 +4613,10 @@ _GUIDE_CSS = (
     ".src{color:#6b655b;font-size:.85rem;margin:.2rem 0 1.2rem}"
     ".cta{display:inline-block;font-weight:700;border:1px solid #1d4c4f;border-radius:999px;"
     "padding:.55rem 1.1rem;color:#1d4c4f;text-decoration:none;margin:.4rem 0}"
+    ".buy{display:inline-block;font-weight:700;background:#1d4c4f;color:#fff;border-radius:999px;"
+    "padding:.62rem 1.2rem;text-decoration:none;margin:.2rem 0}"
+    ".disc{color:#6b655b;font-size:.78rem;margin:.5rem 0 0;max-width:62ch}"
+    ".offer{border-top:1px solid #e6e2da;margin:1.4rem 0 0;padding:1.1rem 0 0}"
     ".nav{margin:1.4rem 0 0;font-size:.92rem}ul.g{list-style:none;padding:0}"
     "ul.g li{border-top:1px solid #e6e2da;padding:.85rem 0}ul.g .m{color:#6b655b;font-size:.9rem;margin-top:.15rem}"
     "ul.g .none{color:#6b655b;border:0}h1.idx{margin-bottom:.2rem}.lead{color:#4a453d;margin:0 0 1.2rem}")
@@ -4685,6 +4732,18 @@ def gallery_guide_page(slug):
     hero = ('<img class="hero" src="%s" alt="%s" loading="lazy">'
             % (_html.escape(image), _html.escape(title))) if image else ""
 
+    # The one honest offer on this page: the ticket to the museum this work
+    # hangs in. Off entirely until a real partner link is set, so most of the
+    # time this is nothing at all.
+    offer = _ticket_offer(museum)
+    offer_html = ""
+    if offer:
+        disc = _html.escape((_affiliates().get("disclosure") or "").strip())
+        offer_html = ('<div class="offer"><a class="buy" href="%s" target="_blank" '
+                      'rel="sponsored noopener">%s &rarr;</a>%s</div>'
+                      % (_html.escape(offer[1]), _html.escape(offer[0]),
+                         ('<p class="disc">%s</p>' % disc) if disc else ""))
+
     return ("""<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>%s%s, a guide · Plateau Strategy</title>
@@ -4696,6 +4755,7 @@ def gallery_guide_page(slug):
 <p class="by">%s</p>
 %s%s%s
 <p class="src">A free guide from the Universal Gallery. Read it aloud in your own language on the tool.</p>
+%s
 <a class="cta" href="/universal-gallery?q=%s">Open it in the Universal Gallery &rarr;</a>
 <p class="nav"><a href="/gallery-guides">More gallery guides</a></p>
 %s</body></html>""" % (
@@ -4706,6 +4766,7 @@ def gallery_guide_page(slug):
         _html.escape(title),
         _html.escape((artist + ", ") if artist else "") + _html.escape(museum),
         tags, hero, reading_html,
+        offer_html,
         _html.escape(title), gen_script))
 
 

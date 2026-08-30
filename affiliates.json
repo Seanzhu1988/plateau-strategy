@@ -1,0 +1,18 @@
+{
+  "_about": "Affiliate links, the site's monetization layer. Empty means nothing shows: no placeholder, no broken link, nothing at all, until a real link is pasted here. Fill each with the trackable link from your affiliate dashboard (Travelpayouts, CJ, Awin, or the program direct). The site wraps these with an honest disclosure and marks them rel=sponsored so they never touch our own search ranking. Ship this file with the repo; it carries no secret, only your partner ids.",
+  "disclosure": "Some links here are partner links. If you buy through one we may earn a small commission, at no extra cost to you. We only point at the ticket for the thing you are already looking at.",
+  "tickets": {
+    "_about": "A trackable link to the ticket page for each museum, from a ticketing partner that carries it (Tiqets carries both the Met and MoMA). 'default' is a general tickets or experiences link for any other museum.",
+    "moma": "",
+    "met": "",
+    "art_institute_chicago": "",
+    "default": ""
+  },
+  "hotels": {
+    "_about": "A trackable hotel-booking link (Booking.com, Expedia, or the program you choose). 'default' is a general 'find a hotel' link; the city keys, when set, point at that city's hotels.",
+    "default": "",
+    "new_york": "",
+    "chicago": "",
+    "boston": ""
+  }
+}
