@@ -28,6 +28,7 @@ import subprocess
 import datetime
 
 import discovery as discovery_mod
+import gallery_log
 import urllib.parse
 import shutil
 import html
@@ -3131,6 +3132,85 @@ def api_room_leave():
     return jsonify({"ok": True})
 
 
+@app.route("/api/gallery/searches")
+@owner_required
+def api_gallery_searches():
+    """What travellers asked the gallery. Owner only.
+
+    Not because the questions are sensitive, they are artwork names, but
+    because this is business intelligence: it says which museum to build
+    next and which artwork to write up, and it belongs to whoever is doing
+    the building.
+    """
+    try:
+        return jsonify({"ok": True, **gallery_log.summary()})
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+
+@app.route("/searches")
+@owner_required
+def searches_page():
+    """The record, read as a page rather than as JSON."""
+    d = gallery_log.summary(top=60, recent=60)
+    import html as _h
+
+    def rows(items, count_key):
+        return "".join(
+            '<tr><td>%s</td><td class="n">%d</td><td class="n">%d</td>'
+            '<td class="n">%d</td></tr>'
+            % (_h.escape(e.get("q", "")), e.get(count_key, 0),
+               e.get("hits", 0), e.get("misses", 0))
+            for e in items) or '<tr><td colspan="4">Nothing recorded yet.</td></tr>'
+
+    recent = "".join(
+        '<li><b>%s</b> <span>%s result%s%s</span></li>'
+        % (_h.escape(r.get("q", "")), r.get("n", 0),
+           "" if r.get("n") == 1 else "s",
+           ", cached" if r.get("cached") else "")
+        for r in d.get("recent", [])) or "<li>Nothing yet.</li>"
+
+    return """<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>What travellers searched</title>
+<style>body{font:16px/1.6 -apple-system,system-ui,sans-serif;max-width:860px;
+margin:2rem auto;padding:0 1.1rem;color:#14110c}
+h1{font-size:1.5rem;margin:0 0 .2rem}h2{font-size:1.05rem;margin:2rem 0 .5rem}
+p.sub{color:#6b655b;margin:0 0 1.4rem}
+.tiles{display:flex;gap:.8rem;flex-wrap:wrap;margin:0 0 1.6rem}
+.tile{border:1px solid #e6e6ea;border-radius:10px;padding:.7rem 1rem;min-width:130px}
+.tile b{display:block;font-size:1.5rem;color:#1f3a5f}
+.tile span{font-size:.78rem;color:#6b655b}
+table{width:100%%;border-collapse:collapse;font-size:.94rem}
+th,td{text-align:left;padding:.45rem .5rem;border-bottom:1px solid #eceae4}
+th{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#6b655b}
+td.n{text-align:right;font-variant-numeric:tabular-nums;width:5.5rem}
+ul{padding-left:1.1rem}li span{color:#6b655b;font-size:.85rem}
+.want{background:#fdf8ec}</style></head><body>
+<h1>What travellers searched</h1>
+<p class="sub">Every question asked of the Universal Gallery, kept. The words
+are kept; who typed them is not.</p>
+<div class="tiles">
+  <div class="tile"><b>%d</b><span>searches</span></div>
+  <div class="tile"><b>%d</b><span>different questions</span></div>
+  <div class="tile"><b>%d</b><span>answered</span></div>
+  <div class="tile"><b>%d</b><span>came back empty</span></div>
+</div>
+<h2>Asked for and not found</h2>
+<p class="sub">The most valuable list here. Each line is a museum or an
+artwork somebody wanted and we could not give them.</p>
+<table class="want"><tr><th>Question</th><th>Times</th><th>Found</th><th>Empty</th></tr>%s</table>
+<h2>Asked most</h2>
+<table><tr><th>Question</th><th>Times</th><th>Found</th><th>Empty</th></tr>%s</table>
+<h2>Lately</h2>
+<ul>%s</ul>
+</body></html>""" % (d.get("searches_total", 0), d.get("distinct", 0),
+                     d.get("answered", 0), d.get("unanswered", 0),
+                     rows(d.get("wanted", []), "count"),
+                     rows(d.get("top", []), "count"), recent)
+
+
 @app.route("/room")
 def room_page():
     """Locked: the lock screen. Open: the work."""
@@ -4437,6 +4517,15 @@ def api_gallery_search():
                                                  r.get("museum_lat"), r.get("museum_lon"))
         except Exception:
             pass
+        # The question itself is kept, cached or not: a repeat search is the
+        # clearest measure of demand, and it used to leave no trace at all.
+        try:
+            _rows = hit[1].get("results") or []
+            gallery_log.record(q, len(_rows),
+                               [r.get("source") for r in _rows if r.get("source")],
+                               cached=True)
+        except Exception:
+            pass
         return jsonify({"ok": True, "cached": True, **hit[1]})
     results = []
     for fn in (_gal_met, _gal_aic, _gal_moma, _gal_wikidata):
@@ -4540,6 +4629,12 @@ def api_gallery_search():
     _GAL_CACHE[ck] = (time.time(), payload)
     if len(_GAL_CACHE) > 300:
         _GAL_CACHE.clear()
+    try:
+        gallery_log.record(q, len(results),
+                           [r.get("source") for r in results if r.get("source")],
+                           cached=False)
+    except Exception:
+        pass                      # a search must never fail because of its log
     return jsonify({"ok": True, "cached": False, **payload})
 
 

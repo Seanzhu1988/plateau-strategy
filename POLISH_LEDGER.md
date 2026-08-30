@@ -50,6 +50,15 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
 
 ## Also on the list
 
+- [ ] The gallery's "not found" signal is weak, and now we can see it. A
+      deliberately nonsense query, "a painting that does not exist anywhere",
+      came back with sixteen results, because Wikidata answers almost anything
+      loosely. So record_gallery_miss almost never fires and the "asked for and
+      not found" list stays empty while real demand hides inside the hits. Fix:
+      judge a search answered only when the top result is a strong match
+      (exact item number, or a title that actually contains the query), and
+      record the rest as unanswered.
+
 - [ ] The 3D models' own labels (Manhattan tower, the promenade, 86th floor)
       are drawn inside the SVG by nyc-3d.js, so build_i18n never sees them and
       they stay English on a translated page. Adding them to i18n_extra.py is
