@@ -12387,7 +12387,7 @@ h1{font-size:1.5rem;color:var(--ink);margin:0;letter-spacing:-.01em}
  </div>
 </div>
 <script>
-var CH={direct:'Direct',internal:'Internal',google:'Google',bing:'Bing',x:'X',twitter:'X',rednote:'RedNote',xiaohongshu:'RedNote',
+var CH={direct:'Direct',internal:'Internal',google:'Google',bing:'Bing',x:'X',twitter:'X',qr:'QR code',rednote:'RedNote',xiaohongshu:'RedNote',
  facebook:'Facebook',instagram:'Instagram',tips:'Tips pages',reddit:'Reddit',youtube:'YouTube',tiktok:'TikTok',linkedin:'LinkedIn',
  chatgpt:'ChatGPT',perplexity:'Perplexity',claude:'Claude',wechat:'WeChat',yelp:'Yelp',tripadvisor:'Tripadvisor'};
 function num(x){return (x||0).toLocaleString();}
