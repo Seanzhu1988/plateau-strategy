@@ -2658,14 +2658,24 @@ def partners_page():
 # exists. Publishing an accurate description of what already happens lowers
 # risk on the day it goes up.
 #
-# It will not serve without PRIVACY_CONTACT. A policy that grants people the
+# It will not serve without a contact address. A policy that grants people the
 # right to ask for their data, and gives them no working address to ask at, is
-# worse than none, it documents an obligation and then fails it. The domain
-# has no MX records today, so hello@plateaustrategy.io bounces, and the owner's
-# personal address is not going up without his say-so. One environment variable
-# publishes it.
+# worse than none, it documents an obligation and then fails it.
+#
+# That reasoning was right and its conclusion has expired. Withholding the
+# policy was meant to be the cautious choice, but the site collects names,
+# emails, phones, addresses and birthdays, two pages LINK to /privacy, and
+# those links returned 404. California's Online Privacy Protection Act asks a
+# commercial site collecting personal information to post a policy
+# conspicuously; a 404 is the one thing that is worse than a plain address.
+#
+# So the default is now the business address ALREADY PUBLISHED on the landing
+# page. That is not a new disclosure, it is the same address a visitor can
+# read today, and it is a Gmail, so it receives mail whatever the domain's
+# forwarding is doing this month. PRIVACY_CONTACT still overrides it, and
+# setting it to an empty string deliberately unpublishes the policy again.
 # ---------------------------------------------------------------------------
-PRIVACY_CONTACT = os.environ.get("PRIVACY_CONTACT", "").strip()
+PRIVACY_CONTACT = os.environ.get("PRIVACY_CONTACT", "plateaustrategy@gmail.com").strip()
 
 
 @app.route("/privacy")

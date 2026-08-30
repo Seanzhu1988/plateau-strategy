@@ -938,6 +938,7 @@ EXTRA.update({
     "Partners": ["合作伙伴", "Socios", "파트너", "Đối tác"],
     "Company": ["公司", "Empresa", "회사", "Công ty"],
     "Security": ["安全", "Seguridad", "보안", "Bảo mật"],
+    "Privacy": ["隐私", "Privacidad", "개인정보", "Quyền riêng tư"],
     "Building integrated wealth through connected ecosystems.": ["以彼此相连的生态，构筑一体化的财富。", "Construyendo riqueza integrada a través de ecosistemas conectados.", "연결된 생태계를 통해 통합된 부를 만듭니다.", "Xây dựng của cải tích hợp qua các hệ sinh thái kết nối."],
     "Name or initials (optional)": ["姓名或缩写（选填）", "Nombre o iniciales (opcional)", "이름 또는 이니셜 (선택)", "Tên hoặc chữ viết tắt (tùy chọn)"],
     "Amount you gave ($)": ["您捐了多少（美元）", "Cantidad que donaste ($)", "기부하신 금액 ($)", "Số tiền bạn đã tặng ($)"],
