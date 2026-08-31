@@ -202,16 +202,11 @@
     .iso-plane + .iso-plane { margin-top: -34%; }
     .iso-stage { perspective: 1100px; }
   }
-  .room-look{display:flex;gap:.85rem;align-items:center;margin:.55rem 0 0;padding:.6rem .7rem;
-             border:1px solid #ded7c6;border-radius:9px;background:#faf8f3;
-             text-decoration:none;color:inherit}
-  .room-look:hover{background:#f4f0e6;border-color:#c9c0ad}
-  .room-look img{border-radius:6px;object-fit:cover;flex:0 0 auto;background:#e9e3d5}
-  .rl-text{display:flex;flex-direction:column;gap:.12rem;min-width:0}
-  .rl-text b{font-size:.95rem}
-  .rl-go{font-size:.83rem;color:#1f3a5f}
-  .rl-text small{font-size:.72rem;color:#6b6459;line-height:1.35}
-  @media (max-width:520px){ .room-look img{width:96px;height:64px} }
+  /* The picture in the guide was already a link and nothing said so. This is
+     the line that tells you, sitting under the caption where the eye lands. */
+  .la-3d{display:block;font-size:.74rem;color:#1f3a5f;margin-top:.1rem}
+  .la-3d.la-plain{color:#6b6459}
+  .leg-art a:hover .la-3d{text-decoration:underline}
 </style>
 </head>
 <body data-arm="company">
@@ -257,18 +252,6 @@
       <button id="roomBarAdd" type="button"></button>
       <button id="roomBarHear" type="button">▶ Hear this room</button>
     </div>
-    <!-- The Met's own photograph of what stands in this room, linking to their
-         page, which is where their 3D scan lives. One 89 KB image and an
-         outbound link, instead of a 913 KB viewer and a research-grade model
-         downloaded onto a phone standing in the gallery. -->
-    <a class="room-look" id="roomLook" hidden target="_blank" rel="noopener">
-      <img id="roomLookImg" alt="" loading="lazy" width="132" height="88">
-      <span class="rl-text">
-        <b id="roomLookTitle"></b>
-        <span class="rl-go">See it in 3D on the Met's own site ↗</span>
-        <small id="roomLookCredit"></small>
-      </span>
-    </a>
     <div class="sheet-body">
       <div id="svgHost"></div>
       <aside id="metGuide" class="mg"></aside>

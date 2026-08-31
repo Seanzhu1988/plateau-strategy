@@ -1,45 +1,98 @@
 {
-  "_note": "Stories for the landmarks page, one entry per landmark, written by the plateau-story-writer routine. Each language is stored on the entry, so the page picks the field for the reader's language and there is NO dictionary lookup to miss. The research block is verified fact with sources, gathered 2026-08-30, so the writer spends its run writing rather than re-finding. FACTUAL ONLY: never invent a person, quote or experience.",
-  "landmarks": [
-    {
-      "id": "brooklyn-bridge",
-      "name": "The Brooklyn Bridge",
-      "style": "gothic-revival",
-      "story_en": "",
-      "story_zh": "",
-      "story_es": "",
-      "story_ko": "",
-      "story_vi": "",
-      "research": [
-        "John Augustus Roebling designed it and never saw a stone laid. Surveying the site in late June 1869 an arriving ferry crushed his foot against the pilings; he contracted tetanus and died about a month later.",
-        "His son Washington took over, worked in the caissons alongside the men, and was disabled by caisson disease (decompression sickness). For years he was so sensitive to light and noise that he barely left home, and he watched the work from a window.",
-        "Emily Warren Roebling learned the engineering and ran it. She visited the site, carried his instructions, attended the board meetings, and managed the project for years. Washington remained chief engineer on paper. At the 1883 opening Emily rode across with President Chester Arthur.",
-        "The wire fraud: contractor J. Lloyd Haigh substituted rejected wire for approved wire after inspection, swapping it overnight. Roebling had insisted on testing every ring rather than every tenth, and the swap was caught by secretly marking the good wire. Haigh was convicted and jailed in 1880.",
-        "About 221 tons of rejected wire was already spun into the cables and could not be removed, so 150 extra wires were added to each cable as a safety margin. That defective wire is still in the bridge, and so is the margin.",
-        "Opened 24 May 1883. Six days later, on 30 May, a woman tripped on the steps, someone screamed, the crowd surged, and 12 people were killed in the panic.",
-        "On 17 May 1884 P. T. Barnum walked 21 elephants across, including Jumbo, with camels and dromedaries. The public read it as proof the bridge would hold.",
-        "Sources: nyhistory.org, history.com, Wikipedia (Washington Roebling, Emily Warren Roebling), structuremag.org, snopes.com, erenow.org (McCullough, The Great Bridge)."
-      ]
+ "_note": "Stories for the landmarks page, written by the plateau-story-writer routine. THREE LENGTHS per landmark so the visitor picks the depth: short is 30 seconds standing in a doorway, mid is 2 minutes in front of the thing, long is 5 minutes for the whole story. Each length carries every language on itself, so the page picks a field and there is no dictionary lookup to miss. Lengths are checked by script_lengths.py against a pace MEASURED from our own recordings, 155 words a minute in English and 228 CHARACTERS a minute in Chinese, because Chinese has no spaces and counting its words gives nonsense. The research block is verified fact with sources. FACTUAL ONLY: never invent a person, quote or experience.",
+ "landmarks": [
+  {
+   "id": "brooklyn-bridge",
+   "name": "The Brooklyn Bridge",
+   "style": "gothic-revival",
+   "research": [
+    "John Augustus Roebling designed it and never saw a stone laid. Surveying the site in late June 1869 an arriving ferry crushed his foot against the pilings; he contracted tetanus and died about a month later.",
+    "His son Washington took over, worked in the caissons alongside the men, and was disabled by caisson disease (decompression sickness). For years he was so sensitive to light and noise that he barely left home, and he watched the work from a window.",
+    "Emily Warren Roebling learned the engineering and ran it. She visited the site, carried his instructions, attended the board meetings, and managed the project for years. Washington remained chief engineer on paper. At the 1883 opening Emily rode across with President Chester Arthur.",
+    "The wire fraud: contractor J. Lloyd Haigh substituted rejected wire for approved wire after inspection, swapping it overnight. Roebling had insisted on testing every ring rather than every tenth, and the swap was caught by secretly marking the good wire. Haigh was convicted and jailed in 1880.",
+    "About 221 tons of rejected wire was already spun into the cables and could not be removed, so 150 extra wires were added to each cable as a safety margin. That defective wire is still in the bridge, and so is the margin.",
+    "Opened 24 May 1883. Six days later, on 30 May, a woman tripped on the steps, someone screamed, the crowd surged, and 12 people were killed in the panic.",
+    "On 17 May 1884 P. T. Barnum walked 21 elephants across, including Jumbo, with camels and dromedaries. The public read it as proof the bridge would hold.",
+    "Sources: nyhistory.org, history.com, Wikipedia (Washington Roebling, Emily Warren Roebling), structuremag.org, snopes.com, erenow.org (McCullough, The Great Bridge)."
+   ],
+   "stories": {
+    "short": {
+     "en": "",
+     "zh": "",
+     "es": "",
+     "ko": "",
+     "vi": ""
     },
-    {
-      "id": "empire-state",
-      "name": "The Empire State Building",
-      "style": "art-deco",
-      "story_en": "",
-      "story_zh": "",
-      "story_es": "",
-      "story_ko": "",
-      "story_vi": "",
-      "research": [
-        "It was built to win a race. John Jakob Raskob and Walter Chrysler were both going for the world's tallest. The Chrysler Building took the record in October 1929 at 1,046 ft, using a spire assembled in secret inside the building.",
-        "Raskob's answer was height that could be justified: a mooring mast for airships. It never worked as one. Updrafts around the tower made mooring impractical, and the mast became a broadcast antenna instead.",
-        "Speed: foundation work began 17 March 1930 and the building was completed 11 April 1931, about 410 days. As many as 3,400 men worked on it in a day, and the steel frame rose about four and a half storeys a week.",
-        "It opened 1 May 1931, into the Great Depression, and most of the office space sat empty. It was nicknamed the Empty State Building. Observatory admissions helped carry it in the early years.",
-        "On 28 July 1945 a US Army B-25 bomber flying in thick fog struck the north side between the 78th and 80th floors. Fourteen people were killed, three crew and eleven in the building, and about 24 were injured. The structure itself was not compromised.",
-        "In that same crash, elevator attendant Betty Lou Oliver, aged 20, fell roughly 75 storeys when the damaged cables of the elevator she had been placed in gave way. She survived, with a broken neck, back and pelvis. It remains the longest survived fall in an elevator, recognised by Guinness World Records.",
-        "The setbacks in the silhouette are law rather than taste: New York's 1916 zoning resolution required towers to step back as they rose so daylight could reach the street.",
-        "Sources: Britannica, Wikipedia (Empire State Building; 1945 Empire State Building B-25 crash), enr.com, foxnews.com, guinnessworldrecords.com."
-      ]
+    "mid": {
+     "en": "Three Roeblings built this bridge and only one of them walked across it whole.\n\nJohn Augustus Roebling designed it and never saw a stone laid. Surveying the site in June 1869, an arriving ferry crushed his foot against the pilings, and he died of tetanus about a month later. His son Washington took over, went down into the caissons with the men, and came up with decompression sickness. For years light and noise were more than he could stand, so he watched the work from a window while his wife, Emily Warren Roebling, learned the engineering and ran the job. She carried his instructions to the site, sat in the board meetings, and managed the project for years while Washington stayed chief engineer on paper. When the bridge opened on 24 May 1883, Emily rode across first, with President Chester Arthur.\n\nThe part most people walk over without knowing: a contractor named J. Lloyd Haigh sold the project rejected wire and swapped it in overnight, after inspection. Roebling had insisted every ring be tested rather than every tenth, and the swap was caught by secretly marking the approved wire. Haigh was convicted and jailed in 1880. About 221 tons of the bad wire was already spun into the cables and could not be pulled back out, so 150 extra wires were added to each cable to cover it. The defective wire is still up there. So is the margin.\n\nTrust came slowly. Six days after the opening a woman tripped on the steps, someone screamed, the crowd surged, and 12 people were killed. Less than a year later P. T. Barnum walked 21 elephants across, Jumbo among them, and the city decided the bridge would hold.\n\nWalk it from the Brooklyn side so the skyline stays in front of you, and go early. By midday the promenade is shoulder to shoulder.",
+     "zh": "这座桥由三位罗布林建成，而完整走过它的只有一位。\n\n约翰·奥古斯都·罗布林设计了它，却没能看到第一块石头落位。1869年6月他在现场勘测时，一艘靠岸的渡轮把他的脚挤在木桩上，一个月后他死于破伤风。儿子华盛顿接手，和工人一起下到水下沉箱，上来时患了减压病。有几年他连光线和声响都受不了，只能从家里的窗口盯着工地，而他的妻子艾米莉·沃伦·罗布林自学工程，把这项工程扛了下来。她把丈夫的指令带到现场，出席董事会，实际主持了多年，华盛顿的总工程师头衔只留在纸面上。1883年5月24日通车那天，第一个走过桥面的是艾米莉，同行的是切斯特·阿瑟总统。\n\n多数人走过却不知道的一段：承包商 J. 劳埃德·海格把验收不合格的钢丝卖给了工程，趁夜里在验过之后掉包。罗布林坚持每一圈都要检验，而不是每十圈抽一圈，最后靠在合格钢丝上暗做记号抓到了他。海格1880年被定罪入狱。但已经有约221吨劣质钢丝绞进了主缆，抽不出来，于是每根主缆又加了150根钢丝补足余量。那些劣质钢丝今天还在上面，那份余量也还在。\n\n信任来得很慢。通车六天后，一位女士在台阶上绊倒，有人尖叫，人群拥挤，12人丧生。不到一年后，P. T. 巴纳姆牵着21头大象走过大桥，其中包括名象 Jumbo，这座城市才认定桥是稳的。\n\n建议从布鲁克林一侧往曼哈顿走，天际线会一直在你正前方；而且要趁早，过了中午步道上就摩肩接踵了。",
+     "es": "Tres Roeblings construyeron este puente y solo uno lo cruzó entero.\n\nJohn Augustus Roebling lo diseñó y nunca vio colocar una sola piedra. Mientras inspeccionaba el emplazamiento en junio de 1869, un ferry que atracaba le aplastó el pie contra los pilotes, y murió de tétanos un mes después. Su hijo Washington tomó el relevo, bajó a los cajones neumáticos con los obreros y salió de allí con enfermedad por descompresión. Durante años no soportaba la luz ni el ruido, así que siguió la obra desde una ventana mientras su esposa, Emily Warren Roebling, aprendía ingeniería y dirigía el trabajo. Llevaba las instrucciones a la obra, asistía a las reuniones del consejo y gestionó el proyecto durante años, mientras Washington seguía siendo ingeniero jefe solo sobre el papel. El día de la inauguración, el 24 de mayo de 1883, Emily cruzó la primera, junto al presidente Chester Arthur.\n\nLo que casi nadie sabe al cruzarlo: un contratista, J. Lloyd Haigh, vendió a la obra cable rechazado y lo cambiaba de noche, después de la inspección. Roebling había exigido probar cada aro y no uno de cada diez, y lo pillaron marcando en secreto el cable aprobado. Haigh fue condenado y encarcelado en 1880. Unas 221 toneladas de cable defectuoso ya estaban trenzadas en los cables principales y no se podían sacar, así que se añadieron 150 alambres más a cada cable como margen. El cable defectuoso sigue ahí arriba. El margen también.\n\nLa confianza llegó despacio. Seis días después de la apertura una mujer tropezó en las escaleras, alguien gritó, la multitud se abalanzó y murieron 12 personas. Menos de un año más tarde P. T. Barnum cruzó con 21 elefantes, Jumbo entre ellos, y la ciudad decidió que el puente aguantaba.\n\nCamínelo desde el lado de Brooklyn para tener el perfil de Manhattan siempre de frente, y hágalo temprano. A mediodía el paseo va hombro con hombro.",
+     "ko": "이 다리는 로블링 세 사람이 지었지만, 온전한 몸으로 건넌 사람은 한 명뿐이다.\n\n존 오거스터스 로블링이 설계했으나 돌 하나 놓이는 것도 보지 못했다. 1869년 6월 현장을 측량하던 중 접안하던 페리에 발이 말뚝 사이로 짓눌렸고, 한 달쯤 뒤 파상풍으로 세상을 떠났다. 아들 워싱턴이 뒤를 이어 인부들과 함께 수중 케이슨으로 내려갔다가 잠수병을 얻었다. 몇 년 동안 빛과 소음조차 견디지 못해 집 창가에서 공사를 지켜봤고, 그동안 아내 에밀리 워런 로블링이 공학을 익혀 현장을 이끌었다. 남편의 지시를 현장에 전달하고 이사회에 참석하며 수년간 사업을 실질적으로 관리했다. 워싱턴의 수석 엔지니어 직함은 서류에만 남아 있었다. 1883년 5월 24일 개통일에 가장 먼저 다리를 건넌 사람은 에밀리였고, 체스터 아서 대통령이 함께했다.\n\n대부분은 모르고 지나가는 이야기가 있다. 하청업자 J. 로이드 헤이그가 검사에서 탈락한 강선을 납품하고, 검사가 끝난 밤에 몰래 바꿔치기했다. 로블링은 열 개 중 하나가 아니라 모든 코일을 검사하라고 고집했고, 합격 강선에 몰래 표시를 해 두어 바꿔치기를 잡아냈다. 헤이그는 1880년 유죄 판결을 받고 수감됐다. 그러나 이미 약 221톤의 불량 강선이 주케이블에 꼬여 들어가 빼낼 수 없었기에, 케이블마다 강선 150가닥을 더 넣어 여유를 확보했다. 불량 강선은 지금도 저 위에 있다. 그 여유분도 그대로다.\n\n신뢰는 천천히 왔다. 개통 엿새 뒤 한 여성이 계단에서 넘어졌고, 누군가 비명을 질렀고, 인파가 밀리며 12명이 목숨을 잃었다. 채 1년도 지나지 않아 P. T. 바넘이 점보를 포함한 코끼리 21마리를 몰고 다리를 건넜고, 그제야 도시는 다리가 버틴다고 믿었다.\n\n브루클린 쪽에서 맨해튼 방향으로 걸으면 스카이라인이 계속 정면에 놓인다. 그리고 이른 시간에 가시라. 정오만 지나도 산책로는 어깨가 부딪힐 만큼 붐빈다.",
+     "vi": "Ba người họ Roebling đã dựng nên cây cầu này, và chỉ một người đi hết được nó khi còn lành lặn.\n\nJohn Augustus Roebling là người thiết kế, nhưng chưa từng thấy một viên đá nào được đặt xuống. Tháng 6 năm 1869, khi đang khảo sát công trường, một chiếc phà cập bến nghiến nát bàn chân ông vào hàng cọc, và khoảng một tháng sau ông qua đời vì uốn ván. Con trai ông, Washington, tiếp quản, xuống tận thùng chìm dưới lòng sông cùng thợ, rồi mắc bệnh giảm áp. Nhiều năm liền ông không chịu nổi ánh sáng và tiếng ồn, chỉ theo dõi công trường qua khung cửa sổ, trong khi vợ ông, Emily Warren Roebling, tự học kỹ thuật và đứng ra điều hành. Bà mang chỉ dẫn của chồng ra công trường, dự các phiên họp hội đồng và quản lý dự án suốt nhiều năm, còn chức kỹ sư trưởng của Washington chỉ còn trên giấy tờ. Ngày khánh thành 24 tháng 5 năm 1883, Emily là người đi qua cầu đầu tiên, cùng Tổng thống Chester Arthur.\n\nCó một chuyện hầu như ai đi qua cũng không biết: nhà thầu J. Lloyd Haigh bán cho công trình loại dây thép đã bị loại, rồi tráo hàng trong đêm sau khi nghiệm thu. Roebling yêu cầu kiểm tra từng cuộn chứ không phải cứ mười cuộn lấy một, và vụ tráo hàng bị phát hiện nhờ đánh dấu ngầm lên số dây đạt chuẩn. Haigh bị kết án và ngồi tù năm 1880. Nhưng khoảng 221 tấn dây kém chất lượng đã được bện vào cáp chính và không thể rút ra, nên mỗi sợi cáp được thêm 150 sợi dây nữa để bù phần dự phòng. Số dây hỏng đó vẫn còn trên kia. Phần dự phòng cũng vậy.\n\nNiềm tin đến rất chậm. Sáu ngày sau lễ khánh thành, một phụ nữ vấp ngã trên bậc thang, có người hét lên, đám đông xô đẩy và 12 người thiệt mạng. Chưa đầy một năm sau, P. T. Barnum dắt 21 con voi đi qua cầu, trong đó có Jumbo, và cả thành phố mới tin rằng cây cầu đứng vững.\n\nHãy đi từ phía Brooklyn về hướng Manhattan để đường chân trời luôn ở ngay trước mặt, và đi sớm. Quá trưa là lối đi bộ đã chen vai nhau."
+    },
+    "long": {
+     "en": "",
+     "zh": "",
+     "es": "",
+     "ko": "",
+     "vi": ""
     }
-  ]
+   }
+  },
+  {
+   "id": "empire-state",
+   "name": "The Empire State Building",
+   "style": "art-deco",
+   "research": [
+    "It was built to win a race. John Jakob Raskob and Walter Chrysler were both going for the world's tallest. The Chrysler Building took the record in October 1929 at 1,046 ft, using a spire assembled in secret inside the building.",
+    "Raskob's answer was height that could be justified: a mooring mast for airships. It never worked as one. Updrafts around the tower made mooring impractical, and the mast became a broadcast antenna instead.",
+    "Speed: foundation work began 17 March 1930 and the building was completed 11 April 1931, about 410 days. As many as 3,400 men worked on it in a day, and the steel frame rose about four and a half storeys a week.",
+    "It opened 1 May 1931, into the Great Depression, and most of the office space sat empty. It was nicknamed the Empty State Building. Observatory admissions helped carry it in the early years.",
+    "On 28 July 1945 a US Army B-25 bomber flying in thick fog struck the north side between the 78th and 80th floors. Fourteen people were killed, three crew and eleven in the building, and about 24 were injured. The structure itself was not compromised.",
+    "In that same crash, elevator attendant Betty Lou Oliver, aged 20, fell roughly 75 storeys when the damaged cables of the elevator she had been placed in gave way. She survived, with a broken neck, back and pelvis. It remains the longest survived fall in an elevator, recognised by Guinness World Records.",
+    "The setbacks in the silhouette are law rather than taste: New York's 1916 zoning resolution required towers to step back as they rose so daylight could reach the street.",
+    "Sources: Britannica, Wikipedia (Empire State Building; 1945 Empire State Building B-25 crash), enr.com, foxnews.com, guinnessworldrecords.com."
+   ],
+   "stories": {
+    "short": {
+     "en": "",
+     "zh": "",
+     "es": "",
+     "ko": "",
+     "vi": ""
+    },
+    "mid": {
+     "en": "",
+     "zh": "",
+     "es": "",
+     "ko": "",
+     "vi": ""
+    },
+    "long": {
+     "en": "",
+     "zh": "",
+     "es": "",
+     "ko": "",
+     "vi": ""
+    }
+   }
+  }
+ ],
+ "lengths": {
+  "short": {
+   "seconds": 30,
+   "words_en": 78,
+   "chars_zh": 114
+  },
+  "mid": {
+   "seconds": 120,
+   "words_en": 310,
+   "chars_zh": 456
+  },
+  "long": {
+   "seconds": 300,
+   "words_en": 775,
+   "chars_zh": 1140
+  }
+ }
 }

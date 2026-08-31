@@ -81,10 +81,27 @@
     if (!arts.length) return '';
     return '<div class="leg-art">' + arts.map(function (a) {
       var cap = a.artist ? a.artist.split(',')[0] : a.title;
+      /* The picture was already a link to the Met's page and nothing said so,
+         so nobody clicked it. [SEAN, pointing at it: "i want it to be placed at
+         uploading picture" and "its not showing anything".]
+
+         Where the Met publishes a 3D scan of the object, say so ON the
+         picture, because that is where the eye already is. The label mirrors
+         the Met's own button, which reads "View in 3D", rather than inventing
+         wording for someone else's feature.
+
+         threeD is set PER OBJECT and verified, never assumed: the Met has 3D
+         for some works and not others, and promising a scan that is not there
+         is worse than staying quiet. Dendur was confirmed by loading their
+         page and finding both the 3D control and Dendur_Crop.glb. An object
+         without the flag renders exactly as before. */
+      var three = a.threeD
+        ? '<span class="la-3d">View in 3D ↗</span>'
+        : '<span class="la-3d la-plain">On the Met\'s site ↗</span>';
       return '<a href="' + a.href + '" target="_blank" rel="noopener">' +
         '<img src="' + a.img + '" alt="' + (a.title || a.work).replace(/"/g, '&quot;') +
         '" loading="lazy">' +
-        '<span class="la-t">' + cap + '</span></a>';
+        '<span class="la-t">' + cap + '</span>' + three + '</a>';
     }).join('') + '</div>';
   }
   var walkedMinutes = {};   /* corridor key -> measured minutes, when surveyed */
@@ -416,87 +433,9 @@
   }
   function roomBarHide() {
     if (roomBar) roomBar.hidden = true;
-    var look = document.getElementById('roomLook');
-    if (look) look.hidden = true;
     document.getElementById('sheetNo').textContent = 'MET-3D · Both floors';
   }
 
-  /* The Met's own photograph of the thing in this room, linking to their page,
-     which is where their 3D scan lives. [SEAN: "how about we use their link and
-     hitting that picture lead to 3D".] It is the cheaper idea and the better
-     one: 89 KB and an outbound link, against a 913 KB viewer plus a
-     research-grade model for someone standing in the gallery on museum wifi.
-     Our endpoint serves cached values, so no visitor ever calls the Met.
-     A room with no object listed simply shows nothing. */
-  var _lookCache = {};
-  function roomLookSync(k) {
-    var look = document.getElementById('roomLook');
-    if (!look) return;
-    look.hidden = true;
-    function paint(o) {
-      if (!o || document.getElementById('roomLook').dataset.room !== k) return;
-      document.getElementById('roomLookImg').src = o.image;
-      document.getElementById('roomLookImg').alt = o.title || '';
-      document.getElementById('roomLookTitle').textContent =
-        o.title + (o.date ? ', ' + o.date : '');
-      document.getElementById('roomLookCredit').textContent =
-        (o.credit || '') + ' Image: The Metropolitan Museum of Art, Open Access.';
-      look.href = o.link;
-      look.hidden = false;
-    }
-    look.dataset.room = k;
-    if (_lookCache[k] !== undefined) { paint(_lookCache[k]); return; }
-    fetch('/api/met-object?room=' + encodeURIComponent(k))
-      .then(function (r) { return r.json(); })
-      .then(function (d) { _lookCache[k] = d && d.object; paint(_lookCache[k]); })
-      .catch(function () { _lookCache[k] = null; });
-  }
-  document.getElementById('svgHost').addEventListener('met3d:room', function (e) {
-    if (!roomBar) return;
-    var k = e.detail.room;
-    if (e.detail.focused) {
-      roomBar.hidden = false;
-      roomBar.dataset.room = k;
-      roomBarSync(k);
-      roomLookSync(k);
-      var c = (window.MET_CARDS || {})[k] || {};
-      document.getElementById('sheetNo').textContent = 'MET-3D · ' + (c.name || k);
-      if (window.MetGuide && !MetGuide.isPlaying()) MetGuide.preview(k);
-    } else {
-      roomBarHide();
-    }
-  });
-  if (roomBar) {
-    document.getElementById('roomBarBack').addEventListener('click', function () {
-      window.Met3D.clearFocus(document.getElementById('svgHost'), _opts3d);
-      roomBarHide();
-    });
-    document.getElementById('roomBarAdd').addEventListener('click', function () {
-      var k = roomBar.dataset.room;
-      if (!k) return;
-      var i = picked.indexOf(k);
-      if (i >= 0) picked.splice(i, 1); else picked.push(k);
-      draw();
-      syncUrl();
-      roomBarSync(k);
-    });
-    document.getElementById('roomBarHear').addEventListener('click', function () {
-      if (window.MetGuide && roomBar.dataset.room) MetGuide.playRoom(roomBar.dataset.room);
-    });
-  }
-  document.getElementById('tabF1').addEventListener('click', function () { mode = 'flat'; floor = 1; if (roomBar) roomBar.hidden = true; remember(); draw(); });
-  document.getElementById('tabF2').addEventListener('click', function () { mode = 'flat'; floor = 2; if (roomBar) roomBar.hidden = true; remember(); draw(); });
-  /* Going in: from the photograph outside to the model inside. */
-  function enterBuilding() {
-    var host = document.getElementById('svgHost');
-    var walkedFlags = {};
-    Object.keys(walkedMinutes).forEach(function (k) { walkedFlags[k] = true; });
-    host.innerHTML = '';
-    window.Met3D.attach(host, { route: fullRoute(), walked: walkedFlags, current: null });
-    window.Met3D.openInterior(host, { route: fullRoute(), walked: walkedFlags, current: null });
-    var o = document.getElementById('btnOutside');
-    if (o) o.hidden = false;
-  }
 
   document.getElementById('tab3D').addEventListener('click', function () { mode = '3d'; remember(); draw(); });
   /* Entering the building is a tap on it; leaving needs a way back. */

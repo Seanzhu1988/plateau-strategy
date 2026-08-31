@@ -35,7 +35,8 @@ window.MET_ART = {
    "artist": "",
    "date": "completed by 10 CE",
    "img": "https://images.metmuseum.org/CRDImages/eg/web-large/DP240337.jpg",
-   "href": "https://www.metmuseum.org/art/collection/search/547802"
+   "href": "https://www.metmuseum.org/art/collection/search/547802",
+   "threeD": true
   }
  ],
  "greek-roman": [
