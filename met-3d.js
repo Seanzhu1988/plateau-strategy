@@ -820,8 +820,13 @@
     animF = requestAnimationFrame(frame);
   }
 
-  /* Which rooms the camera will not dive into: the stairs are plumbing. */
+  /* Which rooms the camera will not dive into: the stairs are plumbing.
+     Unless one of them has been DRAWN. The Grand Staircase now has an
+     interior, and a flight with an eighteen foot Tiepolo at the head of it is
+     not plumbing; a room that went to the trouble of existing should be
+     entered. Everything without an interior keeps the old rule exactly. */
   function focusable(k) {
+    if (k && window.MET_ROOMS && window.MET_ROOMS[k]) return true;
     return k && k !== "grand-stair" && k !== "grand-stair-2";
   }
 

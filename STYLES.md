@@ -240,6 +240,41 @@ from. A count and a dimension that agree are worth more than either alone.
 
 ---
 
+## The white cube
+
+*1930s to now. Here: the Metropolitan's modern wing, gallery 851.*
+
+The only style in this book that is defined by what it removes. A Beaux-Arts
+gallery tells you how to feel before you have looked at anything; a white cube
+withdraws so completely that the room claims to be neutral, which is itself a
+position and a fairly recent one.
+
+**Tells**
+- **No mouldings anywhere.** No cornice, no dado, no skirting worth drawing,
+  no architrave around the opening. A single plane meets another single plane.
+- **The wall is the ground, not the frame.** One flat off-white, unbroken, and
+  the works hung far apart on it.
+- **Light from a slot**, a cove or a scoop at the top of the wall or a
+  daylight ceiling. Never a visible fitting, never a chandelier.
+- **Doorways are holes.** A rectangular opening cut straight through, no case
+  and no reveal.
+- Hung on a common centre line, **57 inches**, which is the museum standard
+  and is why paintings of wildly different sizes read as one row.
+
+**Wrong if** anything is decorated. A moulding, a picture rail, a patterned
+floor or a coloured wall moves it to another style and another century.
+
+**Our numbers.** The room itself is the floor plan's rectangle and not a
+survey, on the same footing as Dendur, and the caption says so. What is real
+is what hangs in it: Pollock's *Autumn Rhythm*, from the Met's own collection
+API, **8 ft 10 1/4 in by 17 ft 4 in**. Seventeen feet four, on a wall drawn at
+34, is the whole reason to build the room; no photograph of that painting has
+ever managed to say it. It is drawn as a bare stretched rectangle at that
+size and nothing else. The painting is in copyright. Its dimensions are not,
+and the size is the subject.
+
+---
+
 ## Working rules
 
 1. **Name the style before choosing the geometry.** If you cannot name it, you

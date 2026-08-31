@@ -617,8 +617,252 @@
     return out;
   }
 
+  /* A plain rectangular mass with its own stroke colour. batteredMass is the
+     Egyptian one and hard-codes a sandstone outline, which is wrong on white
+     plaster and on grey marble. Faces cull on their own normals; the optional
+     depth is there because a wall spanning a whole gallery cannot be sorted on
+     its own corners without painting over the room. */
+  function mass(ctx, x1, y1, x2, y2, z0, h, fill, stroke, depth) {
+    var P = ctx.project, out = [];
+    var b = [[x1, y1], [x2, y1], [x2, y2], [x1, y2]];
+    var norm = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+    for (var i = 0; i < 4; i++) {
+      if (!ctx.faceVisible(norm[i][0], norm[i][1])) continue;
+      var j = (i + 1) % 4;
+      var q = [P(b[i][0], b[i][1], z0), P(b[j][0], b[j][1], z0),
+               P(b[j][0], b[j][1], z0 + h), P(b[i][0], b[i][1], z0 + h)];
+      out.push({ svg: ctx.poly(q, ctx.shade(fill, norm[i][0], norm[i][1], 0), stroke, 0.5),
+                 depth: (depth === undefined ? depthOf(q) : depth + i * 0.1) });
+    }
+    var top = [P(x1, y1, z0 + h), P(x2, y1, z0 + h), P(x2, y2, z0 + h), P(x1, y2, z0 + h)];
+    out.push({ svg: ctx.poly(top, ctx.shade(fill, 0, 0, 1), stroke, 0.5),
+               depth: (depth === undefined ? depthOf(top) : depth + 0.6) });
+    return out;
+  }
+
+  /* A framed canvas hung flat on a wall, in that wall's own coordinates. It is
+     drawn as a rectangle of the published SIZE and nothing else. Three of the
+     four works these two rooms are built around are still in copyright, and a
+     dimension is not. This function is why the rooms can be honest: it draws
+     how big something is, never what is on it. */
+  function canvasOn(ctx, map, uc, zc, wide, high, depth) {
+    var out = [];
+    var u0 = uc - wide / 2, u1 = uc + wide / 2, z0 = zc - high / 2, z1 = zc + high / 2;
+    var f = Math.max(0.35, wide * 0.035);
+    out.push({ svg: ctx.poly([map(u0 - f, z0 - f), map(u1 + f, z0 - f),
+                              map(u1 + f, z1 + f), map(u0 - f, z1 + f)],
+                             "#3b3a36", "#26251f", 0.4), depth: depth });
+    out.push({ svg: ctx.poly([map(u0, z0), map(u1, z0), map(u1, z1), map(u0, z1)],
+                             "#d8cfb9", "#a89d84", 0.4), depth: depth + 0.05 });
+    return out;
+  }
+
+  /* ---------------- Gallery 851, the modern wing ----------------
+     The plan's `modern` node stands for the Lila Acheson Wallace Wing, and the
+     stop's own card names three works in it. They are in three DIFFERENT
+     galleries, 851, 955 and 965, so hanging all three on one wall would be a
+     lie told for convenience. This is gallery 851, and it is drawn around the
+     one thing that gallery is: Pollock's Autumn Rhythm on the end wall.
+
+     PUBLISHED, from the Met's own collection API, object 488978: the canvas is
+     "8 ft. 10 1/4 in. x 17 ft. 4 in." Seventeen feet four. That number is the
+     entire reason this room is worth drawing, because no photograph of it ever
+     conveys that the painting is nearly three times as wide as a person is
+     tall, and a room drawn to scale does.
+
+     It is drawn as a bare stretched rectangle at that size. The painting is in
+     copyright; its dimensions are not, and the size is the subject here.
+
+     SCHEMATIC, on the Dendur precedent, and the page says so: the room
+     envelope is the floor plan's rectangle, not a survey. Only the ceiling is
+     assumed, at 14 ft, which is what fixes feet to plan units and makes the
+     envelope come out near 69 by 56 ft. The hanging centre line is 57 in,
+     which is the museum standard rather than a measurement of this wall.
+
+     The style is the white cube, and the styles book now carries it. */
+  function modern(ctx) {
+    var r = ctx.room, z = ctx.zBase, P = ctx.project, out = [];
+    var wall = ctx.wall || 26;
+    var FT = wall / 14;                       /* 14 ft ceiling fixes the scale */
+    var WALL = "#f3f2ee", WALL_D = "#cdcac2", FLOOR = "#cac4b8";
+    var COVE = "#fdfcf7", BENCH = "#8d8577", BENCH_D = "#6a6357";
+
+    /* The plan's rectangle is the WING, not one gallery, so it is used the way
+       the American Court uses its own: as a stage to stand a room on. Filling
+       it edge to edge produced a 69 by 56 ft hall with a 14 ft ceiling, which
+       rendered as a shallow tray and was nobody's gallery. This is 34 by 26 ft
+       inside, which is a room, and it sits in the middle of the plan slot. */
+    var GW = 34 * FT, GD = 26 * FT;
+    var cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+    var x1 = cx - GW / 2, x2 = cx + GW / 2, y1 = cy - GD / 2, y2 = cy + GD / 2;
+
+    out.push(flat(ctx, r.x, r.y, r.x + r.w, r.y + r.h, z, "#dcd7cc", "#bdb6a8", 0.5, -1e9));
+    out.push(flat(ctx, x1, y1, x2, y2, z + 0.1, FLOOR, "#b0a99c", 0.5, -9.99e8));
+
+    /* Three walls, each at an explicit depth. A white cube is mostly wall, and
+       a wall spanning the room has a nearer corner than the painting hanging
+       in the middle of it. The fourth wall is the one you are looking in
+       through, so it is not there at all. */
+    var T = Math.max(1.2, GW * 0.022);
+    out = out.concat(mass(ctx, x1, y1, x2, y1 + T, z, wall, WALL, WALL_D, -9.8e8));
+    /* The side walls run the whole depth of the room, so their near ends are
+       far closer to the eye than the back wall is. They must therefore paint
+       AFTER the picture hanging on the back wall, or a seventeen foot canvas
+       spills out across a wall standing in front of it. */
+    out = out.concat(mass(ctx, x1, y1, x1 + T, y2, z, wall, WALL, WALL_D, -9.0e8));
+    out = out.concat(mass(ctx, x2 - T, y1, x2, y2, z, wall, WALL, WALL_D, -9.0e8));
+
+    /* the light cove: a white cube is lit from a slot along the top of the
+       wall, and it is the only thing in the room that is not a flat plane */
+    out = out.concat(mass(ctx, x1, y1, x2, y1 + T * 0.5, z + wall - 1.0, 1.0,
+                          COVE, "#e6e3d8", -9.75e8));
+
+    /* AUTUMN RHYTHM, on the end wall, at its published 17 ft 4 in by 8 ft
+       10 1/4 in, centred on the 57 inch museum hanging line. On a 34 ft wall
+       it takes half the room, which is the fact the model exists to carry. */
+    if (ctx.faceVisible(0, 1)) {
+      var mapB = function (u, zz) { return P(u, y1 + T, zz); };
+      var W_FT = 17 + 4 / 12, H_FT = 8 + 10.25 / 12;
+      out = out.concat(canvasOn(ctx, mapB, cx, z + (57 / 12) * FT,
+                                W_FT * FT, H_FT * FT, -9.5e8));
+    }
+
+    /* A bench, 4 ft long and 17 in high wherever you find one, and a 7 ft
+       doorway through to the next gallery. Scale needs something a body
+       already knows the size of; two things are better than one. */
+    var bcy = y2 - GD * 0.26;
+    out = out.concat(mass(ctx, cx - 2 * FT, bcy - 0.75 * FT, cx + 2 * FT, bcy + 0.75 * FT,
+                          z + 0.1, (17 / 12) * FT, BENCH, BENCH_D, -8.0e8));
+    /* on whichever side wall is actually turned towards us, or it is a scale
+       cue the reader never sees */
+    var side = ctx.faceVisible(1, 0) ? x1 + T : (ctx.faceVisible(-1, 0) ? x2 - T : null);
+    if (side !== null) {
+      var mapS = function (u, zz) { return P(side, u, zz); };
+      var dc = y1 + GD * 0.60;
+      out.push({ svg: ctx.poly([mapS(dc - 2.2 * FT, z), mapS(dc + 2.2 * FT, z),
+                                mapS(dc + 2.2 * FT, z + 7 * FT), mapS(dc - 2.2 * FT, z + 7 * FT)],
+                               "#b9b4a8", WALL_D, 0.4), depth: -8.9e8 });
+    }
+    return out;
+  }
+
+  /* ---------------- The Grand Staircase ----------------
+     The plan calls this one plumbing and the camera used to refuse to enter
+     it. It is not plumbing. It is Richard Morris Hunt's ceremonial ascent out
+     of the Great Hall, and there is an eighteen foot Tiepolo at the top of it.
+
+     PUBLISHED, from the Met's collection API, object 437788: The Triumph of
+     Marius, Giovanni Battista Tiepolo, 1729, "220 x 128 5/8 in." That is 18 ft
+     4 in high by 10 ft 8 5/8 in wide, and the model hangs it at exactly that
+     proportion in the arch at the head of the stair, where a photograph from
+     the Great Hall shows it.
+
+     READ OFF THAT PHOTOGRAPH, which is a source for shape even where it is
+     useless for size: ONE straight flight, no half landing, running the full
+     width of the bay; SOLID panelled parapets rather than open balustrades,
+     with brass handrails on them; paired columns standing outside the well on
+     both sides; a single great arch at the head framing the painting.
+
+     NOT CLAIMED: the number of treads. The flight is crowded in every
+     photograph of it and the risers compress with perspective, so a count off
+     the picture would be a guess wearing a decimal point. The model draws a
+     flight that reads correctly and says here that its step count is chosen,
+     not counted. The rise is one storey because the stair joins floor 1 to
+     floor 2, which the plan already knows. */
+  function grandStair(ctx) {
+    var r = ctx.room, z = ctx.zBase, P = ctx.project, out = [];
+    var wall = ctx.wall || 26;
+    var STONE = "#e0d9c9", STONE_D = "#b2a992", TREAD = "#cdc5b3";
+    var DARK = "#9a9382", BRASS = "#c8a44a", SKY = "#3d5a78";
+
+    var x1 = r.x, x2 = r.x + r.w, y1 = r.y, y2 = r.y + r.h;
+    out.push(flat(ctx, x1, y1, x2, y2, z, "#c9c2b2", "#a49c88", 0.5, -1e9));
+
+    /* the flight: from the Great Hall floor at the near end up to the landing
+       at the far end, one storey, one straight run */
+    var PAR = r.w * 0.18;                       /* the parapets each side */
+    var sx1 = x1 + PAR, sx2 = x2 - PAR;
+    var TOP = z + wall * 0.54, N = 24;
+    var yFoot = y2 - r.h * 0.10, yHead = y1 + r.h * 0.30;
+    var run = (yFoot - yHead) / N, rise = (TOP - z) / N;
+
+    for (var i = 0; i < N; i++) {
+      var ya = yFoot - run * i, yb = ya - run, zz = z + rise * i;
+      /* the riser, then the tread on top of it. Steps sort on their own
+         corners safely: each one is small and none spans the room. */
+      out.push({ svg: ctx.poly([P(sx1, yb, zz), P(sx2, yb, zz),
+                                P(sx2, yb, zz + rise), P(sx1, yb, zz + rise)],
+                               ctx.shade(DARK, 0, -1, 0), STONE_D, 0.35),
+                 depth: -8e8 + i * 10 });
+      out.push({ svg: ctx.poly([P(sx1, ya, zz + rise), P(sx2, ya, zz + rise),
+                                P(sx2, yb, zz + rise), P(sx1, yb, zz + rise)],
+                               ctx.shade(TREAD, 0, 0, 1), STONE_D, 0.35),
+                 depth: -8e8 + i * 10 + 5 });
+    }
+
+    /* the landing at the head of the stair */
+    out.push(flat(ctx, sx1, y1, sx2, yHead, TOP, TREAD, STONE_D, 0.5, -8.5e8));
+
+    /* THE PARAPETS: solid, raked, with a brass rail along the top. Drawn as a
+       raked quadrilateral on each side rather than a stack of boxes, because
+       the top of this wall is a straight line and a staircase whose parapet
+       steps is a fire escape. */
+    [[-1, x1, sx1], [1, x2, sx2]].forEach(function (side, si) {
+      var xo = side[1], xi = side[2];
+      var pTop = 3.4;
+      var faceZ = function (yy) {
+        var t = Math.max(0, Math.min(1, (yFoot - yy) / (yFoot - yHead)));
+        return z + (TOP - z) * t + pTop;
+      };
+      /* the inner face, which is what you see from the well */
+      var inner = [P(xi, yFoot, z), P(xi, yHead, TOP),
+                   P(xi, yHead, faceZ(yHead)), P(xi, yFoot, faceZ(yFoot))];
+      out.push({ svg: ctx.poly(inner, ctx.shade(STONE, -side[0], 0, 0), STONE_D, 0.5),
+                 depth: -7.0e8 + si });
+      /* the capping, and the brass rail standing on it */
+      var cap = [P(xi, yFoot, faceZ(yFoot)), P(xi, yHead, faceZ(yHead)),
+                 P(xo, yHead, faceZ(yHead)), P(xo, yFoot, faceZ(yFoot))];
+      out.push({ svg: ctx.poly(cap, ctx.shade(STONE, 0, 0, 1), STONE_D, 0.5),
+                 depth: -6.8e8 + si });
+      var rz = 1.5;
+      out.push({ svg: ctx.poly([P(xi + side[0] * -0.6, yFoot, faceZ(yFoot) + rz),
+                                P(xi + side[0] * -0.6, yHead, faceZ(yHead) + rz),
+                                P(xi + side[0] * -0.6, yHead, faceZ(yHead) + rz + 0.5),
+                                P(xi + side[0] * -0.6, yFoot, faceZ(yFoot) + rz + 0.5)],
+                               BRASS, "#8a6f18", 0.3), depth: -6.6e8 + si });
+      /* the outer wall of the well, full height, holding the columns */
+      out = out.concat(mass(ctx, side[0] < 0 ? xo : xi, y1, side[0] < 0 ? xi : xo, y2,
+                            z, wall, STONE, STONE_D, -9.2e8 + si));
+    });
+
+    /* THE ARCH at the head, and the Tiepolo in it at its published shape:
+       220 by 128 5/8 inches, which is 18 ft 4 in by 10 ft 8 5/8 in. */
+    var mapH = function (u, zz) { return P(u, yHead, zz); };
+    if (ctx.faceVisible(0, 1)) {
+      out = out.concat(mass(ctx, sx1, y1, sx2, yHead, z, wall, STONE, STONE_D, -9.0e8));
+      var cxm = (sx1 + sx2) / 2, halfA = (sx2 - sx1) * 0.40;
+      var springs = wall * 0.30, archTop = springs + halfA * 0.62;
+      var pts = [mapH(cxm - halfA, TOP)];
+      for (var k = 0; k <= 12; k++) {
+        var a = Math.PI - k * Math.PI / 12;
+        pts.push(mapH(cxm + halfA * Math.cos(a), TOP + springs + halfA * Math.sin(a) * 0.62));
+      }
+      pts.push(mapH(cxm + halfA, TOP));
+      out.push({ svg: ctx.poly(pts, SKY, STONE_D, 0.5), depth: -8.6e8 });
+
+      /* 220 by 128 5/8 inches is 1.710 tall for every one across. The ratio is
+         the published fact and is held exactly; the overall size is set by the
+         arch, because the first attempt sized it off the arch's WIDTH and the
+         painting came out taller than the opening it hangs in. */
+      var hT = archTop * 0.80, wT = hT * (128.625 / 220);
+      out = out.concat(canvasOn(ctx, mapH, cxm, TOP + hT * 0.54, wT, hT, -8.4e8));
+    }
+    return out;
+  }
+
   window.MET_ROOMS = { dendur: dendur, 'great-hall': greatHall,
                       'american-court': americanCourt,
-                      'asian-astor': astorCourt };
+                      'asian-astor': astorCourt,
+                      modern: modern, 'grand-stair-2': grandStair };
   Object.keys(LANDMARKS).forEach(function (k) { window.MET_ROOMS[k] = landmark; });
 })();

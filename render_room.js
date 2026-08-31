@@ -67,7 +67,11 @@ const ROOMS = { 'american-court': {x:170,y:230,w:180,h:120},
                 'dendur':         {x:300,y:40, w:220,h:95},
                 'egyptian':       {x:120,y:40, w:110,h:80},
                 'greek-roman':    {x:60, y:150,w:150,h:90},
-                'arms-armor':     {x:200,y:150,w:130,h:90} };
+                'arms-armor':     {x:200,y:150,w:130,h:90},
+                /* straight off met-map.js, so what this draws is what the
+                   floor plan hands the page */
+                'modern':         {x:60, y:415,w:200,h:105},
+                'grand-stair-2':  {x:510,y:250,w:45, h:70} };
 const rr = ROOMS[key] || {x:100,y:100,w:150,h:100};
 const room = {x: rr.x*KX, y: rr.y, w: rr.w*KX, h: rr.h, f:1};
 const W = 900, H = 620;
