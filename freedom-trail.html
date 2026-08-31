@@ -432,12 +432,44 @@
     var HALF = 11;              // stops 1 to 11 sit downtown; 12 onward crosses to Charlestown
     var map = null, routeLayer = null, youMarker = null, followId = null;
 
+    /* Strings this page BUILDS from numbers cannot be looked up whole: the
+       dictionary would need an entry for every duration. So the PATTERN is
+       translated and the values dropped in afterwards, which is what psxFmt
+       exists for. Named placeholders, not positional, because word order
+       differs between languages. Falls back to the English pattern if i18n
+       has not loaded yet, so a slow pack shows English rather than "{mins}". */
+    function T(pattern, vals) {
+        if (window.psxFmt) return window.psxFmt(pattern, vals);
+        return pattern.replace(/\{(\w+)\}/g, function (m, k) {
+            return (vals && vals[k] !== undefined) ? vals[k] : m;
+        });
+    }
     function fmt(m) {
         var h = Math.floor(m / 60), r = m % 60;
-        return h ? (h + " hr " + (r ? r + " min" : "").trim()).trim() : (m + " min");
+        if (!h) return T("{m} min", { m: m });
+        return r ? T("{h} hr {m} min", { h: h, m: r }) : T("{h} hr", { h: h });
     }
     function selected() {
         return trail.stops.filter(function (s) { return included.has(s.n); });
+    }
+
+    /* The line under the title. It lives in its own function because it is
+       built from numbers, so it has to be rebuilt when the reader switches
+       language, and it used to be written once inside the fetch and never
+       touched again. That is why it stayed in English on a Chinese page while
+       everything around it translated. The bold stays OUT of the dictionary:
+       two clean sentences to translate, no markup for a translator to break. */
+    function renderTruth() {
+        if (!trail) return;
+        var mi = (trail.length_m / 1609.34).toFixed(1);
+        var el = document.getElementById("ftTruth");
+        if (!el) return;
+        el.innerHTML =
+            "<b>" + T("{walk} of walking, {inside} inside.",
+                      { walk: fmt(trail.walk_min_total),
+                        inside: fmt(trail.inside_min_total) }) + "</b> " +
+            T("The sixteen sites are {mi} miles apart. All sixteen is about {total} altogether, so pick your version below.",
+              { mi: mi, total: fmt(trail.walk_min_total + trail.inside_min_total) });
     }
 
     // Who narrates the trail, and in which file, depends on the language the
@@ -474,16 +506,20 @@
             prevIdx = i;
         });
         document.getElementById("ftSum").textContent =
-            count + " stops · " + fmt(walk) + " walking · " + fmt(inside) +
-            " inside · about " + fmt(walk + inside) + " altogether";
+            T("{count} stops · {walk} walking · {inside} inside · about {total} altogether",
+              { count: count, walk: fmt(walk), inside: fmt(inside),
+                total: fmt(walk + inside) });
 
 
         var lang = pageLang(), G = trailGuide(lang);
         var host = document.getElementById("ftStops");
         host.innerHTML = trail.stops.map(function (s) {
             var on = included.has(s.n), L = legOf[s.n];
-            var meta = (on && L.first ? "start · " : (on ? L.leg + " min walk · " : "")) +
-                       s.inside_min + " min here";
+            var meta = (on && L.first)
+                ? T("start · {inside} min here", { inside: s.inside_min })
+                : (on ? T("{leg} min walk · {inside} min here",
+                          { leg: L.leg, inside: s.inside_min })
+                      : T("{inside} min here", { inside: s.inside_min }));
             // The deep five minute narration for this stop, in the reader's own
             // language: Yiki reads the English, Pangge the Chinese. Every stop is
             // the same, the three that once carried a book card included, so the
@@ -629,19 +665,13 @@
             trail = (d.trails || []).filter(function (t) { return t.id === "freedom-trail"; })[0];
             if (!trail) throw new Error("no trail");
             included = new Set(trail.stops.map(function (s) { return s.n; }));   // all, to begin
-            var mi = (trail.length_m / 1609.34).toFixed(1);
-            document.getElementById("ftTruth").innerHTML =
-                "<b>" + fmt(trail.walk_min_total) + " of walking, " +
-                fmt(trail.inside_min_total) + " inside.</b> The sixteen sites are " + mi +
-                " miles apart. All sixteen is about " +
-                fmt(trail.walk_min_total + trail.inside_min_total) +
-                " altogether, so pick your version below.";
+            renderTruth();
             render();
             wireMiniShows();             // the stop pictures, once the stops exist
             // Switching language re-reads the stops so the guide who speaks,
             // and the file that plays, follow the reader: Yiki in English,
             // Pangge in Chinese.
-            document.addEventListener("psx:lang", function () { if (trail) render(); });
+            document.addEventListener("psx:lang", function () { if (trail) { renderTruth(); render(); } });
             // Somebody who already said yes should not be asked again every
             // visit; somebody who said no should not be nagged.
             try {
@@ -921,19 +951,32 @@
             .then(function (r) { return r.json(); })
             .then(paintPulse).catch(function () {});
     }
+    /* The live counter. The last figures are kept so the line can be redrawn
+       when the reader switches language: it arrives from the network once, and
+       without this it would sit in English under a fully translated page. The
+       number is passed in ALREADY BOLD, which keeps the markup out of the
+       dictionary while still emphasising the figure. */
+    var lastPulse = null;
     function paintPulse(d) {
-        if (!d || !d.ok) return;
+        if (d && d.ok) lastPulse = d;
+        d = lastPulse;
+        if (!d) return;
         var el = document.getElementById("ftPulse");
+        if (!el) return;
         var bits = [];
         if (d.walking_now > 0)
-            bits.push("<b>" + d.walking_now + "</b> " +
-                      (d.walking_now === 1 ? "traveller" : "travellers") + " on the trail right now");
+            bits.push(T(d.walking_now === 1
+                        ? "{n} traveller on the trail right now"
+                        : "{n} travellers on the trail right now",
+                        { n: "<b>" + d.walking_now + "</b>" }));
         if (d.total_steps_est > 0)
-            bits.push("about <b>" + d.total_steps_est.toLocaleString() + "</b> steps walked here so far");
+            bits.push(T("about {n} steps walked here so far",
+                        { n: "<b>" + d.total_steps_est.toLocaleString() + "</b>" }));
         if (!bits.length) return;
         el.innerHTML = bits.join(" · ");
         el.hidden = false;
     }
+    document.addEventListener("psx:lang", function () { paintPulse(null); });
     // Everyone sees the counter; only consented walkers add to it.
     fetch("/api/trail/pulse").then(function (r) { return r.json(); })
         .then(paintPulse).catch(function () {});

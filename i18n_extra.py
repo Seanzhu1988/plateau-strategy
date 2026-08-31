@@ -939,6 +939,48 @@ EXTRA.update({
     "Company": ["公司", "Empresa", "회사", "Công ty"],
     "Security": ["安全", "Seguridad", "보안", "Bảo mật"],
     "Privacy": ["隐私", "Privacidad", "개인정보", "Quyền riêng tư"],
+
+    # ---- Freedom Trail: strings the PAGE composes from numbers -------------
+    # These are psxFmt patterns, not sentences. The placeholders are named, so
+    # a language may reorder them freely; what a translation must not do is
+    # rename one or drop it. They were the whole of the "Chinese is not
+    # working" bug: the page built them by concatenation, so they could never
+    # be looked up, and the summary under the title stayed in English while
+    # the rest of the page translated around it.
+    "{m} min": ["{m} 分钟", "{m} min", "{m}분", "{m} phút"],
+    "{h} hr {m} min": ["{h} 小时 {m} 分钟", "{h} h {m} min", "{h}시간 {m}분", "{h} giờ {m} phút"],
+    "{h} hr": ["{h} 小时", "{h} h", "{h}시간", "{h} giờ"],
+    "{count} stops · {walk} walking · {inside} inside · about {total} altogether": [
+        "{count} 站 · 步行 {walk} · 参观 {inside} · 合计约 {total}",
+        "{count} paradas · {walk} caminando · {inside} dentro · unas {total} en total",
+        "{count}개 지점 · 도보 {walk} · 내부 관람 {inside} · 총 약 {total}",
+        "{count} điểm · đi bộ {walk} · tham quan {inside} · tổng cộng khoảng {total}"],
+    "start · {inside} min here": [
+        "起点 · 此处 {inside} 分钟", "inicio · {inside} min aquí",
+        "출발 · 이곳에서 {inside}분", "điểm đầu · {inside} phút ở đây"],
+    "{leg} min walk · {inside} min here": [
+        "步行 {leg} 分钟 · 此处 {inside} 分钟", "{leg} min a pie · {inside} min aquí",
+        "도보 {leg}분 · 이곳에서 {inside}분", "đi bộ {leg} phút · {inside} phút ở đây"],
+    "{inside} min here": [
+        "此处 {inside} 分钟", "{inside} min aquí",
+        "이곳에서 {inside}분", "{inside} phút ở đây"],
+    "{walk} of walking, {inside} inside.": [
+        "步行 {walk}，馆内 {inside}。", "{walk} caminando, {inside} dentro.",
+        "도보 {walk}, 내부 관람 {inside}.", "đi bộ {walk}, tham quan {inside}."],
+    "The sixteen sites are {mi} miles apart. All sixteen is about {total} altogether, so pick your version below.": [
+        "十六处景点相距 {mi} 英里。全程合计约 {total}，请在下方选择你的版本。",
+        "Los dieciséis lugares se reparten a lo largo de {mi} millas. Los dieciséis juntos son unas {total}, así que elige tu versión abajo.",
+        "열여섯 곳은 {mi}마일에 걸쳐 있습니다. 열여섯 곳 전체는 약 {total} 걸리니 아래에서 원하는 버전을 고르세요.",
+        "Mười sáu địa điểm trải dài {mi} dặm. Cả mười sáu điểm mất khoảng {total}, hãy chọn phiên bản của bạn bên dưới."],
+    "{n} traveller on the trail right now": [
+        "现在有 {n} 位旅人走在这条路上", "{n} viajero en la ruta ahora mismo",
+        "지금 {n}명이 트레일을 걷고 있습니다", "{n} khách đang đi trên tuyến ngay lúc này"],
+    "{n} travellers on the trail right now": [
+        "现在有 {n} 位旅人走在这条路上", "{n} viajeros en la ruta ahora mismo",
+        "지금 {n}명이 트레일을 걷고 있습니다", "{n} khách đang đi trên tuyến ngay lúc này"],
+    "about {n} steps walked here so far": [
+        "至今已在此走过约 {n} 步", "unos {n} pasos caminados aquí hasta ahora",
+        "지금까지 이곳에서 약 {n}걸음", "khoảng {n} bước đã đi ở đây cho đến nay"],
     "Building integrated wealth through connected ecosystems.": ["以彼此相连的生态，构筑一体化的财富。", "Construyendo riqueza integrada a través de ecosistemas conectados.", "연결된 생태계를 통해 통합된 부를 만듭니다.", "Xây dựng của cải tích hợp qua các hệ sinh thái kết nối."],
     "Name or initials (optional)": ["姓名或缩写（选填）", "Nombre o iniciales (opcional)", "이름 또는 이니셜 (선택)", "Tên hoặc chữ viết tắt (tùy chọn)"],
     "Amount you gave ($)": ["您捐了多少（美元）", "Cantidad que donaste ($)", "기부하신 금액 ($)", "Số tiền bạn đã tặng ($)"],

@@ -50,6 +50,17 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
 
 ## Also on the list
 
+- [ ] **29 composed strings across 15 visitor pages still bypass the
+      translator**, found by `i18n_untranslated.py` after the Freedom Trail
+      bug. Worst first, because these are the flagship free tools:
+      trip-planner (6), universal-gallery, destination-book, booking,
+      landing-page, articles, discovery, factor-clock, favorite-place,
+      footprint, agent, renter, guide-studio, deck. Each is the same repair:
+      route it through psxFmt so the pattern translates and the values drop
+      in, then add the pattern to i18n_extra.py in all four languages. A few
+      per pass. Run the detector to see the list shrink.
+
+
 - [ ] The gallery's "not found" signal is weak, and now we can see it. A
       deliberately nonsense query, "a painting that does not exist anywhere",
       came back with sixteen results, because Wikidata answers almost anything
