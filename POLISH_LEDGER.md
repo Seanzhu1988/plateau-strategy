@@ -31,9 +31,11 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
 
 ## 3D backlog, worked one at a time
 
-- [ ] The idle spin ignores `prefers-reduced-motion`. Anyone who asked their
-      device to stop animation still gets a turning building. The trail page
-      already respects it; the models must too.
+- [x] The idle spin ignores `prefers-reduced-motion`. **Done 2026-08-31**,
+      same shape the trail uses, but read live each frame so changing the
+      setting takes effect without a reload. Proved with a control: two
+      bridges mounted side by side, one told to stop animating, and across
+      real painted frames only the control turned.
 - [ ] The bridge's Gothic arches do not read at the current scale. Either a
       second "at the tower" camera, or thicker arch profiles.
 - [ ] The bridge labels sit on top of the deck. Lift them clear.
@@ -42,13 +44,27 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
 - [ ] Open it up, the way the Met's model does: the Empire State splitting to
       show the two observatory decks inside.
 - [ ] Phone framing: both models are drawn for a wide screen. Check at 375px
-      and give each a portrait camera if it needs one.
+      and give each a portrait camera if it needs one. Half of this is now
+      done: the labels and dots read at any width (2026-08-31). What is left
+      is the drawing itself, the bridge is 2.88:1 so a 375px phone gives it a
+      111px tall box, and the three labels have to crowd into that band.
 - [ ] The bridge deck is drawn level, which is true, but the roadway actually
       rises toward midspan. Small correction, real.
 - [ ] Empire State: the base is 424 by 187 ft, so from some angles it reads
       as square. Verify the footprint proportion on screen against the number.
 
 ## Also on the list
+
+- [ ] **Yiki's Chinese trail overview runs 6:26 against Jason's 5:09**, and
+      the page calls both a five minute narration. Measured by
+      `script_lengths.py`: `freedom-trail-zh.txt` is 1,468 characters, 386
+      seconds, against a long-tier band of 969 to 1,311. The English is 797
+      words, 309 seconds, inside its band. So it is the Chinese that drifted,
+      by about 157 characters. Left alone deliberately on 2026-08-31: the
+      commit that made this file rewrote it "from translationese into a
+      person talking", and trimming a narrator's voice in a hurry is how that
+      work gets undone. Do it as a deliberate edit, or decide the label
+      should not promise five minutes.
 
 - [ ] **The map is 83% full and cannot take many more rooms.** `map_lint.js`
       now catches overlaps, strays and crowding, and fixed the two collisions
@@ -114,3 +130,35 @@ promised "3 minutes" over a 73 second film.
 towers drawn as two posts rather than three piers with two arches, and a
 header logo rendering 1,224 pixels tall that pushed both models off screen.
 Translation: found why the globe kept looking broken, see below.
+
+### 2026-08-31
+Trimmed: the Brooklyn Bridge told a visitor two different tower heights. The
+model's own label said 278 ft while the fact card beneath it and the geometry
+in the file both said 276.5; the label was the only thing left over from
+before yesterday's correction. Then the models' labels, which were unreadable
+on a phone and measurably so: 3.9 CSS pixels for a name and 3.4 for the note
+under it on a 375px screen, with dots 1.3 pixels across, because the text was
+sized in viewBox units and the viewBox is squeezed to 321px there. They are
+now sized against the box's real width, 12.5 and 10.9 pixels at any screen
+size, dots 4.2. Making them readable made them collide and run off the edge,
+which the first screenshot caught, so they also gained an edge flip, a clamp
+that keeps a label inside the box, and a stagger that drops a label a line
+when it would land on one already placed. Measured after: every label on both
+models sits inside its box at 375px, none overlapping. Desktop is untouched,
+12.3 units against the old 12, no flips.
+3D: the idle spin now respects prefers-reduced-motion, the top backlog item.
+Caught in my own fix by measuring, not by reading it: label size is worked out
+at draw time and nothing redrew on resize, so a window that changed width kept
+labels sized for the old one. Fixed with a ResizeObserver, since the idle turn
+cannot be relied on to do it, it does not run for a reader who stopped
+animation, nor once someone has taken hold, nor while the tab is in the
+background.
+Checkers: map sound, 83% full. i18n 37, unchanged, none attempted today.
+Script lengths 1 out of band, recorded above rather than rushed.
+Commits: one, because all three changes live in nyc-3d.js and I staged the
+whole file, "The bridge stops telling two different tower heights, its labels
+become readable on a phone, and the models hold still for anyone who asked".
+Note: four files in this worktree (destination-book.html, destinations.json,
+landmark_stories.json, landmarks.html) were another session's uncommitted work
+and were left untouched. Nothing was rebased for the same reason; origin/main
+was one commit ahead at the time.
