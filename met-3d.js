@@ -598,8 +598,18 @@
     /* The room overview: the focused gallery's highlight works stand on its
        roof as numbered stops, in walking order. Their positions along the
        room are spacing, not surveying; the caption below says so, because
-       this sheet never pretends to know more than it does. */
-    if (focusKey && openT > 0.02 && focusT > 0.02 && R[focusKey]) {
+       this sheet never pretends to know more than it does.
+
+       NOT when the room has an interior drawn. [SEAN: "its still blocking
+       view more like those 123 and words maybe take them off".] These numbers
+       and their labels earned their place when a focused room was an empty
+       box and they were the only thing in it. Over a model of the actual
+       gallery they are furniture standing in front of the exhibit: four
+       circles and four lines of text floating across the temple you dived in
+       to see. The highlights are not lost, they are in the room bar and the
+       guide beside the drawing, which is where a list belongs. */
+    if (focusKey && openT > 0.02 && focusT > 0.02 && R[focusKey] &&
+        !(window.MET_ROOMS && window.MET_ROOMS[focusKey])) {
       var fr = R[focusKey];
       var fCards = window.MET_CARDS || {};
       var hl = ((fCards[focusKey] || {}).highlights || []).slice(0, 4);
@@ -637,12 +647,17 @@
        the same building, remembered rather than shouted. */
     var dim = (focusKey && focusT > 0.02) ? (1 - 0.8 * focusT) : 1;
     items.forEach(function (it) {
-      if (dim < 1 && it.room !== focusKey) {
+      if (dim < 1 && it.lbl) {
+        /* EVERY room's name steps aside when one room is held close, not just
+           the focused one. The focused room's name always faded, but the
+           neighbours' names only dimmed to a fifth, and at this zoom a fifth
+           is still legible text lying across the model. Inside one gallery
+           you do not need the next gallery's name; the caption below and the
+           room bar carry where you are. */
+        var lo = (1 - focusT) * (it.room === focusKey ? 1 : dim);
+        svg.push('<g opacity="' + lo.toFixed(2) + '">' + it.svg + "</g>");
+      } else if (dim < 1 && it.room !== focusKey) {
         svg.push('<g opacity="' + dim.toFixed(2) + '">' + it.svg + "</g>");
-      } else if (dim < 1 && it.lbl) {
-        /* the focused room's own name steps aside: the caption below carries
-           it, and the roof is now the stops' stage */
-        svg.push('<g opacity="' + (1 - focusT).toFixed(2) + '">' + it.svg + "</g>");
       } else {
         svg.push(it.svg);
       }
