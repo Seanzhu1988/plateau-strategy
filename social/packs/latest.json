@@ -1,24 +1,7 @@
 {
  "year": 2026,
- "week": 35,
+ "week": 36,
  "posts": [
-  {
-   "id": "ug-label-en",
-   "lang": "en",
-   "pain": "cannot read the label",
-   "page": "/universal-gallery",
-   "channels": [
-    "facebook",
-    "instagram"
-   ],
-   "text": "Standing in a museum, staring at a label you cannot read? Type the little number printed on it into our free Universal Gallery and it tells you what the piece is, who made it, and where it hangs today. Works for the Met, MoMA and the Art Institute of Chicago. No app, no account.",
-   "tags": "#travelTips #museum #NYC #artmuseum",
-   "visual": "Attach the Universal Gallery film (media/universal-gallery-film.mp4) or a screenshot of the 61.198 Rembrandt result.",
-   "links": {
-    "facebook": "https://plateaustrategy.io/universal-gallery?utm_source=facebook",
-    "instagram": "https://plateaustrategy.io/universal-gallery?utm_source=instagram"
-   }
-  },
   {
    "id": "met-lost-en",
    "lang": "en",
@@ -37,20 +20,20 @@
    }
   },
   {
-   "id": "met-zh",
-   "lang": "zh",
-   "pain": "大都会太大会迷路",
-   "page": "/met",
+   "id": "trail-honest-en",
+   "lang": "en",
+   "pain": "the walk feels too big",
+   "page": "/freedom-trail",
    "channels": [
-    "xiaohongshu",
-    "wechat"
+    "facebook",
+    "instagram"
    ],
-   "text": "大都会博物馆一进门,手机地图就变灰了。我们画了一张脚印地图:先选好想看的展厅,它会一间一间带你走,每段路的时间都是真人走出来量的,不是拍脑袋估的。中文界面,免费,网页打开就能用。",
-   "tags": "#大都会博物馆 #纽约攻略 #博物馆逛展",
-   "visual": "脚印路线图截屏,配一张星空展厅照片。",
+   "text": "Boston's Freedom Trail is sixteen stops, and most visitors quit halfway because nobody tells them how long it really takes. We measured it: 44 minutes of actual walking. Every stop has its own five minute audio guide. Take all sixteen or the downtown half, your choice, free.",
+   "tags": "#Boston #FreedomTrail #travelUSA",
+   "visual": "Screenshot of the trail page with the bronze medallion and the pick row.",
    "links": {
-    "xiaohongshu": "https://plateaustrategy.io/met?utm_source=xiaohongshu",
-    "wechat": "https://plateaustrategy.io/met?utm_source=wechat"
+    "facebook": "https://plateaustrategy.io/freedom-trail?utm_source=facebook",
+    "instagram": "https://plateaustrategy.io/freedom-trail?utm_source=instagram"
    }
   },
   {
@@ -68,6 +51,23 @@
    "links": {
     "xiaohongshu": "https://plateaustrategy.io/freedom-trail?utm_source=xiaohongshu",
     "wechat": "https://plateaustrategy.io/freedom-trail?utm_source=wechat"
+   }
+  },
+  {
+   "id": "ug-zh",
+   "lang": "zh",
+   "pain": "博物馆标签看不懂",
+   "page": "/universal-gallery",
+   "channels": [
+    "xiaohongshu",
+    "wechat"
+   ],
+   "text": "在美国逛博物馆,标签全是英文看不懂?记住这个免费网页:把标签上的小编号直接输进去,马上告诉你这件作品是什么、谁做的、现在挂在几号展厅。大都会、MoMA、芝加哥艺术博物馆都能查,还能看博物馆官方的高清图。不用注册。",
+   "tags": "#纽约旅游 #大都会博物馆 #MoMA #美国旅行攻略",
+   "visual": "截图:输入472.1941查出星夜的那一屏。",
+   "links": {
+    "xiaohongshu": "https://plateaustrategy.io/universal-gallery?utm_source=xiaohongshu",
+    "wechat": "https://plateaustrategy.io/universal-gallery?utm_source=wechat"
    }
   },
   {
@@ -105,22 +105,6 @@
    }
   },
   {
-   "id": "rednote-met",
-   "lang": "zh",
-   "pain": "大都会太大第一次去会迷路",
-   "page": "/met",
-   "channels": [
-    "rednote"
-   ],
-   "title": "大都会太大会迷路?存这个脚印地图",
-   "text": "第一次去纽约大都会博物馆,真的容易迷路。太大了,一进门手机地图还变灰。\n\n分享一个免费网页:先选好你想看的展厅,它会画一张脚印地图,一间一间带你走。\n\n每段路要走多久,都是真人一步一步走出来量的,不是拍脑袋估的。中文界面,不用下载 App,网页打开就能用。\n\n只有半天时间的更要先规划好路线,先收藏📌",
-   "tags": "#纽约旅游 #大都会博物馆 #博物馆攻略 #纽约攻略 #带父母旅行",
-   "visual": "首图用脚印路线图截屏,或大都会展厅实拍;第二张放选展厅的界面。",
-   "links": {
-    "rednote": "https://plateaustrategy.io/met?utm_source=rednote"
-   }
-  },
-  {
    "id": "rednote-family",
    "lang": "zh",
    "pain": "带长辈出游讲解听不懂",
@@ -137,18 +121,19 @@
    }
   },
   {
-   "id": "x-ug-label",
-   "lang": "en",
-   "pain": "cannot read the label",
-   "page": "/universal-gallery",
+   "id": "rednote-planner",
+   "lang": "zh",
+   "pain": "自由行一天路线排不好",
+   "page": "/trip-planner",
    "channels": [
-    "x"
+    "rednote"
    ],
-   "text": "Standing in a museum, staring at a label you cannot read? Type the number on it into our free Universal Gallery: what it is, who made it, where it hangs, in your language. No app, no account.",
-   "tags": "#travel #museums",
-   "visual": "The Universal Gallery film, or a screenshot of a result.",
+   "title": "在美国玩一天 怎么排才不白跑?",
+   "text": "在纽约或者华盛顿玩一天,最怕排了半天路线,到地方发现关门了,或者全堵在路上。\n\n这个免费网页帮你排:把想去的地方放进去,它会按开车时间、路况和每个地方的关门时间,自动帮你把顺序排顺。\n\n不合理的行程,在你出门前就被拦下来了,不用等吃了闭门羹才知道。\n\n自由行的先收藏📌",
+   "tags": "#纽约自由行 #美国旅游攻略 #行程规划 #华盛顿 #自由行",
+   "visual": "首图放规划器上亮和灭的路线截图。",
    "links": {
-    "x": "https://plateaustrategy.io/universal-gallery?utm_source=x"
+    "rednote": "https://plateaustrategy.io/trip-planner?utm_source=rednote"
    }
   },
   {
@@ -179,6 +164,21 @@
    "visual": "Screenshot of the Met footprint sheet with a route drawn.",
    "links": {
     "x": "https://plateaustrategy.io/met?utm_source=x"
+   }
+  },
+  {
+   "id": "x-trail",
+   "lang": "en",
+   "pain": "the walk feels too big",
+   "page": "/freedom-trail",
+   "channels": [
+    "x"
+   ],
+   "text": "Boston's Freedom Trail is 16 stops and most people quit halfway. We measured it: 44 minutes of real walking, and every stop has a 5 minute audio guide, now in Chinese too. Free.",
+   "tags": "#Boston #FreedomTrail",
+   "visual": "Screenshot of the trail page with the medallion and the pick row.",
+   "links": {
+    "x": "https://plateaustrategy.io/freedom-trail?utm_source=x"
    }
   }
  ]
