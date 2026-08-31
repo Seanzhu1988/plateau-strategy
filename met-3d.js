@@ -484,7 +484,13 @@
          the thing that says where the room ends. */
       var hasIn = window.MET_ROOMS && window.MET_ROOMS[k];
       if (hasIn && focusKey === k && focusT > 0.02) {
-        b.svg = '<g opacity="' + (1 - 0.86 * focusT).toFixed(2) + '">' + b.svg + "</g>";
+        /* Nearly out, not merely dimmed. At 14 percent the gallery block was
+           still a solid box drawn around the interior, and its NEAR walls sat
+           between the viewer and the temple: a veil over the one thing the
+           dive exists to show. It cannot go fully invisible because this
+           element carries the click target, so it stays as the faintest
+           footprint and the interior does the drawing. */
+        b.svg = '<g opacity="' + (1 - 0.97 * focusT).toFixed(2) + '">' + b.svg + "</g>";
       }
       items.push(b);
       if (b.labelSvg) {

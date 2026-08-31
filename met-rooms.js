@@ -142,7 +142,7 @@
     /* THE RAKED WALL behind, which stands for the cliffs of the west bank.
        Drawn as a leaning plane, taller at the back, because that is the
        gesture: the room slopes up behind the temple the way the ground did. */
-    var cW = 11, cH = tHt * 1.35;
+    var cW = 9, cH = tHt * 1.05;
     var cq = [P(x0 - 6, r.y + 6, z), P(x0 - 6, r.y + r.h - 6, z),
               P(x0 - 6 + cW, r.y + r.h - 6, z + cH), P(x0 - 6 + cW, r.y + 6, z + cH)];
     /* The normal faces INTO the room, which is the side anyone can see. Lit
@@ -210,13 +210,24 @@
                                z + 0.8 + gH, 2.8, 2.6, SAND_L));
     });
 
-    /* THE GLASS. The north wall and ceiling are stippled glass, chosen to
-       diffuse daylight the way the Nubian sky did. Drawn faint, because it is
-       the one surface in the room you are meant to look through. */
+    /* THE GLASS. The north wall is stippled glass, chosen to diffuse daylight
+       the way the Nubian sky did.
+
+       It was drawn LAST, on the reasoning that glass is translucent so it
+       could sit in front of anything. That was wrong twice over. A full-height
+       wall the width of the room, painted after everything else, simply covers
+       the room: at 34 percent it turned the whole gallery into a pale sheet
+       with the temple somewhere behind it. And it is the same sorting mistake
+       the floor had, in the other direction, because a plane this large cannot
+       be ordered by its nearest corner either.
+
+       In the actual Sackler Wing this glass is the far wall you look TOWARD,
+       not a pane you look through. So it is a backdrop: behind everything but
+       the floor, and faint enough to read as light rather than as a surface. */
     var gq = [P(r.x, r.y, z), P(r.x + r.w, r.y, z),
               P(r.x + r.w, r.y, z + tHt * 1.9), P(r.x, r.y, z + tHt * 1.9)];
-    out.push({ svg: ctx.poly(gq, GLASS, "#b9c4ca", 0.7, ' opacity="0.34"'),
-               depth: 9.9e8 });
+    out.push({ svg: ctx.poly(gq, GLASS, "#c3ced4", 0.6, ' opacity="0.55"'),
+               depth: -9.95e8 });
 
     return out;
   }
