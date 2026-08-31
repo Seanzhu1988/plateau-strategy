@@ -107,7 +107,7 @@
      depth when one is given, because anything drawn ON a wall (a window, a
      door) has to paint after the wall, and a wall spanning seventy feet has
      a nearer corner than the little arch sitting in the middle of it. */
-  function box(ctx, x0, x1, y0, y1, z0, z1, fill, edge, roofFill) {
+  function box(ctx, x0, x1, y0, y1, z0, z1, fill, edge, roofFill, depth) {
     var P = ctx.project, out = [];
     var faces = [
       { n: [0, -1], q: [[x0, y0], [x1, y0]] },
@@ -121,13 +121,14 @@
       if (!ctx.faceVisible(f.n[0], f.n[1])) continue;
       var a = f.q[0], b = f.q[1];
       var quad = [P(a[0], a[1], z0), P(b[0], b[1], z0), P(b[0], b[1], z1), P(a[0], a[1], z1)];
-      var d = depthOf(quad);
+      var d = (depth === undefined) ? depthOf(quad) : depth + i * 0.1;
       out.push({ svg: ctx.poly(quad, ctx.shade(fill, f.n[0], f.n[1], 0), edge, 0.6), depth: d });
       walls[f.n[0] + "," + f.n[1]] = d;
     }
     if (roofFill) {
       var top = [P(x0, y0, z1), P(x1, y0, z1), P(x1, y1, z1), P(x0, y1, z1)];
-      out.push({ svg: ctx.poly(top, ctx.shade(roofFill, 0, 0, 1), edge, 0.6), depth: depthOf(top) });
+      out.push({ svg: ctx.poly(top, ctx.shade(roofFill, 0, 0, 1), edge, 0.6),
+                 depth: (depth === undefined) ? depthOf(top) : depth + 0.5 });
     }
     return { parts: out, walls: walls };
   }
@@ -136,6 +137,7 @@
      both gable triangles, each culled on its own normal. */
   function gableRoof(ctx, x0, x1, y0, y1, zEave, zRidge, fill, edge, gableFill) {
     var P = ctx.project, out = [], xm = (x0 + x1) / 2;
+    out.slopes = {};
     var slopes = [
       { n: [-1, 0], a: [x0, y0], b: [x0, y1] },
       { n: [1, 0],  a: [x1, y1], b: [x1, y0] }
@@ -144,7 +146,9 @@
       var ra = (s.n[0] === -1) ? [[xm, y1], [xm, y0]] : [[xm, y0], [xm, y1]];
       var q = [P(s.a[0], s.a[1], zEave), P(s.b[0], s.b[1], zEave),
                P(ra[0][0], ra[0][1], zRidge), P(ra[1][0], ra[1][1], zRidge)];
-      out.push({ svg: ctx.poly(q, ctx.shade(fill, s.n[0] * 0.5, 0, 0.8), edge, 0.6), depth: depthOf(q) });
+      var d = depthOf(q);
+      out.push({ svg: ctx.poly(q, ctx.shade(fill, s.n[0] * 0.5, 0, 0.8), edge, 0.6), depth: d });
+      out.slopes[s.n[0] + ",0"] = d;
     });
     [[0, -1, y0], [0, 1, y1]].forEach(function (g) {
       if (!ctx.faceVisible(g[0], g[1])) return;
@@ -170,7 +174,7 @@
 
   /* An eight sided stage, tapering. The steeple's lanterns are octagons, and
      an octagon drawn as a cylinder loses the facets that catch the light. */
-  function octStage(ctx, cx, cy, r0, r1, z0, z1, fill, edge) {
+  function octStage(ctx, cx, cy, r0, r1, z0, z1, fill, edge, depth) {
     var P = ctx.project, out = [], N = 8;
     for (var i = 0; i < N; i++) {
       var a0 = (i / N) * Math.PI * 2, a1 = ((i + 1) / N) * Math.PI * 2;
@@ -180,7 +184,8 @@
                P(cx + r0 * Math.cos(a1), cy + r0 * Math.sin(a1), z0),
                P(cx + r1 * Math.cos(a1), cy + r1 * Math.sin(a1), z1),
                P(cx + r1 * Math.cos(a0), cy + r1 * Math.sin(a0), z1)];
-      out.push({ svg: ctx.poly(q, ctx.shade(fill, nx, ny, 0), edge, 0.5), depth: depthOf(q) });
+      out.push({ svg: ctx.poly(q, ctx.shade(fill, nx, ny, 0), edge, 0.5),
+                 depth: (depth === undefined) ? depthOf(q) : depth + i * 0.01 });
     }
     return out;
   }
@@ -319,7 +324,240 @@
     return out;
   }
 
-  var SCENES = { "bunker-hill": bunkerHill, "old-north": oldNorth };
+  /* A flat rectangle lying ON a wall face, in that wall's own (u, z)
+     coordinates: a pilaster, a band, a plain sash. It always takes the wall's
+     depth plus an offset, because a wall eighty feet long has a nearer corner
+     than the strip painted in the middle of it. */
+  function panel(ctx, map, u0, u1, z0, z1, fill, edge, depth) {
+    return { svg: ctx.poly([map(u0, z0), map(u1, z0), map(u1, z1), map(u0, z1)],
+                           fill, edge, 0.4), depth: depth };
+  }
+
+  /* A dome, as rings of octagon that follow a circular profile. Drawn as one
+     cone it would be a spire, and a Federal cupola that ends in a spire is a
+     church. */
+  function domeCap(ctx, cx, cy, r, z0, h, fill, edge, depth) {
+    var out = [], N = 5, prevR = r, prevZ = z0;
+    for (var i = 1; i <= N; i++) {
+      var a = (i / N) * Math.PI / 2;
+      var rr = r * Math.cos(a), zz = z0 + h * Math.sin(a);
+      out = out.concat(octStage(ctx, cx, cy, prevR, Math.max(rr, 0.2), prevZ, zz, fill, edge,
+                                depth === undefined ? undefined : depth + i * 0.2));
+      prevR = rr; prevZ = zz;
+    }
+    return out;
+  }
+
+  /* ---------------- Stop 4: Faneuil Hall ----------------
+     Built 1742 to John Smibert's design, gutted by fire in 1761 and rebuilt
+     inside its own brick shell, then doubled by Charles Bulfinch in 1805 to
+     1806. Federal, and the styles book carries the tells.
+
+     PUBLISHED, from the Boston Landmarks Commission study report and load
+     bearing here: "three-and-a-half stories in height, seven bays in width,
+     and nine bays in depth"; the market floor "measures 76 x 100 feet"; the
+     Great Hall "approximately 76 feet square with a ceiling height of 28
+     feet"; the attic hall "48x76 foot"; "Five copper-clad, barrel-shaped
+     dormers pierce both slopes of the slate-tiled roof"; the orders run
+     "Tuscan at the base, Doric at the second-story level, and Ionic at the
+     third story", "paired at the outer ends"; the ground floor was "an open
+     arcaded space" whose "truncated arched openings are currently lit with
+     10/10 sash windows"; the upper windows are "elongated compass-headed
+     sash, with the exception of the third-story level of the lateral walls";
+     everything is "painted an off-white shade which contrasts strikingly
+     against the red brick surface", with "granite pilaster bases at market
+     level"; and the east front "is surmounted by a domed cupola resting on a
+     quoined base", the belfry "a series of arches segregated by fluted Ionic
+     pilasters", the gilded grasshopper on top of the gilded dome. The vane is
+     52 inches long and 38 pounds, Shem Drowne, 1742.
+
+     The 76 ft inside the walls is the 80 ft outside that every account gives
+     for Bulfinch doubling the original 40 ft width, so the footprint drawn is
+     80 by 100 and it is a subtraction, not a guess. Seven bays over 80 ft and
+     nine over 100 both come out at about 11.2 ft, which is the check.
+
+     DERIVED, and said out loud: floor-to-floor heights and the cupola's own
+     height. Nobody publishes either. They are proportioned from the one
+     published vertical dimension, the Great Hall's 28 ft ceiling. */
+  function faneuilHall(ctx) {
+    var BRICK = "#9c4e3c", BRICK_E = "#6d3327", TRIM = "#f1ece0", TRIM_E = "#b3aa99";
+    var GRANITE = "#b9b5aa", SLATE = "#69707a", SLATE_E = "#464c55";
+    var GLASS = "#42505a", DOOR = "#4a3a30", GOLD = "#c9a22c", GOLD_E = "#8a6f18";
+    var PAVE = "#ded8cb";
+    var out = [], P = ctx.project;
+
+    /* the published plan: 80 wide (7 bays), 100 deep (9 bays), east front */
+    var W = 80, LEN = 100, NX = 7, NY = 9;
+    var x0 = -W / 2, x1 = W / 2, yE = -LEN / 2, yW = LEN / 2;
+
+    /* derived storey lines, from the published 28 ft hall ceiling */
+    var Z0 = 0.5, Z1 = 15, Z2 = 31, EAVE = 45, RIDGE = 66;
+
+    out.push(ground(ctx, 0, 0, 230, 250, 0, PAVE, "#bfb9aa"));
+
+    var body = box(ctx, x0, x1, yE, yW, Z0, EAVE, BRICK, BRICK_E, null);
+    out = out.concat(body.parts);
+
+    var roof = gableRoof(ctx, x0, x1, yE, yW, EAVE, RIDGE, SLATE, SLATE_E, BRICK);
+    var slopes = roof.slopes;
+    out = out.concat(roof);
+
+    /* Every elevation gets the same treatment, which is the whole point of a
+       Federal front: the bays are ruled, not suggested. A face is described
+       once here and drawn wherever it is turned towards us. */
+    var faces = [
+      { n: [-1, 0], k: "-1,0", n0: NY, a: yE, b: yW,
+        map: function (u, z) { return P(x0, u, z); } },
+      { n: [1, 0], k: "1,0", n0: NY, a: yE, b: yW,
+        map: function (u, z) { return P(x1, u, z); } },
+      { n: [0, -1], k: "0,-1", n0: NX, a: x0, b: x1, front: true,
+        map: function (u, z) { return P(u, yE, z); } },
+      { n: [0, 1], k: "0,1", n0: NX, a: x0, b: x1,
+        map: function (u, z) { return P(u, yW, z); } }
+    ];
+
+    faces.forEach(function (f) {
+      var d = body.walls[f.k];
+      if (d === undefined) return;
+      var lateral = (f.n[0] !== 0);
+      var span = f.b - f.a, step = span / f.n0, half = step / 2;
+
+      /* the granite base course the pilasters stand on */
+      out.push(panel(ctx, f.map, f.a, f.b, Z0, Z0 + 2.5, GRANITE, TRIM_E, d + 0.2));
+
+      for (var i = 0; i < f.n0; i++) {
+        var uc = f.a + step * (i + 0.5);
+        var mid = (f.n0 - 1) / 2;
+
+        /* market level: the arcade, glazed in 1806, and the doors of the east
+           front. The report gives paneled doors in the central five bays. */
+        var isDoor = f.front && Math.abs(i - mid) <= 2;
+        out.push(archOpening(ctx, f.map, uc, half * 0.34,
+                             isDoor ? Z0 + 2.5 : Z0 + 5.5, Z1 - 3,
+                             isDoor ? DOOR : GLASS, TRIM_E, d + 0.5));
+
+        /* second story: elongated compass-headed sash, every bay */
+        out.push(archOpening(ctx, f.map, uc, half * 0.30, Z1 + 3, Z2 - 3.5,
+                             GLASS, TRIM_E, d + 0.5));
+
+        /* third story: compass-headed on the ends, square-headed on the long
+           walls, which is the exception the report calls out by name */
+        if (lateral) {
+          out.push(panel(ctx, f.map, uc - half * 0.30, uc + half * 0.30,
+                         Z2 + 3, EAVE - 4, GLASS, TRIM_E, d + 0.5));
+        } else {
+          out.push(archOpening(ctx, f.map, uc, half * 0.30, Z2 + 3, EAVE - 5,
+                               GLASS, TRIM_E, d + 0.5));
+        }
+      }
+
+      /* the pilasters: one on every bay division and PAIRED at the outer
+         ends, so the corners read heavier than the middle. Tuscan, Doric,
+         Ionic bottom to top; at this size the orders show as widths, and the
+         hierarchy shows as the bands between them. */
+      var pw = step * 0.11;
+      var us = [];
+      for (var j = 0; j <= f.n0; j++) us.push(f.a + step * j);
+      us.push(f.a + pw * 2.4); us.push(f.b - pw * 2.4);
+      us.forEach(function (u) {
+        var lo = Math.max(u - pw, f.a), hi = Math.min(u + pw, f.b);
+        out.push(panel(ctx, f.map, lo, hi, Z0 + 2.5, Z1, TRIM, TRIM_E, d + 0.3));
+        out.push(panel(ctx, f.map, lo + pw * 0.12, hi - pw * 0.12, Z1, Z2, TRIM, TRIM_E, d + 0.3));
+        out.push(panel(ctx, f.map, lo + pw * 0.24, hi - pw * 0.24, Z2, EAVE, TRIM, TRIM_E, d + 0.3));
+      });
+
+      /* the entablature over each order, and the cornice at the eaves */
+      out.push(panel(ctx, f.map, f.a, f.b, Z1 - 2.2, Z1, TRIM, TRIM_E, d + 0.35));
+      out.push(panel(ctx, f.map, f.a, f.b, Z2 - 2, Z2, TRIM, TRIM_E, d + 0.35));
+      out.push(panel(ctx, f.map, f.a, f.b, EAVE - 2.4, EAVE, TRIM, TRIM_E, d + 0.35));
+    });
+
+    /* five barrel dormers on each slope, the published count. A dormer sits ON
+       the slope, so it takes the slope's own depth plus an offset. */
+    [[-1, x0], [1, x1]].forEach(function (s) {
+      var sd = slopes[s[0] + ",0"];
+      if (sd === undefined) return;
+      /* gableRoof draws BOTH slopes and lets the painter sort them, so the
+         dormers have to cull themselves. The picture is what caught this: the
+         far slope's five were floating in the sky past the roofline, because
+         nothing was in front of them to hide them. */
+      if (!ctx.faceVisible(s[0], 0)) return;
+      var t = 0.42;                       /* how far up the slope they sit */
+      var xd = s[1] * (1 - t), zd = EAVE + (RIDGE - EAVE) * t;
+      for (var i = 0; i < 5; i++) {
+        var yc = yE + LEN * (i + 0.5) / 5;
+        var map = (function (X) {
+          return function (u, z) { return P(X, u, z); };
+        })(xd);
+        out.push(archOpening(ctx, map, yc, 3.4, zd, zd + 5.6, TRIM, TRIM_E, sd + 0.6));
+        out.push(archOpening(ctx, map, yc, 2.2, zd + 1, zd + 4.8, GLASS, TRIM_E, sd + 0.7));
+      }
+    });
+
+    /* the cupola, over the east end where Bulfinch moved it, not the middle:
+       quoined square base, open arched belfry, gilded dome, grasshopper. */
+    var cy = yE + 15, CB0 = 56, CB1 = 78, cw = 17, CUP = 3e7;
+    /* CUP: the cupola stands ON the roof, and the roof is a plane spanning the
+       whole building, so its nearest corner beats anything sitting in the
+       middle of it. Sorted on its own corners the cupola was buried to the
+       shoulders and the dome floated free above the slate. Explicit depth. */
+    var base = box(ctx, -cw / 2, cw / 2, cy - cw / 2, cy + cw / 2, CB0, CB1, TRIM, TRIM_E, null, CUP);
+    out = out.concat(base.parts);
+
+    /* the quoins, which are what makes it a quoined base rather than a box */
+    [[0, -1], [0, 1], [-1, 0], [1, 0]].forEach(function (n) {
+      var d = base.walls[n[0] + "," + n[1]];
+      if (d === undefined) return;
+      var a = n[0] === 0 ? -cw / 2 : cy - cw / 2, b = n[0] === 0 ? cw / 2 : cy + cw / 2;
+      var map = n[0] === 0
+        ? function (u, z) { return P(u, n[1] < 0 ? cy - cw / 2 : cy + cw / 2, z); }
+        : function (u, z) { return P(n[0] < 0 ? -cw / 2 : cw / 2, u, z); };
+      for (var q = 0; q < 5; q++) {
+        var z = CB1 - 4 - q * 4;
+        if (z < CB0) break;
+        var wq = (q % 2) ? 1.6 : 2.6;
+        out.push(panel(ctx, map, a, a + wq, z, z + 2.4, GRANITE, TRIM_E, d + 0.03));
+        out.push(panel(ctx, map, b - wq, b, z, z + 2.4, GRANITE, TRIM_E, d + 0.03));
+      }
+    });
+
+    /* the open belfry: an arch on every face, with the piers between them */
+    var BF0 = 78, BF1 = 96, bw = 14;
+    var belf = box(ctx, -bw / 2, bw / 2, cy - bw / 2, cy + bw / 2, BF0, BF1, TRIM, TRIM_E, null,
+                   CUP + 1000);
+    out = out.concat(belf.parts);
+    [[0, -1], [0, 1], [-1, 0], [1, 0]].forEach(function (n) {
+      var d = belf.walls[n[0] + "," + n[1]];
+      if (d === undefined) return;
+      var map = n[0] === 0
+        ? function (u, z) { return P(u, n[1] < 0 ? cy - bw / 2 : cy + bw / 2, z); }
+        : function (u, z) { return P(n[0] < 0 ? -bw / 2 : bw / 2, u, z); };
+      var c = n[0] === 0 ? 0 : cy;
+      out.push(archOpening(ctx, map, c, 4.4, BF0 + 3, BF0 + 9.5, "#2f3a40", TRIM_E, d + 0.05));
+    });
+    out.push({ svg: ctx.poly([P(-bw / 2 - 1.2, cy - bw / 2 - 1.2, BF1),
+                              P(bw / 2 + 1.2, cy - bw / 2 - 1.2, BF1),
+                              P(bw / 2 + 1.2, cy + bw / 2 + 1.2, BF1),
+                              P(-bw / 2 - 1.2, cy + bw / 2 + 1.2, BF1)],
+                             ctx.shade(TRIM, 0, 0, 1), TRIM_E, 0.5), depth: CUP + 2000 });
+
+    /* the gilded dome, and the finial the vane turns on */
+    out = out.concat(domeCap(ctx, 0, cy, 7.6, BF1, 9, GOLD, GOLD_E, CUP + 3000));
+    out = out.concat(octStage(ctx, 0, cy, 0.8, 0.8, BF1 + 9, BF1 + 12.5, GOLD, GOLD_E, CUP + 4000));
+
+    /* Shem Drowne's grasshopper, 1742: 52 inches long, 38 pounds, and the one
+       dimension of the cupola that anybody publishes. 52 in is 4.33 ft. */
+    var gz = BF1 + 12.5, GL = 4.33;
+    var g = [P(-GL / 2, cy, gz + 0.9), P(-GL * 0.15, cy, gz + 1.9),
+             P(GL * 0.30, cy, gz + 1.7), P(GL / 2, cy, gz + 0.5),
+             P(GL * 0.30, cy, gz + 0.9), P(GL * 0.05, cy, gz),
+             P(-GL * 0.20, cy, gz + 0.7), P(-GL * 0.42, cy, gz + 0.2)];
+    out.push({ svg: ctx.poly(g, GOLD, GOLD_E, 0.4), depth: CUP + 5000 });
+    return out;
+  }
+
+  var SCENES = { "bunker-hill": bunkerHill, "old-north": oldNorth,
+                 "faneuil-hall": faneuilHall };
 
   /* The live mount: same hand-rolled projection as the other models, so a
      trail stop weighs a few kilobytes and needs no library. */

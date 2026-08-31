@@ -178,6 +178,48 @@ is standing now.
 
 ---
 
+## Federal, and the ordered civic front
+
+*1780s to 1820s. Here: Faneuil Hall, Boston, 1742, enlarged by Charles
+Bulfinch 1805 to 1806.*
+
+Georgian's successor, and the difference is discipline rather than ornament.
+A Georgian church spends everything on one steeple. A Federal civic building
+spends it on ORDER: the whole elevation is ruled into bays by pilasters, and
+the pilasters change their order as they climb.
+
+**Tells**
+- **The hierarchy of orders, bottom to top.** Faneuil Hall runs Tuscan at the
+  market level, Doric at the second story, Ionic at the third. Plainest at the
+  bottom, richest at the top. Getting that order backwards is the giveaway.
+- **Bays counted, not suggested.** A pilaster on every bay division and
+  **paired at the outer ends**, so the corners read as heavier than the middle.
+- Round, elongated **compass-headed** sash in the principal stories, sitting
+  over a ground floor that was an **open arcade** before it was glazed in.
+- Red brick, with every piece of trim painted a single off-white. Not stone.
+  Stone appears only where it must work: granite pilaster bases at the ground,
+  brownstone sills and keystones.
+- A **cupola** on a quoined base: open arched belfry, then a dome. It sits at
+  one end over the entrance front, not on the middle of the roof.
+- The roof is a broad gable holding a usable half story, so it carries real
+  dormers rather than a decorative one or two.
+
+**Wrong if** the orders climb from rich to plain, the pilasters are evenly
+spaced with no pairing at the corners, or the cupola is a spire. A Federal
+cupola ends in a dome; a spire would make it a church.
+
+**Our numbers.** Three and a half stories, **seven bays wide and nine bays
+deep**, the market floor **76 by 100 ft** inside, the Great Hall **76 ft
+square with a 28 ft ceiling**, the attic hall **48 by 76 ft**, **five
+copper-clad barrel dormers on each slope** of the slate roof, and the
+grasshopper vane **52 in long, 38 lb**, cut by Shem Drowne in 1742. The 76 ft
+interior width inside walls a shade over 2 ft thick is the published 80 ft
+outside, which is the figure for Bulfinch doubling the original 40 ft width.
+No source publishes a floor-to-floor height or a cupola height, so those are
+proportioned from the 28 ft ceiling that is published, and said so.
+
+---
+
 ## Working rules
 
 1. **Name the style before choosing the geometry.** If you cannot name it, you

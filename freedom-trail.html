@@ -408,11 +408,12 @@
         <div id="ftStops"></div>
 
         <!-- The stops that have a picture, drawn to their published
-             dimensions. Two of the sixteen so far; the rest are coming. -->
+             dimensions. Three of the sixteen so far; the rest are coming. -->
         <section class="ft-model" id="ftModelWrap" hidden>
           <h2 class="ft-model-h">The trail, standing up</h2>
           <div class="ft-model-pick" id="ftModelPick">
             <button type="button" data-model="old-north" aria-pressed="true">Stop 12, Old North Church</button>
+            <button type="button" data-model="faneuil-hall" aria-pressed="false">Stop 4, Faneuil Hall</button>
             <button type="button" data-model="bunker-hill" aria-pressed="false">Stop 16, Bunker Hill</button>
           </div>
           <p class="ft-model-sub" id="ftModelSub"></p>
@@ -1232,6 +1233,20 @@
             + 'the 191 divides between brick tower, belfry, three lanterns and spire '
             + 'is not published anywhere, and is set here by proportion.'
       },
+      'faneuil-hall': {
+        opts: { yaw: 2.5 },
+        sub: 'Faneuil Hall, 1742, doubled by Charles Bulfinch in 1806. Three and a '
+           + 'half stories, seven bays wide and nine deep, the market floor 76 by 100 '
+           + 'feet inside and the Great Hall 76 feet square under a 28 foot ceiling. '
+           + 'Drag it to turn.',
+        note: 'Federal, and the tell is order rather than ornament: pilasters ruling '
+            + 'every bay and paired at the corners, Tuscan at the market level, Doric '
+            + 'above it, Ionic at the top. The ground floor was an open arcade before '
+            + 'it was glazed in. Five barrel dormers a side, and the grasshopper on '
+            + 'the cupola is Shem Drowne\u2019s, 1742, 52 inches long and 38 pounds. '
+            + 'Floor heights and the cupola\u2019s own height are published nowhere, '
+            + 'and are proportioned here from the 28 feet that is.'
+      },
       'bunker-hill': {
         sub: 'The Bunker Hill Monument, 221 feet of Quincy granite, 30 feet square '
            + 'at the base and tapering to 15.4 at the top. Solomon Willard, '
@@ -1245,7 +1260,7 @@
     function show(key) {
       var t = TEXT[key];
       if (!t) return;
-      window.TRAIL3D.mount(stage, key);
+      window.TRAIL3D.mount(stage, key, t.opts);
       if (sub) sub.textContent = t.sub;
       if (note) note.textContent = t.note;
       var bs = pick.querySelectorAll('button');
