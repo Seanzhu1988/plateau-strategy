@@ -46,7 +46,7 @@
   /* One battered mass: four leaning walls and a top. The top face is inset by
      the batter on every side, which is the whole trick; everything else is a
      box. Returns items, unsorted, each carrying its own depth. */
-  function batteredMass(ctx, x1, y1, x2, y2, z0, h, lean, fill) {
+  function batteredMass(ctx, x1, y1, x2, y2, z0, h, lean, fill, depth) {
     var P = ctx.project, out = [];
     var ix = (x2 - x1) * 0 + lean * h;      /* horizontal draw-in at the top */
     var tx1 = x1 + ix, tx2 = x2 - ix, ty1 = y1 + ix, ty2 = y2 - ix;
@@ -64,12 +64,12 @@
                P(t[j][0], t[j][1], z0 + h), P(t[i][0], t[i][1], z0 + h)];
       if (!ctx.faceVisible(norm[i][0], norm[i][1])) continue;
       out.push({ svg: ctx.poly(q, ctx.shade(fill, norm[i][0], norm[i][1], 0), SAND_D, 0.6),
-                 depth: depthOf(q) });
+                 depth: (depth === undefined ? depthOf(q) : depth) });
     }
     var top = [P(t[0][0], t[0][1], z0 + h), P(t[1][0], t[1][1], z0 + h),
                P(t[2][0], t[2][1], z0 + h), P(t[3][0], t[3][1], z0 + h)];
     out.push({ svg: ctx.poly(top, ctx.shade(fill, 0, 0, 1), SAND_D, 0.6),
-               depth: depthOf(top) });
+               depth: (depth === undefined ? depthOf(top) : depth + 0.5) });
     return out;
   }
 
@@ -270,11 +270,9 @@
     "medieval":           { kind: "screen", h: 52,   w: 42,  fill: "#8d7f63" },
     "islamic":            { kind: "screen", h: 22,   w: 16.7, arch: true, fill: "#7d8f9c" },
     "lehman":             { kind: "canvas", h: 5.1,  w: 4.1,  fill: "#6f5a44" },
-    "american-court":     { kind: "canvas", h: 12.4, w: 21.3, fill: "#5d6b7a" },
     "grand-stair":        { kind: "canvas", h: 18.3, w: 10.7, fill: "#7a6a56" },
     "euro-paintings":     { kind: "canvas", h: 4.7,  w: 4.5,  fill: "#6b5b47" },
-    "nineteenth-century": { kind: "canvas", h: 2.4,  w: 3.1,  fill: "#7d8a5e" },
-    "asian-astor":        { kind: "canvas", h: 24.7, w: 49.6, fill: "#8a7355" }
+    "nineteenth-century": { kind: "canvas", h: 2.4,  w: 3.1,  fill: "#7d8a5e" }
   };
 
   var FRAME = "#4a3f31", STONE_E = "#8b8375";
@@ -435,12 +433,18 @@
 
     out.push(flat(ctx, x1, y1, x1 + L, y2, z + 0.4, "#efe9dc", LIME_D, 0.5, -1e9));
 
-    /* the two long walls, and the arcade cut through the Fifth Avenue side */
-    [y1, y2].forEach(function (yy, side) {
-      var n = (yy === y1) ? -1 : 1;
-      var q = [P(x1, yy, z), P(x1 + L, yy, z), P(x1 + L, yy, z + H), P(x1, yy, z + H)];
-      out.push({ svg: ctx.poly(q, ctx.shade(LIME, 0, n, 0.25), LIME_D, 0.5),
-                 depth: side ? -9.9e8 : -9.6e8 });
+    /* The long walls, drawn as a CUTAWAY: only the wall whose inside faces
+       the camera. Drawing both put a full-height slab between the viewer and
+       the room, which is what a near wall does in a real building and exactly
+       what you do not want in a model of one. The test is the wall's INNER
+       normal: if you can see the inside, draw it; if you would be looking at
+       its back, you are standing outside it and it is in your way. */
+    [[y1, 1], [y2, -1]].forEach(function (wl) {
+      if (!ctx.faceVisible(0, wl[1])) return;
+      var q = [P(x1, wl[0], z), P(x1 + L, wl[0], z),
+               P(x1 + L, wl[0], z + H), P(x1, wl[0], z + H)];
+      out.push({ svg: ctx.poly(q, ctx.shade(LIME, 0, wl[1], 0.25), LIME_D, 0.5),
+                 depth: -9.6e8 });
     });
 
     /* THREE BAYS. Each gets a round arch and a dome, and the piers between
@@ -483,6 +487,138 @@
     return out;
   }
 
-  window.MET_ROOMS = { dendur: dendur, 'great-hall': greatHall };
+
+  /* ---------------- The Charles Engelhard Court ----------------
+     The American Wing's skylit court, and until now a framed rectangle,
+     because its signature work is a painting. That was the wrong reading:
+     the thing people remember about this room is not a canvas, it is a
+     WALL. A whole marble facade stands inside the museum.
+
+     It is the Branch Bank of the United States, Wall Street, by Martin E.
+     Thompson, finished 1824 and moved here when the bank was demolished.
+     Two storeys, SEVEN BAYS, with the middle section stepping forward under
+     a pediment: English Palladian, which the styles book files under
+     Beaux-Arts' ancestors and which means ROUND arches and columns in pairs,
+     never a point. The court was glazed over in 1980.
+
+     The glass roof is drawn as its FRAMING BARS, not as a sheet. A sheet the
+     size of the room painted over the room, which is the mistake the Dendur
+     glass wall made, and bars read as a skylight anyway. */
+  function americanCourt(ctx) {
+    var r = ctx.room, z = ctx.zBase, P = ctx.project, out = [];
+    var wall = ctx.wall || 26;
+    var MARBLE = "#e8e4d8", MARBLE_D = "#b3ad9c", SHADOW = "#d9d4c6";
+
+    var W = r.w * 0.74, H = wall * 0.74;
+    var cx = r.x + r.w / 2, y0 = r.y + r.h * 0.30;
+    var x1 = cx - W / 2, x2 = cx + W / 2;
+    var D = Math.max(2.2, W * 0.030);
+
+    out.push(flat(ctx, r.x, r.y, r.x + r.w, r.y + r.h, z + 0.4, "#efe9dc", "#cdc4b0", 0.5, -1e9));
+
+    /* The wall behind everything, at an explicit depth. Sorted on its own
+       corners it painted over the columns standing in front of it, which is
+       the third time a large flat surface has done that here. */
+    out = out.concat(batteredMass(ctx, x1, y0, x2, y0 + D, z, H, 0, SHADOW, -9.8e8));
+
+    var pw = W * 0.40;
+    out = out.concat(batteredMass(ctx, cx - pw/2, y0 - D*1.2, cx + pw/2, y0, z, H, 0, MARBLE, -9.7e8));
+
+    /* SEVEN BAYS, columns paired across the projecting centre. They stand
+       clear of the wall now and are drawn after it. */
+    var bay = W / 7;
+    for (var i = 0; i <= 7; i++) {
+      var bx = x1 + bay * i;
+      var pair = (i >= 2 && i <= 5);
+      var cw = Math.max(1.1, bay * 0.13);
+      var yy = pair ? y0 - D*1.2 : y0;
+      out = out.concat(batteredMass(ctx, bx - cw, yy - cw*2.2, bx + cw, yy - 0.3,
+                                    z, H * 0.72, 0.012, "#f4f1e8", -9.5e8 + i));
+      out = out.concat(batteredMass(ctx, bx - cw*1.6, yy - cw*2.6, bx + cw*1.6, yy - 0.1,
+                                    z + H*0.72, H*0.05, -0.10, "#faf8f1", -9.4e8 + i));
+    }
+
+    /* the pediment over the centre */
+    var pz = z + H, ph = H * 0.26;
+    var yy2 = y0 - D*1.2;
+    out.push({ svg: ctx.poly([P(cx - pw/2 - 3, yy2, pz), P(cx + pw/2 + 3, yy2, pz),
+                              P(cx, yy2, pz + ph)],
+                             ctx.shade(MARBLE, 0, -1, 0.3), MARBLE_D, 0.7), depth: -9.3e8 });
+    /* the entablature it sits on, so the pediment has something to rest upon */
+    out = out.concat(batteredMass(ctx, cx - pw/2 - 3, yy2 - 1, cx + pw/2 + 3, y0, z + H*0.77,
+                                  H*0.10, 0, "#f7f4ec", -9.35e8));
+    return out;
+  }
+
+
+  /* ---------------- The Astor Chinese Garden Court ----------------
+     A Ming scholar's courtyard, modelled on the Garden of the Master of the
+     Fishing Nets in Suzhou and built here by craftsmen using Ming methods.
+     Roughly 59 by 40 feet, published.
+
+     The thing everyone photographs is the MOON GATE: a perfect circle cut
+     through a white wall. That is the landmark, so that is what is drawn,
+     along with the roofed walkway on one side. A framed painting was never
+     going to say any of this. */
+  function astorCourt(ctx) {
+    var r = ctx.room, z = ctx.zBase, P = ctx.project, out = [];
+    var wall = ctx.wall || 26;
+    var FT = 1.1;
+    var CW = 59, CD = 40;
+    var k = Math.min((r.w * 0.86) / CW, (r.h * 0.78) / CD, FT);
+    var W = CW * k, D = CD * k;
+    var cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+    var x1 = cx - W/2, x2 = cx + W/2, y1 = cy - D/2, y2 = cy + D/2;
+    var PLASTER = "#eceae2", TILE = "#6f6255", TIMBER = "#8a5f43", STONE = "#cfc9bb";
+
+    out.push(flat(ctx, x1, y1, x2, y2, z + 0.4, "#e6e0d2", "#c3bba7", 0.5, -1e9));
+
+    var H = wall * 0.62;
+    /* The white plastered wall carrying the moon gate, at an EXPLICIT depth.
+       Left to sort on its own corners it painted straight over the gate, and
+       the gate is the entire reason this room is worth drawing. That is the
+       fourth time in this file a large flat surface has buried what stands in
+       front of it; large planes get an explicit depth, always. */
+    out = out.concat(batteredMass(ctx, x1, y1, x2, y1 + 2.2, z, H, 0, PLASTER, -9.8e8));
+
+    /* THE MOON GATE, a true circle. Drawn as an n-gon opening on the wall
+       face; a circle is the one shape here that must not be approximated
+       with a rectangle, because the circle IS the subject. */
+    var rr = H * 0.34, mcx = cx, mcz = z + H * 0.46;
+    var ring = [];
+    for (var a = 0; a < 28; a++) {
+      var th = (a / 28) * Math.PI * 2;
+      ring.push(P(mcx + Math.cos(th) * rr, y1 - 0.3, mcz + Math.sin(th) * rr));
+    }
+    out.push({ svg: ctx.poly(ring, "#c6d0cc", "#8e9a94", 0.8), depth: -9.5e8 });
+    /* the moulded surround, so the circle reads as cut THROUGH a wall */
+    var ring2 = [];
+    for (var a2 = 0; a2 < 28; a2++) {
+      var th2 = (a2 / 28) * Math.PI * 2;
+      ring2.push(P(mcx + Math.cos(th2) * rr * 1.13, y1 - 0.15, mcz + Math.sin(th2) * rr * 1.13));
+    }
+    out.push({ svg: ctx.poly(ring2, "#dcd9cf", "#a9a294", 0.7), depth: -9.6e8 });
+
+    /* the roofed walkway down one side: posts and a tiled sweep */
+    var n = 5;
+    for (var i = 0; i <= n; i++) {
+      var px = x1 + (W * 0.62) * (i / n) + W * 0.19;
+      out = out.concat(batteredMass(ctx, px - 1.1, y2 - 4, px + 1.1, y2 - 1.8, z, H * 0.66, 0.01, TIMBER));
+    }
+    out = out.concat(batteredMass(ctx, x1 + W*0.17, y2 - 5.2, x1 + W*0.83, y2 - 0.6,
+                                  z + H * 0.66, H * 0.10, 0.06, TILE));
+
+    /* the rockery, which is the other half of a scholar's garden */
+    [[0.16, 0.46, 0.36], [0.26, 0.58, 0.24], [0.10, 0.62, 0.17]].forEach(function (rk, ri) {
+      var rx = x1 + W * rk[0], ry = y1 + D * rk[1], rs = H * rk[2];
+      out = out.concat(batteredMass(ctx, rx - rs*0.55, ry - rs*0.45, rx + rs*0.55, ry + rs*0.45,
+                                    z, rs, 0.22, STONE, -9.2e8 + ri));
+    });
+    return out;
+  }
+
+  window.MET_ROOMS = { dendur: dendur, 'great-hall': greatHall,
+                      'american-court': americanCourt,
+                      'asian-astor': astorCourt };
   Object.keys(LANDMARKS).forEach(function (k) { window.MET_ROOMS[k] = landmark; });
 })();
