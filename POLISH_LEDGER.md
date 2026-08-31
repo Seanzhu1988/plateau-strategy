@@ -58,8 +58,10 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
       sheet rather than shrinking rooms.
 
 
-- [ ] **29 composed strings across 15 visitor pages still bypass the
-      translator**, found by `i18n_untranslated.py` after the Freedom Trail
+- [ ] **38 composed strings across the visitor pages still bypass the
+      translator** (was reported as 29; the linter itself was blind to
+      single-quoted strings containing HTML attributes, which is nearly every
+      innerHTML line, and now is not), found by `i18n_untranslated.py` after the Freedom Trail
       bug. Worst first, because these are the flagship free tools:
       trip-planner (6), universal-gallery, destination-book, booking,
       landing-page, articles, discovery, factor-clock, favorite-place,

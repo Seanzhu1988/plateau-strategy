@@ -295,6 +295,17 @@
   .ft-model-sub{margin:0 0 1rem;color:#5b544a;line-height:1.55}
   .ft-model-stage{background:#eef0ea;border-radius:10px;overflow:hidden}
   .ft-model-note{margin:.7rem 0 0;font-size:.82rem;color:#6b6459;line-height:1.5}
+  .ft-near{margin:1rem 0 1.4rem;padding:.9rem 1rem;border:1px solid #ded7c6;
+           border-radius:10px;background:#faf8f3}
+  .ft-near button{font:inherit;font-size:.9rem;padding:.5rem .95rem;border-radius:8px;
+                  border:1px solid #1f3a5f;background:#1f3a5f;color:#fff;cursor:pointer}
+  .ft-near button.ft-near-off{background:none;color:#1f3a5f}
+  .ft-near-note{margin:.55rem 0 0;font-size:.78rem;color:#6b6459;line-height:1.5}
+  .ft-near-live{margin:.7rem 0 0;padding-top:.7rem;border-top:1px solid #e8e2d4}
+  .ft-near-here{font-size:1.02rem;margin:0 0 .5rem}
+  .ft-near-here b{color:#1f3a5f}
+  .ft-near-pick{display:flex;flex-wrap:wrap;gap:.5rem;margin:.5rem 0 0}
+  .ft-near-acc{font-size:.74rem;color:#6b6459;margin:.55rem 0 0}
 </style>
 </head>
 <body>
@@ -378,6 +389,17 @@
 
 
 
+
+        <!-- Walk-along. Opt in, and the page tells you which stop you are
+             standing at. It does NOT start the audio by itself: browsers block
+             that without a tap, and starting narration in someone's ear
+             unasked would be wrong even if they allowed it. -->
+        <div class="ft-near" id="ftNear" hidden>
+          <button id="ftNearStart" type="button">Follow me along the trail</button>
+          <p class="ft-near-note" id="ftNearNote">Your phone works out which
+             stop you are at. The location never leaves your device.</p>
+          <div class="ft-near-live" id="ftNearLive" hidden></div>
+        </div>
 
         <div id="ftStops"></div>
 
@@ -561,7 +583,7 @@
             if (G) {
                 var primary = "/media/audio/trail-stop-" + s.n + G.suffix + ".mp3";
                 narr = '<div class="ft-byline"><span class="ft-guide">' + G.name + '</span>' +
-                       '<button class="ft-play" data-audio="' + primary + '">' + resumeLabel(primary) + '</button><span class="hs-mini" title="Headphones, please, for the people around you."><svg class="hs-ear" viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M7.2 2.5a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66A4.1 4.1 0 0 0 7.2 2.5zm9.6 0a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66a4.1 4.1 0 0 0-1.7-8.34z"/></svg></span></div>';
+                       '<button class="ft-play" data-stop="' + s.n + '" data-audio="' + primary + '">' + resumeLabel(primary) + '</button><span class="hs-mini" title="Headphones, please, for the people around you."><svg class="hs-ear" viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M7.2 2.5a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66A4.1 4.1 0 0 0 7.2 2.5zm9.6 0a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66a4.1 4.1 0 0 0-1.7-8.34z"/></svg></span></div>';
             }
             // Yiki's written aside stays as text. Her name chip is dropped when
             // she is also the one narrating aloud (the English page, after the
@@ -1192,6 +1214,157 @@
     try { window.TRAIL3D.mount(stage, 'bunker-hill'); wrap.hidden = false; }
     catch (e) { if (window.console) console.warn('trail model failed:', e); }
   })();
+</script>
+<script>
+/* Walk-along: which stop are you standing at.
+ *
+ * [SEAN: "if i apporach the building it trigger our audio guide to read the
+ * attraction".]
+ *
+ * It offers, it does not trigger, and that is not timidity. Browsers refuse to
+ * start audio without a tap, so an automatic trigger is not available to any
+ * website; and narration starting by itself in someone's ear, in a public
+ * street, would be the wrong behaviour even where it is permitted. The tap on
+ * this prompt IS the gesture, so the audio is allowed to play.
+ *
+ * IT NAMES MORE THAN ONE STOP WHEN IT CANNOT TELL, and that is the honest
+ * part. Measured from the trail's own coordinates, the Old State House and the
+ * Boston Massacre Site are 25 METRES apart. King's Chapel and the Boston Latin
+ * School site, 36. Park Street Church and the Granary Burying Ground, 36. City
+ * GPS is good to 10 or 30 metres. Three pairs on this trail are closer
+ * together than the error, so no radius can separate them, and a page that
+ * confidently named one would simply be wrong a third of the time. When two
+ * are inside the margin it offers both and lets the person standing there
+ * decide, because they can see which building they are looking at.
+ *
+ * The position never leaves the device: no fetch, no logging, nothing stored.
+ * Watching stops when the page is hidden, because a GPS left running in a
+ * pocket is someone's battery.
+ */
+(function () {
+  var wrap = document.getElementById('ftNear');
+  var startBtn = document.getElementById('ftNearStart');
+  var live = document.getElementById('ftNearLive');
+  var note = document.getElementById('ftNearNote');
+  if (!wrap || !startBtn || !navigator.geolocation) return;
+  wrap.hidden = false;
+
+  /* This block builds its text from numbers, so every line goes through the
+     PATTERN translator, not concatenation. Written the other way first, and
+     the site's own linter caught it, after the linter itself was fixed: it
+     had been blind to single-quoted strings containing HTML attributes, which
+     is nearly every innerHTML line here. */
+  function T(pattern, vals) {
+    if (window.psxFmt) return window.psxFmt(pattern, vals);
+    return pattern.replace(/\{(\w+)\}/g, function (m, k) {
+      return (vals && vals[k] !== undefined) ? vals[k] : m;
+    });
+  }
+
+  var RADIUS = 60;      /* generous on purpose: precision is the limit, not this */
+  var AMBIGUOUS = 45;   /* inside this of each other, name them both */
+  var watchId = null, stops = null;
+
+  function metres(aLat, aLon, bLat, bLon) {
+    var R = 6371000, p1 = aLat * Math.PI / 180, p2 = bLat * Math.PI / 180;
+    var dp = p2 - p1, dl = (bLon - aLon) * Math.PI / 180;
+    var x = Math.sin(dp/2) * Math.sin(dp/2) +
+            Math.cos(p1) * Math.cos(p2) * Math.sin(dl/2) * Math.sin(dl/2);
+    return 2 * R * Math.asin(Math.sqrt(x));
+  }
+
+  function esc(t) { var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+  function paint(pos) {
+    if (!stops || !stops.length) return;
+    var la = pos.coords.latitude, lo = pos.coords.longitude;
+    var acc = Math.round(pos.coords.accuracy || 0);
+    var near = stops.map(function (s) {
+      return { s: s, d: metres(la, lo, s.lat, s.lon) };
+    }).filter(function (r) { return r.d <= RADIUS; })
+      .sort(function (a, b) { return a.d - b.d; });
+
+    if (!near.length) {
+      var closest = stops.map(function (s) { return { s: s, d: metres(la, lo, s.lat, s.lon) }; })
+        .sort(function (a, b) { return a.d - b.d; })[0];
+      live.innerHTML =
+        '<p class="ft-near-here">' +
+        T('Not at a stop yet. Nearest is {name}, about {m} m away.',
+          { name: '<b>' + esc(closest.s.name) + '</b>', m: Math.round(closest.d) }) +
+        '</p><p class="ft-near-acc">' +
+        T('Your phone puts you within about {m} m.', { m: acc }) + '</p>';
+      return;
+    }
+
+    /* everything within the margin of the nearest counts as "here" */
+    var here = near.filter(function (r) { return r.d - near[0].d <= AMBIGUOUS; }).slice(0, 3);
+    var head = '<p class="ft-near-here">' + (here.length === 1
+      ? T('You are at {name}, about {m} m away.',
+          { name: '<b>' + esc(here[0].s.name) + '</b>', m: Math.round(here[0].d) })
+      : T('{n} stops are right here. Your phone cannot tell them apart at this distance, but you can see which one you are looking at.',
+          { n: here.length })) + '</p>';
+
+    var picks = here.map(function (r) {
+      return '<button type="button" class="ft-near-go" data-stop="' + r.s.n + '">▶ ' +
+             esc(r.s.name) + '</button>';
+    }).join('');
+
+    live.innerHTML = head + '<div class="ft-near-pick">' + picks + '</div>' +
+      '<p class="ft-near-acc">' +
+      T('Your phone puts you within about {m} m. Three pairs on this trail stand closer together than that.',
+        { m: acc }) + '</p>';
+  }
+
+  /* The tap that reaches the stop's own play button is a real user gesture, so
+     the audio is permitted. Reusing that button rather than starting a second
+     player means there is still exactly one audio path on this page. */
+  live.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.ft-near-go');
+    if (!b) return;
+    var n = b.getAttribute('data-stop');
+    var play = document.querySelector('.ft-play[data-stop="' + n + '"]');
+    if (!play) return;
+    play.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    play.click();
+  });
+
+  function stop() {
+    if (watchId != null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+    live.hidden = true;
+    startBtn.textContent = T('Follow me along the trail', {});
+    startBtn.classList.remove('ft-near-off');
+  }
+
+  function begin() {
+    startBtn.textContent = T('Stop following', {});
+    startBtn.classList.add('ft-near-off');
+    live.hidden = false;
+    live.innerHTML = '<p class="ft-near-here">' + T('Finding you…', {}) + '</p>';
+    watchId = navigator.geolocation.watchPosition(paint, function (err) {
+      live.innerHTML = '<p class="ft-near-here">' + T(
+        (err && err.code === 1)
+          ? 'Could not get your location, permission was declined. The stops below all still play on their own.'
+          : 'Could not get your location. The stops below all still play on their own.',
+        {}) + '</p>';
+    }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+  }
+
+  startBtn.addEventListener('click', function () {
+    if (watchId != null) { stop(); return; }
+    if (stops) { begin(); return; }
+    fetch('/api/trails').then(function (r) { return r.json(); }).then(function (d) {
+      var t = ((d && d.trails) || []).filter(function (x) { return x.id === 'freedom-trail'; })[0];
+      stops = (t && t.stops || []).filter(function (s) { return s.lat && s.lon; });
+      if (!stops.length) { note.textContent = T('The stop locations are not available.', {}); return; }
+      begin();
+    }).catch(function () { note.textContent = T('Could not load the stop locations.', {}); });
+  });
+
+  /* a GPS left running in a pocket is someone's battery */
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden && watchId != null) stop();
+  });
+})();
 </script>
 </body>
 </html>

@@ -39,8 +39,28 @@ SKIP = {"dispatch.html", "board.html", "room.html", "room-locked.html",
 
 TARGET = re.compile(
     r"""(?:\.textContent\s*=|\.innerHTML\s*=|\.push\s*\()""")
-# a quoted literal holding real words: three letters, then a space, then more
-ENGLISHY = re.compile(r"""(['"])((?:[^'"\\]|\\.){0,80}?[A-Za-z]{3}\s+[A-Za-z]{2}(?:[^'"\\]|\\.){0,80}?)\1""")
+# A quoted literal holding real words: three letters, a space, then more.
+#
+# QUOTE-AWARE ON PURPOSE. The first version used one character class excluding
+# BOTH quote characters, so a single-quoted string containing an HTML attribute
+# in double quotes could never match, and nearly every innerHTML line in this
+# codebase looks exactly like that. It reported a page clean while that page
+# built its whole interface out of untranslatable concatenation. The two
+# patterns below each exclude only their OWN delimiter, which is how a string
+# literal actually works.
+SQ = re.compile(r"'((?:[^'\\]|\\.){0,160}?)'")
+DQ = re.compile(r'"((?:[^"\\]|\\.){0,160}?)"')
+WORDS = re.compile(r"[A-Za-z]{3}\s+[A-Za-z]{2}")
+
+
+def englishy(line):
+    """Return the first quoted run that reads like prose, or None."""
+    for pat in (SQ, DQ):
+        for m in pat.finditer(line):
+            body = m.group(1)
+            if WORDS.search(body):
+                return body
+    return None
 SAFE = re.compile(r"\b(?:psxFmt|T)\s*\(")
 
 
@@ -56,10 +76,10 @@ def scan(path):
             continue
         if "+" not in s:              # a bare literal is a text node; the walker gets it
             continue
-        m = ENGLISHY.search(s)
-        if not m:
+        frag = englishy(s)
+        if not frag:
             continue
-        frag = m.group(2).strip()
+        frag = frag.strip()
         # a lone HTML tag or a class name is not prose
         if frag.startswith("<") and frag.endswith(">"):
             continue

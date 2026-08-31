@@ -940,6 +940,56 @@ EXTRA.update({
     "Security": ["安全", "Seguridad", "보안", "Bảo mật"],
     "Privacy": ["隐私", "Privacidad", "개인정보", "Quyền riêng tư"],
 
+    # Walk-along: the page tells you which stop you are standing at. It offers
+    # and never triggers, because browsers block audio without a tap and
+    # narration starting by itself in a stranger's ear would be wrong anyway.
+    "Follow me along the trail": ["沿路跟着我", "Sígueme por la ruta",
+                                  "트레일을 따라가기", "Đi theo tôi trên tuyến"],
+    "Stop following": ["停止跟随", "Dejar de seguir", "따라가기 중지", "Ngừng theo dõi"],
+    "Finding you…": ["正在定位…", "Buscándote…", "위치를 찾는 중…", "Đang tìm bạn…"],
+    "Your phone works out which stop you are at. The location never leaves your device.": [
+        "由你的手机判断你在哪一站。位置信息不会离开你的设备。",
+        "Tu teléfono calcula en qué parada estás. La ubicación nunca sale de tu dispositivo.",
+        "어느 지점에 있는지는 휴대폰이 계산합니다. 위치 정보는 기기를 벗어나지 않습니다.",
+        "Điện thoại của bạn tự xác định bạn đang ở điểm nào. Vị trí không bao giờ rời khỏi thiết bị."],
+    "You are at {name}, about {m} m away.": [
+        "你在{name}，距离约 {m} 米。", "Estás en {name}, a unos {m} m.",
+        "지금 {name}에 있습니다. 약 {m} m 거리입니다.", "Bạn đang ở {name}, cách khoảng {m} m."],
+    "Not at a stop yet. Nearest is {name}, about {m} m away.": [
+        "还没到任何一站。最近的是{name}，约 {m} 米。",
+        "Todavía no estás en una parada. La más cercana es {name}, a unos {m} m.",
+        "아직 지점에 도착하지 않았습니다. 가장 가까운 곳은 {name}, 약 {m} m 거리입니다.",
+        "Chưa tới điểm nào. Gần nhất là {name}, khoảng {m} m."],
+    "{n} stops are right here. Your phone cannot tell them apart at this distance, but you can see which one you are looking at.": [
+        "这里有 {n} 站挨在一起。这个距离上手机分辨不出来，但你抬头就知道自己面对的是哪一座。",
+        "Aquí hay {n} paradas juntas. A esta distancia tu teléfono no puede distinguirlas, pero tú sí ves cuál tienes delante.",
+        "여기에 지점이 {n}곳 붙어 있습니다. 이 거리에서는 휴대폰이 구분하지 못하지만, 눈앞에 있는 건물은 직접 보실 수 있습니다.",
+        "Có {n} điểm ngay tại đây. Ở khoảng cách này điện thoại không phân biệt được, nhưng bạn nhìn là biết mình đang đứng trước cái nào."],
+    "Your phone puts you within about {m} m.": [
+        "手机定位误差约 {m} 米。", "Tu teléfono te sitúa con unos {m} m de margen.",
+        "휴대폰 위치 오차는 약 {m} m입니다.", "Điện thoại định vị bạn trong khoảng {m} m."],
+    "Your phone puts you within about {m} m. Three pairs on this trail stand closer together than that.": [
+        "手机定位误差约 {m} 米。这条路上有三对站点，彼此的距离比这还近。",
+        "Tu teléfono te sitúa con unos {m} m de margen. En esta ruta hay tres pares de paradas más juntas que eso.",
+        "휴대폰 위치 오차는 약 {m} m입니다. 이 트레일에는 그보다 더 가까이 붙어 있는 지점이 세 쌍 있습니다.",
+        "Điện thoại định vị bạn trong khoảng {m} m. Trên tuyến này có ba cặp điểm còn gần nhau hơn thế."],
+    "Could not get your location. The stops below all still play on their own.": [
+        "无法获取你的位置。下面每一站仍然可以自己点开收听。",
+        "No se pudo obtener tu ubicación. Todas las paradas de abajo siguen reproduciéndose por su cuenta.",
+        "위치를 가져오지 못했습니다. 아래 지점들은 그대로 직접 재생할 수 있습니다.",
+        "Không lấy được vị trí của bạn. Các điểm bên dưới vẫn tự phát bình thường."],
+    "Could not get your location, permission was declined. The stops below all still play on their own.": [
+        "无法获取你的位置，权限被拒绝。下面每一站仍然可以自己点开收听。",
+        "No se pudo obtener tu ubicación, se denegó el permiso. Todas las paradas de abajo siguen reproduciéndose por su cuenta.",
+        "위치 권한이 거부되어 위치를 가져오지 못했습니다. 아래 지점들은 그대로 직접 재생할 수 있습니다.",
+        "Không lấy được vị trí vì quyền đã bị từ chối. Các điểm bên dưới vẫn tự phát bình thường."],
+    "The stop locations are not available.": [
+        "暂时无法获取各站位置。", "Las ubicaciones de las paradas no están disponibles.",
+        "지점 위치 정보를 사용할 수 없습니다.", "Hiện chưa có vị trí các điểm."],
+    "Could not load the stop locations.": [
+        "各站位置加载失败。", "No se pudieron cargar las ubicaciones de las paradas.",
+        "지점 위치를 불러오지 못했습니다.", "Không tải được vị trí các điểm."],
+
     # Corrected from 278 ft when the Met's own record gave 276.5 for its
     # tower height. The build gate refused the packs until this was here.
     "276.5 ft": ["276.5 英尺", "276,5 pies", "276.5피트", "276,5 foot"],
