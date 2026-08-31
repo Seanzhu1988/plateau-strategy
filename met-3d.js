@@ -586,8 +586,16 @@
           key: focusKey,
           C: C
         }) || [];
+        /* The interior is a CLICK TARGET, carrying its own room key.
+           [SEAN "click it to take off so the map wont be locked somehow it
+           lock the map".] Without this the model was only shapes lying over
+           the room: whether a tap escaped depended on whether it happened to
+           miss them and reach the box underneath, which is a coin toss and
+           feels like a lock. Now a tap on the temple is a tap on the room,
+           and a tap on the room you are already in is the way out. */
         inside.forEach(function (it) {
-          items.push({ svg: '<g opacity="' + focusT.toFixed(2) + '">' + it.svg + "</g>",
+          items.push({ svg: '<g opacity="' + focusT.toFixed(2) + '" data-room="' +
+                            esc(focusKey) + '">' + it.svg + "</g>",
                        depth: it.depth, floor: ir.f, room: focusKey });
         });
       } catch (e) {
@@ -841,7 +849,17 @@
       var g = e.target && e.target.closest ? e.target.closest("[data-room]") : null;
       roomTap(g ? g.getAttribute("data-room") : null, e);
     }, true);
+    /* Escape is the guaranteed way out. A drawing can always end up with
+       something unexpected on top; a key cannot be covered. */
     host.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && focusKey) {
+        var wasK = focusKey;
+        e.preventDefault();
+        animateFocus(0, host, opts, function () { focusKey = null; render(host, opts); });
+        host.dispatchEvent(new CustomEvent("met3d:room",
+          { detail: { room: wasK, focused: false }, bubbles: true }));
+        return;
+      }
       if (e.key !== "Enter" && e.key !== " ") return;
       if (!(e.target && e.target.closest && e.target.closest('svg[data-met3d]'))) return;
       var g = e.target.closest("[data-room]");
