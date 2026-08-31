@@ -33,8 +33,29 @@ import re
 import sys
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-WPM_EN = 155.0
-CPM_ZH = 228.0
+# Per language, because one rate for all of them was wrong and the routine's
+# own output proved it: every Korean story came out ~30% under target and every
+# Vietnamese ~25% over, systematically, across all six pairs. A pattern that
+# clean is never the translator, it is the ruler.
+#
+# English 155 wpm and Chinese 228 cpm are MEASURED from our own recordings.
+# The others are derived from parallel text: the same story in five languages
+# gives the ratio of words each needs for identical content, and if that
+# content takes the same real time to speak, a language using fewer words must
+# be spoken at fewer words per minute. Spanish came out at 1.008x English,
+# Korean 0.687x, Vietnamese 1.179x, over six pairs each.
+#
+# These are honest second-best. Replace any of them with a measured figure the
+# moment we record a story in that language, the way English and Chinese were.
+RATES = {
+    "en": ("words", 155.0),   # measured, trail recordings
+    "zh": ("chars", 228.0),   # measured, trail recordings
+    "es": ("words", 156.0),   # derived, 1.008x English
+    "ko": ("words", 107.0),   # derived, 0.687x English
+    "vi": ("words", 183.0),   # derived, 1.179x English
+}
+WPM_EN = RATES["en"][1]
+CPM_ZH = RATES["zh"][1]
 TOL = 0.15
 
 TIERS = {"short": 30, "mid": 120, "long": 300}

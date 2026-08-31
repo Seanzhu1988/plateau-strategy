@@ -159,7 +159,20 @@
       STORIES.forEach(function (lm) {
         var box = document.getElementById('story-' + lm.id);
         if (!box) return;
-        var txt = (lm['story_' + lang] || '').trim() || (lm.story_en || '').trim();
+        /* Stories are stored per LENGTH (short 30s, mid 2min, long 5min),
+           each length carrying every language on itself. The page shows the
+           2 minute version, which is the default a visitor gets standing in
+           front of the thing. Falls back through the other lengths, then to
+           the older flat story_<lang> field, then to English, so a partly
+           written entry still renders what exists rather than nothing. */
+        var st = lm.stories || {};
+        var txt = '';
+        ['mid', 'long', 'short'].forEach(function (tier) {
+          if (txt) return;
+          var row = st[tier] || {};
+          txt = (row[lang] || '').trim() || (row.en || '').trim();
+        });
+        if (!txt) txt = (lm['story_' + lang] || '').trim() || (lm.story_en || '').trim();
         if (!txt) { box.hidden = true; return; }
         box.innerHTML = txt.split(/\n\s*\n/).map(function (para) {
           var d = document.createElement('p');

@@ -940,6 +940,16 @@ EXTRA.update({
     "Security": ["安全", "Seguridad", "보안", "Bảo mật"],
     "Privacy": ["隐私", "Privacidad", "개인정보", "Quyền riêng tư"],
 
+    # [SEAN: "share button to be translated too".] These are the site's own
+    # untranslated Share buttons. The bare "Share" at the very top of the
+    # screen belongs to the app Sean views the site in, not to the site, so
+    # there is nothing here that can reach it.
+    "↗ Share": ["↗ 分享", "↗ Compartir", "↗ 공유", "↗ Chia sẻ"],
+    "Share my city": ["分享我的城市", "Compartir mi ciudad",
+                      "내 도시 공유하기", "Chia sẻ thành phố của tôi"],
+    "Shared with you by link": ["通过链接分享给你", "Compartido contigo por enlace",
+                                "링크로 공유되었습니다", "Được chia sẻ với bạn qua liên kết"],
+
     # Walk-along: the page tells you which stop you are standing at. It offers
     # and never triggers, because browsers block audio without a tap and
     # narration starting by itself in a stranger's ear would be wrong anyway.
