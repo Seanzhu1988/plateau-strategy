@@ -462,6 +462,52 @@
   }
 
 
+  document.getElementById('svgHost').addEventListener('met3d:room', function (e) {
+    if (!roomBar) return;
+    var k = e.detail.room;
+    if (e.detail.focused) {
+      roomBar.hidden = false;
+      roomBar.dataset.room = k;
+      roomBarSync(k);
+      var c = (window.MET_CARDS || {})[k] || {};
+      document.getElementById('sheetNo').textContent = 'MET-3D · ' + (c.name || k);
+      if (window.MetGuide && !MetGuide.isPlaying()) MetGuide.preview(k);
+    } else {
+      roomBarHide();
+    }
+  });
+  if (roomBar) {
+    document.getElementById('roomBarBack').addEventListener('click', function () {
+      window.Met3D.clearFocus(document.getElementById('svgHost'), _opts3d);
+      roomBarHide();
+    });
+    document.getElementById('roomBarAdd').addEventListener('click', function () {
+      var k = roomBar.dataset.room;
+      if (!k) return;
+      var i = picked.indexOf(k);
+      if (i >= 0) picked.splice(i, 1); else picked.push(k);
+      draw();
+      syncUrl();
+      roomBarSync(k);
+    });
+    document.getElementById('roomBarHear').addEventListener('click', function () {
+      if (window.MetGuide && roomBar.dataset.room) MetGuide.playRoom(roomBar.dataset.room);
+    });
+  }
+  document.getElementById('tabF1').addEventListener('click', function () { mode = 'flat'; floor = 1; if (roomBar) roomBar.hidden = true; remember(); draw(); });
+  document.getElementById('tabF2').addEventListener('click', function () { mode = 'flat'; floor = 2; if (roomBar) roomBar.hidden = true; remember(); draw(); });
+  /* Going in: from the photograph outside to the model inside. */
+  function enterBuilding() {
+    var host = document.getElementById('svgHost');
+    var walkedFlags = {};
+    Object.keys(walkedMinutes).forEach(function (k) { walkedFlags[k] = true; });
+    host.innerHTML = '';
+    window.Met3D.attach(host, { route: fullRoute(), walked: walkedFlags, current: null });
+    window.Met3D.openInterior(host, { route: fullRoute(), walked: walkedFlags, current: null });
+    var o = document.getElementById('btnOutside');
+    if (o) o.hidden = false;
+  }
+
   document.getElementById('tab3D').addEventListener('click', function () { mode = '3d'; remember(); draw(); });
   /* Entering the building is a tap on it; leaving needs a way back. */
   document.getElementById('svgHost').addEventListener('met3d:layer', function () {
