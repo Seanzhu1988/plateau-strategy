@@ -293,6 +293,10 @@
       .ft-model{margin:2rem 0 0;padding-top:1.5rem;border-top:1px solid #e3ddcd}
   .ft-model-h{font-size:1.35rem;margin:0 0 .3rem}
   .ft-model-sub{margin:0 0 1rem;color:#5b544a;line-height:1.55}
+  .ft-model-pick{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 .8rem}
+  .ft-model-pick button{font:inherit;font-size:.86rem;padding:.42rem .85rem;border-radius:8px;
+                        border:1px solid #1f3a5f;background:none;color:#1f3a5f;cursor:pointer}
+  .ft-model-pick button[aria-pressed="true"]{background:#1f3a5f;color:#fff}
   .ft-model-stage{background:#eef0ea;border-radius:10px;overflow:hidden}
   .ft-model-note{margin:.7rem 0 0;font-size:.82rem;color:#6b6459;line-height:1.5}
   .ft-near{margin:1rem 0 1.4rem;padding:.9rem 1rem;border:1px solid #ded7c6;
@@ -403,17 +407,17 @@
 
         <div id="ftStops"></div>
 
-        <!-- The monument at the end of the trail, drawn to its published
-             dimensions. First of the sixteen stops to get a picture. -->
+        <!-- The stops that have a picture, drawn to their published
+             dimensions. Two of the sixteen so far; the rest are coming. -->
         <section class="ft-model" id="ftModelWrap" hidden>
-          <h2 class="ft-model-h">Stop 16, standing up</h2>
-          <p class="ft-model-sub">The Bunker Hill Monument, 221 feet of Quincy
-             granite, 30 feet square at the base and tapering to 15.4 at the
-             top. Solomon Willard, dedicated 1843. Drag it to turn.</p>
+          <h2 class="ft-model-h">The trail, standing up</h2>
+          <div class="ft-model-pick" id="ftModelPick">
+            <button type="button" data-model="old-north" aria-pressed="true">Stop 12, Old North Church</button>
+            <button type="button" data-model="bunker-hill" aria-pressed="false">Stop 16, Bunker Hill</button>
+          </div>
+          <p class="ft-model-sub" id="ftModelSub"></p>
           <div class="ft-model-stage" id="ftModelStage"></div>
-          <p class="ft-model-note">Every dimension here is the published one.
-             The obelisk form is Egyptian Revival: borrowed from Egypt for its
-             permanence, cut plain in local granite, no carving and no cornice.</p>
+          <p class="ft-model-note" id="ftModelNote"></p>
         </section>
 
         <!-- The tour keeps going. [SEAN "can we have tour to be listed after
@@ -1210,8 +1214,52 @@
   (function () {
     var wrap = document.getElementById('ftModelWrap');
     var stage = document.getElementById('ftModelStage');
-    if (!wrap || !stage || !window.TRAIL3D) return;
-    try { window.TRAIL3D.mount(stage, 'bunker-hill'); wrap.hidden = false; }
+    var pick = document.getElementById('ftModelPick');
+    var sub = document.getElementById('ftModelSub');
+    var note = document.getElementById('ftModelNote');
+    if (!wrap || !stage || !pick || !window.TRAIL3D) return;
+
+    /* The words that go with each model, kept beside the model rather than in
+       the markup, so a stop cannot end up captioned as a different building. */
+    var TEXT = {
+      'old-north': {
+        sub: 'Old North Church, 1723, steeple 1740. The body is 96.5 by 51.5 feet, '
+           + 'the nave 70 by 51 and 42 feet high, and the steeple stands 191 feet '
+           + 'above the ground. Drag it to turn.',
+        note: 'Georgian, read off Christopher Wren\u2019s London churches: a plain '
+            + 'brick box, symmetrical, with round arched windows and every ambition '
+            + 'spent on the steeple. The plan and the 191 feet are published. Where '
+            + 'the 191 divides between brick tower, belfry, three lanterns and spire '
+            + 'is not published anywhere, and is set here by proportion.'
+      },
+      'bunker-hill': {
+        sub: 'The Bunker Hill Monument, 221 feet of Quincy granite, 30 feet square '
+           + 'at the base and tapering to 15.4 at the top. Solomon Willard, '
+           + 'dedicated 1843. Drag it to turn.',
+        note: 'Every dimension here is the published one. The obelisk form is '
+            + 'Egyptian Revival: borrowed from Egypt for its permanence, cut plain '
+            + 'in local granite, no carving and no cornice.'
+      }
+    };
+
+    function show(key) {
+      var t = TEXT[key];
+      if (!t) return;
+      window.TRAIL3D.mount(stage, key);
+      if (sub) sub.textContent = t.sub;
+      if (note) note.textContent = t.note;
+      var bs = pick.querySelectorAll('button');
+      for (var i = 0; i < bs.length; i++) {
+        bs[i].setAttribute('aria-pressed', bs[i].getAttribute('data-model') === key ? 'true' : 'false');
+      }
+    }
+
+    pick.addEventListener('click', function (e) {
+      var b = e.target.closest && e.target.closest('button[data-model]');
+      if (b) show(b.getAttribute('data-model'));
+    });
+
+    try { show('old-north'); wrap.hidden = false; }
     catch (e) { if (window.console) console.warn('trail model failed:', e); }
   })();
 </script>

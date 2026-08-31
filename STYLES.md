@@ -120,6 +120,64 @@ never moored anything. Setbacks at 21, 25, 30, 72, 81 and 85 storeys.
 
 ---
 
+## Egyptian Revival
+
+*1820s to 1850s. Here: the Bunker Hill Monument, 1825 to 1842.*
+
+America borrowed the Egyptian obelisk for the one thing it promised, which was
+permanence, and then cut it plain in whatever stone the ground gave up. At
+Bunker Hill that stone is Quincy granite, hauled on the Granite Railway, the
+first railroad chartered in the country.
+
+**Tells**
+- A single square shaft that tapers dead straight from base to top.
+- The taper is **subtle**. An Egyptian temple wall batters about 0.075 and
+  curves the eye inward; an obelisk is nearer 0.03 and does not curve at all.
+- It ends in a **pyramidion**. A shaft cut off flat is a chimney.
+- No cornice, no carving, no order. Ornament here is a different building.
+
+**Wrong if** the sides visibly bow, or the top is flat, or anything is applied
+to the shaft.
+
+**Our numbers.** 221 ft, 30 ft square at the base to 15.4 ft at the top. That
+is a lean of `(30 - 15.4) / 2 / 221 = 0.033`, taken from the published
+dimensions rather than from a photograph, which is the whole difference
+between an obelisk and a spike.
+
+---
+
+## Georgian, and the Wren church
+
+*1700s to 1780s. Here: Old North Church, Boston, 1723, steeple 1740.*
+
+Christ Church in the City of Boston is a colonial builder's reading of the
+London churches Christopher Wren put up after the Great Fire: a plain brick
+box, correct and symmetrical, with all the ambition spent on the steeple.
+
+**Tells**
+- Strict bilateral symmetry. The plan is a rectangle and the front is centred.
+- **Round** arched sash windows, in two levels on the front. A pointed arch
+  here is Gothic and fifty years early.
+- Red brick laid in bond, with the trim in plain painted wood, never stone
+  carving.
+- The steeple climbs in **diminishing stages**: square brick tower, open
+  belfry, octagonal lanterns, then a slender spire and a vane. A steeple drawn
+  as one continuous taper is an obelisk wearing a cross.
+- The body is low and the steeple is tall. Most of the height is the steeple.
+
+**Wrong if** the arches are pointed, the facade is asymmetric, or the spire
+rises straight off the roof with no stages between.
+
+**Our numbers.** Body 96.5 by 51.5 ft, nave 70 by 51 and 42 ft high, steeple
+191 ft above ground, brick walls 2.5 ft thick and the tower's 3.5. The tower
+block is therefore `96.5 - 70 = 26.5` ft of the length. Sources disagree about
+the first steeple, which several give as 175 ft, and the church's own account
+says the 1806 replacement stood fifteen feet shorter than the 1740 original;
+the 191 ft in the model is the figure the church and the register use for what
+is standing now.
+
+---
+
 ## Working rules
 
 1. **Name the style before choosing the geometry.** If you cannot name it, you
