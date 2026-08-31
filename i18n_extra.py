@@ -940,6 +940,20 @@ EXTRA.update({
     "Security": ["安全", "Seguridad", "보안", "Bảo mật"],
     "Privacy": ["隐私", "Privacidad", "개인정보", "Quyền riêng tư"],
 
+    # The first Freedom Trail landmark to get a model.
+    "Stop 16, standing up": ["第十六站，立体呈现", "Parada 16, en pie",
+                             "16번째 지점, 입체로", "Điểm 16, dựng đứng"],
+    "The Bunker Hill Monument, 221 feet of Quincy granite, 30 feet square at the base and tapering to 15.4 at the top. Solomon Willard, dedicated 1843. Drag it to turn.": [
+        "邦克山纪念碑，221 英尺昆西花岗岩，底部见方 30 英尺，向上收至 15.4 英尺。所罗门·威拉德设计，1843 年落成。拖动可旋转。",
+        "El Monumento de Bunker Hill, 221 pies de granito de Quincy, 30 pies de lado en la base y 15,4 en lo alto. Solomon Willard, inaugurado en 1843. Arrástralo para girarlo.",
+        "벙커힐 기념비, 퀸시 화강암 221피트, 바닥은 한 변 30피트에서 꼭대기 15.4피트로 좁아집니다. 솔로몬 윌러드 설계, 1843년 헌정. 끌어서 돌려 보세요.",
+        "Đài tưởng niệm Bunker Hill, 221 foot đá granit Quincy, đáy vuông 30 foot thu nhỏ còn 15,4 foot ở đỉnh. Solomon Willard, khánh thành năm 1843. Kéo để xoay."],
+    "Every dimension here is the published one. The obelisk form is Egyptian Revival: borrowed from Egypt for its permanence, cut plain in local granite, no carving and no cornice.": [
+        "此处每个尺寸都取自公开资料。方尖碑属埃及复兴式：借用埃及的形制取其恒久，以本地花岗岩素面凿成，无雕饰，无檐口。",
+        "Cada medida aquí es la publicada. El obelisco es de estilo Egyptian Revival: la forma tomada de Egipto por su permanencia, labrada lisa en granito local, sin tallas ni cornisa.",
+        "여기의 모든 치수는 공개된 수치입니다. 오벨리스크 형태는 이집트 리바이벌 양식으로, 영속성을 위해 이집트에서 빌려와 현지 화강암을 장식 없이 매끈하게 깎았습니다.",
+        "Mọi kích thước ở đây đều là số liệu đã công bố. Hình tháp bút thuộc phong cách Egyptian Revival: mượn hình thức của Ai Cập vì sự bền vững, đục trơn bằng đá granit địa phương, không chạm khắc, không phào mái."],
+
     # ---- Freedom Trail: strings the PAGE composes from numbers -------------
     # These are psxFmt patterns, not sentences. The placeholders are named, so
     # a language may reorder them freely; what a translation must not do is

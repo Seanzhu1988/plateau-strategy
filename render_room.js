@@ -24,6 +24,41 @@ global.window = {};
 require("/Users/xiaojunzhu/Claude/worktrees/site/styles-3d.js");
 require("/Users/xiaojunzhu/Claude/worktrees/site/met-rooms.js");
 const key = process.argv[2];
+/* A trail stop renders the same way a gallery does, because trail-3d.js
+   scenes take the same pure context. "trail:bunker-hill" picks one. */
+if (key.startsWith("trail:")) {
+  require("/Users/xiaojunzhu/Claude/worktrees/site/trail-3d.js");
+  const sk = key.slice(6);
+  const scene = (window.TRAIL3D || {}).scenes[sk];
+  if (!scene) { console.error("no such trail scene: " + sk); process.exit(1); }
+  const yaw2 = parseFloat(process.argv[3] || "-0.62"), pitch2 = parseFloat(process.argv[4] || "0.30");
+  const W2 = 900, H2 = 700;
+  const mk2 = (SC,OX,OY) => (x,y,z) => {
+    const c=Math.cos(yaw2), s=Math.sin(yaw2);
+    const rx=x*c-y*s, ry=x*s+y*c;
+    return [OX+rx*SC, OY+(ry*Math.sin(pitch2)-(z||0)*Math.cos(pitch2))*SC, ry];
+  };
+  const fv2 = (nx,ny) => (nx*Math.sin(yaw2)+ny*Math.cos(yaw2)) > 0.001;
+  const L2 = [0.60,0.30,0.68];
+  const sh2 = (h,nx,ny,nz) => { const d=nx*L2[0]+ny*L2[1]+nz*L2[2], f=0.55+0.45*Math.max(0,d);
+    const n=parseInt(h.slice(1),16);
+    return `rgb(${Math.min(255,Math.round((n>>16&255)*f))},${Math.min(255,Math.round((n>>8&255)*f))},${Math.min(255,Math.round((n&255)*f))})`; };
+  let B2=null; const bb2 = pts => { pts.forEach(p=>{ if(!B2) B2=[p[0],p[1],p[0],p[1]];
+    B2[0]=Math.min(B2[0],p[0]);B2[1]=Math.min(B2[1],p[1]);
+    B2[2]=Math.max(B2[2],p[0]);B2[3]=Math.max(B2[3],p[1]); }); return ''; };
+  scene({project:mk2(1,0,0), poly:bb2, shade:sh2, faceVisible:fv2});
+  const bw2=B2[2]-B2[0], bh2=B2[3]-B2[1];
+  const SC2=Math.min((W2-60)/bw2,(H2-60)/bh2);
+  const OX2=(W2-bw2*SC2)/2-B2[0]*SC2, OY2=(H2-bh2*SC2)/2-B2[1]*SC2;
+  const poly2 = (pts,f,st,sw,ex) =>
+    `<polygon points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="${f}"`
+    + (st?` stroke="${st}" stroke-width="${sw||1}"`:'') + ' stroke-linejoin="round"' + (ex||'') + '/>';
+  const it2 = scene({project:mk2(SC2,OX2,OY2), poly:poly2, shade:sh2, faceVisible:fv2});
+  it2.sort((a,b)=>a.depth-b.depth);
+  console.log(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W2} ${H2}" width="${W2}" height="${H2}">`
+    + `<rect width="${W2}" height="${H2}" fill="#eef0ea"/>` + it2.map(i=>i.svg).join('') + '</svg>');
+  process.exit(0);
+}
 const yaw = parseFloat(process.argv[3] || "-0.62"), pitch = parseFloat(process.argv[4] || "0.70");
 const KX = 484/760;
 const ROOMS = { 'american-court': {x:170,y:230,w:180,h:120},

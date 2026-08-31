@@ -2950,6 +2950,13 @@ def api_landmark_stories():
     return jsonify({"ok": True, "landmarks": out})
 
 
+@app.route("/trail-3d.js")
+def trail_3d_js():
+    """The Freedom Trail's landmarks. Sixteen stops that had a narration and
+    no picture; this is where they get one."""
+    return send_file(os.path.join(BASE_DIR, "trail-3d.js"), mimetype="application/javascript")
+
+
 @app.route("/styles-3d.js")
 def styles_3d_js():
     """The styles book, the half a model can execute. Loaded BEFORE any model
@@ -11278,7 +11285,9 @@ def _seed_book_fields_once():
                     live.setdefault("entries", []).append(srce)
                     changed = True
                     continue
-                for fld in ("admission_usd", "tickets_url", "slug", "ferry", "audio"):
+                for fld in ("admission_usd", "tickets_url", "slug", "ferry", "audio",
+                            "story_en", "story_zh", "story_es", "story_ko",
+                            "story_vi"):
                     if fld in srce and tgt.get(fld) != srce[fld]:
                         tgt[fld] = srce[fld]
                         changed = True

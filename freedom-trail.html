@@ -290,7 +290,12 @@
                   border: 2px solid #fff;
                   box-shadow: 0 0 0 3px rgba(18,161,80,.4), 0 1px 4px rgba(0,0,0,.4); }
         @media (max-width: 640px) { .ft-title { font-size: 1.55rem; } }
-    </style>
+      .ft-model{margin:2rem 0 0;padding-top:1.5rem;border-top:1px solid #e3ddcd}
+  .ft-model-h{font-size:1.35rem;margin:0 0 .3rem}
+  .ft-model-sub{margin:0 0 1rem;color:#5b544a;line-height:1.55}
+  .ft-model-stage{background:#eef0ea;border-radius:10px;overflow:hidden}
+  .ft-model-note{margin:.7rem 0 0;font-size:.82rem;color:#6b6459;line-height:1.5}
+</style>
 </head>
 <body>
     <header>
@@ -375,6 +380,19 @@
 
 
         <div id="ftStops"></div>
+
+        <!-- The monument at the end of the trail, drawn to its published
+             dimensions. First of the sixteen stops to get a picture. -->
+        <section class="ft-model" id="ftModelWrap" hidden>
+          <h2 class="ft-model-h">Stop 16, standing up</h2>
+          <p class="ft-model-sub">The Bunker Hill Monument, 221 feet of Quincy
+             granite, 30 feet square at the base and tapering to 15.4 at the
+             top. Solomon Willard, dedicated 1843. Drag it to turn.</p>
+          <div class="ft-model-stage" id="ftModelStage"></div>
+          <p class="ft-model-note">Every dimension here is the published one.
+             The obelisk form is Egyptian Revival: borrowed from Egypt for its
+             permanence, cut plain in local granite, no carving and no cornice.</p>
+        </section>
 
         <!-- The tour keeps going. [SEAN "can we have tour to be listed after
              the 16 tour there says more in boston, to expand the tour like 17
@@ -1163,5 +1181,17 @@
 })();
 </script>
 <script src="/i18n.js"></script>
+<script src="/trail-3d.js"></script>
+<script>
+  /* The model mounts only if its script loaded, so a failed fetch leaves the
+     page exactly as it was rather than an empty framed box. */
+  (function () {
+    var wrap = document.getElementById('ftModelWrap');
+    var stage = document.getElementById('ftModelStage');
+    if (!wrap || !stage || !window.TRAIL3D) return;
+    try { window.TRAIL3D.mount(stage, 'bunker-hill'); wrap.hidden = false; }
+    catch (e) { if (window.console) console.warn('trail model failed:', e); }
+  })();
+</script>
 </body>
 </html>

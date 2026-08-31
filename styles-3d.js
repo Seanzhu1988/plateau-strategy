@@ -203,6 +203,7 @@
     aluminium:        { base: "#b9bec4", edge: "#8d9298" },
     roadway:          { base: "#5a5a5c", edge: "#3f3f41" },
     nubianSandstone:  { base: "#c2a882", edge: "#9a8464" },
+    quincyGranite:    { base: "#9c9a95", edge: "#6f6d69" },
     poolWater:        { base: "#aebfc7", edge: "#8fa3ad" },
     timberDeck:       { base: "#8a6f52", edge: "#66513b" }
   };
@@ -243,6 +244,17 @@
               "wall surfaces are carved in low relief, not left blank"],
       materials: ["sandstone"],
       wrongIf: "the walls are vertical, or the top is a flat cap"
+    },
+    "egyptian-revival": {
+      name: "Egyptian Revival",
+      period: "1820s to 1850s; here the Bunker Hill Monument, 1825 to 1843",
+      tells: ["an OBELISK is a straight taper, not a battered wall: the sides",
+              "run dead straight from base to top and meet a pyramidion cap",
+              "local stone, not sandstone; Quincy granite here, cut plain",
+              "no carving, no cornice: the form does all the work",
+              "civic or funerary use, borrowing Egypt's permanence not its gods"],
+      materials: ["quincyGranite"],
+      wrongIf: "the shaft curves, has a cornice, or ends flat instead of in a point"
     },
     "beaux-arts": {
       name: "Beaux-Arts",
