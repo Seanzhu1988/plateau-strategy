@@ -408,12 +408,15 @@
         <div id="ftStops"></div>
 
         <!-- The stops that have a picture, drawn to their published
-             dimensions. Three of the sixteen so far; the rest are coming. -->
+             dimensions. Four of the sixteen so far; the rest are coming. The
+             stop numbers are read off trails.json, not typed from memory: two
+             of them were wrong here until they were checked against it. -->
         <section class="ft-model" id="ftModelWrap" hidden>
           <h2 class="ft-model-h">The trail, standing up</h2>
           <div class="ft-model-pick" id="ftModelPick">
-            <button type="button" data-model="old-north" aria-pressed="true">Stop 12, Old North Church</button>
-            <button type="button" data-model="faneuil-hall" aria-pressed="false">Stop 4, Faneuil Hall</button>
+            <button type="button" data-model="state-house" aria-pressed="true">Stop 2, the State House</button>
+            <button type="button" data-model="faneuil-hall" aria-pressed="false">Stop 11, Faneuil Hall</button>
+            <button type="button" data-model="old-north" aria-pressed="false">Stop 13, Old North Church</button>
             <button type="button" data-model="bunker-hill" aria-pressed="false">Stop 16, Bunker Hill</button>
           </div>
           <p class="ft-model-sub" id="ftModelSub"></p>
@@ -1223,6 +1226,25 @@
     /* The words that go with each model, kept beside the model rather than in
        the markup, so a stop cannot end up captioned as a different building. */
     var TEXT = {
+      'state-house': {
+        opts: { yaw: 2.9, pitch: 0.26 },
+        sub: 'The Massachusetts State House, Charles Bulfinch, 1795 to 1798. An '
+           + 'oblong 173 feet across the front and 61 deep, a basement storey 20 feet '
+           + 'high under a principal storey of 30, the attic over the centre 60 feet '
+           + 'wide and 20 high, and the dome 50 feet across and 30 high. Drag it to '
+           + 'turn.',
+        note: 'Every one of those numbers comes from the Columbian Centinel of 10 '
+            + 'January 1798, which described the building the week it opened and is '
+            + 'reproduced in the National Historic Landmark nomination. That notice '
+            + 'gives the portico as 94 feet of arches projecting 14 feet, carrying a '
+            + 'Corinthian colonnade of the same length, so the wings are what is left '
+            + 'over: 39 feet 6 inches each. It gives extents but no counts, so the '
+            + 'seven arches, the twelve columns coupled in pairs at both ends and the '
+            + 'three bays to each wing were counted off a photograph, which then '
+            + 'measured the pediment at 60.4 feet against the published 60. The '
+            + 'pediment\u2019s rise, the height of the lanthorn and how far back the '
+            + 'dome sits are published nowhere and are proportioned here.'
+      },
       'old-north': {
         sub: 'Old North Church, 1723, steeple 1740. The body is 96.5 by 51.5 feet, '
            + 'the nave 70 by 51 and 42 feet high, and the steeple stands 191 feet '
@@ -1274,7 +1296,7 @@
       if (b) show(b.getAttribute('data-model'));
     });
 
-    try { show('old-north'); wrap.hidden = false; }
+    try { show('state-house'); wrap.hidden = false; }
     catch (e) { if (window.console) console.warn('trail model failed:', e); }
   })();
 </script>

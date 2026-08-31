@@ -203,7 +203,7 @@
     return out;
   }
 
-  /* ---------------- Stop 12: Old North Church ----------------
+  /* ---------------- Stop 13: Old North Church ----------------
      Christ Church in the City of Boston, 1723, steeple 1740. Georgian, read
      off Wren's London churches by a colonial builder: a plain brick box with
      every ambition spent on the steeple.
@@ -348,7 +348,7 @@
     return out;
   }
 
-  /* ---------------- Stop 4: Faneuil Hall ----------------
+  /* ---------------- Stop 11: Faneuil Hall ----------------
      Built 1742 to John Smibert's design, gutted by fire in 1761 and rebuilt
      inside its own brick shell, then doubled by Charles Bulfinch in 1805 to
      1806. Federal, and the styles book carries the tells.
@@ -556,8 +556,232 @@
     return out;
   }
 
+  /* A column, as an octagonal prism with a base and a capital. Eight facets
+     catch the light where a flat rectangle would read as a stripe, and at
+     twelve columns across a 94 ft portico the facets are what say "round". */
+  function columnAt(ctx, cx, cy, r, z0, z1, fill, edge, depth) {
+    var out = octStage(ctx, cx, cy, r * 1.28, r * 1.28, z0, z0 + r * 0.5, fill, edge, depth);
+    out = out.concat(octStage(ctx, cx, cy, r, r * 0.86, z0 + r * 0.5, z1 - r * 1.1, fill, edge,
+                              depth === undefined ? undefined : depth + 0.2));
+    out = out.concat(octStage(ctx, cx, cy, r * 1.30, r * 1.30, z1 - r * 1.1, z1, fill, edge,
+                              depth === undefined ? undefined : depth + 0.4));
+    return out;
+  }
+
+  /* A balustrade, read as a rail on posts rather than modelled baluster by
+     baluster. Drawn on a wall's own (u, z) map, at that wall's depth. */
+  function balustrade(ctx, map, u0, u1, z0, z1, fill, edge, depth) {
+    var out = [], n = Math.max(3, Math.round((u1 - u0) / 3.2)), step = (u1 - u0) / n;
+    out.push(panel(ctx, map, u0, u1, z1 - 0.9, z1, fill, edge, depth));
+    out.push(panel(ctx, map, u0, u1, z0, z0 + 0.7, fill, edge, depth));
+    for (var i = 0; i <= n; i++) {
+      var u = u0 + step * i;
+      out.push(panel(ctx, map, u - 0.35, u + 0.35, z0 + 0.7, z1 - 0.9, fill, edge, depth + 0.05));
+    }
+    return out;
+  }
+
+  /* ---------------- Stop 2: the Massachusetts State House ----------------
+     Charles Bulfinch, 1795 to 1798. Federal, and the styles book already
+     carries the tells; this is the second building in that style and does not
+     restate them.
+
+     PUBLISHED, and unusually complete, because the building described itself
+     the week it opened. The Columbian Centinel of 10 January 1798, reproduced
+     in the National Historic Landmark nomination (NRHP 66000771):
+
+       "an oblong building, 173 feet front, and 61 deep, it consists
+        externally of a basement story, 20 feet high, and a principal story 30
+        feet. This in the center of the front south is crowned with an Attic 60
+        feet wide, 20 feet high, which is covered with a pediment: Immediately
+        above this rises a dome 50 feet diameter and 30 feet high, the whole
+        terminated with an elegant circular lanthorn, supporting a gilt pine
+        cone ... The basement story is finished plain on the wings with square
+        windows. The centre (portico of the south front) is 94 feet in length,
+        and formed of arches which project 14 feet; they form a covered wall
+        below, and support a Colonade of Corinthian columns of the same extent
+        above. The outside walls are of large patent bricks, with white marble
+        fascias, imposts and key stones."
+
+     Every one of those numbers is in the model. The wings are what is left
+     over: (173 - 94) / 2 = 39.5 ft each, a subtraction rather than a guess.
+
+     COUNTED, because the 1798 writer gave extents and not counts, and a
+     photograph is a published document too. From a frontal view on Wikimedia
+     Commons: SEVEN arches in the arcade, TWELVE Corinthian columns above them
+     COUPLED IN PAIRS at both ends with four singles between, and THREE bays to
+     each wing. The counts check the dimensions rather than contradicting them:
+     at the scale the 94 ft colonnade sets in that photograph, the pediment
+     measures 60.4 ft against the published 60, and the twelve columns come out
+     at 2.5 ft thick, which is the 30 inch diameter the Commonwealth gives for
+     the pine logs the originals were turned from.
+
+     DERIVED, and said out loud: the pediment's own rise, the height of the
+     lanthorn, and how far back the dome sits. The 1798 account gives none of
+     the three. The often quoted 155 ft is measured from the street below the
+     hill and is not what this model claims. */
+  function stateHouse(ctx) {
+    var BRICK = "#a8523c", BRICK_E = "#7a3527", TRIM = "#f4f0e6", TRIM_E = "#b8b0a0";
+    var GOLD = "#c9a22c", GOLD_E = "#8a6f18", GLASS = "#3f4d57", DOOR = "#4a3a30";
+    var LAWN = "#c2c9b4", PAVE = "#ded8cb";
+    var out = [], P = ctx.project;
+
+    /* the published plan */
+    var W = 173, D = 61, PORT = 94, PROJ = 14, ATT = 60;
+    var x0 = -W / 2, x1 = W / 2, yF = -D / 2, yB = D / 2;
+    var px0 = -PORT / 2, px1 = PORT / 2, pyF = yF - PROJ;
+
+    /* the published elevation: 20 ft basement, 30 ft principal story */
+    var BASE = 20, PRIN = 50, CORN = 54;
+    var ATT0 = 50, ATT1 = 70, PED = 80;        /* attic 20 ft, pediment derived */
+    var DOME0 = 72, DOME_H = 30, DOME_R = 25;  /* dome 50 ft across, 30 ft high */
+
+    out.push(ground(ctx, 0, -6, 300, 260, 0, LAWN, "#a8b09a"));
+    out.push(ground(ctx, 0, pyF - 26, 150, 46, 0.3, PAVE, "#bfb9aa"));
+
+    var body = box(ctx, x0, x1, yF, yB, 0, PRIN, BRICK, BRICK_E, "#8d8478");
+
+    out = out.concat(body.parts);
+
+    /* THE WINGS: three bays each, square windows below and tall round headed
+       ones above, which is exactly what the 1798 notice describes. The centre
+       94 ft is skipped because the portico stands in front of it. */
+    var dF = body.walls["0,-1"];
+    if (dF !== undefined) {
+      var mapF = function (u, z) { return P(u, yF, z); };
+      [[x0, px0], [px1, x1]].forEach(function (wing) {
+        var a = wing[0], b = wing[1], step = (b - a) / 3;
+        for (var i = 0; i < 3; i++) {
+          var uc = a + step * (i + 0.5);
+          out.push(panel(ctx, mapF, uc - 3.2, uc + 3.2, 5, 15, GLASS, TRIM_E, dF + 0.4));
+          out.push(archOpening(ctx, mapF, uc, 3.6, 24, 34, GLASS, TRIM_E, dF + 0.4));
+        }
+        /* the marble string course between the two storeys, and the
+           balustrade along the wing's roofline */
+        out.push(panel(ctx, mapF, a, b, BASE, BASE + 1.4, TRIM, TRIM_E, dF + 0.3));
+        out.push(panel(ctx, mapF, a, b, PRIN - 2, PRIN, TRIM, TRIM_E, dF + 0.3));
+        out = out.concat(balustrade(ctx, mapF, a + 1, b - 1, PRIN, CORN, TRIM, TRIM_E, dF + 0.35));
+      });
+      /* The centre 94 ft is not blank behind the colonnade: the photograph
+         shows five tall windows and a fanlight over each, standing between the
+         columns. They take the WALL's depth, so the columns paint over them. */
+      for (var c = 0; c < 5; c++) {
+        var cxw = px0 + PORT * (c + 0.5) / 5;
+        out.push(panel(ctx, mapF, cxw - 3.6, cxw + 3.6, 24, 40, GLASS, TRIM_E, dF + 0.4));
+        out.push(panel(ctx, mapF, cxw - 4.2, cxw + 4.2, 40, 41.4, TRIM, TRIM_E, dF + 0.45));
+        out.push(archOpening(ctx, mapF, cxw, 2.6, 43, 46, GLASS, TRIM_E, dF + 0.4));
+      }
+    }
+
+    /* the same treatment on whichever flank is turned towards us: the 61 ft
+       depth takes two bays of the same rhythm */
+    [[-1, x0], [1, x1]].forEach(function (side) {
+      var d = body.walls[side[0] + ",0"];
+      if (d === undefined) return;
+      var X = side[1];
+      var map = function (u, z) { return P(X, u, z); };
+      for (var i = 0; i < 2; i++) {
+        var yc = yF + D * (i + 0.5) / 2;
+        out.push(panel(ctx, map, yc - 3.2, yc + 3.2, 5, 15, GLASS, TRIM_E, d + 0.4));
+        out.push(archOpening(ctx, map, yc, 3.6, 24, 34, GLASS, TRIM_E, d + 0.4));
+      }
+      out.push(panel(ctx, map, yF, yB, BASE, BASE + 1.4, TRIM, TRIM_E, d + 0.3));
+      out.push(panel(ctx, map, yF, yB, PRIN - 2, PRIN, TRIM, TRIM_E, d + 0.3));
+      out = out.concat(balustrade(ctx, map, yF + 1, yB - 1, PRIN, CORN, TRIM, TRIM_E, d + 0.35));
+    });
+
+    /* THE PORTICO, 94 ft long and projecting 14: the arcade that forms the
+       covered walk, at an explicit depth because it stands in front of a wall
+       that is 173 ft wide and therefore has a much nearer corner. */
+    var ARC = 4e5;
+    var arc = box(ctx, px0, px1, pyF, yF, 0, BASE, BRICK, BRICK_E, TRIM, ARC);
+    out = out.concat(arc.parts);
+    var mapA = function (u, z) { return P(u, pyF, z); };
+    var abay = PORT / 7;
+    /* Guarded on the arcade's OWN front wall. archOpening and panel do not
+       cull themselves, so drawn unguarded these seven arches painted through
+       the back of a 173 ft building and stood in the sky behind it. */
+    for (var i = 0; ctx.faceVisible(0, -1) && i < 7; i++) {
+      var uc = px0 + abay * (i + 0.5);
+      out.push(archOpening(ctx, mapA, uc, abay * 0.34, 1, 14, i === 3 ? DOOR : GLASS,
+                           TRIM_E, ARC + 0.5));
+      /* the marble paterae over each pier, which the photograph shows and the
+         1798 notice calls white marble fascias, imposts and key stones */
+      out.push(panel(ctx, mapA, uc - abay / 2 - 1, uc - abay / 2 + 1, 15.6, 17.6,
+                     TRIM, TRIM_E, ARC + 0.5));
+    }
+    if (ctx.faceVisible(0, -1)) {
+      out.push(panel(ctx, mapA, px0, px1, BASE - 1.6, BASE, TRIM, TRIM_E, ARC + 0.6));
+    }
+
+    /* TWELVE COLUMNS, coupled in pairs at each end. The pair spacing and the
+       single spacing are both measured off the photograph, then scaled by the
+       published 94 ft, so the rhythm is the building's own. */
+    var COL = 5e5, cyC = (pyF + yF) / 2 + 2.5, R = 1.25;
+    var us = [], gap = 11.4, pairGap = 3.8;
+    var left = px0 + 2.2;
+    us.push(left, left + pairGap, left + pairGap + gap, left + 2 * pairGap + gap);
+    var mid0 = us[3] + gap;
+    for (var s = 0; s < 4; s++) us.push(mid0 + gap * s);
+    var right = px1 - 2.2;
+    us.push(right - 2 * pairGap - gap, right - pairGap - gap, right - pairGap, right);
+    us.forEach(function (u, i) {
+      out = out.concat(columnAt(ctx, u, cyC, R, BASE, PRIN, TRIM, TRIM_E, COL + i * 3));
+    });
+    /* the entablature the colonnade carries, spanning the whole 94 ft */
+    out = out.concat(box(ctx, px0, px1, cyC - 2.4, cyC + 2.4, PRIN, CORN, TRIM, TRIM_E,
+                         TRIM, 6e5).parts);
+
+    /* THE ATTIC, 60 ft wide and 20 high, with the pediment over it */
+    var ATTD = 7e5;
+    var att = box(ctx, -ATT / 2, ATT / 2, yF, yF + 16, ATT0, ATT1, BRICK, BRICK_E, TRIM, ATTD);
+    out = out.concat(att.parts);
+    var mapT = function (u, z) { return P(u, yF, z); };
+    if (ctx.faceVisible(0, -1)) {
+      for (var w = 0; w < 5; w++) {
+        var ux = -ATT / 2 + ATT * (w + 0.5) / 5;
+        out.push(panel(ctx, mapT, ux - 3.4, ux + 3.4, ATT1 - 12, ATT1 - 5, GLASS, TRIM_E, ATTD + 0.5));
+      }
+      out.push(panel(ctx, mapT, -ATT / 2, ATT / 2, ATT0, ATT0 + 1.6, TRIM, TRIM_E, ATTD + 0.5));
+    }
+
+    /* THE DOME: 50 ft across and 30 ft high, springing above the attic. It is
+       drawn BEFORE the pediment on purpose. The pediment stands in front of
+       it and has to paint last, or the gilt bulges through the brick. */
+    out = out.concat(domeCap(ctx, 0, yF + 27, DOME_R, DOME0, DOME_H, GOLD, GOLD_E, 1e6));
+
+    /* the pediment, over the attic and in front of the dome */
+    var PEDD = 2e6;
+    if (ctx.faceVisible(0, -1)) {
+    out.push({ svg: ctx.poly([P(-ATT / 2 - 2, yF, ATT1), P(ATT / 2 + 2, yF, ATT1),
+                              P(0, yF, PED)],
+                             ctx.shade(BRICK, 0, -1, 0.2), TRIM_E, 0.6), depth: PEDD });
+    out.push({ svg: ctx.poly([P(-ATT / 2 - 2, yF, ATT1), P(ATT / 2 + 2, yF, ATT1),
+                              P(ATT / 2 + 2, yF, ATT1 + 1.8), P(-ATT / 2 - 2, yF, ATT1 + 1.8)],
+                             ctx.shade(TRIM, 0, -1, 0), TRIM_E, 0.5), depth: PEDD + 0.1 });
+    }
+
+    /* the balustraded ring at the top of the dome, the circular lanthorn, and
+       the gilt pine cone that stands for the Commonwealth's timber */
+    var LZ = DOME0 + DOME_H, LD = 3e6;
+    out = out.concat(octStage(ctx, 0, yF + 27, 8.4, 8.4, LZ - 1.5, LZ + 1.6, TRIM, TRIM_E, LD));
+    out = out.concat(octStage(ctx, 0, yF + 27, 5.4, 5.0, LZ + 1.6, LZ + 13, TRIM, TRIM_E, LD + 10));
+    [[0, -1], [1, 0], [-1, 0]].forEach(function (n, i) {
+      if (!ctx.faceVisible(n[0], n[1])) return;
+      var map = n[0] === 0
+        ? function (u, z) { return P(u, yF + 27 - 5.2, z); }
+        : function (u, z) { return P(n[0] * 5.2, u, z); };
+      var c = n[0] === 0 ? 0 : yF + 27;
+      out.push(archOpening(ctx, map, c, 1.9, LZ + 4, LZ + 8.5, "#2f3a40", TRIM_E, LD + 20 + i));
+    });
+    out = out.concat(octStage(ctx, 0, yF + 27, 6.0, 6.0, LZ + 13, LZ + 14.6, TRIM, TRIM_E, LD + 30));
+    out = out.concat(domeCap(ctx, 0, yF + 27, 4.4, LZ + 14.6, 4.2, GOLD, GOLD_E, LD + 40));
+    out = out.concat(octSpire(ctx, 0, yF + 27, 1.5, LZ + 18.8, LZ + 24, GOLD, GOLD_E));
+    return out;
+  }
+
   var SCENES = { "bunker-hill": bunkerHill, "old-north": oldNorth,
-                 "faneuil-hall": faneuilHall };
+                 "faneuil-hall": faneuilHall, "state-house": stateHouse };
 
   /* The live mount: same hand-rolled projection as the other models, so a
      trail stop weighs a few kilobytes and needs no library. */

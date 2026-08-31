@@ -181,7 +181,8 @@ is standing now.
 ## Federal, and the ordered civic front
 
 *1780s to 1820s. Here: Faneuil Hall, Boston, 1742, enlarged by Charles
-Bulfinch 1805 to 1806.*
+Bulfinch 1805 to 1806; and the Massachusetts State House, Bulfinch, 1795 to
+1798.*
 
 Georgian's successor, and the difference is discipline rather than ornament.
 A Georgian church spends everything on one steeple. A Federal civic building
@@ -217,6 +218,25 @@ interior width inside walls a shade over 2 ft thick is the published 80 ft
 outside, which is the figure for Bulfinch doubling the original 40 ft width.
 No source publishes a floor-to-floor height or a cupola height, so those are
 proportioned from the 28 ft ceiling that is published, and said so.
+
+**And at the State House**, where the building described itself. The
+Columbian Centinel of 10 January 1798, reproduced in the National Historic
+Landmark nomination, gives an **oblong 173 ft front and 61 deep**, a
+**basement storey 20 ft** under a **principal storey 30 ft**, an **attic 60 ft
+wide and 20 high** under a pediment, a **dome 50 ft across and 30 high** with
+a circular lanthorn and a gilt pine cone, a **portico 94 ft long of arches
+projecting 14 ft** carrying a Corinthian colonnade of the same length, square
+windows on the wings, and walls of patent brick with white marble fascias,
+imposts and keystones. The wings follow: `(173 - 94) / 2 = 39.5` ft each.
+
+That notice gives extents and no counts, which is where a photograph earns
+its place as a source. Counted off a frontal view: **seven arches**, **twelve
+columns coupled in pairs at both ends**, **three bays to each wing**. The
+counts then CHECK the dimensions instead of contradicting them, because at
+the scale the published 94 ft sets in that photograph the pediment measures
+60.4 ft against a published 60, and the columns come out 2.5 ft thick against
+the 30 in the Commonwealth gives for the pine logs the originals were turned
+from. A count and a dimension that agree are worth more than either alone.
 
 ---
 
