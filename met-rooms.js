@@ -298,6 +298,12 @@
     if (cfg.kind === "mass") {
       out = out.concat(batteredMass(ctx, cx - W / 2, cy - D / 2, cx + W / 2, cy + D / 2,
                                     z + 0.5, H, cfg.lean || 0.08, cfg.fill));
+      /* The doorway. A mastaba without one is a block; the door is the whole
+         point of a tomb facade, and Perneb's is the thing you walk through. */
+      var dw = W * 0.13, dh = H * 0.42, dy = cy - D / 2 - 0.25;
+      var dq = [P(cx - dw, dy, z + 0.5), P(cx + dw, dy, z + 0.5),
+                P(cx + dw, dy, z + 0.5 + dh), P(cx - dw, dy, z + 0.5 + dh)];
+      out.push({ svg: ctx.poly(dq, "#5b4f3d", "#3d3428", 0.5), depth: -9.45e8 });
       out = out.concat(cornice(ctx, cx - W / 2 + cfg.lean * H, cy - D / 2 + cfg.lean * H,
                                cx + W / 2 - cfg.lean * H, cy + D / 2 - cfg.lean * H,
                                z + 0.5 + H, H * 0.09, H * 0.08, "#d8c6a6"));
@@ -305,14 +311,56 @@
     }
 
     if (cfg.kind === "figure") {
-      /* A plinth, then the figure: a tapering block, because a standing human
-         is narrower at the shoulders than the base of a statue. Not a portrait
-         of the work, a marker that something stands here at this height. */
-      var pl = H * 0.16;
-      out.push(flat(ctx, cx - W, cy - D, cx + W, cy + D, z + pl, "#e4ded1", STONE_E, 0.5, -9.6e8));
+      /* A STANDING HUMAN, not a block. [SEAN: "the artifact in 3D doesnt look
+         alike some object".] He is right: a kouros and a suit of armour drawn
+         as tapering boxes read as furniture. A statue is a person, and a
+         person is legible from very little as long as the PROPORTIONS are
+         human, so this is built on the canonical seven-and-a-half heads:
+         head one seventh and a half of the height, shoulders about a quarter
+         of it across, hips at just over half, arms hanging to mid-thigh.
+
+         The pose is archaic on purpose. A kouros stands rigid and frontal
+         with arms at the sides and the left foot advanced, which is the one
+         thing everybody notices about them, so the feet are offset. A suit of
+         armour on a stand holds the same attitude, which is why one shape
+         serves both. */
+      var pl = H * 0.14;                       /* the plinth */
+      var fh = H;                              /* the figure itself */
+      var head = fh / 7.5;
+      var shoulder = fh * 0.26;                /* across */
+      var deep = shoulder * 0.55;
+      var hip = fh * 0.50, neck = fh * 0.83, crown = fh * 0.97;
+      var zf = z + pl;
+      var C2 = cfg.fill;
+
+      out.push(flat(ctx, cx - W, cy - D, cx + W, cy + D, zf, "#e4ded1", STONE_E, 0.5, -9.62e8));
       out = out.concat(batteredMass(ctx, cx - W, cy - D, cx + W, cy + D, z, pl, 0.02, "#e0d9cb"));
-      out = out.concat(batteredMass(ctx, cx - W / 2, cy - D / 2, cx + W / 2, cy + D / 2,
-                                    z + pl, H, 0.05, cfg.fill));
+
+      /* legs, the left one advanced, which is the archaic stance */
+      [[-1, 0.12], [1, -0.10]].forEach(function (lg) {
+        var lx = cx + lg[0] * shoulder * 0.24, ly = cy + lg[1] * deep;
+        var lw = shoulder * 0.17;
+        out = out.concat(batteredMass(ctx, lx - lw, ly - lw, lx + lw, ly + lw,
+                                      zf, hip, 0.02, C2));
+      });
+      /* torso: wider at the shoulder than the waist, which is the whole
+         silhouette of a standing body */
+      out = out.concat(batteredMass(ctx, cx - shoulder / 2, cy - deep / 2,
+                                    cx + shoulder / 2, cy + deep / 2,
+                                    zf + hip, neck - hip, -0.06, C2));
+      /* arms, hanging at the sides, not out */
+      [-1, 1].forEach(function (sd) {
+        var ax = cx + sd * (shoulder / 2 + shoulder * 0.06), aw = shoulder * 0.10;
+        out = out.concat(batteredMass(ctx, ax - aw, cy - aw, ax + aw, cy + aw,
+                                      zf + hip * 0.92, (neck - hip) * 0.92, 0.02, C2));
+      });
+      /* neck, then head */
+      var nw = shoulder * 0.13;
+      out = out.concat(batteredMass(ctx, cx - nw, cy - nw, cx + nw, cy + nw,
+                                    zf + neck, crown - neck - head * 0.9, 0, C2));
+      var hw = head * 0.42;
+      out = out.concat(batteredMass(ctx, cx - hw, cy - hw * 0.85, cx + hw, cy + hw * 0.85,
+                                    zf + crown - head * 0.9, head * 0.9, -0.05, C2));
       return out;
     }
 
