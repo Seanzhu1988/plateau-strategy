@@ -354,6 +354,87 @@
     return out;
   }
 
-  window.MET_ROOMS = { dendur: dendur };
+
+  /* ---------------- The Great Hall ----------------
+     The room every visitor walks into, and until now an empty box on the plan.
+     It is not an object in a room, it is architecture, which is what the
+     styles book is for. Beaux-Arts was entered in that book ahead of the Met
+     and never used; this is what it was for.
+
+     Richard Morris Hunt, opened December 1902. 166 feet long, 48 wide, two
+     storeys. THREE SAUCER DOMES carried on arches, and they are three because
+     the Fifth Avenue front outside has three arches: the inside is answering
+     the outside. Round arches on PAIRED columns is Hunt's motif, repeated
+     three times across the facade and again over your head in here.
+
+     The arches are drawn by the same function that draws the Brooklyn
+     Bridge's, at a different setting. A two-centred arch whose rise equals
+     its half-width has both centres in one place, so it comes out a true
+     semicircle. Gothic and Roman are one equation. A pointed arch in this
+     room would be a century out of place, and the book says so. */
+  function greatHall(ctx) {
+    var r = ctx.room, z = ctx.zBase, P = ctx.project, out = [];
+    var S = window.STYLES3D;
+    var LEN = 166, WID = 48;
+    var wall = ctx.wall || 26;
+    var k = Math.min((r.w * 0.92) / LEN, (r.h * 0.80) / WID);
+    var L = LEN * k, W = WID * k;
+    var H = wall * 0.92;                       /* two storeys, capped by the plan */
+    var cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+    var x1 = cx - L / 2, y1 = cy - W / 2, y2 = cy + W / 2;
+
+    var LIME = "#ddd5c2", LIME_D = "#b7ad96", LIME_L = "#eae3d3";
+
+    out.push(flat(ctx, x1, y1, x1 + L, y2, z + 0.4, "#efe9dc", LIME_D, 0.5, -1e9));
+
+    /* the two long walls, and the arcade cut through the Fifth Avenue side */
+    [y1, y2].forEach(function (yy, side) {
+      var n = (yy === y1) ? -1 : 1;
+      var q = [P(x1, yy, z), P(x1 + L, yy, z), P(x1 + L, yy, z + H), P(x1, yy, z + H)];
+      out.push({ svg: ctx.poly(q, ctx.shade(LIME, 0, n, 0.25), LIME_D, 0.5),
+                 depth: side ? -9.9e8 : -9.6e8 });
+    });
+
+    /* THREE BAYS. Each gets a round arch and a dome, and the piers between
+       them carry paired columns, which is Hunt's motif inside and out. */
+    var bay = L / 3;
+    for (var i = 0; i < 3; i++) {
+      var bx = x1 + bay * (i + 0.5);
+      var aw = bay * 0.62, ah = H * 0.66;
+      /* rise equals half the width, so the styles book returns a SEMICIRCLE */
+      var pts = (S && S.archedOpening)
+        ? S.archedOpening(aw, ah, (ah - aw / 2) / ah, 18)
+        : [[-aw / 2, 0], [-aw / 2, ah], [aw / 2, ah], [aw / 2, 0]];
+      var face = pts.map(function (pt) { return P(bx + pt[0], y1 + 0.3, z + pt[1]); });
+      out.push({ svg: ctx.poly(face, "#efe9dc", LIME_D, 0.6), depth: -9.55e8 });
+
+      /* the saucer dome over the bay, drawn as stacked rings so it reads as a
+         shallow curve rather than a half ball; the Met's are saucers. */
+      var dr = bay * 0.40, dh = H * 0.20;
+      for (var t = 0; t < 6; t++) {
+        var f0 = t / 6, f1 = (t + 1) / 6;
+        var r0 = dr * Math.cos(f0 * Math.PI / 2), r1 = dr * Math.cos(f1 * Math.PI / 2);
+        var z0 = z + H - dh + dh * Math.sin(f0 * Math.PI / 2);
+        var z1 = z + H - dh + dh * Math.sin(f1 * Math.PI / 2);
+        var ring = [P(bx - r0, cy - r0, z0), P(bx + r0, cy - r0, z0),
+                    P(bx + r1, cy - r1, z1), P(bx - r1, cy - r1, z1)];
+        out.push({ svg: ctx.poly(ring, ctx.shade(LIME_L, 0, -1, 0.5 + f0 * 0.4), LIME_D, 0.4),
+                   depth: -9.3e8 + t });
+      }
+
+      /* paired columns on the piers between the bays */
+      if (i < 2) {
+        var px = x1 + bay * (i + 1);
+        [-1, 1].forEach(function (o) {
+          var colX = px + o * bay * 0.055, cr = bay * 0.028;
+          out = out.concat(batteredMass(ctx, colX - cr, y1 + 1, colX + cr, y1 + 1 + cr * 2,
+                                        z, H * 0.62, 0.01, LIME_L));
+        });
+      }
+    }
+    return out;
+  }
+
+  window.MET_ROOMS = { dendur: dendur, 'great-hall': greatHall };
   Object.keys(LANDMARKS).forEach(function (k) { window.MET_ROOMS[k] = landmark; });
 })();
