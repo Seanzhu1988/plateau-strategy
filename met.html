@@ -204,9 +204,14 @@
   }
   /* The picture in the guide was already a link and nothing said so. This is
      the line that tells you, sitting under the caption where the eye lands. */
+  /* The picture opens OUR model of the room, so it is a button, not a link
+     out. It keeps the anchor's old look because the strip was already right. */
+  .la-open{display:inline-block;padding:0;border:0;background:none;cursor:pointer;
+           font:inherit;color:inherit;text-align:left}
+  .la-still{display:inline-block}
   .la-3d{display:block;font-size:.74rem;color:#1f3a5f;margin-top:.1rem}
-  .la-3d.la-plain{color:#6b6459}
-  .leg-art a:hover .la-3d{text-decoration:underline}
+  .la-open:hover .la-3d{text-decoration:underline}
+  .la-open:focus-visible{outline:2px solid #1f3a5f;outline-offset:3px;border-radius:6px}
 </style>
 </head>
 <body data-arm="company">

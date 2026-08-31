@@ -79,31 +79,56 @@
   function artStrip(k) {
     var arts = (window.MET_ART || {})[k] || [];
     if (!arts.length) return '';
+    /* The picture used to send the reader to the Met's own website.
+       [SEAN: "that picture down there redirect the site to mets lets not do
+       that, we just need the 3D model", and "reason why we are writing too, so
+       it might conflict what we built".]
+
+       He is right, and the reason is the better half of it. We write our own
+       scripts for these rooms. Handing a visitor to the Met's page hands them
+       the Met's version of the story instead of ours, on a page selling our
+       tours. That is not a broken link, it is a leak.
+
+       So the picture now opens OUR model of the room, which already exists and
+       weighs twelve kilobytes, rather than a nine hundred kilobyte viewer or
+       somebody else's website. A room we have not modelled yet shows the
+       picture with no action, because a button that does nothing is worse than
+       no button.
+
+       The photograph itself stays the Met's, Open Access, and is credited as
+       theirs. Using their picture is not the same as sending our reader away. */
+    var hasRoom = !!(window.MET_ROOMS && window.MET_ROOMS[k]);
     return '<div class="leg-art">' + arts.map(function (a) {
       var cap = a.artist ? a.artist.split(',')[0] : a.title;
-      /* The picture was already a link to the Met's page and nothing said so,
-         so nobody clicked it. [SEAN, pointing at it: "i want it to be placed at
-         uploading picture" and "its not showing anything".]
-
-         Where the Met publishes a 3D scan of the object, say so ON the
-         picture, because that is where the eye already is. The label mirrors
-         the Met's own button, which reads "View in 3D", rather than inventing
-         wording for someone else's feature.
-
-         threeD is set PER OBJECT and verified, never assumed: the Met has 3D
-         for some works and not others, and promising a scan that is not there
-         is worse than staying quiet. Dendur was confirmed by loading their
-         page and finding both the 3D control and Dendur_Crop.glb. An object
-         without the flag renders exactly as before. */
-      var three = a.threeD
-        ? '<span class="la-3d">View in 3D ↗</span>'
-        : '<span class="la-3d la-plain">On the Met\'s site ↗</span>';
-      return '<a href="' + a.href + '" target="_blank" rel="noopener">' +
-        '<img src="' + a.img + '" alt="' + (a.title || a.work).replace(/"/g, '&quot;') +
-        '" loading="lazy">' +
-        '<span class="la-t">' + cap + '</span>' + three + '</a>';
+      var alt = (a.title || a.work).replace(/"/g, '&quot;');
+      /* The photograph is the Met's, Open Access. CC0 asks for no credit and
+         we give one anyway, in the tooltip so it informs without shouting. */
+      var inner = '<img src="' + a.img + '" alt="' + alt + '" loading="lazy"' +
+                  ' title="' + alt + '. Image: The Metropolitan Museum of Art, Open Access.">' +
+                  '<span class="la-t">' + cap + '</span>';
+      if (hasRoom) {
+        return '<button type="button" class="la-open" data-room="' + k + '">' +
+               inner + '<span class="la-3d">See this room in 3D</span></button>';
+      }
+      return '<span class="la-still">' + inner + '</span>';
     }).join('') + '</div>';
   }
+
+  /* Opening our own room from the picture: switch to the 3D sheet if we are not
+     already on it, then dive into that gallery. */
+  document.addEventListener('click', function (e) {
+    var b = e.target && e.target.closest && e.target.closest('.la-open');
+    if (!b) return;
+    e.preventDefault();
+    var k = b.dataset.room;
+    var host = document.getElementById('svgHost');
+    if (mode !== '3d') { mode = '3d'; remember(); draw(); }
+    if (!window.Met3D) return;
+    function dive() { window.Met3D.focusRoom(host, _opts3d, k); }
+    if (window.Met3D.isOpen()) dive();
+    else window.Met3D.openInterior(host, _opts3d, dive);
+    host.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
   var walkedMinutes = {};   /* corridor key -> measured minutes, when surveyed */
 
   function corridorKey(a, b) {
