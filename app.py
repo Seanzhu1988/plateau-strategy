@@ -2881,6 +2881,33 @@ def landmarks_page():
     return send_file(os.path.join(BASE_DIR, "landmarks.html"))
 
 
+@app.route("/api/landmark-stories")
+def api_landmark_stories():
+    """The landmark stories, one entry per landmark with every language on it.
+
+    Read from BASE_DIR deliberately, NOT through _data_path. These are
+    authored content that ships with the code and nothing writes them at
+    runtime, so the disk-seeding path would be actively wrong here: it copies
+    once, and a story written next week would never reach a running site.
+
+    Each language is a field on the entry, so the page picks the reader's
+    language directly. There is no dictionary lookup, which means there is no
+    lookup to miss, which is the failure the Freedom Trail had.
+
+    The research block is stripped: it is working material for the writer, it
+    cites sources and is not written for a visitor to read."""
+    try:
+        with open(os.path.join(BASE_DIR, "landmark_stories.json"), encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:
+        return jsonify({"ok": True, "landmarks": []})
+    out = []
+    for lm in data.get("landmarks", []):
+        row = {k: v for k, v in lm.items() if k != "research"}
+        out.append(row)
+    return jsonify({"ok": True, "landmarks": out})
+
+
 @app.route("/styles-3d.js")
 def styles_3d_js():
     """The styles book, the half a model can execute. Loaded BEFORE any model

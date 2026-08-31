@@ -1,0 +1,45 @@
+{
+  "_note": "Stories for the landmarks page, one entry per landmark, written by the plateau-story-writer routine. Each language is stored on the entry, so the page picks the field for the reader's language and there is NO dictionary lookup to miss. The research block is verified fact with sources, gathered 2026-08-30, so the writer spends its run writing rather than re-finding. FACTUAL ONLY: never invent a person, quote or experience.",
+  "landmarks": [
+    {
+      "id": "brooklyn-bridge",
+      "name": "The Brooklyn Bridge",
+      "style": "gothic-revival",
+      "story_en": "",
+      "story_zh": "",
+      "story_es": "",
+      "story_ko": "",
+      "story_vi": "",
+      "research": [
+        "John Augustus Roebling designed it and never saw a stone laid. Surveying the site in late June 1869 an arriving ferry crushed his foot against the pilings; he contracted tetanus and died about a month later.",
+        "His son Washington took over, worked in the caissons alongside the men, and was disabled by caisson disease (decompression sickness). For years he was so sensitive to light and noise that he barely left home, and he watched the work from a window.",
+        "Emily Warren Roebling learned the engineering and ran it. She visited the site, carried his instructions, attended the board meetings, and managed the project for years. Washington remained chief engineer on paper. At the 1883 opening Emily rode across with President Chester Arthur.",
+        "The wire fraud: contractor J. Lloyd Haigh substituted rejected wire for approved wire after inspection, swapping it overnight. Roebling had insisted on testing every ring rather than every tenth, and the swap was caught by secretly marking the good wire. Haigh was convicted and jailed in 1880.",
+        "About 221 tons of rejected wire was already spun into the cables and could not be removed, so 150 extra wires were added to each cable as a safety margin. That defective wire is still in the bridge, and so is the margin.",
+        "Opened 24 May 1883. Six days later, on 30 May, a woman tripped on the steps, someone screamed, the crowd surged, and 12 people were killed in the panic.",
+        "On 17 May 1884 P. T. Barnum walked 21 elephants across, including Jumbo, with camels and dromedaries. The public read it as proof the bridge would hold.",
+        "Sources: nyhistory.org, history.com, Wikipedia (Washington Roebling, Emily Warren Roebling), structuremag.org, snopes.com, erenow.org (McCullough, The Great Bridge)."
+      ]
+    },
+    {
+      "id": "empire-state",
+      "name": "The Empire State Building",
+      "style": "art-deco",
+      "story_en": "",
+      "story_zh": "",
+      "story_es": "",
+      "story_ko": "",
+      "story_vi": "",
+      "research": [
+        "It was built to win a race. John Jakob Raskob and Walter Chrysler were both going for the world's tallest. The Chrysler Building took the record in October 1929 at 1,046 ft, using a spire assembled in secret inside the building.",
+        "Raskob's answer was height that could be justified: a mooring mast for airships. It never worked as one. Updrafts around the tower made mooring impractical, and the mast became a broadcast antenna instead.",
+        "Speed: foundation work began 17 March 1930 and the building was completed 11 April 1931, about 410 days. As many as 3,400 men worked on it in a day, and the steel frame rose about four and a half storeys a week.",
+        "It opened 1 May 1931, into the Great Depression, and most of the office space sat empty. It was nicknamed the Empty State Building. Observatory admissions helped carry it in the early years.",
+        "On 28 July 1945 a US Army B-25 bomber flying in thick fog struck the north side between the 78th and 80th floors. Fourteen people were killed, three crew and eleven in the building, and about 24 were injured. The structure itself was not compromised.",
+        "In that same crash, elevator attendant Betty Lou Oliver, aged 20, fell roughly 75 storeys when the damaged cables of the elevator she had been placed in gave way. She survived, with a broken neck, back and pelvis. It remains the longest survived fall in an elevator, recognised by Guinness World Records.",
+        "The setbacks in the silhouette are law rather than taste: New York's 1916 zoning resolution required towers to step back as they rose so daylight could reach the street.",
+        "Sources: Britannica, Wikipedia (Empire State Building; 1945 Empire State Building B-25 crash), enr.com, foxnews.com, guinnessworldrecords.com."
+      ]
+    }
+  ]
+}

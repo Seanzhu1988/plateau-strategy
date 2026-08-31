@@ -36,6 +36,11 @@
   .lm-honest { font-size: .85rem; color: #6b655b; border-top: 1px solid #e6e6ea;
                padding-top: .8rem; margin-top: 1.4rem; }
   #lmTipsRow a { font-weight: 700; color: #1f3a5f; }
+  .lm-story{margin:1.4rem 0 0;padding:1.2rem 1.3rem;border-left:3px solid #c9c0ad;
+            background:#faf8f4;border-radius:0 8px 8px 0;line-height:1.62}
+  .lm-story p{margin:0 0 .8rem}
+  .lm-story p:last-child{margin-bottom:0}
+  @media (max-width:520px){ .lm-story{padding:1rem} }
 </style>
 </head>
 <body>
@@ -58,7 +63,7 @@
 
     <div class="lm-facts">
       <div class="lm-fact"><b>1,595.5 ft</b><span>the main span, tower to tower</span></div>
-      <div class="lm-fact"><b>278 ft</b><span>tower height above the water</span></div>
+      <div class="lm-fact"><b>276.5 ft</b><span>tower height above the water</span></div>
       <div class="lm-fact"><b>1.1 miles</b><span>the whole walk, end to end</span></div>
       <div class="lm-fact"><b>30 to 40 min</b><span>what it really takes, with stops</span></div>
     </div>
@@ -75,6 +80,8 @@
          from the towers down to the deck, and they are what makes the deck
          stiff. Stand under a tower and look up through them.</p>
     </div>
+
+    <div class="lm-story" id="story-brooklyn-bridge" hidden></div>
   </section>
 
   <section class="lm-sec">
@@ -102,6 +109,8 @@
          street. The setbacks at the 21st, 25th and 30th floors, and again at
          the 72nd, 81st and 85th, are that rule made of limestone.</p>
     </div>
+
+    <div class="lm-story" id="story-empire-state" hidden></div>
   </section>
 
   <p class="lm-honest">Honest about the drawing: the heights, the spans, the
@@ -120,6 +129,38 @@
 <script>
   NYC3D.bridge(document.getElementById('bridgeStage'));
   NYC3D.empire(document.getElementById('empireStage'));
+
+  /* The stories. Each language is stored ON the entry, so this picks a field
+     rather than looking a sentence up in the dictionary. That is deliberate:
+     a page that composes its own text can silently miss the translator, which
+     is what left the Chinese Freedom Trail with an English summary under a
+     Chinese title. There is nothing here to miss. A language with no story
+     written yet falls back to English rather than an empty box, and a
+     landmark with no story at all stays hidden. */
+  (function () {
+    var STORIES = null;
+    function paint() {
+      if (!STORIES) return;
+      var lang = (window.psxLang && window.psxLang()) || 'en';
+      STORIES.forEach(function (lm) {
+        var box = document.getElementById('story-' + lm.id);
+        if (!box) return;
+        var txt = (lm['story_' + lang] || '').trim() || (lm.story_en || '').trim();
+        if (!txt) { box.hidden = true; return; }
+        box.innerHTML = txt.split(/\n\s*\n/).map(function (para) {
+          var d = document.createElement('p');
+          d.textContent = para.trim();
+          return d.outerHTML;
+        }).join('');
+        box.hidden = false;
+      });
+    }
+    fetch('/api/landmark-stories', { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { STORIES = (d && d.landmarks) || []; paint(); })
+      .catch(function () {});
+    document.addEventListener('psx:lang', paint);
+  })();
 </script>
 </body>
 </html>
