@@ -125,7 +125,12 @@
     var x0 = r.x + 8, x1e = r.x + r.w - 8;
     var yc = r.y + r.h / 2;
 
-    var tLen = 43 * FT, tWid = 21 * FT, tHt = 16 * FT;
+    /* The Met's own record for its own object: temple proper 41 ft long,
+       21 wide, 21 high. An earlier pass used 43 by 21 by 16 from a secondary
+       source, whose 16 was the height to the roof rather than overall. When
+       the museum publishes dimensions for the thing it owns, that is the
+       source. */
+    var tLen = 41 * FT, tWid = 21 * FT, tHt = 21 * FT;
     var poolW = 30 * FT;
 
     var tX1 = x0 + 20, tX2 = tX1 + tLen;
@@ -232,5 +237,123 @@
     return out;
   }
 
+
+  /* ==================================================================
+     ONE LANDMARK IN EVERY ROOM
+     [SEAN "can you now add 1 landmark to each of every room?"]
+
+     Dendur gets a room because the room IS the exhibit. Everywhere else
+     one object is the reason people walk in, so each gallery gets that
+     object, standing at its REAL published size.
+
+     Every dimension below came from the Met's own API record for that
+     object, not from a photograph and not from memory. Where the museum
+     publishes only a height, only the height is claimed and the other two
+     are proportion. The Met's record also corrected our own Dendur: it
+     gives 41 by 21 by 21 feet, where a secondary source had said 16 high.
+
+     Four shapes cover twelve rooms, because a kouros and a suit of armour
+     are the same problem at different sizes, and a Rembrandt and a Van
+     Gogh are the same problem at different sizes. What differs is the
+     number, and the number is real.
+
+     A room with no signature work listed gets nothing. Absence over
+     invention: an empty gallery is honest, a generic box is not.
+     ================================================================== */
+
+  var LANDMARKS = {
+    /* kind, then feet. canvas is height then width, as the Met lists them. */
+    "egyptian":           { kind: "mass",   h: 15.8, w: 20, d: 12, lean: 0.09,
+                            fill: "#c7b294", note: "Mastaba Tomb of Perneb, height published" },
+    "greek-roman":        { kind: "figure", h: 6.4,  w: 1.7, d: 2.1, fill: "#ded8cc" },
+    "arms-armor":         { kind: "figure", h: 6.1,  w: 1.9, d: 1.6, fill: "#a9adb4" },
+    "medieval":           { kind: "screen", h: 52,   w: 42,  fill: "#8d7f63" },
+    "islamic":            { kind: "screen", h: 22,   w: 16.7, arch: true, fill: "#7d8f9c" },
+    "lehman":             { kind: "canvas", h: 5.1,  w: 4.1,  fill: "#6f5a44" },
+    "american-court":     { kind: "canvas", h: 12.4, w: 21.3, fill: "#5d6b7a" },
+    "grand-stair":        { kind: "canvas", h: 18.3, w: 10.7, fill: "#7a6a56" },
+    "euro-paintings":     { kind: "canvas", h: 4.7,  w: 4.5,  fill: "#6b5b47" },
+    "nineteenth-century": { kind: "canvas", h: 2.4,  w: 3.1,  fill: "#7d8a5e" },
+    "asian-astor":        { kind: "canvas", h: 24.7, w: 49.6, fill: "#8a7355" }
+  };
+
+  var FRAME = "#4a3f31", STONE_E = "#8b8375";
+
+  function landmark(ctx) {
+    var cfg = LANDMARKS[ctx.key];
+    if (!cfg) return [];                 /* no signature work: draw nothing */
+    var r = ctx.room, z = ctx.zBase, P = ctx.project, out = [];
+    var cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+
+    /* Fit. The real proportions are kept and the whole thing is shrunk when
+       it will not stand in the room: the Valladolid choir screen is 52 feet
+       tall and one storey of this schematic is not. Proportion is the honest
+       part; absolute scale inside a schematic room never was. */
+    var wide = cfg.w || cfg.d || 4, high = cfg.h;
+    var ceil = (ctx.wall || 26) * 0.82;
+    var k = FT;
+    k = Math.min(k, ceil / high, (r.w * 0.62) / wide, (r.h * 0.62) / (cfg.d || wide));
+    var H = high * k, W = wide * k, D = (cfg.d || Math.max(1, wide * 0.12)) * k;
+
+    if (cfg.kind === "mass") {
+      out = out.concat(batteredMass(ctx, cx - W / 2, cy - D / 2, cx + W / 2, cy + D / 2,
+                                    z + 0.5, H, cfg.lean || 0.08, cfg.fill));
+      out = out.concat(cornice(ctx, cx - W / 2 + cfg.lean * H, cy - D / 2 + cfg.lean * H,
+                               cx + W / 2 - cfg.lean * H, cy + D / 2 - cfg.lean * H,
+                               z + 0.5 + H, H * 0.09, H * 0.08, "#d8c6a6"));
+      return out;
+    }
+
+    if (cfg.kind === "figure") {
+      /* A plinth, then the figure: a tapering block, because a standing human
+         is narrower at the shoulders than the base of a statue. Not a portrait
+         of the work, a marker that something stands here at this height. */
+      var pl = H * 0.16;
+      out.push(flat(ctx, cx - W, cy - D, cx + W, cy + D, z + pl, "#e4ded1", STONE_E, 0.5, -9.6e8));
+      out = out.concat(batteredMass(ctx, cx - W, cy - D, cx + W, cy + D, z, pl, 0.02, "#e0d9cb"));
+      out = out.concat(batteredMass(ctx, cx - W / 2, cy - D / 2, cx + W / 2, cy + D / 2,
+                                    z + pl, H, 0.05, cfg.fill));
+      return out;
+    }
+
+    /* canvas and screen both stand as a flat plane facing into the room, on
+       the far side, which is where a big picture or a screen actually hangs. */
+    var y0 = r.y + r.h * 0.22;
+    var x1 = cx - W / 2, x2 = cx + W / 2;
+    var base = z + (cfg.kind === "canvas" ? (ctx.wall || 26) * 0.10 : 0.4);
+
+    if (cfg.kind === "screen" && cfg.arch) {
+      /* A mihrab is a POINTED niche, so the styles book draws it rather than a
+         rectangle with a curve guessed on top. */
+      var S = window.STYLES3D;
+      var pts = (S && S.archedOpening) ? S.archedOpening(W, H, 0.55, 20)
+                                       : [[-W / 2, 0], [-W / 2, H], [W / 2, H], [W / 2, 0]];
+      /* the surround first, so the niche reads as cut INTO something */
+      out = out.concat(batteredMass(ctx, cx - W * 0.62, y0, cx + W * 0.62, y0 + W * 0.10,
+                                    base, H * 1.12, 0.01, "#cfc6b4"));
+      var poly3 = pts.map(function (pt) { return P(cx + pt[0], y0 - 0.2, base + pt[1]); });
+      out.push({ svg: ctx.poly(poly3, ctx.shade(cfg.fill, 0, -1, 0.2), "#5e6d78", 0.7),
+                 depth: -9.4e8 });
+      return out;
+    }
+
+    /* A picture is a flat thing, but drawn as two flat quads it reads as a
+       decal printed on the floor plan. It gets a real frame with depth, so it
+       stands in the room the way it hangs on a wall, and the canvas sits
+       slightly proud of it. The size is the museum's own: at 12.4 by 21.3 feet
+       Washington Crossing the Delaware genuinely fills the end of its court,
+       and that is the fact worth seeing. */
+    var fr = Math.max(0.6, W * 0.045);
+    var th = Math.max(0.5, W * 0.022);            /* how far it stands off the wall */
+    out = out.concat(batteredMass(ctx, x1 - fr, y0, x2 + fr, y0 + th,
+                                  base - fr, H + fr * 2, 0, FRAME));
+    var q = [P(x1, y0 - 0.15, base), P(x2, y0 - 0.15, base),
+             P(x2, y0 - 0.15, base + H), P(x1, y0 - 0.15, base + H)];
+    out.push({ svg: ctx.poly(q, ctx.shade(cfg.fill, 0, -1, 0.25), "#3b332a", 0.5),
+               depth: -9.4e8 });
+    return out;
+  }
+
   window.MET_ROOMS = { dendur: dendur };
+  Object.keys(LANDMARKS).forEach(function (k) { window.MET_ROOMS[k] = landmark; });
 })();

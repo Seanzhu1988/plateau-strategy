@@ -582,6 +582,8 @@
           project: project, poly: poly, shade: shade, faceVisible: faceVisible,
           room: { x: ir.x * KX, y: ir.y, w: ir.w * KX, h: ir.h, f: ir.f },
           zBase: (ir.f === 2 ? (exploded ? WALL + gap : WALL) : 0),
+          wall: WALL,          /* one storey, so nothing is drawn through a ceiling */
+          key: focusKey,
           C: C
         }) || [];
         inside.forEach(function (it) {
