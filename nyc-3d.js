@@ -10,7 +10,7 @@
  * feet, so the proportions on screen are the proportions in the air:
  *
  *   Brooklyn Bridge, opened 1883. Main span 1,595.5 ft, side spans 930 ft
- *   each, total 6,016 ft. Towers 278 ft above mean high water, deck 127 ft.
+ *   each, total 6,016 ft. Towers 276.5 ft above mean high water, deck 127 ft.
  *   Two pointed Gothic arches per tower, each 117 ft tall and 33.75 ft wide.
  *   Four main cables, and about 400 diagonal stays, 138 to 449 ft long, which
  *   are the web everyone photographs and the reason the deck is stiff.
@@ -124,17 +124,58 @@
         '" stroke="' + l.colour + '" stroke-width="' + (l.width || 1) +
         '" opacity="' + (l.opacity == null ? 1 : l.opacity) + '" stroke-linecap="round"/>');
     });
+    /* Labels live in viewBox units, and the viewBox is squeezed to whatever
+       width the page gives it. On a 375 px phone the bridge box is 321 px
+       against a 980 unit viewBox, so a 12 unit label landed at 3.9 CSS
+       pixels and the dot at 1.3: both invisible. Size them against the box's
+       real pixel width instead, so a label reads the same on any screen. The
+       floor of 12 keeps the desktop drawing exactly as it was. */
+    var pxw = host.clientWidth || host.getBoundingClientRect().width || w;
+    var perPx = w / (pxw || w);                        /* viewBox units per CSS px */
+    var fT = Math.max(12, Math.min(12.5 * perPx, 44)); /* the bold name */
+    var fS = fT * 0.875;                               /* the note under it */
+    var ds = fT / 12;                                  /* dots and offsets follow */
+    /* Readable labels are wide labels, so on a phone they ran off the right
+       edge and sat on top of each other. Two guards, both measured from the
+       text itself: a label that would overrun flips to the left of its dot,
+       and a label that would land on one already placed drops a line. On a
+       desktop box neither guard fires, so the wide drawing is untouched. */
+    var gap = 9 * ds, lh = fT * 1.35, placed = [];
+    function runs(s, f) { return (s || '').length * f * 0.55; }
     (scene.marks || []).forEach(function (m) {
       var p = project(m.at, cam);
       parts.push('<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) +
-        '" r="' + (m.r || 4) + '" fill="' + (m.fill || C.navy) + '"/>');
+        '" r="' + ((m.r || 4) * ds).toFixed(1) + '" fill="' + (m.fill || C.navy) + '"/>');
+      if (!m.text && !m.sub) return;
+      var wide = Math.max(runs(m.text, fT), runs(m.sub, fS));
+      var flip = p.x + gap + wide > w - 4;
+      var ax = flip ? p.x - gap : p.x + gap;
+      var x1 = flip ? ax - wide : ax, x2 = x1 + wide;
+      /* flipping a long label can push it off the other edge, so nudge the
+         whole label back inside. The dot stays on the true point. */
+      var shift = x1 < 4 ? 4 - x1 : (x2 > w - 4 ? (w - 4) - x2 : 0);
+      ax += shift; x1 += shift; x2 += shift;
+      var tall = fT + (m.sub ? lh : 0);
+      var drop = 0;
+      for (var g = 0; g < 4; g++) {
+        var top = p.y - fT + drop;
+        var clash = placed.some(function (r) {
+          return x1 < r.x2 && x2 > r.x1 && top < r.y2 && top + tall > r.y1;
+        });
+        if (!clash) break;
+        drop += lh;
+      }
+      placed.push({ x1: x1, x2: x2, y1: p.y - fT + drop, y2: p.y - fT + drop + tall });
+      var anchor = flip ? ' text-anchor="end"' : '';
       if (m.text) {
-        parts.push('<text x="' + (p.x + 9).toFixed(1) + '" y="' + (p.y + 4).toFixed(1) +
-          '" font-size="12" font-weight="700" fill="' + C.ink + '">' + m.text + '</text>');
+        parts.push('<text x="' + ax.toFixed(1) + '" y="' + (p.y + 4 * ds + drop).toFixed(1) +
+          '" font-size="' + fT.toFixed(1) + '" font-weight="700" fill="' + C.ink + '"' +
+          anchor + '>' + m.text + '</text>');
       }
       if (m.sub) {
-        parts.push('<text x="' + (p.x + 9).toFixed(1) + '" y="' + (p.y + 18).toFixed(1) +
-          '" font-size="10.5" fill="' + C.label + '">' + m.sub + '</text>');
+        parts.push('<text x="' + ax.toFixed(1) + '" y="' + (p.y + 4 * ds + drop + lh).toFixed(1) +
+          '" font-size="' + fS.toFixed(1) + '" fill="' + C.label + '"' +
+          anchor + '>' + m.sub + '</text>');
       }
     });
     host.innerHTML = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" ' +
@@ -322,7 +363,7 @@
 
     if (o.marks !== false) {
       marks.push({ at: P(0, 0, BB.towerH + 40), text: 'Manhattan tower',
-                   sub: '278 ft above the water' });
+                   sub: '276.5 ft above the water' });
       marks.push({ at: P(BB.span, 0, BB.towerH + 40), text: 'Brooklyn tower' });
       marks.push({ at: P(BB.span / 2, 0, dz + 60), text: 'the promenade',
                    sub: '18 ft above the traffic, walkers only' });
@@ -404,6 +445,17 @@
       cam = makeCam(cam.yaw + dx, cam.pitch, cam.zoom, cam.ox, cam.oy);
       draw();
     }
+    /* label size is worked out from the box's pixel width, so a box that
+       changes width has to be drawn again. The idle turn would eventually
+       do it, but it does not run for a reader who stopped animation, nor
+       once someone has taken hold, nor while the tab is in the background. */
+    if (window.ResizeObserver) {
+      var seen = 0;
+      new ResizeObserver(function () {
+        var now = Math.round(host.clientWidth);
+        if (now && now !== seen) { seen = now; draw(); }
+      }).observe(host);
+    }
     host.addEventListener('pointerdown', function (e) {
       dragging = true; idle = false; lastX = e.clientX;
       host.setPointerCapture && host.setPointerCapture(e.pointerId);
@@ -415,10 +467,14 @@
     ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (ev) {
       host.addEventListener(ev, function () { dragging = false; });
     });
-    /* a slow idle turn, so a still page shows it is a solid, and it stops
-       the moment anyone takes hold of it */
+    /* a slow idle turn, so a still page shows it is a solid. It stops the
+       moment anyone takes hold of it, and it never starts at all for a
+       reader who asked their device to stop animating. Read live rather
+       than once, so changing the setting takes effect without a reload. */
+    var still = window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)');
     (function spin() {
-      if (idle) turn(0.0016);
+      if (idle && !(still && still.matches)) turn(0.0016);
       requestAnimationFrame(spin);
     })();
     return { turn: turn };
