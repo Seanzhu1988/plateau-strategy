@@ -30,9 +30,9 @@
     'lehman':        { f: 1, x:  60, y: 280, w: 180, h: 105 },
     'greek-roman':   { f: 1, x: 560, y: 375, w: 150, h: 145 },
     'modern':        { f: 1, x:  60, y: 415, w: 200, h: 105 },
-    'grand-stair':   { f: 1, x: 500, y: 250, w:  45, h:  70, sub: 'TO FLOOR 2' },
+    'grand-stair':   { f: 1, x: 510, y: 250, w:  45, h:  70, sub: 'TO FLOOR 2' },
     /* floor 2 */
-    'grand-stair-2': { f: 2, x: 500, y: 250, w:  45, h:  70, sub: 'TO FLOOR 1' },
+    'grand-stair-2': { f: 2, x: 510, y: 250, w:  45, h:  70, sub: 'TO FLOOR 1' },
     'euro-paintings':{ f: 2, x: 290, y: 140, w: 195, h: 140 },
     'nineteenth-century': { f: 2, x: 60, y: 300, w: 210, h: 120 },
     'asian-astor':   { f: 2, x: 290, y:  40, w: 195, h:  80 },

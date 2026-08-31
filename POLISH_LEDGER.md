@@ -50,6 +50,14 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
 
 ## Also on the list
 
+- [ ] **The map is 83% full and cannot take many more rooms.** `map_lint.js`
+      now catches overlaps, strays and crowding, and fixed the two collisions
+      that were already there. But the real ceiling is coming: the schematic
+      is 760 wide and the rooms sit where they really sit, so new galleries
+      cannot simply be packed in. When the lint reports above 88%, widen the
+      sheet rather than shrinking rooms.
+
+
 - [ ] **29 composed strings across 15 visitor pages still bypass the
       translator**, found by `i18n_untranslated.py` after the Freedom Trail
       bug. Worst first, because these are the flagship free tools:
