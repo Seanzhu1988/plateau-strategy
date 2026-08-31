@@ -940,6 +940,10 @@ EXTRA.update({
     "Security": ["安全", "Seguridad", "보안", "Bảo mật"],
     "Privacy": ["隐私", "Privacidad", "개인정보", "Quyền riêng tư"],
 
+    # Corrected from 278 ft when the Met's own record gave 276.5 for its
+    # tower height. The build gate refused the packs until this was here.
+    "276.5 ft": ["276.5 英尺", "276,5 pies", "276.5피트", "276,5 foot"],
+
     # The first Freedom Trail landmark to get a model.
     "Stop 16, standing up": ["第十六站，立体呈现", "Parada 16, en pie",
                              "16번째 지점, 입체로", "Điểm 16, dựng đứng"],
