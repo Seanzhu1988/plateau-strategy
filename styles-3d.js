@@ -125,6 +125,45 @@
   }
 
   /* ---------------------------------------------------------------------
+     ANCIENT EGYPTIAN, and its tell is as decisive as the pointed arch.
+
+     BATTER. An Egyptian wall is not vertical. It leans inward as it rises,
+     and that single fact is what makes a drawing read as Egyptian rather
+     than as a shed. Draw a pylon with plumb walls and you have drawn a
+     billboard. The batter is usually given as a run-to-rise ratio; a pylon
+     leans harder than a temple wall, which is why the gate reads heavier
+     than the building behind it even when it is smaller.
+
+     CAVETTO CORNICE. The top is not a flat cap. It flares outward in a
+     hollow quarter-round, and underneath it runs a TORUS, a projecting
+     roll moulding, usually carved as a bound reed bundle. Cavetto plus
+     torus is the signature; either one alone looks wrong.
+
+     Together they give the profile every Egyptian building shares: leaning
+     in all the way up, then throwing outward at the very top.
+     --------------------------------------------------------------------- */
+
+  /* Horizontal inset of a battered wall at height v, given its full height
+     and the lean at the top. Returns how far the face has drawn in. */
+  function batter(v, height, lean) {
+    if (height <= 0) return 0;
+    return (lean == null ? 0.08 : lean) * height * (v / height);
+  }
+
+  /* The cavetto profile: a hollow quarter-round flaring OUT as it rises.
+     Returns [outward, up] pairs from the bottom of the flare to the top,
+     scaled to the given projection and rise. The curve is a quarter circle,
+     which is what makes it read as hollow rather than as a chamfer. */
+  function cavetto(project, rise, steps) {
+    var n = Math.max(4, steps || 8), pts = [];
+    for (var i = 0; i <= n; i++) {
+      var t = (i / n) * (Math.PI / 2);
+      pts.push([project * (1 - Math.cos(t)), rise * Math.sin(t)]);
+    }
+    return pts;
+  }
+
+  /* ---------------------------------------------------------------------
      ART DECO MASSING, the other style on the map.
 
      A 1930s New York tower is shaped by the 1916 zoning resolution: above a
@@ -163,6 +202,8 @@
     steelCable:       { base: "#6f7378", edge: "#4b4e52" },
     aluminium:        { base: "#b9bec4", edge: "#8d9298" },
     roadway:          { base: "#5a5a5c", edge: "#3f3f41" },
+    nubianSandstone:  { base: "#c2a882", edge: "#9a8464" },
+    poolWater:        { base: "#aebfc7", edge: "#8fa3ad" },
     timberDeck:       { base: "#8a6f52", edge: "#66513b" }
   };
   /* ---------------------------------------------------------------------
@@ -192,6 +233,17 @@
       materials: ["indianaLimestone", "aluminium"],
       wrongIf: "the facade bands horizontally, or the tower is one plain box"
     },
+    "egyptian": {
+      name: "Ancient Egyptian",
+      period: "here: the Temple of Dendur, begun about 23 BC under Augustus",
+      tells: ["walls BATTER, leaning inward as they rise, never plumb",
+              "a cavetto cornice flares outward at the top, over a torus roll",
+              "a pylon gate is two battered masses flanking the opening",
+              "columns carry plant capitals and are joined by screen walls",
+              "wall surfaces are carved in low relief, not left blank"],
+      materials: ["sandstone"],
+      wrongIf: "the walls are vertical, or the top is a flat cap"
+    },
     "beaux-arts": {
       name: "Beaux-Arts",
       period: "1880s to 1920s; the Met's Fifth Avenue front, 1902",
@@ -210,6 +262,8 @@
     pointedArch: pointedArch,
     archedOpening: archedOpening,
     voussoirs: voussoirs,
+    batter: batter,
+    cavetto: cavetto,
     setbackProfile: setbackProfile,
     pierRhythm: pierRhythm,
     PALETTE: PALETTE,

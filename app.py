@@ -1992,6 +1992,13 @@ def met_art_js():
     return send_file(os.path.join(BASE_DIR, "met-art.js"))
 
 
+@app.route("/met-rooms.js")
+def met_rooms_js():
+    """What is actually inside a gallery, for the rooms that have an inside
+    worth drawing. Loaded before met-3d.js, which reads window.MET_ROOMS."""
+    return send_file(os.path.join(BASE_DIR, "met-rooms.js"), mimetype="application/javascript")
+
+
 @app.route("/met-3d.js")
 def met_3d_js():
     """The Met as a solid: real footprint, extruded galleries, turnable."""

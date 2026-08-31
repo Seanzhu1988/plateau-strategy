@@ -477,6 +477,15 @@
                   { label: labelFor(k, r), sub: r.sub, room: k });
       b.floor = 1; b.room = k;
       if (openT < 0.98) b.svg = '<g opacity="' + openT.toFixed(2) + '">' + b.svg + "</g>";
+      /* A room that has an interior drawn for it opens as you dive in: the
+         solid gallery block fades back to a footprint so what is inside can
+         be seen. Without this the box simply hides its own contents. It never
+         goes fully invisible, because the block is also the click target and
+         the thing that says where the room ends. */
+      var hasIn = window.MET_ROOMS && window.MET_ROOMS[k];
+      if (hasIn && focusKey === k && focusT > 0.02) {
+        b.svg = '<g opacity="' + (1 - 0.86 * focusT).toFixed(2) + '">' + b.svg + "</g>";
+      }
       items.push(b);
       if (b.labelSvg) {
         var lb1 = openT < 0.98 ? '<g opacity="' + openT.toFixed(2) + '">' + b.labelSvg + "</g>" : b.labelSvg;
@@ -549,6 +558,35 @@
         if (openT < 0.98) st.svg = '<g opacity="' + openT.toFixed(2) + '">' + st.svg + "</g>";
         items.push(st);
       });
+    }
+
+    /* THE INSIDE OF ONE ROOM, when that room has one drawn.
+       The floor plan knows a gallery is a box, which is honest for a room of
+       vitrines and a lie for Gallery 131, which was built around a single
+       object with a pool for the Nile and a raked wall for the cliffs. A room
+       registers its interior in met-rooms.js; a room without one keeps the
+       plain box and loses nothing. The host lends its own projection and
+       shading so the interior sits in the same space and light as the
+       building around it. */
+    if (focusKey && openT > 0.02 && focusT > 0.02 && R[focusKey] &&
+        window.MET_ROOMS && window.MET_ROOMS[focusKey]) {
+      var ir = R[focusKey];
+      try {
+        var inside = window.MET_ROOMS[focusKey]({
+          project: project, poly: poly, shade: shade, faceVisible: faceVisible,
+          room: { x: ir.x * KX, y: ir.y, w: ir.w * KX, h: ir.h, f: ir.f },
+          zBase: (ir.f === 2 ? (exploded ? WALL + gap : WALL) : 0),
+          C: C
+        }) || [];
+        inside.forEach(function (it) {
+          items.push({ svg: '<g opacity="' + focusT.toFixed(2) + '">' + it.svg + "</g>",
+                       depth: it.depth, floor: ir.f, room: focusKey });
+        });
+      } catch (e) {
+        /* An interior is decoration. If one throws, the room falls back to
+           the plain box rather than taking the whole sheet down with it. */
+        if (window.console) console.warn("room interior failed:", focusKey, e);
+      }
     }
 
     /* The room overview: the focused gallery's highlight works stand on its
