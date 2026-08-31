@@ -416,7 +416,40 @@
   }
   function roomBarHide() {
     if (roomBar) roomBar.hidden = true;
+    var look = document.getElementById('roomLook');
+    if (look) look.hidden = true;
     document.getElementById('sheetNo').textContent = 'MET-3D · Both floors';
+  }
+
+  /* The Met's own photograph of the thing in this room, linking to their page,
+     which is where their 3D scan lives. [SEAN: "how about we use their link and
+     hitting that picture lead to 3D".] It is the cheaper idea and the better
+     one: 89 KB and an outbound link, against a 913 KB viewer plus a
+     research-grade model for someone standing in the gallery on museum wifi.
+     Our endpoint serves cached values, so no visitor ever calls the Met.
+     A room with no object listed simply shows nothing. */
+  var _lookCache = {};
+  function roomLookSync(k) {
+    var look = document.getElementById('roomLook');
+    if (!look) return;
+    look.hidden = true;
+    function paint(o) {
+      if (!o || document.getElementById('roomLook').dataset.room !== k) return;
+      document.getElementById('roomLookImg').src = o.image;
+      document.getElementById('roomLookImg').alt = o.title || '';
+      document.getElementById('roomLookTitle').textContent =
+        o.title + (o.date ? ', ' + o.date : '');
+      document.getElementById('roomLookCredit').textContent =
+        (o.credit || '') + ' Image: The Metropolitan Museum of Art, Open Access.';
+      look.href = o.link;
+      look.hidden = false;
+    }
+    look.dataset.room = k;
+    if (_lookCache[k] !== undefined) { paint(_lookCache[k]); return; }
+    fetch('/api/met-object?room=' + encodeURIComponent(k))
+      .then(function (r) { return r.json(); })
+      .then(function (d) { _lookCache[k] = d && d.object; paint(_lookCache[k]); })
+      .catch(function () { _lookCache[k] = null; });
   }
   document.getElementById('svgHost').addEventListener('met3d:room', function (e) {
     if (!roomBar) return;
@@ -425,6 +458,7 @@
       roomBar.hidden = false;
       roomBar.dataset.room = k;
       roomBarSync(k);
+      roomLookSync(k);
       var c = (window.MET_CARDS || {})[k] || {};
       document.getElementById('sheetNo').textContent = 'MET-3D · ' + (c.name || k);
       if (window.MetGuide && !MetGuide.isPlaying()) MetGuide.preview(k);

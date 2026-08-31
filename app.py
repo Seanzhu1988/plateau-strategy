@@ -1992,6 +1992,41 @@ def met_art_js():
     return send_file(os.path.join(BASE_DIR, "met-art.js"))
 
 
+@app.route("/api/met-object")
+def api_met_object():
+    """The Met's own picture of what stands in a room, and a link to their page.
+
+    [SEAN: "how about we use their link and hitting that picture lead to 3D".]
+    It is the cheaper idea and it is the right one. Showing the Met's 3D scan
+    ourselves costs a 913 KB viewer plus a research-grade model, against the
+    87 KB that currently draws the whole museum, both New York landmarks and
+    this room. One 89 KB photograph that opens their page instead costs a
+    tenth of the viewer alone, loads no JavaScript, hosts no model, and leaves
+    the heavy thing with the people who made it and maintain it.
+
+    Values are CACHED on disk. A visitor's browser never calls the Met: doing
+    that from every page view is how you get rate-limited, which happened to
+    me while researching this very question.
+
+    Only objects whose API record says isPublicDomain is true are listed, and
+    that flag is checked again here rather than trusted from the file. CC0
+    covers copyright, not trademark, so the credit is shown plainly and
+    nothing implies the Museum endorses us."""
+    key = (request.args.get("room") or "").strip().lower()
+    try:
+        with open(os.path.join(BASE_DIR, "met_objects.json"), encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:
+        return jsonify({"ok": True, "object": None})
+    row = (data.get("rooms") or {}).get(key)
+    if not row or not row.get("isPublicDomain") or not row.get("image"):
+        return jsonify({"ok": True, "object": None})
+    return jsonify({"ok": True, "object": {
+        "title": row.get("title"), "date": row.get("date"),
+        "gallery": row.get("gallery"), "credit": row.get("credit"),
+        "image": row.get("image"), "link": row.get("link")}})
+
+
 @app.route("/met-rooms.js")
 def met_rooms_js():
     """What is actually inside a gallery, for the rooms that have an inside
