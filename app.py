@@ -1237,10 +1237,44 @@ def _visit_device():
 
 # href="/x.css" / src="/x.js", ours only. Anything already carrying a
 # query string, and anything absolute, is left alone.
-_ASSET_RE = re.compile(rb'\b(href|src)="(/[\w./-]+\.(?:css|js))"')
+# The optional ?v= group is not decoration. Without it this only matched tags
+# with NO version, so any tag someone had hand-versioned -- met-3d.js?v=dendur1,
+# met-map.js?v=jason3 -- was skipped and kept that string forever. Those were
+# bumped once and never again, so every JavaScript change after that reached
+# nobody who had visited before: the browser held a ten-minute-cacheable URL
+# that never changed. It cost a day chasing a fix that was live on the server
+# and absent in the browser. Matching the existing version and overwriting it
+# means a hand-written one is a starting value, not a permanent one.
+_ASSET_RE = re.compile(rb'\b(href|src)="(/[\w./-]+\.(?:css|js))(?:\?v=[^"]*)?"')
 
 # What the assets are stamped with. Changes on every deploy, the point of it.
-_ASSET_V = (os.environ.get("RENDER_GIT_COMMIT") or "")[:8] or str(int(time.time()))
+def _asset_v():
+    """In production the deploy's commit; in development the newest file.
+
+    The fallback used to be the process start time, which is right on Render,
+    where a deploy is always a new process, and wrong here, where a file is
+    edited far more often than the server is restarted. Editing a script then
+    left its URL unchanged, so the browser kept serving the copy it already
+    had and the edit appeared to do nothing -- which is the same failure this
+    whole versioning scheme exists to prevent, one level down. Keying the
+    fallback to the newest modification time means saving a file is enough."""
+    commit = (os.environ.get("RENDER_GIT_COMMIT") or "")[:8]
+    if commit:
+        return commit
+    newest = 0.0
+    try:
+        for name in os.listdir(BASE_DIR):
+            if name.endswith((".js", ".css")):
+                try:
+                    newest = max(newest, os.path.getmtime(os.path.join(BASE_DIR, name)))
+                except OSError:
+                    pass
+    except OSError:
+        pass
+    return str(int(newest or time.time()))
+
+
+_ASSET_V = _asset_v()
 
 
 # Page bodies not being asset paths: no extension, or a page-like one. Used to
@@ -1373,8 +1407,9 @@ def _compress_and_cache(resp):
                     return resp
                 resp.direct_passthrough = False
             body = resp.get_data()
+            ver = _ASSET_V if os.environ.get("RENDER_GIT_COMMIT") else _asset_v()
             stamped = _ASSET_RE.sub(
-                lambda m: b'%s="%s?v=%s"' % (m.group(1), m.group(2), _ASSET_V.encode()),
+                lambda m: b'%s="%s?v=%s"' % (m.group(1), m.group(2), ver.encode()),
                 body)
             # One sign-in for the whole site, delivered the same way the
             # asset versions are: injected here, once, instead of thirty
@@ -14014,6 +14049,7 @@ try:
     _start_reminder_thread()
 except Exception:
     pass
+
 
 
 if __name__ == "__main__":

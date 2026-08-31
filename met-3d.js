@@ -773,6 +773,19 @@
   /* ---- public ---- */
   function render(host, opts) { host.innerHTML = build(opts); }
 
+  /* Announce the layer from the ANIMATION, not from the tap that started it.
+     [SEAN "once hit view on 3D could come out, maybe need a go back key".]
+     The way out was wired to the click handler, so it appeared only if you
+     entered by tapping the building. Any other path in, and the page had the
+     interior open with the exit still hidden: no way back, which is exactly
+     what being stuck is. A door should not depend on which way you came in. */
+  function announceLayer(host) {
+    try {
+      host.dispatchEvent(new CustomEvent("met3d:layer",
+        { detail: { layer: openT > 0.5 ? "interior" : "exterior" }, bubbles: true }));
+    } catch (e) {}
+  }
+
   function animateTo(target, host, opts, done) {
     if (anim) { cancelAnimationFrame(anim); anim = null; }
     var from = openT, t0 = null, dur = 620;
@@ -783,7 +796,11 @@
       openT = from + (target - from) * e;
       render(host, opts);
       if (k < 1) anim = requestAnimationFrame(frame);
-      else { anim = null; openT = target; render(host, opts); if (done) done(); }
+      else {
+        anim = null; openT = target; render(host, opts);
+        announceLayer(host);
+        if (done) done();
+      }
     }
     anim = requestAnimationFrame(frame);
   }
@@ -852,6 +869,12 @@
     /* Escape is the guaranteed way out. A drawing can always end up with
        something unexpected on top; a key cannot be covered. */
     host.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !focusKey && openT > 0.5) {
+        /* one level at a time: a room first, then the building */
+        e.preventDefault();
+        animateTo(0, host, opts);
+        return;
+      }
       if (e.key === "Escape" && focusKey) {
         var wasK = focusKey;
         e.preventDefault();

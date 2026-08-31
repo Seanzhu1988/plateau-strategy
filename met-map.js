@@ -510,12 +510,43 @@
 
   document.getElementById('tab3D').addEventListener('click', function () { mode = '3d'; remember(); draw(); });
   /* Entering the building is a tap on it; leaving needs a way back. */
-  document.getElementById('svgHost').addEventListener('met3d:layer', function () {
+  document.getElementById('svgHost').addEventListener('met3d:layer', function (e) {
+    /* Read which layer we landed on rather than assuming it is the inside.
+       This used to show the button unconditionally, which was invisible while
+       the event only fired on the way in. Now that every transition announces
+       itself, an unconditional show put "← Outside" back on screen at the
+       moment you had just gone outside, offering a way out of nowhere. */
+    var inside = !e || !e.detail || e.detail.layer !== 'exterior';
     var out = document.getElementById('btnOutside');
-    if (out) out.hidden = false;
-    /* the doorman: greets on entry, once per visit, and never again */
-    if (window.MetGuide && MetGuide.greet) MetGuide.greet();
+    if (out) out.hidden = !inside;
+    /* the doorman: greets on entry, once per visit, and never again -- and
+       never on the way out, which is a goodbye, not a greeting */
+    if (inside && window.MetGuide && MetGuide.greet) MetGuide.greet();
   });
+  /* Escape backs out from anywhere on the page, without needing the drawing
+     to hold keyboard focus. [SEAN "once hit view on 3D could come out, maybe
+     need a go back key".] The button is the way out for a finger; this is the
+     way out that cannot be hidden, covered, or missed, and it steps back one
+     level at a time: the room first, then the building. */
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || !window.Met3D) return;
+    var host = document.getElementById('svgHost');
+    if (!host || mode !== '3d') return;
+    if (window.Met3D.focusedRoom && window.Met3D.focusedRoom()) {
+      window.Met3D.clearFocus(host, _opts3d);
+      roomBarHide();
+      e.preventDefault();
+      return;
+    }
+    if (window.Met3D.isOpen()) {
+      if (window.MetGuide) MetGuide.stop();
+      window.Met3D.closeToExterior(host, _opts3d);
+      var ob = document.getElementById('btnOutside');
+      if (ob) ob.hidden = true;
+      e.preventDefault();
+    }
+  });
+
   var outBtn = document.getElementById('btnOutside');
   if (outBtn) outBtn.addEventListener('click', function () {
     var host = document.getElementById('svgHost');
