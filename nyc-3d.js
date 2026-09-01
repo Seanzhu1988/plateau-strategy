@@ -190,13 +190,23 @@
     archH: 117, archW: 33.75, deckW: 85, towerW: 140, towerT: 53
   };
 
+  /* Two views of the same real bridge. The whole span is what a visitor
+     recognises, but at that framing a 33.75 ft opening is about ten pixels
+     wide, so the Gothic arches, which are the reason the towers look the way
+     they do, are a smudge. The tower view keeps every dimension identical and
+     only moves the eye in: one tower, a stub of deck, and the cables passing
+     over the saddle. At that framing the opening is roughly a third of the
+     drawing and the two-centred curve, the spandrel and the fanned voussoir
+     joints are all legible, which is what they were built into the file for. */
   function bridgeScene(opts) {
     var o = opts || {};
+    var near = o.view === 'tower';
     var f = [], lines = [], marks = [];
     var S = 0.115;                              /* feet to model units */
     function P(x, y, z) { return [x * S, y * S, z * S]; }
     var halfW = BB.deckW / 2, dz = BB.deckH;
-    var x0 = -300, x1 = BB.span + 300;   /* the main span and a little approach */
+    /* the whole span, or a stub either side of the one tower */
+    var x0 = near ? -230 : -300, x1 = near ? 230 : BB.span + 300;
 
     /* the water */
     f.push(face([P(x0 - 260, -520, 0), P(x1 + 260, -520, 0),
@@ -221,7 +231,7 @@
        two posts with a hole in the middle, as this was at first, it reads
        as scaffolding; drawn as pier, arch, pier, arch, pier, it reads as
        the Brooklyn Bridge. */
-    [0, BB.span].forEach(function (tx) {
+    (near ? [0] : [0, BB.span]).forEach(function (tx) {
       var tt = BB.towerT / 2;
       var w = BB.towerW / 2;                 /* 70 ft each side of centre */
       var aw = BB.archW;                     /* 33.75 ft of opening */
@@ -319,7 +329,37 @@
       }
       return pts;
     }
-    [-1, 1].forEach(function (side) {
+    /* Up close the far half of the span, its four catenaries and its four
+       hundred stays are all off the canvas, so drawing them is arithmetic
+       nobody sees, sixty times a second on a phone. What a reader DOES see
+       from under a tower is the cable crossing the saddle and starting down,
+       so that much is drawn, and no more. */
+    if (near) {
+      /* Only the NEAR half. Lines are drawn after every face and are not
+         depth sorted, which costs nothing at the span framing and is glaring
+         up close: the run of cable going away from the eye is behind 276 ft
+         of masonry and was being painted straight over the front of it. At
+         this yaw the negative x half is the half toward the eye, so that is
+         the half that is drawn, and the far half is left out because it
+         would not be visible anyway. */
+      [-1, 1].forEach(function (side) {
+        [halfW - 8, halfW - 22].forEach(function (yy) {
+          var y = side * yy;
+          var steps = 8;
+          function at(t) {
+            /* the shape the long catenary has in its first hundred feet off
+               a tower top, sampled from the same drop it uses */
+            return P(x0 * t, y,
+                     BB.towerH - (BB.towerH - dz - 12) * (t * t * 0.62 + t * 0.38) * 0.55);
+          }
+          for (var i = 0; i < steps; i++) {
+            lines.push({ a: at(i / steps), b: at((i + 1) / steps),
+                         colour: C.cable, width: 2.1 });
+          }
+        });
+      });
+    }
+    if (!near) [-1, 1].forEach(function (side) {
       [halfW - 8, halfW - 22].forEach(function (yy) {
         var y = side * yy;
         var main = catenary(0, BB.towerH, BB.span, BB.towerH, 0.5, BB.towerH - dz - 12, 30, y);
@@ -361,7 +401,21 @@
       });
     });
 
-    if (o.marks !== false) {
+    if (o.marks !== false && near) {
+      /* TWO marks here, not the span view's three. The whole tower fills the
+         box at this framing, so every label lands on the drawing rather than
+         beside it, and a third one was simply stacked over the masonry on a
+         375 px phone. The promenade already has its label on the other view.
+         The height mark also sits 2 ft above the parapet rather than 26: at
+         26 the dot was 7 units from the top of the box and the text above the
+         baseline was cut off by the edge. */
+      marks.push({ at: P(0, 0, BB.towerH + 2), text: 'Manhattan tower',
+                   sub: '276.5 ft above the water' });
+      marks.push({ at: P(0, BB.archW + (BB.towerW - 2 * BB.archW) / 3,
+                         dz + BB.archH * 0.72), fill: C.hi,
+                   text: 'the pointed arch',
+                   sub: '33.75 ft wide, 117 ft tall, two-centred' });
+    } else if (o.marks !== false) {
       marks.push({ at: P(0, 0, BB.towerH + 40), text: 'Manhattan tower',
                    sub: '276.5 ft above the water' });
       marks.push({ at: P(BB.span, 0, BB.towerH + 40), text: 'Brooklyn tower' });
@@ -441,6 +495,13 @@
     var cam = cam0, dragging = false, lastX = 0, idle = true;
     function draw() { render(host, build(), cam); }
     draw();
+    /* Changing view has to REPLACE what this mount draws, not mount a second
+       one beside it. Mounting again would leave the first spin loop running,
+       so two requestAnimationFrame loops would fight over the same box and a
+       reader who tapped back and forth a dozen times would have a dozen. */
+    function retarget(nextBuild, nextCam) {
+      build = nextBuild; cam = nextCam; idle = true; draw();
+    }
     function turn(dx) {
       cam = makeCam(cam.yaw + dx, cam.pitch, cam.zoom, cam.ox, cam.oy);
       draw();
@@ -477,12 +538,34 @@
       if (idle && !(still && still.matches)) turn(0.0016);
       requestAnimationFrame(spin);
     })();
-    return { turn: turn };
+    return { turn: turn, retarget: retarget };
   }
 
+  /* Two framings of the bridge. The span camera is the one that was here and
+     is untouched. The tower camera swings round to look nearly along the
+     roadway, because an arch cut through a tower can only be read from in
+     front of it, and drops the pitch so the 117 ft of height reads as height.
+     The zoom is not a guess: the tower is 276.5 ft, the model scale is 0.115
+     units per foot, so 276.5 x 0.115 x 9.1 is 289 px of a 340 px box, which
+     leaves the arch about 35 px across instead of 10. */
+  var BRIDGE_CAMS = {
+    span: function () { return makeCam(-0.62, 0.32, 2.6, 300, 220); },
+    tower: function () { return makeCam(-1.35, 0.18, 9.1, 470, 318); }
+  };
+
   window.NYC3D = {
-    bridge: function (host) {
-      return mount(host, bridgeScene, makeCam(-0.62, 0.32, 2.6, 300, 220));
+    bridge: function (host, opts) {
+      function builder(v) { return function () { return bridgeScene({ view: v }); }; }
+      var view = (opts && opts.view) === 'tower' ? 'tower' : 'span';
+      var m = mount(host, builder(view), BRIDGE_CAMS[view]());
+      m.view = function (v) {
+        v = v === 'tower' ? 'tower' : 'span';
+        if (v === view) return view;
+        view = v;
+        m.retarget(builder(view), BRIDGE_CAMS[view]());
+        return view;
+      };
+      return m;
     },
     empire: function (host) {
       return mount(host, empireScene, makeCam(-0.7, 0.22, 1, 360, 560));

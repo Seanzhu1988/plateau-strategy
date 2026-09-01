@@ -40,6 +40,25 @@
   .lm-stage { touch-action: pan-y; cursor: grab; user-select: none; }
   .lm-stage:active { cursor: grabbing; }
   .lm-turn { font-size: .78rem; color: #6b655b; margin: .45rem 0 1.1rem; }
+  /* Two framings of the same bridge. These must LOOK pressable, and getting
+     there took measuring rather than guessing: TWO sitewide sheets flatten a
+     plain button, modern.css back to a word with a rule under it and
+     paper.css to a near black slab, and only modern.css exempts .chip. Both
+     declare !important, so an id prefixed selector alone lost and the buttons
+     came out black with 3px corners. Hence !important here as well, kept to
+     this one strip by the id. */
+  .lm-views { display: flex; gap: .5rem; margin: .55rem 0 0; flex-wrap: wrap; }
+  #bridgeViews .chip { font-family: inherit !important; font-size: .82rem !important;
+     font-weight: 600 !important; line-height: 1 !important;
+     border: 1px solid #d8d4cb !important; background: #fff !important;
+     color: #4a453d !important; border-radius: 999px !important;
+     padding: .55rem .95rem !important; cursor: pointer;
+     box-shadow: none !important; text-decoration: none !important;
+     -webkit-appearance: none; appearance: none; }
+  #bridgeViews .chip:hover { border-color: #1f3a5f !important; color: #14110c !important; }
+  #bridgeViews .chip[aria-pressed="true"] { border-color: #1f3a5f !important;
+     color: #1f3a5f !important; background: #f3f6fb !important;
+     box-shadow: inset 0 0 0 1px #1f3a5f !important; }
   .lm-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
               gap: .8rem; margin: 0 0 1.2rem; }
   .lm-fact { border: 1px solid #e6e6ea; border-radius: 10px; padding: .75rem .9rem; background: #fff; }
@@ -73,7 +92,14 @@
     <h2 class="lm-h">The Brooklyn Bridge</h2>
     <p class="lm-sub">Opened 1883, and for a while the longest suspension bridge in the world.</p>
     <div class="lm-stage" id="bridgeStage"></div>
-    <p class="lm-turn">Drag it to turn. It turns by itself until you take hold.</p>
+    <div class="lm-views" id="bridgeViews">
+      <button type="button" class="chip" data-view="span" aria-pressed="true">The whole span</button>
+      <button type="button" class="chip" data-view="tower" aria-pressed="false">At the tower</button>
+    </div>
+    <p class="lm-turn">Drag it to turn. It turns by itself until you take hold.
+       The towers carry two pointed openings each, and at the whole span
+       framing each one is about six pixels across, so there is a second view
+       that stands you under one.</p>
 
     <div class="lm-facts">
       <div class="lm-fact"><b>1,595.5 ft</b><span>the main span, tower to tower</span></div>
@@ -152,8 +178,23 @@
 <script src="/nyc-3d.js"></script>
 <script src="/landmark-3d.js"></script>
 <script>
-  NYC3D.bridge(document.getElementById('bridgeStage'));
+  var bridge = NYC3D.bridge(document.getElementById('bridgeStage'));
   NYC3D.empire(document.getElementById('empireStage'));
+
+  /* One mount, two framings. The buttons retarget it rather than mounting a
+     second model, so there is never more than one animation loop. */
+  (function () {
+    var box = document.getElementById('bridgeViews');
+    if (!box || !bridge.view) return;
+    box.addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-view]');
+      if (!b) return;
+      var v = bridge.view(b.getAttribute('data-view'));
+      [].forEach.call(box.querySelectorAll('button[data-view]'), function (o) {
+        o.setAttribute('aria-pressed', o.getAttribute('data-view') === v ? 'true' : 'false');
+      });
+    });
+  })();
 
   /* The composed models. Every figure printed under a drawing carries the
      source it came from, because a model built from the record has to be
