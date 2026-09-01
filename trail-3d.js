@@ -1239,9 +1239,212 @@
     return out;
   }
 
+  /* ---------------- Stop 16: USS Constitution ----------------
+     Launched Boston, 20 October 1797. Charlestown Navy Yard, Pier 1.
+
+     The sailing frigate, which the styles book now carries. Nothing on a ship
+     is a rectangle: the deck line dips amidships and lifts at both ends, the
+     sides lean back inboard above the widest point, and the bow carries a
+     quarter of the ship's length out in front of the hull. Draw any of those
+     straight and it is a barge with masts.
+
+     PUBLISHED, from the USS Constitution Museum's facts page:
+       207 ft on deck, billethead to taffrail
+       305 ft overall, bowsprit to spanker boom
+       175 ft at the waterline
+       43 ft 6 in beam
+       22 ft 6 in draft today (24 ft loaded, 1812)
+       172 ft, spar deck to main truck
+       thirty 24-pounder long guns on the gun deck
+       twenty-four 32-pounder carronades on the spar deck
+
+     COUNTED, by division rather than by eye: fifteen gun ports a side below
+     and twelve a side above, because thirty guns and twenty-four carronades
+     are shared between two sides and a gun needs a port.
+
+     DERIVED, and said out loud, because that page publishes none of them:
+     the height of the spar deck above the water (20 ft amidships), the sheer
+     curve, the tumblehome, the transom width, and the fore and mizzen masts
+     at 0.95 and 0.80 of the main. The 98 ft by which the published 305 ft
+     overall exceeds the published 207 ft on deck IS published, and is split
+     here 62 ft forward on the bowsprit and jibboom against 36 ft aft on the
+     spanker boom, which is a split and not an invention of length.
+
+     SOURCES DISAGREE about the mainmast. The Navy's fact sheet gives 220 ft
+     and the museum gives 172 ft from the spar deck; those cannot both be
+     heights above the same water, since the deck is nowhere near 48 ft up.
+     The museum's number is the specific one and is what this model uses. */
+  function constitution(ctx) {
+    var P = ctx.project, out = [];
+    var HULL = "#22242a", HULL_E = "#0e0f12", BAND = "#e7e2d4", PORT = "#191b20";
+    var DECK = "#c8b58c", DECK_E = "#9a8763", RAIL = "#2b2d33";
+    var SPAR = "#c6a463", SPAR_E = "#8a7038", TOP = "#1c1e22", WATER = "#7f96a4";
+
+    /* the published plan */
+    var LOA = 207, HALF = LOA / 2, BEAM = 43.5, HB = BEAM / 2;
+    var FWD = 62, AFT = 36;                 /* the published 305 - 207, split */
+
+    /* DERIVED hull form. t runs -1 at the taffrail to +1 at the billethead. */
+    var FREE = 20, TRANSOM = 8.6, STEM = 1.3, TUMBLE = 0.86;
+    function halfB(t) {
+      var s = 1 - Math.pow(Math.abs(t), 2.6);
+      var b = s > 0 ? HB * Math.pow(s, 0.42) : 0;
+      if (t < -0.86) b = Math.max(b, TRANSOM);
+      return Math.max(b, STEM);
+    }
+    /* the sheer: down amidships, up at both ends, more at the bow */
+    function sheer(t) { return FREE + 6.5 * t * t + 1.6 * t; }
+    function railZ(t) { return sheer(t) + 4.6; }
+    var N = 26, ST = [];
+    for (var i = 0; i <= N; i++) {
+      var t = -1 + 2 * i / N;
+      ST.push({ t: t, x: t * HALF, b: halfB(t), z: sheer(t), r: railZ(t) });
+    }
+
+    out.push(ground(ctx, 0, 0, 460, 320, 0, WATER, "#61798a"));
+
+    /* THE HULL, station by station. Two strips per bay: the black topsides
+       from the waterline up to the deck edge, then the bulwark above it,
+       leaning inboard by the tumblehome. Each strip is culled on its own
+       outward normal, which is perpendicular to the run of the station line,
+       so the far side of the ship never draws. */
+    /* A hull is convex, so a strip on the FAR side can still face the viewer
+       near the bow and be hidden by the near side all the same. Culling alone
+       does not order those two; a fixed depth for the band let the far side's
+       ports paint straight through the ship. So the whole side, hull, band and
+       ports together, takes one base depth chosen by which side it is: the far
+       side under the deck, the near side over it. */
+    function sideDepth(s) { return ctx.faceVisible(0, s) ? 2e5 : 0.4e5; }
+    [-1, 1].forEach(function (s) {
+      var HD = sideDepth(s);
+      for (var i = 0; i < N; i++) {
+        var a = ST[i], c = ST[i + 1];
+        var db = c.b - a.b, dx = c.x - a.x;
+        var nl = Math.sqrt(db * db + dx * dx) || 1;
+        var nx = -db / nl, ny = s * dx / nl;
+        if (!ctx.faceVisible(nx, ny)) continue;
+        var q = [P(a.x, s * a.b, 0), P(c.x, s * c.b, 0),
+                 P(c.x, s * c.b, c.z), P(a.x, s * a.b, a.z)];
+        out.push({ svg: ctx.poly(q, ctx.shade(HULL, nx, ny, 0), HULL_E, 0.4),
+                   depth: HD + i * 0.01 });
+        /* the bulwark, tumbled home */
+        var bw = [P(a.x, s * a.b, a.z), P(c.x, s * c.b, c.z),
+                  P(c.x, s * c.b * TUMBLE, c.r), P(a.x, s * a.b * TUMBLE, a.r)];
+        out.push({ svg: ctx.poly(bw, ctx.shade(HULL, nx, ny, 0.1), HULL_E, 0.4),
+                   depth: HD + 0.4 + i * 0.01 });
+      }
+    });
+
+    /* THE GUN PORT BAND, the one pale stripe. Drawn as a chain of quads that
+       follows the hull rather than a straight line, because the hull curves
+       in plan and a flat band would leave the ship at both ends. */
+    function bandAt(s, z0, z1, d, fill) {
+      var db, dx, nl, nx, ny, i, a, c, q;
+      for (i = 0; i < N; i++) {
+        a = ST[i]; c = ST[i + 1];
+        db = c.b - a.b; dx = c.x - a.x; nl = Math.sqrt(db * db + dx * dx) || 1;
+        nx = -db / nl; ny = s * dx / nl;
+        if (!ctx.faceVisible(nx, ny)) continue;
+        if (a.b < 6 || c.b < 6) continue;
+        q = [P(a.x, s * a.b * 1.004, a.z * z0), P(c.x, s * c.b * 1.004, c.z * z0),
+             P(c.x, s * c.b * 1.004, c.z * z1), P(a.x, s * a.b * 1.004, a.z * z1)];
+        out.push({ svg: ctx.poly(q, ctx.shade(fill, nx, ny, 0), "", 0), depth: d + i * 0.01 });
+      }
+    }
+    bandAt(-1, 0.50, 0.72, sideDepth(-1) + 1, BAND);
+    bandAt(1, 0.50, 0.72, sideDepth(1) + 1, BAND);
+
+    /* THE PORTS. Fifteen a side on the gun deck for thirty long guns, twelve
+       a side in the bulwark for twenty-four carronades: the armament divided
+       by two. Spaced along t rather than along x so they keep station with
+       the hull as it narrows. */
+    function ports(s, n, t0, t1, lo, hi, w) {
+      var db, dx, nl, nx, ny, PD = sideDepth(s) + 1.5;
+      for (var k = 0; k < n; k++) {
+        var t = t0 + (t1 - t0) * (k + 0.5) / n;
+        var b = halfB(t), z = sheer(t), x = t * HALF;
+        db = halfB(t + 0.02) - halfB(t - 0.02); dx = 0.04 * HALF;
+        nl = Math.sqrt(db * db + dx * dx) || 1;
+        nx = -db / nl; ny = s * dx / nl;
+        if (!ctx.faceVisible(nx, ny)) continue;
+        var q = [P(x - w, s * b * 1.01, z * lo), P(x + w, s * b * 1.01, z * lo),
+                 P(x + w, s * b * 1.01, z * hi), P(x - w, s * b * 1.01, z * hi)];
+        out.push({ svg: ctx.poly(q, PORT, "#000", 0.3), depth: PD });
+      }
+    }
+    [-1, 1].forEach(function (s) {
+      ports(s, 15, -0.80, 0.80, 0.535, 0.685, 2.4);
+      ports(s, 12, -0.74, 0.76, 1.03, 1.16, 2.2);
+    });
+
+    /* THE SPAR DECK, one flat surface spanning two hundred feet, so it takes
+       an explicit depth. Sorted on its own corners it would have the nearest
+       point on the ship and would paint over the masts standing on it. */
+    var DD = 1e5;
+    var deck = [];
+    for (i = 0; i <= N; i++) deck.push(P(ST[i].x, -ST[i].b * TUMBLE, ST[i].r - 0.6));
+    for (i = N; i >= 0; i--) deck.push(P(ST[i].x, ST[i].b * TUMBLE, ST[i].r - 0.6));
+    out.push({ svg: ctx.poly(deck, ctx.shade(DECK, 0, 0, 1), DECK_E, 0.5), depth: DD });
+
+    /* the transom, flat, which is how a frigate ends aft */
+    if (ctx.faceVisible(-1, 0)) {
+      var tz = ST[0];
+      out.push({ svg: ctx.poly([P(tz.x, -TRANSOM, 0), P(tz.x, TRANSOM, 0),
+                                P(tz.x, TRANSOM * TUMBLE, tz.r), P(tz.x, -TRANSOM * TUMBLE, tz.r)],
+                               ctx.shade(HULL, -1, 0, 0), HULL_E, 0.4), depth: 2e5 + 0.9 });
+    }
+
+    /* THE RIG. Main 172 ft from the spar deck, published; fore and mizzen
+       derived at 0.95 and 0.80 of it, each built as lower mast, topmast and
+       topgallant so the doublings show. Everything at y = 0, so the three
+       masts cannot occlude one another and one depth serves them all. */
+    var MD = 1.5e5;
+    function mast(t, H) {
+      var x = t * HALF, z0 = sheer(t) - 0.6;
+      var segs = [[0, 0.44, 2.9, 2.1, SPAR], [0.40, 0.76, 1.8, 1.2, SPAR],
+                  [0.72, 1.00, 1.0, 0.5, TOP]];
+      segs.forEach(function (g, i) {
+        out = out.concat(taperedShaft(ctx, x, 0, g[2], g[3], z0 + H * g[0],
+                                      H * (g[1] - g[0]), g[4],
+                                      g[4] === TOP ? "#000" : SPAR_E, MD + i * 0.5));
+      });
+      return { x: x, z0: z0, H: H };
+    }
+    /* A yard needs thickness FORE AND AFT as well as depth. Drawn as a single
+       athwartships plane every yard on the ship vanished at broadside, which
+       is the one angle a ship is actually looked at from, and the arithmetic
+       had no complaint: the quad was there, it was just edge-on. */
+    function yard(cx, z, len, th, fill, d) {
+      var y = box(ctx, cx - th, cx + th, -len / 2, len / 2, z - th, z + th,
+                  fill, "#2a2a2a", fill, d);
+      out = out.concat(y.parts);
+    }
+    var MAIN = 172, FORE = MAIN * 0.95, MIZ = MAIN * 0.80;
+    var mm = mast(-0.02, MAIN), fm = mast(0.42, FORE), zm = mast(-0.46, MIZ);
+    [[mm, 1.0], [fm, 0.92], [zm, 0.74]].forEach(function (m) {
+      var M = m[0], k = m[1];
+      [0.20, 0.46, 0.70, 0.88].forEach(function (f, i) {
+        yard(M.x, M.z0 + M.H * f, (78 - i * 15) * k, 0.7,
+             i > 1 ? TOP : SPAR, MD + 1 + i * 0.1);
+      });
+    });
+
+    /* the bowsprit and jibboom forward, the spanker boom aft: the published
+       305 ft overall less the published 207 ft on deck, split 62 and 36 */
+    var bz = sheer(1);
+    out.push({ svg: ctx.poly([P(HALF - 8, 0, bz - 1.5), P(HALF + FWD, 0, bz + 21),
+                              P(HALF + FWD, 0, bz + 23.4), P(HALF - 8, 0, bz + 1.8)],
+                             SPAR, SPAR_E, 0.5), depth: MD + 2 });
+    out.push({ svg: ctx.poly([P(-HALF + 4, 0, zm.z0 + 14), P(-HALF - AFT, 0, zm.z0 + 20),
+                              P(-HALF - AFT, 0, zm.z0 + 21.6), P(-HALF + 4, 0, zm.z0 + 15.6)],
+                             SPAR, SPAR_E, 0.5), depth: MD + 2 });
+    return out;
+  }
+
   var SCENES = { "bunker-hill": bunkerHill, "old-north": oldNorth,
                  "faneuil-hall": faneuilHall, "state-house": stateHouse,
-                 "old-state-house": oldStateHouse, "old-south": oldSouth };
+                 "old-state-house": oldStateHouse, "old-south": oldSouth,
+                 "constitution": constitution };
 
   /* The live mount: same hand-rolled projection as the other models, so a
      trail stop weighs a few kilobytes and needs no library. */

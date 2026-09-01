@@ -311,6 +311,49 @@ ever managed to say it. It is drawn as a bare stretched rectangle at that
 size and nothing else. The painting is in copyright. Its dimensions are not,
 and the size is the subject.
 
+## The sailing frigate
+
+*1797. Here: USS Constitution, berthed at the Charlestown Navy Yard, the last
+stop on the Freedom Trail and the only thing on it that floats.*
+
+Not architecture, and the moment it is drawn like architecture it stops being
+a ship. A building is a set of rectangles and a ship has none: every line on
+it is a curve, and the three curves below are what the eye is actually reading
+when it says "old warship" without knowing why.
+
+**Tells**
+- **The sheer.** The deck line dips amidships and lifts at both ends. Draw it
+  level and you have drawn a barge. It is the single most recognisable line on
+  a wooden warship and it is never straight.
+- **Tumblehome.** The hull is widest a little below the deck and leans back
+  inboard above that, so the rail is narrower than the waterline beam. A hull
+  with vertical sides is a hull from the 1900s.
+- **The gun port band.** One pale stripe running the length of the black
+  topsides with the ports cut in it, evenly spaced, all one size. The count is
+  the armament divided by two, not a decorative rhythm.
+- **Three masts, descending aft to forward is wrong.** Main is tallest,
+  fore a little shorter, mizzen shortest, and they lean aft together.
+- **A bow that carries beyond the hull.** The bowsprit and jibboom add more
+  than a quarter of the ship's length forward, and the spanker boom overhangs
+  the stern. The overall length is much greater than the deck.
+- **A flat transom stern**, not a point. Fine at the bow, blunt at the stern.
+
+**Wrong if** the deck line is level, the sides are vertical, the ports are
+irregular, or the hull ends in a point at both ends.
+
+**Our numbers.** From the USS Constitution Museum's own facts page: **207 feet
+on deck** from billethead to taffrail, **305 feet overall** from bowsprit to
+spanker boom, **175 feet** at the waterline, **43 feet 6 inches** of beam,
+**22 feet 6 inches** of draft today, and the mainmast **172 feet** from the
+spar deck to the truck. The gun ports are counted from the published armament:
+thirty 24-pounder long guns on the gun deck and twenty-four 32-pounder
+carronades on the spar deck, which is fifteen and twelve a side. What is
+derived is said out loud in the model: the height of the spar deck above the
+water, the shape of the sheer, the tumblehome, and the fore and mizzen mast
+heights, none of which that page publishes.
+
+---
+
 ---
 
 ## Working rules
