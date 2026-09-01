@@ -15,6 +15,8 @@ buildings the routine listed.
 
 MoMA: the building's own architecture (moma-3d.js).
 
+Seattle (seattle-3d.js): space-needle. Mounted on tours.html.
+
 ## Freedom Trail, the three not built, and why
 
 **Park Street Church.** The steeple is published and firm: 217 ft 9 in, from
@@ -35,21 +37,32 @@ number and has not been read yet.
 
 **Paul Revere House.** Not researched this run.
 
-## Seattle, not started, and the numbers it already has
+## Seattle, one built, and what the next one needs
 
-The Space Needle is the best documented thing left in the queue. From the
-Space Needle's own facts page and Wikipedia: 605 ft tall, observation deck at
-520 ft, 138 ft across at its widest. Enough to build. Before drawing, confirm
-the leg spread at ground and the top house diameter, which the 138 ft figure
-is usually quoted for.
+**Space Needle. BUILT 2026-09-01.** Every figure sourced: 605 ft to the tip,
+520 ft deck, 518 ft top floor, 500 ft restaurant, 138 ft across the top,
+120 by 120 ft foundation 30 ft deep (Wikipedia); 102 ft leg base, waist at the
+373 ft level, three PAIRS of legs (Docomomo WEWA); 36 in welded columns
+(ASCE). The queue asked to confirm the leg spread and the top house diameter
+before drawing, and both were confirmed. The width AT the waist is the only
+quantity no source publishes, so the curve runs through the published level
+and its narrowest point is a consequence of that curve, declared in the file.
+wikiarquitectura holds plans and returns 403 to a plain fetch; if a later run
+needs the waist as a fact rather than a curve, that is where to look.
 
-Smith Tower, 484 ft and 38 storeys, has not been verified against a source.
+**Smith Tower.** 484 ft and 38 storeys, still unverified against a source, and
+the footprint is not known at all. It needs both before it can be drawn: the
+1914 tower is a slab with a pyramidal cap, and the cap needs a height of its
+own or it will be eyeballed.
 
-Seattle needs a home the way the trail needed one. A `seattle-3d.js` beside
-`trail-3d.js`, and a stage on whichever page sells the cruise walk.
+**The Pier 66 to Pike Place walk**, 0.7 miles and 8 to 10 minutes uphill, is
+not a building and does not need dimensions in the same way. It needs the
+grade, which is the whole point of the promise being made about it, and no
+run has looked for a published elevation gain yet.
 
 ## The rule that produced this file
 
 Absence over invention. A landmark with no verifiable dimensions gets nothing,
-and nothing is honest. Three of the four candidates looked at on 2026-09-01
-were one number short, and none of them were built.
+and nothing is honest. Three of the four candidates looked at on the first 2026-09-01 run were one
+number short and none were built. The fourth, the Space Needle, had every
+number it needed and was built on the second.
