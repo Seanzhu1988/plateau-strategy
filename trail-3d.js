@@ -780,8 +780,173 @@
     return out;
   }
 
+
+  /* ---------------- Stop 8: the Old State House ----------------
+     Built 1712 to 1713 on the site of the wooden Town House that burned in
+     1711, gutted by fire again in 1747 and rebuilt inside its own walls. The
+     oldest surviving public building in Boston, and the balcony on its east
+     end is where the Declaration was read to the town on 18 July 1776.
+
+     PUBLISHED, and load bearing here: the plan is 36 ft 4 in by 112 ft 7 in
+     (SAH Archipedia's survey, which is why the model uses 36.33 by 112.58 and
+     not the round "118 by 36" the popular accounts give); the building stood
+     65 ft tall and was the tallest in Boston until 1745; brick; Georgian; a
+     gable roof; the lion and the unicorn on the east gable, installed between
+     1743 and 1751; the balcony beneath them; and a tower that began as an
+     octagon with a bird vane and is now the tiered square one that stands.
+
+     SOURCES DISAGREE about the storeys: SAH says three above a partial
+     basement, Wikipedia says two and a half above a partially raised one.
+     Three window levels are what a photograph of Washington Street shows, so
+     three is drawn, and the disagreement is recorded rather than hidden.
+
+     DERIVED, and said out loud: floor-to-floor heights, the roof pitch, the
+     bay count, and how the 65 ft divides between wall, roof and tower. None
+     of that is published. It is proportioned from the two dimensions that
+     are, and the eleven foot storey it implies is the check. */
+  function oldStateHouse(ctx) {
+    var BRICK = "#9c4e3c", BRICK_E = "#6d3327", TRIM = "#f1ece0", TRIM_E = "#b3aa99";
+    var ROOF = "#6f6a62", ROOF_E = "#4b473f", GLASS = "#42505a", DOOR = "#4a3a30";
+    var GOLD = "#c9a22c", GOLD_E = "#8a6f18", PAVE = "#ded8cb";
+    var out = [], P = ctx.project;
+
+    /* the published plan. East end at yE, which is the balcony end. */
+    var W = 36.33, LEN = 112.58;
+    /* The east end carries the balcony, so it is put at +y: in the view the
+       page opens on, that is the face turned to the reader. The first
+       render had it at -y, and the entire State Street front, scroll, lion,
+       unicorn and balcony, was drawn on the side nobody could see. */
+    var x0 = -W / 2, x1 = W / 2, yW = -LEN / 2, yE = LEN / 2;
+
+    /* derived storey lines: a raised basement and three eleven foot floors,
+       which is what the published 36.33 by 112.58 plan will carry, and a
+       ridge that leaves the tower room to reach the published 65 ft. */
+    var BASE = 4, Z1 = 15, Z2 = 26, EAVE = 37, RIDGE = 47;
+
+    out.push(ground(ctx, 0, 0, 240, 260, 0, PAVE, "#bfb9aa"));
+
+    /* the brick block, and the granite plinth of the raised basement */
+    var plinth = box(ctx, x0 - 0.6, x1 + 0.6, yW - 0.6, yE + 0.6, 0.3, BASE, "#b9b5aa", "#8d897e", null);
+    out = out.concat(plinth.parts);
+    var body = box(ctx, x0, x1, yW, yE, BASE, EAVE, BRICK, BRICK_E, null);
+    out = out.concat(body.parts);
+
+    /* the roof. Only the slopes come from the shared helper: the east end
+       does not finish in a plain triangle, it finishes in a scrolled gable,
+       and that scroll is the building's face on State Street. */
+    var roof = gableRoof(ctx, x0, x1, yW, yE, EAVE, RIDGE, ROOF, ROOF_E, BRICK);
+    out = out.concat(roof);
+
+    /* nine bays down the long walls, three levels of sash. Nine over 112.58
+       is a 12.5 ft bay, which is the Georgian rhythm and the check on the
+       derived count. */
+    [[-1, x0], [1, x1]].forEach(function (side) {
+      var d = body.walls[side[0] + ",0"];
+      if (d === undefined) return;
+      var X = side[1];
+      var map = function (u, z) { return ctx.project(X, u, z); };
+      for (var b = 0; b < 9; b++) {
+        var yc = yW + LEN * (b + 0.5) / 9;
+        out.push(panel(ctx, map, yc - 2.2, yc + 2.2, BASE + 2.5, Z1 - 2.5, GLASS, TRIM_E, d + 0.4));
+        out.push(panel(ctx, map, yc - 2.2, yc + 2.2, Z1 + 2.5, Z2 - 2.5, GLASS, TRIM_E, d + 0.4));
+        out.push(panel(ctx, map, yc - 2.0, yc + 2.0, Z2 + 2.5, EAVE - 3.5, GLASS, TRIM_E, d + 0.4));
+      }
+    });
+
+    /* the two ends, three bays each, and on the east end the balcony, the
+       lion and the unicorn */
+    [[0, 1, yE], [0, -1, yW]].forEach(function (end) {
+      var d = body.walls[end[0] + "," + end[1]];
+      if (d === undefined) return;
+      var Y = end[2];
+      var map = function (u, z) { return ctx.project(u, Y, z); };
+      for (var b = 0; b < 3; b++) {
+        var xc = x0 + W * (b + 0.5) / 3;
+        out.push(panel(ctx, map, xc - 2.2, xc + 2.2, BASE + 2.5, Z1 - 2.5, GLASS, TRIM_E, d + 0.4));
+        out.push(panel(ctx, map, xc - 2.2, xc + 2.2, Z1 + 2.5, Z2 - 2.5, GLASS, TRIM_E, d + 0.4));
+        out.push(panel(ctx, map, xc - 2.0, xc + 2.0, Z2 + 2.5, EAVE - 3.5, GLASS, TRIM_E, d + 0.4));
+      }
+      out.push(panel(ctx, map, -3.2, 3.2, BASE - 3.2, BASE + 5.5, DOOR, TRIM_E, d + 0.5));
+
+      if (end[1] > 0) {
+        /* the balcony, at the middle window of the second floor */
+        out.push(panel(ctx, map, -6.5, 6.5, Z1 + 1.0, Z1 + 4.2, TRIM, TRIM_E, d + 0.6));
+        /* The lion and the unicorn, one each side of the gable. Their depth
+           has to clear the scrolled gable's, not just the wall's: at d + 0.9
+           the scroll painted straight over both of them and the render came
+           back with a blank parapet. */
+        out.push(panel(ctx, map, -8.5, -4.5, EAVE + 2.0, EAVE + 7.0, GOLD, GOLD_E, d + 1.9));
+        out.push(panel(ctx, map, 4.5, 8.5, EAVE + 2.0, EAVE + 7.0, TRIM, GOLD_E, d + 1.9));
+      }
+    });
+
+    /* THE SCROLLED GABLE. Painted over the plain triangle the roof helper
+       leaves, at a nearer depth, so the scroll's shoulders read against the
+       sky where they swell past the roof line. The east end is the one that
+       faces State Street and the site of the Massacre, so it is the one that
+       has to be right. */
+    if (ctx.faceVisible(0, 1)) {
+      var dG = body.walls["0,1"];
+      if (dG !== undefined) {
+        var g = [], hw = W / 2 + 0.9;
+        g.push(P(-hw, yE, EAVE - 0.5));
+        g.push(P(-hw, yE, EAVE + 3.2));
+        /* the S curve up the left shoulder, sampled rather than faked with
+           two straight lines, because a straight scroll is a pediment */
+        for (var i = 0; i <= 8; i++) {
+          var t = i / 8;
+          var xx = -hw + (hw - 5.5) * t;
+          var zz = EAVE + 3.2 + (RIDGE - 1.5 - (EAVE + 3.2)) * (t * t * (3 - 2 * t));
+          g.push(P(xx, yE, zz));
+        }
+        g.push(P(-5.5, yE, RIDGE + 1.2));
+        g.push(P(5.5, yE, RIDGE + 1.2));
+        for (var j = 8; j >= 0; j--) {
+          var t2 = j / 8;
+          var xx2 = hw - (hw - 5.5) * t2;
+          var zz2 = EAVE + 3.2 + (RIDGE - 1.5 - (EAVE + 3.2)) * (t2 * t2 * (3 - 2 * t2));
+          g.push(P(xx2, yE, zz2));
+        }
+        g.push(P(hw, yE, EAVE + 3.2));
+        g.push(P(hw, yE, EAVE - 0.5));
+        out.push({ svg: ctx.poly(g, ctx.shade(BRICK, 0, 1, 0), BRICK_E, 0.7), depth: dG + 1.4 });
+      }
+    }
+
+    /* the tower, at the west end, in the tiers that stand there now: a square
+       clock stage, a smaller square stage, an octagonal lantern, and the vane
+       that finishes the published 65 ft. */
+    /* The tower rides the roof at the west end. The first render started it
+       six feet under the ridge and it read as a separate shed standing out
+       in the street: a tower has to be embedded down to the eave line
+       before the eye will accept that the roof is carrying it. */
+    var tcy = yW + 11, TW = 17;
+    var t1 = box(ctx, -TW / 2, TW / 2, tcy - TW / 2, tcy + TW / 2, EAVE, RIDGE + 6, TRIM, TRIM_E, null);
+    out = out.concat(t1.parts);
+    [[0, -1], [0, 1], [-1, 0], [1, 0]].forEach(function (n) {
+      var d = t1.walls[n[0] + "," + n[1]];
+      if (d === undefined) return;
+      var map = n[0] === 0
+        ? function (u, z) { return ctx.project(u, n[1] < 0 ? tcy - TW / 2 : tcy + TW / 2, z); }
+        : function (u, z) { return ctx.project(n[0] < 0 ? -TW / 2 : TW / 2, u, z); };
+      var c = n[0] === 0 ? 0 : tcy;
+      out.push(panel(ctx, map, c - 3.2, c + 3.2, RIDGE - 2.4, RIDGE + 4.0, "#e8e2d2", "#8d897e", d + 0.4));
+    });
+    out = out.concat(box(ctx, -5, 5, tcy - 5, tcy + 5, RIDGE + 6, RIDGE + 11, TRIM, TRIM_E, null).parts);
+    out = out.concat(octStage(ctx, 0, tcy, 4.6, 4.0, RIDGE + 11, RIDGE + 15, TRIM, TRIM_E));
+    out = out.concat(domeCap(ctx, 0, tcy, 4.0, RIDGE + 15, 3.4, TRIM, TRIM_E));
+    /* 47 + 15 + 3.4 = 65.4, and the vane sits on top of that: the published
+       65 ft, reached by adding the tiers up rather than by scaling to fit. */
+    out = out.concat(octStage(ctx, 0, tcy, 0.5, 0.5, RIDGE + 18.4, RIDGE + 21, GOLD, GOLD_E));
+    var vane = [P(-3.4, tcy, RIDGE + 19.6), P(3.0, tcy, RIDGE + 20.6),
+                P(3.0, tcy, RIDGE + 21.6), P(-3.4, tcy, RIDGE + 22.0)];
+    out.push({ svg: ctx.poly(vane, GOLD, GOLD_E, 0.5), depth: 1e8 });
+    return out;
+  }
+
   var SCENES = { "bunker-hill": bunkerHill, "old-north": oldNorth,
-                 "faneuil-hall": faneuilHall, "state-house": stateHouse };
+                 "faneuil-hall": faneuilHall, "state-house": stateHouse,
+                 "old-state-house": oldStateHouse };
 
   /* The live mount: same hand-rolled projection as the other models, so a
      trail stop weighs a few kilobytes and needs no library. */
