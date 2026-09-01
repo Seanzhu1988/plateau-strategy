@@ -1441,10 +1441,229 @@
     return out;
   }
 
+  /* ---------------- the Paul Revere House ----------------
+     Post-medieval English, c. 1680, and the oldest building in downtown
+     Boston. See STYLES.md: jetty, pendants, steep gable, massive stack, low
+     storeys, one room to a floor, and an ell that follows the lot instead of
+     the house.
+
+     WHERE EVERY NUMBER COMES FROM. HABS MASS,13-BOST,26, five measured
+     drawing sheets, loc.gov item ma0478, read on 2026-09-01. The NRHP
+     nomination was read on an earlier run and carries NOT ONE dimension in
+     feet, which is why this building waited; the measured drawings carry all
+     of them.
+
+     PUBLISHED ON THE SHEET, read off sheet 2, the first floor plan:
+       main block  30'-6" wide by 18'-2" deep
+       the 30'-6" resolves into nine dimensions that sum to it exactly:
+         4'-1", 2'-11", 4'-5", 2'-11", 4'-4", 2'-11", 2'-8", 2'-8", 3'-7"
+         and the three 2'-11" slots are the casement bays, the 2'-8" the door
+       the 18'-2" resolves as 8'-6" + 1'-6" + 8'-2", also exact
+       SOUTH ROOM (HALL)    22'-6" x 17'-3"
+       NORTH ROOM (KITCHEN) 11'-6" x 15'-3", in the ell
+       ell, over its walls, 12'-3" by 16'-4"
+
+     SCALED OFF SHEET 1, the east elevation, which is a measured drawing at
+     1/4" = 1'-0" and carries no written vertical dimensions. The front wall
+     measures 3238 px against a published 30'-6", giving 106.16 px/ft, and
+     the horizontal lines were found by a row-ink profile rather than by eye:
+       first storey   6'-8"   (jetty line at 3581 px, sill at 4286)
+       second storey  8'-0"   (eave line at 2735 px)
+       eave          14'-8"
+       ridge      about 26'-6"
+       stack top  about 38'-0"
+     The ridge and the stack are the two read from the picture rather than
+     from the profile, so they are given as about. They carry their own
+     check: a 11'-10" rise over a 9'-1" half span is a 52 degree pitch, and
+     the nomination calls the roof steeply pitched, which is the corroboration
+     that a wrong reading would have failed.
+
+     DECLARED, NOT MEASURED. The ell's heights are nowhere on the sheets read.
+     It is given the main block's OWN measured storey heights, because the
+     nomination has it two storeys with a similar overhang, and its ridge then
+     falls out of the same 52 degree pitch over its own published 12'-3".
+     That is a measured number carried across, not a number invented, and it
+     is the one thing here a later sheet could correct.
+
+     THE ANGLE. The ell meets the main block off square. No source publishes
+     the angle; sheet 2 draws it, and the two walls measure about 14 degrees
+     apart on the sheet. It is drawn at 14 and called approximate. The angle
+     itself is not a flourish: the nomination singles it out, the ell was set
+     to fit an irregular lot, and a right angle here would be the drawing
+     telling a lie about how the house grew. */
+  function paulRevere(rawCtx) {
+    /* THE FRONT HAS TO FACE THE READER. The first render came back as a blank
+       brown box: the whole east front, its four bays, its door and both
+       pendants were modelled correctly and were pointing AWAY, because this
+       renderer views from +y and the facade had been built on the -y face.
+       Every face count and every dimension was right and the picture was of
+       a shed. Mirroring y once, here, turns the building around and leaves
+       the plan arithmetic below reading in the same direction as the HABS
+       sheet, which is the only way this stays checkable against it. */
+    var ctx = {
+      project: function (x, y, z) { return rawCtx.project(x, -y, z); },
+      poly: rawCtx.poly, shade: rawCtx.shade,
+      faceVisible: function (nx, ny) { return rawCtx.faceVisible(nx, -ny); }
+    };
+    var CLAP = "#a2977f", CLAP_E = "#57503f";
+    var UPPER = "#b0a58c";
+    var ROOF = "#585049", ROOF_E = "#38322c";
+    var BRICK = "#96513f", BRICK_E = "#673025";
+    var GLASS = "#3b4850", LEAD = "#cec8b9", TRIM = "#463f36";
+    var PAVE = "#ded8cb", KERB = "#bfb9aa";
+    var out = [];
+
+    var W = 30.5, D = 18.167;
+    var S1 = 6.667, S2 = 8.0, EAVE = S1 + S2, RIDGE = 26.5, STACK = 38.0;
+    var JET = 1.1;
+    var x0 = -W / 2, x1 = W / 2;
+
+    /* a prism on any plan polygon, so the ell can stand off square. The
+       outward normal of the edge a->b is [dy,-dx], the same convention box()
+       uses, which is why a rotated wall shades like a square one. */
+    function prism(plan, z0, z1, fill, edge, depth) {
+      var P = ctx.project, res = [], walls = [];
+      for (var i = 0; i < plan.length; i++) {
+        var a = plan[i], b = plan[(i + 1) % plan.length];
+        var dx = b[0] - a[0], dy = b[1] - a[1];
+        var L = Math.sqrt(dx * dx + dy * dy) || 1;
+        var nx = dy / L, ny = -dx / L;
+        if (!ctx.faceVisible(nx, ny)) { walls.push(null); continue; }
+        var q = [P(a[0], a[1], z0), P(b[0], b[1], z0), P(b[0], b[1], z1), P(a[0], a[1], z1)];
+        var d = (depth === undefined) ? depthOf(q) : depth + i * 0.1;
+        res.push({ svg: ctx.poly(q, ctx.shade(fill, nx, ny, 0), edge, 0.6), depth: d });
+        walls.push(d);
+      }
+      return { parts: res, walls: walls };
+    }
+
+    /* a gable on any plan rectangle. The ridge runs along the A->B edge, so
+       ordering the corners chooses which way the roof runs. Each slope and
+       each gable end gets its OWN depth from its own corners; nothing here is
+       allowed to span the scene as one plane. */
+    function gable(A, B, C, E, zEave, zRidge, fill, edge, gFill) {
+      var P = ctx.project, res = [];
+      var R1 = [(A[0] + E[0]) / 2, (A[1] + E[1]) / 2];
+      var R2 = [(B[0] + C[0]) / 2, (B[1] + C[1]) / 2];
+      [[A, B, R2, R1], [C, E, R1, R2]].forEach(function (s) {
+        var dx = s[1][0] - s[0][0], dy = s[1][1] - s[0][1];
+        var L = Math.sqrt(dx * dx + dy * dy) || 1;
+        var q = [P(s[0][0], s[0][1], zEave), P(s[1][0], s[1][1], zEave),
+                 P(s[2][0], s[2][1], zRidge), P(s[3][0], s[3][1], zRidge)];
+        res.push({ svg: ctx.poly(q, ctx.shade(fill, dy / L * 0.6, -dx / L * 0.6, 0.8), edge, 0.6),
+                   depth: depthOf(q) });
+      });
+      [[B, C, R2], [E, A, R1]].forEach(function (g) {
+        var dx = g[1][0] - g[0][0], dy = g[1][1] - g[0][1];
+        var L = Math.sqrt(dx * dx + dy * dy) || 1;
+        var nx = dy / L, ny = -dx / L;
+        if (!ctx.faceVisible(nx, ny)) return;
+        var t = [P(g[0][0], g[0][1], zEave), P(g[1][0], g[1][1], zEave), P(g[2][0], g[2][1], zRidge)];
+        res.push({ svg: ctx.poly(t, ctx.shade(gFill || fill, nx, ny, 0), edge, 0.6), depth: depthOf(t) });
+      });
+      return res;
+    }
+
+    out.push(ground(ctx, 0, 14, 62, 62, 0, PAVE, KERB));
+
+    /* the main block. Lower storey set BACK by the jetty, upper storey out
+       to the wall line, which is the whole silhouette of the period. */
+    var lo = prism([[x0, JET], [x1, JET], [x1, D], [x0, D]], 0, S1, CLAP, CLAP_E);
+    out = out.concat(lo.parts);
+    var hi = prism([[x0, 0], [x1, 0], [x1, D], [x0, D]], S1, EAVE, UPPER, CLAP_E);
+    out = out.concat(hi.parts);
+
+    /* the pendants, one at each end of the jetty. Small, and the signature. */
+    [x0 + 0.55, x1 - 0.55].forEach(function (px) {
+      var q = [ctx.project(px - 0.28, 0.05, S1 - 1.25), ctx.project(px + 0.28, 0.05, S1 - 1.25),
+               ctx.project(px + 0.28, 0.05, S1), ctx.project(px - 0.28, 0.05, S1)];
+      out.push({ svg: ctx.poly(q, TRIM, CLAP_E, 0.4), depth: depthOf(q) + 0.4 });
+      var tip = [ctx.project(px - 0.28, 0.05, S1 - 1.25), ctx.project(px + 0.28, 0.05, S1 - 1.25),
+                 ctx.project(px, 0.05, S1 - 1.85)];
+      out.push({ svg: ctx.poly(tip, TRIM, CLAP_E, 0.4), depth: depthOf(tip) + 0.4 });
+    });
+
+    /* the front, bay by bay, at the measured offsets. Cumulative from the
+       north corner: pier 4'-1", then the string alternates. */
+    var run = [4.083, 2.917, 4.417, 2.917, 4.333, 2.917, 2.667, 2.667, 3.583];
+    var edges = [x0], acc = x0;
+    run.forEach(function (r) { acc += r; edges.push(acc); });
+    var frontLo = lo.walls[0], frontHi = hi.walls[0];
+
+    function casement(xa, xb, za, zb, depth) {
+      if (depth === undefined) return;
+      var q = [ctx.project(xa, 0.02, za), ctx.project(xb, 0.02, za),
+               ctx.project(xb, 0.02, zb), ctx.project(xa, 0.02, zb)];
+      out.push({ svg: ctx.poly(q, GLASS, LEAD, 0.5), depth: depth + 0.6 });
+      /* the leaded lights: small panes, which is what makes it a casement
+         and not a sash */
+      var n = 3;
+      for (var i = 1; i < n; i++) {
+        var xx = xa + (xb - xa) * i / n;
+        var m = [ctx.project(xx - 0.03, 0.03, za), ctx.project(xx + 0.03, 0.03, za),
+                 ctx.project(xx + 0.03, 0.03, zb), ctx.project(xx - 0.03, 0.03, zb)];
+        out.push({ svg: ctx.poly(m, LEAD, null, 0), depth: depth + 0.7 });
+      }
+      var zm = (za + zb) / 2;
+      var h = [ctx.project(xa, 0.03, zm - 0.03), ctx.project(xb, 0.03, zm - 0.03),
+               ctx.project(xb, 0.03, zm + 0.03), ctx.project(xa, 0.03, zm + 0.03)];
+      out.push({ svg: ctx.poly(h, LEAD, null, 0), depth: depth + 0.7 });
+    }
+
+    /* three casement bays and a door below; four casements above. The lower
+       windows sit high under the plate because the storey is 6'-8". */
+    [[1, 2], [3, 4], [5, 6]].forEach(function (b) {
+      casement(edges[b[0]], edges[b[1]], S1 - 4.9, S1 - 1.0, frontLo);
+    });
+    if (frontLo !== undefined && frontLo !== null) {
+      var dq = [ctx.project(edges[7], 0.02, 0.05), ctx.project(edges[8], 0.02, 0.05),
+                ctx.project(edges[8], 0.02, 5.6), ctx.project(edges[7], 0.02, 5.6)];
+      out.push({ svg: ctx.poly(dq, TRIM, CLAP_E, 0.5), depth: frontLo + 0.6 });
+    }
+    [[1, 2], [3, 4], [5, 6], [7, 8]].forEach(function (b) {
+      casement(edges[b[0]], edges[b[1]], EAVE - 4.6, EAVE - 0.8, frontHi);
+    });
+
+    /* the roof, ridge running along the front, and steep */
+    out = out.concat(gable([x0 - 0.7, -0.7], [x1 + 0.7, -0.7], [x1 + 0.7, D + 0.7], [x0 - 0.7, D + 0.7],
+                           EAVE, RIDGE, ROOF, ROOF_E, UPPER));
+
+    /* the stack. Drawn from the ridge up only: below the ridge it is inside
+       the house, and a masonry box started at the ground would have to fight
+       the near roof slope for the sort every frame. Above the ridge it is
+       given a depth past both slopes, which is where it truly is. */
+    var sx = 10.6, sy = D / 2, sw = 3.1, sd = 2.1;
+    var stack = prism([[sx - sw, sy - sd], [sx + sw, sy - sd], [sx + sw, sy + sd], [sx - sw, sy + sd]],
+                      RIDGE - 1.2, STACK, BRICK, BRICK_E, 900);
+    out = out.concat(stack.parts);
+    var cap = [ctx.project(sx - sw, sy - sd, STACK), ctx.project(sx + sw, sy - sd, STACK),
+               ctx.project(sx + sw, sy + sd, STACK), ctx.project(sx - sw, sy + sd, STACK)];
+    out.push({ svg: ctx.poly(cap, ctx.shade(BRICK, 0, 0, 1), BRICK_E, 0.6), depth: 901 });
+
+    /* ---- the ell, off square ----
+       14 degrees, measured on the sheet, not published. */
+    var t = 14 * Math.PI / 180, ct = Math.cos(t), st = Math.sin(t);
+    var EW = 12.25, ED = 16.33;
+    var bx = -14.2, by = D - 0.6;
+    function pt(u, v) { return [bx + u * ct - v * st, by + u * st + v * ct]; }
+    var A = pt(0, 0), B = pt(EW, 0), C = pt(EW, ED), E = pt(0, ED);
+    /* its own jetty, the same move as the main block */
+    var eJ = 0.9;
+    var Aj = pt(eJ, eJ), Bj = pt(EW - eJ, eJ), Cj = pt(EW - eJ, ED), Ej = pt(eJ, ED);
+    out = out.concat(prism([Aj, Bj, Cj, Ej], 0, S1, CLAP, CLAP_E).parts);
+    out = out.concat(prism([A, B, C, E], S1, EAVE, UPPER, CLAP_E).parts);
+    /* ridge along the ell's OWN long axis, so it runs away from the street
+       exactly as the plan has it. Corner order chooses the direction. */
+    var eRidge = EAVE + (EW / 2) * Math.tan(52 * Math.PI / 180);
+    out = out.concat(gable(B, C, E, A, EAVE, eRidge, ROOF, ROOF_E, UPPER));
+
+    return out;
+  }
+
   var SCENES = { "bunker-hill": bunkerHill, "old-north": oldNorth,
                  "faneuil-hall": faneuilHall, "state-house": stateHouse,
                  "old-state-house": oldStateHouse, "old-south": oldSouth,
-                 "constitution": constitution };
+                 "constitution": constitution, "paul-revere": paulRevere };
 
   /* The live mount: same hand-rolled projection as the other models, so a
      trail stop weighs a few kilobytes and needs no library. */

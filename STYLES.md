@@ -146,6 +146,39 @@ between an obelisk and a spike.
 
 ---
 
+## Post-medieval English, the First Period house
+
+The oldest thing on the Freedom Trail is not Georgian and must not be drawn as
+if it were. Georgian is symmetrical, classical and thin-walled in its
+ornament; a First Period house of the 1680s is medieval English carpentry
+built in New England, and every tell is structural rather than decorative.
+
+The tells, in the order they read at fifty feet:
+
+- **The jetty.** The second storey overhangs the first, typically a foot or
+  so, and the overhang is carried on the crosswise timbers of the frame, not
+  on brackets. Draw the upper box wider than the lower one. This single move
+  is most of the silhouette; a flush wall reads as a later house immediately.
+- **The pendants.** Turned wooden drops hang at the corners of the jetty
+  where the posts end. They are small, and they are the signature. The Paul
+  Revere House sheet draws one as a detail at half scale for that reason.
+- **A steep gable.** Around fifty degrees, not the thirty-something of a
+  Georgian roof. The steepness is a thatch inheritance that outlived thatch.
+- **A massive chimney,** central or at one end, rising well clear of the
+  ridge. It is a masonry core, not a flue: it is the widest thing on the roof.
+- **Casements, leaded and small,** in ranges rather than in the tall single
+  sash of the next century. They sit high under the eaves because the storeys
+  are low.
+- **Low storeys.** Six and a half to eight feet, which is why the windows
+  crowd the plate and why the building reads as long rather than tall.
+- **Clapboard,** unpainted or dark, laid over the frame.
+
+And the plan tell, which matters more here than any elevation: **one room to a
+floor**, with the second block added as an ell that follows the LOT rather
+than the house. Where the lot is irregular the ell meets the main block off
+square. Do not straighten it. The angle is the honest fact about how these
+houses grew, and a right angle is the easiest way to draw one of them wrong.
+
 ## Georgian, and the Wren church
 
 *1700s to 1780s. Here: Old North Church, Boston, 1723, steeple 1740.*

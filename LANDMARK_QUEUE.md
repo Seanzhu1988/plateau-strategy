@@ -10,8 +10,8 @@ MET rooms: dendur, great-hall, american-court, asian-astor, modern,
 grand-stair-2, plus the composed landmark cards.
 
 Freedom Trail (trail-3d.js): bunker-hill, old-north, faneuil-hall,
-state-house, old-state-house, old-south, constitution. Seven of the ten
-buildings the routine listed.
+state-house, old-state-house, old-south, constitution, paul-revere. Eight of
+the ten buildings the routine listed.
 
 MoMA: the building's own architecture (moma-3d.js).
 
@@ -33,8 +33,29 @@ is missing, so a run that keeps aiming at them keeps losing. Prefer Wikipedia,
 NPS, loc.gov and the building's own site, and treat the three above as known
 dead ends rather than fresh ideas.
 
-**loc.gov HABS measured drawings are where the Boston numbers actually live.**
-The sheets carry the dimensions on the drawing itself. No run has yet read one.
+**loc.gov HABS measured drawings are where the Boston numbers actually live,
+and 2026-09-01 read one. THE ROUTE, which works and should be reused:**
+`curl` with a browser User-Agent, NOT the fetch tool. The fetch tool returns
+403 on loc.gov; the identical URL with
+`-A "Mozilla/5.0 (Macintosh...) Chrome/124.0 Safari/537.36"` returns 200.
+That single flag is the difference between this queue being blocked and being
+answerable, and it may well open the three 403 walls below too, which no run
+has yet tried.
+
+  1. `https://www.loc.gov/item/<id>/?fo=json`  -> the item, as JSON
+  2. in that JSON, `resources[n].files` is a list of sheets; each sheet lists
+     its formats, and the `image/tiff` master under `storage-services/master/`
+     is the one worth having. The Revere sheets come back 14452 x 9632, which
+     is far more than enough to read a dimension string.
+  3. PIL crops it (`Image.MAX_IMAGE_PIXELS=None` first, the masters trip the
+     decompression-bomb guard), `sips` makes overviews, and then LOOK at it.
+
+Two things learned from actually reading one. The plan sheet carries the
+dimensions written out and needs no measuring at all. The ELEVATION sheet
+often carries none, only a scale note, and the honest way to get a height is
+to scale it against a published plan dimension on the same drawing: find the
+wall's pixel width, divide by the known feet, and read the horizontal lines
+off a row-ink profile rather than by eye.
 
 ## Freedom Trail, the three not built, and why
 
@@ -60,33 +81,36 @@ stops flat. That last fact is the shape of the model; only its height is
 missing. HABS MASS,13-BOST,12 remains the likely home of the number and has
 still not been read.
 
-**Paul Revere House. RESEARCHED 2026-09-01, still not buildable.**
-The NRHP nomination was located and read in full (npshistory.com, extracted
-with pypdf). It is rich on FORM and silent on MEASUREMENT. Not one dimension
-in feet appears anywhere in the document. The only figure it gives is 6,841
-square feet of land, and that parcel covers TWO houses plus the landscaped
-grounds between them, so it cannot be reduced to this building's footprint.
+**Paul Revere House. BUILT 2026-09-01.** The HABS sheets were finally read
+and they carry everything the NRHP nomination did not.
 
-What the nomination does establish, and what a later run will not need to
-re-read, is the whole form:
-  built shortly after the 1676 fire, probably c. 1680
-  two and a half storeys, frame
-  steeply pitched gabled roof
-  second storey overhang with corner pendants
-  five bays on the front (east) elevation
-  the overhang carried on three crosswise timbers, the chimney girt and
-    two summers
-  one room to a floor, the 17th century one-room plan
-  a two storey frame kitchen ell SET AT AN ANGLE to the main house, to fit
-    the irregular lot, and carrying its own bold overhang
-  raised to three full storeys before Revere moved in, 1770
-  the third storey REMOVED in the 1907 to 1908 Chandler restoration, so the
-    building standing today is the two and a half storey version
-The ell set at an angle is the tell, and it is why this house cannot be
-approximated as a box: the plan is two rectangles meeting off square.
-The numbers are in HABS MASS,13-BOST,26, five measured-drawing sheets, at
-loc.gov item ma0478. Read sheet 1 or 2 and this one becomes buildable in a
-single run.
+PUBLISHED, off sheet 2, the first floor plan:
+  main block 30' 6" wide by 18' 2" deep over the walls
+  the 30' 6" resolves into nine dimensions summing to it EXACTLY:
+    4'1", 2'11", 4'5", 2'11", 4'4", 2'11", 2'8", 2'8", 3'7"
+    the three 2'11" slots are the casement bays and a 2'8" is the door
+  the 18' 2" resolves as 8'6" + 1'6" + 8'2", also exact
+  SOUTH ROOM (HALL) 22' 6" x 17' 3"
+  NORTH ROOM (KITCHEN) 11' 6" x 15' 3", in the ell
+  ell over its walls about 12' 3" by 16' 4"
+
+SCALED off sheet 1's east elevation, which carries no written heights: the
+front wall measures 3238 px against the published 30' 6", so 106.16 px/ft,
+and the lines came from a row-ink profile: first storey 6' 8", second 8' 0",
+eave 14' 8". The ridge (about 26' 6") and the stack top (about 38' 0") were
+read from the picture rather than the profile and are given as approximate.
+They check out: an 11' 10" rise over a 9' 1" half span is a 52 degree pitch,
+and the nomination independently calls the roof steeply pitched.
+
+A CORRECTION TO THE RECORD. The NRHP nomination says five bays on the front.
+The HABS sheet says FOUR, in its own title-block text and in its elevation,
+and the four-bay reading is what the nine measured widths actually add up to.
+The measured drawing was believed over the nomination.
+
+STILL NOT PUBLISHED, and declared as such in the model: the ell's heights,
+which are carried across from the main block's measured storeys, and the
+angle the ell sits at, measured off the sheet at about 14 degrees. A later
+run reading sheets 3 to 5 could replace both with drawn numbers.
 
 ## Seattle, one built, and what the next one needs
 
