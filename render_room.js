@@ -101,6 +101,44 @@ if (key.startsWith("spec:")) {
     + `<rect width="${WS}" height="${HS}" fill="#eef0ea"/>` + itS.map(i=>i.svg).join('') + '</svg>');
   process.exit(0);
 }
+/* "seattle:space-needle" draws seattle-3d.js the same way, because a tower
+   605 ft tall and 138 ft wide at the top is exactly the shape that passes a
+   bounding box and still comes out looking like a water tower. */
+if (key.startsWith("seattle:")) {
+  require("/Users/xiaojunzhu/Claude/worktrees/site/seattle-3d.js");
+  const sk3 = key.slice(8);
+  const scene = (window.SEATTLE3D || {}).scenes[sk3];
+  if (!scene) { console.error("no such seattle scene: " + sk3); process.exit(1); }
+  const yaw3 = parseFloat(process.argv[3] || "-0.62"), pitch3 = parseFloat(process.argv[4] || "0.22");
+  /* Square, because qlmanage -s 900 forces a square thumbnail and the first
+     look at this model came back with the plaza cropped off the bottom. */
+  const W3 = 900, H3 = 900;
+  const mk3 = (SC,OX,OY) => (x,y,z) => {
+    const c=Math.cos(yaw3), s=Math.sin(yaw3);
+    const rx=x*c-y*s, ry=x*s+y*c;
+    return [OX+rx*SC, OY+(ry*Math.sin(pitch3)-(z||0)*Math.cos(pitch3))*SC, ry];
+  };
+  const fv3 = (nx,ny) => (nx*Math.sin(yaw3)+ny*Math.cos(yaw3)) > 0.001;
+  const L3 = [0.60,0.30,0.68];
+  const sh3 = (h,nx,ny,nz) => { const d=nx*L3[0]+ny*L3[1]+nz*L3[2], f=0.55+0.45*Math.max(0,d);
+    const n=parseInt(h.slice(1),16);
+    return `rgb(${Math.min(255,Math.round((n>>16&255)*f))},${Math.min(255,Math.round((n>>8&255)*f))},${Math.min(255,Math.round((n&255)*f))})`; };
+  let B3=null; const bb3 = pts => { pts.forEach(p=>{ if(!B3) B3=[p[0],p[1],p[0],p[1]];
+    B3[0]=Math.min(B3[0],p[0]);B3[1]=Math.min(B3[1],p[1]);
+    B3[2]=Math.max(B3[2],p[0]);B3[3]=Math.max(B3[3],p[1]); }); return ''; };
+  scene({project:mk3(1,0,0), poly:bb3, shade:sh3, faceVisible:fv3});
+  const bw3=B3[2]-B3[0], bh3=B3[3]-B3[1];
+  const SC3=Math.min((W3-60)/bw3,(H3-60)/bh3);
+  const OX3=(W3-bw3*SC3)/2-B3[0]*SC3, OY3=(H3-bh3*SC3)/2-B3[1]*SC3;
+  const poly3 = (pts,f,st,sw,ex) =>
+    `<polygon points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="${f}"`
+    + (st?` stroke="${st}" stroke-width="${sw||1}"`:'') + ' stroke-linejoin="round"' + (ex||'') + '/>';
+  const it3 = scene({project:mk3(SC3,OX3,OY3), poly:poly3, shade:sh3, faceVisible:fv3});
+  it3.sort((a,b)=>a.depth-b.depth);
+  console.log(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W3} ${H3}" width="${W3}" height="${H3}">`
+    + `<rect width="${W3}" height="${H3}" fill="#eef0ea"/>` + it3.map(i=>i.svg).join('') + '</svg>');
+  process.exit(0);
+}
 if (key.startsWith("trail:")) {
   require("/Users/xiaojunzhu/Claude/worktrees/site/trail-3d.js");
   const sk = key.slice(6);

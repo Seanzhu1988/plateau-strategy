@@ -356,6 +356,47 @@ heights, none of which that page publishes.
 
 ---
 
+## Googie, and the Space Age tower
+
+*1950s to mid 1960s. Here: the Space Needle, Seattle, 1961 to 1962. John
+Graham and Company, from Edward Carlson's sketch of a balloon on a tether and
+Victor Steinbrueck's hourglass.*
+
+A world's fair style, built to sell the future to a crowd that had just been
+promised one. It is the opposite of every masonry style in this book: nothing
+is stacked, nothing is load-bearing wall, and the eye is meant to be surprised
+that the thing stands up at all.
+
+**Tells**
+- **Structure in tension, shown.** Slender steel legs, splayed wide at the
+  ground and pinched to a waist, with the mass carried at the top rather than
+  at the bottom. A masonry tower gets thinner as it rises. This one gets
+  thinner and then wider again.
+- **The hourglass.** The waist is the whole idea, and a tower drawn as a
+  straight taper is a different building.
+- **A disc, cantilevered, held clear of the shaft.** The saucer is wider than
+  anything below it and overhangs on every side.
+- **A spire that is decoration**, not a mast and not a roof.
+- Pale paint and a lot of glass on the disc, so the top reads as light and the
+  legs read as line.
+
+**Wrong if** the profile tapers straight from base to tip, or the top sits ON
+the shaft rather than clear of it. Both mistakes turn a 1962 fair tower into a
+water tower, and the decade is lost.
+
+**Our numbers.** 605 ft to the spire tip, observation deck at 520 ft, top
+floor 518 ft, restaurant originally 500 ft. 138 ft across at the top. Three
+pairs of steel legs, 36 in welded columns, running from a 102 ft diameter
+base to the pinched waist at 373 ft and flaring out above it. Foundation
+120 by 120 ft and 30 ft deep.
+
+**The one number nobody publishes** is the width AT the waist. The height of
+the waist is published, both widths it sits between are published, so the leg
+curve is drawn through the published level and its narrowest width is a
+consequence of that curve, not a figure claimed from a source.
+
+---
+
 ## Working rules
 
 1. **Name the style before choosing the geometry.** If you cannot name it, you

@@ -173,6 +173,23 @@
     not part of the tour.</p>
   </section>
 
+  <!-- The Space Needle, drawn from published dimensions rather than a stock
+       photograph. seattle-3d.js carries the sources; STYLES.md carries the
+       style. Degrades to nothing at all if the script fails to load. -->
+  <section>
+    <h2>The one everybody asks about</h2>
+    <p>605 feet to the tip, the observation deck at 520, and 138 feet across at the top.
+    Three pairs of steel legs run out to 102 feet at the ground, pinch to a waist at the
+    373 foot level, and flare out again to carry the saucer. That hourglass is the whole
+    idea of the building, and it is the reason it does not look like a water tower.
+    Drag it.</p>
+    <div id="snStage" style="background:#eef0ea;border-radius:10px;overflow:hidden;
+         max-width:640px;margin:0 auto;touch-action:pan-y"></div>
+    <p class="note">Built 1961 to 1962 for the Century 21 Exposition. It is not on the
+    walking tours above, which stay at sea level, but it is the first thing most people
+    off a ship point at, so here it is.</p>
+  </section>
+
   <section>
     <h2>Booking, plainly</h2>
     <ul>
@@ -271,6 +288,13 @@ async function sendTourInquiry(e){
 <!-- Five-language switcher. i18n.js injects the floating globe itself and
      leaves every string untouched if it fails to load, so the page degrades
      to plain English rather than breaking. -->
+<script src="/seattle-3d.js"></script>
+<script>
+(function(){
+  var stage = document.getElementById('snStage');
+  if (stage && window.SEATTLE3D) { window.SEATTLE3D.mount(stage, 'space-needle', {pitch:0.22}); }
+})();
+</script>
 <script src="/i18n.js"></script>
 </body>
 </html>
