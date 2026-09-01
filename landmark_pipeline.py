@@ -683,7 +683,9 @@ def compose_spec(slug, facts, style="", name=""):
             ("height", height, height_at, "height"),
             ("base_width", base_w, "base", "base_width"),
             ("top_width", top_w, "top", "top_width"),
-            ("span", span, "main", "span")):
+            ("span", span, "main", "span"),
+            ("side_span", dim("side_span", "side"), "side", "side_span"),
+            ("deck_height", dim("deck_height", "centre"), "centre", "deck_height")):
         if val is None:
             continue
         spec["dims"][label] = round(val, 2)
@@ -691,6 +693,32 @@ def compose_spec(slug, facts, style="", name=""):
             "dim": label,
             "sources": corroboration(facts, kind, measured),
         })
+    # WHAT WOULD MAKE THIS MODEL TRUER, if a source confirmed it.
+    #
+    # Some dimensions are not needed to build a shape but change what the
+    # shape IS. A suspension bridge without its side spans and anchorages is
+    # drawn with the deck stopping in mid-air at each tower, which is a real
+    # bridge missing the parts that hold it up. The dimension exists in the
+    # record, it simply has one witness, so the composer will not use it.
+    #
+    # Saying so is better than either using it quietly or dropping it
+    # silently. The page can then tell a reader what the model is waiting
+    # for, which is also a list of what a person could usefully confirm.
+    optional = [("side_span", "side"), ("deck_height", "centre"),
+                ("top_width", "top")]
+    for kind, tag in optional:
+        if kind in spec["dims"]:
+            continue
+        have = [f for f in facts
+                if f.get("kind") == kind and (f.get("measured") or "") == tag]
+        if have and fact_value(facts, kind, tag, "ft") is None:
+            spec.setdefault("could_improve", []).append({
+                "dim": kind,
+                "seen": ["%g %s (%s)" % (f.get("value"), f.get("unit"),
+                                         f.get("source")) for f in have],
+                "why": "one source only, so it is recorded and not drawn",
+            })
+
     if form == "shaft" and base_w:
         spec["lean"] = round((base_w - (top_w or base_w)) / (2.0 * height), 4)
     return spec

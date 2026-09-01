@@ -223,11 +223,20 @@
             return '<li><b>' + b.dim.replace(/_/g, ' ') + '</b> '
                  + cites.join(' \u00b7 ') + '</li>';
           }).join('');
+          /* What the model is waiting for. A dimension with one witness is
+             recorded and not drawn, so the drawing is missing a real part of
+             the structure. Saying which part, and what the single source
+             said, is more useful than a model that quietly looks finished. */
+          var wait = (spec.could_improve || []).map(function (c) {
+            return '<li class="lm-wait"><b>' + c.dim.replace(/_/g, ' ')
+                 + '</b> not drawn \u00b7 ' + c.seen.join('; ')
+                 + ' \u00b7 ' + c.why + '</li>';
+          }).join('');
           list.insertAdjacentHTML('beforeend',
             '<article class="lm-block"><h3>' + spec.name + '</h3>'
             + '<div class="lm-stage" id="' + id + '"></div>'
             + '<p class="lm-turn">Drag it to turn.</p>'
-            + '<ul class="lm-facts">' + facts + '</ul></article>');
+            + '<ul class="lm-facts">' + facts + wait + '</ul></article>');
           LANDMARK3D.mount(document.getElementById(id), spec,
                            { minHeight: 150, maxHeight: 460 });
         });

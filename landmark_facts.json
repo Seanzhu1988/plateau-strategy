@@ -58,6 +58,30 @@
      "origin": "human",
      "note": "",
      "retrieved": "2026-08-31"
+    },
+    {
+     "kind": "side_span",
+     "family": "wikimedia",
+     "value": 930,
+     "unit": "ft",
+     "measured": "side",
+     "source": "Wikipedia article",
+     "source_url": "https://en.wikipedia.org/wiki/Brooklyn_Bridge",
+     "origin": "auto",
+     "note": "tower to anchorage, each side",
+     "retrieved": "2026-09-01"
+    },
+    {
+     "kind": "length",
+     "family": "wikimedia",
+     "value": 6016,
+     "unit": "ft",
+     "measured": "total",
+     "source": "Wikipedia article",
+     "source_url": "https://en.wikipedia.org/wiki/Brooklyn_Bridge",
+     "origin": "auto",
+     "note": "including approaches",
+     "retrieved": "2026-09-01"
     }
    ]
   },

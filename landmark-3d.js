@@ -116,38 +116,54 @@
       return out;
     },
 
-    /* A suspension bridge, and specifically the KIND of one the style says.
-       The first version of this drew two plain piers and a cable and Sean
-       said, correctly, that it is not what the Brooklyn Bridge looks like.
-       He was right, and the reason is worth keeping: the fact table settles
-       the DIMENSIONS, and the styles book settles the CHARACTER, and a model
-       built from dimensions alone is a generic object at the right size.
+    /* A suspension bridge, drawn as the thing actually is.
+       [SEAN, 2026-08-31: "look in to the real structure of the building in
+       real life and slowly landmark builder to shape them into its true
+       form... doesnt have to be perfect."]
 
-       What makes that bridge itself is two things, both of them style rather
-       than measurement: the pair of pointed arches cut through each tower,
-       and the fan of straight diagonal stays running down from the tower
-       tops, which is the web you actually see from the promenade. Neither is
-       a claim about the world, so neither needs a source; both come from
-       STYLES3D, which is what the styles book was built for. */
+       Three versions of this got progressively less wrong, and the lesson
+       held each time: the fact table settles DIMENSIONS, the styles book
+       settles CHARACTER, and TOPOLOGY is a third thing that is neither. How
+       many cables a bridge carries, whether its deck runs on past the towers
+       to an anchorage, whether it has side spans at all, none of that is a
+       measurement or a taste. It is what the structure IS, and getting it
+       wrong makes a model that is accurate in every number and still not the
+       bridge.
+
+       What the record says about this one: two side spans of 930 ft between
+       each tower and its anchorage, 6,016 ft in total including approaches,
+       and FOUR main cables, with the suspender ropes hanging from all four.
+       Earlier versions drew one cable, no side spans and no anchorages, so
+       the deck simply stopped in mid-air at each tower.
+
+       Side spans and anchorages are drawn only when the dimension behind
+       them is settled. Unsettled, it falls back to the towers-only bridge,
+       which is less true but never invented. */
     bridge: function (ctx, d, C, style) {
       var P = ctx.project, span = d.span, th = d.height || span * 0.17;
       var deckH = d.deck_height || th * 0.46;
       var twX = span * 0.031, twY = span * 0.088, dep = twY;
       var gothic = /gothic/i.test(style || "");
-      /* The apron is deliberately tight. At 1.5x the span it dominated the
-         bounding box, so fitting the drawing fitted mostly empty ground and
-         the bridge itself shrank to a line across the middle of the stage. */
-      var out = [ground(ctx, 0, 0, span * 1.10, span * 0.26, 0, C.ground, C.edge)];
-      var towers = [-span / 2, span / 2];
+      var side = d.side_span || 0;
+      var half = span / 2, anch = half + side;
+      var reach = side ? anch + span * 0.10 : half + span * 0.08;
+      var out = [ground(ctx, 0, 0, reach * 2.05, span * 0.26, 0, C.ground, C.edge)];
 
-      towers.forEach(function (tx) {
+      /* Anchorages: the masonry blocks the cables actually end in. Without
+         them the cable runs off the edge of the model and the eye reads the
+         whole thing as floating. */
+      if (side) {
+        [-anch, anch].forEach(function (ax) {
+          out = out.concat(prismXY(ctx, ax, 0, twX * 1.5, twY * 0.92,
+                                   twX * 1.4, twY * 0.86, 0, deckH * 1.12,
+                                   C.base, C.edge));
+        });
+      }
+
+      [-half, half].forEach(function (tx) {
         out = out.concat(prismXY(ctx, tx, 0, twX, twY, twX * 0.86, twY * 0.9,
                                  0, th, C.stone, C.edge));
         if (!gothic || !S.pointedArch) return;
-        /* The openings pierce the tower ALONG the deck, because that is where
-           the roadway goes. Drawn on the face the viewer can actually see:
-           faceVisible says the -x face is the lit one at this yaw, and the
-           first attempt put them on a side face that was pointing away. */
         var faceX = tx - twX / 2 - span * 0.0015;
         var aw = twY * 0.30, zs = deckH + th * 0.05, rise = aw * 1.35;
         [-1, 1].forEach(function (sgn) {
@@ -165,41 +181,59 @@
         });
       });
 
-      var dq = [P(-span/2, -dep/2, deckH), P(span/2, -dep/2, deckH),
-                P(span/2, dep/2, deckH), P(-span/2, dep/2, deckH)];
+      /* The deck runs the whole way, THROUGH the towers to the anchorages.
+         Stopping it at the towers was the single most visible error. */
+      var dq = [P(-reach, -dep / 2, deckH), P(reach, -dep / 2, deckH),
+                P(reach, dep / 2, deckH), P(-reach, dep / 2, deckH)];
       out.push({ svg: ctx.poly(dq, ctx.shade(C.deck, 0, 0, 1), C.edge, 0.6),
                  depth: depthOf(dq) });
 
       var sag = th - deckH - th * 0.06;
-      var cableZ = function (x) {
-        var u = 2 * x / span;
-        return th - sag * (1 - u * u);
-      };
-      var N = 30;
-      for (var i = 0; i < N; i++) {
-        var xa = -span/2 + span * i / N, xb = -span/2 + span * (i + 1) / N;
-        var q = [P(xa, 0, cableZ(xa)), P(xb, 0, cableZ(xb)),
-                 P(xb, 0, cableZ(xb) - th * 0.012), P(xa, 0, cableZ(xa) - th * 0.012)];
-        out.push({ svg: ctx.poly(q, C.cable, C.cable, 0.5), depth: depthOf(q) + 3 });
+      function cableZ(x) {
+        if (Math.abs(x) <= half) {
+          var u = x / half;
+          return th - sag * (1 - u * u);
+        }
+        if (!side) return th;
+        /* Beyond a tower the cable falls almost straight to its anchorage. */
+        var t = (Math.abs(x) - half) / side;
+        return th - (th - deckH * 1.12) * (t * t * 0.35 + t * 0.65);
       }
-      /* Vertical suspenders, and then the diagonal stays: from each tower top
-         down to the deck, fanning outward. On the real bridge the stays and
-         the suspenders cross, and that crossing IS the look of it. */
-      for (var k2 = 1; k2 < 22; k2++) {
-        var xs = -span/2 + span * k2 / 22;
-        var qs = [P(xs, 0, cableZ(xs)), P(xs + span * 0.002, 0, cableZ(xs)),
-                  P(xs + span * 0.002, 0, deckH), P(xs, 0, deckH)];
-        out.push({ svg: ctx.poly(qs, C.cable, null, 0, ' opacity="0.75"'),
-                   depth: depthOf(qs) + 3 });
-      }
-      towers.forEach(function (tx) {
+
+      /* FOUR cables, not one. Drawn as two planes either side of the deck,
+         which is what a viewer can actually distinguish. */
+      var planes = [-dep * 0.30, dep * 0.30];
+      var N = 34;
+      planes.forEach(function (cy) {
+        for (var i = 0; i < N; i++) {
+          var xa = -reach + (2 * reach) * i / N;
+          var xb = -reach + (2 * reach) * (i + 1) / N;
+          if (Math.abs(xa) > anch && side) continue;
+          var q = [P(xa, cy, cableZ(xa)), P(xb, cy, cableZ(xb)),
+                   P(xb, cy, cableZ(xb) - th * 0.012),
+                   P(xa, cy, cableZ(xa) - th * 0.012)];
+          out.push({ svg: ctx.poly(q, C.cable, C.cable, 0.5), depth: depthOf(q) + 3 });
+        }
+        for (var k2 = 1; k2 < 24; k2++) {
+          var xs = -half + span * k2 / 24;
+          var top = cableZ(xs);
+          if (top - deckH < th * 0.02) continue;
+          var qs = [P(xs, cy, top), P(xs + span * 0.0018, cy, top),
+                    P(xs + span * 0.0018, cy, deckH), P(xs, cy, deckH)];
+          out.push({ svg: ctx.poly(qs, C.cable, null, 0, ' opacity="0.75"'),
+                     depth: depthOf(qs) + 3 });
+        }
+      });
+
+      /* The diagonal stays. On the real bridge they cross the suspenders,
+         and that crossing is the look of it. */
+      [-half, half].forEach(function (tx) {
         var dir = tx < 0 ? 1 : -1;
         for (var n = 1; n <= 7; n++) {
-          var reach = span * 0.40 * n / 7;
-          var xe = tx + dir * reach;
+          var xe = tx + dir * span * 0.40 * n / 7;
           var qd = [P(tx, 0, th * 0.96), P(tx + dir * span * 0.004, 0, th * 0.96),
                     P(xe + dir * span * 0.004, 0, deckH), P(xe, 0, deckH)];
-          out.push({ svg: ctx.poly(qd, C.cable, null, 0, ' opacity="0.68"'),
+          out.push({ svg: ctx.poly(qd, C.cable, null, 0, ' opacity="0.66"'),
                      depth: depthOf(qd) + 3 });
         }
       });
