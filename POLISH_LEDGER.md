@@ -36,8 +36,15 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
       setting takes effect without a reload. Proved with a control: two
       bridges mounted side by side, one told to stop animating, and across
       real painted frames only the control turned.
-- [ ] The bridge's Gothic arches do not read at the current scale. Either a
-      second "at the tower" camera, or thicker arch profiles.
+- [x] The bridge's Gothic arches do not read at the current scale.
+      **Done 2026-09-01** with the second camera rather than thicker profiles,
+      because the profile was never the problem: at the whole-span framing one
+      opening is about SIX pixels across on a 1000px box. That number was
+      derived from the camera constants (33.75 ft x 0.115 units per foot x 2.6
+      zoom x sin 0.62 = 5.9 viewBox units) and then confirmed independently
+      against the rendered SVG, which measures one half-arc at 3.0px. At the
+      tower camera the same opening is 35px across and 123px tall. Thickening
+      a line inside a six pixel hole would only have made it a solid smudge.
 - [ ] The bridge labels sit on top of the deck. Lift them clear.
 - [ ] Vertical drag: turn is horizontal only, so nobody can look down on the
       Empire State or up from street level.
@@ -96,7 +103,9 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
       (exact item number, or a title that actually contains the query), and
       record the rest as unanswered.
 
-- [ ] The 3D models' own labels (Manhattan tower, the promenade, 86th floor)
+- [ ] The 3D models' own labels (Manhattan tower, the promenade, 86th floor,
+      and as of 2026-09-01 also "the pointed arch" and its note, so this debt
+      grew by two rather than shrank)
       are drawn inside the SVG by nyc-3d.js, so build_i18n never sees them and
       they stay English on a translated page. Adding them to i18n_extra.py is
       easy; the care needed is that the models re-render on every animation
@@ -162,3 +171,42 @@ Note: four files in this worktree (destination-book.html, destinations.json,
 landmark_stories.json, landmarks.html) were another session's uncommitted work
 and were left untouched. Nothing was rebased for the same reason; origin/main
 was one commit ahead at the time.
+
+### 2026-09-01
+Trimmed: two things, both found by looking and then pinned with a number.
+Three mastheads (walks, site-map, driver) carried /icon-192.png as their logo,
+which loads cleanly and is a thin empty ring: drawn to a canvas it is 0.8%
+non-white pixels against the real mark's 80.2%. Forty other pages carry
+/plateau-logo.svg and now these do too. Second, the destination book's
+masthead at 375px: the nav will not shrink and the header will not wrap, so
+min-width:0 took the wordmark down to a ZERO WIDTH BOX, and a zero width box
+with visible overflow still PAINTS, so "Home" sat on top of "Solution".
+Measured: box 0px, text 57px, four lines, header 93px. The home page already
+had the cure (its .logo-text clips), so that was the control and the same rule
+now covers every masthead. After: no brand box taller than one line on any
+page checked, destination book 93px to 75px, book 93 to 85, articles 78 to 75,
+no page's scrollWidth moved off 375, desktop provably untouched.
+3D: the top backlog item, the arches. A second camera rather than thicker
+profiles, and the numbers above say why. Three defects in my own work, each
+caught by looking rather than by reading: cables painted over the front of the
+tower because lines are drawn after faces and are not depth sorted, so only
+the near half is drawn now; the far tower and four hundred stays were being
+computed off-canvas sixty times a second; and the height label was cut off by
+the top edge, so it moved from 26 ft above the parapet to 2, and the view
+carries two labels rather than three because on a phone the third simply
+stacked on the masonry. Control for the whole change: the span view still
+renders byte for byte what it rendered before, 124,502 characters, identical,
+proved by running the pre-change file and the new one side by side.
+Learned, worth keeping: the buttons needed !important. TWO sheets flatten a
+plain button, modern.css to a word with a rule under it and paper.css to a
+near black slab, and only modern.css exempts .chip. An id-prefixed selector
+alone loses to both, which the ledger's own rule did not say.
+Checkers: map sound, 83% full. i18n 39, up two from 37 because another session
+added strings, none attempted and none added by me. Script lengths 1 out of
+band, the same Chinese overview, left alone again on purpose.
+Commits: "Three mastheads stop showing an empty circle, and a wordmark with no
+room stops painting over the nav" and "The Brooklyn Bridge gets a second
+camera, so its Gothic arches are something you can actually see".
+Note: destinations.json is another session's uncommitted work and was left
+untouched. Nothing needed rebasing; the branch was 4 ahead of origin/main and
+0 behind at the start and stayed that way.
