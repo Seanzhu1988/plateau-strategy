@@ -178,6 +178,44 @@ is standing now.
 
 ---
 
+## The New England meeting house
+
+*1600s to 1700s. Here: Old South Meeting House, Boston, 1729.*
+
+Not a church, and drawing it as one is the mistake. A Puritan meeting house
+was a room for the town as much as for the congregation, and its plan says so.
+The Wren church of the same decade puts its door under its tower and walks you
+up the long axis to an altar. The meeting house turns that ninety degrees: the
+principal entrance is on the LONG side, the pulpit faces it across the short
+width, and the tower is stuck on the end wall where it interrupts nothing.
+
+**Tells**
+- **The entrance is on the long side.** A door centred under the tower, with
+  the pews marching away from it, is a church, not a meeting house.
+- The tower stands against the **short gable end**, centred on it, and takes
+  the middle bay of that front for itself.
+- The body is a plain brick rectangle, two storeys, with the same round
+  arched window repeated at both levels and no order laid over the wall. The
+  Federal building rules its bays with pilasters; this one just counts them.
+- The roof runs the long way and can be **gabled at one end and hipped at the
+  other**, which a symmetrical church roof never is.
+- The steeple is wood on a brick tower, and the joint is visible: brick stops,
+  a painted octagon carries on.
+
+**Wrong if** the door is under the tower, the windows are pointed, or pilasters
+divide the wall into bays.
+
+**Our numbers.** The brick tower rises 80 ft from street level to the steeple,
+the copper clad octagonal spire is 20 ft, and the whole stands 183 ft. The
+wooden steeple between them is therefore `183 - 80 - 20 = 83` ft, a
+subtraction rather than a guess. The front is five bays wide including the
+tower's own bay, the long elevations are seven, and the roof is gabled west
+and hipped east. The footprint in feet is published nowhere I could find, and
+is the one soft number: it is proportioned from the 80 ft tower and the
+published bay counts.
+
+---
+
 ## Federal, and the ordered civic front
 
 *1780s to 1820s. Here: Faneuil Hall, Boston, 1742, enlarged by Charles

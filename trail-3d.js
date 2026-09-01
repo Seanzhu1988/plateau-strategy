@@ -1017,9 +1017,231 @@
     return out;
   }
 
+  /* A roof that is gabled at one end and hipped at the other, which is what
+     Old South has and what no symmetrical church roof ever is. Ridge along y,
+     gable at y0, hip run back from y1. Each slope is one plane, which is safe
+     here only because nothing stands on this roof: the tower is off the west
+     end, outside the roof's footprint entirely. */
+  function gableHipRoof(ctx, x0, x1, y0, y1, zEave, zRidge, fill, edge, gableFill, hipRun) {
+    var P = ctx.project, out = [], xm = (x0 + x1) / 2, yh = y1 - hipRun;
+    [[-1, x0], [1, x1]].forEach(function (s) {
+      var sgn = s[0], X = s[1];
+      var q = sgn === -1
+        ? [P(X, y0, zEave), P(X, y1, zEave), P(xm, yh, zRidge), P(xm, y0, zRidge)]
+        : [P(X, y1, zEave), P(X, y0, zEave), P(xm, y0, zRidge), P(xm, yh, zRidge)];
+      out.push({ svg: ctx.poly(q, ctx.shade(fill, sgn * 0.5, 0, 0.8), edge, 0.6), depth: depthOf(q) });
+    });
+    /* the gable, west */
+    if (ctx.faceVisible(0, -1)) {
+      var t = [P(x0, y0, zEave), P(x1, y0, zEave), P(xm, y0, zRidge)];
+      out.push({ svg: ctx.poly(t, ctx.shade(gableFill || fill, 0, -1, 0), edge, 0.6), depth: depthOf(t) });
+    }
+    /* the hip, east: a triangle of roof where the gable would have been */
+    if (ctx.faceVisible(0, 1)) {
+      var h = [P(x0, y1, zEave), P(x1, y1, zEave), P(xm, yh, zRidge)];
+      out.push({ svg: ctx.poly(h, ctx.shade(fill, 0, 0.8, 0.5), edge, 0.6), depth: depthOf(h) });
+    }
+    return out;
+  }
+
+  /* ---------------- Stop 8: Old South Meeting House ----------------
+     1729, and the largest room in colonial Boston: five thousand people
+     packed into it on 16 December 1773 to hear whether the tea would go back,
+     and walked out of it to the harbour.
+
+     PUBLISHED, and load bearing here. From the Boston Landmarks Commission
+     study report of 2025: the brick portion of the tower rises eighty feet
+     from street level to the steeple; the steeple carries a twenty foot
+     copper clad octagonal spire under a gilded weathervane; the front is
+     five bays wide with a gable end and the tower centred on it, the long
+     elevations are seven bays, the windows are semicircular arched with
+     fanlights at the first and second stories, the building is two stories,
+     and the roof is gabled at the west end and hipped at the east. The
+     report also quotes the older description of a three stage octagonal
+     spire. The overall 183 ft is the figure the Freedom Trail and the park
+     service both use, so the wooden steeple between brick and spire is
+     183 - 80 - 20 = 83 ft, a subtraction rather than a guess.
+
+     DERIVED, and said out loud rather than buried: the footprint in feet. No
+     source I could reach publishes it. The width is set by putting the
+     published five bays across a front whose centre bay is a tower tall
+     enough to be the published eighty, and the length by running the
+     published seven bays down the side at the same module. Floor heights and
+     roof pitch are proportioned the same way.
+
+     WHY THE DOOR IS WHERE IT IS. This is a meeting house, not a church. The
+     report is explicit: the tower doors are on the short side, the principal
+     south entrance is on the long side, and the pulpit faces it across the
+     width. Drawing the entrance under the tower would turn it into Old North,
+     which is the one thing it is not. */
+  function oldSouth(ctx) {
+    var BRICK = "#9d5341", BRICK_E = "#6d3327", TRIM = "#f2ede1", TRIM_E = "#b9b0a0";
+    var ROOF = "#7b6f63", ROOF_E = "#574e45", GLASS = "#3f4d55", GOLD = "#c9a22c";
+    var COPPER = "#7fa898", COPPER_E = "#4e6d62";
+    var PAVE = "#ded8cb", KERB = "#bfb9aa";
+    var out = [];
+
+    /* the plan: five bays across, seven down, at one module */
+    var BAY = 13.2;
+    var W = BAY * 5, LEN = BAY * 7;
+    var x0 = -W / 2, x1 = W / 2, y0 = -LEN / 2, y1 = LEN / 2;
+    var EAVE = 40, RIDGE = EAVE + 16;
+
+    out.push(ground(ctx, 0, 0, 230, 230, 0, PAVE, KERB));
+    out.push(ground(ctx, 0, 0, 128, 156, 0.4, "#d3ccbd", KERB));
+
+    /* the body: brick, two storeys */
+    var body = box(ctx, x0, x1, y0, y1, 0.4, EAVE, BRICK, BRICK_E, null);
+    out = out.concat(body.parts);
+    out = out.concat(gableHipRoof(ctx, x0, x1, y0, y1, EAVE, RIDGE, ROOF, ROOF_E, BRICK, 16));
+
+    /* the long walls: seven bays, the same round arched sash twice over.
+       Published as seven, so seven are drawn and not a suggestion of them. */
+    var southPorch = null;
+    [[-1, x0], [1, x1]].forEach(function (side) {
+      var d = body.walls[side[0] + ",0"];
+      if (d === undefined) return;
+      var X = side[1];
+      var map = function (u, z) { return ctx.project(X, u, z); };
+      for (var b = 0; b < 7; b++) {
+        var yc = y0 + LEN * (b + 0.5) / 7;
+        /* the porch stands in the centre bay of the south wall, so that one
+           window is behind it and is not drawn. The first render showed the
+           porch painted flat across a window it should have been standing in
+           front of, which no face count would ever have caught. */
+        if (!(side[0] === 1 && b === 3)) {
+          out.push(archOpening(ctx, map, yc, 3.4, 8, 15.5, GLASS, TRIM_E, d + 0.4));
+        }
+        out.push(archOpening(ctx, map, yc, 3.4, 24, 31.5, GLASS, TRIM_E, d + 0.4));
+      }
+      /* south: the enclosed pedimented porch at street level, centre bay.
+         north: a single window at mid floor height, centre bay. Both are in
+         the report, and both are what tells the two long walls apart. */
+      if (side[0] === 1) {
+        southPorch = d;
+      } else {
+        out.push(archOpening(ctx, map, 0, 2.6, 17.5, 21, GLASS, TRIM_E, d + 0.4));
+      }
+    });
+
+    /* the enclosed pedimented porch, centre bay of the south wall, and the
+       principal entrance of the building. It is a mass that projects, not a
+       shape painted on the wall: this is the door the town came in by, and
+       the whole difference between a meeting house and a church is that it
+       is here on the long side rather than under the tower. */
+    if (southPorch !== null) {
+      /* THE DEPTH, and it is the reason this porch is drawn with one rather
+         than by its own corners: a wall ninety two feet long has a nearer
+         corner than the little mass standing halfway along it, so the wall
+         sorted last and painted straight over the porch. The render showed a
+         grey nub at the kerb and nothing else. It takes the wall's depth and
+         a step, exactly as the windows in that wall do. */
+      var porch = box(ctx, x1, x1 + 7, -6.5, 6.5, 0.4, 12, TRIM, TRIM_E, ROOF, southPorch + 0.6);
+      out = out.concat(porch.parts);
+      var pd = porch.walls["1,0"];
+      if (pd === undefined) pd = southPorch + 0.9;
+      {
+        out.push({ svg: ctx.poly([ctx.project(x1 + 7, -6.5, 12), ctx.project(x1 + 7, 6.5, 12),
+                                  ctx.project(x1 + 7, 0, 16.5)],
+                                 ctx.shade(TRIM, 1, 0, 0), TRIM_E, 0.6), depth: pd + 0.5 });
+        out.push(archOpening(ctx, function (u, z) { return ctx.project(x1 + 7, u, z); },
+                             0, 3.2, 0.4, 8, "#4a3a30", TRIM_E, pd + 0.6));
+      }
+    }
+
+    /* the west front: five bays, the middle one taken by the tower, so two
+       windows each side at each level and nothing in the centre */
+    if (ctx.faceVisible(0, -1)) {
+      var dF = body.walls["0,-1"];
+      var mapW = function (u, z) { return ctx.project(u, y0, z); };
+      [-1, 1].forEach(function (s) {
+        [BAY * 1.5, BAY * 2.5].forEach(function (xc) {
+          out.push(archOpening(ctx, mapW, s * xc, 3.2, 8, 15.5, GLASS, TRIM_E, dF + 0.4));
+          out.push(archOpening(ctx, mapW, s * xc, 3.2, 24, 31.5, GLASS, TRIM_E, dF + 0.4));
+        });
+      });
+    }
+
+    /* the east end, hipped, with the one storey stair tower at its centre */
+    if (ctx.faceVisible(0, 1)) {
+      var dE = body.walls["0,1"];
+      var mapE = function (u, z) { return ctx.project(u, y1, z); };
+      out.push(archOpening(ctx, mapE, 0, 3.2, 24, 31.5, GLASS, TRIM_E, dE + 0.4));
+    }
+    out = out.concat(box(ctx, -7, 7, y1, y1 + 9, 0.4, 14, BRICK, BRICK_E, ROOF).parts);
+
+    /* the tower: brick, eighty feet, centred on the gable end and standing
+       one bay wide of the five, projecting west of the wall */
+    var TW = 24, tx0 = -TW / 2, tx1 = TW / 2;
+    var ty1 = y0 + 3, ty0 = ty1 - 22;
+    var BRICK_TOP = 80;
+    var tower = box(ctx, tx0, tx1, ty0, ty1, 0.4, BRICK_TOP, BRICK, BRICK_E, null);
+    out = out.concat(tower.parts);
+
+    /* the tower doors, on the short side, which is the meeting house tell */
+    if (ctx.faceVisible(0, -1)) {
+      var dT = tower.walls["0,-1"];
+      var mapT = function (u, z) { return ctx.project(u, ty0, z); };
+      out.push(archOpening(ctx, mapT, 0, 4.2, 0.4, 11, "#4a3a30", BRICK_E, dT + 0.4));
+      out.push(archOpening(ctx, mapT, 0, 3.4, 26, 32, GLASS, TRIM_E, dT + 0.4));
+      out.push(archOpening(ctx, mapT, 0, 3.4, 44, 50, GLASS, TRIM_E, dT + 0.4));
+    }
+    /* the clocks, north and south faces, and Galen Brown's of 1766 is the
+       oldest American made tower clock still running where it was hung */
+    [[-1, tx0], [1, tx1]].forEach(function (side) {
+      var d = tower.walls[side[0] + ",0"];
+      if (d === undefined) return;
+      var X = side[1], tyc = (ty0 + ty1) / 2;
+      var map = function (u, z) { return ctx.project(X, u, z); };
+      out.push(archOpening(ctx, map, tyc, 3.4, 26, 32, GLASS, TRIM_E, d + 0.4));
+      var pts = [], N = 16;
+      for (var i = 0; i < N; i++) {
+        var a = i * Math.PI * 2 / N;
+        pts.push(map(tyc + 5 * Math.cos(a), 64 + 5 * Math.sin(a)));
+      }
+      out.push({ svg: ctx.poly(pts, TRIM, "#5f5a50", 0.7), depth: d + 0.5 });
+    });
+
+    var cy = (ty0 + ty1) / 2;
+
+    /* the wooden steeple: brick stops at 80 and a painted octagon carries on,
+       and the joint is meant to be visible. Belfry, then two more stages,
+       which is the three stage octagonal spire the old accounts describe. */
+    out = out.concat(box(ctx, -11, 11, cy - 11, cy + 11, BRICK_TOP, 86, TRIM, TRIM_E, null).parts);
+
+    /* the open colonnaded belfry: you can see through it, so it is drawn as
+       a floor, eight posts and a cap rather than as a solid drum */
+    out = out.concat(octStage(ctx, 0, cy, 10.4, 10.4, 86, 88, TRIM, TRIM_E));
+    for (var k = 0; k < 8; k++) {
+      var ang = (k / 8) * Math.PI * 2 + Math.PI / 8;
+      out = out.concat(columnAt(ctx, 8.6 * Math.cos(ang), cy + 8.6 * Math.sin(ang), 0.9,
+                                88, 106, TRIM, TRIM_E));
+    }
+    /* a cornice ring at every stage break. The first render came back as one
+       smooth taper from belfry to vane, which is the obelisk-wearing-a-cross
+       the styles book warns about: a steeple is diminishing STAGES and the
+       eye needs the step to see them. */
+    out = out.concat(octStage(ctx, 0, cy, 9.8, 9.8, 106, 110, TRIM, TRIM_E));
+    out = out.concat(octStage(ctx, 0, cy, 8.4, 7.6, 110, 132, TRIM, TRIM_E));
+    out = out.concat(octStage(ctx, 0, cy, 8.6, 8.6, 132, 135, TRIM, TRIM_E));
+    out = out.concat(octStage(ctx, 0, cy, 6.8, 6.0, 135, 158, TRIM, TRIM_E));
+    out = out.concat(octStage(ctx, 0, cy, 7.0, 7.0, 158, 161, TRIM, TRIM_E));
+    out = out.concat(octStage(ctx, 0, cy, 5.4, 5.4, 161, 163, TRIM, TRIM_E));
+
+    /* the twenty foot copper spire, and the vane that has been over it since
+       the tower went up */
+    out = out.concat(octSpire(ctx, 0, cy, 5.4, 163, 183, COPPER, COPPER_E));
+    var P = ctx.project;
+    out.push({ svg: ctx.poly([P(0, cy, 183), P(0.9, cy, 183), P(0.9, cy, 189), P(0, cy, 189)],
+                             GOLD, "#8a6f18", 0.5), depth: 1e8 });
+    var vane = [P(-4, cy, 186), P(4, cy, 187.4), P(4, cy, 188.4), P(-4, cy, 189)];
+    out.push({ svg: ctx.poly(vane, GOLD, "#8a6f18", 0.5), depth: 1e8 + 1 });
+    return out;
+  }
+
   var SCENES = { "bunker-hill": bunkerHill, "old-north": oldNorth,
                  "faneuil-hall": faneuilHall, "state-house": stateHouse,
-                 "old-state-house": oldStateHouse };
+                 "old-state-house": oldStateHouse, "old-south": oldSouth };
 
   /* The live mount: same hand-rolled projection as the other models, so a
      trail stop weighs a few kilobytes and needs no library. */
