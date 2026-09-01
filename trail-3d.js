@@ -158,6 +158,56 @@
     return out;
   }
 
+  /* A pitched roof that a tower comes up through, drawn in strips along the
+     ridge so the depth sort can put the tower between them.
+
+     WHY THIS EXISTS. gableRoof draws each slope as one plane running the
+     whole length of the building, and a painter's depth is a face's NEAREST
+     point. The Old State House tower stands at the far end, so the single
+     near slope, whose nearest corner is the eave at the reader's end, sorted
+     after the tower and painted straight over its base. The tower came back
+     from the renderer hanging in the sky behind the roof with nothing under
+     it. Cutting the slope into strips gives each strip its own honest depth,
+     the far strips paint first, the tower next, the near strips last, and
+     the roof reads as carrying it.
+
+     The cut is geometric as well as a sorting trick: where the tower stands
+     there is no roof, only the strip left over each side of it, which is why
+     the span across the tower stops at cutHW instead of running to the
+     ridge. */
+  function gableRoofCut(ctx, x0, x1, y0, y1, zEave, zRidge, fill, edge, gableFill, cutY0, cutY1, cutHW) {
+    var P = ctx.project, out = [], xm = (x0 + x1) / 2, halfW = (x1 - x0) / 2;
+    var zAt = function (xa) { return zRidge - (Math.abs(xa - xm) / halfW) * (zRidge - zEave); };
+
+    /* the spans along the ridge: before the tower, across it, and after */
+    var cuts = [[y0, cutY0, false], [cutY0, cutY1, true], [cutY1, y1, false]];
+    var spans = [];
+    cuts.forEach(function (c) {
+      if (c[1] - c[0] <= 0.01) return;
+      var n = Math.max(1, Math.round((c[1] - c[0]) / 18));
+      for (var i = 0; i < n; i++) {
+        spans.push([c[0] + (c[1] - c[0]) * i / n, c[0] + (c[1] - c[0]) * (i + 1) / n, c[2]]);
+      }
+    });
+
+    [-1, 1].forEach(function (sgn) {
+      var xEave = xm + sgn * halfW;
+      spans.forEach(function (s) {
+        var xIn = s[2] ? xm + sgn * cutHW : xm;
+        var q = [P(xEave, s[0], zEave), P(xEave, s[1], zEave),
+                 P(xIn, s[1], zAt(xIn)), P(xIn, s[0], zAt(xIn))];
+        out.push({ svg: ctx.poly(q, ctx.shade(fill, sgn * 0.5, 0, 0.8), edge, 0.6), depth: depthOf(q) });
+      });
+    });
+
+    [[0, -1, y0], [0, 1, y1]].forEach(function (g) {
+      if (!ctx.faceVisible(g[0], g[1])) return;
+      var t = [P(x0, g[2], zEave), P(x1, g[2], zEave), P(xm, g[2], zRidge)];
+      out.push({ svg: ctx.poly(t, ctx.shade(gableFill || fill, g[0], g[1], 0), edge, 0.6), depth: depthOf(t) });
+    });
+    return out;
+  }
+
   /* A round headed opening: the Georgian tell, and the one shape that must
      never come out pointed. Struck as a true semicircle on the springing
      line, which is why the head is an arc of eleven segments and not two
@@ -823,7 +873,11 @@
        ridge that leaves the tower room to reach the published 65 ft. */
     var BASE = 4, Z1 = 15, Z2 = 26, EAVE = 37, RIDGE = 47;
 
-    out.push(ground(ctx, 0, 0, 240, 260, 0, PAVE, "#bfb9aa"));
+    /* The pavement is kept close to the building. The stage fits itself to
+       whatever the scene draws, so an over-wide ground plane does not add
+       context, it shrinks the building to a stamp in the middle of an empty
+       square. 150 by 170 leaves State Street around it and no more. */
+    out.push(ground(ctx, 0, 0, 150, 170, 0, PAVE, "#bfb9aa"));
 
     /* the brick block, and the granite plinth of the raised basement */
     var plinth = box(ctx, x0 - 0.6, x1 + 0.6, yW - 0.6, yE + 0.6, 0.3, BASE, "#b9b5aa", "#8d897e", null);
@@ -831,10 +885,16 @@
     var body = box(ctx, x0, x1, yW, yE, BASE, EAVE, BRICK, BRICK_E, null);
     out = out.concat(body.parts);
 
+    /* The tower's footprint, declared here because the roof has to know
+       about it: the roof is cut around the tower rather than drawn through
+       it. tcy is measured from the west end. */
+    var tcy = yW + 11, TW = 17;
+
     /* the roof. Only the slopes come from the shared helper: the east end
        does not finish in a plain triangle, it finishes in a scrolled gable,
        and that scroll is the building's face on State Street. */
-    var roof = gableRoof(ctx, x0, x1, yW, yE, EAVE, RIDGE, ROOF, ROOF_E, BRICK);
+    var roof = gableRoofCut(ctx, x0, x1, yW, yE, EAVE, RIDGE, ROOF, ROOF_E, BRICK,
+                            tcy - TW / 2, tcy + TW / 2, TW / 2);
     out = out.concat(roof);
 
     /* nine bays down the long walls, three levels of sash. Nine over 112.58
@@ -871,12 +931,19 @@
       if (end[1] > 0) {
         /* the balcony, at the middle window of the second floor */
         out.push(panel(ctx, map, -6.5, 6.5, Z1 + 1.0, Z1 + 4.2, TRIM, TRIM_E, d + 0.6));
-        /* The lion and the unicorn, one each side of the gable. Their depth
-           has to clear the scrolled gable's, not just the wall's: at d + 0.9
-           the scroll painted straight over both of them and the render came
-           back with a blank parapet. */
-        out.push(panel(ctx, map, -8.5, -4.5, EAVE + 2.0, EAVE + 7.0, GOLD, GOLD_E, d + 1.9));
-        out.push(panel(ctx, map, 4.5, 8.5, EAVE + 2.0, EAVE + 7.0, TRIM, GOLD_E, d + 1.9));
+        /* The lion and the unicorn. They STAND ON the scrolled gable, one
+           each side of its crown, and the first render had them at
+           EAVE + 2 to EAVE + 7, which is under the scroll's own outline:
+           they came back as two coloured rectangles pasted flat on the
+           brick. Their base is now the crown itself, RIDGE + 1.2, so they
+           break the skyline the way the real pair does.
+
+           Their depth is a constant well past every wall and roof strip,
+           for the same reason the vane's is: nothing else in the scene is
+           in front of a figure on the ridge, and leaving them on the wall's
+           depth put the near roof slope over them. */
+        out.push(panel(ctx, map, -5.6, -2.0, RIDGE + 1.2, RIDGE + 5.6, GOLD, GOLD_E, 2e6));
+        out.push(panel(ctx, map, 2.0, 5.6, RIDGE + 1.2, RIDGE + 5.6, TRIM, GOLD_E, 2e6));
       }
     });
 
@@ -909,7 +976,14 @@
         }
         g.push(P(hw, yE, EAVE + 3.2));
         g.push(P(hw, yE, EAVE - 0.5));
-        out.push({ svg: ctx.poly(g, ctx.shade(BRICK, 0, 1, 0), BRICK_E, 0.7), depth: dG + 1.4 });
+        /* dG + 1.4 was not enough. The east end is the near end in the view
+           the page opens on, so the near roof slope's own nearest corner
+           sorted after the scroll and painted over its right shoulder: the
+           gable came back lopsided, an S curve up one side and a plain step
+           down the other. The scroll sits above the eave line, where no wall
+           can overlap it, so a constant past the whole building is safe and
+           is what the render actually needed. */
+        out.push({ svg: ctx.poly(g, ctx.shade(BRICK, 0, 1, 0), BRICK_E, 0.7), depth: 1e6 });
       }
     }
 
@@ -920,7 +994,6 @@
        six feet under the ridge and it read as a separate shed standing out
        in the street: a tower has to be embedded down to the eave line
        before the eye will accept that the roof is carrying it. */
-    var tcy = yW + 11, TW = 17;
     var t1 = box(ctx, -TW / 2, TW / 2, tcy - TW / 2, tcy + TW / 2, EAVE, RIDGE + 6, TRIM, TRIM_E, null);
     out = out.concat(t1.parts);
     [[0, -1], [0, 1], [-1, 0], [1, 0]].forEach(function (n) {
