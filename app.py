@@ -13754,6 +13754,42 @@ def _wikidata_nearby(lat, lon, radius_km):
     return out
 
 
+@app.route("/api/landmark-pipeline")
+def api_landmark_pipeline():
+    """Where every landmark has got to, and what is blocking the ones stuck.
+
+    Read-only. Nothing here advances a landmark or publishes anything: the
+    line ends at a queue a person approves, which is the rule Sean set when
+    he asked for this."""
+    try:
+        import landmark_pipeline as LP
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)[:120]})
+    try:
+        facts = LP.load_facts()
+        reg = LP.load_registry()
+        stages = {}
+        for e in (reg.get("entries") or {}).values():
+            st = e.get("stage") or "found"
+            stages[st] = stages.get(st, 0) + 1
+        blocked = []
+        for slug, rec in (facts.get("landmarks") or {}).items():
+            issues = LP.check_facts(rec.get("facts") or [])
+            if issues:
+                blocked.append({"slug": slug, "name": rec.get("name"),
+                                "issues": issues})
+        return jsonify({
+            "success": True,
+            "stages": stages,
+            "tracked": len(reg.get("entries") or {}),
+            "with_facts": len(facts.get("landmarks") or {}),
+            "blocked": blocked,
+            "publishes_itself": False,
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)[:160]})
+
+
 @app.route("/api/attractions")
 def api_attractions():
     try:

@@ -1,0 +1,315 @@
+{
+ "_note": "Where each landmark has got to on the line.",
+ "entries": {
+  "fort-leavenworth": {
+   "name": "Fort Leavenworth",
+   "qid": "Q590879",
+   "stage": "found",
+   "where": "Leavenworth County",
+   "style": "",
+   "source_url": "https://www.wikidata.org/wiki/Q590879",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "capt-nathaniel-b-palmer-house": {
+   "name": "Capt. Nathaniel B. Palmer House",
+   "qid": "Q599129",
+   "stage": "found",
+   "where": "Stonington",
+   "style": "",
+   "source_url": "https://www.wikidata.org/wiki/Q599129",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "french-quarter": {
+   "name": "French Quarter",
+   "qid": "Q602939",
+   "stage": "found",
+   "where": "New Orleans",
+   "style": "",
+   "source_url": "https://www.wikidata.org/wiki/Q602939",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "presidio-of-san-diego": {
+   "name": "Presidio of San Diego",
+   "qid": "Q605760",
+   "stage": "found",
+   "where": "San Diego",
+   "style": "",
+   "source_url": "https://www.wikidata.org/wiki/Q605760",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "smithsonian-institution-building": {
+   "name": "Smithsonian Institution Building",
+   "qid": "Q605937",
+   "stage": "found",
+   "where": "Washington, D.C.",
+   "style": "Romanesque Revival architecture",
+   "source_url": "https://www.wikidata.org/wiki/Q605937",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "fort-worden": {
+   "name": "Fort Worden",
+   "qid": "Q606315",
+   "stage": "found",
+   "where": "Port Townsend",
+   "style": "",
+   "source_url": "https://www.wikidata.org/wiki/Q606315",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "george-washington-masonic-national-memorial": {
+   "name": "George Washington Masonic National Memorial",
+   "qid": "Q611813",
+   "stage": "found",
+   "where": "Alexandria",
+   "style": "Neoclassical architecture",
+   "source_url": "https://www.wikidata.org/wiki/Q611813",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "oberlin-college": {
+   "name": "Oberlin College",
+   "qid": "Q616591",
+   "stage": "found",
+   "where": "Oberlin",
+   "style": "",
+   "source_url": "https://www.wikidata.org/wiki/Q616591",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "new-york-city-hall": {
+   "name": "New York City Hall",
+   "qid": "Q1065206",
+   "stage": "found",
+   "where": "Manhattan",
+   "style": "Renaissance Revival architecture",
+   "source_url": "https://www.wikidata.org/wiki/Q1065206",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "charles-w-morgan": {
+   "name": "Charles W. Morgan",
+   "qid": "Q1066356",
+   "stage": "found",
+   "where": "Stonington",
+   "style": "",
+   "source_url": "https://www.wikidata.org/wiki/Q1066356",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "plaza-hotel": {
+   "name": "Plaza Hotel",
+   "qid": "Q1066676",
+   "stage": "found",
+   "where": "Manhattan",
+   "style": "Renaissance Revival architecture",
+   "source_url": "https://www.wikidata.org/wiki/Q1066676",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "edgar-allan-poe-national-historic-site": {
+   "name": "Edgar Allan Poe National Historic Site",
+   "qid": "Q1092659",
+   "stage": "found",
+   "where": "Philadelphia",
+   "style": "",
+   "source_url": "https://www.wikidata.org/wiki/Q1092659",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "carpenters-hall": {
+   "name": "Carpenters' Hall",
+   "qid": "Q1093592",
+   "stage": "found",
+   "where": "Philadelphia",
+   "style": "Georgian architecture",
+   "source_url": "https://www.wikidata.org/wiki/Q1093592",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "ss-city-of-milwaukee": {
+   "name": "SS City of Milwaukee",
+   "qid": "Q1094141",
+   "stage": "found",
+   "where": "Manistee",
+   "style": "",
+   "source_url": "https://www.wikidata.org/wiki/Q1094141",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "55-wall-street": {
+   "name": "55 Wall Street",
+   "qid": "Q1097619",
+   "stage": "found",
+   "where": "Manhattan",
+   "style": "Greek Revival architecture",
+   "source_url": "https://www.wikidata.org/wiki/Q1097619",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "isaac-m-wise-temple": {
+   "name": "Isaac M. Wise Temple",
+   "qid": "Q1100476",
+   "stage": "found",
+   "where": "Cincinnati",
+   "style": "Moorish Revival architecture",
+   "source_url": "https://www.wikidata.org/wiki/Q1100476",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "cleveland-abbe-house": {
+   "name": "Cleveland Abbe House",
+   "qid": "Q1100724",
+   "stage": "found",
+   "where": "Washington, D.C.",
+   "style": "Federal architecture",
+   "source_url": "https://www.wikidata.org/wiki/Q1100724",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "tweed-courthouse": {
+   "name": "Tweed Courthouse",
+   "qid": "Q1105773",
+   "stage": "found",
+   "where": "Manhattan",
+   "style": "Italianate architecture",
+   "source_url": "https://www.wikidata.org/wiki/Q1105773",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "coloma": {
+   "name": "Coloma",
+   "qid": "Q1110351",
+   "stage": "found",
+   "where": "El Dorado County",
+   "style": "",
+   "source_url": "https://www.wikidata.org/wiki/Q1110351",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "eldridge-street-synagogue": {
+   "name": "Eldridge Street Synagogue",
+   "qid": "Q1113721",
+   "stage": "found",
+   "where": "Manhattan",
+   "style": "Moorish Revival architecture",
+   "source_url": "https://www.wikidata.org/wiki/Q1113721",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "leap-the-dips": {
+   "name": "Leap-The-Dips",
+   "qid": "Q1125804",
+   "stage": "found",
+   "where": "Logan Township",
+   "style": "",
+   "source_url": "https://www.wikidata.org/wiki/Q1125804",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "connecticut-state-capitol": {
+   "name": "Connecticut State Capitol",
+   "qid": "Q1126213",
+   "stage": "found",
+   "where": "Hartford",
+   "style": "Eastlake Movement",
+   "source_url": "https://www.wikidata.org/wiki/Q1126213",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "oraibi": {
+   "name": "Oraibi",
+   "qid": "Q1130161",
+   "stage": "found",
+   "where": "Navajo County",
+   "style": "",
+   "source_url": "https://www.wikidata.org/wiki/Q1130161",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "old-san-juan-historic-district": {
+   "name": "Old San Juan Historic District",
+   "qid": "Q1136674",
+   "stage": "found",
+   "where": "San Juan",
+   "style": "",
+   "source_url": "https://www.wikidata.org/wiki/Q1136674",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "philadelphia-city-hall": {
+   "name": "Philadelphia City Hall",
+   "qid": "Q1138183",
+   "stage": "found",
+   "where": "Philadelphia",
+   "style": "Second Empire style",
+   "source_url": "https://www.wikidata.org/wiki/Q1138183",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "king-s-chapel": {
+   "name": "King's Chapel",
+   "qid": "Q1139921",
+   "stage": "found",
+   "where": "Boston",
+   "style": "Georgian architecture",
+   "source_url": "https://www.wikidata.org/wiki/Q1139921",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "little-rock-central-high-school": {
+   "name": "Little Rock Central High School",
+   "qid": "Q1140040",
+   "stage": "found",
+   "where": "Little Rock",
+   "style": "Gothic Revival",
+   "source_url": "https://www.wikidata.org/wiki/Q1140040",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "uss-hornet": {
+   "name": "USS Hornet",
+   "qid": "Q1141355",
+   "stage": "found",
+   "where": "Alameda",
+   "style": "",
+   "source_url": "https://www.wikidata.org/wiki/Q1141355",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "monument-avenue": {
+   "name": "Monument Avenue",
+   "qid": "Q1141531",
+   "stage": "found",
+   "where": "Richmond",
+   "style": "Georgian architecture",
+   "source_url": "https://www.wikidata.org/wiki/Q1141531",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "croton-aqueduct": {
+   "name": "Croton Aqueduct",
+   "qid": "Q1141610",
+   "stage": "found",
+   "where": "Manhattan",
+   "style": "",
+   "source_url": "https://www.wikidata.org/wiki/Q1141610",
+   "flags": [],
+   "found_at": "2026-08-31"
+  },
+  "brooklyn-bridge": {
+   "name": "The Brooklyn Bridge",
+   "flags": [],
+   "stage": "modelled"
+  },
+  "bunker-hill-monument": {
+   "name": "Bunker Hill Monument",
+   "flags": [],
+   "stage": "modelled"
+  }
+ }
+}
