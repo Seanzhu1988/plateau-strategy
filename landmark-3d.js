@@ -134,7 +134,10 @@
       var deckH = d.deck_height || th * 0.46;
       var twX = span * 0.031, twY = span * 0.088, dep = twY;
       var gothic = /gothic/i.test(style || "");
-      var out = [ground(ctx, 0, 0, span * 1.5, span * 0.5, 0, C.ground, C.edge)];
+      /* The apron is deliberately tight. At 1.5x the span it dominated the
+         bounding box, so fitting the drawing fitted mostly empty ground and
+         the bridge itself shrank to a line across the middle of the stage. */
+      var out = [ground(ctx, 0, 0, span * 1.10, span * 0.26, 0, C.ground, C.edge)];
       var towers = [-span / 2, span / 2];
 
       towers.forEach(function (tx) {
@@ -226,4 +229,132 @@
   var api = { fromSpec: fromSpec, forms: Object.keys(FORMS) };
   if (typeof window !== "undefined") window.LANDMARK3D = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
+})();
+
+/* ---------------------------------------------------------------------
+ * Putting a composed model on a page.
+ *
+ * nyc-3d.js has a mount already, but its scenes hand back world geometry
+ * and let a camera project it, while these hand back drawn faces. Rather
+ * than bend a working page's renderer to a second contract, this carries
+ * its own: the same projection render_room.js uses headless, so what a
+ * visitor sees is what was checked offline.
+ *
+ * Drag to turn, and it turns slowly by itself until someone takes hold,
+ * which is how a still picture admits it is a solid. It never starts that
+ * for a reader who asked their device to stop animating.
+ */
+(function () {
+  if (typeof window === "undefined") return;
+  var L3 = window.LANDMARK3D;
+  if (!L3) return;
+
+  function ctxFor(yaw, pitch, SC, OX, OY, collect) {
+    var LIGHT = [0.60, 0.30, 0.68];
+    return {
+      project: function (x, y, z) {
+        var c = Math.cos(yaw), s = Math.sin(yaw);
+        var rx = x * c - y * s, ry = x * s + y * c;
+        return [OX + rx * SC,
+                OY + (ry * Math.sin(pitch) - (z || 0) * Math.cos(pitch)) * SC,
+                ry];
+      },
+      faceVisible: function (nx, ny) {
+        return (nx * Math.sin(yaw) + ny * Math.cos(yaw)) > 0.001;
+      },
+      shade: function (hex, nx, ny, nz) {
+        var d = nx * LIGHT[0] + ny * LIGHT[1] + nz * LIGHT[2];
+        var f = 0.55 + 0.45 * Math.max(0, d);
+        var n = parseInt(hex.slice(1), 16);
+        return "rgb(" + Math.min(255, Math.round((n >> 16 & 255) * f)) + ","
+                      + Math.min(255, Math.round((n >> 8 & 255) * f)) + ","
+                      + Math.min(255, Math.round((n & 255) * f)) + ")";
+      },
+      poly: collect,
+    };
+  }
+
+  function mount(host, spec, opts) {
+    var scene = L3.fromSpec(spec);
+    if (!host || !scene) return null;
+    opts = opts || {};
+    var yaw = opts.yaw === undefined ? -0.62 : opts.yaw;
+    var pitch = opts.pitch === undefined ? 0.30 : opts.pitch;
+    var idle = true, dragging = false, lastX = 0;
+
+    function draw() {
+      var W = Math.max(240, host.clientWidth || 640);
+      var B = null;
+      var measure = ctxFor(yaw, pitch, 1, 0, 0, function (pts) {
+        for (var i = 0; i < pts.length; i++) {
+          var p = pts[i];
+          if (!B) B = [p[0], p[1], p[0], p[1]];
+          if (p[0] < B[0]) B[0] = p[0];
+          if (p[1] < B[1]) B[1] = p[1];
+          if (p[0] > B[2]) B[2] = p[0];
+          if (p[1] > B[3]) B[3] = p[1];
+        }
+        return "";
+      });
+      scene(measure);
+      if (!B) return;
+      var bw = Math.max(B[2] - B[0], 1e-6), bh = Math.max(B[3] - B[1], 1e-6);
+      /* The stage takes its height from the model rather than the other way
+         round. A fixed box left a wide, flat bridge floating in a column of
+         empty space, and an obelisk cramped, because fitting by the smaller
+         scale wastes whatever dimension is not binding. Bounded so a very
+         long span cannot squash to a line, nor a tower run off the screen. */
+      var H = Math.round(Math.min(opts.maxHeight || 460,
+                Math.max(opts.minHeight || 200, (W - 40) * bh / bw + 40)));
+      var SC = Math.min((W - 40) / bw, (H - 40) / bh);
+      var OX = (W - bw * SC) / 2 - B[0] * SC, OY = (H - bh * SC) / 2 - B[1] * SC;
+      var out = [];
+      var paint = ctxFor(yaw, pitch, SC, OX, OY, function (pts, fill, st, sw, ex) {
+        var d = pts.map(function (p) {
+          return p[0].toFixed(1) + "," + p[1].toFixed(1);
+        }).join(" ");
+        return '<polygon points="' + d + '" fill="' + fill + '"'
+             + (st ? ' stroke="' + st + '" stroke-width="' + (sw || 1) + '"' : '')
+             + ' stroke-linejoin="round"' + (ex || '') + '/>';
+      });
+      var items = scene(paint);
+      items.sort(function (a, b) { return a.depth - b.depth; });
+      for (var i = 0; i < items.length; i++) out.push(items[i].svg);
+      host.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" '
+        + 'height="' + H + '" role="img" aria-label="'
+        + String(spec.name || spec.slug).replace(/"/g, '') + ', a model you can turn">'
+        + out.join('') + '</svg>';
+    }
+
+    draw();
+    function turn(dx) { yaw += dx; draw(); }
+
+    if (window.ResizeObserver) {
+      var seen = 0;
+      new ResizeObserver(function () {
+        var now = Math.round(host.clientWidth);
+        if (now && now !== seen) { seen = now; draw(); }
+      }).observe(host);
+    }
+    host.addEventListener("pointerdown", function (e) {
+      dragging = true; idle = false; lastX = e.clientX;
+      if (host.setPointerCapture) host.setPointerCapture(e.pointerId);
+    });
+    host.addEventListener("pointermove", function (e) {
+      if (!dragging) return;
+      turn((e.clientX - lastX) * 0.006); lastX = e.clientX;
+    });
+    ["pointerup", "pointercancel", "pointerleave"].forEach(function (ev) {
+      host.addEventListener(ev, function () { dragging = false; });
+    });
+    var still = window.matchMedia
+      && window.matchMedia("(prefers-reduced-motion: reduce)");
+    (function spin() {
+      if (idle && !(still && still.matches)) turn(0.0016);
+      requestAnimationFrame(spin);
+    })();
+    return { turn: turn, redraw: draw };
+  }
+
+  L3.mount = mount;
 })();

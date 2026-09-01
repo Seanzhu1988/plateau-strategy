@@ -641,7 +641,12 @@ def compose_spec(slug, facts, style="", name=""):
     def dim(kind, measured=""):
         return fact_value(facts, kind, measured, "ft")
 
-    height = dim("height", "shaft") or dim("height", "tower") or dim("height")
+    height, height_at = None, ""
+    for tag in ("shaft", "tower", ""):
+        v = dim("height", tag)
+        if v is not None:
+            height, height_at = v, tag
+            break
     base_w = dim("base_width", "base") or dim("width")
     top_w = dim("top_width", "top")
     span = dim("span", "main")
@@ -669,8 +674,13 @@ def compose_spec(slug, facts, style="", name=""):
 
     spec = {"ok": True, "slug": slug, "name": name or slug, "form": form,
             "style": style or "", "dims": {}, "built_from": []}
+    # The measured tag has to be the one the value actually came from. It was
+    # hardcoded to "shaft" while the Brooklyn Bridge's height is recorded
+    # against "tower", so the page printed the dimension with NO source under
+    # it. On a page whose whole claim is provenance, a number with nothing
+    # behind it is the exact failure it exists to prevent.
     for label, val, measured, kind in (
-            ("height", height, "shaft", "height"),
+            ("height", height, height_at, "height"),
             ("base_width", base_w, "base", "base_width"),
             ("top_width", top_w, "top", "top_width"),
             ("span", span, "main", "span")):

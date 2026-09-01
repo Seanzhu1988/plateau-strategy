@@ -248,6 +248,8 @@ and the chronology starts at the Sculpture Garden end of Floor 5. Tap the rooms 
       <button id="tabF5" aria-current="true">Floor 5</button>
       <button id="tabF4" aria-current="false">Floor 4</button>
       <button id="tabF2" aria-current="false">Floor 2</button>
+      <button id="tabM3D" aria-current="false">3D</button>
+      <button id="btnMomaOut" hidden>&#8592; Floor plan</button>
     </div>
     <!-- The room bar: appears only while the model is diving in one gallery.
          Looking closer and editing the walk are now separate gestures, so
@@ -287,6 +289,128 @@ and the chronology starts at the Sculpture Garden end of Floor 5. Tap the rooms 
 <script src="/i18n.js"></script>
 <script src="/moma-cards.js"></script>
 <script src="/moma-map.js"></script>
+<script src="/moma-3d.js"></script>
+<script>
+  /* The building, beside the floor plans rather than instead of them.
+     A way OUT is wired at the same moment as the way in, because on the Met
+     this was left to an event that only some paths fired and people got
+     stuck inside the model with nothing on screen offering to leave. */
+  (function () {
+    var host = document.getElementById('svgHost');
+    var tab3d = document.getElementById('tabM3D');
+    var out = document.getElementById('btnMomaOut');
+    if (!host || !tab3d || !window.MOMA3D) return;
+    var saved = null, on = false;
+
+    function project(yaw, pitch, SC, OX, OY, collect) {
+      var LIGHT = [0.60, 0.30, 0.68];
+      return {
+        project: function (x, y, z) {
+          var c = Math.cos(yaw), sn = Math.sin(yaw);
+          var rx = x * c - y * sn, ry = x * sn + y * c;
+          return [OX + rx * SC,
+                  OY + (ry * Math.sin(pitch) - (z || 0) * Math.cos(pitch)) * SC, ry];
+        },
+        faceVisible: function (nx, ny) {
+          return (nx * Math.sin(yaw) + ny * Math.cos(yaw)) > 0.001;
+        },
+        shade: function (hex, nx, ny, nz) {
+          var d = nx * LIGHT[0] + ny * LIGHT[1] + nz * LIGHT[2];
+          var f = 0.58 + 0.42 * Math.max(0, d);
+          var n = parseInt(hex.slice(1), 16);
+          return 'rgb(' + Math.min(255, Math.round((n >> 16 & 255) * f)) + ','
+                        + Math.min(255, Math.round((n >> 8 & 255) * f)) + ','
+                        + Math.min(255, Math.round((n & 255) * f)) + ')';
+        },
+        poly: collect
+      };
+    }
+
+    var yaw = -0.55, pitch = 0.30, openT = 0, dragging = false, lastX = 0;
+
+    function draw() {
+      var scene = MOMA3D.building(openT);
+      var W = Math.max(280, host.clientWidth || 720), H = 460, B = null;
+      scene(project(yaw, pitch, 1, 0, 0, function (pts) {
+        for (var i = 0; i < pts.length; i++) {
+          var q = pts[i];
+          if (!B) B = [q[0], q[1], q[0], q[1]];
+          if (q[0] < B[0]) B[0] = q[0];
+          if (q[1] < B[1]) B[1] = q[1];
+          if (q[0] > B[2]) B[2] = q[0];
+          if (q[1] > B[3]) B[3] = q[1];
+        }
+        return '';
+      }));
+      if (!B) return;
+      var bw = Math.max(B[2] - B[0], 1e-6), bh = Math.max(B[3] - B[1], 1e-6);
+      var SC = Math.min((W - 40) / bw, (H - 40) / bh);
+      var OX = (W - bw * SC) / 2 - B[0] * SC, OY = (H - bh * SC) / 2 - B[1] * SC;
+      var items = scene(project(yaw, pitch, SC, OX, OY,
+        function (pts, fill, st, sw, ex) {
+          var d = pts.map(function (q) {
+            return q[0].toFixed(1) + ',' + q[1].toFixed(1);
+          }).join(' ');
+          return '<polygon points="' + d + '" fill="' + fill + '"'
+               + (st ? ' stroke="' + st + '" stroke-width="' + (sw || 1) + '"' : '')
+               + ' stroke-linejoin="round"' + (ex || '') + '/>';
+        }));
+      items.sort(function (a, b) { return a.depth - b.depth; });
+      host.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" '
+        + 'height="' + H + '" role="img" aria-label="The Museum of Modern Art, '
+        + 'a model you can turn">'
+        + items.map(function (i) { return i.svg; }).join('') + '</svg>';
+    }
+
+    function enter() {
+      if (on) return;
+      saved = host.innerHTML;
+      on = true;
+      out.hidden = false;
+      tab3d.setAttribute('aria-current', 'true');
+      ['tabF5', 'tabF4', 'tabF2'].forEach(function (id) {
+        var b = document.getElementById(id);
+        if (b) b.setAttribute('aria-current', 'false');
+      });
+      draw();
+    }
+    function leave() {
+      if (!on) return;
+      on = false;
+      out.hidden = true;
+      tab3d.setAttribute('aria-current', 'false');
+      if (saved !== null) host.innerHTML = saved;
+      var b5 = document.getElementById('tabF5');
+      if (b5) b5.click();
+    }
+
+    tab3d.addEventListener('click', enter);
+    out.addEventListener('click', leave);
+    /* Escape leaves too. The button is the way out for a finger; this is the
+       one that cannot be covered or scrolled past. */
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && on) { leave(); e.preventDefault(); }
+    });
+    ['tabF5', 'tabF4', 'tabF2'].forEach(function (id) {
+      var b = document.getElementById(id);
+      if (b) b.addEventListener('click', function () { if (on) leave(); });
+    });
+
+    host.addEventListener('pointerdown', function (e) {
+      if (!on) return;
+      dragging = true; lastX = e.clientX;
+      if (host.setPointerCapture) host.setPointerCapture(e.pointerId);
+    });
+    host.addEventListener('pointermove', function (e) {
+      if (!on || !dragging) return;
+      yaw += (e.clientX - lastX) * 0.006; lastX = e.clientX; draw();
+    });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (ev) {
+      host.addEventListener(ev, function () { dragging = false; });
+    });
+    window.addEventListener('resize', function () { if (on) draw(); });
+  })();
+</script>
 <script>
   /* The guide reads the walk the reader picked, and lights each gallery on
      the model as it describes it. */

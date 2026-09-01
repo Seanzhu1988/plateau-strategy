@@ -127,6 +127,16 @@
     <div class="lm-story" id="story-empire-state" hidden></div>
   </section>
 
+  <section id="composedWrap" hidden>
+    <h2>Built from the record</h2>
+    <p class="lm-lead">These are not drawn by hand. Each one is composed from
+       its published dimensions, and every number under it says where it came
+       from. A landmark whose sources disagree is not drawn at all, and is
+       listed below as waiting rather than quietly left out.</p>
+    <div id="composedList"></div>
+    <p id="composedWaiting" class="lm-honest" hidden></p>
+  </section>
+
   <p class="lm-honest">Honest about the drawing: the heights, the spans, the
      setback floors and the arch dimensions are the real published ones, so the
      proportions on your screen are the proportions in the air. The window
@@ -140,9 +150,56 @@
 <script src="/i18n.js"></script>
 <script src="/styles-3d.js"></script>
 <script src="/nyc-3d.js"></script>
+<script src="/landmark-3d.js"></script>
 <script>
   NYC3D.bridge(document.getElementById('bridgeStage'));
   NYC3D.empire(document.getElementById('empireStage'));
+
+  /* The composed models. Every figure printed under a drawing carries the
+     source it came from, because a model built from the record has to be
+     checkable against the record, and a number with no provenance on a page
+     about accuracy is worse than no number. */
+  (function () {
+    var wrap = document.getElementById('composedWrap');
+    var list = document.getElementById('composedList');
+    if (!wrap || !list || !window.LANDMARK3D) return;
+    fetch('/api/landmark-specs').then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (!d || !d.success) return;
+        var specs = d.specs || [];
+        if (!specs.length && !(d.waiting || []).length) return;
+        wrap.hidden = false;
+        specs.forEach(function (spec, i) {
+          var id = 'composed' + i;
+          var facts = (spec.built_from || []).map(function (b) {
+            var seen = {}, cites = [];
+            (b.sources || []).forEach(function (c) {
+              var key = c.source + '|' + c.as_given;
+              if (seen[key]) return;
+              seen[key] = 1;
+              cites.push(c.as_given + ' \u00b7 ' + c.source);
+            });
+            return '<li><b>' + b.dim.replace(/_/g, ' ') + '</b> '
+                 + cites.join(' \u00b7 ') + '</li>';
+          }).join('');
+          list.insertAdjacentHTML('beforeend',
+            '<article class="lm-block"><h3>' + spec.name + '</h3>'
+            + '<div class="lm-stage" id="' + id + '"></div>'
+            + '<p class="lm-turn">Drag it to turn.</p>'
+            + '<ul class="lm-facts">' + facts + '</ul></article>');
+          LANDMARK3D.mount(document.getElementById(id), spec,
+                           { minHeight: 150, maxHeight: 460 });
+        });
+        var w = d.waiting || [];
+        if (w.length) {
+          var el = document.getElementById('composedWaiting');
+          el.hidden = false;
+          el.textContent = 'Waiting on the record: ' + w.map(function (x) {
+            return x.name + ' (needs ' + (x.missing || []).join(', ') + ')';
+          }).join('; ') + '.';
+        }
+      }).catch(function () {});
+  })();
 
   /* The stories. Each language is stored ON the entry, so this picks a field
      rather than looking a sentence up in the dictionary. That is deliberate:

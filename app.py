@@ -2069,6 +2069,18 @@ def met_rooms_js():
     return send_file(os.path.join(BASE_DIR, "met-rooms.js"), mimetype="application/javascript")
 
 
+@app.route("/landmark-3d.js")
+def landmark_3d_js():
+    """Draws a landmark composed from its facts, and mounts it on a page."""
+    return send_file(os.path.join(BASE_DIR, "landmark-3d.js"))
+
+
+@app.route("/moma-3d.js")
+def moma_3d_js():
+    """MoMA's building. Reads window.MOMA_GEOMETRY, so moma-map.js loads first."""
+    return send_file(os.path.join(BASE_DIR, "moma-3d.js"))
+
+
 @app.route("/met-3d.js")
 def met_3d_js():
     """The Met as a solid: real footprint, extruded galleries, turnable."""
@@ -13752,6 +13764,37 @@ def _wikidata_nearby(lat, lon, radius_km):
         out.append({"title": title, "lat": float(b["lat"]["value"]),
                     "lon": float(b["lon"]["value"]), "langs": int(b["sl"]["value"])})
     return out
+
+
+@app.route("/api/landmark-specs")
+def api_landmark_specs():
+    """Every landmark whose facts are settled enough to draw.
+
+    A landmark missing from this list is not an error and not an omission
+    waiting to be filled in: it is one whose sources disagree or stand alone,
+    and the honest response to that is to draw nothing. The refusals are
+    returned alongside, with the reason, so the page can say what it is
+    waiting for instead of silently showing less."""
+    try:
+        import landmark_pipeline as LP
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)[:120]})
+    try:
+        facts = LP.load_facts()
+        reg = (LP.load_registry() or {}).get("entries") or {}
+        built, waiting = [], []
+        for slug, rec in (facts.get("landmarks") or {}).items():
+            fs = rec.get("facts") or []
+            style = (reg.get(slug) or {}).get("style") or rec.get("style") or ""
+            spec = LP.compose_spec(slug, fs, style, rec.get("name") or slug)
+            if spec.get("ok"):
+                built.append(spec)
+            else:
+                waiting.append({"slug": slug, "name": rec.get("name") or slug,
+                                "missing": spec.get("missing")})
+        return jsonify({"success": True, "specs": built, "waiting": waiting})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)[:160]})
 
 
 @app.route("/api/landmark-pipeline")
