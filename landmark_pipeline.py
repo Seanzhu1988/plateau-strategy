@@ -89,6 +89,48 @@ STAGES = ("found", "facts", "modelled", "aligned", "written", "audited", "ready"
 
 M_PER_FT = 0.3048
 
+# WHO COUNTS AS A SECOND OPINION.
+#
+# The corroboration rule asks for two sources. Probing showed how easily that
+# is satisfied without being met: Wikipedia's infobox and Wikidata carry the
+# Brooklyn Bridge's dimensions in near-identical form because one is largely
+# derived from the other. Two names, one witness. So facts are grouped into
+# families and corroboration is counted across families, never within one.
+#
+# The practical consequence is that most landmarks will hold a single family
+# and will NOT be buildable from machine reads alone. That is the honest
+# state of the evidence rather than a defect, and it is what the review queue
+# is for: a person confirming a number is the second witness, which is
+# exactly the role Sean chose for himself when he picked review over
+# auto-publish.
+SOURCE_FAMILIES = (
+    ("human", ("",)),
+    ("survey", ("nps", "haer", "habs", "library of congress", "loc.gov",
+                "national park service", "usgs", "nomination")),
+    ("wikimedia", ("wikidata", "wikipedia", "wikimedia", "commons")),
+)
+
+
+def source_family(source, origin="auto"):
+    """Which witness a fact came from, not merely which URL."""
+    if origin == "human":
+        return "human"
+    low = (source or "").strip().lower()
+    for fam, keys in SOURCE_FAMILIES:
+        if fam == "human":
+            continue
+        for k in keys:
+            if k and k in low:
+                return fam
+    return "published:" + (low[:24] or "unknown")
+
+
+# When several sources agree, the value used is the most authoritative one
+# ACTUALLY PUBLISHED, never their mean. Averaging 276.5, 275.6 and 272 gives
+# 274.7, a figure no source states and no reader could ever check. A model
+# built on it cites nothing.
+FAMILY_RANK = {"human": 0, "survey": 1, "wikimedia": 3}
+
 # A building taller than this in metres is not a building, it is a unit error.
 # The tallest structure in the United States is about 629 m.
 IMPLAUSIBLE_M = 700.0
@@ -144,6 +186,7 @@ def make_fact(kind, value, unit, source, source_url="", origin="auto",
     one the tip. Unlabelled, they are."""
     return {
         "kind": kind,
+        "family": source_family(source, origin),
         "value": value,
         "unit": unit,
         "measured": measured,
@@ -253,18 +296,18 @@ def fact_value(facts, kind, measured="", unit="ft"):
     vals = [(v, f) for v, f in vals if v is not None]
     if not vals:
         return None
-    if any(f.get("origin") == "human" for _, f in vals):
-        settled = [v for v, f in vals if f.get("origin") == "human"]
-    else:
-        sources = {(f.get("source") or "").strip().lower() for _, f in vals}
-        if len(sources) < 2:
-            return None
-        settled = [v for v, _ in vals]
-    if not settled:
+    fams = {f.get("family") or source_family(f.get("source"), f.get("origin"))
+            for _, f in vals}
+    if "human" not in fams and len(fams) < 2:
         return None
-    if max(settled) / max(min(settled), 1e-9) > 1.02:
+    spread = max(v for v, _ in vals) / max(min(v for v, _ in vals), 1e-9)
+    if spread > 1.02:
         return None
-    ft = sum(settled) / len(settled)
+    def rank(pair):
+        f = pair[1]
+        fam = f.get("family") or source_family(f.get("source"), f.get("origin"))
+        return FAMILY_RANK.get(fam, 2)
+    ft = sorted(vals, key=rank)[0][0]
     return ft if unit == "ft" else ft * M_PER_FT
 
 
@@ -509,3 +552,135 @@ def audit_sources(research):
         "named": (named[0][:300] if named else ""),
         "level": "ok" if has_sources else "flag",
     }
+
+
+# --------------------------------------------------------------------------
+# a second read, for coverage rather than corroboration
+
+INFOBOX_FIELDS = {
+    "height": ("height", ""),
+    "mainspan": ("span", "main"),
+    "main_span": ("span", "main"),
+    "length": ("length", "total"),
+    "width": ("width", ""),
+    "elevation": ("elevation", ""),
+}
+
+_CONV_RE = re.compile(r"\{\{\s*convert\s*\|\s*([\d.,]+)\s*\|\s*([a-zA-Z]+)", re.I)
+_FIELD_RE = re.compile(r"\|\s*([a-z_ ]+?)\s*=\s*(.+)")
+
+
+def fetch_wikipedia_dims(page, timeout=30):
+    """Read the dimensions out of an article's infobox.
+
+    This is a COVERAGE source, not a corroborating one. Wikipedia and
+    Wikidata are the same family here, so a figure that appears in both is
+    still one witness. What this adds is reach: Wikidata carried a height for
+    7% of landmarks in the probe, and the infobox carries dimensions for many
+    of the ones it misses, including spans and lengths it never holds at all.
+
+    Values usually sit inside a {{convert}} template, which states the number
+    in its original unit and lets the wiki render the other. The original is
+    the one taken; a bare number with no unit is returned marked "?" and is
+    refused downstream rather than assumed to be feet."""
+    url = ("https://en.wikipedia.org/w/api.php?action=parse&format=json"
+           "&prop=wikitext&page=" + urllib.parse.quote(page.replace(" ", "_")))
+    req = urllib.request.Request(url, headers={"User-Agent": UA})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as f:
+            wt = json.load(f)["parse"]["wikitext"]["*"]
+    except Exception as e:
+        return {"ok": False, "error": str(e)[:140], "facts": []}
+
+    src = "Wikipedia infobox"
+    url_page = "https://en.wikipedia.org/wiki/" + page.replace(" ", "_")
+    out = []
+    for line in wt.split("\n")[:260]:
+        m = _FIELD_RE.match(line.strip())
+        if not m:
+            continue
+        key = m.group(1).strip().lower().replace(" ", "_")
+        if key not in INFOBOX_FIELDS:
+            continue
+        kind, measured = INFOBOX_FIELDS[key]
+        c = _CONV_RE.search(m.group(2))
+        if c:
+            unit = c.group(2).lower()
+            unit = {"foot": "ft", "feet": "ft", "metre": "m", "meter": "m"}.get(unit, unit)
+            if unit not in ("ft", "m"):
+                continue
+            try:
+                val = float(c.group(1).replace(",", ""))
+            except Exception:
+                continue
+            out.append(make_fact(kind, val, unit, src, url_page,
+                                 measured=measured, note="infobox " + key))
+    return {"ok": True, "facts": out}
+
+
+# --------------------------------------------------------------------------
+# stage 2: compose a model from what is settled
+
+FORMS = ("shaft", "block", "bridge")
+
+
+def compose_spec(slug, facts, style="", name=""):
+    """Turn settled facts into something buildable, or refuse and say why.
+
+    This is what makes the line scale. A model written by hand is a model per
+    landmark; a model composed from a spec is a model per SHAPE, and the
+    shapes repeat across the whole country. An obelisk is an obelisk whether
+    it stands in Washington or Charlestown; only its numbers differ.
+
+    It refuses more often than it builds, and that is the design. Every
+    dimension comes through fact_value, which returns nothing unless the
+    sources agree and more than one family stands behind them. A landmark
+    with a height nobody has corroborated produces a refusal carrying the
+    reason, not a model carrying a guess. A guess would render, look
+    finished, and be wrong in a way no one would think to check."""
+    def dim(kind, measured=""):
+        return fact_value(facts, kind, measured, "ft")
+
+    height = dim("height", "shaft") or dim("height", "tower") or dim("height")
+    base_w = dim("base_width", "base") or dim("width")
+    top_w = dim("top_width", "top")
+    span = dim("span", "main")
+
+    missing = []
+    if span is not None:
+        form = "bridge"
+        if height is None:
+            missing.append("tower height")
+    elif height is not None and base_w is not None and top_w is not None:
+        form = "shaft"
+    elif height is not None and base_w is not None:
+        form = "block"
+    else:
+        form = None
+        if height is None:
+            missing.append("height")
+        if base_w is None:
+            missing.append("base width")
+
+    if form is None or missing:
+        return {"ok": False, "slug": slug, "form": form,
+                "missing": missing or ["a shape"],
+                "reason": "not enough corroborated facts to build from"}
+
+    spec = {"ok": True, "slug": slug, "name": name or slug, "form": form,
+            "style": style or "", "dims": {}, "built_from": []}
+    for label, val, measured, kind in (
+            ("height", height, "shaft", "height"),
+            ("base_width", base_w, "base", "base_width"),
+            ("top_width", top_w, "top", "top_width"),
+            ("span", span, "main", "span")):
+        if val is None:
+            continue
+        spec["dims"][label] = round(val, 2)
+        spec["built_from"].append({
+            "dim": label,
+            "sources": corroboration(facts, kind, measured),
+        })
+    if form == "shaft" and base_w:
+        spec["lean"] = round((base_w - (top_w or base_w)) / (2.0 * height), 4)
+    return spec

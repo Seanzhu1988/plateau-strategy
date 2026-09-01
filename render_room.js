@@ -26,6 +26,81 @@ require("/Users/xiaojunzhu/Claude/worktrees/site/met-rooms.js");
 const key = process.argv[2];
 /* A trail stop renders the same way a gallery does, because trail-3d.js
    scenes take the same pure context. "trail:bunker-hill" picks one. */
+/* "spec:/path/to/spec.json" draws a landmark composed from its facts rather
+   than from hand-written code, so the composer's output can be LOOKED at.
+   A wrong proportion passes every arithmetic check and fails one glance. */
+/* "moma:closed" / "moma:open" draws the MoMA building from the same floor
+   data the 2D map uses. Same pure-context contract as every other scene. */
+if (key.startsWith("moma:")) {
+  const fs2 = require("fs");
+  const src = fs2.readFileSync("/Users/xiaojunzhu/Claude/worktrees/site/moma-map.js", "utf8");
+  const g = src.match(/window\.MOMA_GEOMETRY\s*=\s*\{[\s\S]*?\n\};/);
+  if (g) { eval(g[0]); }
+  require("/Users/xiaojunzhu/Claude/worktrees/site/moma-3d.js");
+  const scene = window.MOMA3D.scenes[key.slice(5)] || window.MOMA3D.scenes.closed;
+  const yawM = parseFloat(process.argv[3] || "-0.62");
+  const pitchM = parseFloat(process.argv[4] || "0.42");
+  const WM = 900, HM = 700;
+  const mkM = (SC,OX,OY) => (x,y,z) => {
+    const c=Math.cos(yawM), s2=Math.sin(yawM);
+    const rx=x*c-y*s2, ry=x*s2+y*c;
+    return [OX+rx*SC, OY+(ry*Math.sin(pitchM)-(z||0)*Math.cos(pitchM))*SC, ry];
+  };
+  const fvM = (nx,ny) => (nx*Math.sin(yawM)+ny*Math.cos(yawM)) > 0.001;
+  const LM = [0.60,0.30,0.68];
+  const shM = (h,nx,ny,nz) => { const d=nx*LM[0]+ny*LM[1]+nz*LM[2], f=0.58+0.42*Math.max(0,d);
+    const n=parseInt(h.slice(1),16);
+    return `rgb(${Math.min(255,Math.round((n>>16&255)*f))},${Math.min(255,Math.round((n>>8&255)*f))},${Math.min(255,Math.round((n&255)*f))})`; };
+  let BM=null; const bbM = pts => { pts.forEach(p=>{ if(!BM) BM=[p[0],p[1],p[0],p[1]];
+    BM[0]=Math.min(BM[0],p[0]);BM[1]=Math.min(BM[1],p[1]);
+    BM[2]=Math.max(BM[2],p[0]);BM[3]=Math.max(BM[3],p[1]); }); return ''; };
+  scene({project:mkM(1,0,0), poly:bbM, shade:shM, faceVisible:fvM});
+  const bwM=BM[2]-BM[0], bhM=BM[3]-BM[1];
+  const SCM=Math.min((WM-60)/bwM,(HM-60)/bhM);
+  const OXM=(WM-bwM*SCM)/2-BM[0]*SCM, OYM=(HM-bhM*SCM)/2-BM[1]*SCM;
+  const polyM = (pts,f,st,sw,ex) =>
+    `<polygon points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="${f}"`
+    + (st?` stroke="${st}" stroke-width="${sw||1}"`:'') + ' stroke-linejoin="round"' + (ex||'') + '/>';
+  const itM = scene({project:mkM(SCM,OXM,OYM), poly:polyM, shade:shM, faceVisible:fvM});
+  itM.sort((a,b)=>a.depth-b.depth);
+  console.log(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WM} ${HM}" width="${WM}" height="${HM}">`
+    + `<rect width="${WM}" height="${HM}" fill="#f2f3ef"/>` + itM.map(i=>i.svg).join('') + '</svg>');
+  process.exit(0);
+}
+if (key.startsWith("spec:")) {
+  require("/Users/xiaojunzhu/Claude/worktrees/site/landmark-3d.js");
+  const spec = JSON.parse(require("fs").readFileSync(key.slice(5), "utf8"));
+  const scene = window.LANDMARK3D.fromSpec(spec);
+  if (!scene) { console.error("spec is not buildable"); process.exit(1); }
+  const yawS = parseFloat(process.argv[3] || "-0.62");
+  const pitchS = parseFloat(process.argv[4] || "0.30");
+  const WS = 900, HS = 700;
+  const mkS = (SC,OX,OY) => (x,y,z) => {
+    const c=Math.cos(yawS), s2=Math.sin(yawS);
+    const rx=x*c-y*s2, ry=x*s2+y*c;
+    return [OX+rx*SC, OY+(ry*Math.sin(pitchS)-(z||0)*Math.cos(pitchS))*SC, ry];
+  };
+  const fvS = (nx,ny) => (nx*Math.sin(yawS)+ny*Math.cos(yawS)) > 0.001;
+  const LS = [0.60,0.30,0.68];
+  const shS = (h,nx,ny,nz) => { const d=nx*LS[0]+ny*LS[1]+nz*LS[2], f=0.55+0.45*Math.max(0,d);
+    const n=parseInt(h.slice(1),16);
+    return `rgb(${Math.min(255,Math.round((n>>16&255)*f))},${Math.min(255,Math.round((n>>8&255)*f))},${Math.min(255,Math.round((n&255)*f))})`; };
+  let BS=null; const bbS = pts => { pts.forEach(p=>{ if(!BS) BS=[p[0],p[1],p[0],p[1]];
+    BS[0]=Math.min(BS[0],p[0]);BS[1]=Math.min(BS[1],p[1]);
+    BS[2]=Math.max(BS[2],p[0]);BS[3]=Math.max(BS[3],p[1]); }); return ''; };
+  scene({project:mkS(1,0,0), poly:bbS, shade:shS, faceVisible:fvS});
+  const bwS=BS[2]-BS[0], bhS=BS[3]-BS[1];
+  const SCS=Math.min((WS-60)/bwS,(HS-60)/bhS);
+  const OXS=(WS-bwS*SCS)/2-BS[0]*SCS, OYS=(HS-bhS*SCS)/2-BS[1]*SCS;
+  const polyS = (pts,f,st,sw,ex) =>
+    `<polygon points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="${f}"`
+    + (st?` stroke="${st}" stroke-width="${sw||1}"`:'') + ' stroke-linejoin="round"' + (ex||'') + '/>';
+  const itS = scene({project:mkS(SCS,OXS,OYS), poly:polyS, shade:shS, faceVisible:fvS});
+  itS.sort((a,b)=>a.depth-b.depth);
+  console.log(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WS} ${HS}" width="${WS}" height="${HS}">`
+    + `<rect width="${WS}" height="${HS}" fill="#eef0ea"/>` + itS.map(i=>i.svg).join('') + '</svg>');
+  process.exit(0);
+}
 if (key.startsWith("trail:")) {
   require("/Users/xiaojunzhu/Claude/worktrees/site/trail-3d.js");
   const sk = key.slice(6);
