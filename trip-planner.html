@@ -83,7 +83,21 @@
         @media (max-width: 640px) {
             /* On a phone there is not room for label-beside-field three across,
                so each pair stacks and the row becomes two clean columns. */
-            .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 0.7rem; }
+            /* minmax(0,1fr), not 1fr. A bare 1fr is minmax(AUTO,1fr), and the
+               native date input's min-content is 165px, so the date row's first
+               column swelled to 165 against the second's 136 and the pair ran
+               23px past the grid's own right edge. Two rows of a two column form
+               that do not line up with each other is what "crooked" looks like.
+               Measured at 375px: 165.09/136.39 and children ending at x=355
+               against a grid ending at 332, now 139.31/139.31 ending at 332,
+               flush with the State and County row above. */
+            .controls { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 0.6rem 0.7rem; }
+            /* A field left alone on the last row takes the whole row instead of
+               half of it with an empty half beside it. That is also what stopped
+               Traffic reading "Auto (by time of da": 152px of text with 248px of
+               room now, where a half column gave it 98. Conditional on being the
+               ODD one out, so adding a field cannot leave a stray full width row. */
+            .controls .field:last-child:nth-child(odd) { grid-column: 1 / -1; }
             .controls .field { flex-direction: column; align-items: stretch; gap: 0.2rem; }
             .controls .field label { font-size: 0.78rem; }
             .controls .field select, .controls .field input { width: 100%; }

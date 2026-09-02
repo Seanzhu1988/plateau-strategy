@@ -781,14 +781,31 @@
     display: flex !important;
     gap: 0.75rem !important;
     flex: 0 0 auto !important;
-    flex-wrap: nowrap !important;
     /* Refusing to shrink is what stopped "Book a Ride" being clipped, and it
        is also what pushed whole pages sideways: a nav with four links wants
        425px and a phone is 390px, so the page itself scrolled off its axis and
-       the site read as crooked. These three lines keep the links at full width
-       and unclipped, but make the strip scroll INSIDE its own row instead of
-       dragging the page with it. Measured on the trip planner: 425px to 350px,
-       page overflow 55px to zero, all four links still reachable. */
+       the site read as crooked. max-width and min-width keep the strip inside
+       its own row instead of dragging the page with it.
+
+       That stopped the page going crooked and left the links UNREACHABLE
+       instead. The strip scrolled, but the scrollbar is hidden on purpose, so
+       nothing on screen said there was more. Measured on the trip planner at
+       375px: the strip wanted 466px in a 335px row, and THREE items sat past
+       the right edge with no cue, including "Book a Ride", which is the one
+       link on this site that earns money.
+
+       So the strip wraps to a second line rather than scrolling. Each link
+       still refuses to break inside itself (white-space: nowrap below), so the
+       old failure of "Book / a / Ride" stacked down a 35px column cannot come
+       back: a wrap now happens BETWEEN links, never inside one. overflow-x
+       stays as a last-resort backstop for a single link wider than the row.
+       Measured after: 335px in a 335px row, two rows, nothing hidden, page
+       still exactly 375 wide. It costs 47px of masthead, which is the honest
+       price of five 44px touch targets that do not fit on one line. */
+    flex-wrap: wrap !important;
+    justify-content: flex-end;
+    row-gap: 0.2rem !important;
+    column-gap: 0.6rem !important;
     max-width: 100%;
     min-width: 0;
     overflow-x: auto;
