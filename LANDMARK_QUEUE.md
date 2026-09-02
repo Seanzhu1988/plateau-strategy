@@ -427,3 +427,98 @@ Landmarks Preservation Board) and for King's Chapel and Park Street Church
 (Boston Landmarks Commission, and MACRIS). That is the single highest value
 lead left in this file, because a run that cracks that document class could
 unblock three of the four at once.
+
+## The 2026-09-02 third run: the Boston municipal lead is CLOSED, and it was the queue's own top lead
+
+This run built nothing. It went at the single highest value lead this file
+names, the MUNICIPAL LANDMARK NOMINATION, on the Boston half where the file
+predicted it "could unblock three of the four at once." That prediction is now
+disproven for Boston, and one more document route was closed beside it. Both
+are written down here so no later run spends itself the same way.
+
+**THE BOSTON LANDMARKS COMMISSION HAS NO REPORT FOR EITHER CHURCH. CLOSED.**
+The BLC study report index at `cityofboston.gov/landmarks/publications/` was
+read in full. It lists many properties and districts and it carries NO study
+report for King's Chapel, NO study report for Park Street Church, and none for
+any Freedom Trail church. Arlington Street Church is on the list and is a
+different building on a different street. The document class is real and the
+queue was right that it carries plan dimensions, but for these two buildings
+the document does not exist to be found. Do not search this index again.
+
+**PARK STREET CHURCH HAS A HABS RECORD AND IT IS EMPTY. CLOSED.**
+No previous run had checked HABS for this building; the entry above lists
+parkstreet.org, Wikipedia, SAH, trolleytours and a targeted search, and not
+loc.gov. It was checked on this run and the record exists:
+
+  HABS MA-631, loc.gov item `ma0913`, call number MASS,13-BOST,50-
+  found by the collection search, which works and is worth reusing:
+  `loc.gov/collections/historic-american-buildings-landscapes-and-engineering-records/?q=<name>&fo=json`
+
+Its medium field reads `Photo(s): 1` and it has THREE resources, which looked
+promising and was not. Both PDFs were pulled and extracted with pypdf:
+  `.../ma/ma0900/ma0913/data/ma0913data.pdf`  one page, a title cover sheet
+  `.../ma/ma0900/ma0913/supp/ma0913supp.pdf`  one page, a Form 10-444 index card
+The supplemental card carries only the architect (Peter Banner, assisted by
+Solomon Willard), the date 1809, "brick, pitch roof," and three bibliography
+lines. NO DIMENSION OF ANY KIND. There are no measured drawings.
+This is the same shape as King's Chapel's ma0461: a HABS record that exists,
+answers, and holds nothing measurable. Two for two on Boston churches, so a
+HABS hit on a Boston church should now be treated as unpromising rather than
+as a lead, and the cheap test is the `medium` field in the item JSON. If it
+says only `Photo(s)` and not `Drawing(s)`, there is nothing to scale.
+
+**MoMA's MARRON ATRIUM: A TRAP NAMED, AND THE PLAN STILL ABSENT.**
+The 110 ft is confirmed again from a venue listing that answers a browser
+User-Agent (`cxra.com/venue/moma-museum-of-modern-art/`, 200): "skylights 110
+feet overhead." The same sentence carries the figure a future run is most
+likely to misuse:
+
+  "the Marron Atrium stands at the center of more than 20,000 square feet of
+   gallery space"
+
+THAT 20,000 IS THE GALLERY SPACE AROUND THE ATRIUM, NOT THE ATRIUM FLOOR, and
+the venue's own 32,400 sq ft is the whole rentable museum. An atrium drawn to
+20,000 sq ft would be several times too big and would render entirely
+convincingly. A "roughly 70 feet wide" figure also circulates and its own
+source states it is a personal estimate, not a specification. Neither number
+may be used. moma.org itself returns 403 to both the fetch tool and a browser
+User-Agent curl, so the museum's own event spec sheet, which is the right
+document class for a room dimension, has not been read yet and is the live
+lead here.
+
+**A ROUTE THAT DID NOT ANSWER, recorded so it is retried rather than trusted.**
+archive.org full text search inside an item, `ia-fts.archive.org/api/v1/search/
+hits_inside?item=<id>&q=<q>`, returned nothing at all to curl on this run.
+The idea behind it is still good and untested: Foote's "Annals of King's
+Chapel" reproduces the building committee's own records and is the most likely
+published home of the tower height. But archive.org's advanced search finds
+only `annalsofkingscha0003john`, volume 3 of 1940. VOLUMES 1 AND 2, the ones
+that carry the eighteenth century building records, were not found under that
+title and finding them is the actual first step, not the search endpoint.
+
+**WHERE THE FOUR NOW STAND.**
+  King's Chapel     every horizontal published, NO vertical of the standing
+                    building published. The file calls this "one number" but
+                    it is really two, the tower height and the body eaves, and
+                    a roof pitch after that. BLC closed. HABS closed. The
+                    parish Historic Structure Report and Foote's Annals vols
+                    1 and 2 are what is left.
+  Park Street Ch.   steeple 217 ft 9 in published, footprint absent. BLC
+                    closed, HABS closed. Sanborn fire insurance maps on
+                    loc.gov are now the best untried idea: they are published,
+                    they carry a printed scale, and they show footprints. The
+                    cost is that sheets are not indexed by street and must be
+                    found by eye.
+  Smith Tower       462 ft firm, footprint absent. seattle.gov site search and
+                    skyscrapercenter's real building id are still unspent, and
+                    Sanborn applies here too.
+  Marron Atrium     110 ft firm, plan absent, and the two numbers a run would
+                    reach for are both disqualified above.
+
+**THE RULE, working again.** Four runs have now ended without a model. That is
+not four failures, it is the same decision taken four times: every one of these
+buildings would render convincingly from an invented number, and a licensed
+guide's site is exactly where an invented building becomes a liability. What
+this run added is subtraction. Two document routes that looked open are shut,
+one circulating number is marked poison, and the queue's own top lead is spent
+on the Boston half. The next run starts from a smaller and more honest map.
