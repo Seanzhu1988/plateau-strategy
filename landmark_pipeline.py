@@ -77,6 +77,26 @@ DATA_DIR = os.environ.get("DATA_DIR", BASE_DIR)
 FACTS_PATH = os.path.join(DATA_DIR, "landmark_facts.json")
 REGISTRY_PATH = os.path.join(DATA_DIR, "landmark_registry.json")
 
+
+def _read_path(name):
+    """The runtime copy if one exists, otherwise the committed one.
+
+    The fact table is CONTENT, written here and committed like the
+    Destination Book, not runtime state accumulated by visitors. In
+    production DATA_DIR points at a persistent disk that a deploy never
+    touches, so reading only from there found nothing: the live site served
+    an empty landmark list and the "Built from the record" section rendered
+    blank, while everything looked correct locally because DATA_DIR and the
+    repo are the same folder here.
+
+    So reads prefer the disk and fall back to what shipped. Writes still go
+    to the disk, so a fact confirmed at runtime survives the next deploy and
+    from then on takes precedence over the committed seed."""
+    live = os.path.join(DATA_DIR, name)
+    if os.path.exists(live):
+        return live
+    return os.path.join(BASE_DIR, name)
+
 UA = ("PlateauStrategy/1.0 (+https://plateaustrategy.io; "
       "seanzhu1988115@gmail.com)")
 
@@ -156,12 +176,12 @@ def _load(path, default):
 
 
 def load_facts():
-    return _load(FACTS_PATH, {"_note": "One sourced number per fact. See landmark_pipeline.py.",
+    return _load(_read_path("landmark_facts.json"), {"_note": "One sourced number per fact. See landmark_pipeline.py.",
                               "landmarks": {}})
 
 
 def load_registry():
-    return _load(REGISTRY_PATH, {"_note": "Where each landmark has got to on the line.",
+    return _load(_read_path("landmark_registry.json"), {"_note": "Where each landmark has got to on the line.",
                                  "entries": {}})
 
 
