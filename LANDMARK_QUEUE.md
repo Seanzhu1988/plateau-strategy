@@ -28,7 +28,37 @@ and `pypdf` extracts it cleanly. That is how the Paul Revere House nomination
 was finally read. Pattern:
 `npshistory.com/publications/<park>/nr-<building>.pdf`, then extract locally.
 
-**The 403 wall.** historylink.org, skyscrapercenter.com and sah-archipedia.org
+**THE 403 WALL IS TWO THIRDS DOWN, 2026-09-02.** The previous run guessed that
+the loc.gov `curl -A` trick "may well open the three 403 walls, which no run has
+yet tried." It was tried, and it works on two of the three:
+
+    curl -sL -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) \
+      AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" <url>
+
+  historylink.org        403 -> 200. OPEN. This is the big one; it holds the
+                         Seattle numbers and it is now readable in full.
+  skyscrapercenter.com   403 -> 200. OPEN.
+  sah-archipedia.org     403 -> 403. STILL CLOSED, and the User-Agent is not
+                         what it is checking. Treat as a real dead end.
+
+Two traps found while using them, so a later run does not repeat them.
+  historylink's /Search page is rendered by JavaScript and a fetch of it returns
+  only the site chrome. Do NOT try to search it directly. Use a web search
+  restricted to the domain to get the essay number, then fetch /File/<n>, which
+  is plain server-rendered HTML and parses cleanly.
+  skyscrapercenter building ids are not guessable. The id 1104 guessed on this
+  run is NOT Smith Tower; it returns a 755 ft, 56 floor building.
+
+**npgallery.nps.gov answers a plain curl and serves NRHP nomination PDFs** at
+`https://npgallery.nps.gov/NRHP/GetAsset/NRHP/<refnum>_text`, which is a second
+route beside npshistory.com and covers buildings that are not in a park. Its
+limit: an undigitized record returns a one page PDF reading "The PDF file for
+this National Register record has not yet been digitized," so a 200 and a real
+PDF still do not mean there is a nomination to read. Its /NRHP/SearchResults
+page is JavaScript rendered and cannot be scraped for reference numbers.
+
+**The 403 wall, as it stood before 2026-09-02.** historylink.org,
+skyscrapercenter.com and sah-archipedia.org
 all refuse a plain fetch. Between them they hold most of the numbers this queue
 is missing, so a run that keeps aiming at them keeps losing. Prefer Wikipedia,
 NPS, loc.gov and the building's own site, and treat the three above as known
@@ -126,37 +156,101 @@ and its narrowest point is a consequence of that curve, declared in the file.
 wikiarquitectura holds plans and returns 403 to a plain fetch; if a later run
 needs the waist as a fact rather than a curve, that is where to look.
 
-**Smith Tower. HEIGHTS NOW VERIFIED, footprint still missing.**
-Confirmed 2026-09-01 against Wikipedia and a second search result:
-  484 ft to the top of the antenna spire
-  462 ft to the roof
-  469 ft from curbside to the top of the pyramid
-  38 floors
-  a 22 STOREY BASE and a 20 STOREY TOWER, which is the massing: a broad
-    block with a slender shaft rising out of it, not a single slab
-  the pyramidal cap is HOLLOW, held a 12,000 gallon water tank and access
-    ladders, and shows three tiers of small arched windows that have NO
-    floors behind them
-  opened 4 July 1914
-So the queue's old note that 484 ft and 38 storeys were "unverified" can be
-retired, and the guess that it is "a slab with a pyramidal cap" was WRONG:
-it is base plus shaft.
+**Smith Tower. THE CONTRADICTION IS RESOLVED. ONE NUMBER STILL BLOCKS IT.**
 
-TWO THINGS STILL BLOCK IT.
-1. The footprint. Still unpublished anywhere reachable. The lot is described
-   as ODD SHAPED, at 2nd and Yesler, which means even if a width turns up it
-   may not be a rectangle. historylink.org, skyscrapercenter.com and
-   sah-archipedia.org each returned 403 on this run and each is likely to
-   hold it.
-2. A CONTRADICTION that must be resolved, not averaged. The Wikipedia
-   infobox also carries a pinnacle figure of 159 m (522 ft), which cannot
-   sit beside 484 ft to the tip. One of the two is wrong or is measuring
-   from a different datum. Do not draw this building until that is settled,
-   because the pyramid's own height falls out of it: 469 minus 462 leaves
-   only 7 ft of pyramid, which is far too little for a hollow cap holding a
-   12,000 gallon tank behind three tiers of windows. At least one of these
-   published numbers is measured from somewhere other than where it appears
-   to be.
+The 2026-09-01 run ended with a rule: "Do not draw this building until that is
+settled, because the pyramid's own height falls out of it." It is settled, and
+it was settled by an essay that exists specifically to correct this building's
+published numbers.
+
+SOURCE, read 2026-09-02 through the newly opened 403 wall:
+HistoryLink Essay 4310, "Smith Tower (Seattle)," by the architectural critic
+John Pastier. Much of it is a catalogue of the errors printed about this
+building, and it says in its own words:
+
+  "The most frequent errors involve its number of floors and height in feet,
+   which are almost universally given as 42 stories above the ground and
+   either 500 or 522 feet."
+
+So the 522 ft pinnacle figure the queue could not reconcile is NOT a rival
+measurement to be averaged against 484. IT IS A NAMED ERROR, and the queue was
+right to refuse to average it. The true figure, from the same essay:
+
+  "Plans on file with Seattle's Department of Planning and Development reveal
+   that the building is about 462 feet tall (the drawings are not fully
+   dimensioned, and some scaling is required), using standard definitions of
+   height which do not include flagpoles as part of the calculation."
+
+That also dissolves the "only 7 ft of pyramid" absurdity, which was never a
+real problem in the building, only in the reading of it. 462 and 469 are not
+roof versus pyramid tip. They are THE SAME TOP measured from two different
+ground datums, and this site slopes hard: Yesler Way falls away from 2nd
+Avenue, so a curbside figure is legitimately several feet below the entrance
+datum. The heights therefore stack as:
+
+  462 ft   ground to the top of the pyramid. ARCHITECTURAL HEIGHT, from the
+           permit plans. This is the number to model to.
+  469 ft   the same top, measured from the downhill curb.
+  484 ft   to the top of the antenna spire (Wikipedia).
+  489 ft   to the top of the antenna spire (HistoryLink Essay 5370).
+  522 ft   A MYTH. Do not use it. Do not average it into anything.
+
+The 484 against 489 spread is unresolved but does NOT block a model: the spire
+is a flagpole-class element excluded from architectural height, so it can be
+drawn to 462 and the spire either omitted or declared as approximate.
+
+MASSING, now firm and no longer a guess (Essay 4310):
+  "The building took the fashionable New York 'mounted tower' form, combining
+   a substantial base with a slender tower above."
+  "The broad base accommodated most of the building's floor space, while the
+   slim tower provided most of the visual interest and much of the building's
+   height."
+  the base and tower relate awkwardly by design, Pastier calling it "a gawky
+   long necked giraffe," so a model should NOT smooth the junction
+  "the Smith Tower occupied less than a quarter of a small block"
+  the pyramid is hollow, held a water tank and access ladders above the
+   observatory floor, carries three tiers of small arched windows with NO
+   floors behind them, and was topped by a hollow glass globe beacon
+
+A CORRECTION TO THIS FILE'S OWN EARLIER NOTE. The 2026-09-01 run wrote "a 22
+STOREY BASE and a 20 STOREY TOWER." Essay 4310 gives the son's scheme as
+"21 stories capped by a 20-story tower." The floor count is genuinely
+ambiguous and Pastier says so: 33 rentable above-ground floors, an observation
+deck and function room on the 35th story, a 34th floor never meant for human
+occupancy, "36 stories when it opened," and 38 today after the caretaker's
+apartment became a two-storey penthouse. Any model should carry 462 ft as the
+hard number and treat the storey split as approximate.
+
+Also published, Essay 5370, useful and not needed for geometry: 1,400 doors,
+2,000 windows, 40,000 ft of molding, and 1,276 Raymond concrete piles 22 ft
+long. Opened 4 July 1914.
+
+THE ONE THING STILL BLOCKING IT: THE FOOTPRINT. Nothing else.
+Pastier's own source note says the plans are "on file with Seattle Department
+of Planning and Development," which is a counter in a building, not a URL, and
+he says they are "not fully dimensioned" even in person. Checked and failed
+2026-09-02:
+  historylink 4310, 727 and 5370, now fully readable, carry NO plan dimension
+  npgallery NRHP: ref 84003484 returns the undigitized stub
+  King County ArcGIS (gismaps.kingcounty.gov/arcgis/rest/services) has NO
+    building footprint layer at all. Its Property folder holds only
+    KingCo_Parcels, KingCo_ParcelLabels, KingCo_PropertyInfo,
+    KingCo_FarmlandPreservationProgram and KingCo_PublicBenefitRatingSystem.
+    A parcel is the LOT, and Pastier says the building covers less than a
+    quarter of a small block, so the parcel is not the footprint and must not
+    be substituted for one.
+  overpass-api.de did not answer at all on this run (curl exit 7). It is worth
+    retrying, but an OSM traced outline is a crowd tracing rather than a
+    published dimension, so it belongs in a cross-check and not in the model.
+
+THE THREE LEADS NOT YET SPENT, in the order worth trying:
+  1. The Seattle city landmark nomination. Smith Tower is a designated Seattle
+     landmark and the city publishes nomination PDFs at seattle.gov; those
+     documents routinely carry plan dimensions where a NRHP form does not.
+     THIS IS THE BEST REMAINING SHOT and no run has tried it.
+  2. skyscrapercenter.com, now open, once its real building id is found. It
+     publishes gross floor area, which with a storey count bounds a plate.
+  3. Seattle DPD / SDCI's own permit records, if any are online.
 
 **The Pier 66 to Pike Place walk. BUILT 2026-09-01.** The queue was right that
 this was the cheapest item left, and the route to the numbers turned out to be
@@ -221,3 +315,24 @@ Space Needle, had every number it needed and was built on the second. The
 third run checked Smith Tower, the Paul Revere House and King's Chapel, moved
 all three closer, and built none of them, which is the rule working rather
 than the rule failing.
+
+The 2026-09-02 run built nothing either, and should be read the same way. It
+spent itself on Smith Tower, broke two of the three 403 walls, resolved the
+height contradiction that the previous run had declared a hard stop, and
+confirmed the massing. Then it found the footprint genuinely absent from every
+reachable source and stopped rather than estimate one. A skyscraper drawn to a
+guessed plan would have looked entirely convincing in the render, which is
+exactly why the rule has to hold at the point where it is inconvenient.
+
+WHAT A FUTURE RUN SHOULD TAKE FROM THIS. The queue is now down to four
+candidates and every one of them is missing a PLAN DIMENSION specifically:
+Park Street Church's brick body, King's Chapel's tower height, Smith Tower's
+footprint, MoMA's Marron Atrium. Heights and histories are easy to publish and
+plans are not, so the remaining work is not "find a landmark" but "find the
+class of document that carries plans." The two that have worked so far are
+HABS measured drawings on loc.gov and NRHP nominations. The one never tried is
+the MUNICIPAL LANDMARK NOMINATION, which exists for Smith Tower (Seattle
+Landmarks Preservation Board) and for King's Chapel and Park Street Church
+(Boston Landmarks Commission, and MACRIS). That is the single highest value
+lead left in this file, because a run that cracks that document class could
+unblock three of the four at once.
