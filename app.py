@@ -12348,6 +12348,11 @@ h1{font-size:1.5rem;color:var(--ink);margin:0;letter-spacing:-.01em}
 .rw .bar i{display:block;height:100%;background:var(--accent);border-radius:999px}
 .rw .v{width:2.6rem;text-align:right;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .empty{color:var(--muted);font-size:.9rem}
+.me{font-size:.95rem;line-height:1.7}.me b{color:var(--ink);font-weight:600}
+.me .ok{color:var(--good);font-weight:700}.me .warn{color:var(--warn);font-weight:700}
+.mebtns{display:flex;flex-wrap:wrap;gap:.5rem;margin:.7rem 0 0}
+.mebtn{font:inherit;font-weight:700;font-size:.85rem;color:#fff;background:var(--accent);border:none;border-radius:999px;padding:.5rem 1rem;cursor:pointer}
+.menote{color:var(--good);font-size:.82rem;margin:.5rem 0 0;min-height:1rem}
 .foot{text-align:center;color:var(--muted);font-size:.78rem;margin-top:.4rem}
 .foot button{font:inherit;color:var(--accent);background:none;border:none;font-weight:600;cursor:pointer;padding:.4rem}
 #login{max-width:340px;margin:12vh auto 0;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.4rem}
@@ -12383,6 +12388,14 @@ h1{font-size:1.5rem;color:var(--ink);margin:0;letter-spacing:-.01em}
    <div class="card"><p class="hd">What pulls them in, 7 days</p><div id="landings"></div></div>
    <div class="card"><p class="hd">Most read, 7 days</p><div id="pages"></div></div>
    <div class="card"><p class="hd">Where they are, 7 days</p><div id="places"></div></div>
+   <div class="card" id="mecard"><p class="hd">You</p>
+     <div id="mestatus" class="me">Checking whether this device counts.</div>
+     <div class="mebtns">
+       <button id="meDevice" class="mebtn" hidden></button>
+       <button id="meNet" class="mebtn" hidden>Don't count this wifi</button>
+     </div>
+     <p id="menote" class="menote"></p>
+   </div>
    <p class="foot">Updates itself. <button onclick="load()">Refresh now</button></p>
  </div>
 </div>
@@ -12418,7 +12431,28 @@ function render(d){
     return '<div title="'+v+'" style="height:'+Math.max(2,Math.round((v/mx)*64))+'px"></div>';}).join('');
   rows('channels',d.channels,'ch');rows('landings',d.landings,'pg');
   rows('pages',d.pages,'pg');rows('places',d.places,'pl');
+  loadMe();
 }
+function meRender(d){
+  var dev=d.device_counted, net=d.network_registered, today=d.in_today_count;
+  document.getElementById('mestatus').innerHTML=
+    (dev?'<span class="warn">This device is being counted.</span>':'<span class="ok">This device is not counted.</span>')
+    +'<br>'+(net?'<span class="ok">This wifi is excluded too.</span>':'This wifi is not excluded yet.');
+  var bd=document.getElementById('meDevice');
+  if(dev){bd.hidden=false;bd.textContent="Don't count this device";}
+  else if(today){bd.hidden=false;bd.textContent="Remove my visits from today";}
+  else{bd.hidden=true;}
+  document.getElementById('meNet').hidden=net;
+}
+function loadMe(){fetch('/api/traffic/me').then(function(r){return r.json();}).then(function(d){if(d&&d.ok)meRender(d);}).catch(function(){});}
+document.getElementById('meDevice').onclick=function(){
+  fetch('/api/traffic/optout').then(function(){return fetch('/api/traffic/forget-today',{method:'POST'});})
+    .then(function(){document.getElementById('menote').textContent='Done. You are out of the count on this device.';loadMe();}).catch(function(){});
+};
+document.getElementById('meNet').onclick=function(){
+  fetch('/api/traffic/networks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({label:'owner wifi'})})
+    .then(function(r){return r.json();}).then(function(){document.getElementById('menote').textContent='This wifi is now excluded.';loadMe();}).catch(function(){});
+};
 function showLogin(){document.getElementById('app').hidden=true;document.getElementById('login').hidden=false;}
 function load(){
   fetch('/api/pulse',{headers:{'Accept':'application/json'}}).then(function(r){
