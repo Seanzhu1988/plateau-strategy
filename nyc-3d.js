@@ -100,6 +100,37 @@
   function render(host, scene, cam, extras) {
     var w = scene.w, h = scene.h;
     var parts = [];
+    /* An ink skyline, so a label can be put where the drawing is not.
+       The box is cut into columns and every piece of STRUCTURE that gets
+       drawn records the highest and lowest it reaches in each column. The
+       ground and water planes are flat fills and are deliberately left out:
+       they are a backdrop a word reads perfectly well against, and counting
+       them would leave nowhere at all to put a label. */
+    var NB = 240, skyTop = [], skyBot = [];
+    function inkAt(x, y) {
+      var i = Math.floor(x / w * NB);
+      if (i < 0 || i >= NB) return;
+      if (skyTop[i] == null || y < skyTop[i]) skyTop[i] = y;
+      if (skyBot[i] == null || y > skyBot[i]) skyBot[i] = y;
+    }
+    function inkEdge(a, b) {
+      var n = Math.max(1, Math.ceil(Math.abs(b.x - a.x) / (w / NB)));
+      for (var s = 0; s <= n; s++) {
+        var t = s / n;
+        inkAt(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t);
+      }
+    }
+    function inkSpan(x1, x2) {
+      var i1 = Math.max(0, Math.floor(x1 / w * NB));
+      var i2 = Math.min(NB - 1, Math.ceil(x2 / w * NB));
+      var top = null, bot = null;
+      for (var i = i1; i <= i2; i++) {
+        if (skyTop[i] == null) continue;
+        if (top == null || skyTop[i] < top) top = skyTop[i];
+        if (bot == null || skyBot[i] > bot) bot = skyBot[i];
+      }
+      return { top: top, bot: bot };
+    }
     /* painter's algorithm on the face centroid's depth */
     var faces = scene.faces.slice();
     faces.forEach(function (f) {
@@ -112,6 +143,7 @@
       var pts = f.pts.map(function (p) { return project(p, cam); });
       var d = pts.map(function (p) { return p.x.toFixed(1) + ',' + p.y.toFixed(1); }).join(' ');
       var fill = f.flat ? f.colour : shade(f.colour, normal(f.pts[0], f.pts[1], f.pts[2]));
+      if (!f.flat) for (var q = 0; q < pts.length; q++) inkEdge(pts[q], pts[(q + 1) % pts.length]);
       parts.push('<polygon points="' + d + '" fill="' + fill + '"' +
         (f.stroke ? ' stroke="' + f.stroke + '" stroke-width="' + (f.width || 0.6) + '"' : '') +
         (f.opacity ? ' opacity="' + f.opacity + '"' : '') +
@@ -119,6 +151,7 @@
     });
     (scene.lines || []).forEach(function (l) {
       var a = project(l.a, cam), b = project(l.b, cam);
+      inkEdge(a, b);
       parts.push('<line x1="' + a.x.toFixed(1) + '" y1="' + a.y.toFixed(1) +
         '" x2="' + b.x.toFixed(1) + '" y2="' + b.y.toFixed(1) +
         '" stroke="' + l.colour + '" stroke-width="' + (l.width || 1) +
@@ -155,27 +188,94 @@
          whole label back inside. The dot stays on the true point. */
       var shift = x1 < 4 ? 4 - x1 : (x2 > w - 4 ? (w - 4) - x2 : 0);
       ax += shift; x1 += shift; x2 += shift;
-      var tall = fT + (m.sub ? lh : 0);
-      var drop = 0;
-      for (var g = 0; g < 4; g++) {
-        var top = p.y - fT + drop;
-        var clash = placed.some(function (r) {
-          return x1 < r.x2 && x2 > r.x1 && top < r.y2 && top + tall > r.y1;
+      /* the block runs from the title's ascender to the note's descender.
+         Guessing this short is how a label ends up half off the bottom edge:
+         at 375px the type is three times its desktop size, so the four units
+         above and the descender below are twenty units of real estate. */
+      var tall = fT + 4 * ds + (m.sub ? lh + 0.3 * fS : 0.3 * fT);
+      var ink = inkSpan(x1, x2), base = p.y - fT;
+      function fits(y) { return y >= 4 && y + tall <= h - 4; }
+      function hits(y) {
+        return placed.some(function (r) {
+          return x1 < r.x2 && x2 > r.x1 && y < r.y2 && y + tall > r.y1;
         });
-        if (!clash) break;
-        drop += lh;
       }
-      placed.push({ x1: x1, x2: x2, y1: p.y - fT + drop, y2: p.y - fT + drop + tall });
+      /* Lift it clear of the drawing. At the whole span framing the bridge
+         fills the middle of the box, so a label anchored at the deck landed
+         inside the cable web: "the promenade" and its note were written
+         across the suspenders and the roadway. Measured in viewBox units at
+         the columns that label occupies, structure ran from y=63 down to
+         y=142 while the label block sat at 115 to 147, so 27 units of it lay
+         on the drawing. So the block moves to the nearer edge of the ink,
+         above it or below it, and a leader is drawn back to the dot. The DOT
+         never moves: it stays on the true point, which is the whole promise
+         of the drawing.
+
+         A lift is only taken if the lifted block lands inside the box and on
+         no other label. Where it cannot, the label is left exactly where the
+         old code put it and gets a halo instead. That order matters: at the
+         tower framing and on a phone there is genuinely nowhere to go, and a
+         lift taken anyway put a bridge label off the bottom edge. */
+      var clear = 5 * ds, lift = 0;
+      if (ink.top != null &&
+          base < ink.bot + clear && base + tall > ink.top - clear) {
+        var up = (ink.top - clear - tall) - base;
+        var dn = (ink.bot + clear) - base;
+        var cands = (-up <= dn) ? [up, dn] : [dn, up];
+        for (var c = 0; c < 2; c++) {
+          if (fits(base + cands[c]) && !hits(base + cands[c])) { lift = cands[c]; break; }
+        }
+      }
+      var drop = 0;
+      if (!lift) {
+        for (var g = 0; g < 4; g++) {
+          var top = base + drop;
+          if (!fits(top)) { drop -= lh; break; }
+          if (!hits(top)) break;
+          drop += lh;
+        }
+        if (drop < 0) drop = 0;
+      }
+      var y0 = base + lift + drop;
+      /* last word: the block stays inside the box whatever came before. If
+         that puts it back on the drawing the halo below picks it up, which is
+         the right order of preference: inside the box and haloed beats
+         outside the box and unread. */
+      var pull = y0 < 4 ? 4 - y0 : (y0 + tall > h - 4 ? (h - 4) - (y0 + tall) : 0);
+      lift += pull; y0 += pull;
+      placed.push({ x1: x1, x2: x2, y1: y0, y2: y0 + tall });
       var anchor = flip ? ' text-anchor="end"' : '';
+      var yT = p.y + 4 * ds + lift + drop;
+      /* Sometimes there is nowhere to lift it to. At the tower framing the
+         masonry fills the whole box, so both labels there sit on stone, and
+         the code above correctly declines to move a label it cannot place
+         better. Those words get a halo instead: the ground colour stroked
+         behind the glyphs, drawn under them by paint-order, which is how a
+         map keeps a place name legible over a hillside. Only the labels that
+         are still on the drawing get one, so the whole span view's lifted
+         labels are drawn exactly as they were. */
+      var onInk = ink.top != null &&
+        y0 < ink.bot + 1 && y0 + tall > ink.top - 1;
+      var halo = onInk ? ' paint-order="stroke" stroke="' + C.ground +
+        '" stroke-width="' + (2.6 * ds).toFixed(2) +
+        '" stroke-linejoin="round"' : '';
+      if (Math.abs(lift) > 2) {
+        /* the leader, drawn before the words so the words stay on top */
+        var lx = flip ? ax + 0.3 * gap : ax - 0.3 * gap;
+        parts.push('<line class="psx-lead" x1="' + p.x.toFixed(1) + '" y1="' + p.y.toFixed(1) +
+          '" x2="' + lx.toFixed(1) + '" y2="' + (yT - 0.32 * fT).toFixed(1) +
+          '" stroke="' + C.label + '" stroke-width="' + (0.8 * ds).toFixed(2) +
+          '" opacity="0.75"/>');
+      }
       if (m.text) {
-        parts.push('<text x="' + ax.toFixed(1) + '" y="' + (p.y + 4 * ds + drop).toFixed(1) +
+        parts.push('<text x="' + ax.toFixed(1) + '" y="' + yT.toFixed(1) +
           '" font-size="' + fT.toFixed(1) + '" font-weight="700" fill="' + C.ink + '"' +
-          anchor + '>' + m.text + '</text>');
+          halo + anchor + '>' + m.text + '</text>');
       }
       if (m.sub) {
-        parts.push('<text x="' + ax.toFixed(1) + '" y="' + (p.y + 4 * ds + drop + lh).toFixed(1) +
+        parts.push('<text x="' + ax.toFixed(1) + '" y="' + (yT + lh).toFixed(1) +
           '" font-size="' + fS.toFixed(1) + '" fill="' + C.label + '"' +
-          anchor + '>' + m.sub + '</text>');
+          halo + anchor + '>' + m.sub + '</text>');
       }
     });
     host.innerHTML = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" ' +
