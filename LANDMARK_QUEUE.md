@@ -522,3 +522,84 @@ guide's site is exactly where an invented building becomes a liability. What
 this run added is subtraction. Two document routes that looked open are shut,
 one circulating number is marked poison, and the queue's own top lead is spent
 on the Boston half. The next run starts from a smaller and more honest map.
+
+## The 2026-09-02 fourth run: Sanborn is DISQUALIFIED for Smith Tower, and it was a live lead
+
+This run built nothing, and the useful part is again subtraction. It went at the
+Smith Tower footprint, which is the queue's highest business value blocker, spent
+its three named leads, and closed one of them on a reason no future run should
+have to rediscover.
+
+**SANBORN CANNOT ANSWER SMITH TOWER. NOT A COST PROBLEM, A KIND PROBLEM.**
+The file lists Sanborn as applying to Smith Tower "too." It does not. A fire
+insurance map draws the GROUND FLOOR OUTLINE of a building. Smith Tower is a
+mounted tower: Pastier's own words in Essay 4310 are "a substantial base with a
+slender tower above," and the file already records that the base and the tower
+relate awkwardly by design. The plate that the model is actually blocked on is
+the SLENDER TOWER's, because that is what carries most of the 462 ft and all of
+the silhouette. A Sanborn shows the base and is silent about the tower, so even a
+perfectly read sheet would hand back the one plate the model needs least. Strike
+Sanborn from this building's lead list.
+
+Sanborn stays LIVE and correct for Park Street Church, where the brick body is a
+single mass and the ground outline IS the footprint.
+
+**THE SEATTLE SANBORN VOLUMES, listed here so the idea is retired with its
+evidence rather than on assertion.** The loc.gov collection JSON search answers a
+browser User-Agent cleanly and returns 32 Seattle items. The ones that post-date
+the tower's July 1914 opening, and would therefore have shown it:
+  1916  sanborn09315_009      1917  sanborn09315_011, _013, _014
+  1919  sanborn09315_015      1929  sanborn09315_012
+They are real and reachable. They are simply the wrong instrument.
+
+**LEAD 1, seattle.gov site search: THAT PATH IS 404.**
+`seattle.gov/search?q=...` returns 404, so the file's "the seattle.gov site
+search is the way in, not a guessed path" is itself now a guessed path. The
+municipal nomination may still exist; the entry point has to be found before it
+can be searched, and that is the remaining work on this lead.
+
+**LEAD 2, skyscrapercenter: OPEN BUT JS RENDERED, so a 200 means nothing.**
+A guessed building URL returned 200 with an EMPTY `<title>` and no readable
+content, and `/api/search` returned 404. The 403 wall is down, as the file says,
+but what is behind it is a JavaScript shell. Do not read a 200 from this host as
+a document.
+
+**A NUMBER THAT WILL TEMPT A FUTURE RUN, AND MUST NOT BE USED.** Wikipedia's
+infobox carries `floor_area = 28275 m2`, which is 304,350 sq ft gross over 38
+floors. Dividing that by the floor count to get a plate is meaningless on a
+mounted tower, because the base floors and the tower floors are different plates
+and the file already records that "the broad base accommodated most of the
+building's floor space." An average plate would be far too big for the tower and
+too small for the base, and it would render convincingly. Disqualified.
+
+**AND A CONFIRMATION WORTH HAVING.** The same article describes the site as "the
+odd-shaped lot at the Northeast corner of Yesler Way and Second Avenue." That is
+independent of Pastier and it says the same thing the parcel check said: this
+footprint is not a rectangle waiting to be guessed. The refusal to invent one is
+not excessive caution, it is the shape of the actual building.
+
+**KING'S CHAPEL, three cheap shots spent, all empty.** This run tried it because
+the file's own lesson says heights publish more readily than plans, which makes
+this the likeliest of the four to come unblocked. It did not.
+  kings-chapel.org/history.html   404
+  Wikipedia King's Chapel         no height of any kind, tower or eaves
+  archive.org                     confirms only `annalsofkingscha0003john`,
+                                  volume 3 of 1940, under that title. Volumes 1
+                                  and 2 remain unfound, and finding them is
+                                  still the first step, exactly as the previous
+                                  run wrote.
+
+**A ROUTE THAT TIMED OUT TWICE, recorded so it is retried rather than trusted.**
+The loc.gov Sanborn JSON search worked first try for Seattle and then returned
+curl code 000 twice for Boston, at 30 and 45 second timeouts, both with and
+without a location facet. The host and the pattern are good; the Boston query
+specifically did not come back. A future run going after Park Street Church
+should expect to retry it and should not read the timeout as a closed door.
+
+**WHERE THIS LEAVES THE FOUR.** Unchanged in count, smaller in surface.
+  King's Chapel     still missing every vertical. Three routes closed today.
+  Park Street Ch.   Sanborn confirmed as the right instrument, entry point
+                    verified, the Boston query itself still to be landed.
+  Smith Tower       Sanborn now struck. Two leads left, both needing an
+                    identifier found before they can be read.
+  Marron Atrium     untouched this run.
