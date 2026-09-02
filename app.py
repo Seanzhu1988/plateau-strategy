@@ -2958,6 +2958,19 @@ def _social_lib():
         return []
 
 
+@app.route("/iticket")
+def page_iticket():
+    """The ticket booth, announced while it is still being built.
+
+    Deliberately takes no sign-ups. A page that harvests emails for a product
+    with no supply agreements behind it is selling an intention, and the
+    people who leave an address are the ones who would be let down first. It
+    says what works, what is being worked on and what is deliberately last,
+    and it points providers at a real address, because the supply side is the
+    only part of this that cannot be built alone."""
+    return send_file(os.path.join(BASE_DIR, "iticket.html"))
+
+
 @app.route("/landmarks")
 def landmarks_page():
     """Brooklyn Bridge and the Empire State Building, as models you can turn.
@@ -3169,6 +3182,7 @@ PUBLIC_PAGES = [
     ("/tips", "0.8", "weekly"),
     ("/gallery-guides", "0.8", "weekly"),
     ("/landmarks", "0.8", "monthly"),
+    ("/iticket", "0.5", "monthly"),
     ("/partners", "0.6", "monthly"),
     ("/agent", "0.6", "monthly"),
     ("/renter", "0.6", "monthly"),
