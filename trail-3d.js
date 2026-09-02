@@ -1419,15 +1419,58 @@
                   fill, "#2a2a2a", fill, d);
       out = out.concat(y.parts);
     }
-    var MAIN = 172, FORE = MAIN * 0.95, MIZ = MAIN * 0.80;
+    /* Mast heights are the Navy's published ones, measured from the water:
+       mainmast 220 ft, foremast 198, mizzen 172.5. The spar deck stands about
+       20 ft up, so what is drawn above it is that figure less the freeboard.
+       The three were previously derived from one number by ratio, which put
+       the fore and mizzen in roughly the right place for the wrong reason. */
+    var MAIN = 220 - FREE, FORE = 198 - FREE, MIZ = 172.5 - FREE;
     var mm = mast(-0.02, MAIN), fm = mast(0.42, FORE), zm = mast(-0.46, MIZ);
-    [[mm, 1.0], [fm, 0.92], [zm, 0.74]].forEach(function (m) {
+    /* The main yard is about 95 ft on a 43.5 ft beam: more than twice the
+       width of the ship, which is the proportion that makes a square-rigger
+       look like one. At 78 ft the yards read as short crossbars and the whole
+       rig looked like a mast with twigs on it. They shorten going up. */
+    [[mm, 1.0], [fm, 0.88], [zm, 0.66]].forEach(function (m) {
       var M = m[0], k = m[1];
       [0.20, 0.46, 0.70, 0.88].forEach(function (f, i) {
-        yard(M.x, M.z0 + M.H * f, (78 - i * 15) * k, 0.7,
+        yard(M.x, M.z0 + M.H * f, (95 - i * 19) * k, 0.8,
              i > 1 ? TOP : SPAR, MD + 1 + i * 0.1);
       });
     });
+
+    /* THE SHROUDS, and they are the reason this looked wrong.
+       [SEAN, 2026-08-31: "USS constitution look really not ok".]
+
+       A square-rigger carries its masts on standing rigging: fans of rope
+       running from each masthead down to the channels bolted along the hull
+       side, raked aft. Without them the masts are poles balanced in a tub,
+       and no amount of correcting the hull fixes that, because the eye reads
+       a ship by its rigging before it reads the planking.
+
+       Drawn as thin quads rather than lines so they survive the same
+       painter's sort as everything else. Both sides, because the far side's
+       shrouds are visible ABOVE the bulwark even when its hull is hidden. */
+    function shrouds(M, spread, n) {
+      var tTop = M.x / HALF;
+      var ztop = M.z0 + M.H * 0.42;
+      var bAt = halfB(tTop);
+      for (var side = -1; side <= 1; side += 2) {
+        for (var k2 = 0; k2 < n; k2++) {
+          var f = n === 1 ? 0 : k2 / (n - 1);
+          var ax = M.x - spread * 0.30 + spread * f;
+          var ay = side * bAt * (1.02 + 0.05 * f);
+          var az = sheer(ax / HALF) + 3.4;
+          var w = 0.55;
+          var q = [P(M.x, side * 1.4, ztop), P(M.x + w, side * 1.4, ztop),
+                   P(ax + w, ay, az), P(ax, ay, az)];
+          out.push({ svg: ctx.poly(q, "#3a3a3a", "", 0, ' opacity="0.8"'),
+                     depth: MD + 0.8 + k2 * 0.01 });
+        }
+      }
+    }
+    shrouds(mm, 34, 7);
+    shrouds(fm, 30, 7);
+    shrouds(zm, 24, 5);
 
     /* the bowsprit and jibboom forward, the spanker boom aft: the published
        305 ft overall less the published 207 ft on deck, split 62 and 36 */
