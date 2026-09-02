@@ -49,6 +49,42 @@ Two traps found while using them, so a later run does not repeat them.
   skyscrapercenter building ids are not guessable. The id 1104 guessed on this
   run is NOT Smith Tower; it returns a 755 ft, 56 floor building.
 
+**THE NHL NOMINATION IS THE DOCUMENT CLASS THAT CARRIES PLANS, and 2026-09-02
+proved it on King's Chapel.** The previous run's closing note asked a future run
+to "find the class of document that carries plans" and named the municipal
+landmark nomination as the best lead. The municipal route is still unproven, but
+a cheaper one worked first. A National Historic Landmark nomination is written to
+a higher standard than an ordinary NRHP listing and its description section
+routinely quotes measured dimensions out of the primary building records. The
+whole route is two steps and costs under a minute:
+
+  1. `curl -sL "https://en.wikipedia.org/w/index.php?title=<Name>&action=raw"`
+     and grep for `refnum` in the NRHP infobox. This is far faster than any
+     search, and it is where the King's Chapel number 74002045 came from.
+  2. `curl -sL "https://npgallery.nps.gov/NRHP/GetAsset/NRHP/<refnum>_text"`
+     then pypdf. No User-Agent trick is needed on this host.
+
+Its limits, both hit on this run. A building whose Wikipedia infobox has no
+`refnum` gives you nothing to ask for, which is where Park Street Church stalled.
+And DO NOT GUESS REFERENCE NUMBERS. Four plausible Boston refnums were tried
+blind and all four returned real, valid, DIFFERENT nominations with a 200 and a
+full PDF, so a wrong guess does not fail loudly, it hands you the wrong building.
+Always read the NAME field on page one before believing a word of the document.
+
+**MACRIS IS A CLOSED DEAD END. Do not spend another run on it.** The previous
+run named the Massachusetts MACRIS inventory as a hope for the two Boston
+buildings. mhc-macris.net sits behind an Incapsula bot wall: every path,
+including the bare root and any /api guess, returns a 200 carrying only an
+`_Incapsula_Resource` script tag and an empty body. A browser User-Agent does not
+move it, because it is not the User-Agent being checked. Treat it like
+sah-archipedia.org.
+
+**seattle.gov's landmark pages have moved.** Both the nomination and designation
+page and the HistoricPreservation/Landmarks document directory returned 404 on
+2026-09-02. The Smith Tower municipal nomination lead is still the right idea but
+the URL has to be found first, and the seattle.gov site search is the way in, not
+a guessed path.
+
 **npgallery.nps.gov answers a plain curl and serves NRHP nomination PDFs** at
 `https://npgallery.nps.gov/NRHP/GetAsset/NRHP/<refnum>_text`, which is a second
 route beside npshistory.com and covers buildings that are not in a park. Its
@@ -99,18 +135,63 @@ HABS or MACRIS record.
 Checked 2026-09-01: parkstreet.org Freedom Trail page, Wikipedia, SAH search
 result, trolleytours, and a targeted search for a body dimension. None had it.
 
-**King's Chapel. NOW A CLOSED DEAD END, do not spend another run on it.**
-The footprint is published, 65 by 100 ft of Quincy granite, and no source
-publishes the height of the unfinished tower, which is the whole silhouette.
-The 2026-09-01 fourth run went to the place the queue said the number lived
-and it is NOT THERE. HABS ma0461 was found and read: its call number is
-MASS,13-BOST,55 not the 12 this file guessed, and the record is
-`Photo(s): 1, Photo Caption Page(s): 1`. There are NO MEASURED DRAWINGS. The
-data PDF (`cdn.loc.gov/master/pnp/habshaer/ma/ma0400/ma0461/data/ma0461data.pdf`,
-and it needs `curl -L`, it answers 307) is a one page cover sheet carrying a
-title and nothing else. So the tower height is not in HABS, and the three 403
-walls are all that is left. Treat this as unbuildable until a MACRIS record or
-a measured drawing turns up somewhere new.
+**King's Chapel. REOPENED 2026-09-02 (second run). THE FOOTPRINT BLOCKER IS
+GONE. ONE NUMBER, THE TOWER HEIGHT, IS ALL THAT IS LEFT.**
+
+The previous entry closed this building because HABS ma0461 turned out to hold
+photographs and no measured drawings, and because the three 403 walls were all
+that seemed to remain. That was wrong about what remained. The NHL nomination
+had never been pulled for this building, only for Smith Tower, and it carries
+plan dimensions quoted from the building committee's own instruction letter.
+
+SOURCE, read 2026-09-02, a plain curl with no User-Agent trick needed:
+`https://npgallery.nps.gov/NRHP/GetAsset/NRHP/74002045_text`
+NRHP / NHL reference 74002045, six pages, digitised, extracts cleanly with
+pypdf. The refnum came from the Wikipedia infobox, which is the cheap way in.
+
+PUBLISHED, quoting the nomination quoting Bridenbaugh's Peter Harrison:
+  "The Length of the Church from West to East, including the Steeple, is to be
+   120 feet, besides which there will be 10 feet allowed for a Chancel. The
+   breadth is to be 65 feet 8 inches. The Ground has a Declivity of about 5 feet
+   from West to East....The Building is to be of rough Stone."
+
+ALSO PUBLISHED, in the nomination's own description:
+  tower 26 ft square "from out to out", walls 4 ft thick at the base
+  the tower is crowned by a BLOCK TYPE CORNICE, and the spire was never built
+  front porch of Ionic columns 25 ft in height, executed 1785-87 in wood by
+    Thomas Clement, not the stone Harrison drew
+  the balustrade above that porch, 4 ft 2 in
+  north and south flanks carry TWO TIERS of windows, for the galleries
+  east end carries a PALLADIAN window
+  the never-built steeple would have been two square storeys and an octagonal
+    spire, Ionic below with 16 coupled columns 19 in diameter, Corinthian above
+    with 8 single columns 14 in diameter, plus 32 stone urns on the balustrade
+
+A CONTRADICTION TO CARRY FORWARD, NOT TO AVERAGE. The nomination's 120 ft
+including the tower and 65 ft 8 in breadth are the INSTRUCTION to the architect
+in 1749, not a measurement of what stands. Wikipedia and the secondary sources
+say 65 by 100 ft. Those two can be reconciled if the 100 ft excludes the tower
+and the 120 ft includes it, but 100 + 26 is 126 and not 120, so they do not
+close. Do not split the difference. A model should use the nomination's figures
+and say which they are, or wait for an as-built plan.
+
+THE ONE THING STILL BLOCKING IT: THE TOWER HEIGHT, and with it the eaves height
+of the body. Every horizontal is now published and no vertical of the standing
+building is. The portico gives 25 ft plus 4 ft 2 in of balustrade, which is a
+published height but only of the porch, and the tower rises past it. Checked
+and failed on this run: a targeted web search for the tower height returned
+only the footprint and the story of the abandoned steeple; SAH Archipedia still
+answers 403. NOT YET TRIED and worth a later run: the Boston Landmarks
+Commission study report, and a Historic Structure Report if the parish has one
+online.
+
+STILL TRUE AND STILL WORTH NOT RE-WALKING, carried over from the 2026-09-01
+run: HABS ma0461 is King's Chapel, its call number is MASS,13-BOST,55 not the
+12 an earlier note guessed, and the record is `Photo(s): 1, Photo Caption
+Page(s): 1`. THERE ARE NO MEASURED DRAWINGS. The data PDF
+(`cdn.loc.gov/master/pnp/habshaer/ma/ma0400/ma0461/data/ma0461data.pdf`, and it
+needs `curl -L`, it answers 307) is a one page cover sheet carrying a title and
+nothing else. The tower height is not in HABS and no run should look again.
 
 **Paul Revere House. BUILT 2026-09-01.** The HABS sheets were finally read
 and they carry everything the NRHP nomination did not.
@@ -324,10 +405,20 @@ reachable source and stopped rather than estimate one. A skyscraper drawn to a
 guessed plan would have looked entirely convincing in the render, which is
 exactly why the rule has to hold at the point where it is inconvenient.
 
+The second 2026-09-02 run also built nothing, and it is the same rule working.
+It went at the queue's own stated highest-value lead, the municipal landmark
+nomination, found that road closed at both ends (seattle.gov 404, MACRIS behind
+a bot wall), and then found a cheaper document class that the queue had never
+thought to try on these buildings. That turned King's Chapel from a declared
+dead end into a building missing exactly one number. It did not draw the tower
+it could not measure, which is the same call the Smith Tower run made about the
+footprint, and for the same reason: the render would have looked entirely
+convincing either way.
+
 WHAT A FUTURE RUN SHOULD TAKE FROM THIS. The queue is now down to four
-candidates and every one of them is missing a PLAN DIMENSION specifically:
-Park Street Church's brick body, King's Chapel's tower height, Smith Tower's
-footprint, MoMA's Marron Atrium. Heights and histories are easy to publish and
+candidates. Three are missing a PLAN DIMENSION: Park Street Church's brick
+body, Smith Tower's footprint, MoMA's Marron Atrium. King's Chapel is no longer
+one of them; its plan is now published and it is missing a HEIGHT instead. Heights and histories are easy to publish and
 plans are not, so the remaining work is not "find a landmark" but "find the
 class of document that carries plans." The two that have worked so far are
 HABS measured drawings on loc.gov and NRHP nominations. The one never tried is
