@@ -15,7 +15,8 @@ the ten buildings the routine listed.
 
 MoMA: the building's own architecture (moma-3d.js).
 
-Seattle (seattle-3d.js): space-needle. Mounted on tours.html.
+Seattle (seattle-3d.js): space-needle, pier66-walk. Space Needle mounted on
+tours.html; the walk is built and NOT YET MOUNTED on a page.
 
 ## How to get dimensions here, learned the hard way
 
@@ -68,18 +69,18 @@ HABS or MACRIS record.
 Checked 2026-09-01: parkstreet.org Freedom Trail page, Wikipedia, SAH search
 result, trolleytours, and a targeted search for a body dimension. None had it.
 
-**King's Chapel.** The opposite gap. The footprint is published, a rectangular
-granite edifice of 65 by 100 ft, but no source found publishes the height of
-the unfinished tower, which is the whole silhouette.
-Re-checked 2026-09-01 (second run): a targeted search naming the tower, the
-granite, Harrison and the wooden colonnade returned Wikipedia, NPS, the
-Freedom Trail site, the church's own pages and SAH, and NOT ONE carries a
-vertical measurement. Confirmed from that pass: Quincy granite, completed
-1754, portico added 1785 to 1787 in wood, and the Gibbs-style steeple was
-NEVER BUILT for lack of funds, so there is no steeple to draw and the tower
-stops flat. That last fact is the shape of the model; only its height is
-missing. HABS MASS,13-BOST,12 remains the likely home of the number and has
-still not been read.
+**King's Chapel. NOW A CLOSED DEAD END, do not spend another run on it.**
+The footprint is published, 65 by 100 ft of Quincy granite, and no source
+publishes the height of the unfinished tower, which is the whole silhouette.
+The 2026-09-01 fourth run went to the place the queue said the number lived
+and it is NOT THERE. HABS ma0461 was found and read: its call number is
+MASS,13-BOST,55 not the 12 this file guessed, and the record is
+`Photo(s): 1, Photo Caption Page(s): 1`. There are NO MEASURED DRAWINGS. The
+data PDF (`cdn.loc.gov/master/pnp/habshaer/ma/ma0400/ma0461/data/ma0461data.pdf`,
+and it needs `curl -L`, it answers 307) is a one page cover sheet carrying a
+title and nothing else. So the tower height is not in HABS, and the three 403
+walls are all that is left. Treat this as unbuildable until a MACRIS record or
+a measured drawing turns up somewhere new.
 
 **Paul Revere House. BUILT 2026-09-01.** The HABS sheets were finally read
 and they carry everything the NRHP nomination did not.
@@ -157,11 +158,32 @@ TWO THINGS STILL BLOCK IT.
    published numbers is measured from somewhere other than where it appears
    to be.
 
-**The Pier 66 to Pike Place walk**, 0.7 miles and 8 to 10 minutes uphill, is
-not a building and does not need dimensions in the same way. It needs the
-grade, which is the whole point of the promise being made about it, and no
-run has looked for a published elevation gain yet. This is the cheapest
-remaining item in the queue and the one most directly tied to selling a tour.
+**The Pier 66 to Pike Place walk. BUILT 2026-09-01.** The queue was right that
+this was the cheapest item left, and the route to the numbers turned out to be
+a third technique worth keeping beside the other two.
+
+TWO PUBLIC APIS, both answering a plain curl with no key and no 403:
+  `router.project-osrm.org/route/v1/foot/<lon,lat>;<lon,lat>?geometries=geojson`
+    returns the real walking route over OpenStreetMap, its length, and its
+    vertices. No more guessing at waypoints.
+  `epqs.nationalmap.gov/v1/json?x=<lon>&y=<lat>&units=Feet&wkid=4326`
+    is USGS 3DEP, 1 metre raster, one elevation per call. 64 calls at 8 in
+    parallel took seconds. Three came back empty and were simply re-asked.
+Between them any walk anywhere in the United States can be measured, which
+makes every other walking route on this site buildable on the same pattern.
+
+WHAT THE MEASUREMENT SAID, and the site copy was WRONG on both counts:
+  the route is 1334 m, 0.829 mi, NOT 0.7 mi
+  it is NOT simply uphill: it climbs to 152.7 ft at 1st Ave near Virginia and
+    then drops 44 ft into the Market, finishing at 110.6 ft
+  start 15.8 ft, net rise 94.8 ft, gross climb 139.1 ft
+  two steep pitches, not one: Wall St up to Elliott, and Lenora at about 16
+    percent over its steepest 50 m
+THE COPY ON tours.html AND ANYWHERE ELSE STILL SAYS 0.7 MILES UPHILL AND
+SHOULD BE CORRECTED TO MATCH. That is the next run's cheapest job.
+
+STILL TO DO: the walk is not mounted on any page yet. It needs a stage on
+tours.html the way the Space Needle has one.
 
 ## MoMA
 

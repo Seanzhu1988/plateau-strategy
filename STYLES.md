@@ -430,6 +430,36 @@ consequence of that curve, not a figure claimed from a source.
 
 ---
 
+## The cut section, and drawing ground
+
+Not a building style. It is the set of rules that make a piece of LANDFORM
+honest, and it was added the run the Pier 66 walk was drawn, because a hill is
+the first thing on this site that is not architecture.
+
+THE TELLS, which are conventions rather than ornament:
+
+- **A named datum.** Ground is drawn cut down to something, and that something
+  has to be stated. The walk is cut to mean sea level, which is where its own
+  elevations are measured from.
+- **A declared vertical exaggeration.** Terrain is nearly always flatter than
+  it feels. 137 ft of relief over 4376 ft of run is 1 in 32, and at true scale
+  it is a flat tape with no grade to see. Section drawings exaggerate the
+  vertical and SAY SO on the drawing. Exaggerating silently is inventing a
+  dimension; exaggerating and declaring it is a drawing convention.
+- **Horizontal distance is never exaggerated.** Only the vertical moves.
+- **Nothing is drawn between two samples.** The ground line runs straight from
+  measured point to measured point. A smooth interpolated curve looks better
+  and claims knowledge the samples do not have.
+- **The ribbon width is not a measurement.** A path drawn wide enough to see
+  is a drawing device, and must be labelled as one, or a reader will scale it.
+
+THE MISTAKE THIS ENTRY EXISTS TO PREVENT: at 6x exaggeration and a 22 m
+ribbon, the first render of the walk came back as a dam wall seen edge on. The
+mass was 12 times taller than the surface was wide, so the only thing visible
+was the cut face, and the grade, which was the entire point, was a sliver.
+Landform wants a wide surface, a modest exaggeration, and a camera looking
+down on it.
+
 ## Working rules
 
 1. **Name the style before choosing the geometry.** If you cannot name it, you

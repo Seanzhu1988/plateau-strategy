@@ -182,13 +182,243 @@
     return out;
   }
 
-  var SCENES = { "space-needle": spaceNeedle };
+
+  /* ---------------- Stop 2: the Pier 66 to Pike Place walk ----------------
+
+     Not a building. The thing being modelled here is the HILL, because the
+     hill is the whole of the promise the tours page makes to a cruise
+     passenger stepping off at the Bell Street Pier, and a promise about a
+     climb is the one thing a map drawn flat cannot show.
+
+     Its style, such as it is, is the CUT SECTION, added to STYLES.md this
+     run: a measured ground line, an honest datum, and a declared vertical
+     exaggeration.
+
+     EVERY NUMBER BELOW IS MEASURED, and where it came from:
+
+       the route .......... OSRM foot routing over OpenStreetMap, from the
+                            Bell Street Pier at Alaskan Way to Pike Place at
+                            Stewart Street: Alaskan Way, Wall Street, Elliott
+                            Avenue, Lenora Street, 1st Avenue, Pine Street.
+                            64 vertices, returned as a GeoJSON line.
+       1334 m, 0.829 mi ... the length of that route, summed haversine over
+                            its own vertices.
+       the elevations ..... USGS 3DEP, the National Map point elevation
+                            service, one query per vertex, 1 metre raster,
+                            reported in feet.
+
+     WHAT THE MEASUREMENT SAYS, which is not what the page said:
+
+       start, Alaskan Way ....................  15.8 ft
+       crest, 1st Avenue near Virginia .......  152.7 ft, at 1018 m in
+       finish, Pike Place ....................  110.6 ft
+       net rise .............................. + 94.8 ft
+       gross climb ...........................  139.1 ft
+       gross descent .........................   44.3 ft
+       steepest 50 m ......................... about 16 percent, at 797 m in,
+                                                which is Lenora Street
+
+     So the walk is NOT 0.7 miles and it is NOT simply uphill. It is 0.83
+     miles, it climbs 139 ft, and then it hands 44 ft of that back down 1st
+     Avenue and Pine Street into the Market. The site copy is corrected to
+     match the measurement rather than the measurement trimmed to match the
+     copy.
+
+     THE ONE DRAWING CONVENTION, declared rather than buried. 137 ft of relief
+     over 4376 ft of run is a slope of about 1 in 32, and at true scale this
+     model is a flat tape: the grade that is the entire subject would be
+     invisible. The vertical is therefore exaggerated, by the factor named in
+     VE below, which is what a section drawing does and says. Every horizontal
+     distance is true.
+
+     NOT MEASURED, and so not drawn: anything between two samples. The ground
+     line is straight from vertex to vertex because that is exactly as much as
+     64 point queries know. */
+
+  var WALK = [
+    [    0.0,    0.0,  15.8,    0.0],
+    [  -14.4,   12.6,  15.9,   19.1],
+    [  -56.0,   48.9,  15.7,   74.3],
+    [  -62.5,   51.7,  15.8,   81.4],
+    [  -86.9,   72.7,  15.9,  113.6],
+    [ -104.6,   87.2,  15.8,  136.5],
+    [ -123.7,  101.9,  15.8,  160.5],
+    [ -154.1,  124.7,  15.8,  198.5],
+    [ -162.1,  130.9,  15.9,  208.6],
+    [ -157.4,  136.8,  15.7,  216.2],
+    [ -151.0,  144.8,  15.5,  226.4],
+    [ -148.4,  148.0,  15.5,  230.6],
+    [ -143.6,  154.0,  15.9,  238.2],
+    [ -115.4,  184.0,  34.0,  279.4],
+    [ -108.1,  192.5,  35.7,  290.6],
+    [ -102.2,  187.4,  35.8,  298.4],
+    [  -45.0,  137.0,  41.9,  374.6],
+    [  -37.0,  130.1,  42.8,  385.1],
+    [  -31.4,  125.4,  43.6,  392.4],
+    [   51.7,   53.9,  59.4,  502.0],
+    [   59.4,   47.3,  60.9,  512.1],
+    [   66.7,   41.8,  62.1,  521.3],
+    [   73.5,   37.5,  63.2,  529.3],
+    [   83.2,   34.0,  64.9,  539.7],
+    [  113.2,   23.6,  69.6,  571.3],
+    [  148.4,   11.3,  75.4,  608.6],
+    [  154.5,   12.9,  75.7,  614.9],
+    [  162.9,    9.1,  77.1,  624.0],
+    [  173.4,    4.8,  78.9,  635.5],
+    [  189.4,   -2.7,  81.5,  653.1],
+    [  196.7,   -5.0,  82.5,  660.7],
+    [  203.7,   -7.6,  83.5,  668.2],
+    [  255.4,  -25.8,  91.5,  722.9],
+    [  258.5,  -27.0,  91.8,  726.3],
+    [  269.2,  -30.9,  93.2,  737.6],
+    [  286.5,  -37.9,  94.4,  756.3],
+    [  309.6,  -47.1,  96.6,  781.2],
+    [  317.8,  -49.7,  97.1,  789.7],
+    [  323.0,  -44.8,  97.9,  796.9],
+    [  349.8,  -14.6, 118.3,  837.3],
+    [  360.4,   -2.7, 127.3,  853.2],
+    [  375.2,   13.9, 138.6,  875.4],
+    [  382.6,   22.2, 139.0,  886.5],
+    [  391.4,   14.4, 139.9,  898.3],
+    [  424.3,  -14.3, 145.3,  942.0],
+    [  475.3,  -58.8, 152.6, 1009.6],
+    [  481.3,  -64.0, 152.7, 1017.5],
+    [  488.8,  -70.5, 152.4, 1027.4],
+    [  549.9, -123.2, 147.3, 1108.2],
+    [  571.1, -142.0, 145.4, 1136.5],
+    [  578.1, -148.3, 145.1, 1145.8],
+    [  583.2, -156.6, 144.5, 1155.6],
+    [  605.6, -192.8, 140.3, 1198.2],
+    [  610.1, -200.3, 139.9, 1206.9],
+    [  595.9, -208.9, 139.0, 1223.5],
+    [  593.7, -210.3, 138.1, 1226.0],
+    [  564.7, -228.2, 120.2, 1260.1],
+    [  546.6, -239.4, 110.9, 1281.4],
+    [  545.0, -240.4, 110.7, 1283.3],
+    [  539.1, -243.9, 110.5, 1290.2],
+    [  536.4, -241.6, 110.2, 1293.7],
+    [  514.8, -222.7, 109.3, 1322.4],
+    [  518.9, -218.0, 109.1, 1328.6],
+    [  522.3, -213.9, 110.6, 1333.9]
+  ];
+
+  var VE = 3;               /* declared vertical exaggeration */
+  var FT = 0.3048;          /* the elevations arrive in feet, the plan in m */
+  /* Half width of the drawn ribbon, in metres, and NOT a measurement: a real
+     pavement is about 3 m and at 3 m this ribbon is a thread 772 m long. The
+     first render came back a dam wall for exactly that reason, so the ribbon
+     is drawn wide enough to be a surface you can see the grade on. It carries
+     no claim about the width of any street. */
+  var HALF = 40;
+
+  function walkZ(ft) { return ft * FT * VE; }
+
+  function pier66Walk(ctx) {
+    var P = ctx.project, out = [];
+    var EARTH = "#c7c0ae", EARTH_EDGE = "#8f8879";
+    var PATH = "#d8d2c4", PATH_EDGE = "#a49c8c";
+    var STEEP = "#c98a4b", STEEP_EDGE = "#8f5f31";
+    var WATER = "#8fa6ae", WATER_EDGE = "#5d7079";
+    var POST = "#7e796f";
+
+    /* the left and right edges of the ribbon, offset along the normal to the
+       direction of travel at each vertex */
+    var L = [], R = [];
+    for (var i = 0; i < WALK.length; i++) {
+      var a = WALK[Math.max(0, i - 1)], b = WALK[Math.min(WALK.length - 1, i + 1)];
+      var dx = b[0] - a[0], dy = b[1] - a[1];
+      var m = Math.sqrt(dx * dx + dy * dy) || 1;
+      var nx = -dy / m, ny = dx / m;
+      L.push([WALK[i][0] + nx * HALF, WALK[i][1] + ny * HALF]);
+      R.push([WALK[i][0] - nx * HALF, WALK[i][1] - ny * HALF]);
+    }
+
+    /* Elliott Bay, at the datum. A single plane spanning the whole scene, so
+       it is given an explicit depth: sorted on its own near corner it would
+       be the last thing painted and would drown the hill standing on it.
+       This is the sixth time that rule has been the difference. */
+    out.push({ svg: ctx.poly([P(-120, -300, 0), P(120, 140, 0),
+                              P(-180, 300, 0), P(-420, -140, 0)],
+                             WATER, WATER_EDGE, 0.5), depth: -1e9 });
+
+    /* the ground mass, cut open on both sides down to mean sea level. Each
+       wall quad is a small face and sorts honestly on its own corners. */
+    function wall(edge, sign) {
+      for (var i = 0; i < edge.length - 1; i++) {
+        var z0 = walkZ(WALK[i][2]), z1 = walkZ(WALK[i + 1][2]);
+        var dx = edge[i + 1][0] - edge[i][0], dy = edge[i + 1][1] - edge[i][1];
+        var m = Math.sqrt(dx * dx + dy * dy) || 1;
+        var nx = sign * -dy / m, ny = sign * dx / m;
+        if (!ctx.faceVisible(nx, ny)) continue;
+        var q = [P(edge[i][0], edge[i][1], 0), P(edge[i + 1][0], edge[i + 1][1], 0),
+                 P(edge[i + 1][0], edge[i + 1][1], z1), P(edge[i][0], edge[i][1], z0)];
+        out.push({ svg: ctx.poly(q, ctx.shade(EARTH, nx, ny, 0.15), EARTH_EDGE, 0.4),
+                   depth: depthOf(q) });
+      }
+    }
+    wall(L, 1); wall(R, -1);
+
+    /* the two ends, so the mass reads as cut and not as hollow */
+    function cap(i, sign) {
+      var z = walkZ(WALK[i][2]);
+      var a = WALK[Math.max(0, i - 1)], b = WALK[Math.min(WALK.length - 1, i + 1)];
+      var dx = b[0] - a[0], dy = b[1] - a[1], m = Math.sqrt(dx * dx + dy * dy) || 1;
+      var nx = sign * dx / m, ny = sign * dy / m;
+      if (!ctx.faceVisible(nx, ny)) return;
+      var q = [P(L[i][0], L[i][1], 0), P(R[i][0], R[i][1], 0),
+               P(R[i][0], R[i][1], z), P(L[i][0], L[i][1], z)];
+      out.push({ svg: ctx.poly(q, ctx.shade(EARTH, nx, ny, 0.1), EARTH_EDGE, 0.5),
+                 depth: depthOf(q) });
+    }
+    cap(0, -1); cap(WALK.length - 1, 1);
+
+    /* the walking surface. Coloured by its own measured grade, so the steep
+       block on Lenora is a thing you can see rather than a figure in a
+       caption. The threshold is 8 percent, which is the grade above which a
+       pavement stops being a stroll. */
+    for (var j = 0; j < WALK.length - 1; j++) {
+      var run = WALK[j + 1][3] - WALK[j][3];
+      var rise = (WALK[j + 1][2] - WALK[j][2]) * FT;
+      var g = run > 0.5 ? Math.abs(rise / run) : 0;
+      var steep = g >= 0.08;
+      var za = walkZ(WALK[j][2]), zb = walkZ(WALK[j + 1][2]);
+      var q2 = [P(L[j][0], L[j][1], za), P(R[j][0], R[j][1], za),
+                P(R[j + 1][0], R[j + 1][1], zb), P(L[j + 1][0], L[j + 1][1], zb)];
+      out.push({ svg: ctx.poly(q2, steep ? STEEP : PATH,
+                               steep ? STEEP_EDGE : PATH_EDGE, 0.4),
+                 depth: depthOf(q2) + 0.5 });
+    }
+
+    /* three posts: where you land, the crest, and the Market. Slender, so
+       they are drawn from every side rather than culled, and given depths
+       above everything else because nothing in this model can stand in
+       front of them. */
+    var MARKS = [[0, 26], [45, 30], [WALK.length - 1, 26]];
+    for (var k = 0; k < MARKS.length; k++) {
+      var idx = MARKS[k][0], h = MARKS[k][1];
+      var px = WALK[idx][0], py = WALK[idx][1], pz = walkZ(WALK[idx][2]);
+      var col = frustum(ctx, px, py, 2.2, pz, 1.6, pz + h, 8, POST, "#4f4b45");
+      for (var q3 = 0; q3 < col.length; q3++) col[q3].depth = 1e6 + k * 100 + q3;
+      out = out.concat(col);
+      var head = disc(ctx, px, py, 6, pz + h, 12, STEEP, STEEP_EDGE, 1e6 + k * 100 + 90);
+      out.push(head);
+    }
+    return out;
+  }
+
+  var SCENES = { "space-needle": spaceNeedle, "pier66-walk": pier66Walk };
 
   /* The live mount: the same hand-rolled projection every other model on this
      site uses, so what the page draws is what render_room.js draws. */
   function mount(host, key, opts) {
     var o = opts || {};
-    var yaw = o.yaw == null ? -0.62 : o.yaw, pitch = o.pitch == null ? 0.22 : o.pitch;
+    /* A tower and a landform want different cameras. 0.22 looks along a
+       605 ft spire; the walk needs to be looked DOWN on or its surface, which
+       is the whole subject, goes edge on. The first render of the walk at
+       0.22 came back a dam wall. */
+    var isLand = key === "pier66-walk";
+    var yaw = o.yaw == null ? (isLand ? -0.30 : -0.62) : o.yaw;
+    var pitch = o.pitch == null ? (isLand ? 0.52 : 0.22) : o.pitch;
     var LIGHT = [0.60, 0.30, 0.68];
 
     function draw() {
