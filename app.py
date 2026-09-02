@@ -2958,6 +2958,21 @@ def _social_lib():
         return []
 
 
+@app.route("/thumbs/<name>.svg")
+def serve_thumb(name):
+    """A landmark's picture, drawn once by make_thumbs.js and cached hard.
+
+    These are static files rather than something the book draws for itself,
+    because drawing them in the browser would mean loading four model scripts
+    onto a page of ninety-nine cards so that six could show a picture."""
+    if not re.fullmatch(r"[a-z0-9-]{1,40}", name or ""):
+        return ("", 404)
+    f = os.path.join(BASE_DIR, "thumbs", name + ".svg")
+    if not os.path.exists(f):
+        return ("", 404)
+    return send_file(f, mimetype="image/svg+xml")
+
+
 @app.route("/iticket")
 def page_iticket():
     """The ticket booth, announced while it is still being built.
