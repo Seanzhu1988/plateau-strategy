@@ -222,6 +222,54 @@
     return { svg: ctx.poly(pts, fill, edge, 0.5), depth: depth };
   }
 
+  /* A CIRCULAR window, struck as a true circle on a wall's own (u, z) map.
+     Bowen says "circular windows" on the bell story and on both octagons, and
+     a round HEADED opening is a different shape: it has straight jambs and a
+     sill. Drawn as a 16-gon, which at these sizes is a circle. */
+  function roundWindow(ctx, map, uc, zc, r, fill, edge, depth) {
+    var pts = [], N = 16;
+    for (var i = 0; i < N; i++) {
+      var a = i * Math.PI * 2 / N;
+      pts.push(map(uc + r * Math.cos(a), zc + r * Math.sin(a)));
+    }
+    return { svg: ctx.poly(pts, fill, edge, 0.5), depth: depth };
+  }
+
+  /* The detailing that makes an octagonal lantern read as a storey rather
+     than as a length of cone: a column on each of its eight corners, and a
+     circular window on four of its eight faces. Both counts are published for
+     both of Park Street's octagons, and drawing neither is what made them
+     read as one taper. Columns are placed on the PLAN, once, and drawn only
+     where their own facet faces us. colR 0 draws windows only. */
+  function octDetail(ctx, cx, cy, r, z0, z1, colR, winR, fill, edge) {
+    var out = [], N = 8, P = ctx.project;
+    for (var i = 0; i < N; i++) {
+      var a0 = (i / N) * Math.PI * 2, a1 = ((i + 1) / N) * Math.PI * 2;
+      var am = (a0 + a1) / 2, nx = Math.cos(am), ny = Math.sin(am);
+      if (!ctx.faceVisible(nx, ny)) continue;
+      /* the facet's own depth, so its trim sorts with it and not through it */
+      var d = depthOf([P(cx + r * Math.cos(a0), cy + r * Math.sin(a0), z0),
+                       P(cx + r * Math.cos(a1), cy + r * Math.sin(a1), z1)]);
+      if (winR > 0 && i % 2 === 0) {
+        /* the window sits at the middle of the facet, on that facet's plane */
+        var ux = -Math.sin(am), uy = Math.cos(am);
+        var wx = cx + r * Math.cos(am) * 0.995, wy = cy + r * Math.sin(am) * 0.995;
+        var zc = z0 + (z1 - z0) * 0.55;
+        out.push(roundWindow(ctx, function (u, z) {
+          return P(wx + ux * u, wy + uy * u, z);
+        }, 0, zc, winR, "#2f3a40", edge, d + 0.4));
+      }
+      if (colR > 0) {
+        /* one column on each end of the facet: eight over the eight corners */
+        [a0, a1].forEach(function (a, k) {
+          out = out.concat(columnAt(ctx, cx + r * Math.cos(a), cy + r * Math.sin(a),
+                                    colR, z0, z1, fill, edge, d + 0.8 + k * 0.05));
+        });
+      }
+    }
+    return out;
+  }
+
   /* An eight sided stage, tapering. The steeple's lanterns are octagons, and
      an octagon drawn as a cylinder loses the facets that catch the light. */
   function octStage(ctx, cx, cy, r0, r1, z0, z1, fill, edge, depth) {
@@ -1809,34 +1857,67 @@
     /* THE FOUR COLUMNS OF 35 FEET, published, Doric, on the Tremont front.
        Diameter proportioned from the published height, and said so above. */
     var COL_R = 35 / 8 / 2;
+    var ENT0 = 1.6 + 35, ENT_H = 3.2;
     if (ctx.faceVisible(0, -1)) {
       var dC = tower.walls["0,-1"];
       [-10.2, -3.4, 3.4, 10.2].forEach(function (cxq, i) {
-        out = out.concat(columnAt(ctx, cxq, y0 - COL_R * 0.55, COL_R, 1.6, 36.6,
+        out = out.concat(columnAt(ctx, cxq, y0 - COL_R * 0.55, COL_R, 1.6, ENT0,
                                   TRIM, TRIM_E, dC + 1.0 + i * 0.05));
       });
-      /* the entablature the four columns carry */
+      /* the entablature the four columns carry, and over it the PEDIMENT.
+         Bowen's sentence puts the pediment here: the tower "ornamented with
+         four columns of 35 feet, and the vestibule, is crowned by an elegant
+         pediment and balustrade." So the pediment crowns the order, which is
+         where a pediment belongs, rather than floating 40 ft above it. */
       out = out.concat(slab(ctx, 0, y0 - COL_R * 0.55, TW + 1.4, COL_R * 2.2,
-                            36.6, 3.2, TRIM_D, TRIM_E, dC + 1.6));
+                            ENT0, ENT_H, TRIM_D, TRIM_E, dC + 1.6));
+      var Pp = ctx.project, yP = y0 - COL_R * 1.1, pz = ENT0 + ENT_H;
+      var ped = [Pp(-(TW + 1.4) / 2, yP, pz), Pp((TW + 1.4) / 2, yP, pz),
+                 Pp(0, yP, pz + (TW + 1.4) / 2 * 0.30)];
+      out.push({ svg: ctx.poly(ped, ctx.shade(TRIM, 0, -1, 0), TRIM_E, 0.6),
+                 depth: dC + 1.9 });
     }
 
-    /* THE UNITEMISED BAND: 72 to 99.75. Pediment and balustrade, named by
-       Bowen and measured by nobody, drawn at exactly the residual of two
-       published numbers. Its internal split is the only soft geometry here. */
-    var BAND0 = 72, BAND1 = 99.75;
-    out = out.concat(slab(ctx, 0, cy, TW + 2.2, TD + 2.2, BAND0, 3.4, TRIM_D, TRIM_E));
-    var PED0 = BAND0 + 3.4;
-    /* the pediment reads on the front; the balustrade runs round above it */
-    if (ctx.faceVisible(0, -1)) {
-      var P = ctx.project, yF = y0 - 1.1;
-      var ped = [P(x0 - 1.1, yF, PED0), P(x1 + 1.1, yF, PED0), P(0, yF, PED0 + 7.2)];
-      out.push({ svg: ctx.poly(ped, ctx.shade(TRIM, 0, -1, 0), TRIM_E, 0.6), depth: depthOf(ped) });
-    }
-    var BAL0 = PED0 + 7.6, BAL1 = BAND1;
-    var balBase = box(ctx, x0 - 1.1, x1 + 1.1, y0 - 1.1, y1 + 1.1, BAL0 - 1.2, BAL0, TRIM_D, TRIM_E, null);
-    out = out.concat(balBase.parts);
+    /* THE UNITEMISED BAND, 72 to 94.85, and ITS HEIGHT IS NOT A FREE CHOICE.
+       Bowen itemises 72 + 8 + 25 + 20 + 9 + 50 + 6 = 190 ft and publishes the
+       vane at 217 ft 9 in, so 27 ft 9 in is unmeasured. But this model also
+       has to put a cornice between the stages Bowen describes as standing one
+       on another, and those cornices (2.0 + 1.6 + 1.3 = 4.9 ft) are unmeasured
+       too. They come OUT of the same 27.75, they are not added on top of it.
+       An earlier version of this scene spent the whole 27.75 on the band and
+       then added the cornices as well, which pushed the spire 4.9 ft too high
+       and left 1.1 ft for a published 6 ft ball, so the ball was drawn upside
+       down. The render showed it; the arithmetic had not.
+         72 + 22.85 + 8 + 2.0 + 25 + 1.6 + 20 + 1.3 + 9 + 50 + 6 = 217.75.
+       That closes on the published total exactly, with every published stage
+       unrounded, and the band is the only soft number in the steeple.
+
+       ITS INTERNAL SPLIT is soft too, and the one rule it must obey is that
+       nothing floats: the attic is solid brick from the tower cornice to the
+       balustrade, so the rail stands on something. */
+    var BAND0 = 72, BAND1 = 94.85;
+    var CORN_H = 3.4, BAL_H = 4.0;
+    out = out.concat(slab(ctx, 0, cy, TW + 2.2, TD + 2.2, BAND0, CORN_H, TRIM_D, TRIM_E));
+
+    var ATT0 = BAND0 + CORN_H, ATT1 = BAND1 - BAL_H;
+    var attic = box(ctx, x0, x1, y0, y1, ATT0, ATT1, BRICK, BRICK_E, null);
+    out = out.concat(attic.parts);
+    /* the clock stage's one opening per visible face, round headed */
     [[0, -1], [1, 0], [-1, 0], [0, 1]].forEach(function (n) {
-      var d = balBase.walls[n[0] + "," + n[1]];
+      var d = attic.walls[n[0] + "," + n[1]];
+      if (d === undefined) return;
+      var map = n[0] === 0
+        ? function (u, z) { return ctx.project(u, n[1] < 0 ? y0 : y1, z); }
+        : function (u, z) { return ctx.project(n[0] < 0 ? x0 : x1, u, z); };
+      out.push(archOpening(ctx, map, n[0] === 0 ? 0 : cy, 3.0,
+                           ATT0 + 2.4, ATT0 + 8.0, GLASS, TRIM_E, d + 0.4));
+    });
+    out = out.concat(slab(ctx, 0, cy, TW + 2.2, TD + 2.2, ATT1 - 1.0, 1.0, TRIM_D, TRIM_E));
+
+    /* the balustrade, 4 ft, standing on the attic and not in the air */
+    var BAL0 = ATT1, BAL1 = BAND1;
+    [[0, -1], [1, 0], [-1, 0], [0, 1]].forEach(function (n) {
+      var d = attic.walls[n[0] + "," + n[1]];
       if (d === undefined) return;
       var map = n[0] === 0
         ? function (u, z) { return ctx.project(u, n[1] < 0 ? y0 - 1.1 : y1 + 1.1, z); }
@@ -1846,43 +1927,66 @@
     });
 
     /* THE BELL STORY: published 20 ft square, 8 ft high, four large circular
-       windows, eight Ionic columns on pedestals, four pediments. */
-    var B0 = BAND1, B1 = B0 + 8, bw = 20;
-    var bell = box(ctx, -bw / 2, bw / 2, cy - bw / 2, cy + bw / 2, B0, B1, TRIM, TRIM_E, null);
+       windows, eight Ionic columns on pedestals, four pediments and cornices.
+
+       THE EIGHT COLUMNS ARE PLACED ONCE, ON THE PLAN, not per visible face.
+       Placing them inside the face loop put them outside the wall plane on
+       the flanks, where they poked out sideways and read as brackets. Eight
+       columns on a square is two to a face, set in from the corners, and the
+       positions are computed here and then drawn only if their own face is
+       turned to us. */
+    var B0 = BAND1, B1 = B0 + 8, bw = 20, bh = bw / 2;
+    var bell = box(ctx, -bh, bh, cy - bh, cy + bh, B0, B1, TRIM, TRIM_E, null);
     out = out.concat(bell.parts);
+
+    var BELL_COLS = [];
+    [[0, -1], [1, 0], [-1, 0], [0, 1]].forEach(function (n) {
+      [-6.4, 6.4].forEach(function (u) {
+        BELL_COLS.push(n[0] === 0
+          ? { x: u, y: cy + n[1] * (bh + 0.9), n: n }
+          : { x: n[0] * (bh + 0.9), y: cy + u, n: n });
+      });
+    });
+    BELL_COLS.forEach(function (c, i) {
+      var d = bell.walls[c.n[0] + "," + c.n[1]];
+      if (d === undefined) return;
+      out = out.concat(columnAt(ctx, c.x, c.y, 1.0, B0, B1, TRIM, TRIM_E, d + 0.8 + i * 0.02));
+    });
+    /* one large CIRCULAR window per face: four in all, as published, and
+       circular rather than round headed because Bowen says circular */
     [[0, -1], [1, 0], [-1, 0], [0, 1]].forEach(function (n) {
       var d = bell.walls[n[0] + "," + n[1]];
       if (d === undefined) return;
       var map = n[0] === 0
-        ? function (u, z) { return ctx.project(u, n[1] < 0 ? cy - bw / 2 : cy + bw / 2, z); }
-        : function (u, z) { return ctx.project(n[0] < 0 ? -bw / 2 : bw / 2, u, z); };
-      var c = n[0] === 0 ? 0 : cy;
-      /* one large circular window per face: four in all, as published */
-      out.push(archOpening(ctx, map, c, 3.1, B0 + 1.4, B0 + 6.6, "#2f3a40", TRIM_E, d + 0.4));
-      /* the eight Ionic columns, two showing on each face */
-      out = out.concat(columnAt(ctx, n[0] === 0 ? -7.4 : (n[0] < 0 ? -bw / 2 - 0.8 : bw / 2 + 0.8),
-                                n[0] === 0 ? (n[1] < 0 ? cy - bw / 2 - 0.8 : cy + bw / 2 + 0.8) : cy - 7.4,
-                                1.0, B0, B1, TRIM, TRIM_E, d + 0.8));
-      out = out.concat(columnAt(ctx, n[0] === 0 ? 7.4 : (n[0] < 0 ? -bw / 2 - 0.8 : bw / 2 + 0.8),
-                                n[0] === 0 ? (n[1] < 0 ? cy - bw / 2 - 0.8 : cy + bw / 2 + 0.8) : cy + 7.4,
-                                1.0, B0, B1, TRIM, TRIM_E, d + 0.9));
+        ? function (u, z) { return ctx.project(u, cy + n[1] * bh, z); }
+        : function (u, z) { return ctx.project(n[0] * bh, u, z); };
+      out.push(roundWindow(ctx, map, n[0] === 0 ? 0 : cy, B0 + 4.0, 2.7,
+                           "#2f3a40", TRIM_E, d + 0.4));
     });
     out = out.concat(slab(ctx, 0, cy, bw + 2.6, bw + 2.6, B1, 2.0, TRIM_D, TRIM_E));
 
     /* THE TWO OCTAGONS, both published across the flats, so the circumradius
-       is w / 2 / cos(22.5deg) and not the half width. */
+       is w / 2 / cos(22.5deg) and not the half width.
+
+       EACH GETS ITS PUBLISHED WINDOWS AND COLUMNS. Drawn as bare tapers the
+       two stages read as a single cone and the orders Bowen names, Corinthian
+       then Composite, are the whole point of the diminishing. Four circular
+       windows and eight columns on each, exactly as published. */
     function circumR(flats) { return (flats / 2) / Math.cos(Math.PI / 8); }
     var O1_0 = B1 + 2.0, O1_1 = O1_0 + 25, r1 = circumR(16);
     out = out.concat(octStage(ctx, 0, cy, r1, r1, O1_0, O1_1, TRIM, TRIM_E));
+    out = out.concat(octDetail(ctx, 0, cy, r1, O1_0, O1_1, 0.85, 1.9, TRIM, TRIM_E));
     out = out.concat(octStage(ctx, 0, cy, r1 + 1.1, r1 + 1.1, O1_1, O1_1 + 1.6, TRIM_D, TRIM_E));
 
     var O2_0 = O1_1 + 1.6, O2_1 = O2_0 + 20, r2 = circumR(12.5);
     out = out.concat(octStage(ctx, 0, cy, r2, r2, O2_0, O2_1, TRIM, TRIM_E));
+    out = out.concat(octDetail(ctx, 0, cy, r2, O2_0, O2_1, 0.7, 1.5, TRIM, TRIM_E));
     out = out.concat(octStage(ctx, 0, cy, r2 + 0.9, r2 + 0.9, O2_1, O2_1 + 1.3, TRIM_D, TRIM_E));
 
     /* THE SPIRE BASE: 11 ft from side to side, 9 ft high, eight oval windows */
     var S0 = O2_1 + 1.3, S1 = S0 + 9, rB = circumR(11);
     out = out.concat(octStage(ctx, 0, cy, rB, rB, S0, S1, TRIM, TRIM_E));
+    out = out.concat(octDetail(ctx, 0, cy, rB, S0, S1, 0, 1.2, TRIM, TRIM_E));
 
     /* THE SPIRE: 50 ft, 9 ft 6 in across the base, 18 in across the top,
        with the collar Bowen puts midway. */
@@ -1892,21 +1996,18 @@
     out = out.concat(octStage(ctx, 0, cy, rM + 0.8, rM + 0.8, MID, MID + 1.1, TRIM_D, TRIM_E));
     out = out.concat(octStage(ctx, 0, cy, rM, rT, MID + 1.1, SP1, TRIM, TRIM_E));
 
-    /* THE BALL, 6 ft above the spire, and the blazing star that tops out at
-       the published 217 ft 9 in. */
+    /* THE BALL, published at 6 ft above the spire, and the blazing star. The
+       stack now leaves exactly those 6 ft, so the ball is drawn the right way
+       up and the vane tops out at the published 217 ft 9 in. */
     var TOTAL = 217.75;
-    out = out.concat(octStage(ctx, 0, cy, 0.5, 0.5, SP1, TOTAL - 3.4, GOLD, GOLD_E));
-    out = out.concat(octStage(ctx, 0, cy, 1.5, 1.5, TOTAL - 3.4, TOTAL - 1.6, GOLD, GOLD_E));
-    var Pv = ctx.project, star = [];
-    for (var s = 0; s < 10; s++) {
-      var ang = -Math.PI / 2 + s * Math.PI / 5, rr = (s % 2 === 0) ? 3.0 : 1.25;
-      star.push(Pv(rr * Math.cos(ang), cy, TOTAL - 1.6 + 1.6 + rr * Math.sin(ang) * 0.0 + (s % 2 === 0 ? 0 : 0)));
-    }
+    out = out.concat(octStage(ctx, 0, cy, 0.55, 0.55, SP1, SP1 + 1.6, GOLD, GOLD_E));
+    out = out.concat(octStage(ctx, 0, cy, 1.7, 1.7, SP1 + 1.6, SP1 + 4.0, GOLD, GOLD_E));
+    out = out.concat(octStage(ctx, 0, cy, 0.45, 0.45, SP1 + 4.0, TOTAL - 2.6, GOLD, GOLD_E));
     /* the star is drawn in the vertical plane, so it is built in (x, z) */
-    star = [];
+    var Pv = ctx.project, star = [];
     for (var t = 0; t < 10; t++) {
-      var a2 = -Math.PI / 2 + t * Math.PI / 5, r3 = (t % 2 === 0) ? 3.0 : 1.25;
-      star.push(Pv(r3 * Math.cos(a2), cy, TOTAL - 1.6 - r3 * Math.sin(a2)));
+      var a2 = -Math.PI / 2 + t * Math.PI / 5, r3 = (t % 2 === 0) ? 2.6 : 1.1;
+      star.push(Pv(r3 * Math.cos(a2), cy, TOTAL - 2.6 + r3 * Math.sin(a2) + 2.6));
     }
     out.push({ svg: ctx.poly(star, GOLD, GOLD_E, 0.5), depth: 1e8 });
     return out;

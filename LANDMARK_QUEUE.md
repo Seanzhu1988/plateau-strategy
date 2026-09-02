@@ -10,8 +10,10 @@ MET rooms: dendur, great-hall, american-court, asian-astor, modern,
 grand-stair-2, plus the composed landmark cards.
 
 Freedom Trail (trail-3d.js): bunker-hill, old-north, faneuil-hall,
-state-house, old-state-house, old-south, constitution, paul-revere. Eight of
-the ten buildings the routine listed.
+state-house, old-state-house, old-south, constitution, paul-revere,
+park-street. Nine of the ten buildings the routine listed. park-street is
+MOUNTED on freedom-trail.html as Stop 3, at yaw -2.5 so the Tremont front
+faces the reader.
 
 MoMA: the building's own architecture (moma-3d.js).
 
@@ -707,3 +709,72 @@ only for PART of it. Park Street Church was never fully blocked. It was blocked
 below the cornice and completely open above it, and the queue had been treating
 the building as a single yes-or-no for four runs. Before declaring the next
 landmark blocked, split it and check the parts.
+
+
+## The 2026-09-02 sixth run: the steeple is FINISHED AND MOUNTED, and the picture caught an arithmetic error the arithmetic had passed
+
+This run took the four render defects the previous run listed as "the next
+run's first job" and closed all four, then found a FIFTH that no defect list
+had named because it was not visible until the stages were drawn honestly.
+
+**THE ERROR: THE PUBLISHED STAGES DID NOT CLOSE ON THE PUBLISHED TOTAL.**
+Bowen itemises 72 + 8 + 25 + 20 + 9 + 50 + 6 = 190 ft and publishes the vane at
+217 ft 9 in, so 27 ft 9 in is unmeasured. The previous model spent that whole
+27.75 on the pediment-and-balustrade band AND THEN added three inter-stage
+cornices (2.0 + 1.6 + 1.3 = 4.9 ft) on top of it. Those cornices are unmeasured
+too and come OUT of the residual, not on top of it. The consequence:
+
+  spire top landed at 216.65 against a published total of 217.75
+  the ball, published at 6 ft, had 1.1 ft left for it
+  so the ball was drawn from 216.65 DOWN to 214.35, z0 above z1, INVERTED
+
+The band is now 22.85 and the stack closes exactly:
+  72 + 22.85 + 8 + 2.0 + 25 + 1.6 + 20 + 1.3 + 9 + 50 + 6 = 217.75
+Every published stage stays unrounded and the band is the only soft number.
+
+THE LESSON, and it is the one this whole routine exists for. The old model
+passed every check a number can pass: each published stage was present and
+correct, the total constant was right, no geometry was non-finite. The defect
+was that an unmeasured quantity got counted twice, and it showed up as a gold
+ball drawn upside down at the top of a 217 ft steeple, which is invisible in a
+face count and obvious the moment the residual is written out. WHEN A MODEL
+CARRIES A RESIDUAL, RE-SUM THE WHOLE STACK AFTER EVERY ADDITION. A cornice
+added later is a claim on the residual.
+
+**THE FOUR LISTED DEFECTS, all closed.**
+  1. THE CAMERA. Mounted at yaw -2.5, where the front face (0,-1) is visible,
+     because faceVisible is the normal's own ry and (0,-1) needs cos(yaw) < 0.
+     The shared default of -0.62 shows the back of this building.
+  2. THE BELL STORY'S EIGHT COLUMNS. They were placed inside the per-face
+     loop, which put them off the wall plane on the flanks so they poked out
+     sideways as brackets. Now computed ONCE on the plan as eight positions,
+     two to a face set in from the corners, and drawn only where their own
+     face is turned to us.
+  3. THE TWO OCTAGONS READING AS ONE CONE. Both now carry their published
+     four circular windows and eight columns through a new octDetail helper,
+     so the Corinthian stage and the Composite stage read as storeys.
+  4. THE RESIDUAL BAND DOMINATING. It was worse than "dominating": the
+     balustrade box FLOATED, with open air on three sides between the
+     pediment apex and the rail, because only the front had a pediment drawn
+     in that gap. The band is now a solid brick attic from the tower cornice
+     up, with a real 4 ft balustrade standing on it. Nothing floats.
+
+**TWO SMALLER CORRECTIONS made while there.** The pediment moved down to crown
+the four 35 ft columns, which is where Bowen's own sentence puts it ("the
+tower ornamented with four columns of 35 feet, and the vestibule, is crowned
+by an elegant pediment and balustrade") rather than floating 40 ft above the
+order it belongs to. And the circular windows are now CIRCLES: a new
+roundWindow helper strikes a true circle, where archOpening draws a round
+HEADED opening with straight jambs and a sill, which is a different shape and
+is not what Bowen describes.
+
+**WHAT IS STILL NOT DRAWN, and why.** The brick meeting house. Its footprint is
+still unpublished, the lot dimensions from the deed are still not a substitute,
+and Sanborn volume sanborn03693 is still the live route to it for a future run.
+Nothing about this run changes that.
+
+**WHERE THE FOUR STAND.**
+  Park Street Ch.   STEEPLE FINISHED AND MOUNTED. Body still absent.
+  King's Chapel     unchanged. Every horizontal published, no vertical.
+  Smith Tower       unchanged. 462 ft firm, footprint absent.
+  Marron Atrium     unchanged. 110 ft firm, plan absent.
