@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Seattle Walking Tours with a Licensed Guide · Cruise Terminal &amp; Downtown | Plateau Strategy</title>
 <meta name="description" content="Private and small-group walking tours of Seattle with a Washington-licensed guide. Cruise-terminal tours from Pier 66 and Pier 91, timed to get you back aboard. Downtown and Pike Place half-day walks.">
+    <!-- Social preview. Without these a shared link shows as a bare URL
+         with no image or title, which is most of the click-through gone.
+         og:image is the site card, which is live and 70KB. -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Plateau Strategy Solution Lab">
+    <meta property="og:url" content="https://plateaustrategy.io/tours">
+    <meta property="og:title" content="Seattle Walking Tours with a Licensed Guide">
+    <meta property="og:description" content="Cruise-terminal walks from Pier 66 and Pier 91, timed to get you back aboard. Downtown and Pike Place half-days.">
+    <meta property="og:image" content="https://plateaustrategy.io/share-card.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Seattle Walking Tours with a Licensed Guide">
+    <meta name="twitter:description" content="Cruise-terminal walks from Pier 66 and Pier 91, timed to get you back aboard. Downtown and Pike Place half-days.">
+    <meta name="twitter:image" content="https://plateaustrategy.io/share-card.jpg">
+    <link rel="canonical" href="https://plateaustrategy.io/tours">
 <link rel="canonical" href="https://plateaustrategy.io/tours">
 
 <!-- Walking tours only. Before adding any product that carries a client in a
@@ -159,6 +173,46 @@
     not part of the tour.</p>
   </section>
 
+  <!-- The Space Needle, drawn from published dimensions rather than a stock
+       photograph. seattle-3d.js carries the sources; STYLES.md carries the
+       style. Degrades to nothing at all if the script fails to load. -->
+  <section>
+    <h2>The one everybody asks about</h2>
+    <p>605 feet to the tip, the observation deck at 520, and 138 feet across at the top.
+    Three pairs of steel legs run out to 102 feet at the ground, pinch to a waist at the
+    373 foot level, and flare out again to carry the saucer. That hourglass is the whole
+    idea of the building, and it is the reason it does not look like a water tower.
+    Drag it.</p>
+    <div id="snStage" style="background:#eef0ea;border-radius:10px;overflow:hidden;
+         max-width:640px;margin:0 auto;touch-action:pan-y"></div>
+    <p class="note">Built 1961 to 1962 for the Century 21 Exposition. It is not on the
+    walking tours above, which stay at sea level, but it is the first thing most people
+    off a ship point at, so here it is.</p>
+  </section>
+
+  <!-- The Pier 66 walk, drawn as a cut section from a measured route and
+       measured ground. The route is OSRM foot routing over OpenStreetMap and
+       every height is a USGS 3DEP query, one per vertex; seattle-3d.js carries
+       the full list. Degrades to nothing at all if the script fails to load. -->
+  <section>
+    <h2>The walk off the ship, measured rather than promised</h2>
+    <p>From the Bell Street Pier at Alaskan Way up to Pike Place at Stewart Street is
+    <strong>0.83 miles</strong>, and it is <strong>not simply uphill</strong>. You start
+    at 16 feet above the water, climb 139 feet to a crest on 1st Avenue near Virginia at
+    <strong>153 feet</strong>, and then hand 44 of those feet back down into the Market,
+    which finishes at 111 feet. Two pitches do most of the work: Wall Street up to Elliott
+    Avenue, and <strong>Lenora Street at about 16 percent</strong>. Both are drawn in
+    orange. Drag it.</p>
+    <div id="walkStage" style="background:#eef0ea;border-radius:10px;overflow:hidden;
+         max-width:640px;margin:0 auto;touch-action:pan-y"></div>
+    <p class="note">The route came from OpenStreetMap foot routing and every height is a
+    separate USGS elevation query along it, so this is the ground you would actually walk,
+    not a sketch of it. The vertical is exaggerated three times over, which is what a
+    section drawing does; every horizontal distance is true. Three posts mark where you
+    land, the crest, and the Market. This is the reason the cruise tour is timed backwards
+    from your all-aboard, and the reason I say comfortable shoes and mean it.</p>
+  </section>
+
   <section>
     <h2>Booking, plainly</h2>
     <ul>
@@ -257,6 +311,19 @@ async function sendTourInquiry(e){
 <!-- Five-language switcher. i18n.js injects the floating globe itself and
      leaves every string untouched if it fails to load, so the page degrades
      to plain English rather than breaking. -->
+<script src="/seattle-3d.js"></script>
+<script>
+(function(){
+  var stage = document.getElementById('snStage');
+  if (stage && window.SEATTLE3D) { window.SEATTLE3D.mount(stage, 'space-needle', {pitch:0.22}); }
+  /* The walk wants its own camera: a tower is looked ALONG and a landform is
+     looked DOWN on, or the graded surface that is the whole subject goes edge
+     on. seattle-3d.js already defaults this scene to yaw -0.30, pitch 0.52,
+     so the mount is left to take them rather than repeating them here. */
+  var walk = document.getElementById('walkStage');
+  if (walk && window.SEATTLE3D) { window.SEATTLE3D.mount(walk, 'pier66-walk'); }
+})();
+</script>
 <script src="/i18n.js"></script>
 </body>
 </html>

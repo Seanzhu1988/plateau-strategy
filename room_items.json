@@ -1,0 +1,33 @@
+{
+ "about": "What sits on the shelves in the partner room. Edit this file to add or remove an item; nothing here is public, so it can name work that is not ready.",
+ "items": [
+  {
+   "title": "New York, standing up",
+   "state": "built, still being refined daily",
+   "note": "The Brooklyn Bridge and the Empire State Building as models you can turn, drawn at their real published dimensions. A daily routine improves one thing about them each morning, so what you see today is not what you will see next week.",
+   "link": "/landmarks",
+   "action": "Turn them"
+  },
+  {
+   "title": "Inside the Met, and inside MoMA",
+   "state": "live, checked weekly against the museums",
+   "note": "Indoor footprint maps. Each one checks its own claims against the museum's data every Monday, so a rehang cannot leave the guide lying. The first run caught two works our Met cards were promising that the museum had taken down.",
+   "link": "/met",
+   "action": "Walk the Met"
+  },
+  {
+   "title": "The Universal Gallery, with its film",
+   "state": "live",
+   "note": "One search bar answering from the Met, MoMA, the Art Institute and Wikidata, by name or by the number printed on the label. The three minute film on the page is narrated and was cut from real screens of the site.",
+   "link": "/universal-gallery",
+   "action": "Search anything"
+  },
+  {
+   "title": "The Freedom Trail, in two languages",
+   "state": "Chinese complete, English at eleven of sixteen stops",
+   "note": "Sixteen stops, each with a five minute narration. The Chinese is finished; the English is voiced through stop eleven and stops when the recording budget does. Honest about where it stands.",
+   "link": "/freedom-trail",
+   "action": "Walk it"
+  }
+ ]
+}

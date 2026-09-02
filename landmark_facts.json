@@ -1,0 +1,127 @@
+{
+ "_note": "One sourced number per fact. See landmark_pipeline.py.",
+ "landmarks": {
+  "brooklyn-bridge": {
+   "name": "The Brooklyn Bridge",
+   "facts": [
+    {
+     "kind": "height",
+     "value": 276.5,
+     "unit": "ft",
+     "measured": "tower",
+     "source": "NPS / HAER NY-18",
+     "source_url": "https://www.loc.gov/pictures/collection/hh/",
+     "origin": "human",
+     "note": "",
+     "retrieved": "2026-08-31"
+    },
+    {
+     "kind": "height",
+     "value": 84,
+     "unit": "m",
+     "measured": "tower",
+     "source": "Wikidata (P2048)",
+     "source_url": "https://www.wikidata.org/wiki/Q125006",
+     "origin": "auto",
+     "note": "",
+     "retrieved": "2026-08-31"
+    },
+    {
+     "kind": "span",
+     "value": 1595.5,
+     "unit": "ft",
+     "measured": "main",
+     "source": "NPS / HAER NY-18",
+     "source_url": "https://www.loc.gov/pictures/collection/hh/",
+     "origin": "human",
+     "note": "",
+     "retrieved": "2026-08-31"
+    },
+    {
+     "kind": "deck_height",
+     "value": 127,
+     "unit": "ft",
+     "measured": "centre",
+     "source": "NPS / HAER NY-18",
+     "source_url": "https://www.loc.gov/pictures/collection/hh/",
+     "origin": "human",
+     "note": "",
+     "retrieved": "2026-08-31"
+    },
+    {
+     "kind": "defective_wire",
+     "value": 221,
+     "unit": "tons",
+     "measured": "",
+     "source": "McCullough, The Great Bridge",
+     "source_url": "",
+     "origin": "human",
+     "note": "",
+     "retrieved": "2026-08-31"
+    },
+    {
+     "kind": "side_span",
+     "family": "wikimedia",
+     "value": 930,
+     "unit": "ft",
+     "measured": "side",
+     "source": "Wikipedia article",
+     "source_url": "https://en.wikipedia.org/wiki/Brooklyn_Bridge",
+     "origin": "auto",
+     "note": "tower to anchorage, each side",
+     "retrieved": "2026-09-01"
+    },
+    {
+     "kind": "length",
+     "family": "wikimedia",
+     "value": 6016,
+     "unit": "ft",
+     "measured": "total",
+     "source": "Wikipedia article",
+     "source_url": "https://en.wikipedia.org/wiki/Brooklyn_Bridge",
+     "origin": "auto",
+     "note": "including approaches",
+     "retrieved": "2026-09-01"
+    }
+   ]
+  },
+  "bunker-hill-monument": {
+   "name": "Bunker Hill Monument",
+   "facts": [
+    {
+     "kind": "height",
+     "value": 221,
+     "unit": "ft",
+     "measured": "shaft",
+     "source": "NPS Boston NHP",
+     "source_url": "https://www.nps.gov/bost/",
+     "origin": "human",
+     "note": "",
+     "retrieved": "2026-08-31"
+    },
+    {
+     "kind": "base_width",
+     "value": 30,
+     "unit": "ft",
+     "measured": "base",
+     "source": "NPS Boston NHP",
+     "source_url": "https://www.nps.gov/bost/",
+     "origin": "human",
+     "note": "",
+     "retrieved": "2026-08-31"
+    },
+    {
+     "kind": "top_width",
+     "value": 15.4,
+     "unit": "ft",
+     "measured": "top",
+     "source": "NPS Boston NHP",
+     "source_url": "https://www.nps.gov/bost/",
+     "origin": "human",
+     "note": "",
+     "retrieved": "2026-08-31"
+    }
+   ]
+  }
+ }
+}

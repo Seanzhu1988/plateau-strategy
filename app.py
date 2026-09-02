@@ -28,6 +28,7 @@ import subprocess
 import datetime
 
 import discovery as discovery_mod
+import gallery_log
 import urllib.parse
 import shutil
 import html
@@ -166,6 +167,9 @@ WISHLIST_PATH = _data_path("finance_wishlist.json")
 PARTNERS_PATH = _data_path("partners.json")
 PRICING_PATH = _data_path("pricing.json")
 OWNER_AUTH_PATH = _data_path("owner_auth.json")
+# The partner room's passcode, kept apart from the owner login on purpose:
+# handing an attorney a way in must never hand them dispatch as well.
+ROOM_AUTH_PATH = _data_path("room_auth.json")
 SECRET_PATH = _data_path(".flask_secret")
 CONTRACT_PATH = _data_path("contract.json")
 SIGNATURES_PATH = _data_path("contract_signatures.json")
@@ -1233,10 +1237,44 @@ def _visit_device():
 
 # href="/x.css" / src="/x.js", ours only. Anything already carrying a
 # query string, and anything absolute, is left alone.
-_ASSET_RE = re.compile(rb'\b(href|src)="(/[\w./-]+\.(?:css|js))"')
+# The optional ?v= group is not decoration. Without it this only matched tags
+# with NO version, so any tag someone had hand-versioned -- met-3d.js?v=dendur1,
+# met-map.js?v=jason3 -- was skipped and kept that string forever. Those were
+# bumped once and never again, so every JavaScript change after that reached
+# nobody who had visited before: the browser held a ten-minute-cacheable URL
+# that never changed. It cost a day chasing a fix that was live on the server
+# and absent in the browser. Matching the existing version and overwriting it
+# means a hand-written one is a starting value, not a permanent one.
+_ASSET_RE = re.compile(rb'\b(href|src)="(/[\w./-]+\.(?:css|js))(?:\?v=[^"]*)?"')
 
 # What the assets are stamped with. Changes on every deploy, the point of it.
-_ASSET_V = (os.environ.get("RENDER_GIT_COMMIT") or "")[:8] or str(int(time.time()))
+def _asset_v():
+    """In production the deploy's commit; in development the newest file.
+
+    The fallback used to be the process start time, which is right on Render,
+    where a deploy is always a new process, and wrong here, where a file is
+    edited far more often than the server is restarted. Editing a script then
+    left its URL unchanged, so the browser kept serving the copy it already
+    had and the edit appeared to do nothing -- which is the same failure this
+    whole versioning scheme exists to prevent, one level down. Keying the
+    fallback to the newest modification time means saving a file is enough."""
+    commit = (os.environ.get("RENDER_GIT_COMMIT") or "")[:8]
+    if commit:
+        return commit
+    newest = 0.0
+    try:
+        for name in os.listdir(BASE_DIR):
+            if name.endswith((".js", ".css")):
+                try:
+                    newest = max(newest, os.path.getmtime(os.path.join(BASE_DIR, name)))
+                except OSError:
+                    pass
+    except OSError:
+        pass
+    return str(int(newest or time.time()))
+
+
+_ASSET_V = _asset_v()
 
 
 # Page bodies not being asset paths: no extension, or a page-like one. Used to
@@ -1369,8 +1407,9 @@ def _compress_and_cache(resp):
                     return resp
                 resp.direct_passthrough = False
             body = resp.get_data()
+            ver = _ASSET_V if os.environ.get("RENDER_GIT_COMMIT") else _asset_v()
             stamped = _ASSET_RE.sub(
-                lambda m: b'%s="%s?v=%s"' % (m.group(1), m.group(2), _ASSET_V.encode()),
+                lambda m: b'%s="%s?v=%s"' % (m.group(1), m.group(2), ver.encode()),
                 body)
             # One sign-in for the whole site, delivered the same way the
             # asset versions are: injected here, once, instead of thirty
@@ -1986,6 +2025,60 @@ def met_guide_js():
 def met_art_js():
     """Real works per gallery, baked from the Met's CC0 Open Access API."""
     return send_file(os.path.join(BASE_DIR, "met-art.js"))
+
+
+@app.route("/api/met-object")
+def api_met_object():
+    """The Met's own picture of what stands in a room, and a link to their page.
+
+    [SEAN: "how about we use their link and hitting that picture lead to 3D".]
+    It is the cheaper idea and it is the right one. Showing the Met's 3D scan
+    ourselves costs a 913 KB viewer plus a research-grade model, against the
+    87 KB that currently draws the whole museum, both New York landmarks and
+    this room. One 89 KB photograph that opens their page instead costs a
+    tenth of the viewer alone, loads no JavaScript, hosts no model, and leaves
+    the heavy thing with the people who made it and maintain it.
+
+    Values are CACHED on disk. A visitor's browser never calls the Met: doing
+    that from every page view is how you get rate-limited, which happened to
+    me while researching this very question.
+
+    Only objects whose API record says isPublicDomain is true are listed, and
+    that flag is checked again here rather than trusted from the file. CC0
+    covers copyright, not trademark, so the credit is shown plainly and
+    nothing implies the Museum endorses us."""
+    key = (request.args.get("room") or "").strip().lower()
+    try:
+        with open(os.path.join(BASE_DIR, "met_objects.json"), encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:
+        return jsonify({"ok": True, "object": None})
+    row = (data.get("rooms") or {}).get(key)
+    if not row or not row.get("isPublicDomain") or not row.get("image"):
+        return jsonify({"ok": True, "object": None})
+    return jsonify({"ok": True, "object": {
+        "title": row.get("title"), "date": row.get("date"),
+        "gallery": row.get("gallery"), "credit": row.get("credit"),
+        "image": row.get("image"), "link": row.get("link")}})
+
+
+@app.route("/met-rooms.js")
+def met_rooms_js():
+    """What is actually inside a gallery, for the rooms that have an inside
+    worth drawing. Loaded before met-3d.js, which reads window.MET_ROOMS."""
+    return send_file(os.path.join(BASE_DIR, "met-rooms.js"), mimetype="application/javascript")
+
+
+@app.route("/landmark-3d.js")
+def landmark_3d_js():
+    """Draws a landmark composed from its facts, and mounts it on a page."""
+    return send_file(os.path.join(BASE_DIR, "landmark-3d.js"))
+
+
+@app.route("/moma-3d.js")
+def moma_3d_js():
+    """MoMA's building. Reads window.MOMA_GEOMETRY, so moma-map.js loads first."""
+    return send_file(os.path.join(BASE_DIR, "moma-3d.js"))
 
 
 @app.route("/met-3d.js")
@@ -2654,14 +2747,24 @@ def partners_page():
 # exists. Publishing an accurate description of what already happens lowers
 # risk on the day it goes up.
 #
-# It will not serve without PRIVACY_CONTACT. A policy that grants people the
+# It will not serve without a contact address. A policy that grants people the
 # right to ask for their data, and gives them no working address to ask at, is
-# worse than none, it documents an obligation and then fails it. The domain
-# has no MX records today, so hello@plateaustrategy.io bounces, and the owner's
-# personal address is not going up without his say-so. One environment variable
-# publishes it.
+# worse than none, it documents an obligation and then fails it.
+#
+# That reasoning was right and its conclusion has expired. Withholding the
+# policy was meant to be the cautious choice, but the site collects names,
+# emails, phones, addresses and birthdays, two pages LINK to /privacy, and
+# those links returned 404. California's Online Privacy Protection Act asks a
+# commercial site collecting personal information to post a policy
+# conspicuously; a 404 is the one thing that is worse than a plain address.
+#
+# So the default is now the business address ALREADY PUBLISHED on the landing
+# page. That is not a new disclosure, it is the same address a visitor can
+# read today, and it is a Gmail, so it receives mail whatever the domain's
+# forwarding is doing this month. PRIVACY_CONTACT still overrides it, and
+# setting it to an empty string deliberately unpublishes the policy again.
 # ---------------------------------------------------------------------------
-PRIVACY_CONTACT = os.environ.get("PRIVACY_CONTACT", "").strip()
+PRIVACY_CONTACT = os.environ.get("PRIVACY_CONTACT", "plateaustrategy@gmail.com").strip()
 
 
 @app.route("/privacy")
@@ -2855,6 +2958,34 @@ def _social_lib():
         return []
 
 
+@app.route("/thumbs/<name>.svg")
+def serve_thumb(name):
+    """A landmark's picture, drawn once by make_thumbs.js and cached hard.
+
+    These are static files rather than something the book draws for itself,
+    because drawing them in the browser would mean loading four model scripts
+    onto a page of ninety-nine cards so that six could show a picture."""
+    if not re.fullmatch(r"[a-z0-9-]{1,40}", name or ""):
+        return ("", 404)
+    f = os.path.join(BASE_DIR, "thumbs", name + ".svg")
+    if not os.path.exists(f):
+        return ("", 404)
+    return send_file(f, mimetype="image/svg+xml")
+
+
+@app.route("/iticket")
+def page_iticket():
+    """The ticket booth, announced while it is still being built.
+
+    Deliberately takes no sign-ups. A page that harvests emails for a product
+    with no supply agreements behind it is selling an intention, and the
+    people who leave an address are the ones who would be let down first. It
+    says what works, what is being worked on and what is deliberately last,
+    and it points providers at a real address, because the supply side is the
+    only part of this that cannot be built alone."""
+    return send_file(os.path.join(BASE_DIR, "iticket.html"))
+
+
 @app.route("/landmarks")
 def landmarks_page():
     """Brooklyn Bridge and the Empire State Building, as models you can turn.
@@ -2865,6 +2996,48 @@ def landmarks_page():
     takes and which observatory is the one people mean.
     """
     return send_file(os.path.join(BASE_DIR, "landmarks.html"))
+
+
+@app.route("/api/landmark-stories")
+def api_landmark_stories():
+    """The landmark stories, one entry per landmark with every language on it.
+
+    Read from BASE_DIR deliberately, NOT through _data_path. These are
+    authored content that ships with the code and nothing writes them at
+    runtime, so the disk-seeding path would be actively wrong here: it copies
+    once, and a story written next week would never reach a running site.
+
+    Each language is a field on the entry, so the page picks the reader's
+    language directly. There is no dictionary lookup, which means there is no
+    lookup to miss, which is the failure the Freedom Trail had.
+
+    The research block is stripped: it is working material for the writer, it
+    cites sources and is not written for a visitor to read."""
+    try:
+        with open(os.path.join(BASE_DIR, "landmark_stories.json"), encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:
+        return jsonify({"ok": True, "landmarks": []})
+    out = []
+    for lm in data.get("landmarks", []):
+        row = {k: v for k, v in lm.items() if k != "research"}
+        out.append(row)
+    return jsonify({"ok": True, "landmarks": out})
+
+
+@app.route("/trail-3d.js")
+def trail_3d_js():
+    """The Freedom Trail's landmarks. Sixteen stops that had a narration and
+    no picture; this is where they get one."""
+    return send_file(os.path.join(BASE_DIR, "trail-3d.js"), mimetype="application/javascript")
+
+
+@app.route("/styles-3d.js")
+def styles_3d_js():
+    """The styles book, the half a model can execute. Loaded BEFORE any model
+    script, because a model declares the style it is drawn in and this is what
+    that declaration means. STYLES.md is the same book written for a person."""
+    return send_file(os.path.join(BASE_DIR, "styles-3d.js"), mimetype="application/javascript")
 
 
 @app.route("/nyc-3d.js")
@@ -3024,6 +3197,7 @@ PUBLIC_PAGES = [
     ("/tips", "0.8", "weekly"),
     ("/gallery-guides", "0.8", "weekly"),
     ("/landmarks", "0.8", "monthly"),
+    ("/iticket", "0.5", "monthly"),
     ("/partners", "0.6", "monthly"),
     ("/agent", "0.6", "monthly"),
     ("/renter", "0.6", "monthly"),
@@ -3034,6 +3208,198 @@ OWNER_ONLY_PATHS = ["/dispatch", "/setup", "/archive", "/api/", "/deflator", "/d
 SITE_ORIGIN = os.environ.get("SITE_ORIGIN", "https://plateaustrategy.io").rstrip("/")
 # Referrers from our own pages are not a traffic source, they are navigation.
 SITE_HOSTS = ("plateaustrategy.io", "plateau-strategy.onrender.com")
+
+
+# ---------------------------------------------------------------------------
+# THE PARTNER ROOM
+#
+# [SEAN 2026-08-30: "I need the website to have a locked room thats for test
+# site not supposed to show to the public but the partners like everybodys
+# attorney ... with passcode like dispatch. so i can show to the attorney
+# without leak to anyone."]
+#
+# One passcode, deliberately NOT the owner login. An attorney needs to see
+# work; an attorney does not need dispatch, the reservation book, or the
+# customer names behind it. Two locks, two keys, and the room's key opens
+# only the room.
+#
+# The gate is on the SERVER. A page that ships its contents and hides them
+# with JavaScript has not hidden anything: the material is already on the
+# reader's machine and View Source shows it. Unlocked, this route returns the
+# lock screen and nothing else.
+#
+# It is not in the sitemap, not in the site index, and NOT listed in
+# robots.txt, because that file is public and a Disallow line advertises the
+# path to exactly the people it is meant to keep out. It carries
+# X-Robots-Tag: noindex instead, which is the same reasoning the share-link
+# pages below already use.
+#
+# Honest about the strength: this is a shared passcode, so it is as private as
+# the people holding it. Good for showing work in confidence. Not a vault, and
+# nothing here should be anything whose leak would be a catastrophe.
+def _load_room():
+    try:
+        with open(ROOM_AUTH_PATH) as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+def _room_open():
+    """Owner always; anyone who has entered the passcode this session."""
+    return bool(session.get("owner") or session.get("room"))
+
+
+def room_required(fn):
+    @wraps(fn)
+    def wrapper(*a, **k):
+        if not _room_open():
+            return jsonify({"ok": False, "auth_required": True,
+                            "error": "The room is locked."}), 401
+        return fn(*a, **k)
+    return wrapper
+
+
+@app.route("/api/room/set", methods=["POST"])
+@owner_required
+def api_room_set():
+    """The owner sets or changes the room passcode. Owner only, always: if a
+    partner could change the code they could lock the owner out of his own
+    room, or quietly hand it to somebody else."""
+    data = request.get_json(force=True, silent=True) or {}
+    code = (data.get("passcode") or "").strip()
+    if len(code) < 6:
+        return jsonify({"ok": False, "error": "Use at least six characters."}), 400
+    salt, h = _hash_pw(code)
+    with open(ROOM_AUTH_PATH, "w") as f:
+        json.dump({"salt": salt, "hash": h, "note": (data.get("note") or "").strip()[:120],
+                   "set_at": datetime.datetime.now().isoformat(timespec="seconds")}, f, indent=2)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/room/enter", methods=["POST"])
+def api_room_enter():
+    room = _load_room()
+    code = ((request.get_json(force=True, silent=True) or {}).get("passcode") or "")
+    if _login_blocked("__room__"):
+        return _too_many_tries()
+    if not room:
+        return jsonify({"ok": False, "error": "No passcode has been set yet."}), 403
+    ok = hmac.compare_digest(
+        hashlib.sha256((room.get("salt", "") + code).encode()).hexdigest(),
+        room.get("hash", ""))
+    if not ok:
+        _login_failed("__room__")
+        return jsonify({"ok": False, "error": "That passcode does not open this room."}), 401
+    _login_ok("__room__")
+    session["room"] = True
+    return _set_not_counted(jsonify({"ok": True}))
+
+
+@app.route("/api/room/leave", methods=["POST"])
+def api_room_leave():
+    session.pop("room", None)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/gallery/searches")
+@owner_required
+def api_gallery_searches():
+    """What travellers asked the gallery. Owner only.
+
+    Not because the questions are sensitive, they are artwork names, but
+    because this is business intelligence: it says which museum to build
+    next and which artwork to write up, and it belongs to whoever is doing
+    the building.
+    """
+    try:
+        return jsonify({"ok": True, **gallery_log.summary()})
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+
+@app.route("/searches")
+@owner_required
+def searches_page():
+    """The record, read as a page rather than as JSON."""
+    d = gallery_log.summary(top=60, recent=60)
+    import html as _h
+
+    def rows(items, count_key):
+        return "".join(
+            '<tr><td>%s</td><td class="n">%d</td><td class="n">%d</td>'
+            '<td class="n">%d</td></tr>'
+            % (_h.escape(e.get("q", "")), e.get(count_key, 0),
+               e.get("hits", 0), e.get("misses", 0))
+            for e in items) or '<tr><td colspan="4">Nothing recorded yet.</td></tr>'
+
+    recent = "".join(
+        '<li><b>%s</b> <span>%s result%s%s</span></li>'
+        % (_h.escape(r.get("q", "")), r.get("n", 0),
+           "" if r.get("n") == 1 else "s",
+           ", cached" if r.get("cached") else "")
+        for r in d.get("recent", [])) or "<li>Nothing yet.</li>"
+
+    return """<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>What travellers searched</title>
+<style>body{font:16px/1.6 -apple-system,system-ui,sans-serif;max-width:860px;
+margin:2rem auto;padding:0 1.1rem;color:#14110c}
+h1{font-size:1.5rem;margin:0 0 .2rem}h2{font-size:1.05rem;margin:2rem 0 .5rem}
+p.sub{color:#6b655b;margin:0 0 1.4rem}
+.tiles{display:flex;gap:.8rem;flex-wrap:wrap;margin:0 0 1.6rem}
+.tile{border:1px solid #e6e6ea;border-radius:10px;padding:.7rem 1rem;min-width:130px}
+.tile b{display:block;font-size:1.5rem;color:#1f3a5f}
+.tile span{font-size:.78rem;color:#6b655b}
+table{width:100%%;border-collapse:collapse;font-size:.94rem}
+th,td{text-align:left;padding:.45rem .5rem;border-bottom:1px solid #eceae4}
+th{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#6b655b}
+td.n{text-align:right;font-variant-numeric:tabular-nums;width:5.5rem}
+ul{padding-left:1.1rem}li span{color:#6b655b;font-size:.85rem}
+.want{background:#fdf8ec}</style></head><body>
+<h1>What travellers searched</h1>
+<p class="sub">Every question asked of the Universal Gallery, kept. The words
+are kept; who typed them is not.</p>
+<div class="tiles">
+  <div class="tile"><b>%d</b><span>searches</span></div>
+  <div class="tile"><b>%d</b><span>different questions</span></div>
+  <div class="tile"><b>%d</b><span>answered</span></div>
+  <div class="tile"><b>%d</b><span>came back empty</span></div>
+</div>
+<h2>Asked for and not found</h2>
+<p class="sub">The most valuable list here. Each line is a museum or an
+artwork somebody wanted and we could not give them.</p>
+<table class="want"><tr><th>Question</th><th>Times</th><th>Found</th><th>Empty</th></tr>%s</table>
+<h2>Asked most</h2>
+<table><tr><th>Question</th><th>Times</th><th>Found</th><th>Empty</th></tr>%s</table>
+<h2>Lately</h2>
+<ul>%s</ul>
+</body></html>""" % (d.get("searches_total", 0), d.get("distinct", 0),
+                     d.get("answered", 0), d.get("unanswered", 0),
+                     rows(d.get("wanted", []), "count"),
+                     rows(d.get("top", []), "count"), recent)
+
+
+@app.route("/room")
+def room_page():
+    """Locked: the lock screen. Open: the work."""
+    page = "room.html" if _room_open() else "room-locked.html"
+    resp = send_file(os.path.join(BASE_DIR, page))
+    resp.headers["X-Robots-Tag"] = "noindex, nofollow"
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
+
+
+@app.route("/api/room/items")
+@room_required
+def api_room_items():
+    """What is on the shelves. Read only, and only from inside the room."""
+    try:
+        with open(os.path.join(BASE_DIR, "room_items.json"), encoding="utf-8") as f:
+            return jsonify({"ok": True, "items": json.load(f).get("items") or []})
+    except Exception:
+        return jsonify({"ok": True, "items": []})
 
 
 @app.route("/rent-a-tesla")
@@ -3658,6 +4024,20 @@ def favorite_place_page():
 def factor_clock_page():
     """Free tool: the Factor Clock, an honest prediction engine (free founding beta)."""
     return send_file(os.path.join(BASE_DIR, "factor-clock.html"))
+
+
+@app.route("/factor-clock-dial.png")
+def factor_clock_dial_png():
+    """Torre dell'Ore, the clock's Venetian face, shown on the free-tool page."""
+    return send_file(os.path.join(BASE_DIR, "factor-clock-dial.png"),
+                     mimetype="image/png")
+
+
+@app.route("/factor-clock-film.mp4")
+def factor_clock_film_mp4():
+    """The clock filmed from its own live dial (no mock-ups)."""
+    return send_file(os.path.join(BASE_DIR, "factor-clock-film.mp4"),
+                     mimetype="video/mp4")
 
 
 @app.route("/api/clock/signup", methods=["POST"])
@@ -4321,6 +4701,15 @@ def api_gallery_search():
                                                  r.get("museum_lat"), r.get("museum_lon"))
         except Exception:
             pass
+        # The question itself is kept, cached or not: a repeat search is the
+        # clearest measure of demand, and it used to leave no trace at all.
+        try:
+            _rows = hit[1].get("results") or []
+            gallery_log.record(q, len(_rows),
+                               [r.get("source") for r in _rows if r.get("source")],
+                               cached=True)
+        except Exception:
+            pass
         return jsonify({"ok": True, "cached": True, **hit[1]})
     results = []
     for fn in (_gal_met, _gal_aic, _gal_moma, _gal_wikidata):
@@ -4424,6 +4813,12 @@ def api_gallery_search():
     _GAL_CACHE[ck] = (time.time(), payload)
     if len(_GAL_CACHE) > 300:
         _GAL_CACHE.clear()
+    try:
+        gallery_log.record(q, len(results),
+                           [r.get("source") for r in results if r.get("source")],
+                           cached=False)
+    except Exception:
+        pass                      # a search must never fail because of its log
     return jsonify({"ok": True, "cached": False, **payload})
 
 
@@ -6633,6 +7028,7 @@ def _create_reservation(data, agent=None, self_driver=None):
     except (TypeError, ValueError):
         distance_mi = None
 
+    price_overridden = False
     if quote_requested:
         fare = 0.0                       # priced later by the owner
     elif trip_type == "destination" and distance_mi is not None:
@@ -6653,10 +7049,40 @@ def _create_reservation(data, agent=None, self_driver=None):
         else:
             fare = _distance_fare(distance_mi)
     else:
+        # THE PRICE IS OURS TO SET, NOT THE CALLER'S. This used to take
+        # data["fare"] on trust, which the booking page fills from a select
+        # whose options we render, so the form was always honest. The API was
+        # not: a crafted POST with {"fare": 0.01} came back with a real Square
+        # invoice for one cent on an airport run, verified by test. The
+        # destination branch above already knew better, and says so in its own
+        # comment, so this is that rule applied everywhere.
+        #
+        # A fare is now accepted only if it is one WE publish: a pricing
+        # preset, the airport flat rate, or the default. Anything else falls
+        # back to the default rather than being honoured, and the reservation
+        # carries a flag so the dashboard can see it happened.
+        allowed = set()
         try:
-            fare = float(data.get("fare") or os.environ.get("DEFAULT_FARE_USD", 45))
+            for _p in (_load_pricing().get("presets") or []):
+                allowed.add(round(float(_p.get("price")), 2))
         except Exception:
-            fare = float(os.environ.get("DEFAULT_FARE_USD", 45))
+            pass
+        try:
+            _default = float(os.environ.get("DEFAULT_FARE_USD", 45))
+        except Exception:
+            _default = 45.0
+        allowed.add(round(_default, 2))
+        allowed.add(round(float(AIRPORT_FLAT_USD), 2))
+        try:
+            asked = round(float(data.get("fare")), 2) if data.get("fare") not in (None, "") else None
+        except (TypeError, ValueError):
+            asked = None
+        if asked is not None and asked in allowed:
+            fare = asked
+        else:
+            fare = _default
+            if asked is not None:
+                price_overridden = True
     fare = round(fare, 2)
 
     trip = {
@@ -6717,6 +7143,7 @@ def _create_reservation(data, agent=None, self_driver=None):
         },
         "trip": trip,
         "fare_usd": fare,
+        "price_refused": price_overridden,   # a caller asked for a price we do not publish
         "quote_requested": quote_requested,
         "status": "QUOTE" if quote_requested else "NEW",
         "renter_id": None,
@@ -10948,7 +11375,9 @@ def _seed_book_fields_once():
                     live.setdefault("entries", []).append(srce)
                     changed = True
                     continue
-                for fld in ("admission_usd", "tickets_url", "slug", "ferry", "audio"):
+                for fld in ("admission_usd", "tickets_url", "slug", "ferry", "audio",
+                            "story_en", "story_zh", "story_es", "story_ko",
+                            "story_vi"):
                     if fld in srce and tgt.get(fld) != srce[fld]:
                         tgt[fld] = srce[fld]
                         changed = True
@@ -13414,6 +13843,73 @@ def _wikidata_nearby(lat, lon, radius_km):
     return out
 
 
+@app.route("/api/landmark-specs")
+def api_landmark_specs():
+    """Every landmark whose facts are settled enough to draw.
+
+    A landmark missing from this list is not an error and not an omission
+    waiting to be filled in: it is one whose sources disagree or stand alone,
+    and the honest response to that is to draw nothing. The refusals are
+    returned alongside, with the reason, so the page can say what it is
+    waiting for instead of silently showing less."""
+    try:
+        import landmark_pipeline as LP
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)[:120]})
+    try:
+        facts = LP.load_facts()
+        reg = (LP.load_registry() or {}).get("entries") or {}
+        built, waiting = [], []
+        for slug, rec in (facts.get("landmarks") or {}).items():
+            fs = rec.get("facts") or []
+            style = (reg.get(slug) or {}).get("style") or rec.get("style") or ""
+            spec = LP.compose_spec(slug, fs, style, rec.get("name") or slug)
+            if spec.get("ok"):
+                built.append(spec)
+            else:
+                waiting.append({"slug": slug, "name": rec.get("name") or slug,
+                                "missing": spec.get("missing")})
+        return jsonify({"success": True, "specs": built, "waiting": waiting})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)[:160]})
+
+
+@app.route("/api/landmark-pipeline")
+def api_landmark_pipeline():
+    """Where every landmark has got to, and what is blocking the ones stuck.
+
+    Read-only. Nothing here advances a landmark or publishes anything: the
+    line ends at a queue a person approves, which is the rule Sean set when
+    he asked for this."""
+    try:
+        import landmark_pipeline as LP
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)[:120]})
+    try:
+        facts = LP.load_facts()
+        reg = LP.load_registry()
+        stages = {}
+        for e in (reg.get("entries") or {}).values():
+            st = e.get("stage") or "found"
+            stages[st] = stages.get(st, 0) + 1
+        blocked = []
+        for slug, rec in (facts.get("landmarks") or {}).items():
+            issues = LP.check_facts(rec.get("facts") or [])
+            if issues:
+                blocked.append({"slug": slug, "name": rec.get("name"),
+                                "issues": issues})
+        return jsonify({
+            "success": True,
+            "stages": stages,
+            "tracked": len(reg.get("entries") or {}),
+            "with_facts": len(facts.get("landmarks") or {}),
+            "blocked": blocked,
+            "publishes_itself": False,
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)[:160]})
+
+
 @app.route("/api/attractions")
 def api_attractions():
     try:
@@ -13709,6 +14205,7 @@ try:
     _start_reminder_thread()
 except Exception:
     pass
+
 
 
 if __name__ == "__main__":

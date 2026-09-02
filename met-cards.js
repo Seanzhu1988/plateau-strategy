@@ -286,7 +286,7 @@ window.MET_CARDS = {
   "name": "The Grand Staircase",
   "floor": 2,
   "minutes": 2,
-  "one_line": "",
+  "one_line": "One straight flight out of the Great Hall, with a Tiepolo eighteen feet tall waiting in the arch at the top of it.",
   "highlights": []
  }
 };

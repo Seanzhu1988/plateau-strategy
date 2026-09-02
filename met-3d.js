@@ -477,6 +477,21 @@
                   { label: labelFor(k, r), sub: r.sub, room: k });
       b.floor = 1; b.room = k;
       if (openT < 0.98) b.svg = '<g opacity="' + openT.toFixed(2) + '">' + b.svg + "</g>";
+      /* A room that has an interior drawn for it opens as you dive in: the
+         solid gallery block fades back to a footprint so what is inside can
+         be seen. Without this the box simply hides its own contents. It never
+         goes fully invisible, because the block is also the click target and
+         the thing that says where the room ends. */
+      var hasIn = window.MET_ROOMS && window.MET_ROOMS[k];
+      if (hasIn && focusKey === k && focusT > 0.02) {
+        /* Nearly out, not merely dimmed. At 14 percent the gallery block was
+           still a solid box drawn around the interior, and its NEAR walls sat
+           between the viewer and the temple: a veil over the one thing the
+           dive exists to show. It cannot go fully invisible because this
+           element carries the click target, so it stays as the faintest
+           footprint and the interior does the drawing. */
+        b.svg = '<g opacity="' + (1 - 0.97 * focusT).toFixed(2) + '">' + b.svg + "</g>";
+      }
       items.push(b);
       if (b.labelSvg) {
         var lb1 = openT < 0.98 ? '<g opacity="' + openT.toFixed(2) + '">' + b.labelSvg + "</g>" : b.labelSvg;
@@ -551,11 +566,60 @@
       });
     }
 
+    /* THE INSIDE OF ONE ROOM, when that room has one drawn.
+       The floor plan knows a gallery is a box, which is honest for a room of
+       vitrines and a lie for Gallery 131, which was built around a single
+       object with a pool for the Nile and a raked wall for the cliffs. A room
+       registers its interior in met-rooms.js; a room without one keeps the
+       plain box and loses nothing. The host lends its own projection and
+       shading so the interior sits in the same space and light as the
+       building around it. */
+    if (focusKey && openT > 0.02 && focusT > 0.02 && R[focusKey] &&
+        window.MET_ROOMS && window.MET_ROOMS[focusKey]) {
+      var ir = R[focusKey];
+      try {
+        var inside = window.MET_ROOMS[focusKey]({
+          project: project, poly: poly, shade: shade, faceVisible: faceVisible,
+          room: { x: ir.x * KX, y: ir.y, w: ir.w * KX, h: ir.h, f: ir.f },
+          zBase: (ir.f === 2 ? (exploded ? WALL + gap : WALL) : 0),
+          wall: WALL,          /* one storey, so nothing is drawn through a ceiling */
+          key: focusKey,
+          C: C
+        }) || [];
+        /* The interior is a CLICK TARGET, carrying its own room key.
+           [SEAN "click it to take off so the map wont be locked somehow it
+           lock the map".] Without this the model was only shapes lying over
+           the room: whether a tap escaped depended on whether it happened to
+           miss them and reach the box underneath, which is a coin toss and
+           feels like a lock. Now a tap on the temple is a tap on the room,
+           and a tap on the room you are already in is the way out. */
+        inside.forEach(function (it) {
+          items.push({ svg: '<g opacity="' + focusT.toFixed(2) + '" data-room="' +
+                            esc(focusKey) + '">' + it.svg + "</g>",
+                       depth: it.depth, floor: ir.f, room: focusKey });
+        });
+      } catch (e) {
+        /* An interior is decoration. If one throws, the room falls back to
+           the plain box rather than taking the whole sheet down with it. */
+        if (window.console) console.warn("room interior failed:", focusKey, e);
+      }
+    }
+
     /* The room overview: the focused gallery's highlight works stand on its
        roof as numbered stops, in walking order. Their positions along the
        room are spacing, not surveying; the caption below says so, because
-       this sheet never pretends to know more than it does. */
-    if (focusKey && openT > 0.02 && focusT > 0.02 && R[focusKey]) {
+       this sheet never pretends to know more than it does.
+
+       NOT when the room has an interior drawn. [SEAN: "its still blocking
+       view more like those 123 and words maybe take them off".] These numbers
+       and their labels earned their place when a focused room was an empty
+       box and they were the only thing in it. Over a model of the actual
+       gallery they are furniture standing in front of the exhibit: four
+       circles and four lines of text floating across the temple you dived in
+       to see. The highlights are not lost, they are in the room bar and the
+       guide beside the drawing, which is where a list belongs. */
+    if (focusKey && openT > 0.02 && focusT > 0.02 && R[focusKey] &&
+        !(window.MET_ROOMS && window.MET_ROOMS[focusKey])) {
       var fr = R[focusKey];
       var fCards = window.MET_CARDS || {};
       var hl = ((fCards[focusKey] || {}).highlights || []).slice(0, 4);
@@ -593,12 +657,17 @@
        the same building, remembered rather than shouted. */
     var dim = (focusKey && focusT > 0.02) ? (1 - 0.8 * focusT) : 1;
     items.forEach(function (it) {
-      if (dim < 1 && it.room !== focusKey) {
+      if (dim < 1 && it.lbl) {
+        /* EVERY room's name steps aside when one room is held close, not just
+           the focused one. The focused room's name always faded, but the
+           neighbours' names only dimmed to a fifth, and at this zoom a fifth
+           is still legible text lying across the model. Inside one gallery
+           you do not need the next gallery's name; the caption below and the
+           room bar carry where you are. */
+        var lo = (1 - focusT) * (it.room === focusKey ? 1 : dim);
+        svg.push('<g opacity="' + lo.toFixed(2) + '">' + it.svg + "</g>");
+      } else if (dim < 1 && it.room !== focusKey) {
         svg.push('<g opacity="' + dim.toFixed(2) + '">' + it.svg + "</g>");
-      } else if (dim < 1 && it.lbl) {
-        /* the focused room's own name steps aside: the caption below carries
-           it, and the roof is now the stops' stage */
-        svg.push('<g opacity="' + (1 - focusT).toFixed(2) + '">' + it.svg + "</g>");
       } else {
         svg.push(it.svg);
       }
@@ -704,6 +773,19 @@
   /* ---- public ---- */
   function render(host, opts) { host.innerHTML = build(opts); }
 
+  /* Announce the layer from the ANIMATION, not from the tap that started it.
+     [SEAN "once hit view on 3D could come out, maybe need a go back key".]
+     The way out was wired to the click handler, so it appeared only if you
+     entered by tapping the building. Any other path in, and the page had the
+     interior open with the exit still hidden: no way back, which is exactly
+     what being stuck is. A door should not depend on which way you came in. */
+  function announceLayer(host) {
+    try {
+      host.dispatchEvent(new CustomEvent("met3d:layer",
+        { detail: { layer: openT > 0.5 ? "interior" : "exterior" }, bubbles: true }));
+    } catch (e) {}
+  }
+
   function animateTo(target, host, opts, done) {
     if (anim) { cancelAnimationFrame(anim); anim = null; }
     var from = openT, t0 = null, dur = 620;
@@ -714,7 +796,11 @@
       openT = from + (target - from) * e;
       render(host, opts);
       if (k < 1) anim = requestAnimationFrame(frame);
-      else { anim = null; openT = target; render(host, opts); if (done) done(); }
+      else {
+        anim = null; openT = target; render(host, opts);
+        announceLayer(host);
+        if (done) done();
+      }
     }
     anim = requestAnimationFrame(frame);
   }
@@ -734,8 +820,13 @@
     animF = requestAnimationFrame(frame);
   }
 
-  /* Which rooms the camera will not dive into: the stairs are plumbing. */
+  /* Which rooms the camera will not dive into: the stairs are plumbing.
+     Unless one of them has been DRAWN. The Grand Staircase now has an
+     interior, and a flight with an eighteen foot Tiepolo at the head of it is
+     not plumbing; a room that went to the trouble of existing should be
+     entered. Everything without an interior keeps the old rule exactly. */
   function focusable(k) {
+    if (k && window.MET_ROOMS && window.MET_ROOMS[k]) return true;
     return k && k !== "grand-stair" && k !== "grand-stair-2";
   }
 
@@ -780,7 +871,23 @@
       var g = e.target && e.target.closest ? e.target.closest("[data-room]") : null;
       roomTap(g ? g.getAttribute("data-room") : null, e);
     }, true);
+    /* Escape is the guaranteed way out. A drawing can always end up with
+       something unexpected on top; a key cannot be covered. */
     host.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !focusKey && openT > 0.5) {
+        /* one level at a time: a room first, then the building */
+        e.preventDefault();
+        animateTo(0, host, opts);
+        return;
+      }
+      if (e.key === "Escape" && focusKey) {
+        var wasK = focusKey;
+        e.preventDefault();
+        animateFocus(0, host, opts, function () { focusKey = null; render(host, opts); });
+        host.dispatchEvent(new CustomEvent("met3d:room",
+          { detail: { room: wasK, focused: false }, bubbles: true }));
+        return;
+      }
       if (e.key !== "Enter" && e.key !== " ") return;
       if (!(e.target && e.target.closest && e.target.closest('svg[data-met3d]'))) return;
       var g = e.target.closest("[data-room]");

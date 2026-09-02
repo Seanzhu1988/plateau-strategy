@@ -757,6 +757,18 @@
     font-size: 0.92rem !important;
     line-height: 1.15 !important;
     min-width: 0;                      /* shrink and reflow rather than push the nav out */
+    /* min-width:0 lets the wordmark shrink, and on a page whose nav refuses to
+       shrink it shrinks all the way to a ZERO WIDTH BOX. A zero width box with
+       visible overflow still PAINTS, so on the destination book the wordmark
+       was drawn straight across the nav and "Home" sat on top of "Solution".
+       Measured: box 0px wide, text 57px, four lines, header 93px tall.
+       The home page never had this because its .logo-text already clips; this
+       is the same rule, applied to every masthead. One line rather than four,
+       so a wordmark with no room takes no height either, and an ellipsis where
+       there is SOME room so what shows is a word and not a cut letter. */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   @media (max-width: 400px) {
     header .brand, header .logo-text { font-size: 0.84rem !important; }

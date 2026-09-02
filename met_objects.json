@@ -1,0 +1,16 @@
+{
+ "_note": "Room key to Met object. Values are CACHED from the Met's Collection API so a visitor's browser NEVER calls the Met: hitting their API from every page view is how you get rate-limited, and it happened to me while researching this. Only objects whose API record says isPublicDomain is true belong here, because that flag is the licence check. CC0 covers copyright only, so we credit the Met plainly and never imply they endorse us. The picture links out to the Met's own object page, which is where their 3D model lives; we host no model and load no viewer.",
+ "checked": "2026-08-31",
+ "rooms": {
+  "dendur": {
+   "objectId": 547802,
+   "title": "The Temple of Dendur",
+   "date": "completed by 10 CE",
+   "gallery": "131",
+   "credit": "Given to the United States by Egypt in 1965 and awarded to The Metropolitan Museum of Art in 1967.",
+   "image": "https://images.metmuseum.org/CRDImages/eg/web-large/DP240337.jpg",
+   "link": "https://www.metmuseum.org/art/collection/search/547802",
+   "isPublicDomain": true
+  }
+ }
+}

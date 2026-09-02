@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Locked</title>
+<link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+<style>
+  body { font: 17px/1.6 Georgia, serif; color: #14110c; background: #f4f1ea;
+         display: flex; align-items: center; justify-content: center;
+         min-height: 100vh; margin: 0; padding: 1.2rem; }
+  .box { background: #fff; border: 1px solid #d9d4c7; border-radius: 14px;
+         padding: 2rem 1.8rem; max-width: 420px; width: 100%;
+         box-shadow: 0 18px 44px -26px rgba(20,17,12,.35); }
+  h1 { font-size: 1.35rem; margin: 0 0 .4rem; }
+  p { color: #6b655b; font-size: .95rem; margin: 0 0 1.2rem; }
+  input { width: 100%; font: inherit; padding: .7rem .85rem; box-sizing: border-box;
+          border: 1px solid #d3d3da; border-radius: 8px; background: #fff; }
+  #go { font: inherit; font-weight: 700; border: 0; border-radius: 999px;
+        background: #1f3a5f; color: #fff; padding: .6rem 1.4rem; margin-top: .9rem;
+        cursor: pointer; }
+  #msg { color: #a4342b; font-size: .9rem; min-height: 1.3em; margin-top: .6rem; }
+</style>
+</head>
+<body>
+  <div class="box">
+    <h1>This room is locked</h1>
+    <p>Work in progress, shared by passcode. If you were given one, it goes here.</p>
+    <input id="code" type="password" placeholder="Passcode" autocomplete="off"
+           aria-label="Passcode" autofocus>
+    <div><button id="go" type="button">Open the room</button></div>
+    <div id="msg" role="status"></div>
+  </div>
+<script>
+  var msg = document.getElementById('msg');
+  async function enter() {
+    msg.textContent = '';
+    var r = await fetch('/api/room/enter', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ passcode: document.getElementById('code').value })
+    }).then(function (x) { return x.json(); }).catch(function () { return { error: 'No answer from the site.' }; });
+    if (r && r.ok) { location.reload(); return; }
+    msg.textContent = (r && r.error) || 'That did not work.';
+  }
+  document.getElementById('go').addEventListener('click', enter);
+  document.getElementById('code').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') enter();
+  });
+</script>
+</body>
+</html>

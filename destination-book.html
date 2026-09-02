@@ -137,6 +137,13 @@
         .b-price{ background: var(--psx-wash-good,#e1f8ec); color: #14513a; }
         .entry .desc { font-size: 0.9rem; color: #4a453d; line-height: 1.55; }
         .entry .meta { font-size: 0.8rem; color: #6b655b; }
+        .entry .story { margin: 0.55rem 0 0; font-size: 0.88rem; color: #4a453d;
+            line-height: 1.6; border-left: 2px solid #c9c0ad; padding-left: 0.8rem; }
+        .entry .story > summary { font-size: 0.84rem; font-weight: 700; color: #1f3a5f;
+            cursor: pointer; list-style: none; text-decoration: underline;
+            text-underline-offset: 2px; }
+        .entry .story > summary::-webkit-details-marker { display: none; }
+        .entry .story p { margin: 0.5rem 0 0; }
         .entry .meta.adv { color: #1f3a5f; font-weight: 600; }
         .adv-links { display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; margin: .45rem 0 0; }
         .golink { font: inherit; font-size: .86rem; font-weight: 700; color: #1f3a5f;
@@ -214,6 +221,18 @@
     .tier-door { border: 1px dashed #b4b2a9; border-radius: 10px; padding: .8rem 1rem;
                  margin: .2rem 0 .4rem; color: #4a453d; cursor: pointer; font-size: .95rem; }
     .tier-door:hover { border-color: #1f3a5f; color: #1f3a5f; }
+    /* Lives INSIDE the description paragraph, not beside it. The card is a
+       flex column, and a flex container ignores floats entirely: every child
+       becomes its own row, so the picture sat on a line of its own and added
+       its full height to the card, which is the one thing it must not do.
+       Inside a block of text the float behaves, and the words wrap around it.
+
+       Small, and deliberately not interactive. A card carries a
+       name, a rating, a description, opening hours and four prompts already;
+       a model that asks to be turned would be competing with all of it. */
+    .db-model { float: right; width: 104px; height: 84px; margin: 0 0 .35rem .7rem;
+                object-fit: contain; }
+    @media (max-width: 420px) { .db-model { width: 84px; height: 68px; } }
 </style>
     <link rel="stylesheet" href="/paper.css">
     <script src="/psx-net.js"></script>
@@ -456,6 +475,38 @@
     function openTier(city, t){ tierOpen[city + '|' + t] = true; render(); }
     window.openTier = openTier;
 
+    /* A LANDMARK'S PICTURE, AT THE SIZE A CARD CAN AFFORD.
+       [SEAN: place the trail models in the book, "not taking too much spaces
+       and easy to understand".]
+
+       Floated beside the description so the text wraps around it, which means
+       it costs no extra height on the card at all. Drawn once by
+       make_thumbs.js and served as a static file, so a reader who never
+       scrolls to Boston never downloads a single one, and nobody's phone
+       renders geometry to show a picture that will never change.
+
+       Matched on the name rather than the slug, because most of the entries
+       the scout added carry no slug. */
+    const MODELS = {
+        'uss constitution': 'constitution',
+        'faneuil hall': 'faneuil-hall',
+        'old north church': 'old-north',
+        'old south meeting': 'old-south',
+        'massachusetts state house': 'state-house',
+        'old state house': 'state-house',
+        'bunker hill': 'bunker-hill',
+        'paul revere house': 'paul-revere'
+    };
+    function modelThumb(e) {
+        const n = String(e.name || '').toLowerCase();
+        let key = null;
+        for (const k in MODELS) if (n.indexOf(k) !== -1) { key = MODELS[k]; break; }
+        if (!key) return '';
+        return '<img class="db-model" loading="lazy" width="104" height="84" '
+             + 'src="/thumbs/' + key + '.svg" alt="' + esc(e.name)
+             + ', a model of the building">';
+    }
+
     function render(){
         const q = $('q').value.trim().toLowerCase();
         const inPlanner = plannerNames();
@@ -562,7 +613,8 @@
                 + '<div class="place-views" data-vname="' + esc(e.name) + '" data-vcity="'
                 +   esc(e.city || '') + '" title="How many travelers have looked at this place">'
                 +   '<b>' + (e.views || 0) + '</b> viewed</div>'
-                + '<p class="desc">' + esc(e.desc) + '</p>'
+                + '<p class="desc">' + modelThumb(e) + esc(e.desc) + '</p>'
+                + storyBlock(e)
                 + '<p class="meta">'
                 +   (e.typical_visit
                         ? T('Open till {time} · ', { time: fmt(e.close) })
@@ -882,6 +934,21 @@
     // and none publish prices. What the map does know is the useful half,
     // and where a menu link exists it goes straight to the restaurant's own
     // page rather than a copy of it here.
+    /* The story a guide tells standing in front of the place. Every language
+       is stored ON the entry, so this picks a field and there is no dictionary
+       lookup to miss: the visitor's language, then English, then nothing. Folded
+       shut by default, because a 150 word read must never push the opening hours
+       and the tip off the card for someone who only wanted the practical lines. */
+    function storyBlock(e){
+        const lang = (window.psxLang && window.psxLang()) || 'en';
+        const txt = String(e['story_' + lang] || e.story_en || '').trim();
+        if (!txt) return '';
+        const body = txt.split(/\n{2,}/)
+            .map(x => '<p>' + esc(x.trim()) + '</p>').join('');
+        return '<details class="story"><summary>' + T('Read the story')
+             + '</summary>' + body + '</details>';
+    }
+
     function diningRow(e){
         const d = e.dining;
         // Hours alone are not a dining profile: the card already prints them
