@@ -45,7 +45,19 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
       against the rendered SVG, which measures one half-arc at 3.0px. At the
       tower camera the same opening is 35px across and 123px tall. Thickening
       a line inside a six pixel hole would only have made it a solid smudge.
-- [ ] The bridge labels sit on top of the deck. Lift them clear.
+- [x] The bridge labels sit on top of the deck. **Done 2026-09-02** with an
+      ink skyline: the box is cut into 240 columns and every piece of
+      STRUCTURE that gets drawn records how high and how low it reaches in
+      each one, deliberately not the flat ground and water planes, which a
+      word reads perfectly well against. A label moves to the nearer clear
+      edge of that ink and a leader is drawn back to its dot; the dot never
+      moves. Measured at 1100px against the pre-change file at the same
+      camera angle, in viewBox units of text sitting on the drawing: bridge
+      39.0 to 0.0, Empire State 28.4 to 0.0 (its 'Fifth Avenue' pair had the
+      same defect and was not on the list). A lift is only taken if it lands
+      inside the box and on no other label. Where there is nowhere to go, at
+      the tower framing and on a phone, the label keeps exactly the position
+      the old code gave it and is haloed instead.
 - [ ] Vertical drag: turn is horizontal only, so nobody can look down on the
       Empire State or up from street level.
 - [ ] Open it up, the way the Met's model does: the Empire State splitting to
@@ -210,3 +222,42 @@ camera, so its Gothic arches are something you can actually see".
 Note: destinations.json is another session's uncommitted work and was left
 untouched. Nothing needed rebasing; the branch was 4 ahead of origin/main and
 0 behind at the start and stayed that way.
+
+### 2026-09-02
+Trimmed: two, both measured before and after. The masthead's nav strip wanted
+466px in a 335px row at 375px and scrolled, but its scrollbar is hidden on
+purpose, so THREE items sat past the right edge with nothing on screen saying
+so, including Book a Ride, the one link on this site that earns money. The
+strip wraps now. Each link still refuses to break inside itself, so the old
+"Book / a / Ride" down a 35px column cannot come back; a wrap happens between
+links, never inside one. Swept sixteen pages: fourteen unchanged, trip planner
+three hidden to none, walks one to none, no page's scrollWidth off 375, and
+desktop still one row at 1200px. It costs 47px of masthead on the two pages
+that were hiding something. Second, the trip planner's second form row used a
+bare 1fr, which is minmax(AUTO,1fr), and the native date input's min-content is
+165px, so that row came out 165/136 and ran 23px past the grid's own right edge
+while the State and County row above sat at 139/139. Now 139.31/139.31 ending
+at 332, flush, and a field left alone on the last row takes the whole row, which
+is what stopped Traffic reading "Auto (by time of da": 152px of text with 248px
+of room now, against 98.
+3D: the top backlog item, the labels on the deck, done with an ink skyline plus
+leaders, and a halo for the labels that have nowhere to go. Numbers above.
+Two defects in my own work, both caught by measuring rather than reading: the
+first lift put a bridge label clean off the bottom edge on a phone because the
+block height ignored the note's descender and the four units above the title,
+twenty units at phone type sizes; and the checker itself identified leaders by
+their opacity, and the Empire State draws 64 glass edges at that same opacity,
+so it was quietly deleting them from the ink map. Leaders carry a class now.
+Also worth keeping: requestAnimationFrame does not fire while the browser pane
+is hidden, so a verification loop that waits on it hangs, and the models stand
+still, which makes a clean before/after at one camera angle but is not a test
+of the spin.
+Checkers: map sound, 83% full. i18n 39, unchanged, none attempted. Script
+lengths 1 out of band, the same Chinese overview, left alone again on purpose.
+Links: all 54 internal hrefs across sixteen pages answer 200.
+Commits: "The masthead stops hiding Book a Ride behind an invisible scrollbar,
+and the trip planner's form rows line up" and "The model labels get out of the
+drawing, and the ones with nowhere to go get a halo".
+Note: destinations.json is another session's uncommitted work and was left
+untouched, verified by checksum across the rebase. The branch was 1 ahead and 2
+behind origin/main at the start and was rebased with --autostash.
