@@ -15,8 +15,8 @@ the ten buildings the routine listed.
 
 MoMA: the building's own architecture (moma-3d.js).
 
-Seattle (seattle-3d.js): space-needle, pier66-walk. Space Needle mounted on
-tours.html; the walk is built and NOT YET MOUNTED on a page.
+Seattle (seattle-3d.js): space-needle, pier66-walk. BOTH NOW MOUNTED on
+tours.html, each with its own camera.
 
 ## How to get dimensions here, learned the hard way
 
@@ -179,11 +179,32 @@ WHAT THE MEASUREMENT SAID, and the site copy was WRONG on both counts:
   start 15.8 ft, net rise 94.8 ft, gross climb 139.1 ft
   two steep pitches, not one: Wall St up to Elliott, and Lenora at about 16
     percent over its steepest 50 m
-THE COPY ON tours.html AND ANYWHERE ELSE STILL SAYS 0.7 MILES UPHILL AND
-SHOULD BE CORRECTED TO MATCH. That is the next run's cheapest job.
+MOUNTED AND FINISHED 2026-09-01, and two things the previous run predicted
+turned out differently.
 
-STILL TO DO: the walk is not mounted on any page yet. It needs a stage on
-tours.html the way the Space Needle has one.
+THE 0.7 MILE COPY DOES NOT EXIST. This run grepped every html, js and json in
+the tree for "0.7 mi", "0.7-mile" and "uphill". The only live hit is an
+unrelated line in guide_scripts.json about the Starbucks Roastery being a
+fifteen minute walk uphill from downtown, which is a different walk and is
+correct. tours.html never carried the 0.7 figure. So the queue's "cheapest
+job" was already not there; the walk section now added to tours.html states
+0.83 miles, the 139 ft climb, the 44 ft given back, and the 16 percent on
+Lenora, from the measurement.
+
+A REAL DEFECT THE PICTURE FOUND, and the numbers had passed. The surface is
+coloured steep at 8 percent, and the grade was taken between adjacent vertices
+with only a `run > 0.5` guard. 3DEP is a 1 m raster whose vertical error is
+about a foot, so over a 2.5 m run one foot of noise reads as 12 PERCENT, which
+is larger than the threshold itself. Two blocks were being painted as hills
+that nobody climbs: a 0.9 ft drop over 2.5 m at 1224 m in, and a 1.5 ft rise
+over 5.3 m in the last strides into the Market. The guard is now MIN_RUN = 15
+m, where that same foot of error is worth 2 percent. It removes exactly those
+two and keeps all six real pitches, which is the test that it is a noise floor
+and not a convenient trim. THE GENERAL LESSON, and it applies to every future
+walk built on the OSRM plus 3DEP pattern: a routed line gives you vertices
+wherever the street geometry happens to bend, some of them metres apart, and a
+per-vertex grade from a 1 m raster is mostly raster. Grade needs a minimum run
+declared before it is claimed.
 
 ## MoMA
 

@@ -375,11 +375,27 @@
     /* the walking surface. Coloured by its own measured grade, so the steep
        block on Lenora is a thing you can see rather than a figure in a
        caption. The threshold is 8 percent, which is the grade above which a
-       pavement stops being a stroll. */
+       pavement stops being a stroll.
+
+       MIN_RUN, and why it is not the 0.5 m it started as. 3DEP is a 1 metre
+       raster and its vertical error is of the order of a foot, so a grade
+       taken between two vertices 2.5 m apart is mostly the error: one foot
+       of noise over 2.5 m reads as 12 percent, which is larger than the whole
+       threshold this line is testing. The first LOOK at this model showed
+       exactly that, two orange blocks the walker never climbs. One is a 0.9 ft
+       DROP over 2.5 m at 1224 m in, and one is a 1.5 ft RISE over 5.3 m in
+       the last few strides into the Market. Neither is a hill; both are the
+       raster talking to itself. At 15 m the same foot of error is worth 2
+       percent, comfortably inside the threshold, so 15 m is the shortest run
+       this data can carry a grade claim over. It removes those two and keeps
+       all six real pitches, which is the test that it is a noise floor and
+       not a convenient trim. Segments below it are drawn, and simply make no
+       claim about their steepness. */
+    var MIN_RUN = 15;
     for (var j = 0; j < WALK.length - 1; j++) {
       var run = WALK[j + 1][3] - WALK[j][3];
       var rise = (WALK[j + 1][2] - WALK[j][2]) * FT;
-      var g = run > 0.5 ? Math.abs(rise / run) : 0;
+      var g = run >= MIN_RUN ? Math.abs(rise / run) : 0;
       var steep = g >= 0.08;
       var za = walkZ(WALK[j][2]), zb = walkZ(WALK[j + 1][2]);
       var q2 = [P(L[j][0], L[j][1], za), P(R[j][0], R[j][1], za),

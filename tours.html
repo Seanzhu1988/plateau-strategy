@@ -190,6 +190,29 @@
     off a ship point at, so here it is.</p>
   </section>
 
+  <!-- The Pier 66 walk, drawn as a cut section from a measured route and
+       measured ground. The route is OSRM foot routing over OpenStreetMap and
+       every height is a USGS 3DEP query, one per vertex; seattle-3d.js carries
+       the full list. Degrades to nothing at all if the script fails to load. -->
+  <section>
+    <h2>The walk off the ship, measured rather than promised</h2>
+    <p>From the Bell Street Pier at Alaskan Way up to Pike Place at Stewart Street is
+    <strong>0.83 miles</strong>, and it is <strong>not simply uphill</strong>. You start
+    at 16 feet above the water, climb 139 feet to a crest on 1st Avenue near Virginia at
+    <strong>153 feet</strong>, and then hand 44 of those feet back down into the Market,
+    which finishes at 111 feet. Two pitches do most of the work: Wall Street up to Elliott
+    Avenue, and <strong>Lenora Street at about 16 percent</strong>. Both are drawn in
+    orange. Drag it.</p>
+    <div id="walkStage" style="background:#eef0ea;border-radius:10px;overflow:hidden;
+         max-width:640px;margin:0 auto;touch-action:pan-y"></div>
+    <p class="note">The route came from OpenStreetMap foot routing and every height is a
+    separate USGS elevation query along it, so this is the ground you would actually walk,
+    not a sketch of it. The vertical is exaggerated three times over, which is what a
+    section drawing does; every horizontal distance is true. Three posts mark where you
+    land, the crest, and the Market. This is the reason the cruise tour is timed backwards
+    from your all-aboard, and the reason I say comfortable shoes and mean it.</p>
+  </section>
+
   <section>
     <h2>Booking, plainly</h2>
     <ul>
@@ -293,6 +316,12 @@ async function sendTourInquiry(e){
 (function(){
   var stage = document.getElementById('snStage');
   if (stage && window.SEATTLE3D) { window.SEATTLE3D.mount(stage, 'space-needle', {pitch:0.22}); }
+  /* The walk wants its own camera: a tower is looked ALONG and a landform is
+     looked DOWN on, or the graded surface that is the whole subject goes edge
+     on. seattle-3d.js already defaults this scene to yaw -0.30, pitch 0.52,
+     so the mount is left to take them rather than repeating them here. */
+  var walk = document.getElementById('walkStage');
+  if (walk && window.SEATTLE3D) { window.SEATTLE3D.mount(walk, 'pier66-walk'); }
 })();
 </script>
 <script src="/i18n.js"></script>
