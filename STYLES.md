@@ -311,6 +311,59 @@ from. A count and a dimension that agree are worth more than either alone.
 
 ---
 
+## The Federal spired tower
+
+*Here: Park Street Church, Boston, Peter Banner, 1809, steeple 217 ft 9 in.*
+
+Federal's churches do something its civic buildings never do. Faneuil Hall
+ranks its orders ACROSS an elevation; a Federal spired tower ranks them
+VERTICALLY, and every stage is a smaller polygon than the one below it. The
+building is a telescope standing on a brick box.
+
+**Tells**
+- **The orders climb as the stages shrink**: Doric in the brick tower, Ionic
+  at the bell story, Corinthian at the first octagon, Composite at the second.
+  Plainest at the bottom, richest at the top, the same rule as Faneuil Hall
+  turned on its end. Reversing it is the giveaway.
+- **Square, square, octagon, octagon, spire.** The plan changes shape twice on
+  the way up. A tower that stays square to the spire is Georgian, not this.
+- Each stage is **straight sided**, not tapered; the diminution happens at the
+  joints, where a cornice steps in. Only the spire itself tapers.
+- **Circular and oval windows** in the stages, not the arched sash of the
+  walls below. Four round at the bell, four at the first octagon, eight oval
+  at the spire base.
+- The whole thing above the brick is **wood**, and it is detailed like wood:
+  attenuated columns and fine mouldings that would be impossible in stone.
+- A **collar midway up the spire**, and a ball and vane above it.
+
+**Wrong if** the stages taper into one another so the silhouette reads as a
+single cone, if the plan never leaves the square, or if the orders repeat
+instead of climbing.
+
+**Our numbers, all published** (Bowen's Picture of Boston, 1833, quoted in the
+1903 preservation pamphlet): tower **72 ft high, 27 by 31 in breadth**, Doric,
+carrying **four columns of 35 ft**, crowned by a pediment and balustrade; bell
+story **20 ft square and 8 ft high**, four large circular windows, eight Ionic
+columns on pedestals; octagon **25 ft high, 16 ft from side to side**, four
+circular windows, eight Corinthian columns; second octagon **20 ft high, 12 ft
+6 in from side to side**, Composite; spire base **11 ft from side to side, 9 ft
+high**, eight oval windows; spire **50 ft**, **9 ft 6 in at its base**
+diminishing to **18 in at the top**, a collar midway; a ball **6 ft above**,
+and a vane cut as a blazing star at **217 ft 9 in from the street**.
+
+An octagon published **from side to side** is published across the FLATS. The
+circumradius the drawing needs is `w / 2 / cos(22.5 deg)`, about 1.082 times
+the half width, and using the half width directly makes every octagon in the
+steeple about 8 percent too small.
+
+**The gap, and why it is left as one.** Those heights sum to 190 ft against a
+published 217 ft 9 in. The 27 ft 9 in difference is the one band Bowen names
+and does not measure, the pediment and balustrade over the tower, plus the
+vane. It is drawn at exactly the residual rather than spread quietly across
+the stages that are published.
+
+---
+
 ## The white cube
 
 *1930s to now. Here: the Metropolitan's modern wing, gallery 851.*

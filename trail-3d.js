@@ -1703,10 +1703,220 @@
     return out;
   }
 
+
+  /* ---------------- Stop 3: Park Street Church ----------------
+     Peter Banner, 1809. Solomon Willard carved the capitals. The tallest
+     building in the United States from 1810 to 1828, and still the thing you
+     see first coming up Tremont Street.
+
+     Federal, and the styles book carries the tells; what this building adds
+     to the book is the SPIRED TOWER, whose orders climb Doric, Ionic,
+     Corinthian, Composite as the stages diminish. See STYLES.md.
+
+     WHAT IS DRAWN, AND WHY ONLY THIS. The steeple. Not the meeting house.
+     Four earlier runs of the landmark routine left this building unbuilt for
+     one reason: no source publishes the footprint of the brick body. That is
+     still true and nothing here invents it. What changed is that every
+     dimension of the TOWER AND SPIRE turned out to be published, itemised
+     stage by stage, so the part of this building that is actually the
+     landmark can be drawn honestly while the part that cannot be measured is
+     left off rather than guessed at.
+
+     SOURCE, read 2026-09-02: "The Preservation of Park Street Church,
+     Boston," issued by the Committee, 1903, archive.org
+     `preservationpar01churgoog`, quoting Bowen's Picture of Boston, 1833:
+
+       "The tower is 72 feet in height, and 27 by 31 in breadth, of the Doric
+        order. On each side of the tower is a circular vestibule of two
+        stories, containing stairs to the galleries. This and the tower
+        ornamented with four columns of 35 feet, and the vestibule, is crowned
+        by an elegant pediment and balustrade ... The tower supports a square
+        story for a bell, 8 feet high and 20 feet square, with four large
+        circular windows, eight columns on pedestals of the Ionic order, with
+        corresponding pilasters, crowned by four pediments and cornices. On
+        this stands an octagon, 25 feet high and 16 feet from side to side,
+        with four circular windows, ornamented with 8 Corinthian columns ...
+        This supports another octagon of 20 feet, 12 feet and 6 inches from
+        side to side, with the same number of columns and windows of the
+        Composite order. On this stands a base for the spire, 11 feet from
+        side to side and 9 in height, with 8 oval windows. From this rises an
+        octagonal spire of 50 feet with a collar midway 9 feet 6 inches at its
+        base, and diminishing gradually to 18 inches at the top, crowned by a
+        ball 6 feet above, with a vane representing a blazing star. The height
+        of the vane from the street is 217 feet 9 inches."
+
+     Every horizontal and every vertical above is in the model, unrounded.
+
+     THE ONE ARITHMETIC GAP, DECLARED RATHER THAN HIDDEN. The itemised heights
+     sum to 190 ft: 72 tower + 8 bell + 25 + 20 + 9 + 50 spire + 6 to the ball.
+     The published total to the vane is 217 ft 9 in. The 27 ft 9 in difference
+     is the one band Bowen NAMES but does not measure, the pediment and
+     balustrade crowning the tower, plus the vane itself. So the band is drawn
+     at exactly the residual and its internal split is the only soft thing
+     here. The total is published, each stage is published, and the leftover is
+     stated instead of being quietly spread across the stages.
+
+     TWO SMALLER CHOICES, also not published. Which of 27 and 31 faces Tremont
+     Street: Bowen says "27 by 31" without saying which way round, and 27 is
+     put across the front here. And the column diameters, proportioned from
+     their published 35 ft height at the classical Doric eighth.
+
+     NOT DRAWN, because unmeasured: the brick body, and the two circular
+     vestibules Bowen puts on each side of the tower. The lot is published at
+     80 ft on Tremont by 118 ft on Park, from the deed quoted in the same
+     pamphlet, but a lot is not a footprint and it is not used here. */
+  function parkStreet(ctx) {
+    var BRICK = "#9a4b3a", BRICK_E = "#6d3327";
+    var TRIM = "#f2ede1", TRIM_E = "#b9b0a0", TRIM_D = "#e2dbcb";
+    var GLASS = "#3f4d55", GOLD = "#c9a22c", GOLD_E = "#8a6f18";
+    var PAVE = "#ded8cb", GRASS = "#c2c9b4", STONE = "#c9c4b8";
+    var out = [];
+
+    /* PLAN, published: 27 across the Tremont front, 31 into the block. */
+    var TW = 27, TD = 31;
+    var x0 = -TW / 2, x1 = TW / 2, y0 = -TD / 2, y1 = TD / 2;
+    var cy = 0;
+
+    /* the corner it stands on. Ground planes take an explicit far depth
+       through ground(), which is why they never paint over the tower. */
+    out.push(ground(ctx, 0, 0, 200, 200, 0, GRASS, "#a8b09a"));
+    out.push(ground(ctx, 0, 0, 104, 112, 0.4, PAVE, "#bfb9aa"));
+    out = out.concat(slab(ctx, 0, cy, TW + 7, TD + 7, 0.4, 1.6, STONE, "#9d988c", -9.9e8));
+
+    /* THE TOWER, 72 ft, Doric, brick */
+    var TOP = 72;
+    var tower = box(ctx, x0, x1, y0, y1, 1.6, TOP, BRICK, BRICK_E, null);
+    out = out.concat(tower.parts);
+
+    /* the Tremont front: the door, and the window over it */
+    if (ctx.faceVisible(0, -1)) {
+      var dF = tower.walls["0,-1"];
+      var mapF = function (u, z) { return ctx.project(u, y0, z); };
+      out.push(archOpening(ctx, mapF, 0, 4.2, 1.6, 13, "#4a3a30", TRIM_E, dF + 0.4));
+      out.push(archOpening(ctx, mapF, 0, 3.4, 22, 30, GLASS, TRIM_E, dF + 0.4));
+      out.push(archOpening(ctx, mapF, 0, 2.8, 48, 54, GLASS, TRIM_E, dF + 0.4));
+    }
+    /* and the same on whichever flank is turned to us */
+    [[-1, x0], [1, x1]].forEach(function (side) {
+      var d = tower.walls[side[0] + ",0"];
+      if (d === undefined) return;
+      var X = side[1];
+      var map = function (u, z) { return ctx.project(X, u, z); };
+      out.push(archOpening(ctx, map, cy, 3.4, 22, 30, GLASS, TRIM_E, d + 0.4));
+      out.push(archOpening(ctx, map, cy, 2.8, 48, 54, GLASS, TRIM_E, d + 0.4));
+    });
+
+    /* THE FOUR COLUMNS OF 35 FEET, published, Doric, on the Tremont front.
+       Diameter proportioned from the published height, and said so above. */
+    var COL_R = 35 / 8 / 2;
+    if (ctx.faceVisible(0, -1)) {
+      var dC = tower.walls["0,-1"];
+      [-10.2, -3.4, 3.4, 10.2].forEach(function (cxq, i) {
+        out = out.concat(columnAt(ctx, cxq, y0 - COL_R * 0.55, COL_R, 1.6, 36.6,
+                                  TRIM, TRIM_E, dC + 1.0 + i * 0.05));
+      });
+      /* the entablature the four columns carry */
+      out = out.concat(slab(ctx, 0, y0 - COL_R * 0.55, TW + 1.4, COL_R * 2.2,
+                            36.6, 3.2, TRIM_D, TRIM_E, dC + 1.6));
+    }
+
+    /* THE UNITEMISED BAND: 72 to 99.75. Pediment and balustrade, named by
+       Bowen and measured by nobody, drawn at exactly the residual of two
+       published numbers. Its internal split is the only soft geometry here. */
+    var BAND0 = 72, BAND1 = 99.75;
+    out = out.concat(slab(ctx, 0, cy, TW + 2.2, TD + 2.2, BAND0, 3.4, TRIM_D, TRIM_E));
+    var PED0 = BAND0 + 3.4;
+    /* the pediment reads on the front; the balustrade runs round above it */
+    if (ctx.faceVisible(0, -1)) {
+      var P = ctx.project, yF = y0 - 1.1;
+      var ped = [P(x0 - 1.1, yF, PED0), P(x1 + 1.1, yF, PED0), P(0, yF, PED0 + 7.2)];
+      out.push({ svg: ctx.poly(ped, ctx.shade(TRIM, 0, -1, 0), TRIM_E, 0.6), depth: depthOf(ped) });
+    }
+    var BAL0 = PED0 + 7.6, BAL1 = BAND1;
+    var balBase = box(ctx, x0 - 1.1, x1 + 1.1, y0 - 1.1, y1 + 1.1, BAL0 - 1.2, BAL0, TRIM_D, TRIM_E, null);
+    out = out.concat(balBase.parts);
+    [[0, -1], [1, 0], [-1, 0], [0, 1]].forEach(function (n) {
+      var d = balBase.walls[n[0] + "," + n[1]];
+      if (d === undefined) return;
+      var map = n[0] === 0
+        ? function (u, z) { return ctx.project(u, n[1] < 0 ? y0 - 1.1 : y1 + 1.1, z); }
+        : function (u, z) { return ctx.project(n[0] < 0 ? x0 - 1.1 : x1 + 1.1, u, z); };
+      var a = n[0] === 0 ? x0 - 1.1 : y0 - 1.1, b = n[0] === 0 ? x1 + 1.1 : y1 + 1.1;
+      out = out.concat(balustrade(ctx, map, a, b, BAL0, BAL1, TRIM, TRIM_E, d + 0.4));
+    });
+
+    /* THE BELL STORY: published 20 ft square, 8 ft high, four large circular
+       windows, eight Ionic columns on pedestals, four pediments. */
+    var B0 = BAND1, B1 = B0 + 8, bw = 20;
+    var bell = box(ctx, -bw / 2, bw / 2, cy - bw / 2, cy + bw / 2, B0, B1, TRIM, TRIM_E, null);
+    out = out.concat(bell.parts);
+    [[0, -1], [1, 0], [-1, 0], [0, 1]].forEach(function (n) {
+      var d = bell.walls[n[0] + "," + n[1]];
+      if (d === undefined) return;
+      var map = n[0] === 0
+        ? function (u, z) { return ctx.project(u, n[1] < 0 ? cy - bw / 2 : cy + bw / 2, z); }
+        : function (u, z) { return ctx.project(n[0] < 0 ? -bw / 2 : bw / 2, u, z); };
+      var c = n[0] === 0 ? 0 : cy;
+      /* one large circular window per face: four in all, as published */
+      out.push(archOpening(ctx, map, c, 3.1, B0 + 1.4, B0 + 6.6, "#2f3a40", TRIM_E, d + 0.4));
+      /* the eight Ionic columns, two showing on each face */
+      out = out.concat(columnAt(ctx, n[0] === 0 ? -7.4 : (n[0] < 0 ? -bw / 2 - 0.8 : bw / 2 + 0.8),
+                                n[0] === 0 ? (n[1] < 0 ? cy - bw / 2 - 0.8 : cy + bw / 2 + 0.8) : cy - 7.4,
+                                1.0, B0, B1, TRIM, TRIM_E, d + 0.8));
+      out = out.concat(columnAt(ctx, n[0] === 0 ? 7.4 : (n[0] < 0 ? -bw / 2 - 0.8 : bw / 2 + 0.8),
+                                n[0] === 0 ? (n[1] < 0 ? cy - bw / 2 - 0.8 : cy + bw / 2 + 0.8) : cy + 7.4,
+                                1.0, B0, B1, TRIM, TRIM_E, d + 0.9));
+    });
+    out = out.concat(slab(ctx, 0, cy, bw + 2.6, bw + 2.6, B1, 2.0, TRIM_D, TRIM_E));
+
+    /* THE TWO OCTAGONS, both published across the flats, so the circumradius
+       is w / 2 / cos(22.5deg) and not the half width. */
+    function circumR(flats) { return (flats / 2) / Math.cos(Math.PI / 8); }
+    var O1_0 = B1 + 2.0, O1_1 = O1_0 + 25, r1 = circumR(16);
+    out = out.concat(octStage(ctx, 0, cy, r1, r1, O1_0, O1_1, TRIM, TRIM_E));
+    out = out.concat(octStage(ctx, 0, cy, r1 + 1.1, r1 + 1.1, O1_1, O1_1 + 1.6, TRIM_D, TRIM_E));
+
+    var O2_0 = O1_1 + 1.6, O2_1 = O2_0 + 20, r2 = circumR(12.5);
+    out = out.concat(octStage(ctx, 0, cy, r2, r2, O2_0, O2_1, TRIM, TRIM_E));
+    out = out.concat(octStage(ctx, 0, cy, r2 + 0.9, r2 + 0.9, O2_1, O2_1 + 1.3, TRIM_D, TRIM_E));
+
+    /* THE SPIRE BASE: 11 ft from side to side, 9 ft high, eight oval windows */
+    var S0 = O2_1 + 1.3, S1 = S0 + 9, rB = circumR(11);
+    out = out.concat(octStage(ctx, 0, cy, rB, rB, S0, S1, TRIM, TRIM_E));
+
+    /* THE SPIRE: 50 ft, 9 ft 6 in across the base, 18 in across the top,
+       with the collar Bowen puts midway. */
+    var SP0 = S1, SP1 = SP0 + 50, rS = circumR(9.5), rT = circumR(1.5);
+    var MID = SP0 + 25, rM = (rS + rT) / 2;
+    out = out.concat(octStage(ctx, 0, cy, rS, rM, SP0, MID, TRIM, TRIM_E));
+    out = out.concat(octStage(ctx, 0, cy, rM + 0.8, rM + 0.8, MID, MID + 1.1, TRIM_D, TRIM_E));
+    out = out.concat(octStage(ctx, 0, cy, rM, rT, MID + 1.1, SP1, TRIM, TRIM_E));
+
+    /* THE BALL, 6 ft above the spire, and the blazing star that tops out at
+       the published 217 ft 9 in. */
+    var TOTAL = 217.75;
+    out = out.concat(octStage(ctx, 0, cy, 0.5, 0.5, SP1, TOTAL - 3.4, GOLD, GOLD_E));
+    out = out.concat(octStage(ctx, 0, cy, 1.5, 1.5, TOTAL - 3.4, TOTAL - 1.6, GOLD, GOLD_E));
+    var Pv = ctx.project, star = [];
+    for (var s = 0; s < 10; s++) {
+      var ang = -Math.PI / 2 + s * Math.PI / 5, rr = (s % 2 === 0) ? 3.0 : 1.25;
+      star.push(Pv(rr * Math.cos(ang), cy, TOTAL - 1.6 + 1.6 + rr * Math.sin(ang) * 0.0 + (s % 2 === 0 ? 0 : 0)));
+    }
+    /* the star is drawn in the vertical plane, so it is built in (x, z) */
+    star = [];
+    for (var t = 0; t < 10; t++) {
+      var a2 = -Math.PI / 2 + t * Math.PI / 5, r3 = (t % 2 === 0) ? 3.0 : 1.25;
+      star.push(Pv(r3 * Math.cos(a2), cy, TOTAL - 1.6 - r3 * Math.sin(a2)));
+    }
+    out.push({ svg: ctx.poly(star, GOLD, GOLD_E, 0.5), depth: 1e8 });
+    return out;
+  }
+
   var SCENES = { "bunker-hill": bunkerHill, "old-north": oldNorth,
                  "faneuil-hall": faneuilHall, "state-house": stateHouse,
                  "old-state-house": oldStateHouse, "old-south": oldSouth,
-                 "constitution": constitution, "paul-revere": paulRevere };
+                 "constitution": constitution, "paul-revere": paulRevere,
+                 "park-street": parkStreet };
 
   /* The live mount: same hand-rolled projection as the other models, so a
      trail stop weighs a few kilobytes and needs no library. */

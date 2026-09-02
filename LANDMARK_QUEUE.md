@@ -603,3 +603,107 @@ should expect to retry it and should not read the timeout as a closed door.
   Smith Tower       Sanborn now struck. Two leads left, both needing an
                     identifier found before they can be read.
   Marron Atrium     untouched this run.
+
+## The 2026-09-02 fifth run: PARK STREET CHURCH'S STEEPLE IS BUILT, and the body is still absent
+
+This run BUILT, after four runs that did not. The thing that broke the deadlock
+was not a new document route but a change of QUESTION. Every previous run asked
+"can I get the footprint of this building," got no, and stopped. This one found
+that the part of Park Street Church which is actually the landmark, the steeple,
+is published to the inch, stage by stage, and drew that while leaving the
+unmeasurable brick body off entirely.
+
+**THE SOURCE, and it was one archive.org search away the whole time.**
+`archive.org/download/preservationpar01churgoog/preservationpar01churgoog_djvu.txt`
+"The Preservation of Park Street Church, Boston," issued by the Committee, 1903.
+This is the SAME document Wikipedia already cited for the 217 ft figure, so the
+queue had a footnote pointing straight at it for four runs and never followed it.
+It quotes Bowen's Picture of Boston, 1833, in full, and that quotation carries
+EVERY dimension of the tower and spire:
+
+  tower 72 ft high, 27 by 31 in breadth, Doric, four columns of 35 ft,
+    crowned by a pediment and balustrade
+  bell story 8 ft high, 20 ft square, four large circular windows,
+    eight Ionic columns on pedestals, four pediments and cornices
+  octagon 25 ft high, 16 ft from side to side, four circular windows,
+    eight Corinthian columns
+  octagon 20 ft high, 12 ft 6 in from side to side, Composite
+  spire base 9 ft high, 11 ft from side to side, eight oval windows
+  octagonal spire 50 ft, collar midway, 9 ft 6 in at its base
+    diminishing to 18 in at the top
+  a ball 6 ft above, a vane representing a blazing star
+  the vane 217 ft 9 in from the street
+
+**THE ARITHMETIC GAP, CARRIED NOT AVERAGED.** Those itemised heights sum to
+190 ft, and the published total is 217 ft 9 in. The 27 ft 9 in difference is the
+one band Bowen NAMES and does not measure, the pediment and balustrade over the
+tower, plus the vane. The model draws it at exactly the residual and says so.
+Do not "fix" this by stretching the published stages.
+
+**A SECOND FIND IN THE SAME PAMPHLET, AND IT IS A TRAP.** The deed is quoted:
+the lot bounds "southeasterly by Tremont street, eighty feet; southwesterly by
+Park street, one hundred and eighteen feet; northwesterly by land formerly of
+Edmund Dwight, eighty feet; northeasterly by the Old Granary Burying-ground."
+THAT IS THE LOT AND IT IS NOT THE FOOTPRINT. It is the same disqualified
+substitution this file already struck for Smith Tower's parcel, and it is more
+tempting here because the church nearly fills its corner. It is not used, and a
+later run must not use it either. The 1974 Ministries Building stands on part of
+that same frontage, which is by itself enough to prove the lot is not the church.
+
+**BOWEN'S OWN VOLUMES ARE UNREADABLE AND DO NOT NEED TO BE READ.** Both
+archive.org scans of Bowen, `bowenspictureofb00owe` (1833) and
+`bowenspictureofb1838bowe` (1838), have OCR so poor that "Park Street," "72
+feet" and "blazing star" all return zero hits in text that certainly contains
+them. Do not spend a run on them. The 1903 pamphlet reproduces the passage
+cleanly and is the better copy.
+
+**THE loc.gov SANBORN QUERY FOR BOSTON LANDED THIS TIME.** The previous run
+recorded it timing out twice and told a later run to retry rather than read the
+timeout as a closed door. That was right. With a browser User-Agent and a 60
+second timeout it returned 75 Boston items, volume `sanborn03693`, running
+1885 to 1975. The sheets are there and reachable if a future run wants the body
+outline by eye. It was not needed for the steeple and was not spent.
+
+**WHAT THE RENDER SHOWED THAT THE NUMBERS DID NOT.** The model is committed
+because its geometry is sourced and its arithmetic checks, but the picture found
+four things and they are the next run's first job, not a later polish:
+
+  1. THE DEFAULT CAMERA SHOWS THE BACK. At the shared yaw of -0.62 the visible
+     faces are (0,1) and (-1,0), so the Tremont front is turned away and the
+     four published 35 ft Doric columns, the pediment and the door are all
+     drawn and all invisible. The scene must be mounted at a yaw that turns the
+     front to the viewer before it goes on a page. THIS IS WHY IT IS NOT YET
+     MOUNTED: mounting a model whose front elevation has never been looked at
+     would break the rule this whole routine exists to enforce.
+  2. THE BELL STORY'S EIGHT IONIC COLUMNS READ AS BRACKETS. The per-face
+     placement puts them outside the wall plane on the flanks, so they poke out
+     sideways instead of standing at the corners. They want placing on the
+     eight positions of the 20 ft square, computed once, not per visible face.
+  3. THE TWO OCTAGONS READ AS ONE CONE. Their published windows and columns are
+     not drawn, so the 25 ft Corinthian stage and the 20 ft Composite stage lose
+     the distinction the style depends on. Bowen publishes four circular windows
+     on the first and the same number on the second; drawing them is what makes
+     this a spired tower rather than a spike.
+  4. THE RESIDUAL BAND READS AS A DRUM. Its 27 ft 9 in is honest and its
+     internal split is declared soft, but at this camera it is the widest thing
+     on the steeple and it dominates. Worth revisiting the split once the front
+     is visible and the pediment can be seen doing its share of the height.
+
+**WHERE THE FOUR NOW STAND.**
+  Park Street Ch.   STEEPLE BUILT to published dimensions. The brick body is
+                    still unpublished and still not drawn. Sanborn volume
+                    sanborn03693 is the live route to it and is now known to
+                    answer. Finishing the render defects above comes first.
+  King's Chapel     unchanged. Every horizontal published, no vertical of the
+                    standing building published.
+  Smith Tower       unchanged. 462 ft firm, footprint absent.
+  Marron Atrium     unchanged. 110 ft firm, plan absent.
+
+**THE LESSON, and it is a different one from the four before it.** Those four
+runs each ended by refusing to invent a number, which was right. This one shows
+the refusal has a second move available that none of them tried: when a building
+is one dimension short, ask whether the dimension is needed for ALL of it or
+only for PART of it. Park Street Church was never fully blocked. It was blocked
+below the cornice and completely open above it, and the queue had been treating
+the building as a single yes-or-no for four runs. Before declaring the next
+landmark blocked, split it and check the parts.
