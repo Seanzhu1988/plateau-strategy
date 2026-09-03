@@ -1315,3 +1315,119 @@ finding and this one did the building, and the whole budget went into geometry
 because the numbers were already in hand and already checked. That is the shape
 a two-run landmark should take. The one thing the geometry could not tell
 itself was that its own roof was lying, and only the picture said so.
+
+## The 2026-09-03 fourth run: THE ROUTER THIS FILE RECOMMENDS IS A CAR, and it was recommended to every future walk
+
+Nothing was built and no landmark moved, which is the rule working. This run
+went looking for the one number that unblocks each of the three remaining
+buildings, failed on all three in ways worth recording, and then found a defect
+in the site's own measuring instrument, which is the more valuable result.
+
+**THE FINDING. `router.project-osrm.org` IGNORES THE PROFILE IN THE URL.**
+The Pier 66 walk is recorded in this file and in seattle-3d.js as measured by
+"OSRM foot routing over OpenStreetMap," and the 2026-09-01 run wrote that the
+technique "makes every other walking route on this site buildable on the same
+pattern." It does not, because it is not a walking route.
+
+Tested this run, same two points, four profiles:
+
+    /route/v1/foot/-71.066070,42.355040;-71.063880,42.358600  ->  950.8 m
+    /route/v1/driving/...                                     ->  950.8 m
+    /route/v1/walking/...                                     ->  950.8 m
+    /route/v1/bike/...                                        ->  950.8 m
+
+Identical to the tenth of a metre in all four. The public demo server carries
+only the car network and silently accepts any profile name. Those two points
+are Boston Common and the State House, a 500 m stroll up Park Street that the
+car network sends 950 m around the one-ways of Beacon Hill.
+
+  WHAT IT DOES TO THE FREEDOM TRAIL, which is how it was caught. Routed through
+  all 16 published stops in trails.json, the demo server returns 10,549 m,
+  6.555 MILES, against the trail's own published 2.5. Individual legs are
+  absurd on their face: Common to State House 950 m, State House to Park Street
+  Church 888 m for a walk of about 250, Copp's Hill to the Constitution 2,011 m
+  across the Charlestown Bridge. That is a car obeying one-way streets. The
+  build stopped there rather than draw it.
+
+  WHAT IT DOES TO THE BUILT PIER 66 WALK, stated plainly and not smoothed over.
+  Its 0.829 mi and its 139 ft of climb were measured along a DRIVING route. On
+  that particular corridor the two coincide closely, because Alaskan Way, Wall,
+  Elliott, Lenora, 1st and Pine are two-way streets a car and a walker take
+  alike, which is exactly why the figure passed its sanity check at the time.
+  The model has NOT been redrawn, because the numbers are probably right; the
+  COMMENT in seattle-3d.js has been corrected this run so the file no longer
+  claims a foot route it did not have. A later run that wants the Pier 66
+  numbers to be true rather than probably true should re-measure it on the
+  router below and compare.
+
+**THE REPLACEMENT, FOUND AND PROVEN LIVE THIS RUN: brouter.de.** A plain GET,
+no key, no User-Agent trick, no 403.
+
+    https://brouter.de/brouter?lonlats=<lon,lat>|<lon,lat>&profile=hiking-beta
+      &alternativeidx=0&format=geojson
+
+  Boston Common to Park Street Church came back 200 with `track-length` 420 m
+  over 32 points, which is a walk and not a drive. TWO THINGS A LATER RUN NEEDS
+  TO KNOW ABOUT IT. Its geometry carries a THIRD ordinate, elevation in metres,
+  so a rough profile arrives with the route and 3DEP is then a refinement
+  rather than a requirement. And it answers HTTP 400 with the plain-text body
+  `target island detected for section 0` when a waypoint snaps to an isolated
+  way: the State House coordinate in trails.json does that, because 42.3586,
+  -71.06388 lands on the building and not on a street. That is a real routing
+  error and not a wall. Nudge the waypoint to the kerb and it routes.
+
+  So the Freedom Trail walk is now a genuinely buildable item, and it is the
+  first one this queue has had in three runs. It needs only the 16 waypoints
+  nudged off their buildings and one pass of the router. THE HABIT THAT MUST
+  RIDE WITH IT: measure the trail's published 2.5 miles against what the router
+  says, and if they disagree, say so on the page the way the Pier 66 section
+  says 0.83 and not 0.7.
+
+**THE THREE BLOCKED BUILDINGS, all three walked again, all three still short.**
+
+  KING'S CHAPEL, tower height. A FIFTH source read and it does not carry it:
+  HUB History episode 279, "Granite, Glass, and the Construction of King's
+  Chapel," which is a whole episode about this building's construction and
+  quotes the primary records at length. Every dimension in it is one this file
+  already holds, from the same 1749 instruction letter: 120 ft west to east
+  including the steeple, 10 ft more for a chancel, 65 ft 8 in breadth, walls
+  4 ft thick to the first floor. ONE GENUINELY NEW published figure, a
+  horizontal and not the vertical wanted: the 1748 town grant that enlarged the
+  lot, "15 ft wide on the north side and 74 ft in length, and 10 ft on the east
+  end," plus a foundation trench "between seven and 8 ft" deep. Five sources
+  now read without the height: the NHL nomination, HABS ma0461, the BLC index,
+  Helfand, and this. The height is not in the popular literature and a later
+  run should stop asking it for one.
+
+  SMITH TOWER, footprint. Lead 2 of the three named leads is now SPENT and it
+  half-worked: skyscrapercenter's Smith Tower page (building id 9676) is open
+  and publishes 304,350 sq ft gross and a 462 ft roof height. The 462 is a
+  useful INDEPENDENT CORROBORATION of Pastier's permit-plan figure, which this
+  file previously had from one source only. The gross area does not give a
+  footprint: Pastier's own storey count is ambiguous by his own admission,
+  the base and tower have very different plates, and dividing one number by an
+  uncertain other is arithmetic dressed as a measurement. Lead 3, SDCI permit
+  records, is the only one left untried.
+
+  MARRON ATRIUM, plan dimension. A CORRECTION TO A NUMBER THAT IS ABOUT TO BE
+  MISUSED. A search for the atrium's plan returns "12,400 square feet" attached
+  to the atrium in secondary write-ups and in search summaries. It is not the
+  atrium. MoMA's own 2004 reopening release, pulled as a PDF and extracted with
+  pypdf, says: "engages the public with a 12,400-square-foot (1,152 square
+  metres) LOBBY that connects West 53rd and 54th Streets." The atrium appears
+  in the same release with exactly one dimension, the 110-foot height this file
+  already has. Two other published heights came out of it and are recorded in
+  case they are ever wanted: the Contemporary Galleries have "nearly 22-foot-
+  high ceilings" and the sixth-floor special exhibition galleries 18 ft. The
+  atrium's plan is still absent, and a run that takes the 12,400 for it will
+  draw a room MoMA never described.
+
+**THE LESSON, and it is the same shape as the six painter's-depth bugs.** The
+arithmetic passed for two days: 1334 m, 64 vertices, six named streets, a grade
+profile with a declared noise floor. Every one of those numbers was internally
+consistent and the whole thing was measured with the wrong instrument. What
+caught it was asking the instrument the same question four ways and noticing it
+gave one answer. THE RULE TO CARRY: before a data source is written into this
+file as a technique, ask it something whose answer you already know, or ask it
+the same thing two ways that should differ. A source that cannot tell a car
+from a walker will not tell you that it cannot.

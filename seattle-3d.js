@@ -196,11 +196,27 @@
 
      EVERY NUMBER BELOW IS MEASURED, and where it came from:
 
-       the route .......... OSRM foot routing over OpenStreetMap, from the
+       the route .......... router.project-osrm.org, from the
                             Bell Street Pier at Alaskan Way to Pike Place at
                             Stewart Street: Alaskan Way, Wall Street, Elliott
                             Avenue, Lenora Street, 1st Avenue, Pine Street.
                             64 vertices, returned as a GeoJSON line.
+                            CORRECTED 2026-09-03: this was recorded here as
+                            "foot routing" and it is NOT. The public OSRM demo
+                            server carries only the car network and ignores the
+                            profile in the URL; foot, walking, driving and bike
+                            all return the identical distance, tested on this
+                            corridor and on Boston. So the line below is a
+                            DRIVING route measured through walking waypoints.
+                            Along this particular corridor the two coincide
+                            closely, because Alaskan Way, Wall, Elliott, Lenora,
+                            1st and Pine are all two-way streets a car and a
+                            walker take alike, which is why the figure survived
+                            a sanity check. It is still the wrong label and it
+                            would be the wrong number anywhere one-way streets
+                            or a pedestrian cut-through differ. brouter.de
+                            answers a plain GET with a real foot profile and
+                            should replace it.
        1334 m, 0.829 mi ... the length of that route, summed haversine over
                             its own vertices.
        the elevations ..... USGS 3DEP, the National Map point elevation
