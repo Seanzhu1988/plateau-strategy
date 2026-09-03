@@ -60,6 +60,7 @@ VISITOR = {
     "destination-book.html", "road-trip.html", "trips.html", "walks.html",
     "met.html", "moma.html", "universal-gallery.html", "freedom-trail.html",
     "landmarks.html", "tours.html", "articles.html",
+    "iticket.html",
 }
 
 
