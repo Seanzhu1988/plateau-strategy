@@ -2193,6 +2193,23 @@
                         #psx-trail-feature .mfx-title{margin:.55rem 0 0;font-size:1.28rem;font-weight:700;
                             color:var(--psx-ink,#14110c);letter-spacing:-.01em;}
                         #psx-trail-feature .mfx-desc{margin:.7rem 0 0;font-size:.98rem;line-height:1.6;color:#6b655b;}
+                        /* iTicket. It sits with the guides because that is where it
+                           will belong, and it is deliberately QUIETER than they are:
+                           no shadow, a dashed edge, muted ink. Those three say
+                           "not yet" before a word is read, which matters on a
+                           front page where every other card opens something that
+                           works. A tile that looks finished would be a promise. */
+                        #psx-iticket-dock{max-width:1180px;margin:1.1rem auto 0;
+                            background:transparent;border:1px dashed var(--psx-border,#d9d4ca);
+                            border-radius:18px;overflow:hidden;}
+                        #psx-iticket-dock .mfx-body{padding:1.35rem 1.5rem;}
+                        #psx-iticket-dock .mfx-eyebrow{font-size:.72rem;font-weight:700;
+                            letter-spacing:.14em;color:#6b655b;}
+                        #psx-iticket-dock .mfx-title{margin:.55rem 0 0;font-size:1.28rem;
+                            font-weight:700;color:var(--psx-ink,#14110c);letter-spacing:-.01em;}
+                        #psx-iticket-dock .mfx-desc{margin:.7rem 0 0;font-size:.98rem;
+                            line-height:1.6;color:#6b655b;}
+                        #psx-iticket-dock .psx-card-link{color:#6b655b;}
                         /* The third of the set: a second building, same card, same
                            weight, so the row reads as one family of guides. */
                         #psx-moma-feature{max-width:1180px;margin:1.1rem auto 0;background:var(--psx-card);
@@ -2243,6 +2260,19 @@
                             <h3 class="psx-card-title">New York, standing up</h3>
                             <p class="psx-card-desc">The Brooklyn Bridge and the Empire State Building as models you can turn in your hand, drawn at their real dimensions, with the questions answered underneath: which way to walk the bridge, and which observatory is the one people mean.</p>
                             <a class="psx-card-link" href="/landmarks">Turn the landmarks →</a>
+                        </div>
+                    </div>
+                    <div id="psx-iticket-dock" data-arm="operations">
+                        <div class="mfx-body">
+                            <span class="mfx-eyebrow">IN DEVELOPMENT · NOT TAKING BOOKINGS</span>
+                            <h3 class="mfx-title">iTicket, one booth for the whole trip</h3>
+                            <p class="mfx-desc">You plan the day here and then leave to go and buy
+                               the ticket somewhere else. iTicket is meant to close that gap: the
+                               museum, the tour, the boat, chosen by the plan you already made.
+                               Nothing to buy yet, and this page says plainly what works, what does
+                               not, and what it is waiting on. If you sell tickets, it is mostly
+                               written for you.</p>
+                            <a class="psx-card-link" href="/iticket">See where it stands →</a>
                         </div>
                     </div>
                     <!-- The Universal Gallery tile stood here 2026-08-26 to 2026-08-28.
