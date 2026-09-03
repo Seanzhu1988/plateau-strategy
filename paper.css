@@ -748,9 +748,31 @@
     padding: 0.7rem 0.9rem !important;
     gap: 0.55rem !important;
     align-items: center !important;
-    flex-wrap: nowrap !important;
+    /* The row was pinned to one line, and the wordmark was the only thing in
+       it allowed to shrink, so on a page with a wide nav it shrank away.
+       Measured at 375px: the destination book 2px, which paints as a stray
+       vertical stroke between the mark and "Home", the booking page 79px,
+       articles 114px and driver 189px, all cut mid-word, and the home page
+       0px. The reason the row was pinned was "Book / a / Ride" stacking down
+       a column, and that is now prevented at the link itself (white-space:
+       nowrap, below), so the pin is no longer earning its keep. The row
+       wraps: the nav drops to its own line when it cannot share one, and
+       does not move at all on a page where everything already fits. */
+    flex-wrap: wrap !important;
+    row-gap: 0.35rem !important;
   }
-  header img, header .logo, header .psx-logo {
+  /* The home page nests its own row (.header-top) inside the header, so
+     wrapping the OUTER header only strands the share button on a third line,
+     112px against 143px measured. That page wraps one level down instead. */
+  header:has(.header-top) { flex-wrap: nowrap !important; }
+  .header-top { flex-wrap: wrap !important; row-gap: 0.3rem !important; }
+  .header-top > div { flex: 1 1 auto !important; }
+
+  /* img.logo, not .logo. Every .logo in this site is a DIV wrapping the mark
+     and the wordmark together, so sizing it to 30px squeezed the wordmark
+     inside it to zero: that, not the flex row, is why the home page carried
+     no wordmark at all. The rule was always meant for the image. */
+  header img, header img.logo, header img.psx-logo {
     height: 30px !important; width: 30px !important; flex: 0 0 auto;
   }
   header .brand, header .logo-text {
