@@ -41,6 +41,12 @@
   };
 
   /* ---- the camera: yaw around the vertical, pitch down from level ---- */
+  /* How far the eye may drop below level and rise above it. The floor is the
+     same for every view, a shallow worm's eye so a reader can stand in the
+     street and look UP, and it was measured: at -0.14 nothing on either model
+     leaves its box. The ceiling is per view because the two drawings run out
+     of room at different angles, and the numbers are in TILT_LIMITS. */
+  var PITCH_FLOOR = -0.14;
   function makeCam(yaw, pitch, zoom, ox, oy) {
     return { yaw: yaw, pitch: pitch, zoom: zoom, ox: ox, oy: oy };
   }
@@ -590,20 +596,30 @@
     return { w: 720, h: 620, faces: f, lines: lines, marks: marks };
   }
 
-  /* ---- mounting: drag to turn, and it turns on its own until you touch ---- */
-  function mount(host, build, cam0) {
-    var cam = cam0, dragging = false, lastX = 0, idle = true;
+  /* ---- mounting: drag to turn and to tilt, and it turns on its own ---- */
+  function mount(host, build, cam0, ceil) {
+    var cam = cam0, dragging = false, lastX = 0, lastY = 0, idle = true;
+    var pitchCeil = (typeof ceil === 'number') ? ceil : 0.48;
     function draw() { render(host, build(), cam); }
     draw();
     /* Changing view has to REPLACE what this mount draws, not mount a second
        one beside it. Mounting again would leave the first spin loop running,
        so two requestAnimationFrame loops would fight over the same box and a
        reader who tapped back and forth a dozen times would have a dozen. */
-    function retarget(nextBuild, nextCam) {
-      build = nextBuild; cam = nextCam; idle = true; draw();
+    function retarget(nextBuild, nextCam, nextCeil) {
+      build = nextBuild; cam = nextCam; idle = true;
+      if (typeof nextCeil === 'number') pitchCeil = nextCeil;
+      draw();
     }
-    function turn(dx) {
-      cam = makeCam(cam.yaw + dx, cam.pitch, cam.zoom, cam.ox, cam.oy);
+    function turn(dx) { aim(cam.yaw + dx, cam.pitch); }
+    /* Pitch is how far the eye has risen above level. The floor is a little
+       under level so a reader can stand in the street and look UP at the
+       thing, which is the whole point of a 1,250 ft building, and the ceiling
+       stops short of straight down, where a building collapses into its own
+       footprint and the model stops being a model. */
+    function aim(yaw, pitch) {
+      pitch = Math.max(PITCH_FLOOR, Math.min(pitchCeil, pitch));
+      cam = makeCam(yaw, pitch, cam.zoom, cam.ox, cam.oy);
       draw();
     }
     /* label size is worked out from the box's pixel width, so a box that
@@ -618,12 +634,19 @@
       }).observe(host);
     }
     host.addEventListener('pointerdown', function (e) {
-      dragging = true; idle = false; lastX = e.clientX;
+      dragging = true; idle = false; lastX = e.clientX; lastY = e.clientY;
       host.setPointerCapture && host.setPointerCapture(e.pointerId);
     });
+    /* Sideways turns, up and down tilts, and both are applied in ONE aim so a
+       diagonal drag costs one draw rather than two. On a touch screen the
+       stage is set to touch-action: pan-y, which hands every vertical gesture
+       to the page, so tilt is a mouse, trackpad and stylus gesture there and
+       a finger still scrolls past the model rather than being caught by it. */
     host.addEventListener('pointermove', function (e) {
       if (!dragging) return;
-      turn((e.clientX - lastX) * 0.006); lastX = e.clientX;
+      aim(cam.yaw + (e.clientX - lastX) * 0.006,
+          cam.pitch + (e.clientY - lastY) * 0.004);
+      lastX = e.clientX; lastY = e.clientY;
     });
     ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (ev) {
       host.addEventListener(ev, function () { dragging = false; });
@@ -638,7 +661,8 @@
       if (idle && !(still && still.matches)) turn(0.0016);
       requestAnimationFrame(spin);
     })();
-    return { turn: turn, retarget: retarget };
+    return { turn: turn, aim: aim, cam: function () { return cam; },
+             retarget: retarget };
   }
 
   /* Two framings of the bridge. The span camera is the one that was here and
@@ -652,23 +676,33 @@
     span: function () { return makeCam(-0.62, 0.32, 2.6, 300, 220); },
     tower: function () { return makeCam(-1.35, 0.18, 9.1, 470, 318); }
   };
+  /* Where each view runs out of room, measured rather than guessed: the
+     drawing's own bounding box was read against the 720 x 620 viewBox at
+     every twentieth of a radian. The span view is the tight one because a
+     1,595 ft deck swings into vertical screen space as the eye rises, and it
+     starts leaving the top of the box at 0.50. The tower view is nine times
+     zoomed so it goes over almost at once. The Empire State is a tall thin
+     thing and holds to 0.75, which is far enough to look down on the
+     setbacks and the roof of the tower. */
+  var TILT_CEIL = { span: 0.44, tower: 0.30, empire: 0.75 };
 
   window.NYC3D = {
     bridge: function (host, opts) {
       function builder(v) { return function () { return bridgeScene({ view: v }); }; }
       var view = (opts && opts.view) === 'tower' ? 'tower' : 'span';
-      var m = mount(host, builder(view), BRIDGE_CAMS[view]());
+      var m = mount(host, builder(view), BRIDGE_CAMS[view](), TILT_CEIL[view]);
       m.view = function (v) {
         v = v === 'tower' ? 'tower' : 'span';
         if (v === view) return view;
         view = v;
-        m.retarget(builder(view), BRIDGE_CAMS[view]());
+        m.retarget(builder(view), BRIDGE_CAMS[view](), TILT_CEIL[view]);
         return view;
       };
       return m;
     },
     empire: function (host) {
-      return mount(host, empireScene, makeCam(-0.7, 0.22, 1, 360, 560));
+      return mount(host, empireScene, makeCam(-0.7, 0.22, 1, 360, 560),
+                   TILT_CEIL.empire);
     }
   };
 })();

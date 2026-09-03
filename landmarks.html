@@ -96,10 +96,10 @@
       <button type="button" class="chip" data-view="span" aria-pressed="true">The whole span</button>
       <button type="button" class="chip" data-view="tower" aria-pressed="false">At the tower</button>
     </div>
-    <p class="lm-turn">Drag it to turn. It turns by itself until you take hold.
-       The towers carry two pointed openings each, and at the whole span
-       framing each one is about six pixels across, so there is a second view
-       that stands you under one.</p>
+    <p class="lm-turn">Drag it to turn, and up or down to tilt. It turns by
+       itself until you take hold. The towers carry two pointed openings each,
+       and at the whole span framing each one is about six pixels across, so
+       there is a second view that stands you under one.</p>
 
     <div class="lm-facts">
       <div class="lm-fact"><b>1,595.5 ft</b><span>the main span, tower to tower</span></div>
@@ -128,7 +128,7 @@
     <h2 class="lm-h">The Empire State Building</h2>
     <p class="lm-sub">1931, and still the shape everyone draws when they draw a skyscraper.</p>
     <div class="lm-stage" id="empireStage"></div>
-    <p class="lm-turn">Drag it to turn.</p>
+    <p class="lm-turn">Drag it to turn, and up or down to tilt.</p>
 
     <div class="lm-facts">
       <div class="lm-fact"><b>1,250 ft</b><span>to the roof</span></div>
@@ -235,7 +235,7 @@
           list.insertAdjacentHTML('beforeend',
             '<article class="lm-block"><h3>' + spec.name + '</h3>'
             + '<div class="lm-stage" id="' + id + '"></div>'
-            + '<p class="lm-turn">Drag it to turn.</p>'
+            + '<p class="lm-turn">Drag it to turn, and up or down to tilt.</p>'
             + '<ul class="lm-facts">' + facts + wait + '</ul></article>');
           LANDMARK3D.mount(document.getElementById(id), spec,
                            { minHeight: 150, maxHeight: 460 });
