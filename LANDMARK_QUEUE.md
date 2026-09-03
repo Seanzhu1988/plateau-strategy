@@ -882,3 +882,117 @@ Nothing about this run changes that.
   King's Chapel     unchanged. Every horizontal published, no vertical.
   Smith Tower       unchanged. 462 ft firm, footprint absent.
   Marron Atrium     unchanged. 110 ft firm, plan absent.
+
+## The 2026-09-02 seventh run: FOOTE'S ANNALS VOLS 1 AND 2 ARE FOUND AND READ, and they do not carry the height
+
+This run built nothing. It spent itself on the two leads this file names as the
+last ones standing for King's Chapel, landed one of them outright, and found the
+number genuinely absent from it. The subtraction is the output.
+
+**VOLUMES 1 AND 2 EXIST ON ARCHIVE.ORG. THE PREVIOUS TWO RUNS WERE WRONG ABOUT
+THIS, AND THE ERROR WAS A SEARCH ERROR, NOT AN ABSENCE.**
+Two runs recorded that archive.org "confirms only `annalsofkingscha0003john`,
+volume 3 of 1940" and told a later run that "finding them is the actual first
+step." They are there. The identifier those runs searched carries `john`, which
+is not the author string archive.org files these under. The advancedsearch API
+answers a plain curl and finds them in one call:
+
+    curl -sL "https://archive.org/advancedsearch.php?q=title%3A%28annals+of+king%27s+chapel%29&fl%5B%5D=identifier&fl%5B%5D=year&rows=15&output=json"
+
+  annalsofkingscha01foot   1882  vol 1
+  annalsofkingscha02foot   1896  vol 2
+  plus eleven other scans of the same two volumes
+
+Both download as full text at
+`archive.org/download/<id>/<id>_djvu.txt`, 1.8 MB and 2.3 MB, and the OCR is
+good: it returns the known 65 ft 8 in breadth from the Harrison instruction at a
+grep, which is the cheap proof that the text is readable before trusting a null.
+
+**AND THE TOWER HEIGHT IS NOT IN THEM.** Every line in both volumes carrying
+`feet` or `foot` beside a height, length, breadth or tower word was read. What
+the building records give is the horizontal instruction this file already has,
+the mason's contract, and Allen's estimate for the steeple that was never built.
+What they do not give is any vertical of the standing granite tower or of the
+body's eaves. Specifically checked and empty: "height of the wall/tower/
+building/chapel", walls "to be N feet", and the tower "carried/raised up".
+
+  ONE PASSAGE LOOKS LIKE THE ANSWER AND IS NOT. Vol 2 line 26349, in an
+  extract from a 1784 pamphlet, reads "The tower, on which the steeple is to
+  stand, is 90 feet in height." THAT IS BRATTLE STREET CHURCH, not King's
+  Chapel. The same passage gives Old South's steeple at 180 feet. The pamphlet
+  walks the Boston churches one by one, and where King's Chapel's turn comes
+  the editor substitutes "[Then follows a description of King's Chapel.]" and
+  prints none of it. A future run grepping for "90 feet" will land on this and
+  must read the surrounding paragraph before believing it.
+
+  THE MASON'S CONTRACT IS THE OTHER TRAP. It prices "every Perch of Wall four
+  foot thick and one foot high." That is a unit of masonry sold by the perch,
+  not a wall four feet thick and one foot tall, and it fixes no height at all.
+
+**A GENUINELY NEW CROSS-CHECK, AND IT CONFIRMS A MODEL ALREADY BUILT.** The
+same 1784 pamphlet gives Old South's steeple at 180 feet. trail-3d.js draws Old
+South at 183 ft overall, from the Boston Landmarks Commission study report and
+the figure the Freedom Trail and the park service use. A 1784 figure and a
+modern one three feet apart, on a stack whose top is a weathervane, is agreement
+rather than contradiction. Nothing was changed. It is recorded because an
+independent eighteenth century number landing within three feet of a model built
+from twenty-first century sources is the cheapest confirmation this file has.
+
+**A CORRECTION TO THIS FILE.** The third 2026-09-02 run wrote that the BLC index
+carries "no study report for King's Chapel, NO study report for Park Street
+Church, and none for any Freedom Trail church." The last clause is wrong, and
+trail-3d.js disproves it in its own source comment: Old South Meeting House is
+modelled from a Boston Landmarks Commission study report of 2025, which is where
+its eighty foot brick tower and twenty foot spire come from. The BLC document
+class is NOT closed. It is closed for those two named buildings only. A future
+run must not skip the BLC for a Boston landmark on the strength of that sentence.
+
+**THE EVENT RENTAL SPEC SHEET: A NEW DOCUMENT CLASS, TRIED ON BOTH REMAINING
+BUILDINGS, AND IT FAILS ON BOTH.** The reasoning was sound and is worth writing
+down so it is not re-derived: a room let for private hire is a room whose owner
+publishes its dimensions, and this file's other two instruments (HABS, NRHP) both
+publish plans, which is what all three blocked candidates lack. It does not work
+here.
+
+  SMITH TOWER publishes no dimension anywhere on its own site. `smithtower.com`
+  answers a plain curl with the browser User-Agent at /private-events/,
+  /observatory/, /weddings/ and /faq/, all 200 and all real content. Stripped of
+  script and style, not one line in any of them contains a foot, a square foot or
+  a room dimension. The Observatory and the Chinese Room are sold on the view.
+  This was the best form of the idea, because the Observatory sits in the SLENDER
+  TOWER and would have given exactly the plate that Sanborn was struck for not
+  giving. It is spent.
+
+  THE MARRON ATRIUM returns the same two numbers from every host, and this file
+  has already disqualified both. `thevendry.com/venue/27152/.../space/719` is a
+  listing for the atrium ALONE rather than the museum, which is the strongest
+  form this class takes, and its whole overview is one sentence: the skylight
+  110 feet overhead, the 20,000 square feet of gallery space around it, seated
+  400 and standing 700. No floor dimension, no square footage of the room
+  itself. Capacity is not a plan: 700 standing constrains the floor from below
+  and nothing bounds it from above, so it cannot be turned into a rectangle.
+  moma.org answers 403 to the browser User-Agent on /visit/private-events/ and
+  /support/entertaining-benefits/entertaining, so the museum's own spec sheet is
+  still unread and is still the live lead. Guessed URLs on cvent, partyslate and
+  greatperformances all 404; those hosts are worth a search rather than a guess.
+
+**WHERE THE THREE STAND.**
+  King's Chapel     unchanged, and now with its last two named leads spent.
+                    Every horizontal published, no vertical of the standing
+                    building published anywhere reached in seven runs. Foote
+                    closed. BLC closed for this building. HABS closed. Helfand
+                    closed. What is left is an as-built measured drawing, and
+                    nobody has found one.
+  Smith Tower       unchanged. 462 ft firm, footprint absent, and the rental
+                    route now struck beside Sanborn.
+  Marron Atrium     unchanged. 110 ft firm, plan absent. moma.org's own 403 is
+                    the whole remaining problem.
+
+**THE RULE, and what this run adds to it.** Seven runs, three models built, and
+this one built none. The part worth keeping is not the refusal, which this file
+has recorded five times. It is that a null has to be earned. The previous two
+runs recorded Foote's volumes 1 and 2 as unfindable and passed that forward as
+fact; they were one correctly spelled query away, and a later run inherited a
+false dead end. Before writing "not found" into this file, prove the instrument
+works on something you already know: the Annals text was trusted as a real null
+only because a grep for the 65 ft 8 in this file already holds came back with it.
