@@ -996,3 +996,112 @@ fact; they were one correctly spelled query away, and a later run inherited a
 false dead end. Before writing "not found" into this file, prove the instrument
 works on something you already know: the Annals text was trusted as a real null
 only because a grep for the 65 ft 8 in this file already holds came back with it.
+
+## The 2026-09-03 run: the Park Street body sheet is FOUND AND ON SCREEN, and the loc.gov recipe in this file is superseded
+
+This run built nothing and it is not the same null as the four before it. Those
+ended with a document that did not exist or did not carry the number. This one
+ends with the sheet identified, the page displayed, its printed scale read, and
+the crop not yet taken. The next run does not start a search, it starts a read.
+
+**THE PARK STREET CHURCH BODY IS ON SANBORN VOL. 1, 1885, SHEET 8.**
+Item `sanborn03693_002`, notes `Vol. 1, 1885`, `58 sheet(s)`, `Double-paged
+plates numbered 1-25c`. The KEY MAP is the volume's own first plate, image
+`03693_01_1885-0000R`, and it was pulled and LOOKED AT rather than reasoned
+about. It carries three things worth having:
+
+  its own printed scale, `SCALE 50 FT. TO AN INCH`, on the title cartouche
+  a legend distinguishing the bold sheet numbers from the fire-district numbers,
+    so the bold figures on the key map are sheet references and can be trusted
+  the block bounded by Tremont on the west, School and Bromfield on the north
+    and Winter on the south, which is the block Park Street Church stands at the
+    southwest corner of, lettered 8
+
+Neighbouring sheets, in case the corner falls across a boundary: 12 west of
+Tremont, 13 north at Scollay, 20 east, 18 southeast at Winter.
+
+**THE IIIF SERVICE REPLACES THE DOWNLOAD-THE-MASTER RECIPE. USE IT.**
+This file's loc.gov recipe says pull the `image/tiff` master and crop it with
+PIL after disabling the decompression-bomb guard. That is no longer the cheapest
+route and on Sanborn it is the wrong one. Every sheet is served by IIIF and
+accepts a region and a scale in the URL, so an arbitrary crop at an arbitrary
+zoom costs one request and no download:
+
+    B=https://tile.loc.gov/image-services/iiif/service:gmd:gmd376m:g3764m:\
+g3764bm:g03693188501:03693_01_1885-<SHEET>
+    curl -sL --http1.1 -A "<browser UA>" "$B/full/pct:25/0/default.jpg"
+    curl -sL --http1.1 -A "<browser UA>" "$B/pct:38,58,22,18/full/0/default.jpg"
+
+The second form is `pct:x,y,w,h` of the source and it is what made the key map
+legible: a 22 by 18 percent window came back sharp enough to read `MONTGOMERY
+PL.` and `MUSIC HALL`. Sheet ids run `-0000L`, `-0000R`, `-0001L`, `-0001R` and
+so on, L and R being the halves of each double page, and they are listed in the
+item JSON under `resources[0].files`.
+
+TWO TRANSPORT NOTES, both cost a retry to learn. `--http1.1` is required: a
+plain HTTP/2 fetch of the loc.gov item JSON returned curl exit 92 with the body
+truncated at 7,684 bytes, which parses as a JSON error and looks like a bad URL.
+And the browser User-Agent is still needed on every loc.gov host.
+
+**WHAT IS LEFT ON THIS BUILDING, stated so the next run can just do it.** Crop
+sheet 8's southwest corner, find the church against Tremont and Park, and read
+whether Sanborn letters its dimension. If it does, that is the footprint and the
+brick body can be drawn under a steeple that has been standing on nothing since
+2026-09-02. If it does not, the outline is still a published orthographic drawing
+at a printed 50 ft to the inch, so a scaled figure is admissible the way the Paul
+Revere elevation heights are, and must be declared scaled.
+
+**THE 1903 PAMPHLET DOES NOT CARRY THE BODY. NULL EARNED, NOT ASSUMED.**
+Before spending on Sanborn this run re-pulled
+`preservationpar01churgoog_djvu.txt` and grepped every line containing `feet` or
+`foot`. The instrument was proved first, per the seventh run's rule: the grep
+returns the 217 ft 9 in this file already holds. There are 20 such lines and
+every dimension in them is the steeple, the lot deed, or a land price. THE BRICK
+MEETING HOUSE IS NOT MEASURED ANYWHERE IN THAT DOCUMENT. Do not re-read it.
+
+  ONE NEW NUMBER CAME OUT OF THE GREP AND IT IS A TRAP. Line 2313: Banner's
+  ORIGINAL drawing carried one more lantern section, which would have put the
+  small octagon "about eighteen feet higher than it now is, making the entire
+  steeple 223 feet high from pavement to the top of the finial ball." That is
+  the DESIGN THAT WAS NOT BUILT, the committee having been "against the great
+  height." It is also loose on its own terms: 217.75 plus 18 is 235.75, not 223.
+  Do not use 223 and do not reconcile it with the model. It is the same class of
+  number as King's Chapel's never-built steeple.
+
+**A NEW INSTRUMENT, TRIED, AND IT IS INCOMPLETE. Recorded because a null from it
+would otherwise look authoritative.** The NPS publishes the National Register as
+an ArcGIS feature service and no run has tried it. It answers a plain curl:
+
+    https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/\
+nrhp_locations/MapServer/0/query?where=<sql>&outFields=RESNAME,NRIS_Refnum\
+&returnGeometry=false&f=json
+
+The refnum field is `NRIS_Refnum`, NOT `REFNUM`, and a wrong field name returns
+a bare 400 with empty `details`. It would be the cheap general answer to "what
+is this building's refnum," which is the step that stalled Park Street Church
+four runs ago. IT IS NOT COMPLETE. A city-and-name query returns 23 Boston
+churches and Park Street Church is not among them, which on its own would read
+as "not listed." But a query on `NRIS_Refnum='74002045'`, the King's Chapel
+number THIS FILE ALREADY HOLDS AND HAS READ THE NOMINATION FOR, returns zero
+features too. So the layer omits buildings that are certainly on the Register.
+Use it to FIND a refnum, never to prove one absent, and always test it against
+74002045 first. Wikipedia's own Park Street Church article was re-checked on
+this run and still carries no `refnum`, so that half of the earlier finding
+stands.
+
+**WHERE THE FOUR STAND.**
+  Park Street Ch.   steeple built and mounted. Body sheet FOUND: Sanborn vol 1
+                    1885, sheet 8, at a printed 50 ft to the inch. The crop is
+                    the whole remaining job.
+  King's Chapel     unchanged. Every horizontal published, no vertical.
+  Smith Tower       unchanged. 462 ft firm, footprint absent, Sanborn struck
+                    for this building on the mounted-tower reason.
+  Marron Atrium     unchanged. 110 ft firm, plan absent.
+
+**THE LESSON.** This file's own recipes age. The download-the-master step was
+written from the Paul Revere HABS sheets, where it was right, and it has been
+carried forward as the way to read loc.gov ever since. On a 58 sheet volume it
+is the expensive way to answer a question that IIIF answers in one request, and
+the cost of the old recipe is exactly what made the Sanborn lead look too big to
+spend a run on for the last three runs. Before deciding a lead is too expensive,
+check whether the tool the file recommends is still the tool the host offers.
