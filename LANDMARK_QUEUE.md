@@ -1431,3 +1431,113 @@ gave one answer. THE RULE TO CARRY: before a data source is written into this
 file as a technique, ask it something whose answer you already know, or ask it
 the same thing two ways that should differ. A source that cannot tell a car
 from a walker will not tell you that it cannot.
+
+## The 2026-09-03 fifth run: THE FREEDOM TRAIL IS MEASURED, and the published 2.5 miles is below its own geometric floor
+
+The last run left this as "a genuinely buildable item, the first one this queue
+has had in three runs," needing "only the 16 waypoints nudged off their
+buildings and one pass of the router." That is what this run did. It is the
+FINDING half of a two-run landmark, the same shape that built the Park Street
+body: the numbers are now in the repo, checked, and the next run can spend its
+whole budget on geometry without touching the network.
+
+**THE MEASUREMENT.** `freedom_trail_walk.json`, committed. 127 vertices, each
+carrying x and y in metres from Boston Common, an elevation in feet, and a
+cumulative distance.
+
+    length      5,650.8 m = 3.511 mi
+    start       18.0 ft, Boston Common
+    high        90.3 ft at 594 m, the State House shoulder of Beacon Hill
+    end         79.9 ft, the Bunker Hill Monument
+    gross       241.3 ft climbed, 179.4 ft given back, net 61.9 ft
+    pitches     four at or above 8 percent over a 15 m run:
+                  8.4% over 83 m at 257 m   Park Street off the Common
+                 12.7% over 33 m at 340 m   the last of it to the State House
+                -11.7% over 30 m at 3442 m  Hull Street down off Copp's Hill
+                 13.4% over 35 m at 5553 m  up Breed's Hill to the Monument
+
+Those four are a coherent Boston: up Beacon Hill, down off Copp's Hill, up
+Breed's Hill at the end. A profile that came back without them would have been
+the instrument talking rather than the city.
+
+**THE ROUTER WORKED AND ONLY ONE WAYPOINT NEEDED NUDGING.** brouter.de with
+`profile=hiking-beta` routed 15 of the 16 legs from the coordinates already in
+trails.json. Only the Massachusetts State House threw `target island detected`,
+exactly as the last run predicted, and a 20 m offset cleared it. Every other
+stop snapped to a street on its published coordinate. The nudge is recorded in
+the data file's provenance note so nobody later mistakes a moved point for a
+measured one.
+
+**THE DISAGREEMENT, AND WHY IT IS NOT A ROUNDING.** The Freedom Trail
+Foundation publishes 2.5 miles. This says 3.511. The queue's standing habit is
+to say so on the page the way the Pier 66 section says 0.83 and not 0.7, and
+this gap is far too large to fold away, so here is the arithmetic that makes it
+a finding rather than a doubt:
+
+  the crow-flies sum through the 16 stops is already 3,537 m, 2.198 mi, and
+    that is a HARD FLOOR for any path that visits them in order
+  one of those crow lines, Copp's Hill to the USS Constitution, is 566 m
+    STRAIGHT OVER THE CHARLES RIVER. The routed walk over the Charlestown
+    Bridge is 1,487 m. No walker does the 566
+  swap only that one leg for its real length and leave every other leg at its
+    impossible straight line: 3,537 - 566 + 1,487 = 4,458 m = 2.77 mi
+
+So 2.5 miles is below the shortest path that can reach these sixteen stops,
+before a single street corner is turned. Either the published figure measures
+something other than a walk between these stops, or it is a round number that
+has outlived its measurement. This file does not know which, and the data file
+says so in those words. DO NOT AVERAGE THEM and do not quietly print the
+published one because it is the friendlier number.
+
+**A SECOND INSTRUMENT DEFECT, found the same way the router was found, by
+asking a source something whose answer is known.** 3DEP came back BELOW SEA
+LEVEL at four vertices. It is a BARE EARTH raster: over a bridge or a pier it
+returns the water, not the deck. Three of the four are the Charlestown Bridge
+at 3862-3933 m; the fourth is vertex 108 at 4863 m, which is stop 15 itself,
+the USS Constitution's berth. Their elevations are CARRIED from the banks on
+either side and are flagged as carried, not measured, in the data file. The
+first pass got this wrong in a way worth recording: it treated all four as one
+contiguous run and interpolated the ship's berth across 1,000 m of Charlestown,
+which put the Constitution at 8.7 ft on a line to nowhere. Grouping the water
+vertices into CONTIGUOUS runs before carrying anything is the fix.
+
+  THE GENERAL RULE, and it belongs beside the router lesson: a bare-earth DEM
+  will hand you a confident number for a place your walker is not standing.
+  Any future walk that crosses a bridge, a pier, a viaduct or a tunnel must
+  check its profile for values that are physically impossible before it draws
+  a grade off them.
+
+**A LEAD OPENED AND HALF SPENT: OSM CARRIES THE PAINTED LINE ITSELF.**
+Relation 976514, `route=foot`, `operator=The Freedom Trail Foundation`,
+`wikidata=Q49131`. Two things a later run needs.
+
+  overpass-api.de answers 406 Not Acceptable to a python urllib POST even with
+  the browser User-Agent. THE MIRROR WORKS: `overpass.kumi.systems/api/
+  interpreter`, same query, same headers, answered immediately. And the plain
+  OSM API is better still for a known relation and needs no Overpass at all:
+  `api.openstreetmap.org/api/0.6/relation/976514/full.json`, a plain GET.
+
+  DO NOT TAKE ITS LENGTH BY SUMMING ITS MEMBERS. That was tried and it gives
+  8,142 m, 5.06 mi, which is nonsense for this trail. The relation has 156
+  member ways and a route relation's members overlap, branch and double back;
+  the trail is one ordered path through them and has to be walked as one. That
+  is a real piece of work and it is the ONLY way this queue will ever get the
+  painted line rather than a shortest path. Worth a run of its own, and if it
+  comes out near 2.5 the disagreement above is explained rather than merely
+  stated.
+
+**WHAT THE NEXT RUN SHOULD DO, and it needs no network at all.** Draw it.
+`freedom_trail_walk.json` is the same shape as the WALK array in
+seattle-3d.js, so `pier66Walk` is the template almost line for line: the
+ribbon, the cut earth walls, the two end caps, the grade-coloured surface at
+MIN_RUN 15, and posts at the stops. Two things this walk needs that Pier 66
+did not. It is 4.2 times longer, so sixteen posts will crowd and only a few
+stops should carry one. And it crosses water, so the Charlestown Bridge wants
+to be drawn as a deck rather than as ground, which is also the honest way to
+show the two carried vertices.
+
+**WHERE THE THREE BLOCKED BUILDINGS STAND, untouched by this run.** King's
+Chapel wants the tower height, six sources read. Smith Tower wants the
+footprint, with SDCI permit records the one lead never tried. The Marron Atrium
+wants a plan dimension, and the 12,400 sq ft floating around search results is
+the LOBBY and not the atrium.
