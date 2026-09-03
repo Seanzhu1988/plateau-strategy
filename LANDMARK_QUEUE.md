@@ -1105,3 +1105,140 @@ is the expensive way to answer a question that IIIF answers in one request, and
 the cost of the old recipe is exactly what made the Sanborn lead look too big to
 spend a run on for the last three runs. Before deciding a lead is too expensive,
 check whether the tool the file recommends is still the tool the host offers.
+
+## The 2026-09-03 second run: THE PARK STREET CHURCH BODY IS MEASURED, and the sheet the last run named was the wrong one
+
+This run did not build. It read the sheet the previous run left ready to read,
+found that sheet was not the sheet, found the right one, and came back with the
+body's plan and, unexpectedly, with a published VERTICAL that no run had found.
+
+**THE PREVIOUS RUN READ A FIRE DISTRICT NUMBER AS A SHEET NUMBER. CORRECTED.**
+It wrote that the Tremont / School / Bromfield / Winter block is "lettered 8" and
+told this run to crop sheet 8. Sheet 8 was pulled first, and printed sheet 8 is
+the WEST END: Charles Street, Allen, Leverett, the Boston and Lowell freight
+depot and the Charles River. It is a mile from Tremont.
+
+The key map distinguishes the two number classes and its own legend says so, in
+two lines that sit one above the other: a numeral in a small tablet is a
+`REFERENCE TO ADJOINING SHEET`, and a plain numeral `INDICATES FIRE DISTRICT`.
+On the map itself the difference is that the SHEET numbers are SOLID BLACK and
+the FIRE DISTRICT numbers are drawn HOLLOW, in outline. The 8 beside Montgomery
+Place is hollow. So are the 17 at Franklin and the 18 at Avon Place. The solid
+numerals in that corner of the key map are 13 at Scollay, 12 on Beacon Hill, 20
+at Bromfield and 19 at Federal.
+
+  THE RULE FOR A LATER RUN: on a Sanborn key map, read the numeral's WEIGHT
+  before believing it is a sheet. A hollow numeral will send you to the wrong
+  end of the city and the sheet you land on will look perfectly real.
+
+**PARK STREET CHURCH IS ON SHEET 12.** File `1885-0012R`, the right half of the
+double plate, 5755 x 8149 px, and it carries the whole corner: Tremont House,
+the Granary Burying Ground, Park St Church, the Massachusetts State House,
+Boston University, and Boston Common blank to the south.
+
+**WHAT THE SHEET LETTERS ON THE CHURCH ITSELF.** Two things, and the second was
+not being looked for:
+
+  `PARK ST. CHURCH`
+  `40' TO EAVES`   <- A PUBLISHED HEIGHT OF THE BRICK BODY. Every previous run
+                      recorded this building as having a published steeple and
+                      no published body at all. The eaves height was on the
+                      plan the whole time.
+  `2`              <- two storeys, in the plan's own storey-count notation
+  `SPIRE 200'`     <- lettered inside a small YELLOW (frame) box drawn at the
+                      Tremont end, which is where the steeple stands
+
+  THE 200 IS NOT A RIVAL TO THE 217 FT 9 IN AND MUST NOT BE AVERAGED WITH IT.
+  A Sanborn spire note is a rounded fire-risk annotation on an insurance plan;
+  the 217 ft 9 in comes from the church's own publication and from Bowen, and it
+  is what trail-3d.js is already drawn to. Record 200 as an independent
+  corroboration that the thing is roughly two hundred feet of timber, and change
+  nothing.
+
+Street widths are lettered beside it and are free cross-checks: Tremont 65 ft,
+and 44 ft on the Park Street side.
+
+**THE FOOTPRINT, SCALED. NOT LETTERED, SO DECLARED SCALED.** Sanborn letters no
+dimension on this building, so the outline was measured off the drawing the way
+the Paul Revere elevation heights were, and the same declaration applies: these
+are scaled figures, not published ones.
+
+  THE SCALE, from the sheet's OWN scale bar rather than from the printed
+  "50 ft. to an inch" alone. The bar was cropped at full IIIF resolution
+  (region `3900,6450,1600,400`) and its tick marks located on a column ink
+  profile: 0 at px 428, 50 at 731, 100 at 1035.5, 150 at 1334, and the left
+  extension's 50 at 126. Zero to 150 is 906 px for 150 ft and the left 50 to
+  150 is 1208 px for 200 ft, both giving
+
+      6.04 px per foot at full resolution
+
+  which is a 302 dpi scan against a printed 50 ft to the inch, and 5755 px
+  divided by 302 is 19.05 inches of paper, which is the right size for a
+  Sanborn half plate. The scale is therefore confirmed twice.
+
+  THE MEASUREMENT. The church's long axis bears 35.14 degrees off the sheet's
+  horizontal, fitted to the long NW wall where it runs against the Granary. The
+  crop was rotated by that angle so the walls read on straight profiles, and the
+  building was found by COLOUR rather than by darkness, which matters: this JPEG
+  renders the pink brick fill at about L=150, so a brightness threshold catches
+  the fill along with the ink and finds nothing. The discriminator that works is
+
+      paper  (175,173,160)  ->  G-B about 13
+      brick  (163,145,143)  ->  G-B about 2
+      so pink is (R-G) > 10 AND (G-B) < 8
+
+  Off that mask, on the rotated crop:
+      depth, Park Street wall to Granary wall   467 to 471 px  ->  77.3 to 78.0 ft
+      length, SW party wall (x 977) to the
+        eastern extremity of the round end
+        (x 1598, at mid-height)                 621 px         ->  102.8 ft
+
+  So the brick body is ABOUT 103 FT ALONG PARK STREET BY ABOUT 78 FT DEEP,
+  measured to the inside of the ink line, which is about a foot inside the outer
+  face at this scale. Call it 104 by 78 over the walls and say it is scaled.
+
+  THE TREMONT END IS SEMICIRCULAR AND THE DRAWING CHECKS THAT IT IS. The pink
+  reaches x 1598 at mid-height and only x 1496 at 181 px off centre. A true
+  semicircle of radius half the depth (235 px) centred at x 1363 predicts 1513
+  at that offset. Measured 1496, seventeen px or 2.8 ft inside the prediction,
+  so a semicircular end of radius about 39 ft, springing where the straight
+  walls stop, is a fair description of what is drawn.
+
+**WHAT IS NOW IN HAND FOR THIS BUILDING, and it is enough to draw the body.**
+  steeple            217 ft 9 in, published, ALREADY BUILT AND MOUNTED
+  eaves of the body  40 ft, published, off the Sanborn plan
+  storeys            2, off the plan
+  footprint          about 104 by 78 ft, SCALED off the plan at 6.04 px/ft
+  east end           semicircular, radius about 39 ft, SCALED
+  roof               NOT MEASURED and not on the plan. A Sanborn is orthographic
+                     and gives no roof pitch, so a body drawn from this must
+                     either stop at the eaves or declare the roof as assumed.
+
+**WHY IT WAS NOT BUILT ON THIS RUN.** The run's whole budget went into finding
+that the named sheet was the wrong sheet, finding the right one, and earning the
+measurement rather than eyeballing it. The geometry is the next run's job and it
+now starts with numbers rather than with a search.
+
+**THE TRANSPORT NOTES, added to the IIIF recipe the last run wrote.** A pixel
+region works and is easier than percentages: `/<x>,<y>,<w>,<h>/full/0/default.jpg`.
+A region past the right edge is silently truncated rather than refused. And
+`pct:x,y,w,h/full/0/` returned curl exit 18 once on a large crop and succeeded on
+retry with a downscale, so pair a big region with a `pct:` size or with `--retry`.
+
+**WHERE THE FOUR STAND.**
+  Park Street Ch.   steeple built and mounted. BODY NOW MEASURED: 40 ft to the
+                    eaves published, about 104 by 78 ft scaled, round east end.
+                    Ready to draw.
+  King's Chapel     unchanged. Every horizontal published, no vertical.
+  Smith Tower       unchanged. 462 ft firm, footprint absent.
+  Marron Atrium     unchanged. 110 ft firm, plan absent.
+
+**THE LESSON.** The last run handed this one a sheet number and a job that was
+supposed to be a read rather than a search, and the number was wrong because two
+kinds of numeral on the same map look alike at a glance. Nothing about the
+previous run was careless; it looked at the picture, which is this routine's own
+central rule, and the picture is where the mistake lives. What catches this is
+cheap and should be habit: when a document hands you an index, pull the thing it
+points at and check that it is the thing you asked for BEFORE spending the run on
+it. Sheet 8 was pulled first and it took one look to see the Charles River where
+Tremont Street should have been.
