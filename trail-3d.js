@@ -1752,6 +1752,63 @@
   }
 
 
+
+  /* A LONG WALL DRAWN AS SEPARATE BAYS, and the reason is the painter's rule
+     this project keeps relearning the hard way. A quad's depth is its NEAREST
+     corner, so a single sixty four foot wall carries the depth of whichever
+     end is turned to the reader along its whole length, and it paints over
+     anything standing beside its far end. Park Street's body runs past the
+     foot of a two hundred and eighteen foot steeple, so that failure would
+     bury the tower's own door. Bays give each length of wall a depth of its
+     own, and they also give the two published storeys of window somewhere to
+     sit. Each bay hands back its own wall map and its own depth.
+       axis "y": the wall runs along y at x = at, outward normal (nx, 0).
+       axis "x": the wall runs along x at y = at, outward normal (0, ny). */
+  function wallRun(ctx, axis, at, u0, u1, z0, z1, nx, ny, fill, edge, nBays) {
+    var out = [], bays = [];
+    if (!ctx.faceVisible(nx, ny)) return { parts: out, bays: bays };
+    var P = ctx.project;
+    var map = axis === "y"
+      ? function (u, z) { return P(at, u, z); }
+      : function (u, z) { return P(u, at, z); };
+    for (var i = 0; i < nBays; i++) {
+      var a = u0 + (u1 - u0) * i / nBays, b = u0 + (u1 - u0) * (i + 1) / nBays;
+      var q = [map(a, z0), map(b, z0), map(b, z1), map(a, z1)];
+      var d = depthOf(q);
+      out.push({ svg: ctx.poly(q, ctx.shade(fill, nx, ny, 0), edge, 0.6), depth: d });
+      bays.push({ uc: (a + b) / 2, half: Math.abs(b - a) / 2, depth: d, map: map });
+    }
+    return { parts: out, bays: bays };
+  }
+
+  /* A SEMICIRCULAR END, as facets struck on a true half circle from one
+     straight wall round to the other. Each facet is culled and depth sorted
+     on its own outward normal, which is what keeps the near side of the curve
+     in front of the far side; drawn as one polygon it would read as a flat
+     wall cut on a slant. Each facet also hands back a map along its own
+     chord, so a window can be set on it the same way as on a straight bay. */
+  function apseRun(ctx, cx, cy, r, z0, z1, fill, edge, N) {
+    var P = ctx.project, out = [], facets = [];
+    for (var i = 0; i < N; i++) {
+      var a0 = (i / N) * Math.PI, a1 = ((i + 1) / N) * Math.PI, am = (a0 + a1) / 2;
+      var nx = Math.cos(am), ny = Math.sin(am);
+      if (!ctx.faceVisible(nx, ny)) continue;
+      var q = [P(cx + r * Math.cos(a0), cy + r * Math.sin(a0), z0),
+               P(cx + r * Math.cos(a1), cy + r * Math.sin(a1), z0),
+               P(cx + r * Math.cos(a1), cy + r * Math.sin(a1), z1),
+               P(cx + r * Math.cos(a0), cy + r * Math.sin(a0), z1)];
+      var d = depthOf(q);
+      out.push({ svg: ctx.poly(q, ctx.shade(fill, nx, ny, 0), edge, 0.6), depth: d });
+      facets.push({
+        i: i, depth: d, uc: 0, half: r * Math.sin((a1 - a0) / 2),
+        map: (function (mx, my, tx, ty) {
+          return function (u, z) { return P(mx + tx * u, my + ty * u, z); };
+        })(cx + r * Math.cos(am), cy + r * Math.sin(am), -Math.sin(am), Math.cos(am))
+      });
+    }
+    return { parts: out, facets: facets };
+  }
+
   /* ---------------- Stop 3: Park Street Church ----------------
      Peter Banner, 1809. Solomon Willard carved the capitals. The tallest
      building in the United States from 1810 to 1828, and still the thing you
@@ -1818,6 +1875,10 @@
     var TRIM = "#f2ede1", TRIM_E = "#b9b0a0", TRIM_D = "#e2dbcb";
     var GLASS = "#3f4d55", GOLD = "#c9a22c", GOLD_E = "#8a6f18";
     var PAVE = "#ded8cb", GRASS = "#c2c9b4", STONE = "#c9c4b8";
+    /* the stopping plane at the eaves is a LEAD grey, deliberately not a warm
+       roofing brown: it is where the evidence runs out, and it should not
+       compete with the steeple that is the landmark. */
+    var DECK = "#8e8a7e";
     var out = [];
 
     /* PLAN, published: 27 across the Tremont front, 31 into the block. */
@@ -1825,11 +1886,121 @@
     var x0 = -TW / 2, x1 = TW / 2, y0 = -TD / 2, y1 = TD / 2;
     var cy = 0;
 
-    /* the corner it stands on. Ground planes take an explicit far depth
-       through ground(), which is why they never paint over the tower. */
-    out.push(ground(ctx, 0, 0, 200, 200, 0, GRASS, "#a8b09a"));
-    out.push(ground(ctx, 0, 0, 104, 112, 0.4, PAVE, "#bfb9aa"));
-    out = out.concat(slab(ctx, 0, cy, TW + 7, TD + 7, 0.4, 1.6, STONE, "#9d988c", -9.9e8));
+    /* ================= THE BRICK BODY =================
+       Five earlier runs left this building as a steeple standing on nothing,
+       because no source published the meeting house. The Sanborn fire
+       insurance atlas of Boston, 1885, sheet 12 (Library of Congress IIIF,
+       file 1885-0012R) turned out to letter two of the numbers on the plan
+       itself, and to give a plan good enough to measure the rest:
+
+         PUBLISHED, lettered on the sheet beside the building
+           40' TO EAVES     the height of the brick body
+           2                two storeys, in the plan's own storey notation
+           SPIRE 200'       a rounded fire-risk note. NOT a rival to Bowen's
+                            217 ft 9 in and not averaged with it; recorded as
+                            independent corroboration and nothing is changed.
+
+         PUBLISHED, from the deed quoted in the 1903 pamphlet
+           the lot, 80 ft on Tremont by 118 ft on Park.
+
+         SCALED off the plan, and DECLARED SCALED rather than published. The
+         sheet letters no dimension on the walls, so the outline was measured
+         against the sheet's own scale bar at 6.04 px per foot (a 302 dpi scan
+         of a printed 50 ft to the inch, confirmed twice):
+           about 78 ft across the front, Park Street wall to Granary wall
+           about 103 ft from the west wall to the eastern extremity
+           a semicircular east end of radius about 39 ft, springing where the
+             straight walls stop, which the drawing's own offsets confirm.
+
+       THE SCALED FIGURES CHECK AGAINST THE PUBLISHED LOT, which is why they
+       are trusted enough to draw: 78 by 103 sits inside 80 by 118 with a foot
+       to spare across the front and room for an areaway behind. A measurement
+       that had to be squeezed into the deed would have been thrown away.
+
+       WHAT IS STILL NOT KNOWN, and is therefore not drawn: the roof. A
+       Sanborn is orthographic and publishes no pitch, and no other source
+       carries one. The model stops at the published 40 ft eaves line. */
+    var P = ctx.project;
+    var BODY_W = 78, BODY_LEN = 103, APSE_R = 39, EAVE = 40;
+    var bx0 = -BODY_W / 2, bx1 = BODY_W / 2;
+    var by0 = y0;                          /* west wall in the tower's plane */
+    var byS = by0 + (BODY_LEN - APSE_R);   /* where the round end springs */
+    var BZ0 = 1.6, midY = by0 + BODY_LEN / 2;
+
+    /* the corner it stands on, paved to the PUBLISHED LOT. The deed gives the
+       lot's size and not where in it the church sits, so the lot is centred
+       on the measured footprint and that centring is the one soft thing here.
+       Ground planes take an explicit far depth through ground(), which is why
+       they never paint over the building. */
+    out.push(ground(ctx, 0, midY, 320, 320, 0, GRASS, "#a8b09a"));
+    out.push(ground(ctx, 0, midY, 80, 118, 0.4, PAVE, "#bfb9aa"));
+
+    /* the water table, one foot proud of the wall and one foot of stone */
+    var PL = 1.0;
+    out = out.concat(wallRun(ctx, "x", by0 - PL, bx0 - PL, bx1 + PL, 0.4, BZ0, 0, -1, STONE, "#9d988c", 4).parts);
+    out = out.concat(wallRun(ctx, "y", bx0 - PL, by0 - PL, byS, 0.4, BZ0, -1, 0, STONE, "#9d988c", 5).parts);
+    out = out.concat(wallRun(ctx, "y", bx1 + PL, by0 - PL, byS, 0.4, BZ0, 1, 0, STONE, "#9d988c", 5).parts);
+    out = out.concat(apseRun(ctx, 0, byS, APSE_R + PL, 0.4, BZ0, STONE, "#9d988c", 14).parts);
+
+    /* THE WEST FRONT IS DRAWN IN TWO PANELS with the tower's own 27 ft left
+       out from between them. The plan is a single outline and the tower
+       stands inside it, so a full width wall here would put a 78 ft sheet of
+       brick in the same plane as the tower's door and the sort would decide
+       which of them the reader sees. Declining to draw wall where the plan
+       has tower is not an invention. */
+    var runs = [];
+    runs.push(wallRun(ctx, "x", by0, bx0, x0, BZ0, EAVE, 0, -1, BRICK, BRICK_E, 2));
+    runs.push(wallRun(ctx, "x", by0, x1, bx1, BZ0, EAVE, 0, -1, BRICK, BRICK_E, 2));
+    runs.push(wallRun(ctx, "y", bx0, by0, byS, BZ0, EAVE, -1, 0, BRICK, BRICK_E, 5));
+    runs.push(wallRun(ctx, "y", bx1, by0, byS, BZ0, EAVE, 1, 0, BRICK, BRICK_E, 5));
+    runs.forEach(function (r) { out = out.concat(r.parts); });
+    var round = apseRun(ctx, 0, byS, APSE_R, BZ0, EAVE, BRICK, BRICK_E, 12);
+    out = out.concat(round.parts);
+
+    /* TWO STOREYS, which the plan letters as a plain 2, so the body carries
+       two ranks of window and not three. They are round headed because that
+       is what this building's flanks carry. Their SIZE and their NUMBER are
+       published nowhere and are not on the plan: they follow the bays, and
+       the bays were chosen for depth sorting. Declared soft, exactly like the
+       column diameters in the tower above. */
+    function twoRanks(f) {
+      var hw = Math.min(3.1, f.half * 0.42);
+      if (hw < 1.2) return;
+      out.push(archOpening(ctx, f.map, f.uc, hw, 5.5, 14.5, GLASS, TRIM_E, f.depth + 0.4));
+      out.push(archOpening(ctx, f.map, f.uc, hw, 21.0, 30.0, GLASS, TRIM_E, f.depth + 0.4));
+    }
+    runs.forEach(function (r) { r.bays.forEach(twoRanks); });
+    round.facets.forEach(function (f) { if (f.i % 2 === 0) twoRanks(f); });
+
+    /* the eaves cornice, at the published 40 ft and standing a foot proud */
+    var CZ = EAVE - 1.8;
+    out = out.concat(wallRun(ctx, "x", by0 - PL, bx0 - PL, bx1 + PL, CZ, EAVE, 0, -1, TRIM_D, TRIM_E, 4).parts);
+    out = out.concat(wallRun(ctx, "y", bx0 - PL, by0 - PL, byS, CZ, EAVE, -1, 0, TRIM_D, TRIM_E, 5).parts);
+    out = out.concat(wallRun(ctx, "y", bx1 + PL, by0 - PL, byS, CZ, EAVE, 1, 0, TRIM_D, TRIM_E, 5).parts);
+    out = out.concat(apseRun(ctx, 0, byS, APSE_R + PL, CZ, EAVE, TRIM_D, TRIM_E, 14).parts);
+
+    /* THE ROOF IS NOT DRAWN and the deck that closes the walls is a STOPPING
+       PLANE, not a claim that this church is flat roofed. It is where the
+       evidence stops. The deck is traced AROUND the tower rather than across
+       it, so the two never contend for the same pixels at the same depth. */
+    var deck = [P(bx0, by0, EAVE), P(x0, by0, EAVE), P(x0, y1, EAVE),
+                P(x1, y1, EAVE), P(x1, by0, EAVE), P(bx1, by0, EAVE)];
+    for (var dk = 0; dk <= 18; dk++) {
+      var ad = (dk / 18) * Math.PI;
+      deck.push(P(APSE_R * Math.cos(ad), byS + APSE_R * Math.sin(ad), EAVE));
+    }
+    /* AND ITS DEPTH IS EXPLICIT, which the render is the reason for. Sorted
+       on its own corners the deck took the depth of its NEAREST corner, the
+       west end beside the tower, and then painted its far half straight over
+       the tower's front, eating the pediment and the tops of the four
+       published columns. The arithmetic passed it; one look did not. The deck
+       lies behind every wall that is drawn, because an inward facing wall is
+       culled and never reaches the sort, so it is given a depth below all of
+       them and painted first. */
+    out.push({ svg: ctx.poly(deck, ctx.shade(DECK, 0, 0, 1), TRIM_E, 0.6),
+               depth: -1e7 });
+    /* ================= end of the body ================= */
+
 
     /* THE TOWER, 72 ft, Doric, brick */
     var TOP = 72;

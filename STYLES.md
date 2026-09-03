@@ -356,6 +356,39 @@ circumradius the drawing needs is `w / 2 / cos(22.5 deg)`, about 1.082 times
 the half width, and using the half width directly makes every octagon in the
 steeple about 8 percent too small.
 
+**The brick box the telescope stands on**, added 2026-09-03 when Park Street's
+body was finally measured. The entry above said the building is "a telescope
+standing on a brick box" and then drew only the telescope. The box has tells of
+its own and they are the meeting house tells, not the tower's:
+
+- **Two storeys of round headed window and no more.** The wall is ranked
+  horizontally while the tower is ranked vertically, which is the whole
+  contrast: the box counts bays, the tower climbs orders.
+- **A plain brick wall with the ornament spent on the front.** The columns, the
+  entablature and the pediment all sit on the Tremont end. The flanks get a
+  water table below and a cornice at the eaves and nothing between.
+- **The eaves line is low against the steeple.** Park Street is 40 ft to the
+  eaves under 217 ft 9 in of tower, so the box is under a fifth of the height.
+  Drawing the body tall enough to look like a church is what makes the steeple
+  stop reading as a landmark.
+- **A semicircular end away from the street.** The auditorium's curved end is a
+  Federal plan move and it is the one thing that stops the box being a box.
+
+**Wrong if** the body carries three storeys, if the flanks are ornamented like
+the front, or if the eaves climb far enough to shorten the tower.
+
+**Our numbers.** Published, lettered on Sanborn 1885 sheet 12: **40 ft to the
+eaves**, **2 storeys**. Published from the deed: the lot, **80 ft on Tremont by
+118 ft on Park**. Scaled off the same plan at 6.04 px/ft and declared scaled:
+about **78 by 103 ft** with a **semicircular east end of about 39 ft radius**.
+The scaled figures are trusted because they fit inside the published lot.
+
+**The roof is not drawn**, because a fire insurance plan is orthographic and
+publishes no pitch. The model stops at the published eaves and closes with a
+plain lead grey deck, which is a stopping plane and not a claim that this
+church is flat roofed. Where a drawing has to stop, it should stop somewhere
+the reader can see is a stop.
+
 **The gap, and why it is left as one.** Those heights sum to 190 ft against a
 published 217 ft 9 in. The 27 ft 9 in difference is the one band Bowen names
 and does not measure, the pediment and balustrade over the tower, plus the

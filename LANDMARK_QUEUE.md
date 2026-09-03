@@ -13,7 +13,9 @@ Freedom Trail (trail-3d.js): bunker-hill, old-north, faneuil-hall,
 state-house, old-state-house, old-south, constitution, paul-revere,
 park-street. Nine of the ten buildings the routine listed. park-street is
 MOUNTED on freedom-trail.html as Stop 3, at yaw -2.5 so the Tremont front
-faces the reader.
+faces the reader, and as of 2026-09-03 it is a WHOLE CHURCH: the brick body
+is built from the Sanborn numbers the last run measured, so the steeple no
+longer stands on nothing.
 
 MoMA: the building's own architecture (moma-3d.js).
 
@@ -1242,3 +1244,74 @@ cheap and should be habit: when a document hands you an index, pull the thing it
 points at and check that it is the thing you asked for BEFORE spending the run on
 it. Sheet 8 was pulled first and it took one look to see the Charles River where
 Tremont Street should have been.
+
+
+## The 2026-09-03 third run: THE PARK STREET BODY IS BUILT, and the render caught the deck eating the pediment
+
+The last run left numbers instead of a search, and this run spent its budget on
+geometry, which is what that handoff was for. The body is drawn, mounted and
+looked at from three sides.
+
+**WHAT WAS BUILT.** `parkStreet` in trail-3d.js now draws the meeting house
+under the steeple:
+
+    footprint    78 ft across by 103 ft deep, SCALED, declared scaled
+    east end     semicircular, radius 39 ft, springing at 64 ft from the front
+    eaves        40 ft, PUBLISHED, lettered on Sanborn 1885 sheet 12
+    storeys      2, PUBLISHED, off the same plan
+    paving       the PUBLISHED lot, 80 ft on Tremont by 118 on Park
+    roof         NOT DRAWN. See below.
+
+**THE PUBLISHED LOT IS WHY THE SCALED FOOTPRINT WAS TRUSTED ENOUGH TO DRAW.**
+78 by 103 sits inside 80 by 118 with a foot to spare across the front and room
+for an areaway behind. That check was run before a line was written, and a
+measurement that had to be squeezed into the deed would have been thrown away
+rather than drawn. A later run should keep this habit: a scaled figure earns
+its place by agreeing with a published one it was not fitted to.
+
+**TWO HELPERS WERE ADDED and both exist for the painter's rule.**
+`wallRun` draws a long wall as separate BAYS, because a quad's depth is its
+NEAREST corner and one 64 ft wall would carry the depth of whichever end faces
+the reader along its whole length, burying the tower beside its far end.
+`apseRun` strikes the round end as facets on a true half circle, each culled
+and sorted on its own outward normal; drawn as one polygon it reads as a flat
+wall cut on a slant. Both hand back a per-bay map and depth so windows can be
+set on them.
+
+**THE RENDER CAUGHT A DEFECT THE ARITHMETIC PASSED, which is the sixth time
+this exact family has appeared here.** The roof deck was sorted on its own
+corners. Its nearest corner is the west end beside the tower, so the whole
+plane took that depth and painted its far half straight over the tower's
+front, EATING THE PEDIMENT AND THE TOPS OF THE FOUR PUBLISHED COLUMNS. Face
+counts, finite geometry and the bounding box all passed. The picture did not.
+The deck now takes an explicit depth of -1e7 and is painted first, which is
+safe because every wall that reaches the sort is outward facing: an inward
+facing wall is culled and never drawn, so nothing that should be hidden by the
+deck is ever in the list.
+
+  THE RULE, restated because it keeps costing a run: cutting a notch in a
+  large plane so it does not OVERLAP the thing it would bury is not enough.
+  The notch fixed the plan; the plane still projected across the tower higher
+  up the screen. Give the plane an explicit depth as well.
+
+**THE ROOF IS STILL NOT DRAWN and the deck is grey on purpose.** A Sanborn is
+orthographic and publishes no pitch. The first version closed the walls with a
+warm brown deck and the render showed it reading as a finished flat roof,
+which is a claim. It is now a lead grey stopping plane that sits back and lets
+the steeple carry the picture. Anyone who later finds a published pitch should
+replace the deck rather than tilt it.
+
+**WHERE THE THREE REMAINING STAND, unchanged by this run.**
+  King's Chapel     every horizontal published, NO VERTICAL. Still the wall.
+  Smith Tower       462 ft firm, FOOTPRINT ABSENT. Sanborn is disqualified for
+                    it, per the fourth run.
+  Marron Atrium     110 ft firm, PLAN ABSENT.
+
+So the Freedom Trail is now nine of ten built with only King's Chapel left, and
+it is left for a reason that no amount of drawing skill fixes.
+
+**THE LESSON.** The handoff worked exactly as intended: the last run did the
+finding and this one did the building, and the whole budget went into geometry
+because the numbers were already in hand and already checked. That is the shape
+a two-run landmark should take. The one thing the geometry could not tell
+itself was that its own roof was lying, and only the picture said so.
