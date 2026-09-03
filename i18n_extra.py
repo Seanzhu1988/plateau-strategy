@@ -3071,6 +3071,7 @@ EXTRA.update({
      "1931년에 지어졌고, 지금도 사람들이 마천루를 그릴 때 떠올리는 바로 그 형태입니다.",
      "Xây năm 1931, và đến nay vẫn là hình dáng mà ai cũng vẽ khi vẽ một tòa chọc trời."],
  "Drag it to turn.": ["拖动可以旋转。", "Arrástralo para girarlo.", "끌어서 돌려 보세요.", "Kéo để xoay."],
+ "Drag it to turn, and up or down to tilt.": ["拖动可以旋转，上下拖动可以俯仰。", "Arrástralo para girarlo, y hacia arriba o abajo para inclinarlo.", "끌어서 돌리고, 위아래로 끌면 기울어집니다.", "Kéo để xoay, kéo lên xuống để nghiêng."],
  "1,250 ft": ["1,250 英尺", "1.250 pies", "1,250 피트", "1.250 foot"],
  "to the roof": ["到屋顶", "hasta el tejado", "옥상까지", "tính đến mái"],
  "1,454 ft": ["1,454 英尺", "1.454 pies", "1,454 피트", "1.454 foot"],
@@ -3405,18 +3406,18 @@ EXTRA.update({
      "Các ngày tàu du lịch trong tháng Tám và tháng Chín kín trước tiên, vì đó là cao điểm của tuyến Alaska. Nếu ngày của bạn eo hẹp, hãy nói trong tin nhắn và tôi sẽ trả lời ngay là có được hay không."],
  "Ask about a date": ["咨询某个日期", "Consulta una fecha", "날짜 문의하기", "Hỏi về một ngày cụ thể"],
  "Which tour": ["选择行程", "Qué tour", "어떤 투어", "Tour nào"],
- "Cruise Terminal Walking Tour: $75/person": [
-     "邮轮码头徒步游：每人75美元", "Tour desde la terminal de cruceros: 75 $/persona",
-     "크루즈 터미널 도보 투어: 1인당 75달러", "Tour đi bộ từ bến tàu: 75 đô/người"],
- "Downtown & Pike Place Half-Day: $89/person": [
-     "市中心与派克市场半日游：每人89美元", "Medio día centro y Pike Place: 89 $/persona",
-     "다운타운과 파이크 플레이스 반일: 1인당 89달러", "Nửa ngày trung tâm và Pike Place: 89 đô/người"],
- "Private Group Walking Tour: $395 flat": [
-     "私人团徒步游：一口价395美元", "Tour privado a pie: 395 $ fijos",
-     "프라이빗 그룹 도보 투어: 정액 395달러", "Tour đi bộ nhóm riêng: trọn gói 395 đô"],
+ "Cruise Terminal Walk, $75 each": [
+     "邮轮码头徒步：每人75美元", "Terminal cruceros, 75 $/pers.",
+     "크루즈 터미널 도보, 1인 75달러", "Bến tàu, 75 đô/người"],
+ "Pike Place Half-Day, $89 each": [
+     "派克市场半日游：每人89美元", "Pike Place, 89 $/persona",
+     "파이크 플레이스 반일, 1인 89달러", "Pike Place nửa ngày, 89 đô"],
+ "Private Group, $395 flat": [
+     "私人团：一口价395美元", "Grupo privado, 395 $ fijos",
+     "프라이빗 그룹, 정액 395달러", "Nhóm riêng, trọn gói 395 đô"],
  "Not sure yet, tell me what fits": [
      "还没想好，帮我看看哪个合适", "Aún no lo sé, dime qué encaja",
-     "아직 정하지 못했어요, 맞는 걸 추천해 주세요", "Chưa chắc, hãy tư vấn giúp tôi"],
+     "아직 미정, 맞는 걸 추천해 주세요", "Chưa chắc, hãy tư vấn giúp tôi"],
  "Date in Seattle": ["在西雅图的日期", "Fecha en Seattle", "시애틀 방문 날짜", "Ngày ở Seattle"],
  "How many people": ["几位", "Cuántas personas", "인원 수", "Bao nhiêu người"],
  "Ship name and all-aboard time, or anything else": [
@@ -3469,7 +3470,7 @@ EXTRA.update({
     'Plan a day': ['规划一天', 'Planificar un día', '하루 계획하기', 'Lên kế hoạch một ngày'],
     'The whole span': ['整座桥', 'El vano completo', '다리 전체', 'Toàn nhịp cầu'],
     'At the tower': ['走到桥塔下', 'Junto a la torre', '탑 아래에서', 'Ngay chân tháp'],
-    'Drag it to turn. It turns by itself until you take hold. The towers carry two pointed openings each, and at the whole span framing each one is about six pixels across, so there is a second view that stands you under one.': ['拖动即可转动，你不碰它时它会自己慢慢转。每座桥塔各开两道尖拱，在整桥视角下每道只有约六个像素宽，所以另有一个视角，把你放到其中一道拱下面。', 'Arrástrelo para girarlo; gira solo hasta que usted lo sujeta. Cada torre lleva dos vanos apuntados y, en la vista del vano completo, cada uno mide unos seis píxeles, así que hay una segunda vista que le sitúa debajo de uno.', '끌어서 돌리세요. 손을 대기 전까지는 저절로 돕니다. 탑마다 뾰족한 개구부가 두 개씩 있는데, 다리 전체 시점에서는 하나가 약 6픽셀에 불과합니다. 그래서 그 아래에 서게 하는 두 번째 시점이 있습니다.', 'Kéo để xoay. Nó tự xoay cho tới khi bạn chạm vào. Mỗi tháp có hai ô vòm nhọn, và ở góc nhìn toàn nhịp mỗi ô chỉ rộng chừng sáu điểm ảnh, nên có một góc nhìn thứ hai đặt bạn ngay bên dưới một ô.'],
+    'Drag it to turn, and up or down to tilt. It turns by itself until you take hold. The towers carry two pointed openings each, and at the whole span framing each one is about six pixels across, so there is a second view that stands you under one.': ['拖动即可转动，上下拖动可以俯仰。你不碰它时它会自己慢慢转。每座桥塔各开两道尖拱，在整桥视角下每道只有约六个像素宽，所以另有一个视角，把你放到其中一道拱下面。', 'Arrástrelo para girarlo, y hacia arriba o abajo para inclinarlo; gira solo hasta que usted lo sujeta. Cada torre lleva dos vanos apuntados y, en la vista del vano completo, cada uno mide unos seis píxeles, así que hay una segunda vista que le sitúa debajo de uno.', '끌어서 돌리고, 위아래로 끌면 기울어집니다. 손을 대기 전까지는 저절로 돕니다. 탑마다 뾰족한 개구부가 두 개씩 있는데, 다리 전체 시점에서는 하나가 약 6픽셀에 불과합니다. 그래서 그 아래에 서게 하는 두 번째 시점이 있습니다.', 'Kéo để xoay, kéo lên xuống để nghiêng. Nó tự xoay cho tới khi bạn chạm vào. Mỗi tháp có hai ô vòm nhọn, và ở góc nhìn toàn nhịp mỗi ô chỉ rộng chừng sáu điểm ảnh, nên có một góc nhìn thứ hai đặt bạn ngay bên dưới một ô.'],
     'Built from the record': ['依据记载建起来的', 'Construido a partir del registro', '기록에서 세운 것', 'Dựng từ hồ sơ'],
     'These are not drawn by hand. Each one is composed from its published dimensions, and every number under it says where it came from. A landmark whose sources disagree is not drawn at all, and is listed below as waiting rather than quietly left out.': ['这些不是手绘的。每一座都由公开发表的尺寸拼合而成，下方每个数字都注明出处。若某处地标的资料互相矛盾，就干脆不画，并在下面列为「等待中」，而不是悄悄略过。', 'No están dibujados a mano. Cada uno se compone a partir de sus dimensiones publicadas, y cada cifra debajo dice de dónde salió. Un monumento cuyas fuentes no coinciden no se dibuja, y aparece abajo como pendiente en lugar de omitirse en silencio.', '손으로 그린 것이 아닙니다. 각각은 공표된 치수로 조립되며, 아래의 모든 숫자는 출처를 밝힙니다. 출처가 서로 어긋나는 랜드마크는 아예 그리지 않고, 조용히 빼는 대신 아래에 대기 중으로 적어 둡니다.', 'Chúng không được vẽ bằng tay. Mỗi công trình được dựng từ các kích thước đã công bố, và mọi con số bên dưới đều ghi rõ nguồn. Một địa danh có các nguồn mâu thuẫn thì không được vẽ, và được liệt kê bên dưới là đang chờ, thay vì lặng lẽ bỏ qua.'],
     '← Floor plan': ['← 平面图', '← Plano de planta', '← 평면도', '← Sơ đồ mặt bằng'],
