@@ -4033,13 +4033,6 @@ def factor_clock_dial_png():
                      mimetype="image/png")
 
 
-@app.route("/factor-clock-film.mp4")
-def factor_clock_film_mp4():
-    """The clock filmed from its own live dial (no mock-ups)."""
-    return send_file(os.path.join(BASE_DIR, "factor-clock-film.mp4"),
-                     mimetype="video/mp4")
-
-
 @app.route("/api/clock/signup", methods=["POST"])
 def api_clock_signup():
     """Founding-beta email capture for the Factor Clock (free now, $10/yr later)."""
