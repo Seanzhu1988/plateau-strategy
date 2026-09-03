@@ -1460,7 +1460,73 @@
 
   var RADIUS = 60;      /* generous on purpose: precision is the limit, not this */
   var AMBIGUOUS = 45;   /* inside this of each other, name them both */
+  var ARRIVE = 35;      /* speak only well inside the radius, not at its edge */
   var watchId = null, stops = null;
+
+  /* THE TRIGGER, and how it is allowed to exist.
+   * [SEAN, twice: "if i apporach the building it trigger our audio guide to
+   * read the attraction", then "we need to work on the nearby guide audio
+   * trigger".]
+   *
+   * The first version could only OFFER, and the reason given was that
+   * browsers refuse to start audio without a tap. That is true of a NEW audio
+   * element, which is what the stop buttons make each time. It is not true of
+   * an element that a tap has already started: that one keeps its permission
+   * for the life of the page.
+   *
+   * So the tap on "Follow me along the trail" does double duty. It asks for
+   * location, and it silently unlocks one audio element. From then on,
+   * walking up to a stop really does start the narration, with no second tap,
+   * which is what was asked for in the first place.
+   *
+   * Three things it will not do.
+   *   It never speaks when two stops are inside the margin of error. Three
+   *   pairs on this trail stand closer together than city GPS can resolve, so
+   *   there it still offers both and lets the person looking at the building
+   *   decide. Guessing aloud is worse than asking.
+   *   It never speaks the same stop twice, and never interrupts itself.
+   *   It stops the moment the page is hidden or following is turned off.
+   *
+   * And it can be switched off on its own, because someone may want the map
+   * following them without a voice starting in a public street. */
+  var auto = { on: false, el: null, spoken: {}, saying: null };
+
+  function unlockAudio() {
+    if (auto.el) return true;
+    try {
+      var a = new Audio();
+      a.preload = 'auto';
+      /* A one-sample silent WAV. Playing it inside the tap is what carries the
+         permission forward; there is nothing to hear. */
+      a.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAgD4AAAB9AAACABAAZGF0YQAAAAA=';
+      var r = a.play();
+      if (r && r.catch) r.catch(function () {});
+      auto.el = a;
+      a.addEventListener('ended', function () { auto.saying = null; });
+      a.addEventListener('error', function () { auto.saying = null; });
+      return true;
+    } catch (err) { return false; }
+  }
+
+  function speak(stop) {
+    if (!auto.on || !auto.el || auto.saying) return false;
+    if (auto.spoken[stop.n]) return false;
+    var src = '/media/audio/trail-stop-' + stop.n +
+              ((window.FT_GUIDE && window.FT_GUIDE.suffix) || '') + '.mp3';
+    auto.spoken[stop.n] = true;
+    auto.saying = stop.n;
+    try {
+      auto.el.src = src;
+      var r = auto.el.play();
+      if (r && r.catch) r.catch(function () { auto.saying = null; });
+    } catch (err) { auto.saying = null; return false; }
+    return true;
+  }
+
+  function hushAuto() {
+    if (auto.el) { try { auto.el.pause(); } catch (err) {} }
+    auto.saying = null;
+  }
 
   function metres(aLat, aLon, bLat, bLon) {
     var R = 6371000, p1 = aLat * Math.PI / 180, p2 = bLat * Math.PI / 180;
@@ -1506,10 +1572,22 @@
              esc(r.s.name) + '</button>';
     }).join('');
 
-    live.innerHTML = head + '<div class="ft-near-pick">' + picks + '</div>' +
+    /* One stop, well inside the radius, nothing already playing: say it. Two
+       stops inside the margin: say nothing and offer both, because the phone
+       cannot tell and the person standing there can. */
+    var spoke = false;
+    if (auto.on && here.length === 1 && here[0].d <= ARRIVE) {
+      spoke = speak(here[0].s);
+    }
+
+    live.innerHTML = head +
+      (spoke ? '<p class="ft-near-said">' +
+        T('Playing {name}. Tap to stop.', { name: esc(here[0].s.name) }) + '</p>' : '') +
+      '<div class="ft-near-pick">' + picks + '</div>' +
       '<p class="ft-near-acc">' +
       T('Your phone puts you within about {m} m. Three pairs on this trail stand closer together than that.',
-        { m: acc }) + '</p>';
+        { m: acc }) +
+      (auto.on ? '' : ' ' + T('Automatic playing is off.', {})) + '</p>';
   }
 
   /* The tap that reaches the stop's own play button is a real user gesture, so
@@ -1527,6 +1605,8 @@
 
   function stop() {
     if (watchId != null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+    auto.on = false;
+    hushAuto();
     live.hidden = true;
     startBtn.textContent = T('Follow me along the trail', {});
     startBtn.classList.remove('ft-near-off');
@@ -1548,6 +1628,10 @@
 
   startBtn.addEventListener('click', function () {
     if (watchId != null) { stop(); return; }
+    /* THIS tap is the gesture. Spend it on the unlock before anything async
+       happens, because a permission prompt or a fetch ends the gesture and
+       the unlock would then be refused. */
+    auto.on = unlockAudio();
     if (stops) { begin(); return; }
     fetch('/api/trails').then(function (r) { return r.json(); }).then(function (d) {
       var t = ((d && d.trails) || []).filter(function (x) { return x.id === 'freedom-trail'; })[0];
@@ -1557,7 +1641,8 @@
     }).catch(function () { note.textContent = T('Could not load the stop locations.', {}); });
   });
 
-  /* a GPS left running in a pocket is someone's battery */
+  /* a GPS left running in a pocket is someone's battery, and a voice still
+     talking after the phone goes in the pocket is worse */
   document.addEventListener('visibilitychange', function () {
     if (document.hidden && watchId != null) stop();
   });
