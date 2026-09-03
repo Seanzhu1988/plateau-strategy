@@ -58,8 +58,24 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
       inside the box and on no other label. Where there is nowhere to go, at
       the tower framing and on a phone, the label keeps exactly the position
       the old code gave it and is haloed instead.
-- [ ] Vertical drag: turn is horizontal only, so nobody can look down on the
-      Empire State or up from street level.
+- [x] Vertical drag: turn is horizontal only, so nobody can look down on the
+      Empire State or up from street level. **Done 2026-09-03.** One aim()
+      takes yaw and pitch together, so a diagonal drag costs one draw and not
+      two, and a horizontal drag is byte for byte the old behaviour (measured:
+      dragging 100px sideways moves yaw 0.60 and pitch exactly 0). The floor
+      is -0.14 everywhere, a shallow worm's eye, and it was measured rather
+      than picked: at that angle nothing on either model leaves its box. The
+      ceiling is per view, because the drawings run out of room at different
+      angles and the bounding box was read against the 720 x 620 viewBox at
+      every fiftieth of a radian: the span leaves the top of its box at 0.46
+      so it stops at 0.44, the tower is nine times zoomed so it stops at 0.30,
+      and the Empire State holds to 0.75, far enough to look down on the
+      setbacks and the roof. No label leaves its box at any tilt in any of the
+      three framings, checked at seven angles. On a touch screen .lm-stage is
+      touch-action: pan-y, which is left alone on purpose: the browser keeps
+      every vertical gesture, so a finger still scrolls past the model rather
+      than being caught by it, and tilt there is a mouse, trackpad or stylus
+      gesture.
 - [ ] Open it up, the way the Met's model does: the Empire State splitting to
       show the two observatory decks inside.
 - [ ] Phone framing: both models are drawn for a wide screen. Check at 375px
@@ -261,3 +277,56 @@ drawing, and the ones with nowhere to go get a halo".
 Note: destinations.json is another session's uncommitted work and was left
 untouched, verified by checksum across the rebase. The branch was 1 ahead and 2
 behind origin/main at the start and was rebased with --autostash.
+
+### 2026-09-03
+Trimmed: two, and the second turned out to be one defect wearing nine faces.
+First, the tours page's "Which tour" menu cut its own prices off at 375px:
+the widest option wanted 331px of text in a box with 238px of room before the
+chevron, so a customer choosing a tour read "Cruise Terminal Walking Tour:
+$75/" with the arrow sitting on the "p". The labels are now 174 to 227px and
+whole. Worth recording: the first check used the select's scrollWidth, which
+CAPS at clientWidth and reported a clean 281/281 for strings that did not fit
+at all, so the real measurement is the text drawn to a canvas in the select's
+own font.
+Second, the masthead wordmark. It was the only thing in the row allowed to
+shrink and the nav refuses to, so on nine pages it had been squeezed to a
+stub or to nothing: the destination book 2px, which paints as a stray vertical
+stroke between the mark and "Home", the home page and trips 0px, booking 79,
+articles 114, driver, renter, agent 189 and partners 183, every one cut
+mid-word. The row wraps now, so the nav drops to its own line when it cannot
+share one and does not move at all on the eight pages where everything already
+fits. All nine read 194px and whole; measured across 22 pages, no page's
+scrollWidth moved off 375 and no masthead element sits outside the viewport.
+It costs 36px of masthead on seven of them, 49 on booking, and the trip
+planner is 3px shorter. Underneath the home page's 0px was a separate bug: the
+mobile rule sized `header .logo` to 30px square, and every .logo on this site
+is a DIV wrapping the mark and the wordmark together, so it was squeezing the
+wordmark inside it to zero. It is `img.logo` now. The home page nests its own
+row, so it wraps one level down; wrapping the outer header there stranded the
+share button on a third line, 143px against 112px measured.
+Rejected with numbers rather than by taste: hiding the wordmark on phones
+costs no height and looked right on the destination book, but the Met and MoMA
+carry a wordmark and no image at all, so hiding it leaves those mastheads
+empty. That is what decided it.
+3D: the top backlog item, vertical drag. Numbers above.
+Caught in my own work: shortening the tour labels orphaned their four
+translations, and build_i18n refused to write the packs until every visible
+visitor line had one, which is the gate doing its job. Writing the new ones
+then found a defect I had not gone looking for: measured in the select's font,
+the Spanish labels came out at 256 and 254px and the Korean "Not sure yet" at
+279, all over the same 238px budget, the Korean one from before today. Every
+option in every language now fits, verified live by switching the page to
+Spanish and measuring what rendered.
+Checkers: map sound, 83% full. i18n 39, unchanged, none attempted and none
+added. Script lengths 1 out of band, the same Chinese overview, left alone
+again on purpose. The four language packs were diffed key by key against HEAD:
+five added, four removed, one changed, all mine, no drift from the other
+session.
+Commits: "The tour menu stops cutting off its own prices, and a wordmark with
+no room stops being a stray stroke", "The models tilt as well as turn, with
+the floor and every ceiling measured against the box" and "The four packs
+learn the shortened tour labels and the new turn line".
+Note: destinations.json is another session's uncommitted work and was left
+untouched; its checksum changed twice during the pass, so that session was
+writing while this one ran. The branch was 1 ahead of origin/main and 0 behind
+at the start and needed no rebase.
