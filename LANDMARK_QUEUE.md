@@ -187,6 +187,56 @@ answers 403. NOT YET TRIED and worth a later run: the Boston Landmarks
 Commission study report, and a Historic Structure Report if the parish has one
 online.
 
+TWO OF THE TOWER-HEIGHT LEADS ARE NOW SPENT AND BOTH FAILED, 2026-09-02
+(fourth run). The entry above named two: the Boston Landmarks Commission study
+report, and a Historic Structure Report.
+
+  THE BLC STUDY REPORT DOES NOT EXIST FOR THIS BUILDING. A search restricted to
+  boston.gov and cityofboston.gov returns the study-report index, the Parker
+  House and Massachusetts Historical Society reports, and a King's Chapel
+  BURYING GROUND pdf, which is the graveyard and not the church. This is not
+  surprising once stated: King's Chapel is a National Historic Landmark, and
+  the BLC writes study reports to evaluate a property for CITY designation.
+  Treat it as closed, not as a search that needs better terms.
+
+  NO HISTORIC STRUCTURE REPORT SURFACED either, on a targeted search pairing
+  the building with "historic structure report" and "measured drawings."
+
+A THIRD SOURCE WAS FOUND, READ IN FULL, AND IT DOES NOT CARRY THE HEIGHT. It is
+worth recording because it looks like it should and a later run will find it
+again: Aaron Helfand, "Inspired by Gibbs: Peter Harrison's lost designs for the
+steeple of King's Chapel," Georgian Group Journal vol. XXVII (2019), a free 15
+page PDF at
+`georgiangroup.org.uk/wp-content/uploads/2020/10/GGJ_2019_13_Helfand.pdf`
+which a plain curl fetches and pypdf extracts. It is a reconstruction of the
+NEVER-BUILT steeple from Allen's cost estimate and the 1784 description. Every
+dimension in it is of the steeple that was not built. It gives no height for
+the granite tower that stands.
+
+  ONE GENUINELY NEW PUBLISHED NUMBER DID COME OUT OF IT, and it is a horizontal
+  cross-check rather than the vertical still wanted: Allen's estimate lists
+  "96 feet of entablature," and Helfand divides that by the tower's four sides
+  to get 24 FEET PER SIDE, measured to the outermost extent of the cornice, for
+  the proposed Ionic storey. That sits just inside the nomination's 26 ft square
+  "from out to out" for the granite tower, which is the right relationship for
+  a storey stepping back above a base with 4 ft walls, so the two published
+  figures agree rather than contradict. It does not unblock the model.
+
+  Also confirmed there, and useful if the tower is ever drawn: the granite
+  portion of the standing tower has FOUR WINDOWS below the level where the
+  Ionic storey would have gone, and they are ARCHED, matching the arched
+  windows used elsewhere in the building.
+
+THE HEIGHT IS STILL THE ONE BLOCKER. Four sources have now been read without
+finding it: the NHL nomination, HABS ma0461, the BLC index, and Helfand. The
+leads left, none yet tried: the Massachusetts Historical Society's King's
+Chapel records 1686-1942 (finding aid fa0249 at masshist.org), which is an
+archive rather than a document and may need a person; and the Sanborn route
+opened for Smith Tower above, which gives footprints but not heights so it does
+NOT help here. Absence over invention still applies: do not scale a height off
+a photograph, and do not take one off Helfand's reconstruction drawings, which
+are an argument about a steeple that was never built.
+
 STILL TRUE AND STILL WORTH NOT RE-WALKING, carried over from the 2026-09-01
 run: HABS ma0461 is King's Chapel, its call number is MASS,13-BOST,55 not the
 12 an earlier note guessed, and the record is `Photo(s): 1, Photo Caption
@@ -326,6 +376,49 @@ he says they are "not fully dimensioned" even in person. Checked and failed
     retrying, but an OSM traced outline is a crowd tracing rather than a
     published dimension, so it belongs in a cross-check and not in the model.
 
+LEAD 1 IS SPENT AND IT FAILED, 2026-09-02 (fourth run). The Seattle city
+landmark nomination was called "THE BEST REMAINING SHOT." It is not a shot at
+all. Smith Tower was designated a Seattle Landmark on 12 June 1984, but no run
+should look for its nomination PDF again: a site-restricted search of
+seattle.gov returns the Landmarks Preservation Board's agendas and its generic
+nomination application form, and no nomination document for this building. What
+the search DOES surface, and it is a trap worth naming, is
+`.../historicdistricts/pioneersquare/2025/psb030525breifingsmithtowerpp.pdf`,
+a 9.2 MB 57 page Pioneer Square board briefing that a plain curl with the
+browser User-Agent downloads and pypdf extracts cleanly. It looks like a
+building document and it is not one. It is WESTERN NEON'S SIGN PACKAGE for a
+Caffe Vita tenant fit-out, drawn 2024-25. It carries no plan and no plan
+dimension. Its one arguably useful sheet is page 13, a south elevation on
+Yesler Way at a stated 1/8 inch = 1 foot, so the base width along Yesler could
+in principle be scaled off it; but it is a sign contractor's drawing of the
+facade it is hanging a sign on, not a measured survey, and a footprint scaled
+from it would be a guess wearing a scale bar. Do not model from it.
+
+LEAD 4, NEW AND UNSPENT, AND IT IS NOW THE BEST ONE: SANBORN FIRE INSURANCE
+MAPS AT loc.gov. Confirmed live on 2026-09-02, and it fits the loc.gov workflow
+this file already proves. A Sanborn sheet is a published, scaled, orthographic
+building outline, usually 50 feet to the inch, and it routinely letters the
+dimension of a large block outright. It is exactly the class of document the
+queue has been missing for this building, and no run has tried it.
+
+  the search endpoint answers a plain curl with the browser User-Agent:
+  `https://www.loc.gov/search/?q=sanborn+seattle+washington&fa=partof:sanborn+maps&fo=json&c=5`
+  it returns real Seattle volumes, for example item `sanborn09315_026`, whose
+  own `?fo=json` reports `Vol. 6, 1919 - Sep 1950` and 128 sheets, with 129
+  files under `resources[0].files`. So the volumes are digitised, post-date
+  Smith Tower's July 1914 opening, and are read by the same three-step recipe
+  the Paul Revere HABS sheets used: item JSON, pick the `image/tiff` master,
+  crop with PIL and LOOK at it.
+
+  WHAT A LATER RUN MUST DO FIRST, because it is where this will go wrong: pick
+  the volume that covers PIONEER SQUARE, 2nd Avenue at Yesler Way, which is
+  almost certainly Vol. 1 and NOT the Vol. 6 sampled above. Each volume's sheet
+  010 is a "Key map to edition," so read the key map before pulling a sheet.
+  And carry the caveat honestly: a Sanborn outline is a published drawing, so
+  it is admissible where an OSM tracing is not, but if the sheet does not
+  letter the dimension then what comes off it is scaled and must be declared
+  scaled, the same way the Paul Revere elevation heights are.
+
 THE THREE LEADS NOT YET SPENT, in the order worth trying:
   1. The Seattle city landmark nomination. Smith Tower is a designated Seattle
      landmark and the city publishes nomination PDFs at seattle.gov; those
@@ -388,6 +481,17 @@ declared before it is claimed.
 The building's architecture is built. The Marron Atrium, a 110 ft daylight
 shaft, has not been modelled and its 110 ft is the only number in hand. It
 needs a plan dimension before it can be drawn, the same gap as Park Street.
+
+## Run log, fourth run, 2026-09-02
+
+Nothing was built and that is the rule working. Three candidates remain and all
+three are still exactly one number short: King's Chapel wants the tower height,
+Smith Tower wants the footprint, the Marron Atrium wants a plan dimension. This
+run spent its budget closing dead ends rather than guessing, and it closed
+three of them: the Seattle landmark nomination, the Boston Landmarks Commission
+study report, and the Helfand steeple paper. It opened one, the loc.gov Sanborn
+volumes, which is the first source ever found for this file that is designed to
+publish a building footprint.
 
 ## The rule that produced this file
 
