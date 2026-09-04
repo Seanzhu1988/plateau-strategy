@@ -128,7 +128,14 @@
     <h2 class="lm-h">The Empire State Building</h2>
     <p class="lm-sub">1931, and still the shape everyone draws when they draw a skyscraper.</p>
     <div class="lm-stage" id="empireStage"></div>
+    <div class="lm-views" id="empireViews">
+      <button type="button" class="chip" data-open="0" aria-pressed="true">Solid</button>
+      <button type="button" class="chip" data-open="1" aria-pressed="false">Open it up</button>
+    </div>
     <p class="lm-turn">Drag it to turn, and up or down to tilt.</p>
+    <p class="lm-turn">Open it and the tower splits at the two observatory
+       floors, 1,050 ft and 1,224 ft: an open terrace on the 86th, a glassed
+       room on the 102nd.</p>
 
     <div class="lm-facts">
       <div class="lm-fact"><b>1,250 ft</b><span>to the roof</span></div>
@@ -179,7 +186,24 @@
 <script src="/landmark-3d.js"></script>
 <script>
   var bridge = NYC3D.bridge(document.getElementById('bridgeStage'));
-  NYC3D.empire(document.getElementById('empireStage'));
+  var empire = NYC3D.empire(document.getElementById('empireStage'));
+
+  /* Solid or opened up, on the one mount, the same way the bridge switches
+     framings: the model is told to open, it is never mounted again. */
+  (function () {
+    var box = document.getElementById('empireViews');
+    if (!box || !empire.open) return;
+    box.addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-open]');
+      if (!b) return;
+      var want = b.getAttribute('data-open') === '1';
+      empire.open(want);
+      [].forEach.call(box.querySelectorAll('button[data-open]'), function (o) {
+        o.setAttribute('aria-pressed',
+          (o.getAttribute('data-open') === '1') === want ? 'true' : 'false');
+      });
+    });
+  })();
 
   /* One mount, two framings. The buttons retarget it rather than mounting a
      second model, so there is never more than one animation loop. */

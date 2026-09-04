@@ -538,16 +538,77 @@
     obs86: 1050, obs102: 1224
   };
 
+  /* How far apart the pieces draw when the building is fully open, in feet.
+     150 ft is a little over twelve storeys of this building, which is enough
+     air to see a deck through and not so much that the tower stops reading
+     as one object. */
+  var ES_LIFT = 150;
+
   function empireScene(opts) {
     var o = opts || {};
+    var openT = Math.max(0, Math.min(1, o.openT || 0));
     var f = [], lines = [], marks = [];
-    var S = 0.30;
+    /* Opening it makes the drawing 300 ft taller, which would push the
+       antenna and its label straight out of the box. So the whole model is
+       scaled down by exactly the factor that keeps the tip on the same line
+       of the box however far it is open, tip / (tip + two lifts). A uniform
+       scale falsifies no proportion: everything shrinks together, and closed
+       the factor is 1 and the drawing is the one that was here. */
+    var S = 0.30 * (ES.tip + 2 * ES_LIFT * (1 - openT)) / (ES.tip + 2 * ES_LIFT);
     function P(x, y, z) { return [x * S, y * S, z * S]; }
     var FH = ES.roof / 102;                       /* mean storey, 12.25 ft */
+
+    /* The two heights it splits at are the two published observatory floors,
+       1,050 ft and 1,224 ft, which were already the only two heights this
+       model named. Everything below 1,050 stands still, the piece between
+       the decks rises one lift, and the mast and antenna rise two, so each
+       deck is left standing in clear air on top of the piece it belongs to. */
+    var CUT = [ES.obs86, ES.obs102];
+    function lift(z) {
+      if (!openT) return 0;
+      return (z >= ES.obs102 ? 2 : z >= ES.obs86 ? 1 : 0) * ES_LIFT * openT;
+    }
 
     /* the block it stands on */
     f.push(face([P(-420, -420, 0), P(420, -420, 0), P(420, 420, 0), P(-420, 420, 0)],
                 C.ground, { flat: true }));
+
+    /* One storey band of the massing. Closed it is a single box and a single
+       run of window bands, exactly as before. Open, it is cut at whichever
+       of the two deck heights falls inside it, and each piece is carried up
+       by its own tier, so a band that spans a cut does not tear. */
+    function slab(w, d, z0, z1, bare) {
+      var edges = [z0], i, j;
+      if (openT) CUT.forEach(function (c) { if (c > z0 && c < z1) edges.push(c); });
+      edges.push(z1);
+      edges.sort(function (a, b) { return a - b; });
+      for (i = 0; i < edges.length - 1; i++) {
+        var a = edges[i], b = edges[i + 1], up = lift(a);
+        var x0 = P(-w / 2, 0, 0)[0], x1 = P(w / 2, 0, 0)[0];
+        var y0 = P(0, -d / 2, 0)[1], y1 = P(0, d / 2, 0)[1];
+        var za = P(0, 0, a + up)[2], zb = P(0, 0, b + up)[2];
+        f = f.concat(box(x0, x1, y0, y1, za, zb, C.stoneTop));
+        /* box() draws no underside, which is invisible on a building
+           standing on the ground and a hole in one that has been lifted off
+           it. A piece in the air gets its floor. */
+        if (up > 0) f.push(face([[x0, y0, za], [x0, y1, za], [x1, y1, za], [x1, y0, za]],
+                                C.stoneTop));
+        /* the vertical window bands that make it read as Art Deco limestone.
+           A band is inset six feet from the bottom of its piece and four from
+           the top, so a piece ten feet or shorter has none: that is only ever
+           a sliver left by a cut, since the shortest real storey band in the
+           massing is the 86th at 12.25 ft, and it keeps its bands exactly as
+           it always had. The mast asks for none at all. */
+        if (bare || b - a <= 10) continue;
+        var bands = Math.max(3, Math.round(w / 26));
+        for (j = 1; j < bands; j++) {
+          var xx = -w / 2 + (w * j / bands);
+          lines.push({ a: P(xx, -d / 2 - 0.5, a + up + 6),
+                       b: P(xx, -d / 2 - 0.5, b + up - 4),
+                       colour: C.glassEdge, width: 1.1, opacity: 0.75 });
+        }
+      }
+    }
 
     /* the massing, floor by floor in the real setback order: the five storey
        base, the steps at 21, 25 and 30, the long shaft, then 72, 81, 85. */
@@ -565,28 +626,64 @@
     var z = 0;
     steps.forEach(function (s) {
       var top = s.to * FH;
-      f = f.concat(box(P(-s.w / 2, 0, 0)[0], P(s.w / 2, 0, 0)[0],
-                       P(0, -s.d / 2, 0)[1], P(0, s.d / 2, 0)[1],
-                       P(0, 0, z)[2], P(0, 0, top)[2], C.stoneTop));
-      /* the vertical window bands that make it read as Art Deco limestone */
-      var bands = Math.max(3, Math.round(s.w / 26));
-      for (var i = 1; i < bands; i++) {
-        var xx = -s.w / 2 + (s.w * i / bands);
-        lines.push({ a: P(xx, -s.d / 2 - 0.5, z + 6), b: P(xx, -s.d / 2 - 0.5, top - 4),
-                     colour: C.glassEdge, width: 1.1, opacity: 0.75 });
-      }
+      slab(s.w, s.d, z, top);
       z = top;
     });
 
-    /* the mooring mast and the antenna to the tip */
-    f = f.concat(box(P(-30, 0, 0)[0], P(30, 0, 0)[0],
-                     P(0, -26, 0)[1], P(0, 26, 0)[1],
-                     P(0, 0, ES.roof - 40)[2], P(0, 0, ES.roof)[2], C.stoneTop));
-    lines.push({ a: P(0, 0, ES.roof), b: P(0, 0, ES.tip), colour: C.ink, width: 2.4 });
+    /* the mooring mast and the antenna to the tip. The 102nd floor is inside
+       the mast, so the mast is one of the pieces that gets cut. */
+    slab(60, 52, ES.roof - 40, ES.roof, true);
+    var tipUp = lift(ES.roof);
+    lines.push({ a: P(0, 0, ES.roof + tipUp), b: P(0, 0, ES.tip + tipUp),
+                 colour: C.ink, width: 2.4 });
+
+    /* ---- the two decks, drawn only once there is room to see them ---- */
+    /* Each deck is the tower's own plan at that height, so no dimension is
+       invented: the 86th is the 128 by 96 ft band it sits in, the 102nd is
+       the 60 by 52 ft mast. What is indicative, exactly like the window
+       bands, is the parapet and the glass: the height of a wall is not a
+       number this model can cite. The difference between them is the fact
+       the page states, and the whole reason a visitor picks one: the 86th is
+       open to the air, the 102nd is enclosed. */
+    function ring(w, d, zb, hh, colour, edge) {
+      var t = Math.max(3, w * 0.028);
+      [[-w / 2, -d / 2, w / 2, -d / 2 + t], [-w / 2, d / 2 - t, w / 2, d / 2],
+       [-w / 2, -d / 2, -w / 2 + t, d / 2], [w / 2 - t, -d / 2, w / 2, d / 2]
+      ].forEach(function (r) {
+        var bx = box(P(r[0], 0, 0)[0], P(r[2], 0, 0)[0],
+                     P(0, r[1], 0)[1], P(0, r[3], 0)[1],
+                     P(0, 0, zb)[2], P(0, 0, zb + hh)[2], colour);
+        bx.forEach(function (fc) {
+          fc.bias = 0.4;
+          if (edge) { fc.stroke = edge; fc.width = 0.5; }
+          if (openT < 0.98) fc.opacity = openT.toFixed(2);
+          f.push(fc);
+        });
+      });
+    }
+    function deck(w, d, at, hh, floor, wall, edge) {
+      var fl = face([P(-w / 2, -d / 2, at), P(w / 2, -d / 2, at),
+                     P(w / 2, d / 2, at), P(-w / 2, d / 2, at)], floor);
+      fl.bias = 0.3;
+      if (openT < 0.98) fl.opacity = openT.toFixed(2);
+      f.push(fl);
+      ring(w, d, at, hh, wall, edge);
+    }
+    if (openT > 0.02) {
+      /* Both floors are drawn in the promenade blue-grey the bridge walkway
+         uses, not in limestone, because a floor the colour of the wall reads
+         as the top of a box rather than as a floor you could stand on. That
+         is the whole thing this view exists to show. */
+      /* the open-air terrace, on top of the piece that stands still */
+      deck(128, 96, ES.obs86, 11, C.walkTop, C.stoneTop, C.stoneEdge);
+      /* the enclosed room, riding up with the piece it stands on */
+      deck(60, 52, ES.obs102 + lift(ES.obs86), 13, C.walkTop, C.glass, C.glassEdge);
+    }
 
     if (o.marks !== false) {
-      marks.push({ at: P(0, 0, ES.tip + 24), text: '1,454 ft to the tip' });
-      marks.push({ at: P(78, 0, ES.obs102), fill: C.hi, text: '102nd floor',
+      marks.push({ at: P(0, 0, ES.tip + 24 + tipUp), text: '1,454 ft to the tip' });
+      marks.push({ at: P(78, 0, ES.obs102 + lift(ES.obs86)), fill: C.hi,
+                   text: '102nd floor',
                    sub: 'enclosed, 1,224 ft, the small one' });
       marks.push({ at: P(96, 0, ES.obs86), fill: C.navy, text: '86th floor',
                    sub: 'open air, 1,050 ft, the one people mean' });
@@ -662,7 +759,7 @@
       requestAnimationFrame(spin);
     })();
     return { turn: turn, aim: aim, cam: function () { return cam; },
-             retarget: retarget };
+             retarget: retarget, redraw: draw };
   }
 
   /* Two framings of the bridge. The span camera is the one that was here and
@@ -701,8 +798,58 @@
       return m;
     },
     empire: function (host) {
-      return mount(host, empireScene, makeCam(-0.7, 0.22, 1, 360, 560),
-                   TILT_CEIL.empire);
+      /* The builder reads openT live, so the same mount draws the solid and
+         the opened building and there is never a second animation loop
+         fighting the first over one box. */
+      var openT = 0, anim = null;
+      var m = mount(host, function () { return empireScene({ openT: openT }); },
+                    makeCam(-0.7, 0.22, 1, 360, 560), TILT_CEIL.empire);
+      var still = window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)');
+      /* A floor is invisible edge-on. The opening view starts at pitch 0.22,
+         barely above level, where a 128 by 96 ft deck projects five units
+         tall in a 620 unit box and reads as a seam rather than as a floor
+         you could stand on. So the eye rises with the tower, to 0.55, which
+         is well inside the measured 0.75 ceiling and steep enough to look
+         down onto both decks. It is a floor, never a ceiling: a reader who
+         has already tilted higher keeps their own angle. Closing leaves the
+         camera exactly where the reader put it, because taking a view away
+         from someone who chose it is worse than an odd angle. */
+      var OPEN_PITCH = 0.55;
+      function pitchFor(want, now) {
+        return want ? Math.max(now, OPEN_PITCH) : now;
+      }
+      /* Same easing and the same 620 ms as the Met's roof lifting away, so
+         the two models on this site open with one motion and not two. A
+         reader who asked their device to stop animating is given the end
+         state at once, and that is read live rather than once, so changing
+         the setting takes effect without a reload. */
+      m.open = function (want) {
+        var target = want ? 1 : 0;
+        if (anim) { cancelAnimationFrame(anim); anim = null; }
+        if (still && still.matches) {
+          openT = target;
+          m.aim(m.cam().yaw, pitchFor(want, m.cam().pitch));
+          return !!want;
+        }
+        var from = openT, t0 = null, dur = 620;
+        var p0 = m.cam().pitch, p1 = pitchFor(want, p0);
+        function frame(ts) {
+          if (t0 === null) t0 = ts;
+          var k = Math.min(1, (ts - t0) / dur);
+          var e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+          openT = from + (target - from) * e;
+          /* aim draws, so the eye rising and the tower parting are one frame
+             and not two. */
+          m.aim(m.cam().yaw, p0 + (p1 - p0) * e);
+          if (k < 1) anim = requestAnimationFrame(frame);
+          else { anim = null; openT = target; m.aim(m.cam().yaw, p1); }
+        }
+        anim = requestAnimationFrame(frame);
+        return !!want;
+      };
+      m.isOpen = function () { return openT > 0.5; };
+      return m;
     }
   };
 })();
