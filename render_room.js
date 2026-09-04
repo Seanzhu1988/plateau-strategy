@@ -31,6 +31,39 @@ const key = process.argv[2];
    A wrong proportion passes every arithmetic check and fails one glance. */
 /* "moma:closed" / "moma:open" draws the MoMA building from the same floor
    data the 2D map uses. Same pure-context contract as every other scene. */
+/* "dc:mall" draws the National Mall from its real coordinates. */
+if (key.startsWith("dc:")) {
+  require("/Users/xiaojunzhu/Claude/worktrees/site/dc-3d.js");
+  const scene = window.DC3D.scenes[key.slice(3)] || window.DC3D.scenes.mall;
+  const yawD = parseFloat(process.argv[3] || "-0.30");
+  const pitchD = parseFloat(process.argv[4] || "0.42");
+  const WD = 1100, HD = 620;
+  const mkD = (SC,OX,OY) => (x,y,z) => {
+    const c=Math.cos(yawD), s2=Math.sin(yawD);
+    const rx=x*c-y*s2, ry=x*s2+y*c;
+    return [OX+rx*SC, OY+(ry*Math.sin(pitchD)-(z||0)*Math.cos(pitchD))*SC, ry];
+  };
+  const fvD = (nx,ny) => (nx*Math.sin(yawD)+ny*Math.cos(yawD)) > 0.001;
+  const LD = [0.55,0.35,0.72];
+  const shD = (h,nx,ny,nz) => { const d=nx*LD[0]+ny*LD[1]+nz*LD[2], f=0.62+0.38*Math.max(0,d);
+    const n=parseInt(h.slice(1),16);
+    return `rgb(${Math.min(255,Math.round((n>>16&255)*f))},${Math.min(255,Math.round((n>>8&255)*f))},${Math.min(255,Math.round((n&255)*f))})`; };
+  let BD=null; const bbD = pts => { pts.forEach(p=>{ if(!BD) BD=[p[0],p[1],p[0],p[1]];
+    BD[0]=Math.min(BD[0],p[0]);BD[1]=Math.min(BD[1],p[1]);
+    BD[2]=Math.max(BD[2],p[0]);BD[3]=Math.max(BD[3],p[1]); }); return ''; };
+  scene({project:mkD(1,0,0), poly:bbD, shade:shD, faceVisible:fvD});
+  const bwD=BD[2]-BD[0], bhD=BD[3]-BD[1];
+  const SCD=Math.min((WD-50)/bwD,(HD-50)/bhD);
+  const OXD=(WD-bwD*SCD)/2-BD[0]*SCD, OYD=(HD-bhD*SCD)/2-BD[1]*SCD;
+  const polyD = (pts,f,st,sw,ex) =>
+    `<polygon points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="${f}"`
+    + (st?` stroke="${st}" stroke-width="${sw||1}"`:'') + ' stroke-linejoin="round"' + (ex||'') + '/>';
+  const itD = scene({project:mkD(SCD,OXD,OYD), poly:polyD, shade:shD, faceVisible:fvD});
+  itD.sort((a,b)=>a.depth-b.depth);
+  console.log(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WD} ${HD}" width="${WD}" height="${HD}">`
+    + `<rect width="${WD}" height="${HD}" fill="#eef1ea"/>` + itD.map(i=>i.svg).join('') + '</svg>');
+  process.exit(0);
+}
 if (key.startsWith("moma:")) {
   const fs2 = require("fs");
   const src = fs2.readFileSync("/Users/xiaojunzhu/Claude/worktrees/site/moma-map.js", "utf8");
