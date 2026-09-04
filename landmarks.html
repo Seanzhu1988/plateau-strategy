@@ -231,8 +231,29 @@
     fetch('/api/landmark-specs').then(function (r) { return r.json(); })
       .then(function (d) {
         if (!d || !d.success) return;
-        var specs = d.specs || [];
-        if (!specs.length && !(d.waiting || []).length) return;
+
+        /* A landmark that already stands somewhere on this site is not drawn
+           again here. The Brooklyn Bridge is the model at the top of this very
+           page, and Bunker Hill is stop sixteen of the Freedom Trail, so both
+           were appearing twice with two sets of numbers under them.
+           [SEAN 2026-09-04: "these 2 needed to take off, its duplication whats
+           already have".]
+           The pipeline itself is left honest: it still composes and serves
+           them, and /api/landmark-specs is unchanged. This is the page
+           declining to repeat itself. Take a slug out of this list on the day
+           its other model goes away, and this section will draw it again. */
+        var DRAWN_ELSEWHERE = {
+            'brooklyn-bridge': 'the model at the top of this page (nyc-3d.js)',
+            'bunker-hill-monument': 'Freedom Trail stop 16 (trail-3d.js)'
+        };
+        var specs = (d.specs || []).filter(function (sp) {
+            return !DRAWN_ELSEWHERE[sp.slug];
+        });
+
+        /* With nothing left to draw the section says nothing at all. A heading
+           reading "Built from the record" over an empty space, or over a
+           waiting list alone, promises a drawing that is not coming. */
+        if (!specs.length) return;
         wrap.hidden = false;
         specs.forEach(function (spec, i) {
           var id = 'composed' + i;
