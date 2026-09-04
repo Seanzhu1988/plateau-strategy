@@ -3025,6 +3025,44 @@ def api_landmark_stories():
     return jsonify({"ok": True, "landmarks": out})
 
 
+@app.route("/scene-mount.js")
+def scene_mount_js():
+    """One live mount for every hand-rolled scene: hand it a host and a scene
+    function and it draws, fits, shades and turns."""
+    return send_file(os.path.join(BASE_DIR, "scene-mount.js"), mimetype="application/javascript")
+
+
+@app.route("/dc-3d.js")
+def dc_3d_js():
+    """The National Mall: twenty places at their real coordinates, and one
+    scene per place so a single building can be looked at alone."""
+    return send_file(os.path.join(BASE_DIR, "dc-3d.js"), mimetype="application/javascript")
+
+
+@app.route("/dc-form-<name>.js")
+def dc_form_js(name):
+    """One Mall building rebuilt to the model standard, one file each.
+
+    A pattern route rather than one route per file, deliberately. The landmark
+    routine adds a dc-form-*.js every three hours; under one-route-per-file it
+    would have to remember to edit app.py each time, and the models it has
+    already built prove what happens when it does not. Every one of them was
+    unreachable in a browser, served by no route at all, working only in the
+    server-side renderer where nobody could see them.
+
+    The name is confined to lowercase letters, digits and dashes, and the
+    resolved path is checked to sit directly in BASE_DIR, so this serves the
+    family and nothing else."""
+    if not re.fullmatch(r"[a-z0-9-]{1,40}", name or ""):
+        abort(404)
+    path = os.path.join(BASE_DIR, "dc-form-" + name + ".js")
+    if os.path.dirname(os.path.realpath(path)) != os.path.realpath(BASE_DIR):
+        abort(404)
+    if not os.path.exists(path):
+        abort(404)
+    return send_file(path, mimetype="application/javascript")
+
+
 @app.route("/trail-3d.js")
 def trail_3d_js():
     """The Freedom Trail's landmarks. Sixteen stops that had a narration and

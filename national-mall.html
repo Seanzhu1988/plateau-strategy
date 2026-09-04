@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The National Mall, Plateau Strategy Solution Lab</title>
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+    <meta name="description" content="Eighteen stops from the Capitol to the Jefferson Memorial, each one a building you can turn in your hand before you stand in front of it, with the time each one really takes.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Plateau Strategy Solution Lab">
+    <meta property="og:url" content="https://plateaustrategy.io/national-mall">
+    <meta property="og:title" content="The National Mall, eighteen stops in walking order">
+    <meta property="og:description" content="Turn each building before you stand in front of it, and see the time every stop really takes.">
+    <meta property="og:image" content="https://plateaustrategy.io/share-card.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="The National Mall, eighteen stops in walking order">
+    <meta name="twitter:description" content="Turn each building before you stand in front of it, and see the time every stop really takes.">
+    <meta name="twitter:image" content="https://plateaustrategy.io/share-card.jpg">
+    <link rel="canonical" href="https://plateaustrategy.io/national-mall">
+    <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+    <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
+    <link rel="stylesheet" href="/modern.css">
+    <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
+    <style>
+        header img { height: 42px; width: 42px; border-radius: 50%; }
+        header .brand { font-size: 1.2rem; font-weight: 800; }
+
+        .nm-wrap { max-width: 980px; margin: 2rem auto 4rem; padding: 0 1.2rem; }
+        .nm-eyebrow { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+                      color: #8a8378; font-weight: 700; }
+        .nm-wrap h1 { margin: .35rem 0 .5rem; font-size: clamp(1.7rem, 4.4vw, 2.5rem);
+                      letter-spacing: -.02em; line-height: 1.15; }
+        .nm-lead { margin: 0 0 1.3rem; font-size: 1.03rem; line-height: 1.65;
+                   color: #55504a; max-width: 46rem; }
+
+        /* The measured line. Values are filled from the trail data; the words
+           beside them stay in the markup so the language packs can reach them. */
+        .nm-stats { display: flex; flex-wrap: wrap; gap: .4rem 1.5rem; margin: 0 0 1.6rem;
+                    padding: .8rem 0; border-top: 1px solid #e6e1d8; border-bottom: 1px solid #e6e1d8; }
+        .nm-stat { font-size: .94rem; color: #6b655b; }
+        .nm-stat b { font-size: 1.06rem; color: #14110c; font-weight: 750; margin-right: .28rem; }
+
+        .nm-cols { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+                   gap: 1.6rem; align-items: start; }
+        @media (max-width: 780px) { .nm-cols { grid-template-columns: 1fr; } }
+
+        /* The model. It is the map's twin, not its decoration: the same stop is
+           selected in both, and either one can do the selecting. */
+        .nm-stage { width: 100%; aspect-ratio: 82 / 56; background: #eef0ea;
+                    border-radius: 12px; cursor: grab; touch-action: pan-y;
+                    border: 1px solid #e2ded4; overflow: hidden; }
+        .nm-stage:active { cursor: grabbing; }
+        .nm-stage-note { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center;
+                         margin: .55rem 0 0; font-size: .82rem; color: #8a8378; }
+        /* The site's stylesheet strips fills from every button on purpose:
+           navy on white, never a colour block behind a word. So the way back
+           is a text action with a rule under it, not a pill. It has to be
+           unmissable, because a model with no way out is a bug this site
+           already shipped once on the Met. */
+        .nm-back { color: #12305b !important; font-weight: 750 !important;
+                   font-size: .86rem !important; cursor: pointer;
+                   border-bottom: 2px solid #12305b !important; padding-bottom: 1px !important; }
+        .nm-back[hidden] { display: none !important; }
+
+        .nm-now { margin: 1rem 0 0; padding: .9rem 1rem; background: #faf8f4;
+                  border: 1px solid #e6e1d8; border-radius: 10px; }
+        .nm-now[hidden] { display: none !important; }
+        .nm-now h2 { margin: 0 0 .3rem; font-size: 1.12rem; letter-spacing: -.01em; }
+        .nm-now p { margin: 0; font-size: .95rem; line-height: 1.6; color: #55504a; }
+        .nm-now .nm-links { margin-top: .6rem; font-size: .86rem; }
+        .nm-now .nm-links a { color: #12305b; font-weight: 650; }
+
+        #nmMap { width: 100%; height: 300px; border-radius: 12px; border: 1px solid #e2ded4;
+                 background: #f5f1e8; }
+        #nmMap .leaflet-tile-pane { opacity: .6; }
+        #nmMap .leaflet-control-attribution { font-size: .58rem !important; }
+        .leaflet-container { background: #f5f1e8; font: inherit; }
+
+        .nm-list-h { margin: 1.4rem 0 .6rem; font-size: .72rem; letter-spacing: .14em;
+                     text-transform: uppercase; color: #8a8378; font-weight: 700; }
+        .nm-list { list-style: none; margin: 0; padding: 0; }
+        .nm-list li { border-bottom: 1px solid #efebe3; }
+        .nm-stop { display: flex; gap: .75rem; align-items: baseline; width: 100%;
+                   background: none; border: 0; font: inherit; text-align: left;
+                   padding: .62rem .4rem; cursor: pointer; color: inherit; border-radius: 8px; }
+        /* Same reason: the global rule forces background to none on every
+           button, so the selected stop is marked with a rule and ink weight,
+           which nothing overrides. */
+        .nm-stop { border-left: 3px solid transparent; }
+        .nm-stop[aria-current="true"] { border-left-color: #12305b; }
+        .nm-stop[aria-current="true"] .nm-name { color: #12305b; font-weight: 750; }
+        .nm-stop[aria-current="true"] .n { color: #12305b; }
+        .nm-stop .n { font-size: .78rem; font-weight: 750; color: #12305b;
+                      min-width: 1.5rem; font-variant-numeric: tabular-nums; }
+        .nm-stop .nm-name { font-weight: 620; line-height: 1.35; }
+        .nm-stop .nm-meta { display: block; font-size: .79rem; color: #8a8378; margin-top: .12rem; }
+        .nm-foot { margin: 1.6rem 0 0; font-size: .82rem; color: #8a8378; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="right">
+            <a href="/destination-book">Destination Book</a>
+            <a href="/trip-planner">Trip Planner</a>
+            <a href="/">Home</a>
+        </div>
+    </header>
+
+    <div class="nm-wrap">
+        <p class="nm-eyebrow">Washington, DC</p>
+        <h1>The National Mall</h1>
+        <p class="nm-lead">Eighteen stops from the Capitol to the Jefferson Memorial. Turn each
+           building in your hand before you stand in front of it.</p>
+
+        <div class="nm-stats">
+            <span class="nm-stat"><b id="nmStops"></b>stops</span>
+            <span class="nm-stat"><b id="nmMiles"></b>miles</span>
+            <span class="nm-stat"><b id="nmWalk"></b>walking</span>
+            <span class="nm-stat"><b id="nmInside"></b>inside</span>
+        </div>
+
+        <div class="nm-cols">
+            <div>
+                <div class="nm-stage" id="nmStage" aria-label="The National Mall in three dimensions"></div>
+                <div class="nm-stage-note">
+                    <button type="button" class="nm-back" id="nmBack" hidden>&larr; Show the whole Mall</button>
+                    <span>Drag the model to turn it.</span>
+                </div>
+
+                <div class="nm-now" id="nmNow" hidden>
+                    <h2 id="nmNowName"></h2>
+                    <p id="nmNowDesc"></p>
+                    <p class="nm-links"><a id="nmNowMap" href="#" target="_blank" rel="noopener">Open in Maps</a></p>
+                </div>
+            </div>
+
+            <div>
+                <div id="nmMap"></div>
+                <p class="nm-list-h">The walk, in order</p>
+                <ul class="nm-list" id="nmList">
+                    <li><span class="nm-stat">Loading the Mall&hellip;</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <p class="nm-foot">Distances are straight-line estimates between stops, not walking routes.
+           Times inside are what a visitor who actually stops really spends.</p>
+    </div>
+
+<script src="/i18n.js"></script>
+<script src="/vendor/leaflet/leaflet.js"></script>
+<script src="/dc-3d.js"></script>
+<script src="/scene-mount.js"></script>
+<script src="/dc-form-capitol.js"></script>
+<script src="/dc-form-lincoln.js"></script>
+<script src="/dc-form-jefferson.js"></script>
+<script src="/dc-form-monument.js"></script>
+<script src="/dc-form-castle.js"></script>
+<script src="/dc-form-hirshhorn.js"></script>
+<script src="/dc-form-nmaahc.js"></script>
+<script src="/dc-form-wwii.js"></script>
+<script>
+(function () {
+    "use strict";
+    var stage = document.getElementById("nmStage");
+    var listEl = document.getElementById("nmList");
+    var backBtn = document.getElementById("nmBack");
+    var nowBox = document.getElementById("nmNow");
+    var nowName = document.getElementById("nmNowName");
+    var nowDesc = document.getElementById("nmNowDesc");
+    var nowMap = document.getElementById("nmNowMap");
+
+    var stops = [], view = null, map = null, layer = null, dots = {};
+    var trail = null, current = "";
+
+    /* The unit words are built here rather than sitting in the markup, so they
+       have to be translated here too: a Chinese page reading "1 h 19 min" is
+       exactly the half-translated look that reads as a broken language tab. */
+    function T(en) { return (window.psxT ? window.psxT(en) : en) || en; }
+    function minutes(m) {
+        m = Math.round(m || 0);
+        if (m < 60) return m + " " + T("min");
+        var h = Math.floor(m / 60), r = m % 60;
+        return r ? h + " " + T("hr") + " " + r + " " + T("min") : h + " " + T("hr");
+    }
+
+    /* The scene for a key, with the site's own forms preferred. dc-3d.js keeps
+       one scene per place so a single building can be looked at alone; the
+       whole Mall is the default and the way back to it is always on screen,
+       because a model you cannot leave is the bug this site already shipped
+       once on the Met. */
+    function sceneFor(key) {
+        var S = window.DC3D && window.DC3D.scenes;
+        if (!S) return null;
+        if (!key) return S.mall || null;
+        return S["only-" + key] || S.mall || null;
+    }
+
+    function show(key, fromUser) {
+        current = key || "";
+        var sc = sceneFor(key);
+        if (!sc) return;
+        /* The Mall is two miles long and its buildings are not tall, so the
+           overview is a 6:1 strip: seen from the same angle as a single
+           building it reads as an empty lawn. It gets a lower pitch, which is
+           a more side-on eye and stands the buildings up on screen, and a
+           tighter margin. No height is exaggerated to achieve it. */
+        var wide = !key;
+        if (!view) {
+            view = window.mountScene(stage, sc, {
+                yaw: -0.55, pitch: wide ? 0.20 : 0.30, pad: wide ? 18 : 50 });
+            view.__wide = wide;
+        } else {
+            if (view.__wide !== wide) {
+                view.stop();
+                view = window.mountScene(stage, sc, {
+                    yaw: -0.55, pitch: wide ? 0.20 : 0.30, pad: wide ? 18 : 50 });
+                view.__wide = wide;
+            } else {
+                view.setScene(sc);
+            }
+        }
+        backBtn.hidden = !key;
+
+        var s = key ? stops.filter(function (x) { return x.model === key; })[0] : null;
+        if (s) {
+            nowBox.hidden = false;
+            nowName.textContent = s.n + ". " + s.name;
+            nowDesc.textContent = s.desc || "";
+            nowMap.href = "https://www.google.com/maps/search/?api=1&query=" + s.lat + "," + s.lon;
+        } else {
+            nowBox.hidden = true;
+        }
+
+        Array.prototype.forEach.call(listEl.querySelectorAll(".nm-stop"), function (b) {
+            b.setAttribute("aria-current", b.dataset.model === key ? "true" : "false");
+        });
+        /* Only a deliberate pick moves the map. On load it keeps the fitted
+           view of the whole route, which is the more useful first sight and
+           avoids panning to a corner before the tiles for it have arrived. */
+        if (fromUser && map && key && dots[key]) {
+            map.invalidateSize();
+            map.panTo(dots[key].getLatLng(), { animate: true });
+        }
+    }
+
+    function paintList() {
+        listEl.innerHTML = "";
+        stops.forEach(function (s) {
+            var li = document.createElement("li");
+            var b = document.createElement("button");
+            b.type = "button"; b.className = "nm-stop"; b.dataset.model = s.model || "";
+            var meta = [];
+            if (s.walk_min_from_prev) meta.push(minutes(s.walk_min_from_prev) + " " + T("walk"));
+            if (s.inside_min) meta.push(minutes(s.inside_min) + " " + T("inside"));
+            b.innerHTML = '<span class="n"></span><span><span class="nm-name"></span>' +
+                          '<span class="nm-meta"></span></span>';
+            b.querySelector(".n").textContent = s.n;
+            b.querySelector(".nm-name").textContent = s.name;
+            b.querySelector(".nm-meta").textContent = meta.join(" · ");
+            b.addEventListener("click", function () { show(s.model || "", true); });
+            li.appendChild(b); listEl.appendChild(li);
+        });
+    }
+
+    function paintMap() {
+        if (!window.L || !stops.length) return;
+        if (!map) {
+            map = L.map("nmMap", { zoomControl: false }).setView([38.8895, -77.03], 13);
+            L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OSM</a>'
+            }).addTo(map);
+            layer = L.layerGroup().addTo(map);
+            /* Leaflet measures its container once, at creation. This one is a
+               grid cell that is still settling, so without a second look it
+               paints tiles for a width it no longer has and leaves grey to the
+               right of them. Re-measure after layout, and on every resize. */
+            requestAnimationFrame(function () { map.invalidateSize(); });
+            window.addEventListener("resize", function () { map.invalidateSize(); });
+        }
+        layer.clearLayers(); dots = {};
+        var pts = stops.map(function (s) { return [s.lat, s.lon]; });
+        L.polyline(pts, { color: "#fff", weight: 10, opacity: .9 }).addTo(layer);
+        L.polyline(pts, { color: "#12305b", weight: 5, opacity: 1 }).addTo(layer);
+        stops.forEach(function (s) {
+            var d = L.circleMarker([s.lat, s.lon], { radius: 5, color: "#12305b", weight: 3,
+                fillColor: "#fff", fillOpacity: 1, opacity: 1 }).addTo(layer);
+            d.on("click", function () { show(s.model || "", true); });
+            if (s.model) dots[s.model] = d;
+        });
+        /* Measure before fitting, not after: fitBounds computed against a
+           stale width leaves a strip of the container unpainted. */
+        map.invalidateSize();
+        map.fitBounds(L.latLngBounds(pts), { padding: [24, 24] });
+    }
+
+    function stats(t) {
+        document.getElementById("nmStops").textContent = stops.length;
+        document.getElementById("nmMiles").textContent = (t.length_m / 1609.34).toFixed(1);
+        document.getElementById("nmWalk").textContent = minutes(t.walk_min_total);
+        document.getElementById("nmInside").textContent = minutes(t.inside_min_total);
+    }
+
+    backBtn.addEventListener("click", function () { show("", true); });
+
+    /* Times and unit words are assembled here, so the language switcher cannot
+       repaint them by walking text nodes. The engine says so itself and fires
+       psx:lang for exactly this case: once when the pack lands, and again on
+       every switch. Rebuild what we wrote, and keep the reader's place. */
+    document.addEventListener("psx:lang", function () {
+        if (!trail) return;
+        stats(trail); paintList(); show(current);
+    });
+
+    /* Open on the first stop, not on the whole Mall. The Mall is two miles of
+       lawn and its buildings are low, so the overview is honest and unreadable
+       at once: at true scale the Capitol is a speck on a green strip, and the
+       map beside it already does the job of showing where the walk goes. The
+       page's promise is that you can turn a building before you stand in front
+       of it, so it opens on one, and the whole Mall is one tap away.
+       Drawn from the shipped scene immediately, so the box is never blank
+       while the network answers. */
+    show("capitol");
+
+    fetch("/api/trails").then(function (r) { return r.json(); }).then(function (d) {
+        var all = d.trails || d || [];
+        var t = null;
+        for (var i = 0; i < all.length; i++) {
+            if (all[i] && all[i].id === "national-mall") { t = all[i]; break; }
+        }
+        if (!t) { listEl.innerHTML = ""; return; }
+        trail = t;
+        stops = t.stops || [];
+        stats(t); paintList(); paintMap();
+        show((stops[0] && stops[0].model) || "");
+    }).catch(function () { listEl.innerHTML = ""; });
+})();
+</script>
+</body>
+</html>

@@ -37,6 +37,76 @@ EXTRA_SKIP = {
 }
 
 EXTRA = {
+    # ---- time units built in JS on the Mall page ----
+    "hr": ["\u5c0f\u65f6", "h", "\uc2dc\uac04", "gi\u1edd"],
+    "min": ["\u5206\u949f", "min", "\ubd84", "ph\u00fat"],
+    "walk": ["\u6b65\u884c", "a pie", "\ub3c4\ubcf4", "\u0111i b\u1ed9"],
+
+    # ---- the National Mall card on the front page ----
+    "NEW \u00b7 THE WASHINGTON WALK": [
+        "\u65b0 \u00b7 \u534e\u76db\u987f\u6b65\u884c\u7ebf",
+        "NUEVO \u00b7 EL PASEO DE WASHINGTON",
+        "\uc2e0\uaddc \u00b7 \uc6cc\uc2f1\ud134 \uac77\uae30",
+        "M\u1edaI \u00b7 CHUY\u1ebeN \u0110I B\u1ed8 WASHINGTON"],
+    "Eighteen stops from the Capitol to the Jefferson Memorial in walking order, with the time each one really takes. Turn the Capitol, the Lincoln and the Washington Monument in your hand before you stand in front of them.": [
+        "\u4ece\u56fd\u4f1a\u5927\u53a6\u5230\u6770\u65bb\u900a\u7eaa\u5ff5\u5802\uff0c\u5341\u516b\u7ad9\u6309\u6b65\u884c\u987a\u5e8f\u6392\u5217\uff0c\u5e76\u6807\u660e\u6bcf\u4e00\u7ad9\u771f\u6b63\u9700\u8981\u7684\u65f6\u95f4\u3002\u5728\u4eb2\u4e34\u73b0\u573a\u4e4b\u524d\uff0c\u5148\u5728\u624b\u4e2d\u8f6c\u52a8\u56fd\u4f1a\u5927\u53a6\u3001\u6797\u80af\u7eaa\u5ff5\u5802\u548c\u534e\u76db\u987f\u7eaa\u5ff5\u7891\u3002",
+        "Dieciocho paradas desde el Capitolio hasta el Monumento a Jefferson en orden de recorrido, con el tiempo que lleva cada una de verdad. Gira el Capitolio, el Lincoln y el Monumento a Washington en la mano antes de plantarte delante de ellos.",
+        "\uad6d\ud68c\uc758\uc0ac\ub2f9\uc5d0\uc11c \uc81c\ud37c\uc2a8 \uae30\ub150\uad00\uae4c\uc9c0 \uac77\ub294 \uc21c\uc11c\ub300\ub85c \uc5f4\uc5ec\ub35f \uacf3, \uac01\uac01\uc5d0 \uc2e4\uc81c\ub85c \uac78\ub9ac\ub294 \uc2dc\uac04\uae4c\uc9c0. \uc9c1\uc811 \uc11c\uae30 \uc804\uc5d0 \uad6d\ud68c\uc758\uc0ac\ub2f9\uacfc \ub9c1\ucef4 \uae30\ub150\uad00, \uc6cc\uc2f1\ud134 \uae30\ub150\ud0d1\uc744 \uc190\uc548\uc5d0\uc11c \ub3cc\ub824 \ubcf4\uc138\uc694.",
+        "M\u01b0\u1eddi t\u00e1m \u0111i\u1ec3m d\u1eebng t\u1eeb \u0110i\u1ec7n Capitol \u0111\u1ebfn \u0110\u00e0i t\u01b0\u1edfng ni\u1ec7m Jefferson theo th\u1ee9 t\u1ef1 \u0111i b\u1ed9, k\u00e8m th\u1eddi gian th\u1ef1c t\u1ebf cho t\u1eebng \u0111i\u1ec3m. Xoay \u0110i\u1ec7n Capitol, \u0110\u00e0i Lincoln v\u00e0 Th\u00e1p b\u00fat Washington trong tay tr\u01b0\u1edbc khi b\u1ea1n \u0111\u1ee9ng tr\u01b0\u1edbc ch\u00fang."],
+    "Walk the Mall \u2192": [
+        "\u8d70\u4e00\u8d9f\u56fd\u5bb6\u5e7f\u573a \u2192",
+        "Recorre el National Mall \u2192",
+        "\ub0b4\uc154\ub110 \ubab0 \uac77\uae30 \u2192",
+        "\u0110i b\u1ed9 National Mall \u2192"],
+
+    # ---- the National Mall, the DC walk (national-mall.html) ----
+    "The National Mall, Plateau Strategy Solution Lab": [
+        "\u56fd\u5bb6\u5e7f\u573a\uff0cPlateau Strategy Solution Lab",
+        "El National Mall, Plateau Strategy Solution Lab",
+        "\ub0b4\uc154\ub110 \ubab0, Plateau Strategy Solution Lab",
+        "National Mall, Plateau Strategy Solution Lab"],
+    "The National Mall": [
+        "\u56fd\u5bb6\u5e7f\u573a", "El National Mall",
+        "\ub0b4\uc154\ub110 \ubab0", "National Mall"],
+    "Washington, DC": [
+        "\u534e\u76db\u987f\u7279\u533a", "Washington D. C.",
+        "\uc6cc\uc2f1\ud134 D.C.", "Washington, D.C."],
+    "Eighteen stops from the Capitol to the Jefferson Memorial. Turn each building in your hand before you stand in front of it.": [
+        "\u4ece\u56fd\u4f1a\u5927\u53a6\u5230\u6770\u65bb\u900a\u7eaa\u5ff5\u5802\uff0c\u5171\u5341\u516b\u7ad9\u3002\u5728\u4eb2\u4e34\u73b0\u573a\u4e4b\u524d\uff0c\u5148\u628a\u6bcf\u4e00\u5ea7\u5efa\u7b51\u63e1\u5728\u624b\u4e2d\u8f6c\u4e00\u8f6c\u3002",
+        "Dieciocho paradas desde el Capitolio hasta el Monumento a Jefferson. Gira cada edificio en la mano antes de plantarte delante de \u00e9l.",
+        "\uad6d\ud68c\uc758\uc0ac\ub2f9\uc5d0\uc11c \uc81c\ud37c\uc2a8 \uae30\ub150\uad00\uae4c\uc9c0 \uc5f4\uc5ec\ub35f \uacf3. \uc9c1\uc811 \uc11c\uae30 \uc804\uc5d0 \uac74\ubb3c\uc744 \uc190\uc548\uc5d0\uc11c \ub3cc\ub824 \ubcf4\uc138\uc694.",
+        "M\u01b0\u1eddi t\u00e1m \u0111i\u1ec3m d\u1eebng t\u1eeb \u0110i\u1ec7n Capitol \u0111\u1ebfn \u0110\u00e0i t\u01b0\u1edfng ni\u1ec7m Jefferson. Xoay t\u1eebng c\u00f4ng tr\u00ecnh trong tay tr\u01b0\u1edbc khi b\u1ea1n \u0111\u1ee9ng tr\u01b0\u1edbc n\u00f3."],
+    "stops": ["\u7ad9", "paradas", "\uacf3", "\u0111i\u1ec3m d\u1eebng"],
+    "miles": ["\u82f1\u91cc", "millas", "\ub9c8\uc77c", "d\u1eb7m"],
+    "walking": ["\u6b65\u884c", "caminando", "\ub3c4\ubcf4", "\u0111i b\u1ed9"],
+    "inside": ["\u9986\u5185", "dentro", "\ub0b4\ubd80", "b\u00ean trong"],
+    "\u2190 Show the whole Mall": [
+        "\u2190 \u67e5\u770b\u6574\u4e2a\u56fd\u5bb6\u5e7f\u573a",
+        "\u2190 Ver todo el National Mall",
+        "\u2190 \ub0b4\uc154\ub110 \ubab0 \uc804\uccb4 \ubcf4\uae30",
+        "\u2190 Xem to\u00e0n b\u1ed9 National Mall"],
+    "Drag the model to turn it.": [
+        "\u62d6\u52a8\u6a21\u578b\u5373\u53ef\u65cb\u8f6c\u3002",
+        "Arrastra el modelo para girarlo.",
+        "\ubaa8\ub378\uc744 \ub4dc\ub798\uadf8\ud558\uba74 \ub3cc\ub9b4 \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
+        "K\u00e9o m\u00f4 h\u00ecnh \u0111\u1ec3 xoay."],
+    "Open in Maps": [
+        "\u5728\u5730\u56fe\u4e2d\u6253\u5f00", "Abrir en Maps",
+        "\uc9c0\ub3c4\uc5d0\uc11c \uc5f4\uae30", "M\u1edf trong Maps"],
+    "The walk, in order": [
+        "\u6b65\u884c\u987a\u5e8f", "El recorrido, en orden",
+        "\uac77\ub294 \uc21c\uc11c", "L\u1ed9 tr\u00ecnh, theo th\u1ee9 t\u1ef1"],
+    "Loading the Mall\u2026": [
+        "\u6b63\u5728\u8f7d\u5165\u56fd\u5bb6\u5e7f\u573a\u2026",
+        "Cargando el National Mall\u2026",
+        "\ub0b4\uc154\ub110 \ubab0\uc744 \ubd88\ub7ec\uc624\ub294 \uc911\u2026",
+        "\u0110ang t\u1ea3i National Mall\u2026"],
+    "Distances are straight-line estimates between stops, not walking routes. Times inside are what a visitor who actually stops really spends.": [
+        "\u7ad9\u70b9\u4e4b\u95f4\u7684\u8ddd\u79bb\u662f\u76f4\u7ebf\u4f30\u7b97\uff0c\u5e76\u975e\u6b65\u884c\u8def\u7ebf\u3002\u9986\u5185\u65f6\u95f4\u662f\u771f\u6b63\u505c\u7559\u53c2\u89c2\u6240\u9700\u7684\u65f6\u95f4\u3002",
+        "Las distancias son estimaciones en l\u00ednea recta entre paradas, no rutas a pie. Los tiempos de visita son lo que pasa dentro quien de verdad se detiene.",
+        "\uc815\uac70\uc7a5 \uc0ac\uc774\uc758 \uac70\ub9ac\ub294 \uc9c1\uc120 \ucd94\uc815\uce58\uc774\uba70 \ub3c4\ubcf4 \uacbd\ub85c\uac00 \uc544\ub2d9\ub2c8\ub2e4. \ub0b4\ubd80 \uc2dc\uac04\uc740 \uc2e4\uc81c\ub85c \uad00\ub78c\ud558\ub294 \uc0ac\ub78c\uc774 \uba38\ubb34\ub294 \uc2dc\uac04\uc785\ub2c8\ub2e4.",
+        "Kho\u1ea3ng c\u00e1ch gi\u1eefa c\u00e1c \u0111i\u1ec3m l\u00e0 \u01b0\u1edbc t\u00ednh \u0111\u01b0\u1eddng th\u1eb3ng, kh\u00f4ng ph\u1ea3i l\u1ed9 tr\u00ecnh \u0111i b\u1ed9. Th\u1eddi gian b\u00ean trong l\u00e0 th\u1eddi gian m\u1ed9t kh\u00e1ch th\u1ef1c s\u1ef1 d\u1eebng l\u1ea1i tham quan."],
+
 
     # ---- Freedom Trail: Yiki's stop notes ----
     "Stand across the street and look straight up. In the Second World War they painted the dome grey so it would not shine for bombers off the coast. It is gold again now, and on a clear morning you have to squint.": ["站到街对面，抬头直直往上看。第二次世界大战期间，人们把这圆顶漆成了灰色，免得它在海面外的轰炸机眼里发亮。如今它又是金色的了，天气晴朗的早晨，你得眯起眼睛才看得清。", "Ponte al otro lado de la calle y mira directamente hacia arriba. Durante la Segunda Guerra Mundial pintaron la cúpula de gris para que no brillara ante los bombarderos frente a la costa. Ahora vuelve a ser dorada, y en una mañana despejada tienes que entrecerrar los ojos.", "길 건너편에 서서 곧장 위를 올려다보세요. 제2차 세계 대전 때는 해안의 폭격기 눈에 반짝이지 않도록 이 돔을 회색으로 칠했습니다. 지금은 다시 금빛이라, 맑은 아침이면 눈이 부셔 실눈을 뜨게 됩니다.", "Hãy đứng bên kia đường và nhìn thẳng lên. Trong Thế chiến thứ hai, người ta sơn mái vòm màu xám để nó không lấp lánh cho máy bay ném bom ngoài khơi thấy. Giờ mái vòm lại vàng óng, và vào một buổi sáng trời trong, bạn phải nheo mắt mới nhìn được."],
