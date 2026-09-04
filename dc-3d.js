@@ -291,6 +291,21 @@
     },
   };
 
+  /* A ground shadow: a footprint polygon slid along the light direction and
+     painted dark just above the lawn. Nothing in this renderer casts light,
+     so a building with no shadow floats; this is the cheapest thing that
+     stops it. LIGHT_DIR is the same vector the shading uses. */
+  var LIGHT_DIR = { x: -0.55, y: -0.35 };
+  function shadow(ctx, footprint, h) {
+    var P = ctx.project, pts = [];
+    var dx = LIGHT_DIR.x * h * 0.9, dy = LIGHT_DIR.y * h * 0.9;
+    footprint.forEach(function (q) { pts.push(P(q[0], q[1], 0.3)); });
+    for (var i = footprint.length - 1; i >= 0; i--) {
+      pts.push(P(footprint[i][0] + dx, footprint[i][1] + dy, 0.3));
+    }
+    return { svg: ctx.poly(pts, "#000", null, 0, ' opacity="0.16"'), depth: -1e9 + 2 };
+  }
+
   function ground(ctx, x0, y0, x1, y1, z, fill) {
     var P = ctx.project;
     return { svg: ctx.poly([P(x0,y0,z),P(x1,y0,z),P(x1,y1,z),P(x0,y1,z)], fill, C.edge, 0.4),
@@ -322,12 +337,13 @@
       /* A single building gets a pad of ground its own size, not the Mall.
          Fitting the camera to two miles of lawn made every close-up a speck
          in the corner of an empty field. */
+      var EXT = (typeof window !== "undefined" && window.DC_FORMS) || {};
       if (only) {
         var one = pts.filter(function (p) { return p.k === only; })[0];
         if (!one) return out;
         var pad = Math.max(one.h, 40) * 2.2;
         out.push(ground(ctx, one.x - pad, one.y - pad, one.x + pad, one.y + pad, 0, C.lawn));
-        var f1 = FORMS[one.form] || FORMS.block;
+        var f1 = EXT[one.k] || FORMS[one.form] || FORMS.block;
         return out.concat(f1(ctx, { x: one.x, y: one.y, h: Math.max(one.h, MIN_H) * VE, form: one.form }, s, 1));
       }
       var minX = Math.min.apply(null, pts.map(function (p) { return p.x; })) - 400;
@@ -347,7 +363,7 @@
       out.push({ svg: ctx.poly(basin, C.water, C.edge, 0.4), depth: -1e9 + 1 });
       pts.forEach(function (p) {
         if (only && only !== p.k) return;
-        var f = FORMS[p.form] || FORMS.block;
+        var f = EXT[p.k] || FORMS[p.form] || FORMS.block;
         var q = { x: p.x, y: p.y, h: Math.max(p.h, MIN_H) * VE, form: p.form };
         out = out.concat(f(ctx, q, s, 1));
       });
@@ -358,7 +374,9 @@
   var scenes = { mall: mall(), tall: mall({ ve: 1.6 }) };
   /* one scene per place, so any building can be looked at on its own */
   PLACES.forEach(function (p) { scenes["only-" + p.k] = mall({ only: p.k }); });
-  var api = { mall: mall, places: PLACES, xy: xy, MIN_H: MIN_H, scenes: scenes };
+  var api = { mall: mall, places: PLACES, xy: xy, MIN_H: MIN_H, scenes: scenes,
+              helpers: { prism: prism, ngon: ngon, dome: dome, colonnade: colonnade,
+                         pyramid: pyramid, shadow: shadow, depthOf: depthOf, C: C } };
   if (typeof window !== "undefined") window.DC3D = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })();

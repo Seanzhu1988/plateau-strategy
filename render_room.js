@@ -34,10 +34,18 @@ const key = process.argv[2];
 /* "dc:mall" draws the National Mall from its real coordinates. */
 if (key.startsWith("dc:")) {
   require("/Users/xiaojunzhu/Claude/worktrees/site/dc-3d.js");
+  /* one file per building, built independently; each registers window.DC_FORMS[k] */
+  require("fs").readdirSync("/Users/xiaojunzhu/Claude/worktrees/site")
+    .filter(f => /^dc-form-[a-z]+\.js$/.test(f))
+    .forEach(f => { try { require("/Users/xiaojunzhu/Claude/worktrees/site/" + f); } catch (e) { console.error("form " + f + ": " + e.message); } });
   const scene = window.DC3D.scenes[key.slice(3)] || window.DC3D.scenes.mall;
   const yawD = parseFloat(process.argv[3] || "-0.30");
   const pitchD = parseFloat(process.argv[4] || "0.42");
-  const WD = 1100, HD = 620;
+  /* A single building gets a square frame: qlmanage -s N forces a square
+     thumbnail, and a 1100x620 page cropped the slab's corner and left the
+     bottom fifth blank. The whole Mall keeps its wide frame. */
+  const oneD = /^dc:only-/.test(key);
+  const WD = oneD ? 900 : 1100, HD = oneD ? 900 : 620;
   const mkD = (SC,OX,OY) => (x,y,z) => {
     const c=Math.cos(yawD), s2=Math.sin(yawD);
     const rx=x*c-y*s2, ry=x*s2+y*c;
@@ -51,9 +59,15 @@ if (key.startsWith("dc:")) {
   let BD=null; const bbD = pts => { pts.forEach(p=>{ if(!BD) BD=[p[0],p[1],p[0],p[1]];
     BD[0]=Math.min(BD[0],p[0]);BD[1]=Math.min(BD[1],p[1]);
     BD[2]=Math.max(BD[2],p[0]);BD[3]=Math.max(BD[3],p[1]); }); return ''; };
-  scene({project:mkD(1,0,0), poly:bbD, shade:shD, faceVisible:fvD});
+  /* A single building is fitted to the BUILDING, not to its lawn pad: the
+     pad is 2.2 heights each way, so fitting to it left the model a speck in
+     the upper-right and a blank band under it. Ground items carry depth
+     -1e9 (the pad) and -1e9+1 (water); shadows at -1e9+2 stay in the fit. */
+  const it0 = scene({project:mkD(1,0,0), poly:(pts)=>pts, shade:shD, faceVisible:fvD});
+  it0.forEach(i => { if (!oneD || i.depth > -1e9 + 1.5) bbD(i.svg); });
   const bwD=BD[2]-BD[0], bhD=BD[3]-BD[1];
-  const SCD=Math.min((WD-50)/bwD,(HD-50)/bhD);
+  const marD = oneD ? 0.10 : 0;
+  const SCD=Math.min((WD*(1-2*marD)-(oneD?0:50))/bwD,(HD*(1-2*marD)-(oneD?0:50))/bhD);
   const OXD=(WD-bwD*SCD)/2-BD[0]*SCD, OYD=(HD-bhD*SCD)/2-BD[1]*SCD;
   const polyD = (pts,f,st,sw,ex) =>
     `<polygon points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="${f}"`
