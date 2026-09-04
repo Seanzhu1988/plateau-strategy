@@ -31,7 +31,7 @@
  * NAMED GAPS, guessed nowhere, stated here rather than buried:
  *   - the PIERS' plan positions and sizes are not published in any source
  *     reached this run, only that there are four and that they are massive
- *     and sculptural. Four are drawn, 26 ft square, on the ring's mid-radius
+ *     and sculptural. Four are drawn, 34 ft square, on the ring's mid-radius
  *     at the four diagonals: that is an assumption, on its own line, chosen
  *     because photographs from the Mall show two piers framing the opening
  *     symmetrically rather than one dead centre.
@@ -152,7 +152,7 @@
     /* the plaza is excluded from the camera fit (depth below -1e9+1.5) so a
        2.7 acre pad cannot shrink the building into a speck, the mistake the
        whole-Mall fit made once already */
-    disc(150, 0.15, PAVE, -1e9 + 1.0);
+    disc(194, 0.15, PAVE, -1e9 + 1.0);   /* 2.7 acres is r = 194 ft; r = 150 was 1.62 acres, a cited number the drawing did not keep */
     ring(R * 1.12, RI * 0.99, 0.05, "#a49d92", -1e9 + 2.0);   /* the shadow the drum throws on the plaza, a RING: the courtyard is open to the sky */
     /* The dark under-drum. LOOKING is what forced this: with the ground
        beneath the building drawn the same tone as the plaza, the 14 ft of

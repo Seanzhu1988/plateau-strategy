@@ -123,3 +123,32 @@ scene file) and has been LOOKED at from more than one angle.
   wall actually stops at, leaving a thinner sliver of the same hole; and
   three courses of banding on a published WINDOWLESS wall made an 82 ft
   drum read as a tyre.
+  OWED, from the architecture critic, which returned after this run's 25
+  minute ceiling and so got no fix round. It scored the model 5 of 10 and
+  could not refute the arithmetic; every defect it raised is in the PICTURE.
+  Two were corrected on the spot because they were number-honesty faults
+  rather than build work: the header claimed 26 ft piers while the code drew
+  34 ft, and the plaza was drawn at 1.62 acres under a header citing 2.7.
+  The rest stand for the next run, worst first:
+    1. the 14 ft lift still does not read. The dark under-drum ring is
+       tonally continuous with the shadow outside it, so void and shadow
+       merge into one plinth. Draw the ring's SOFFIT at z=14 as its own
+       bounce-lit plane and let plaza colour, not a dark ring, fill the
+       0 to 14 band.
+    2. the piers can never break the silhouette: at RP 86.5 with half-width
+       17 their reach is 103.5 ft, inside R 115.5, and their tone is nearly
+       the under-drum's. Lighten them and let one read against the void.
+    3. per-segment flat shading puts 44 vertical bands on a wall published
+       as blank, which is the same tyre the reveals made. Interpolate the
+       shade across each facet or compress the shade range.
+    4. abutting ring quads round apart under toFixed(1) and leave a
+       starburst of pale seams on the roof. Overlap each segment slightly.
+    5. at some yaws the recess and its jamb paint outside the silhouette:
+       the jamb normal is flipped until faceVisible passes, which can select
+       a face that should be occluded. Suppress the whole recess when its
+       arc faces away.
+    6. the courtyard is glazed as two ribbons, but the source says "large
+       rectangular windows". Cut them into per-segment lights, or move it
+       into the named gaps.
+    7. the coping band is too faint to register at map scale.
+  The rendering reviewer had not reported when the ceiling fell.
