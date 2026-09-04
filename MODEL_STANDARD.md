@@ -153,6 +153,62 @@ scene file) and has been LOOKED at from more than one angle.
     c. the corona is a SCREEN standing off a glass wall, and here it is a
        solid envelope. Nothing of the wall behind shows through, which is
        the one thing the published porosity range describes.
+- wwii, the National World War II Memorial (2026-09-04). Every dimension
+  published, none guessed: plaza 337'-10" by 240'-2" sunk 6 ft below grade,
+  pool 246'-9" by 147'-8", 56 pillars 17 ft tall and 4'-4" by 3' with an open
+  centre and two bronze wreaths each on a bronze rope, two 43 ft pavilions
+  23 ft square with four bronze columns, four eagles and a suspended laurel,
+  Freedom Wall 84'-8" wide and 9 ft high on a 41'-9" radius carrying 4,048
+  gold stars, ceremonial entrance 148'-3" wide, overall 384 ft pavilion to
+  pavilion by 279 ft, Kershaw granite in the pillars and pavilions, Green
+  County paving with Rio Verde and Moss Green accents, Academy Black and
+  Mount Airy in the rebuilt pool (Wikipedia, National World War II Memorial;
+  Friends of the National WWII Memorial, wwiimemorialfriends.org/design).
+  ORIENTATION DERIVED, not guessed: the pavilions mark the midpoints of the
+  north and south sides, so 384 ft is the north-south dimension, so the
+  plaza's 337'-10" is too, and the pool's 246'-9" cannot lie east-west inside
+  a 240'-2" plaza. That fixes every axis, and the resulting insets are 45.5
+  and 46.2 ft, symmetric to within a foot. The Freedom Wall's arc centre at
+  u = -97.75 falls out of the published 279 ft width the same way. The
+  dc-3d.js place height was 5 m against a published 43 ft and was corrected
+  to 13: heights TRUE.
+  Named gaps: "17 feet tall" and "17' above grade" describe the same pillar
+  two ways and cannot both hold over a plaza 6 ft down, so TALL was taken and
+  the pillars show 11 ft above the lawn; no published pillar spacing (spread
+  evenly between the published entrance opening and the published pavilion);
+  no published size for the opening in a pillar; no dimensioned berm (drawn
+  14 ft, checked against the 279 ft width); no published flagpole height so
+  none is drawn; no published pavilion column size (2 ft square assumed); no
+  published pool basin depth.
+  What LOOKING caught and arithmetic did not, both of them fatal to the plan
+  and invisible in every number: (1) the rim was drawn as a CLOSED ring of
+  bank, so the 148'-3" ceremonial entrance's steps lay loose on the lawn like
+  a jetty with a retaining wall between them and the plaza they descend into;
+  (2) worse, the Freedom Wall's arc, correctly derived to bulge west past the
+  plaza ellipse, hooped straight THROUGH its own colonnade and read as a gold
+  ribbon floating inside the ring. Both are the same fault: an opening that
+  is published as an opening had been drawn as a wall. The rim is now cut at
+  both, with the alcove floored on the wall's own radius and a cheek holding
+  the lawn back on each flank.
+  OWED: the two adversarial critics did not fit inside the run's 25 minute
+  ceiling. The two renders (yaw -0.55 and +0.75) are what this build was
+  verified on. First thing for the next run, worst first:
+    a. the ceremonial steps still read as a narrow ramp rather than a
+       148 ft flight. They are five slabs across a 14 ft bank; no source
+       reached this run gives a tread count or a ramp position, so either
+       find the construction drawings or draw the published 24 bas-relief
+       panels along the cheeks, which ARE published and are missing here.
+    b. the opening in each pillar, which is the pillar's whole idea, does not
+       register at map scale: the legs and the slot are drawn but read as one
+       solid stick. Widen the slot or drop the legs' tone.
+    c. the pavilions read as gazebos rather than triumphal arches. The four
+       eagles and the laurel are blocks. Nothing is published about their
+       form beyond the count, so this is a modelling problem, not a research
+       one.
+    d. the Rainbow Pool is one flat sheet. The published semicircular
+       fountains at the pavilion bases and the waterfalls flanking the wall
+       are drawn as flat water patches and do not read as either.
+
 - hirshhorn, the Hirshhorn Museum and Sculpture Garden (2026-09-04). Every
   dimension published in Wikipedia's technical section: 231 ft outer
   diameter, 82 ft high, elevated 14 ft on four piers, 115 ft interior court,
