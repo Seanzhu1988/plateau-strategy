@@ -67,7 +67,7 @@
        that give the west end its shape */
     { k: "castle",    n: "Smithsonian Castle",         lat: 38.88875, lon: -77.02600, h: 44,  form: "castle" },
     { k: "hirshhorn", n: "Hirshhorn Museum",           lat: 38.88816, lon: -77.02297, h: 25,  form: "drum" },
-    { k: "nmaahc",    n: "African American History Museum", lat: 38.89111, lon: -77.03278, h: 32, form: "corona" },
+    { k: "nmaahc",    n: "African American History Museum", lat: 38.89111, lon: -77.03278, h: 26, form: "corona" },
     { k: "indian",    n: "American Indian Museum",     lat: 38.88830, lon: -77.01660, h: 30,  form: "block" },
     { k: "botanic",   n: "Botanic Garden",             lat: 38.88800, lon: -77.01300, h: 20,  form: "block" },
     { k: "holocaust", n: "Holocaust Memorial Museum",  lat: 38.88667, lon: -77.03250, h: 24,  form: "block" },

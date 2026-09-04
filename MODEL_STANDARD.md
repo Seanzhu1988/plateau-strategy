@@ -108,6 +108,51 @@ scene file) and has been LOOKED at from more than one angle.
   the second north tower or the five small ones, no published eave heights.
   The adversarial critic round did not fit inside the run's 25 minute
   ceiling and is owed; the two renders are what the build was verified on.
+- nmaahc, the National Museum of African American History and Culture
+  (2026-09-04). Published: 85 ft high, three-tiered inverted step pyramid,
+  corona angled at 17 degrees to match the Washington Monument's capstone,
+  3,600 bronze-coloured cast-aluminium panels 4 by 5 ft at 65 to 95 percent
+  solid, 200 ft long-span porch over the main entrance, 350,000 sq ft on 5
+  acres, five storeys above and five below (Wikipedia; Metal Architecture,
+  "Architectural Crown Jewel"). Plan measured this run from OSM way
+  398810868 through Overpass: 200 ft by 201 ft, effectively a square with
+  the north east corner cut back; OSM way 898560007 puts the porch on the
+  SOUTH face, 192 ft by 41 ft, tagged height 7 m.
+  Named gaps: no published corona base height (drawn 15 ft), no published
+  individual tier heights (85 less 15, divided in three), no published step
+  back between tiers (drawn 3 ft), no published glass set-back behind the
+  screen (drawn 8 ft), no published porch projection or column count (OSM
+  trace, five columns), no dimensions found for the water feature or berms
+  so none is drawn. The dc-3d.js place height was 32 m against a published
+  85 ft, and was corrected to 26: heights TRUE.
+  What LOOKING caught and arithmetic did not: (1) an inverted pyramid
+  overhangs everything below it, so every horizontal ledge on the FAR side
+  is hidden in life, and drawn it was not hidden here, its inner edge sorts
+  nearer than the roof's far edge and it painted two concentric rectangles
+  straight onto the roof; ledges are now culled by the same test the walls
+  use. (2) the 4 by 5 ft panels drawn as seams every 20 ft in a shadow tone
+  turned a perforated bronze screen into a brick wall; one faint joint every
+  25 ft, one tone off the face, reads as a screen. (3) the porch begun at
+  the corona's outer edge started 23 ft in front of the ground storey it
+  shelters and floated like a jetty; it now runs from the glass facade.
+  (4) at northern yaws the porch sat on the far side and its inner half,
+  lying under the roof overhang, painted a pale sliver across the roof: the
+  whole porch is now gated on the south face being toward the camera, which
+  is the Hirshhorn balcony's lesson arriving a second time.
+  OWED: the two adversarial critics did not fit inside the run's 25 minute
+  ceiling. The four renders above are what this build was verified on. First
+  thing for the next run, worst first:
+    a. the porch is the weakest part of the model. From the south it reads
+       as a boardwalk on fence posts rather than a 200 ft canopy: the slab
+       is 3 ft thick over an 87 ft span, the five columns are 6 ft square
+       assumptions, and nothing published was found for either. Either find
+       the architect's section or reduce it to a canopy against the facade.
+    b. the roof is the largest surface in the model and carries nothing.
+       Photographs show mechanical plant and a distinct parapet; neither is
+       published in a source reached this run, so it is flat grey.
+    c. the corona is a SCREEN standing off a glass wall, and here it is a
+       solid envelope. Nothing of the wall behind shows through, which is
+       the one thing the published porosity range describes.
 - hirshhorn, the Hirshhorn Museum and Sculpture Garden (2026-09-04). Every
   dimension published in Wikipedia's technical section: 231 ft outer
   diameter, 82 ft high, elevated 14 ft on four piers, 115 ft interior court,
