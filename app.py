@@ -3061,7 +3061,19 @@ def tips_index():
     import html as _html
     rows = []
     for p in _social_lib():
-        first = p["text"].split("." if p["lang"] == "en" else "。")[0][:150]
+        # The summary is the post's first sentence. Two things it must not do:
+        # end without the full stop that split() just ate, which made every one
+        # of these read as an unfinished fragment, or stop mid-word at exactly
+        # 150 characters, which gave us "and it tells you what t".
+        stop = "." if p["lang"] == "en" else "。"
+        sent = p["text"].split(stop)[0].strip()
+        if len(sent) > 150:
+            cut = sent[:150]
+            if " " in cut:
+                cut = cut[:cut.rfind(" ")]
+            first = cut.rstrip(" ,;:，、") + "…"
+        else:
+            first = sent + (stop if stop in p["text"] else "")
         rows.append('<li><a href="/tips/%s"><b>%s</b></a><br><span>%s</span></li>'
                     % (_html.escape(p["id"]), _html.escape(p["pain"]),
                        _html.escape(first)))

@@ -527,17 +527,33 @@
        touched again. That is why it stayed in English on a Chinese page while
        everything around it translated. The bold stays OUT of the dictionary:
        two clean sentences to translate, no markup for a translator to break. */
+    /* The whole-trail totals, added up from the same legs the stop list
+       prints, and skipping the first stop's leg exactly the way render()
+       does, because there is no walk to the place you start. They used to
+       come from trail.walk_min_total, a number stored beside the legs
+       rather than derived from them, and it had drifted: the banner said
+       44 min of walking while the line six rows below it added the sixteen
+       legs and said 43. Derived, the two can never disagree again. */
+    function wholeTrail() {
+        var walk = 0, inside = 0;
+        trail.stops.forEach(function (s, i) {
+            inside += s.inside_min || 0;
+            if (i) walk += s.walk_min_from_prev || 0;
+        });
+        return { walk: walk, inside: inside };
+    }
     function renderTruth() {
         if (!trail) return;
         var mi = (trail.length_m / 1609.34).toFixed(1);
         var el = document.getElementById("ftTruth");
         if (!el) return;
+        var all = wholeTrail();
         el.innerHTML =
             "<b>" + T("{walk} of walking, {inside} inside.",
-                      { walk: fmt(trail.walk_min_total),
-                        inside: fmt(trail.inside_min_total) }) + "</b> " +
+                      { walk: fmt(all.walk),
+                        inside: fmt(all.inside) }) + "</b> " +
             T("The sixteen sites are {mi} miles apart. All sixteen is about {total} altogether, so pick your version below.",
-              { mi: mi, total: fmt(trail.walk_min_total + trail.inside_min_total) });
+              { mi: mi, total: fmt(all.walk + all.inside) });
     }
 
     // Who narrates the trail, and in which file, depends on the language the
