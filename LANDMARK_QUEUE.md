@@ -9,7 +9,9 @@ does not spend its whole budget re-walking the same dead ends.
 MET rooms: dendur, great-hall, american-court, asian-astor, modern,
 grand-stair-2, plus the composed landmark cards.
 
-Freedom Trail (trail-3d.js): bunker-hill, old-north, faneuil-hall,
+Freedom Trail (trail-3d.js): THE WHOLE WALK (scene key "walk", built
+2026-09-03 sixth run, MOUNTED on freedom-trail.html as "The whole walk, all
+sixteen" at yaw -0.30 pitch 0.55), plus bunker-hill, old-north, faneuil-hall,
 state-house, old-state-house, old-south, constitution, paul-revere,
 park-street. Nine of the ten buildings the routine listed. park-street is
 MOUNTED on freedom-trail.html as Stop 3, at yaw -2.5 so the Tremont front
@@ -1541,3 +1543,72 @@ Chapel wants the tower height, six sources read. Smith Tower wants the
 footprint, with SDCI permit records the one lead never tried. The Marron Atrium
 wants a plan dimension, and the 12,400 sq ft floating around search results is
 the LOBBY and not the atrium.
+
+
+## The 2026-09-03 sixth run: THE WALK IS DRAWN, and every defect in it was invisible in the numbers
+
+The last run measured the trail and said the next run should draw it and would
+need no network at all. That is exactly what happened: this run made zero
+network calls. `freedom_trail_walk.json` went in as the FT_WALK array in
+trail-3d.js, `pier66Walk` was the template, and the scene is registered as
+`trail:walk` and mounted on freedom-trail.html.
+
+**WHAT SHIPPED.** 127 measured vertices, cut to the sea level datum, vertical
+exaggeration 4 and declared, ribbon half width 35 m and declared a drawing
+device, grade coloured at 8 percent over a MIN_RUN of 15 m, the Charlestown
+Bridge and the Constitution's berth drawn as DECK ON PIERS because those are
+the vertices 3DEP refused, and six posts rather than sixteen. The page carries
+BOTH lengths, 3.51 measured and 2.5 published, and says why they cannot be
+averaged.
+
+**FOUR DEFECTS, ALL FOUND BY LOOKING, NONE VISIBLE IN THE ARITHMETIC.**
+
+  1. HALF 110 was the number that came from scaling Pier 66's ribbon by scene
+     size. The render was a chain of fat overlapping pads. The vertices here
+     are 30 m apart and Boston's corners are sharp, so a ribbon wider than its
+     own turning radius folds at every bend. 35 fixed it and is still 25 px
+     wide in a 900 px render.
+  2. VE 6 stood the cut mass 165 m tall against a 70 m ribbon, the dam-wall
+     proportion the styles book warns about. VE 4 gives 110 against 70, a ratio
+     of 1.6, which is exactly what Pier 66 settled on.
+  3. The deck at 4 m thickness lay on the water like paint. At 14 it reads as
+     carried, which is the whole point of drawing it as deck.
+  4. THE RETRACE. The trail climbs Park and Beacon to the State House and comes
+     back down the same pavement: vertices 9 and 20 are the SAME POINT to the
+     metre, as are 11 and 18. Two coplanar ribbons sorted on a tie and came
+     back as a fan of slivers. Segments whose midpoint falls within 12 m of an
+     earlier one's are now skipped by the ground and the surface. Checked
+     BEFORE doing it: all four measured pitches are outside the retrace, so no
+     grade claim was lost.
+
+**WHAT IS STILL NOT CLEAN, stated rather than smoothed.** The State House
+turn still shows a small zigzag notch where the dedupe drops segments that are
+near-coincident but not exactly so. It is local, it is honest geometry rather
+than a painter's bug, and a later run could improve it by merging the retrace
+into a single centreline instead of dropping segments from it. Do not fix it by
+widening the tolerance without looking: at 20 m it will start eating real
+corners downtown.
+
+**ONE CHANGE IS DELIBERATELY NOT COMMITTED.** render_room.js needs the walk
+rendered on a SQUARE 900x900 sheet, because qlmanage -s 900 forces a square
+thumbnail and a 900x700 sheet comes back scaled up and clipped on the right,
+the same lesson the Space Needle branch learned with its plaza cropped off the
+bottom. That one-line change was made and used, but render_room.js also carried
+UNCOMMITTED work from a parallel DC-landmark run in its `dc:` branch, so the
+walk's hunk was committed alone against HEAD and the parallel run's work was
+left in the working tree untouched. A fresh checkout therefore renders
+`trail:walk` on the wide sheet and crops it; the SHIPPED PAGE is unaffected,
+because the live mount computes its own frame.
+
+**WHAT THE NEXT RUN SHOULD DO.** The buildable queue is now thin and every
+remaining item is blocked on ONE number, so a run that finds it can build the
+same day. King's Chapel wants the tower height, six sources read, the leads
+left are the Massachusetts Historical Society's King's Chapel records
+1686-1942 (finding aid fa0249) and nothing else cheap. Smith Tower wants the
+footprint, and SDCI permit records are the one lead never tried. The Marron
+Atrium wants a plan dimension, and the 12,400 sq ft in search results is the
+LOBBY. The one item needing no new number at all is the OSM painted line,
+relation 976514, walked as one ordered path rather than summed over its 156
+members: if it comes out near 2.5 the length disagreement above is explained
+rather than merely stated. Use the kumi.systems Overpass mirror or the plain
+OSM relation API; overpass-api.de answers 406.

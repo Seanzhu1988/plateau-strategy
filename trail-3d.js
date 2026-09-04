@@ -2184,11 +2184,423 @@
     return out;
   }
 
+
+  /* ---------------- The whole walk: sixteen stops, one landform ------------
+     THE FREEDOM TRAIL AS A WALK, which is what a visitor actually buys. Nine
+     of the stops above are buildings and each one is drawn alone; this is the
+     line between them, with the hills in it.
+
+     Style: THE CUT SECTION, the entry the styles book added when the Pier 66
+     walk was drawn. Its tells are read back at the bottom of this comment and
+     every one of them is obeyed here.
+
+     THE MEASUREMENT, and it is not eyeballed. `freedom_trail_walk.json` in
+     this repo carries 127 vertices, measured 2026-09-03: the 16 published stop
+     coordinates from trails.json, routed leg by leg on brouter.de with
+     profile=hiking-beta (a true foot router; router.project-osrm.org was
+     caught being a car), simplified to a 30 m minimum vertex spacing, and then
+     given an elevation per vertex from USGS 3DEP at epqs.nationalmap.gov in
+     feet. The array below is that file, transcribed. Columns are metres east
+     and north of Boston Common, feet above sea level, and metres walked.
+
+       length   5,650.8 m = 3.511 mi
+       start    18.0 ft on the Common, high 90.3 ft at 594 m on Beacon Hill,
+                end 79.9 ft at the Monument
+       climbed  241.3 ft gross, 179.4 ft given back, 61.9 ft net
+
+     THE DISAGREEMENT, printed and not averaged. The Freedom Trail Foundation
+     publishes 2.5 miles. This says 3.511. The gap is not a rounding: the
+     crow-flies sum through the sixteen stops is already 3,537 m, and one of
+     those straight lines runs 566 m over the Charles, which no walker does.
+     Swap that single leg for its routed 1,487 m, leave every other leg at its
+     impossible straight line, and the floor is still 2.77 mi. So 2.5 is below
+     the shortest path that can reach these stops. Both numbers belong on any
+     page that shows this model.
+
+     WHAT IS CARRIED AND NOT MEASURED, declared because 3DEP is a BARE EARTH
+     raster and hands back the water under a bridge rather than the deck.
+     Vertices 90 to 92 came back below sea level and are the Charlestown
+     Bridge; vertex 108 came back below sea level and is the USS Constitution's
+     berth. Their elevations are carried from the vertices on either side. This
+     model draws exactly those runs as DECK on piers rather than as ground, so
+     the reader can see which part of the line is not standing on earth.
+
+     THE TELLS, read back:
+       datum          mean sea level, which is where the elevations are from
+       exaggeration   VE below, declared, and the horizontal is untouched
+       interpolation  none; the ground line is straight between samples
+       ribbon width   HALF below is a DRAWING DEVICE and not a measurement */
+
+  var FT_WALK = [
+    [     0.0,      0.0,   18.0,      0.0],
+    [    46.1,     23.6,   21.3,     51.9],
+    [    95.7,     53.1,   25.2,    109.6],
+    [   138.0,     77.3,   27.8,    158.4],
+    [   152.5,    112.4,   33.1,    197.4],
+    [   169.7,    169.4,   42.5,    256.9],
+    [   192.6,    249.1,   65.3,    339.9],
+    [   194.5,    276.7,   79.0,    372.8],
+    [   223.2,    290.4,   79.1,    405.4],
+    [   240.0,    316.4,   81.0,    446.9],
+    [   268.3,    334.0,   81.4,    480.4],
+    [   259.6,    382.7,   85.6,    530.0],
+    [   248.5,    406.4,   87.0,    560.6],
+    [   218.6,    405.9,   90.3,    594.0],
+    [   209.4,    434.8,   86.6,    627.0],
+    [   201.0,    441.5,   82.3,    640.8],
+    [   218.0,    408.4,   90.1,    684.9],
+    [   245.8,    405.9,   87.2,    718.1],
+    [   259.6,    382.7,   85.6,    751.5],
+    [   267.1,    345.2,   82.6,    789.8],
+    [   240.0,    316.4,   81.0,    834.6],
+    [   257.2,    281.9,   70.4,    876.4],
+    [   298.5,    222.3,   56.7,    949.0],
+    [   316.6,    199.2,   52.6,    978.4],
+    [   343.0,    191.5,   49.8,   1014.0],
+    [   386.9,    249.5,   54.9,   1086.7],
+    [   351.3,    246.0,   56.6,   1132.9],
+    [   344.7,    241.7,   56.6,   1141.3],
+    [   366.0,    262.2,   57.8,   1171.5],
+    [   408.7,    277.2,   54.9,   1231.3],
+    [   446.0,    326.4,   52.9,   1293.0],
+    [   469.3,    337.9,   50.1,   1327.1],
+    [   490.4,    327.6,   46.7,   1351.4],
+    [   522.1,    315.6,   41.8,   1385.3],
+    [   554.5,    303.5,   37.4,   1419.9],
+    [   624.3,    279.0,   29.7,   1493.9],
+    [   603.0,    238.7,   32.1,   1542.9],
+    [   623.6,    213.1,   30.2,   1580.1],
+    [   623.8,    245.9,   30.8,   1626.9],
+    [   648.7,    280.0,   27.8,   1669.2],
+    [   670.4,    321.9,   30.2,   1716.5],
+    [   676.0,    368.2,   30.0,   1763.2],
+    [   679.2,    406.2,   28.5,   1801.3],
+    [   716.9,    406.1,   23.3,   1839.1],
+    [   724.8,    417.0,   22.7,   1875.5],
+    [   704.3,    412.1,   25.3,   1896.7],
+    [   714.2,    410.4,   23.6,   1931.9],
+    [   722.5,    424.9,   22.5,   1968.3],
+    [   729.0,    424.6,   21.8,   1974.8],
+    [   749.3,    445.4,   18.7,   2013.4],
+    [   750.4,    526.1,    9.0,   2111.6],
+    [   786.3,    541.5,    9.5,   2160.6],
+    [   782.5,    577.6,    9.0,   2197.0],
+    [   804.2,    578.0,    9.2,   2220.9],
+    [   779.3,    595.0,    8.3,   2259.6],
+    [   793.1,    620.5,    8.2,   2304.4],
+    [   824.2,    642.2,    8.1,   2342.6],
+    [   851.9,    683.4,    8.9,   2392.2],
+    [   877.7,    730.3,   13.4,   2445.7],
+    [   898.7,    785.9,   20.2,   2505.7],
+    [   925.4,    817.6,   16.4,   2550.5],
+    [   944.7,    841.2,   11.8,   2581.1],
+    [   960.8,    876.9,   13.2,   2620.2],
+    [   978.8,    907.6,   14.7,   2655.9],
+    [  1001.9,    933.8,   15.8,   2691.0],
+    [  1020.6,    972.0,   21.3,   2733.7],
+    [  1033.3,   1008.8,   26.3,   2772.6],
+    [  1050.1,   1060.4,   24.2,   2826.9],
+    [  1038.1,   1083.4,   23.1,   2860.1],
+    [  1061.0,   1114.6,   21.6,   2898.9],
+    [  1074.2,   1143.3,   20.8,   2930.5],
+    [  1063.8,   1163.5,   20.5,   2963.5],
+    [  1016.5,   1208.3,   21.3,   3031.5],
+    [   990.1,   1214.7,   21.6,   3067.5],
+    [   981.7,   1236.7,   22.2,   3099.7],
+    [   955.5,   1249.7,   28.7,   3133.7],
+    [   948.3,   1253.9,   28.7,   3142.1],
+    [   937.4,   1276.8,   29.7,   3173.9],
+    [   963.4,   1339.8,   33.0,   3245.8],
+    [   931.8,   1360.0,   40.1,   3283.3],
+    [   878.7,   1394.2,   44.3,   3346.5],
+    [   854.9,   1410.4,   41.8,   3375.3],
+    [   800.6,   1448.6,   24.8,   3441.7],
+    [   776.1,   1466.1,   13.3,   3471.8],
+    [   741.1,   1438.4,   12.9,   3517.6],
+    [   715.3,   1415.3,   13.3,   3552.3],
+    [   686.8,   1415.3,   12.9,   3590.5],
+    [   663.1,   1391.4,   11.5,   3624.2],
+    [   636.5,   1364.9,   13.9,   3661.8],
+    [   609.3,   1373.0,   18.2,   3693.5],
+    [   531.8,   1522.5,   21.8,   3861.9],
+    [   517.2,   1556.9,   22.6,   3899.3],
+    [   499.0,   1584.9,   23.3,   3932.7],
+    [   421.2,   1734.1,   26.9,   4101.0],
+    [   394.3,   1770.9,   26.2,   4146.6],
+    [   370.4,   1792.5,   25.0,   4178.9],
+    [   375.6,   1819.6,   23.2,   4208.9],
+    [   451.9,   1889.3,   18.7,   4312.3],
+    [   469.8,   1865.4,   12.0,   4345.0],
+    [   489.5,   1853.9,   10.7,   4376.6],
+    [   607.8,   1929.7,    8.3,   4517.2],
+    [   645.1,   1953.0,    8.7,   4561.1],
+    [   678.3,   1973.7,   10.1,   4600.3],
+    [   706.5,   1997.4,    9.6,   4637.5],
+    [   771.5,   2043.6,    9.5,   4717.3],
+    [   795.2,   2020.9,    9.3,   4755.7],
+    [   768.3,   1995.9,    8.8,   4800.7],
+    [   786.6,   1967.9,    8.5,   4835.7],
+    [   783.8,   1947.3,    8.5,   4863.2],
+    [   773.9,   1977.7,    8.4,   4906.8],
+    [   797.1,   2013.7,    9.5,   4959.7],
+    [   782.9,   2038.3,   10.4,   4992.0],
+    [   758.9,   2053.5,    9.7,   5025.2],
+    [   738.5,   2077.9,   13.0,   5057.0],
+    [   726.1,   2098.9,   14.5,   5087.9],
+    [   697.4,   2074.2,   13.8,   5125.7],
+    [   671.3,   2067.8,   15.7,   5161.7],
+    [   646.6,   2087.6,   19.9,   5193.6],
+    [   624.6,   2077.1,   19.2,   5225.9],
+    [   603.0,   2098.3,   20.3,   5256.1],
+    [   586.5,   2142.0,   29.5,   5312.8],
+    [   570.0,   2231.7,   51.6,   5404.0],
+    [   554.0,   2316.2,   65.0,   5490.0],
+    [   501.1,   2346.4,   62.1,   5553.0],
+    [   469.6,   2361.5,   77.5,   5587.9],
+    [   445.5,   2382.9,   78.5,   5626.7],
+    [   434.2,   2382.6,   79.9,   5650.8]
+  ];
+
+  /* Declared vertical exaggeration. 82 ft of relief over 5,651 m of walk is a
+     slope of 1 in 226, and at true scale this model is a flat tape with no
+     grade on it at all. Four is chosen rather than picked, and it was picked
+     down from six by LOOKING. Two constraints decide it. The steepest measured
+     pitch, 13.4 percent up Breed's Hill, draws at 28 degrees, which is what
+     the Pier 66 walk's steepest block draws at and reads as a hill rather than
+     a cliff. And the cut mass, which runs from the sea level datum to 90.3 ft,
+     stands 110 m tall against a 70 m ribbon, a ratio of 1.6, which is exactly
+     the proportion that stopped the Pier 66 walk from coming back a dam wall.
+     At six it was 165 m against the same ribbon and the surface went edge on. */
+  var VE_WALK = 4;
+  var FT_M = 0.3048;
+
+  /* Half width of the drawn ribbon, in metres, and NOT a measurement. A real
+     pavement is about 3 m and at 3 m this ribbon is a thread 5.6 km long. It
+     is drawn at roughly the same fraction of its scene that the Pier 66 walk
+     used, so the surface is wide enough to carry the grade colour. It says
+     nothing about the width of any Boston street.
+
+     WHY IT IS 35 AND NOT THE 110 THE FIRST DRAFT USED, and the picture is the
+     only thing that could have said so. The Pier 66 walk is 1.3 km long and
+     took a 40 m half width, about a tenth of its scene. Scaling that fraction
+     to this scene gave 110, and at 110 the render came back as a chain of fat
+     overlapping pads: the vertices here are 30 m apart and Boston's corners
+     are sharp, so a ribbon wider than its own turning radius folds over itself
+     at every bend and the line stops being a line. 35 is under that radius and
+     still 25 px wide in a 900 px render. */
+  var HALF_WALK = 35;
+
+  /* THE BRIDGE RUN AND THE BERTH SPUR. These are the segment indices whose
+     ground the DEM refused, so they are drawn as deck. The extent is inferred
+     from which vertices came back under water, not measured off a plan, and
+     is declared as such. */
+  var DECK_SEGS = { 89: 1, 90: 1, 91: 1, 92: 1, 107: 1, 108: 1 };
+
+  function walkZ(ft) { return ft * FT_M * VE_WALK; }
+
+  function freedomWalk(ctx) {
+    var P = ctx.project, out = [];
+    var EARTH = "#c7c0ae", EARTH_EDGE = "#8f8879";
+    var PATH  = "#d8d2c4", PATH_EDGE  = "#a49c8c";
+    var STEEP = "#c98a4b", STEEP_EDGE = "#8f5f31";
+    var WATER = "#8fa6ae", WATER_EDGE = "#5d7079";
+    var DECK  = "#b3ab9a", DECK_EDGE  = "#7d7768";
+    var POST  = "#7e796f";
+    var W = FT_WALK, N = W.length;
+
+    /* left and right edges of the ribbon, offset along the normal to the
+       direction of travel at each vertex.
+
+       THE HAIRPIN, which the first look found and the arithmetic could not.
+       This walk goes UP Park Street to the State House and comes back DOWN the
+       same pavement, so at the turn the vertex before and the vertex after are
+       nearly the same point, the chord between them is about zero, and a
+       normal taken from that chord collapses. The ribbon pinched to nothing
+       there and the surface came back as a fan of triangular slivers. Where
+       that chord is degenerate the normal is taken from the outgoing segment
+       instead, which is the direction the walker is actually facing. */
+    var L = [], R = [];
+    for (var i = 0; i < N; i++) {
+      var a = W[Math.max(0, i - 1)], b = W[Math.min(N - 1, i + 1)];
+      var dx = b[0] - a[0], dy = b[1] - a[1];
+      var m = Math.sqrt(dx * dx + dy * dy);
+      if (m < 12) {
+        if (i === N - 1) { dx = W[i][0] - W[i - 1][0]; dy = W[i][1] - W[i - 1][1]; }
+        else { dx = W[i + 1][0] - W[i][0]; dy = W[i + 1][1] - W[i][1]; }
+        m = Math.sqrt(dx * dx + dy * dy) || 1;
+      }
+      var nx = -dy / m, ny = dx / m;
+      L.push([W[i][0] + nx * HALF_WALK, W[i][1] + ny * HALF_WALK]);
+      R.push([W[i][0] - nx * HALF_WALK, W[i][1] - ny * HALF_WALK]);
+    }
+
+    /* THE RETRACE, DRAWN ONCE. Between 447 m and 835 m the walk climbs Park
+       and Beacon to the State House and comes back down the same pavement:
+       vertices 9 and 20 are the SAME POINT to the metre, as are 11 and 18. Two
+       ribbons then lie exactly on top of each other, and the first look came
+       back with a fan of slivers there, because coplanar faces sort on a tie.
+       Drawing it twice would also claim two surfaces where Boston has one. So
+       a segment whose midpoint falls within 12 m of an earlier segment's is
+       skipped by the ground and the surface. It is still walked, and its
+       length is still in the 5,650.8 m: only the paint is dropped. Checked
+       before doing it: none of the four measured pitches is inside the
+       retrace, so no grade claim is lost. */
+    var SKIP = {};
+    (function () {
+      var mid = [];
+      for (var i = 0; i < N - 1; i++)
+        mid.push([(W[i][0] + W[i + 1][0]) / 2, (W[i][1] + W[i + 1][1]) / 2]);
+      for (var a2 = 1; a2 < mid.length; a2++)
+        for (var b2 = 0; b2 < a2; b2++) {
+          if (SKIP[b2]) continue;
+          var ddx = mid[a2][0] - mid[b2][0], ddy = mid[a2][1] - mid[b2][1];
+          if (ddx * ddx + ddy * ddy < 144) { SKIP[a2] = 1; break; }
+        }
+    })();
+
+    /* The Charles, drawn only where the walk crosses it, and given an explicit
+       depth so that a plane spanning the crossing does not sort on its own
+       near corner and paint over the bridge standing on it. That rule has now
+       been the difference seven times. Its EXTENT is a drawing device: the
+       fact of water here is known, because the bare earth raster returned it;
+       the position of the banks is not measured by this file. */
+    (function () {
+      var x0 = W[89][0], y0 = W[89][1], x1 = W[93][0], y1 = W[93][1];
+      var dx = x1 - x0, dy = y1 - y0, m = Math.sqrt(dx * dx + dy * dy) || 1;
+      var ex = dx / m, ey = dy / m, sx = -ey, sy = ex, SPAN = 150, OVER = 30;
+      var q = [P(x0 - ex * OVER + sx * SPAN, y0 - ey * OVER + sy * SPAN, 0),
+               P(x1 + ex * OVER + sx * SPAN, y1 + ey * OVER + sy * SPAN, 0),
+               P(x1 + ex * OVER - sx * SPAN, y1 + ey * OVER - sy * SPAN, 0),
+               P(x0 - ex * OVER - sx * SPAN, y0 - ey * OVER - sy * SPAN, 0)];
+      out.push({ svg: ctx.poly(q, WATER, WATER_EDGE, 0.5), depth: -1e9 });
+    })();
+
+    /* the ground mass, cut open on both sides down to mean sea level, and
+       stopping at the water's edge. Each wall quad is a small face and sorts
+       honestly on its own corners. */
+    function wall(edge, sign) {
+      for (var i = 0; i < N - 1; i++) {
+        if (DECK_SEGS[i] || SKIP[i]) continue;
+        var z0 = walkZ(W[i][2]), z1 = walkZ(W[i + 1][2]);
+        var dx = edge[i + 1][0] - edge[i][0], dy = edge[i + 1][1] - edge[i][1];
+        var m = Math.sqrt(dx * dx + dy * dy) || 1;
+        var nx = sign * -dy / m, ny = sign * dx / m;
+        if (!ctx.faceVisible(nx, ny)) continue;
+        var q = [P(edge[i][0], edge[i][1], 0), P(edge[i + 1][0], edge[i + 1][1], 0),
+                 P(edge[i + 1][0], edge[i + 1][1], z1), P(edge[i][0], edge[i][1], z0)];
+        /* the walk retraces Park Street, so two cut walls can be exactly
+           coincident. depthOf alone leaves those tied and the sort is then
+           unstable; the index breaks the tie deterministically. */
+        out.push({ svg: ctx.poly(q, ctx.shade(EARTH, nx, ny, 0.15), EARTH_EDGE, 0.4),
+                   depth: depthOf(q) + i * 1e-3 });
+      }
+    }
+    wall(L, 1); wall(R, -1);
+
+    /* the cut ends, so the mass reads as cut and not as hollow: the two ends
+       of the walk, and both banks where the deck leaves the ground */
+    function cap(i, sign) {
+      var z = walkZ(W[i][2]);
+      var a = W[Math.max(0, i - 1)], b = W[Math.min(N - 1, i + 1)];
+      var dx = b[0] - a[0], dy = b[1] - a[1], m = Math.sqrt(dx * dx + dy * dy) || 1;
+      var nx = sign * dx / m, ny = sign * dy / m;
+      if (!ctx.faceVisible(nx, ny)) return;
+      var q = [P(L[i][0], L[i][1], 0), P(R[i][0], R[i][1], 0),
+               P(R[i][0], R[i][1], z), P(L[i][0], L[i][1], z)];
+      out.push({ svg: ctx.poly(q, ctx.shade(EARTH, nx, ny, 0.1), EARTH_EDGE, 0.5),
+                 depth: depthOf(q) });
+    }
+    cap(0, -1); cap(N - 1, 1);
+    cap(89, 1); cap(93, -1); cap(107, 1); cap(109, -1);
+
+    /* THE DECK. Where the DEM refused the ground, the walk is carried on a
+       slab rather than on earth, with piers to the datum, so that the part of
+       the line whose height is carried rather than measured is the part that
+       visibly does not stand on anything. */
+    /* Deck thickness, in DRAWN metres, and a drawing device like the ribbon
+       width. At 4 the first render had the deck lying flat on the water like
+       paint; the crossing has to read as carried. */
+    var TH = 14;
+    for (var b1 in DECK_SEGS) {
+      var s = +b1;
+      var za = walkZ(W[s][2]) - TH, zb = walkZ(W[s + 1][2]) - TH;
+      var qd = [P(L[s][0], L[s][1], za), P(R[s][0], R[s][1], za),
+                P(R[s + 1][0], R[s + 1][1], zb), P(L[s + 1][0], L[s + 1][1], zb)];
+      out.push({ svg: ctx.poly(qd, ctx.shade(DECK, 0, 0, 1), DECK_EDGE, 0.4),
+                 depth: depthOf(qd) + 0.2 });
+      var dx2 = W[s + 1][0] - W[s][0], dy2 = W[s + 1][1] - W[s][1];
+      var m2 = Math.sqrt(dx2 * dx2 + dy2 * dy2) || 1;
+      var nx2 = -dy2 / m2, ny2 = dx2 / m2;
+      var side = [[1, 0.4], [-1, 0.15]];
+      for (var t = 0; t < 2; t++) {
+        var sg = side[t][0];
+        if (!ctx.faceVisible(sg * nx2, sg * ny2)) continue;
+        var e = sg > 0 ? L : R;
+        var qs = [P(e[s][0], e[s][1], za), P(e[s + 1][0], e[s + 1][1], zb),
+                  P(e[s + 1][0], e[s + 1][1], zb + TH), P(e[s][0], e[s][1], za + TH)];
+        out.push({ svg: ctx.poly(qs, ctx.shade(DECK, sg * nx2, sg * ny2, 0), DECK_EDGE, 0.4),
+                   depth: depthOf(qs) + 0.3 });
+      }
+      var mx = (W[s][0] + W[s + 1][0]) / 2, my = (W[s][1] + W[s + 1][1]) / 2;
+      out = out.concat(octStage(ctx, mx, my, 9, 9, 0, (za + zb) / 2, DECK, DECK_EDGE));
+    }
+
+    /* the walking surface, coloured by its own measured grade, so the four
+       pitches this walk actually has are things you can see rather than
+       figures in a caption. Threshold 8 percent.
+
+       MIN_RUN is the noise floor carried over from the Pier 66 walk and it is
+       the same instrument: 3DEP's vertical error is of the order of a foot, so
+       a grade taken over a few metres is mostly error. At 15 m that foot is
+       worth 2 percent, comfortably inside the threshold. Segments shorter than
+       it are drawn and simply make no claim about their steepness. */
+    var MIN_RUN = 15;
+    for (var j = 0; j < N - 1; j++) {
+      var run = W[j + 1][3] - W[j][3];
+      var rise = (W[j + 1][2] - W[j][2]) * FT_M;
+      var g = run >= MIN_RUN ? Math.abs(rise / run) : 0;
+      if (SKIP[j]) continue;
+      var steep = g >= 0.08, onDeck = !!DECK_SEGS[j];
+      var za2 = walkZ(W[j][2]), zb2 = walkZ(W[j + 1][2]);
+      var q2 = [P(L[j][0], L[j][1], za2), P(R[j][0], R[j][1], za2),
+                P(R[j + 1][0], R[j + 1][1], zb2), P(L[j + 1][0], L[j + 1][1], zb2)];
+      out.push({ svg: ctx.poly(q2, steep ? STEEP : (onDeck ? DECK : PATH),
+                               steep ? STEEP_EDGE : (onDeck ? DECK_EDGE : PATH_EDGE), 0.4),
+                 depth: depthOf(q2) + 0.5 + j * 1e-3 });
+    }
+
+    /* Six posts and not sixteen. At 5.6 km a post per stop is a picket fence
+       and the line disappears behind it, so the posts mark the shape of the
+       walk: where you start, the crest of Beacon Hill, the turn at Faneuil
+       Hall, the top of Copp's Hill before it drops, the ship, and the
+       Monument. Slender, so they are drawn from every side rather than culled,
+       and given depths above everything else because nothing in this model can
+       stand in front of them. */
+    var MARKS = [[0, 46], [15, 52], [53, 42], [81, 44], [108, 42], [126, 62]];
+    for (var k = 0; k < MARKS.length; k++) {
+      var idx = MARKS[k][0], h = MARKS[k][1];
+      var px = W[idx][0], py = W[idx][1], pz = walkZ(W[idx][2]);
+      var col = octStage(ctx, px, py, 4.5, 3.2, pz, pz + h, POST, "#4f4b45");
+      for (var q3 = 0; q3 < col.length; q3++) col[q3].depth = 1e6 + k * 100 + q3;
+      out = out.concat(col);
+      var head = octStage(ctx, px, py, 11, 11, pz + h, pz + h + 6, STEEP, STEEP_EDGE);
+      for (var q4 = 0; q4 < head.length; q4++) head[q4].depth = 1e6 + k * 100 + 50 + q4;
+      out = out.concat(head);
+      var top = [];
+      for (var e8 = 0; e8 < 8; e8++) {
+        var ang = (e8 / 8) * Math.PI * 2;
+        top.push(P(px + 11 * Math.cos(ang), py + 11 * Math.sin(ang), pz + h + 6));
+      }
+      out.push({ svg: ctx.poly(top, STEEP, STEEP_EDGE, 0.4), depth: 1e6 + k * 100 + 90 });
+    }
+    return out;
+  }
+
   var SCENES = { "bunker-hill": bunkerHill, "old-north": oldNorth,
                  "faneuil-hall": faneuilHall, "state-house": stateHouse,
                  "old-state-house": oldStateHouse, "old-south": oldSouth,
                  "constitution": constitution, "paul-revere": paulRevere,
-                 "park-street": parkStreet };
+                 "park-street": parkStreet, "walk": freedomWalk };
 
   /* The live mount: same hand-rolled projection as the other models, so a
      trail stop weighs a few kilobytes and needs no library. */

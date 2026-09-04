@@ -178,7 +178,12 @@ if (key.startsWith("trail:")) {
   const scene = (window.TRAIL3D || {}).scenes[sk];
   if (!scene) { console.error("no such trail scene: " + sk); process.exit(1); }
   const yaw2 = parseFloat(process.argv[3] || "-0.62"), pitch2 = parseFloat(process.argv[4] || "0.30");
-  const W2 = 900, H2 = 700;
+  /* Square for the walk, because qlmanage -s 900 forces a square thumbnail and
+     a 900x700 sheet comes back scaled up and clipped on the right. The Space
+     Needle branch above learned this the same way, with the plaza cropped off
+     the bottom. A building keeps the wider sheet; a 3.5 mile landform does
+     not fit in it anyway. */
+  const W2 = 900, H2 = (sk === "walk") ? 900 : 700;
   const mk2 = (SC,OX,OY) => (x,y,z) => {
     const c=Math.cos(yaw2), s=Math.sin(yaw2);
     const rx=x*c-y*s, ry=x*s+y*c;

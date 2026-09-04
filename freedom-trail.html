@@ -423,6 +423,7 @@
             <button type="button" data-model="old-north" aria-pressed="false">Stop 13, Old North Church</button>
             <button type="button" data-model="constitution" aria-pressed="false">Stop 15, USS Constitution</button>
             <button type="button" data-model="bunker-hill" aria-pressed="false">Stop 16, Bunker Hill</button>
+            <button type="button" data-model="walk" aria-pressed="false">The whole walk, all sixteen</button>
           </div>
           <p class="ft-model-sub" id="ftModelSub"></p>
           <div class="ft-model-stage" id="ftModelStage"></div>
@@ -1249,6 +1250,41 @@
             + 'measured the pediment at 60.4 feet against the published 60. The '
             + 'pediment\u2019s rise, the height of the lanthorn and how far back the '
             + 'dome sits are published nowhere and are proportioned here.'
+      },
+      /* The line between the stops, which is the thing a visitor actually
+         walks. Looked DOWN on rather than along: it is a landform, and at the
+         camera the buildings use its surface goes edge on. */
+      'walk': {
+        opts: { yaw: -0.30, pitch: 0.55 },
+        sub: 'The whole trail as ground. One hundred and twenty seven measured '
+           + 'points from Boston Common to the Bunker Hill Monument, each with a '
+           + 'height, cut down to sea level so the hills are solid: up Beacon '
+           + 'Hill to the State House, along the flat through downtown and the '
+           + 'North End, down off Copp\u2019s Hill, over the Charles, and up '
+           + 'Breed\u2019s Hill at the end. The four orange blocks are the only '
+           + 'stretches steeper than eight per cent. Eighteen feet at the start, '
+           + 'ninety at the highest point, eighty at the Monument, and two '
+           + 'hundred and forty one feet of climbing in all. Six posts, not '
+           + 'sixteen, or the line disappears behind them. Drag it to turn.',
+        note: 'Measured on 3 September 2026, and it disagrees with the published '
+            + 'figure. The sixteen stop coordinates were routed leg by leg on a '
+            + 'walking router and came to 3.51 miles; the Freedom Trail '
+            + 'Foundation publishes 2.5. That gap is not a rounding: the '
+            + 'straight lines between the sixteen stops already add to 2.2 '
+            + 'miles, and one of those straight lines crosses the Charles, which '
+            + 'no walker does. Replace only that leg with the real bridge and '
+            + 'leave every other leg impossibly straight, and the floor is still '
+            + '2.77 miles. Both numbers are printed here rather than averaged. '
+            + 'The heights come from the USGS one metre elevation model, which '
+            + 'reads bare earth, so over the Charlestown Bridge and at the '
+            + 'Constitution\u2019s berth it returned the water instead of the '
+            + 'deck. Those runs are carried from the banks and are drawn as deck '
+            + 'on piers, so the part of the line that is not standing on '
+            + 'measured ground is the part you can see is not standing on it. '
+            + 'The vertical is exaggerated four times, the way a section drawing '
+            + 'does, or eighty two feet of relief over three and a half miles '
+            + 'would be a flat tape. The width of the ribbon is a drawing '
+            + 'device and is not the width of any street.'
       },
       'park-street': {
         opts: { yaw: -2.5, pitch: 0.28 },

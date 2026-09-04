@@ -560,3 +560,25 @@ down on it.
    invisible, hidden or inside out. A malformed spandrel bricked up all four
    openings while every number in the file was correct, and only the picture
    showed it.
+
+### Added when the Freedom Trail walk was drawn, 2026-09-03
+
+Three more tells for this entry, all of them found by looking at a picture the
+arithmetic had already passed.
+
+- **A bare-earth elevation model lies over water.** USGS 3DEP hands back a
+  confident number for the river under a bridge, not the deck the walker is on.
+  Any walk that crosses a bridge, pier, viaduct or tunnel must find those
+  vertices, carry their heights from the banks, and DRAW THAT RUN AS DECK ON
+  PIERS rather than as ground, so the reader can see which part of the line is
+  not standing on measured earth.
+- **The ribbon must be narrower than the path's own turning radius.** Scaling
+  Pier 66's width by scene size gave a 110 m half width, and the render came
+  back a chain of fat overlapping pads: with vertices 30 m apart and Boston's
+  corners sharp, a ribbon wider than its turn folds over itself and the line
+  stops being a line.
+- **A walk that retraces its own pavement is drawn ONCE.** The Freedom Trail
+  climbs to the State House and comes back down the same street, so two ribbons
+  land exactly on top of each other. Painted twice they sort on a tie and come
+  back as a fan of slivers, and they also claim two surfaces where the city has
+  one. Skip the repeat, keep its length in the total, and say so.
