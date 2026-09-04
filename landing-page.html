@@ -2106,7 +2106,7 @@
                         <div class="psx-cta-row">
                             <a href="#" onclick="showView('reinvestment', event)" class="psx-btn psx-btn-primary">Share your idea</a>
                             <a href="#psx-try" class="psx-btn psx-btn-ghost">Try our services</a>
-                            <a href="/iticket" class="psx-btn psx-btn-soon">iTicket · coming soon</a>
+                            <span class="psx-btn psx-btn-soon" aria-disabled="true">iTicket</span>
                         </div>
                         <!-- Real visitor numbers, counted by our own server.
                              Hidden entirely until the endpoint says show:true,
@@ -2194,7 +2194,16 @@
                         #psx-trail-feature .mfx-title{margin:.55rem 0 0;font-size:1.28rem;font-weight:700;
                             color:var(--psx-ink,#14110c);letter-spacing:-.01em;}
                         #psx-trail-feature .mfx-desc{margin:.7rem 0 0;font-size:.98rem;line-height:1.6;color:#6b655b;}
-                        /* iTicket sits beside the two hero buttons as a grey tab,
+                        /* iTicket is a TAB, NOT A DOOR. [SEAN "i only want the tab
+                           not meant to be tab in yet".] It is a span, not a link:
+                           nothing to click, nothing to read, no page behind it. It
+                           is there so the name is on the board, and that is all it
+                           is for until there is something on the other side worth
+                           opening. Twice now this has been built with more in it
+                           than was asked for, a full card and then a link, so the
+                           smallest possible version is the correct one.
+
+                           It sits beside the two hero buttons as a grey tab,
                            not as a card. It is the only control on this page that
                            does not open something finished, so it is the quietest
                            one here: no fill, grey ink, grey hairline. Findable on
@@ -2213,9 +2222,9 @@
                         #view-overview .psx-btn-soon{background:transparent;
                             color:rgba(231,236,245,.62);
                             border:1px solid rgba(255,255,255,.20);font-weight:600;}
-                        #view-overview .psx-btn-soon:hover{
-                            border-color:rgba(255,255,255,.34);
-                            color:rgba(231,236,245,.88);}
+                        /* No hover state and no pointer: hover that lights up is
+                           an invitation to click something that does nothing. */
+                        #view-overview .psx-btn-soon{cursor:default;}
                         /* The third of the set: a second building, same card, same
                            weight, so the row reads as one family of guides. */
                         #psx-moma-feature{max-width:1180px;margin:1.1rem auto 0;background:var(--psx-card);
