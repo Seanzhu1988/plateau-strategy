@@ -108,3 +108,18 @@ scene file) and has been LOOKED at from more than one angle.
   the second north tower or the five small ones, no published eave heights.
   The adversarial critic round did not fit inside the run's 25 minute
   ceiling and is owed; the two renders are what the build was verified on.
+- hirshhorn, the Hirshhorn Museum and Sculpture Garden (2026-09-04). Every
+  dimension published in Wikipedia's technical section: 231 ft outer
+  diameter, 82 ft high, elevated 14 ft on four piers, 115 ft interior court,
+  60 ft fountain, precast Swenson pink granite aggregate. The windowless
+  outer wall and the third-floor balcony facing the Mall are published in
+  aviewoncities.com's description. Named gaps: no published pier plan or
+  size, no published floor levels inside the drum, no published balcony
+  width, no published statement that the court is concentric.
+  What LOOKING caught and arithmetic did not: the balcony ledge was being
+  drawn right around the building; the balcony's jambs were culled with one
+  sign for both ends, leaving lawn visible straight through the wall; the
+  jambs then sat on the nominal arc rather than on the segment boundary the
+  wall actually stops at, leaving a thinner sliver of the same hole; and
+  three courses of banding on a published WINDOWLESS wall made an 82 ft
+  drum read as a tyre.
