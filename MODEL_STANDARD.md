@@ -151,4 +151,33 @@ scene file) and has been LOOKED at from more than one angle.
        rectangular windows". Cut them into per-segment lights, or move it
        into the named gaps.
     7. the coping band is too faint to register at map scale.
-  The rendering reviewer had not reported when the ceiling fell.
+  The rendering reviewer reported after that, also 5 of 10, and its worst
+  finding was a defect this run's own jamb fix had CREATED: on the far side
+  of the drum the recess back wall and jambs, carrying biases larger than a
+  ring segment's depth spread, painted straight through the roof and left a
+  dark rectangle marooned on the top face at two of six angles. That earned
+  the single fix round the standard allows, and it is fixed: the whole
+  balcony assembly is now gated on the Mall face being toward the camera and
+  every bias is small. Its light leak is fixed too, a hard white arc of
+  plaza tone showing through the 14 ft gap at the wall base. Both verified
+  at the two angles that showed them.
+  STILL OWED, and the two critics agree on the first two:
+    a. the piers are tonally invisible: measured 104,95,88 against the
+       under-drum's 97,92,86, seven levels out of 255, and their reach of
+       103.5 ft is inside R so they can never break the silhouette. Lighten
+       them, give them a top face, and the lift will finally read.
+    b. the 14 ft lift still does not read as air. Draw the ring's SOFFIT at
+       z=14 as its own bounce-lit plane.
+    c. the courtyard's inner wall is the BRIGHTEST surface in the model,
+       because outward=false hands ctx.shade a normal pointing at the
+       camera, so a 96 ft shaft is lit like a sunlit facade. Needs an
+       explicit occlusion multiplier deepening toward the base.
+    d. per-segment flat shading puts 44 vertical bands on a wall published
+       as blank, and stroke=fill leaves a 44-spoke starburst of seams on the
+       ring top. Interpolate the shade, drop the stroke, overlap slightly.
+    e. the courtyard is glazed as two ribbons where the source says "large
+       rectangular windows". Cut into per-segment lights or name it a gap.
+    f. the shadow ring is concentric, i.e. sun at the zenith, while the
+       walls are directionally lit. Offset it away from the light.
+    g. the plaza disc's polygon corner reads as a sheet of paper under the
+       model at some yaws; the coping is too faint to register.

@@ -160,6 +160,9 @@
        tyre lying on the grass. What a photograph actually shows through
        that gap is deep shade, so deep shade is what is drawn. */
     ring(R * 1.005, RI, 0.10, "#6d6760", -1e9 + 2.2);
+    /* the court's own floor, half in the drum's shade. Left at plaza tone it
+       showed through the 14 ft gap as a hard white arc along the wall base. */
+    ring(RI, FR, 0.12, "#b3aca1", -1e9 + 2.3);
     disc(FR, 0.55, WATER, -1e9 + 2.4);
 
     /* ---------- 2. the four piers ---------- */
@@ -179,15 +182,37 @@
     /* ---------- 4. the ring's top ---------- */
     ring(R, RI, ZT, GRAN);
 
+    /* the coping, the only line on a blank wall. Drawn BEFORE the balcony,
+       because the balcony block can return early when its opening faces
+       away and the top of the drum must not leave with it.
+       There were two more reveals here, at the derived floor levels. The
+       render is why they are gone: three courses banded an 82 ft cylinder
+       into a stack and the thing read as a tyre, when every photograph of
+       this building shows one unbroken blank wall. Windowless is published;
+       banded is not. */
+    wall(R + 0.35, ZT - 2.2, ZT, GRAND, true, null, 0.30);
+
     /* ---------- 5. the blank outer wall ---------- */
     var notBalcony = function (u) { return offNorth(u) > HB; };
     var isBalcony  = function (u) { return offNorth(u) <= HB; };
     wall(R, ZP, ZT, GRAN, true, notBalcony, 0);
+    /* The recess is a hole in the wall, and a hole is only a hole from the
+       side you can see into. Drawn unconditionally it sat on the FAR side of
+       the drum at some yaws and its back wall and jambs, carrying biases
+       bigger than a ring segment's own depth spread, painted straight
+       through the roof: a dark rectangle marooned on the top face. Nothing
+       of the balcony is emitted unless the Mall face is toward the camera,
+       and every bias here is now smaller than that spread. */
+    var balconyShows = ctx.faceVisible(0, 1);
+    if (!balconyShows) {
+      wall(R, ZP, ZT, GRAN, true, isBalcony, 0);
+      return items;
+    }
     /* on the Mall side the top level opens: wall up to the third floor, a
        low parapet, and behind it the recess */
     wall(R - 7, Z2, ZT, RECES, true, isBalcony, 0);
     wall(R, ZP, Z2, GRAN, true, isBalcony, 0);
-    wall(R, Z2, Z2 + 3.5, GRAN, true, isBalcony, 0.10);
+    wall(R, Z2, Z2 + 3.5, GRAN, true, isBalcony, 0.02);
     ring(R, R - 7, Z2 + 3.5, RECES, undefined, isBalcony);   /* the balcony's own floor, and ONLY across the balcony: drawn right around the building it put a bright ledge on a blank wall */
     /* the two jambs at the ends of the recess. Without them the render
        showed daylight straight through the wall at the balcony's edge: a
@@ -216,16 +241,8 @@
             pt((R - 7) * Math.cos(u), (R - 7) * Math.sin(u), Z2 + 3.5),
             pt((R - 7) * Math.cos(u), (R - 7) * Math.sin(u), ZT),
             pt(R * Math.cos(u), R * Math.sin(u), ZT)],
-           RECES, nu, nv, 0, 0.14);
+           RECES, nu, nv, 0, 0.03);
     });
-
-    /* ---------- 6. the coping, the only line on a blank wall ---------- */
-    /* There were two more reveals here, at the derived floor levels. The
-       render is why they are gone: three courses banded an 82 ft cylinder
-       into a stack and the thing read as a tyre, when every photograph of
-       this building shows one unbroken blank wall. Windowless is published;
-       banded is not. */
-    wall(R + 0.35, ZT - 2.2, ZT, GRAND, true, null, 0.30);
 
     return items;
   };
