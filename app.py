@@ -3198,6 +3198,7 @@ PUBLIC_PAGES = [
     ("/gallery-guides", "0.8", "weekly"),
     ("/landmarks", "0.8", "monthly"),
     ("/iticket", "0.5", "monthly"),
+    ("/national-mall", "0.8", "monthly"),
     ("/partners", "0.6", "monthly"),
     ("/agent", "0.6", "monthly"),
     ("/renter", "0.6", "monthly"),
@@ -5250,6 +5251,12 @@ def api_trail_pulse():
             "total_steps_est": int(d.get("total_prints", 0)) * _STEPS_PER_PRINT,
             "total_walks": int(d.get("walks", 0)),
         })
+
+
+@app.route("/national-mall")
+def page_national_mall():
+    """The DC tour: the Mall as a model that is also the map, stop by stop."""
+    return send_file(os.path.join(BASE_DIR, "national-mall.html"))
 
 
 @app.route("/freedom-trail")
