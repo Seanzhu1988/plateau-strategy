@@ -76,8 +76,27 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
       every vertical gesture, so a finger still scrolls past the model rather
       than being caught by it, and tilt there is a mouse, trackpad or stylus
       gesture.
-- [ ] Open it up, the way the Met's model does: the Empire State splitting to
-      show the two observatory decks inside.
+- [x] Open it up, the way the Met's model does: the Empire State splitting to
+      show the two observatory decks inside. **Done 2026-09-04.** It splits at
+      the two heights this model already named, 1,050 and 1,224 ft, so the
+      lower mass stands still, the piece between the decks rises 150 ft and
+      the mast and antenna rise 300, leaving each deck in clear air on top of
+      the piece it belongs to. Both floors are drawn in the promenade
+      blue-grey, not limestone, because a floor the colour of the wall reads
+      as the top of a box; the 86th gets a parapet ring, the 102nd a glass
+      one, which is the only difference a visitor is actually choosing
+      between. Two things had to be measured rather than guessed. The
+      drawing grows 300 ft when it opens, so the whole model is scaled by
+      tip / (tip + two lifts), which holds the antenna on the same line at
+      any openness: measured across 105 angles, the full turn by five tilts
+      from the -0.14 floor to the 0.75 ceiling, not one label leaves the
+      720 x 620 box, worst 331.7 to 589.2 across and 112.5 to 615 down. And
+      a floor is invisible edge-on: at the opening pitch of 0.22 a 128 by 96
+      ft deck projects five units tall in a 620 unit box, so the eye rises to
+      0.55 with the tower, as a floor and never a ceiling, so a reader who
+      already tilted higher keeps their angle. Closed is proved unchanged
+      rather than assumed: the model drawn from the old file and from the new
+      one are the same 15,341 bytes of SVG, byte for byte.
 - [ ] Phone framing: both models are drawn for a wide screen. Check at 375px
       and give each a portrait camera if it needs one. Half of this is now
       done: the labels and dots read at any width (2026-08-31). What is left
@@ -330,3 +349,46 @@ Note: destinations.json is another session's uncommitted work and was left
 untouched; its checksum changed twice during the pass, so that session was
 writing while this one ran. The branch was 1 ahead of origin/main and 0 behind
 at the start and needed no rebase.
+
+### 2026-09-04
+Trimmed: two, and both were numbers that contradicted themselves.
+On the Freedom Trail the banner said "44 min of walking ... about 6 hr 14 min
+altogether" while the summary six rows below it said 43 min and 6 hr 13, on
+the same screen. The banner read trail.walk_min_total, a total stored beside
+the legs rather than added up from them, and it had drifted: the sixteen legs
+sum to 43 and the stored number said 44. The National Mall's stored total is
+79 against legs of 79, which is what settled which of the two was wrong. Both
+lines are now added from the same legs, skipping the first stop's the way the
+summary already did, so they cannot disagree again whatever the file says.
+Checked that the Downtown half still moves only the summary: 11 stops, 17 min,
+banner still 43.
+On /tips every one of the 26 summaries ended without its full stop, because
+the first sentence was taken with split(".") and the separator went with it,
+so each one read as an unfinished fragment. Three were also cut at exactly 150
+characters and two of those mid-word, one ending "and it tells you what t".
+The stop goes back on, and a summary too long for the line now stops on a
+whole word with an ellipsis. Measured after: 26 of 26 end in punctuation,
+3 end in an ellipsis, none mid-word.
+3D: the top backlog item, the Empire State opening up. Numbers above.
+Caught in my own work, twice. The new chips and their sentence were English
+in every language, and lengthening the existing turn line would have orphaned
+its four translations, so the original sentence is left exactly as it was and
+the new one stands on its own. Adding them found that build_i18n has been
+REFUSING to write any pack at all, blocked by one untranslated visitor line,
+"The whole walk, all sixteen", which is in HEAD and is nobody's work today. It
+is translated now and the packs write again. Diffed key by key against HEAD:
+four added in each of the four languages, none removed, none changed, all
+mine, no drift from the other session.
+Also worth writing down: a fix can look broken because the page is cached.
+The asset stamp is the newest .js mtime and is right, but the HTML carrying it
+was served from the browser's own cache, so the page kept loading the previous
+script and the camera work appeared to do nothing. A query string on the page
+URL settles it.
+Checkers: map sound, 83% full. i18n 39 composed strings, unchanged, none
+added. Script lengths 1 out of band, the same Chinese overview, left alone
+again on purpose.
+Commits: "The trail stops printing two different walking times on one screen,
+and a tip summary stops ending mid-word", "The Empire State opens at its two
+observatory floors" and "Four packs learn the opened tower, and start writing
+again".
+Note: the branch was level with origin/main at the start and needed no rebase.
