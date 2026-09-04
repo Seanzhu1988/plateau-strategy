@@ -546,6 +546,43 @@ was the cut face, and the grade, which was the entire point, was a sliver.
 Landform wants a wide surface, a modest exaggeration, and a camera looking
 down on it.
 
+## The wall in the ground
+
+Added the run the Vietnam Veterans Memorial was drawn, 2026-09-04, because
+nothing in this book covered a memorial that is a CUT rather than a building.
+Maya Lin's competition text calls it "a rift in the earth", and every tell
+below follows from that one idea. It is the idiom of the earthwork memorial:
+no facade, no order, no roof, no silhouette against the sky.
+
+THE TELLS:
+
+- **The top of the wall is the ground.** The wall does not stand ON the lawn,
+  it RETAINS it. Its top edge runs level with the grade behind it, so from the
+  uphill side there is no monument at all, only grass and a stone line. A model
+  that sets the wall on the ground and lets you walk round it has drawn a
+  fence, not a rift.
+- **The visitor descends; the wall does not rise.** Height comes from the walk
+  being cut down, not from stone being stacked up. Draw the walk sloping and
+  the coping flat, never the reverse.
+- **The far side is EARTH, not a back face.** There is no rear elevation to
+  model, and drawing one puts a free-standing slab where a retaining wall
+  belongs. Everything on the cut side, walk included, must be culled when the
+  camera is behind the wall, or it paints straight through the lawn.
+- **Polished black stone reads by REFLECTION, not by shading.** The face is
+  darker than any ground tone around it and carries a lighter wash where the
+  sky falls on it. Flat matte black reads as a hole.
+- **Panelling is a rhythm, not masonry.** The joints are hairlines in polished
+  stone. Drawn at full strength, or drawn one per panel at map scale, they turn
+  a mirror into brickwork, which is the same fault the NMAAHC screen taught.
+- **Additions stand apart and stand UP.** The figurative sculpture and the
+  flagpole that get attached to such memorials are set at a distance and on
+  the grade, deliberately not continuous with the cut. Draw the gap.
+
+THE MISTAKE THIS ENTRY EXISTS TO PREVENT: the generic "wall" form drew this
+memorial as a low slab lying on the lawn. Every dimension in it could have been
+right and it would still have been the opposite building, because the one thing
+the memorial does is go DOWN.
+
 ## Working rules
 
 1. **Name the style before choosing the geometry.** If you cannot name it, you

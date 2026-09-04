@@ -99,6 +99,75 @@ repeat it. A name on this list has a `dc-form-<k>.js` (or the equivalent
 scene file) and has been LOOKED at from more than one angle.
 
 - capitol, lincoln, jefferson, monument (2026-09-03, the four heroes)
+- vietnam, the Vietnam Veterans Memorial (2026-09-04). Published, quoted in
+  the file header: each wall "246 feet 9 inches long", "10.1 feet tall at the
+  apex", "8 inches tall at their extremities", "meeting at an angle of 125
+  deg 12 min", "72 panels, 70 listing names" per wall, granite "quarried in
+  Bangalore, India" for its "reflective quality", a "two-acre" site
+  (Wikipedia); the Three Servicemen "stand seven feet tall upon a base that
+  is one foot tall" and "The 12-foot-by-8-foot flag flies from a 60-foot
+  pole" (NPS / VVMF).
+  ORIENTATION DERIVED AND CHECKED, not claimed: dc-3d.js already carries all
+  three coordinates, so the "one wall points at the Monument, the other at
+  the Lincoln" claim was tested rather than trusted. From the vertex the
+  bearings are -135.16 and -9.52 degrees, an interior angle of 125.63,
+  against a published 125 deg 12 min = 125.20. Half a degree apart on two
+  independent sources. The arms are drawn on the derived bisector, split by
+  the published angle.
+  SCALE, the one deliberate departure from the other forms: the true apex is
+  3.08 m, under dc-3d.js's 12 m MIN_H floor, so p.h arrives inflated about
+  four times. Using it would have put a 1,900 ft wall on the Mall and made a
+  ten foot wall read as a forty foot rampart. This form uses the true 0.3048
+  m per foot and ignores the floor, because MIN_H exists to rescue memorials
+  too small to see and a 493 ft long wall needs rescuing in plan not at all,
+  while its height is the one thing that must not move. The place height h: 3
+  was already the published 3.08 m and needed no correction.
+  STYLE ADDED FIRST, per the standard: STYLES.md now carries "The wall in the
+  ground", the earthwork idiom, because nothing in the book covered a
+  memorial that is a CUT. Its tells are the ones this model is built on: the
+  top of the wall IS the grade, the visitor descends rather than the stone
+  rising, the far side is earth and has no elevation to draw, polished black
+  reads by reflection not by shading, and the sculpture and flagpole stand
+  apart and stand up.
+  Named gaps: no published panel width (derived, 246.75 over 70 = 3.525 ft);
+  no published wall thickness (coping drawn 2 ft); no published pathway width
+  (10 ft); no dimensioned back slope (drawn as a 1 in 2.5 GRADE, not a
+  width); no published position for the flagpole or the statue, only "a
+  distance away"; no dimensions found for the Vietnam Women's Memorial, so it
+  is not drawn at all.
+  What LOOKING caught and arithmetic did not, four things, none of them
+  visible in any count: (1) the back slope was a FIXED 30 ft apron beside a
+  wall that runs from 10 ft deep to 8 inches, so it read as a green ramp of
+  even width beside a wall that vanishes; a slope has a grade, not a width,
+  and at 1 in 2.5 it now shrinks to nothing where the wall does. (2) the 24
+  bank and walk segments abutted exactly and rounded apart under toFixed,
+  leaving a ladder of pale stripes down the whole bank, which is the
+  Hirshhorn ring's starburst arriving again; each segment now overruns its
+  neighbour by a third of a segment. (3) THE WORST ONE: with the far arm's
+  face correctly culled, its 2 ft coping was a black hairline ending in mid
+  lawn and read as a scratch on the drawing rather than as a wall. From the
+  uphill side a visitor really does see only a stone line, but they also see
+  the shadowed SLOT beyond it where the cut falls away, and that is what
+  gives the line weight; a narrow dark band on the far side of the coping now
+  carries it, and nothing else is drawn, because nothing else is visible from
+  there. (4) the site pad at 230 ft was shorter than the 246.75 ft arms, so
+  the coping ran off it and the memorial sat on a pale rectangle of paper;
+  the pad is now 300 ft in the host's own lawn tone, so the two grounds meet
+  without a seam.
+  OWED: the two adversarial critics did not fit inside this run's 25 minute
+  ceiling. The four renders (yaw -0.55, -1.90, -2.15, -2.40) are what this
+  build was verified on. First thing for the next run, worst first:
+    a. the bank is now nearly the lawn's own tone once shaded, so the cut
+       reads as walk-then-grass with no bank between. Either deepen EARTH or
+       give the bank's top edge a line.
+    b. the names are the memorial and nothing here says so. At map scale
+       58,320 names cannot be text, but the face currently carries only a
+       reflective wash and one joint every fifth panel. A close-up scene, or
+       a legible inscription texture, is the honest next step.
+    c. the flagpole and the Three Servicemen are placed on an assumption and
+       read as unrelated objects on an empty lawn. Their real plaza and the
+       grove around them are not dimensioned in any source reached; find the
+       site plan or say so on the page.
 - castle, the Smithsonian Institution Building (2026-09-04). Plan measured
   from OSM relation 7393969 through Nominatim: 444 ft by 156 ft, five masses
   and nine towers read off the polygon. Four tower heights published in the
