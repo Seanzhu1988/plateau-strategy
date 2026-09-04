@@ -91,3 +91,20 @@ spend limit once, part-way through review. Batch the work, four to six
 buildings at a time, and never run two of these workflows at once. A run that
 dies in the review phase leaves builds on disk and no verdicts, and a result
 with zero verdicts reads as "passed" unless you check.
+
+## Rebuilt to this standard
+
+Each run rebuilds one building and adds it here, so the next run does not
+repeat it. A name on this list has a `dc-form-<k>.js` (or the equivalent
+scene file) and has been LOOKED at from more than one angle.
+
+- capitol, lincoln, jefferson, monument (2026-09-03, the four heroes)
+- castle, the Smithsonian Institution Building (2026-09-04). Plan measured
+  from OSM relation 7393969 through Nominatim: 444 ft by 156 ft, five masses
+  and nine towers read off the polygon. Four tower heights published in the
+  National Register nomination via Wikipedia: south principal 91 ft and 37 ft
+  square, taller north tower 145 ft, northeast campanile 117 ft and 17 ft
+  square. Named gaps: no published overall length, no published height for
+  the second north tower or the five small ones, no published eave heights.
+  The adversarial critic round did not fit inside the run's 25 minute
+  ceiling and is owed; the two renders are what the build was verified on.
