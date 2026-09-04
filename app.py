@@ -5255,8 +5255,31 @@ def api_trail_pulse():
 
 @app.route("/national-mall")
 def page_national_mall():
-    """The DC tour: the Mall as a model that is also the map, stop by stop."""
-    return send_file(os.path.join(BASE_DIR, "national-mall.html"))
+    """The DC tour: the Mall as a model that is also the map, stop by stop.
+
+    Fail soft while the page file is still being written. The route and its
+    supporting scripts were pushed before national-mall.html was committed, so
+    every visit was a 500. When that file lands this serves it exactly as
+    before; until then it shows a plain 'being built' page instead of an error.
+    """
+    p = os.path.join(BASE_DIR, "national-mall.html")
+    if os.path.exists(p):
+        return send_file(p)
+    return Response(
+        "<!doctype html><meta charset=utf-8>"
+        "<meta name=viewport content='width=device-width,initial-scale=1'>"
+        "<meta name=robots content='noindex'>"
+        "<title>National Mall tour, coming soon</title>"
+        "<style>body{margin:0;min-height:100vh;display:flex;align-items:center;"
+        "justify-content:center;background:#faf8f4;color:#14110c;"
+        "font:17px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;"
+        "padding:2rem;text-align:center}.c{max-width:26rem}"
+        "h1{font-size:1.4rem;margin:0 0 .5rem}p{color:#4a453d}"
+        "a{color:#1d4c4f;font-weight:700;text-decoration:none}</style>"
+        "<div class=c><h1>The National Mall tour is being built</h1>"
+        "<p>This DC walk is almost ready. Check back shortly.</p>"
+        "<p><a href='/freedom-trail'>Try the Freedom Trail &rarr;</a></p></div>",
+        mimetype="text/html")
 
 
 @app.route("/freedom-trail")
