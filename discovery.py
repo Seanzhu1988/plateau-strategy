@@ -736,7 +736,10 @@ def voice_refine():
     for e, text in queue[:VOICE_PER_PASS]:
         path = os.path.join(outdir, "guide-%s.mp3" % e["slug"])
         try:
-            record(e["slug"], voice, text, path)
+            # key, not slug: met_voices.record(key, voice, text, path). For weeks this
+            # passed the place slug as the ElevenLabs key, every call 401d inside the
+            # try, and the queue "held" forever. Found by the 2026-09-04 audio audit.
+            record(key, voice, text, path)
         except Exception:
             continue          # quota or transient: the queue holds it
         url = "/media/audio/guide-%s.mp3" % e["slug"]

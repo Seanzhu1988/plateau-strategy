@@ -251,6 +251,18 @@
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 95
  },
+ "guide-air-and-space-museum.mp3": {
+  "chars": 2836,
+  "sig": "279c34000cf5",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 528
+ },
+ "guide-arlington-national-cemetery.mp3": {
+  "chars": 2916,
+  "sig": "ac486a77631c",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 539
+ },
  "guide-bainbridge-island-ferry.mp3": {
   "adopted": true,
   "chars": 2641,
@@ -258,12 +270,48 @@
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 526
  },
+ "guide-ben-s-chili-bowl.mp3": {
+  "chars": 2716,
+  "sig": "39d2572e4749",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 490
+ },
+ "guide-jefferson-memorial.mp3": {
+  "chars": 2892,
+  "sig": "3dad35752f3d",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 542
+ },
+ "guide-lincoln-memorial-steps.mp3": {
+  "chars": 2805,
+  "sig": "8cd2aae1ffa3",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 523
+ },
  "guide-lincoln-memorial.mp3": {
   "adopted": true,
   "chars": 2727,
   "sig": "fa66e20eccb1",
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 515
+ },
+ "guide-museum-of-american-history.mp3": {
+  "chars": 2726,
+  "sig": "eddd2fd4aff4",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 494
+ },
+ "guide-national-gallery-of-art.mp3": {
+  "chars": 2763,
+  "sig": "ea6279ed8c1c",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 529
+ },
+ "guide-old-ebbitt-grill.mp3": {
+  "chars": 2634,
+  "sig": "2600b077ab41",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 482
  },
  "guide-pike-place-market.mp3": {
   "adopted": true,
@@ -292,6 +340,24 @@
   "sig": "76d225b75ea1",
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 531
+ },
+ "guide-us-capitol-visitor-center.mp3": {
+  "chars": 2752,
+  "sig": "5a588e153f52",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 500
+ },
+ "guide-washington-monument.mp3": {
+  "chars": 2993,
+  "sig": "a5d31257a499",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 561
+ },
+ "guide-white-house-lafayette-sq.mp3": {
+  "chars": 2777,
+  "sig": "ffe584e2dcea",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 490
  },
  "trail-freedom.mp3": {
   "chars": 4416,

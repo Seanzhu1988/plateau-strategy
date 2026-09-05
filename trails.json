@@ -313,10 +313,15 @@
      "walk_m_from_prev": 0,
      "walk_min_from_prev": 0,
      "est": true,
-     "book_slug": "",
+     "book_slug": "us-capitol-visitor-center",
      "desc": "The east end of the axis and the building everything else is measured from. The dome is cast iron painted to look like stone, and the Statue of Freedom on top faces east, away from the Mall.",
      "model": "capitol",
-     "photos": []
+     "photos": [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/US%20Capitol%20west%20side.JPG",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/US%20Capitol%20dome%20Jan%202006.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Capitol%20at%20Dusk%202.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/US%20Capitol%20east%20side.JPG"
+     ]
     },
     {
      "n": 2,
@@ -327,10 +332,15 @@
      "walk_m_from_prev": 383,
      "walk_min_from_prev": 5,
      "est": true,
-     "book_slug": "",
+     "book_slug": "united-states-botanic-garden",
      "desc": "The oldest continually operating botanic garden in the country, in a conservatory at the foot of Capitol Hill. Free, warm, and the place to get out of the weather.",
      "model": "botanic",
-     "photos": []
+     "photos": [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/United%20States%20Botanic%20Garden%20Washington%20April%202017%20002.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/United%20States%20Botanic%20Garden%20Washington%20April%202017%20001.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/United%20States%20Botanic%20Garden%20Washington%20April%202017%20003.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/United%20States%20Botanic%20Garden%2C%20Washington%2C%20D.C.%2C%20USA3.jpg"
+     ]
     },
     {
      "n": 3,
@@ -341,10 +351,15 @@
      "walk_m_from_prev": 313,
      "walk_min_from_prev": 4,
      "est": true,
-     "book_slug": "",
+     "book_slug": "national-museum-of-the-american-indian",
      "desc": "Curved limestone meant to read as wind-carved rock, the only museum on the Mall whose building refuses the axis. The cafe is the best on the Mall.",
      "model": "indian",
-     "photos": []
+     "photos": [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Museum%20of%20the%20American%20Indian%20%2821%20September%202023%29%2031.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Museum%20of%20the%20American%20Indian%20%2821%20September%202023%29%2030.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Museum%20of%20the%20American%20Indian%20%2821%20September%202023%29%2028.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Museum%20of%20the%20American%20Indian%203.jpg"
+     ]
     },
     {
      "n": 4,
@@ -358,7 +373,12 @@
      "book_slug": "air-and-space-museum",
      "desc": "The Wright Flyer, the Spirit of St. Louis and the Apollo 11 command module under one roof. Timed passes, free, and they go fast.",
      "model": "airspace",
-     "photos": []
+     "photos": [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Smithsonian%20Air%20and%20Space%20Planes.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Air%20and%20Space%20Museum%2C%20Washington%2C%20DC%20%2821%20September%202023%29%2024.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Air%20and%20Space%20Museum%2C%20Washington%2C%20DC%20%2821%20September%202023%29%2061.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Air%20and%20Space%20Museum%2C%20Washington%2C%20DC%20%2821%20September%202023%29%2028.jpg"
+     ]
     },
     {
      "n": 5,
@@ -372,7 +392,12 @@
      "book_slug": "national-gallery-of-art",
      "desc": "The West Building is the marble one, the East Building is the angles. Free, and the only Leonardo in the Americas is in the West.",
      "model": "gallery",
-     "photos": []
+     "photos": [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Edouard%20Manet%20-%20Le%20Chemin%20de%20fer%20-%20Google%20Art%20Project.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Edouard%20Manet%20-%20The%20Plum%20-%20National%20Gallery%20of%20Art.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Peter%20Paul%20Rubens%20-%20The%20Fall%20of%20Phaeton%20%28National%20Gallery%20of%20Art%29.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Paris%2C%20rue%20du%20Havre%20by%20Jean%20B%C3%A9raud%20-%20National%20Gallery%20of%20Art.jpg"
+     ]
     },
     {
      "n": 6,
@@ -383,10 +408,15 @@
      "walk_m_from_prev": 442,
      "walk_min_from_prev": 6,
      "est": true,
-     "book_slug": "",
+     "book_slug": "hirshhorn-museum",
      "desc": "The concrete drum on legs, and the sculpture garden sunk beside it. Modern and contemporary, free, and the building is the first exhibit.",
      "model": "hirshhorn",
-     "photos": []
+     "photos": [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Hirshhorn%20Museum%20DC%202007.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Hirshhorn%20closed%20government%20shutdown%20Washington%20DC%202025-10-15%2012-19-45.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Exterior%20Views%20of%20Hirshhorn%20Museum%20and%20Sculpture%20Garden%2C%20Smithsonian%2C%20on%20the%20National%20Mall%20in%20Washington%2C%20DC%20%2814e305c3-37ea-449e-811c-afcde98b849a%29.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Hirshhorn%20Museum%20-Washington%20DC%20-%20USA%20-%20panoramio.jpg"
+     ]
     },
     {
      "n": 7,
@@ -397,10 +427,15 @@
      "walk_m_from_prev": 270,
      "walk_min_from_prev": 3,
      "est": true,
-     "book_slug": "",
+     "book_slug": "smithsonian-castle",
      "desc": "Red sandstone and towers, 1855, the Smithsonian's first building and its front door. Closed for renovation at the time of writing; the outside is the visit.",
      "model": "castle",
-     "photos": []
+     "photos": [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/%27Smithsonian%20Castle%20in%20Washington%20DC%27%20by%20Tania%20Dey.JPG",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Smithsonian%20Institution%20Building%20%28%22The%20Castle%22%29%2C%20Washington%2C%20D.C.%20in%202012.JPG",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Smithsonian%20Institution%20Building%20%28%22The%20Castle%22%29%20-%20Washington%2C%20D.C.%202012.JPG",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Romanesque%20Revival%20-%20Washington%2C%20D.C.%20-%20Smithsonian%20Institution%20Building%20%28The%20Castle%29%20%286%29.jpg"
+     ]
     },
     {
      "n": 8,
@@ -411,10 +446,15 @@
      "walk_m_from_prev": 284,
      "walk_min_from_prev": 4,
      "est": true,
-     "book_slug": "",
+     "book_slug": "national-museum-of-natural-history",
      "desc": "The elephant in the rotunda, the Hope Diamond upstairs, and more visitors than any other museum on the Mall. Go early or go at four.",
      "model": "natural",
-     "photos": []
+     "photos": [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Acrophoca%20skeleton%20at%20the%20National%20Museum%20of%20Natural%20History%20in%20Washington%2C%20D.C.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Taxidermied%20lion%20-%20National%20Museum%20of%20Natural%20History%2C%20Washington%2C%20D.C.%20%282013%29%20-%2007.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/African%20elephant%20-%20National%20Museum%20of%20Natural%20History%2C%20Washington%2C%20D.C.%20%282013%29%20-%2003.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Museum%20of%20Natural%20History%20.jpg"
+     ]
     },
     {
      "n": 9,
@@ -425,10 +465,15 @@
      "walk_m_from_prev": 355,
      "walk_min_from_prev": 4,
      "est": true,
-     "book_slug": "",
+     "book_slug": "museum-of-american-history",
      "desc": "The Star-Spangled Banner in a dark room, Dorothy's ruby slippers, and the flag that was the anthem. Free.",
      "model": "american",
-     "photos": []
+     "photos": [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Entrance_of_National_Museum_of_American_History_20240531.jpg/1280px-Entrance_of_National_Museum_of_American_History_20240531.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/National_Museum_of_American_History-_Kenneth_E._Behring_Center.jpg/1280px-National_Museum_of_American_History-_Kenneth_E._Behring_Center.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/National_Museum_of_American_History_1.jpg/1280px-National_Museum_of_American_History_1.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Interior_of_the_National_Museum_of_American_History_20240531.jpg/1280px-Interior_of_the_National_Museum_of_American_History_20240531.jpg"
+     ]
     },
     {
      "n": 10,
@@ -439,10 +484,15 @@
      "walk_m_from_prev": 241,
      "walk_min_from_prev": 3,
      "est": true,
-     "book_slug": "",
+     "book_slug": "national-museum-of-african-american-history-and-culture",
      "desc": "The bronze corona, three tiers widening as they rise, the newest museum on the Mall and the one that needs the most time. Timed passes, free.",
      "model": "nmaahc",
-     "photos": []
+     "photos": [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Cabinet%20Card%20of%20Sojourner%20Truth%20-%20Collection%20of%20the%20National%20Museum%20of%20African%20American%20History%20and%20Culture.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Museum%20of%20African%20American%20History%20and%20Culture%20in%20February%202020.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Museum%20of%20African%20American%20History%20and%20Culture%20%2897901%29.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Museum%20of%20African%20American%20History%20and%20Culture%20-%20exterior%2020250405.jpg"
+     ]
     },
     {
      "n": 11,
@@ -456,7 +506,12 @@
      "book_slug": "washington-monument",
      "desc": "The tallest stone structure in the world, and the colour changes a third of the way up where construction stopped for twenty-two years. Tickets for the top are timed and free.",
      "model": "monument",
-     "photos": []
+     "photos": [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Washington_Monument%2C_Washington_DC.jpg/1280px-Washington_Monument%2C_Washington_DC.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Nighttime_View_of_the_Washington_Monument_and_Reflecting_Pool.jpg/1280px-Nighttime_View_of_the_Washington_Monument_and_Reflecting_Pool.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Washington_Monument_DSC_0205.jpg/1280px-Washington_Monument_DSC_0205.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Washington_Monument_F9K60333.jpg/1280px-Washington_Monument_F9K60333.jpg"
+     ]
     },
     {
      "n": 12,
@@ -467,10 +522,15 @@
      "walk_m_from_prev": 460,
      "walk_min_from_prev": 6,
      "est": true,
-     "book_slug": "",
+     "book_slug": "world-war-ii-memorial",
      "desc": "Fifty-six pillars around the pool, one per state and territory, between the Monument and the Reflecting Pool. The Freedom Wall carries 4,048 gold stars, one for every hundred dead.",
      "model": "wwii",
-     "photos": []
+     "photos": [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/World%20War%20II%20Monument%20and%20Lincoln%20Memorial%202.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/National%20World%20War%20II%20Memorial%20drained%20for%20maintenance%2C%201%20February%202024.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/World%20War%20II%20Monument%20and%20Lincoln%20Memorial.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/U.S.%20Army%20Brass%20Quintet%20and%20Ceremonial%20Band%20supported%20a%20Memorial%20Day%20Ceremony%20at%20the%20World%20War%20II%20Memorial%20in%20Washington%2C%20D.C.%20on%20May%2024%2C%202025%20-%2013.jpg"
+     ]
     },
     {
      "n": 13,
@@ -481,10 +541,15 @@
      "walk_m_from_prev": 652,
      "walk_min_from_prev": 8,
      "est": true,
-     "book_slug": "",
+     "book_slug": "vietnam-veterans-memorial",
      "desc": "Two black granite arms sunk into the ground, 58,000 names in the order they died. Bring paper for a rubbing; the rangers have pencils.",
      "model": "vietnam",
-     "photos": []
+     "photos": [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/World%20War%20I%20veteran%20Joseph%20Ambrose%2C%2086%2C%20at%20the%20dedication%20day%20parade%20for%20the%20Vietnam%20Veterans%20Memorial%20in%201982.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Vietnam%20Memorial%20Wall%20with%20Washington%20Monument.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Vietnam%20Veterans%20Memorial%20in%20Washington%2C%20D.C.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Ceremony%20honoring%20Vietnam%20War%20veterans%20at%20the%20Vietnam%20Veterans%20Memorial%20in%20Washington%2C%20March%2029%2C%202025%20-%203.jpg"
+     ]
     },
     {
      "n": 14,
@@ -498,7 +563,12 @@
      "book_slug": "lincoln-memorial",
      "desc": "Thirty-six columns for the states at Lincoln's death, and the step where King stood is marked. Best at dawn and after dark, when it is lit and the crowds are gone.",
      "model": "lincoln",
-     "photos": []
+     "photos": [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Lincoln%20Memorial%20east%20side.JPG",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Statue%20of%20Abraham%20Lincoln%2C%20Lincoln%20Memorial%20%282024%29-L1005507.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Abraham%20Lincoln%20v2.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Lincoln_Memorial_interior_with_statue.jpg/1280px-Lincoln_Memorial_interior_with_statue.jpg"
+     ]
     },
     {
      "n": 15,
@@ -509,10 +579,15 @@
      "walk_m_from_prev": 303,
      "walk_min_from_prev": 4,
      "est": true,
-     "book_slug": "",
+     "book_slug": "korean-war-veterans-memorial",
      "desc": "Nineteen steel soldiers walking through juniper, and a black granite wall that reflects them into thirty-eight, for the parallel. Go at dusk.",
      "model": "korean",
-     "photos": []
+     "photos": [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Aerial_view_of_Korean_War_Veterans_Memorial.jpg/1280px-Aerial_view_of_Korean_War_Veterans_Memorial.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Korean_War_Veterans_Memorial_%2849736164073%29.jpg/1280px-Korean_War_Veterans_Memorial_%2849736164073%29.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Korean_War_Veterans_Memorial_%28wall%29.jpg/1280px-Korean_War_Veterans_Memorial_%28wall%29.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Korean_War_Veterans_Memorial_Pool_of_Remembrance%2C_July_2017_01.jpg/1280px-Korean_War_Veterans_Memorial_Pool_of_Remembrance%2C_July_2017_01.jpg"
+     ]
     },
     {
      "n": 16,
@@ -523,10 +598,15 @@
      "walk_m_from_prev": 323,
      "walk_min_from_prev": 4,
      "est": true,
-     "book_slug": "",
+     "book_slug": "martin-luther-king-jr-memorial",
      "desc": "The Stone of Hope pulled forward out of the Mountain of Despair, on the Tidal Basin between Lincoln and Jefferson, on a line that was chosen on purpose.",
      "model": "mlk",
-     "photos": []
+     "photos": [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Martin_Luther_King%2C_Jr._Memorial_-_Flickr_-_Stabbur%27s_Master.jpg/1280px-Martin_Luther_King%2C_Jr._Memorial_-_Flickr_-_Stabbur%27s_Master.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Martin_Luther_King%2C_Jr._Memorial_10_-_July_2012.JPG/1280px-Martin_Luther_King%2C_Jr._Memorial_10_-_July_2012.JPG",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Cherry_Blossoms_Bloom_Spring_2022_Washington_DC_Martin_Luther_King_Memorial_Tidal_Basin_%2851955131547%29.jpg/1280px-Cherry_Blossoms_Bloom_Spring_2022_Washington_DC_Martin_Luther_King_Memorial_Tidal_Basin_%2851955131547%29.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Martin_Luther_King_Jr._Memorial_%28b0cee633-6c18-4bf7-86c9-d830a55373f9%29.jpg/1280px-Martin_Luther_King_Jr._Memorial_%28b0cee633-6c18-4bf7-86c9-d830a55373f9%29.jpg"
+     ]
     },
     {
      "n": 17,
@@ -537,10 +617,15 @@
      "walk_m_from_prev": 248,
      "walk_min_from_prev": 3,
      "est": true,
-     "book_slug": "",
+     "book_slug": "franklin-delano-roosevelt-memorial",
      "desc": "Four outdoor rooms, one per term, with waterfalls, along the Tidal Basin. The only presidential memorial you walk through rather than up to.",
      "model": "fdr",
-     "photos": []
+     "photos": [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Franklin_Delano_Roosevelt_Memorial%2C_Washington%2C_D.C._LOC_2005626363.jpg/1280px-Franklin_Delano_Roosevelt_Memorial%2C_Washington%2C_D.C._LOC_2005626363.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Franklin_Delano_Roosevelt_Memorial%2C_Washington%2C_D.C._LOC_2007625829.jpg/1280px-Franklin_Delano_Roosevelt_Memorial%2C_Washington%2C_D.C._LOC_2007625829.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Franklin_Delano_Roosevelt_Memorial%2C_Washington%2C_D.C._LOC_2010588361.jpg/1280px-Franklin_Delano_Roosevelt_Memorial%2C_Washington%2C_D.C._LOC_2010588361.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Franklin_Delano_Roosevelt_Memorial%2C_Washington%2C_D.C._LOC_98688162.jpg/1280px-Franklin_Delano_Roosevelt_Memorial%2C_Washington%2C_D.C._LOC_98688162.jpg"
+     ]
     },
     {
      "n": 18,
@@ -554,7 +639,12 @@
      "book_slug": "jefferson-memorial",
      "desc": "The rotunda across the water from the Monument, on axis with the White House. The cherry trees around it are the ones people come in April for.",
      "model": "jefferson",
-     "photos": []
+     "photos": [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Jefferson%20Memorial%20Washington%20April%202017%20002.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Jefferson%20Memorial%20At%20Dusk%201.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Jefferson%20Memorial%20Washington%20April%202017%20001.jpg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/12072012%20Jefferson%20Memorial%2004.jpg"
+     ]
     }
    ]
   }

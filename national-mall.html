@@ -103,8 +103,11 @@
            inherited, so a viewer that drops variables still draws them. */
         .nm-show { position: relative; margin: .5rem 0; background: #0f172a; border-radius: 10px; overflow: hidden; }
         .nm-show img { display: block; width: 100%; max-height: 300px; object-fit: cover; }
-        .nm-show button { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border: 0;
-            border-radius: 50%; background: rgba(15,23,42,.65); color: #ffffff; font-size: 22px; cursor: pointer; }
+        /* modern.css strips every button to a rose underline with !important, so these
+           controls carry !important too or they render as bare text (2026-09-04 scan). */
+        .nm-show button { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; min-height: 44px;
+            border: 0 !important; border-radius: 50% !important; background: rgba(15,23,42,.65) !important; color: #ffffff !important;
+            padding: 0 !important; box-shadow: none !important; font-size: 22px; cursor: pointer; }
         .nm-show #nmPrev { left: 8px; } .nm-show #nmNext { right: 8px; }
         .nm-show #nmShowN { position: absolute; right: 10px; bottom: 8px; font-size: 12px; color: #ffffff;
             background: rgba(15,23,42,.65); padding: 2px 8px; border-radius: 10px; }
@@ -112,9 +115,9 @@
         .nm-guide { display: flex; align-items: center; gap: .6rem; margin: .5rem 0; font-size: .9rem; color: #334155; }
         .nm-guide audio { width: 100%; max-width: 420px; }
         .nm-walkbar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: .6rem 0; }
-        .nm-walkbar button { min-height: 44px; padding: .5rem .9rem; border-radius: 10px; border: 1px solid #12305b;
-            background: #12305b; color: #ffffff; font-weight: 700; cursor: pointer; }
-        .nm-walkbar button[aria-pressed="true"] { background: #0f6d5c; border-color: #0f6d5c; }
+        .nm-walkbar button { min-height: 44px; padding: .5rem .9rem !important; border-radius: 10px !important; border: 1px solid #12305b !important;
+            background: #12305b !important; color: #ffffff !important; font-weight: 700; box-shadow: none !important; cursor: pointer; }
+        .nm-walkbar button[aria-pressed="true"] { background: #0f6d5c !important; border-color: #0f6d5c !important; }
         .nm-walkbar #nmLoc { font-size: .9rem; color: #334155; }
         .nm-consent { font-size: .85rem; color: #475569; margin: .2rem 0 .6rem; }
         .nm-you { width: 16px; height: 16px; border-radius: 50%; background: #a4161a; border: 3px solid #ffffff;
@@ -174,7 +177,7 @@
                     <button type="button" id="nmFollow" aria-pressed="false" hidden>Follow me on the map</button>
                     <span id="nmLoc" aria-live="polite"></span>
                 </div>
-                <p class="nm-consent" id="nmConsent" hidden>Your position is read by this browser and drawn on the map here. It is never sent anywhere.</p>
+                <p class="nm-consent" id="nmConsent" hidden>Your position stays on this phone and is drawn on the map here. We never send it to our server. The map loads tiles for the area on screen, as any map does.</p>
                 <div id="nmMap"></div>
                 <p class="nm-list-h">The walk, in order</p>
                 <ul class="nm-list" id="nmList">
@@ -308,9 +311,32 @@
         } else { sb.hidden = true; nowDesc.hidden = false; }
         showPics = (s && s.photos) || []; showIdx = 0; paintShow();
         var g = document.getElementById("nmGuide"), a = document.getElementById("nmAudio");
-        var src = e && (e.audio || e.audio_url);
-        if (src) { if (a.getAttribute("src") !== src) a.setAttribute("src", src); g.hidden = false; }
-        else { g.hidden = true; a.removeAttribute("src"); }
+        var setSrc = function (u) {
+            if (!u) { g.hidden = true; a.removeAttribute("src"); return; }
+            if (a.getAttribute("src") !== u) a.setAttribute("src", u);
+            g.hidden = false;
+        };
+        var src = (e && (e.audio || e.audio_url)) || "";
+        if (src) { setSrc(src); return; }
+        /* Second pipeline. The trail voice recorder writes one guide per stop as
+           media/audio/national-mall-stop-N.mp3 (and .<lang>.mp3) from a script of
+           at least 700 words in trail_scripts/national-mall/. Whichever pipeline
+           finishes a stop first is what plays; the page asks whether the file
+           exists and never guesses. A late answer for a stop no longer shown is
+           dropped, so switching stops fast cannot attach the wrong voice. */
+        setSrc("");
+        if (!s || !s.n) return;
+        var L = window.psxLang, lang = (typeof L === "function" ? L() : L) || (document.documentElement.lang || "en").slice(0, 2);
+        var cands = ["/media/audio/national-mall-stop-" + s.n + ".mp3"];
+        if (lang && lang !== "en") cands.unshift("/media/audio/national-mall-stop-" + s.n + "." + lang + ".mp3");
+        var forKey = s.model || "";
+        (function tryNext(i) {
+            if (i >= cands.length) return;
+            fetch(cands[i], { method: "HEAD" }).then(function (r) {
+                if (r.ok) { if (current === forKey) setSrc(cands[i]); }
+                else tryNext(i + 1);
+            }).catch(function () { tryNext(i + 1); });
+        })(0);
     }
     function hideExtras() {
         document.getElementById("nmNowStory").hidden = true; nowDesc.hidden = false;
@@ -479,7 +505,7 @@
                 reached[best.s.n] = true;
                 show(best.s.model || "", true);
                 var au = document.getElementById("nmAudio");
-                if (au.getAttribute("src")) { var pr = au.play(); if (pr && pr.catch) pr.catch(function () {}); }
+                if (au.getAttribute("src")) { var pr = au.play(); if (pr && pr.catch) pr.catch(function () { locEl.textContent += " " + T("Tap play to hear the guide."); }); }
             }
         }, function (err) {
             locEl.textContent = (err && err.code === 1) ? T("Location was not shared. The walk stays locked; the map will not follow.")
