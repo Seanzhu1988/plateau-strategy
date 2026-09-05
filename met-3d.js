@@ -941,6 +941,10 @@
     focusedRoom: function () { return focusKey; },
     setExploded: function (v) { exploded = !!v; },
     isExploded: function () { return exploded; },
-    reset: function () { yaw = -0.62; pitch = 0.70; }
+    reset: function () { yaw = -0.62; pitch = 0.70; },
+    /* For render_room.js, which has no pointer to drag with. The page never
+       calls this; it exists so the Met exterior can be LOOKED at offline,
+       which every other model on the site could already be. */
+    setView: function (y, p) { yaw = y; pitch = p; }
   };
 })();

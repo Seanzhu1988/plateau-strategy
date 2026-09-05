@@ -78,6 +78,36 @@ if (key.startsWith("dc:")) {
     + `<rect width="${WD}" height="${HD}" fill="#eef1ea"/>` + itD.map(i=>i.svg).join('') + '</svg>');
   process.exit(0);
 }
+/* "met:closed" / "met:open" draws the Met exterior. Unlike every other route
+   here, met-3d.js builds its own complete SVG, so this only has to feed it the
+   floor geometry it reads and tell it where to stand. */
+if (key.startsWith("met:")) {
+  const fsM = require("fs");
+  /* MET_GEOMETRY is assembled from locals inside met-map.js's own closure, so
+     there is no literal to lift out; the file is run with a document stub
+     instead. It only needs the geometry, never the page. */
+  const stubEl = () => ({ style:{}, dataset:{}, classList:{add(){},remove(){},toggle(){},contains(){return false;}},
+    appendChild(){}, addEventListener(){}, setAttribute(){}, removeAttribute(){},
+    querySelector(){return null;}, querySelectorAll(){return [];}, innerHTML:"", textContent:"" });
+  global.document = { getElementById(){return null;}, querySelector(){return null;},
+    querySelectorAll(){return [];}, createElement(){return stubEl();},
+    addEventListener(){}, body: stubEl(), documentElement: stubEl() };
+  global.window.document = global.document;
+  global.window.addEventListener = function(){};
+  try { require("/Users/xiaojunzhu/Claude/worktrees/site/met-map.js"); } catch (e) {}
+  if (!window.MET_GEOMETRY || !window.MET_GEOMETRY.ROOMS) {
+    console.error("met-map.js ran but MET_GEOMETRY.ROOMS is missing"); process.exit(1);
+  }
+  require("/Users/xiaojunzhu/Claude/worktrees/site/met-3d.js");
+  const M = window.Met3D;
+  M.setView(parseFloat(process.argv[3] || "-0.62"), parseFloat(process.argv[4] || "0.70"));
+  if (key.slice(4) === "open") M.setExploded(true);
+  const hostM = { innerHTML: "" };
+  M.render(hostM, {});
+  if (!hostM.innerHTML) { console.error("met: build returned nothing"); process.exit(1); }
+  console.log(hostM.innerHTML);
+  process.exit(0);
+}
 if (key.startsWith("moma:")) {
   const fs2 = require("fs");
   const src = fs2.readFileSync("/Users/xiaojunzhu/Claude/worktrees/site/moma-map.js", "utf8");
