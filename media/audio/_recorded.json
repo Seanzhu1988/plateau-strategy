@@ -276,6 +276,18 @@
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 490
  },
+ "guide-brooklyn-bridge.mp3": {
+  "chars": 4179,
+  "sig": "748c73daf5ab",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 761
+ },
+ "guide-empire-state-building.mp3": {
+  "chars": 4266,
+  "sig": "7b294e6428fa",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 798
+ },
  "guide-jefferson-memorial.mp3": {
   "chars": 2892,
   "sig": "3dad35752f3d",
@@ -306,6 +318,12 @@
   "sig": "ea6279ed8c1c",
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 529
+ },
+ "guide-national-museum-of-the-american-indian.mp3": {
+  "chars": 2700,
+  "sig": "fddf95877bb9",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 501
  },
  "guide-old-ebbitt-grill.mp3": {
   "chars": 2634,
@@ -340,6 +358,12 @@
   "sig": "76d225b75ea1",
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 531
+ },
+ "guide-united-states-botanic-garden.mp3": {
+  "chars": 2764,
+  "sig": "d438194f1dbb",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 521
  },
  "guide-us-capitol-visitor-center.mp3": {
   "chars": 2752,
