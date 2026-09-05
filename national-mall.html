@@ -347,6 +347,26 @@
     window.addEventListener("pagehide", remember);
     armRestore();
 
+    /* Every path that stops showing the player must also stop the sound. The
+       player was being HIDDEN in two places and DETACHED in only one, so
+       pressing play on a stop and then asking for the whole Mall left the guide
+       talking with the controls gone: no pause button, no scrub bar, nothing to
+       stop it but leaving the page. pause() first, so the pause event writes the
+       place down, then let go of the media outright. */
+    function silenceGuide() {
+        if (audioEl) {
+            try { audioEl.pause(); } catch (e) {}
+            if (audioEl.getAttribute("src")) {
+                audioEl.removeAttribute("src");
+                try { audioEl.load(); } catch (e) {}
+            }
+            pendingAt = 0; restoredFor = "";
+        }
+        var gg = document.getElementById("nmGuide");
+        if (gg) gg.hidden = true;
+        paintResume();
+    }
+
     /* The unit words are built here rather than sitting in the markup, so they
        have to be translated here too: a Chinese page reading "1 h 19 min" is
        exactly the half-translated look that reads as a broken language tab. */
@@ -457,7 +477,11 @@
             if (a.getAttribute("src") && a.getAttribute("src") !== u) {
                 if (!a.paused) a.pause(); else remember();
             }
-            if (!u) { g.hidden = true; a.removeAttribute("src"); paintResume(); return; }
+            /* Removing the attribute alone does not stop a media element that
+               has already started: the resource stays attached, and Safari in
+               particular keeps the stream alive, so tapping a stop with no
+               recording could leave the PREVIOUS stop's guide talking over it. */
+            if (!u) { silenceGuide(); return; }
             if (a.getAttribute("src") !== u) a.setAttribute("src", u);
             g.hidden = false;
             armRestore();
@@ -485,8 +509,12 @@
         })(0);
     }
     function hideExtras() {
-        document.getElementById("nmNowStory").hidden = true; nowDesc.hidden = false;
-        showPics = []; paintShow(); document.getElementById("nmGuide").hidden = true;
+        var st = document.getElementById("nmNowStory");
+        st.hidden = true; st.textContent = "";      /* nothing stale left to surface */
+        nowDesc.hidden = false;
+        nowName.textContent = "";
+        showPics = []; paintShow();
+        silenceGuide();
     }
     function show(key, fromUser) {
         current = key || "";
