@@ -3025,6 +3025,17 @@ def api_landmark_stories():
     return jsonify({"ok": True, "landmarks": out})
 
 
+@app.route("/seattle-3d.js")
+def seattle_3d_js():
+    """Seattle's landmarks, for the page that sells the Seattle tours.
+
+    tours.html has loaded this since it was written and no route ever served
+    it, so both 3D stages on that page were permanently empty while the copy
+    beside them invited the reader to turn the model. The same shape as the
+    Mall forms: built, committed, and reachable by nobody."""
+    return send_file(os.path.join(BASE_DIR, "seattle-3d.js"), mimetype="application/javascript")
+
+
 @app.route("/scene-mount.js")
 def scene_mount_js():
     """One live mount for every hand-rolled scene: hand it a host and a scene
@@ -3292,7 +3303,11 @@ PUBLIC_PAGES = [
     ("/landmarks", "0.8", "monthly"),
     ("/iticket", "0.5", "monthly"),
     ("/national-mall", "0.8", "monthly"),
-    ("/partners", "0.6", "monthly"),
+    # The page that sells the tours. It was in neither this list, nor the
+    # site index, nor any link on any page, so the only way to reach it was
+    # a social post. For a licensed guide whose tours are the product, that
+    # is the front door bricked up. [SEAN 2026-09-05: "check all of them".]
+    ("/tours", "0.9", "weekly"),
     ("/agent", "0.6", "monthly"),
     ("/renter", "0.6", "monthly"),
     ("/deflator", "0.5", "monthly"),
@@ -3544,6 +3559,7 @@ SITE_MAP = [
          "Who stands behind the company."),
     ]),
     ("Ride with us", "Licensed, insured, and driven by a licensed guide.", [
+        ("/tours", "Walking Tours", "Seattle on foot with a licensed guide."),
         ("/book", "Book a Ride", "Airport runs, tours, and long distance."),
         ("/rent-a-tesla", "Rent a Tesla", "The car, the rates and the rules."),
         ("/driver", "For Drivers", "Drive with us."),
@@ -7342,6 +7358,75 @@ def _create_reservation(data, agent=None, self_driver=None):
                      reservation["notified"]), flush=True)
 
     return reservation, None
+
+
+TOUR_INQUIRY_PATH = _data_path("tour_inquiries.json")
+
+
+@app.route("/api/tour-inquiry", methods=["POST"])
+def api_tour_inquiry():
+    """The tours page's booking form. It has posted here since the page was
+    written and this endpoint did not exist, so every inquiry hit a 404, the
+    fetch threw on parsing the error page, and the visitor was told there had
+    been a network hiccup. A licensed guide's tour enquiries were being dropped
+    on the floor, silently, one at a time.
+
+    A lead is not a reservation. There is no fare, no driver and no vehicle to
+    assign, so this does not go near _create_reservation; it is written down and
+    counted, and Sean answers it himself, which is what the page promises the
+    reader: "I will write back today with the time and meeting point."
+
+    Written down FIRST and always. If anything downstream fails the enquiry is
+    already saved, because a lost enquiry is the bug being fixed here."""
+    d = request.get_json(force=True, silent=True) or {}
+
+    def clean(k, cap):
+        return str(d.get(k) or "").strip()[:cap]
+
+    name, contact = clean("name", 120), clean("contact", 200)
+    if not name or not contact:
+        return jsonify({"ok": False,
+                        "error": "Name and a way to reach you are both required."}), 400
+
+    row = {
+        "id": "TI-%s" % secrets.token_hex(5),
+        "at": datetime.datetime.now().isoformat(timespec="seconds"),
+        "name": name,
+        "contact": contact,
+        "tour": clean("tour", 120),
+        "date": clean("date", 40),
+        "people": clean("people", 20),
+        "note": clean("note", 2000),
+        "answered": False,
+    }
+    try:
+        rows = _load(TOUR_INQUIRY_PATH)
+        if not isinstance(rows, list):
+            rows = []
+        rows.append(row)
+        _save(TOUR_INQUIRY_PATH, rows)
+    except Exception:
+        # Tell the truth rather than a cheerful lie. The page shows this text
+        # and offers the email address as the way through.
+        return jsonify({"ok": False,
+                        "error": "Could not save that. Please email hello@plateaustrategy.io."}), 500
+
+    try:
+        record_conversion("tour_inquiry")
+    except Exception:
+        pass
+    return jsonify({"ok": True, "id": row["id"]})
+
+
+@app.route("/api/tour-inquiries")
+@owner_required
+def api_tour_inquiries():
+    """Sean's own list. Saving enquiries nobody can read would fix nothing."""
+    rows = _load(TOUR_INQUIRY_PATH)
+    if not isinstance(rows, list):
+        rows = []
+    rows = sorted(rows, key=lambda r: r.get("at") or "", reverse=True)
+    return jsonify({"ok": True, "count": len(rows), "inquiries": rows})
 
 
 @app.route("/api/book", methods=["POST"])
