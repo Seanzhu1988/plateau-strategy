@@ -235,6 +235,28 @@
     @media (max-width: 420px) { .db-model { width: 84px; height: 68px; } }
 </style>
     <link rel="stylesheet" href="/paper.css">
+    <style>
+      /* The model on a card. The picture is the door and the model is behind
+         it, so a reader who only wants the opening hours never loads a
+         renderer, which is the rule the thumbnail was written for. */
+      .db-model-btn { float: left; margin: 0 .7rem .35rem 0; padding: 0; border: 0;
+        background: none; cursor: pointer; position: relative; line-height: 0; }
+      .db-model-btn .db-model { border-radius: 8px; display: block; }
+      .db-model-cue { position: absolute; right: 4px; bottom: 4px; font-size: .58rem;
+        font-weight: 800; letter-spacing: .04em; color: #fff; background: rgba(31,58,95,.85);
+        border-radius: 999px; padding: 1px 6px; line-height: 1.5; }
+      .db-model-btn:hover .db-model-cue, .db-model-btn.open .db-model-cue { background: #1f3a5f; }
+      .m3d { display: none; clear: both; margin: .6rem 0 .2rem; }
+      .m3d.on { display: block; }
+      .m3d-stage { touch-action: pan-y; cursor: grab; user-select: none;
+        border: 1px solid #e6e6ea; border-radius: 10px; overflow: hidden; }
+      .m3d-stage:active { cursor: grabbing; }
+      .m3d-turn, .m3d-note { font-size: .76rem; color: #6b655b; margin: .35rem 0 0; }
+      .shrbtn { margin-top: .5rem; font: inherit; font-size: .82rem; font-weight: 600;
+        border: 1px solid #d8d4cb; background: #fff; color: #4a453d; border-radius: 999px;
+        padding: .42rem .85rem; cursor: pointer; }
+      .shrbtn:hover { border-color: #1f3a5f; color: #14110c; }
+    </style>
     <script src="/psx-net.js"></script>
     <link rel="stylesheet" href="/modern.css">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -487,24 +509,142 @@
 
        Matched on the name rather than the slug, because most of the entries
        the scout added carry no slug. */
+    /* Each entry: the thumbnail's name, which family of models it belongs to,
+       and the scene key inside that family. The Old State House used to point
+       at 'state-house', which is the MASSACHUSETTS State House on Beacon Hill,
+       a different building a mile away with a gold dome: searching one showed
+       a picture of the other until both were rebuilt and given their own
+       models. Longest fragment first, because "old state house" also contains
+       "state house". */
     const MODELS = {
-        'uss constitution': 'constitution',
-        'faneuil hall': 'faneuil-hall',
-        'old north church': 'old-north',
-        'old south meeting': 'old-south',
-        'massachusetts state house': 'state-house',
-        'old state house': 'state-house',
-        'bunker hill': 'bunker-hill',
-        'paul revere house': 'paul-revere'
+        'uss constitution': ['constitution', 'trail', 'constitution'],
+        'faneuil hall': ['faneuil-hall', 'trail', 'faneuil-hall'],
+        'old north church': ['old-north', 'trail', 'old-north'],
+        'old south meeting': ['old-south', 'trail', 'old-south'],
+        'massachusetts state house': ['state-house', 'trail', 'state-house'],
+        'old state house': ['old-state-house', 'trail', 'old-state-house'],
+        'bunker hill': ['bunker-hill', 'trail', 'bunker-hill'],
+        'paul revere house': ['paul-revere', 'trail', 'paul-revere'],
+        'brooklyn bridge': ['brooklyn-bridge', 'nyc', 'bridge'],
+        'empire state': ['empire-state', 'nyc', 'empire']
     };
-    function modelThumb(e) {
+    function modelOf(e) {
         const n = String(e.name || '').toLowerCase();
-        let key = null;
-        for (const k in MODELS) if (n.indexOf(k) !== -1) { key = MODELS[k]; break; }
-        if (!key) return '';
-        return '<img class="db-model" loading="lazy" width="104" height="84" '
-             + 'src="/thumbs/' + key + '.svg" alt="' + esc(e.name)
-             + ', a model of the building">';
+        let best = null;
+        for (const k in MODELS) {
+            if (n.indexOf(k) !== -1 && (!best || k.length > best[0].length)) best = [k, MODELS[k]];
+        }
+        return best ? best[1] : null;
+    }
+    /* The picture is a raster, not the vector it used to be: the rebuilt
+       models are detailed enough that the bridge's SVG is a quarter of a
+       megabyte, and this is also the image a shared link previews with. */
+    function modelThumb(e, i) {
+        const m = modelOf(e);
+        if (!m) return '';
+        return '<button class="db-model-btn" onclick="openModel(' + i + ', \'' + m[1]
+             + '\', \'' + m[2] + '\', this)" title="Turn it: open the 3D model">'
+             + '<img class="db-model" loading="lazy" width="104" height="84" '
+             + 'src="/thumbs/' + m[0] + '.png" alt="' + esc(e.name)
+             + ', a model of the building"><span class="db-model-cue">3D</span></button>';
+    }
+
+    /* ---------- the live model, the same one the landmarks page draws ----------
+       [SEAN: "use the 3D we have built".] The thumbnail is a picture and this
+       is the building: tap it and the real model opens under the card, turnable,
+       drawn by the same files /landmarks and /freedom-trail use. Nothing is
+       loaded until someone asks, so a reader who never taps pays nothing, which
+       is the rule the static thumbnail was written for in the first place.
+       The form files are fetched from the same endpoint the two pages use, so a
+       building rebuilt by the routine appears here with no edit to this file. */
+    const _need = {};
+    function loadOnce(src) {
+        if (_need[src]) return _need[src];
+        _need[src] = new Promise(function (res, rej) {
+            const el = document.createElement('script');
+            el.src = src; el.onload = res; el.onerror = rej;
+            document.head.appendChild(el);
+        });
+        return _need[src];
+    }
+    function loadFamily(fam) {
+        const base = fam === 'nyc' ? '/nyc-3d.js' : '/trail-3d.js';
+        return loadOnce('/styles-3d.js').then(function () { return loadOnce(base); })
+            .then(function () { return fetch('/api/forms/' + fam).then(function (r) { return r.json(); }); })
+            .then(function (d) {
+                const names = (d && d.forms) || [];
+                return Promise.all(names.map(function (n) {
+                    return loadOnce('/' + fam + '-form-' + n + '.js').catch(function () {});
+                }));
+            });
+    }
+    function openModel(i, fam, key, btn) {
+        const wrap = document.getElementById('m3d_' + i);
+        if (!wrap) return;
+        if (wrap.classList.contains('on')) {
+            wrap.classList.remove('on'); wrap.innerHTML = '';
+            if (btn) btn.classList.remove('open');
+            return;
+        }
+        wrap.classList.add('on');
+        if (btn) btn.classList.add('open');
+        wrap.innerHTML = '<div class="m3d-note">' + T('Loading the model…') + '</div>';
+        loadFamily(fam).then(function () {
+            wrap.innerHTML = '<div class="m3d-stage" id="m3ds_' + i + '"></div>'
+                + '<p class="m3d-turn">' + T('Drag it to turn.') + '</p>';
+            const host = document.getElementById('m3ds_' + i);
+            if (fam === 'nyc') {
+                if (key === 'bridge') { window.NYC3D.bridge(host, { view: 'tower' }); }
+                else { window.NYC3D.empire(host); }
+            } else {
+                window.TRAIL3D.mount(host, key);
+            }
+            /* STOP THE IDLE SPIN. Both mounts turn slowly on their own until
+               someone takes hold, which is right on a landmarks page showing
+               one model and wrong in a list: the bridge is 3,618 polygons and
+               redrawing all of them sixty times a second inside a card pegged
+               the renderer hard enough to stop the page answering at all,
+               which is how this was found. Both mounts stop the moment they
+               see a pointer go down, so the card hands them one. Dragging
+               still works; only the unasked-for animation is gone. */
+            try {
+                ['pointerdown', 'pointerup'].forEach(function (t) {
+                    host.dispatchEvent(new PointerEvent(t, { bubbles: true, clientX: 0, clientY: 0 }));
+                });
+            } catch (err) {}
+        }).catch(function () {
+            wrap.innerHTML = '<div class="m3d-note">' + T('The model could not load.') + '</div>';
+        });
+    }
+
+    /* ---------- share: one destination, one link ----------
+       [SEAN: "this way each destination will bring in traffic".] The book
+       already reads ?q= on load and prefills the search from it, so a link to
+       one place needs no new page: it lands on the book showing that place.
+       The tag says the visit came from a share, which is the only way the
+       traffic count can tell a shared link apart from a search engine. */
+    function shareDest(i, name) {
+        const url = location.origin + '/destination-book?q=' + encodeURIComponent(name)
+                  + '&utm_source=share&utm_medium=link&utm_campaign=destination';
+        const btn = document.getElementById('shr_' + i);
+        function said(msg) {
+            if (!btn) return;
+            const was = btn.innerHTML;
+            btn.innerHTML = msg;
+            setTimeout(function () { btn.innerHTML = was; }, 1800);
+        }
+        if (navigator.share) {
+            navigator.share({ title: name, text: name + ' on the Destination Book', url: url })
+                .catch(function () {});
+            return;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url)
+                .then(function () { said('✓ ' + T('Link copied')); })
+                .catch(function () { window.prompt(T('Copy this link'), url); });
+            return;
+        }
+        window.prompt(T('Copy this link'), url);
     }
 
     function render(){
@@ -613,7 +753,8 @@
                 + '<div class="place-views" data-vname="' + esc(e.name) + '" data-vcity="'
                 +   esc(e.city || '') + '" title="How many travelers have looked at this place">'
                 +   '<b>' + (e.views || 0) + '</b> viewed</div>'
-                + '<p class="desc">' + modelThumb(e) + esc(e.desc) + '</p>'
+                + '<p class="desc">' + modelThumb(e, i) + esc(e.desc) + '</p>'
+                + '<div class="m3d" id="m3d_' + i + '"></div>'
                 + storyBlock(e)
                 + '<p class="meta">'
                 +   (e.typical_visit
@@ -656,6 +797,9 @@
                 +   '</span>'
                 +   '<div class="cmt-body" id="cmt_' + i + '"></div>'
                 + '</div>'
+                + '<button class="shrbtn" id="shr_' + i + '" onclick="shareDest(' + i + ', '
+                +   JSON.stringify(e.name).replace(/"/g, '&quot;') + ')">🔗 '
+                +   T('Share this place') + '</button>'
                 + '</div>' });
         });
         // One city per section, largest first, "Other" always last so the
@@ -909,7 +1053,7 @@
             render();
             $('count').textContent += resp.already_known
                 ? ' · “' + name + '” was already in the book'
-                : (auto ? ' · 🌱 “' + name + '” created from your search — the book will remember it'
+                : (auto ? ' · 🌱 “' + name + '” created from your search, and the book will remember it'
                         : ' · 🌱 “' + name + '” added, the book will remember it');
         } else {
             $('count').textContent = (resp && resp.error) || 'Could not add, try again.';

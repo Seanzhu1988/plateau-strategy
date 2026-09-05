@@ -362,15 +362,27 @@ scene file) and has been LOOKED at from more than one angle.
   roofs painted over their own walls' feet, the painter's trap, fixed by tiling
   every roof at 40 ft. (6) The ends of the span read as burnt black blocks;
   the cut faces are stone now, because no part of this bridge is black masonry.
-  THE TILT CEILING WAS RE-MEASURED, and this is the part a count would have
-  passed: the rebuilt tower view is taller in its frame than the scene it
-  replaced, and at the old 0.30 ceiling its top ran 55 units above a 620 unit
-  box. Swept a hundredth of a radian at a time, 0.25 is the last angle that
-  holds, so TILT_CEIL.tower is 0.24. Every view now fits at the pitch floor,
-  the page default and the ceiling, measured on the drawing's own bounding box.
+  THE TILT CEILING WAS RE-MEASURED, AND THEN THE MEASUREMENT WAS CORRECTED,
+  which is the more useful half. The rebuilt tower view is taller in its frame
+  than the scene it replaced, and at the old 0.30 ceiling its cornice ran 55
+  units above the top of the box, so TILT_CEIL.tower is 0.24, the last angle
+  where nothing leaves the top. The first version of this entry also claimed
+  every view now fits its box at the floor, the default and the ceiling. That
+  was wrong, and it was wrong because the box height was ASSUMED rather than
+  read: bridgeScene returns 980 by 340 for BOTH framings, not the 720 by 620
+  the tower view was checked against. Read from the scene itself, the tower at
+  nine times zoom runs past the BOTTOM of its box at every pitch, and the
+  original scene did the same by 89 units at the page's own default, so the
+  cropped pedestal is this view's framing and not a fault of the rebuild. What
+  was new, and what 0.24 fixes, is the top. Cropping masonry standing in the
+  water is a choice; cropping the top of the tower is a mistake.
   The empire's ground plane has always run past the bottom of its box above
   pitch 0.5, before this rebuild and after it, identical to the unit; that
   number is left exactly as it was because it is not this rebuild's to change.
+  THE LESSON, and it is the one this file keeps writing down: a frame size is
+  a fact to read off the scene, never a number to carry over from the scene
+  next to it. Two views of one model here have different frames, and the whole
+  check was run against the wrong one without anything failing.
   A CLAIM IN A BUILD REPORT THAT DID NOT SURVIVE CHECKING: the bridge build
   recorded that the far anchorage rises 17 units above the span box at the 0.44
   ceiling and recommended lowering it to 0.40. Re-measured here it is inside by

@@ -782,14 +782,21 @@
      thing and holds to 0.75, which is far enough to look down on the
      setbacks and the roof of the tower. */
   /* The tower ceiling was 0.30, measured for the scene that stood here before
-     the 2026-09-05 rebuild. The rebuilt tower is taller in the frame (a cut
-     stub of deck and cables either side, a real cornice and parapet), and at
-     0.30 its top ran 55 units above a 620 unit box. Re-measured the same way,
-     a hundredth of a radian at a time against the drawing's own bounding box:
-     0.25 is the last angle that holds, so 0.24 is taken. The span and empire
-     ceilings were re-measured too and are unchanged; the empire's ground plane
-     has always run past the bottom of the box above pitch 0.5, before this
-     rebuild and after it, so that number is left exactly as it was. */
+     the 2026-09-05 rebuild, and it is 0.24 now. The reason is narrower than
+     it first looked, and the first version of this note got it wrong by
+     assuming the tower view uses a 720 by 620 frame. It does not: bridgeScene
+     returns 980 by 340 for BOTH framings, and at nine times zoom the tower
+     has ALWAYS run past the bottom of that box. The original scene did too,
+     by 89 units at the page's own default pitch, so the cropped pedestal is
+     this view's framing and not a fault.
+     What is new is the TOP. The rebuilt tower is taller in the frame, a cut
+     stub of deck and cables either side and a real cornice and parapet, and
+     at 0.30 its cornice ran 55 units ABOVE the box, which the old scene never
+     did. Cropping masonry that stands in the water is a framing choice;
+     cropping the top of the tower is a mistake. Swept a hundredth of a radian
+     at a time against the scene's own frame, 0.24 is the last angle where
+     nothing leaves the top. The span and empire ceilings were re-measured the
+     same way and are unchanged. */
   var TILT_CEIL = { span: 0.44, tower: 0.24, empire: 0.75 };
 
   var EMPIRE_CAM = function () { return makeCam(-0.7, 0.22, 1, 360, 560); };

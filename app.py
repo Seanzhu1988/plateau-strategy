@@ -2958,6 +2958,23 @@ def _social_lib():
         return []
 
 
+@app.route("/thumbs/<name>.png")
+def serve_thumb_png(name):
+    """The same landmark, rastered once.
+
+    Two reasons the card asks for this rather than the vector. The rebuilt
+    models are detailed enough that the Brooklyn Bridge's vector runs to a
+    quarter of a megabyte for a picture 104 pixels wide, and no social
+    platform accepts an SVG as a link preview, which is the whole point of
+    sharing a destination. Made by make_thumbs.js and qlmanage together."""
+    if not re.fullmatch(r"[a-z0-9-]{1,40}", name or ""):
+        return ("", 404)
+    f = os.path.join(BASE_DIR, "thumbs", "png", name + ".png")
+    if not os.path.exists(f):
+        return ("", 404)
+    return send_file(f, mimetype="image/png")
+
+
 @app.route("/thumbs/<name>.svg")
 def serve_thumb(name):
     """A landmark's picture, drawn once by make_thumbs.js and cached hard.
