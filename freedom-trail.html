@@ -1237,8 +1237,37 @@
 <!-- one file per building, the dc-form pattern: each registers
      window.TRAIL_FORMS[k] and takes over from the scene in trail-3d.js.
      They MUST load after it. -->
-<script src="/trail-form-bunker-hill.js"></script>
-<script src="/trail-form-old-north.js"></script>
+<script>
+/* The rebuilt trail buildings, asked for rather than listed here.
+
+   Two were named by hand and three more were finished after that: the
+   Massachusetts State House, Old South Meeting House and Faneuil Hall were all
+   built to the standard, committed, and served by a route, and this page loaded
+   none of them. Stop two kept showing the OLD State House, the version whose own
+   rebuild commit records that every feature sits on the face the opening camera
+   culls, so the reader was shown the one blank wall.
+
+   Whatever the routine finishes next appears here without anyone editing markup.
+   Anything already drawn is redrawn once the forms land, because trail-3d.js
+   resolves window.TRAIL_FORMS at draw time and a model mounted before they
+   arrive would keep the old scene. */
+(function () {
+  fetch("/api/forms/trail").then(function (r) { return r.json(); }).then(function (d) {
+    var names = (d && d.forms) || [];
+    if (!names.length) return;
+    var left = names.length;
+    names.forEach(function (n) {
+      var el = document.createElement("script");
+      el.src = "/trail-form-" + n + ".js";
+      el.onload = el.onerror = function () {
+        if (--left) return;
+        if (window.__trailRedraw) { try { window.__trailRedraw(); } catch (e) {} }
+      };
+      document.head.appendChild(el);
+    });
+  }).catch(function () {});
+})();
+</script>
 <script>
   /* The model mounts only if its script loaded, so a failed fetch leaves the
      page exactly as it was rather than an empty framed box. */
@@ -1451,7 +1480,13 @@
     function show(key) {
       var t = TEXT[key];
       if (!t) return;
-      window.TRAIL3D.mount(stage, key, t.opts);
+      var view = window.TRAIL3D.mount(stage, key, t.opts);
+      /* Held so the form loader above can redraw this exact model the
+         moment the rebuilt buildings finish arriving. */
+      window.__trailRedraw = function () {
+        if (view && view.redraw) view.redraw();
+        else window.TRAIL3D.mount(stage, key, t.opts);
+      };
       if (sub) sub.textContent = t.sub;
       if (note) note.textContent = t.note;
       var bs = pick.querySelectorAll('button');

@@ -188,6 +188,36 @@
   var bridge = NYC3D.bridge(document.getElementById('bridgeStage'));
   var empire = NYC3D.empire(document.getElementById('empireStage'));
 
+  /* The rebuilt New York landmarks, asked for rather than named here.
+
+     nyc-form-bridge.js and nyc-form-empire.js were both written, committed and
+     served by a route, and this page loaded neither, so both models on it were
+     still the pre-standard scenes. Same trap as the Mall and the trail: a file
+     can be finished, correct and reachable by nobody, and nothing fails loudly
+     enough to notice.
+
+     nyc-3d.js resolves NYC_FORMS at draw time and the mounts expose redraw, so
+     the models simply repaint once the forms land. Nothing is re-mounted, which
+     means the framing buttons and the tower's opening animation keep working. */
+  (function () {
+    fetch('/api/forms/nyc').then(function (r) { return r.json(); }).then(function (d) {
+      var names = (d && d.forms) || [];
+      if (!names.length) return;
+      var left = names.length;
+      names.forEach(function (n) {
+        var el = document.createElement('script');
+        el.src = '/nyc-form-' + n + '.js';
+        el.onload = el.onerror = function () {
+          if (--left) return;
+          [bridge, empire].forEach(function (v) {
+            if (v && v.redraw) { try { v.redraw(); } catch (e) {} }
+          });
+        };
+        document.head.appendChild(el);
+      });
+    }).catch(function () {});
+  })();
+
   /* Solid or opened up, on the one mount, the same way the bridge switches
      framings: the model is told to open, it is never mounted again. */
   (function () {

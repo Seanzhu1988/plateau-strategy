@@ -3072,6 +3072,32 @@ def api_dc_forms():
         return jsonify({"success": False, "forms": [], "error": str(e)[:120]})
 
 
+@app.route("/api/forms/<family>")
+def api_forms(family):
+    """The same question for the other two families: which buildings exist.
+
+    /api/dc-forms answered it for the Mall and nothing answered it for the
+    Freedom Trail or New York, so those pages kept naming their script tags by
+    hand and kept falling behind. On 2026-09-05 five rebuilt buildings were on
+    disk, served by a route, and drawn on no page at all: the State House,
+    Old South and Faneuil Hall on the trail, and both New York landmarks.
+    A routine that finishes a building every few hours cannot depend on someone
+    remembering to edit markup, so every page asks."""
+    prefix = {"dc": "dc-form-", "trail": "trail-form-", "nyc": "nyc-form-"}.get(family)
+    if not prefix:
+        abort(404)
+    try:
+        names = []
+        for fn in os.listdir(BASE_DIR):
+            if fn.startswith(prefix) and fn.endswith(".js"):
+                slug = fn[len(prefix):-len(".js")]
+                if re.fullmatch(r"[a-z0-9-]{1,40}", slug):
+                    names.append(slug)
+        return jsonify({"success": True, "family": family, "forms": sorted(names)})
+    except Exception as e:
+        return jsonify({"success": False, "forms": [], "error": str(e)[:120]})
+
+
 @app.route("/dc-form-<name>.js")
 def dc_form_js(name):
     """One Mall building rebuilt to the model standard, one file each.
