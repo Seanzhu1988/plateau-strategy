@@ -781,7 +781,16 @@
      zoomed so it goes over almost at once. The Empire State is a tall thin
      thing and holds to 0.75, which is far enough to look down on the
      setbacks and the roof of the tower. */
-  var TILT_CEIL = { span: 0.44, tower: 0.30, empire: 0.75 };
+  /* The tower ceiling was 0.30, measured for the scene that stood here before
+     the 2026-09-05 rebuild. The rebuilt tower is taller in the frame (a cut
+     stub of deck and cables either side, a real cornice and parapet), and at
+     0.30 its top ran 55 units above a 620 unit box. Re-measured the same way,
+     a hundredth of a radian at a time against the drawing's own bounding box:
+     0.25 is the last angle that holds, so 0.24 is taken. The span and empire
+     ceilings were re-measured too and are unchanged; the empire's ground plane
+     has always run past the bottom of the box above pitch 0.5, before this
+     rebuild and after it, so that number is left exactly as it was. */
+  var TILT_CEIL = { span: 0.44, tower: 0.24, empire: 0.75 };
 
   var EMPIRE_CAM = function () { return makeCam(-0.7, 0.22, 1, 360, 560); };
 

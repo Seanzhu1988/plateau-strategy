@@ -163,14 +163,6 @@ queue instead. Remove a line the moment its work lands or is abandoned.
 - american, not built at all. The only Mall place with no dc-form file. This is
   the routine's own next queue item, so it is claimed here to stop a duplicate.
 
-- bridge and empire, the two New York landmarks in nyc-3d.js, rebuild in
-  progress in a live session (2026-09-05, Sean: "realistic the 3D model of
-  empire state building and brooklyn bridge"). nyc-3d.js now carries the
-  form hook (window.NYC_FORMS[k] from nyc-form-<k>.js, resolved at draw
-  time) and render_room.js the nyc: route (nyc:bridge, nyc:bridge-tower,
-  nyc:empire, nyc:empire-open). The routine must SKIP both until this line
-  is removed.
-
 After these: Boston, the nine Freedom Trail buildings, in batches.
 
 ## Rebuilt to this standard
@@ -180,6 +172,96 @@ repeat it. A name on this list has a `dc-form-<k>.js` (or the equivalent
 scene file) and has been LOOKED at from more than one angle.
 
 - capitol, lincoln, jefferson, monument (2026-09-03, the four heroes)
+- bridge and empire, the two New York landmarks (2026-09-05). [SEAN:
+  "realistic the 3D model of empire state building and brooklyn bridge".]
+  Both were pre-standard: the bridge was two slabs, a hairline cable and a
+  tower with two slots, the tower nine stacked boxes with scratched window
+  lines. New York got the dc-form mechanism the trail already had: a landmark
+  registers window.NYC_FORMS[k] from its own nyc-form-<k>.js and takes over
+  from the scene in nyc-3d.js at DRAW time, so the page's fixed cameras, its
+  labels, the span/tower buttons and the tower's opening animation are all
+  untouched. render_room.js gained the nyc: route so the offline tool draws
+  through the page's own renderer.
+  BRIDGE, published and quoted in the file header: main span 1,595.5 ft and
+  land spans 930 ft (NPS); roadway 119 ft above high water at the towers and
+  135 ft at midspan, so the deck cambers 16 ft; navigational clearance 127 ft;
+  stiffening trusses 33 ft deep; deck 85 ft wide; promenade 18 ft above the
+  roadways; tower plan 140 x 59 ft at the water, 131 x 48 at the roadway,
+  136 x 53 at the top (NPS and the 1906 figures via nycsubway.org); arch
+  opening 33.75 ft wide and 117 ft above the roadway, struck on a published
+  46 ft radius (Structure); 25 stays per fan spread between the published 138
+  and 449 ft. The 276.5 ft tower height is kept because the page's own label
+  already says it, and the disagreement with Wikipedia's 278.25 and Structure's
+  271 is recorded rather than resolved.
+  EMPIRE, published: base 424 x 187 ft; setbacks at 5, 21, 25, 30, 72, 81 and
+  85; bay counts off the LPC designation report LP-2000 p.16 (15 bays to the
+  21st on the long fronts, 11 to the 30th, 9 above; 9, 7, 6, 5 on the short);
+  86th floor 1,050 ft, 102nd 1,224 ft, roof 1,250 ft, tip 1,454 ft; the 1953
+  broadcast tower 200 ft; 24 windows on the 102nd. The published "60 ft setback
+  on all sides" CONTRADICTS the published 28 ft office depth and the quarter
+  lot zoning area if applied north to south, so the north-south plans are
+  derived from the latter two and the contradiction is stated in the header
+  rather than hidden.
+  WHAT LOOKING CAUGHT, none of it visible in any count. (1) The old scene's
+  arch openings were centred 57.9 ft off the tower axis, OUTSIDE the 131 ft
+  tower plan: the page's own "the pointed arch" dot had been pointing at empty
+  stone for as long as the page has existed. They sit at 27.46 ft now. (2) The
+  tower view's arches vanished under their own cable web: 25 stays a fan on
+  four planes at full weight hatched the openings into a smudge, and a face
+  probe proved the openings were genuinely open, so the fix was the veil and
+  not the geometry. That defect survived a fix round and was still there at the
+  end; it was corrected in this session by thinning the tower view's stays to
+  the width and opacity the span view already proved. (3) A deck shadow was
+  drawn and invisible because a bias of -990 cannot beat water at -999 when
+  centroid depths spread over 400 units. (4) Made visible, it was a ladder of
+  pale seams: forty abutting translucent quads rounding apart under toFixed,
+  the Vietnam Memorial lesson arriving again. (5) On the tower, the Empire's
+  roofs painted over their own walls' feet, the painter's trap, fixed by tiling
+  every roof at 40 ft. (6) The ends of the span read as burnt black blocks;
+  the cut faces are stone now, because no part of this bridge is black masonry.
+  THE TILT CEILING WAS RE-MEASURED, and this is the part a count would have
+  passed: the rebuilt tower view is taller in its frame than the scene it
+  replaced, and at the old 0.30 ceiling its top ran 55 units above a 620 unit
+  box. Swept a hundredth of a radian at a time, 0.25 is the last angle that
+  holds, so TILT_CEIL.tower is 0.24. Every view now fits at the pitch floor,
+  the page default and the ceiling, measured on the drawing's own bounding box.
+  The empire's ground plane has always run past the bottom of its box above
+  pitch 0.5, before this rebuild and after it, identical to the unit; that
+  number is left exactly as it was because it is not this rebuild's to change.
+  A CLAIM IN A BUILD REPORT THAT DID NOT SURVIVE CHECKING: the bridge build
+  recorded that the far anchorage rises 17 units above the span box at the 0.44
+  ceiling and recommended lowering it to 0.40. Re-measured here it is inside by
+  1.4 units. A later fix round had cured it and the note was stale. Verify a
+  gap before acting on it, including one written by the builder.
+  THE VERIFICATION TOOL PRODUCED TWO FALSE BLOCKING FINDINGS, which is worth
+  more than either of them. Both critics judged renders taken at yaws the page
+  never uses, and reported the Brooklyn back span "ending in mid-air" and the
+  model "not fitted to the frame". The page's cameras are FIXED: only yaw turns,
+  so at yaw 0.9 the drawing legitimately runs past the frame edge. Rendering the
+  ORIGINAL scene at the same angles proved it does exactly the same, by
+  arithmetic (y to 409 in a 340 tall box) and in the picture. An off-camera
+  render is a culling probe, not a framing judgement, and a critic handed one
+  without that context will report the frame edge as a broken model.
+  Named gaps, both files: the bridge's cornice and parapet stages, voussoir
+  ring depth and count, cable plane offsets, stay attachment points, anchorage
+  vault sizes and coursing spacing are ASSUMED and marked; the published 971
+  and 1,562.5 ft approach ramps do not fit the page's box and are drawn as
+  stubs; only four stiffening trusses are drawn because no post-1954 truss
+  dimensions were reached. The Empire's storey heights, every setback plan, the
+  mast tier plans, the portal and eagle sizes, the crown ring spacing and the
+  antenna widths are ASSUMED and marked; the gold EMPIRE STATE letters, the
+  eight cone openings and the individual 102nd floor windows are sub-pixel at
+  this scale and are not drawn.
+  OWED: the two adversarial critics ran twice on the bridge and once on the
+  Empire; the Empire's second round and the page integration died on the
+  account's monthly spend limit, so the Empire carries one review round rather
+  than the standard's two. Its outstanding notes are in the build report. The
+  remaining bridge notes, worst first: the voussoir ring is one pale band at
+  900 px rather than 16 readable wedges, so either the joints get a tone step
+  or the header should stop claiming a count; the anchorage openings are flat
+  dark panels with no ring or reveal where the street sees deep stone vaults;
+  and the tower crown's parapet is thicker than the cornice below it, which
+  inverts the real profile.
 - vietnam, the Vietnam Veterans Memorial (2026-09-04). Published, quoted in
   the file header: each wall "246 feet 9 inches long", "10.1 feet tall at the
   apex", "8 inches tall at their extremities", "meeting at an angle of 125

@@ -1,4 +1,4 @@
-/* render_room.js — look at a gallery interior without a browser.
+/* render_room.js: look at a gallery interior without a browser.
  *
  *     node render_room.js dendur > /tmp/x.svg
  *     qlmanage -t -s 900 -o /tmp /tmp/x.svg      # macOS: SVG to PNG
