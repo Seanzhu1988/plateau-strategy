@@ -502,24 +502,54 @@
         var src = (e && (e.audio || e.audio_url)) || "";
         if (src) { setSrc(src); return; }
         /* Second pipeline. The trail voice recorder writes one guide per stop as
-           media/audio/national-mall-stop-N.mp3 (and .<lang>.mp3) from a script of
-           at least 700 words in trail_scripts/national-mall/. Whichever pipeline
-           finishes a stop first is what plays; the page asks whether the file
-           exists and never guesses. A late answer for a stop no longer shown is
-           dropped, so switching stops fast cannot attach the wrong voice. */
+           media/audio/national-mall-stop-N.mp3, and either pipeline may finish a
+           stop first, so the page still has to ask which files exist.
+
+           It used to ask by firing a HEAD request per stop and reading the 404.
+           Eleven of the eighteen stops have no recording, so every single visit
+           produced eleven failed requests and eleven red lines in the console.
+           That is not just waste: it BURIES real errors. Auditing this very page
+           I found twelve console errors, and had to read the network log one row
+           at a time to discover that all but one were this probe working
+           normally. An error that is expected teaches everyone to ignore errors.
+
+           media/audio/_recorded.json already lists every recording the voice
+           pipeline has made, and freedom-trail.html has been reading it for
+           exactly this reason. One fetch, cached for the page's life, no failed
+           requests, and a stop that is not in the manifest is simply silent. */
         setSrc("");
         if (!s || !s.n) return;
         var L = window.psxLang, lang = (typeof L === "function" ? L() : L) || (document.documentElement.lang || "en").slice(0, 2);
-        var cands = ["/media/audio/national-mall-stop-" + s.n + ".mp3"];
-        if (lang && lang !== "en") cands.unshift("/media/audio/national-mall-stop-" + s.n + "." + lang + ".mp3");
         var forKey = s.model || "";
-        (function tryNext(i) {
-            if (i >= cands.length) return;
-            fetch(cands[i], { method: "HEAD" }).then(function (r) {
-                if (r.ok) { if (current === forKey) setSrc(cands[i]); }
-                else tryNext(i + 1);
-            }).catch(function () { tryNext(i + 1); });
-        })(0);
+        recordedList(function (have) {
+            /* A late answer for a stop no longer shown is dropped, so switching
+               stops quickly cannot attach the wrong voice. */
+            if (current !== forKey) return;
+            var cands = [];
+            if (lang && lang !== "en") cands.push("national-mall-stop-" + s.n + "." + lang + ".mp3");
+            cands.push("national-mall-stop-" + s.n + ".mp3");
+            for (var i = 0; i < cands.length; i++) {
+                if (have[cands[i]]) { setSrc("/media/audio/" + cands[i]); return; }
+            }
+        });
+    }
+
+    /* Fetched once and remembered. A failure leaves an empty manifest, which
+       means "no recordings", which is the honest answer when the list cannot be
+       read rather than a guess that they exist. */
+    var recorded = null, recordedWaiting = [];
+    function recordedList(then) {
+        if (recorded) { then(recorded); return; }
+        recordedWaiting.push(then);
+        if (recordedWaiting.length > 1) return;
+        var done = function (m) {
+            recorded = m || {};
+            var q = recordedWaiting; recordedWaiting = [];
+            q.forEach(function (fn) { try { fn(recorded); } catch (e) {} });
+        };
+        fetch("/media/audio/_recorded.json", { cache: "no-store" })
+            .then(function (r) { return r.ok ? r.json() : {}; })
+            .then(done).catch(function () { done({}); });
     }
     function hideExtras() {
         var st = document.getElementById("nmNowStory");
