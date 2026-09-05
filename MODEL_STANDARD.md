@@ -514,6 +514,75 @@ scene file) and has been LOOKED at from more than one angle.
   prominent feature, and drawing no piers at all would leave a marble box,
   which is the exact failure Sean called unacceptable.
 
+- state-house, the Massachusetts State House (2026-09-05). Published, quoted
+  in the file header and load bearing: the Columbian Centinel of 10 January
+  1798, reproduced in the National Historic Landmark nomination (NRHP
+  66000771), gives "173 feet front, and 61 deep", "a basement story, 20 feet
+  high, and a principal story 30 feet", an "Attic 60 feet wide, 20 feet
+  high, which is covered with a pediment", "a dome 50 feet diameter and 30
+  feet high", "an elegant circular lanthorn, supporting a gilt pine cone",
+  a portico "94 feet in length, and formed of arches which project 14 feet"
+  carrying "a Colonade of Corinthian columns of the same extent above", and
+  walls "of large patent bricks, with white marble fascias, imposts and key
+  stones". Counts off a frontal photograph on Wikimedia Commons: seven
+  arches, twelve columns coupled in pairs at both ends, three bays a wing.
+  CHECKED THIS RUN AND REPORTED AS A NEGATIVE: the Wikipedia article on the
+  building publishes NO dimension whatever, no width, depth, storey height,
+  dome diameter, column count or total height. What it does carry, and what
+  the model leans on for checklist item 9, is that the dome is GILDED and was
+  re-gilded "in 1969, at a cost of $36,000" and again "in July 1997" for
+  "around $300,000".
+  THE FINDING, and it is the whole reason this file exists: the scene it
+  replaces had every published number RIGHT and rendered as a blank brick
+  warehouse. The portico, the arcade, the twelve columns, the wings' windows,
+  the attic and the pediment were all drawn on the south face, the south face
+  sat at -y, and at the page's own opening yaw of -0.62 that face is culled:
+  faceVisible(0,-1) = -cos(0.62) = -0.81. Every piece of architecture in the
+  model was on the side nobody could see, and the reader got the one wall
+  that had nothing on it. The building is turned so the front is at +y, which
+  is what Old State House had already recorded in trail-3d.js after making
+  the same mistake, and what Bunker Hill and Old North both sprang again on
+  the day they were rebuilt. ARITHMETIC CANNOT CATCH THIS. Every count, every
+  dimension and every depth was correct in the version that rendered as a
+  warehouse.
+  ADDED to reach the nine item list: a granite water table so the brick does
+  not grow out of the lawn; a ground shadow; brick course banding as the
+  second tone, a texture and not a count, since no source reached gives a
+  course height; a marble string course at the published 20 ft storey line
+  and a two course main cornice at the published 50; the balustraded parapet
+  carried round the whole block instead of the front wings only; a light
+  marble SURROUND struck round every opening before the dark glass is struck
+  inside it, which is item 8 and is what stops a window being a stain at 900
+  pixels; marble imposts and keystones round each of the seven arches; the
+  colonnade's entablature split into an architrave course and a crowning
+  cornice; a drum and its cornice under the dome; a second gold tone as a rib
+  on the dome, because one flat gold reads as a brass bowl; the pediment's
+  two raking cornices; and three low granite steps at the arcade.
+  CHECKLIST 4, said out loud rather than faked: the main block really does
+  end in a FLAT roof behind that balustraded parapet. The roof this building
+  is meant to show is the dome; the parapet hides the rest. So the lid stays
+  a lid.
+  Named gaps: no published pediment rise, lanthorn height, or dome set-back
+  (all derived); no published tread count at the arcade (three drawn); and
+  the entire NORTH back elevation, which no source reached describes, because
+  Bulfinch's back was built over by Charles Brigham's extension in 1895. The
+  back carries the front's own courses, cornice, parapet and bay module and
+  claims nothing more. The often quoted 155 ft total is measured from the
+  street at the foot of the hill and is not what this model claims.
+  Verified on two renders, yaw -0.62 (the page's own opening view) and -0.05
+  near frontal. OWED: the two adversarial critics did not fit inside this
+  run's 25 minute ceiling. First thing for the next run, worst first:
+    a. at oblique yaws the pediment's apex disappears behind a 50 ft dome
+       set only 27 ft back, so the pediment reads as two dark shoulders. The
+       set-back is derived, not published; find a section or a plan.
+    b. the main roof lid is a large muddy plane in the middle of the model
+       and carries nothing. Photographs show it largely hidden; either raise
+       the parapet to the height that hides it or draw what is up there.
+    c. the wings' second storey is drawn with round headed windows on the
+       strength of the 1798 notice contrasting them with the "square windows"
+       of the basement. That is an inference from a contrast, not a
+       published statement, and it should be checked against an elevation.
+
 - bunker-hill, the Bunker Hill Monument (2026-09-04), the first trail stop
   rebuilt, and the run that gave the trail the dc-form mechanism: a stop now
   registers window.TRAIL_FORMS[k] from its own trail-form-<k>.js and takes
