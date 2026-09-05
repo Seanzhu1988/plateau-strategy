@@ -3039,6 +3039,28 @@ def dc_3d_js():
     return send_file(os.path.join(BASE_DIR, "dc-3d.js"), mimetype="application/javascript")
 
 
+@app.route("/api/dc-forms")
+def api_dc_forms():
+    """Which Mall buildings have been rebuilt to the standard, by slug.
+
+    The page used to name its script tags by hand, which meant a building was
+    finished, recorded in the ledger, and still drawn nowhere: the Vietnam
+    Memorial passed every completion test on 2026-09-04 and was loaded by no
+    page at all. A routine that adds a building every three hours cannot rely
+    on someone remembering to add a line to the markup, so the page asks what
+    exists instead of being told."""
+    try:
+        names = []
+        for fn in os.listdir(BASE_DIR):
+            if fn.startswith("dc-form-") and fn.endswith(".js"):
+                slug = fn[len("dc-form-"):-len(".js")]
+                if re.fullmatch(r"[a-z0-9-]{1,40}", slug):
+                    names.append(slug)
+        return jsonify({"success": True, "forms": sorted(names)})
+    except Exception as e:
+        return jsonify({"success": False, "forms": [], "error": str(e)[:120]})
+
+
 @app.route("/dc-form-<name>.js")
 def dc_form_js(name):
     """One Mall building rebuilt to the model standard, one file each.

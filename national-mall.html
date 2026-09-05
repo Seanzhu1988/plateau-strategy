@@ -97,6 +97,28 @@
         .nm-stop .nm-name { font-weight: 620; line-height: 1.35; }
         .nm-stop .nm-meta { display: block; font-size: .79rem; color: #8a8378; margin-top: .12rem; }
         .nm-foot { margin: 1.6rem 0 0; font-size: .82rem; color: #8a8378; line-height: 1.6; }
+        /* The stop's pictures, story and voice, and the walk bar. [SEAN 2026-09-04:
+           "the 3D, slide show the discription with audio track ... once they
+           locked the walk it follows traveller"] Colours are explicit hex, never
+           inherited, so a viewer that drops variables still draws them. */
+        .nm-show { position: relative; margin: .5rem 0; background: #0f172a; border-radius: 10px; overflow: hidden; }
+        .nm-show img { display: block; width: 100%; max-height: 300px; object-fit: cover; }
+        .nm-show button { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border: 0;
+            border-radius: 50%; background: rgba(15,23,42,.65); color: #ffffff; font-size: 22px; cursor: pointer; }
+        .nm-show #nmPrev { left: 8px; } .nm-show #nmNext { right: 8px; }
+        .nm-show #nmShowN { position: absolute; right: 10px; bottom: 8px; font-size: 12px; color: #ffffff;
+            background: rgba(15,23,42,.65); padding: 2px 8px; border-radius: 10px; }
+        .nm-story p { margin: 0 0 .7rem; }
+        .nm-guide { display: flex; align-items: center; gap: .6rem; margin: .5rem 0; font-size: .9rem; color: #334155; }
+        .nm-guide audio { width: 100%; max-width: 420px; }
+        .nm-walkbar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: .6rem 0; }
+        .nm-walkbar button { min-height: 44px; padding: .5rem .9rem; border-radius: 10px; border: 1px solid #12305b;
+            background: #12305b; color: #ffffff; font-weight: 700; cursor: pointer; }
+        .nm-walkbar button[aria-pressed="true"] { background: #0f6d5c; border-color: #0f6d5c; }
+        .nm-walkbar #nmLoc { font-size: .9rem; color: #334155; }
+        .nm-consent { font-size: .85rem; color: #475569; margin: .2rem 0 .6rem; }
+        .nm-you { width: 16px; height: 16px; border-radius: 50%; background: #a4161a; border: 3px solid #ffffff;
+            box-shadow: 0 0 0 4px rgba(164,22,26,.28); }
     </style>
 </head>
 <body>
@@ -133,12 +155,26 @@
 
                 <div class="nm-now" id="nmNow" hidden>
                     <h2 id="nmNowName"></h2>
+                    <div class="nm-show" id="nmShow" hidden>
+                        <img id="nmShowImg" alt="" loading="lazy">
+                        <button type="button" id="nmPrev" aria-label="Previous picture">&lsaquo;</button>
+                        <button type="button" id="nmNext" aria-label="Next picture">&rsaquo;</button>
+                        <span id="nmShowN"></span>
+                    </div>
+                    <div class="nm-story" id="nmNowStory" hidden></div>
+                    <div class="nm-guide" id="nmGuide" hidden><span>Listen:</span><audio id="nmAudio" controls preload="none"></audio></div>
                     <p id="nmNowDesc"></p>
                     <p class="nm-links"><a id="nmNowMap" href="#" target="_blank" rel="noopener">Open in Maps</a></p>
                 </div>
             </div>
 
             <div>
+                <div class="nm-walkbar">
+                    <button type="button" id="nmLock" aria-pressed="false">Lock the walk</button>
+                    <button type="button" id="nmFollow" aria-pressed="false" hidden>Follow me on the map</button>
+                    <span id="nmLoc" aria-live="polite"></span>
+                </div>
+                <p class="nm-consent" id="nmConsent" hidden>Your position is read by this browser and drawn on the map here. It is never sent anywhere.</p>
                 <div id="nmMap"></div>
                 <p class="nm-list-h">The walk, in order</p>
                 <ul class="nm-list" id="nmList">
@@ -155,14 +191,6 @@
 <script src="/vendor/leaflet/leaflet.js"></script>
 <script src="/dc-3d.js"></script>
 <script src="/scene-mount.js"></script>
-<script src="/dc-form-capitol.js"></script>
-<script src="/dc-form-lincoln.js"></script>
-<script src="/dc-form-jefferson.js"></script>
-<script src="/dc-form-monument.js"></script>
-<script src="/dc-form-castle.js"></script>
-<script src="/dc-form-hirshhorn.js"></script>
-<script src="/dc-form-nmaahc.js"></script>
-<script src="/dc-form-wwii.js"></script>
 <script>
 (function () {
     "use strict";
@@ -193,13 +221,101 @@
        whole Mall is the default and the way back to it is always on screen,
        because a model you cannot leave is the bug this site already shipped
        once on the Met. */
+    var checked = {};
     function sceneFor(key) {
-        var S = window.DC3D && window.DC3D.scenes;
+        var D = window.DC3D, S = D && D.scenes;
         if (!S) return null;
         if (!key) return S.mall || null;
-        return S["only-" + key] || S.mall || null;
+        var sc = S["only-" + key] || S.mall || null;
+        if (!sc || checked[key]) return sc;
+        checked[key] = 1;
+
+        /* Run it once against a throwaway context before it is trusted. A form
+           file can be perfectly valid JavaScript and still throw the moment it
+           draws: dc-form-indian.js references an undefined LAWNC on one line,
+           so the American Indian museum raised a ReferenceError every time and
+           the renderer, catching it, simply left the PREVIOUS building on
+           screen. Tapping that stop showed the Botanic Garden under the right
+           name, the right description and the right sources, with nothing to
+           tell anyone it was the wrong building. A wrong drawing that looks
+           finished is worse than a plain one, so a form that cannot run is
+           dropped and the place falls back to its honest massing. */
+        try {
+            sc({ project: function (x, y, z) { return [x || 0, y || 0, z || 0]; },
+                 poly: function () { return ""; },
+                 shade: function (h) { return h; },
+                 faceVisible: function () { return true; } });
+            return sc;
+        } catch (e) {
+            if (window.DC_FORMS && window.DC_FORMS[key]) {
+                delete window.DC_FORMS[key];
+                if (window.console) {
+                    console.warn("dc-form-" + key + ".js failed to draw, falling back "
+                                 + "to massing: " + (e && e.message));
+                }
+            }
+            return (D.mall ? D.mall({ only: key }) : sc);
+        }
     }
 
+    /* ---------- the stop's story, pictures and voice (Sean 2026-09-04) ----------
+       The story writer and the landmark builder MAKE the content: a destination
+       entry per stop, story_<lang> in five languages, and a recorded guide at
+       entry.audio. This page only LINKS a stop to that entry, by book_slug first
+       and by name second, and shows what exists: the story if written, else the
+       trail's own line; pictures if listed; the player only when a recording is
+       on disk. Nothing on this page is invented here. */
+    var dests = null, destByName = {};
+    function lang() { return (window.psxLang ? window.psxLang() : "en") || "en"; }
+    function entryFor(s) {
+        if (!dests || !s) return null;
+        if (s.book_slug && dests[s.book_slug]) return dests[s.book_slug];
+        return destByName[String(s.name || "").trim().toLowerCase()] || null;
+    }
+    function storyFor(e) {
+        if (!e) return "";
+        var L = lang(), st = e.stories || {}, txt = "";
+        ["mid", "long", "short"].forEach(function (tier) {
+            if (txt) return;
+            var row = st[tier] || {};
+            txt = (row[L] || "").trim() || (row.en || "").trim();
+        });
+        if (!txt) txt = (e["story_" + L] || "").trim() || (e.story_en || "").trim();
+        return txt;
+    }
+    var showPics = [], showIdx = 0;
+    function paintShow() {
+        var box = document.getElementById("nmShow"), img = document.getElementById("nmShowImg");
+        if (!showPics.length) { box.hidden = true; img.removeAttribute("src"); return; }
+        box.hidden = false;
+        var u = showPics[showIdx];
+        img.src = u + (u.indexOf("?") > -1 ? "&" : "?") + "width=720";
+        document.getElementById("nmShowN").textContent = (showIdx + 1) + " / " + showPics.length;
+        var one = showPics.length < 2;
+        document.getElementById("nmPrev").hidden = one; document.getElementById("nmNext").hidden = one;
+    }
+    document.getElementById("nmPrev").addEventListener("click", function () {
+        if (showPics.length) { showIdx = (showIdx + showPics.length - 1) % showPics.length; paintShow(); } });
+    document.getElementById("nmNext").addEventListener("click", function () {
+        if (showPics.length) { showIdx = (showIdx + 1) % showPics.length; paintShow(); } });
+    function renderExtras(s) {
+        var e = entryFor(s), story = storyFor(e), sb = document.getElementById("nmNowStory");
+        if (story) {
+            sb.innerHTML = "";
+            story.split(/\n\s*\n/).forEach(function (para) {
+                var p = document.createElement("p"); p.textContent = para.trim(); sb.appendChild(p); });
+            sb.hidden = false; nowDesc.hidden = true;
+        } else { sb.hidden = true; nowDesc.hidden = false; }
+        showPics = (s && s.photos) || []; showIdx = 0; paintShow();
+        var g = document.getElementById("nmGuide"), a = document.getElementById("nmAudio");
+        var src = e && (e.audio || e.audio_url);
+        if (src) { if (a.getAttribute("src") !== src) a.setAttribute("src", src); g.hidden = false; }
+        else { g.hidden = true; a.removeAttribute("src"); }
+    }
+    function hideExtras() {
+        document.getElementById("nmNowStory").hidden = true; nowDesc.hidden = false;
+        showPics = []; paintShow(); document.getElementById("nmGuide").hidden = true;
+    }
     function show(key, fromUser) {
         current = key || "";
         var sc = sceneFor(key);
@@ -232,8 +348,9 @@
             nowName.textContent = s.n + ". " + s.name;
             nowDesc.textContent = s.desc || "";
             nowMap.href = "https://www.google.com/maps/search/?api=1&query=" + s.lat + "," + s.lon;
+            renderExtras(s);
         } else {
-            nowBox.hidden = true;
+            nowBox.hidden = true; hideExtras();
         }
 
         Array.prototype.forEach.call(listEl.querySelectorAll(".nm-stop"), function (b) {
@@ -307,6 +424,69 @@
     }
 
     backBtn.addEventListener("click", function () { show("", true); });
+    /* ---------- lock the walk, then the map follows you (Sean 2026-09-04) ----------
+       Two taps, on purpose. LOCK fixes the walk as it stands, so nothing moves
+       under your feet once you are on it. FOLLOW asks for your position, in
+       words first and then in the browser's own prompt, and from then on your
+       dot moves on the map beside the route. The position is read by the
+       browser and drawn here; it is never sent anywhere. Within sixty metres of
+       a stop you have not reached, the page opens that stop, its pictures and
+       its story, and starts its guide if one is recorded. Freedom Trail behaves
+       this way too; this is written for the Mall's own page and data. */
+    var locked = false, watchId = null, youMarker = null, reached = {}, wakeLock = null;
+    var lockBtn = document.getElementById("nmLock"), followBtn = document.getElementById("nmFollow");
+    var locEl = document.getElementById("nmLoc"), consentEl = document.getElementById("nmConsent");
+    function dist(a, b, c, d) {
+        var R = 6371000, toR = Math.PI / 180, dLat = (c - a) * toR, dLon = (d - b) * toR;
+        var h = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(a * toR) * Math.cos(c * toR) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        return 2 * R * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+    }
+    function stopFollow(msg) {
+        if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+        followBtn.textContent = T("Follow me on the map"); followBtn.setAttribute("aria-pressed", "false");
+        try { if (wakeLock) { wakeLock.release(); wakeLock = null; } } catch (e) {}
+        if (msg) locEl.textContent = msg;
+    }
+    lockBtn.addEventListener("click", function () {
+        if (!stops.length) return;
+        locked = !locked;
+        lockBtn.textContent = locked ? T("Walk locked") + " \u00b7 " + stops.length + " " + T("stops") : T("Lock the walk");
+        lockBtn.setAttribute("aria-pressed", locked ? "true" : "false");
+        consentEl.hidden = !locked; followBtn.hidden = !locked;
+        if (!locked) stopFollow(T("Unlocked."));
+    });
+    followBtn.addEventListener("click", function () {
+        if (watchId !== null) { stopFollow(T("The map is no longer following you. Your walk stays locked.")); return; }
+        if (!navigator.geolocation) { locEl.textContent = T("This browser cannot share a location."); return; }
+        if (!map) paintMap();
+        try { document.getElementById("nmAudio").load(); } catch (e) {}   /* this tap lets a stop's guide start later */
+        locEl.textContent = T("Asking to use your location...");
+        watchId = navigator.geolocation.watchPosition(function (pos) {
+            var lat = pos.coords.latitude, lon = pos.coords.longitude, acc = Math.round(pos.coords.accuracy || 0);
+            if (!youMarker) {
+                youMarker = L.marker([lat, lon], { icon: L.divIcon({ className: "", iconSize: [16, 16],
+                    iconAnchor: [8, 8], html: '<div class="nm-you"></div>' }) }).addTo(map);
+                var pts = stops.map(function (s) { return [s.lat, s.lon]; }); pts.push([lat, lon]);
+                map.invalidateSize(); map.fitBounds(L.latLngBounds(pts), { padding: [24, 24] });
+                followBtn.textContent = T("Stop following"); followBtn.setAttribute("aria-pressed", "true");
+                try { if (navigator.wakeLock) navigator.wakeLock.request("screen").then(function (w) { wakeLock = w; }); } catch (e) {}
+            } else { youMarker.setLatLng([lat, lon]); }
+            var best = null;
+            stops.forEach(function (s) { var d = dist(lat, lon, s.lat, s.lon); if (!best || d < best.d) best = { s: s, d: d }; });
+            if (!best) return;
+            locEl.textContent = Math.round(best.d) + " m " + T("from") + " " + best.s.n + ". " + best.s.name + (acc ? " \u00b7 \u00b1" + acc + " m" : "");
+            if (best.d <= 60 && acc <= 80 && !reached[best.s.n]) {
+                reached[best.s.n] = true;
+                show(best.s.model || "", true);
+                var au = document.getElementById("nmAudio");
+                if (au.getAttribute("src")) { var pr = au.play(); if (pr && pr.catch) pr.catch(function () {}); }
+            }
+        }, function (err) {
+            locEl.textContent = (err && err.code === 1) ? T("Location was not shared. The walk stays locked; the map will not follow.")
+                                                       : T("No position yet. Try again outdoors.");
+            stopFollow();
+        }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+    });
 
     /* Times and unit words are assembled here, so the language switcher cannot
        repaint them by walking text nodes. The engine says so itself and fires
@@ -317,6 +497,28 @@
         stats(trail); paintList(); show(current);
     });
 
+    /* The rebuilt buildings are asked for, not listed here. Naming them by
+       hand is how the Vietnam Memorial came to be finished, recorded in the
+       ledger and drawn on no page at all: the routine adds a building every
+       three hours and nobody was editing the markup to match. Each one that
+       fails to load is skipped rather than holding up the page, because a
+       missing form only means that place falls back to its massing. */
+    function loadForms(done) {
+        fetch("/api/dc-forms").then(function (r) { return r.json(); })
+            .then(function (d) {
+                var names = (d && d.forms) || [];
+                if (!names.length) { done(); return; }
+                var left = names.length;
+                names.forEach(function (n) {
+                    var el = document.createElement("script");
+                    el.src = "/dc-form-" + n + ".js";
+                    el.onload = el.onerror = function () { if (--left === 0) done(); };
+                    document.head.appendChild(el);
+                });
+            })
+            .catch(function () { done(); });
+    }
+
     /* Open on the first stop, not on the whole Mall. The Mall is two miles of
        lawn and its buildings are low, so the overview is honest and unreadable
        at once: at true scale the Capitol is a speck on a green strip, and the
@@ -325,7 +527,10 @@
        of it, so it opens on one, and the whole Mall is one tap away.
        Drawn from the shipped scene immediately, so the box is never blank
        while the network answers. */
+    /* Drawn once with whatever forms are already in the page, so the box is
+       never blank, then drawn again the moment the real ones arrive. */
     show("capitol");
+    loadForms(function () { show(current || "capitol"); });
 
     fetch("/api/trails").then(function (r) { return r.json(); }).then(function (d) {
         var all = d.trails || d || [];
@@ -337,6 +542,14 @@
         trail = t;
         stops = t.stops || [];
         stats(t); paintList(); paintMap();
+        fetch("/api/destinations").then(function (r) { return r.json(); }).then(function (d) {
+            dests = {}; destByName = {};
+            (d.entries || []).forEach(function (e) {
+                if (e.slug) dests[e.slug] = e;
+                if (e.name) destByName[String(e.name).trim().toLowerCase()] = e;
+            });
+            show(current);
+        }).catch(function () {});
         show((stops[0] && stops[0].model) || "");
     }).catch(function () { listEl.innerHTML = ""; });
 })();

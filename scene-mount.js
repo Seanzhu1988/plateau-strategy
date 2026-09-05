@@ -74,7 +74,10 @@
       try {
         scene({ project: projector(1, 0, 0), poly: measure, shade: shade, faceVisible: faceVisible });
       } catch (e) { BB = null; }
-      if (!BB || !(BB[2] > BB[0]) || !(BB[3] > BB[1])) return;
+      /* Returning here used to leave whatever was drawn last still on screen,
+         so a scene that threw showed the PREVIOUS model under the new one's
+         name. An empty frame is honest; the wrong building is not. */
+      if (!BB || !(BB[2] > BB[0]) || !(BB[3] > BB[1])) { host.innerHTML = ""; return; }
 
       var pad = o.pad == null ? 50 : o.pad;
       var bw = BB[2] - BB[0], bh = BB[3] - BB[1];
