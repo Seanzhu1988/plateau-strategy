@@ -623,6 +623,66 @@ scene file) and has been LOOKED at from more than one angle.
   without touching a published dimension. (3) The 78 course joints are what
   turn a taper into 221 feet of stone; without them the shaft has no scale.
 
+- old-south, the Old South Meeting House (2026-09-05). Published, quoted in
+  the file header: "66-68 feet (20-21 m) wide and 93-95 feet (28-29 m) long",
+  the tower "about 80 feet (24 m) with three stories", "183 feet (56 m) tall"
+  overall, a "20-foot-tall (6.1 m) gilded weathervane" by the Drownes, first
+  story windows "15-over-15" and second "15-over-20", "Multiple oxeye windows
+  with radiating muntins", "Flemish bond" with a "brick water table at lowest
+  portion", a roof "combination of hipped and gable" in slate, the clock "no
+  later than 1770" (Wikipedia); five bays front, seven bays long side, arched
+  windows with fanlights, a twenty foot copper octagonal spire, a three stage
+  octagonal steeple, the principal door on the LONG side (Boston Landmarks
+  Commission study report, 2025, already quoted in trail-3d.js).
+  THE CHECK THAT MADE THE REBUILD WORTH DOING, and it is arithmetic: the old
+  scene had to DERIVE the footprint because no source it reached published
+  one. Wikipedia publishes it, and the published footprint and the published
+  bay counts agree to a tenth of a foot, 67 over five bays = 13.40, 94 over
+  seven = 13.43. Two independent published facts, one module, nothing
+  proportioned by eye.
+  A CONFLICT, named rather than smoothed: Wikipedia calls the WEATHERVANE
+  twenty feet tall, the Landmarks report calls the SPIRE twenty feet, and
+  both cannot sit inside a published 183 ft. The spire reading is taken
+  because it closes the height arithmetic (80 brick + 83 wood + 20 spire),
+  the vane is drawn as a finial, and if the vane really is twenty feet this
+  model is twenty feet short at the top.
+  Named gaps: no published tower plan (20 ft square projecting 5, derived
+  from the 13.4 ft module); no published storey or eave heights; no published
+  roof pitch or hip run; no published position for the oxeye windows; no
+  published split of the 83 ft of wooden steeple into its bell stage,
+  pedestal and three octagons, which is the softest thing in the file.
+  WHAT LOOKING CAUGHT AND ARITHMETIC DID NOT, three things, and the second is
+  the worst fault in this file's history: (1) a 300 ft pavement pad, not the
+  building, was setting the frame, because the trail renderer fits to
+  everything including the ground; 150 nearly doubled the meeting house on
+  the page without touching a published dimension, which is the Bunker Hill
+  lesson arriving again. (2) panel() and archOpening() carry NO visibility
+  test, so every window, belt course and cornice was struck on the -x and +y
+  maps at every yaw: turn the model round and all of that trim went on
+  painting, floating in front of the building on the side it does not belong
+  to, in white bars and windows hanging past the corners, and the tower
+  carried its door on whichever side the reader was not on. box() culls its
+  walls; the things drawn ON a wall have to be culled by hand with the same
+  test, and both the body and the tower now loop their four faces. Every
+  count and every dimension was correct in the version that did this.
+  (3) the published clock, which the article dates to no later than 1770, was
+  struck at z = 100, inside the pedestal that is drawn after it, so it was
+  painted over and never appeared at all; it is now on the tower face under
+  the belfry where it belongs.
+  Verified on renders at yaw -0.62 (the page's own opening view) and -2.30.
+  OWED: the two adversarial critics did not fit inside this run's 25 minute
+  ceiling. First thing for the next run, worst first:
+    a. at the hipped east end a pale wedge of roof still reads as a void
+       rather than as a hip. The strips inside the hip run are shaded down
+       but the far slope shows past the ridge there; either cull the far
+       slope inside the hip run or close the end properly.
+    b. the three octagons carry one round window each on the facet nearest
+       the camera, struck on a plane rather than on the facet, so at some
+       yaws it will drift off the facet edge. octDetail already does this
+       correctly and should be used instead.
+    c. the belfry louvres read as a radiator at map scale. Fewer, deeper
+       slats, or a darker ground behind them.
+
 - old-north, Christ Church in the City of Boston (2026-09-04). This file
   named it: "better, recognisable even, and still flat: one brick tone, no
   cornice, no window frames, no shadow." The massing was already right and
