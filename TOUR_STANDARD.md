@@ -224,6 +224,27 @@ where the book is deepest.
 
 ---
 
+## Who does what
+
+Three routines carry this, so none of it depends on anyone remembering.
+
+**`plateau-landmark-builder`**, every three hours, one building. Works its own
+queue and skips anything listed as claimed in `MODEL_STANDARD.md`.
+
+**`plateau-story-writer`**, hourly, one piece. A missing story first, because a
+recording is made from a story. When that queue is dry it writes an artifact
+into the Universal Gallery instead, which is what a dry hour is for.
+
+**`plateau-tour-builder`**, manual until Sean starts it, one increment. The
+three claimed DC buildings, then artifacts, then the silent stops, then a new
+city, route first. [SEAN 2026-09-05: "we want this when we have enough token".]
+It is deliberately not scheduled: it is the expensive one, and it should run
+when there is budget for it rather than quietly finding out there was not.
+
+The claimed list in `MODEL_STANDARD.md` is how they stay out of each other's
+way. A full-standard building costs about 1.7M subagent tokens, so two routines
+building the same one is not a tidiness problem.
+
 ## Cost, honestly
 
 A full-standard building is about 1.7M subagent tokens. A tour of eighteen stops
