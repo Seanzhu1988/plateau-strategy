@@ -122,6 +122,9 @@
         .nm-story p { margin: 0 0 .7rem; }
         .nm-guide { display: flex; align-items: center; gap: .6rem; margin: .5rem 0; font-size: .9rem; color: #334155; }
         .nm-guide audio { width: 100%; max-width: 420px; }
+        .nm-guide { flex-wrap: wrap; }
+        .nm-resume { font-size: .82rem; color: #8a8378; white-space: nowrap; }
+        .nm-resume[hidden] { display: none !important; }
         .nm-walkbar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: .6rem 0; }
         .nm-walkbar button { min-height: 44px; padding: .5rem .9rem !important; border-radius: 10px !important; border: 1px solid #12305b !important;
             background: #12305b !important; color: #ffffff !important; font-weight: 700; box-shadow: none !important; cursor: pointer; }
@@ -174,7 +177,7 @@
                         <span id="nmShowN"></span>
                     </div>
                     <div class="nm-story" id="nmNowStory" hidden></div>
-                    <div class="nm-guide" id="nmGuide" hidden><span>Listen:</span><audio id="nmAudio" controls preload="none"></audio></div>
+                    <div class="nm-guide" id="nmGuide" hidden><span>Listen:</span><audio id="nmAudio" controls preload="none"></audio><span class="nm-resume" id="nmResume" hidden></span></div>
                     <p id="nmNowDesc"></p>
                     <p class="nm-links"><a id="nmNowMap" href="#" target="_blank" rel="noopener">Open in Maps</a></p>
                 </div>
@@ -216,6 +219,133 @@
 
     var stops = [], view = null, map = null, layer = null, dots = {};
     var trail = null, current = "";
+
+    /* ---------------- the guide remembers where it stopped ----------------
+       A walker is interrupted constantly: a stop arrives and swaps the track,
+       the phone locks, a call comes in, they close the tab on a bench and open
+       it again three streets later. A plain <audio> loses its place at every
+       one of those, and restarting a seven minute guide from the top is the
+       fastest way to make someone give up on it.
+
+       So the position is written down per track, kept in this browser only,
+       and put back when the same track is opened again. It is deliberately
+       localStorage: it is a convenience for one reader on one device, it must
+       survive a reload, and it is nobody else's business. Every read and write
+       is wrapped, because a private window, cleared site data or a browser set
+       to refuse storage all throw here rather than returning empty. */
+    var AKEY = "nmAudioPos";
+    var audioEl = document.getElementById("nmAudio");
+    var resumeEl = document.getElementById("nmResume");
+    var lastSave = 0;
+
+    function posAll() {
+        try { return JSON.parse(localStorage.getItem(AKEY) || "{}") || {}; }
+        catch (e) { return {}; }
+    }
+    function posWrite(m) { try { localStorage.setItem(AKEY, JSON.stringify(m)); } catch (e) {} }
+    function clock(t) {
+        t = Math.max(0, Math.floor(t || 0));
+        var mm = Math.floor(t / 60), ss = t % 60;
+        return mm + ":" + (ss < 10 ? "0" : "") + ss;
+    }
+
+    /* Under three seconds is not a place worth returning to, and a track played
+       to its end should start again from the beginning rather than resume on
+       its own last breath. */
+    /* A place that has been read out of storage but not yet reached. Until the
+       seek actually lands, currentTime is 0, and 0 is "not worth remembering",
+       so a save in that window DELETES the very place it is on its way back to.
+       That is what made a reload lose the position while storage still held it:
+       the restore and the save raced, and the save won. */
+    var pendingAt = 0, restoredFor = "";
+    function armRestore() {
+        if (!audioEl) return;
+        restoredFor = "";
+        var src = audioEl.getAttribute("src");
+        pendingAt = (src && posAll()[src]) || 0;
+        paintResume();
+    }
+    /* Arms itself if nothing else did, so a track attached by any path still
+       returns to its place, and records WHICH track it has already restored.
+       Without that second half a later play event would re-read storage and
+       yank the reader back to where they started, in the middle of listening. */
+    function applyRestore() {
+        if (!audioEl) return;
+        var src = audioEl.getAttribute("src") || "";
+        if (!src || restoredFor === src) return;
+        if (!pendingAt) pendingAt = posAll()[src] || 0;
+        if (!pendingAt) { restoredFor = src; return; }
+        if (Math.abs((audioEl.currentTime || 0) - pendingAt) < 1) {
+            pendingAt = 0; restoredFor = src; return;
+        }
+        try { audioEl.currentTime = pendingAt; } catch (e) {}
+    }
+    function remember() {
+        if (!audioEl || pendingAt) return;
+        var src = audioEl.getAttribute("src");
+        if (!src) return;
+        /* Before metadata arrives currentTime is 0 because nothing is loaded,
+           not because the reader is at the start. Loading a track fires pause
+           before it fires loadedmetadata, so saving here would read that 0 as
+           "not worth remembering" and delete the place we are on our way back
+           to. Without metadata we know nothing, so we write nothing. */
+        if (audioEl.readyState < 1) return;
+        var m = posAll(), t = audioEl.currentTime || 0, d = audioEl.duration || 0;
+        if (t < 3 || (d && t >= d - 2)) delete m[src]; else m[src] = t;
+        posWrite(m);
+        paintResume();
+    }
+    function paintResume() {
+        if (!resumeEl || !audioEl) return;
+        var src = audioEl.getAttribute("src");
+        var at = src ? posAll()[src] : 0;
+        if (at && audioEl.paused) {
+            resumeEl.hidden = false;
+            resumeEl.textContent = T("Picks up at") + " " + clock(at);
+        } else { resumeEl.hidden = true; }
+    }
+
+    if (audioEl) {
+        /* loadedmetadata is the first moment a seek is allowed. With
+           preload="none" it arrives when the reader presses play, so the jump
+           happens as playback begins rather than visibly mid-listen. */
+        /* Tried at each of the three moments a browser will accept a seek. With
+           preload="none" the first is only reached when the reader presses
+           play, and a seek asked for before the media is seekable is silently
+           dropped, so asking once is not enough. */
+        ["loadedmetadata", "canplay", "play"].forEach(function (ev) {
+            audioEl.addEventListener(ev, function () { applyRestore(); paintResume(); });
+        });
+        audioEl.addEventListener("seeked", function () {
+            if (pendingAt && Math.abs((audioEl.currentTime || 0) - pendingAt) < 1) {
+                pendingAt = 0; restoredFor = audioEl.getAttribute("src") || "";
+            }
+        });
+        audioEl.addEventListener("pause", remember);
+        audioEl.addEventListener("play", function () { if (resumeEl) resumeEl.hidden = true; });
+        audioEl.addEventListener("ended", function () {
+            var src = audioEl.getAttribute("src");
+            if (src) { var m = posAll(); delete m[src]; posWrite(m); }
+            paintResume();
+        });
+        /* Written down every few seconds as well, so a tab killed outright or a
+           battery that runs out still leaves a recent place to come back to. */
+        audioEl.addEventListener("timeupdate", function () {
+            var now = Date.now();
+            if (now - lastSave < 5000) return;
+            lastSave = now; remember();
+        });
+    }
+
+    /* An interruption the page can see: the screen locks, the reader switches
+       app, the tab goes to the background. Pause rather than talk to nobody,
+       and write the place down before the browser stops giving us cycles. */
+    document.addEventListener("visibilitychange", function () {
+        if (document.hidden && audioEl && !audioEl.paused) { audioEl.pause(); }
+        else if (document.hidden) { remember(); }
+    });
+    window.addEventListener("pagehide", remember);
+    armRestore();
 
     /* The unit words are built here rather than sitting in the markup, so they
        have to be translated here too: a Chinese page reading "1 h 19 min" is
@@ -321,9 +451,16 @@
         showPics = (s && s.photos) || []; showIdx = 0; paintShow();
         var g = document.getElementById("nmGuide"), a = document.getElementById("nmAudio");
         var setSrc = function (u) {
-            if (!u) { g.hidden = true; a.removeAttribute("src"); return; }
+            /* Arriving at the next stop is an interruption like any other. The
+               place in the track being left is written down first, so walking
+               back to a stop resumes it instead of restarting it. */
+            if (a.getAttribute("src") && a.getAttribute("src") !== u) {
+                if (!a.paused) a.pause(); else remember();
+            }
+            if (!u) { g.hidden = true; a.removeAttribute("src"); paintResume(); return; }
             if (a.getAttribute("src") !== u) a.setAttribute("src", u);
             g.hidden = false;
+            armRestore();
         };
         var src = (e && (e.audio || e.audio_url)) || "";
         if (src) { setSrc(src); return; }

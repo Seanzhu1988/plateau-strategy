@@ -43,6 +43,10 @@ EXTRA_SKIP = {
 }
 
 EXTRA = {
+    # ---- the guide player on the National Mall page ----
+    "Picks up at": ["\u4ece\u6b64\u5904\u7ee7\u7eed", "Contin\u00faa en",
+                    "\uc774\uc5b4\uc11c \uc7ac\uc0dd", "Ti\u1ebfp t\u1ee5c t\u1eeb"],
+
     # ---- time units built in JS on the Mall page ----
     "hr": ["\u5c0f\u65f6", "h", "\uc2dc\uac04", "gi\u1edd"],
     "min": ["\u5206\u949f", "min", "\ubd84", "ph\u00fat"],
