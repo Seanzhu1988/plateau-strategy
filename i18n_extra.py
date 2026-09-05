@@ -37,6 +37,14 @@ EXTRA_SKIP = {
 }
 
 EXTRA = {
+    # ---- the dedication on the National Mall page ----
+    # The name is carried through every language unchanged.
+    "This tour is in memory of my beloved friend, Dave Weathersby.": [
+        "\u8c28\u4ee5\u6b64\u884c\u7eaa\u5ff5\u6211\u631a\u7231\u7684\u670b\u53cb Dave Weathersby\u3002",
+        "Este recorrido est\u00e1 dedicado a la memoria de mi querido amigo, Dave Weathersby.",
+        "\uc774 \ud22c\uc5b4\ub294 \uc0ac\ub791\ud558\ub294 \uce5c\uad6c Dave Weathersby\ub97c \uae30\ub9ac\uba70 \ub9cc\ub4e4\uc5c8\uc2b5\ub2c8\ub2e4.",
+        "H\u00e0nh tr\u00ecnh n\u00e0y \u0111\u1ec3 t\u01b0\u1edfng nh\u1edb ng\u01b0\u1eddi b\u1ea1n th\u00e2n y\u00eau c\u1ee7a t\u00f4i, Dave Weathersby."],
+
     # ---- time units built in JS on the Mall page ----
     "hr": ["\u5c0f\u65f6", "h", "\uc2dc\uac04", "gi\u1edd"],
     "min": ["\u5206\u949f", "min", "\ubd84", "ph\u00fat"],
