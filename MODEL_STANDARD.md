@@ -68,6 +68,55 @@ A score under 7.5 or any blocking issue goes back to a fix agent with the
 issue list; up to two rounds. A model passes when the refuters fail to refute
 it, not when the builder is satisfied.
 
+## The realism checklist, pass or fail
+
+Sean, 2026-09-04, on the models the routine had not yet reached: "I love the
+way of the built we have now for example capitol hill, however we need others
+to be more realist too, some of them are still unacceptable."
+
+He is right, and the reason is worth stating plainly, because it changes how
+the rest of the queue gets built. The four heroes cost about 1.7 million
+subagent tokens each, and what made them good was NOT the spend. It was that
+they ended up with a list of real features. The Air and Space Museum, rendered
+this day, is a plain grey box with no shadow. Old North Church is better,
+recognisable even, and still flat: one brick tone, no cornice, no window
+frames, no shadow. Neither is short of tokens. Both are short of a LIST.
+
+So here is the list. Every model answers all nine before it is committed, and
+a No is a defect to fix, not a note to file. This is cheap to satisfy once the
+research is done, which is the whole point.
+
+1. **Real counts drawn as real objects.** Columns as columns, each with a
+   capital block. Windows as openings. Bays as bays. A column count in the
+   header over a blank wall in the render is a FAIL, and it is the single
+   most common one.
+2. **Horizontal breaks.** Cornice, string course, water table, parapet, each
+   as its own thin slab. One extruded wall running ground to roof is the
+   shape of a box, whatever is written above it.
+3. **A base.** Steps as a stack of shrinking slabs at the real count, or a
+   plinth, or a podium. Nothing in this project sits straight on the lawn.
+4. **A roof that is not just the top face.** Pitch, hip, dome on a drum,
+   lantern, cupola, balustrade, chimneys. If the roof is a flat lid, say in
+   the header that the building really has a flat roof, or fix it.
+5. **Two tones per material, minimum,** through `ctx.shade`, warmer on the
+   sunlit faces. Flat single-tone fill is what makes a correct model read as
+   a cardboard mock-up.
+6. **A ground shadow under every main mass.** Nothing here casts light, so a
+   building without one floats.
+7. **Heights TRUE,** and if the `dc-3d.js` place height disagrees with the
+   published number, the place height is corrected. Four models have needed
+   this already.
+8. **Openings that survive map scale.** A window one tone off its wall
+   disappears at 900 pixels. Give reveals real contrast or admit they are
+   not drawn.
+9. **The one thing a visitor names.** The Statue of Freedom. The grasshopper
+   vane. The gold dome. The 36 columns. If a building is famous for a feature
+   and the feature is not in the model, the model is not that building, and
+   no amount of correct massing rescues it.
+
+And then the step that is not on the list because it is not optional: LOOK at
+it, from more than one angle, before it is committed.
+
 ## The mechanics
 
 - One file per building: `dc-form-<k>.js` registers
@@ -351,3 +400,92 @@ scene file) and has been LOOKED at from more than one angle.
        walls are directionally lit. Offset it away from the light.
     g. the plaza disc's polygon corner reads as a sheet of paper under the
        model at some yaws; the coping is too faint to register.
+
+- dcwar, the District of Columbia War Memorial (2026-09-04). Published, every
+  figure read this run: "47-foot (14 m) tall circular, domed, peristyle Doric
+  temple", platform "43 feet 5 inches (13.23 m)", "4-foot (1.2 m) high"
+  marble base, twelve "22-foot (6.7 m) tall" "fluted Doric marble columns"
+  (Wikipedia, District of Columbia War Memorial); overall diameter 44 ft and
+  each column "3 feet 10 inches in diameter", Vermont marble from the Danby
+  quarry (NPS, "Building the District of Columbia War Memorial"). Designed as
+  a BANDSTAND, which is why the platform is a floor and not a plinth and why
+  nothing stands on it. The place height h: 14 already WAS the published 47 ft
+  and needed no correction; true 0.3048 m per foot throughout.
+  STYLE NAMED FIRST, per the standard: the Greek Doric monopteros. STYLES.md
+  does not carry it and this run may not edit that shared file, so the five
+  tells the model is built to are restated in the file header and the STYLES.md
+  entry is OWED: no walls at all and the far columns visible through it; Doric
+  means no column base; the entablature is two bands, architrave then an
+  oversailing cornice; a shallow saucer dome, never a hemisphere; a stepped
+  stylobate.
+  DERIVED IN THE OPEN, because the two published diameters differ by 7 inches
+  and something had to reconcile them: column CENTRES on a 19.79 ft radius, so
+  their outer faces reach 21.7 ft, giving the published 43'-5" platform and a
+  44 ft temple measured to the column face.
+  Named gaps: no published step count or riser (three, 8 in, classical); no
+  published entablature depth (2 + 1.5 taken out of the 47 ft remainder); no
+  published dome rise or profile; no published statement that the Doric frieze
+  carries triglyphs, so none is drawn; no published inscription band height.
+  What LOOKING caught and arithmetic did not, three things, none of them
+  visible in any count: (1) the dome sprang straight off the cornice at the
+  full 22 ft radius and, with six rings in ALTERNATING tones, a correctly
+  budgeted 13 ft saucer read as a stepped beehive on twelve stumps; it now
+  springs inside a low attic ring, in ONE tone, over ten fine rings. (2) the
+  cornice at 1.055 x the architrave did not oversail enough to read as its own
+  slab and merged into the dome mass; 1.10 separates them. (3) THE WORST ONE,
+  and only the low camera showed it: at a 27 ft outermost tread the stylobate
+  stood 5 ft proud of the 43'-5" platform and HID the 4 ft base completely, so
+  the 499 names, which are the entire memorial, had nowhere to be; the steps
+  now finish just outside the platform and the inscribed base reads.
+  OWED: the two adversarial critics did not fit inside this run's 25 minute
+  ceiling. The four renders (yaw -0.55 pitch 0.30 before and after the dome
+  fix, yaw -2.10 pitch 0.22 before and after the stylobate fix) are what this
+  build was verified on. First thing for the next run, worst first:
+    a. the ngon-stack dome still shows ten bright annular top faces and reads
+       as ribbed rather than smooth. This is the shared dome idiom, so the fix
+       belongs in the helper, not here: interpolate the shade across each ring
+       or suppress the top face of every ring but the crown.
+    b. the columns are eight-sided prisms and the word "fluted" is carried
+       only by the per-face shading. At map scale that is honest; in a close-up
+       scene it will not be.
+    c. no source reached this run says whether the Doric frieze carries
+       triglyphs. It is drawn plain. Find an elevation or a HABS sheet
+       (loc.gov/pictures/item/dc1019, HABS DC-857, six sheets) and settle it.
+
+## Researched this run, NOT built, for the next run to pick up
+
+- american, the National Museum of American History. The research is done and
+  is recorded here so the next run does not pay for it twice.
+  MEASURED this run from OSM way 445808462 through Overpass: 151.2 m by 68.9 m
+  = 496 ft by 226 ft, an almost pure rectangle, tagged height 20.5 m. The
+  dc-3d.js place height is 24 and should be CORRECTED to 21, with the honest
+  caveat that 20.5 m is an OSM tag, not an architect's figure, and no published
+  height was found in any source reached.
+  PUBLISHED: about 750,000 sq ft over a basement, three exhibition levels, two
+  collection levels and a mechanical penthouse; designed 1955-1964 by McKim,
+  Mead and White / Steinman, Cain and White, Walker O. Cain the architect;
+  walls are precast concrete panels faced in pink Tennessee marble sandblasted
+  to a uniform surface; the building sits on a broad platform base and carries
+  "modernist shadow cornices" (Smithsonian Institution Archives; SAH
+  ARCHIPEDIA DC-01-ML14).
+  THE FACADE, which is the whole model and is published in words: "regularly
+  spaced, rectangular slabs of wall set vertically that rise from the podium to
+  the cornice line are treated as a modern equivalent of columns", "held away
+  from the inner wall by vertical windows of solar gray glass, creating the
+  alternation of light and shade associated with columnar architecture"; the
+  building was "conceived as a modern rendition of a peripteral temple on the
+  model of the Lincoln Memorial"; its "compact rectangular mass culminates in a
+  recessed attic story"; "the building's broad terrace seen from the Mall
+  serves as the roof of a full-story level set against the embankment fronting
+  on Constitution Avenue" (SAH ARCHIPEDIA).
+  THE GAP THAT BLOCKED THE BUILD, and it is exactly the one checklist item 1
+  cares about: no source reached this run gives the NUMBER of marble piers or
+  the bay module. Three sources were tried and none has it. The NCPC west
+  facade modification recommendation, file 7156, October 2010, is a scanned
+  PDF that WebFetch could not read and is the most likely place for an
+  elevation:
+  ncpc.gov/docs/actions/2010Oct/National_Museum_American_History_West_Facade_Modification_Recommendation_7156_October2010_.pdf
+  Get that PDF read, or find the HABS sheets, before building. Drawing the
+  piers on an invented module would put a guessed count in the model's most
+  prominent feature, and drawing no piers at all would leave a marble box,
+  which is the exact failure Sean called unacceptable.
