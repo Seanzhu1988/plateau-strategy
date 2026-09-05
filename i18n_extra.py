@@ -43,6 +43,12 @@ EXTRA_SKIP = {
 }
 
 EXTRA = {
+    "No recording for this stop yet.": [
+        "\u8fd9\u4e00\u7ad9\u5c1a\u672a\u5f55\u5236\u8bb2\u89e3\u3002",
+        "Todav\u00eda no hay grabaci\u00f3n para esta parada.",
+        "\uc774 \uc7a5\uc18c\ub294 \uc544\uc9c1 \ub179\uc74c\uc774 \uc5c6\uc2b5\ub2c8\ub2e4.",
+        "\u0110i\u1ec3m d\u1eebng n\u00e0y ch\u01b0a c\u00f3 b\u1ea3n ghi \u00e2m."],
+
     # ---- the guide player on the National Mall page ----
     "Picks up at": ["\u4ece\u6b64\u5904\u7ee7\u7eed", "Contin\u00faa en",
                     "\uc774\uc5b4\uc11c \uc7ac\uc0dd", "Ti\u1ebfp t\u1ee5c t\u1eeb"],

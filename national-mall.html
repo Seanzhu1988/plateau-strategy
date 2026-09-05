@@ -125,6 +125,10 @@
         .nm-guide { flex-wrap: wrap; }
         .nm-resume { font-size: .82rem; color: #8a8378; white-space: nowrap; }
         .nm-resume[hidden] { display: none !important; }
+        /* Said plainly, because a stop that simply shows nothing reads as
+           a broken page rather than an honest gap. */
+        .nm-nogudie { margin: .4rem 0 0; font-size: .84rem; color: #8a8378; }
+        .nm-nogudie[hidden] { display: none !important; }
         .nm-walkbar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: .6rem 0; }
         .nm-walkbar button { min-height: 44px; padding: .5rem .9rem !important; border-radius: 10px !important; border: 1px solid #12305b !important;
             background: #12305b !important; color: #ffffff !important; font-weight: 700; box-shadow: none !important; cursor: pointer; }
@@ -178,6 +182,7 @@
                     </div>
                     <div class="nm-story" id="nmNowStory" hidden></div>
                     <div class="nm-guide" id="nmGuide" hidden><span>Listen:</span><audio id="nmAudio" controls preload="none"></audio><span class="nm-resume" id="nmResume" hidden></span></div>
+                    <p class="nm-nogudie" id="nmNoGuide" hidden>No recording for this stop yet.</p>
                     <p id="nmNowDesc"></p>
                     <p class="nm-links"><a id="nmNowMap" href="#" target="_blank" rel="noopener">Open in Maps</a></p>
                 </div>
@@ -366,6 +371,13 @@
         if (gg) gg.hidden = true;
         paintResume();
     }
+    /* Eleven of the eighteen stops have no recording yet. Hiding the player and
+       saying nothing made that read as a fault: tap a stop, get silence, no idea
+       whether the guide is broken or simply not made. Say which. */
+    function sayNoGuide(on) {
+        var el = document.getElementById("nmNoGuide");
+        if (el) el.hidden = !on;
+    }
 
     /* The unit words are built here rather than sitting in the markup, so they
        have to be translated here too: a Chinese page reading "1 h 19 min" is
@@ -481,9 +493,10 @@
                has already started: the resource stays attached, and Safari in
                particular keeps the stream alive, so tapping a stop with no
                recording could leave the PREVIOUS stop's guide talking over it. */
-            if (!u) { silenceGuide(); return; }
+            if (!u) { silenceGuide(); sayNoGuide(!!(s && s.n)); return; }
             if (a.getAttribute("src") !== u) a.setAttribute("src", u);
             g.hidden = false;
+            sayNoGuide(false);
             armRestore();
         };
         var src = (e && (e.audio || e.audio_url)) || "";
@@ -514,7 +527,7 @@
         nowDesc.hidden = false;
         nowName.textContent = "";
         showPics = []; paintShow();
-        silenceGuide();
+        silenceGuide(); sayNoGuide(false);
     }
     function show(key, fromUser) {
         current = key || "";
