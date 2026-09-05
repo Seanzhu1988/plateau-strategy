@@ -6,12 +6,10 @@
     "other": "Other",
     "boston": "Boston",
     "toruń": "Toruń",
-    "new-york": "New-York",
-    "los-angeles": "Los-Angeles",
-    "stadtbezirk-ii-essen": "Stadtbezirk-Ii-Essen",
+    "los-angeles": "Los Angeles",
+    "stadtbezirk-ii-essen": "Stadtbezirk Ii Essen",
     "chicago": "Chicago",
-    "south-kensington": "South-Kensington",
-    "washington-d-c": "Washington-D-C"
+    "south-kensington": "South Kensington"
   },
   "entries": [
     {
@@ -3272,7 +3270,7 @@
     },
     {
       "name": "The Met, New York",
-      "city": "new-york",
+      "city": "nyc",
       "type": "attraction",
       "cat": "culture",
       "price": null,
@@ -3410,7 +3408,7 @@
     },
     {
       "name": "Smithsonian Institution",
-      "city": "washington-d-c",
+      "city": "dc",
       "type": "attraction",
       "cat": "culture",
       "price": null,
@@ -3435,7 +3433,7 @@
     },
     {
       "name": "Museum of Modern Art",
-      "city": "new-york",
+      "city": "nyc",
       "type": "attraction",
       "cat": "culture",
       "price": null,

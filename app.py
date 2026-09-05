@@ -5647,8 +5647,8 @@ def api_geography():
         # District of Columbia". Name the city there instead, it is the same
         # ground, and saying it twice helps nobody.
         if county.lower() == state.lower():
-            county = (e.get("city_label") or city).title()
-        label = (e.get("city_label") or cities.get(city) or city.title()).strip()
+            county = (e.get("city_label") or _city_title(city))
+        label = (e.get("city_label") or cities.get(city) or _city_title(city)).strip()
         counties = geo.setdefault(state, {})
         lst = counties.setdefault(county, [])
         if city not in seen.setdefault((state, county), set()):
@@ -6056,17 +6056,54 @@ _CITY_ALIASES = {
 }
 
 
+def _norm_city(s):
+    """A city name reduced to plain words, so two spellings of one city can be
+    compared. The alias table above is written in words, but discovery.py hands
+    the book a SLUG: _slug("New York") is "new-york" and _slug("Washington,
+    D.C.") is "washington-d-c", and neither is in any tuple above. That single
+    mismatch is what let "New-York" open a rival chapter beside "New York" with
+    2 places in it against 55, and "Washington-D-C" beside "Washington DC" with
+    1 against 38. Every separator now collapses to one space, so the slug, the
+    label and the alias all read the same."""
+    return " ".join(re.sub(r"[^a-z0-9]+", " ", (s or "").lower()).split())
+
+
+def _city_title(key):
+    """A readable city name from a bare key. A key is a slug, so title() alone
+    printed the separator straight onto the filter row: three chips read
+    "Los-Angeles", "South-Kensington" and "Stadtbezirk-Ii-Essen", which is a
+    slug wearing a city's place on the page."""
+    return (key or "").replace("-", " ").replace("_", " ").strip().title()
+
+
+# The alias table, indexed the way names actually arrive.
+_CITY_ALIAS_BY_NORM = {}
+for _short, _names in _CITY_ALIASES.items():
+    for _n in (_short,) + tuple(_names):
+        _CITY_ALIAS_BY_NORM[_norm_city(_n)] = _short
+
+
+def _city_group(key, label):
+    """The canonical chapter a (key, label) pair belongs to, alias or not."""
+    for cand in (_norm_city(label), _norm_city(key)):
+        if cand:
+            return _CITY_ALIAS_BY_NORM.get(cand) or cand
+    return ""
+
+
 def _same_chapter(cities, key, label):
     """The existing chapter this city belongs to, or the key unchanged."""
     if not key or key in cities:
         return key
-    for short, names in _CITY_ALIASES.items():
-        if short in cities and key in names:
+    for cand in (_norm_city(key), _norm_city(label)):
+        if not cand:
+            continue
+        short = _CITY_ALIAS_BY_NORM.get(cand)
+        if short and short in cities:
             return short
-    want = (label or key).strip().lower()
-    for k, lbl in cities.items():
-        if (lbl or "").strip().lower() == want:
-            return k
+        for k, lbl in cities.items():
+            if _norm_city(lbl) == cand or _norm_city(k) == cand:
+                return k
     return key
 
 
@@ -6128,11 +6165,25 @@ def _heal_chapters(d):
     for e in entries:
         counts[e.get("city")] = counts.get(e.get("city"), 0) + 1
 
+    # Grouped on the NORMALISED name, not the raw label. Grouping on the label
+    # folded "New-York" into "New York" only by luck of the hyphen reading as
+    # one word; it could never fold "Washington-D-C" into "Washington DC",
+    # because those are two different strings however you case them. Through
+    # the alias table both land on "dc".
     groups = {}
     for k, lbl in cities.items():
-        groups.setdefault((lbl or k).strip().lower(), []).append(k)
+        groups.setdefault(_city_group(k, lbl) or k, []).append(k)
 
     moved = False
+    # A label that is exactly key.title() was written by the machine from the
+    # slug, never by a person or a geocoder, so the separator can be taken back
+    # out. A real name ("New York" under "nyc", "Toruń" under "toruń") never
+    # matches this test and is left exactly as it is.
+    for k, lbl in list(cities.items()):
+        if lbl and lbl == k.title() and lbl != _city_title(k):
+            cities[k] = _city_title(k)
+            moved = True
+
     for _, keys in groups.items():
         if len(keys) < 2:
             continue
@@ -6412,7 +6463,7 @@ def api_destinations_add():
                 cities.setdefault("other", "Other")
             else:
                 label = (city_lbl or _no_tags((data.get("city_label") or "").strip())[:60]
-                         or city.title())
+                         or _city_title(city))
                 cities[city] = label
         # dedupe: the site already remembers this place, but a re-search is a chance
         # to FILL IN what's still missing. A blank description gets one; a description
@@ -6492,7 +6543,7 @@ def api_destinations_add():
                "found_via": (data.get("found_via") or "search")[:20],
                # where in the world it is, so the planner's pickers can find it
                "state": state, "county": county, "country": country,
-               "city_label": _no_tags(city_lbl or "")[:60] or cities.get(city, city.title()),
+               "city_label": _no_tags(city_lbl or "")[:60] or cities.get(city) or _city_title(city),
                "added_at": datetime.datetime.now().isoformat(timespec="seconds")}
         if dining:
             rec["dining"] = dining
@@ -11689,10 +11740,19 @@ def _seed_book_fields_once():
                     live = json.load(f)
             except Exception:
                 live = {"cities": {}, "entries": []}
+            # A live book already carrying a split chapter repairs itself
+            # here, rather than waiting for somebody to plant a place, which
+            # is the only other moment _heal_chapters runs. It has to happen
+            # BEFORE the index below, not after: the index matches a shipped
+            # row to a live one on (city, name), so healing afterwards left
+            # the live rows under the old key, the shipped rows failed to
+            # match them, and three museums were appended a second time.
+            # Measured on a live copy carrying the split: 140 entries became
+            # 143.
+            changed = _heal_chapters(live)
             idx = {}
             for e in live.get("entries") or []:
                 idx[(e.get("city"), (e.get("name") or "").lower())] = e
-            changed = False
             for srce in shipped.get("entries") or []:
                 k = (srce.get("city"), (srce.get("name") or "").lower())
                 tgt = idx.get(k)
