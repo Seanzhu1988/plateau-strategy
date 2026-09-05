@@ -4,7 +4,8 @@
   "dc": "Washington DC",
   "seattle": "Seattle",
   "other": "Other",
-  "boston": "Boston"
+  "boston": "Boston",
+  "toruń": "Toruń"
  },
  "entries": [
   {
@@ -348,7 +349,9 @@
      "step-free"
     ]
    },
-   "updated_at": "2026-09-01T02:51:32"
+   "updated_at": "2026-09-01T02:51:32",
+   "audio": "/media/audio/guide-washington-monument.mp3",
+   "audio_kind": "guide"
   },
   {
    "name": "Air & Space Museum",
@@ -367,7 +370,9 @@
    "story_zh": "史密森学会当年并不想要莱特飞行者号。世界上第一架飞机在伦敦挂了二十年，是1928年奥维尔·莱特亲手送过去的，因为这家博物馆当时仍把兰利的机器说成是第一架具备飞行能力的飞机。直到1942年，学会才承认兰利的\"飞机场号\"是被人悄悄改装之后才飞起来的。奥维尔安排了飞机回国，却在1948年1月去世，同年12月它才在这里揭幕。\n\n这栋楼1976年7月1日开馆，比建国二百周年纪念日早三天，今年正好满五十年。2018年动工的十亿美元大修，最后五个展厅在2026年7月完工，可以用手触摸的月岩也回到了展厅。\n\n门票免费，但要预约时段，而且会约满。出门前先在网上订好。建议开馆就到：国家广场那一侧排队最短，大厅人还少的时候，头顶那些飞机最好看。",
    "story_es": "El Smithsonian no siempre quiso el Wright Flyer. Durante veinte años el primer avión del mundo estuvo colgado en Londres, enviado allí en 1928 por el propio Orville Wright, porque esta institución seguía atribuyendo a la máquina de Samuel Langley el mérito de ser la primera capaz de volar. En 1942 el Smithsonian admitió por fin que el Aerodrome de Langley había sido modificado en silencio antes de volar. Orville gestionó el regreso del avión y murió en enero de 1948. Se inauguró aquí en diciembre de ese mismo año.\n\nEl edificio abrió el 1 de julio de 1976, tres días antes del Bicentenario, y este año cumple cincuenta. La reforma de mil millones de dólares iniciada en 2018 terminó sus últimas cinco salas en julio de 2026, y la roca lunar que se puede tocar volvió a la sala.\n\nLa entrada es gratuita, con pase de hora, y se agotan. Resérvelo por internet antes de salir del hotel. Venga a la hora de apertura: la cola del lado del Mall es la más corta y los aviones colgantes se ven mejor con el atrio vacío.",
    "story_ko": "스미소니언이 처음부터 라이트 플라이어를 원했던 것은 아닙니다. 세계 최초의 비행기는 20년 동안 런던에 걸려 있었습니다. 1928년 오빌 라이트가 직접 보낸 것입니다. 당시 이 박물관이 새뮤얼 랭글리의 기계를 최초로 비행이 가능했던 기체라고 계속 소개했기 때문입니다. 스미소니언은 1942년에야 랭글리의 에어로드롬이 비행 전에 조용히 개조되었다는 사실을 인정했습니다. 오빌은 기체의 귀환을 준비했지만 1948년 1월에 세상을 떠났고, 비행기는 그해 12월에 공개되었습니다.\n\n건물은 1976년 7월 1일, 독립 200주년을 사흘 앞두고 문을 열었고 올해로 오십 년이 됩니다. 2018년 시작된 10억 달러 규모의 재단장은 마지막 다섯 개 전시실을 2026년 7월에 마쳤고, 손으로 만질 수 있는 월석도 전시장에 돌아왔습니다.\n\n입장은 무료지만 시간 지정 예약이 필요하고 예약은 금방 마감됩니다. 숙소를 나서기 전에 온라인으로 예약하세요. 개관 시간에 맞춰 가는 편이 좋습니다. 몰 쪽 입구 줄이 가장 짧고, 중앙홀이 비어 있을 때 천장에 매달린 항공기가 가장 잘 보입니다.",
-   "story_vi": "Viện Smithsonian không phải lúc nào cũng muốn giữ chiếc Wright Flyer. Suốt hai mươi năm, chiếc máy bay đầu tiên của thế giới được treo ở London, do chính Orville Wright gửi sang năm 1928, vì khi đó bảo tàng vẫn ghi công cỗ máy của Samuel Langley là chiếc đầu tiên có khả năng bay. Mãi đến năm 1942, Smithsonian mới thừa nhận chiếc Aerodrome của Langley đã được sửa đổi lặng lẽ trước khi bay. Orville lo việc đưa máy bay về nước rồi qua đời vào tháng 1 năm 1948. Hiện vật được ra mắt tại đây vào tháng 12 cùng năm.\n\nTòa nhà mở cửa ngày 1 tháng 7 năm 1976, ba ngày trước lễ kỷ niệm 200 năm lập quốc, và năm nay tròn năm mươi tuổi. Đợt tu sửa trị giá một tỷ đô la khởi công năm 2018 đã hoàn tất năm phòng trưng bày cuối cùng vào tháng 7 năm 2026, và mẫu đá Mặt Trăng có thể chạm tay đã trở lại phòng trưng bày.\n\nVào cửa miễn phí nhưng phải đặt vé theo khung giờ, và vé hết rất nhanh. Hãy đặt trực tuyến trước khi rời khách sạn. Nên đến lúc mở cửa: hàng chờ phía National Mall ngắn nhất, và những chiếc máy bay treo trên trần đẹp nhất khi sảnh còn vắng."
+   "story_vi": "Viện Smithsonian không phải lúc nào cũng muốn giữ chiếc Wright Flyer. Suốt hai mươi năm, chiếc máy bay đầu tiên của thế giới được treo ở London, do chính Orville Wright gửi sang năm 1928, vì khi đó bảo tàng vẫn ghi công cỗ máy của Samuel Langley là chiếc đầu tiên có khả năng bay. Mãi đến năm 1942, Smithsonian mới thừa nhận chiếc Aerodrome của Langley đã được sửa đổi lặng lẽ trước khi bay. Orville lo việc đưa máy bay về nước rồi qua đời vào tháng 1 năm 1948. Hiện vật được ra mắt tại đây vào tháng 12 cùng năm.\n\nTòa nhà mở cửa ngày 1 tháng 7 năm 1976, ba ngày trước lễ kỷ niệm 200 năm lập quốc, và năm nay tròn năm mươi tuổi. Đợt tu sửa trị giá một tỷ đô la khởi công năm 2018 đã hoàn tất năm phòng trưng bày cuối cùng vào tháng 7 năm 2026, và mẫu đá Mặt Trăng có thể chạm tay đã trở lại phòng trưng bày.\n\nVào cửa miễn phí nhưng phải đặt vé theo khung giờ, và vé hết rất nhanh. Hãy đặt trực tuyến trước khi rời khách sạn. Nên đến lúc mở cửa: hàng chờ phía National Mall ngắn nhất, và những chiếc máy bay treo trên trần đẹp nhất khi sảnh còn vắng.",
+   "audio": "/media/audio/guide-air-and-space-museum.mp3",
+   "audio_kind": "guide"
   },
   {
    "name": "Museum of American History",
@@ -384,7 +389,10 @@
    "story_zh": "这栋楼 1964 年 1 月开馆，当时叫国立历史与技术博物馆，由 McKim, Mead & White 事务所设计，1980 年才改成现在的名字。进馆免费。多数人来，是为了看一件东西。\n\n那面星条旗 1813 年在巴尔的摩缝成，缝制者是玛丽·皮克斯吉尔，由麦克亨利堡的阿米斯特德少校订制。原本 30 英尺乘 42 英尺，现在挂在这里的只有 30 乘 34。少掉的部分在十九世纪被一块块剪下送人做纪念，其中包括一整颗星，再也没回来。\n\n这也是展厅昏暗的原因。旗子平放在一个低氧展柜里，以十度倾角托着，灯光经过过滤。这个角度是文物修复人员定的，既撑得住羊毛，又让你看得见。先去看它，趁人还没多起来。进去以后给眼睛整整一分钟适应，再判断自己是不是什么都看不清。",
    "story_es": "El edificio abrió en enero de 1964 como Museo Nacional de Historia y Tecnología, obra del estudio McKim, Mead and White, y adoptó su nombre actual en 1980. La entrada es gratuita. Casi todo el mundo viene por un solo objeto.\n\nLa bandera del himno se cosió en Baltimore en 1813. La hizo Mary Pickersgill por encargo del mayor George Armistead, para el fuerte McHenry. Medía 30 pies por 42. La que cuelga aquí mide 30 por 34. El resto se fue cortando a lo largo del siglo XIX y se repartió como recuerdo, incluida una estrella entera que nunca volvió.\n\nPor eso la sala está a oscuras. La bandera reposa inclinada diez grados en una cámara de bajo oxígeno y con luz filtrada, un ángulo que eligieron los conservadores para sostener la lana y dejar verla a la vez. Vaya allí primero, antes de que se llene. Y dele un minuto entero a sus ojos dentro de la cámara antes de decidir que no ve nada.",
    "story_ko": "이 건물은 1964년 1월 국립 역사기술박물관으로 문을 열었고, 설계는 매킴 미드 앤 화이트가 맡았습니다. 지금의 이름은 1980년에 붙었습니다. 입장은 무료입니다. 대부분은 딱 한 점을 보러 옵니다.\n\n성조기는 1813년 볼티모어에서 메리 피커스길이 꿰맸습니다. 맥헨리 요새를 위해 아미스테드 소령이 주문한 깃발입니다. 원래는 가로 42피트, 세로 30피트였는데 지금 걸린 것은 30 곱하기 34입니다. 나머지는 19세기 내내 조각조각 잘려 기념품으로 나눠졌고, 그중에는 별 하나가 통째로 있었습니다. 돌아오지 않았습니다.\n\n전시실이 어두운 이유가 이것입니다. 깃발은 저산소 전시실 안에 10도로 기울여 눕혀 두고, 빛도 걸러서 씁니다. 양모를 받치면서도 잘 보이게 하려고 보존 담당자들이 고른 각도입니다. 이곳부터 먼저 보세요, 사람이 몰리기 전에. 그리고 안에 들어가면 눈이 적응하도록 꼬박 1분은 준 다음에 아무것도 안 보인다고 판단하세요.",
-   "story_vi": "Tòa nhà mở cửa tháng 1 năm 1964 với tên Bảo tàng Quốc gia về Lịch sử và Kỹ thuật, do hãng McKim, Mead and White thiết kế, và mang tên hiện nay từ năm 1980. Vào cửa miễn phí. Phần lớn khách đến vì đúng một hiện vật.\n\nLá cờ Star-Spangled Banner được bà Mary Pickersgill khâu ở Baltimore năm 1813, theo đơn đặt của Thiếu tá George Armistead cho pháo đài McHenry. Nó vốn rộng 30 bộ nhân 42 bộ. Lá cờ treo ở đây bây giờ là 30 nhân 34. Phần còn lại đã bị cắt dần suốt thế kỷ 19 rồi đem tặng làm kỷ vật, trong đó có nguyên một ngôi sao, và không bao giờ quay lại.\n\nĐó là lý do gian trưng bày tối như vậy. Lá cờ nằm nghiêng 10 độ trong buồng ít oxy, dưới ánh sáng đã lọc. Các nhà bảo quản chọn góc nghiêng đó để vừa đỡ được lớp len vừa cho người xem nhìn rõ. Hãy vào đây trước tiên, trước khi đông người. Và cho mắt trọn một phút để quen với bóng tối rồi hãy kết luận là mình không nhìn thấy gì."
+   "story_vi": "Tòa nhà mở cửa tháng 1 năm 1964 với tên Bảo tàng Quốc gia về Lịch sử và Kỹ thuật, do hãng McKim, Mead and White thiết kế, và mang tên hiện nay từ năm 1980. Vào cửa miễn phí. Phần lớn khách đến vì đúng một hiện vật.\n\nLá cờ Star-Spangled Banner được bà Mary Pickersgill khâu ở Baltimore năm 1813, theo đơn đặt của Thiếu tá George Armistead cho pháo đài McHenry. Nó vốn rộng 30 bộ nhân 42 bộ. Lá cờ treo ở đây bây giờ là 30 nhân 34. Phần còn lại đã bị cắt dần suốt thế kỷ 19 rồi đem tặng làm kỷ vật, trong đó có nguyên một ngôi sao, và không bao giờ quay lại.\n\nĐó là lý do gian trưng bày tối như vậy. Lá cờ nằm nghiêng 10 độ trong buồng ít oxy, dưới ánh sáng đã lọc. Các nhà bảo quản chọn góc nghiêng đó để vừa đỡ được lớp len vừa cho người xem nhìn rõ. Hãy vào đây trước tiên, trước khi đông người. Và cho mắt trọn một phút để quen với bóng tối rồi hãy kết luận là mình không nhìn thấy gì.",
+   "slug": "museum-of-american-history",
+   "audio": "/media/audio/guide-museum-of-american-history.mp3",
+   "audio_kind": "guide"
   },
   {
    "name": "National Gallery of Art",
@@ -410,7 +418,9 @@
      "step-free"
     ]
    },
-   "updated_at": "2026-09-01T02:51:52"
+   "updated_at": "2026-09-01T02:51:52",
+   "audio": "/media/audio/guide-national-gallery-of-art.mp3",
+   "audio_kind": "guide"
   },
   {
    "name": "US Capitol Visitor Center",
@@ -428,7 +438,10 @@
    "story_zh": "参观从地下开始。游客中心 2008 年 12 月 2 日启用，58 万平方英尺，差不多是它上方国会大厦的四分之三，整个埋在东侧地下，所以大厦的外形一点没变。2007 年 12 月，国会把中央大厅命名为“解放大厅”，纪念当年参与建造国会大厦的奴隶劳工。厅里立着自由女神像的石膏原模，圆顶上那尊铜像就是照它铸出来的。\n\n往下走到地穴层，四十根阿奎亚溪砂岩多立克柱撑起圆形大厅的地板。中段由查尔斯·布尔芬奇在 1826 年完成。找一找地上那块白色大理石罗盘石，华盛顿的四个方位区就是从这一点分开的，所以这里的地址不写 NW 或 SE 就等于没写。\n\n地穴正下方还有一间墓室，本来是给乔治·华盛顿准备的。他的遗嘱写明要葬在弗农山庄，家人照办了。这间屋子空了两百年。\n\n大多数团队都是穿过地穴急着上圆形大厅。地穴才是更安静的那一站，值得站住多看一会儿。",
    "story_es": "La visita empieza bajo tierra. El centro de visitantes abrió el 2 de diciembre de 2008: 580.000 pies cuadrados, unas tres cuartas partes del tamaño del Capitolio que tiene encima, todo enterrado en el lado este para que la silueta del edificio no cambiara. En diciembre de 2007 el Congreso puso al vestíbulo central el nombre de Emancipation Hall, en reconocimiento a los trabajadores esclavizados que ayudaron a levantar el Capitolio. Allí está el modelo en yeso de la Estatua de la Libertad, la pieza de la que se fundió el bronce de la cúpula.\n\nAbajo, en la Cripta, cuarenta columnas dóricas de arenisca de Aquia Creek sostienen el suelo de la Rotonda. Charles Bulfinch terminó la sección central en 1826. Busque la piedra de mármol blanco con la rosa de los vientos: ese punto divide Washington en sus cuatro cuadrantes, y por eso una dirección aquí no significa nada sin NW o SE.\n\nJusto debajo de la Cripta hay una cámara funeraria construida para George Washington. Su testamento decía Mount Vernon y su familia lo cumplió. Lleva dos siglos vacía.\n\nCasi todos los grupos cruzan la Cripta con prisa camino de la Rotonda. Es el sitio más tranquilo para pararse a mirar.",
    "story_ko": "관람은 지하에서 시작합니다. 방문자 센터는 2008년 12월 2일에 문을 열었고, 58만 제곱피트로 위에 있는 의사당의 약 4분의 3 크기입니다. 전부 동쪽 지하에 묻혀 있어 건물의 외관은 그대로 남았습니다. 2007년 12월 의회는 중앙 홀에 이맨시페이션 홀이라는 이름을 붙였습니다. 의사당을 세우는 데 동원된 노예 노동자들을 기리기 위해서입니다. 이곳에는 돔 위 청동상의 원형이 된 자유의 여신상 석고 모형이 서 있습니다.\n\n아래 크립트에는 아콰이아크리크 사암으로 만든 도리스식 기둥 마흔 개가 로툰다 바닥을 떠받칩니다. 중앙부는 1826년 찰스 불핀치가 완성했습니다. 바닥에 있는 흰 대리석 나침반 돌을 찾아보세요. 워싱턴의 네 구역이 바로 이 지점에서 갈리기 때문에, 이곳 주소는 NW나 SE 없이는 아무 의미가 없습니다.\n\n크립트 바로 아래에는 조지 워싱턴을 위해 만든 묘실이 있습니다. 유언장에 마운트버넌이 적혀 있었고 가족은 그 뜻을 따랐습니다. 그 방은 이백 년째 비어 있습니다.\n\n대부분의 단체는 로툰다로 올라가느라 크립트를 빠르게 지나갑니다. 서서 천천히 보기에는 크립트가 더 조용합니다.",
-   "story_vi": "Chuyến tham quan bắt đầu dưới lòng đất. Trung tâm đón khách mở cửa ngày 2 tháng 12 năm 2008, rộng 580.000 foot vuông, bằng khoảng ba phần tư tòa Quốc hội phía trên, toàn bộ nằm chìm ở mặt phía đông nên dáng của tòa nhà không hề thay đổi. Tháng 12 năm 2007, Quốc hội đặt tên sảnh trung tâm là Emancipation Hall để ghi nhận những người nô lệ đã góp công dựng nên tòa nhà này. Trong sảnh có bản mẫu bằng thạch cao của tượng Nữ thần Tự do, chính là khuôn để đúc bức tượng đồng trên mái vòm.\n\nXuống tầng hầm mộ, bốn mươi cột đá sa thạch Aquia Creek kiểu Doric đỡ lấy sàn của Rotunda. Charles Bulfinch hoàn thành phần giữa vào năm 1826. Hãy tìm phiến đá cẩm thạch trắng hình la bàn trên sàn: điểm đó chia Washington thành bốn khu, và vì vậy một địa chỉ ở đây không có NW hay SE thì không nói lên điều gì.\n\nNgay bên dưới tầng hầm mộ là một phòng mộ xây cho George Washington. Di chúc của ông ghi Mount Vernon, và gia đình đã làm đúng như thế. Căn phòng ấy bỏ trống đã hai trăm năm.\n\nPhần lớn các đoàn đi nhanh qua tầng hầm mộ để lên Rotunda. Đây mới là chỗ yên tĩnh để đứng lại mà nhìn."
+   "story_vi": "Chuyến tham quan bắt đầu dưới lòng đất. Trung tâm đón khách mở cửa ngày 2 tháng 12 năm 2008, rộng 580.000 foot vuông, bằng khoảng ba phần tư tòa Quốc hội phía trên, toàn bộ nằm chìm ở mặt phía đông nên dáng của tòa nhà không hề thay đổi. Tháng 12 năm 2007, Quốc hội đặt tên sảnh trung tâm là Emancipation Hall để ghi nhận những người nô lệ đã góp công dựng nên tòa nhà này. Trong sảnh có bản mẫu bằng thạch cao của tượng Nữ thần Tự do, chính là khuôn để đúc bức tượng đồng trên mái vòm.\n\nXuống tầng hầm mộ, bốn mươi cột đá sa thạch Aquia Creek kiểu Doric đỡ lấy sàn của Rotunda. Charles Bulfinch hoàn thành phần giữa vào năm 1826. Hãy tìm phiến đá cẩm thạch trắng hình la bàn trên sàn: điểm đó chia Washington thành bốn khu, và vì vậy một địa chỉ ở đây không có NW hay SE thì không nói lên điều gì.\n\nNgay bên dưới tầng hầm mộ là một phòng mộ xây cho George Washington. Di chúc của ông ghi Mount Vernon, và gia đình đã làm đúng như thế. Căn phòng ấy bỏ trống đã hai trăm năm.\n\nPhần lớn các đoàn đi nhanh qua tầng hầm mộ để lên Rotunda. Đây mới là chỗ yên tĩnh để đứng lại mà nhìn.",
+   "slug": "us-capitol-visitor-center",
+   "audio": "/media/audio/guide-us-capitol-visitor-center.mp3",
+   "audio_kind": "guide"
   },
   {
    "name": "White House (Lafayette Sq)",
@@ -445,7 +458,10 @@
    "story_zh": "大多数人只顾着拍白宫，从来不回头看一眼。你身后这片广场七英亩，属于朗方 1791 年规划里那片 88 英亩的总统公园。1824 年，为迎接拉法耶特再度访美，这里铺出第一批步道，并以他的名字命名。\n\n再看看正中间站着谁。不是拉法耶特，是安德鲁·杰克逊，骑在一匹人立起来的马上，出自克拉克·米尔斯之手，1853 年 1 月 8 日揭幕，正是新奥尔良战役三十八周年。这是美国铸造的第一尊青铜像，也是世界上第一尊只靠后腿支撑的骑马像，十五吨重，分十块铸成。拉法耶特要到 1891 年才在角上得到一个位置。另外三个角分别归罗尚博、科希丘什科和冯·施托伊本。\n\n你此刻站的地方本来是马路。1995 年 5 月俄克拉何马城爆炸案之后，宾夕法尼亚大道这一段对车辆封闭，此后再没重开。\n\n白宫北立面只有清早和傍晚才照得到直射阳光，正午光线平，拍出来干净。天黑之后建筑打灯，那时候来最好。",
    "story_es": "Casi todo el mundo fotografía la casa y no se da la vuelta. La plaza que tiene detrás mide siete acres y formaba parte de los 88 acres del President's Park en el plano de L'Enfant de 1791. Recibió el nombre de Lafayette en 1824, cuando se trazaron los primeros paseos antes de su regreso al país.\n\nFíjese ahora en quién ocupa el centro. No es Lafayette: es Andrew Jackson sobre un caballo encabritado, obra de Clark Mills, inaugurada el 8 de enero de 1853, en el trigésimo octavo aniversario de la batalla de Nueva Orleans. Fue la primera estatua de bronce fundida en Estados Unidos y la primera estatua ecuestre del mundo sostenida solo sobre las patas traseras: quince toneladas en diez piezas. A Lafayette le dieron una esquina en 1891. Rochambeau, Kosciuszko y von Steuben ocuparon las otras tres.\n\nUsted está de pie en una calle. Pennsylvania Avenue se cerró al tráfico en mayo de 1995, tras el atentado de Oklahoma City, y no volvió a abrirse.\n\nLa fachada norte solo recibe sol directo a primera y a última hora; al mediodía la luz es plana y pareja. Venga al anochecer, cuando iluminan el edificio.",
    "story_ko": "대부분은 백악관만 찍고 뒤는 돌아보지 않습니다. 등 뒤의 광장은 7에이커로, 1791년 랑팡 계획에 담긴 88에이커 프레지던츠 파크의 일부였습니다. 1824년 라파예트의 재방문을 앞두고 첫 산책로가 놓이면서 그의 이름이 붙었습니다.\n\n이제 한가운데 누가 서 있는지 보세요. 라파예트가 아니라 앞발을 든 말에 올라탄 앤드루 잭슨입니다. 클라크 밀스가 만들었고 1853년 1월 8일, 뉴올리언스 전투 38주년에 제막했습니다. 미국에서 주조된 최초의 청동상이자 뒷다리만으로 균형을 잡은 세계 최초의 기마상으로, 무게 15톤을 열 조각으로 나누어 주조했습니다. 라파예트는 1891년에야 모퉁이 한 자리를 얻었습니다. 나머지 세 모퉁이는 로샹보, 코시치우슈코, 폰 슈토이벤이 차지했습니다.\n\n지금 서 있는 곳은 원래 도로입니다. 1995년 5월 오클라호마시티 폭탄 테러 이후 이 구간의 펜실베이니아 애비뉴는 차량 통행이 막혔고 다시 열리지 않았습니다.\n\n북쪽 정면에는 이른 아침과 늦은 오후에만 직사광선이 듭니다. 한낮에는 빛이 평평하고 고르게 퍼집니다. 해가 진 뒤 건물에 조명이 들어올 때 오시면 가장 좋습니다.",
-   "story_vi": "Hầu hết mọi người chỉ chụp tòa nhà rồi đi, không quay lại nhìn. Quảng trường sau lưng bạn rộng bảy mẫu Anh, vốn thuộc khu President's Park rộng 88 mẫu trong quy hoạch năm 1791 của L'Enfant. Năm 1824, khi những lối đi đầu tiên được mở để đón Lafayette trở lại nước Mỹ, quảng trường được đặt theo tên ông.\n\nGiờ hãy nhìn xem ai đứng ở chính giữa. Không phải Lafayette, mà là Andrew Jackson trên lưng con ngựa chồm lên, tác phẩm của Clark Mills, khánh thành ngày 8 tháng 1 năm 1853, đúng ba mươi tám năm sau trận New Orleans. Đó là bức tượng đồng đầu tiên được đúc tại Mỹ, và là tượng cưỡi ngựa đầu tiên trên thế giới chỉ đứng bằng hai chân sau: mười lăm tấn, đúc thành mười mảnh. Mãi đến năm 1891 Lafayette mới có một góc cho riêng mình. Ba góc còn lại thuộc về Rochambeau, Kosciuszko và von Steuben.\n\nChỗ bạn đang đứng vốn là lòng đường. Tháng 5 năm 1995, sau vụ đánh bom Oklahoma City, đoạn Pennsylvania Avenue này đóng với xe cộ và không bao giờ mở lại.\n\nMặt phía bắc chỉ có nắng trực tiếp vào sáng sớm và chiều muộn; giữa trưa ánh sáng phẳng và đều. Hãy đến lúc chạng vạng, khi đèn chiếu tòa nhà bật lên."
+   "story_vi": "Hầu hết mọi người chỉ chụp tòa nhà rồi đi, không quay lại nhìn. Quảng trường sau lưng bạn rộng bảy mẫu Anh, vốn thuộc khu President's Park rộng 88 mẫu trong quy hoạch năm 1791 của L'Enfant. Năm 1824, khi những lối đi đầu tiên được mở để đón Lafayette trở lại nước Mỹ, quảng trường được đặt theo tên ông.\n\nGiờ hãy nhìn xem ai đứng ở chính giữa. Không phải Lafayette, mà là Andrew Jackson trên lưng con ngựa chồm lên, tác phẩm của Clark Mills, khánh thành ngày 8 tháng 1 năm 1853, đúng ba mươi tám năm sau trận New Orleans. Đó là bức tượng đồng đầu tiên được đúc tại Mỹ, và là tượng cưỡi ngựa đầu tiên trên thế giới chỉ đứng bằng hai chân sau: mười lăm tấn, đúc thành mười mảnh. Mãi đến năm 1891 Lafayette mới có một góc cho riêng mình. Ba góc còn lại thuộc về Rochambeau, Kosciuszko và von Steuben.\n\nChỗ bạn đang đứng vốn là lòng đường. Tháng 5 năm 1995, sau vụ đánh bom Oklahoma City, đoạn Pennsylvania Avenue này đóng với xe cộ và không bao giờ mở lại.\n\nMặt phía bắc chỉ có nắng trực tiếp vào sáng sớm và chiều muộn; giữa trưa ánh sáng phẳng và đều. Hãy đến lúc chạng vạng, khi đèn chiếu tòa nhà bật lên.",
+   "slug": "white-house-lafayette-sq",
+   "audio": "/media/audio/guide-white-house-lafayette-sq.mp3",
+   "audio_kind": "guide"
   },
   {
    "name": "Jefferson Memorial",
@@ -471,7 +487,9 @@
      "step-free"
     ]
    },
-   "updated_at": "2026-09-01T03:52:36"
+   "updated_at": "2026-09-01T03:52:36",
+   "audio": "/media/audio/guide-jefferson-memorial.mp3",
+   "audio_kind": "guide"
   },
   {
    "name": "Georgetown Waterfront",
@@ -507,7 +525,9 @@
    "story_zh": "这片山坡曾是罗伯特·李将军家的前院。他的妻子从父亲那里继承了这块地，她父亲是玛莎·华盛顿的孙子。1861年全家离开，联邦政府随后以一笔92.07美元的欠税为由收走了庄园。她派堂亲代为缴纳，税务处以必须本人亲自缴纳为由拒收。\n\n这里的坟墓是有意安排的。军需总监蒙哥马利·米格斯早年在李手下当过差，认定他是叛徒，下令把墓一路埋到宅子跟前，让李家再也无法搬回来住。1866年，他把一座安放2,111名内战无名阵亡者的墓穴直接建在李夫人的玫瑰园里。1882年最高法院判定这次没收违法，次年国会付给李家的儿子15万美元买下这片地。\n\n先上到阿灵顿宅邸，站在门廊上回头看。整座华盛顿城尽收眼底，而米格斯当年要夺走的，正是这片风景。",
    "story_es": "Esta colina era el jardín delantero de Robert E. Lee. Su mujer la heredó de su padre, nieto de Martha Washington, y la familia se marchó en 1861. El gobierno se quedó con la finca por una deuda de impuestos de 92,07 dólares: rechazó el pago que llevó el primo que ella envió, porque la norma exigía que entregara el dinero en persona.\n\nLas tumbas están aquí a propósito. El intendente general Montgomery Meigs había servido a las órdenes de Lee, lo consideraba un traidor y mandó enterrar hasta pegado a la casa para que ningún Lee pudiera volver a vivir en ella. En 1866 colocó una cripta con 2.111 muertos anónimos de la Guerra Civil en el rosal de la señora Lee. El Tribunal Supremo declaró ilegal la incautación en 1882 y al año siguiente el Congreso pagó 150.000 dólares al hijo por el terreno.\n\nSuba primero a Arlington House y dese la vuelta en el porche. Desde ahí se ve la ciudad entera, que es justo lo que Meigs le estaba quitando.",
    "story_ko": "이 언덕은 로버트 E. 리 장군 집의 앞마당이었습니다. 그의 아내가 아버지에게서 물려받은 땅이고, 그 아버지는 마사 워싱턴의 손자였습니다. 1861년 가족이 이곳을 떠나자 연방정부는 92달러 7센트의 체납 세금을 이유로 저택을 압류했습니다. 그녀가 대신 보낸 친척이 세금을 내러 갔지만 본인이 직접 내야 한다며 받아주지 않았습니다.\n\n무덤이 여기 있는 것은 의도된 일입니다. 병참감 몽고메리 마이그스는 예전에 리 밑에서 복무했고 그를 반역자로 여겨, 리 가족이 다시는 이 집에 살 수 없도록 저택 바로 앞까지 무덤을 쓰게 했습니다. 1866년에는 남북전쟁 무명 전사자 2,111명의 유해를 담은 납골실을 리 부인의 장미정원 안에 만들었습니다. 1882년 대법원은 이 압류가 위법이라고 판결했고, 이듬해 의회는 아들에게 15만 달러를 주고 이 땅을 사들였습니다.\n\n먼저 알링턴 하우스까지 올라가 현관에서 뒤를 돌아보세요. 워싱턴 시내 전체가 보이는데, 마이그스가 빼앗으려 했던 것이 바로 그 풍경입니다.",
-   "story_vi": "Ngọn đồi này từng là sân trước nhà tướng Robert E. Lee. Vợ ông thừa kế khu đất từ cha mình, một người cháu nội của bà Martha Washington, và cả nhà rời đi năm 1861. Chính phủ liên bang tịch thu điền trang vì khoản thuế nợ 92,07 đô la. Bà cho người anh họ đi nộp thay nhưng sở thuế từ chối, viện lẽ chủ đất phải tự tay nộp.\n\nNhững ngôi mộ ở đây là có chủ ý. Tổng quản quân nhu Montgomery Meigs từng phục vụ dưới quyền Lee, coi ông là kẻ phản bội, nên ra lệnh chôn cất áp sát ngay trước nhà để không một người nhà Lee nào còn có thể quay về ở. Năm 1866 ông đặt một hầm mộ chứa 2.111 tử sĩ vô danh của Nội chiến ngay trong vườn hồng của bà Lee. Năm 1882 Tòa án Tối cao phán việc tịch thu là trái luật, và năm sau Quốc hội trả cho người con trai 150.000 đô la để mua lại khu đất.\n\nHãy lên Arlington House trước rồi quay người lại trên hiên nhà. Từ đó nhìn thấy toàn bộ thành phố, và đó chính là thứ Meigs muốn tước đi."
+   "story_vi": "Ngọn đồi này từng là sân trước nhà tướng Robert E. Lee. Vợ ông thừa kế khu đất từ cha mình, một người cháu nội của bà Martha Washington, và cả nhà rời đi năm 1861. Chính phủ liên bang tịch thu điền trang vì khoản thuế nợ 92,07 đô la. Bà cho người anh họ đi nộp thay nhưng sở thuế từ chối, viện lẽ chủ đất phải tự tay nộp.\n\nNhững ngôi mộ ở đây là có chủ ý. Tổng quản quân nhu Montgomery Meigs từng phục vụ dưới quyền Lee, coi ông là kẻ phản bội, nên ra lệnh chôn cất áp sát ngay trước nhà để không một người nhà Lee nào còn có thể quay về ở. Năm 1866 ông đặt một hầm mộ chứa 2.111 tử sĩ vô danh của Nội chiến ngay trong vườn hồng của bà Lee. Năm 1882 Tòa án Tối cao phán việc tịch thu là trái luật, và năm sau Quốc hội trả cho người con trai 150.000 đô la để mua lại khu đất.\n\nHãy lên Arlington House trước rồi quay người lại trên hiên nhà. Từ đó nhìn thấy toàn bộ thành phố, và đó chính là thứ Meigs muốn tước đi.",
+   "audio": "/media/audio/guide-arlington-national-cemetery.mp3",
+   "audio_kind": "guide"
   },
   {
    "name": "Ben's Chili Bowl",
@@ -530,7 +550,10 @@
     "cuisine": "american",
     "hours_text": "Mo 11:00-21:00; Tu 11:00-21:00; We 11:00-21:00; Th 11:00-23:00; Fr 11:00-04:00; Sa 11:00-04:00; Su 11:00-22:00"
    },
-   "updated_at": "2026-09-01T04:53:16"
+   "updated_at": "2026-09-01T04:53:16",
+   "slug": "ben-s-chili-bowl",
+   "audio": "/media/audio/guide-ben-s-chili-bowl.mp3",
+   "audio_kind": "guide"
   },
   {
    "name": "Old Ebbitt Grill",
@@ -559,7 +582,10 @@
      "air conditioned"
     ]
    },
-   "updated_at": "2026-09-01T04:53:18"
+   "updated_at": "2026-09-01T04:53:18",
+   "slug": "old-ebbitt-grill",
+   "audio": "/media/audio/guide-old-ebbitt-grill.mp3",
+   "audio_kind": "guide"
   },
   {
    "name": "Founding Farmers",
@@ -788,7 +814,12 @@
    "lon": -122.3282,
    "desc": "CLOSED. Starbucks permanently shut the Capitol Hill Reserve Roastery on September 25, 2025, along with its SoDo Reserve store. The building, a restored 1920s Packard auto showroom at 1124 Pike Street, still stands.",
    "tip": "Do not route anyone here. For Starbucks history in Seattle, the Pike Place store at 1912 Pike Place is still open.",
-   "slug": "starbucks-reserve-roastery"
+   "slug": "starbucks-reserve-roastery",
+   "story_en": "This one is gone. Starbucks closed the Reserve Roastery on 25 September 2025, together with its SoDo Reserve store, and it has not reopened. Do not build a morning around it.\n\nThe building still earns a look if you are walking Pike Street. It went up in the 1920s as a motor car showroom on what Seattle then called Auto Row, and when Tom Kundig of Olson Kundig turned it into the first Reserve Roastery in December 2014 he kept the terra cotta front and the tall display windows. Inside were fifteen thousand square feet, copper pipes carrying beans overhead, and roasters working behind glass.\n\nFor Starbucks history, go to 1912 Pike Place instead. One thing worth knowing while you stand in that queue: it is not the original either. The first store opened on 30 March 1971 at 2000 Western Avenue and moved to Pike Place about five years later.",
+   "story_zh": "这家已经没了。星巴克在2025年9月25日关闭了臻选烘焙工坊，同时关掉的还有SoDo的臻选门店，之后再没重开。不要把一个上午安排在这里。\n\n如果你本来就在派克街上走，这栋楼还是值得看一眼。它建于1920年代，当年是汽车展厅，那一带被西雅图人称作「汽车街」。2014年12月，建筑师汤姆·昆迪格（Olson Kundig 事务所）把它改成了第一家臻选烘焙工坊，保留了赤陶外立面和高大的展示橱窗。里面有一万五千平方英尺的空间，头顶铜管输送咖啡豆，烘焙机在玻璃后面运转。\n\n想看星巴克的历史，改去派克市场1912号那家。排队时不妨知道一件事：那家其实也不是最初的门店。第一家1971年3月30日开在西部大道2000号，大约五年后才搬到派克市场。",
+   "story_es": "Este ya no existe. Starbucks cerró la Reserve Roastery el 25 de septiembre de 2025, junto con su tienda Reserve de SoDo, y no ha vuelto a abrir. No organice una mañana en torno a este sitio.\n\nEl edificio todavía merece una mirada si va caminando por Pike Street. Se levantó en los años veinte como salón de exposición de automóviles, en lo que Seattle llamaba entonces Auto Row, y cuando Tom Kundig, del estudio Olson Kundig, lo convirtió en la primera Reserve Roastery en diciembre de 2014, conservó la fachada de terracota y los grandes ventanales. Dentro había quince mil pies cuadrados, tuberías de cobre que llevaban el café por encima de la cabeza y tostadoras trabajando detrás del cristal.\n\nPara la historia de Starbucks, vaya al 1912 de Pike Place. Algo que conviene saber mientras hace esa cola: tampoco es la tienda original. La primera abrió el 30 de marzo de 1971 en el 2000 de Western Avenue y se mudó a Pike Place unos cinco años después.",
+   "story_ko": "이곳은 문을 닫았습니다. 스타벅스는 2025년 9월 25일 리저브 로스터리를 소도(SoDo) 리저브 매장과 함께 영구 폐점했고, 다시 열지 않았습니다. 이곳을 중심으로 오전 일정을 짜지 마세요.\n\n파이크 스트리트를 걷는 길이라면 건물 자체는 한 번 볼 만합니다. 1920년대에 자동차 전시장으로 지어졌고, 당시 시애틀에서 '오토 로'라고 부르던 거리에 있었습니다. 2014년 12월 올슨 쿤딕의 건축가 톰 쿤딕이 이 건물을 첫 리저브 로스터리로 바꾸면서 테라코타 외벽과 높은 진열창을 그대로 남겼습니다. 내부는 1만 5천 제곱피트 규모였고, 머리 위 구리 배관이 원두를 실어 날랐으며 로스터가 유리 너머에서 돌아갔습니다.\n\n스타벅스의 역사를 보려면 파이크 플레이스 1912번지로 가세요. 그 줄에 서 있는 동안 알아 두면 좋은 사실이 하나 있습니다. 그곳도 1호점은 아닙니다. 첫 매장은 1971년 3월 30일 웨스턴 애비뉴 2000번지에 문을 열었고, 약 5년 뒤에 파이크 플레이스로 옮겨 왔습니다.",
+   "story_vi": "Chỗ này không còn nữa. Starbucks đã đóng cửa Reserve Roastery ngày 25 tháng 9 năm 2025, cùng với cửa hàng Reserve ở SoDo, và không mở lại. Đừng xếp cả buổi sáng quanh địa điểm này.\n\nTòa nhà vẫn đáng nhìn một lượt nếu bạn đang đi bộ trên phố Pike. Nó được xây vào thập niên 1920 làm phòng trưng bày ô tô, trên con phố mà người Seattle khi ấy gọi là Auto Row. Tháng 12 năm 2014, kiến trúc sư Tom Kundig của Olson Kundig cải tạo nó thành Reserve Roastery đầu tiên và giữ lại mặt tiền đất nung cùng những ô cửa kính trưng bày cao. Bên trong rộng mười lăm nghìn foot vuông, các ống đồng đưa hạt cà phê chạy trên đầu, máy rang hoạt động sau lớp kính.\n\nMuốn xem lịch sử Starbucks, hãy tới số 1912 Pike Place. Một điều đáng biết khi bạn đứng xếp hàng ở đó: nơi ấy cũng không phải cửa hàng đầu tiên. Cửa hàng đầu tiên mở ngày 30 tháng 3 năm 1971 tại số 2000 đại lộ Western, khoảng năm năm sau mới dời về Pike Place."
   },
   {
    "city": "boston",
@@ -954,56 +985,6 @@
    "story_ko": "방문객들은 존 하버드 동상 앞에 줄을 서서 사진을 찍지만, 그 동상에는 틀린 것이 세 가지 있습니다. 받침에는 존 하버드, 설립자, 1638년이라고 새겨져 있습니다. 그는 설립자가 아니라 첫 번째 주요 기부자였고, 재산의 절반과 책 사백여 권을 남겼습니다. 대학이 세워진 해는 1636년입니다. 게다가 그의 초상은 하나도 남아 있지 않아서, 1883년 대니얼 체스터 프렌치가 이 상을 만들 때는 셔먼 호어라는 재학생을 모델로 세웠습니다. 학생들은 이것을 세 가지 거짓말의 동상이라고 부릅니다. 동상이 유니버시티 홀 옆에 놓인 것도 1924년의 일입니다.\n\n이곳에 남아 있는 가장 오래된 건물은 1718년에서 1720년 사이에 지은 매사추세츠 홀입니다.\n\n한 가지 더 이어볼 만한 이야기가 있습니다. 프렌치는 워싱턴 링컨 기념관의 앉아 있는 링컨상도, 보스턴 공공도서관의 청동문도 만들었습니다. 두 도시를 모두 도신다면 같은 조각가를 세 번 만나는 셈입니다.\n\n열 시 전에 오십시오. 이 뜰은 텅 비어 있을 때 가장 좋습니다.",
    "story_vi": "Du khách xếp hàng chụp ảnh bức tượng John Harvard, và hầu như ai cũng đang đứng trước ba chỗ sai. Dòng chữ khắc trên bệ ghi John Harvard, người sáng lập, 1638. Ông không phải người sáng lập mà là nhà tài trợ lớn đầu tiên, để lại một nửa gia sản và chừng bốn trăm cuốn sách. Trường được lập năm 1636. Ngoài ra không còn bức chân dung nào của ông, nên khi Daniel Chester French tạc tượng năm 1883, ông đã lấy một sinh viên tên Sherman Hoar làm mẫu. Sinh viên gọi đây là Bức tượng Ba Điều Dối. Chính bức tượng cũng chỉ được đặt cạnh University Hall từ năm 1924.\n\nCông trình cổ nhất còn đứng ở đây là Massachusetts Hall, dựng trong khoảng 1718 đến 1720.\n\nCó một mạch chuyện đáng lần theo. French cũng là người tạc tượng Lincoln ngồi ở Washington và đúc bộ cửa đồng của Thư viện Công cộng Boston. Nếu bạn đi cả hai thành phố, bạn đã gặp cùng một nhà điêu khắc ba lần.\n\nHãy đến trước mười giờ. Khoảng sân này đẹp nhất khi vắng người.",
    "updated_at": "2026-09-01T13:58:59"
-  },
-  {
-   "name": "Seattle",
-   "city": "other",
-   "type": "attraction",
-   "cat": "culture",
-   "price": null,
-   "close": 1020,
-   "visit": 60,
-   "lat": 47.6062,
-   "lon": -122.3321,
-   "desc": "Place in Washington.",
-   "tip": "",
-   "photo": null,
-   "source_url": null,
-   "visibility": "public",
-   "source": "user",
-   "auto_desc": true,
-   "desc_from": "map data",
-   "found_via": "road-trip",
-   "state": "Washington",
-   "county": "Washington",
-   "country": "",
-   "city_label": "Other",
-   "added_at": "2026-08-01T17:17:14"
-  },
-  {
-   "name": "Seattle",
-   "city": "seattle",
-   "type": "attraction",
-   "cat": "culture",
-   "price": null,
-   "close": 1020,
-   "visit": 60,
-   "lat": 47.6062,
-   "lon": -122.3321,
-   "desc": "Place in Seattle, Washington.",
-   "tip": "",
-   "photo": null,
-   "source_url": null,
-   "visibility": "public",
-   "source": "user",
-   "auto_desc": true,
-   "desc_from": "map data",
-   "found_via": "road-trip",
-   "state": "Washington",
-   "county": "Washington",
-   "country": "",
-   "city_label": "Seattle",
-   "added_at": "2026-08-01T17:28:32"
   },
   {
    "name": "Staten Island Ferry",
@@ -1334,7 +1315,12 @@
    "visit": 360,
    "price": null,
    "desc": "A one-day loop across the river, six stops in walking-and-Red-Line order: Harvard Yard and the free Harvard Art Museums in the morning, the Glass Flowers next door, Mount Auburn's garden cemetery, then MIT's Great Dome, the Infinite Corridor and the Kendall Square museum to close the afternoon.",
-   "tip": "Ride the Red Line: start at Harvard, take bus 71 or 73 out to Mount Auburn, then two stops to Kendall/MIT. The museums close around 5, so walk the free outdoor pieces last."
+   "tip": "Ride the Red Line: start at Harvard, take bus 71 or 73 out to Mount Auburn, then two stops to Kendall/MIT. The museums close around 5, so walk the free outdoor pieces last.",
+   "story_en": "This loop is built around one object most visitors have never heard of. In the Harvard Museum of Natural History are the Glass Flowers: 4,300 models of 780 plant species, made in glass by Leopold and Rudolf Blaschka, father and son, working in Germany from 1886 to 1936 for Harvard alone. Professor George Lincoln Goodale commissioned them because pressed specimens lose their shape and wax models sag. Mary Lee Ware and her mother Elizabeth paid for fifty years of it.\n\nStart in Harvard Yard in the morning, then the Harvard Art Museums, which are free. The Glass Flowers are next door. Take bus 71 or 73 out to Mount Auburn and its garden cemetery, then the Red Line two stops to Kendall for MIT, the Great Dome and the Infinite Corridor.\n\nDo the museums before lunch. Cambridge is a walking day, so wear the right shoes.",
+   "story_zh": "这条环线是围绕一件多数游客没听说过的东西设计的。哈佛自然史博物馆里陈列着\"玻璃花\"：4300件模型，涵盖780种植物，由德国的莱奥波德与鲁道夫·布拉施卡父子用玻璃制成，从1886年一直做到1936年，只供哈佛一家。乔治·林肯·古德尔教授之所以定制它们，是因为压制标本会走形，蜡制模型会塌软。玛丽·李·韦尔和她母亲伊丽莎白资助了这整整五十年。\n\n上午从哈佛园开始，接着去哈佛艺术博物馆，那里免费。玻璃花就在隔壁。乘71路或73路公交去奥本山，看那片园林式墓园，再坐红线两站到肯德尔，去麻省理工看大圆顶和\"无限长廊\"。\n\n博物馆放在午饭前看完。剑桥这一天全靠走，鞋子要穿对。",
+   "story_es": "Este circuito está construido alrededor de un objeto del que casi ningún visitante ha oído hablar. En el Harvard Museum of Natural History están las Flores de Cristal: 4.300 modelos de 780 especies de plantas, hechos en vidrio por Leopold y Rudolf Blaschka, padre e hijo, trabajando en Alemania de 1886 a 1936 en exclusiva para Harvard. El profesor George Lincoln Goodale los encargó porque los ejemplares prensados pierden la forma y los modelos de cera se comban. Mary Lee Ware y su madre Elizabeth pagaron cincuenta años de trabajo.\n\nEmpiece por la mañana en Harvard Yard, luego los Harvard Art Museums, que son gratuitos. Las Flores de Cristal están al lado. Tome el autobús 71 o 73 hasta Mount Auburn y su cementerio jardín, y después la Línea Roja dos paradas hasta Kendall, para el MIT, la Great Dome y el Infinite Corridor.\n\nHaga los museos antes de comer. Cambridge es un día de caminar, así que venga bien calzado.",
+   "story_ko": "이 코스는 대부분의 방문객이 이름도 못 들어본 물건 하나를 중심으로 짜여 있습니다. 하버드 자연사박물관에는 유리꽃이 있습니다. 780종 식물을 본뜬 4,300점의 모형으로, 독일에서 작업한 레오폴트와 루돌프 블라슈카 부자가 1886년부터 1936년까지 오직 하버드만을 위해 유리로 만들었습니다. 조지 링컨 구데일 교수가 이것을 주문한 이유는 눌러 말린 표본은 형태를 잃고 밀랍 모형은 주저앉기 때문입니다. 메리 리 웨어와 그의 어머니 엘리자베스가 그 50년을 후원했습니다.\n\n아침에 하버드 야드에서 시작해 무료인 하버드 미술관으로 가세요. 유리꽃은 바로 옆 건물입니다. 71번이나 73번 버스로 마운트 오번의 정원식 묘지까지 갔다가, 레드라인으로 두 정거장 가면 켄들에서 MIT의 그레이트 돔과 인피니트 코리도를 볼 수 있습니다.\n\n박물관은 점심 전에 끝내세요. 케임브리지는 온종일 걷는 코스라 신발을 잘 골라야 합니다.",
+   "story_vi": "Vòng đi này được dựng quanh một hiện vật mà hầu hết du khách chưa từng nghe tên. Trong Bảo tàng Lịch sử Tự nhiên Harvard có bộ Hoa Thủy Tinh: 4.300 mẫu vật của 780 loài thực vật, do hai cha con Leopold và Rudolf Blaschka làm bằng thủy tinh tại Đức từ năm 1886 đến 1936, chỉ dành riêng cho Harvard. Giáo sư George Lincoln Goodale đặt làm chúng vì tiêu bản ép thì mất dáng còn mẫu sáp thì chảy xệ. Mary Lee Ware và mẹ bà, Elizabeth, đã tài trợ suốt năm mươi năm ấy.\n\nBuổi sáng bắt đầu ở Harvard Yard, rồi sang Harvard Art Museums, nơi vào cửa miễn phí. Hoa Thủy Tinh ở ngay tòa bên cạnh. Đi xe buýt 71 hoặc 73 ra Mount Auburn với nghĩa trang kiểu vườn, sau đó đi tuyến Đỏ hai ga tới Kendall để xem MIT, mái vòm Great Dome và hành lang Infinite Corridor.\n\nHãy xem bảo tàng trước bữa trưa. Cambridge là một ngày đi bộ, nên hãy chọn đúng đôi giày."
   },
   {
    "name": "Park Central Hotel",
@@ -1359,32 +1345,12 @@
    "county": "",
    "country": "",
    "city_label": "New York",
-   "added_at": "2026-08-31T18:57:19"
-  },
-  {
-   "name": "888 Seventh Avenue",
-   "city": "nyc",
-   "type": "attraction",
-   "cat": "culture",
-   "price": null,
-   "close": 1020,
-   "visit": 60,
-   "lat": 40.7652,
-   "lon": -73.9808,
-   "desc": "888 Seventh Avenue is a 628 ft (191m) tall modern-style office skyscraper in Midtown Manhattan which was completed in 1969 and has 46 floors. Emery Roth & Sons designed the building.",
-   "tip": "",
-   "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/888_Seventh_Avenue_%2855283846949%29.jpg/500px-888_Seventh_Avenue_%2855283846949%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-   "source_url": "https://en.wikipedia.org/?curid=17626850",
-   "visibility": "public",
-   "source": "user",
-   "auto_desc": true,
-   "desc_from": "wikipedia",
-   "found_via": "scout:wikipedia",
-   "state": "",
-   "county": "",
-   "country": "",
-   "city_label": "New York",
-   "added_at": "2026-08-31T18:57:20"
+   "added_at": "2026-08-31T18:57:19",
+   "story_en": "Gronenberg and Leuchtag put up this 25-story hotel in 1926 and it opened in June 1927 with about 1,600 rooms. Then it collected two of the century's most famous unsolved killings.\n\nOn 4 November 1928 the gambler Arnold Rothstein was shot in the stomach here after a card game. He lived two days and refused to name the man who did it. Nobody was ever convicted.\n\nTwenty-nine years later, on 25 October 1957, the mob boss Albert Anastasia sat down in the barbershop of this same building, by then called the Park Sheraton. Two men walked in and shot him in the chair. No one was ever charged for that one either.\n\nGuests check in with no idea. Stand across Seventh Avenue near 56th Street to take in the whole facade. The barbershop is long gone.",
+   "story_zh": "这栋25层的酒店由格罗嫩贝格与洛伊希塔格事务所设计，1926年建成，1927年6月开业，客房约1600间。之后，它收下了本世纪两桩最有名的悬案。\n\n1928年11月4日，赌徒阿诺德·罗斯坦在这里打完牌后腹部中枪。他撑了两天，始终不肯说出开枪的人是谁，此案从未有人被定罪。\n\n二十九年后的1957年10月25日，黑帮头目阿尔伯特·阿纳斯塔西娅坐进了同一栋楼的理发店，当时这里已改名帕克喜来登。两个男人走进来，对着椅子上的他开了枪。这一桩同样没有任何人被起诉。\n\n今天的客人办入住时对这些一无所知。想看清整个立面，就站到第七大道对面、56街附近去看。那家理发店早就没有了。",
+   "story_es": "Gronenberg y Leuchtag levantaron este hotel de 25 pisos en 1926 y abrió en junio de 1927 con unas 1.600 habitaciones. Después acumuló dos de los asesinatos sin resolver más famosos del siglo.\n\nEl 4 de noviembre de 1928, el jugador Arnold Rothstein recibió un tiro en el estómago aquí, después de una partida de cartas. Vivió dos días y se negó a decir quién había disparado. Nadie fue condenado nunca.\n\nVeintinueve años más tarde, el 25 de octubre de 1957, el jefe mafioso Albert Anastasia se sentó en la barbería de este mismo edificio, para entonces llamado Park Sheraton. Dos hombres entraron y le dispararon en el sillón. Tampoco por ese caso se acusó jamás a nadie.\n\nLos huéspedes entran sin saber nada de esto. Cruce a la acera de enfrente de la Séptima Avenida, cerca de la calle 56, para ver la fachada entera. La barbería ya no existe.",
+   "story_ko": "그로넨베르크 앤 로이히타크가 1926년에 지은 25층 호텔로, 1927년 6월 약 1,600개 객실로 문을 열었습니다. 그 뒤 이 건물은 20세기의 대표적인 미제 살인 사건 두 건을 떠안게 됩니다.\n\n1928년 11월 4일, 도박사 아널드 로스스타인이 카드판이 끝난 뒤 이곳에서 복부에 총을 맞았습니다. 이틀을 버텼지만 끝내 범인의 이름을 말하지 않았고, 이 사건으로 유죄 판결을 받은 사람은 없습니다.\n\n29년 뒤인 1957년 10월 25일, 마피아 보스 앨버트 아나스타시아가 같은 건물의 이발소 의자에 앉았습니다. 당시 이름은 파크 셰러턴이었습니다. 두 남자가 들어와 의자에 앉은 그를 쐈고, 이 사건 역시 아무도 기소되지 않았습니다.\n\n투숙객들은 이런 사연을 모른 채 체크인합니다. 건물 정면을 통째로 보려면 7번가 건너편 56번가 근처에 서세요. 이발소는 오래전에 사라졌습니다.",
+   "story_vi": "Hãng Gronenberg và Leuchtag dựng khách sạn 25 tầng này năm 1926, mở cửa tháng 6 năm 1927 với khoảng 1.600 phòng. Sau đó nó gom về mình hai vụ giết người chưa có lời giải nổi tiếng nhất thế kỷ.\n\nNgày 4 tháng 11 năm 1928, tay cờ bạc Arnold Rothstein trúng đạn vào bụng tại đây sau một ván bài. Ông sống thêm hai ngày và nhất định không khai kẻ đã bắn mình. Không ai từng bị kết án.\n\nHai mươi chín năm sau, ngày 25 tháng 10 năm 1957, trùm mafia Albert Anastasia ngồi xuống ghế tiệm cắt tóc của chính tòa nhà này, khi đó mang tên Park Sheraton. Hai người đàn ông bước vào và bắn ông ngay trên ghế. Vụ này cũng không ai bị truy tố.\n\nKhách trọ vẫn nhận phòng mà không hay biết gì. Muốn nhìn trọn mặt tiền, hãy sang bên kia Đại lộ 7, gần phố 56. Tiệm cắt tóc thì đã biến mất từ lâu."
   },
   {
    "name": "Carnegie Hall",
@@ -1447,56 +1413,6 @@
    "story_vi": "Tòa nhà này do ba họa sĩ tự dựng lên. Lawton Parker, Georgia Timken Fry và John Hemming Fry lập công ty Rodin Studios năm 1916, vì không ai trong họ tìm nổi một xưởng vẽ ra hồn. Họ thuê Cass Gilbert, khởi công ngay trong năm đó và khánh thành năm 1917: mười bốn tầng nguyên cộng một tầng mười lăm dở dang, kiểu Gothic Pháp, gạch màu be điểm chi tiết đất nung và sắt chạm hình thú cùng mặt quái.\n\nĐiều đáng xem là những ô cửa. Từ tầng ba lên tầng mười hai, mặt phía đường 57 là một dãy cửa cao gấp đôi quay về hướng bắc, bởi ánh sáng bắc không đổi hướng suốt cả ngày. Phía sau là các xưởng vẽ thông tầng, trần cao 22 foot và sâu 30 foot. Nhà văn Theodore Dreiser sống ở đây từ năm 1926 đến 1931.\n\nGilbert thiết kế nó để đối đáp với tòa Art Students League bên kia đường. Vậy nên hãy sang phía bắc đường 57, đứng trước cửa League rồi quay lại nhìn dãy cửa sổ cao đôi ấy. Công trình được xếp hạng di sản ngày 16 tháng 2 năm 1988, và nay là văn phòng."
   },
   {
-   "name": "1740 Broadway",
-   "city": "nyc",
-   "type": "attraction",
-   "cat": "culture",
-   "price": null,
-   "close": 1020,
-   "visit": 60,
-   "lat": 40.76506,
-   "lon": -73.98165,
-   "desc": "1740 Broadway (formerly the MONY Building or Mutual of New York Building) is a 26-story building on the east side of Broadway, between 55th and 56th Streets, in the Midtown Manhattan neighborhood of New York City. The building is owned by EQ Office and shares a city block with the Park Central Hotel.",
-   "tip": "",
-   "photo": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Mony-building.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
-   "source_url": "https://en.wikipedia.org/?curid=16449435",
-   "visibility": "public",
-   "source": "user",
-   "auto_desc": true,
-   "desc_from": "wikipedia",
-   "found_via": "scout:wikipedia",
-   "state": "",
-   "county": "",
-   "country": "",
-   "city_label": "New York",
-   "added_at": "2026-08-31T18:57:23"
-  },
-  {
-   "name": "57th Street–Seventh Avenue station",
-   "city": "nyc",
-   "type": "attraction",
-   "cat": "culture",
-   "price": null,
-   "close": 1020,
-   "visit": 60,
-   "lat": 40.76546,
-   "lon": -73.98009,
-   "desc": "The 57th Street–Seventh Avenue station (signed as the 57th Street station) is an express station on the BMT Broadway Line of the New York City Subway. Located in Midtown Manhattan at the intersection of 57th Street and Seventh Avenue, it is served by the N and Q trains at all times, the R train at all times except late nights, and the W train on weekdays.",
-   "tip": "",
-   "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/57th_Street%E2%80%93Seventh_Avenue_downtown_platform_June_2026.jpg/500px-57th_Street%E2%80%93Seventh_Avenue_downtown_platform_June_2026.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-   "source_url": "https://en.wikipedia.org/?curid=2709647",
-   "visibility": "public",
-   "source": "user",
-   "auto_desc": true,
-   "desc_from": "wikipedia",
-   "found_via": "scout:wikipedia",
-   "state": "",
-   "county": "",
-   "country": "",
-   "city_label": "New York",
-   "added_at": "2026-08-31T19:59:06"
-  },
-  {
    "name": "Ariston Bathhouse raid",
    "city": "nyc",
    "type": "attraction",
@@ -1519,57 +1435,12 @@
    "county": "",
    "country": "",
    "city_label": "New York",
-   "added_at": "2026-08-31T19:59:07"
-  },
-  {
-   "name": "218 West 57th Street",
-   "city": "nyc",
-   "type": "attraction",
-   "cat": "culture",
-   "price": null,
-   "close": 1020,
-   "visit": 60,
-   "lat": 40.7657,
-   "lon": -73.9812,
-   "desc": "218 West 57th Street (also known as 220 West 57th Street; formerly known as the Society House of the American Society of Civil Engineers or the ASCE Society House) is a building on 57th Street in Midtown Manhattan in New York City. It was designed by Cyrus L. W. Eidlitz in the French Renaissance Revival style, with an annex built to designs by Eidlitz and Andrew C. McKenzie.",
-   "tip": "",
-   "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/W_57th_St_Nov_2020_52.jpg/500px-W_57th_St_Nov_2020_52.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-   "source_url": "https://en.wikipedia.org/?curid=65870934",
-   "visibility": "public",
-   "source": "user",
-   "auto_desc": true,
-   "desc_from": "wikipedia",
-   "found_via": "scout:wikipedia",
-   "state": "",
-   "county": "",
-   "country": "",
-   "city_label": "New York",
-   "added_at": "2026-08-31T19:59:08"
-  },
-  {
-   "name": "CitySpire",
-   "city": "nyc",
-   "type": "attraction",
-   "cat": "culture",
-   "price": null,
-   "close": 1020,
-   "visit": 60,
-   "lat": 40.76417,
-   "lon": -73.97972,
-   "desc": "CitySpire (also known as CitySpire Center) is a mixed-use skyscraper at 150 West 56th Street in the Midtown Manhattan neighborhood of New York City. Completed in 1990 and designed by Murphy/Jahn Architects, the building measures 814 feet (248 m) tall with 75 stories.",
-   "tip": "",
-   "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Cityspire_Metro_Carnegie_tower_55_jeh_ShiftNcut_%28cropped%29.jpg/500px-Cityspire_Metro_Carnegie_tower_55_jeh_ShiftNcut_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-   "source_url": "https://en.wikipedia.org/?curid=994583",
-   "visibility": "public",
-   "source": "user",
-   "auto_desc": true,
-   "desc_from": "wikipedia",
-   "found_via": "scout:wikipedia",
-   "state": "",
-   "county": "",
-   "country": "",
-   "city_label": "New York",
-   "added_at": "2026-08-31T19:59:08"
+   "added_at": "2026-08-31T19:59:07",
+   "story_en": "At nine in the evening on 21 February 1903, police raided the Ariston Bathhouse, off Broadway near 55th Street. About 78 men were inside. They arrested 34 of them. At least 16 were charged with sodomy and 12 went to trial. Of the five trials whose transcripts survive, three ended in guilty verdicts, one in a conviction with a recommendation of mercy, and one in a mistrial. Two of the convictions were appealed. The owner, John Begley, was charged with keeping a disorderly house.\n\nIt was not spontaneous. Undercover officers and the Society for the Prevention of Crime had been building the case for weeks.\n\nThis is the first documented anti-gay police raid on a business in New York City, 66 years before Stonewall. Nothing marks the spot. Stand near the corner and know what the address used to be.",
+   "story_zh": "1903年2月21日晚九点，警方突袭了百老汇55街附近的阿里斯顿浴室。当时里面约有78名男子，警方逮捕了其中34人，至少16人被控鸡奸罪，12人被送上法庭。在留有庭审记录的五场审判中，三场判定有罪，一场判罪同时附带从轻建议，一场因陪审团分歧宣告无效。两起有罪判决后来提出上诉。浴室老板约翰·贝格利被控经营妨害风化场所。\n\n这不是临时起意。便衣警察与\"预防犯罪协会\"已经取证数周。\n\n这是纽约市有记载的第一起针对同性恋场所的警察突袭，比石墙事件早了66年。现场没有任何标识。站到街角，记得这个地址曾经是什么。",
+   "story_es": "A las nueve de la noche del 21 de febrero de 1903, la policía irrumpió en los baños Ariston, junto a Broadway cerca de la calle 55. Dentro había unos 78 hombres. Detuvieron a 34. Al menos 16 fueron acusados de sodomía y 12 llegaron a juicio. De los cinco juicios cuyas actas se conservan, tres terminaron en condena, uno en condena con recomendación de clemencia y uno en nulidad. Dos condenas se recurrieron. El dueño, John Begley, fue acusado de regentar un local de desorden.\n\nNo fue algo espontáneo. Agentes de incógnito y la Society for the Prevention of Crime llevaban semanas preparando el caso.\n\nEs la primera redada policial antihomosexual documentada contra un negocio en Nueva York, 66 años antes de Stonewall. Nada señala el lugar. Párese cerca de la esquina sabiendo qué hubo en esa dirección.",
+   "story_ko": "1903년 2월 21일 밤 9시, 경찰이 브로드웨이 55번가 인근의 아리스턴 목욕탕을 급습했습니다. 안에는 약 78명의 남성이 있었고 그중 34명이 체포됐습니다. 최소 16명이 소도미 혐의로 기소돼 12명이 재판을 받았습니다. 기록이 남은 다섯 건의 재판 가운데 셋은 유죄, 하나는 선처 권고가 붙은 유죄, 하나는 심리 무효로 끝났습니다. 유죄 판결 두 건은 항소로 이어졌습니다. 업주 존 베글리는 풍기문란 업소 운영 혐의로 기소됐습니다.\n\n즉흥적인 단속이 아니었습니다. 잠복 경관들과 범죄예방협회가 몇 주에 걸쳐 증거를 모아둔 상태였습니다.\n\n뉴욕시에서 기록으로 남은 최초의 반동성애 업소 단속이며, 스톤월보다 66년 앞섭니다. 현장에는 아무 표식도 없습니다. 모퉁이에 서서 이 주소가 무엇이었는지 기억해 두세요.",
+   "story_vi": "Chín giờ tối ngày 21 tháng 2 năm 1903, cảnh sát ập vào nhà tắm Ariston, cạnh Broadway gần phố 55. Bên trong có khoảng 78 người đàn ông. Họ bắt 34 người. Ít nhất 16 người bị buộc tội kê gian và 12 người ra tòa. Trong năm phiên tòa còn giữ được biên bản, ba phiên tuyên có tội, một phiên tuyên có tội kèm kiến nghị khoan hồng, một phiên bị hủy. Hai bản án bị kháng cáo. Chủ cơ sở, John Begley, bị buộc tội duy trì nơi gây mất trật tự.\n\nĐây không phải một cuộc bố ráp bột phát. Cảnh sát chìm và Hội Phòng chống Tội phạm đã dựng hồ sơ suốt nhiều tuần.\n\nĐây là vụ cảnh sát bố ráp một cơ sở vì lý do chống người đồng tính được ghi nhận sớm nhất ở New York, trước Stonewall 66 năm. Không có gì đánh dấu chỗ này. Hãy đứng gần góc phố và nhớ địa chỉ ấy từng là nơi nào."
   },
   {
    "name": "Russian Tea Room",
@@ -1805,7 +1676,12 @@
    "county": "",
    "country": "",
    "city_label": "New York",
-   "added_at": "2026-09-01T02:51:11"
+   "added_at": "2026-09-01T02:51:11",
+   "story_en": "Forrest Myers put this up in 1973: 42 green aluminum bars on 42 steel braces, set against a blue field covering most of the blank south wall of 599 Broadway. That wall is blank because Houston Street was widened and the row of buildings that once stood against it came down.\n\nThen it became a lawsuit. The owners wanted billboards on one of the busiest corners in SoHo and valued the space at about 600,000 dollars a year. They took the work down in 2002 for repairs. A federal judge found in 2005 that the piece was not technically part of the building. In 2007 the city and the owners settled: the wall was raised 30 feet, the artwork went back 18 feet higher, and the advertising got the space nearer the street.\n\nLook up at the corner of Broadway and Houston. Both sides of that deal are visible at once.",
+   "story_zh": "1973年，福雷斯特·迈尔斯做出了这件作品：42根绿色铝条装在42个钢支架上，衬在蓝色底面上，占据了百老汇599号南侧那面空墙的大部分。那面墙之所以空着，是因为休斯顿街拓宽时，原本贴着它的一排房子被拆掉了。\n\n后来它变成了一场官司。业主想在苏荷最繁忙的街角之一挂广告牌，估算这块位置每年值约60万美元。2002年他们以修缮为由把作品拆了下来。2005年，一位联邦法官认定这件作品在法律意义上并不属于这栋建筑的一部分。2007年，市政府与业主达成和解：墙体加高30英尺，作品往上挪18英尺装回去，广告则拿到了更靠近街面的位置。\n\n站在百老汇与休斯顿街路口抬头看。这笔交易的两边，一眼就能同时看见。",
+   "story_es": "Forrest Myers instaló esto en 1973: 42 barras de aluminio verde sobre 42 soportes de acero, contra un fondo azul que cubre casi todo el muro ciego sur del 599 de Broadway. Ese muro está ciego porque se ensanchó Houston Street y cayó la hilera de edificios que se apoyaba en él.\n\nLuego vino el pleito. Los propietarios querían vallas publicitarias en una de las esquinas más transitadas del SoHo y calculaban ese espacio en unos 600.000 dólares al año. Retiraron la obra en 2002 por reparaciones. En 2005 un juez federal determinó que la pieza no formaba parte del edificio en sentido técnico. En 2007 la ciudad y los propietarios llegaron a un acuerdo: el muro se elevó 30 pies, la obra volvió 18 pies más arriba y la publicidad se quedó con el espacio más cercano a la calle.\n\nMire hacia arriba en la esquina de Broadway con Houston. Se ven las dos partes del trato a la vez.",
+   "story_ko": "포러스트 마이어스가 1973년에 설치한 작품입니다. 강철 브래킷 42개 위에 녹색 알루미늄 봉 42개를 얹고, 브로드웨이 599번지 남쪽 민벽 대부분을 덮는 파란 바탕 위에 세웠습니다. 그 벽이 비어 있는 이유는 휴스턴가를 넓히면서 벽에 붙어 있던 건물들이 헐렸기 때문입니다.\n\n그리고 이 작품은 소송이 됐습니다. 건물주는 소호에서 가장 붐비는 모퉁이에 광고판을 걸고 싶어 했고, 그 자리의 값을 연 60만 달러쯤으로 봤습니다. 2002년 보수를 이유로 작품을 떼어냈고, 2005년 연방 판사는 이 작품이 법적으로 건물의 일부가 아니라고 판단했습니다. 2007년 시와 건물주가 합의했습니다. 벽을 30피트 높이고, 작품은 18피트 위로 올려 다시 달고, 광고는 길에 더 가까운 자리를 가져갔습니다.\n\n브로드웨이와 휴스턴가 모퉁이에서 위를 보세요. 그 합의의 양쪽이 한눈에 보입니다.",
+   "story_vi": "Forrest Myers dựng tác phẩm này năm 1973: 42 thanh nhôm màu xanh lá gắn trên 42 giá thép, đặt trên nền xanh lam phủ gần hết bức tường trống phía nam số 599 Broadway. Bức tường trống ấy có được là vì phố Houston được mở rộng và dãy nhà từng tựa vào nó đã bị phá.\n\nRồi nó thành một vụ kiện. Chủ tòa nhà muốn treo biển quảng cáo ở một trong những góc phố đông nhất SoHo và định giá chỗ đó khoảng 600.000 đô la mỗi năm. Năm 2002 họ tháo tác phẩm xuống với lý do sửa chữa. Năm 2005, một thẩm phán liên bang kết luận tác phẩm về mặt kỹ thuật không thuộc tòa nhà. Năm 2007 thành phố và chủ nhà dàn xếp: tường được nâng thêm 30 feet, tác phẩm gắn lại cao hơn 18 feet, còn quảng cáo nhận phần sát mặt đường.\n\nHãy ngẩng lên ở góc Broadway và Houston. Cả hai phía của thỏa thuận ấy hiện ra cùng lúc."
   },
   {
    "name": "E. V. Haughwout Building",
@@ -1838,81 +1714,6 @@
    "story_vi": "Ngày 23 tháng 3 năm 1857, góc phố này khai trương cùng chiếc thang máy chở khách thành công đầu tiên trên thế giới, do Elisha Otis chế tạo riêng cho tòa nhà. Nó tốn 300 đô la, chạy bằng máy hơi nước đặt dưới tầng hầm và đi lên khoảng hai mươi phân mỗi giây, nên năm tầng lầu mất gần hai phút. Nhanh chưa bao giờ là mục đích. Mục đích là cabin sẽ không rơi.\n\nBên trong, Eder Haughwout bán pha lê mài, đèn chùm và đồ sứ vẽ tay. Bộ đồ sứ chính thức của Nhà Trắng thời Mary Todd Lincoln được vẽ ngay tại đây. Hai mặt tiền gang đúc do xưởng Architectural Iron Works của Daniel Badger cung cấp, lấy mẫu từ thư viện Sansovino ở Venice và lặp lại từng gian giống hệt nhau, vì gang được rót vào khuôn và cái khuôn dùng lại được.\n\nMàu be xỉn không phải là bụi bẩn. Năm 1995 người ta sơn lại các cột bằng đúng màu gốc, Turkish drab, màu được chọn để gang trông như đá. Tòa nhà được công nhận là di tích của thành phố New York năm 1965, thuộc lứa đầu tiên. Hãy đứng ở góc tây nam Broadway và Broome để nhìn thấy cả hai mặt tiền cùng lúc."
   },
   {
-   "name": "Northwest One Library",
-   "city": "dc",
-   "type": "attraction",
-   "cat": "culture",
-   "price": null,
-   "close": 1020,
-   "visit": 60,
-   "lat": 38.90401,
-   "lon": -77.01362,
-   "desc": "The Northwest One Library is part of the District of Columbia Public Library (DCPL) System. It was originally opened to the public in December 2009.",
-   "tip": "",
-   "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Northwest_One_Library.jpg/500px-Northwest_One_Library.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-   "source_url": "https://en.wikipedia.org/?curid=50317370",
-   "visibility": "public",
-   "source": "user",
-   "auto_desc": true,
-   "desc_from": "wikipedia",
-   "found_via": "scout:dc-open-data",
-   "state": "",
-   "county": "",
-   "country": "",
-   "city_label": "Washington DC",
-   "added_at": "2026-09-01T03:51:54"
-  },
-  {
-   "name": "Deanwood Library",
-   "city": "dc",
-   "type": "attraction",
-   "cat": "culture",
-   "price": null,
-   "close": 1020,
-   "visit": 60,
-   "lat": 38.90846,
-   "lon": -76.93216,
-   "desc": "Deanwood is a neighborhood in Northeast Washington, D.C., bounded by Eastern Avenue to the northeast, Kenilworth Avenue to the northwest, Division Avenue to the southeast, and Nannie Helen Burroughs Avenue to the south.\nOne of Northeast's oldest neighborhoods, Deanwood's relatively low-density, small wood-frame and brick homes, and dense tree cover give it a small-town character that is unique in the District of Columbia.",
-   "tip": "",
-   "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Map_deanwood.jpg/500px-Map_deanwood.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-   "source_url": "https://en.wikipedia.org/?curid=997846",
-   "visibility": "public",
-   "source": "user",
-   "auto_desc": true,
-   "desc_from": "wikipedia",
-   "found_via": "scout:dc-open-data",
-   "state": "",
-   "county": "",
-   "country": "",
-   "city_label": "Washington DC",
-   "added_at": "2026-09-01T04:52:43"
-  },
-  {
-   "name": "Sean John",
-   "city": "nyc",
-   "type": "attraction",
-   "cat": "culture",
-   "price": null,
-   "close": 1020,
-   "visit": 60,
-   "lat": 40.76425,
-   "lon": -73.98208,
-   "desc": "Sean John is an American privately held fashion and lifestyle company founded by fashion designer and record producer Sean Combs. The brand launched its fashion line with a men's sportswear collection for the spring 1998 season.",
-   "tip": "",
-   "photo": null,
-   "source_url": "https://en.wikipedia.org/?curid=945607",
-   "visibility": "public",
-   "source": "user",
-   "auto_desc": true,
-   "desc_from": "wikipedia",
-   "found_via": "scout:wikipedia",
-   "state": "",
-   "county": "",
-   "country": "",
-   "city_label": "New York",
-   "added_at": "2026-09-01T18:58:16"
-  },
-  {
    "name": "A7 (bar)",
    "city": "nyc",
    "type": "attraction",
@@ -1935,32 +1736,12 @@
    "county": "",
    "country": "",
    "city_label": "New York",
-   "added_at": "2026-09-01T18:58:16"
-  },
-  {
-   "name": "Metropolitan Tower (Manhattan)",
-   "city": "nyc",
-   "type": "attraction",
-   "cat": "culture",
-   "price": null,
-   "close": 1020,
-   "visit": 60,
-   "lat": 40.7648,
-   "lon": -73.9793,
-   "desc": "Metropolitan Tower is a mixed-use skyscraper at 146 West 57th Street in the Midtown Manhattan neighborhood of New York City. Completed in 1987 and designed by SLCE Architects, the building measures 716 ft (218 m) tall with 68 stories.",
-   "tip": "",
-   "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/W_57th_St_Aug_2021_35.jpg/500px-W_57th_St_Aug_2021_35.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-   "source_url": "https://en.wikipedia.org/?curid=2623855",
-   "visibility": "public",
-   "source": "user",
-   "auto_desc": true,
-   "desc_from": "wikipedia",
-   "found_via": "scout:wikipedia",
-   "state": "",
-   "county": "",
-   "country": "",
-   "city_label": "New York",
-   "added_at": "2026-09-01T18:58:17"
+   "added_at": "2026-09-01T18:58:16",
+   "story_en": "Between 1981 and 1984 this corner of East 7th Street and Avenue A held a tiny room that New York hardcore mostly came out of. Dave Gibson and Doug Holland ran it. Agnostic Front, Cro-Mags, Reagan Youth, The Mob, Urban Waste, The Abused, Kraut, Antidote, Heart Attack, The Stimulators and The Violators all played A7, some of them weekly.\n\nThe point was the size. There was no stage worth the name and no distance between the band and the room, which is the sound those records are trying to reproduce.\n\nIt reopened under a new name in 1997 and is now Niagara. Bands still play in the same room. A plaque went up in October 2013.\n\nDo not expect a shrine. It is a bar on a corner, and the history is the room itself.",
+   "story_zh": "1981到1984年间，东7街与A大道这个街角有一个极小的房间，纽约硬核朋克基本上就是从这里出来的。经营者是戴夫·吉布森和道格·霍兰。Agnostic Front、Cro-Mags、Reagan Youth、The Mob、Urban Waste、The Abused、Kraut、Antidote、Heart Attack、The Stimulators、The Violators 都在 A7 演过，有些乐队每周都来。\n\n关键就在于小。这里没有像样的舞台，乐队和观众之间也没有距离，那些唱片想复刻的正是这种声音。\n\n1997年它以新名字重新开张，如今叫 Niagara，乐队仍在同一个房间里演出。2013年10月，这里挂上了一块纪念牌。\n\n别指望什么圣地。它就是街角的一家酒吧，历史就是这个房间本身。",
+   "story_es": "Entre 1981 y 1984, esta esquina de la calle 7 Este y la Avenida A albergó una sala diminuta de la que salió casi todo el hardcore neoyorquino. La llevaban Dave Gibson y Doug Holland. Agnostic Front, Cro-Mags, Reagan Youth, The Mob, Urban Waste, The Abused, Kraut, Antidote, Heart Attack, The Stimulators y The Violators tocaron en el A7, algunos cada semana.\n\nLa clave era el tamaño. No había escenario digno de ese nombre ni distancia entre la banda y la sala, y ese es el sonido que esos discos intentan reproducir.\n\nReabrió con otro nombre en 1997 y hoy se llama Niagara. Los grupos siguen tocando en la misma sala. En octubre de 2013 se colocó una placa.\n\nNo espere un santuario. Es un bar en una esquina, y la historia es la propia sala.",
+   "story_ko": "1981년부터 1984년까지 이스트 7번가와 애비뉴 A가 만나는 이 모퉁이에는 아주 작은 방이 하나 있었고, 뉴욕 하드코어는 대체로 거기서 나왔습니다. 데이브 깁슨과 더그 홀런드가 운영했습니다. 애그노스틱 프런트, 크로맥스, 레이건 유스, 더 맙, 어반 웨이스트, 디 어뷰즈드, 크라우트, 앤티도트, 하트 어택, 더 스티뮬레이터스, 더 바이얼레이터스가 모두 A7에서 연주했고 일부는 매주 나왔습니다.\n\n핵심은 그 좁기였습니다. 무대라 부를 만한 것도, 밴드와 객석 사이의 거리도 없었습니다. 그 시절 음반들이 재현하려던 소리가 바로 그것입니다.\n\n1997년 새 이름으로 다시 열었고 지금은 나이아가라입니다. 밴드는 여전히 같은 방에서 연주합니다. 2013년 10월에는 명패가 붙었습니다.\n\n성지를 기대하지는 마세요. 모퉁이의 술집일 뿐이고, 역사는 그 방 자체입니다.",
+   "story_vi": "Từ 1981 đến 1984, góc phố 7 Đông và Đại lộ A này chứa một căn phòng bé xíu, nơi gần như toàn bộ dòng hardcore New York bước ra. Dave Gibson và Doug Holland điều hành nó. Agnostic Front, Cro-Mags, Reagan Youth, The Mob, Urban Waste, The Abused, Kraut, Antidote, Heart Attack, The Stimulators và The Violators đều từng chơi ở A7, vài ban còn diễn hằng tuần.\n\nĐiểm mấu chốt nằm ở sự chật. Không có sân khấu nào đáng gọi là sân khấu, cũng không có khoảng cách giữa ban nhạc và khán phòng, và đó chính là thứ âm thanh mà những đĩa nhạc thời ấy cố tái tạo.\n\nNơi này mở lại với tên khác vào năm 1997 và nay là Niagara. Các ban nhạc vẫn chơi trong đúng căn phòng đó. Tháng 10 năm 2013, một tấm biển kỷ niệm được gắn lên.\n\nĐừng mong một thánh địa. Đó là một quán bar ở góc phố, và lịch sử chính là căn phòng ấy."
   },
   {
    "name": "224 West 57th Street",
@@ -1985,82 +1766,12 @@
    "county": "",
    "country": "",
    "city_label": "New York",
-   "added_at": "2026-09-01T18:58:18"
-  },
-  {
-   "name": "The Briarcliffe",
-   "city": "nyc",
-   "type": "attraction",
-   "cat": "culture",
-   "price": null,
-   "close": 1020,
-   "visit": 60,
-   "lat": 40.76556,
-   "lon": -73.97958,
-   "desc": "The Briarcliffe is a 13-story, 35-unit residence at 171 West 57th Street, at the northeastern corner with Seventh Avenue, in Midtown Manhattan, New York City. Located just north of Carnegie Hall, the property was built as a hotel in 1922, designed by architects Warren and Wetmore, and converted to its current purpose as condominiums in 1999.",
-   "tip": "",
-   "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/The_Briarcliffe_2024.jpg/500px-The_Briarcliffe_2024.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-   "source_url": "https://en.wikipedia.org/?curid=69514422",
-   "visibility": "public",
-   "source": "user",
-   "auto_desc": true,
-   "desc_from": "wikipedia",
-   "found_via": "scout:wikipedia",
-   "state": "",
-   "county": "",
-   "country": "",
-   "city_label": "New York",
-   "added_at": "2026-09-01T18:58:19"
-  },
-  {
-   "name": "Random House Tower",
-   "city": "nyc",
-   "type": "attraction",
-   "cat": "culture",
-   "price": null,
-   "close": 1020,
-   "visit": 60,
-   "lat": 40.76534,
-   "lon": -73.9825,
-   "desc": "The Random House Tower, also known as the Park Imperial Apartments, is a 52-story, 684 ft (208 m) mixed-use tower in Midtown Manhattan, New York City. It is owned by real estate companies SL Green Realty and Ivanhoé Cambridge.",
-   "tip": "",
-   "photo": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Random-house2.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
-   "source_url": "https://en.wikipedia.org/?curid=16605491",
-   "visibility": "public",
-   "source": "user",
-   "auto_desc": true,
-   "desc_from": "wikipedia",
-   "found_via": "scout:wikipedia",
-   "state": "",
-   "county": "",
-   "country": "",
-   "city_label": "New York",
-   "added_at": "2026-09-01T20:20:00"
-  },
-  {
-   "name": "140 West 57th Street",
-   "city": "nyc",
-   "type": "attraction",
-   "cat": "culture",
-   "price": null,
-   "close": 1020,
-   "visit": 60,
-   "lat": 40.76477,
-   "lon": -73.97895,
-   "desc": "140 West 57th Street, also known as The Beaufort or Parc Beaufort, is an office building on 57th Street between Sixth Avenue and Seventh Avenue in Midtown Manhattan in New York City. It was built from 1907 to 1909 and designed by Pollard and Steinam, who also simultaneously designed the neighboring, nearly identical building at 130 West 57th Street.",
-   "tip": "",
-   "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/W_57th_St_Aug_2021_19_%28cropped%29.jpg/500px-W_57th_St_Aug_2021_19_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-   "source_url": "https://en.wikipedia.org/?curid=65884761",
-   "visibility": "public",
-   "source": "user",
-   "auto_desc": true,
-   "desc_from": "wikipedia",
-   "found_via": "scout:wikipedia",
-   "state": "",
-   "county": "",
-   "country": "",
-   "city_label": "New York",
-   "added_at": "2026-09-01T20:20:01"
+   "added_at": "2026-09-01T18:58:18",
+   "story_en": "You are standing on Automobile Row. Between about 1907 and the 1920s the stretch of Broadway from 42nd to 72nd Street filled with car showrooms, and this corner is the best surviving piece of it.\n\nFrancis H. Kimball designed two buildings here and the George A. Fuller Company started work in March 1909. The Demarest half was finished in June, the Peerless half in September. Both sold cars on the ground floor behind big showroom windows. The facade is almost entirely terracotta, Gothic and Romanesque detail run up a building made to sell automobiles, and the New York Architectural Terra-Cotta Company made the ornament.\n\nGeneral Motors ran its headquarters and showrooms here from 1918 to 1927. Hearst had the offices from 1977 to 2006. The city landmarked the building on 19 December 2000.\n\nCross to the north side of 57th Street and look up at the terracotta.",
+   "story_zh": "你正站在\"汽车街\"上。大约从1907年到1920年代，百老汇从42街到72街这一段挤满了汽车展厅，而这个街角是保存得最好的一块。\n\n弗朗西斯·H·金博尔在这里设计了两栋楼，乔治·A·富勒公司1909年3月动工，德马雷斯特那一半6月完工，皮尔利斯那一半9月完工。两边的一层都是卖车的，橱窗开得极大。整个立面几乎全是赤陶，哥特与罗曼式的装饰爬满一栋为卖汽车而建的房子，饰件由纽约建筑赤陶公司烧制。\n\n1918到1927年，通用汽车把总部和展厅设在这里；1977到2006年，赫斯特集团在此办公。2000年12月19日，纽约市将这栋楼列为地标。\n\n走到57街北侧，抬头看那些赤陶。",
+   "story_es": "Está usted en el Automobile Row. Entre 1907 y los años veinte, el tramo de Broadway de la calle 42 a la 72 se llenó de salas de exposición de coches, y esta esquina es el mejor resto que queda.\n\nFrancis H. Kimball proyectó dos edificios aquí y la George A. Fuller Company empezó la obra en marzo de 1909. La mitad Demarest se terminó en junio y la mitad Peerless en septiembre. Ambas vendían coches en la planta baja tras grandes escaparates. La fachada es casi toda de terracota, con detalle gótico y románico trepando por un edificio hecho para vender automóviles, y el ornamento salió de la New York Architectural Terra-Cotta Company.\n\nGeneral Motors tuvo aquí su sede y sus salas de 1918 a 1927. Hearst ocupó las oficinas de 1977 a 2006. La ciudad lo declaró monumento el 19 de diciembre de 2000.\n\nCruce a la acera norte de la calle 57 y mire la terracota.",
+   "story_ko": "지금 서 있는 곳이 오토모빌 로우입니다. 1907년 무렵부터 1920년대까지 브로드웨이의 42번가에서 72번가 구간은 자동차 전시장으로 가득했고, 이 모퉁이가 그중 가장 잘 남은 조각입니다.\n\n프랜시스 H. 킴볼이 여기 두 동을 설계했고 조지 A. 풀러 사가 1909년 3월 공사를 시작해 디머레스트 쪽은 6월에, 피어리스 쪽은 9월에 마쳤습니다. 두 건물 모두 1층에서 큰 쇼윈도 뒤로 자동차를 팔았습니다. 외벽은 거의 전부 테라코타이고, 고딕과 로마네스크 장식이 자동차를 팔기 위해 지은 건물을 타고 올라갑니다. 장식은 뉴욕 건축용 테라코타 회사가 만들었습니다.\n\n제너럴 모터스가 1918년부터 1927년까지 본사와 전시장을 두었고, 허스트가 1977년부터 2006년까지 사무실로 썼습니다. 뉴욕시는 2000년 12월 19일 이 건물을 랜드마크로 지정했습니다.\n\n57번가 북쪽으로 건너가 테라코타를 올려다보세요.",
+   "story_vi": "Bạn đang đứng trên Automobile Row. Từ khoảng năm 1907 đến thập niên 1920, đoạn Broadway từ phố 42 đến phố 72 đặc kín các phòng trưng bày xe hơi, và góc phố này là mảnh còn lại nguyên vẹn nhất.\n\nFrancis H. Kimball thiết kế hai tòa nhà ở đây, công ty George A. Fuller khởi công tháng 3 năm 1909, phần Demarest xong tháng 6, phần Peerless xong tháng 9. Cả hai đều bán xe ở tầng trệt sau những ô kính trưng bày lớn. Mặt tiền gần như toàn bằng đất nung, chi tiết Gothic và Romanesque leo kín một tòa nhà dựng lên để bán ô tô, phần trang trí do công ty New York Architectural Terra-Cotta chế tác.\n\nGeneral Motors đặt trụ sở và phòng trưng bày tại đây từ 1918 đến 1927. Hearst dùng làm văn phòng từ 1977 đến 2006. Thành phố xếp hạng di tích cho tòa nhà ngày 19 tháng 12 năm 2000.\n\nHãy sang phía bắc phố 57 và ngẩng nhìn phần đất nung."
   },
   {
    "name": "American Fine Arts Society",
@@ -2091,31 +1802,6 @@
    "story_es": "Tres grupos de artistas no podían pagar edificios por separado, así que en 1889 la Art Students League, la Society of American Artists y la Architectural League levantaron una sola casa entre los tres. Henry Janeway Hardenbergh ganó el concurso frente a otras treinta propuestas, y solo después de que trajeran a William Morris Hunt para desempatar al jurado. La fachada de piedra caliza costó unos 200.000 dólares y se inauguró en diciembre de 1892.\n\nMire encima de las ventanas centrales de la calle 57. Tres placas dicen Pintura, Arquitectura, Escultura, y explican para qué se hizo el edificio. Tres semanas después de la apertura, George Washington Vanderbilt II entregó la galería que él había pagado y perdonó con ella el préstamo de la obra.\n\nLa League es la única ocupante desde 1941 y sigue funcionando como empezó: sin títulos, sin notas, sin comité de admisión. Jackson Pollock, Georgia O'Keeffe, Lee Krasner, Mark Rothko y Norman Rockwell trabajaron en estas salas.",
    "story_ko": "1889년, 세 예술 단체는 각자 건물을 유지할 형편이 되지 않아 함께 한 채를 지었습니다. 아트 스튜던츠 리그, 미국 미술가 협회, 뉴욕 건축가 연맹입니다. 설계 공모에는 서른한 개 안이 들어왔고, 심사가 교착되자 윌리엄 모리스 헌트를 불러 결론을 내린 끝에 헨리 재너웨이 하든버그가 뽑혔습니다. 석회암 정면에 약 20만 달러가 들었고 1892년 12월에 문을 열었습니다.\n\n57번가 쪽 가운데 창 위를 보세요. 회화, 건축, 조각이라고 새긴 세 개의 명판이 이 건물의 용도를 말해 줍니다. 개관 3주 뒤 조지 워싱턴 밴더빌트 2세는 자신이 비용을 댄 갤러리를 넘기면서 공사 대금 채무까지 면제해 주었습니다.\n\n리그는 1941년부터 이 건물의 유일한 사용자이며, 처음 방식 그대로 학위도 성적도 입학 심사도 없습니다. 잭슨 폴록, 조지아 오키프, 리 크래스너, 마크 로스코, 노먼 록웰이 모두 이 방들에서 작업했습니다.",
    "story_vi": "Năm 1889, ba hội nghệ thuật không kham nổi trụ sở riêng nên cùng nhau dựng chung một tòa nhà: Art Students League, Society of American Artists và Architectural League. Henry Janeway Hardenbergh thắng cuộc thi thiết kế trước ba mươi phương án khác, và chỉ sau khi ban giám khảo bế tắc phải mời William Morris Hunt vào phân xử. Mặt tiền đá vôi tốn khoảng 200.000 đô la và khánh thành tháng 12 năm 1892.\n\nHãy nhìn lên phía trên dãy cửa sổ giữa mặt phố 57. Ba tấm biển ghi Hội họa, Kiến trúc, Điêu khắc, nói rõ tòa nhà này sinh ra để làm gì. Ba tuần sau lễ khai trương, George Washington Vanderbilt II trao lại phòng tranh do chính ông bỏ tiền, kèm theo đó là xóa luôn khoản vay xây dựng.\n\nTừ năm 1941, League là bên duy nhất sử dụng tòa nhà, và vẫn dạy theo lối ban đầu: không bằng cấp, không điểm số, không hội đồng tuyển sinh. Jackson Pollock, Georgia O'Keeffe, Lee Krasner, Mark Rothko và Norman Rockwell đều từng làm việc trong những căn phòng này."
-  },
-  {
-   "name": "1717 Broadway",
-   "city": "nyc",
-   "type": "attraction",
-   "cat": "culture",
-   "price": null,
-   "close": 1020,
-   "visit": 60,
-   "lat": 40.7644,
-   "lon": -73.9826,
-   "desc": "1717 Broadway is a skyscraper in the Midtown Manhattan neighborhood of New York City. At 750 feet (230 m) high, it is the tallest hotel in North America.",
-   "tip": "",
-   "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/1717_Broadway_%2855282698152%29.jpg/500px-1717_Broadway_%2855282698152%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-   "source_url": "https://en.wikipedia.org/?curid=30239479",
-   "visibility": "public",
-   "source": "user",
-   "auto_desc": true,
-   "desc_from": "wikipedia",
-   "found_via": "scout:wikipedia",
-   "state": "",
-   "county": "",
-   "country": "",
-   "city_label": "New York",
-   "added_at": "2026-09-01T20:20:03"
   },
   {
    "name": "New York Earth Room",
@@ -2355,7 +2041,12 @@
    "close": "1320",
    "visit": "60",
    "desc": "A hilltop campus above Medford, with one of the better skyline views back toward Boston",
-   "tip": "Green Line to Medford/Tufts, then walk up; the view from the President's Lawn is the reason to climb"
+   "tip": "Green Line to Medford/Tufts, then walk up; the view from the President's Lawn is the reason to climb",
+   "story_en": "Tufts sits on a hill in Medford, and the free thing worth the climb is the view back at the Boston skyline from the top of the campus. The stranger thing is the mascot.\n\nP. T. Barnum gave the university the mounted hide of Jumbo, the circus elephant killed by a locomotive at St. Thomas, Ontario, on 15 September 1885. Jumbo stood in Barnum Hall for decades and became the school's mascot, which is why Tufts teams are the Jumbos. In April 1975 a fire destroyed the hide.\n\nWhat survived is the part people remember. Ashes believed to be Jumbo's are kept in a 14-ounce Peter Pan crunchy peanut butter jar in the athletic director's office. The tail is held separately in the university archives.\n\nCome on a clear afternoon, walk up to the hilltop and look back toward the city.",
+   "story_zh": "塔夫茨大学坐落在梅德福的一座山丘上。值得爬上去的免费风景，是从校园高处回望波士顿的天际线。更奇怪的是它的吉祥物。\n\nP. T. 巴纳姆把大象\"珍宝\"的标本皮捐给了这所大学。这头马戏团大象1885年9月15日在安大略省圣托马斯被火车撞死。珍宝在巴纳姆楼里立了几十年，成了学校的吉祥物，塔夫茨的球队因此被叫作\"珍宝队\"。1975年4月，一场大火烧掉了那张标本皮。\n\n留下来的部分才是人人记得的。据信属于珍宝的骨灰，装在一个14盎司的\"彼得潘\"颗粒花生酱罐里，放在体育主任的办公室。它的尾巴则单独收在学校档案馆。\n\n挑个晴朗的下午来，走上山顶，回头看那座城市。",
+   "story_es": "Tufts está en una colina de Medford, y lo gratis que justifica la subida es la vista de la silueta de Boston desde lo alto del campus. Lo más raro es la mascota.\n\nP. T. Barnum regaló a la universidad la piel montada de Jumbo, el elefante de circo al que mató una locomotora en St. Thomas, Ontario, el 15 de septiembre de 1885. Jumbo estuvo décadas en el Barnum Hall y se convirtió en la mascota de la escuela, por eso los equipos de Tufts son los Jumbos. En abril de 1975 un incendio destruyó la piel.\n\nLo que sobrevivió es lo que todo el mundo recuerda. Unas cenizas que se cree son de Jumbo se guardan en un tarro de 400 gramos de crema de cacahuete Peter Pan, en el despacho del director deportivo. La cola se conserva aparte, en el archivo universitario.\n\nVenga una tarde despejada, suba a lo alto y mire hacia la ciudad.",
+   "story_ko": "터프츠는 메드퍼드의 언덕 위에 있습니다. 올라갈 값을 하는 무료 볼거리는 캠퍼스 꼭대기에서 되돌아보는 보스턴 스카이라인입니다. 더 기이한 것은 마스코트 쪽입니다.\n\nP. T. 바넘이 이 대학에 서커스 코끼리 점보의 박제 가죽을 기증했습니다. 점보는 1885년 9월 15일 온타리오주 세인트토머스에서 기관차에 치여 죽었습니다. 점보는 수십 년간 바넘 홀에 서 있었고 학교의 마스코트가 되었습니다. 터프츠 운동부를 점보스라고 부르는 이유입니다. 1975년 4월 화재로 그 가죽은 사라졌습니다.\n\n남은 쪽이 오히려 모두가 기억하는 이야기가 됐습니다. 점보의 것으로 여겨지는 재는 14온스짜리 피터팬 크런치 땅콩버터 병에 담겨 체육부장 사무실에 있습니다. 꼬리는 따로 대학 기록관이 보관합니다.\n\n맑은 날 오후에 와서 언덕 꼭대기까지 걸어 올라가 도시 쪽을 돌아보세요.",
+   "story_vi": "Tufts nằm trên một ngọn đồi ở Medford, và thứ miễn phí đáng công leo lên là tầm nhìn ngoái về đường chân trời Boston từ đỉnh khuôn viên. Thứ kỳ lạ hơn là linh vật của trường.\n\nP. T. Barnum tặng trường bộ da nhồi của Jumbo, con voi xiếc bị đầu máy xe lửa đâm chết tại St. Thomas, Ontario ngày 15 tháng 9 năm 1885. Jumbo đứng trong Barnum Hall suốt nhiều thập kỷ và trở thành linh vật của trường, nên các đội thể thao Tufts được gọi là Jumbos. Tháng 4 năm 1975, một trận cháy thiêu rụi bộ da ấy.\n\nPhần còn lại mới là phần ai cũng nhớ. Tro được tin là của Jumbo hiện đựng trong một lọ bơ đậu phộng Peter Pan loại 14 ounce, đặt trong phòng giám đốc thể thao. Chiếc đuôi được lưu riêng ở kho lưu trữ của trường.\n\nHãy đến vào một buổi chiều quang, đi bộ lên đỉnh đồi và nhìn ngược về phía thành phố."
   },
   {
    "city": "boston",
@@ -2369,7 +2060,12 @@
    "close": "1020",
    "visit": "90",
    "desc": "A lakeside campus in Wellesley with a free art museum and a botanic greenhouse",
-   "tip": "The Davis Museum is free and open to the public, and the path around Lake Waban is about an hour"
+   "tip": "The Davis Museum is free and open to the public, and the path around Lake Waban is about an hour",
+   "story_en": "Pauline and Henry Fowle Durant founded Wellesley in 1870 and the first students arrived on 8 September 1875. On 17 March 1914 the original College Hall burned down. The cause was never settled, though it may have started in the zoology laboratory.\n\nSo the campus you walk is the one built after the fire, spread across 500 acres above Lake Waban, with grounds laid out by Frederick Law Olmsted Jr. The path along the lake is the walk to take, and it costs nothing.\n\nNeither does the Davis Museum, which opened in 1993 and runs from ancient art through contemporary shows. Free admission makes it one of the better art hours anywhere near Boston.\n\nThis is a working campus about half an hour west of the city. Come on a weekday, when the museum is open and the lake path is quiet.",
+   "story_zh": "1870年，波琳与亨利·福尔·杜兰特夫妇创办了韦尔斯利学院，第一批学生在1875年9月8日入学。1914年3月17日，最初的学院大楼被一场大火烧毁，起火原因始终没有定论，可能来自动物学实验室。\n\n所以你今天走的这片校园，是火灾之后重建的：500英亩土地铺展在瓦班湖之上，园林由小弗雷德里克·劳·奥姆斯特德规划。最该走的是沿湖那条小径，一分钱不花。\n\n戴维斯博物馆同样免费。它1993年开馆，从世界各地的古代艺术一直排到当代展览。免门票这一点，让它成为波士顿周边最划算的一两个小时艺术时间之一。\n\n这是一所仍在上课的学校，位于城西大约半小时车程。挑工作日来，博物馆开着，湖边小径也安静。",
+   "story_es": "Pauline y Henry Fowle Durant fundaron Wellesley en 1870 y las primeras alumnas llegaron el 8 de septiembre de 1875. El 17 de marzo de 1914 se incendió el College Hall original. Nunca se determinó la causa, aunque pudo empezar en el laboratorio de zoología.\n\nAsí que el campus que se recorre hoy es el que se levantó después del fuego: 500 acres sobre el lago Waban, con jardines trazados por Frederick Law Olmsted Jr. El paseo que hay que hacer es el del borde del lago, y no cuesta nada.\n\nTampoco cuesta nada el Davis Museum, abierto en 1993, que va del arte antiguo a las muestras contemporáneas. La entrada gratuita lo convierte en una de las mejores horas de arte de los alrededores de Boston.\n\nEs un campus en funcionamiento, a una media hora al oeste de la ciudad. Venga entre semana, cuando el museo abre y el camino del lago está tranquilo.",
+   "story_ko": "폴린과 헨리 파울 듀랜트 부부가 1870년에 웰즐리를 세웠고 첫 학생들은 1875년 9월 8일에 들어왔습니다. 1914년 3월 17일 최초의 칼리지 홀이 불타 없어졌습니다. 원인은 끝내 확정되지 않았지만 동물학 실험실에서 시작됐을 가능성이 있습니다.\n\n그래서 지금 걷는 캠퍼스는 화재 이후에 지은 것입니다. 와반 호수 위로 500에이커가 펼쳐지고, 조경은 프레더릭 로 옴스테드 주니어가 맡았습니다. 꼭 걸어야 할 길은 호숫가 산책로이고, 돈은 들지 않습니다.\n\n데이비스 미술관도 무료입니다. 1993년에 문을 열었고 세계 각지의 고대 미술부터 동시대 기획전까지 이어집니다. 입장료가 없다는 점에서 보스턴 근교에서 보낼 수 있는 가장 알찬 미술 시간 축에 듭니다.\n\n수업이 돌아가는 캠퍼스이고, 도심에서 서쪽으로 30분쯤 걸립니다. 미술관이 열고 호숫길이 한산한 평일에 오세요.",
+   "story_vi": "Pauline và Henry Fowle Durant lập Wellesley năm 1870, những sinh viên đầu tiên nhập học ngày 8 tháng 9 năm 1875. Ngày 17 tháng 3 năm 1914, tòa College Hall nguyên thủy cháy rụi. Nguyên nhân không bao giờ được xác định, dù đám cháy có thể khởi đầu từ phòng thí nghiệm động vật học.\n\nVì thế khuôn viên bạn đi hôm nay là khuôn viên dựng lại sau đám cháy: 500 mẫu Anh trải trên hồ Waban, cảnh quan do Frederick Law Olmsted Jr. quy hoạch. Lối đáng đi nhất là con đường ven hồ, và nó miễn phí.\n\nBảo tàng Davis cũng miễn phí. Mở cửa năm 1993, bộ sưu tập chạy từ nghệ thuật cổ đại khắp thế giới đến các triển lãm đương đại. Vào cửa không mất tiền khiến đây là một hai giờ xem nghệ thuật đáng giá bậc nhất quanh Boston.\n\nĐây là một khuôn viên đang dạy học, cách thành phố chừng nửa giờ về phía tây. Hãy đến vào ngày thường, khi bảo tàng mở và đường ven hồ vắng."
   },
   {
    "city": "boston",
@@ -2383,7 +2079,12 @@
    "close": "1380",
    "visit": "30",
    "desc": "A performing arts college in Boston's Theater District that restored three historic theatres and runs them",
-   "tip": "The Cutler Majestic and the Colonial are Emerson houses, so a ticket is the way to see inside one"
+   "tip": "The Cutler Majestic and the Colonial are Emerson houses, so a ticket is the way to see inside one",
+   "story_en": "Charles Wesley Emerson founded this school in 1880 as the Boston Conservatory of Elocution, Oratory, and Dramatic Art. It spent most of a century in Back Bay. Then in the 1990s, under president John Zacharis, it began buying into the Theater District, starting with 180 Tremont Street.\n\nWhat it did next is why the block still has its theatres. The Cutler Majestic, opened in 1903, reopened in 2003 after Emerson restored it. The Paramount, a 1932 movie house, was bought in 2005 and reopened in 2010 as the Paramount Center. The college took its option on the Colonial in 2006, putting a dormitory in the upper floors of the building while the theatre stayed a theatre.\n\nThese are working stages, not plaques on a wall. ArtsEmerson and Emerson Stage sell tickets to the public, so look up what is playing the night you are here.",
+   "story_zh": "1880年，查尔斯·卫斯理·爱默生创办了这所学校，最初的名字是波士顿演说、雄辩与戏剧艺术学院。它在后湾区待了将近一个世纪。到了1990年代，在校长约翰·扎卡里斯任内，学校开始买进剧院区的物业，第一处是特里蒙特街180号。\n\n之后做的事，正是这一带的老剧院还在的原因。1903年开业的卡特勒·马杰斯蒂剧院经爱默生修复，2003年重新开门。1932年的电影院派拉蒙剧院2005年被买下，2010年以派拉蒙中心的身份重开。2006年学校行使了对殖民剧院的购买权，把楼上几层改成宿舍，剧院仍旧是剧院。\n\n这些都是天天在用的舞台，不是墙上的一块牌子。ArtsEmerson 和 Emerson Stage 都对外售票，来之前查一查你在的那晚演什么。",
+   "story_es": "Charles Wesley Emerson fundó esta escuela en 1880 como Boston Conservatory of Elocution, Oratory, and Dramatic Art. Pasó casi un siglo en Back Bay. Después, en los años noventa y bajo el rector John Zacharis, empezó a comprar en el Theater District, arrancando por el 180 de Tremont Street.\n\nLo que hizo a continuación explica que la manzana conserve sus teatros. El Cutler Majestic, inaugurado en 1903, reabrió en 2003 tras la restauración de Emerson. El Paramount, un cine de 1932, se compró en 2005 y reabrió en 2010 como Paramount Center. En 2006 la universidad ejerció su opción sobre el Colonial y puso una residencia de estudiantes en las plantas altas del edificio, mientras el teatro seguía siendo teatro.\n\nSon escenarios en uso, no placas en una pared. ArtsEmerson y Emerson Stage venden entradas al público, así que mire qué se representa la noche que esté aquí.",
+   "story_ko": "찰스 웨슬리 에머슨이 1880년에 보스턴 화술, 웅변, 연극예술 학교라는 이름으로 세운 학교입니다. 거의 한 세기를 백베이에서 보냈습니다. 그러다 1990년대에 존 재커리스 총장 아래 극장 지구의 건물을 사들이기 시작했고, 그 첫 건물이 트레몬트가 180번지였습니다.\n\n그다음에 한 일이 이 블록에 아직 극장이 남아 있는 이유입니다. 1903년 문을 연 커틀러 머제스틱은 에머슨의 복원을 거쳐 2003년 다시 열었습니다. 1932년 영화관이던 파라마운트는 2005년에 사들여 2010년 파라마운트 센터로 다시 열었습니다. 2006년에는 콜로니얼 극장 매입 권리를 행사해 건물 위층을 기숙사로 바꾸면서도 극장은 극장으로 남겼습니다.\n\n벽에 붙은 명패가 아니라 매일 쓰이는 무대들입니다. ArtsEmerson과 Emerson Stage가 일반에 표를 파니, 머무는 날 밤에 무엇을 하는지 찾아보세요.",
+   "story_vi": "Charles Wesley Emerson lập ngôi trường này năm 1880 với tên Nhạc viện Diễn thuyết, Hùng biện và Nghệ thuật Kịch Boston. Trường ở Back Bay gần trọn một thế kỷ. Rồi vào thập niên 1990, dưới thời hiệu trưởng John Zacharis, trường bắt đầu mua vào khu Nhà hát, khởi đầu là số 180 phố Tremont.\n\nViệc trường làm sau đó chính là lý do dãy phố này còn giữ được các nhà hát. Cutler Majestic mở cửa năm 1903, được Emerson trùng tu và mở lại năm 2003. Paramount, một rạp chiếu bóng năm 1932, được mua năm 2005 và mở lại năm 2010 thành Paramount Center. Năm 2006 trường thực hiện quyền mua nhà hát Colonial, biến các tầng trên thành ký túc xá trong khi nhà hát vẫn là nhà hát.\n\nĐây là những sân khấu đang chạy, không phải tấm biển gắn tường. ArtsEmerson và Emerson Stage bán vé cho công chúng, vậy hãy tra xem đêm bạn ở đây có vở gì."
   },
   {
    "city": "boston",
@@ -2457,32 +2158,12 @@
    "county": "",
    "country": "",
    "city_label": "Washington DC",
-   "added_at": "2026-09-01T23:23:00"
-  },
-  {
-   "name": "Dc Jail Library",
-   "city": "dc",
-   "type": "attraction",
-   "cat": "culture",
-   "price": null,
-   "close": 1020,
-   "visit": 60,
-   "lat": 38.88344,
-   "lon": -76.97638,
-   "desc": "The District of Columbia Jail or the D.C. Central Detention Facility  (commonly referred to as the D.C. Jail) is a jail run by the District of Columbia Department of Corrections in the Hill East neighborhood of Washington, D.C., U.S. The majority of male inmates housed in the Central Detention Facility are awaiting adjudication of cases or are sentenced for misdemeanor offenses. Female inmates in the custody of the D.C. Department of Corrections are housed at the adjacent Correctional Treatment Facility.",
-   "tip": "",
-   "photo": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/District_Jail%2C_Wash._D.C..jpg/500px-District_Jail%2C_Wash._D.C..jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-   "source_url": "https://en.wikipedia.org/?curid=47452846",
-   "visibility": "public",
-   "source": "user",
-   "auto_desc": true,
-   "desc_from": "wikipedia",
-   "found_via": "scout:dc-open-data",
-   "state": "",
-   "county": "",
-   "country": "",
-   "city_label": "Washington DC",
-   "added_at": "2026-09-02T00:23:03"
+   "added_at": "2026-09-01T23:23:00",
+   "story_en": "This neighborhood in far northwest Washington is worth knowing for what happened here after the Second World War. Restrictive covenants had kept Jews and African Americans from buying houses in Shepherd Park. Once those covenants stopped being enforced, the neighborhood became largely Jewish and African American, and it stayed that way rather than emptying out.\n\nThat is the part that matters. Across much of the country, an arriving Black family was the signal for white families to sell. Here the mix held. The Jewish population thinned over the following forty years and is rising again, and the neighborhood has gone on supporting a settled middle and upper middle class Black community.\n\nThere is no monument to any of this. There is a library, a branch named for Juanita E. Thornton, and streets of houses. Come to see an integration that worked, not a plaque about one.",
+   "story_zh": "这片位于华盛顿西北角的社区，值得一说的是二战之后发生在这里的事。此前，限制性契约不许犹太人和非裔美国人在谢泼德公园买房。等到这类契约不再被执行，社区居民很快以犹太人和非裔美国人为主，而且就这样稳住了，没有走空。\n\n关键正在于此。在美国许多地方，一户黑人家庭搬来，就是白人家庭挂牌卖房的信号。而在这里，混居的局面保住了。此后四十年间犹太人口逐渐减少，如今又在回升，社区则一直托着一个安稳的中产与中上层黑人群体。\n\n这一切没有纪念碑，只有一座以胡安妮塔·E·桑顿命名的图书馆分馆，和一条条住宅街道。来这里，是来看一次真正成功的融合，而不是看一块讲述它的牌子。",
+   "story_es": "Este barrio del extremo noroeste de Washington merece conocerse por lo que ocurrió aquí después de la Segunda Guerra Mundial. Las cláusulas restrictivas habían impedido que judíos y afroamericanos compraran casas en Shepherd Park. Cuando dejaron de aplicarse, el barrio pasó a ser mayoritariamente judío y afroamericano, y siguió siéndolo en lugar de vaciarse.\n\nAhí está lo importante. En buena parte del país, la llegada de una familia negra era la señal para que las familias blancas vendieran. Aquí la mezcla aguantó. La población judía se fue reduciendo durante los cuarenta años siguientes y ahora vuelve a crecer, y el barrio ha seguido sosteniendo a una comunidad negra de clase media y media alta bien asentada.\n\nNo hay ningún monumento a esto. Hay una biblioteca, una sucursal con el nombre de Juanita E. Thornton, y calles de casas. Venga a ver una integración que funcionó, no una placa que la cuente.",
+   "story_ko": "워싱턴 북서쪽 끝의 이 동네는 2차 세계대전 이후 여기서 벌어진 일 때문에 알아둘 만합니다. 이전에는 제한적 계약 조항이 유대인과 흑인의 셰퍼드 파크 주택 구입을 막았습니다. 그 조항들이 더는 강제되지 않게 되자 동네는 유대인과 흑인이 다수인 곳이 되었고, 비어 나가는 대신 그 상태로 자리를 잡았습니다.\n\n중요한 대목이 바로 그것입니다. 미국의 많은 지역에서 흑인 가족의 이사는 백인 가족이 집을 내놓는 신호였습니다. 이곳에서는 그 혼합이 유지됐습니다. 이후 사십 년 동안 유대인 인구는 줄었다가 지금 다시 늘고 있고, 동네는 안정된 중산층과 중상층 흑인 공동체를 계속 떠받쳐 왔습니다.\n\n이를 기리는 기념물은 없습니다. 후아니타 E. 손턴의 이름을 딴 도서관 분관과 주택이 늘어선 거리가 있을 뿐입니다. 통합에 관한 명패가 아니라, 실제로 작동한 통합을 보러 오세요.",
+   "story_vi": "Khu dân cư ở góc tây bắc xa của Washington này đáng biết vì những gì đã diễn ra ở đây sau Thế chiến thứ hai. Trước đó, các điều khoản hạn chế trong khế ước nhà đất không cho người Do Thái và người Mỹ gốc Phi mua nhà tại Shepherd Park. Khi những điều khoản ấy không còn được thi hành, khu này trở thành nơi phần lớn cư dân là người Do Thái và người da đen, và nó giữ nguyên như vậy thay vì bị bỏ trống.\n\nĐó mới là phần đáng kể. Ở nhiều nơi trên đất Mỹ, một gia đình da đen dọn đến là tín hiệu để các gia đình da trắng rao bán nhà. Ở đây, sự pha trộn đó trụ lại được. Bốn mươi năm sau, dân số Do Thái thưa dần rồi nay đang tăng trở lại, còn khu phố vẫn nâng đỡ một cộng đồng da đen trung lưu và trung lưu lớp trên đã an cư.\n\nKhông có đài tưởng niệm nào cho chuyện này. Chỉ có một thư viện chi nhánh mang tên Juanita E. Thornton và những dãy phố nhà ở. Hãy đến xem một cuộc hòa nhập đã thành công, chứ không phải tấm biển kể về nó."
   },
   {
    "name": "South Street Seaport Historic District",
@@ -2507,7 +2188,12 @@
    "county": "",
    "country": "",
    "city_label": "New York",
-   "added_at": "2026-09-03T19:03:47"
+   "added_at": "2026-09-03T19:03:47",
+   "story_en": "Stand on Fulton Street with the river behind you and look at the low brick block. Peter Schermerhorn built a dozen counting houses here between 1811 and 1812, and he built them on made land. The water once reached Front Street, and the ground under your feet was filled in by hand in the late 1700s. The mansard roofs came after the Civil War, so the row is a century of building stacked on one wall.\n\nThe Fulton Fish Market worked this corner from 1822 until 2005, when it moved to Hunts Point in the Bronx. Most visitors walk straight past the white lighthouse at Fulton and Pearl. That is the Titanic Memorial, raised in 1913 on the roof of the Seamen's Church Institute and brought down here in the 1970s. At the pier, the iron ship Wavertree was launched at Southampton in 1885.\n\nCome before ten. The blocks are quiet, and the morning sun comes up Fulton straight off the river.",
+   "story_zh": "站在富尔顿街上，背对东河，看那排矮矮的红砖楼。1811 到 1812 年间，彼得·谢默霍恩在这里盖了十二栋商行小楼，而且是盖在填出来的地上。早年河水一直漫到 Front Street，你脚下这块地是十八世纪末一点一点填起来的。屋顶那层法式坡顶是南北战争之后才加上去的，所以这一面墙上叠着整整一个世纪的建筑。\n\n富尔顿鱼市从 1822 年起就在这个路口做生意，直到 2005 年才搬去布朗克斯的 Hunts Point。多数游客会径直走过富尔顿街与珍珠街口那座白色灯塔。那是泰坦尼克号纪念灯塔，1913 年立在海员教会协会大楼的屋顶上，1970 年代移到了这里。码头边系着铁壳帆船 Wavertree，1885 年在英国南安普敦下水。\n\n十点前来最好。街区安静，早上的太阳正顺着富尔顿街从河面照进来。",
+   "story_es": "Ponte en Fulton Street de espaldas al río y mira la manzana baja de ladrillo. Peter Schermerhorn levantó aquí una docena de casas de comercio entre 1811 y 1812, y las levantó sobre terreno ganado al agua. El río llegaba antes hasta Front Street, y el suelo que pisas se rellenó a mano a finales del siglo XVIII. Los tejados de mansarda se añadieron después de la Guerra Civil, así que en esa fachada hay un siglo de construcción superpuesto.\n\nEl mercado de pescado de Fulton trabajó esta esquina desde 1822 hasta 2005, cuando se trasladó a Hunts Point, en el Bronx. Casi todos los visitantes pasan de largo frente al faro blanco de Fulton con Pearl. Es el Monumento al Titanic, colocado en 1913 sobre el tejado del Seamen's Church Institute y bajado hasta aquí en los años setenta. En el muelle está el Wavertree, un velero de casco de hierro botado en Southampton en 1885.\n\nVen antes de las diez. Las calles están tranquilas y el sol de la mañana sube por Fulton directamente desde el río.",
+   "story_ko": "풀턴 스트리트에 서서 강을 등지고 낮은 벽돌 건물 줄을 보자. 피터 셔머혼이 1811년부터 1812년 사이에 이곳에 상관 열두 채를 지었다. 그것도 매립지 위에 지었다. 예전에는 강물이 프런트 스트리트까지 들어왔고, 지금 발밑의 땅은 1700년대 후반에 사람 손으로 메운 것이다. 지붕의 맨사드 층은 남북전쟁 이후에 올린 것이라, 이 한 면의 벽에 한 세기의 건축이 쌓여 있다.\n\n풀턴 수산시장은 1822년부터 2005년까지 이 모퉁이에서 영업하다가 브롱크스의 헌츠포인트로 옮겨 갔다. 방문객 대부분은 풀턴과 펄 스트리트가 만나는 곳의 흰 등대를 그냥 지나친다. 타이태닉 기념 등대다. 1913년 선원교회협회 건물 옥상에 세워졌고 1970년대에 이 자리로 내려왔다. 부두에는 1885년 영국 사우샘프턴에서 진수된 철제 범선 웨이버트리가 매여 있다.\n\n10시 전에 오는 것이 좋다. 거리가 조용하고, 아침 해가 강에서 풀턴 스트리트를 따라 곧장 들어온다.",
+   "story_vi": "Đứng trên phố Fulton, quay lưng ra sông và nhìn dãy nhà gạch thấp. Peter Schermerhorn đã dựng ở đây một tá nhà thương hội trong hai năm 1811 và 1812, và dựng trên đất lấn sông. Ngày trước nước còn vào tới phố Front, và nền đất dưới chân bạn được đắp bằng tay hồi cuối những năm 1700. Phần mái mansard phía trên được thêm vào sau Nội chiến, nên bức tường này chồng lên cả một thế kỷ xây dựng.\n\nChợ cá Fulton buôn bán ở góc phố này từ năm 1822 đến năm 2005, rồi dời về Hunts Point ở Bronx. Phần lớn khách đi thẳng qua ngọn hải đăng trắng ở góc Fulton và Pearl. Đó là Đài tưởng niệm Titanic, dựng năm 1913 trên nóc tòa nhà Seamen's Church Institute và được đưa xuống đây vào thập niên 1970. Ngoài bến là chiếc thuyền buồm vỏ sắt Wavertree, hạ thủy tại Southampton năm 1885.\n\nHãy đến trước mười giờ. Khu phố yên tĩnh, và nắng sớm rọi thẳng theo phố Fulton từ mặt sông vào."
   },
   {
    "name": "New York Studio School of Drawing, Painting and Sculpture",
@@ -2532,7 +2218,12 @@
    "county": "",
    "country": "",
    "city_label": "New York",
-   "added_at": "2026-09-03T19:03:48"
+   "added_at": "2026-09-03T19:03:48",
+   "story_en": "Stand at 8 West 8th Street and you are in the doorway where American art got its own museum. Gertrude Vanderbilt Whitney ran a studio and club for living American artists here from 1914. In 1929 she offered more than 500 works to the Metropolitan Museum, which turned the gift down. So she built her own. The Whitney Museum of American Art opened on this block on 18 November 1931 and stayed until 1954, when it moved uptown.\n\nThe building did not go quiet. In 1963 the painter Mercedes Matter and a group of her students founded the New York Studio School here, worn out by art taught in disconnected courses. It gave no degrees at first. Students drew from life, all day. Philip Guston, Alex Katz and Esteban Vicente taught in these rooms.\n\nAlmost everyone walks past. The ground-floor gallery is free and open to the public, so go in.",
+   "story_zh": "站在西八街8号门口，你正站在美国艺术拥有自己博物馆的起点。1914年起，格特鲁德·范德比尔特·惠特尼在这里为在世的美国艺术家开办工作室和俱乐部。1929年，她提出把五百多件作品捐给大都会博物馆，对方拒绝了这份礼物。于是她自己建了一座。惠特尼美国艺术博物馆1931年11月18日在这条街上开门，一直待到1954年才迁往上城。\n\n这栋楼并没有就此安静下来。1963年，画家梅赛德斯·马特与一群学生在这里创办了纽约画室学院，原因是他们受够了被拆成一门门零散课程的艺术教育。学院最初不发学位，学生整天对着真人写生。菲利普·古斯顿、亚历克斯·卡茨和埃斯特万·比森特都曾在这几间屋子里授课。\n\n几乎所有人都是从门口走过去的。一层的展厅免费向公众开放，进去看看。",
+   "story_es": "Párese en el 8 de West 8th Street: está en la puerta donde el arte estadounidense consiguió su propio museo. Desde 1914, Gertrude Vanderbilt Whitney dirigió aquí un estudio y un club para artistas estadounidenses vivos. En 1929 ofreció más de 500 obras al Museo Metropolitano, que rechazó la donación. Así que construyó el suyo. El Whitney Museum of American Art abrió en esta manzana el 18 de noviembre de 1931 y siguió allí hasta 1954, cuando se mudó al norte de la ciudad.\n\nEl edificio no se quedó en silencio. En 1963 la pintora Mercedes Matter y un grupo de sus alumnos fundaron aquí la New York Studio School, cansados de una enseñanza artística partida en cursos sueltos. Al principio no daba títulos. Los alumnos dibujaban del natural, todo el día. Philip Guston, Alex Katz y Esteban Vicente dieron clase en estas salas.\n\nCasi todo el mundo pasa de largo. La galería de la planta baja es gratuita y está abierta al público, así que entre.",
+   "story_ko": "웨스트 8번가 8번지 앞에 서 보세요. 미국 미술이 자기 미술관을 갖게 된 자리입니다. 거트루드 밴더빌트 휘트니는 1914년부터 이곳에서 생존 미국 작가들을 위한 스튜디오와 클럽을 운영했습니다. 1929년 그는 500점이 넘는 작품을 메트로폴리탄 미술관에 기증하겠다고 제안했지만 거절당했고, 결국 자기 미술관을 세웁니다. 휘트니 미국미술관은 1931년 11월 18일 이 블록에서 문을 열었고 1954년 업타운으로 옮길 때까지 여기 있었습니다.\n\n건물은 조용해지지 않았습니다. 1963년 화가 머세이디스 매터와 그의 학생들이 이곳에 뉴욕 스튜디오 스쿨을 세웠습니다. 조각조각 나뉜 강좌식 미술 교육에 지쳐서였습니다. 처음에는 학위를 주지 않았고, 학생들은 하루 종일 실물을 보고 그렸습니다. 필립 거스턴, 알렉스 카츠, 에스테반 비센테가 이 방들에서 가르쳤습니다.\n\n거의 모두가 그냥 지나칩니다. 1층 갤러리는 무료로 개방되어 있으니 들어가 보세요.",
+   "story_vi": "Đứng trước số 8 West 8th Street là bạn đang đứng ngay chỗ nghệ thuật Mỹ có được bảo tàng của riêng mình. Từ năm 1914, bà Gertrude Vanderbilt Whitney mở tại đây một xưởng vẽ và câu lạc bộ dành cho các nghệ sĩ Mỹ đương thời. Năm 1929, bà đề nghị tặng hơn 500 tác phẩm cho Bảo tàng Metropolitan và bị từ chối. Thế là bà tự xây bảo tàng của mình. Bảo tàng Nghệ thuật Mỹ Whitney mở cửa ngay khu nhà này ngày 18 tháng 11 năm 1931 và ở đó đến năm 1954 thì chuyển lên khu trên.\n\nTòa nhà không vì thế mà lặng đi. Năm 1963, họa sĩ Mercedes Matter cùng một nhóm học trò lập ra New York Studio School tại đây, vì chán kiểu dạy nghệ thuật bị cắt vụn thành từng môn rời rạc. Ban đầu trường không cấp bằng. Sinh viên vẽ người thật, cả ngày. Philip Guston, Alex Katz và Esteban Vicente từng dạy trong những căn phòng này.\n\nGần như ai cũng đi lướt qua. Phòng trưng bày ở tầng trệt mở cửa miễn phí cho công chúng, hãy vào xem."
   },
   {
    "name": "Museum of Sex",
@@ -2557,7 +2248,12 @@
    "county": "",
    "country": "",
    "city_label": "New York",
-   "added_at": "2026-09-03T19:03:51"
+   "added_at": "2026-09-03T19:03:51",
+   "story_en": "Daniel Gluck opened this museum at 233 Fifth Avenue on 5 October 2002, and the exhibits were not the hard part. The New York State Board of Regents refused its non-profit application, arguing that a museum of sex made a mockery of the word museum. Gluck also turned down money from the pornography industry. Without the status and without that funding, the first ticket cost 17 dollars.\n\nThe opening show was NYC Sex: How New York City Transformed Sex in America, and that is still the honest frame for the place. It is a social history museum about the subject other museums leave out, running from Chinese erotic art to American pinup photography of 1860 to 1960 to living artists.\n\nYou must be 18 to get in, with no exceptions. A second location opened in Miami in October 2024.",
+   "story_zh": "2002年10月5日，丹尼尔·格拉克在第五大道233号办起了这家博物馆，难办的部分并不是展品。纽约州立评议会驳回了它的非营利机构申请，理由是\"性博物馆\"是对\"博物馆\"这个词的嘲弄。格拉克同时拒绝了色情行业的资助。既没有身份，也没有那笔钱，第一张门票定价17美元。\n\n开馆展叫《纽约之性：这座城市如何改变了美国人的性》，直到今天，这仍是理解这里最准确的角度。它是一座社会史博物馆，讲的是其他博物馆略过不提的那部分，从中国春宫艺术，到1860至1960年的美国海报女郎摄影，再到在世艺术家的作品。\n\n入场必须年满18岁，没有例外。2024年10月，它在迈阿密开出了第二家馆。",
+   "story_es": "Daniel Gluck abrió este museo en el 233 de la Quinta Avenida el 5 de octubre de 2002, y lo difícil no fueron las salas. La Junta de Regentes del Estado de Nueva York rechazó su solicitud como entidad sin ánimo de lucro, alegando que un museo del sexo se burlaba de la palabra museo. Gluck además rechazó dinero de la industria pornográfica. Sin ese estatus y sin esa financiación, la primera entrada costó 17 dólares.\n\nLa muestra inaugural fue NYC Sex: How New York City Transformed Sex in America, y sigue siendo la manera honesta de leer el sitio. Es un museo de historia social sobre el asunto que los demás museos dejan fuera, del arte erótico chino a la fotografía pinup estadounidense de 1860 a 1960 y a artistas vivos.\n\nHay que tener 18 años para entrar, sin excepciones. En octubre de 2024 abrió una segunda sede en Miami.",
+   "story_ko": "대니얼 글럭이 2002년 10월 5일 5번가 233번지에 문을 연 박물관입니다. 어려웠던 것은 전시가 아니었습니다. 뉴욕주 리전트 위원회는 \"성 박물관\"이 박물관이라는 말을 우롱한다며 비영리 법인 신청을 거부했고, 글럭은 포르노 산업의 자금도 받지 않았습니다. 지위도 돈도 없이 출발했기에 첫 입장료는 17달러였습니다.\n\n개관전은 《뉴욕의 성: 이 도시는 어떻게 미국의 성을 바꾸었나》였고, 지금도 이곳을 이해하는 가장 정직한 틀입니다. 다른 박물관이 빼놓는 주제를 다루는 사회사 박물관으로, 중국 춘화부터 1860년에서 1960년 사이 미국 핀업 사진, 그리고 동시대 작가들까지 이어집니다.\n\n만 18세 이상만 입장할 수 있고 예외는 없습니다. 2024년 10월에는 마이애미에 두 번째 관이 문을 열었습니다.",
+   "story_vi": "Daniel Gluck mở bảo tàng này tại số 233 Đại lộ 5 ngày 5 tháng 10 năm 2002, và phần khó nhất không nằm ở hiện vật. Hội đồng Quản trị Giáo dục bang New York bác đơn xin tư cách phi lợi nhuận, cho rằng một \"bảo tàng về tình dục\" là sự nhạo báng chính chữ bảo tàng. Gluck cũng từ chối tiền từ ngành công nghiệp khiêu dâm. Không có tư cách ấy, cũng không có khoản tài trợ ấy, tấm vé đầu tiên có giá 17 đô la.\n\nTriển lãm khai trương mang tên NYC Sex: How New York City Transformed Sex in America, và đến nay đó vẫn là cách đọc trung thực nhất về nơi này. Đây là một bảo tàng lịch sử xã hội về đúng chủ đề mà các bảo tàng khác bỏ qua, trải từ tranh xuân cung Trung Hoa đến ảnh pinup Mỹ giai đoạn 1860 đến 1960 và các nghệ sĩ đương thời.\n\nPhải đủ 18 tuổi mới được vào, không ngoại lệ. Tháng 10 năm 2024, bảo tàng mở cơ sở thứ hai tại Miami."
   },
   {
    "name": "The Renee and Chaim Gross Foundation",
@@ -2582,7 +2278,66 @@
    "county": "",
    "country": "",
    "city_label": "New York",
-   "added_at": "2026-09-03T19:03:52"
+   "added_at": "2026-09-03T19:03:52",
+   "story_en": "Half a block south of Washington Square, at 526 LaGuardia Place, a four-story brick building from 1873 spent decades as an industrial loft. In 1962 the sculptor Chaim Gross and his wife Renee bought it and rebuilt it as one thing: home upstairs, workshop on the ground floor, with a modernist skylight cut in to light the carving. Gross worked in that studio from 1963 until he died in 1991, and the tools are still where he left them.\n\nHe carved direct, straight into wood and stone with no clay model first, a method he helped bring to American sculpture in the late 1920s. A wrong cut is permanent, which is the whole point of it.\n\nGo up to the third floor for what most visitors miss: the couple's own living room, hung with the art they collected, including Milton Avery, Marsden Hartley, Willem de Kooning and Jacob Lawrence.\n\nGuided one-hour tours only, eight people maximum, September through June. Book at least a day ahead.",
+   "story_zh": "华盛顿广场往南半个街区，拉瓜迪亚广场526号，一栋1873年的四层砖楼，几十年里一直是工业阁楼。1962年，雕塑家夏姆·格罗斯和妻子蕾妮买下它，把它改成了一体：楼上住人，一楼做工作室，屋顶开出一扇现代主义天窗，为雕刻引光。1963年起他就在这间工作室里干活，直到1991年去世，工具至今还摆在他离开时的位置。\n\n他用的是直接雕刻：不先做泥稿，直接下刀进木头和石头。这套做法由他在1920年代末带进美国雕塑界。刀下错了就永远错，这正是它的分量所在。\n\n多数人会错过三楼：那是夫妇俩自己的起居室，墙上挂的是他们收藏的画，包括米尔顿·艾弗里、马斯登·哈特利、威廉·德·库宁和雅各布·劳伦斯。\n\n只接受一小时导览，每场最多八人，九月到六月开放。请至少提前一天预约。",
+   "story_es": "A media cuadra al sur de Washington Square, en el 526 de LaGuardia Place, hay un edificio de ladrillo de cuatro plantas de 1873 que durante décadas fue un loft industrial. En 1962 el escultor Chaim Gross y su esposa Renee lo compraron y lo rehicieron como una sola cosa: la vivienda arriba y el taller en la planta baja, con un tragaluz modernista abierto para iluminar el tallado. Gross trabajó en ese taller desde 1963 hasta su muerte en 1991, y las herramientas siguen donde él las dejó.\n\nTallaba en directo, sobre la madera y la piedra, sin modelo previo en barro, un método que ayudó a introducir en la escultura estadounidense a finales de los años veinte. Un corte equivocado es permanente, y en eso consiste todo.\n\nSuba al tercer piso para ver lo que casi nadie ve: el salón del matrimonio, con la colección que compraron, entre ella Milton Avery, Marsden Hartley, Willem de Kooning y Jacob Lawrence.\n\nSolo visitas guiadas de una hora, ocho personas por grupo, de septiembre a junio. Reserve con al menos un día de antelación.",
+   "story_ko": "워싱턴 스퀘어에서 남쪽으로 반 블록, 라과디아 플레이스 526번지에 1873년에 지은 4층 벽돌 건물이 있습니다. 수십 년 동안 공업용 로프트로 쓰이던 곳입니다. 1962년 조각가 하임 그로스와 아내 러네이가 이 건물을 사서 하나로 고쳤습니다. 위층은 집, 1층은 작업실, 그리고 조각 작업에 빛을 들이려고 모던한 천창을 냈습니다. 그로스는 1963년부터 1991년 세상을 떠날 때까지 이 작업실에서 일했고, 연장은 지금도 그가 두었던 자리에 그대로 있습니다.\n\n그는 점토 원형을 먼저 만들지 않고 나무와 돌을 바로 깎는 직접 조각 방식으로 작업했습니다. 1920년대 후반 미국 조각계에 이 방식을 들여오는 데 그가 앞장섰습니다. 한 번 잘못 깎으면 되돌릴 수 없고, 바로 그 점이 핵심입니다.\n\n대부분의 방문객이 놓치는 것은 3층입니다. 부부가 실제로 쓰던 거실이고, 벽에는 두 사람이 모은 밀턴 에이버리, 마스든 하틀리, 윌럼 데 쿠닝, 제이콥 로런스의 작품이 걸려 있습니다.\n\n관람은 1시간 가이드 투어만 가능하고 한 회 최대 8명, 9월부터 6월까지입니다. 최소 하루 전에 예약하세요.",
+   "story_vi": "Cách Washington Square nửa dãy nhà về phía nam, tại số 526 LaGuardia Place, có một tòa nhà gạch bốn tầng xây năm 1873, suốt nhiều thập kỷ chỉ là một gác xưởng công nghiệp. Năm 1962, nhà điêu khắc Chaim Gross và vợ là Renee mua lại và cải tạo thành một khối thống nhất: nhà ở phía trên, xưởng ở tầng trệt, cùng một giếng trời hiện đại mở ra để lấy sáng cho việc đục đẽo. Gross làm việc trong xưởng đó từ năm 1963 cho đến khi ông mất năm 1991, và dụng cụ vẫn nằm nguyên chỗ ông để lại.\n\nÔng tạc trực tiếp vào gỗ và đá, không nặn mẫu đất sét trước, phương pháp mà ông góp phần đưa vào điêu khắc Mỹ cuối thập niên 1920. Sai một nhát là hỏng vĩnh viễn, và đó chính là điều đáng nói.\n\nHãy lên tầng ba để thấy thứ phần lớn khách bỏ lỡ: phòng khách của hai vợ chồng, treo đúng những tác phẩm họ sưu tầm, trong đó có Milton Avery, Marsden Hartley, Willem de Kooning và Jacob Lawrence.\n\nChỉ nhận tour có hướng dẫn viên kéo dài một giờ, tối đa tám người mỗi lượt, từ tháng 9 đến tháng 6. Nên đặt trước ít nhất một ngày."
+  },
+  {
+   "name": "Cathedral church of SS. John the Baptist and John the Evange",
+   "city": "toruń",
+   "type": "attraction",
+   "cat": "culture",
+   "price": null,
+   "close": 1020,
+   "visit": 60,
+   "lat": 53.00937,
+   "lon": 18.60623,
+   "desc": "Place of worship in Old Town, Stare Miasto.",
+   "tip": "",
+   "photo": null,
+   "source_url": null,
+   "visibility": "public",
+   "source": "user",
+   "auto_desc": true,
+   "desc_from": "map data",
+   "found_via": "book",
+   "state": "Kuyavian-Pomeranian Voivodeship",
+   "county": "Kuyavian-Pomeranian Voivodeship",
+   "country": "Poland",
+   "city_label": "Toruń",
+   "added_at": "2026-09-04T14:10:34",
+   "dining": {
+    "flags": [
+     "step-free"
+    ]
+   },
+   "story_en": "Toruń made its money on the Vistula, and this brick church is where the money went. Work started in the 13th century and the building did not reach its present shape until the end of the 1400s. It was the Old Town parish church for seven centuries and only became a cathedral in 1992, when the Diocese of Toruń was created.\n\nTwo things are worth the stop. In the tower hangs the Tuba Dei, God's Trumpet, cast in Toruń by a local founder named Martin Schmidt on 22 September 1500: nearly 7,500 kilos, 2.27 metres across, still the largest medieval bell in Poland. In a side chapel stands the 13th-century font where, by tradition, Nicolaus Copernicus was baptised in 1473, with a Renaissance portrait of him set beside it a century later. Most people walk straight up the nave and miss it.\n\nLook up at the tower clock on your way in. It has a single hand, so it gives you the hour and nothing finer.",
+   "story_zh": "托伦的财富来自维斯瓦河，而这座砖砌教堂就是财富的去处。它13世纪动工，直到15世纪末才有了今天的样子。此后七百年间它一直是旧城的堂区教堂，直到1992年托伦教区成立，才升为主教座堂。\n\n有两样东西值得专程停留。塔楼里挂着「Tuba Dei」，意为「上帝之号」，1500年9月22日由托伦本地铸钟匠马丁·施密特铸成：近7500公斤，直径2.27米，至今仍是波兰最大的中世纪钟。侧面的小礼拜堂里立着一座13世纪的洗礼盆，相传1473年哥白尼就在此受洗，一百年后人们又在旁边立了一幅文艺复兴风格的哥白尼画像。多数人沿着中殿径直往里走，就错过了。\n\n进门前抬头看塔上的钟。它只有一根指针，只报时，不报分。",
+   "story_es": "El dinero de Toruń salió del Vístula, y esta iglesia de ladrillo es donde fue a parar. Las obras empezaron en el siglo XIII y el edificio no alcanzó su forma actual hasta finales del siglo XV. Fue la parroquia de la Ciudad Vieja durante siete siglos y solo pasó a ser catedral en 1992, cuando se creó la diócesis de Toruń.\n\nHay dos cosas que justifican la parada. En la torre cuelga la Tuba Dei, la Trompeta de Dios, fundida en Toruń por un fundidor local llamado Martin Schmidt el 22 de septiembre de 1500: casi 7.500 kilos, 2,27 metros de diámetro, todavía la campana medieval más grande de Polonia. En una capilla lateral está la pila bautismal del siglo XIII donde, según la tradición, Nicolás Copérnico fue bautizado en 1473, con un retrato renacentista suyo colocado al lado un siglo después. La mayoría sube directa por la nave y se la pierde.\n\nMire el reloj de la torre al entrar. Tiene una sola aguja, así que le da la hora y nada más fino.",
+   "story_ko": "토룬의 부는 비스와강에서 나왔고, 그 돈이 흘러 들어간 곳이 이 벽돌 교회입니다. 13세기에 공사가 시작됐지만 지금의 모습이 된 것은 15세기 말입니다. 이후 700년 동안 구시가 본당이었다가, 1992년 토룬 교구가 세워지면서 비로소 주교좌성당이 되었습니다.\n\n들를 이유는 두 가지입니다. 종탑에는 '투바 데이', 곧 '신의 나팔'이 걸려 있습니다. 1500년 9월 22일 토룬의 주조공 마르틴 슈미트가 만든 것으로, 무게 약 7,500킬로그램, 지름 2.27미터, 지금도 폴란드에서 가장 큰 중세 종입니다. 측면 경당에는 13세기 세례반이 있는데, 전해오기로는 1473년 코페르니쿠스가 여기서 세례를 받았다고 합니다. 한 세기 뒤 그 옆에 르네상스 양식의 초상이 놓였습니다. 대부분은 신랑을 따라 곧장 걸어가다 이곳을 지나칩니다.\n\n들어가기 전에 탑의 시계를 올려다보세요. 바늘이 하나뿐이라 시각만 알려 주고 분은 알려 주지 않습니다.",
+   "story_vi": "Tiền của Toruń đến từ sông Wisła, và nhà thờ gạch này chính là nơi số tiền ấy đổ vào. Công trình khởi công từ thế kỷ 13 nhưng phải đến cuối thế kỷ 15 mới có hình dáng như hôm nay. Suốt bảy thế kỷ đây là nhà thờ giáo xứ của Phố Cổ, và chỉ trở thành nhà thờ chính tòa năm 1992, khi giáo phận Toruń được lập.\n\nCó hai thứ đáng để dừng lại. Trên tháp treo quả chuông Tuba Dei, nghĩa là Kèn của Chúa, do thợ đúc địa phương Martin Schmidt đúc tại Toruń ngày 22 tháng 9 năm 1500: gần 7.500 kg, đường kính 2,27 mét, đến nay vẫn là chuông thời trung cổ lớn nhất Ba Lan. Trong một nguyện đường bên hông là giếng rửa tội thế kỷ 13, tương truyền Nicolaus Copernicus đã được rửa tội tại đây năm 1473, một thế kỷ sau người ta đặt bên cạnh bức chân dung ông theo lối Phục Hưng. Phần lớn khách đi thẳng dọc gian giữa và bỏ lỡ nó.\n\nTrước khi vào, hãy ngước nhìn đồng hồ trên tháp. Nó chỉ có một kim, nên chỉ báo giờ chứ không báo phút."
+  },
+  {
+   "name": "United States Botanic Garden",
+   "slug": "united-states-botanic-garden",
+   "city": "dc",
+   "type": "attraction",
+   "cat": "nature",
+   "price": null,
+   "close": 1020,
+   "visit": 45,
+   "lat": 38.888,
+   "lon": -77.013,
+   "desc": "Free glasshouse at the foot of Capitol Hill: jungle, desert, orchids and a Hawaii room under one roof.",
+   "tip": "Cross Independence Avenue to Bartholdi Park. The cast-iron fountain was built for the 1876 Centennial in Philadelphia and most visitors never go look for it.",
+   "story_en": "Congress set aside ground for a national garden in 1820, which makes this the oldest continuously operating public garden in the country. The glasshouse you walk into is much younger. The cornerstone went down in 1931 and the Lord and Burnham conservatory opened here in 1933.\n\nSome of the plants are older than the building. Four living specimens in this collection came back with the U.S. Exploring Expedition under Lieutenant Charles Wilkes, which returned in 1842: a queen sago, a vessel fern, a jujube and a blue cycad. They have been in federal care for more than 180 years.\n\nGo upstairs in the Jungle. The walkway puts you level with the crowns of the palms, and almost nobody who comes in at ground level thinks to climb.\n\nAdmission is free and the Jungle stays warm and wet year round, which makes this the stop worth having on a raw January day, when the rest of the Mall is a wind tunnel.",
+   "story_zh": "1820 年，国会划出这片地建国家植物园，所以这里是全美连续运营时间最长的公共园林。你走进的这座玻璃温室要年轻得多：1931 年奠基，1933 年由 Lord & Burnham 公司建成开放。\n\n园里有些植物比这栋房子还老。1842 年，威尔克斯中尉率领的美国远征探险队带回一批活体植物，其中四株至今仍在馆内：一株女王苏铁、一株莲座蕨、一株枣树，还有一株蓝灰苏铁。它们由联邦政府照料了一百八十多年。\n\n到丛林厅记得上二楼。空中步道正好与棕榈树冠齐平，而从底层走进来的人，十有八九想不到往上走。\n\n这里免费，丛林厅常年温热潮湿。所以一月天寒风大、整条国家广场像个风口的时候，这一站最值得进来。",
+   "story_es": "El Congreso reservó terreno para un jardín nacional en 1820, lo que convierte a este en el jardín público más antiguo del país en funcionamiento continuo. El invernadero al que se entra es mucho más joven: la primera piedra se puso en 1931 y el conservatorio de Lord and Burnham abrió aquí en 1933.\n\nAlgunas plantas son más viejas que el edificio. Cuatro ejemplares vivos de esta colección llegaron con la Expedición Exploradora de Estados Unidos al mando del teniente Charles Wilkes, que regresó en 1842: una cica reina, un helecho gigante, un azufaifo y una cica azul. Llevan más de 180 años bajo cuidado federal.\n\nSuba al piso de arriba en la Jungla. La pasarela lo deja a la altura de las copas de las palmeras, y casi nadie que entra por la planta baja se le ocurre subir.\n\nLa entrada es gratuita y la Jungla se mantiene cálida y húmeda todo el año, así que esta es la parada que conviene tener guardada para un enero crudo, cuando el resto del Mall es un túnel de viento.",
+   "story_ko": "1820년 의회가 국립 식물원 부지를 지정했고, 그래서 이곳은 미국에서 가장 오래 끊김 없이 운영된 공공 정원입니다. 지금 들어서는 유리 온실은 훨씬 나중입니다. 1931년에 주춧돌을 놓았고 Lord and Burnham이 지은 온실이 1933년에 문을 열었습니다.\n\n건물보다 나이가 많은 식물도 있습니다. 찰스 윌크스 중위가 이끈 미국 탐험대가 1842년에 돌아오며 가져온 식물 가운데 네 그루가 지금도 살아 있습니다. 퀸사고야자, 큰나무고사리의 일종인 왕관고사리, 대추나무, 그리고 푸른 소철입니다. 180년 넘게 연방 정부가 돌봐 왔습니다.\n\n정글 전시관에서는 위층으로 올라가 보십시오. 통로가 야자수 꼭대기와 같은 높이라, 1층으로 들어온 사람은 대부분 올라갈 생각을 하지 못합니다.\n\n입장은 무료이고 정글관은 일 년 내내 덥고 습합니다. 내셔널 몰 전체가 바람 통로가 되는 1월의 매서운 날, 들러 둘 만한 곳입니다.",
+   "story_vi": "Quốc hội dành đất cho một vườn thực vật quốc gia từ năm 1820, nên đây là vườn công cộng hoạt động liên tục lâu đời nhất nước Mỹ. Nhà kính bạn bước vào thì trẻ hơn nhiều: đặt viên đá đầu tiên năm 1931, và nhà kính do hãng Lord and Burnham dựng mở cửa tại đây năm 1933.\n\nCó những cây còn già hơn cả tòa nhà. Bốn cây sống trong bộ sưu tập này theo đoàn thám hiểm Hoa Kỳ của trung úy Charles Wilkes trở về năm 1842: một cây thiên tuế nữ hoàng, một cây quyết lá dừa, một cây táo tàu và một cây thiên tuế xanh. Chúng đã được chính phủ liên bang chăm sóc hơn 180 năm.\n\nVào khu Rừng nhiệt đới, hãy lên tầng trên. Lối đi trên cao đưa bạn ngang tầm ngọn cọ, mà hầu như ai vào từ tầng trệt cũng không nghĩ tới việc leo lên.\n\nVào cửa miễn phí, và khu Rừng luôn ấm ẩm quanh năm. Vì vậy đây là điểm đáng ghé vào một ngày tháng Giêng buốt giá, khi cả dải National Mall biến thành một đường hầm gió."
   }
  ]
 }
