@@ -165,13 +165,156 @@ queue instead. Remove a line the moment its work lands or is abandoned.
 
 After these: Boston, the nine Freedom Trail buildings, in batches.
 
+- constitution and park-street, the last two unrebuilt Freedom Trail scenes,
+  are UNCLAIMED and are the routine's next work. Everything else on the trail
+  is rebuilt.
+
+TWO WRITERS COLLIDED ON THIS FILE'S OWN QUEUE, 2026-09-05, and it is recorded
+here because the claim list above is what exists to prevent it. A live session
+and the three hourly landmark routine rebuilt the Old State House and the Paul
+Revere House at the same time, in the same worktree, within four minutes of
+each other. The routine wrote last, so the session's two files were silently
+replaced on disk: no error, no conflict, nothing in git, because neither file
+had ever been committed. Nothing was lost that mattered, and the routine's
+versions are the better ones on the evidence: its Old State House is measured
+from SAH Archipedia at 36 ft 4 in by 112 ft 7 in against the session's
+committee specification of "36 by 110 to 112", and its tower carries the clock
+dials the session had put only on the east gable. The session's work was
+dropped rather than merged, and the lesson is the cheap one: CLAIM A BUILDING
+IN THIS FILE BEFORE THE FIRST LINE OF IT IS WRITTEN, whoever you are. The list
+above is not paperwork, it is the lock.
+
+
 ## Rebuilt to this standard
 
 Each run rebuilds one building and adds it here, so the next run does not
 repeat it. A name on this list has a `dc-form-<k>.js` (or the equivalent
 scene file) and has been LOOKED at from more than one angle.
 
+- paul-revere, old-state-house and park-street, three Freedom Trail stops
+  (2026-09-05, the landmark routine). Published, quoted in each file header.
+  PAUL REVERE: main section "30 by 48 feet", rear ell "about 16 by 16 feet",
+  "two stories high", the east front "divided vertically into four bays", the
+  second storey "cantilevered above the sidewalk", a "steep pitched roof" with
+  "a gable that runs parallel to the street", "two chimneys", "casement
+  windows grouped in pairs, with rhombus-shaped panes", "clapboard", the
+  courtyard "paved in brick" (Wikipedia, citing the NHL file); the front faces
+  EAST, the main part is "four bays wide" with "the second story featuring a
+  framed overhang", and "a two story ell extends two bays deep" with "a
+  similar overhang" (HABS MA-491, Library of Congress ma0478).
+  WHICH DIMENSION IS THE FRONT was DERIVED from two published facts rather
+  than picked: the gable runs parallel to the street, so the street front is
+  the eaves side and takes the longer figure, 48 ft, and the check is the
+  roof. A ridge parallel to a 48 ft front spans the 30 ft depth, 15 ft of
+  rafter each side, which is a seventeenth century roof; the other reading
+  spans 48 ft and puts a roof taller than the house on top of it. Second
+  check, the bay module: 48 over the published four bays is 12 ft, which is
+  what a pair of casements and their frame occupy.
+  A PUBLISHED CONTRADICTION, named not smoothed: the same article gives the
+  main section as 1,430 sq ft and the lot as "about 1,475 square feet", so
+  the house would cover 97 percent of a lot that also holds a brick
+  courtyard. The footprint is used and the lot figure is not. HABS and the
+  article also disagree on rooms per floor, one against two; neither is
+  visible from the street and neither is drawn.
+  OLD STATE HOUSE: plan 36 ft 4 in by 112 ft 7 in (SAH Archipedia, carried
+  over from the scene this replaces); "At 65 feet (20 meters), it was also
+  the tallest building in Boston until 1745"; it "rises 2+1/2 stories above a
+  partially raised basement"; the gambrel roof "replaced by a gable roof" and
+  the octagonal tower by "a tiered square tower" after 1747; lion and unicorn
+  "installed between 1743 and 1751", torn down and burned in 1776, replicas
+  in 1882 and a "new unicorn and lion's head" in 1901; laws "announced from a
+  small balcony"; Clough's "gilded eagle to the western elevation"; "A clock
+  was added sometime between 1817 and 1825" and the east "sundial was
+  replaced with a clock" in 1830 (Wikipedia). The 2014 carpentry restored
+  "the balustrade and crown molding at the east facade balcony" (M and A
+  Architectural Preservation), which is why the balcony now has a balustrade
+  rather than the white slot it was.
+  HOW THE PUBLISHED 65 FT IS SPENT is the one place that model commits, and
+  it was chosen because it satisfies BOTH published storey counts at once:
+  raised basement to 4.5, two full storeys to 26, an attic half storey to a
+  33 ft eave, ridge 42, the square tower's stages to 56, lantern, dome and
+  vane finishing at 65. SAH's three ranks of window are all on the elevation
+  and so is Wikipedia's two and a half above a raised basement.
+  PARK STREET was NOT rebuilt. Its research is the best on the trail already,
+  Bowen's 1833 stage by stage description, and its model implements it. Two
+  checklist defects were fixed in place: it had no ground shadow, so it
+  floated, and its grass pad was 320 ft square around a published 80 by 118
+  lot, which is the Bunker Hill and Old South lesson a third time. The stage
+  fits itself to everything the scene draws, ground included, so the pad was
+  setting the frame and shrinking a 217 ft steeple to a stamp; at 150 by 172
+  the church nearly doubles on the page. No published dimension was touched.
+  WHAT LOOKING CAUGHT, none of it visible in any count. (1) The Revere
+  house's big chimney, placed 4.4 ft clear of the gable wall where the plan
+  arithmetic said the stack sits, came back as a free standing brick tower
+  beside the house; a chimney at the end of a gable rises THROUGH the roof,
+  inside the wall line, and it is at x0 + 2.6 now. (2) The ell's chimney was
+  given the same constant depth past every roof strip that the main stack
+  needs, and painted over the main roof it stands behind; it takes its depth
+  from its own geometry now, because a constant that says "in front of
+  everything" is only true for the thing that IS in front of everything.
+  (3) The Old State House's lion and unicorn, drawn as seven stacked
+  rectangles each, came back as a gold scrap and a WHITE LADDER: a white body
+  in white panels against a near white sky is a wireframe, not an animal.
+  Each beast is one silhouette polygon now, with a stroke heavy enough to
+  hold the unicorn off the sky and an ivory rather than a paper white. That
+  is checklist item 1 and item 9 failing together, on the one feature every
+  visitor to that building names.
+  Named gaps, all three files: no storey heights, no roof pitches, no
+  overhang projection, no chimney dimensions, no clapboard exposure (courses
+  drawn at 2.2 ft, because a true lap hatches into a grey smear at map
+  scale), no door positions, no bay count on the Old State House long walls
+  (nine is derived and 112.58 over nine is a 12.5 ft Georgian bay, which is
+  the check), no tower plan or stage heights, no cupola dimensions, no
+  dimension for the lion or the unicorn, no step counts. The Old State
+  House's gilded eagle is drawn on the WEST elevation where it is published,
+  which the page's default yaw culls; that is where it is, and moving it to
+  be seen would be a different building.
+  OWED: the two adversarial critics did not fit inside the run's 25 minute
+  ceiling. The renders at yaw -0.62 and -1.95 (Revere), -0.62 and -2.10 (Old
+  State House) and -0.62 (Park Street) are what these builds were verified
+  on. First thing for the next run, worst first: (a) Park Street's shadow
+  falls away from the page's default camera, so it reads as a thin band on
+  the -x side rather than as a shadow; the same is true of every trail form
+  and is a property of LIGHT = [0.60,0.30,0.68] against a camera that sees
+  +y and -x, worth solving once for all of them rather than five times.
+  (b) the Revere house's two pavement pads overlap at the corner and read as
+  two rectangles rather than as a courtyard and a street. (c) the Old State
+  House roof is the largest surface in that model and carries nothing; no
+  source reached publishes dormers or plant, so it is flat.
 - capitol, lincoln, jefferson, monument (2026-09-03, the four heroes)
+- old-state-house and paul-revere (2026-09-05, by the landmark routine;
+  reviewed, corrected and committed by a live session, which is the pass the
+  routine's own 25 minute ceiling can never fit). Both were the boxes the
+  standard exists to stop: the Old State House a long red barn with a toy
+  cupola, flat blue windows, no cornice, no base and no shadow, carrying NONE
+  of the three things a visitor comes for; the Paul Revere House a plain brown
+  box with sash windows from the wrong century and no overhang at all, which
+  is the one tell its whole style rests on.
+  The Old State House now carries what it is famous for: the balcony the
+  Declaration was read from on 18 July 1776, the 1831 Simon Willard clock, and
+  the gold lion and the silver unicorn standing on the east parapet, with the
+  tower in the DIMINISHING stages the style book requires rather than one
+  taper. The Revere House carries the jetty, the pendants, leaded casements in
+  pairs, clapboard courses and the steep gable of a First Period house.
+  WHAT LOOKING CAUGHT in the reviewing pass, after the routine had finished:
+  the Revere House's main chimney was 4.8 by 7.6 ft and read at the street
+  view as a factory pipe standing against the gable, which is the exact
+  opposite of the tell. STYLES.md says a First Period chimney is "a masonry
+  core, not a flue: it is the widest thing on the roof", and the published
+  note that both stacks are "comparatively large because they each serve
+  multiple rooms" says it again in the source's own words. Widened to 7.2 by
+  9.0 with a shorter neck, and it reads as the core the house is built around.
+  The plan size stays ASSUMED; no source reached publishes it.
+  The session's own discarded attempt found two things worth keeping even
+  though its files were replaced: a jetty of a foot or so does not read at 800
+  pixels until the SHADOW it throws on the wall beneath is drawn, and a roof
+  slope that runs the whole length of a building will paint over every dormer
+  standing on it unless each dormer is given an explicit depth. Both are the
+  painter's trap and the eye test, met again.
+  Verified after the corrections at four angles including the street level
+  pitch floor, on the page's own renderer: syntax clean, no em dashes,
+  /api/forms/trail lists all seven rebuilt stops and the page's loader fetches
+  them, and both files are served 200.
 - bridge and empire, the two New York landmarks (2026-09-05). [SEAN:
   "realistic the 3D model of empire state building and brooklyn bridge".]
   Both were pre-standard: the bridge was two slabs, a hairline cable and a
