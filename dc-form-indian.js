@@ -338,6 +338,12 @@
     var GLASS  = "#2f3b45";   /* "the windows cut like caves in the stone" */
     var MULL   = "#4d5c66";
     var PRISM  = "#7d94a0";
+    /* The site pad. Declared here because it never was: the 4.25-acre
+       rectangle called LAWNC and nothing defined it, so this form threw a
+       ReferenceError on every draw and the museum was never drawn at all.
+       The value is the shared Mall lawn from dc-3d.js (C.lawn), so this
+       building sits on the same ground as its neighbours. */
+    var LAWNC  = "#cfd8c4";
     var FOREST = "#7d9463";
     var CANOPY = "#5f7c4c";
     var TRUNK  = "#6a5844";
