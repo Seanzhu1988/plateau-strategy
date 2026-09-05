@@ -1932,8 +1932,27 @@
        on the measured footprint and that centring is the one soft thing here.
        Ground planes take an explicit far depth through ground(), which is why
        they never paint over the building. */
-    out.push(ground(ctx, 0, midY, 320, 320, 0, GRASS, "#a8b09a"));
+    out.push(ground(ctx, 0, midY, 150, 172, 0, GRASS, "#a8b09a"));
     out.push(ground(ctx, 0, midY, 80, 118, 0.4, PAVE, "#bfb9aa"));
+
+    /* CHECKLIST 6, added 2026-09-05 by the landmark routine: a ground
+       shadow, thrown away from LIGHT = [0.60,0.30,0.68], so down and to the
+       left in plan. Nothing in this renderer casts light, so a building
+       without one floats, and this one did.
+
+       The surrounding pad came down from 320 ft square at the same time.
+       That is the Bunker Hill and Old South lesson a third time: the stage
+       fits itself to everything the scene draws, ground included, so a pad
+       four times the building's own lot was setting the frame and shrinking
+       a 217 ft steeple to a stamp in the middle of an empty green. The
+       PUBLISHED lot, 80 by 118, is untouched; only the grass around it
+       moved, and no published dimension is involved in it either way. */
+    (function () {
+      var q = [ctx.project(bx0 - 21, by0 - 6, 0.15), ctx.project(bx1 - 4, by0 - 6, 0.15),
+               ctx.project(bx1 - 4, byS + APSE_R - 5, 0.15),
+               ctx.project(bx0 - 21, byS + APSE_R - 5, 0.15)];
+      out.push({ svg: ctx.poly(q, "#a9a294", null, 0), depth: -9e8 });
+    })();
 
     /* the water table, one foot proud of the wall and one foot of stone */
     var PL = 1.0;
