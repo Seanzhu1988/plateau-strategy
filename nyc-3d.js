@@ -783,9 +783,29 @@
      setbacks and the roof of the tower. */
   var TILT_CEIL = { span: 0.44, tower: 0.30, empire: 0.75 };
 
+  var EMPIRE_CAM = function () { return makeCam(-0.7, 0.22, 1, 360, 560); };
+
+  /* ONE FILE PER LANDMARK, the dc-form pattern brought to New York the way
+     Bunker Hill brought it to the trail. A rebuilt landmark registers
+     window.NYC_FORMS[k] from its own nyc-form-<k>.js and takes over from the
+     scene above, resolved at DRAW time because the form files load after
+     this one. A form takes the same opts the scene took ({view} for the
+     bridge, {openT} for the tower) and returns the same shape:
+     { w, h, faces, lines, marks }. The mount, the camera, the labels and the
+     opening animation are untouched, so the page's buttons keep working. */
+  var SCENES = { bridge: bridgeScene, empire: empireScene };
+  function sceneFor(k) {
+    var EXT = (typeof window !== 'undefined' && window.NYC_FORMS) || {};
+    return EXT[k] || SCENES[k];
+  }
+
   window.NYC3D = {
+    scenes: SCENES, scene: sceneFor, renderTo: render,
+    cams: { span: BRIDGE_CAMS.span, tower: BRIDGE_CAMS.tower, empire: EMPIRE_CAM },
+    helpers: { face: face, box: box, project: project, shade: shade, normal: normal,
+               makeCam: makeCam, C: C, SUN: SUN, PITCH_FLOOR: PITCH_FLOOR, TILT_CEIL: TILT_CEIL },
     bridge: function (host, opts) {
-      function builder(v) { return function () { return bridgeScene({ view: v }); }; }
+      function builder(v) { return function () { return sceneFor('bridge')({ view: v }); }; }
       var view = (opts && opts.view) === 'tower' ? 'tower' : 'span';
       var m = mount(host, builder(view), BRIDGE_CAMS[view](), TILT_CEIL[view]);
       m.view = function (v) {
@@ -802,8 +822,8 @@
          the opened building and there is never a second animation loop
          fighting the first over one box. */
       var openT = 0, anim = null;
-      var m = mount(host, function () { return empireScene({ openT: openT }); },
-                    makeCam(-0.7, 0.22, 1, 360, 560), TILT_CEIL.empire);
+      var m = mount(host, function () { return sceneFor('empire')({ openT: openT }); },
+                    EMPIRE_CAM(), TILT_CEIL.empire);
       var still = window.matchMedia &&
         window.matchMedia('(prefers-reduced-motion: reduce)');
       /* A floor is invisible edge-on. The opening view starts at pitch 0.22,

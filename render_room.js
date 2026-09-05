@@ -186,6 +186,35 @@ if (key.startsWith("seattle:")) {
     + `<rect width="${W3}" height="${H3}" fill="#eef0ea"/>` + it3.map(i=>i.svg).join('') + '</svg>');
   process.exit(0);
 }
+/* "nyc:bridge" | "nyc:bridge-tower" | "nyc:empire" | "nyc:empire-open" draw the
+   two New York landmarks through nyc-3d.js's OWN renderer, so what this draws
+   is what landmarks.html draws. A rebuilt landmark registers window.NYC_FORMS[k]
+   from nyc-form-<k>.js and takes over at draw time. Yaw and pitch default to the
+   page's own camera for that view. */
+if (key.startsWith("nyc:")) {
+  const SITE_N = "/Users/xiaojunzhu/Claude/worktrees/site";
+  require(SITE_N + "/nyc-3d.js");
+  require("fs").readdirSync(SITE_N).filter(f => /^nyc-form-[a-z-]+\.js$/.test(f))
+    .forEach(f => { try { require(SITE_N + "/" + f); } catch (e) { console.error("form " + f + ": " + e.message); } });
+  const N = window.NYC3D;
+  const what = key.slice(4);
+  const which = what.startsWith("bridge") ? "bridge" : "empire";
+  const opts = which === "bridge" ? { view: what === "bridge-tower" ? "tower" : "span" }
+                                  : { openT: what === "empire-open" ? 1 : 0 };
+  const cam = which === "bridge" ? N.cams[opts.view]() : N.cams.empire();
+  if (process.argv[3] != null) cam.yaw = parseFloat(process.argv[3]);
+  if (process.argv[4] != null) cam.pitch = parseFloat(process.argv[4]);
+  const scene = N.scene(which)(opts);
+  const host = { innerHTML: "", clientWidth: scene.w, getBoundingClientRect: () => ({ width: scene.w }) };
+  N.renderTo(host, scene, cam);
+  /* qlmanage squares the thumbnail, so the drawing is centred on a square sheet */
+  const side = Math.max(scene.w, scene.h);
+  const inner = host.innerHTML.replace(/^<svg /, '<svg xmlns="http://www.w3.org/2000/svg" ')
+    .replace(' width="100%"', ` width="${scene.w}" height="${scene.h}" x="${(side - scene.w) / 2}" y="${(side - scene.h) / 2}"`);
+  console.log(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${side} ${side}" width="${side}" height="${side}">`
+    + `<rect width="${side}" height="${side}" fill="${N.helpers.C.ground}"/>` + inner + '</svg>');
+  process.exit(0);
+}
 if (key.startsWith("trail:")) {
   require("/Users/xiaojunzhu/Claude/worktrees/site/trail-3d.js");
   /* one file per building, the dc-form pattern: each registers window.TRAIL_FORMS[k] */

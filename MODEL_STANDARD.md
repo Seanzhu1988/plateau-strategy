@@ -163,6 +163,14 @@ queue instead. Remove a line the moment its work lands or is abandoned.
 - american, not built at all. The only Mall place with no dc-form file. This is
   the routine's own next queue item, so it is claimed here to stop a duplicate.
 
+- bridge and empire, the two New York landmarks in nyc-3d.js, rebuild in
+  progress in a live session (2026-09-05, Sean: "realistic the 3D model of
+  empire state building and brooklyn bridge"). nyc-3d.js now carries the
+  form hook (window.NYC_FORMS[k] from nyc-form-<k>.js, resolved at draw
+  time) and render_room.js the nyc: route (nyc:bridge, nyc:bridge-tower,
+  nyc:empire, nyc:empire-open). The routine must SKIP both until this line
+  is removed.
+
 After these: Boston, the nine Freedom Trail buildings, in batches.
 
 ## Rebuilt to this standard

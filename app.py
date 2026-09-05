@@ -3085,6 +3085,27 @@ def dc_form_js(name):
     return send_file(path, mimetype="application/javascript")
 
 
+@app.route("/nyc-form-<name>.js")
+@app.route("/trail-form-<name>.js")
+def landmark_form_js(name):
+    """The same one-file-per-building family for New York (nyc-form-*.js) and
+    the Freedom Trail (trail-form-*.js). Same guard as dc_form_js above, and
+    added for the same reason: the trail forms had script tags on
+    freedom-trail.html and no route serving them, so every rebuilt stop fell
+    back to its old scene in the browser while the offline renderer showed the
+    new one. The prefix is read off the request path, so each family can only
+    reach its own files."""
+    if not re.fullmatch(r"[a-z0-9-]{1,40}", name or ""):
+        abort(404)
+    prefix = "nyc-form-" if request.path.startswith("/nyc-form-") else "trail-form-"
+    path = os.path.join(BASE_DIR, prefix + name + ".js")
+    if os.path.dirname(os.path.realpath(path)) != os.path.realpath(BASE_DIR):
+        abort(404)
+    if not os.path.exists(path):
+        abort(404)
+    return send_file(path, mimetype="application/javascript")
+
+
 @app.route("/trail-3d.js")
 def trail_3d_js():
     """The Freedom Trail's landmarks. Sixteen stops that had a narration and
