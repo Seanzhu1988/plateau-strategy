@@ -25,8 +25,9 @@ Not a page. Six things, and a tour is done when all six are true:
 5. **A page** that carries all of it and can be reached from the site.
 6. **A way in.** A sitemap entry, a site-index entry, and a link on a page a
    visitor already reads.
+7. **Its artifacts in the Universal Gallery**, if any stop is a museum.
 
-Six is not decoration. A tour that scores five out of six reaches nobody, and
+Seven is not decoration. A tour that scores six out of seven reaches nobody, and
 this site has shipped that twice: `/tours` existed for months linked from
 nowhere, and eighteen Mall models were served by a route no page called.
 
@@ -90,6 +91,52 @@ land because every stop falls back to honest massing. Never block a tour on them
   Planner still think the stop is silent.
 - A page must never discover recordings by probing for them. See the traps.
 
+## The artifacts
+
+[SEAN 2026-09-05: "any museum or artifact related, put in the universal gallery
+so people can easily search those artifact", "please take those into your job
+flow".]
+
+Every stop that is a museum owes its objects to `/universal-gallery`. This is
+not optional polish.
+
+I wrote here an hour ago that the search reaches the Met and the Art Institute
+and nothing else. That was wrong, and testing it found out: it also reaches
+MoMA, Wikidata, and through them the Getty, Museum Folkwang, the Science Museum
+and the Smithsonian. A search for the Hope Diamond does return the Hope Diamond.
+
+The real gap is different and worse. It returns the museum's **catalogue line**.
+Nine of the eighteen National Mall stops are museums and the gallery holds not
+one written piece about any object in them, so a visitor searching the Wright
+Flyer gets a photograph of Orville Wright and two windows by Frank Lloyd Wright,
+because the actual aircraft has nobody's writing attached to it.
+
+What goes in is not a catalogue line. The museum already publishes those and
+anyone can get them. **What a visitor cannot get anywhere else is somebody
+telling them what to notice in the two minutes they are standing there**, which
+is why the written piece is the product and the facts are arranged around it.
+
+One entry in `gallery_items.json` under `items`, keyed `<museum>:<item number>`:
+
+    "si-air:A19540209000": {
+      "title":       "1903 Wright Flyer",
+      "artist":      "Wilbur and Orville Wright",
+      "date":        "1903",
+      "museum":      "National Air and Space Museum",
+      "city":        "Washington",
+      "item_number": "A19540209000",
+      "where":       "The Wright Brothers gallery, second floor",
+      "script":      "gallery_scripts/wright-flyer.txt",
+      "teaser":      "One sentence that makes someone walk over."
+    }
+
+and the writing itself in `gallery_scripts/<slug>.txt`, in the same voice as the
+stories: second person, spoken, concrete, no brochure language.
+
+**Pick three to six objects per museum, not everything.** A gallery of two
+hundred entries nobody wrote properly is worth less than six a visitor actually
+stands in front of. Choose the objects a guide would walk someone to.
+
 ## The map
 
 - Leaflet, already vendored. Muted tiles, a bold route line, quiet dots at the
@@ -102,7 +149,12 @@ land because every stop falls back to honest massing. Never block a tour on them
 
 ## The page
 
-`national-mall.html` is the working template. Its shape:
+[SEAN 2026-09-05: "DC tour built was excellent lets align most of the builds
+approach with it and we will do more adjust later".]
+
+**`national-mall.html` is the reference implementation.** New tours are built to
+its shape rather than invented, and the older pages are brought toward it as
+they are touched, not in one sweep. Its shape:
 
 - The model opens on the first stop, not the whole route. A two mile route at
   true scale is an honest picture and an unreadable one, and the map beside it

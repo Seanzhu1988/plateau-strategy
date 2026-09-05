@@ -4874,19 +4874,92 @@ def api_gallery_search():
     # actually contains the words asked for outranks one that does not, and if
     # NOTHING contains them the honest answer is nothing.
     ql = q.lower().replace(" ", "")
+    qflat = " ".join(q.lower().split())
     words = [w for w in q.lower().split() if len(w) > 2]
+
+    # OUR OWN WRITING COMES FIRST, and it was not in these results at all.
+    # gallery_items.json is the product: the museum publishes a catalogue line
+    # and anybody can get it, but somebody telling you what to notice in the two
+    # minutes you are standing there exists nowhere else. It was served by
+    # /api/gallery/items and never searched, so a reader looking up The Starry
+    # Night got MoMA's label instead of the piece written about it.
+    try:
+        with open(os.path.join(BASE_DIR, "gallery_items.json"), encoding="utf-8") as _f:
+            _own = (json.load(_f).get("items") or {})
+    except Exception:
+        _own = {}
+    _have = set()
+    for r in results:
+        _have.add(((r.get("title") or "").strip().lower(),
+                   (r.get("item_number") or "").strip().lower()))
+    for k, v in _own.items():
+        hay = " ".join(str(v.get(f) or "") for f in
+                       ("title", "artist", "museum", "item_number", "teaser")).lower()
+        if not (qflat in hay or (words and all(w in hay for w in words))):
+            continue
+        key = ((v.get("title") or "").strip().lower(),
+               (v.get("item_number") or "").strip().lower())
+        results = [r for r in results
+                   if ((r.get("title") or "").strip().lower(),
+                       (r.get("item_number") or "").strip().lower()) != key]
+        row = dict(v)
+        row.pop("script", None)
+        row["written"] = True
+        row["source"] = v.get("museum") or ""
+        row["gallery_key"] = k
+        results.insert(0, row)
+
+    def _cover(hay):
+        """How much of the question this row actually answers, 0 to 1. Raw word
+        counts let a long title that happens to contain one word beat a short
+        one that contains both."""
+        if not words:
+            return 1.0 if qflat and qflat in hay else 0.0
+        return sum(1 for w in words if w in hay) / float(len(words))
 
     def _rank(r):
         num = (r.get("item_number") or "").lower().replace(" ", "")
         if num and num == ql:
-            return (0, 0, 0)
-        title = (r.get("title") or "").lower()
-        return (1, -sum(1 for w in words if w in title), 0 if r.get("on_view") else 1)
+            return (0, 0.0, 0, 0, 0)           # somebody is reading the label
+
+        title = (r.get("title") or "").strip().lower()
+        artist = (r.get("artist") or "").strip().lower()
+
+        # THE ARTIST WAS NEVER CONSULTED, which is the whole reason an artist
+        # search was useless: "van gogh" scored "Van Gogh textile" two points
+        # for its title and The Starry Night zero, because his name is not in
+        # the name of his painting. A search for a person should return their
+        # work, not objects with their name written on them. Coverage is over
+        # title AND artist together, so a row answering both words beats one
+        # answering either, and at equal coverage a title match beats an
+        # artist-only match: "Flyer I" outranks a window by Frank Lloyd Wright.
+        cov = _cover(title + " " + artist)
+        t_hit = 0 if _cover(title) > 0 else 1
+
+        # Our own writing leads, but only when it really answers the question.
+        # Every written row used to share one top rank, so a search for "starry
+        # night" led with Cypresses: its teaser mentions the painting, which is
+        # a fair reason to include it and no reason at all to put it first.
+        if r.get("written") and cov > 0:
+            return (1, -cov, t_hit, 0, 0)
+
+        exact = 0 if (title == qflat or artist == qflat) else 1
+        starts = 0 if (title.startswith(qflat) or artist.startswith(qflat)) else 1
+        # A related piece of our own still sits above a stranger it ties with.
+        return (2, -cov, t_hit, exact, starts if not r.get("written") else starts - 1)
 
     results.sort(key=_rank)
+
+    # If nothing answers the question, say nothing. One of these museums will
+    # return eight arbitrary artworks for gibberish, and a gallery that answers
+    # nonsense with a Self-Portrait looks broken even though every row is real.
     if words and results:
-        exact = any((r.get("item_number") or "").lower().replace(" ", "") == ql for r in results)
-        if not exact and not any(w in (results[0].get("title") or "").lower() for w in words):
+        top = results[0]
+        answered = (top.get("written")
+                    or (top.get("item_number") or "").lower().replace(" ", "") == ql
+                    or _cover((top.get("title") or "").lower()) > 0
+                    or _cover((top.get("artist") or "").lower()) > 0)
+        if not answered:
             results = []
     # EVERY SEARCH TEACHES THE BOOK SOMETHING. A hit tells us a museum and a
     # city somebody cares about, which may be a city the book has never heard
