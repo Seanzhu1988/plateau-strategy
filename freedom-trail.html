@@ -1234,6 +1234,11 @@
 </script>
 <script src="/i18n.js"></script>
 <script src="/trail-3d.js"></script>
+<!-- one file per building, the dc-form pattern: each registers
+     window.TRAIL_FORMS[k] and takes over from the scene in trail-3d.js.
+     They MUST load after it. -->
+<script src="/trail-form-bunker-hill.js"></script>
+<script src="/trail-form-old-north.js"></script>
 <script>
   /* The model mounts only if its script loaded, so a failed fetch leaves the
      page exactly as it was rather than an empty framed box. */
