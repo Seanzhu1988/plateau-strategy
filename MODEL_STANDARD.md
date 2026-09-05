@@ -165,9 +165,9 @@ queue instead. Remove a line the moment its work lands or is abandoned.
 
 After these: Boston, the nine Freedom Trail buildings, in batches.
 
-- constitution and park-street, the last two unrebuilt Freedom Trail scenes,
-  are UNCLAIMED and are the routine's next work. Everything else on the trail
-  is rebuilt.
+- constitution is REBUILT, 2026-09-05, by the landmark routine; see below.
+  park-street is DONE and needs no rebuild: it is already researched to this
+  standard in trail-3d.js, and its flat top is a declared gap, not a defect.
 
 TWO WRITERS COLLIDED ON THIS FILE'S OWN QUEUE, 2026-09-05, and it is recorded
 here because the claim list above is what exists to prevent it. A live session
@@ -190,6 +190,43 @@ above is not paperwork, it is the lock.
 Each run rebuilds one building and adds it here, so the next run does not
 repeat it. A name on this list has a `dc-form-<k>.js` (or the equivalent
 scene file) and has been LOOKED at from more than one angle.
+
+- constitution, USS Constitution (2026-09-05, the landmark routine). Published
+  and quoted in the file header: mast heights fore 198, main 220, mizzen 172.5
+  ft, beam 43 ft 6 in, draft 21 forward and 23 aft, 207 ft billet head to
+  taffrail, 304 ft bowsprit to spanker, armament 30 long guns and 22
+  carronades, the boats by name and length, Paul Revere's copper sheathing, the
+  billethead, and from the USS Constitution Museum the stern's "six windows in
+  the transom, with pilasters separating them" and the "spread eagle" near the
+  taffrail. Sources: en.wikipedia.org/wiki/USS_Constitution and
+  ussconstitutionmuseum.org/2017/02/03/the-quarter-galleries/.
+  WHAT THE PICTURE SHOWED THAT THE NUMBERS DID NOT. The hull, sheer,
+  tumblehome, ports, mast heights and shrouds were all already correct and
+  the render still read wrong, in four ways no arithmetic could catch. The
+  STERN was one flat black quad: a frigate that ended in a cliff. The masts
+  had yards and NO FIGHTING TOPS, so a square rigger had no platforms at its
+  doublings. There was no shadow, so 1,576 tons floated like a decal on the
+  water. And the topside was one black field with a single stripe, no wale
+  and no copper. All four are now drawn: a six window transom with five
+  pilasters, a taffrail moulding, the eagle, a windowed quarter gallery at
+  each after corner, tops on all three masts, two water shadows, a wale under
+  the gun stripe, and the copper boot top.
+  AND THE PICTURE CAUGHT MY OWN ERROR TWICE. The copper first ran a third of
+  the way up the topside, because the published draft was applied as though
+  z = 0 were the keel; in this model z = 0 IS the waterline, so almost all of
+  Revere's copper is under water and only the boot top can be drawn. The
+  frigate looked like a rusty barge and the number behind it was right. The
+  earlier slip was cheaper and worse: the file was assembled with the old
+  function's `return out;` left in the middle of it, so every addition sat
+  after a return, the render came back BYTE IDENTICAL to the old one, and the
+  syntax check passed. A model that renders unchanged after a rebuild is not
+  a subtle bug, it is the whole run wasted, and the only thing that found it
+  was comparing the two file sizes.
+  NAMED GAPS: no published transom width, window size, pilaster spacing,
+  quarter gallery projection, fighting top diameter, head rail run or
+  billethead size. Each is derived from a published number at the line that
+  uses it. Four of the eight published boats are not drawn and are named in
+  the header rather than invented to reach the count.
 
 - paul-revere, old-state-house and park-street, three Freedom Trail stops
   (2026-09-05, the landmark routine). Published, quoted in each file header.
