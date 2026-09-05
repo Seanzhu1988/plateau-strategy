@@ -2637,7 +2637,7 @@
         });
         return "";
       };
-      SCENES[key]({ project: mk(1, 0, 0), poly: measure, shade: shade, faceVisible: faceVisible });
+      sceneFor(key)({ project: mk(1, 0, 0), poly: measure, shade: shade, faceVisible: faceVisible });
       var bw = BB[2] - BB[0], bh = BB[3] - BB[1];
       var SC = Math.min((W - 50) / bw, (H - 50) / bh);
       var OX = (W - bw * SC) / 2 - BB[0] * SC, OY = (H - bh * SC) / 2 - BB[1] * SC;
@@ -2648,7 +2648,7 @@
           (st ? ' stroke="' + st + '" stroke-width="' + (sw || 1) + '"' : "") +
           ' stroke-linejoin="round"' + (ex || "") + "/>";
       };
-      var items = SCENES[key]({ project: mk(SC, OX, OY), poly: poly, shade: shade, faceVisible: faceVisible });
+      var items = sceneFor(key)({ project: mk(SC, OX, OY), poly: poly, shade: shade, faceVisible: faceVisible });
       items.sort(function (a, b) { return a.depth - b.depth; });
       host.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" width="100%" ' +
         'style="display:block;background:#eef0ea;border-radius:10px">' +
@@ -2677,5 +2677,23 @@
     return { redraw: draw };
   }
 
-  window.TRAIL3D = { scenes: SCENES, mount: mount };
+  /* ONE FILE PER BUILDING, the dc-form pattern brought over to the trail.
+     A rebuilt stop registers window.TRAIL_FORMS[k] from its own
+     trail-form-<k>.js and takes over from the SCENES entry above, so the
+     landmark routine can raise a stop to the model standard without editing
+     this 2,600 line file. Resolved at DRAW time, never at load time,
+     because the form files load after this one. */
+  function sceneFor(k) {
+    var EXT = (typeof window !== "undefined" && window.TRAIL_FORMS) || {};
+    return EXT[k] || SCENES[k];
+  }
+
+  window.TRAIL3D = { scenes: SCENES, scene: sceneFor, mount: mount,
+    helpers: { depthOf: depthOf, taperedShaft: taperedShaft, pyramidion: pyramidion,
+               slab: slab, ground: ground, box: box, gableRoof: gableRoof,
+               gableRoofCut: gableRoofCut, gableHipRoof: gableHipRoof,
+               archOpening: archOpening, roundWindow: roundWindow, panel: panel,
+               octStage: octStage, octSpire: octSpire, octDetail: octDetail,
+               domeCap: domeCap, columnAt: columnAt, balustrade: balustrade,
+               wallRun: wallRun, apseRun: apseRun } };
 })();

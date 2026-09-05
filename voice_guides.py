@@ -266,6 +266,21 @@ def main():
               % (tier, lang, os.path.basename(scripts_path(lang, tier))))
         return 1
 
+    # --only limits a run to named slugs, so a city can be recorded on its own
+    # budget instead of every unrecorded script on the site. [SEAN, DC first]
+    if "--only" in sys.argv:
+        try:
+            wanted = [x.strip() for x in
+                      sys.argv[sys.argv.index("--only") + 1].split(",") if x.strip()]
+        except Exception:
+            print("--only needs a comma separated list of slugs")
+            return 1
+        unknown = [w for w in wanted if w not in scripts]
+        if unknown:
+            print("No such script: %s" % ", ".join(unknown))
+            return 1
+        scripts = {k: v for k, v in scripts.items() if k in wanted}
+
     force = "--force" in sys.argv
     have, bad, todo, adopted = [], [], [], []
     for slug, text in scripts.items():

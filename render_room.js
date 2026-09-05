@@ -188,8 +188,12 @@ if (key.startsWith("seattle:")) {
 }
 if (key.startsWith("trail:")) {
   require("/Users/xiaojunzhu/Claude/worktrees/site/trail-3d.js");
+  /* one file per building, the dc-form pattern: each registers window.TRAIL_FORMS[k] */
+  require("fs").readdirSync("/Users/xiaojunzhu/Claude/worktrees/site")
+    .filter(f => /^trail-form-[a-z-]+\.js$/.test(f))
+    .forEach(f => { try { require("/Users/xiaojunzhu/Claude/worktrees/site/" + f); } catch (e) { console.error("form " + f + ": " + e.message); } });
   const sk = key.slice(6);
-  const scene = (window.TRAIL3D || {}).scenes[sk];
+  const scene = (window.TRAIL3D || {}).scene(sk);
   if (!scene) { console.error("no such trail scene: " + sk); process.exit(1); }
   const yaw2 = parseFloat(process.argv[3] || "-0.62"), pitch2 = parseFloat(process.argv[4] || "0.30");
   /* Square for the walk, because qlmanage -s 900 forces a square thumbnail and
