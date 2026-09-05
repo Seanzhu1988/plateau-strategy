@@ -3598,3 +3598,23 @@ EXTRA.update({
     'Playing {name}. Tap to stop.': ['正在播放{name}。点一下可停止。', 'Reproduciendo {name}. Toque para detener.', '{name} 재생 중입니다. 누르면 멈춥니다.', 'Đang phát {name}. Chạm để dừng.'],
     'Automatic playing is off.': ['自动播放已关闭。', 'La reproducción automática está desactivada.', '자동 재생이 꺼져 있습니다.', 'Tự động phát đang tắt.'],
 })
+
+
+# The Universal Gallery's watermark and its new lede. [SEAN 2026-09-05, drawn
+# on paper: every result says whether it is the museum's own record or the
+# reading we wrote.] The two marks are built in JavaScript, so build_i18n's
+# HTML scan never sees them; they are put here deliberately, because i18n.js
+# watches the page and will translate them as the cards are rebuilt.
+EXTRA.update({
+    "Any museum, one artwork at a time. What it is, where it hangs, and what to notice while you are standing there. Where we have written the work you get our reading; where we have not, you get the museum's own record until we do.": [
+        "任何博物馆，一次一件作品。它是什么，陈列在哪里，以及站在它面前时该留意什么。凡是我们写过的作品，你看到的是我们的解读；尚未写到的，先给你博物馆自己的记录，直到我们写出来为止。",
+        "Cualquier museo, una obra cada vez. Qué es, dónde está colgada y qué mirar mientras está delante de ella. De las obras que hemos escrito verá nuestra lectura; de las que aún no, verá el registro propio del museo hasta que la escribamos.",
+        "어느 미술관이든, 한 번에 한 작품씩. 그것이 무엇이고 어디에 걸려 있으며 그 앞에 섰을 때 무엇을 볼지. 저희가 쓴 작품은 저희 글로 보여 드리고, 아직 쓰지 못한 작품은 저희가 쓸 때까지 미술관 자체의 기록으로 보여 드립니다.",
+        "Bảo tàng nào cũng được, mỗi lần một tác phẩm. Nó là gì, treo ở đâu, và cần chú ý điều gì khi bạn đứng trước nó. Tác phẩm nào chúng tôi đã viết thì bạn đọc bài của chúng tôi; tác phẩm chưa viết thì bạn xem hồ sơ gốc của bảo tàng, cho tới khi chúng tôi viết xong."],
+    "Written by us · enhanced": [
+        "我们亲手写的 · 增补版", "Escrito por nosotros · ampliado",
+        "우리가 직접 쓴 것 · 보강판", "Do chúng tôi viết · bổ sung"],
+    "Museum original": [
+        "博物馆原始记录", "Registro original del museo",
+        "박물관 원본 기록", "Bản gốc của bảo tàng"],
+})

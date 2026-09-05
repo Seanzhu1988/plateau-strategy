@@ -43,23 +43,22 @@
                   border: 1px solid #d3d3da !important; border-radius: 6px !important;
                   box-sizing: border-box; background: #fff !important; color: #14110c !important; }
         .ug-hint { font-size: .85rem; color: #6b655b; margin: .5rem 0 1.2rem; }
-        /* Two ways in, one at a time. The guides we wrote sit behind their own
-           tab so they no longer stand between the search box and its results:
-           type anything and the page is already showing you the search. The id
-           on the row lets these pills outrank modern.css's site-wide button
-           rule, the same trick the Read it button needs. */
-        #ugTabs { display: flex; gap: .5rem; flex-wrap: wrap; margin: 0 0 1.3rem; }
-        #ugTabs .ug-tab {
-            font: inherit !important; font-weight: 700 !important; cursor: pointer;
-            padding: .5rem 1.05rem !important; min-height: 44px;
-            border: 1px solid #d3d3da !important; border-radius: 999px !important;
-            background: #fff !important; color: #4a453d !important;
-            display: inline-flex !important; align-items: center; white-space: nowrap; }
-        #ugTabs .ug-tab.is-on {
-            background: #1f3a5f !important; color: #fff !important;
-            border-color: #1f3a5f !important; }
-        .ug-tab-n { margin-left: .4rem; font-weight: 700; opacity: .75;
-                    font-variant-numeric: tabular-nums; }
+        /* THE WATERMARK. [SEAN 2026-09-05, drawn on paper: "any museum ->
+           original search -> shown written by us Enhanced -> when not
+           available show original until available -> watermark -> museum
+           original / written by us enhanced".] Every row now says which of the
+           two it is. A catalogue line the museum publishes and a reading that
+           exists nowhere else were arriving in identical clothes, so the one
+           thing this site makes was indistinguishable from the one thing
+           anybody can already get. A pill rather than a literal watermark
+           across the text: a watermark over words is unreadable, and this one
+           has to survive translation. */
+        .ug-mark { display: inline-block; font-size: .64rem; font-weight: 800;
+                   letter-spacing: .12em; text-transform: uppercase;
+                   border: 1px solid #d9d5cd; border-radius: 999px;
+                   padding: .2rem .6rem; margin: 0 0 .55rem;
+                   color: #6b655b; background: #fbfaf8; }
+        .ug-mark.is-ours { color: #14403f; border-color: #b6d3cd; background: #eef6f3; }
         /* A quiet live line, shown only when two or more travellers are here,
            so it never announces a lonely one. The dot pulses to say "now", and
            stops for anyone who asked their device to reduce motion. */
@@ -172,8 +171,9 @@
 
     <div class="ug-wrap">
         <h1 class="ug-title">Universal Gallery</h1>
-        <p class="ug-lede">Every exhibition, one artwork at a time. What it is, where it
-           hangs, and what to notice while you are standing there.</p>
+        <p class="ug-lede">Any museum, one artwork at a time. What it is, where it hangs, and
+           what to notice while you are standing there. Where we have written the work you
+           get our reading; where we have not, you get the museum's own record until we do.</p>
 
         <p class="ug-live" id="ugLive" hidden><span class="ug-live-dot" aria-hidden="true"></span>
            <span><b id="ugLiveN">0</b> <span class="ug-live-txt">travellers are exploring right now</span></span></p>
@@ -194,23 +194,20 @@
                    src="/media/universal-gallery-film.mp4"></video>
         </div>
 
-        <div class="ug-tabs" id="ugTabs" role="tablist">
-            <button class="ug-tab is-on" id="ugTabW" type="button" role="tab"
-                    aria-selected="true" data-tab="written">Written by us<span
-                    class="ug-tab-n" id="ugWrittenN"></span></button>
-            <button class="ug-tab" id="ugTabF" type="button" role="tab"
-                    aria-selected="false" data-tab="found">Search</button>
-        </div>
-
-        <div id="ugWritten" role="tabpanel"></div>
-        <div id="ugFound" role="tabpanel" hidden></div>
+        <!-- One search, one surface. The two tabs that stood here made the
+             reader choose a door before they knew what was behind either, and
+             whichever one they were not standing in was invisible. Now the
+             results say for themselves which is a museum's catalogue line and
+             which is ours. -->
+        <div id="ugWritten"></div>
+        <div id="ugFound" hidden></div>
 
         <p class="ug-more" style="margin:1.5rem 0 0;text-align:center;font-size:.95rem"><a href="/gallery-guides" style="color:#1d4c4f;font-weight:600">Browse the works travellers look up most &rarr;</a></p>
     </div>
 
 <script>
 (function () {
-    var written = {}, timer = null, canGen = false, found = {};
+    var written = {}, timer = null, canGen = false, found = {}, haveWritten = false;
 
     // The reader's language, for a reading written on the spot in it. The
     // i18n runtime is the source of truth; the html lang is the fallback.
@@ -223,14 +220,13 @@
         return String(s == null ? "" : s).replace(/[&<>"]/g,
             function (c) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; });
     }
-    var FOUND_HINT = '<p class="ug-none">Type a name, or the number on the label, to search.</p>';
+    // An empty box shows what we have written; a typed one shows the search.
+    // No tabs, so there is nothing to keep in sync and nothing hidden behind a
+    // control the reader never pressed.
     function showTab(which) {
         var found = which === "found";
         document.getElementById("ugWritten").hidden = found;
         document.getElementById("ugFound").hidden = !found;
-        var bW = document.getElementById("ugTabW"), bF = document.getElementById("ugTabF");
-        bW.classList.toggle("is-on", !found); bW.setAttribute("aria-selected", String(!found));
-        bF.classList.toggle("is-on", found); bF.setAttribute("aria-selected", String(found));
     }
     function card(it, key, fk) {
         // Every real photograph the museum published of this object. A single
@@ -271,9 +267,17 @@
         // on the spot, in the reader's language, for a work nobody here has
         // ever written about. That reading, for anything you can point at, is
         // the thing the facts alone are not.
-        var curated = key && it.has_narrative;
-        var canRead = curated || (!key && canGen && it.title);
-        return '<div class="ug-card" data-k="' + esc(key || "") +
+        // A searched row that is ours carries its own gallery_key, so the
+        // reading we already wrote is opened by key rather than written a
+        // second time by the engine.
+        var gk = key || it.gallery_key || "";
+        var curated = !!(gk && it.has_narrative);
+        var canRead = curated || (!gk && canGen && it.title);
+        // WHICH OF THE TWO THIS IS, said on every row. [SEAN, drawn.]
+        var mark = curated
+            ? '<div class="ug-mark is-ours">Written by us · enhanced</div>'
+            : '<div class="ug-mark">Museum original</div>';
+        return '<div class="ug-card" data-k="' + esc(gk) +
                '" data-fk="' + esc(fk || "") + '">' +
             // The photograph is the point of this page for somebody standing in
             // a gallery: it is how they confirm they are in front of the right
@@ -287,7 +291,7 @@
                 esc(it.image) + '" alt="' + esc(it.title) +
                 '" loading="lazy" onerror="this.remove()">'
               : '') +
-            '<div class="ug-body">' +
+            '<div class="ug-body">' + mark +
             '<div class="ug-h">' + esc(it.title) + '</div>' +
             '<div class="ug-by">' + esc(it.artist || "Maker unrecorded") +
             (it.date ? ", " + esc(it.date) : "") + '</div>' +
@@ -325,21 +329,19 @@
             '</div></div>';
     }
 
-    document.getElementById("ugFound").innerHTML = FOUND_HINT;   // ready before the first search
-
     fetch("/api/gallery/items").then(function (r) { return r.json(); }).then(function (d) {
         written = d.items || {};
         var keys = Object.keys(written);
-        if (!keys.length) {
-            // Nothing written yet: no tab to offer, so the search stands alone.
-            document.getElementById("ugTabW").hidden = true;
-            showTab("found");
-            return;
-        }
-        document.getElementById("ugWrittenN").textContent = "· " + keys.length;
+        if (!keys.length) { showTab("found"); return; }   // nothing to fall back to
+        haveWritten = true;
+        // No heading over this block: every card in it already carries the
+        // mark, and a "Written by us" header three lines above a "Written by
+        // us · enhanced" pill is the same words twice. The search results keep
+        // their heading, which is the one place a heading tells you something
+        // the cards do not.
         document.getElementById("ugWritten").innerHTML =
             keys.map(function (k) { return card(written[k], k); }).join("");
-    }).catch(function () {});
+    }).catch(function () { showTab("found"); });   // items unreachable: the search still works
 
     // THE PICTURE, and when it is on show. It appears whenever the narrative is
     // being read or heard, and can also be opened on its own by tapping the
@@ -395,13 +397,6 @@
     // Listen: built on first press, so a page of twenty artworks does not open
     // twenty audio connections nobody asked for.
     document.addEventListener("click", function (e) {
-        var tab = e.target.closest(".ug-tab");
-        if (tab) {
-            var which = tab.getAttribute("data-tab");
-            showTab(which);
-            if (which === "found") document.getElementById("ugFind").focus();
-            return;
-        }
         var dot = e.target.closest(".ug-dot");
         if (dot) {
             var st = dot.closest(".ug-stage");
@@ -481,7 +476,7 @@
 
     function search(q) {
         var host = document.getElementById("ugFound");
-        if (q.length < 2) { host.innerHTML = FOUND_HINT; return; }
+        if (q.length < 2) { host.innerHTML = ""; return; }
         host.innerHTML = '<div class="ug-sec">Searching the collections</div>';
         fetch("/api/gallery/search?q=" + encodeURIComponent(q))
             .then(function (r) { return r.json(); })
@@ -510,10 +505,9 @@
     document.getElementById("ugFind").addEventListener("input", function () {
         var v = this.value.trim();
         clearTimeout(timer);
-        // Typing takes you straight to the search: the guides never sit in the
-        // way. Empty the box and you are back among them.
-        if (v.length >= 2) { showTab("found"); }
-        else if (!v.length && !document.getElementById("ugTabW").hidden) { showTab("written"); }
+        // Typing takes you straight to the search. Empty the box and you are
+        // back among the works we have written.
+        showTab(v.length >= 2 || !haveWritten ? "found" : "written");
         timer = setTimeout(function () { search(v); }, 350);   // one request per pause, not per keystroke
     });
     // Arriving with ?q= (from a museum page's embedded search bar) starts the

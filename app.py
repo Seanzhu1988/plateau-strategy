@@ -4905,6 +4905,14 @@ def api_gallery_search():
         row = dict(v)
         row.pop("script", None)
         row["written"] = True
+        # WHETHER THE WRITING CAN ACTUALLY BE OPENED. /api/gallery/items has
+        # always sent this and the search never did, so our own piece came back
+        # first, replaced the museum's row, and then drew with no Read button:
+        # the page fell through to "write one on the spot" and would have
+        # generated a second reading over the top of the one we wrote. The
+        # product was invisible at the exact moment somebody searched for it.
+        row["has_narrative"] = os.path.exists(
+            os.path.join(BASE_DIR, v.get("script", "")))
         row["source"] = v.get("museum") or ""
         row["gallery_key"] = k
         results.insert(0, row)
