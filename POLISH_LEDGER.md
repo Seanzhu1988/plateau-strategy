@@ -97,11 +97,28 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
       already tilted higher keeps their angle. Closed is proved unchanged
       rather than assumed: the model drawn from the old file and from the new
       one are the same 15,341 bytes of SVG, byte for byte.
-- [ ] Phone framing: both models are drawn for a wide screen. Check at 375px
-      and give each a portrait camera if it needs one. Half of this is now
-      done: the labels and dots read at any width (2026-08-31). What is left
-      is the drawing itself, the bridge is 2.88:1 so a 375px phone gives it a
-      111px tall box, and the three labels have to crowd into that band.
+- [x] Phone framing: both models are drawn for a wide screen. **Done
+      2026-09-05**, and the answer was not a portrait camera. Measured first:
+      the lift built on 2026-09-02 was never firing on a phone, because a
+      label block is 2.9458 x fT tall and wants 3.3625 x fT + 4 units of clear
+      air, which is 132 units at the phone type size against the 48 the frame
+      offers, so fits() refused both directions and all three labels fell back
+      to the halo and lay across the deck. The frame now grows by exactly that
+      shortfall, above and below, and the eye drops by the same so the drawing
+      keeps its place. That alone was worth almost nothing, 88.8 units of text
+      on the drawing to 84.0, and it would have been dishonest to ship it as
+      the fix: the real constraint is that the three labels are 490, 349 and
+      267 units wide in a 980 box and collide with each other, so whoever is
+      placed last has nowhere left. Placement now goes WIDEST FIRST, since a
+      wide label has the fewest places it can fit. Together: 89.0 units to
+      44.3, three labels on the drawing to one, and that one is haloed. Both
+      changes are opt-in per scene, which the Empire State paid for: applied
+      to everything, widest-first took it from 117.8 to 121.2, so it is gated
+      and the tower is byte for byte what it was. Desktop proved unchanged the
+      same way, every label and every leader at the identical coordinate at
+      1000px. The Empire State needs no portrait camera: it is 1.16:1, gets a
+      276px box on a phone against the bridge's 111, and every label of its
+      seven that touches the drawing is already haloed.
 - [ ] The bridge deck is drawn level, which is true, but the roadway actually
       rises toward midspan. Small correction, real.
 - [ ] Empire State: the base is 424 by 187 ft, so from some angles it reads
@@ -392,3 +409,60 @@ and a tip summary stops ending mid-word", "The Empire State opens at its two
 observatory floors" and "Four packs learn the opened tower, and start writing
 again".
 Note: the branch was level with origin/main at the start and needed no rebase.
+
+### 2026-09-05
+Trimmed: one, and it was hiding the site's three most-linked museums.
+The Destination Book's city filter listed the same city twice: "New York" and
+"New-York" side by side, and "Washington DC" beside "Washington-D-C", plus
+three chips printing a slug where a city name goes, "Los-Angeles",
+"South-Kensington", "Stadtbezirk-Ii-Essen". So tapping New York reached 55 of
+57 New York places and Washington DC 38 of 39, and the three it could not
+reach were the Met, MoMA and the Smithsonian, which are exactly the museums
+the Universal Gallery links to. Root cause: app.py already had a guard for
+this, and the guard was comparing the wrong shapes. Its alias table is written
+in words ("new york", "washington, d.c.") but discovery.py hands the book a
+SLUG, _slug("New York") is "new-york", and no slug is in any tuple, so
+_same_chapter never matched and each new spelling opened a rival chapter.
+Every separator now collapses to one space before anything is compared, on the
+key, the label and the alias alike, so "washington-d-c" and "washington, d.c."
+both read as "washington d c". _heal_chapters groups on that normalised name
+rather than the raw label, which is what lets it fold DC at all: "Washington
+DC" and "Washington-D-C" are two different strings however you case them, and
+only the alias table joins them. A label that is exactly key.title() was
+written by the machine from the slug and gets its separators taken back out; a
+real name never matches that test and is left alone. Verified on a copy before
+anything was written: 13 unit checks, 140 entries in and 140 out, the split
+folded 55 to 57 and 38 to 39, Toruń and Chicago correctly NOT folded, and a
+second pass is a no-op. Chip row 13 to 11, one New York, one Washington DC, no
+slug on the page, and the Met and the Smithsonian now render under the right
+chip. Caught in my own fix by measuring rather than reading: healing the live
+book AFTER the shipped-book merge duplicated three museums, 140 entries became
+143, because the merge matches a shipped row to a live one on (city, name) and
+the live rows were still under the old key. It heals before the index now, and
+a live copy carrying the split was booted on to prove it: 140 in, 140 out,
+zero duplicate rows, 12 chapters to 10.
+3D: the top backlog item, phone framing. Numbers above.
+Caught in my own work three times, each by measuring and not by reading. The
+first version of the checker never redrew, so it reported the same ink and the
+same 38.2 unit type at 266px and at 846px, which is the 2026-09-02 note about
+requestAnimationFrame not firing in a hidden pane wearing a different hat; the
+models only move when something asks them to. The second version counted
+leaders by the class lm-leader when they carry psx-lead, so it reported zero
+lifts at every width when lifts were being taken all along. And restoring a
+file from a snapshot I had taken BEFORE a later edit silently threw that edit
+away; the grep that caught it is now the habit.
+Also worth writing down: an element measured while document.hidden is true has
+no layout at all, clientWidth 0, and the model then draws at its 12 unit type
+floor. That produced an accidental but real control, since the floor is
+exactly where the new frame adds nothing.
+Checkers: map sound, 83% full. i18n 40 composed strings, up one from 39
+because another session added one, none attempted and none added by me. Script
+lengths 1 out of band, the same Chinese overview, left alone again on purpose.
+Links: all 11 pages checked answer 200.
+Commits: "One city, one chapter: the book stops listing New York twice and
+hiding the Met behind the second one" and "The bridge labels get off the deck
+on a phone, by growing the frame and letting the widest label choose first".
+Note: dc-form-indian.js and gallery_items.json are another session's
+uncommitted work and were left untouched, verified by checksum at the start and
+at the end. The branch was 1 ahead of origin/main and 0 behind and needed no
+rebase.
