@@ -640,6 +640,14 @@
             /* a surface ring keeps overlapping pins readable against each other */
             border: 1.5px solid #fff;
             box-shadow: 0 1px 2px rgba(15,23,42,.28), 0 2px 5px rgba(15,23,42,.16); }
+        /* The board is the background; the trip is the figure. Unchosen places
+           become small quiet dots so fifty of them cannot wall off the map, while
+           a chosen stop keeps its full 20px dot, its number and its name. The start
+           pin is excluded: it is its own thing and stays full size.
+           Scaled, not resized: the 20px layout box survives, so Leaflet's
+           iconAnchor [38,10] still lands on the true point. A 14px box would have
+           lifted every small dot 3px off its place. */
+        .tp-pin:not(.tp-vis):not(.tp-start) .tp-dot { transform: scale(.7); transform-origin: 50% 50%; font-size: 0; }
         /* status glyph, the secondary encoding */
         .tp-dot::after { content: attr(data-glyph);
             position: absolute; right: -4px; bottom: -4px;
@@ -1653,14 +1661,28 @@
     // greyscale, in print, and for colour-blind users.
     const TP_GLYPH = { 'tp-lit': '✓', 'tp-tight': '!', 'tp-off': '✕',
                        'tp-tomorrow': '›', 'tp-catoff': '✕', 'tp-vis': '★' };
+    // One source of truth for "which stop is this": the place's position in the
+    // route, as a string, or '' when it is not in the trip. The map pin and the
+    // Destination Book row both read it, so the two can never disagree again.
+    function stopNo(i){
+        const k = st.route.findIndex(r => r && r.i === i);
+        return k >= 0 ? String(k + 1) : '';
+    }
     function pinHtml(i, cls){
         const glyph = TP_GLYPH[cls] || '';
         // only a chosen stop carries its name on the map; the rest stay compact
         const lbl = cls === 'tp-vis'
             ? '<span class="tp-lbl">' + escj(places[i].name.split(' ').slice(0, 2).join(' ')) + '</span>'
             : '';
+        // The number is the stop's ORDER IN THE TRIP, never its slot in the board.
+        // The board grows every time a visitor adds a place, so board index made
+        // every pin wear a meaningless 37 or 52 and the map slowly filled with
+        // digits. An unchosen place shows no number at all: its colour and glyph
+        // already say lit, tight, or out of reach. [Sean 2026-09-02: "confusing
+        // numbers, slowly blocking the map"]
+        const num = cls === 'tp-vis' ? (stopNo(i) || '✓') : '';
         return '<div class="tp-pin ' + cls + '"><div class="tp-dot" data-glyph="' + glyph + '">'
-             + (i + 1) + '</div>' + lbl + '</div>';
+             + num + '</div>' + lbl + '</div>';
     }
     function refresh(){
         let lit = 0, tight = 0, off = 0;
@@ -1998,7 +2020,7 @@
             + (st.visited.has(i)
                 ? '<span class="addbtn done" title="Already in your route">✓</span>'
                 : '<span class="addbtn" title="Add to your route" onclick="addToRoute(' + i + ')">＋</span>')
-            + '<span class="nm">' + (i + 1) + '. ' + escj(p.name) + crowdHint(p) + '</span>'
+            + '<span class="nm">' + (stopNo(i) ? stopNo(i) + '. ' : '') + escj(p.name) + crowdHint(p) + '</span>'
             + '<input type="time" value="' + fmt(p.close).padStart(5, '0') + '" onchange="editPlace(' + i + ',\'close\',this.value)">'
             + '<input type="number" min="10" step="5" value="' + p.visit + '" onchange="editPlace(' + i + ',\'visit\',this.value)">'
             + '<select onchange="editPlace(' + i + ',\'cat\',this.value)" style="width:78px">'
