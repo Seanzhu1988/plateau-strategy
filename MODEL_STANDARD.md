@@ -489,3 +489,63 @@ scene file) and has been LOOKED at from more than one angle.
   piers on an invented module would put a guessed count in the model's most
   prominent feature, and drawing no piers at all would leave a marble box,
   which is the exact failure Sean called unacceptable.
+
+- bunker-hill, the Bunker Hill Monument (2026-09-04), the first trail stop
+  rebuilt, and the run that gave the trail the dc-form mechanism: a stop now
+  registers window.TRAIL_FORMS[k] from its own trail-form-<k>.js and takes
+  over from the SCENES entry in trail-3d.js, resolved at DRAW time because
+  the form files load second. Helpers are exported on TRAIL3D.helpers.
+  Published, quoted in the file header, all from the Wikipedia article which
+  cites the NPS and the Boston Landmarks Commission: "221 feet (67 m) from
+  its base", "about 30 by 30 feet" at the footprint "tapers to 15 by 15 feet
+  near the top of the shaft", "78 courses, each measuring 2+2/3 feet", walls
+  "6 feet at the bottom to 2 feet at the top", the pyramidal top
+  "12-foot-tall" of "five courses" with a capstone "3.5 feet high", a
+  foundation "50 by 50 feet" and "12 feet deep" in "six courses"; the 1902
+  Lodge "50 by 38 feet across and 19 feet tall", "three by four bays", "gray
+  Deer Isle granite", an "Ionic-style portico" east and a "cast iron door
+  with two rosettes"; the Prescott statue "about 8 feet" of bronze.
+  ARITHMETIC DONE, NOT ASSUMED: 78 x 2+2/3 = 208.0 ft of shaft, + the 12 ft
+  top = 220, against a published 221 from the base, so one foot of plinth
+  shows and the numbers close.
+  Named gaps: no column count for the portico (drawn DISTYLE, the fewest a
+  portico can have, and labelled a derivation); no window sizes (openings
+  sit on the published bay grid and nowhere else); no roof form for the
+  Lodge (drawn flat behind a parapet, and said out loud per item 4); no
+  published position for the statue.
+  What LOOKING caught: (1) at the site's default yaw the visible faces are
+  +y and -x, so the east portico, the Lodge's one distinctive feature, is
+  CULLED; verified from a second angle where its two columns, entablature
+  and dark door all read. (2) The 260 ft grass pad, not the monument, was
+  setting the frame, because the trail renderer fits to everything including
+  the ground; shrinking it to 190 nearly doubled the monument on the page
+  without touching a published dimension. (3) The 78 course joints are what
+  turn a taper into 221 feet of stone; without them the shaft has no scale.
+
+- old-north, Christ Church in the City of Boston (2026-09-04). This file
+  named it: "better, recognisable even, and still flat: one brick tone, no
+  cornice, no window frames, no shadow." The massing was already right and
+  is KEPT unchanged; what was added is checklist items 2, 5, 6 and 8.
+  Published, quoted in the header: main building "96.5 by 51.5 feet", nave
+  "about 70 by 51 feet ... about 42 feet high", apse "20 by 23.5 feet", the
+  spire "191 feet above ground", foundation "rubblestone", tower walls
+  "3.5-foot-thick brick", upper walls "English common bond, generally
+  measuring 2.5 feet thick", "gable roof with slate shingles", "42 windows
+  with over 2,000 panes" in "two levels of arched sash windows", a belfry of
+  "157 or 159 steps" with eight bells cast in 1744.
+  ADDED: a stone water table where the rubblestone foundation meets the
+  brick, a belt course between the two window tiers, a wooden cornice under
+  the eaves, a stone band and a cornice on the tower and on the belfry, a
+  ground shadow, granite steps at the door, and a light stone SURROUND
+  struck round every opening before the dark glass is struck inside it,
+  which is item 8 and is the difference between a Georgian window and a
+  stain. The brick got its second tone as faint course banding, a texture
+  and not a count.
+  HONEST SHORTFALL, named rather than invented: 42 windows are published and
+  36 openings are modelled (24 on the nave walls, 4 on the tower, 8 on the
+  apse end, plus the door). The six unaccounted are not added to a wall that
+  may not have them.
+  What LOOKING caught: the front door and the whole entrance front are
+  CULLED at the default yaw, the same trap Bunker Hill sprang the same run,
+  so both models were checked from the opposite side. Two angles is not a
+  formality on this renderer; it is the only way to see half the building.
