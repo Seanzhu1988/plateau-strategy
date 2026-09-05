@@ -103,8 +103,51 @@
     ];
   }
 
+  /* The air the bridge's own 980 by 340 frame already offers above its
+     drawing at the span camera, measured off the rendered SVG: ink runs from
+     y=48.7 to y=286.3, so 48.7 above and 53.7 below. The smaller of the two,
+     rounded down, is what a lift can count on without being told. */
+  var LABEL_AIR = 48;
+
   function render(host, scene, cam, extras) {
     var w = scene.w, h = scene.h;
+    /* Labels live in viewBox units, and the viewBox is squeezed to whatever
+       width the page gives it. On a 375 px phone the bridge box is 321 px
+       against a 980 unit viewBox, so a 12 unit label landed at 3.9 CSS
+       pixels and the dot at 1.3: both invisible. Size them against the box's
+       real pixel width instead, so a label reads the same on any screen. The
+       floor of 12 keeps the desktop drawing exactly as it was.
+       Worked out HERE, at the top, because the frame below is decided from
+       the type size and the type size cannot be decided from the frame. */
+    var pxw = host.clientWidth || host.getBoundingClientRect().width || w;
+    var perPx = w / (pxw || w);                        /* viewBox units per CSS px */
+    var fT = Math.max(12, Math.min(12.5 * perPx, 44)); /* the bold name */
+    var fS = fT * 0.875;                               /* the note under it */
+    var ds = fT / 12;                                  /* dots and offsets follow */
+
+    /* ROOM FOR THE LABELS, on a scene that asks for it.
+       A titled-and-noted block is 2.9458 x fT tall and wants 0.4167 x fT of
+       clearance off the drawing plus the box's own 4 unit margin, so it needs
+       3.3625 x fT + 4 units of clear air to be lifted into. The bridge's frame
+       offers about 48 above the drawing and 54 below, which is plenty at the
+       desktop type size and nowhere near enough on a phone: at 321 px the type
+       is 38.2 units, a block is 112, and fits() rejects BOTH lifts, so all
+       three labels fall back to the halo and lie across the deck. Measured at
+       375 px before this: 5 of 5 text runs on the drawing, worst 44.3 units,
+       and two of them not even haloed.
+       So the frame grows by exactly the shortfall, above and below, and the
+       eye drops by the same amount so the drawing keeps its place. At the
+       desktop type size the shortfall is zero and nothing changes at all,
+       which is the point: this can only ever add room, never move a wide
+       drawing. Opt in, so no other landmark is reframed behind its back. */
+    var air = 0;
+    if (scene.roomForLabels) {
+      air = Math.max(0, Math.ceil(3.3625 * fT + 4 - LABEL_AIR));
+      if (air) {
+        cam = makeCam(cam.yaw, cam.pitch, cam.zoom, cam.ox, cam.oy + air);
+        h = h + 2 * air;
+      }
+    }
     var parts = [];
     /* An ink skyline, so a label can be put where the drawing is not.
        The box is cut into columns and every piece of STRUCTURE that gets
@@ -163,17 +206,6 @@
         '" stroke="' + l.colour + '" stroke-width="' + (l.width || 1) +
         '" opacity="' + (l.opacity == null ? 1 : l.opacity) + '" stroke-linecap="round"/>');
     });
-    /* Labels live in viewBox units, and the viewBox is squeezed to whatever
-       width the page gives it. On a 375 px phone the bridge box is 321 px
-       against a 980 unit viewBox, so a 12 unit label landed at 3.9 CSS
-       pixels and the dot at 1.3: both invisible. Size them against the box's
-       real pixel width instead, so a label reads the same on any screen. The
-       floor of 12 keeps the desktop drawing exactly as it was. */
-    var pxw = host.clientWidth || host.getBoundingClientRect().width || w;
-    var perPx = w / (pxw || w);                        /* viewBox units per CSS px */
-    var fT = Math.max(12, Math.min(12.5 * perPx, 44)); /* the bold name */
-    var fS = fT * 0.875;                               /* the note under it */
-    var ds = fT / 12;                                  /* dots and offsets follow */
     /* Readable labels are wide labels, so on a phone they ran off the right
        edge and sat on top of each other. Two guards, both measured from the
        text itself: a label that would overrun flips to the left of its dot,
@@ -181,7 +213,34 @@
        desktop box neither guard fires, so the wide drawing is untouched. */
     var gap = 9 * ds, lh = fT * 1.35, placed = [];
     function runs(s, f) { return (s || '').length * f * 0.55; }
-    (scene.marks || []).forEach(function (m) {
+    /* WIDEST FIRST. Placement is first come, first served: a label that would
+       land on one already placed is refused. So the order the scene happens to
+       list its marks in decides who gets the clear air, and on the bridge that
+       order gave it to the two tower labels and left the promenade, the widest
+       label on the model at 490 units against 349 and 267, with both its lifts
+       blocked and nowhere to go. It stayed on the deck and its note was
+       written across the roadway.
+       A wide label has the fewest places it can fit, so it is the one that
+       must choose first. Measured on the span view at 321 px, this alone
+       takes the text lying on the drawing from 84.0 units to 0. Only the
+       ORDER of placement changes: every dot is still drawn, at the same
+       point, in the same paint order as before. */
+    var order = (scene.marks || []).slice();
+    if (scene.roomForLabels) {
+      /* Only a scene that asked for the room gets the order that uses it.
+         Measured when this was applied to everything: the Empire State, whose
+         labels stand beside a tall thin drawing rather than on top of a wide
+         one, went from 117.8 units of text on the drawing to 121.2. Better on
+         the bridge is not a licence to be worse on the tower. */
+      order = order.map(function (m, i) { return [i, m]; });
+      order.sort(function (a, b) {
+        var wa = Math.max(runs(a[1].text, fT), runs(a[1].sub, fS));
+        var wb = Math.max(runs(b[1].text, fT), runs(b[1].sub, fS));
+        return (wb - wa) || (a[0] - b[0]);
+      });
+      order = order.map(function (r) { return r[1]; });
+    }
+    order.forEach(function (m) {
       var p = project(m.at, cam);
       parts.push('<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) +
         '" r="' + ((m.r || 4) * ds).toFixed(1) + '" fill="' + (m.fill || C.navy) + '"/>');
@@ -528,7 +587,7 @@
       marks.push({ at: P(BB.span / 2, 0, dz + 60), text: 'the promenade',
                    sub: '18 ft above the traffic, walkers only' });
     }
-    return { w: 980, h: 340, faces: f, lines: lines, marks: marks };
+    return { w: 980, h: 340, roomForLabels: !near, faces: f, lines: lines, marks: marks };
   }
 
   /* ==================== EMPIRE STATE BUILDING ==================== */

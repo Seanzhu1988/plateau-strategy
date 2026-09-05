@@ -1067,6 +1067,12 @@
       marks.push({ at: P(BK / 2, 0, F.deckMid + 60), text: 'the promenade',
                    sub: '18 ft above the traffic, walkers only' });
     }
-    return { w: 980, h: 340, faces: f, lines: lines, marks: marks };
+    /* The span view asks the renderer for label room. The tower view does
+       not: it is nine times zoomed, the tower already runs past the bottom
+       of this frame by design, and its ceiling of 0.24 was measured against
+       340. Growing that frame would un-crop a pedestal that is meant to be
+       cropped and make a measured ceiling wrong. */
+    return { w: 980, h: 340, roomForLabels: !near,
+             faces: f, lines: lines, marks: marks };
   };
 })();
