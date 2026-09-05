@@ -710,3 +710,75 @@ scene file) and has been LOOKED at from more than one angle.
   CULLED at the default yaw, the same trap Bunker Hill sprang the same run,
   so both models were checked from the opposite side. Two angles is not a
   formality on this renderer; it is the only way to see half the building.
+
+- faneuil-hall, Faneuil Hall (2026-09-05). Published, quoted in the file
+  header: Bulfinch's 1806 building is "80 by 102 feet", "four stories high,
+  including the attic", northern and southern elevations "nine bays",
+  western and eastern "seven bays", "red" brick in "Flemish bond", a "gable
+  roof" oriented "west-east" and "clad in slate shingles", "Tuscan-style
+  pilasters" on the first story, "Doric pilasters" on the second, "Ionic
+  pilasters, which are entirely of Bulfinch's design" on the third,
+  "protruding limestone cornices" and "limestone keystones", first-story
+  openings "arched", second and third "round-arched windows with keystones"
+  on west and east against "rectangular sash windows, topped by detached
+  semicircular lunettes" on north and south, "tympana with an architrave
+  containing a lunette" and "porthole-like bullseye windows" on the gable
+  ends, a cupola whose "lower part is a square tower with louvers on its
+  western elevation and windows on its other elevations" over "a belfry"
+  with an 1867 bell, moved "to the eastern end during the 1806 renovation",
+  a Great Hall "28 feet high and 76 by 76 feet across", a market "76 by 100
+  feet", and Shem Drowne's grasshopper at "25 pounds" (Wikipedia).
+  TWO ARITHMETIC CHECKS, done rather than assumed, and they are why nothing
+  in the plan is proportioned by eye. Bulfinch extended NORTHWARD, so 80 ft
+  is north-south and 102 ft east-west; a northern elevation is then 102 ft
+  over nine bays = 11.33 ft, a western 80 ft over seven = 11.43. One module
+  reached twice from two independent published facts, the way Old South
+  closed. Second: a 76 by 76 hall inside 80 by 102 leaves 2 ft of wall each
+  long side, a 76 by 100 market leaves 1 ft at each end. Both are believable
+  masonry and neither is possible with the axes swapped, so the rooms
+  confirm the orientation the bays gave.
+  Named gaps: NO published height for anything, so every z is derived from
+  the published four storeys and the published 28 ft hall (market storey 17,
+  hall storey 29.3, Bulfinch storey 14.4, attic in the roof); no published
+  cupola dimensions or position along the ridge; the square tower IS
+  published and is square, the belfry is named separately in the same
+  sentence but its plan is not given and is drawn octagonal, which is a
+  derivation from Bulfinch's idiom and is said so; no published grasshopper
+  length, only its weight; no published window sizes, pilaster widths or
+  step counts.
+  What LOOKING caught and arithmetic did not, three things, none visible in
+  any count: (1) the tympanum's lunette and both bullseyes were struck two
+  feet above the eave, so the published ornament clustered along the bottom
+  of a sixteen foot triangle and the whole upper gable was bare brick; the
+  architrave now springs at a third of the height. (2) the gable had no
+  RAKING cornice, so a pediment read as the sawn-off end of a roof, which is
+  the one thing a Georgian gable end is not. (3) the cupola, placed 16 ft in
+  from the east end, stood dead in front of the tympanum it is supposed to
+  stand behind and hid the lunette; moved to 25 ft in, both read. A fourth,
+  cheaper: the 150 ft pad was setting the frame and shrinking the building,
+  which is the Bunker Hill lesson arriving for the third time in this file.
+  OWED: the two adversarial critics did not fit inside this run's 25 minute
+  ceiling. The renders at the default yaw are what this build was verified
+  on. First thing for the next run, worst first:
+    a. the lunette's arch grazes the left rake of the pediment at some yaws.
+       Either narrow it or raise the raking cornice's inner edge.
+    b. the three paneled doors are dark rectangles inside the arcade rather
+       than doors in a doorcase. Published as "paneled" and drawn flat.
+    c. the arcade is the whole idea of the ground storey and here it is
+       glazed arches in a wall; nothing says market. No source reached this
+       run gives the arcade's original open form after 1806, so it is drawn
+       as it stands rather than as it was.
+
+## Skipped this run, and why
+
+- american, the National Museum of American History (2026-09-05). NOT built.
+  No exterior architectural dimensions could be reached: the Wikipedia
+  article carries none, and SAH Archipedia returned HTTP 403. What IS
+  published is 750,000 sq ft, five storeys, and a facing of pink Tennessee
+  marble sandblasted over 16 3/8 inch precast sandwich panels. That is a
+  material and an area, not a building. Per the standard's first rule, real
+  published dimensions or do not build it, it is left for a run that can
+  reach the National Register nomination or the architect's drawings. The
+  OSM-footprint route used for the Castle and NMAAHC would give a plan but
+  still no height, and a five storey box of correct plan is exactly the
+  model Sean called unacceptable.
