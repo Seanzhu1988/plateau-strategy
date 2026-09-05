@@ -141,6 +141,30 @@ buildings at a time, and never run two of these workflows at once. A run that
 dies in the review phase leaves builds on disk and no verdicts, and a result
 with zero verdicts reads as "passed" unless you check.
 
+## Claimed right now, so two builders do not build the same thing
+
+[SEAN 2026-09-04: "national ameican history museum, african american museum,
+also needs realistic redesign, after that do all boston and others".]
+
+A live session is working these through the full four steps, including the
+adversarial review the routine's 25 minute ceiling cannot fit. The landmark
+routine must SKIP anything listed here and take the next unclaimed item in its
+queue instead. Remove a line the moment its work lands or is abandoned.
+
+- indian, rebuild in progress. LAWNC was undeclared so the form threw on every
+  draw and the museum was never drawn at all; that is fixed and committed. The
+  roof still reads as a flat mesa from above, a landscape tree paints on top of
+  it, and the cantilevered entrance overhang aimed at the Capitol is missing.
+- nmaahc, rebuild queued. The file's own header is right and its geometry does
+  not implement it: 126 drawn items, no screen, no porch, no visible inversion.
+  The corona is a SCREEN of 3,600 panels at 65 to 95 percent porosity standing
+  off a glass wall at 17 degrees, which is the Washington Monument's capstone
+  angle, and the entrance is on the SOUTH face under a 200 ft porch.
+- american, not built at all. The only Mall place with no dc-form file. This is
+  the routine's own next queue item, so it is claimed here to stop a duplicate.
+
+After these: Boston, the nine Freedom Trail buildings, in batches.
+
 ## Rebuilt to this standard
 
 Each run rebuilds one building and adds it here, so the next run does not
