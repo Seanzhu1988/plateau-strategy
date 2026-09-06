@@ -169,6 +169,10 @@ queue instead. Remove a line the moment its work lands or is abandoned.
 - american, not built at all. The only Mall place with no dc-form file. This is
   the routine's own next queue item, so it is claimed here to stop a duplicate.
 
+- nineteenth-century is DONE, 2026-09-06, by the landmark routine. The Met
+  interiors still object-in-a-box are greek-roman, lehman, grand-stair and
+  euro-paintings.
+
 After these: Boston, the nine Freedom Trail buildings, in batches.
 
 
@@ -193,6 +197,44 @@ above is not paperwork, it is the lock.
 
 
 ## Rebuilt to this standard
+
+- nineteenth-century, Gallery 812, the great Salon room (2026-09-06, the
+  landmark routine). The FOURTH Met interior rebuilt from an object in a box
+  into a room. The route is the arms-armor one and it worked again: fetch
+  department highlights and filter on each object's own GalleryNumber field.
+  PUBLISHED, the Met's collection API, read this run, both verified
+  GalleryNumber 812: object 435702, Rosa Bonheur, "The Horse Fair", 1852-55,
+  "96 1/4 x 199 1/2 in." = 8 ft 0 1/4 by SIXTEEN FEET SEVEN AND A HALF; and
+  object 438820, Courbet, "Young Ladies of the Village", 1851-52,
+  "76 3/4 x 102 3/4 in." Both drawn at exactly those numbers.
+  WHAT THE FILTER ALSO DID, which is half its value: Courbet's "Woman with a
+  Parrot", 51 by 77 in., came back on the same sweep and is LEFT OUT, because
+  its GalleryNumber is 811, the room next door. A search tells you what to
+  draw; the gallery field tells you what not to.
+  DERIVED and declared: the gallery's own dimensions are published nowhere
+  reached, so the painting fixes the scale, near 36 1/2 by 27 ft at 2.2 Horse
+  Fairs long. NAMED GAPS: the 20 ft ceiling, the picture rail height, the
+  wall colour, which wall each painting hangs on, and the two-foot bottom
+  rail are all drawing decisions and say so in the file.
+  WHAT THE RENDER SHOWED AND THE NUMBERS DID NOT, and it generalises to every
+  room still to be rebuilt: a LAYLIGHT CANNOT BE DRAWN AT ALL in these rooms.
+  Sorted the usual way it painted over the back wall and the Horse Fair, the
+  Dendur glass wall one storey up. Pushed behind the back wall it STILL came
+  out as a pale streak lying across the floor, because a horizontal plane at
+  ceiling height, seen from above and outside, projects down into the room
+  whatever its depth. Sorting is not the lever. The room is a roofless
+  cutaway, so it has no ceiling and cannot show a thing in the ceiling; the
+  wall cove carries the top light and the laylight is a declared gap.
+  It was identified by a CONTROL RENDER with the side canvas switched off,
+  which is the cheap move worth copying: when two candidates could be making
+  one smear, delete one and look again.
+  LOOKED at three times: before the depth change, after it, and after removal.
+
+  MET INTERIORS REMAINING after this run: greek-roman (REFUSED on published
+  dimensions, see below), lehman, grand-stair and euro-paintings. NOTE for
+  the next run: the Met API WAF blocked this run after about 350 object
+  fetches, two requests in parallel is enough to trigger it, and it stayed
+  blocked. Fetch one department per run, serially, and stop while ahead.
 
 - arms-armor, the Equestrian Court, Met gallery 371 (2026-09-06, the landmark
   routine). The THIRD Met interior rebuilt from an object in a box into a room,

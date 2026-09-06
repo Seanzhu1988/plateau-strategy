@@ -268,8 +268,7 @@
     "greek-roman":        { kind: "figure", h: 6.4,  w: 1.7, d: 2.1, fill: "#ded8cc" },
     "lehman":             { kind: "canvas", h: 5.1,  w: 4.1,  fill: "#6f5a44" },
     "grand-stair":        { kind: "canvas", h: 18.3, w: 10.7, fill: "#7a6a56" },
-    "euro-paintings":     { kind: "canvas", h: 4.7,  w: 4.5,  fill: "#6b5b47" },
-    "nineteenth-century": { kind: "canvas", h: 2.4,  w: 3.1,  fill: "#7d8a5e" }
+    "euro-paintings":     { kind: "canvas", h: 4.7,  w: 4.5,  fill: "#6b5b47" }
   };
 
   var FRAME = "#4a3f31", STONE_E = "#8b8375";
@@ -1417,12 +1416,140 @@
     return out;
   }
 
+
+  /* ---------------- Gallery 812, the great Salon room ----------------
+     The nineteenth-century stop was an object in a box: one generic canvas
+     2.4 by 3.1 feet floating in the plan's rectangle. Gallery 812 is not a
+     generic room. It is the Met's Salon wall, and its whole subject is SIZE.
+
+     PUBLISHED, read this run from the Met's own collection API, both objects
+     verified to be GalleryNumber 812:
+       object 435702, Rosa Bonheur, "The Horse Fair", 1852-55,
+         "96 1/4 x 199 1/2 in. (244.5 x 506.7 cm)"  =  8 ft 0 1/4 in high by
+         SIXTEEN FEET SEVEN AND A HALF INCHES wide;
+       object 438820, Gustave Courbet, "Young Ladies of the Village", 1851-52,
+         "76 3/4 x 102 3/4 in. (194.9 x 261 cm)"  =  6 ft 4 3/4 by 8 ft 6 3/4.
+     Both are drawn at exactly those numbers. Courbet's "Woman with a Parrot"
+     came back on the same sweep at 51 by 77 in. and is NOT in this room: its
+     GalleryNumber is 811, the room next door, so it is left out. That is the
+     whole value of filtering on the object's own gallery field rather than on
+     a search: it tells you what to leave out as well as what to draw.
+
+     DERIVED and declared, on the arms-armor and Medieval Hall precedent: the
+     gallery's own dimensions are published nowhere reached, so THE PAINTING
+     FIXES THE SCALE and the plan rectangle does not. A canvas 16 ft 7 in wide
+     needs a wall it can be seen whole from, and the Met hangs it centred on
+     the long wall with a room to back away into. The room is drawn at 2.2
+     Horse Fairs long, near 36 1/2 ft, with the plan rectangle's proportion
+     kept for the depth, near 27 ft.
+
+     NAMED GAPS, so nothing here reads as measured that is not:
+       the 20 ft ceiling is chosen, not published;
+       the laylight is a drawing decision, consistent with these galleries
+         sitting under the roof of the building, and is not a cited fact;
+       the picture rail height and the wall colour are drawing decisions;
+       no source reached says which wall either painting hangs on, so the
+         Horse Fair takes the long back wall because it is the only wall in
+         a room this size that can hold it, and the Courbet takes the side.
+     A big Salon canvas is hung with its bottom rail about two feet off the
+     floor rather than on the 57 inch centre line the white cube uses, because
+     an eight foot painting centred at 57 inches would touch the skirting.
+     That is a drawing decision too, and it is why it is written down. */
+  function gallery812(ctx) {
+    var r = ctx.room, z = ctx.zBase, P = ctx.project, out = [];
+    var wall = ctx.wall || 26;
+    var F = wall / 20;                      /* 20 ft ceiling fixes the scale */
+
+    var WALL = "#6d5347", WALL_D = "#523d33", RAIL = "#c9b189", RAIL_D = "#a68f6a";
+    var FLOOR = "#8a7358", FLOOR_D = "#6d5a44";
+    var LIGHT = "#f6f1e2", BENCH = "#4f4438", BENCH_D = "#3a3128";
+
+    var GW = 36.5 * F, GD = 27 * F;
+    var cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+    var x1 = cx - GW / 2, x2 = cx + GW / 2, y1 = cy - GD / 2, y2 = cy + GD / 2;
+
+    /* the plan slot under it, then the gallery floor standing on that slot.
+       Both are flats spanning the scene, so both carry an EXPLICIT depth:
+       a plane this wide has a nearer corner than everything it holds. */
+    out.push(flat(ctx, r.x, r.y, r.x + r.w, r.y + r.h, z, "#cfc6b4", "#b0a99c", 0.5, -1e9));
+    out.push(flat(ctx, x1, y1, x2, y2, z + 0.1, FLOOR, FLOOR_D, 0.5, -9.99e8));
+
+    var T = Math.max(1.2, GW * 0.020);
+    /* back wall first, then the two side walls AFTER the pictures, because a
+       side wall runs the whole depth of the room and its near end is far
+       closer to the eye than the back wall it meets. */
+    out = out.concat(mass(ctx, x1, y1, x2, y1 + T, z, wall, WALL, WALL_D, -9.80e8));
+
+    /* THE HORSE FAIR on the back wall, at 199 1/2 by 96 1/4 inches. On a
+       36 1/2 ft wall it takes very nearly half the room, which is the fact
+       this model exists to carry and which no photograph of it conveys. */
+    var HF_W = (199.5 / 12), HF_H = (96.25 / 12);
+    if (ctx.faceVisible(0, 1)) {
+      var mapB = function (u, zz) { return P(u, y1 + T, zz); };
+      out = out.concat(canvasOn(ctx, mapB, cx, z + (2 + HF_H / 2) * F,
+                                HF_W * F, HF_H * F, -9.50e8));
+    }
+
+    /* the picture rail and the cove above it: the two horizontal lines that
+       make a nineteenth century hang read as one, and the only relief on an
+       otherwise flat wall. Heights chosen, as declared above. */
+    out = out.concat(mass(ctx, x1, y1, x2, y1 + T * 0.55, z + 13 * F, 0.5 * F,
+                          RAIL, RAIL_D, -9.74e8));
+    out = out.concat(mass(ctx, x1, y1, x2, y1 + T * 0.55, z + wall - 1.6 * F, 1.6 * F,
+                          LIGHT, "#ded6c0", -9.72e8));
+
+    /* THE COURBET on whichever side wall is turned towards us, at 102 3/4 by
+       76 3/4 inches. If neither side faces the eye it is not drawn, rather
+       than drawn somewhere it is not. */
+    var sideX = ctx.faceVisible(1, 0) ? x1 + T : (ctx.faceVisible(-1, 0) ? x2 - T : null);
+    if (sideX !== null) {
+      var mapS = function (u, zz) { return P(sideX, u, zz); };
+      var CB_W = (102.75 / 12), CB_H = (76.75 / 12);
+      out = out.concat(canvasOn(ctx, mapS, y1 + GD * 0.46, z + (2 + CB_H / 2) * F,
+                                CB_W * F, CB_H * F, -9.20e8));
+      /* a 7 ft doorway through to gallery 811, where the Parrot actually is */
+      var dc = y2 - GD * 0.16;
+      out.push({ svg: ctx.poly([mapS(dc - 2.2 * F, z + 0.1), mapS(dc + 2.2 * F, z + 0.1),
+                                mapS(dc + 2.2 * F, z + 7 * F), mapS(dc - 2.2 * F, z + 7 * F)],
+                               "#3b2d26", WALL_D, 0.4), depth: -9.15e8 });
+    }
+
+    out = out.concat(mass(ctx, x1, y1, x1 + T, y2, z, wall, WALL, WALL_D, -9.00e8));
+    out = out.concat(mass(ctx, x2 - T, y1, x2, y2, z, wall, WALL, WALL_D, -9.00e8));
+
+    /* THE LAYLIGHT IS NOT DRAWN, and the reason is worth the space because it
+       is the painter's-depth trap arriving in a form no depth can fix.
+       First pass put a lit panel across the ceiling at the usual "behind
+       everything" depth and it painted over the back wall and the Horse Fair,
+       which is the Dendur glass wall again, one storey up. Pushing it behind
+       the back wall did not fix it either: a ceiling plane seen from above and
+       outside PROJECTS DOWN ACROSS THE FLOOR whatever its sort order, so it
+       came out as a pale streak lying in the middle of the room. It survived
+       a control render with the Courbet switched off, which is how it was
+       identified.
+       The room is a roofless cutaway. It has no ceiling, so it cannot show a
+       thing that is IN the ceiling. The cove band on the wall carries the top
+       light instead, and the laylight is a declared gap rather than a smear.
+       THE GENERAL RULE for the rooms still to be rebuilt: a horizontal plane
+       at ceiling height cannot be drawn in an open-top room at all. Sorting
+       is not the lever; not drawing it is. */
+
+    /* A backless gallery bench, 6 ft by 17 in, set back where you would stand
+       to take the Horse Fair in whole. Scale needs one thing a body already
+       knows the size of, and in this room it is the only such thing. */
+    var bcy = y2 - GD * 0.30;
+    out = out.concat(mass(ctx, cx - 3 * F, bcy - 0.8 * F, cx + 3 * F, bcy + 0.8 * F,
+                          z + 0.1, (17 / 12) * F, BENCH, BENCH_D, -8.0e8));
+    return out;
+  }
+
   window.MET_ROOMS = { dendur: dendur, 'great-hall': greatHall,
                       'american-court': americanCourt,
                       'asian-astor': astorCourt,
                       islamic: damascusRoom,
                       medieval: medievalHall,
                       'arms-armor': armsArmor,
+                      'nineteenth-century': gallery812,
                       modern: modern, 'grand-stair-2': grandStair };
   Object.keys(LANDMARKS).forEach(function (k) { window.MET_ROOMS[k] = landmark; });
 })();
