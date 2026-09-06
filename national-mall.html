@@ -93,17 +93,45 @@
         .nm-stop { display: flex; gap: .75rem; align-items: baseline; width: 100%;
                    background: none; border: 0; font: inherit; text-align: left;
                    padding: .62rem .4rem; cursor: pointer; color: inherit; border-radius: 8px; }
-        /* Same reason: the global rule forces background to none on every
-           button, so the selected stop is marked with a rule and ink weight,
-           which nothing overrides. */
-        .nm-stop { border-left: 3px solid transparent; }
-        .nm-stop[aria-current="true"] { border-left-color: #12305b; }
+        /* The comment that stood here said the selected stop is marked with a
+           rule "which nothing overrides". Measured, nothing of the sort was
+           happening: modern.css sets border 0, then a 2px rose underline, then
+           padding .1rem 0, on every button on the site, all with !important. So
+           this list had been wearing another component's chrome. The left rule
+           marking the selected stop never drew at all, the rows had almost no
+           padding to tap, and every row carried an underline nobody designed.
+           An id outranks it, the same trick the film button already needs. */
+        #nmList .nm-stop { border: 0 !important;
+                   border-left: 3px solid transparent !important;
+                   border-radius: 8px !important;
+                   padding: .62rem .5rem !important;
+                   font-weight: inherit !important; }
+        #nmList .nm-stop[aria-current="true"] { border-left-color: #12305b !important; }
         .nm-stop[aria-current="true"] .nm-name { color: #12305b; font-weight: 750; }
         .nm-stop[aria-current="true"] .n { color: #12305b; }
         .nm-stop .n { font-size: .78rem; font-weight: 750; color: #12305b;
                       min-width: 1.5rem; font-variant-numeric: tabular-nums; }
         .nm-stop .nm-name { font-weight: 620; line-height: 1.35; }
         .nm-stop .nm-meta { display: block; font-size: .79rem; color: #8a8378; margin-top: .12rem; }
+        /* TAP THE NAME, HEAR THE STOP. [SEAN 2026-09-06: "when someone hit the
+           name of those 18 items it will start playing instead of scroll up to
+           play, hit it again it will stop".] The player at the top of the page
+           is fine when you are already looking at it and useless when you are
+           eighteen rows down the list, which is where a reader actually is.
+           The mark is drawn in CSS rather than set as a character: a play
+           triangle and a pause bar are both emoji on some systems and boxes on
+           others, and this one has to be legible on every phone. */
+        .nm-au { flex: 0 0 auto; width: 12px; height: 14px; position: relative;
+                 margin-left: auto; align-self: center; opacity: .3; color: #8a8378; }
+        .nm-au::before { content: ""; position: absolute; left: 2px; top: 2px;
+                         border-left: 9px solid currentColor;
+                         border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+        .nm-stop[data-au="play"] .nm-au { opacity: .9; color: #12305b; }
+        .nm-stop[data-au="playing"] .nm-au { opacity: 1; color: #12305b; }
+        .nm-stop[data-au="playing"] .nm-au::before { left: 1px; top: 1px; width: 3px; height: 12px;
+                         border: 0; background: currentColor; }
+        .nm-stop[data-au="playing"] .nm-au::after { content: ""; position: absolute;
+                         left: 7px; top: 1px; width: 3px; height: 12px; background: currentColor; }
         .nm-foot { margin: 1.6rem 0 0; font-size: .82rem; color: #8a8378; line-height: 1.6; }
         /* The stop's pictures, story and voice, and the walk bar. [SEAN 2026-09-04:
            "the 3D, slide show the discription with audio track ... once they
@@ -327,6 +355,9 @@
             }
         });
         audioEl.addEventListener("pause", remember);
+        ["play", "pause", "ended", "emptied"].forEach(function (ev) {
+            audioEl.addEventListener(ev, function () { paintRows(); });
+        });
         audioEl.addEventListener("play", function () { if (resumeEl) resumeEl.hidden = true; });
         audioEl.addEventListener("ended", function () {
             var src = audioEl.getAttribute("src");
@@ -358,6 +389,39 @@
        talking with the controls gone: no pause button, no scrub bar, nothing to
        stop it but leaving the page. pause() first, so the pause event writes the
        place down, then let go of the media outright. */
+    /* Set by a row tap, consumed by setSrc the moment a track is attached, so
+       the play happens whichever pipeline supplied the file. Cleared on read so
+       it can never leak into a later selection made by Prev, Next or Back. */
+    var playOnAttach = false;
+    function playGuide() {
+        if (!audioEl || !audioEl.getAttribute("src")) return;
+        var p;
+        try { p = audioEl.play(); } catch (e) { return; }
+        /* A refused play is not an error worth shouting about: the controls are
+           already on screen, so the reader can press the one they can see. */
+        if (p && p.catch) p.catch(function () { paintRows(); });
+    }
+    /* Returns false when there is nothing attached to toggle, which is how the
+       caller knows to fall through and select the stop instead. */
+    function toggleGuide() {
+        if (!audioEl || !audioEl.getAttribute("src")) return false;
+        if (audioEl.paused) playGuide();
+        else audioEl.pause();          /* pause writes the place down already */
+        paintRows();
+        return true;
+    }
+    /* Which row is speaking, said on the row itself. Reads the audio element
+       rather than a flag of its own, so pressing pause in the player at the top
+       of the page and tapping the row are the same state seen twice. */
+    function paintRows() {
+        var playing = !!(audioEl && audioEl.getAttribute("src") && !audioEl.paused);
+        var live = !!(audioEl && audioEl.getAttribute("src"));
+        Array.prototype.forEach.call(listEl.querySelectorAll(".nm-stop"), function (b) {
+            var on = b.getAttribute("aria-current") === "true";
+            b.setAttribute("data-au", on && playing ? "playing" : (on && live ? "play" : ""));
+        });
+    }
+
     function silenceGuide() {
         if (audioEl) {
             try { audioEl.pause(); } catch (e) {}
@@ -370,6 +434,7 @@
         var gg = document.getElementById("nmGuide");
         if (gg) gg.hidden = true;
         paintResume();
+        paintRows();
     }
     /* Eleven of the eighteen stops have no recording yet. Hiding the player and
        saying nothing made that read as a fault: tap a stop, get silence, no idea
@@ -498,6 +563,9 @@
             g.hidden = false;
             sayNoGuide(false);
             armRestore();
+            var wanted = playOnAttach; playOnAttach = false;
+            if (wanted) playGuide();
+            paintRows();
         };
         var src = (e && (e.audio || e.audio_url)) || "";
         if (src) { setSrc(src); return; }
@@ -599,6 +667,7 @@
         Array.prototype.forEach.call(listEl.querySelectorAll(".nm-stop"), function (b) {
             b.setAttribute("aria-current", b.dataset.model === key ? "true" : "false");
         });
+        paintRows();
         /* Only a deliberate pick moves the map. On load it keeps the fitted
            view of the whole route, which is the more useful first sight and
            avoids panning to a corner before the tiles for it have arrived. */
@@ -618,11 +687,22 @@
             if (s.walk_min_from_prev) meta.push(minutes(s.walk_min_from_prev) + " " + T("walk"));
             if (s.inside_min) meta.push(minutes(s.inside_min) + " " + T("inside"));
             b.innerHTML = '<span class="n"></span><span><span class="nm-name"></span>' +
-                          '<span class="nm-meta"></span></span>';
+                          '<span class="nm-meta"></span></span><span class="nm-au"></span>';
             b.querySelector(".n").textContent = s.n;
             b.querySelector(".nm-name").textContent = s.name;
             b.querySelector(".nm-meta").textContent = meta.join(" · ");
-            b.addEventListener("click", function () { show(s.model || "", true); });
+            /* Tapping the stop you are already on plays it, and tapping it
+               again stops it where it is, so a third tap picks up rather than
+               starts over. Tapping a different stop selects it and starts it.
+               A click is a user gesture, which is what a browser requires
+               before it will make a sound, so this is allowed where an
+               automatic trigger would be refused. */
+            b.addEventListener("click", function () {
+                var key = s.model || "";
+                if (current === key && toggleGuide()) return;
+                playOnAttach = true;
+                show(key, true);
+            });
             li.appendChild(b); listEl.appendChild(li);
         });
     }
