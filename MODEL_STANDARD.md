@@ -160,6 +160,12 @@ queue instead. Remove a line the moment its work lands or is abandoned.
   The corona is a SCREEN of 3,600 panels at 65 to 95 percent porosity standing
   off a glass wall at 17 degrees, which is the Washington Monument's capstone
   angle, and the entrance is on the SOUTH face under a 200 ft porch.
+- the Met INTERIORS, met-rooms.js, are the landmark routine's lane as of
+  2026-09-06: islamic and medieval are done, and greek-roman, arms-armor,
+  lehman, grand-stair, euro-paintings and nineteenth-century remain as
+  object-in-a-box LANDMARKS entries. A live session taking one of these
+  should claim it here first.
+
 - american, not built at all. The only Mall place with no dc-form file. This is
   the routine's own next queue item, so it is claimed here to stop a duplicate.
 
@@ -187,6 +193,33 @@ above is not paperwork, it is the lock.
 
 
 ## Rebuilt to this standard
+
+- medieval, the Medieval Sculpture Hall, Met gallery 305 (2026-09-06, the
+  landmark routine). The SECOND Met interior rebuilt from an object in a box
+  into a room.
+  PUBLISHED, checked this run (metmuseum.org object 201926 and the Met's own
+  gallery description): "Choir screen from the Cathedral of Valladolid",
+  attributed to Rafael Amezua of Elorrio, erected 1763 and painted and gilded
+  1764, iron gilded and painted with a limestone base, 52 FEET HIGH and 42
+  FEET WIDE; commissioned by Isidro Cosio y Bustamante, bishop of Valladolid,
+  and standing in the nave dividing the choir from the high altar; gallery 305
+  "is dominated by" it and the hall evokes a church interior.
+  SCHEMATIC and declared: only the screen is true; the hall is derived from it.
+  WHAT THE RENDER SHOWED AND THE NUMBERS DID NOT, and it is the sharpest case
+  of this yet: sizing the hall off the floor plan's rectangle made a correct
+  42 foot screen span a FIFTH of the room. Every number was right and the
+  picture was wrong, because the plan rectangle is the WING and not this room.
+  The hall is now sized off the screen at 88 percent of its length, near 48 by
+  33 feet with the plan's proportion kept. THE GENERAL RULE, worth carrying to
+  every remaining Met interior: when a room is famous for one object, the
+  object fixes the scale and the plan rectangle does not.
+  NAMED GAPS: no published count of balusters, registers or gate leaves, so
+  the grid at 34 bars is a drawing decision; the hall's own height and length
+  are published nowhere reached this run; the four sculptures are a plinth
+  with a stone standing in for the figure, on the canvasOn honesty, because no
+  dimension was taken for any single work.
+  LOOKED at three times: `node render_room.js medieval`, once before the fix
+  and once after, and `... medieval 0.55 0.55`.
 
 - islamic, the Damascus Room, Met gallery 461 (2026-09-06, the landmark
   routine). The FIRST of the fifteen Met interiors rebuilt from a facade-style
@@ -975,6 +1008,16 @@ scene file) and has been LOOKED at from more than one angle.
   WHAT WOULD UNBLOCK IT: the LPC report at (b), or the 1939 press release in
   MoMA's own archive at moma.org/documents, which announced the new building
   and is the kind of primary source that states a plot size in feet.
+  TWO MORE ROUTES CLOSED, 2026-09-06, so a third run does not pay for them:
+    e. the LPC report at (b) WAS opened this run. s-media.nyc.gov/agencies/lpc/
+       lp/2420.pdf downloads fine, 3.1MB, and CANNOT BE READ on this machine:
+       WebFetch returns the raw stream, there is no pdftotext, the Read tool
+       needs pdftoppm which is not installed, and system python has no Quartz.
+       The lead is still good and is now blocked on a TOOL, not a source. A
+       run that installs poppler, or a session with a PDF reader, unblocks
+       MoMA in one step.
+    f. Overpass by bounding box was refused by the sandbox this run (the curl
+       was denied), so route (c) could not even be retried.
 
 - american, the National Museum of American History. The research is done and
   is recorded here so the next run does not pay for it twice.
