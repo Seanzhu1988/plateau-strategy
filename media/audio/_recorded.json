@@ -288,11 +288,29 @@
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 798
  },
+ "guide-franklin-delano-roosevelt-memorial.mp3": {
+  "chars": 2425,
+  "sig": "b90c61f7c92b",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 457
+ },
+ "guide-hirshhorn-museum.mp3": {
+  "chars": 2687,
+  "sig": "03ed4b3baab0",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 504
+ },
  "guide-jefferson-memorial.mp3": {
   "chars": 2892,
   "sig": "3dad35752f3d",
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 542
+ },
+ "guide-korean-war-veterans-memorial.mp3": {
+  "chars": 2556,
+  "sig": "bf8f0bc83a07",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 454
  },
  "guide-lincoln-memorial-steps.mp3": {
   "chars": 2805,
@@ -307,6 +325,12 @@
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 515
  },
+ "guide-martin-luther-king-jr-memorial.mp3": {
+  "chars": 2662,
+  "sig": "51c7ea8abe1a",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 502
+ },
  "guide-museum-of-american-history.mp3": {
   "chars": 2726,
   "sig": "eddd2fd4aff4",
@@ -318,6 +342,18 @@
   "sig": "ea6279ed8c1c",
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 529
+ },
+ "guide-national-museum-of-african-american-history-and-culture.mp3": {
+  "chars": 2526,
+  "sig": "20de3763f154",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 469
+ },
+ "guide-national-museum-of-natural-history.mp3": {
+  "chars": 2418,
+  "sig": "19d5671fc89e",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 465
  },
  "guide-national-museum-of-the-american-indian.mp3": {
   "chars": 2700,
@@ -337,6 +373,12 @@
   "sig": "8794e9530db4",
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 547
+ },
+ "guide-smithsonian-castle.mp3": {
+  "chars": 2634,
+  "sig": "596511b53bbd",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 484
  },
  "guide-space-needle.mp3": {
   "adopted": true,
@@ -371,6 +413,12 @@
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 500
  },
+ "guide-vietnam-veterans-memorial.mp3": {
+  "chars": 2577,
+  "sig": "8960031f2259",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 492
+ },
  "guide-washington-monument.mp3": {
   "chars": 2993,
   "sig": "a5d31257a499",
@@ -382,6 +430,12 @@
   "sig": "ffe584e2dcea",
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 490
+ },
+ "guide-world-war-ii-memorial.mp3": {
+  "chars": 2465,
+  "sig": "3909bb224585",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 455
  },
  "trail-freedom.mp3": {
   "chars": 4416,
@@ -445,6 +499,13 @@
   "voice": "hFamrilbAE6WDMtWgKvu",
   "words": 7
  },
+ "trail-stop-12.mp3": {
+  "chars": 4307,
+  "settings": null,
+  "sig": "9d0a158df193",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 801
+ },
  "trail-stop-12.zh.mp3": {
   "chars": 1459,
   "settings": {
@@ -453,6 +514,13 @@
   "sig": "ac6e871a8c0c",
   "voice": "hFamrilbAE6WDMtWgKvu",
   "words": 7
+ },
+ "trail-stop-13.mp3": {
+  "chars": 4153,
+  "settings": null,
+  "sig": "04e693318d35",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 774
  },
  "trail-stop-13.zh.mp3": {
   "chars": 1367,
@@ -463,6 +531,13 @@
   "voice": "hFamrilbAE6WDMtWgKvu",
   "words": 8
  },
+ "trail-stop-14.mp3": {
+  "chars": 4162,
+  "settings": null,
+  "sig": "6d7a923eb789",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 768
+ },
  "trail-stop-14.zh.mp3": {
   "chars": 1354,
   "settings": {
@@ -472,6 +547,13 @@
   "voice": "hFamrilbAE6WDMtWgKvu",
   "words": 6
  },
+ "trail-stop-15.mp3": {
+  "chars": 4273,
+  "settings": null,
+  "sig": "720176fe4d4f",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 787
+ },
  "trail-stop-15.zh.mp3": {
   "chars": 1408,
   "settings": {
@@ -480,6 +562,13 @@
   "sig": "1e8843089acc",
   "voice": "hFamrilbAE6WDMtWgKvu",
   "words": 7
+ },
+ "trail-stop-16.mp3": {
+  "chars": 4421,
+  "settings": null,
+  "sig": "91898dd976de",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 818
  },
  "trail-stop-16.zh.mp3": {
   "chars": 1449,
