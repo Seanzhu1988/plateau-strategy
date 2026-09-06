@@ -168,10 +168,23 @@ queue instead. Remove a line the moment its work lands or is abandoned.
 
 - american, not built at all. The only Mall place with no dc-form file. This is
   the routine's own next queue item, so it is claimed here to stop a duplicate.
+  BLOCKED A THIRD TIME, 2026-09-06, and the new dead end is recorded so a
+  fourth run does not walk into it. The file's own suggested unblock was to
+  count the marble piers off a rectified photograph. Wikimedia Commons was
+  searched successfully through its API and the Mall facade shots were found,
+  but the IMAGE BYTES could not be fetched: upload.wikimedia.org returns an
+  HTML block page to this sandbox's curl, and the browser-headers retry was
+  refused by a permission rule. So the photograph route is shut here too,
+  alongside the NCPC PDF and the 403 on SAH Archipedia and the museum's own
+  architecture page. What would work: an HABS sheet from the Library of
+  Congress, whose images are served from a different host, or a session with
+  the browser pane that can simply LOOK at a photograph and count.
 
-- nineteenth-century is DONE, 2026-09-06, by the landmark routine. The Met
-  interiors still object-in-a-box are greek-roman, lehman, grand-stair and
-  euro-paintings.
+- nineteenth-century is DONE, 2026-09-06, by the landmark routine.
+- euro-paintings is DONE, 2026-09-06, by the landmark routine, as Gallery 637.
+  The Met interiors still object-in-a-box are greek-roman (REFUSED on
+  published dimensions), lehman and grand-stair. grand-stair-2 already has a
+  real stair; the floor 1 node does not.
 
 After these: Boston, the nine Freedom Trail buildings, in batches.
 
@@ -197,6 +210,51 @@ above is not paperwork, it is the lock.
 
 
 ## Rebuilt to this standard
+
+- euro-paintings, Gallery 637, a Dutch and Flemish room (2026-09-06, the
+  landmark routine). The FIFTH Met interior rebuilt from an object in a box
+  into a room, and the first where the plan node stood for a whole SUITE: the
+  old entry was one canvas, h 4.7 by w 4.5, standing for forty galleries. A
+  suite has no envelope, so this is one gallery and says so.
+  PUBLISHED, the Met's collection API, read this run, both objects verified on
+  their own GalleryNumber field = 637: object 679844, Joachim Beuckelaer,
+  "Fish Market", 1568, "50 5/8 x 68 7/8 in."; object 436622, Frans Hals,
+  "Merrymakers at Shrovetide", ca. 1616-17, "51 3/4 x 39 1/4 in." Drawn at
+  exactly those numbers and nothing else.
+  THE FILTER EARNED ITS KEEP AGAIN: Vermeer's "Young Woman with a Water
+  Pitcher" came back on the same sweep at 18 by 16 in. and is LEFT OUT,
+  because its GalleryNumber is 614. Same lesson as gallery 812, now twice.
+  THE DEPARTMENT MAP, so the next run does not lose a fetch budget to it:
+  departmentId 11 is European Paintings and 12 is European SCULPTURE and
+  decorative arts, not the Lehman Collection, which is 15. A dept-12 sweep run
+  by mistake this session did turn up something worth keeping for whoever
+  builds a period room: object 196910, Robert Adam's Dining Room from
+  Lansdowne House, gallery 515, carries a CONFIRMED room measurement,
+  "17 ft. 11 in. x 46 ft. 9 in. x 24 ft. 1 in.", which is rarer than any
+  painting dimension and is a complete room handed over for free.
+  DERIVED and declared: no dimension of gallery 637 is published anywhere
+  reached, so the room keeps the floor plan's 195:140 proportion at near 44 by
+  32 ft on a 22 ft wall. NAMED GAPS: ceiling height, rail height, dado height,
+  wall colour, bay count, and which wall each picture hangs on.
+  WHAT THE RENDER SHOWED AND THE NUMBERS DID NOT, three things, and the first
+  is the one that generalises to every remaining Met room:
+  (1) THE ROOM DID NOT EXIST ON THE FIRST LOOK. It rendered as the old flat
+  canvas, because the fallback loop at the foot of met-rooms.js rewrites
+  MET_ROOMS for every key still in the LANDMARKS table and it runs AFTER the
+  literal that registers the new room. Registering a room is not enough; the
+  key has to LEAVE that table. A comment now sits where the entry was.
+  (2) The Hals and the enfilade doorway came back invisible. A side wall's own
+  inner face is drawn from this eye and painted over both; they sort after it
+  now. Every number was right and the wall was blank.
+  (3) The dado at 3 ft cut straight across the bottom of the Fish Market,
+  because a 50 inch picture on the 57 inch centre line starts at 32 inches.
+  Both heights were drawing decisions and the dado gave way, at 2.4 ft.
+  NOT DRAWN, declared: the laylight. Gallery 637 is one of the skylit rooms,
+  and the gallery 812 rule was applied before it could cost a render, since a
+  horizontal plane at ceiling height projects down across the floor whatever
+  depth it is given. The lit cove carries the top light.
+  LOOKED at three times: the first render that came back as the old canvas,
+  the default after the fix, and yaw 0.72 pitch 0.42.
 
 - nineteenth-century, Gallery 812, the great Salon room (2026-09-06, the
   landmark routine). The FOURTH Met interior rebuilt from an object in a box
