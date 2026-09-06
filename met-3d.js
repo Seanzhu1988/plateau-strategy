@@ -278,6 +278,36 @@
     return { svg: poly([pa, pb, pc, pd], fill, edge, sw || 0.6),
              depth: Math.max(pa[2], pb[2]) };
   }
+  /* THE FIFTH AVENUE FRONT, rebuilt 2026-09-05 to MODEL_STANDARD.md.
+   * Published, and quoted so the next reader does not repeat the search:
+   * Richard Morris Hunt's Beaux-Arts front opened December 1902; it is
+   * "a colossal Roman arch with a tripartite window flanked by massive pairs
+   * of freestanding Corinthian columns", "repeated three times across the
+   * central block"; "Four pyramids of roughly-hewn limestone" are the
+   * remnants of sculpture groups never carved; "Six portrait medallions of
+   * Renaissance artists" sit "in the spandrels of the museum's central
+   * structure". Sources: en.wikipedia.org/wiki/The_Met_Fifth_Avenue and the
+   * museum's own history page.
+   * NAMED GAPS, every one: no published facade height, arch span or rise, no
+   * column height or diameter, no bay widths, no attic or entablature height,
+   * no step count or staircase width, no medallion or pyramid size, and no
+   * published length for the Fifth Avenue frontage alone. Everything below is
+   * DERIVED from the OSM shell and from classical proportion, and the two
+   * derivations are stated where they are used.
+   * DERIVATION 1, the width of the central block: it is the OSM south-east
+   * run itself, 197.2 units, centred on where the Great Hall projects. Three
+   * colossal arches and four pairs of freestanding columns do not fit in the
+   * 74 units this drawing used before; the run is what Hunt's block occupies.
+   * DERIVATION 2, the column diameter: it was 2.2 units under a 74 unit
+   * shaft, 34 diameters, which is why the render came back as a picket fence
+   * rather than as massive pairs. A Corinthian column is nine to ten
+   * diameters including its capital. The shaft is 55 units over a 6 unit
+   * diameter, 9.2, with a one diameter capital: the order, not a guess.
+   * A CONTRADICTION, named not smoothed: Wikipedia calls the uncarved blocks
+   * limestone and a secondary account calls the facade "gleaming Vermont
+   * marble". No authoritative material statement was reached, so the stone is
+   * drawn in this model's one limestone and the disagreement is recorded.
+   */
   function facade(fade) {
     var out = [];
     /* The facade is the outermost thing on the street side, so the whole of
@@ -287,132 +317,238 @@
       out.push({ svg: '<g opacity="' + fade.toFixed(2) + '">' + part + "</g>",
                  depth: 1e8 + 10 + out.length, floor: 3 });
     }
-    var PAV_H = 113, PAV_D = 10, PAV_HW = 37, PLAT_Z = 18;
+    var PAV_H = 113, PAV_D = 10, PAV_HW = 74, PLAT_Z = 18;
+    /* the vertical storey, bottom up: plinth, pedestal, shaft, capital,
+       architrave, frieze, cornice, attic */
+    var PED_Z = 31, SHAFT_Z = 86, CAP_Z = 92,
+        ARCH_Z = 95.5, FRZ_Z = 100.5, COR_Z = 105.5, ATT_Z = PAV_H;
+    var AC = [-46, 0, 46], ARCH_R = 15, SPRING = 62;
+    var PC = [-67.5, -23, 23, 67.5], COL_OFF = 3.4, COL_R = 3.0;
+    var D_WALL = PAV_D, D_GLASS = PAV_D + 0.2, D_RING = PAV_D + 0.9,
+        D_COL = PAV_D + 5.5, D_ENT = PAV_D + 6.2, D_COR = PAV_D + 8.4,
+        D_ATT = PAV_D + 2.0, D_BLK = PAV_D + 4.0;
     var shadeN = function (c) { return shade(c, FR.n[0], FR.n[1], 0); };
     var shadeU = function (c, sgn) { return shade(c, FR.u[0] * sgn, FR.u[1] * sgn, 0); };
+    /* a darker limestone for reveals, and a warmer one for the sunlit strip
+       down a column: two tones per material is checklist item 5 */
+    var STONE = shadeN(C.shellWall), STONE_LIT = shadeN(C.f2Top),
+        STONE_DK = shadeU(C.shellWall, -1), REVEAL = "#8d846f";
 
-    /* the pavilion: a taller block standing proud of the wall */
+    /* --- the pavilion mass, its two returns, and its cap --- */
     var pavParts = [], pavDepth = -1e9;
     [[-1, 0], [1, 0]].forEach(function (side) {
       var sgn = side[0];
       if (!faceVisible(FR.u[0] * sgn, FR.u[1] * sgn)) return;
       var t = FR.tC + PAV_HW * sgn;
-      var a = fp(t, 0), b = fp(t, PAV_D);
+      var a = fp(t, 0), b = fp(t, D_COR);
       var pa = project(a[0], a[1], PAV_H), pb = project(b[0], b[1], PAV_H),
           pc = project(b[0], b[1], 0), pd = project(a[0], a[1], 0);
       pavDepth = Math.max(pavDepth, pa[2], pb[2]);
       pavParts.push(poly([pa, pb, pc, pd], shadeU(C.shellWall, sgn), C.shellEdge, 0.7));
     });
-    var fq = frontQuad(FR.tC - PAV_HW, FR.tC + PAV_HW, PAV_D, 0, PAV_H,
-                       shadeN(C.shellWall), C.shellEdge, 0.8);
+    var fq = frontQuad(FR.tC - PAV_HW, FR.tC + PAV_HW, D_WALL, 0, PAV_H,
+                       STONE, C.shellEdge, 0.8);
     if (fq) { pavParts.push(fq.svg); pavDepth = Math.max(pavDepth, fq.depth); }
-    /* its flat cap */
     var capPts = [fp(FR.tC - PAV_HW, 0), fp(FR.tC + PAV_HW, 0),
-                  fp(FR.tC + PAV_HW, PAV_D), fp(FR.tC - PAV_HW, PAV_D)]
+                  fp(FR.tC + PAV_HW, D_ATT), fp(FR.tC - PAV_HW, D_ATT)]
       .map(function (q) { return project(q[0], q[1], PAV_H); });
     pavParts.push(poly(capPts, shade(C.roof, 0, 0, 1), C.shellEdge, 1));
-    capPts.forEach(function (q) { pavDepth = Math.max(pavDepth, q[2]); });
     push(pavParts.join(""));
 
-    /* the grand staircase, descending to the avenue and widening as it goes */
-    for (var st = 0; st < 5; st++) {
-      var hw = 30 + st * 3.5;
-      var d1 = PAV_D + st * 4.4, d2 = PAV_D + (st + 1) * 4.4;
-      var zt = PLAT_Z - (PLAT_Z / 5) * st;
+    /* --- the rusticated basement course, so the wall has a foot --- */
+    var wt = frontQuad(FR.tC - PAV_HW, FR.tC + PAV_HW, D_WALL + 0.7, 0, PLAT_Z,
+                       shadeN(C.slab), C.shellEdge, 0.6);
+    if (wt) push(wt.svg);
+
+    /* --- the three colossal arches: recess, tripartite window, archivolt --- */
+    function archOutline(t, r, spring, base, d) {
+      var pts = [];
+      pts.push(project.apply(null, fp(t - r, d).concat([base])));
+      pts.push(project.apply(null, fp(t - r, d).concat([spring])));
+      for (var ai = 1; ai < 16; ai++) {
+        var th = Math.PI - (Math.PI * ai) / 16;
+        var q = fp(t + Math.cos(th) * r, d);
+        pts.push(project(q[0], q[1], spring + Math.sin(th) * r));
+      }
+      pts.push(project.apply(null, fp(t + r, d).concat([spring])));
+      pts.push(project.apply(null, fp(t + r, d).concat([base])));
+      return pts;
+    }
+    if (faceVisible(FR.n[0], FR.n[1])) AC.forEach(function (ac) {
+      var t = FR.tC + ac, parts = [];
+      /* the archivolt: the ring of stone round the opening, drawn as the
+         outline of a slightly larger arch behind the opening itself */
+      parts.push(poly(archOutline(t, ARCH_R + 3, SPRING, PLAT_Z, D_RING),
+                      STONE_LIT, C.shellEdge, 0.9));
+      /* the opening, in shadow */
+      parts.push(poly(archOutline(t, ARCH_R, SPRING, PLAT_Z, D_GLASS),
+                      REVEAL, C.shellEdge, 0.7));
+      /* the tripartite window: three lights, the middle one taller, set in
+         the opening. Published as "a tripartite window"; the mullion spacing
+         is derived by thirds and is a named gap. */
+      var lw = ARCH_R * 0.56;
+      [[-1, 46], [0, 58], [1, 46]].forEach(function (L) {
+        var c = t + L[0] * (ARCH_R * 0.62), top = SPRING + (L[1] - 46) * 0.9 + 4;
+        var g = frontQuad(c - lw / 2, c + lw / 2, D_GLASS + 0.15, PLAT_Z + 4,
+                          Math.min(top, SPRING + 8), C.glass, C.glassEdge, 0.8);
+        if (g) parts.push(g.svg);
+      });
+      /* the keystone */
+      var ks = frontQuad(t - 2.2, t + 2.2, D_RING + 0.3, SPRING + ARCH_R - 1,
+                         SPRING + ARCH_R + 5, STONE_LIT, C.shellEdge, 0.8);
+      if (ks) parts.push(ks.svg);
+      push(parts.join(""));
+    });
+
+    /* --- six portrait medallions, two in the spandrels of each outer arch
+       and of the centre: published as six, in the spandrels --- */
+    if (faceVisible(FR.n[0], FR.n[1])) {
+      var meds = [];
+      [-46, 0, 46].forEach(function (ac) {
+        [-1, 1].forEach(function (sgn) {
+          var q = fp(FR.tC + ac + sgn * 9.5, D_RING + 0.4);
+          var p = project(q[0], q[1], SPRING + ARCH_R + 7);
+          meds.push('<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) +
+                    '" r="4.2" fill="' + STONE_LIT + '" stroke="' + REVEAL +
+                    '" stroke-width="1.1"/>');
+        });
+      });
+      push(meds.join(""));
+    }
+
+    /* --- four pairs of freestanding Corinthian columns --- */
+    PC.forEach(function (pc) {
+      [-COL_OFF, COL_OFF].forEach(function (off) {
+        var t = FR.tC + pc + off, parts = [];
+        /* pedestal */
+        var ped = frontQuad(t - COL_R - 1.1, t + COL_R + 1.1, D_COL + 0.6,
+                            PLAT_Z, PED_Z, STONE, C.shellEdge, 0.6);
+        if (ped) parts.push(ped.svg);
+        var pcap = frontQuad(t - COL_R - 1.6, t + COL_R + 1.6, D_COL + 1.0,
+                             PED_Z - 1.6, PED_Z, STONE_LIT, C.shellEdge, 0.5);
+        if (pcap) parts.push(pcap.svg);
+        /* the shaft in three strips, so a flat quad reads as a cylinder */
+        [[-COL_R, -COL_R * 0.35, STONE_DK],
+         [-COL_R * 0.35, COL_R * 0.30, STONE_LIT],
+         [COL_R * 0.30, COL_R, STONE]].forEach(function (s) {
+          var q = frontQuad(t + s[0], t + s[1], D_COL, PED_Z, SHAFT_Z,
+                            s[2], "none", 0);
+          if (q) parts.push(q.svg);
+        });
+        var edge = frontQuad(t - COL_R, t + COL_R, D_COL - 0.05, PED_Z, SHAFT_Z,
+                             "none", C.shellEdge, 0.6);
+        if (edge) parts.push(edge.svg);
+        /* the Corinthian capital: one diameter tall, flaring to an abacus */
+        var bell = frontQuad(t - COL_R * 1.05, t + COL_R * 1.05, D_COL + 0.3,
+                             SHAFT_Z, CAP_Z - 1.4, STONE_LIT, C.shellEdge, 0.5);
+        if (bell) parts.push(bell.svg);
+        var abac = frontQuad(t - COL_R * 1.45, t + COL_R * 1.45, D_COL + 0.7,
+                             CAP_Z - 1.4, CAP_Z, STONE, C.shellEdge, 0.55);
+        if (abac) parts.push(abac.svg);
+        push(parts.join(""));
+      });
+    });
+
+    /* --- the entablature the pairs carry: architrave, frieze, cornice --- */
+    var entParts = [];
+    var arch1 = frontQuad(FR.tC - PAV_HW, FR.tC + PAV_HW, D_ENT, CAP_Z, ARCH_Z,
+                          STONE, C.shellEdge, 0.6);
+    if (arch1) entParts.push(arch1.svg);
+    var frz = frontQuad(FR.tC - PAV_HW, FR.tC + PAV_HW, D_ENT - 0.6, ARCH_Z, FRZ_Z,
+                        STONE_DK, C.shellEdge, 0.55);
+    if (frz) entParts.push(frz.svg);
+    var cor = frontQuad(FR.tC - PAV_HW, FR.tC + PAV_HW, D_COR, FRZ_Z, COR_Z,
+                        STONE_LIT, C.shellEdge, 0.8);
+    if (cor) entParts.push(cor.svg);
+    /* the cornice soffit, which is what tells the eye it projects */
+    var soff = [fp(FR.tC - PAV_HW, D_ENT), fp(FR.tC + PAV_HW, D_ENT),
+                fp(FR.tC + PAV_HW, D_COR), fp(FR.tC - PAV_HW, D_COR)]
+      .map(function (q) { return project(q[0], q[1], FRZ_Z); });
+    entParts.push(poly(soff, REVEAL, C.shellEdge, 0.5, ' opacity="0.55"'));
+    push(entParts.join(""));
+
+    /* --- the attic above the cornice --- */
+    var att = frontQuad(FR.tC - PAV_HW + 2, FR.tC + PAV_HW - 2, D_ATT, COR_Z, ATT_Z,
+                        STONE, C.shellEdge, 0.7);
+    if (att) push(att.svg);
+
+    /* --- the four pyramids of roughly hewn limestone, never carved --- */
+    PC.forEach(function (pc) {
+      var bParts = [], bd = -1e9;
+      var bq = frontQuad(FR.tC + pc - 5.5, FR.tC + pc + 5.5, D_BLK, ATT_Z, ATT_Z + 9,
+                         STONE_LIT, C.shellEdge, 0.7);
+      if (bq) { bParts.push(bq.svg); bd = Math.max(bd, bq.depth); }
+      var bt = [fp(FR.tC + pc - 5.5, D_ATT - 3.5), fp(FR.tC + pc + 5.5, D_ATT - 3.5),
+                fp(FR.tC + pc + 5.5, D_BLK), fp(FR.tC + pc - 5.5, D_BLK)]
+        .map(function (q) { return project(q[0], q[1], ATT_Z + 9); });
+      bParts.push(poly(bt, shade(C.roof, 0, 0, 1), C.shellEdge, 0.6));
+      push(bParts.join(""));
+    });
+
+    /* --- the wings on this run: water table, string course, cornice and
+       real window openings, so a wall is not one extruded slab --- */
+    [[2, FR.tC - PAV_HW - 2], [FR.tC + PAV_HW + 2, FR.L - 2]].forEach(function (w) {
+      if (w[1] - w[0] < 12 || !faceVisible(FR.n[0], FR.n[1])) return;
+      var wp = [];
+      var wtb = frontQuad(w[0], w[1], 0.9, 0, 9, STONE_DK, C.shellEdge, 0.5);
+      if (wtb) wp.push(wtb.svg);
+      var sc = frontQuad(w[0], w[1], 0.9, 38, 41, STONE_LIT, C.shellEdge, 0.5);
+      if (sc) wp.push(sc.svg);
+      var wc = frontQuad(w[0], w[1], 1.6, 58, 64, STONE_LIT, C.shellEdge, 0.7);
+      if (wc) wp.push(wc.svg);
+      var par = frontQuad(w[0], w[1], 0.9, 64, 69, STONE, C.shellEdge, 0.6);
+      if (par) wp.push(par.svg);
+      /* bays: a real opening with a real reveal, not a scratch line */
+      var span = w[1] - w[0], nb = Math.max(2, Math.round(span / 13));
+      for (var bi = 0; bi < nb; bi++) {
+        var bc = w[0] + (span / nb) * (bi + 0.5);
+        [[12, 34], [44, 55]].forEach(function (zr) {
+          var op = frontQuad(bc - 3.0, bc + 3.0, 0.35, zr[0], zr[1],
+                             REVEAL, C.shellEdge, 0.5);
+          if (op) wp.push(op.svg);
+          var gl = frontQuad(bc - 2.3, bc + 2.3, 0.2, zr[0] + 0.9, zr[1] - 0.9,
+                             C.glass, C.glassEdge, 0.4);
+          if (gl) wp.push(gl.svg);
+        });
+      }
+      push(wp.join(""));
+    });
+
+    /* --- the grand staircase, descending to the avenue and widening --- */
+    for (var st = 0; st < 6; st++) {
+      var hw = 58 + st * 3.6;
+      var d1 = D_COR + st * 4.6, d2 = D_COR + (st + 1) * 4.6;
+      var zt = PLAT_Z - (PLAT_Z / 6) * st;
       var q1 = fp(FR.tC - hw, d1), q2 = fp(FR.tC + hw, d1),
           q3 = fp(FR.tC + hw, d2), q4 = fp(FR.tC - hw, d2);
       var t1 = project(q1[0], q1[1], zt), t2 = project(q2[0], q2[1], zt),
           t3 = project(q3[0], q3[1], zt), t4 = project(q4[0], q4[1], zt);
       var stepParts = [poly([t1, t2, t3, t4], shade(C.f2Top, 0, 0, 1), C.shellEdge, 0.5)];
-      var riser = frontQuad(FR.tC - hw, FR.tC + hw, d2, zt - PLAT_Z / 5, zt,
+      var riser = frontQuad(FR.tC - hw, FR.tC + hw, d2, zt - PLAT_Z / 6, zt,
                             shadeN(C.f1Top), C.shellEdge, 0.4);
-      var sd = Math.max(t3[2], t4[2]);
-      if (riser) { stepParts.push(riser.svg); sd = Math.max(sd, riser.depth); }
+      if (riser) stepParts.push(riser.svg);
       push(stepParts.join(""));        /* each step nearer the street */
     }
-
-    /* the three arches, glass in shadow behind the colonnade */
-    [-18.5, 0, 18.5].forEach(function (ac) {
-      var t = FR.tC + ac, r = 8.2, spring = 58, base = PLAT_Z;
-      var pts = [];
-      pts.push(project.apply(null, fp(t - r, PAV_D + 0.15).concat([base])));
-      pts.push(project.apply(null, fp(t - r, PAV_D + 0.15).concat([spring])));
-      for (var ai = 1; ai < 8; ai++) {
-        var th = Math.PI - (Math.PI * ai) / 8;
-        var q = fp(t + Math.cos(th) * r, PAV_D + 0.15);
-        pts.push(project(q[0], q[1], spring + Math.sin(th) * r));
-      }
-      pts.push(project.apply(null, fp(t + r, PAV_D + 0.15).concat([spring])));
-      pts.push(project.apply(null, fp(t + r, PAV_D + 0.15).concat([base])));
-      if (faceVisible(FR.n[0], FR.n[1])) {
-        push(poly(pts, C.glass, C.glassEdge, 0.9, ' opacity="0.85"'));
-      }
-    });
-
-    /* four pairs of columns, platform to entablature */
-    var pairs = [-27.75, -9.25, 9.25, 27.75];
-    pairs.forEach(function (pc) {
-      [-3.2, 3.2].forEach(function (off) {
-        var t = FR.tC + pc + off;
-        var col = frontQuad(t - 1.1, t + 1.1, PAV_D + 0.3, PLAT_Z, 92,
-                            shadeN(C.f2Top), C.shellEdge, 0.45);
-        if (col) push(col.svg);
-        var cap = frontQuad(t - 1.8, t + 1.8, PAV_D + 0.35, 88, 92,
-                            shadeN(C.f1Top), C.shellEdge, 0.4);
-        if (cap) push(cap.svg);
-      });
-    });
-    /* the entablature they carry */
-    var ent = frontQuad(FR.tC - PAV_HW + 1.5, FR.tC + PAV_HW - 1.5, PAV_D + 0.4,
-                        92, 100, shadeN(C.f2Top), C.shellEdge, 0.6);
-    if (ent) push(ent.svg);
-
-    /* the four blocks that were never carved, one above each pair */
-    pairs.forEach(function (pc) {
-      var bParts = [], bd = -1e9;
-      var bq = frontQuad(FR.tC + pc - 4.5, FR.tC + pc + 4.5, 8, PAV_H, PAV_H + 8,
-                         shadeN(C.shellWall), C.shellEdge, 0.6);
-      if (bq) { bParts.push(bq.svg); bd = Math.max(bd, bq.depth); }
-      var bt = [fp(FR.tC + pc - 4.5, 2), fp(FR.tC + pc + 4.5, 2),
-                fp(FR.tC + pc + 4.5, 8), fp(FR.tC + pc - 4.5, 8)]
-        .map(function (q) { return project(q[0], q[1], PAV_H + 8); });
-      bParts.push(poly(bt, shade(C.roof, 0, 0, 1), C.shellEdge, 0.6));
-      bt.forEach(function (q) { bd = Math.max(bd, q[2]); });
-      push(bParts.join(""));
-    });
-
-    /* the wings' cornice, drawn on the true wall either side of the pavilion */
-    [[2, FR.tC - PAV_HW - 2], [FR.tC + PAV_HW + 2, FR.L - 2]].forEach(function (w) {
-      if (w[1] - w[0] < 8 || !faceVisible(FR.n[0], FR.n[1])) return;
-      var a = fp(w[0], 0.6), b = fp(w[1], 0.6);
-      var pa = project(a[0], a[1], 62), pb = project(b[0], b[1], 62);
-      var line = '<line x1="' + pa[0].toFixed(1) + '" y1="' + pa[1].toFixed(1) +
-                 '" x2="' + pb[0].toFixed(1) + '" y2="' + pb[1].toFixed(1) +
-                 '" stroke="' + C.shellEdge + '" stroke-width="1"/>';
-      var pil = [];
-      for (var pt = w[0] + 8; pt < w[1] - 6; pt += 14) {
-        var g1 = fp(pt, 0.6);
-        var v1 = project(g1[0], g1[1], 14), v2 = project(g1[0], g1[1], 56);
-        pil.push('<line x1="' + v1[0].toFixed(1) + '" y1="' + v1[1].toFixed(1) +
-                 '" x2="' + v2[0].toFixed(1) + '" y2="' + v2[1].toFixed(1) +
-                 '" stroke="' + C.shellEdge + '" stroke-width="0.8" opacity="0.7"/>');
-      }
-      push(line + pil.join(""));
-    });
     return out;
   }
 
   /* ---- the roof, with the skylight banks ---- */
   function roof(shellH) {
-    var parts = [shellRing(shellH, C.roof, null, C.shellEdge, 1.4)];
+    var CURB = 5;                    /* the upstand each skylight bank sits on */
+    var parts = [shellRing(shellH, C.roofLine, null, C.shellEdge, 1.4)];
     /* No panel seams: straight lines at a fixed y poked past the ring's
        notches and read as floating scratches. The skylights carry the roof. */
     /* the glass: three skylight banks over the picture galleries */
     [[150, 180, 300, 202], [150, 226, 300, 248], [150, 272, 300, 294]].forEach(function (g) {
-      var q = [project(g[0], g[1], shellH), project(g[2], g[1], shellH),
-               project(g[2], g[3], shellH), project(g[0], g[3], shellH)];
+      /* the curb the bank stands on. Without it the glass is drawn clear of
+         the roof with nothing under it and reads as three planks hanging in
+         the sky, which is what the first render of this model showed. */
+      parts.push(box(g[0] - 3, g[1] - 3, g[2] + 3, g[3] + 3, shellH, CURB,
+                     C.roofLine, C.shellWall, C.shellEdge));
+      var q = [project(g[0], g[1], shellH + CURB), project(g[2], g[1], shellH + CURB),
+               project(g[2], g[3], shellH + CURB), project(g[0], g[3], shellH + CURB)];
       parts.push(poly(q, C.glass, C.glassEdge, 1));
-      var glA = project(g[0], g[1] + 3, shellH), glB = project(g[2], g[1] + 3, shellH);
+      var glA = project(g[0], g[1] + 3, shellH + CURB), glB = project(g[2], g[1] + 3, shellH + CURB);
       parts.push('<line x1="' + glA[0].toFixed(1) + '" y1="' + glA[1].toFixed(1) +
                  '" x2="' + glB[0].toFixed(1) + '" y2="' + glB[1].toFixed(1) +
                  '" stroke="#ffffff" stroke-width="1.2" opacity=".7"/>');
@@ -453,8 +589,8 @@
       'outline, and inside it both gallery floors, their corridors drawn as footprints.">'];
 
     /* the shadow the building throws, then the ground it stands on */
-    svg.push('<g transform="translate(-15,11)">' +
-             shellRing(0, C.ink, "0.07", "none", 0) + "</g>");
+    svg.push('<g transform="translate(-24,17)">' +
+             shellRing(0, C.ink, "0.16", "none", 0) + "</g>");
     svg.push(shellRing(0, C.ground, null, C.shellEdge, 1));
 
     /* the outer wall, and closed, its roof */

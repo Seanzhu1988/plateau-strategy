@@ -166,69 +166,6 @@ queue instead. Remove a line the moment its work lands or is abandoned.
 After these: Boston, the nine Freedom Trail buildings, in batches.
 
 
-- met exterior, the Fifth Avenue facade. CLAIMED 2026-09-05 by the landmark
-  routine and STILL OPEN: this run built the tool to see it with and spent its
-  ceiling doing that, so the defect list below is verified and the rebuild is
-  not started. Whoever takes it next inherits a picture, not a guess.
-  THE MET COULD NOT BE LOOKED AT UNTIL TODAY. render_room.js had routes for
-  dc:, trail:, nyc:, moma: and spec:, and none for met:, so the one model on
-  this site that is the site's own front door had shipped verified by
-  arithmetic alone, which is the exact condition this file was written to end.
-  It has a met: route now. It is shorter than the others because met-3d.js
-  builds its own complete SVG rather than taking a drawing context, so the
-  route only feeds it MET_GEOMETRY and tells it where to stand; the geometry
-  is assembled inside met-map.js's closure and cannot be lifted out as a
-  literal the way MOMA_GEOMETRY can, so the file is run against a document
-  stub instead. met-3d.js gained one export, setView, because the page turns
-  the model by dragging and an offline tool has no pointer.
-  WHAT THE FIRST PICTURE SHOWED, none of it visible in any count, worst first:
-    a. THE THREE SKYLIGHT BANKS FLOAT IN THE SKY. They are drawn clear of the
-       roof with nothing beneath them, running off the top of the frame, and
-       read as three glass planks hanging over the building. This is the
-       largest thing in the drawing and it is not attached to anything.
-    b. NO GROUND SHADOW. Eleven and a half acres sit on a pale grey pad that
-       reads as paper, so the mass floats. Checklist item 6.
-    c. THE FACADE HAS NO ARCHES. The published front is "a colossal Roman arch
-       with a tripartite window flanked by massive pairs of freestanding
-       Corinthian columns", "repeated three times". The model draws about ten
-       thin identical sticks in a row and three pale rectangles with rounded
-       tops behind them: a picket fence, not four massive pairs, and no arch
-       ring at all. Checklist items 1 and 9 failing together, on the one
-       feature every visitor to the Met names.
-    d. THE WINGS ARE FLAT SLABS. McKim, Mead and White's fronts are one tone
-       from grade to roof with two or three scratch lines on them, no cornice,
-       no water table, no bays. Checklist items 2, 5 and 8.
-    e. The default page view is nearly a pure elevation, so a 291 by 337 metre
-       footprint collapses to a ribbon and both wings run off the frame. The
-       page's own camera may be right for a front door; the rebuild should
-       decide that deliberately rather than inherit it.
-  WHAT IS ALREADY RIGHT AND SHOULD SURVIVE THE REBUILD: the four uncarved
-  blocks are on the attic where Wikipedia puts them, "Four pyramids of roughly
-  hewn limestone"; the shell is the true OSM outline from relation 3698894;
-  and the steps are a real stack of shrinking slabs rather than a ramp.
-  PUBLISHED, for the rebuild, so the research is not repeated: the Beaux-Arts
-  Fifth Avenue facade and Great Hall are Richard Morris Hunt's, opened
-  December 1902, completed by his son Richard Howland Hunt; the front is "a
-  colossal Roman arch with a tripartite window flanked by massive pairs of
-  freestanding Corinthian columns", "repeated three times across the central
-  block"; "Four pyramids of roughly-hewn limestone" are the remnants of
-  planned sculpture groups; "Six portrait medallions of Renaissance artists"
-  sit "in the spandrels of the museum's central structure"; four caryatids
-  represent "painting, sculpture, architecture, and music"; the building
-  "measures almost 1/4-mile (400 m) long" with "more than 2 million square
-  feet" of floor space and is "an accretion of over 20 structures".
-  Sources: en.wikipedia.org/wiki/The_Met_Fifth_Avenue and the museum's own
-  history page. A CONTRADICTION, named not smoothed: Wikipedia calls the
-  uncarved blocks limestone while a secondary account calls the facade
-  "gleaming Vermont marble"; no authoritative material statement was reached,
-  so the rebuild must cite one or state the gap.
-  NAMED GAPS, every one of them: no published facade height, no arch span or
-  rise, no column height or diameter, no bay widths, no attic or entablature
-  height, no step count or staircase width, no medallion, caryatid or pyramid
-  size, and no published length for the Fifth Avenue frontage alone as
-  distinct from the 400 m whole. The central block's width can be DERIVED
-  from the OSM shell already in met-3d.js, which is how it should be done.
-
 - constitution is REBUILT, 2026-09-05, by the landmark routine; see below.
   park-street is DONE and needs no rebuild: it is already researched to this
   standard in trail-3d.js, and its flat top is a declared gap, not a defect.
@@ -254,6 +191,71 @@ above is not paperwork, it is the lock.
 Each run rebuilds one building and adds it here, so the next run does not
 repeat it. A name on this list has a `dc-form-<k>.js` (or the equivalent
 scene file) and has been LOOKED at from more than one angle.
+
+- met exterior, the Fifth Avenue facade (2026-09-05, the landmark routine).
+  The claim the previous run left open is now closed. That run built the met:
+  route so the site's own front door could be LOOKED at for the first time and
+  spent its ceiling doing it; this run inherited its picture and its research
+  and rebuilt the front from them.
+  Published, quoted in the file header so it is not searched a third time:
+  Richard Morris Hunt's Beaux-Arts front opened December 1902; it is "a
+  colossal Roman arch with a tripartite window flanked by massive pairs of
+  freestanding Corinthian columns", "repeated three times across the central
+  block"; "Four pyramids of roughly-hewn limestone" are the remnants of
+  sculpture groups never carved; "Six portrait medallions of Renaissance
+  artists" sit "in the spandrels of the museum's central structure".
+  Sources: en.wikipedia.org/wiki/The_Met_Fifth_Avenue and the museum's history
+  page. The material CONTRADICTION is carried, not smoothed: Wikipedia says
+  limestone, a secondary account says "gleaming Vermont marble", and no
+  authoritative statement was reached.
+  THE ONE NUMBER THAT WAS WRONG AND EXPLAINS THE WHOLE OLD PICTURE: the
+  columns were 2.2 units wide under a 74 unit shaft. That is thirty-four
+  diameters. A Corinthian column is nine to ten including its capital, so the
+  facade rendered as about ten identical hairline sticks in a row and the
+  published phrase "massive pairs" was true only in the comment above them.
+  The shaft is now 55 units over a 6 unit diameter, 9.2, with a one diameter
+  capital, a pedestal under it and an abacus over it. The order, derived, not
+  a look chosen by eye.
+  THE SECOND DERIVATION, the width of the central block: three colossal arches
+  and four pairs of freestanding columns cannot stand in 74 units, so the old
+  pavilion was not Hunt's block, it was a doorcase. The block is the OSM
+  south-east run itself, 148 units centred on where the Great Hall projects,
+  which is as wide as the run allows symmetrically. Everything else follows
+  from those two: arches at 46 unit centres on a 15 unit radius, pairs in the
+  four gaps between them.
+  NOW DRAWN, and none of it was there before: archivolt rings with keystones,
+  a tripartite window in each opening, the six spandrel medallions, a three
+  band entablature with a projecting cornice and a lit soffit, an attic, a
+  rusticated basement course, and on the wing a water table, a string course,
+  a cornice, a parapet and real window openings with reveals instead of
+  scratch lines.
+  WHAT LOOKING CAUGHT, four things, none visible in any count. (1) The six
+  medallions came back INVISIBLE on the first render: placed at the arch
+  haunch they landed exactly behind the column pairs, which is the only place
+  on this facade they could not be seen. (2) The ground shadow existed all
+  along at opacity 0.07 and read as paper, which is why the previous run
+  recorded it as missing; it is 0.16 now and eleven and a half acres stop
+  floating. (3) The skylight banks were drawn on the roof plane with nothing
+  under them and read as three glass planks hung in the sky; each stands on a
+  5 unit curb now, and the curb's own shade is what attaches them. (4) The
+  roof deck was #efe9db against a near white page, so the largest surface in
+  the drawing read as sky; it is the darker roof line tone now.
+  Named gaps, all of them: no published facade height, arch span or rise, no
+  column height or diameter, no bay widths, no attic or entablature height, no
+  step count or staircase width, no medallion, caryatid or pyramid size, and
+  no published length for the Fifth Avenue frontage alone. The four caryatids
+  representing painting, sculpture, architecture and music are published and
+  are NOT drawn, because nothing reached gives their size or position, and an
+  invented figure on a facade is worse than an honest absence.
+  OWED, worst first, and the two adversarial critics did not fit in the 25
+  minute ceiling; the renders at yaw -0.62 pitch 0.34 and yaw -1.15 pitch 0.42
+  are what this build was verified on. (a) The staircase has no cheek walls,
+  so from an oblique angle it fans out as a stack of loose planks beside the
+  building rather than as masonry. (b) The roof is still the largest surface
+  in the model and carries nothing but the three banks. (c) The wings away
+  from this front run are still the flat slabs the previous run reported; they
+  are drawn by shellSolid, not by the facade, and bays there are a separate
+  and larger change.
 
 - constitution, USS Constitution (2026-09-05, the landmark routine). Published
   and quoted in the file header: mast heights fore 198, main 220, mizzen 172.5
