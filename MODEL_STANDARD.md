@@ -953,6 +953,28 @@ scene file) and has been LOOKED at from more than one angle.
 
 ## Researched this run, NOT built, for the next run to pick up
 
+- greek-roman, the Leon Levy and Shelby White Court, Met gallery 162
+  (2026-09-06, the landmark routine). REFUSED, and the negative is reported
+  rather than left for a third run to rediscover.
+  PUBLISHED and reached this run (metmuseum.org press, 2006 and 2007): the
+  court is "a monumental, skylit peristyle for the display of Hellenistic and
+  Roman art with a soaring two-story atrium", inside galleries totalling more
+  than 30,000 square feet, opened 20 April 2007 after a fifteen year project.
+  THE GAP: not one DIMENSION of the court in feet, and no published column
+  count for the peristyle. A square footage for the whole suite of galleries
+  is a programme, not a room, and a peristyle drawn with a guessed column
+  count fails checklist item 1 by definition. Item 7 says heights are TRUE or
+  it is not committed, so it was not committed.
+  WHAT WOULD UNBLOCK IT: the Kevin Roche office's own published drawings, or
+  an architectural review of the 2007 opening in a journal that prints plan
+  dimensions. The Met's collection API, which supplies every other room here,
+  describes OBJECTS and will never carry a room.
+  The remaining object-in-a-box rooms after this run are greek-roman,
+  arms-armor, lehman, grand-stair, euro-paintings and nineteenth-century.
+  arms-armor is the strongest next candidate: the Equestrian Court's four
+  mounted figures are armours, and armours have published dimensions in the
+  API, which is exactly the route that worked twice today.
+
 - moma, the Museum of Modern Art exterior (2026-09-05, the landmark routine).
   CLAIMED at the start of the run, then RELEASED unbuilt, and the claim was
   removed rather than left to block another builder. The reason is the
