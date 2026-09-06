@@ -269,7 +269,12 @@
     /* lehman left this table on 2026-09-06: it is gallery 959 now, an actual
        room. A key that stays here is overwritten by the fallback loop at the
        foot of this file, which runs after MET_ROOMS is built. */
-    "grand-stair":        { kind: "canvas", h: 18.3, w: 10.7, fill: "#7a6a56" }
+    /* grand-stair left this table on 2026-09-06 as well. The plan carries the
+       SAME staircase twice, once as a floor 1 node and once as a floor 2 one,
+       and grandStair() already draws the whole flight from the Great Hall
+       floor to the landing. Drawing it for both nodes is not a duplicate, it
+       is the one stair seen from each end; drawing a flat canvas for the
+       floor 1 node was the error. */
     /* euro-paintings left this table on 2026-09-06: it is gallery 637 now,
        an actual room, and the fallback loop at the foot of this file
        overwrites MET_ROOMS for every key that stays here. */
@@ -1787,6 +1792,7 @@
                       'nineteenth-century': gallery812,
                       'euro-paintings': gallery637,
                       lehman: gallery959,
-                      modern: modern, 'grand-stair-2': grandStair };
+                      modern: modern, 'grand-stair-2': grandStair,
+                      'grand-stair': grandStair };
   Object.keys(LANDMARKS).forEach(function (k) { window.MET_ROOMS[k] = landmark; });
 })();

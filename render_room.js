@@ -304,7 +304,8 @@ const ROOMS = { 'american-court': {x:170,y:230,w:180,h:120},
                 'modern':         {x:60, y:415,w:200,h:105},
                 'grand-stair-2':  {x:510,y:250,w:45, h:70},
                 'euro-paintings': {x:290,y:140,w:195,h:140},
-                'lehman':         {x:60, y:280,w:180,h:105} };
+                'lehman':         {x:60, y:280,w:180,h:105},
+                'grand-stair':    {x:510,y:250,w:45, h:70} };
 const rr = ROOMS[key] || {x:100,y:100,w:150,h:100};
 const room = {x: rr.x*KX, y: rr.y, w: rr.w*KX, h: rr.h, f:1};
 const W = 900, H = 620;
