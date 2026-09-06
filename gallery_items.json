@@ -150,6 +150,100 @@
    "images": [
     "https://commons.wikimedia.org/wiki/Special:FilePath/Hope_Diamond.jpg?width=1100"
    ]
+  },
+  "si-air:A19700102000": {
+   "title": "Apollo 11 Command Module Columbia",
+   "artist": "North American Rockwell",
+   "date": "1969",
+   "museum": "National Air and Space Museum",
+   "city": "Washington",
+   "item_number": "A19700102000",
+   "where": "Destination Moon, gallery 206, second floor",
+   "script": "gallery_scripts/apollo-11-columbia.txt",
+   "teaser": "A three hundred and sixty three foot rocket left Florida and this twelve foot cone came back, and a laser scan in 2016 found the crew's handwriting still inside it.",
+   "minutes": 3,
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Apollo_11_Command_Module.jpg?width=1100"
+   ],
+   "source_url": "https://airandspace.si.edu/collection-objects/command-module-apollo-11/nasm_A19700102000"
+  },
+  "si-nmah:star-spangled-banner": {
+   "title": "The Star-Spangled Banner",
+   "artist": "Mary Pickersgill, with Caroline Pickersgill, two nieces and Grace Wisher",
+   "date": "1813",
+   "museum": "National Museum of American History",
+   "city": "Washington",
+   "item_number": "",
+   "where": "The Star-Spangled Banner chamber, second floor, off the central hall",
+   "script": "gallery_scripts/star-spangled-banner.txt",
+   "teaser": "Count the stars and you get fourteen. The fifteenth was cut off and given away, and nobody today knows who has it.",
+   "minutes": 4,
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Star_Spangled_Banner_Flag_on_display_at_the_Smithsonian's_National_Museum_of_History_and_Technology,_around_1964.jpg?width=1100"
+   ],
+   "source_url": "https://americanhistory.si.edu/explore/exhibitions/star-spangled-banner"
+  },
+  "nga:1967.6.1.a": {
+   "title": "Ginevra de' Benci",
+   "artist": "Leonardo da Vinci",
+   "date": "c. 1474/1478",
+   "museum": "National Gallery of Art",
+   "city": "Washington",
+   "item_number": "1967.6.1.a",
+   "where": "West Building, main floor, the Italian Renaissance rooms",
+   "script": "gallery_scripts/ginevra-de-benci.txt",
+   "teaser": "The only Leonardo on public view in the Americas, and somebody sawed the bottom off it. Her hands are gone.",
+   "minutes": 3,
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Leonardo%20da%20Vinci%20-%20Ginevra%20de%27%20Benci%20-%20Google%20Art%20Project.jpg?width=1100"
+   ],
+   "source_url": "https://www.nga.gov/artworks/1210-ginevra-de-benci-obverse"
+  },
+  "si-nmaahc:2009.50.39": {
+   "title": "Shawl Given to Harriet Tubman by Queen Victoria",
+   "artist": "Unrecorded maker, England",
+   "date": "about 1897",
+   "museum": "National Museum of African American History and Culture",
+   "city": "Washington",
+   "item_number": "2009.50.39",
+   "where": "Slavery and Freedom, the history galleries, Concourse level 3, when it is on view",
+   "script": "gallery_scripts/tubman-shawl.txt",
+   "teaser": "A queen invited her to the Jubilee, she did not go, and the lace came instead."
+  },
+  "si-castle:smithson-crypt": {
+   "title": "The Crypt of James Smithson",
+   "artist": "Monument carved in Italy, unrecorded maker",
+   "date": "1829, installed here 1905",
+   "museum": "Smithsonian Institution Building (the Castle)",
+   "city": "Washington",
+   "item_number": "smithson-crypt",
+   "where": "The small room immediately left of the north entrance, behind the iron gate",
+   "script": "gallery_scripts/smithson-crypt.txt",
+   "teaser": "He never once set foot in America, left it his whole fortune with no explanation, and the gate over his tomb is the fence from his grave in Genoa."
+  },
+  "si-hmsg:picketts-charge": {
+   "title": "Pickett's Charge",
+   "artist": "Mark Bradford",
+   "date": "2017",
+   "museum": "Hirshhorn Museum and Sculpture Garden",
+   "city": "Washington",
+   "item_number": "picketts-charge",
+   "where": "Third floor, wrapping the inner ring",
+   "script": "gallery_scripts/picketts-charge.txt",
+   "teaser": "Eight canvases, nearly four hundred feet, wrapped around a round wall: an 1883 Gettysburg cyclorama buried under paper and then torn back open.",
+   "minutes": 3
+  },
+  "si-nmai:nnavm": {
+   "title": "National Native American Veterans Memorial, Warriors' Circle of Honor",
+   "artist": "Harvey Pratt (Cheyenne and Arapaho)",
+   "date": "2020",
+   "museum": "National Museum of the American Indian",
+   "city": "Washington",
+   "item_number": "nnavm",
+   "where": "Outdoors on the museum grounds, at the end of the curving stone path through the trees. Open at all hours, no ticket.",
+   "script": "gallery_scripts/native-veterans-memorial.txt",
+   "teaser": "Congress approved it in 1994 and nobody built it for twenty six years, and the cloths tied to the four lances were put there by visitors, who are invited to add one.",
+   "minutes": 3
   }
  }
 }

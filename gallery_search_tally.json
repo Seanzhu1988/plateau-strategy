@@ -9,27 +9,27 @@
 },
 "starry night": {
 "q": "starry night",
-"count": 4,
+"count": 6,
 "first": 1788618838,
-"hits": 4,
+"hits": 6,
 "misses": 0,
-"last": 1788628001
+"last": 1788713317
 },
 "wright flyer": {
 "q": "wright flyer",
-"count": 4,
+"count": 5,
 "first": 1788618840,
-"hits": 4,
+"hits": 5,
 "misses": 0,
-"last": 1788630462
+"last": 1788706068
 },
 "hope diamond": {
 "q": "hope diamond",
-"count": 8,
+"count": 10,
 "first": 1788618843,
-"hits": 8,
+"hits": 10,
 "misses": 0,
-"last": 1788667522
+"last": 1788727617
 },
 "nighthawks": {
 "q": "nighthawks",
@@ -70,5 +70,165 @@
 "hits": 1,
 "misses": 0,
 "last": 1788644837
+},
+"columbia": {
+"q": "Columbia",
+"count": 1,
+"first": 1788706046,
+"hits": 1,
+"misses": 0,
+"last": 1788706046
+},
+"apollo 11 command module columbia": {
+"q": "Apollo 11 Command Module Columbia",
+"count": 1,
+"first": 1788706054,
+"hits": 1,
+"misses": 0,
+"last": 1788706054
+},
+"columbia command module": {
+"q": "Columbia command module",
+"count": 1,
+"first": 1788706056,
+"hits": 1,
+"misses": 0,
+"last": 1788706056
+},
+"test": {
+"q": "test",
+"count": 2,
+"first": 1788713250,
+"hits": 2,
+"misses": 0,
+"last": 1788731270
+},
+"ginevra de' benci": {
+"q": "Ginevra de' Benci",
+"count": 3,
+"first": 1788713271,
+"hits": 3,
+"misses": 0,
+"last": 1788713345
+},
+"ginevra benci": {
+"q": "Ginevra Benci",
+"count": 1,
+"first": 1788713297,
+"hits": 1,
+"misses": 0,
+"last": 1788713297
+},
+"shawl given to harriet tubman by queen victoria": {
+"q": "Shawl Given to Harriet Tubman by Queen Victoria",
+"count": 1,
+"first": 1788724035,
+"hits": 1,
+"misses": 0,
+"last": 1788724035
+},
+"harriet tubman shawl": {
+"q": "Harriet Tubman shawl",
+"count": 1,
+"first": 1788724042,
+"hits": 1,
+"misses": 0,
+"last": 1788724042
+},
+"tubman": {
+"q": "Tubman",
+"count": 1,
+"first": 1788724044,
+"hits": 1,
+"misses": 0,
+"last": 1788724044
+},
+"harriet tubman": {
+"q": "Harriet Tubman",
+"count": 1,
+"first": 1788724047,
+"hits": 1,
+"misses": 0,
+"last": 1788724047
+},
+"smithson crypt": {
+"q": "Smithson crypt",
+"count": 1,
+"first": 1788727602,
+"hits": 1,
+"misses": 0,
+"last": 1788727602
+},
+"james smithson": {
+"q": "James Smithson",
+"count": 1,
+"first": 1788727610,
+"hits": 1,
+"misses": 0,
+"last": 1788727610
+},
+"smithsonian castle": {
+"q": "Smithsonian Castle",
+"count": 1,
+"first": 1788727613,
+"hits": 1,
+"misses": 0,
+"last": 1788727613
+},
+"pickett's charge": {
+"q": "Pickett's Charge",
+"count": 1,
+"first": 1788731277,
+"hits": 1,
+"misses": 0,
+"last": 1788731277
+},
+"hirshhorn": {
+"q": "Hirshhorn",
+"count": 1,
+"first": 1788731292,
+"hits": 1,
+"misses": 0,
+"last": 1788731292
+},
+"mark bradford": {
+"q": "Mark Bradford",
+"count": 1,
+"first": 1788731296,
+"hits": 1,
+"misses": 0,
+"last": 1788731296
+},
+"warriors circle of honor": {
+"q": "Warriors Circle of Honor",
+"count": 2,
+"first": 1788734829,
+"hits": 2,
+"misses": 0,
+"last": 1788734853
+},
+"national native american veterans memorial": {
+"q": "National Native American Veterans Memorial",
+"count": 2,
+"first": 1788734836,
+"hits": 2,
+"misses": 0,
+"last": 1788734853
+},
+"native veterans memorial": {
+"q": "native veterans memorial",
+"count": 2,
+"first": 1788734839,
+"hits": 0,
+"misses": 2,
+"last": 1788734853
+},
+"native american veterans memorial warriors circle": {
+"q": "Native American Veterans Memorial Warriors Circle",
+"count": 1,
+"first": 1788734864,
+"hits": 1,
+"misses": 0,
+"last": 1788734864
 }
 }

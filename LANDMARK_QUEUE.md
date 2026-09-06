@@ -1612,3 +1612,78 @@ relation 976514, walked as one ordered path rather than summed over its 156
 members: if it comes out near 2.5 the length disagreement above is explained
 rather than merely stated. Use the kumi.systems Overpass mirror or the plain
 OSM relation API; overpass-api.de answers 406.
+
+## 2026-09-06, the landmark routine: three routes closed, nothing built
+
+A run that builds nothing is worth recording when it closes routes, and this
+one closed three that two earlier runs had each left open as "the strongest
+remaining lead". Nothing was invented and no model was committed.
+
+**MoMA: LP-2420 IS NOT MoMA. It is the Japan Society headquarters, and the
+lead is dead, not merely unreadable.** Two runs left
+`s-media.nyc.gov/agencies/lpc/lp/2420.pdf` recorded as the one document that
+would unblock the MoMA rebuild, the second concluding it was "blocked on a
+TOOL, not a source" and that "a run that installs poppler, or a session with a
+PDF reader, unblocks MoMA in one step". Both halves of that are wrong.
+
+  1. THE PDF IS READABLE HERE ALREADY. `pypdf` is installed, version 6.14.2,
+     and reads that file in one line. `curl -sL -o /tmp/x.pdf <url>` then
+     `pypdf.PdfReader(...).pages[i].extract_text()`. No poppler, no pdftoppm,
+     no Quartz. This is the same route the Paul Revere nomination used, and
+     the earlier note simply did not try it on this file. Any PDF the routine
+     wants read from now on should go through pypdf FIRST.
+  2. AND WHAT IT SAYS IS: "LP-2420 ... JAPAN SOCIETY HEADQUARTERS, 333 East
+     47th Street ... Built 1969-71, Junzo Yoshimura and George G. Shimamoto".
+     Eighteen pages about a different building a mile away.
+
+  So the guessed-reference-number trap this file already records for NRHP
+  refnums holds for LPC numbers too, and in the same shape: a wrong number
+  returns 200, a real 3.1MB PDF, and a complete valid document for the wrong
+  building. The number appeared in search results next to a MoMA query and
+  was never verified against the NAME on page one. Read the name first, every
+  time, on every document class.
+
+  MoMA therefore remains blocked with no dimension in feet from any route, and
+  route (b) should be struck rather than retried. What is left is the 1939
+  press release in MoMA's own archive at moma.org/documents, which route (e)
+  named and nobody has opened.
+
+**Wikimedia will not serve an arbitrary thumbnail width, and it fails as a
+web page rather than as an error.** Requests to
+`upload.wikimedia.org/.../1600px-<file>` and `.../800px-<file>` both returned
+a 2KB HTML "Wikimedia Error" body saying "Use thumbnail sizes listed on
+https://w.wiki/GHai". `1280px` works. Two consequences for any run that
+downloads a photograph to count a feature off it:
+  - ask the API for `iiurlwidth` and use the width it hands back, or use 1280;
+  - run `file -b <name>.jpg` before reading it, because a downloaded error
+    page has a .jpg name, a plausible size, and reads as an image request that
+    silently returned prose. A User-Agent with a contact address is also worth
+    sending; it is Wikimedia policy, though it was not what these rejections
+    were about.
+
+**american: the pier count is not on Wikimedia Commons either, so that is a
+third closed route.** The whole `Category:National Museum of American History`
+was listed, 52 files, and it contains NO straight-on view of the Mall facade.
+Two candidates were downloaded and looked at, and both are worth naming so a
+later run does not pay for them: `Museum of American History edit.jpg` is a
+flowerbed with a sliver of wall, and `National Museum of American History -
+Washington DC - USA - panoramio.jpg` is MISLABELLED, it is a Beaux-Arts
+building with arched windows and rusticated stone and is not this museum at
+all. The Commons category is not a source for this count.
+
+  ONE THING THE PHOTOGRAPHS DID SETTLE, and it is worth having when the count
+  finally arrives. `NMAH facade in afternoon sunlight .jpg`, an oblique view
+  of the west end, confirms the SAH prose as geometry: the marble piers are
+  FREE STANDING FINS that cast their own shadows onto the glazed wall behind
+  them, the glazing between them is a deep dark slot rather than a window in a
+  wall, and the recessed attic storey above the pier line reads clearly as a
+  set-back band under a plain parapet. So when the count is found, the piers
+  must be drawn as separate slabs standing proud of a dark recessed wall
+  plane, not as pilasters on it. That is checklist items 1 and 2 together, and
+  it is now settled by looking rather than by prose.
+
+  Routes still open for the count, in the order a later run should try them:
+  the NCPC west facade PDF at file 7156, which pypdf can now be pointed at and
+  which nobody has actually run pypdf against; the HABS/HAER collection at
+  loc.gov, which the `curl -A` trick opens; and a rectified frontal photograph
+  from somewhere other than Commons.
