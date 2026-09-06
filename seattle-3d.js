@@ -29,6 +29,46 @@
      three PAIRS of steel legs ..................... Docomomo WEWA
      36 in welded beam columns ..................... ASCE, Civil Engineering
 
+   REBUILT TO MODEL_STANDARD.md, 2026-09-05 [SEAN: "can you build a realistic
+   spaceneedle"]. Not one published dimension moved. What changed is the
+   drawing, and every change came from looking at it:
+
+     the legs      at the published 3 ft they were arithmetically right and
+                   rendered as hairlines, so the picture was a fat core with
+                   six threads beside it, which is the exact INVERSION of the
+                   style: STYLES.md says the legs are the structure and must
+                   read as line. Their width is unchanged, because it is
+                   published. They carry their own edge stroke now.
+     the shadow    checklist 6, and it was missing altogether. Projected
+                   honestly at first, base and saucer thrown clear by 520 ft,
+                   and it came back as a grey blob on the grass reading as a
+                   pond. This renderer has no penumbra and no horizon, so the
+                   footprint convention every other model here uses is used
+                   here too, and named as the drawing device it is.
+     the roof      24 segments each carrying a full edge stroke made a fanned
+                   parasol, all ribs and no surface. The strokes came off.
+     the halo      drawn at a radius of 24 where the roof surface at that
+                   height is already 34, so it was BURIED inside its own cone.
+                   Invisible however carefully a comment describes it, which is
+                   checklist 1 failing quietly. Its radius is taken from the
+                   roof profile now.
+     added         the three elevators, which are the other thing a visitor
+                   names after the shape; footings under the legs, because six
+                   columns cannot end in a painted square; the overhanging eave
+                   and its fascia, without which a saucer meeting its roof at
+                   one line reads as a lampshade; the deck's glass guard; and
+                   the aircraft beacon, the only thing up there that is not
+                   white.
+
+   COLOUR IS A RESEARCH QUESTION HERE AND IS ANSWERED AS A GAP. The published
+   1962 scheme is Orbital Olive body, Astronaut White legs, Re-entry Red
+   saucer, Galaxy Gold roof (Wikipedia). None of it is what stands there now.
+   The gold roof returned for the fiftieth in April 2012 and was gold for SIX
+   MONTHS before going back to Astronaut White (NPR, KING5), and again for the
+   sixtieth in 2022. No source reached establishes today's colour, so this
+   draws the everyday tower in pale white steel and records the names rather
+   than painting a guess on the most recognisable roof in Seattle.
+
    THE ONE NUMBER NOBODY PUBLISHES is the width AT the waist. The height of
    the waist is published and both widths it sits between are published, so
    the leg curve is drawn THROUGH the published level and its narrowest width
@@ -90,12 +130,24 @@
   }
 
   function spaceNeedle(ctx) {
-    var STEEL = "#b9b3a6", STEEL_EDGE = "#7e796f";
-    var PALE = "#d8d2c4", GLASS = "#8fa6ae", GLASS_EDGE = "#5d7079";
-    var PLAZA = "#ddd8cc", GRASS = "#c2c9b4", ORANGE = "#c98a4b";
+    /* COLOUR, and it is a research question rather than a taste one. The
+       published 1962 scheme is "Orbital Olive paint for the body, Astronaut
+       White for the legs, Re-entry Red for the saucer, and Galaxy Gold for the
+       roof" (Wikipedia). None of that is what stands there now. The gold roof
+       came back for the fiftieth in April 2012 and was gold for SIX MONTHS
+       before returning to Astronaut White (NPR, KING5), and again for the
+       sixtieth in 2022. No source reached this run establishes today's colour,
+       so this model draws the everyday tower: pale white steel throughout,
+       with the published names recorded here rather than a guess painted on.
+       That is a NAMED GAP, not a decision. */
+    var WHITE = "#e4e0d6", WHITE_D = "#cdc8bb", STEEL_EDGE = "#8a8478";
+    var PALE = "#d8d3c6", GLASS = "#8fa6ae", GLASS_EDGE = "#5d7079";
+    var DARK = "#6d6a63";
+    var PLAZA = "#ddd8cc", GRASS = "#c2c9b4", SHADOW = "#aab09c";
     var cx = 0, cy = 0, out = [];
 
-    /* the published profile */
+    /* the published profile, unchanged: every one of these carries a source
+       in this file's header and none of them moved in this rebuild */
     var R_BASE = 51;      /* 102 ft diameter at the base of the legs */
     var Z_WAIST = 373;    /* the published waist LEVEL */
     var Z_REST = 500;     /* restaurant as originally built */
@@ -124,61 +176,166 @@
        shows. Drawing the pit would be drawing something nobody can see. */
     out.push(pad(ctx, cx, cy, 120, 120, 1, "#cfc8b7", "#a9a394", -0.98e9));
 
+    /* CHECKLIST 6, and it was missing entirely: a ground shadow. Nothing in
+       this renderer casts light, so a 605 ft tower without one floats on its
+       own plaza.
+       WHAT LOOKING CAUGHT: the first version projected it honestly, the base
+       under the legs and the saucer thrown clear by its own 520 ft, and the
+       picture came back with a grey blob sitting on the grass twenty yards
+       from the tower, joined to nothing, reading as a pond. A physically
+       projected shadow needs a penumbra and a horizon to be legible, and this
+       renderer has neither. Every other model on this site draws the footprint
+       instead, so this one does too: one shape at the legs' own 102 ft spread,
+       pulled a little toward the light's far side, and nothing else. It is a
+       drawing device and is named as one. */
+    (function () {
+      var q = [], N = 24;
+      for (var i = 0; i < N; i++) {
+        var a = (i / N) * Math.PI * 2;
+        q.push(ctx.project(cx + R_BASE * 1.05 * Math.cos(a) + 14,
+                           cy + R_BASE * 1.05 * Math.sin(a) + 9, 0.9));
+      }
+      out.push({ svg: ctx.poly(q, SHADOW, null, 0), depth: -0.97e9 });
+    })();
+
     /* the core. Narrower than the waist, because the FIRST render drew it as
        wide as the waist and the picture came back a fat trunk with six guy
        wires hanging off it: the hourglass was in the numbers and not in the
        image. It claims no dimension of its own, being a fraction of the one
        unpublished quantity. */
     out = out.concat(frustum(ctx, cx, cy, R_WAIST * 0.55, 1, R_WAIST * 0.5, Z_REST,
-                             12, "#a8a294", "#79746a"));
+                             12, "#b3ada0", "#79746a"));
 
-    /* three PAIRS of legs, 36 in columns. Not culled: a slender member is
-       visible from every side, and culling the far ones halves the tower. */
-    var COL = 3, GAP = 0.13, STEPS = 22;
-    for (var p = 0; p < 3; p++) {
-      for (var s = -1; s <= 1; s += 2) {
-        var ang = p * (Math.PI * 2 / 3) + s * GAP;
+    /* THE THREE ELEVATORS, which are the other thing a visitor names after the
+       shape: they run up the OUTSIDE of the core in glass cars, and from the
+       ground they read as three bright vertical lines on an otherwise plain
+       shaft. Published: three of them, forty one seconds to the top, ten miles
+       an hour coming down. Their width is not published and is drawn as a
+       fraction of the core, marked ASSUMED. */
+    (function () {
+      for (var e = 0; e < 3; e++) {
+        var ang = e * (Math.PI * 2 / 3) + 0.55;
+        var nx = Math.cos(ang), ny = Math.sin(ang);
+        if (!ctx.faceVisible(nx, ny)) continue;
+        var STEPS = 14, w = 0.30;    /* ASSUMED: 0.30 rad of the core's arc */
         for (var k = 0; k < STEPS; k++) {
-          var z0 = 1 + (Z_REST - 1) * (k / STEPS);
-          var z1 = 1 + (Z_REST - 1) * ((k + 1) / STEPS);
-          var r0 = legR(z0), r1 = legR(z1);
-          var half = COL / 2;
-          var t0 = Math.atan2(half, Math.max(6, r0)), t1 = Math.atan2(half, Math.max(6, r1));
-          var q = [ctx.project(r0 * Math.cos(ang - t0), r0 * Math.sin(ang - t0), z0),
-                   ctx.project(r0 * Math.cos(ang + t0), r0 * Math.sin(ang + t0), z0),
-                   ctx.project(r1 * Math.cos(ang + t1), r1 * Math.sin(ang + t1), z1),
-                   ctx.project(r1 * Math.cos(ang - t1), r1 * Math.sin(ang - t1), z1)];
-          out.push({ svg: ctx.poly(q, ctx.shade(STEEL, Math.cos(ang), Math.sin(ang), 0.1),
-                                   STEEL_EDGE, 0.4),
-                     depth: depthOf(q) });
+          var z0 = 6 + (Z_REST - 30) * (k / STEPS);
+          var z1 = 6 + (Z_REST - 30) * ((k + 1) / STEPS);
+          var r0 = R_WAIST * (0.55 + (0.5 - 0.55) * (z0 / Z_REST)) + 0.6;
+          var r1 = R_WAIST * (0.55 + (0.5 - 0.55) * (z1 / Z_REST)) + 0.6;
+          var q = [ctx.project(r0 * Math.cos(ang - w), r0 * Math.sin(ang - w), z0),
+                   ctx.project(r0 * Math.cos(ang + w), r0 * Math.sin(ang + w), z0),
+                   ctx.project(r1 * Math.cos(ang + w), r1 * Math.sin(ang + w), z1),
+                   ctx.project(r1 * Math.cos(ang - w), r1 * Math.sin(ang - w), z1)];
+          out.push({ svg: ctx.poly(q, ctx.shade(GLASS, nx, ny, 0.1), GLASS_EDGE, 0.35),
+                     depth: depthOf(q) + 0.5 });
         }
       }
+    })();
+
+    /* three PAIRS of legs, 36 in columns. Not culled: a slender member is
+       visible from every side, and culling the far ones halves the tower.
+       WHAT LOOKING CAUGHT: at the published 3 ft the legs are arithmetically
+       right and rendered as hairlines, so the picture came back a fat core
+       with six threads beside it, which is the exact inversion of the style.
+       STYLES.md is explicit that the legs ARE the structure and must "read as
+       line". The width is NOT changed, because it is published. What changed
+       is that each leg now carries its own edge stroke at full contrast and a
+       darker inboard face, so a 3 ft member still registers at 800 pixels the
+       way a steel column registers against the sky. */
+    var COL = 3, GAP = 0.13, STEPS = 26;
+    for (var p = 0; p < 3; p++) {
+      for (var sgn = -1; sgn <= 1; sgn += 2) {
+        var ang2 = p * (Math.PI * 2 / 3) + sgn * GAP;
+        for (var k2 = 0; k2 < STEPS; k2++) {
+          var z0b = 1 + (Z_REST - 1) * (k2 / STEPS);
+          var z1b = 1 + (Z_REST - 1) * ((k2 + 1) / STEPS);
+          var r0b = legR(z0b), r1b = legR(z1b);
+          var half = COL / 2;
+          var t0 = Math.atan2(half, Math.max(6, r0b)), t1 = Math.atan2(half, Math.max(6, r1b));
+          var q2 = [ctx.project(r0b * Math.cos(ang2 - t0), r0b * Math.sin(ang2 - t0), z0b),
+                    ctx.project(r0b * Math.cos(ang2 + t0), r0b * Math.sin(ang2 + t0), z0b),
+                    ctx.project(r1b * Math.cos(ang2 + t1), r1b * Math.sin(ang2 + t1), z1b),
+                    ctx.project(r1b * Math.cos(ang2 - t1), r1b * Math.sin(ang2 - t1), z1b)];
+          out.push({ svg: ctx.poly(q2, ctx.shade(WHITE, Math.cos(ang2), Math.sin(ang2), 0.1),
+                                   STEEL_EDGE, 0.9),
+                     depth: depthOf(q2) + 1 });
+        }
+      }
+    }
+
+    /* the leg footings. The legs land on the published 120 ft foundation and
+       something has to receive them, or six columns end in a painted square. */
+    for (var f = 0; f < 3; f++) {
+      var fa = f * (Math.PI * 2 / 3);
+      var fx = R_BASE * Math.cos(fa), fy = R_BASE * Math.sin(fa);
+      out = out.concat(frustum(ctx, fx, fy, 9, 1, 7, 9, 10, WHITE_D, STEEL_EDGE));
+      out.push(disc(ctx, fx, fy, 7, 9, 10, WHITE_D, STEEL_EDGE, depthOf(
+        [ctx.project(fx, fy, 9)]) + 2));
     }
 
     /* the top house. The disc is wider than anything below it and overhangs
        on every side: that is the tell, and it is why the legs stop at the
        flare and the saucer carries on past them. */
     out = out.concat(frustum(ctx, cx, cy, R_FLARE, 490, R_TOP, Z_REST,
-                             24, PALE, "#a49c8c"));            /* the cone under the saucer */
+                             28, PALE, null));                 /* the cone under the saucer */
     out = out.concat(frustum(ctx, cx, cy, R_TOP, Z_REST, R_TOP, 518,
                              24, GLASS, GLASS_EDGE));          /* restaurant glass, 500 to 518 */
-    out = out.concat(frustum(ctx, cx, cy, R_TOP, 518, R_TOP - 3, Z_DECK,
-                             24, ORANGE, "#8f5f31"));          /* the deck rim at 520 */
-    out.push(disc(ctx, cx, cy, R_TOP - 3, Z_DECK, 24, "#cdc6b6", "#a49c8c", -1e3));
+    /* THE EAVE. A saucer that meets its roof at a single line reads as a
+       lampshade. The real top house has a deep overhanging rim standing proud
+       of the glass under it, and it is the shadow line under that rim that
+       makes the thing read as a disc held in the air. Its projection is not
+       published and is drawn at 4 ft, ASSUMED. */
+    out = out.concat(frustum(ctx, cx, cy, R_TOP, 518, R_TOP + 4, Z_DECK,
+                             24, WHITE, STEEL_EDGE));
+    out = out.concat(frustum(ctx, cx, cy, R_TOP + 4, Z_DECK, R_TOP + 4, Z_DECK + 3,
+                             24, WHITE_D, STEEL_EDGE));        /* the rim's own fascia */
+    /* the observation deck's guard, the floor to ceiling glass the 2018 work
+       put in, drawn as a low glazed band standing on the rim */
+    out = out.concat(frustum(ctx, cx, cy, R_TOP + 1, Z_DECK + 3, R_TOP - 1, Z_DECK + 11,
+                             24, GLASS, GLASS_EDGE));
+    out.push(disc(ctx, cx, cy, R_TOP - 1, Z_DECK + 11, 24, PALE, "#a49c8c", -1e3));
     /* the roof. Shallow. The first render gave it 36 ft of rise over 40 ft of
        run and the saucer came back a mushroom, which is a different building
        and a different decade. 138 ft across against 50 ft tall is the ratio a
        photograph shows. */
-    out = out.concat(frustum(ctx, cx, cy, R_TOP - 6, Z_DECK, 20, 540,
-                             24, PALE, "#a49c8c"));
-    out.push(disc(ctx, cx, cy, 20, 540, 24, "#e0dacb", "#a49c8c", -0.9e3));
+    /* WHAT LOOKING CAUGHT, second thing: with every one of its 24 segments
+       carrying a full edge stroke the roof came back as a fanned parasol, all
+       ribs and no surface. A cone is one surface, and the segments are the
+       renderer's way of curving it, not something the building has. The
+       strokes come off and the shading alone does the curving. */
+    out = out.concat(frustum(ctx, cx, cy, R_TOP - 1, Z_DECK + 11, 20, 552,
+                             28, WHITE, null));
+    /* THE HALO: the ring near the top of the roof, which is the one piece of
+       the profile that stops it being a plain cone. Its size is not published
+       and is drawn as a band standing slightly proud of the roof, ASSUMED.
+       WHAT LOOKING CAUGHT: drawn first at a radius of 24 it was BURIED, because
+       the roof surface at that height is already 34 ft out. A ring inside its
+       own cone is invisible however carefully it is described in a comment,
+       which is checklist item 1 failing quietly. Its radius is now taken FROM
+       the roof profile at that height and pushed 1.5 ft past it. */
+    (function () {
+      var zA = 543, zB = 547;
+      function roofR(z) {   /* the cone from R_TOP-1 at the deck to 20 at 552 */
+        var t = (z - (Z_DECK + 11)) / (552 - (Z_DECK + 11));
+        return (R_TOP - 1) + (20 - (R_TOP - 1)) * Math.min(1, Math.max(0, t));
+      }
+      var rA = roofR(zA) + 1.5, rB = roofR(zB) + 1.5;
+      out = out.concat(frustum(ctx, cx, cy, rA, zA, rB, zB, 28, WHITE_D, STEEL_EDGE));
+    })();
+    out.push(disc(ctx, cx, cy, 20, 552, 28, "#eae5d8", "#a49c8c", -0.9e3));
 
     /* the spire: decoration, not a mast. Explicit largest depth, because it
        is the topmost element, nothing on this model can occlude it, and a
        roof cap sorted on its own near rim would otherwise bury it. */
-    var sp = frustum(ctx, cx, cy, 7, 540, 1.5, Z_TIP, 10, "#cfc8b7", "#8d867a");
+    var sp = frustum(ctx, cx, cy, 4.5, 552, 1.1, Z_TIP - 8, 10, WHITE, "#8d867a");
     for (var i = 0; i < sp.length; i++) { sp[i].depth = 1e6 + i; }
     out = out.concat(sp);
+    /* the aircraft warning beacon at the tip, which is the only thing up
+       there that is not white */
+    var be = frustum(ctx, cx, cy, 2.2, Z_TIP - 8, 1.2, Z_TIP, 8, "#b4544a", "#7d3a33");
+    for (var j2 = 0; j2 < be.length; j2++) { be[j2].depth = 1.1e6 + j2; }
+    out = out.concat(be);
     return out;
   }
 

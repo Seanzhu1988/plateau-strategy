@@ -165,6 +165,7 @@ queue instead. Remove a line the moment its work lands or is abandoned.
 
 After these: Boston, the nine Freedom Trail buildings, in batches.
 
+
 - met exterior, the Fifth Avenue facade. CLAIMED 2026-09-05 by the landmark
   routine and STILL OPEN: this run built the tool to see it with and spent its
   ceiling doing that, so the defect list below is verified and the rebuild is
@@ -382,6 +383,32 @@ scene file) and has been LOOKED at from more than one angle.
   House roof is the largest surface in that model and carries nothing; no
   source reached publishes dormers or plant, so it is flat.
 - capitol, lincoln, jefferson, monument (2026-09-03, the four heroes)
+- space-needle, Seattle (2026-09-05). The city Sean actually sells tours in,
+  and the routine's own queue calls it the one that could sell a tour. The
+  research was already done and sourced in seattle-3d.js: 605 ft to the tip,
+  deck at 520, top floor 518, restaurant 500, 138 ft across the top, a 120 ft
+  square foundation 30 ft deep, 102 ft at the base of the legs, the waist at
+  373 ft, three PAIRS of legs in 36 in welded columns. NOT ONE OF THOSE MOVED.
+  What was wrong was the picture, and it was wrong in the way this file keeps
+  describing: the legs, drawn at their published 3 ft, rendered as hairlines
+  beside a core that read as a trunk, which INVERTS the style's own tell that
+  the legs are the structure. The fix was contrast, not a changed dimension.
+  WHAT ELSE LOOKING CAUGHT: no ground shadow at all; then a physically
+  projected one that read as a pond on the lawn, replaced by the footprint
+  convention the rest of the site uses; a roof whose 24 segment edges made it
+  a fanned parasol; and a halo ring drawn at radius 24 where its own roof is
+  already 34 ft out, so it was buried inside the cone and invisible however
+  carefully the comment described it. Added: the three elevators, leg
+  footings, the overhanging eave and fascia, the deck's glass guard, the
+  aircraft beacon.
+  COLOUR HANDLED AS A GAP RATHER THAN A GUESS: the 1962 names are published
+  (Orbital Olive, Astronaut White, Re-entry Red, Galaxy Gold) and none of them
+  is today's tower. Gold came back for six months in 2012 and again in 2022,
+  and the roof returns to Astronaut White. No source reached gives today's
+  colour, so it is drawn white and the history is in the header.
+  Reachable, which is the other half: the tours page already drew it, and it
+  is now in the Destination Book's model map with a thumbnail, so searching
+  "space needle" shows the building and opens the turnable model.
 - old-state-house and paul-revere (2026-09-05, by the landmark routine;
   reviewed, corrected and committed by a live session, which is the pass the
   routine's own 25 minute ceiling can never fit). Both were the boxes the

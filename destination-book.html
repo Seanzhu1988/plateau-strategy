@@ -539,7 +539,8 @@
         'bunker hill': ['bunker-hill', 'trail', 'bunker-hill'],
         'paul revere house': ['paul-revere', 'trail', 'paul-revere'],
         'brooklyn bridge': ['brooklyn-bridge', 'nyc', 'bridge'],
-        'empire state': ['empire-state', 'nyc', 'empire']
+        'empire state': ['empire-state', 'nyc', 'empire'],
+        'space needle': ['space-needle', 'seattle', 'space-needle']
     };
     function modelOf(e) {
         const n = String(e.name || '').toLowerCase();
@@ -581,14 +582,20 @@
         return _need[src];
     }
     function loadFamily(fam) {
-        const base = fam === 'nyc' ? '/nyc-3d.js' : '/trail-3d.js';
+        const base = fam === 'nyc' ? '/nyc-3d.js'
+                   : fam === 'seattle' ? '/seattle-3d.js' : '/trail-3d.js';
         return loadOnce('/styles-3d.js').then(function () { return loadOnce(base); })
-            .then(function () { return fetch('/api/forms/' + fam).then(function (r) { return r.json(); }); })
-            .then(function (d) {
-                const names = (d && d.forms) || [];
-                return Promise.all(names.map(function (n) {
-                    return loadOnce('/' + fam + '-form-' + n + '.js').catch(function () {});
-                }));
+            .then(function () {
+                /* Seattle has no form files: its scenes live in the one script,
+                   so there is no list to fetch and nothing more to load. */
+                if (fam === 'seattle') return null;
+                return fetch('/api/forms/' + fam).then(function (r) { return r.json(); })
+                    .then(function (d) {
+                        const names = (d && d.forms) || [];
+                        return Promise.all(names.map(function (n) {
+                            return loadOnce('/' + fam + '-form-' + n + '.js').catch(function () {});
+                        }));
+                    });
             });
     }
     /* A model that has more than one framing says so. [SEAN: "can you also add
@@ -661,6 +668,8 @@
             if (fam === 'nyc') {
                 m = key === 'bridge' ? window.NYC3D.bridge(host, { view: 'tower' })
                                      : window.NYC3D.empire(host);
+            } else if (fam === 'seattle') {
+                m = window.SEATTLE3D.mount(host, key);
             } else {
                 m = window.TRAIL3D.mount(host, key);
             }

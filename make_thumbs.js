@@ -20,6 +20,7 @@ require("/Users/xiaojunzhu/Claude/worktrees/site/styles-3d.js");
 require("/Users/xiaojunzhu/Claude/worktrees/site/met-rooms.js");
 require("/Users/xiaojunzhu/Claude/worktrees/site/trail-3d.js");
 require("/Users/xiaojunzhu/Claude/worktrees/site/nyc-3d.js");
+require("/Users/xiaojunzhu/Claude/worktrees/site/seattle-3d.js");
 const fs = require("fs");
 const path = require("path");
 /* THE REBUILT MODELS. Without these lines every thumbnail is drawn from the
@@ -178,6 +179,10 @@ const JOBS = [
   ["bunker-hill",     () => window.TRAIL3D.scene("bunker-hill"),    -0.62, 0.26],
   ["paul-revere",     () => window.TRAIL3D.scene("paul-revere"),    -0.62, 0.30],
   ["old-state-house", () => window.TRAIL3D.scene("old-state-house"), -0.62, 0.30],
+  /* Seattle speaks the same pure-context contract as the trail, so it goes
+     through the same builder. The city Sean actually sells tours in had no
+     picture in the book at all. */
+  ["space-needle",    () => window.SEATTLE3D.scenes["space-needle"],  -0.62, 0.16],
 ];
 
 /* The two New York landmarks, through their own renderer. */
