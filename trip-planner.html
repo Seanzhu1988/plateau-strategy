@@ -98,6 +98,20 @@
                room now, where a half column gave it 98. Conditional on being the
                ODD one out, so adding a field cannot leave a stray full width row. */
             .controls .field:last-child:nth-child(odd) { grid-column: 1 / -1; }
+            /* A row whose widest menu entry cannot survive a half column stops
+               being two columns at all. The rule above hands the WHOLE row to
+               whichever field happens to be last, which on the State, County
+               and City row is exactly backwards: City needs 69px and got 290,
+               while State needs 250px for "Kuyavian-Pomeranian Voivodeship"
+               and County 125px for "New York County" and both got 114px of
+               text room. Measured at 375px before this: the default view read
+               "New York Cour" with the arrow sitting on the cut, and picking
+               the Polish state read "Kuyavian-Pome", 18 of its 31 characters
+               gone. Which rows stack is decided by measuring the real options
+               in fitControlRows(), never by naming this page's fields, so a
+               longer county name later stacks its own row and a short one
+               keeps the two column form. */
+            .controls.stack { grid-template-columns: minmax(0,1fr); }
             .controls .field { flex-direction: column; align-items: stretch; gap: 0.2rem; }
             .controls .field label { font-size: 0.78rem; }
             .controls .field select, .controls .field input { width: 100%; }
@@ -2139,7 +2153,47 @@
         // date defaults to today if the traveler hasn't chosen one
         const dd = $('departDate');
         if (dd && !dd.value && bootSaved && bootSaved.departDate) dd.value = bootSaved.departDate;
+        fitControlRows();
     }
+    /* Give a control row the whole width when its menus genuinely need it.
+       Nothing here guesses how wide the native dropdown arrow is, because that
+       is not a length any stylesheet states and it differs between browsers.
+       The select is asked instead: released to width:auto it reports the width
+       the browser itself wants, which already contains the widest option, the
+       padding and the arrow. If that is more than the half column offers, the
+       row stops being two columns. Runs after the pickers are filled and on
+       resize, adds or removes one class and nothing else. */
+    function fitControlRows(){
+        const phone = window.matchMedia && matchMedia('(max-width: 640px)').matches;
+        document.querySelectorAll('.controls').forEach(row => {
+            row.classList.remove('stack');
+            if (!phone) return;
+            const sels = [...row.querySelectorAll('select')];
+            if (!sels.length) return;
+            let needsRoom = false;
+            for (const sel of sels) {
+                const had = sel.getBoundingClientRect().width;
+                if (!had) continue;
+                // width:auto alone answers 139 every time and the screenshot
+                // says otherwise: the field is a column flex box with
+                // align-items:stretch, and the stretch beats the auto, so the
+                // select reports the column it was squeezed into rather than
+                // the width it wants. Released from the stretch as well, it
+                // answers honestly: 298 for "Kuyavian-Pomeranian Voivodeship"
+                // where the half column offers 139.
+                const pw = sel.style.width, pa = sel.style.alignSelf, pm = sel.style.maxWidth;
+                sel.style.width = 'auto';
+                sel.style.alignSelf = 'flex-start';
+                sel.style.maxWidth = 'none';
+                const wanted = sel.getBoundingClientRect().width;
+                sel.style.width = pw; sel.style.alignSelf = pa; sel.style.maxWidth = pm;
+                if (wanted > had + 1) { needsRoom = true; break; }
+            }
+            if (needsRoom) row.classList.add('stack');
+        });
+    }
+    addEventListener('resize', fitControlRows);
+
     function onStateChange(){
         const s = $('selState').value;
         fillCounties(s);
@@ -2147,12 +2201,14 @@
         fillCities(s, county);
         const first = ((GEO[s] || {})[county] || [])[0];
         if (first) { $('selCity').value = first[0]; onCityChange(); }
+        fitControlRows();       // a new state brings its own county names
     }
     function onCountyChange(){
         const s = $('selState').value, county = $('selCounty').value;
         fillCities(s, county);
         const first = ((GEO[s] || {})[county] || [])[0];
         if (first) { $('selCity').value = first[0]; onCityChange(); }
+        fitControlRows();       // and its own city names
     }
     function onCityChange(){
         const key = $('selCity').value;
