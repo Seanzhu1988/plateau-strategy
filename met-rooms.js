@@ -267,7 +267,6 @@
                             fill: "#c7b294", note: "Mastaba Tomb of Perneb, height published" },
     "greek-roman":        { kind: "figure", h: 6.4,  w: 1.7, d: 2.1, fill: "#ded8cc" },
     "arms-armor":         { kind: "figure", h: 6.1,  w: 1.9, d: 1.6, fill: "#a9adb4" },
-    "medieval":           { kind: "screen", h: 52,   w: 42,  fill: "#8d7f63" },
     "lehman":             { kind: "canvas", h: 5.1,  w: 4.1,  fill: "#6f5a44" },
     "grand-stair":        { kind: "canvas", h: 18.3, w: 10.7, fill: "#7a6a56" },
     "euro-paintings":     { kind: "canvas", h: 4.7,  w: 4.5,  fill: "#6b5b47" },
@@ -1059,10 +1058,156 @@
     return out;
   }
 
+  /* ---------------- Gallery 305, the Medieval Sculpture Hall ----------------
+     The plan's `medieval` node drew a flat panel 52 by 42 standing in a box.
+     Those are the real dimensions of the Valladolid choir screen and drawing
+     them as a rectangle threw away the one thing a reja is: a GRID of iron,
+     in registers, with a gate in the middle and a crest on top.
+
+     PUBLISHED, checked this run (metmuseum.org object 201926, and the Met's
+     own gallery description): "Choir screen from the Cathedral of Valladolid",
+     attributed to Rafael Amezua of Elorrio, erected 1763 and painted and
+     gilded 1764, iron gilded and painted with a limestone base, 52 FEET HIGH
+     and 42 FEET WIDE. It was commissioned by Isidro Cosio y Bustamante, bishop
+     of Valladolid, and stood in the nave dividing the choir from the high
+     altar. Gallery 305, the Medieval Sculpture Hall, "is dominated by" it and
+     the hall itself evokes a church interior.
+
+     SCHEMATIC, and the page says so on the Dendur precedent: the HALL envelope
+     is the floor plan's rectangle, not a survey. Only the screen is true, and
+     the screen is what fixes feet to plan units here: everything else in the
+     drawing is sized off 52 feet.
+
+     NAMED GAPS: no published count of balusters, registers or gate leaves was
+     found, so the grid is drawn at a spacing that matches the photographs and
+     is a drawing decision; the hall's own height and length are not published
+     anywhere reached this run.
+
+     THE CUTAWAY, as everywhere else here: the wall you would be standing in is
+     not drawn, and the hall's ceiling is not drawn because this view looks
+     down into it. */
+  function medievalHall(ctx) {
+    var r = ctx.room, z = ctx.zBase, P = ctx.project, out = [];
+    var wall = ctx.wall || 26;
+
+    var SCR_H = 52, SCR_W = 42;                 /* published, feet */
+    var k = (wall * 0.99) / SCR_H;
+    var H = SCR_H * k, SW = SCR_W * k;
+    /* THE FIX THE FIRST RENDER FORCED. Sizing the hall off the plan rectangle
+       made the screen a fifth of the hall's width: a gate in a wall, not the
+       thing the Met says the gallery is dominated by. The plan rectangle is
+       the wing, not this room, so the hall is sized off the SCREEN instead.
+       It spans 88 percent of the hall's length, which puts the hall near 48
+       by 33 feet, and the plan's own proportion is kept. */
+    var HALL_L = SCR_W / 0.88;
+    var HALL_D = HALL_L * (r.h / r.w);
+    var cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+    var x1 = cx - HALL_L * k / 2, x2 = cx + HALL_L * k / 2;
+    var y1 = cy - HALL_D * k / 2, y2 = cy + HALL_D * k / 2;
+
+    var STONE = "#ded7c6", STONE_D = "#b0a892", FLOOR = "#cfc7b4",
+        IRON = "#4a4438", IRON_L = "#6b6252", GOLD = "#c19a3e", GOLD_D = "#94722a",
+        LIME = "#d9d1bd", LIME_D = "#aaa189", SHAD = "#bdb5a2";
+
+    out.push(flat(ctx, x1, y1, x2, y2, z + 0.2, FLOOR, STONE_D, 0.5, -1e9));
+
+    /* the hall's own side walls, cut away on the near side like the Great Hall,
+       with the tall arcaded openings the flanking galleries stand behind */
+    [[y1, 1], [y2, -1]].forEach(function (wl) {
+      if (!ctx.faceVisible(0, wl[1])) return;
+      var q = [P(x1, wl[0], z), P(x2, wl[0], z), P(x2, wl[0], z + H * 0.86),
+               P(x1, wl[0], z + H * 0.86)];
+      out.push({ svg: ctx.poly(q, ctx.shade(STONE, 0, wl[1], 0.2), STONE_D, 0.5),
+                 depth: -9.80e8 });
+      /* a stone string course, so the wall is not one extrusion */
+      out.push({ svg: ctx.poly([P(x1, wl[0], z + H * 0.50), P(x2, wl[0], z + H * 0.50),
+                                P(x2, wl[0], z + H * 0.54), P(x1, wl[0], z + H * 0.54)],
+                               ctx.shade(STONE_D, 0, wl[1], 0.2), STONE_D, 0.4),
+                 depth: -9.79e8 });
+      /* five round-headed openings, dark enough to survive map scale */
+      for (var i = 0; i < 5; i++) {
+        var a = x1 + (x2 - x1) * (i + 0.16) / 5, b = x1 + (x2 - x1) * (i + 0.84) / 5;
+        var zt = z + H * 0.42, zb = z + 0.4;
+        var arc = [P(a, wl[0], zb), P(a, wl[0], zt)];
+        for (var g = 1; g < 8; g++) {
+          var t = g / 8, uu = a + (b - a) * t;
+          arc.push(P(uu, wl[0], zt + Math.sin(t * Math.PI) * (b - a) * 0.5));
+        }
+        arc.push(P(b, wl[0], zt), P(b, wl[0], zb));
+        out.push({ svg: ctx.poly(arc, "#3a352b", "#241f18", 0.5), depth: -9.78e8 });
+      }
+    });
+
+    /* ---- THE SCREEN, 52 by 42, at the far end of the hall ---- */
+    var sx1 = cx - SW / 2, sx2 = cx + SW / 2, sy = y1 + (y2 - y1) * 0.18;
+    var BASE = H * 0.10;                      /* the limestone base */
+    out.push(flat(ctx, sx1 - 1, sy, sx2 + 1, sy + BASE * 0.9, z + 0.25, SHAD, null, 0, -9.7e8));
+    out = out.concat(mass(ctx, sx1, sy, sx2, sy + BASE * 0.55, z, BASE, LIME, LIME_D, -9.6e8));
+
+    var D0 = -9.5e8;
+    function panel(a, b, z0, z1, fill, stroke, dd) {
+      out.push({ svg: ctx.poly([P(a, sy, z + z0), P(b, sy, z + z0),
+                                P(b, sy, z + z1), P(a, sy, z + z1)],
+                               fill, stroke, 0.4), depth: dd });
+    }
+    /* two registers of balusters over the base, a gilt frieze between them and
+       another above, then the crest. That is the reja's real anatomy. */
+    var zBase = BASE, zR1 = H * 0.52, zF1 = H * 0.58, zR2 = H * 0.84, zF2 = H * 0.89;
+    panel(sx1, sx2, zBase, zR1, "#2f2b23", IRON, D0);            /* the dark behind the bars */
+    panel(sx1, sx2, zF1, zF1 + H * 0.05, GOLD, GOLD_D, D0 + 3);  /* lower frieze */
+    panel(sx1, sx2, zR1, zF1, GOLD_D, GOLD_D, D0 + 2);
+    panel(sx1, sx2, zF1 + H * 0.05, zR2, "#2f2b23", IRON, D0 + 1);
+    panel(sx1, sx2, zR2, zF2, GOLD, GOLD_D, D0 + 4);             /* upper frieze */
+
+    var nb = 34;                              /* drawing decision, declared */
+    for (var i2 = 0; i2 < nb; i2++) {
+      var bxc = sx1 + (SW / nb) * (i2 + 0.5), bw = (SW / nb) * 0.34;
+      /* skip the middle, that is the gate */
+      var mid = Math.abs(i2 - (nb - 1) / 2);
+      if (mid < 2.6) continue;
+      panel(bxc - bw, bxc + bw, zBase + 0.3, zR1, IRON_L, IRON, D0 + 5);
+      panel(bxc - bw * 0.8, bxc + bw * 0.8, zF1 + H * 0.05, zR2, IRON_L, IRON, D0 + 6);
+      /* a gilt knop where the bar crosses the frieze */
+      panel(bxc - bw * 1.3, bxc + bw * 1.3, zF1, zF1 + H * 0.05, GOLD, GOLD_D, D0 + 7);
+    }
+
+    /* the double gate, taller and arched, which is where you actually walk */
+    var gw = SW * 0.16;
+    panel(cx - gw, cx + gw, zBase, zR2, "#241f19", GOLD_D, D0 + 8);
+    for (var gi = 0; gi < 8; gi++) {
+      var gx = cx - gw + (2 * gw) * (gi + 0.5) / 8;
+      panel(gx - gw * 0.035, gx + gw * 0.035, zBase + 0.3, zR2 - 0.3, GOLD, GOLD_D, D0 + 9);
+    }
+    panel(cx - gw * 1.08, cx + gw * 1.08, zR2, zR2 + H * 0.04, GOLD, GOLD_D, D0 + 10);
+
+    /* THE CREST. A reja is finished by a gilt crest, and this is the thing you
+       see first from the length of the hall. */
+    var crest = [P(sx1 + SW * 0.10, sy, z + zF2), P(sx2 - SW * 0.10, sy, z + zF2),
+                 P(cx + SW * 0.16, sy, z + H * 0.955), P(cx, sy, z + H),
+                 P(cx - SW * 0.16, sy, z + H * 0.955)];
+    out.push({ svg: ctx.poly(crest, GOLD, GOLD_D, 0.5), depth: D0 + 11 });
+    /* the cross on the summit */
+    panel(cx - SW * 0.010, cx + SW * 0.010, H * 0.955, H * 1.035, GOLD, GOLD_D, D0 + 12);
+    panel(cx - SW * 0.042, cx + SW * 0.042, H * 0.995, H * 1.012, GOLD, GOLD_D, D0 + 13);
+
+    /* sculpture on plinths down the hall, which is what the gallery is for */
+    for (var s2 = 0; s2 < 4; s2++) {
+      var px = x1 + (x2 - x1) * (0.30 + 0.16 * s2);
+      var py = y2 - (y2 - y1) * 0.26;
+      var pw = 2.2 * k, fw = 1.3 * k;      /* a plinth about two feet across */
+      out = out.concat(mass(ctx, px - pw, py - pw, px + pw, py + pw, z, 3.2 * k,
+                            LIME, LIME_D));
+      out = out.concat(mass(ctx, px - fw, py - fw, px + fw, py + fw, z + 3.2 * k,
+                            6.0 * k, "#cfc6b0", STONE_D));
+    }
+    return out;
+  }
+
   window.MET_ROOMS = { dendur: dendur, 'great-hall': greatHall,
                       'american-court': americanCourt,
                       'asian-astor': astorCourt,
                       islamic: damascusRoom,
+                      medieval: medievalHall,
                       modern: modern, 'grand-stair-2': grandStair };
   Object.keys(LANDMARKS).forEach(function (k) { window.MET_ROOMS[k] = landmark; });
 })();
