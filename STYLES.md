@@ -583,6 +583,39 @@ memorial as a low slab lying on the lawn. Every dimension in it could have been
 right and it would still have been the opposite building, because the one thing
 the memorial does is go DOWN.
 
+## The Ottoman Damascus qa'a
+
+The Met's Damascus Room, gallery 461, dated 1119 AH/1707 CE. A qa'a is a
+winter reception room and it is not one space: it is two floors at two
+levels under one ceiling, and drawing it as a single box loses the room.
+
+The tells, in the order a model needs them:
+
+- **Two levels, one room.** A small antechamber, the 'ataba, at the door,
+  and a RAISED square seating area, the tazar, beyond it. The tazar is
+  square, so its depth is the room's width, and the 'ataba is whatever
+  depth is left. Two published numbers give you the plan.
+- **A fountain in the lower floor.** In this room it is five inches high.
+  It is small, and the model should let it be small.
+- **Every surface worked.** Carved and painted wood ('ajami) with gesso
+  relief, gold and tin leaf; gilded stucco; tile; marble below. There is no
+  plain wall anywhere, so a single flat tone is the wrong answer twice.
+- **Registers, not a wall.** Marble dado, a gilt string course, a tall
+  panelled register with niches and shuttered windows, then the cornice.
+  Each is its own horizontal break.
+- **A muqarnas cornice** where the wall meets the ceiling: corbelled steps
+  with a row of pendants under them. It is what makes the top of the room
+  read as a qa'a rather than as paneling.
+- **A painted wooden ceiling** above that. In a view looking DOWN into the
+  room the ceiling is not drawn, and the model says so rather than
+  pretending the room is open to the sky.
+- **Colour**: warm brown and gold on the walls, red and white marble on the
+  tazar floor, cool grey-blue only in the water.
+
+The cutaway rule that applies to every interior applies here hardest: the
+courtyard doorway is in the near wall, and the near wall is the one you are
+standing in, so it is culled by its inner normal and never drawn.
+
 ## Working rules
 
 1. **Name the style before choosing the geometry.** If you cannot name it, you

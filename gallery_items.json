@@ -119,6 +119,37 @@
    "minutes": 3,
    "copyright": true,
    "source_url": "https://www.artic.edu/artworks/6565/american-gothic"
+  },
+  "si-air:A19610048000": {
+   "title": "1903 Wright Flyer",
+   "artist": "Wilbur and Orville Wright",
+   "date": "1903",
+   "museum": "National Air and Space Museum",
+   "city": "Washington",
+   "item_number": "A19610048000",
+   "where": "The Wright Brothers and the Invention of the Aerial Age, second floor",
+   "script": "gallery_scripts/wright-flyer.txt",
+   "teaser": "The pilot lay on his stomach and steered by sliding his hips, and everything this aircraft ever did, it did in one morning.",
+   "minutes": 3,
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Wright_Flyer.jpg?width=1100"
+   ],
+   "source_url": "https://airandspace.si.edu/collection-objects/1903-wright-flyer/nasm_A19610048000"
+  },
+  "si-nmnh:G3551-00": {
+   "title": "Hope Diamond",
+   "artist": "Kollur mine, India",
+   "date": "cut 1812, set by Cartier",
+   "museum": "National Museum of Natural History",
+   "city": "Washington",
+   "item_number": "G3551-00",
+   "where": "The Harry Winston Gallery, Janet Annenberg Hooker Hall of Geology, Gems and Minerals",
+   "script": "gallery_scripts/hope-diamond.txt",
+   "teaser": "It is the size of a walnut, the blue is boron, and under ultraviolet light it glows red.",
+   "minutes": 3,
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Hope_Diamond.jpg?width=1100"
+   ]
   }
  }
 }

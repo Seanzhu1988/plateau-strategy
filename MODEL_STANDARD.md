@@ -188,6 +188,38 @@ above is not paperwork, it is the lock.
 
 ## Rebuilt to this standard
 
+- islamic, the Damascus Room, Met gallery 461 (2026-09-06, the landmark
+  routine). The FIRST of the fifteen Met interiors rebuilt from a facade-style
+  object-in-a-box into an actual room, which is queue item 5.
+  PUBLISHED, the Met's own collection API, object 452102, read this run:
+  "Overall measurements are 264 7/16 in. (H) x 200 1/2 in. (W) x 316 5/8 in.
+  (D) ... fountain is 4 15/16 in. high", dated 1119 AH/1707 CE, gallery 461.
+  In feet 22.037 x 16.708 x 26.385, fountain 0.411. The old LANDMARKS entry
+  called this a "screen" 22 by 16.7: those were the ROOM's own numbers all
+  along, used to draw a flat panel.
+  PUBLISHED, metmuseum.org (Damascus Room; The Damascus Room essay): a qa'a
+  divided into a raised square seating area (tazar) and a small antechamber
+  ('ataba) entered through a doorway from a courtyard; the 'ataba carries the
+  fountain; every surface, walls, ceiling, niches, shuttered windows, is
+  carved and painted wood, gilded stucco and tile; the tazar floor is square
+  red and white marble panels and the step up has an opus sectile riser.
+  DERIVED and load-bearing: the tazar is square and the room is 16.708 wide,
+  so the tazar is 16.708 deep and the 'ataba is the remaining 9.68 ft. The
+  plan falls out of two published numbers.
+  NAMED GAPS: step riser drawn at 9 in, none published; fountain basin
+  diameter not published, only its height; panel and niche counts are a
+  drawing decision at roughly two-foot panels.
+  NOT DRAWN, declared: the near wall with the courtyard door (the Great Hall
+  cutaway rule) and the ceiling, because this view looks down into the room
+  and a plane at 22 ft paints over everything under it.
+  LOOKED at twice, `node render_room.js islamic` and `... islamic 0.75 0.45`.
+  What the picture showed that the numbers did not: the two floor levels did
+  not read at all until the platform threw a shadow onto the 'ataba floor,
+  and the fountain at its true five inches is startlingly small, which is the
+  honest surprise of the room and worth keeping.
+  Styles book gains the Ottoman Damascus qa'a. render_room.js gains the
+  islamic room rect, taken straight off met-map.js.
+
 Each run rebuilds one building and adds it here, so the next run does not
 repeat it. A name on this list has a `dc-form-<k>.js` (or the equivalent
 scene file) and has been LOOKED at from more than one angle.

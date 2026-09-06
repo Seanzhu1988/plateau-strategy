@@ -268,7 +268,6 @@
     "greek-roman":        { kind: "figure", h: 6.4,  w: 1.7, d: 2.1, fill: "#ded8cc" },
     "arms-armor":         { kind: "figure", h: 6.1,  w: 1.9, d: 1.6, fill: "#a9adb4" },
     "medieval":           { kind: "screen", h: 52,   w: 42,  fill: "#8d7f63" },
-    "islamic":            { kind: "screen", h: 22,   w: 16.7, arch: true, fill: "#7d8f9c" },
     "lehman":             { kind: "canvas", h: 5.1,  w: 4.1,  fill: "#6f5a44" },
     "grand-stair":        { kind: "canvas", h: 18.3, w: 10.7, fill: "#7a6a56" },
     "euro-paintings":     { kind: "canvas", h: 4.7,  w: 4.5,  fill: "#6b5b47" },
@@ -860,9 +859,210 @@
     return out;
   }
 
+  /* ---------------- Gallery 461, the Damascus Room ----------------
+     The plan's `islamic` node used to draw ONE signature object standing in a
+     plain box: a screen 22 feet by 16.7, floating. Those numbers were never a
+     screen. They are the room itself, and this is the one stop on the Met plan
+     where the exhibit IS an interior, so drawing it as an object in a box lost
+     the whole point in the way Dendur would if the temple were drawn without
+     its pool.
+
+     PUBLISHED, read this run from the Met's own collection API, object 452102,
+     which is the source that corrected Dendur once already:
+       "Overall measurements are 264 7/16 in. (H) x 200 1/2 in. (W) x
+        316 5/8 in. (D); from inside front entrance to back wall is
+        316 5/8 in. deep; fountain is 4 15/16 in. high."
+       dated 1119 AH/1707 CE, gallery 461,
+       Gift of The Hagop Kevorkian Fund, 1970.
+     In feet: 22.04 high, 16.71 wide, 26.39 deep, and a fountain five inches
+     high. Every one of those is used below at its published value.
+
+     PUBLISHED, the Met's own pages on the room (metmuseum.org, Damascus Room;
+     The Damascus Room essay), read this run: it is a winter reception room, a
+     qa'a, "divided into two areas: a raised, square seating area (tazar) and a
+     small antechamber ('ataba) entered through a doorway from a courtyard";
+     the 'ataba carries the fountain; "every surface, walls, ceiling, niches,
+     shuttered windows, is covered in carved and painted wood, gilded stucco,
+     and tile"; the tazar floor is square marble panels in red and white
+     geometric patterns and the step up to it has an opus sectile riser.
+
+     DERIVED, and it is the one measurement that does real work here: the tazar
+     is SQUARE and the room is 16.71 wide, so the tazar is 16.71 deep and the
+     'ataba is what is left of the 26.39, which is 9.68 feet. The split is not
+     a drawing decision, it falls out of two published numbers.
+
+     NAMED GAPS, not guessed: the step riser between 'ataba and tazar is drawn
+     at 9 inches and no published figure was found; the fountain basin's
+     diameter is not published, only its height; the panel and niche counts on
+     each wall are a drawing decision at roughly two-foot panels, because no
+     source reached this run counts them.
+
+     THE CUTAWAY: the courtyard doorway is in the near wall, and the near wall
+     is not drawn, which is the same rule the Great Hall uses. You are standing
+     in the doorway looking in, so the 'ataba and its fountain are in front of
+     you and the raised tazar is at the far end. The CEILING is likewise not
+     drawn: this view looks down into the room, and a painted ceiling plane at
+     22 feet would paint over everything under it. The muqarnas cornice is
+     where the walls stop, and the header says so rather than the model
+     pretending the room is open to the sky.
+
+     Style: the Ottoman Damascus qa'a, now in the styles book. */
+  function damascusRoom(ctx) {
+    var r = ctx.room, z = ctx.zBase, P = ctx.project, out = [];
+    var wall = ctx.wall || 26;
+
+    var H_FT = 22.037, W_FT = 16.708, D_FT = 26.385, FOUNT_FT = 0.411;
+    var k = Math.min((r.w * 0.80) / W_FT, (r.h * 0.80) / D_FT, (wall * 0.95) / H_FT);
+    var W = W_FT * k, D = D_FT * k, H = H_FT * k;
+    var cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+    var x1 = cx - W / 2, x2 = cx + W / 2, y1 = cy - D / 2, y2 = cy + D / 2;
+    var yStep = y1 + W;                 /* tazar square at the far end */
+    var RISE = 0.75 * k;                /* 9 in, NOT published */
+
+    var WOOD = "#8a5733", WOOD_D = "#63401f", GILT = "#c9a24c", GILT_D = "#9c7a2f",
+        CREAM = "#e6d7b8", MARB = "#e9e3d5", MARB_D = "#b3ab95", RED = "#9d423d",
+        WATER = "#a9bcc6", CUSH = "#7c4850", SHAD = "#c9c2b2";
+
+    /* feet above the floor, so the registers read as the room's own storeys */
+    var F_DADO = 3.6, F_PANEL = 12.8, F_MUQ = 16.2, F_UP = 20.6;
+
+    /* ---- floors. The 'ataba is marble, the tazar is a raised platform ---- */
+    out.push(flat(ctx, x1, y1, x2, y2, z + 0.2, "#ded6c4", MARB_D, 0.5, -1e9));
+    /* opus sectile: real panels, alternating, not one flat tone */
+    var an = 3, ad = (y2 - yStep) / an;
+    for (var ai = 0; ai < an; ai++) {
+      for (var aj = 0; aj < 3; aj++) {
+        var px0 = x1 + (W / 3) * aj + 0.5, px1 = x1 + (W / 3) * (aj + 1) - 0.5;
+        var py0 = yStep + ad * ai + 0.5, py1 = yStep + ad * (ai + 1) - 0.5;
+        out.push(flat(ctx, px0, py0, px1, py1, z + 0.35,
+                      ((ai + aj) % 2) ? "#e9e3d5" : "#cdc4ae", MARB_D, 0.4, -9.9e8 + ai));
+      }
+    }
+
+    /* the shadow the platform throws onto the 'ataba floor */
+    out.push(flat(ctx, x1, yStep, x2, yStep + RISE * 1.6, z + 0.3, SHAD, null, 0, -9.89e8));
+
+    /* ---- the tazar, raised and square, with its red and white marble ---- */
+    out = out.concat(mass(ctx, x1, y1, x2, yStep, z, RISE, MARB, MARB_D, -9.5e8));
+    for (var ti = 0; ti < 4; ti++) {
+      for (var tj = 0; tj < 4; tj++) {
+        var qx = x1 + (W / 4) * tj, qy = y1 + (W / 4) * ti;
+        out.push(flat(ctx, qx + 0.4, qy + 0.4, qx + W / 4 - 0.4, qy + W / 4 - 0.4,
+                      z + RISE + 0.08, ((ti + tj) % 2) ? RED : "#efe9db",
+                      MARB_D, 0.4, -9.4e8 + ti * 0.1 + tj * 0.01));
+      }
+    }
+
+    /* ---- the fountain, five published inches high, in the 'ataba ---- */
+    var fr = W * 0.15, fx = cx, fy = (yStep + y2) / 2, fh = FOUNT_FT * k;
+    var rim = [], inner = [];
+    for (var oi = 0; oi < 8; oi++) {
+      var th = (oi / 8) * Math.PI * 2 + Math.PI / 8;
+      rim.push([fx + Math.cos(th) * fr, fy + Math.sin(th) * fr]);
+      inner.push([fx + Math.cos(th) * fr * 0.72, fy + Math.sin(th) * fr * 0.72]);
+    }
+    for (var si = 0; si < 8; si++) {
+      var sj = (si + 1) % 8;
+      var nx = Math.cos(((si + 0.5) / 8) * Math.PI * 2 + Math.PI / 8);
+      var ny = Math.sin(((si + 0.5) / 8) * Math.PI * 2 + Math.PI / 8);
+      if (!ctx.faceVisible(nx, ny)) continue;
+      out.push({ svg: ctx.poly([P(rim[si][0], rim[si][1], z + 0.3),
+                                P(rim[sj][0], rim[sj][1], z + 0.3),
+                                P(rim[sj][0], rim[sj][1], z + 0.3 + fh),
+                                P(rim[si][0], rim[si][1], z + 0.3 + fh)],
+                               ctx.shade(MARB, nx, ny, 0), MARB_D, 0.4),
+                 depth: -9.3e8 + si });
+    }
+    out.push({ svg: ctx.poly(rim.map(function (q) { return P(q[0], q[1], z + 0.3 + fh); }),
+                             ctx.shade(MARB, 0, 0, 1), MARB_D, 0.4), depth: -9.29e8 });
+    out.push({ svg: ctx.poly(inner.map(function (q) { return P(q[0], q[1], z + 0.3 + fh * 0.7); }),
+                             WATER, "#8fa4b0", 0.4), depth: -9.28e8 });
+
+    /* ---- the walls, as a cutaway: only a wall whose INSIDE faces you ---- */
+    var walls = [
+      { n: [1, 0],  u0: y1, u1: y2, tazEnd: y1 + W,
+        map: function (u, zz) { return P(x1, u, zz); }, d: -9.80e8 },
+      { n: [-1, 0], u0: y1, u1: y2, tazEnd: y1 + W,
+        map: function (u, zz) { return P(x2, u, zz); }, d: -9.80e8 },
+      { n: [0, 1],  u0: x1, u1: x2, tazEnd: x2,
+        map: function (u, zz) { return P(u, y1, zz); }, d: -9.82e8 },
+      { n: [0, -1], u0: x1, u1: x2, tazEnd: x2,
+        map: function (u, zz) { return P(u, y2, zz); }, d: -9.78e8 }
+    ];
+
+    walls.forEach(function (wl) {
+      if (!ctx.faceVisible(wl.n[0], wl.n[1])) return;
+      var m = wl.map, u0 = wl.u0, u1 = wl.u1, d = wl.d;
+      var sh = function (c) { return ctx.shade(c, wl.n[0], wl.n[1], 0.2); };
+      function band(f0, f1, fill, stroke, dd) {
+        out.push({ svg: ctx.poly([m(u0, z + f0 * k), m(u1, z + f0 * k),
+                                  m(u1, z + f1 * k), m(u0, z + f1 * k)],
+                                 sh(fill), stroke, 0.4), depth: dd });
+      }
+      /* the wall itself, then its registers, each one a real horizontal break */
+      band(0, H_FT, CREAM, WOOD_D, d);
+      band(0, F_DADO, MARB, MARB_D, d + 1);                 /* marble dado */
+      band(F_DADO, F_DADO + 0.5, GILT, GILT_D, d + 2);      /* gilt string course */
+      band(F_PANEL, F_MUQ, WOOD, WOOD_D, d + 2);            /* muqarnas ground */
+      band(F_UP, H_FT, WOOD, WOOD_D, d + 2);                /* the ceiling beam */
+
+      /* 'AJAMI PANELLING: real panels, each with its own gilt frame. The count
+         is a drawing decision at about two feet, and the header says so. */
+      var span = u1 - u0, ftPerUnit = W_FT / W;
+      var np = Math.max(4, Math.round((span * ftPerUnit) / 2.1));
+      for (var i = 0; i < np; i++) {
+        var pa = u0 + (span / np) * i + span * 0.006;
+        var pb = u0 + (span / np) * (i + 1) - span * 0.006;
+        out.push({ svg: ctx.poly([m(pa, z + (F_DADO + 0.7) * k), m(pb, z + (F_DADO + 0.7) * k),
+                                  m(pb, z + (F_PANEL - 0.3) * k), m(pa, z + (F_PANEL - 0.3) * k)],
+                                 sh(GILT), GILT_D, 0.4), depth: d + 3 });
+        var ia = pa + span * 0.010, ib = pb - span * 0.010;
+        out.push({ svg: ctx.poly([m(ia, z + (F_DADO + 1.0) * k), m(ib, z + (F_DADO + 1.0) * k),
+                                  m(ib, z + (F_PANEL - 0.6) * k), m(ia, z + (F_PANEL - 0.6) * k)],
+                                 sh(WOOD), WOOD_D, 0.4), depth: d + 4 });
+        /* a shuttered window or niche in every other panel, arched, drawn as
+           an opening dark enough to survive map scale */
+        if (i % 2 === 1) {
+          var ca = ia + (ib - ia) * 0.16, cb = ib - (ib - ia) * 0.16;
+          var zt = z + (F_PANEL - 1.8) * k, zb = z + (F_DADO + 1.6) * k;
+          var arc = [m(ca, zb), m(ca, zt)];
+          for (var g = 1; g < 7; g++) {
+            var t = g / 7, uu = ca + (cb - ca) * t;
+            arc.push(m(uu, zt + Math.sin(t * Math.PI) * (cb - ca) * 0.32));
+          }
+          arc.push(m(cb, zt), m(cb, zb));
+          out.push({ svg: ctx.poly(arc, sh("#3d2a18"), "#241708", 0.4), depth: d + 5 });
+        }
+      }
+
+      /* MUQARNAS CORNICE, three corbelled steps and a row of pendants. It is
+         the thing that makes the top of a qa'a read as a qa'a. */
+      for (var s = 0; s < 3; s++) {
+        var f0 = F_MUQ + (F_UP - F_MUQ) * (s / 3);
+        var f1 = F_MUQ + (F_UP - F_MUQ) * ((s + 1) / 3);
+        band(f0, f1, [GILT, CREAM, GILT][s], GILT_D, d + 6 + s);
+      }
+      var nm = Math.max(6, Math.round((u1 - u0) / (span / 14)) / 1);
+      for (var q = 0; q < 14; q++) {
+        var qa = u0 + (span / 14) * q, qb = u0 + (span / 14) * (q + 1);
+        out.push({ svg: ctx.poly([m(qa, z + F_MUQ * k), m(qb, z + F_MUQ * k),
+                                  m((qa + qb) / 2, z + (F_MUQ - 0.9) * k)],
+                                 sh(GILT_D), WOOD_D, 0.3), depth: d + 9 });
+      }
+    });
+
+    /* ---- the seating the tazar exists for: low cushioned benches ---- */
+    var bh = 1.4 * k, bw = 2.2 * k;
+    out = out.concat(mass(ctx, x1 + 0.4, y1 + 0.4, x2 - 0.4, y1 + bw, z + RISE, bh, CUSH, "#5a323a"));
+    out = out.concat(mass(ctx, x1 + 0.4, y1 + bw, x1 + bw, yStep - 0.4, z + RISE, bh, CUSH, "#5a323a"));
+    out = out.concat(mass(ctx, x2 - bw, y1 + bw, x2 - 0.4, yStep - 0.4, z + RISE, bh, CUSH, "#5a323a"));
+    return out;
+  }
+
   window.MET_ROOMS = { dendur: dendur, 'great-hall': greatHall,
                       'american-court': americanCourt,
                       'asian-astor': astorCourt,
+                      islamic: damascusRoom,
                       modern: modern, 'grand-stair-2': grandStair };
   Object.keys(LANDMARKS).forEach(function (k) { window.MET_ROOMS[k] = landmark; });
 })();
