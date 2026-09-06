@@ -3618,3 +3618,14 @@ EXTRA.update({
         "博物馆原始记录", "Registro original del museo",
         "박물관 원본 기록", "Bản gốc của bảo tàng"],
 })
+
+
+# The way out of the whole-Mall view, which names the stop it returns to.
+# One pattern rather than "Back to" plus a name glued on, because Korean and
+# Vietnamese put the destination before the verb and concatenation would read
+# backwards in both.
+EXTRA.update({
+    "\u2190 Back to {name}": [
+        "\u2190 \u8fd4\u56de{name}", "\u2190 Volver a {name}",
+        "\u2190 {name}(\uc73c)\ub85c \ub3cc\uc544\uac00\uae30", "\u2190 Quay l\u1ea1i {name}"],
+})

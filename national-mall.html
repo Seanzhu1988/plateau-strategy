@@ -65,6 +65,13 @@
            so there the gain is the dead space rather than the width. */
         .nm-cols.is-wide { grid-template-columns: 1fr; }
         .nm-cols.is-wide .nm-stage { aspect-ratio: 82 / 26; }
+        /* Going full width dropped the second column below the model, which
+           put the stop list under the map and under the fold with it. In the
+           overview the list is the thing you came for, so it comes first and
+           the map follows it. */
+        .nm-cols.is-wide > div:last-child { display: flex; flex-direction: column; }
+        .nm-cols.is-wide .nm-list-h { order: -2; margin-top: 0; }
+        .nm-cols.is-wide .nm-list { order: -1; margin-bottom: 1.4rem; }
 
         /* The model. It is the map's twin, not its decoration: the same stop is
            selected in both, and either one can do the selecting. */
@@ -258,6 +265,9 @@
     var cols = document.querySelector(".nm-cols");
     var listEl = document.getElementById("nmList");
     var backBtn = document.getElementById("nmBack");
+    /* The stop the reader was on before they opened the whole Mall, so the way
+       out of the overview can say where it goes rather than just "back". */
+    var lastStop = "";
     var nowBox = document.getElementById("nmNow");
     var nowName = document.getElementById("nmNowName");
     var nowDesc = document.getElementById("nmNowDesc");
@@ -678,7 +688,27 @@
                 view.setScene(sc);
             }
         }
-        backBtn.hidden = !key;
+        /* ONE CONTROL, BOTH DIRECTIONS. [SEAN 2026-09-06: "there is no button
+           to go back after showing the bigger mall".] This used to hide itself
+           in the overview, on the reasoning that the whole Mall is the top of
+           the tree and has nothing above it. That was wrong twice over: the
+           reader arrived here FROM a stop and wants to get back to it, and
+           making the overview full width moved the stop list below the map, so
+           the one remaining way onward went under the fold. A drill-down with
+           no visible way out is a bug this site has shipped before. */
+        if (key) lastStop = key;
+        if (key) {
+            backBtn.hidden = false;
+            backBtn.textContent = T("\u2190 Show the whole Mall");
+        } else if (lastStop) {
+            var was = stops.filter(function (x) { return x.model === lastStop; })[0];
+            backBtn.hidden = false;
+            backBtn.textContent = window.psxFmt
+                ? psxFmt("\u2190 Back to {name}", { name: was ? was.name : "" })
+                : "\u2190 Back to " + (was ? was.name : "");
+        } else {
+            backBtn.hidden = true;      /* nothing was open, so nothing to go back to */
+        }
 
         var s = key ? stops.filter(function (x) { return x.model === key; })[0] : null;
         if (s) {
@@ -773,7 +803,9 @@
         document.getElementById("nmInside").textContent = minutes(t.inside_min_total);
     }
 
-    backBtn.addEventListener("click", function () { show("", true); });
+    backBtn.addEventListener("click", function () {
+        show(current ? "" : (lastStop || ""), true);
+    });
     /* ---------- lock the walk, then the map follows you (Sean 2026-09-04) ----------
        Two taps, on purpose. LOCK fixes the walk as it stands, so nothing moves
        under your feet once you are on it. FOLLOW asks for your position, in
