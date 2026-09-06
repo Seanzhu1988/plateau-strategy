@@ -972,7 +972,13 @@ device are added to the visitor totals.</p>
 # It never touches disk, resets on restart, and holds only anonymous cookie ids
 # with a last-seen stamp, nothing identifying, nothing retained.
 _PRESENCE = {}                 # anonymous vid -> last-seen epoch seconds
-_PRESENCE_WINDOW = 300         # "online" = seen in the last 5 minutes
+# "online" = seen in the last 3 minutes. The live pages heartbeat every 40 to 60
+# seconds, so a genuinely open tab keeps refreshing its stamp and stays counted,
+# while a tab that closed ages out inside three minutes instead of lingering for
+# five. Shorter than the ping cadence would make an open tab flicker; much longer
+# turns "right now" into "loaded a page a while ago". Three minutes is the honest
+# middle. [SEAN "how many people is actually logged in ... refine this"]
+_PRESENCE_WINDOW = 180
 _PRESENCE_MAX = 5000           # hard bound so a burst can't grow memory unchecked
 
 
@@ -5402,10 +5408,15 @@ def api_gallery_here():
     caller present, so somebody sitting on the page reading stays counted
     while the tab is open. The page only shows the number when it is two or
     more, so it never announces a lonely one. [SEAN "how many traveller is
-    reading or live ... above 2+ travelers are exploring"]"""
-    vid = request.cookies.get("psx_vid")
-    if vid:
-        _presence_touch(vid)
+    reading or live ... above 2+ travelers are exploring"]
+
+    Honours the same "not a visitor" rule as every other count, so the owner,
+    an opted-out device, an ignored network, and anything that smells like a bot
+    keep themselves out of the live line here exactly as they do everywhere else.
+    Without this the gallery was the one place you still counted yourself.
+    [SEAN "make sure it doesn't count me"]"""
+    if not _skip_traffic():
+        _presence_touch(request.cookies.get("psx_vid"))
     resp, code = _bp_nostore(jsonify({"ok": True, "here": _presence_count()}))
     return resp, code
 
