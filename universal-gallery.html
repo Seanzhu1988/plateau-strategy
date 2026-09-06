@@ -59,6 +59,41 @@
                    padding: .2rem .6rem; margin: 0 0 .55rem;
                    color: #6b655b; background: #fbfaf8; }
         .ug-mark.is-ours { color: #14403f; border-color: #b6d3cd; background: #eef6f3; }
+        /* THE ARCHIVE. [SEAN 2026-09-06: "it's not necessary to show all the
+           written by us exhibitions ... once we have a lot, there's no way that
+           you can really scroll all those exhibitions. Therefore it should be
+           kept in the same page but archived."] He is right, and eight was the
+           only number where dumping every card worked: it went to ten while
+           this was being written, and the hourly routine adds one an idle hour.
+           So the writing is banded by museum, the way the Destination Book
+           bands by city, because a reader standing in one museum wants that
+           museum. The first band is open and the rest are shut, always, so the
+           page is never empty and never a wall no matter how long the archive
+           gets. The ids are here because modern.css puts a rose underline and
+           no padding on every button on the site, with !important. */
+        #ugWritten .ug-band { border-top: 1px solid #eae5dc; }
+        #ugWritten .ug-band:first-of-type { border-top: 0; }
+        #ugWritten .ug-band-h { display: flex !important; width: 100%;
+            align-items: baseline; gap: .6rem; cursor: pointer;
+            border: 0 !important; border-radius: 0 !important;
+            padding: .85rem .1rem !important; text-align: left;
+            font: inherit !important; font-weight: 700 !important;
+            color: #14110c !important; }
+        #ugWritten .ug-band-h .ug-n { font-size: .72rem; font-weight: 700;
+            letter-spacing: .1em; color: #8a8378; font-variant-numeric: tabular-nums; }
+        #ugWritten .ug-band-h .ug-caret { margin-left: auto; color: #8a8378;
+            font-size: .8rem; transition: transform .15s ease; }
+        #ugWritten .ug-band-h[aria-expanded="true"] .ug-caret { transform: rotate(90deg); }
+        #ugWritten .ug-row { display: block !important; width: 100%;
+            border: 0 !important; border-radius: 6px !important;
+            padding: .5rem .55rem !important; text-align: left;
+            font: inherit !important; font-weight: inherit !important;
+            color: #14110c !important; cursor: pointer; }
+        #ugWritten .ug-row:hover { background: #f6f3ee !important; }
+        #ugWritten .ug-row-t { font-weight: 640; }
+        #ugWritten .ug-row-a { display: block; font-size: .82rem; color: #6b655b; }
+        #ugWritten .ug-band-b { padding: 0 0 .7rem; }
+        #ugWritten .ug-row-card { padding: 0 0 .6rem; }
         /* A quiet live line, shown only when two or more travellers are here,
            so it never announces a lonely one. The dot pulses to say "now", and
            stops for anyone who asked their device to reduce motion. */
@@ -216,6 +251,11 @@
         return (document.documentElement.lang || "en").slice(0, 2) || "en";
     }
 
+    /* This page had no translate helper, so the archive's own words went
+       through a T that did not exist. The error landed in the items fetch's
+       catch and was swallowed whole, which is why the section rendered empty
+       and the console stayed clean. */
+    function T(en) { return (window.psxT ? window.psxT(en) : en) || en; }
     function esc(s) {
         return String(s == null ? "" : s).replace(/[&<>"]/g,
             function (c) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; });
@@ -329,19 +369,21 @@
             '</div></div>';
     }
 
-    fetch("/api/gallery/items").then(function (r) { return r.json(); }).then(function (d) {
-        written = d.items || {};
-        var keys = Object.keys(written);
-        if (!keys.length) { showTab("found"); return; }   // nothing to fall back to
-        haveWritten = true;
-        // No heading over this block: every card in it already carries the
-        // mark, and a "Written by us" header three lines above a "Written by
-        // us · enhanced" pill is the same words twice. The search results keep
-        // their heading, which is the one place a heading tells you something
-        // the cards do not.
-        document.getElementById("ugWritten").innerHTML =
-            keys.map(function (k) { return card(written[k], k); }).join("");
-    }).catch(function () { showTab("found"); });   // items unreachable: the search still works
+    /* The catch covers the FETCH, not the drawing. It used to wrap both, so a
+       bug in the render read exactly like a museum being unreachable: an empty
+       section and a clean console. A network failure still falls back to the
+       search; a broken render is now allowed to say so. */
+    fetch("/api/gallery/items")
+        .then(function (r) { return r.json(); })
+        .catch(function () { return null; })
+        .then(function (d) {
+            if (!d) { showTab("found"); return; }   // unreachable: the search still works
+            written = d.items || {};
+            var keys = Object.keys(written);
+            if (!keys.length) { showTab("found"); return; }
+            haveWritten = true;
+            paintArchive(keys);
+        });
 
     // THE PICTURE, and when it is on show. It appears whenever the narrative is
     // being read or heard, and can also be opened on its own by tapping the
@@ -396,7 +438,68 @@
     // rebinding a listener per card is how you end up with four of them.
     // Listen: built on first press, so a page of twenty artworks does not open
     // twenty audio connections nobody asked for.
+    /* Banded by museum, because the reader is standing in one of them. Sorted
+       by how much we have written about each, so the deepest is first and is
+       the one left open. A single museum gets no band at all: a heading over
+       one group labels the page rather than the group, which is the rule the
+       Destination Book already follows. */
+    function paintArchive(keys) {
+        var groups = {}, order = [];
+        keys.forEach(function (k) {
+            var m = String(written[k].museum || written[k].source || "").trim() ||
+                    T("Elsewhere");
+            if (!groups[m]) { groups[m] = []; order.push(m); }
+            groups[m].push(k);
+        });
+        order.sort(function (a, b) {
+            return groups[b].length - groups[a].length || a.localeCompare(b);
+        });
+        var one = order.length === 1;
+        var html = '<div class="ug-sec">' + esc(T("Written by us")) +
+                   ' <span class="ug-n">' + keys.length + '</span></div>';
+        order.forEach(function (m, i) {
+            var open = one || i === 0;
+            var rows = groups[m].map(function (k) {
+                var it = written[k];
+                return '<button type="button" class="ug-row" data-k="' + esc(k) + '">' +
+                         '<span class="ug-row-t">' + esc(it.title) + '</span>' +
+                         '<span class="ug-row-a">' + esc(it.artist || T("Maker unrecorded")) +
+                         (it.date ? ", " + esc(it.date) : "") + '</span>' +
+                       '</button><div class="ug-row-card" hidden></div>';
+            }).join("");
+            html += '<div class="ug-band">' +
+                (one ? "" :
+                  '<button type="button" class="ug-band-h" aria-expanded="' + open + '">' +
+                    '<span>' + esc(m) + '</span>' +
+                    '<span class="ug-n">' + groups[m].length + '</span>' +
+                    '<span class="ug-caret" aria-hidden="true">&rsaquo;</span>' +
+                  '</button>') +
+                '<div class="ug-band-b"' + (open ? "" : " hidden") + '>' + rows + '</div>' +
+              '</div>';
+        });
+        document.getElementById("ugWritten").innerHTML = html;
+    }
+
     document.addEventListener("click", function (e) {
+        /* Open a museum, or open one work inside it. The card is built on the
+           tap rather than up front, so an archive of two hundred works costs
+           two hundred short rows and not two hundred cards with pictures. */
+        var bh = e.target.closest(".ug-band-h");
+        if (bh) {
+            var body = bh.nextElementSibling;
+            var willOpen = body.hidden;
+            body.hidden = !willOpen;
+            bh.setAttribute("aria-expanded", String(willOpen));
+            return;
+        }
+        var row = e.target.closest(".ug-row");
+        if (row) {
+            var box = row.nextElementSibling, k = row.getAttribute("data-k");
+            if (!box.hidden) { box.hidden = true; box.innerHTML = ""; return; }
+            box.innerHTML = card(written[k], k);
+            box.hidden = false;
+            return;
+        }
         var dot = e.target.closest(".ug-dot");
         if (dot) {
             var st = dot.closest(".ug-stage");
