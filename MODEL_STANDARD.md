@@ -974,6 +974,16 @@ scene file) and has been LOOKED at from more than one angle.
   arms-armor is the strongest next candidate: the Equestrian Court's four
   mounted figures are armours, and armours have published dimensions in the
   API, which is exactly the route that worked twice today.
+  ONE STEP TAKEN ON IT ALREADY, so the next run starts past it: the API's
+  search CANNOT be filtered by gallery, and a q="armor for man and horse"
+  query over department 4 returns armours in galleries 373 and 378, not the
+  Equestrian Court's gallery 371. Two objects were read and neither is one of
+  the four horsemen: object 23205, an Italian armour ca. 1400-1450, H. 66 1/2
+  in., gallery 373; object 35728, a Japanese tatami gusoku, H. 63 in., gallery
+  378. Both are real published heights and both are for a different room. The
+  route that will work is the Met's own gallery 371 page or the court's label
+  text, which name the four armours; then the API gives each one its height,
+  and a rider's true height over a horse is the whole scale of that room.
 
 - moma, the Museum of Modern Art exterior (2026-09-05, the landmark routine).
   CLAIMED at the start of the run, then RELEASED unbuilt, and the claim was
