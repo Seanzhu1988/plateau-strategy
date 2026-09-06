@@ -119,8 +119,19 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
       1000px. The Empire State needs no portrait camera: it is 1.16:1, gets a
       276px box on a phone against the bridge's 111, and every label of its
       seven that touches the drawing is already haloed.
-- [ ] The bridge deck is drawn level, which is true, but the roadway actually
-      rises toward midspan. Small correction, real.
+- [x] The bridge deck is drawn level, which is true, but the roadway actually
+      rises toward midspan. **Done 2026-09-06**, and the datum was wrong as
+      well as the shape: deckH was 127, the navigational clearance everyone
+      quotes, not the roadway height anywhere in particular. The published
+      pair is 119 ft 3 in at the towers and 135 ft at the centre, a climb of
+      15.75 ft, drawn as a parabola through the two towers and midspan. The
+      300 ft approach stubs are held level rather than invented, because no
+      figure for the grade down to the anchorages was found. Worth 4.47
+      viewBox units of lift in a 340 unit frame at the span camera, over a
+      deck 388 units long, and 8.0 units of the climb at the tower camera.
+      120 checks, a full turn by five tilts in both framings, no label out of
+      its box, and on a phone all five labels land at the identical
+      coordinate before and after.
 - [ ] Empire State: the base is 424 by 187 ft, so from some angles it reads
       as square. Verify the footprint proportion on screen against the number.
 
@@ -466,3 +477,76 @@ Note: dc-form-indian.js and gallery_items.json are another session's
 uncommitted work and were left untouched, verified by checksum at the start and
 at the end. The branch was 1 ahead of origin/main and 0 behind and needed no
 rebase.
+
+
+### 2026-09-06
+Trimmed: two, and the first was yesterday's repair coming undone by a second
+route. The Destination Book listed "Washington DC" and "Washington-D-C" side
+by side again. _heal_chapters folds the split correctly; the shipped-book
+merge then undid it in the same breath, because the cities loop at the end
+asks only whether a shipped key is missing from the live book and the heal is
+exactly what made it missing. The row under the retired key then failed to
+match its live twin, which the heal had moved to the canonical key, so it was
+appended a second time and the curated fields rode on the duplicate rather
+than on the row the page renders. Healing the shipped copy first, in memory
+and never on disk, makes both loops speak the same keys. Fixture carrying the
+split: 3 entries in and 4 out before, 3 and 3 after. A live disk already
+carrying the damage: 11 chapters to 10, 196 entries in and 196 out, nothing
+lost, no duplicate rows. On the page at 375px, 22 chips to 21. Ten checks
+cover the repo file never being written, a second pass being a no-op, a clean
+book keeping every chapter and still gaining its fields, a visitor's own
+chapter surviving, and a genuinely new shipped chapter still arriving.
+Second: the Trip Planner's State, County and City row. On a phone it is a two
+column grid, and the rule that hands a whole row to a lone last field gave it
+to City, which needs the least. The two menus that need the most shared a half
+column and cut their own text: the default view read "New York Cour" with the
+arrow sitting on the cut, and the Polish state read "Kuyavian-Pome", 18 of its
+31 characters gone, while City had 290px of row for a word 69px wide. A row
+whose widest menu entry cannot survive a half column now stops being two
+columns, and which rows those are is measured rather than named. Both render
+whole now. The date row below is untouched at 139.31/139.31, so only the row
+that needed it changed, and desktop is untouched by construction, the rule
+living inside the 640px media block.
+3D: the top backlog item, the deck camber. Numbers above.
+Caught in my own work four times, and three of them by looking rather than
+reading. My first probe for the select answered 139 every time and the
+screenshot said otherwise: the field is a column flex box with
+align-items:stretch and the stretch beats width:auto, so the select reported
+the column it had been squeezed into. Released from the stretch as well it
+answers 298. I bundled two unrelated repairs into one commit under a message
+about only one of them, and split them. I wrote a comment claiming an arrow
+width had been measured by growing an option when I had done no such thing,
+and replaced the whole approach with one that asks the browser instead and
+needs no constant. And my check that the new CSS rule sat inside the phone
+media block reported False when it sits there plainly: the file holds four
+blocks with that same query and the script matched the first.
+Worth writing down: the page's own /tips index looked like a dead end with 27
+links and no way home, and it was not. The home link is the 27th and my first
+scan printed only 20.
+Checkers: map sound, 83% full. i18n 40 composed strings, unchanged, none
+attempted and none added by me. Script lengths 1 out of band, the same Chinese
+overview, left alone again on purpose. check_js.py could not run here, its
+Playwright browser is not installed on this Mac.
+For Sean, not touched: the live working copy of destinations.json, which
+belongs to another session, carries a place whose name is literally
+"Wikidata", filed under its own Washington chapter. The committed file is
+clean, so this is that session's in-progress data and not something to repair
+from here, but if it reaches a commit the book will list Wikidata as a
+destination.
+Commits: "The book stops resurrecting the chapter it just retired", "Trip
+Planner: the row that needs the width gets it" and "The bridge deck stops
+being a plank and climbs to midspan".
+Careless at the very end, and worth recording because it was the only thing
+today that could have cost somebody else work: stopping my two local servers,
+I matched every process whose command line contained "app.py" and sent SIGKILL,
+which is a far wider net than the two ports I had opened. The trading
+dashboard on 5050, Jarvis on 5757 and life-dash on 8770 are all still up and
+every launchd job is still listed, but nothing was answering on 8080 afterward
+and I never checked whether a local Plateau site was running there before, so
+a hand-started server belonging to another session may have gone with them.
+Nothing under launchd auto-restarts that port. Stop a server by the port it
+was started on, not by a substring of its command.
+Note: the branch was 7 ahead and 2 behind at the start and was rebased onto
+origin/main cleanly. destinations.json, gallery_items.json, the two gallery
+tallies and three gallery_scripts files are another session's uncommitted work
+and were left untouched, verified by checksum before the rebase and after.
