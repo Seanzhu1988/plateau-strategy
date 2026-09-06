@@ -228,10 +228,11 @@ if (key.startsWith("nyc:")) {
     .forEach(f => { try { require(SITE_N + "/" + f); } catch (e) { console.error("form " + f + ": " + e.message); } });
   const N = window.NYC3D;
   const what = key.slice(4);
-  const which = what.startsWith("bridge") ? "bridge" : "empire";
+  const which = what.startsWith("bridge") ? "bridge" : what.startsWith("trump") ? "trump" : "empire";
   const opts = which === "bridge" ? { view: what === "bridge-tower" ? "tower" : "span" }
-                                  : { openT: what === "empire-open" ? 1 : 0 };
-  const cam = which === "bridge" ? N.cams[opts.view]() : N.cams.empire();
+             : which === "trump" ? {}
+             : { openT: what === "empire-open" ? 1 : 0 };
+  const cam = which === "bridge" ? N.cams[opts.view]() : N.cams[which === "trump" ? "trump" : "empire"]();
   if (process.argv[3] != null) cam.yaw = parseFloat(process.argv[3]);
   if (process.argv[4] != null) cam.pitch = parseFloat(process.argv[4]);
   const scene = N.scene(which)(opts);

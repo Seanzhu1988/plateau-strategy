@@ -214,6 +214,61 @@ def record(key, voice, text, model=None, language=None, settings=None):
                 pulling it back toward an English mouth, so lowering it is
                 what lets the model drift to the target language.
     """
+    """
+    LONG SCRIPTS ARE SPLIT. The API refuses a request over ten thousand
+    characters outright: "text_too_long". A fifteen minute guide is about
+    eleven and a half thousand, so the first one written hit the wall and
+    recorded nothing. The text is cut on PARAGRAPH boundaries, never mid
+    sentence, each piece is requested separately, and the MP3 streams are
+    joined end to end. That join is why the split has to be at a paragraph:
+    the reader takes a breath at a blank line anyway, so the seam falls where
+    a pause already belongs and cannot be heard. ID3 headers on the later
+    pieces are dropped so the result is one clean stream.
+    """
+    parts = _split_for_api(text)
+    if len(parts) > 1:
+        chunks = []
+        for i, piece in enumerate(parts):
+            audio, why = _record_one(key, voice, piece, model, language, settings)
+            if why:
+                return None, "part %d of %d: %s" % (i + 1, len(parts), why)
+            chunks.append(_strip_id3(audio) if i else audio)
+        return b"".join(chunks), None
+    return _record_one(key, voice, text, model, language, settings)
+
+
+API_TEXT_MAX = 9500          # the documented ceiling is 10000; leave headroom
+
+
+def _split_for_api(text):
+    """Whole paragraphs, each group under the API ceiling. A single paragraph
+    longer than the ceiling is returned whole and will fail loudly, which is
+    correct: silently cutting a sentence in half is worse than a clear error."""
+    if len(text) <= API_TEXT_MAX:
+        return [text]
+    out, cur = [], ""
+    for para in text.split("\n\n"):
+        add = para if not cur else cur + "\n\n" + para
+        if len(add) > API_TEXT_MAX and cur:
+            out.append(cur)
+            cur = para
+        else:
+            cur = add
+    if cur:
+        out.append(cur)
+    return out
+
+
+def _strip_id3(audio):
+    """Drop a leading ID3v2 tag so joined pieces are one stream."""
+    if audio[:3] != b"ID3" or len(audio) < 10:
+        return audio
+    b = audio[6:10]
+    size = (b[0] << 21) | (b[1] << 14) | (b[2] << 7) | b[3]
+    return audio[10 + size:]
+
+
+def _record_one(key, voice, text, model=None, language=None, settings=None):
     body = {"text": text, "model_id": model or MODEL}
     if language and model:
         body["language_code"] = language

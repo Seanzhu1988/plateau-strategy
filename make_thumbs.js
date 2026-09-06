@@ -195,6 +195,8 @@ const NYC_JOBS = [
    () => window.NYC3D.cams.tower()],
   ["empire-state",    () => window.NYC3D.scene("empire")({ openT: 0 }),
    () => window.NYC3D.cams.empire()],
+  ["trump-tower",     () => window.NYC3D.scene("trump")({}),
+   () => window.NYC3D.cams.trump()],
 ];
 
 const outDir = path.join(__dirname, "thumbs");

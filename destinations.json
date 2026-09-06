@@ -3511,6 +3511,21 @@
       "story_es": "El MoMA abrió el 7 de noviembre de 1929, nueve días después del crac de Wall Street, en seis salas alquiladas del piso doce del edificio Heckscher. Tres mujeres lo impulsaron: Abby Aldrich Rockefeller, Lillie P. Bliss y Mary Quinn Sullivan. La primera muestra reunió a cuatro europeos ya fallecidos, Cézanne, Gauguin, Seurat y van Gogh, y todos los cuadros eran prestados. Recibió 47.293 visitantes en un mes. El cuadro que casi todos vienen a ver llegó doce años después. Bliss nunca fue dueña de La noche estrellada. Su testamento permitía al museo vender su colección para comprar obra que ella habría querido, y el cielo nocturno de van Gogh se pagó con la venta de sus propios cuadros. Ahí está el método del museo en un solo lienzo: vender lo ya consagrado y comprar lo que aún no lo está. Suba primero al quinto piso y baje desde ahí. La sala de La noche estrellada está más tranquila en la primera media hora tras la apertura.",
       "story_ko": "뉴욕 현대미술관은 월가 대폭락 9일 뒤인 1929년 11월 7일, 헤크셔 빌딩 12층에 빌린 방 여섯 칸에서 문을 열었습니다. 이를 밀어붙인 사람은 애비 올드리치 록펠러, 릴리 P. 블리스, 메리 퀸 설리번 세 여성이었습니다. 첫 전시는 세잔, 고갱, 쇠라, 반 고흐 네 명의 작품이었고 전부 빌려온 그림이었습니다. 한 달 동안 47,293명이 찾았습니다. 오늘날 관람객 대부분이 보러 오는 그림은 12년 뒤에 들어왔습니다. 블리스는 '별이 빛나는 밤'을 소유한 적이 없습니다. 블리스의 유언은 미술관이 소장품을 팔아 더 나은 작품을 사도록 허락했고, 반 고흐의 밤하늘은 바로 그 판매 대금으로 구입한 것입니다. 이 한 점에 미술관의 방식이 담겨 있습니다. 이미 정리된 것을 팔고 아직 정리되지 않은 것을 산다는 것입니다. 먼저 5층으로 올라가 아래로 내려오세요. '별이 빛나는 밤'이 걸린 전시실은 개관 직후 30분이 가장 한산합니다.",
       "story_vi": "Bảo tàng Nghệ thuật Hiện đại mở cửa ngày 7 tháng 11 năm 1929, chín ngày sau vụ sụp đổ phố Wall, trong sáu căn phòng thuê ở tầng mười hai tòa nhà Heckscher. Ba người phụ nữ đã thúc đẩy việc này: Abby Aldrich Rockefeller, Lillie P. Bliss và Mary Quinn Sullivan. Triển lãm đầu tiên gồm bốn họa sĩ châu Âu đã qua đời là Cézanne, Gauguin, Seurat và van Gogh, toàn bộ tranh đều đi mượn. Trong một tháng có 47.293 người đến xem. Bức tranh mà phần lớn khách đến để xem chỉ tới mười hai năm sau đó. Bliss chưa bao giờ sở hữu Đêm đầy sao. Di chúc của bà cho phép bảo tàng bán bộ sưu tập của mình để mua những tác phẩm bà hẳn sẽ chọn, và bầu trời đêm của van Gogh được mua bằng chính số tiền bán tranh ấy. Cách làm của bảo tàng nằm gọn trong một bức tranh: bán thứ đã yên vị để mua thứ chưa yên vị. Hãy lên tầng năm trước rồi đi xuống dần. Phòng treo Đêm đầy sao yên tĩnh nhất trong nửa giờ đầu sau khi mở cửa."
+    },
+    {
+      "name": "Trump Tower",
+      "city": "nyc",
+      "type": "attraction",
+      "cat": "history",
+      "price": null,
+      "close": 1200,
+      "visit": 25,
+      "lat": 40.7624,
+      "lon": -73.9738,
+      "desc": "A 664 ft tower of gold tinted glass cut into 28 sides, with a five storey public atrium of pink marble and a 60 ft waterfall you can walk into for nothing.",
+      "tip": "The atrium is a privately owned public space, so entry is free, but there is a bag check and the posted hours change. Cross to the east side of Fifth Avenue and look back from 57th Street to see the whole sawtooth at once.",
+      "slug": "trump-tower",
+      "audio": "/media/audio/guide-trump-tower.mp3"
     }
   ]
 }

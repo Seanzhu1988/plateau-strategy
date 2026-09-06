@@ -868,6 +868,16 @@
      bridge, {openT} for the tower) and returns the same shape:
      { w, h, faces, lines, marks }. The mount, the camera, the labels and the
      opening animation are untouched, so the page's buttons keep working. */
+  /* Trump Tower's camera looks at Fifth Avenue and 56th Street, which is
+     where the sawtooth is and where every photograph of it is taken from.
+     Drawn first at the site's usual -0.72 the renderer showed the two FLAT
+     elevations, the north and the west, and the tower came back a plain brown
+     box: the 28 sided plan was in the geometry and none of it was in the
+     picture. A yaw past a right angle puts the serrated faces toward the eye.
+     Measured rather than guessed: faceVisible is nx*sin(yaw) + ny*cos(yaw),
+     so east needs sin(yaw) > 0 and south needs cos(yaw) < 0, which is any yaw
+     between a right angle and a straight one. 2.24 sits in the middle of it. */
+  var TRUMP_CAM = function () { return makeCam(2.24, 0.19, 1, 356, 566); };
   var SCENES = { bridge: bridgeScene, empire: empireScene };
   function sceneFor(k) {
     var EXT = (typeof window !== 'undefined' && window.NYC_FORMS) || {};
@@ -876,7 +886,8 @@
 
   window.NYC3D = {
     scenes: SCENES, scene: sceneFor, renderTo: render,
-    cams: { span: BRIDGE_CAMS.span, tower: BRIDGE_CAMS.tower, empire: EMPIRE_CAM },
+    cams: { span: BRIDGE_CAMS.span, tower: BRIDGE_CAMS.tower, empire: EMPIRE_CAM,
+            trump: TRUMP_CAM },
     helpers: { face: face, box: box, project: project, shade: shade, normal: normal,
                makeCam: makeCam, C: C, SUN: SUN, PITCH_FLOOR: PITCH_FLOOR, TILT_CEIL: TILT_CEIL },
     bridge: function (host, opts) {
@@ -891,6 +902,15 @@
         return view;
       };
       return m;
+    },
+    /* Trump Tower. It has no second framing and nothing to open, so it is
+       the plainest mount on this file: one builder, one camera, one ceiling.
+       It exists only as a form file, so a page that has not loaded
+       nyc-form-trump.js gets nothing rather than a half drawn tower. */
+    trump: function (host) {
+      if (!(window.NYC_FORMS && window.NYC_FORMS.trump)) return null;
+      return mount(host, function () { return sceneFor('trump')({}); },
+                   TRUMP_CAM(), TILT_CEIL.empire);
     },
     empire: function (host) {
       /* The builder reads openT live, so the same mount draws the solid and

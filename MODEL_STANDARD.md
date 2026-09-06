@@ -383,6 +383,42 @@ scene file) and has been LOOKED at from more than one angle.
   House roof is the largest surface in that model and carries nothing; no
   source reached publishes dormers or plant, so it is flat.
 - capitol, lincoln, jefferson, monument (2026-09-03, the four heroes)
+- trump-tower, 725 Fifth Avenue (2026-09-05), New York's third landmark.
+  Published and load bearing: 664 ft, 58 storeys, "28-sided" with "horizontal
+  setbacks", gold tinted reflective glass, a five storey 15,000 sq ft atrium
+  with a 60 ft waterfall and 240 tons of Breccia Pernice, 34 in brass letters,
+  34 lifts, Der Scutt of Swanke Hayden Connell, begun 1979 and opened 1983.
+  The lot outline was MEASURED this run from OpenStreetMap way "Trump Tower",
+  addr 721/725 5th Avenue, 24 vertices spanning 197.5 by 184.7 ft, and is used
+  for the podium only, because it is the lot and not the tower above it.
+  THE 28 SIDES ARE A COUNT IN THE GEOMETRY, NOT A CLAIM IN A HEADER. The
+  number is published and its distribution is not, so the sawtooth is put
+  where Der Scutt put it and where the photographs show it: 8 bays on Fifth
+  Avenue and 5 on 56th Street, two sides each, flat north and west. 16 + 10 +
+  2 = 28. The scene returns its own side count and the build asserts it.
+  Drawn first, it came back 29, because the walk closed on a duplicate vertex
+  and a zero length side. That is the cheapest possible demonstration of
+  checklist item 1: a count in a comment is not a count in the geometry.
+  WHAT LOOKING CAUGHT, and the first one is the whole model: at the site's
+  usual yaw the renderer showed the NORTH and WEST elevations, which are the
+  two FLAT faces, and the tower came back a plain brown box with its 28 sides
+  entirely invisible. The camera was turned past a right angle so the serrated
+  Fifth Avenue and 56th Street faces are toward the eye, and the angle was
+  derived from faceVisible rather than guessed. Then the sawtooth at a 9 ft
+  bay depth read as CORRUGATED, a radiator rather than a faceted slab, so the
+  depth gave way, because the published fact is the count and not the depth.
+  Then the 56th Street elevation came back nearly black, because this file was
+  picking a tone by hand from the same normal the renderer's shader was
+  already using: two shadings stacked. The hand tone came off.
+  Named gaps: the podium height (82 ft, and no lower than the published 60 ft
+  waterfall), the tower plan, the bay depth, the two setback levels and their
+  step, the storey band, the canopy and the sign band are all ASSUMED and
+  marked. The atrium, the waterfall and the pink marble are the building's
+  famous interior and none of it is visible from the street, so none of it is
+  drawn. The brass letters are a band, not letterforms: 34 inches is under a
+  pixel here.
+  Reachable: it is in the Destination Book with a thumbnail, a share link and
+  a fifteen minute spoken guide.
 - space-needle, Seattle (2026-09-05). The city Sean actually sells tours in,
   and the routine's own queue calls it the one that could sell a tour. The
   research was already done and sourced in seattle-3d.js: 605 ft to the tip,
