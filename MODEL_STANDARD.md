@@ -888,6 +888,62 @@ scene file) and has been LOOKED at from more than one angle.
 
 ## Researched this run, NOT built, for the next run to pick up
 
+- moma, the Museum of Modern Art exterior (2026-09-05, the landmark routine).
+  CLAIMED at the start of the run, then RELEASED unbuilt, and the claim was
+  removed rather than left to block another builder. The reason is the
+  standard's first rule and it is worth writing down, because the failure is
+  not laziness and the next run should not repeat the four dead ends.
+  WHAT THE PICTURE SHOWS, and this is why it was picked: rendered at
+  `node render_room.js moma:closed -0.62 0.40`, the current model is a grey
+  striped slab. Six identical glazing bands wrap all four faces, the marble
+  MoMA is actually faced in is nowhere in the palette, the recessed ground
+  floor the file's own comment calls "the cheapest single line that makes it
+  MoMA" does not read at this angle, there is no ground shadow, and the mass
+  reaches the right edge of the frame. It is an office block on a pale pad.
+  The file does not hide this. Its own comments say the height is set because
+  extruding the wayfinding plan "produced a squat slab that looked like a car
+  park", that mullion spacing "is a drawing decision, not a measurement", and
+  that "THE PLAN IS NOT THE FOOTPRINT". So every number in it is invented,
+  which is exactly what a rebuild exists to fix.
+  WHAT IS PUBLISHED AND WAS REACHED THIS RUN: the 1939 Goodwin and Stone
+  building is "a six-story structure ... a white marble box with a glass-walled
+  base, two levels of galleries with translucent glazing, and upper-level
+  offices with horizontal strip windows"; Taniguchi's 2004 rebuild kept only
+  the 53rd Street facades of the 1939 building, Johnson's 1964 East Wing and
+  Pelli's Museum Tower, and brought the campus to about 630,000 sq ft; the
+  2019 Diller Scofidio + Renfro expansion added about 50,000 sq ft of gallery
+  space; the adjoining Museum Tower is 56 storeys (Wikipedia, Museum of Modern
+  Art; moma.org).
+  THE GAP THAT BLOCKED THE BUILD: not one exterior DIMENSION in feet. No
+  facade width, no depth, no height, no bay count. A storey count and a square
+  footage are a programme, not a building, and checklist item 7 says heights
+  are TRUE or the model is not committed. Building the envelope from the
+  wayfinding plan again would reproduce the exact model being replaced.
+  FOUR ROUTES TRIED THIS RUN, ALL DEAD, so the next run starts past them:
+    a. Wikipedia, Museum of Modern Art. Carries the storey count and the square
+       footages and NO dimension of any kind. Checked and reported as a
+       negative, the same way the state-house entry does.
+    b. the NYC Landmarks Preservation Commission designation report, which is
+       where a New York building's facade width and bay count normally live.
+       Three searches failed to surface a report for 11 West 53rd Street.
+       s-media.nyc.gov/agencies/lpc/lp/2420.pdf appeared in the results and was
+       NOT opened for lack of run budget; it is the strongest remaining lead
+       and the next run should open it FIRST.
+    c. Overpass, the route that measured the Castle, NMAAHC and the National
+       Museum of American History footprints. A name query over the block
+       bounded by 40.7595,-73.9800 and 40.7640,-73.9740 returns an EMPTY
+       element list: MoMA's footprint is not tagged with its name there. A
+       plain `building` query over the block would return the whole street and
+       needs a way id, not a name, to be useful.
+    d. the museum's own architecture page,
+       americanhistory-style, at moma.org and americanhistory.si.edu, returns
+       HTTP 403 to WebFetch, as SAH ARCHIPEDIA already does. Two of the three
+       best architectural sources on this project are now closed to the
+       routine, which is worth knowing before planning a run around them.
+  WHAT WOULD UNBLOCK IT: the LPC report at (b), or the 1939 press release in
+  MoMA's own archive at moma.org/documents, which announced the new building
+  and is the kind of primary source that states a plot size in feet.
+
 - american, the National Museum of American History. The research is done and
   is recorded here so the next run does not pay for it twice.
   MEASURED this run from OSM way 445808462 through Overpass: 151.2 m by 68.9 m
@@ -919,6 +975,16 @@ scene file) and has been LOOKED at from more than one angle.
   PDF that WebFetch could not read and is the most likely place for an
   elevation:
   ncpc.gov/docs/actions/2010Oct/National_Museum_American_History_West_Facade_Modification_Recommendation_7156_October2010_.pdf
+  RETRIED 2026-09-05 by the landmark routine and still blocked, recorded so a
+  third run does not spend its budget the same way: a targeted search for the
+  Mall-elevation pier or bay count returns only the SAME prose already quoted
+  above, "regularly spaced, rectangular slabs of wall ... treated as a modern
+  equivalent of columns", with no number anywhere; and the museum's own
+  architecture page, americanhistory.si.edu/explore/stories/museums-
+  architecture-classical-modern-details, returns HTTP 403 to WebFetch exactly
+  as SAH ARCHIPEDIA does. The count is not on the open web in prose. It has to
+  come off a DRAWING, which means the NCPC PDF or the HABS sheets, or off a
+  rectified photograph of the Mall facade counted by eye.
   Get that PDF read, or find the HABS sheets, before building. Drawing the
   piers on an invented module would put a guessed count in the model's most
   prominent feature, and drawing no piers at all would leave a marble box,
