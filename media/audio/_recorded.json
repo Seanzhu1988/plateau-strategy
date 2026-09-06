@@ -403,7 +403,9 @@
  },
  "guide-trump-tower.mp3": {
   "chars": 13434,
-  "sig": "dc83b1459960",
+  "intro": "intro-disco",
+  "intro_bytes": 72933,
+  "sig": "39bbbc2aea04",
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 2499
  },

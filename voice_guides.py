@@ -6,7 +6,7 @@
     python3 voice_guides.py --lang ja     # record the Japanese narrations
     python3 voice_guides.py --voice NAME  # use a different reader
     python3 voice_guides.py --cards       # record the thirty second cards
-    python3 voice_guides.py --force       # redo even adopted recordings
+    python3 voice_guides.py --force       # redo even adopted recordings\n    python3 voice_guides.py --reintro     # change the opening music, spend nothing
 
 Languages. English scripts live in guide_scripts.json; every other language
 lives in guide_scripts.<lang>.json with the same slugs, and records to
@@ -75,6 +75,19 @@ DEFAULT_VOICE = "6nukEV6JAgCcOkdtH5FM"
 # About 450 words is three minutes of narration at an unhurried pace. English
 # scripts shorter than this are held back as unfinished; see the docstring for
 # why other languages are not word-counted.
+# A guide may open with a short piece of music, named here by its file stem in
+# media/audio. The file is recorded in the same shape as the reader (mono,
+# 44.1kHz, 64kbps mp3) so it is joined to the front of the narration as raw
+# frames: nothing is re-encoded and no audio tool is needed at record time.
+#
+# THE MUSIC HAS TO BE OURS. A famous record carries two copyrights, one on the
+# recording and one on the song, and the few seconds everybody recognises is
+# exactly the part that is protected, so a clip is not a way around it. On a
+# commercial guide that is the risky use, not the safe one. intro-disco.mp3 was
+# synthesised for this site out of oscillators and noise by make_sting.py, so it
+# owes nothing to anyone. Anything added here has to clear the same bar.
+INTRO = {"trump-tower": "intro-disco"}
+
 MIN_WORDS = 450
 
 # THE SECOND TIER: CARDS. A deep guide is for a place you travel to and settle
@@ -141,9 +154,44 @@ def save_manifest(m):
         json.dump(m, f, ensure_ascii=False, indent=1, sort_keys=True)
 
 
-def sig(text):
-    """A short fingerprint of a script, so a rewrite is noticed."""
-    return hashlib.sha1(text.encode("utf-8")).hexdigest()[:12]
+def intro_for(slug, tier="guide"):
+    """The music that opens this guide, or None. A card never gets one: thirty
+    seconds cannot afford ten of horns."""
+    return INTRO.get(slug) if tier == "guide" else None
+
+
+def music_bytes(name):
+    """The opening music as mp3 frames, or empty if there is none to add."""
+    if not name:
+        return b""
+    p = os.path.join(OUTDIR, name + ".mp3")
+    if not os.path.exists(p):
+        print("  no intro  %s is missing, recorded without it" % os.path.basename(p))
+        return b""
+    with open(p, "rb") as f:
+        return _strip_id3(f.read())
+
+
+def with_intro(audio, music):
+    """Put the opening music in front of the narration.
+
+    Both are mono 44.1kHz 64kbps mp3, so this is a frame join and the narration
+    is never re-encoded: no generation loss, and no audio tool needed on this
+    machine at record time. The narration's own ID3 header goes, because it is
+    no longer the front of the file, and the music is written without one.
+
+    HOW MANY BYTES OF MUSIC WENT ON IS STAMPED IN THE LEDGER, so the opening can
+    be changed later by slicing exactly that much off the front and joining a new
+    one. Without that number a new intro would mean re-reading a fifteen minute
+    script, and quota is real."""
+    return (music + _strip_id3(audio)) if music else audio
+
+
+def sig(text, intro=None):
+    """A short fingerprint of a script, so a rewrite is noticed. The opening
+    music is part of it: add, change or drop an intro and the guide is remade."""
+    seed = text if not intro else text + "\x00intro:" + intro
+    return hashlib.sha1(seed.encode("utf-8")).hexdigest()[:12]
 
 
 def off_band(text, lang, tier="guide"):
@@ -187,7 +235,7 @@ def status(slug, text, voice, lang, manifest, tier="guide"):
         # the guess is that a script edited before adoption keeps its old audio.
         # Use --force to overrule it.
         return "adopt"
-    if m.get("voice") != voice or m.get("sig") != sig(text):
+    if m.get("voice") != voice or m.get("sig") != sig(text, intro_for(slug, tier)):
         return "record"
     return "have"
 
@@ -297,6 +345,62 @@ def _record_one(key, voice, text, model=None, language=None, settings=None):
     return audio, None
 
 
+def reintro(scripts, manifest, lang, tier, dry=False, force=False):
+    """Change the opening music on guides already on disk, spending nothing.
+
+    The narration is untouched: the old music is sliced off using the byte count
+    the ledger recorded when it went on, and the new music is joined to the
+    front. A guide whose ledger row predates that count is left alone and named,
+    because guessing where the music ends would cut into the first sentence.
+
+    --force re-applies even when the name has not changed, which is what a
+    recut of the same music needs."""
+    changed, skipped = [], []
+    for slug in scripts:
+        p = out_path(slug, lang, tier)
+        if not os.path.exists(p):
+            continue
+        row = dict(manifest.get(os.path.basename(p)) or {})
+        have, want = row.get("intro"), intro_for(slug, tier)
+        if have == want and not force:
+            continue
+        old = int(row.get("intro_bytes") or 0)
+        if have and not old:
+            skipped.append((slug, "the ledger never recorded how long %s is" % have))
+            continue
+        music = music_bytes(want)
+        if want and not music:
+            skipped.append((slug, "no %s.mp3 in media/audio" % want))
+            continue
+        if dry:
+            changed.append((slug, have, want))
+            continue
+        with open(p, "rb") as f:
+            data = f.read()
+        body = data[old:] if old else _strip_id3(data)
+        with open(p, "wb") as f:
+            f.write(music + body)
+        row["intro"] = want
+        row["intro_bytes"] = len(music)
+        if not want:
+            row.pop("intro", None)
+            row.pop("intro_bytes", None)
+        text = scripts.get(slug, "")
+        row["sig"] = sig(text, want)
+        manifest[os.path.basename(p)] = row
+        changed.append((slug, have, want))
+    if changed and not dry:
+        save_manifest(manifest)
+    for slug, have, want in changed:
+        print("  %-32s %s -> %s%s" % (slug, have or "no opening", want or "no opening",
+                                      "  (dry)" if dry else ""))
+    for slug, why in skipped:
+        print("  %-32s left alone: %s" % (slug, why))
+    print("\nopening music changed on %d guide(s), %d left alone. No characters spent."
+          % (len(changed), len(skipped)))
+    return 0
+
+
 def main():
     dry = "--dry" in sys.argv
     lang = "en"
@@ -336,6 +440,13 @@ def main():
             return 1
         scripts = {k: v for k, v in scripts.items() if k in wanted}
 
+    # --reintro puts a new opening on guides that are already recorded, for
+    # free. Re-recording to change ten seconds of music would re-read the whole
+    # script at ElevenLabs, and a fifteen minute guide is most of a free month.
+    if "--reintro" in sys.argv:
+        return reintro(scripts, manifest, lang, tier, dry,
+                       force="--force" in sys.argv)
+
     force = "--force" in sys.argv
     have, bad, todo, adopted = [], [], [], []
     for slug, text in scripts.items():
@@ -343,7 +454,8 @@ def main():
         if st == "adopt" and not force:
             adopted.append(slug)
             manifest[os.path.basename(out_path(slug, lang, tier))] = {
-                "voice": voice, "sig": sig(text), "words": len(text.split()),
+                "voice": voice, "sig": sig(text, intro_for(slug, tier)),
+                "words": len(text.split()),
                 "chars": len(text), "adopted": True}
             have.append(slug)
         elif st == "have":
@@ -400,11 +512,18 @@ def main():
             failed.append((slug, why))
             print("  failed  %-32s %s" % (slug, why))
             continue
+        name = intro_for(slug, tier)
+        music = music_bytes(name)
+        audio = with_intro(audio, music)
         p = out_path(slug, lang, tier)
         with open(p, "wb") as f:
             f.write(audio)
-        manifest[os.path.basename(p)] = {"voice": voice, "sig": sig(text),
-                                         "words": len(text.split()), "chars": len(text)}
+        row = {"voice": voice, "sig": sig(text, name),
+               "words": len(text.split()), "chars": len(text)}
+        if music:
+            row["intro"] = name
+            row["intro_bytes"] = len(music)
+        manifest[os.path.basename(p)] = row
         save_manifest(manifest)
         made.append(slug)
         print("  voiced  %-32s %6d bytes" % (slug, len(audio)))

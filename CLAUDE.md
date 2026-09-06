@@ -45,5 +45,12 @@ A change that has not been looked at on a phone is not finished.
   in page copy, articles, blueprints, or any written content. Use commas or
   periods. The server enforces this for posted content; write it that way by
   hand too.
+- **Music on the site has to be ours.** A famous record carries two copyrights,
+  one on the recording and one on the song, and the few seconds everyone
+  recognises is exactly the protected part, so a short clip is not a way around
+  it. On a commercial tour guide that is the risky use, not the safe one. The
+  opening on a guide is synthesised here by `make_sting.py` and joined to the
+  front of the narration by `voice_guides.py`. Anything added later clears the
+  same bar: written for us, licensed for commercial use, or not used.
 - Design tokens and colour live in `PALETTE.md`. The reasoning behind past
   choices lives in `DESIGN_DECISIONS.md`. Read them before restyling.
