@@ -267,8 +267,10 @@
                             fill: "#c7b294", note: "Mastaba Tomb of Perneb, height published" },
     "greek-roman":        { kind: "figure", h: 6.4,  w: 1.7, d: 2.1, fill: "#ded8cc" },
     "lehman":             { kind: "canvas", h: 5.1,  w: 4.1,  fill: "#6f5a44" },
-    "grand-stair":        { kind: "canvas", h: 18.3, w: 10.7, fill: "#7a6a56" },
-    "euro-paintings":     { kind: "canvas", h: 4.7,  w: 4.5,  fill: "#6b5b47" }
+    "grand-stair":        { kind: "canvas", h: 18.3, w: 10.7, fill: "#7a6a56" }
+    /* euro-paintings left this table on 2026-09-06: it is gallery 637 now,
+       an actual room, and the fallback loop at the foot of this file
+       overwrites MET_ROOMS for every key that stays here. */
   };
 
   var FRAME = "#4a3f31", STONE_E = "#8b8375";
@@ -1543,6 +1545,134 @@
     return out;
   }
 
+
+  /* ---------------- Gallery 637, European Paintings ----------------
+     The plan's `euro-paintings` node stood for the whole second floor suite
+     and was drawn as a single canvas in a box, height 4.7 by width 4.5, with
+     no room around it and no work named. This is the FIFTH Met interior turned
+     from an object into a room, and it is drawn as ONE gallery, 637, because
+     a suite of forty rooms has no single envelope and pretending it does is
+     the lie the old entry told.
+
+     PUBLISHED, the Met's own collection API, read this run, both objects
+     verified to carry GalleryNumber 637:
+       object 679844, Joachim Beuckelaer, "Fish Market", 1568,
+         "50 5/8 x 68 7/8 in." = 4 ft 2 5/8 by FIVE FEET EIGHT AND SEVEN
+         EIGHTHS;
+       object 436622, Frans Hals, "Merrymakers at Shrovetide", ca. 1616-17,
+         "51 3/4 x 39 1/4 in."
+     Both are drawn at exactly those numbers and at nothing else.
+
+     WHAT THE GALLERY FILTER ALSO DID, which is half its value and is the same
+     lesson gallery 812 taught: Vermeer's "Young Woman with a Water Pitcher"
+     came back on the very same sweep, at 18 by 16 in., and is LEFT OUT,
+     because its GalleryNumber is 614, a different room in the same suite. A
+     search tells you what to draw; the gallery field tells you what not to.
+
+     DERIVED and declared: no dimension of gallery 637 itself is published
+     anywhere reached this run. The room keeps the floor plan's own proportion,
+     195 by 140, and is drawn near 44 by 32 ft, with the Fish Market spanning
+     an eighth of the long wall, which is what a 5 ft 9 picture does in a
+     gallery of that size.
+
+     NAMED GAPS, every one of them: the ceiling height, the picture rail
+     height, the dado height, the wall colour, the bay count, and which wall
+     each painting hangs on are drawing decisions, not measurements. The
+     hanging centre is 57 in, the museum standard, not a survey of this wall.
+
+     NOT DRAWN, declared, and this is the gallery 812 rule applied before it
+     could waste a render: gallery 637 is one of the SKYLIT top-lit rooms, and
+     a laylight cannot be drawn in these cutaways at all. A horizontal plane at
+     ceiling height projects down across the floor from this eye whatever depth
+     it is given. The room is roofless; the lit cove at the top of the wall
+     carries the daylight and the laylight is a gap on the page. */
+  function gallery637(ctx) {
+    var r = ctx.room, z = ctx.zBase, P = ctx.project, out = [];
+    var wall = ctx.wall || 26;
+    var F = wall / 22;                    /* 22 ft wall height fixes the scale */
+
+    var WALL = "#5c6650", WALL_D = "#454d3c";     /* the green damask hang */
+    var DADO = "#4a4136", DADO_D = "#382f27";
+    var RAIL = "#c6ad83", RAIL_D = "#a08a66";
+    var FLOOR = "#8d7757", FLOOR_D = "#6f5c43";
+    var LIGHT = "#f7f2e4", BENCH = "#4e4337", BENCH_D = "#392f27";
+
+    var GW = 44 * F, GD = 32 * F;
+    var cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+    var x1 = cx - GW / 2, x2 = cx + GW / 2, y1 = cy - GD / 2, y2 = cy + GD / 2;
+
+    /* the plan slot, which doubles as the ground shadow this mass would
+       otherwise float over, then the gallery floor standing on it. Both span
+       the scene, so both carry an EXPLICIT depth: a plane this wide has a
+       nearer corner than everything standing on it. */
+    out.push(flat(ctx, r.x, r.y, r.x + r.w, r.y + r.h, z, "#cfc6b4", "#b0a99c", 0.5, -1e9));
+    out.push(flat(ctx, x1, y1, x2, y2, z + 0.1, FLOOR, FLOOR_D, 0.5, -9.99e8));
+
+    var T = Math.max(1.2, GW * 0.020);
+
+    /* back wall, then its dado, rail and cove, then the pictures, and the two
+       SIDE walls last, because a side wall runs the whole depth and its near
+       end sits far closer to the eye than the back wall it meets. */
+    out = out.concat(mass(ctx, x1, y1, x2, y1 + T, z, wall, WALL, WALL_D, -9.80e8));
+
+    /* THE FISH MARKET on the back wall at 68 7/8 by 50 5/8 inches, hung on the
+       57 inch centre line. */
+    if (ctx.faceVisible(0, 1)) {
+      var mapB = function (u, zz) { return P(u, y1 + T, zz); };
+      var FM_W = (68.875 / 12), FM_H = (50.625 / 12);
+      out = out.concat(canvasOn(ctx, mapB, cx - GW * 0.17, z + (57 / 12) * F,
+                                FM_W * F, FM_H * F, -9.50e8));
+      /* a second, empty frame of the same family further along the wall: the
+         gallery hangs more than two pictures and an empty wall would say it
+         does not. It is drawn blank and at no published size, and the header
+         says so. */
+      out = out.concat(canvasOn(ctx, mapB, cx + GW * 0.22, z + (57 / 12) * F,
+                                3.2 * F, 4.0 * F, -9.49e8));
+    }
+
+    /* the three horizontal breaks that stop a hung wall reading as one
+       extrusion: a dado to 3 ft, the picture rail at 14, the lit cove above. */
+    /* the dado is 2.4 ft and not 3, and the reason is the render: at 3 ft its
+       top ledge cut straight across the bottom of the Fish Market, because a
+       50 inch picture on the 57 inch centre line starts at 32 inches. Both
+       numbers were choices, and the picture is the one that had to give way. */
+    out = out.concat(mass(ctx, x1, y1, x2, y1 + T * 0.62, z + 0.15, 2.4 * F,
+                          DADO, DADO_D, -9.76e8));
+    out = out.concat(mass(ctx, x1, y1, x2, y1 + T * 0.55, z + 14 * F, 0.5 * F,
+                          RAIL, RAIL_D, -9.74e8));
+    out = out.concat(mass(ctx, x1, y1, x2, y1 + T * 0.55, z + wall - 1.8 * F, 1.8 * F,
+                          LIGHT, "#ded6c0", -9.72e8));
+
+    /* THE HALS on whichever side wall is turned towards the eye, at 39 1/4 by
+       51 3/4 inches. If neither faces us it is not drawn, rather than drawn on
+       a wall it is not on. */
+    var sideX = ctx.faceVisible(1, 0) ? x1 + T : (ctx.faceVisible(-1, 0) ? x2 - T : null);
+    if (sideX !== null) {
+      var mapS = function (u, zz) { return P(sideX, u, zz); };
+      var HL_W = (39.25 / 12), HL_H = (51.75 / 12);
+      out = out.concat(canvasOn(ctx, mapS, y1 + GD * 0.40, z + (57 / 12) * F,
+                                HL_W * F, HL_H * F, -8.95e8));
+      /* the 8 ft enfilade doorway through to the next gallery in the suite,
+         which is what a European Paintings room actually is: a link in a
+         chain of forty. Dark enough to survive map scale. */
+      var dc = y2 - GD * 0.18;
+      out.push({ svg: ctx.poly([mapS(dc - 2.4 * F, z + 0.1), mapS(dc + 2.4 * F, z + 0.1),
+                                mapS(dc + 2.4 * F, z + 8 * F), mapS(dc - 2.4 * F, z + 8 * F)],
+                               "#31281f", WALL_D, 0.4), depth: -8.93e8 });
+    }
+
+    out = out.concat(mass(ctx, x1, y1, x1 + T, y2, z, wall, WALL, WALL_D, -9.00e8));
+    out = out.concat(mass(ctx, x2 - T, y1, x2, y2, z, wall, WALL, WALL_D, -9.00e8));
+
+    /* a backless bench, 6 ft by 17 in, the one object in the room a body
+       already knows the size of, which is what gives the paintings their
+       scale. */
+    var bcy = y2 - GD * 0.34;
+    out = out.concat(mass(ctx, cx - 3 * F, bcy - 0.8 * F, cx + 3 * F, bcy + 0.8 * F,
+                          z + 0.1, (17 / 12) * F, BENCH, BENCH_D, -8.0e8));
+    return out;
+  }
+
   window.MET_ROOMS = { dendur: dendur, 'great-hall': greatHall,
                       'american-court': americanCourt,
                       'asian-astor': astorCourt,
@@ -1550,6 +1680,7 @@
                       medieval: medievalHall,
                       'arms-armor': armsArmor,
                       'nineteenth-century': gallery812,
+                      'euro-paintings': gallery637,
                       modern: modern, 'grand-stair-2': grandStair };
   Object.keys(LANDMARKS).forEach(function (k) { window.MET_ROOMS[k] = landmark; });
 })();
