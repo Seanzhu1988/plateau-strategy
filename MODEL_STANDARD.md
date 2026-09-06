@@ -183,10 +183,16 @@ queue instead. Remove a line the moment its work lands or is abandoned.
 - nineteenth-century is DONE, 2026-09-06, by the landmark routine.
 - euro-paintings is DONE, 2026-09-06, by the landmark routine, as Gallery 637.
 - lehman is DONE, 2026-09-06, by the landmark routine, as Gallery 959.
-  The Met interiors still object-in-a-box are greek-roman (REFUSED on
-  published dimensions) and grand-stair. grand-stair-2 already has a real
-  stair; the floor 1 node falls back to the landmark drawing and is the last
-  one left.
+- grand-stair is DONE, 2026-09-06, by the landmark routine: the floor 1 node
+  now draws grandStair(), the same flight the floor 2 node already drew, and
+  the key left the LANDMARKS table. It is the one stair seen from each end.
+  THE MET INTERIORS ARE NOW FINISHED except greek-roman, which is REFUSED on
+  published dimensions and should stay refused until a source is found. Queue
+  item 5 is closed. The next run should go to the top of the queue instead:
+  american is the only Mall place with no dc-form file and is blocked three
+  times over, so unless a run can reach an HABS sheet or LOOK at a photograph,
+  the honest next work is a rebuild pass over the older trail-3d.js and
+  nyc-3d.js models against the nine-item checklist.
 
 After these: Boston, the nine Freedom Trail buildings, in batches.
 
