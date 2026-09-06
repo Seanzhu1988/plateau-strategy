@@ -266,7 +266,9 @@
     "egyptian":           { kind: "mass",   h: 15.8, w: 20, d: 12, lean: 0.09,
                             fill: "#c7b294", note: "Mastaba Tomb of Perneb, height published" },
     "greek-roman":        { kind: "figure", h: 6.4,  w: 1.7, d: 2.1, fill: "#ded8cc" },
-    "lehman":             { kind: "canvas", h: 5.1,  w: 4.1,  fill: "#6f5a44" },
+    /* lehman left this table on 2026-09-06: it is gallery 959 now, an actual
+       room. A key that stays here is overwritten by the fallback loop at the
+       foot of this file, which runs after MET_ROOMS is built. */
     "grand-stair":        { kind: "canvas", h: 18.3, w: 10.7, fill: "#7a6a56" }
     /* euro-paintings left this table on 2026-09-06: it is gallery 637 now,
        an actual room, and the fallback loop at the foot of this file
@@ -1673,6 +1675,109 @@
     return out;
   }
 
+
+  /* ---------------- Gallery 959, the Robert Lehman Wing ----------------
+     The plan's `lehman` node was a canvas in a box, h 5.1 by w 4.1, naming no
+     work. This is the SIXTH Met interior turned into a room, and the object
+     that fixes its scale is not a painting at all.
+
+     PUBLISHED, the Met's own collection API, read this run, both objects
+     verified to carry GalleryNumber 959:
+       object 459205, Bernard van Orley, "The Last Supper", ca. 1525-28,
+         "131 7/8 x 137 13/16 in." = ELEVEN FEET BY ELEVEN FEET FIVE AND
+         THREE QUARTERS;
+       object 459227, "Emperor Vespasian Cured by Veronica's Veil", ca. 1510,
+         "135 1/2" x 135"" = eleven feet three and a half by eleven feet three.
+     Two Netherlandish tapestries, each over eleven feet square. That is the
+     fact this room exists to carry: no photograph of the Lehman Wing conveys
+     that a single hanging in it is twice the height of a standing person and
+     as wide again.
+
+     DERIVED and load bearing, on the Medieval Hall rule that when a room is
+     famous for one object the object fixes the scale and the plan rectangle
+     does not: the back wall carries an 11.5 ft hanging with clear wall to
+     either side, so it is 2.6 hangings, near 30 ft, and the plan's own
+     180:105 proportion gives 17.5 ft of depth.
+
+     NAMED GAPS: the gallery's own height, length and depth are published
+     nowhere reached this run; the 16 ft wall is what an eleven foot three
+     hanging plus a base and a cornice requires, not a measurement. The hanging
+     height off the floor, the cornice, the panelled dado and the doorway are
+     drawing decisions.
+
+     NOT DRAWN, declared: the ceiling, on the standing rule for these
+     cutaways. A horizontal plane at ceiling height projects down across the
+     floor from this eye whatever depth it is given.
+
+     The tapestries are drawn as rectangles of the published SIZE and nothing
+     else, which is what canvasOn is for. */
+  function gallery959(ctx) {
+    var r = ctx.room, z = ctx.zBase, P = ctx.project, out = [];
+    var wall = ctx.wall || 26;
+    var F = wall / 16;                    /* 16 ft wall height fixes the scale */
+
+    var WALL = "#6a5f52", WALL_D = "#514840";
+    var PANEL = "#4b3f33", PANEL_D = "#382f26";
+    var CORN = "#c3ab86", CORN_D = "#9d8865";
+    var FLOOR = "#8b7454", FLOOR_D = "#6c5941";
+    var BENCH = "#4c4135", BENCH_D = "#372e26";
+
+    var GW = 30 * F, GD = 17.5 * F;
+    var cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+    var x1 = cx - GW / 2, x2 = cx + GW / 2, y1 = cy - GD / 2, y2 = cy + GD / 2;
+
+    out.push(flat(ctx, r.x, r.y, r.x + r.w, r.y + r.h, z, "#cfc6b4", "#b0a99c", 0.5, -1e9));
+    out.push(flat(ctx, x1, y1, x2, y2, z + 0.1, FLOOR, FLOOR_D, 0.5, -9.99e8));
+
+    var T = Math.max(1.2, GW * 0.022);
+    out = out.concat(mass(ctx, x1, y1, x2, y1 + T, z, wall, WALL, WALL_D, -9.80e8));
+
+    /* THE LAST SUPPER on the back wall at 137 13/16 by 131 7/8 inches, hung
+       with its lower edge 1 ft 6 in off the floor, which is how a tapestry of
+       this size has to hang in a 16 ft room and is a decision, not a source. */
+    var LS_W = (137.8125 / 12), LS_H = (131.875 / 12);
+    if (ctx.faceVisible(0, 1)) {
+      var mapB = function (u, zz) { return P(u, y1 + T, zz); };
+      out = out.concat(canvasOn(ctx, mapB, cx, z + (1.5 + LS_H / 2) * F,
+                                LS_W * F, LS_H * F, -9.50e8));
+    }
+
+    /* a panelled dado to 2.5 ft and a cornice under the wall head: the two
+       horizontal breaks that stop the hang reading as one extrusion. The
+       dado stops below the tapestry, which starts at 1 ft 6. */
+    out = out.concat(mass(ctx, x1, y1, x2, y1 + T * 0.60, z + 0.15, 1.4 * F,
+                          PANEL, PANEL_D, -9.76e8));
+    out = out.concat(mass(ctx, x1, y1, x2, y1 + T * 0.50, z + wall - 1.1 * F, 1.1 * F,
+                          CORN, CORN_D, -9.72e8));
+
+    /* THE VESPASIAN on whichever side wall is turned to the eye, at 135 by
+       135 1/2 inches. It paints AFTER the side walls, because a side wall's
+       own inner face is drawn from this eye and would cover it. */
+    var sideX = ctx.faceVisible(1, 0) ? x1 + T : (ctx.faceVisible(-1, 0) ? x2 - T : null);
+
+    out = out.concat(mass(ctx, x1, y1, x1 + T, y2, z, wall, WALL, WALL_D, -9.00e8));
+    out = out.concat(mass(ctx, x2 - T, y1, x2, y2, z, wall, WALL, WALL_D, -9.00e8));
+
+    if (sideX !== null) {
+      var mapS = function (u, zz) { return P(sideX, u, zz); };
+      var VE_W = (135 / 12), VE_H = (135.5 / 12);
+      out = out.concat(canvasOn(ctx, mapS, y1 + GD * 0.47, z + (1.5 + VE_H / 2) * F,
+                                VE_W * F, VE_H * F, -8.95e8));
+      out.push({ svg: ctx.poly([mapS(y2 - GD * 0.13 - 2.2 * F, z + 0.1),
+                                mapS(y2 - GD * 0.13 + 2.2 * F, z + 0.1),
+                                mapS(y2 - GD * 0.13 + 2.2 * F, z + 7.5 * F),
+                                mapS(y2 - GD * 0.13 - 2.2 * F, z + 7.5 * F)],
+                               "#2f2820", WALL_D, 0.4), depth: -8.93e8 });
+    }
+
+    /* the one object a body already knows the size of, which is what makes an
+       eleven foot hanging read as eleven feet: a 6 ft bench, 17 in high. */
+    var bcy = y2 - GD * 0.32;
+    out = out.concat(mass(ctx, cx - 3 * F, bcy - 0.8 * F, cx + 3 * F, bcy + 0.8 * F,
+                          z + 0.1, (17 / 12) * F, BENCH, BENCH_D, -8.0e8));
+    return out;
+  }
+
   window.MET_ROOMS = { dendur: dendur, 'great-hall': greatHall,
                       'american-court': americanCourt,
                       'asian-astor': astorCourt,
@@ -1681,6 +1786,7 @@
                       'arms-armor': armsArmor,
                       'nineteenth-century': gallery812,
                       'euro-paintings': gallery637,
+                      lehman: gallery959,
                       modern: modern, 'grand-stair-2': grandStair };
   Object.keys(LANDMARKS).forEach(function (k) { window.MET_ROOMS[k] = landmark; });
 })();
