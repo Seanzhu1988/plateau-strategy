@@ -10,7 +10,11 @@
  * feet, so the proportions on screen are the proportions in the air:
  *
  *   Brooklyn Bridge, opened 1883. Main span 1,595.5 ft, side spans 930 ft
- *   each, total 6,016 ft. Towers 276.5 ft above mean high water, deck 127 ft.
+ *   each, total 6,016 ft. Towers 276.5 ft above mean high water. The roadway
+ *   is 119 ft 3 in above high water at the towers and 135 ft at the centre of
+ *   the span, so it climbs 15.75 ft to midspan; 127 ft, the number usually
+ *   quoted, is the navigational clearance and not the height of the roadway
+ *   anywhere in particular.
  *   Two pointed Gothic arches per tower, each 117 ft tall and 33.75 ft wide.
  *   Four main cables, and about 400 diagonal stays, 138 to 449 ft long, which
  *   are the web everyone photographs and the reason the deck is stiff.
@@ -351,9 +355,29 @@
   /* ==================== BROOKLYN BRIDGE ==================== */
   /* Feet, origin at the Manhattan tower's centre, x runs to Brooklyn. */
   var BB = {
-    span: 1595.5, side: 930, towerH: 276.5, deckH: 127,
+    span: 1595.5, side: 930, towerH: 276.5, deckH: 119.25, deckMid: 135,
     archH: 117, archW: 33.75, deckW: 85, towerW: 140, towerT: 53
   };
+
+  /* The roadway is not a plank. It stands 119 ft 3 in above mean high water
+     where it passes the towers and 135 ft at the centre of the river span, so
+     it climbs 15.75 ft to midspan and falls again: the deck a visitor walks is
+     a shallow arc. deckH was 127 before, which is the NAVIGATIONAL clearance
+     everyone quotes, not the height of the roadway at any particular place,
+     and using it as the tower datum would have put the rise at 8 ft, a number
+     no source supports. Both published figures now sit in the file and the
+     curve is drawn between them.
+     Sources: the roadway "is 119 feet 3 inches above high water at the towers
+     and 135 feet at the centre of the span"; nycsubway.org's Chapter 4 gives
+     the same 119.25 ft at the towers. */
+  function deckZ(x) {
+    /* Outside the towers the roadway really does fall away toward the
+       anchorages, but no figure for that grade was found, so the approach
+       stubs are held at the tower height rather than invented. */
+    if (x <= 0 || x >= BB.span) return BB.deckH;
+    var t = (x - BB.span / 2) / (BB.span / 2);   /* -1 at a tower, 0 at midspan */
+    return BB.deckMid - (BB.deckMid - BB.deckH) * t * t;
+  }
 
   /* Two views of the same real bridge. The whole span is what a visitor
      recognises, but at that framing a 33.75 ft opening is about ten pixels
@@ -377,18 +401,40 @@
     f.push(face([P(x0 - 260, -520, 0), P(x1 + 260, -520, 0),
                  P(x1 + 260, 520, 0), P(x0 - 260, 520, 0)], C.water, { flat: true }));
 
-    /* the deck: a long slab, sagging slightly toward the towers is not real,
-       the roadway is nearly level, so it is drawn level. */
-    [[x0, 0], [BB.span, 0]].forEach(function () {});
-    f = f.concat(box(P(x0, 0, 0)[0], P(x1, 0, 0)[0],
-                     P(0, -halfW, 0)[1], P(0, halfW, 0)[1],
-                     P(0, 0, dz - 9)[2], P(0, 0, dz)[2], C.deckTop));
+    /* A slab that follows deckZ instead of running flat. Same five-sided shape
+       box() makes, minus the ends' bottom, built one segment at a time so the
+       top and both flanks bend with the roadway. Winding matches box() exactly,
+       so the shading by normal is unchanged. The near view carries 460 ft of
+       deck against the span view's 2,195, and takes proportionally fewer. */
+    var SEGS = near ? 10 : 32;
+    function slab(y0, y1, below, above, colour) {
+      var out = [], i;
+      var Y0 = P(0, y0, 0)[1], Y1 = P(0, y1, 0)[1];
+      function lo(x) { return P(0, 0, deckZ(x) + below)[2]; }
+      function hi(x) { return P(0, 0, deckZ(x) + above)[2]; }
+      for (i = 0; i < SEGS; i++) {
+        var xa = x0 + (x1 - x0) * i / SEGS, xb = x0 + (x1 - x0) * (i + 1) / SEGS;
+        var Xa = P(xa, 0, 0)[0], Xb = P(xb, 0, 0)[0];
+        var la = lo(xa), lb = lo(xb), ha = hi(xa), hb = hi(xb);
+        out.push(face([[Xa, Y0, ha], [Xb, Y0, hb], [Xb, Y1, hb], [Xa, Y1, ha]], colour));
+        out.push(face([[Xa, Y0, la], [Xb, Y0, lb], [Xb, Y0, hb], [Xa, Y0, ha]], colour));
+        out.push(face([[Xa, Y1, la], [Xb, Y1, lb], [Xb, Y1, hb], [Xa, Y1, ha]], colour));
+      }
+      [x0, x1].forEach(function (xe) {
+        var X = P(xe, 0, 0)[0];
+        out.push(face([[X, Y0, lo(xe)], [X, Y1, lo(xe)],
+                       [X, Y1, hi(xe)], [X, Y0, hi(xe)]], colour));
+      });
+      return out;
+    }
+
+    /* the deck, 9 ft of structure hanging under the roadway line */
+    f = f.concat(slab(-halfW, halfW, -9, 0, C.deckTop));
 
     /* the promenade: between the roadways, 18 ft above them, pedestrians
-       only since 2021. This is the line the visitor actually walks. */
-    f = f.concat(box(P(x0, 0, 0)[0], P(x1, 0, 0)[0],
-                     P(0, -13, 0)[1], P(0, 13, 0)[1],
-                     P(0, 0, dz)[2], P(0, 0, dz + 18)[2], C.walkTop));
+       only since 2021. This is the line the visitor actually walks, and it
+       rides the same curve, which is why the walk is uphill to the middle. */
+    f = f.concat(slab(-13, 13, 0, 18, C.walkTop));
 
     /* The two towers, and the arches are the whole point of them. Across
        the deck a tower is THREE masonry piers with TWO openings between
