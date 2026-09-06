@@ -161,7 +161,7 @@ queue instead. Remove a line the moment its work lands or is abandoned.
   off a glass wall at 17 degrees, which is the Washington Monument's capstone
   angle, and the entrance is on the SOUTH face under a 200 ft porch.
 - the Met INTERIORS, met-rooms.js, are the landmark routine's lane as of
-  2026-09-06: islamic and medieval are done, and greek-roman, arms-armor,
+  2026-09-06: islamic, medieval and arms-armor are done, and greek-roman,
   lehman, grand-stair, euro-paintings and nineteenth-century remain as
   object-in-a-box LANDMARKS entries. A live session taking one of these
   should claim it here first.
@@ -193,6 +193,45 @@ above is not paperwork, it is the lock.
 
 
 ## Rebuilt to this standard
+
+- arms-armor, the Equestrian Court, Met gallery 371 (2026-09-06, the landmark
+  routine). The THIRD Met interior rebuilt from an object in a box into a room,
+  and the one the previous run was blocked on.
+  THE ROUTE THAT WORKED, and it unblocks every remaining Met room: the API
+  cannot be filtered by gallery, so 450 objects of department 4 were fetched
+  and filtered on their own GalleryNumber field. The previous run's dead end
+  was a search that returned galleries 373 and 378; this is the way past it.
+  PUBLISHED, the Met's collection API, read this run, every object verified to
+  be GalleryNumber 371: objects 22757 / 35772, the Collalto horse armor shown
+  as "Armor for Man and Horse", "as mounted, H. 75 1/2 in.; L. 90 in.;
+  W. 30 in.; Wt. including saddle 93 lb. 1 oz."; objects 23358 / 35739, the
+  horse armor of Johann Ernst of Saxony-Coburg, dated 1548, Nuremberg. Six
+  standing armors with published heights, each drawn at its own: Henry VIII's
+  1527 garniture 73 in, his ca. 1544 field armor 72 1/2 in, Clifford's 1586
+  garniture 69 1/2 in, Scudamore ca. 1595 70 1/4 in, an Augsburg tilt armor
+  ca. 1580 68 3/4 in, a Milanese field and tournament armor 71 1/2 in.
+  DERIVED and declared: the court's own dimensions are published nowhere
+  reached, so the horse fixes the scale the way the reja fixes the Medieval
+  Hall. The hall is 6.4 horse-lengths, 48 ft, and the plan rectangle keeps its
+  proportion. Saddle on the back at 0.72 of 75.5 in, rider folded at 0.72 of a
+  published standing height.
+  WHAT THE RENDER SHOWED AND THE NUMBERS DID NOT: reading 75.5 in as the top of
+  the BODY put the saddle inside the horse and the rider on a slab. Every
+  number was right and the first picture was four legs and a TABLE. 75.5 in
+  "as mounted" is the crest of the shaffron: the back is at 0.72 of it and the
+  head reaches the whole. A second pass shortened the body to two thirds of the
+  overall length and built the crinet as three rising plates, which is what
+  finally made it a horse.
+  NAMED GAPS: no source reached states how many mounted figures the court
+  holds, so TWO are drawn because two are what the API evidence supports; a
+  third would be invented. The court's height is the file's standard wall
+  height and is not a measurement. The arcade and balcony openings are drawn
+  at six bays, a drawing decision.
+  KNOWN AND NOT FIXED, for the next run: the rider still reads small against
+  the horse, the lance collapses to a line at some yaws because it is a flat
+  quad, and the whole group is blocky at close range.
+  LOOKED at three times: `node render_room.js arms-armor` before and after the
+  proportion fix, and `... arms-armor 0.72 0.42`.
 
 - medieval, the Medieval Sculpture Hall, Met gallery 305 (2026-09-06, the
   landmark routine). The SECOND Met interior rebuilt from an object in a box
@@ -984,6 +1023,10 @@ scene file) and has been LOOKED at from more than one angle.
   route that will work is the Met's own gallery 371 page or the court's label
   text, which name the four armours; then the API gives each one its height,
   and a rider's true height over a horse is the whole scale of that room.
+  RESOLVED 2026-09-06, the next run did it: the fix is not the search at all,
+  it is fetching objects and filtering on their own GalleryNumber field. See
+  arms-armor in the rebuilt list above. The rooms still object-in-a-box are
+  greek-roman, lehman, grand-stair, euro-paintings and nineteenth-century.
 
 - moma, the Museum of Modern Art exterior (2026-09-05, the landmark routine).
   CLAIMED at the start of the run, then RELEASED unbuilt, and the claim was

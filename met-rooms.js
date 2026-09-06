@@ -266,7 +266,6 @@
     "egyptian":           { kind: "mass",   h: 15.8, w: 20, d: 12, lean: 0.09,
                             fill: "#c7b294", note: "Mastaba Tomb of Perneb, height published" },
     "greek-roman":        { kind: "figure", h: 6.4,  w: 1.7, d: 2.1, fill: "#ded8cc" },
-    "arms-armor":         { kind: "figure", h: 6.1,  w: 1.9, d: 1.6, fill: "#a9adb4" },
     "lehman":             { kind: "canvas", h: 5.1,  w: 4.1,  fill: "#6f5a44" },
     "grand-stair":        { kind: "canvas", h: 18.3, w: 10.7, fill: "#7a6a56" },
     "euro-paintings":     { kind: "canvas", h: 4.7,  w: 4.5,  fill: "#6b5b47" },
@@ -1203,11 +1202,227 @@
     return out;
   }
 
+  /* ------------- Gallery 371, the Equestrian Court (arms and armor) -------------
+     The plan's `arms-armor` node drew ONE figure 6.1 feet tall in a box. The
+     Equestrian Court is not a figure: it is a hall of ARMED MEN ON ARMED
+     HORSES, and a mounted knight is nine feet of steel, not six.
+
+     PUBLISHED, the Met's own collection API, read this run, every object
+     checked to be GalleryNumber 371:
+       object 22757 / 35772, "Horse Armor Probably Made for Count Antonio IV
+         Collalto (1548-1620)", Italian, probably Brescia, ca. 1580-90, shown
+         as "Armor for Man and Horse" with a Milanese man's armor ca. 1570:
+         "as mounted, H. 75 1/2 in. (191.8 cm); L. 90 in. (228.6 cm);
+         W. 30 in. (76.2 cm); Wt. including saddle 93 lb. 1 oz."
+       object 23358 / 35739, "Horse Armor Made for Johann Ernst, Duke of
+         Saxony-Coburg (1521-1553)", German, Nuremberg, dated 1548, shown as
+         "Armor for Man and Horse"; horse armor with saddle approx. 92 lb.,
+         man's armor approx. 56 lb.
+     Standing armors in the same gallery, with their published heights, which
+     is what every plinth here is drawn at:
+       22741 Armor Garniture probably of King Henry VIII, dated 1527,
+             Greenwich, Overall H. 73 in.
+       23936 Field Armor of King Henry VIII, ca. 1544, Milan or Brescia,
+             H. 72 1/2 in.; W. 33 in.; D. 14 1/2 in.
+       23939 Armor Garniture of George Clifford, Third Earl of Cumberland,
+             Greenwich, 1586, H. 69 1/2 in.
+       22139 Armor of Sir James Scudamore, Greenwich, ca. 1595-96, H. 70 1/4 in.
+       23203 Armor for the Tilt, Augsburg, ca. 1580, H. 68 3/4 in.;
+             W. at shoulders 18 in.
+       22905 Armor, German possibly Brunswick, ca. 1535, as mounted H. 77 in.
+       24696 Armor for Field and Tournament, probably Milan, ca. 1575-80,
+             H. 71 1/2 in.
+
+     THE ROUTE, written down because the previous run was blocked on exactly
+     this: the API cannot be filtered by gallery, so 450 objects of department
+     4 were fetched and filtered on their own GalleryNumber field. That works,
+     and it is how any Met room gets its objects from now on.
+
+     COUNT, and it is a NAMED GAP rather than a guess: across those 450
+     objects exactly TWO man-and-horse groups carry gallery 371, so two are
+     drawn. No source reached this run states how many mounted figures the
+     court actually holds, and a third horse would be invented.
+
+     DERIVED and declared: the court's own dimensions are published nowhere
+     reached, so the horse fixes the scale the way the reja fixes the Medieval
+     Hall. The hall is 6.4 horse-lengths long, 48 feet, and the plan
+     rectangle's proportion is kept for its depth. A seated rider is drawn
+     with the saddle at 0.73 of the horse's 75.5 in and the man's own
+     published standing height folded at 0.72; the crest of a helm therefore
+     lands near nine feet, which is the whole point of the room.
+
+     NOT DRAWN, declared, the cutaway rule used in every room here: the near
+     wall, and the ceiling, because this view looks down into the court and a
+     plane overhead paints over everything under it. The court is skylit and
+     the skylight is the thing this view cannot show. */
+  function armsArmor(ctx) {
+    var r = ctx.room, z = ctx.zBase, P = ctx.project, out = [];
+    var wall = ctx.wall || 26;
+
+    var HORSE_L = 90 / 12, HORSE_H = 75.5 / 12, HORSE_W = 30 / 12;  /* published */
+    var HALL_L = HORSE_L * 6.4;                       /* derived, 48 ft */
+    var k = r.w / HALL_L;                             /* plan units per foot */
+    var x1 = r.x, x2 = r.x + r.w, y1 = r.y, y2 = r.y + r.h;
+    var cx = (x1 + x2) / 2, cy = (y1 + y2) / 2;
+    var H = wall;
+
+    var STONE = "#dcd6c7", STONE_D = "#aca48e", FLOOR = "#c8c1ae",
+        STEEL = "#a9adb4", STEEL_D = "#6e737b", DARK = "#4c5057",
+        GOLD = "#bd9a44", GOLD_D = "#8d7027", PLINTH = "#b9b2a0",
+        PLINTH_D = "#8d876f", SHAD = "#b3ac99", WOOD = "#6a4f33";
+
+    out.push(flat(ctx, x1, y1, x2, y2, z + 0.2, FLOOR, STONE_D, 0.5, -1e9));
+
+    /* --- the court's walls, near side cut away, with a dado, a balcony
+       string course and an upper arcade, so no wall is one extrusion --- */
+    [[y1, 1], [y2, -1]].forEach(function (wl) {
+      if (!ctx.faceVisible(0, wl[1])) return;
+      var band = function (za, zb, fill, dd) {
+        out.push({ svg: ctx.poly([P(x1, wl[0], z + za), P(x2, wl[0], z + za),
+                                  P(x2, wl[0], z + zb), P(x1, wl[0], z + zb)],
+                                 ctx.shade(fill, 0, wl[1], 0.2), STONE_D, 0.5),
+                   depth: dd });
+      };
+      band(0, H * 0.92, STONE, -9.80e8);            /* the wall itself */
+      band(0, H * 0.13, STONE_D, -9.795e8);         /* the dado */
+      band(H * 0.13, H * 0.16, PLINTH, -9.793e8);   /* its cap moulding */
+      band(H * 0.50, H * 0.55, STONE_D, -9.790e8);  /* the balcony string course */
+      band(H * 0.86, H * 0.92, PLINTH, -9.786e8);   /* the cornice under the skylight */
+      /* six round-headed openings at gallery level, dark enough to survive
+         map scale, and six balcony openings above the string course */
+      for (var i = 0; i < 6; i++) {
+        var a = x1 + (x2 - x1) * (i + 0.18) / 6, b = x1 + (x2 - x1) * (i + 0.82) / 6;
+        var zb0 = z + H * 0.16, zt0 = z + H * 0.40;
+        var arc = [P(a, wl[0], zb0), P(a, wl[0], zt0)];
+        for (var g = 1; g < 8; g++) {
+          var t = g / 8, uu = a + (b - a) * t;
+          arc.push(P(uu, wl[0], zt0 + Math.sin(t * Math.PI) * (b - a) * 0.42));
+        }
+        arc.push(P(b, wl[0], zt0), P(b, wl[0], zb0));
+        out.push({ svg: ctx.poly(arc, "#3b3730", "#241f18", 0.5), depth: -9.784e8 });
+        out.push({ svg: ctx.poly([P(a, wl[0], z + H * 0.58), P(b, wl[0], z + H * 0.58),
+                                  P(b, wl[0], z + H * 0.80), P(a, wl[0], z + H * 0.80)],
+                                 "#443f37", "#241f18", 0.5), depth: -9.782e8 });
+      }
+    });
+
+    /* ---- a mounted man-and-horse group, built at the published sizes ---- */
+    function mounted(px, py, face, steelFill, giltCrest) {
+      var g = [], s = face;                 /* s = +1 nose toward +x */
+      var L = HORSE_L * k, W = HORSE_W * k, HH = HORSE_H * k;
+      /* THE FIX THE FIRST RENDER FORCED. Reading the published 75.5 in as the
+         top of the BODY put the saddle inside the horse and the rider on top of
+         a slab: four legs and a table. 75.5 in "as mounted" is the crest of the
+         shaffron. The back sits at 0.72 of it and the head reaches the whole. */
+      var belly = HH * 0.50, bodyT = HH * 0.72;
+      g.push(flat(ctx, px - L * 0.55, py - W * 0.85, px + L * 0.55, py + W * 0.85,
+                  z + 0.22, SHAD, null, 0, -9.5e8));
+      /* four legs, real objects rather than a skirt */
+      [[-0.28, -0.40], [-0.28, 0.40], [0.22, -0.40], [0.22, 0.40]].forEach(function (o) {
+        var lx = px + o[0] * L, ly = py + o[1] * W;
+        g = g.concat(mass(ctx, lx - L * 0.065, ly - W * 0.20, lx + L * 0.065,
+                          ly + W * 0.20, z + 0.25, belly, STEEL_D, DARK));
+      });
+      /* barded body: peytral in front, flanchards on the sides, crupper behind */
+      g = g.concat(mass(ctx, px - L * 0.36, py - W / 2, px + L * 0.30, py + W / 2,
+                        z + belly, bodyT - belly, steelFill, STEEL_D));
+      g = g.concat(mass(ctx, px + s * L * 0.28, py - W * 0.54, px + s * L * 0.38,
+                        py + W * 0.54, z + belly * 0.86, (bodyT - belly) * 0.92,
+                        steelFill, STEEL_D));               /* the peytral */
+      g = g.concat(mass(ctx, px - s * L * 0.44, py - W * 0.52, px - s * L * 0.34,
+                        py + W * 0.52, z + belly * 0.95, (bodyT - belly) * 0.8,
+                        steelFill, STEEL_D));               /* the crupper */
+      /* neck in two rising plates, the crinet, then the shaffron on the head */
+      var nx = px + s * L * 0.22;
+      [[0.00, 0.62, 0.26, 0.24], [0.07, 0.80, 0.22, 0.20],
+       [0.15, 0.96, 0.17, 0.17]].forEach(function (c) {
+        var a1 = nx + s * L * c[0], a2 = a1 + s * L * c[2];
+        g = g.concat(mass(ctx, Math.min(a1, a2), py - W * c[3], Math.max(a1, a2),
+                          py + W * c[3], z + bodyT * c[1], bodyT * 0.55,
+                          steelFill, STEEL_D));
+      });
+      var hx = nx + s * L * 0.24;
+      g = g.concat(mass(ctx, Math.min(hx, hx + s * L * 0.20), py - W * 0.15,
+                        Math.max(hx, hx + s * L * 0.20), py + W * 0.15,
+                        z + HH * 0.72, HH * 0.28, STEEL, STEEL_D));  /* the shaffron, to 75.5 in */
+      /* the saddle, published as part of the horse armor's weight */
+      var SAD = z + bodyT;                        /* the saddle sits ON the back */
+      g = g.concat(mass(ctx, px - L * 0.10, py - W * 0.36, px + L * 0.12,
+                        py + W * 0.36, SAD, HH * 0.10, WOOD, "#3d2c1c"));
+      /* ---- the rider: legs, cuirass, gorget, helm, crest, lance ---- */
+      var MAN = (73 / 12) * k;                     /* Henry VIII garniture, published */
+      var seat = MAN * 0.72;                       /* derived, declared */
+      var mw = W * 0.62;
+      g = g.concat(mass(ctx, px - L * 0.06, py - W * 0.56, px + L * 0.16,
+                        py + W * 0.56, SAD + HH * 0.02, MAN * 0.24,
+                        STEEL, STEEL_D));          /* thighs over the saddle */
+      g = g.concat(mass(ctx, px - mw * 0.5, py - mw * 0.5, px + mw * 0.5,
+                        py + mw * 0.5, SAD + MAN * 0.24, seat * 0.46,
+                        steelFill, STEEL_D));      /* the cuirass */
+      g = g.concat(mass(ctx, px - mw * 0.60, py - mw * 0.58, px + mw * 0.60,
+                        py + mw * 0.58, SAD + MAN * 0.24 + seat * 0.46,
+                        seat * 0.08, GOLD, GOLD_D));   /* the gorget, gilt */
+      var hz = SAD + MAN * 0.24 + seat * 0.54;
+      g = g.concat(mass(ctx, px - mw * 0.34, py - mw * 0.36, px + mw * 0.34,
+                        py + mw * 0.36, hz, seat * 0.20, STEEL, STEEL_D));  /* helm */
+      if (giltCrest) {
+        g = g.concat(mass(ctx, px - mw * 0.06, py - mw * 0.30, px + mw * 0.06,
+                          py + mw * 0.30, hz + seat * 0.20, seat * 0.12,
+                          GOLD, GOLD_D));          /* the crest */
+      }
+      /* the lance, which is what makes the room read as the Equestrian Court */
+      var lx0 = px + s * L * 0.20, lz0 = SAD + MAN * 0.40;
+      var lx3 = px + s * L * 0.95, lz3 = lz0 + HH * 0.50;
+      var ly0 = py - W * 0.34, t = W * 0.055;
+      out.push({ svg: ctx.poly([P(lx0, ly0 - t, lz0), P(lx3, ly0 - t, lz3),
+                                P(lx3, ly0 + t, lz3), P(lx0, ly0 + t, lz0)],
+                               "#7c6647", "#4a3a26", 0.5), depth: 9.0e8 });
+      return g;
+    }
+
+    /* two groups, nose to tail down the middle of the court, facing the visitor */
+    out = out.concat(mounted(cx - r.w * 0.20, cy + r.h * 0.06, 1, "#9ba0a8", true));
+    out = out.concat(mounted(cx + r.w * 0.16, cy - r.h * 0.04, 1, "#b0a99c", false));
+
+    /* ---- standing armors on plinths, each at its own published height ---- */
+    var ARMORS = [
+      { h: 73,     n: "Henry VIII garniture, 1527" },
+      { h: 72.5,   n: "Henry VIII field armor, ca. 1544" },
+      { h: 69.5,   n: "Clifford, Earl of Cumberland, 1586" },
+      { h: 70.25,  n: "Sir James Scudamore, ca. 1595" },
+      { h: 68.75,  n: "Armor for the Tilt, ca. 1580" },
+      { h: 71.5,   n: "Field and tournament, ca. 1575-80" }
+    ];
+    ARMORS.forEach(function (a, i) {
+      var side = i < 3 ? -1 : 1, j = i % 3;
+      var px = x1 + (x2 - x1) * (0.20 + 0.30 * j);
+      var py = cy + side * r.h * 0.36;
+      var pw = 1.05 * k, ph = 1.6 * k, fw = 0.62 * k, fh = (a.h / 12) * k;
+      out = out.concat(mass(ctx, px - pw, py - pw, px + pw, py + pw, z + 0.24,
+                            ph, PLINTH, PLINTH_D));
+      out.push(flat(ctx, px - pw * 1.5, py - pw * 1.5, px + pw * 1.5, py + pw * 1.5,
+                    z + 0.23, SHAD, null, 0, -9.4e8));
+      /* legs, cuirass, gorget, helm: an armor, not a lozenge */
+      out = out.concat(mass(ctx, px - fw * 0.62, py - fw * 0.5, px + fw * 0.62,
+                            py + fw * 0.5, z + 0.24 + ph, fh * 0.46, STEEL_D, DARK));
+      out = out.concat(mass(ctx, px - fw, py - fw * 0.66, px + fw, py + fw * 0.66,
+                            z + 0.24 + ph + fh * 0.46, fh * 0.30, STEEL, STEEL_D));
+      out = out.concat(mass(ctx, px - fw * 0.72, py - fw * 0.52, px + fw * 0.72,
+                            py + fw * 0.52, z + 0.24 + ph + fh * 0.76, fh * 0.06,
+                            GOLD, GOLD_D));
+      out = out.concat(mass(ctx, px - fw * 0.46, py - fw * 0.42, px + fw * 0.46,
+                            py + fw * 0.42, z + 0.24 + ph + fh * 0.82, fh * 0.18,
+                            STEEL, STEEL_D));
+    });
+    return out;
+  }
+
   window.MET_ROOMS = { dendur: dendur, 'great-hall': greatHall,
                       'american-court': americanCourt,
                       'asian-astor': astorCourt,
                       islamic: damascusRoom,
                       medieval: medievalHall,
+                      'arms-armor': armsArmor,
                       modern: modern, 'grand-stair-2': grandStair };
   Object.keys(LANDMARKS).forEach(function (k) { window.MET_ROOMS[k] = landmark; });
 })();
