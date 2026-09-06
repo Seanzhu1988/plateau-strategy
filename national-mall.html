@@ -53,6 +53,18 @@
         .nm-cols { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
                    gap: 1.6rem; align-items: start; }
         @media (max-width: 780px) { .nm-cols { grid-template-columns: 1fr; } }
+        /* THE WHOLE MALL, BIGGER. [SEAN 2026-09-06: "show the whole mall we
+           need a little bigger version".] Measured, the overview was drawing
+           521 pixels wide and 81 tall inside a 532 by 364 box: it already
+           filled the width it was given, and 78 percent of the height was
+           empty, because a two mile strip was being fitted into a box shaped
+           for one building. So the size has to come from the box. With no stop
+           selected the column beside it holds nothing, so the stage takes the
+           whole width and the map drops below it, and the box takes a shape
+           the strip actually is. On a phone the layout is already one column,
+           so there the gain is the dead space rather than the width. */
+        .nm-cols.is-wide { grid-template-columns: 1fr; }
+        .nm-cols.is-wide .nm-stage { aspect-ratio: 82 / 26; }
 
         /* The model. It is the map's twin, not its decoration: the same stop is
            selected in both, and either one can do the selecting. */
@@ -243,6 +255,7 @@
 (function () {
     "use strict";
     var stage = document.getElementById("nmStage");
+    var cols = document.querySelector(".nm-cols");
     var listEl = document.getElementById("nmList");
     var backBtn = document.getElementById("nmBack");
     var nowBox = document.getElementById("nmNow");
@@ -637,15 +650,29 @@
            a more side-on eye and stands the buildings up on screen, and a
            tighter margin. No height is exaggerated to achieve it. */
         var wide = !key;
+        /* Before the mount, never after: mountScene measures the host it is
+           given, so a stage that changes width after being measured is drawn
+           at the wrong scale until something else forces a redraw. */
+        if (cols) cols.classList.toggle("is-wide", wide);
         if (!view) {
             view = window.mountScene(stage, sc, {
-                yaw: -0.55, pitch: wide ? 0.20 : 0.30, pad: wide ? 18 : 50 });
+                yaw: -0.55, pitch: wide ? 0.20 : 0.30, pad: wide ? 10 : 50,
+                /* The viewBox has to be the shape of the box it lands in.
+                   mountScene defaults to 820 by 560 and the svg carries no
+                   height, so a stage given a wider ratio renders an svg taller
+                   than itself and the strip is clipped away below the fold. */
+                width: 820, height: wide ? 260 : 560 });
             view.__wide = wide;
         } else {
             if (view.__wide !== wide) {
                 view.stop();
                 view = window.mountScene(stage, sc, {
-                    yaw: -0.55, pitch: wide ? 0.20 : 0.30, pad: wide ? 18 : 50 });
+                    yaw: -0.55, pitch: wide ? 0.20 : 0.30, pad: wide ? 10 : 50,
+                /* The viewBox has to be the shape of the box it lands in.
+                   mountScene defaults to 820 by 560 and the svg carries no
+                   height, so a stage given a wider ratio renders an svg taller
+                   than itself and the strip is clipped away below the fold. */
+                width: 820, height: wide ? 260 : 560 });
                 view.__wide = wide;
             } else {
                 view.setScene(sc);
