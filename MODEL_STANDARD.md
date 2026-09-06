@@ -182,9 +182,11 @@ queue instead. Remove a line the moment its work lands or is abandoned.
 
 - nineteenth-century is DONE, 2026-09-06, by the landmark routine.
 - euro-paintings is DONE, 2026-09-06, by the landmark routine, as Gallery 637.
+- lehman is DONE, 2026-09-06, by the landmark routine, as Gallery 959.
   The Met interiors still object-in-a-box are greek-roman (REFUSED on
-  published dimensions), lehman and grand-stair. grand-stair-2 already has a
-  real stair; the floor 1 node does not.
+  published dimensions) and grand-stair. grand-stair-2 already has a real
+  stair; the floor 1 node falls back to the landmark drawing and is the last
+  one left.
 
 After these: Boston, the nine Freedom Trail buildings, in batches.
 
@@ -210,6 +212,35 @@ above is not paperwork, it is the lock.
 
 
 ## Rebuilt to this standard
+
+- lehman, Gallery 959, the tapestry room (2026-09-06, the landmark routine).
+  The SIXTH Met interior rebuilt from an object in a box into a room, built in
+  the same run as gallery 637 and cheaper for it, because every trap the first
+  one hit was already known.
+  PUBLISHED, the Met's collection API, read this run, both objects verified on
+  their own GalleryNumber field = 959: object 459205, Bernard van Orley, "The
+  Last Supper", ca. 1525-28, "131 7/8 x 137 13/16 in."; object 459227,
+  "Emperor Vespasian Cured by Veronica's Veil", ca. 1510, "135 1/2" x 135"".
+  Two Netherlandish tapestries, each OVER ELEVEN FEET SQUARE, drawn at exactly
+  those numbers. Department 15 is the Robert Lehman Collection.
+  DERIVED, on the Medieval Hall rule that the object fixes the scale and the
+  plan rectangle does not: the back wall is 2.6 hangings, near 30 ft, and the
+  plan's 180:105 proportion gives 17.5 ft of depth.
+  NAMED GAPS: the gallery's own height, length and depth are published nowhere
+  reached; the 16 ft wall is what an eleven foot three hanging plus a base and
+  a cornice requires, not a measurement; hanging height, cornice, panelled
+  dado and doorway are drawing decisions.
+  WHAT THE RENDER SHOWED AND THE NUMBERS DID NOT: at true size the two
+  hangings run from just above the dado to just under the cornice and leave
+  almost no bare wall in the room. That is the fact the old canvas in a box
+  hid, and it is why an eleven foot number is worth a room. The side hanging
+  was recentred from 0.42 to 0.47 of the depth after the first look so it
+  clears both ends of its wall.
+  THE THREE GALLERY 637 LESSONS WERE APPLIED BEFORE THEY COULD COST A RENDER,
+  which is the argument for building two rooms in one run rather than one: the
+  key left the LANDMARKS table, the side hanging and the doorway sort after
+  the side walls, and no ceiling is drawn.
+  LOOKED at twice: default, and yaw 0.70 pitch 0.44.
 
 - euro-paintings, Gallery 637, a Dutch and Flemish room (2026-09-06, the
   landmark routine). The FIFTH Met interior rebuilt from an object in a box
