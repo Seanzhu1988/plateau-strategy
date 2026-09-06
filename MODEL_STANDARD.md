@@ -168,17 +168,60 @@ queue instead. Remove a line the moment its work lands or is abandoned.
 
 - american, not built at all. The only Mall place with no dc-form file. This is
   the routine's own next queue item, so it is claimed here to stop a duplicate.
-  BLOCKED A THIRD TIME, 2026-09-06, and the new dead end is recorded so a
-  fourth run does not walk into it. The file's own suggested unblock was to
-  count the marble piers off a rectified photograph. Wikimedia Commons was
-  searched successfully through its API and the Mall facade shots were found,
-  but the IMAGE BYTES could not be fetched: upload.wikimedia.org returns an
-  HTML block page to this sandbox's curl, and the browser-headers retry was
-  refused by a permission rule. So the photograph route is shut here too,
-  alongside the NCPC PDF and the 403 on SAH Archipedia and the museum's own
-  architecture page. What would work: an HABS sheet from the Library of
-  Congress, whose images are served from a different host, or a session with
-  the browser pane that can simply LOOK at a photograph and count.
+  BLOCKED A FOURTH TIME, 2026-09-06, but the block MOVED, and the next run
+  starts a long way past where the last three did.
+
+  THE PHOTOGRAPH ROUTE IS OPEN. The third run recorded it as shut because
+  upload.wikimedia.org returns a block page to this sandbox's curl. It is not
+  shut; it was the wrong door. Through the BROWSER PANE:
+    https://commons.wikimedia.org/wiki/Special:FilePath/<FILE NAME>?width=3840
+  loads and renders. Do not guess a /thumb/x/xx/ hash path, that is a 404, and
+  do not ask for a non-standard width, that is a 400. Better still, a Wikimedia
+  image document is SAME ORIGIN as its own img element, so
+    var img=document.images[0]; c.width=3840; c.height=2160;
+    ctx.drawImage(img,0,0); ctx.getImageData(x,y,w,h)
+  works, and the facade can be MEASURED in pixels rather than eyeballed. Draw
+  into a canvas and replaceChildren(canvas) in ONE javascript_exec call to look
+  at a magnified crop; two calls loses the image, because clearing the body
+  destroys it. The pane is hidden, so scroll and hover time out: screenshot,
+  get_page_text and javascript_exec all work, and computer zoom does not crop.
+
+  THE PHOTOGRAPH: "National Museum of American History - 2026
+  (55256384290).jpg" from Category:Architecture of the National Museum of
+  American History, 8375 x 4711, a near-frontal Mall facade in low sun.
+  MEASURED IN IT at width=3840, so the next run does not re-derive the frame:
+  sky meets roof at y=658; the RECESSED ATTIC STOREY is the band y=660 to 735,
+  visibly set back with its own shadow line, which confirms the SAH prose;
+  the main facade is y=740 to 1040; trees intrude below y=1050 and below y=900
+  at the left, so the only clean scanline is y=780 to 800. The facade spans
+  x=672 to 3264, and against the published 496 ft that is 5.23 px per foot.
+  The two DEEP end recesses sit at x=784-806 and x=3102-3124, symmetric about
+  x=1954, which is how we know the shot is square enough to count from.
+
+  AND THE COUNT STILL DID NOT FALL OUT, which is the honest part. A brightness
+  profile across the clean scanline is dominated by a regular period of about
+  50 px, which at 5.23 px/ft is 9.6 ft: that is the PRECAST PANEL joint module,
+  not the piers, and it matches the published 16 3/8 in precast sandwich panel
+  construction. In this photograph the sun is nearly frontal, so the vertical
+  window slots between the piers are mid-grey, not dark, and brightness alone
+  will not separate a pier from its recess. Counting the 50 px rhythm and
+  calling it piers would put a guessed count in the model's most prominent
+  feature dressed up as a measurement, which is worse than the gap.
+
+  WHAT THE FIFTH RUN SHOULD DO, in order, and it should be cheap now:
+    1. A RAKING-LIGHT photograph, where the recesses are genuinely dark. Not
+       yet tried, from the same category: "American History Museum by Matthew
+       Bisanz.JPG", "National Museum of American History (53832039979).jpg"
+       (5184x3240), "National Museum of American History, Washington, D.C.
+       (2013) - 01/03/04/05.JPG". One of these is shot with the sun down the
+       facade; the dark runs then count themselves.
+    2. Failing that, profile the EDGES, not the brightness: a horizontal
+       gradient magnitude summed over the band y=780..1000 peaks at every
+       pier arris whatever the lighting, and the pier module is the peak
+       spacing that is NOT 50 px.
+    3. "Aerial view of National Museum of American History.jpg" gives the roof
+       and confirms the attic setback depth, which is currently unmeasured.
+  The plan and height are already settled below and do not need redoing.
 
 - nineteenth-century is DONE, 2026-09-06, by the landmark routine.
 - euro-paintings is DONE, 2026-09-06, by the landmark routine, as Gallery 637.
@@ -194,7 +237,17 @@ queue instead. Remove a line the moment its work lands or is abandoned.
   the honest next work is a rebuild pass over the older trail-3d.js and
   nyc-3d.js models against the nine-item checklist.
 
-After these: Boston, the nine Freedom Trail buildings, in batches.
+THE FREEDOM TRAIL IS FINISHED, corrected 2026-09-06 by the landmark routine,
+because this file said otherwise and a run nearly rebuilt five buildings that
+already exist. All nine stops have a committed trail-form-*.js built to this
+standard: bunker-hill, constitution, faneuil-hall, old-north, old-south,
+old-state-house, paul-revere, state-house, and park-street, which needed no
+rebuild. The entries for state-house, bunker-hill, old-south, old-north and
+faneuil-hall still sit under "Researched this run, NOT built" further down;
+they are BUILT, and the sections are kept only for the research they carry.
+Queue item 2 is closed. So is item 3, New York, and the Met exterior half of
+item 4. The ONLY open rebuild-queue items are MoMA, blocked on a tool, and
+american, blocked on a count.
 
 
 - constitution is REBUILT, 2026-09-05, by the landmark routine; see below.
