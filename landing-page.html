@@ -1219,7 +1219,12 @@
       /* The warm line the owner asked for, sitting above the big statement:
          the brand, then who we are to the visitor, then what we are. */
       #view-overview .psx-tagline{
-        margin:1.5rem 0 0;font-weight:700;line-height:1.22;letter-spacing:.004em;
+        /* line-height carries !important because this is a <p>, and modern.css
+           sets `p, li, .sub, ... { line-height: 1.62 !important }`. An
+           important declaration beats specificity, so the ID prefix here was
+           not enough on its own: the declared 1.22 lost and the biggest line
+           on the site set on body leading, 90.5px of slug under 55.8px type. */
+        margin:1.5rem 0 0;font-weight:700;line-height:1.22 !important;letter-spacing:.004em;
         /* Bigger than the statement below it, on the owner's instruction, so
            it clears the h1's clamp(1.7,4.6vw,3.5rem) at every width. And a
            midnight metallic grey, the Tesla "Midnight Silver Metallic" paint:
@@ -2219,9 +2224,26 @@
                            a dark-on-light tone and would have sat almost invisible
                            against it. Quiet means one step back from its
                            neighbours, not unreadable. */
+                        /* Light ground, so the colours are the page's own. This chip
+                           had kept a dark-hero palette: rgba(231,236,245,.62) text
+                           and a rgba(255,255,255,.20) border, which is white on a
+                           white hero, 1.11:1. Its two siblings in the row escaped
+                           because they are <a> and modern.css recolours links; a
+                           <span> is not a link, so nothing rescued this one. Muted
+                           ink is the same grey the ghost link beside it renders,
+                           5.05:1, and the pill keeps its hairline. */
                         #view-overview .psx-btn-soon{background:transparent;
-                            color:rgba(231,236,245,.62);
-                            border:1px solid rgba(255,255,255,.20);font-weight:600;}
+                            color:var(--m-muted);
+                            /* No border and no padding box, measured against the two
+                               siblings rather than guessed: modern.css strips <a>
+                               back to plain text, 0px border and 1.6px padding, so
+                               the live actions in this row render as words. This
+                               chip is a <span>, which modern.css never touches, so
+                               it kept the full pill: 1px border, 24px side padding,
+                               56px tall against their 44. The only element in the
+                               row that looked like a button was the only one that
+                               does nothing. */
+                            border:0;padding:1.6px 0 2.88px;font-weight:600;}
                         /* No hover state and no pointer: hover that lights up is
                            an invitation to click something that does nothing. */
                         #view-overview .psx-btn-soon{cursor:default;}
