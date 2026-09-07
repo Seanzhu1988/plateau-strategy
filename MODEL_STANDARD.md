@@ -132,6 +132,13 @@ it, from more than one angle, before it is committed.
 - The workflow that encodes all four steps is `realistic-mall-models`
   (research, build, verify, fix). Reuse it; do not hand-roll a cheaper
   version.
+- PDFs ARE READABLE, and three runs were blocked believing they are not.
+  `osascript -l JavaScript pdftext.js FILE.pdf` prints every page. It goes
+  through macOS PDFKit over the JXA Objective-C bridge, so nothing is
+  installed and nothing is fetched. pdftotext, mutool and gs are all absent
+  on this machine and none of them is needed. An empty page means that page
+  is a scan with no text layer, which is an answer too: that one needs an
+  image route.
 
 ## Cost, honestly
 
@@ -197,6 +204,50 @@ queue instead. Remove a line the moment its work lands or is abandoned.
   x=672 to 3264, and against the published 496 ft that is 5.23 px per foot.
   The two DEEP end recesses sit at x=784-806 and x=3102-3124, symmetric about
   x=1954, which is how we know the shot is square enough to count from.
+
+  BLOCKED A FIFTH TIME, 2026-09-07, by the landmark routine, and two more
+  routes are now closed for good so a sixth run starts past them.
+    g. NCPC file 7156 WAS READ THIS RUN, in full, six pages. The three
+       previous runs recorded it as unreadable; it is not, see pdftext.js
+       below. It carries NO pier count, NO bay module and NO dimension in
+       feet. It is a concept review of ONE window on the WEST facade, and
+       the drawings on its pages 4 and 5 are photographs of that west wall,
+       not a Mall elevation. This lead is dead, not deferred, and the next
+       run must not spend on it.
+       WHAT IT DOES ADD, published and usable: the glass is PPG "Greylite",
+       "still extant throughout the building" and "originally developed
+       specifically for the museum"; the terrace "encircles the building",
+       with Level 2 at terrace level and Level 1 below it; the west wing's
+       Lower Level is a cafeteria behind "a wide expanse of glass".
+    h. the Library of Congress HABS search API, www.loc.gov/search/?fo=json,
+       returned nothing parseable to this sandbox's curl. Untested beyond one
+       attempt, so it is a maybe, not a closed door.
+  MEASURED THIS RUN off the photograph, and reported as a NEGATIVE because
+  that is what it is. The frame in the notes above reproduces exactly: the
+  facade spans x=672 to 3264 at width=3840, and the two deep end recesses sit
+  at x=784-805 and x=3102-3123, 22 px each, symmetric. That is an independent
+  confirmation of the 496 ft OSM footprint, since 2592 px at 5.23 px/ft is
+  496 ft to the foot.
+  THE PIERS THEMSELVES DO NOT RESOLVE. Five scanlines were averaged across
+  the clean band (y=750-775, 778-802, 805-835, 840-870, 880-905), detrended
+  against a 91 px moving average and autocorrelated. The dominant lag is
+  INCONSISTENT between rows, 148, 82, 103, 79 and 78 px, which is what noise
+  looks like, not a bay module; and the local minima come in at roughly 21 px
+  spacing, which at 5.23 px/ft is 4 ft, the scale of mullions rather than of
+  piers.
+  WHAT DOES SURVIVE ALL FIVE ROWS is a set of strong verticals at x = 784,
+  1141, 1500, 1849, 2215, 2570, 2752 and 3112, a module of about 68 ft with
+  one half-step at 2752. Recorded because it is real and repeatable, but it
+  is NOT presented as the pier module: 68 ft is far too wide for the "modern
+  equivalent of columns" the SAH prose describes, so these are more likely
+  the joints between the big wall planes.
+  SO THE REFUSAL STANDS, for the fifth time and for the same reason: the
+  count belongs to checklist item 1, it is the model's most prominent
+  feature, and a guessed module would be exactly the failure Sean named. The
+  remaining doors are a HABS measured elevation, or a higher-resolution and
+  more frontal photograph, or a run that counts the piers by EYE off a
+  magnified crop rather than off a luminance profile. That last one is the
+  cheapest and has not been tried.
 
   AND THE COUNT STILL DID NOT FALL OUT, which is the honest part. A brightness
   profile across the clean scanline is dominated by a regular period of about
@@ -1625,6 +1676,20 @@ scene file) and has been LOOKED at from more than one angle.
        MoMA in one step.
     f. Overpass by bounding box was refused by the sandbox this run (the curl
        was denied), so route (c) could not even be retried.
+  THE TOOL BLOCK AT (e) IS LIFTED AND THE LEAD IS DEAD ANYWAY, 2026-09-07.
+  s-media.nyc.gov/agencies/lpc/lp/2420.pdf downloads and now READS, in full,
+  through pdftext.js. It is not MoMA. LP-2420 is the JAPAN SOCIETY
+  HEADQUARTERS, 333 East 47th Street, designated 22 March 2011. It surfaced
+  in a search for a MoMA designation report and was never one; two runs have
+  now called it "the strongest remaining lead" on the strength of a search
+  result nobody had opened. Closed conclusively.
+  WHAT IS LEFT FOR MoMA, in order: the 1939 press release in MoMA's own
+  archive at moma.org/documents, which is the primary source most likely to
+  state a plot size in feet; a real LPC designation report for 11 West 53rd
+  Street, if one exists at all, found by LP number rather than by search; and
+  Overpass by way id rather than by name, which route (c) showed is the only
+  form that can work there. The PDF half of this block no longer exists, so
+  any PDF found from here is readable.
 
 - american, the National Museum of American History. The research is done and
   is recorded here so the next run does not pay for it twice.
