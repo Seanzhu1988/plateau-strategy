@@ -29,6 +29,7 @@ import datetime
 
 import discovery as discovery_mod
 import gallery_log
+import worklist as worklist_mod
 import urllib.parse
 import shutil
 import html
@@ -3467,6 +3468,40 @@ def api_room_enter():
 def api_room_leave():
     session.pop("room", None)
     return jsonify({"ok": True})
+
+
+WORKLIST_PATH = _data_path("worklist.json")
+
+
+@app.route("/api/worklist")
+@owner_required
+def api_worklist():
+    """The job list, state then town then place. Owner only: it is a plan of
+    what this company is going to build, which is not a stranger's business."""
+    try:
+        return jsonify({"ok": True, **worklist_mod.grouped(WORKLIST_PATH,
+                                                           request.args.get("country") or None)})
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+
+@app.route("/api/worklist/tick", methods=["POST"])
+@owner_required
+def api_worklist_tick():
+    """One green check mark. The tick is the only thing a tap can change; the
+    "already in the book" flag beside it is recomputed from the book itself and
+    is never written from here."""
+    body = request.get_json(silent=True) or {}
+    qid = (body.get("qid") or "").strip()
+    if not qid:
+        return jsonify({"ok": False, "error": "no qid"}), 400
+    try:
+        it = worklist_mod.tick(WORKLIST_PATH, qid, bool(body.get("done", True)))
+        if not it:
+            return jsonify({"ok": False, "error": "unknown place"}), 404
+        return jsonify({"ok": True, "item": it})
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
 
 
 @app.route("/api/gallery/searches")
@@ -13172,6 +13207,18 @@ body{margin:0;background:var(--paper);color:var(--body);font:16px/1.5 -apple-sys
  padding:calc(env(safe-area-inset-top) + 1rem) 1rem calc(env(safe-area-inset-bottom) + 2rem);-webkit-font-smoothing:antialiased}
 .wrap{max-width:560px;margin:0 auto}
 .hd2{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:1rem 0 .35rem}
+.wlr{display:flex;align-items:baseline;gap:.5rem;padding:.6rem .1rem;border-top:1px solid var(--line);cursor:pointer}
+.wlr:first-child{border-top:0}
+.wlr .rg{flex:1;color:var(--ink);font-weight:500}
+.wlr .lf{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.wlt{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:.7rem 0 .2rem}
+.wlp{display:flex;align-items:center;gap:.55rem;padding:.4rem 0 .4rem .2rem}
+.wlp .tk{width:22px;height:22px;flex:0 0 auto;border:1.5px solid var(--line);border-radius:5px;
+ display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;background:#fff}
+.wlp.on .tk{background:var(--good);border-color:var(--good)}
+.wlp .pn{flex:1;font-size:.92rem}
+.wlp.on .pn{color:var(--muted);text-decoration:line-through}
+.wlp .hv{font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
 .sub{font-size:.85rem;color:var(--muted);margin:0 0 .2rem}
 .top{display:flex;align-items:baseline;justify-content:space-between;gap:.6rem;margin:0 0 1rem}
 h1{font-size:1.5rem;color:var(--ink);margin:0;letter-spacing:-.01em}
@@ -13237,6 +13284,9 @@ h1{font-size:1.5rem;color:var(--ink);margin:0;letter-spacing:-.01em}
    <div class="card"><p class="hd">What pulls them in, 7 days</p><div id="landings"></div></div>
    <div class="card"><p class="hd">Most read, 7 days</p><div id="pages"></div></div>
    <div class="card"><p class="hd">Where they are, 7 days</p><div id="places"></div></div>
+   <div class="card" id="wlcard" hidden><p class="hd">The job list</p>
+    <p class="sub" id="wlsum"></p>
+    <div id="wlregions"></div></div>
    <div class="card" id="srchcard" hidden><p class="hd">What they came looking for</p>
     <p class="sub" id="srchsum"></p>
     <p class="hd2">Asked for, and we had nothing</p><div id="srchmiss"></div>
@@ -13265,6 +13315,83 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return
    they get their own renderer: no bars, because a bar invites you to read the
    biggest one as the best one, and here the whole point is that every row is
    something we failed to answer. */
+/* THE JOB LIST. State, then town, then the place, because that is the order
+   the work actually happens in: you go to a city and do several at once.
+   Regions are ordered by how much is left rather than alphabetically, so the
+   top of the list is the next trip rather than Alabama.
+
+   The rows are collapsed until tapped and the full list is fetched once, on
+   the first tap, because there are hundreds of places and this is a phone. */
+var WL = null, wlOpen = {};
+function wlPaint(){
+  var host = document.getElementById('wlregions');
+  if (!WL) { host.innerHTML = '<p class="empty">Tap to load.</p>'; return; }
+  host.innerHTML = WL.regions.map(function(r){
+    var left = r.total - r.done;
+    var body = '';
+    if (wlOpen[r.region]) {
+      body = r.towns.map(function(t){
+        return (t.town ? '<p class="wlt">' + esc(t.town) + '</p>' : '') +
+          t.places.map(function(p){
+            return '<div class="wlp' + (p.done ? ' on' : '') + '" data-q="' + esc(p.qid) + '">' +
+                   '<span class="tk">' + (p.done ? '\u2713' : '') + '</span>' +
+                   '<span class="pn">' + esc(p.name) + '</span>' +
+                   (p.have ? '<span class="hv">in the book</span>' : '') + '</div>';
+          }).join('');
+      }).join('');
+    }
+    return '<div><div class="wlr" data-r="' + esc(r.region) + '">' +
+           '<span class="rg">' + esc(r.region || 'Elsewhere') + '</span>' +
+           '<span class="lf">' + num(left) + ' left</span></div>' + body + '</div>';
+  }).join('');
+}
+function wlLoad(){
+  if (WL) { wlPaint(); return; }
+  fetch('/api/worklist').then(function(r){return r.json();}).then(function(d){
+    if (d && d.ok) { WL = d; wlPaint(); }
+  }).catch(function(){});
+}
+document.addEventListener('click', function(e){
+  var row = e.target.closest && e.target.closest('.wlr');
+  if (row) { var k = row.getAttribute('data-r'); wlOpen[k] = !wlOpen[k]; wlPaint(); return; }
+  var pl = e.target.closest && e.target.closest('.wlp');
+  if (!pl) return;
+  /* Tick first, save second, and put it back if the save fails. A check mark
+     that lies is worse than one that is slow. */
+  var qid = pl.getAttribute('data-q'), was = pl.classList.contains('on');
+  pl.classList.toggle('on', !was);
+  pl.querySelector('.tk').textContent = !was ? '\u2713' : '';
+  fetch('/api/worklist/tick', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({qid: qid, done: !was})})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if (!d || !d.ok) throw 0;
+      if (WL) WL.regions.forEach(function(r){ r.towns.forEach(function(t){ t.places.forEach(function(p){
+        if (p.qid === qid) { p.done = !was; }
+      });});});
+      wlSum();
+    })
+    .catch(function(){
+      pl.classList.toggle('on', was);
+      pl.querySelector('.tk').textContent = was ? '\u2713' : '';
+    });
+});
+function wlSum(){
+  if (!WL) return;
+  var done = 0, total = 0;
+  WL.regions.forEach(function(r){ r.towns.forEach(function(t){ t.places.forEach(function(p){
+    total++; if (p.done) done++; });});});
+  document.getElementById('wlsum').textContent =
+    num(total) + ' places, ' + num(done) + ' ticked, ' + num(WL.have) + ' already in the book.';
+}
+function wl(d){
+  var c = document.getElementById('wlcard');
+  if (!d || !d.ok || !d.total) { c.hidden = true; return; }
+  c.hidden = false;
+  document.getElementById('wlsum').textContent =
+    num(d.total) + ' places, ' + num(d.done) + ' ticked, ' + num(d.have) + ' already in the book.';
+  wlLoad();
+}
 function srch(d){
   var c=document.getElementById('srchcard');
   if(!d||!d.ok){c.hidden=true;return;}
@@ -13305,6 +13432,7 @@ function render(d){
   rows('channels',d.channels,'ch');rows('landings',d.landings,'pg');
   rows('pages',d.pages,'pg');rows('places',d.places,'pl');
   srch(d.searches);
+  wl(d.worklist);
   loadMe();
 }
 function meRender(d){
@@ -13414,6 +13542,20 @@ def _pulse_searches(n=6):
     }
 
 
+def _pulse_worklist():
+    """Counts only. The list runs to hundreds of places and a phone should not
+    pull all of them to show three numbers; the card fetches the rest on the
+    tap that opens it."""
+    try:
+        d = worklist_mod.load(WORKLIST_PATH)
+        items = d.get("items", {})
+        return {"ok": bool(items), "total": len(items),
+                "done": sum(1 for v in items.values() if v.get("done")),
+                "have": sum(1 for v in items.values() if v.get("have"))}
+    except Exception:
+        return {"ok": False}
+
+
 def api_pulse():
     data = _load_traffic()
     days = data.get("days", {})
@@ -13458,6 +13600,7 @@ def api_pulse():
         "places": agg("places", 7, 6),
         "spark": spark,
         "searches": _pulse_searches(),
+        "worklist": _pulse_worklist(),
         "updated": datetime.datetime.now().strftime("%b %-d, %-I:%M %p"),
     })
 
