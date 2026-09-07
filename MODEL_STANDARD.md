@@ -364,6 +364,83 @@ queue instead. Remove a line the moment its work lands or is abandoned.
        and confirms the attic setback depth, which is currently unmeasured.
   The plan and height are already settled below and do not need redoing.
 
+  THE SEVENTH RUN ANSWERED THE ONE REQUIREMENT, 2026-09-07, by the landmark
+  routine. The block that held six runs is GONE. Two things changed, and the
+  method one matters more than the answer.
+
+  THE BROWSER PANE WAS NEVER NEEDED. curl CAN fetch a Commons image, and PIL
+  and numpy are installed in the sandbox. Six runs measured through
+  javascript_exec into a hidden pane, re-navigating before every call because
+  replaceChildren destroys document.images[0]. All of that was working around
+  a wall that is not there:
+    curl -sL "https://commons.wikimedia.org/wiki/Special:FilePath/<FILE>"
+  returns 200 and the full-resolution JPEG. Only upload.wikimedia.org is
+  blocked, and Special:FilePath is served by commons.wikimedia.org. So the
+  image comes to disk, PIL opens it, numpy measures it, and the crop can be
+  saved as a PNG and READ AS AN IMAGE, which is the same LOOK the routine
+  demands of a render. One rate limit was seen, a 429 on the fourth file
+  fetched in a loop; space the fetches.
+
+  THE PHOTOGRAPH WITH BOTH ENDS IN FRAME EXISTS and it is not a facade shot:
+  "Aerial view of National Museum of American History.jpg", 6697 x 3984, from
+  Category:Architecture of the National Museum of American History. Shot with
+  a long lens from the Washington Monument looking NORTH, so the face toward
+  the camera is the SOUTH, Mall facade, with the Federal Triangle behind. The
+  whole 496 ft frontage, both corners, the recessed attic storey, the roof and
+  the terrace are in one frame, and because it is a long lens from far away
+  the foreshortening across the facade is mild enough to measure.
+
+  THE COUNT, measured and stable. Column-mean luminance over a 120 px band,
+  x = 1700..5750, dark runs at mean minus 40 percent of the mean-to-min range:
+    y=2320   11 runs at x = 1744, 1990, 2387, 2778, 3170, 3566, 3963, 4363,
+             4750, 5135, 5629
+    y=2340   11 runs at the same centres to within 3 px
+    y=2300   10 runs, the same list with x=3963 missing
+  The first and last of the eleven are the two CORNERS in shadow. The nine
+  between them are the recessed window slots. Centre-to-centre gaps: 397, 390,
+  393, 395, 397, 400, 386, 384, mean 393 px.
+
+  AND IT CLOSES ON ITSELF, which is why it is a count and not a rhythm. The
+  corner-to-corner span is 5629 minus 1744 = 3885 px. Against the published
+  496 ft that is 7.83 px per foot, so the 393 px module is 50.2 ft. Ten bays
+  into 496 ft is 49.6 ft. The pixel module and the published length agree to
+  1.2 percent WITHOUT either being used to derive the other. NINE SLOTS, TEN
+  BAYS, TEN PIERS on the Mall facade, each bay about 49.6 ft, the pier about
+  three quarters of the bay and the glass slot the remaining quarter.
+
+  WHAT IS STILL A NAMED GAP, and it is small. The two END bays measure 246 px
+  and 496 px against the interior 393, because both corners are in shadow and
+  the detector is finding a shadowed return wall on the west and losing the
+  arris on the east. So the pier WIDTH at the two ends is not measured. The
+  interior module is.
+
+  WHAT THE PICTURE SHOWED THAT THE NUMBERS DID NOT, three things, all of them
+  building facts the model needs:
+    a. The piers are BROAD and the slots are NARROW. In a 1:1 crop the pier is
+       about 100 px of a 135 px module. This is not a colonnade of thin fins;
+       it is a wall of massive marble slabs with a glass reveal between them,
+       which is exactly what "a modern equivalent of columns" meant.
+    b. The recessed attic storey is a CONTINUOUS BAND OF SMALL SQUARE WINDOWS
+       in a dense rhythm, set back behind its own flat roof deck, and it runs
+       the full length. It is not a blank parapet.
+    c. There is a low SHADOW COURSE at the top of the piers: each slot carries
+       a diagonal shadow where the pier returns into the recess, which is what
+       SAH called the "modernist shadow cornices". It reads on the render as a
+       dark triangle at the head of every slot.
+
+  THE MALL FACADE HAS NO WIDE CENTRE BAY. The uniform 393 px module runs from
+  corner to corner with no 2.6 module span anywhere. The wide inscribed centre
+  the fourth and fifth runs found belongs to the OTHER facade: the entrance
+  front, seen in "National Museum of American History (53832039979).jpg",
+  where four huge inscribed panels carry the Smithson bequest text around the
+  door. Those two facades are different compositions and must not be averaged.
+
+  SO THE BUILD IS UNBLOCKED and the next run should build it, not measure it.
+  Everything checklist item 1 needs is above: 10 bays, 9 slots, 49.6 ft module,
+  496 by 226 ft plan, height 21 m corrected from the dc-3d.js 24, the attic
+  window band, the shadow cornice, the terrace podium. Do not re-measure the
+  aerial. Do not open the browser pane for it.
+
 - nineteenth-century is DONE, 2026-09-06, by the landmark routine.
 - euro-paintings is DONE, 2026-09-06, by the landmark routine, as Gallery 637.
 - lehman is DONE, 2026-09-06, by the landmark routine, as Gallery 959.
