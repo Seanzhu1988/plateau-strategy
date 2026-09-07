@@ -13211,6 +13211,10 @@ body{margin:0;background:var(--paper);color:var(--body);font:16px/1.5 -apple-sys
 .wlr:first-child{border-top:0}
 .wlr .rg{flex:1;color:var(--ink);font-weight:500}
 .wlr .lf{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.nrw{display:flex;align-items:baseline;justify-content:space-between;gap:.7rem;padding:.5rem 0;border-top:1px solid var(--line)}
+.nrw:first-child{border-top:0}
+.nrw .nn{color:var(--ink)}
+.nrw .nv{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
 .wlt{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:.7rem 0 .2rem}
 .wlp{display:flex;align-items:center;gap:.55rem;padding:.4rem 0 .4rem .2rem}
 .wlp .tk{width:22px;height:22px;flex:0 0 auto;border:1.5px solid var(--line);border-radius:5px;
@@ -13473,9 +13477,9 @@ function rev(d){
   // harvested out, so a red open book is what is still working, not a loss.
   var o=d.open||{};
   document.getElementById('rnet').innerHTML=
-    '<div class="rw"><span class="nm">Banked, lifetime</span><span class="v">'+money(d.realized_life,2)+'</span></div>'+
-    '<div class="rw"><span class="nm">Paper, '+num(o.bags)+' bags still growing</span><span class="v">'+money(o.paper,2)+'</span></div>'+
-    '<div class="rw"><span class="nm">True net</span><span class="v">'+money(d.true_net,2)+'</span></div>';
+    '<div class="nrw"><span class="nn">Banked, lifetime</span><span class="nv">'+money(d.realized_life,2)+'</span></div>'+
+    '<div class="nrw"><span class="nn">Paper, '+num(o.bags)+' bags still growing</span><span class="nv">'+money(o.paper,2)+'</span></div>'+
+    '<div class="nrw"><span class="nn">True net</span><span class="nv">'+money(d.true_net,2)+'</span></div>';
   document.getElementById('rnote').textContent=
     num(o.near_green)+' of '+num(o.bags)+' bags are within 5% of turning green. '+
     'Winners are harvested out, so what stays open is the part still working, not a realized loss.';
