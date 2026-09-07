@@ -274,6 +274,75 @@ queue instead. Remove a line the moment its work lands or is abandoned.
   Do not re-derive the frame, the roofline, the clean band or the module. They
   are measured above.
 
+  THE SIXTH RUN RAN THAT PLAN, 2026-09-06 night, by the landmark routine.
+  BOTH CALLS WERE MADE. One of the two questions is now SETTLED, the other is
+  proven UNANSWERABLE FROM THIS PHOTOGRAPH, and that second result is the
+  useful one because it stops a seventh run measuring this image again.
+
+  STEP 2, THE HIGHER BAND, IS A DEAD END. Do not retry it. Column-mean
+  luminance over y=690..730 gives mean 146, min 89, and the threshold sweep
+  yields six weak runs at minus 30 percent, three at minus 40, and ZERO at
+  minus 50 and minus 60, all of them clustered at x=1250 and x=2515 rather
+  than spread on a module. The reason is structural, not photographic: that
+  band IS the recessed attic storey, and the attic has no piers. The clean
+  band y=700..800 remains the only one.
+
+  THE SWEEP ON THE CLEAN BAND REPRODUCES THE FIFTH RUN EXACTLY, which is
+  worth knowing since nothing else here survived. At minus 50 percent the six
+  runs sit at x = 795, 1139, 1489, 2396, 2755, 3113, matching the fifth run's
+  795, 1139, 1490, 2396, 2755, 3113 to within a pixel. Minus 60 gives the same
+  six. Minus 40 gives seven, the extra at x=1852. Minus 30 collapses into 15
+  noise runs. So the count is stable across three of the four thresholds, not
+  four, and the module of about 353 px with one central span of about 906 px
+  is real and repeatable.
+
+  STEP 1 IS SETTLED, AND IT WAS SETTLED BY LOOKING, not by the aerial. Three
+  1:1 crops of the band y=660..990, taken at x=200..1400, 1400..2600 and
+  2600..3800, show one continuous wall of BROAD plain marble piers separated
+  by NARROW dark glass slots carrying horizontal glazing bars, with the
+  recessed attic above it and a broad blank inscribed centre bay. There are no
+  lower flanking wings anywhere in the frame. The Mall frontage is one plane,
+  exactly as the SAH prose says.
+
+  AND THAT DEMOLISHES BOTH INHERITED FRAMES. The fifth run's "tall block from
+  x=1020 to x=3250" is the RECESSED ATTIC, not the main mass. Two independent
+  checks say so. First, luminance sampled every 10 px along y=600 reads 225 to
+  251 across the ENTIRE width from x=0 to x=3840, so that row is unbroken sky
+  and the roofline lies below it at every column, which cannot be true of a
+  centre block with sky beside it at y=660 unless the thing ending at x=1020
+  and x=3250 sits ABOVE the main roof. Second, the right-hand 1:1 crop shows
+  the attic parapet ending at about x=3365 with sky above and the pier-and-slot
+  facade running on underneath it to the edge of the picture.
+
+  SO THIS PHOTOGRAPH CAN NEVER GIVE THE COUNT, and that is the finding. The
+  left end of the building is in frame at about x=264. The right end is NOT in
+  frame: the facade runs out of the picture. With only one end visible there is
+  no span to divide into 496 ft, so no px per foot exists here, and the 353 px
+  module cannot be turned into feet however well it is measured. Every attempt
+  since the fourth run has been trying to scale an image that does not contain
+  the object being scaled. The fourth run's 5.23 px/ft and the fifth run's
+  2230 px block were both answers to that impossible question.
+
+  A LOCAL-CONTRAST DETECTOR WAS ALSO TRIED and is recorded as a negative so it
+  is not tried again: column mean minus a 240 px moving average, thresholded at
+  minus 10, over y=700..790 across the full width, returns 36 runs which merge
+  to about 23 centres with gaps of 216, 155, 142, 209, 155, 142 and so on. The
+  216 plus 142 pair sums to the 353 module, so the rhythm is there, but the
+  detector also fires on panel joints and tree edges and cannot be trusted to
+  count on its own.
+
+  WHAT THE SEVENTH RUN SHOULD DO, and it is now ONE requirement, not a method:
+  find a Mall-facade photograph with BOTH ENDS of the 496 ft frontage inside
+  the frame. Nothing else is missing. The detector is written and proven, the
+  clean band is known, the module is measured, the massing is settled. With
+  both ends in one frame the px per foot falls out of the two end faces and the
+  module becomes feet in a single call. Candidates not yet opened, from
+  Category:National Museum of American History on Commons, are the wide
+  elevations and any aerial that shows the whole Mall front square on. If no
+  such photograph exists, the count still has to come off the NCPC PDF or an
+  HABS sheet, and this entry should say so rather than let an eighth run
+  re-measure a picture that has now twice been proved too narrow.
+
   THE BROWSER MECHANICS, confirmed again this run and worth the two lines:
   document.body.replaceChildren(canvas) DESTROYS document.images[0], so the
   NEXT javascript_exec call throws "provided value is not of type
