@@ -208,6 +208,78 @@ queue instead. Remove a line the moment its work lands or is abandoned.
   calling it piers would put a guessed count in the model's most prominent
   feature dressed up as a measurement, which is worse than the gap.
 
+  BLOCKED A FIFTH TIME, 2026-09-06 evening, by the landmark routine, and the
+  block moved again. The photograph route WORKS, the method now works, and what
+  is missing is one specific number. Read this before touching the count again.
+
+  THE INHERITED FRAME IS WRONG AND WAS THE FOURTH RUN'S REAL ERROR. That run
+  recorded "the facade spans x=672 to 3264, and against the published 496 ft
+  that is 5.23 px per foot". It does not. Re-measured this run at the same
+  width=3840 by scanning luminance rows for the sky/roof boundary: the roofline
+  is at y=657, which the fourth run had right, but at y=660 the sky is bright
+  (229 to 254) from x=200 out to x=1000 and again from x=3300 to x=3700, and
+  the main mass reads dark (76 to 175) only from x=1020 to x=3250. The tall
+  block is 2230 px wide in this frame, not 2592, and the 5.23 px/ft figure that
+  every later inference rested on is 30 percent out. Anything derived from it
+  in the entry above should be re-derived, including the two "deep end
+  recesses" at x=784 and x=3102, which cannot both be on a block that starts
+  at x=1020.
+
+  THE RAKING-LIGHT SHOT THE PLAN ASKED FOR IS THIS SAME PHOTOGRAPH. Step 1 of
+  the fourth run's plan said to go find one. It did not need to: in
+  "National Museum of American History - 2026 (55256384290).jpg" the sun is low
+  and from the left, and in the band ABOVE THE TREES the window slots are
+  genuinely dark. The fourth run's clean scanline, y=780 to 800, is BELOW the
+  treeline and is why brightness would not separate a pier from its recess
+  there. The clean band is y=700 to 800, above the foliage and below the
+  cornice.
+
+  THE MEASUREMENT, which is repeatable in one call. Column-mean luminance over
+  x=520..3400, y=700..800, threshold at mean minus 45 percent of the mean-to-
+  min range (th=99, mean=135, min=55, max=176), gives six dark runs centred at
+  x = 795, 1139, 1490, 2396, 2755, 3113, of widths 22, 12, 6, 6, 14, 22 px.
+  The centre-to-centre gaps are 344, 351, 906, 359, 358. So there IS a regular
+  module of about 353 px with one span of 906 px, about 2.6 modules, in the
+  middle: that wide middle span is the blank marble centre bay, confirmed by
+  eye in a 1:1 crop where a broad plain pier stands between two inscribed
+  recessed bays carrying the Franklin text. This is a real architectural
+  rhythm, not the 50 px precast joint the fourth run correctly refused.
+
+  WHY IT IS STILL NOT A COUNT, stated plainly so a sixth run does not mistake
+  progress for an answer. Two things are missing and both are small.
+    a. The slot at x=795 lies OUTSIDE the main block, which starts at x=1020,
+       so only five of the six runs are on the facade at all. Left of the wide
+       centre there are two slots, right of it three. That asymmetry is not
+       perspective, which compresses but does not delete; the likeliest cause
+       is a tree crown clipping the top band on the left, and it means the
+       detector is under-counting on one side.
+    b. It is NOT established that the tall block from x=1020 to x=3250 IS the
+       published 496 ft frontage rather than the central mass with lower wings
+       either side. Until that is settled the 353 px module cannot be turned
+       into feet, and 2230/353 = 6.3 bays is arithmetic, not a count.
+  Six bays with a double-width centre is the shape the evidence points at. It
+  is NOT written into a model on this evidence, because a guessed count in the
+  building's most prominent feature is exactly what checklist item 1 forbids,
+  and the fourth run was right to refuse for the same reason.
+
+  WHAT THE SIXTH RUN SHOULD DO, and it is now two calls, not a research task:
+    1. Settle (b) from the aerial: "Aerial view of National Museum of American
+       History.jpg" shows whether the Mall frontage is one flat 496 ft plane or
+       a centre block with wings. That single fact converts 353 px to feet.
+    2. Settle (a) by running the same dark-run detector on a HIGHER band,
+       y=690..730, which is above more of the foliage, and by widening the
+       threshold sweep: report the run centres at th = mean minus 30, 40, 50
+       and 60 percent and take the count that is stable across all four. A
+       count that moves with the threshold is not a count.
+  Do not re-derive the frame, the roofline, the clean band or the module. They
+  are measured above.
+
+  THE BROWSER MECHANICS, confirmed again this run and worth the two lines:
+  document.body.replaceChildren(canvas) DESTROYS document.images[0], so the
+  NEXT javascript_exec call throws "provided value is not of type
+  HTMLImageElement". Re-navigate before every call that touches the image, and
+  batch navigate plus exec plus screenshot into ONE browser_batch.
+
   WHAT THE FIFTH RUN SHOULD DO, in order, and it should be cheap now:
     1. A RAKING-LIGHT photograph, where the recesses are genuinely dark. Not
        yet tried, from the same category: "American History Museum by Matthew
