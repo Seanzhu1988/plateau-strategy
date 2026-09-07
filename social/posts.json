@@ -1,339 +1,365 @@
 {
- "about": "Hand-written post library for the weekly social pack. Assembled, never generated.",
- "site": "https://plateaustrategy.io",
- "posts": [
-  {
-   "id": "ug-label-en",
-   "lang": "en",
-   "pain": "cannot read the label",
-   "page": "/universal-gallery",
-   "channels": [
-    "facebook",
-    "instagram"
-   ],
-   "text": "Standing in a museum, staring at a label you cannot read? Type the little number printed on it into our free Universal Gallery and it tells you what the piece is, who made it, and where it hangs today. Works for the Met, MoMA and the Art Institute of Chicago. No app, no account.",
-   "tags": "#travelTips #museum #NYC #artmuseum",
-   "visual": "Attach the Universal Gallery film (media/universal-gallery-film.mp4) or a screenshot of the 61.198 Rembrandt result."
-  },
-  {
-   "id": "met-lost-en",
-   "lang": "en",
-   "pain": "lost inside the museum",
-   "page": "/met",
-   "channels": [
-    "facebook",
-    "instagram"
-   ],
-   "text": "The map on your phone goes grey the moment you step inside the Met. Ours does not. Pick the rooms you want and footprints walk you room to room with honest times, measured on foot by a person, not estimated. Free, in your browser.",
-   "tags": "#TheMet #NYCtravel #museumday",
-   "visual": "Screenshot of the Met footprint sheet with a route drawn."
-  },
-  {
-   "id": "trail-honest-en",
-   "lang": "en",
-   "pain": "the walk feels too big",
-   "page": "/freedom-trail",
-   "channels": [
-    "facebook",
-    "instagram"
-   ],
-   "text": "Boston's Freedom Trail is sixteen stops, and most visitors quit halfway because nobody tells them how long it really takes. We measured it: 44 minutes of actual walking. Every stop has its own five minute audio guide. Take all sixteen or the downtown half, your choice, free.",
-   "tags": "#Boston #FreedomTrail #travelUSA",
-   "visual": "Screenshot of the trail page with the bronze medallion and the pick row."
-  },
-  {
-   "id": "planner-en",
-   "lang": "en",
-   "pain": "planning overwhelm",
-   "page": "/trip-planner",
-   "channels": [
-    "facebook",
-    "instagram"
-   ],
-   "text": "Planning a New York or DC day should not take a day. Drop your stops on our free planner and watch each one light up or dim by drive time, traffic and closing hours, so the impossible plan dies before you are standing in front of a closed door.",
-   "tags": "#tripplanning #NYC #WashingtonDC",
-   "visual": "Screenshot of the planner with a lit and dimmed route."
-  },
-  {
-   "id": "tours-cruise-en",
-   "lang": "en",
-   "pain": "cruise stop, afraid to wander",
-   "page": "/tours",
-   "channels": [
-    "facebook",
-    "instagram"
-   ],
-   "text": "Visiting Seattle by cruise ship and afraid to wander far from the pier? A licensed local guide walks you through the city on routes timed against your all-aboard, so you see Seattle and still make the ship. Small groups, real stories.",
-   "tags": "#Seattle #cruise #AlaskaCruise #shoreexcursion",
-   "visual": "A real photo of Seattle waterfront or Pike Place, no stock."
-  },
-  {
-   "id": "trail-zh",
-   "lang": "zh",
-   "pain": "父母听不懂英文讲解",
-   "page": "/freedom-trail",
-   "channels": [
-    "xiaohongshu",
-    "wechat"
-   ],
-   "text": "波士顿自由之路,全程中文语音讲解来了。16个景点,每个都有5分钟的深度讲解,是地道的普通话配音,不是那种机器翻译腔。全程走路其实只要44分钟,可以走全程,也可以只走市中心一半。免费,不用下载App,打开网页就能听。带爸妈来玩的,先收藏。",
-   "tags": "#波士顿旅游 #自由之路 #美国东部 #带父母旅行 #博物馆",
-   "visual": "小红书首图用步道铜牌照片,第二张放中文讲解播放界面截图。"
-  },
-  {
-   "id": "ug-zh",
-   "lang": "zh",
-   "pain": "博物馆标签看不懂",
-   "page": "/universal-gallery",
-   "channels": [
-    "xiaohongshu",
-    "wechat"
-   ],
-   "text": "在美国逛博物馆,标签全是英文看不懂?记住这个免费网页:把标签上的小编号直接输进去,马上告诉你这件作品是什么、谁做的、现在挂在几号展厅。大都会、MoMA、芝加哥艺术博物馆都能查,还能看博物馆官方的高清图。不用注册。",
-   "tags": "#纽约旅游 #大都会博物馆 #MoMA #美国旅行攻略",
-   "visual": "截图:输入472.1941查出星夜的那一屏。"
-  },
-  {
-   "id": "met-zh",
-   "lang": "zh",
-   "pain": "大都会太大会迷路",
-   "page": "/met",
-   "channels": [
-    "xiaohongshu",
-    "wechat"
-   ],
-   "text": "大都会博物馆一进门,手机地图就变灰了。我们画了一张脚印地图:先选好想看的展厅,它会一间一间带你走,每段路的时间都是真人走出来量的,不是拍脑袋估的。中文界面,免费,网页打开就能用。",
-   "tags": "#大都会博物馆 #纽约攻略 #博物馆逛展",
-   "visual": "脚印路线图截屏,配一张星空展厅照片。"
-  },
-  {
-   "id": "tours-zh",
-   "lang": "zh",
-   "pain": "邮轮停靠时间紧",
-   "page": "/tours",
-   "channels": [
-    "xiaohongshu",
-    "wechat"
-   ],
-   "text": "坐邮轮到西雅图,停靠时间短,不敢走远?持照导游带你走市区精华路线,行程按你的开船时间倒推安排,保证准时回船。小团,中文服务,派克市场、海滨、市中心一次走到位。",
-   "tags": "#西雅图 #阿拉斯加邮轮 #邮轮旅行 #华人导游",
-   "visual": "派克市场或海滨实拍,不用素材图。"
-  },
-  {
-   "id": "moma-en",
-   "lang": "en",
-   "pain": "museum day, no plan",
-   "page": "/moma",
-   "channels": [
-    "facebook",
-    "instagram"
-   ],
-   "text": "MoMA is three floors of the last 140 years of art, and The Starry Night has a crowd at any hour. Our free footprint guide walks you floor by floor, room by room, checked every week against the museum's own collection data, so it never sends you to a painting that moved.",
-   "tags": "#MoMA #NYCart #StarryNight",
-   "visual": "Screenshot of the /moma sheet with rooms picked."
-  },
-  {
-   "id": "rednote-ug-reading",
-   "lang": "zh",
-   "pain": "看不懂的作品也想听讲解",
-   "page": "/universal-gallery",
-   "channels": [
-    "rednote"
-   ],
-   "title": "看展神器｜对着任何一幅画都能听讲解",
-   "text": "在美国逛博物馆,很多画连标签都是英文,看得一头雾水。\n\n分享一个一直在用的免费网页。它不只是帮你查资料,是真的现场给你写一段讲解。\n\n比如站在 MoMA 的星夜前面,把标签上的编号 472.1941 输进去,它就用中文讲给你听:先看整幅画的尺寸,其实比你想的小很多;再走近看笔触,全是一道道厚厚的颜料;然后退后几步,那片天空就开始转起来了。\n\n重点是不只是名画。你在任何一家博物馆,对着任何一件看不懂的作品,它都能现场写一段给你,用你自己的语言。\n\n大都会 MoMA 芝加哥艺术博物馆都能用,不用下载 App,也不用注册。看展前先收藏一下📌",
-   "tags": "#纽约旅游 #看展攻略 #MoMA #星夜 #博物馆打卡 #美国旅行",
-   "visual": "首图放输入 472.1941 查出星夜、下面生成中文讲解的那一屏;第二张放讲解正在播放的截图。也可以用 media/universal-gallery-film.mp4 的封面。"
-  },
-  {
-   "id": "rednote-trail",
-   "lang": "zh",
-   "pain": "带爸妈走自由之路,英文讲解听不懂",
-   "page": "/freedom-trail",
-   "channels": [
-    "rednote"
-   ],
-   "title": "波士顿自由之路 全程中文讲解🎧",
-   "text": "波士顿自由之路,一直想带爸妈走,但英文讲解他们听不懂,就一直没敢安排。\n\n最近发现一个免费网页,把这条路做成了全程中文语音讲解🎧\n16 个景点,每个都有大概 5 分钟的深度讲解,是地道的普通话配音,不是那种机器翻译腔。\n\n最贴心的是时间。全程走路其实只要 44 分钟,是真人一步一步走出来量的,不是拍脑袋估的。走累了可以只走市中心那一半,随时停。\n\n手机打开网页就能听,不用下载 App。脚印地图还会一个点一个点带着你走,不怕迷路。\n\n带爸妈,或者第一次来波士顿的,先收藏📌",
-   "tags": "#波士顿旅游 #自由之路 #美国东部攻略 #带父母旅行 #中文讲解",
-   "visual": "首图用步道铜牌的实拍照片;第二张放中文讲解的播放界面,或者脚印路线图截屏。"
-  },
-  {
-   "id": "rednote-met",
-   "lang": "zh",
-   "pain": "大都会太大第一次去会迷路",
-   "page": "/met",
-   "channels": [
-    "rednote"
-   ],
-   "title": "大都会太大会迷路?存这个脚印地图",
-   "text": "第一次去纽约大都会博物馆,真的容易迷路。太大了,一进门手机地图还变灰。\n\n分享一个免费网页:先选好你想看的展厅,它会画一张脚印地图,一间一间带你走。\n\n每段路要走多久,都是真人一步一步走出来量的,不是拍脑袋估的。中文界面,不用下载 App,网页打开就能用。\n\n只有半天时间的更要先规划好路线,先收藏📌",
-   "tags": "#纽约旅游 #大都会博物馆 #博物馆攻略 #纽约攻略 #带父母旅行",
-   "visual": "首图用脚印路线图截屏,或大都会展厅实拍;第二张放选展厅的界面。"
-  },
-  {
-   "id": "rednote-family",
-   "lang": "zh",
-   "pain": "带长辈出游讲解听不懂",
-   "page": "/destination-book",
-   "channels": [
-    "rednote"
-   ],
-   "title": "带爸妈在美国玩 讲解听不懂?",
-   "text": "带爸妈或者长辈在美国旅游,最大的问题是讲解全是英文,他们听不懂,只能干看。\n\n这个免费网页把景点和博物馆的讲解做成了语音,而且不止中文,英文、西班牙语、韩语、越南语都有,一家人各听各的。\n\n是地道的配音,不是机器翻译腔。手机网页打开就能听,不用下载 App。\n\n带家里长辈出门的先收藏,能省不少事📌",
-   "tags": "#带父母旅行 #美国旅游攻略 #华人 #中文讲解 #长辈旅行",
-   "visual": "首图放讲解播放界面或一家人看展的实拍;第二张放语言切换的界面。"
-  },
-  {
-   "id": "rednote-planner",
-   "lang": "zh",
-   "pain": "自由行一天路线排不好",
-   "page": "/trip-planner",
-   "channels": [
-    "rednote"
-   ],
-   "title": "在美国玩一天 怎么排才不白跑?",
-   "text": "在纽约或者华盛顿玩一天,最怕排了半天路线,到地方发现关门了,或者全堵在路上。\n\n这个免费网页帮你排:把想去的地方放进去,它会按开车时间、路况和每个地方的关门时间,自动帮你把顺序排顺。\n\n不合理的行程,在你出门前就被拦下来了,不用等吃了闭门羹才知道。\n\n自由行的先收藏📌",
-   "tags": "#纽约自由行 #美国旅游攻略 #行程规划 #华盛顿 #自由行",
-   "visual": "首图放规划器上亮和灭的路线截图。"
-  },
-  {
-   "id": "rednote-roundup",
-   "lang": "zh",
-   "pain": "在美国旅游需要一份免费工具合集",
-   "page": "/universal-gallery",
-   "channels": [
-    "rednote"
-   ],
-   "title": "在美国旅游 必存的免费网站合集",
-   "text": "整理了几个在美国旅游一直在用的免费网页,都不用下载 App,网页打开就能用,先收藏:\n\n1 博物馆标签看不懂:输标签编号,中文告诉你这是什么、谁做的、在几号厅。\n\n2 博物馆里迷路:选好展厅,脚印地图一间一间带你走,时间是真人量的。\n\n3 一天怎么排:放进想去的地方,自动按路况和关门时间排顺。\n\n4 波士顿自由之路:16 个景点全程中文语音讲解。\n\n全部免费,中文界面。出发前先存起来📌",
-   "tags": "#美国旅游攻略 #纽约旅游 #免费好用 #旅行必备 #博物馆打卡",
-   "visual": "首图用大字封面 在美国旅游必存的免费网站,可以放四宫格拼图。"
-  },
-  {
-   "id": "rednote-starry-night",
-   "lang": "zh",
-   "pain": "来纽约想看星夜却跑错博物馆",
-   "page": "/universal-gallery",
-   "channels": [
-    "rednote"
-   ],
-   "title": "纽约看星夜 别站错地方",
-   "text": "很多人来纽约想看梵高的星夜,结果跑错了博物馆。星夜不在大都会,在 MoMA 现代艺术博物馆,五楼。\n\n分享一个免费网页:到了画前面,把标签上的编号 472.1941 输进去,它用中文讲给你听。先看尺寸,其实比你想的小很多;再走近看笔触,一道一道厚厚的颜料;退后几步,那片天空就开始转。\n\n梵高是在精神病院的窗前画的,画完第二年就走了。看之前先了解一点,站在画前会很不一样。\n\n去 MoMA 的先收藏📌",
-   "tags": "#纽约旅游 #星夜 #MoMA #梵高 #博物馆打卡 #看展攻略",
-   "visual": "首图用大字封面 纽约看星夜别站错地方;第二张放输入 472.1941 查出星夜的截图。"
-  },
-  {
-   "id": "rednote-audio-free",
-   "lang": "zh",
-   "pain": "博物馆语音导览要另外花钱租",
-   "page": "/destination-book",
-   "channels": [
-    "rednote"
-   ],
-   "title": "在美国看展 别再花钱租语音导览",
-   "text": "很多博物馆的语音导览要另外花钱租,一次七八美元,还经常没有中文。\n\n其实有个免费网页,把讲解直接做成了中文语音,戴上耳机就能听,不用租机器,也不用下载 App。\n\n还不只博物馆,很多景点也有,而且中英西韩越几种语言都有,带爸妈的话他们也听得懂。\n\n出门前先收藏,能省一笔📌",
-   "tags": "#美国旅游攻略 #省钱攻略 #博物馆 #中文语音讲解 #带父母旅行",
-   "visual": "首图用大字封面 别再花钱租语音导览;第二张放讲解播放界面。"
-  },
-  {
-   "id": "rednote-dc",
-   "lang": "zh",
-   "pain": "华盛顿DC博物馆多一天玩不过来",
-   "page": "/trip-planner",
-   "channels": [
-    "rednote"
-   ],
-   "title": "华盛顿 DC 一天 怎么玩才不累",
-   "text": "华盛顿 DC 景点密集,博物馆又大又多,一天很容易越走越乱,最后哪个都没看好。\n\n这个免费网页帮你排一天:把想去的地方放进去,它按开车时间、路况和每个地方的关门时间,自动排出顺路的顺序。\n\nDC 很多博物馆还是免费的,时间排好了,一天能舒舒服服看好几个。\n\n去 DC 自由行的先收藏📌",
-   "tags": "#华盛顿DC #美国东部攻略 #自由行 #行程规划 #博物馆",
-   "visual": "首图用大字封面 DC 一天怎么玩不累;第二张放规划器排好的路线截图。"
-  },
-  {
-   "id": "rednote-chicago",
-   "lang": "zh",
-   "pain": "芝加哥艺术博物馆标签看不懂",
-   "page": "/universal-gallery",
-   "channels": [
-    "rednote"
-   ],
-   "title": "芝加哥艺术博物馆 这样逛不迷糊",
-   "text": "芝加哥艺术博物馆很大,大名画一堆,可惜标签全是英文,看着看着就糊了。\n\n分享一个免费网页:对着看不懂的画,把标签上的编号输进去,它用中文告诉你这是什么、谁画的、在几号厅,还能现场给你讲一段。\n\n大都会、MoMA、芝加哥艺术博物馆都支持,不用注册,网页打开就能用。\n\n去芝加哥看展的先收藏📌",
-   "tags": "#芝加哥 #芝加哥艺术博物馆 #美国旅游 #看展攻略 #博物馆打卡",
-   "visual": "首图用大字封面 芝加哥看展这样不迷糊;第二张放输入编号查出作品的截图。"
-  },
-  {
-   "id": "rednote-homework",
-   "lang": "zh",
-   "pain": "看展前想先了解作品",
-   "page": "/gallery-guides",
-   "channels": [
-    "rednote"
-   ],
-   "title": "看展前花 3 分钟 站在画前完全不一样",
-   "text": "同一幅画,什么都不懂地看,和知道该看哪儿地看,完全是两回事。\n\n这个免费网页把大家最常搜的作品,一件一件写成了短讲解:先看哪里、背后的故事、还有画在哪个博物馆几号厅。出发前花三分钟读一篇,到了画前面就有话可说。\n\n中文,免费,不用下载。看展前先存一篇📌",
-   "tags": "#看展攻略 #博物馆打卡 #美国旅游 #艺术 #纽约旅游",
-   "visual": "首图用大字封面 看展前 3 分钟站画前不一样;第二张放一篇作品讲解页面。"
-  },
-  {
-   "id": "x-ug-label",
-   "lang": "en",
-   "pain": "cannot read the label",
-   "page": "/universal-gallery",
-   "channels": [
-    "x"
-   ],
-   "text": "Standing in a museum, staring at a label you cannot read? Type the number on it into our free Universal Gallery: what it is, who made it, where it hangs, in your language. No app, no account.",
-   "tags": "#travel #museums",
-   "visual": "The Universal Gallery film, or a screenshot of a result."
-  },
-  {
-   "id": "x-ug-reading",
-   "lang": "en",
-   "pain": "wants a real reading, not just facts",
-   "page": "/universal-gallery",
-   "channels": [
-    "x"
-   ],
-   "text": "New in our free gallery: point it at ANY artwork and it writes you a real guide on the spot, in your language. Not just the label, a proper reading of what to notice while you stand there.",
-   "tags": "#arttravel #museums",
-   "visual": "Screenshot of a generated reading on a searched work."
-  },
-  {
-   "id": "x-met",
-   "lang": "en",
-   "pain": "lost inside the museum",
-   "page": "/met",
-   "channels": [
-    "x"
-   ],
-   "text": "Your phone map goes grey the moment you step inside the Met. Ours does not. Pick the rooms you want and footprints walk you room to room, with times measured on foot by a person. Free.",
-   "tags": "#TheMet #NYC",
-   "visual": "Screenshot of the Met footprint sheet with a route drawn."
-  },
-  {
-   "id": "x-trail",
-   "lang": "en",
-   "pain": "the walk feels too big",
-   "page": "/freedom-trail",
-   "channels": [
-    "x"
-   ],
-   "text": "Boston's Freedom Trail is 16 stops and most people quit halfway. We measured it: 44 minutes of real walking, and every stop has a 5 minute audio guide, now in Chinese too. Free.",
-   "tags": "#Boston #FreedomTrail",
-   "visual": "Screenshot of the trail page with the medallion and the pick row."
-  },
-  {
-   "id": "x-planner",
-   "lang": "en",
-   "pain": "planning overwhelm",
-   "page": "/trip-planner",
-   "channels": [
-    "x"
-   ],
-   "text": "Planning a New York or DC day should not take a day. Drop your stops on our free planner and each one lights up or dims by drive time, traffic and closing hours, before you hit a locked door.",
-   "tags": "#tripplanning #travel",
-   "visual": "Screenshot of the planner with a lit and dimmed route."
-  }
- ]
+  "about": "Hand-written post library for the weekly social pack. Assembled, never generated.",
+  "site": "https://plateaustrategy.io",
+  "posts": [
+    {
+      "id": "ug-label-en",
+      "lang": "en",
+      "pain": "cannot read the label",
+      "page": "/universal-gallery",
+      "channels": [
+        "facebook",
+        "instagram"
+      ],
+      "text": "Standing in a museum, staring at a label you cannot read? Type the little number printed on it into our free Universal Gallery and it tells you what the piece is, who made it, and where it hangs today. Works for the Met, MoMA and the Art Institute of Chicago. No app, no account.",
+      "tags": "#travelTips #museum #NYC #artmuseum",
+      "visual": "Attach the Universal Gallery film (media/universal-gallery-film.mp4) or a screenshot of the 61.198 Rembrandt result."
+    },
+    {
+      "id": "met-lost-en",
+      "lang": "en",
+      "pain": "lost inside the museum",
+      "page": "/met",
+      "channels": [
+        "facebook",
+        "instagram"
+      ],
+      "text": "The map on your phone goes grey the moment you step inside the Met. Ours does not. Pick the rooms you want and footprints walk you room to room with honest times, measured on foot by a person, not estimated. Free, in your browser.",
+      "tags": "#TheMet #NYCtravel #museumday",
+      "visual": "Screenshot of the Met footprint sheet with a route drawn."
+    },
+    {
+      "id": "trail-honest-en",
+      "lang": "en",
+      "pain": "the walk feels too big",
+      "page": "/freedom-trail",
+      "channels": [
+        "facebook",
+        "instagram"
+      ],
+      "text": "Boston's Freedom Trail is sixteen stops, and most visitors quit halfway because nobody tells them how long it really takes. We measured it: 44 minutes of actual walking. Every stop has its own five minute audio guide. Take all sixteen or the downtown half, your choice, free.",
+      "tags": "#Boston #FreedomTrail #travelUSA",
+      "visual": "Screenshot of the trail page with the bronze medallion and the pick row."
+    },
+    {
+      "id": "planner-en",
+      "lang": "en",
+      "pain": "planning overwhelm",
+      "page": "/trip-planner",
+      "channels": [
+        "facebook",
+        "instagram"
+      ],
+      "text": "Planning a New York or DC day should not take a day. Drop your stops on our free planner and watch each one light up or dim by drive time, traffic and closing hours, so the impossible plan dies before you are standing in front of a closed door.",
+      "tags": "#tripplanning #NYC #WashingtonDC",
+      "visual": "Screenshot of the planner with a lit and dimmed route."
+    },
+    {
+      "id": "tours-cruise-en",
+      "lang": "en",
+      "pain": "cruise stop, afraid to wander",
+      "page": "/tours",
+      "channels": [
+        "facebook",
+        "instagram"
+      ],
+      "text": "Visiting Seattle by cruise ship and afraid to wander far from the pier? A licensed local guide walks you through the city on routes timed against your all-aboard, so you see Seattle and still make the ship. Small groups, real stories.",
+      "tags": "#Seattle #cruise #AlaskaCruise #shoreexcursion",
+      "visual": "A real photo of Seattle waterfront or Pike Place, no stock."
+    },
+    {
+      "id": "trail-zh",
+      "lang": "zh",
+      "pain": "父母听不懂英文讲解",
+      "page": "/freedom-trail",
+      "channels": [
+        "xiaohongshu",
+        "wechat"
+      ],
+      "text": "波士顿自由之路,全程中文语音讲解来了。16个景点,每个都有5分钟的深度讲解,是地道的普通话配音,不是那种机器翻译腔。全程走路其实只要44分钟,可以走全程,也可以只走市中心一半。免费,不用下载App,打开网页就能听。带爸妈来玩的,先收藏。",
+      "tags": "#波士顿旅游 #自由之路 #美国东部 #带父母旅行 #博物馆",
+      "visual": "小红书首图用步道铜牌照片,第二张放中文讲解播放界面截图。"
+    },
+    {
+      "id": "ug-zh",
+      "lang": "zh",
+      "pain": "博物馆标签看不懂",
+      "page": "/universal-gallery",
+      "channels": [
+        "xiaohongshu",
+        "wechat"
+      ],
+      "text": "在美国逛博物馆,标签全是英文看不懂?记住这个免费网页:把标签上的小编号直接输进去,马上告诉你这件作品是什么、谁做的、现在挂在几号展厅。大都会、MoMA、芝加哥艺术博物馆都能查,还能看博物馆官方的高清图。不用注册。",
+      "tags": "#纽约旅游 #大都会博物馆 #MoMA #美国旅行攻略",
+      "visual": "截图:输入472.1941查出星夜的那一屏。"
+    },
+    {
+      "id": "met-zh",
+      "lang": "zh",
+      "pain": "大都会太大会迷路",
+      "page": "/met",
+      "channels": [
+        "xiaohongshu",
+        "wechat"
+      ],
+      "text": "大都会博物馆一进门,手机地图就变灰了。我们画了一张脚印地图:先选好想看的展厅,它会一间一间带你走,每段路的时间都是真人走出来量的,不是拍脑袋估的。中文界面,免费,网页打开就能用。",
+      "tags": "#大都会博物馆 #纽约攻略 #博物馆逛展",
+      "visual": "脚印路线图截屏,配一张星空展厅照片。"
+    },
+    {
+      "id": "tours-zh",
+      "lang": "zh",
+      "pain": "邮轮停靠时间紧",
+      "page": "/tours",
+      "channels": [
+        "xiaohongshu",
+        "wechat"
+      ],
+      "text": "坐邮轮到西雅图,停靠时间短,不敢走远?持照导游带你走市区精华路线,行程按你的开船时间倒推安排,保证准时回船。小团,中文服务,派克市场、海滨、市中心一次走到位。",
+      "tags": "#西雅图 #阿拉斯加邮轮 #邮轮旅行 #华人导游",
+      "visual": "派克市场或海滨实拍,不用素材图。"
+    },
+    {
+      "id": "moma-en",
+      "lang": "en",
+      "pain": "museum day, no plan",
+      "page": "/moma",
+      "channels": [
+        "facebook",
+        "instagram"
+      ],
+      "text": "MoMA is three floors of the last 140 years of art, and The Starry Night has a crowd at any hour. Our free footprint guide walks you floor by floor, room by room, checked every week against the museum's own collection data, so it never sends you to a painting that moved.",
+      "tags": "#MoMA #NYCart #StarryNight",
+      "visual": "Screenshot of the /moma sheet with rooms picked."
+    },
+    {
+      "id": "rednote-ug-reading",
+      "lang": "zh",
+      "pain": "看不懂的作品也想听讲解",
+      "page": "/universal-gallery",
+      "channels": [
+        "rednote"
+      ],
+      "title": "看展神器｜对着任何一幅画都能听讲解",
+      "text": "在美国逛博物馆,很多画连标签都是英文,看得一头雾水。\n\n分享一个一直在用的免费网页。它不只是帮你查资料,是真的现场给你写一段讲解。\n\n比如站在 MoMA 的星夜前面,把标签上的编号 472.1941 输进去,它就用中文讲给你听:先看整幅画的尺寸,其实比你想的小很多;再走近看笔触,全是一道道厚厚的颜料;然后退后几步,那片天空就开始转起来了。\n\n重点是不只是名画。你在任何一家博物馆,对着任何一件看不懂的作品,它都能现场写一段给你,用你自己的语言。\n\n大都会 MoMA 芝加哥艺术博物馆都能用,不用下载 App,也不用注册。看展前先收藏一下📌",
+      "tags": "#纽约旅游 #看展攻略 #MoMA #星夜 #博物馆打卡 #美国旅行",
+      "visual": "首图放输入 472.1941 查出星夜、下面生成中文讲解的那一屏;第二张放讲解正在播放的截图。也可以用 media/universal-gallery-film.mp4 的封面。"
+    },
+    {
+      "id": "rednote-trail",
+      "lang": "zh",
+      "pain": "带爸妈走自由之路,英文讲解听不懂",
+      "page": "/freedom-trail",
+      "channels": [
+        "rednote"
+      ],
+      "title": "波士顿自由之路 全程中文讲解🎧",
+      "text": "波士顿自由之路,一直想带爸妈走,但英文讲解他们听不懂,就一直没敢安排。\n\n最近发现一个免费网页,把这条路做成了全程中文语音讲解🎧\n16 个景点,每个都有大概 5 分钟的深度讲解,是地道的普通话配音,不是那种机器翻译腔。\n\n最贴心的是时间。全程走路其实只要 44 分钟,是真人一步一步走出来量的,不是拍脑袋估的。走累了可以只走市中心那一半,随时停。\n\n手机打开网页就能听,不用下载 App。脚印地图还会一个点一个点带着你走,不怕迷路。\n\n带爸妈,或者第一次来波士顿的,先收藏📌",
+      "tags": "#波士顿旅游 #自由之路 #美国东部攻略 #带父母旅行 #中文讲解",
+      "visual": "首图用步道铜牌的实拍照片;第二张放中文讲解的播放界面,或者脚印路线图截屏。"
+    },
+    {
+      "id": "rednote-met",
+      "lang": "zh",
+      "pain": "大都会太大第一次去会迷路",
+      "page": "/met",
+      "channels": [
+        "rednote"
+      ],
+      "title": "大都会太大会迷路?存这个脚印地图",
+      "text": "第一次去纽约大都会博物馆,真的容易迷路。太大了,一进门手机地图还变灰。\n\n分享一个免费网页:先选好你想看的展厅,它会画一张脚印地图,一间一间带你走。\n\n每段路要走多久,都是真人一步一步走出来量的,不是拍脑袋估的。中文界面,不用下载 App,网页打开就能用。\n\n只有半天时间的更要先规划好路线,先收藏📌",
+      "tags": "#纽约旅游 #大都会博物馆 #博物馆攻略 #纽约攻略 #带父母旅行",
+      "visual": "首图用脚印路线图截屏,或大都会展厅实拍;第二张放选展厅的界面。"
+    },
+    {
+      "id": "rednote-family",
+      "lang": "zh",
+      "pain": "带长辈出游讲解听不懂",
+      "page": "/destination-book",
+      "channels": [
+        "rednote"
+      ],
+      "title": "带爸妈在美国玩 讲解听不懂?",
+      "text": "带爸妈或者长辈在美国旅游,最大的问题是讲解全是英文,他们听不懂,只能干看。\n\n这个免费网页把景点和博物馆的讲解做成了语音,而且不止中文,英文、西班牙语、韩语、越南语都有,一家人各听各的。\n\n是地道的配音,不是机器翻译腔。手机网页打开就能听,不用下载 App。\n\n带家里长辈出门的先收藏,能省不少事📌",
+      "tags": "#带父母旅行 #美国旅游攻略 #华人 #中文讲解 #长辈旅行",
+      "visual": "首图放讲解播放界面或一家人看展的实拍;第二张放语言切换的界面。"
+    },
+    {
+      "id": "rednote-planner",
+      "lang": "zh",
+      "pain": "自由行一天路线排不好",
+      "page": "/trip-planner",
+      "channels": [
+        "rednote"
+      ],
+      "title": "在美国玩一天 怎么排才不白跑?",
+      "text": "在纽约或者华盛顿玩一天,最怕排了半天路线,到地方发现关门了,或者全堵在路上。\n\n这个免费网页帮你排:把想去的地方放进去,它会按开车时间、路况和每个地方的关门时间,自动帮你把顺序排顺。\n\n不合理的行程,在你出门前就被拦下来了,不用等吃了闭门羹才知道。\n\n自由行的先收藏📌",
+      "tags": "#纽约自由行 #美国旅游攻略 #行程规划 #华盛顿 #自由行",
+      "visual": "首图放规划器上亮和灭的路线截图。"
+    },
+    {
+      "id": "rednote-roundup",
+      "lang": "zh",
+      "pain": "在美国旅游需要一份免费工具合集",
+      "page": "/universal-gallery",
+      "channels": [
+        "rednote"
+      ],
+      "title": "在美国旅游 必存的免费网站合集",
+      "text": "整理了几个在美国旅游一直在用的免费网页,都不用下载 App,网页打开就能用,先收藏:\n\n1 博物馆标签看不懂:输标签编号,中文告诉你这是什么、谁做的、在几号厅。\n\n2 博物馆里迷路:选好展厅,脚印地图一间一间带你走,时间是真人量的。\n\n3 一天怎么排:放进想去的地方,自动按路况和关门时间排顺。\n\n4 波士顿自由之路:16 个景点全程中文语音讲解。\n\n全部免费,中文界面。出发前先存起来📌",
+      "tags": "#美国旅游攻略 #纽约旅游 #免费好用 #旅行必备 #博物馆打卡",
+      "visual": "首图用大字封面 在美国旅游必存的免费网站,可以放四宫格拼图。"
+    },
+    {
+      "id": "rednote-starry-night",
+      "lang": "zh",
+      "pain": "来纽约想看星夜却跑错博物馆",
+      "page": "/universal-gallery",
+      "channels": [
+        "rednote"
+      ],
+      "title": "纽约看星夜 别站错地方",
+      "text": "很多人来纽约想看梵高的星夜,结果跑错了博物馆。星夜不在大都会,在 MoMA 现代艺术博物馆,五楼。\n\n分享一个免费网页:到了画前面,把标签上的编号 472.1941 输进去,它用中文讲给你听。先看尺寸,其实比你想的小很多;再走近看笔触,一道一道厚厚的颜料;退后几步,那片天空就开始转。\n\n梵高是在精神病院的窗前画的,画完第二年就走了。看之前先了解一点,站在画前会很不一样。\n\n去 MoMA 的先收藏📌",
+      "tags": "#纽约旅游 #星夜 #MoMA #梵高 #博物馆打卡 #看展攻略",
+      "visual": "首图用大字封面 纽约看星夜别站错地方;第二张放输入 472.1941 查出星夜的截图。"
+    },
+    {
+      "id": "rednote-audio-free",
+      "lang": "zh",
+      "pain": "博物馆语音导览要另外花钱租",
+      "page": "/destination-book",
+      "channels": [
+        "rednote"
+      ],
+      "title": "在美国看展 别再花钱租语音导览",
+      "text": "很多博物馆的语音导览要另外花钱租,一次七八美元,还经常没有中文。\n\n其实有个免费网页,把讲解直接做成了中文语音,戴上耳机就能听,不用租机器,也不用下载 App。\n\n还不只博物馆,很多景点也有,而且中英西韩越几种语言都有,带爸妈的话他们也听得懂。\n\n出门前先收藏,能省一笔📌",
+      "tags": "#美国旅游攻略 #省钱攻略 #博物馆 #中文语音讲解 #带父母旅行",
+      "visual": "首图用大字封面 别再花钱租语音导览;第二张放讲解播放界面。"
+    },
+    {
+      "id": "rednote-dc",
+      "lang": "zh",
+      "pain": "华盛顿DC博物馆多一天玩不过来",
+      "page": "/trip-planner",
+      "channels": [
+        "rednote"
+      ],
+      "title": "华盛顿 DC 一天 怎么玩才不累",
+      "text": "华盛顿 DC 景点密集,博物馆又大又多,一天很容易越走越乱,最后哪个都没看好。\n\n这个免费网页帮你排一天:把想去的地方放进去,它按开车时间、路况和每个地方的关门时间,自动排出顺路的顺序。\n\nDC 很多博物馆还是免费的,时间排好了,一天能舒舒服服看好几个。\n\n去 DC 自由行的先收藏📌",
+      "tags": "#华盛顿DC #美国东部攻略 #自由行 #行程规划 #博物馆",
+      "visual": "首图用大字封面 DC 一天怎么玩不累;第二张放规划器排好的路线截图。"
+    },
+    {
+      "id": "rednote-chicago",
+      "lang": "zh",
+      "pain": "芝加哥艺术博物馆标签看不懂",
+      "page": "/universal-gallery",
+      "channels": [
+        "rednote"
+      ],
+      "title": "芝加哥艺术博物馆 这样逛不迷糊",
+      "text": "芝加哥艺术博物馆很大,大名画一堆,可惜标签全是英文,看着看着就糊了。\n\n分享一个免费网页:对着看不懂的画,把标签上的编号输进去,它用中文告诉你这是什么、谁画的、在几号厅,还能现场给你讲一段。\n\n大都会、MoMA、芝加哥艺术博物馆都支持,不用注册,网页打开就能用。\n\n去芝加哥看展的先收藏📌",
+      "tags": "#芝加哥 #芝加哥艺术博物馆 #美国旅游 #看展攻略 #博物馆打卡",
+      "visual": "首图用大字封面 芝加哥看展这样不迷糊;第二张放输入编号查出作品的截图。"
+    },
+    {
+      "id": "rednote-homework",
+      "lang": "zh",
+      "pain": "看展前想先了解作品",
+      "page": "/gallery-guides",
+      "channels": [
+        "rednote"
+      ],
+      "title": "看展前花 3 分钟 站在画前完全不一样",
+      "text": "同一幅画,什么都不懂地看,和知道该看哪儿地看,完全是两回事。\n\n这个免费网页把大家最常搜的作品,一件一件写成了短讲解:先看哪里、背后的故事、还有画在哪个博物馆几号厅。出发前花三分钟读一篇,到了画前面就有话可说。\n\n中文,免费,不用下载。看展前先存一篇📌",
+      "tags": "#看展攻略 #博物馆打卡 #美国旅游 #艺术 #纽约旅游",
+      "visual": "首图用大字封面 看展前 3 分钟站画前不一样;第二张放一篇作品讲解页面。"
+    },
+    {
+      "id": "rednote-mall-follow",
+      "lang": "zh",
+      "pain": "去华盛顿看纪念碑,不知道在看什么,也怕走丢",
+      "page": "/national-mall",
+      "channels": [
+        "rednote"
+      ],
+      "title": "华盛顿国家广场｜地图跟着你走的自助导览",
+      "text": "去华盛顿,国家广场那一片纪念碑又大又散,跟团赶时间,自己走又常常不知道眼前这座是什么,还容易走岔。\n\n分享一个免费网页,把整片国家广场做成了一条自助路线。从林肯纪念堂一路走到国会山,中间的华盛顿纪念碑、杰斐逊纪念堂、二战、越战、韩战纪念碑、史密森尼城堡,一站一站排好顺序,每一站都有中文图文讲解,站在它面前就知道自己在看什么。\n\n最好用的是新加的一个功能:点一下锁定路线,地图上会有个点跟着你的位置走,你走到哪它标到哪,一站一站带着你,不用一直低头查地图,也不怕走丢。\n\n部分景点已经有语音讲解,还在一个个补。手机打开网页就能用,不用下载 App,不用跟团,免费。去 DC 前先收藏📌",
+      "tags": "#华盛顿旅游 #美国东部攻略 #国家广场 #华盛顿DC #林肯纪念堂 #自助游",
+      "visual": "首图放地图上小圆点跟着走、一站站路线的那一屏;第二张放某座纪念碑配中文讲解的截图。"
+    },
+    {
+      "id": "rednote-langs",
+      "lang": "zh",
+      "pain": "一家人语言不一样,一份讲解只顾得上一个人",
+      "page": "/freedom-trail",
+      "channels": [
+        "rednote"
+      ],
+      "title": "一个网站六种语言｜全家各听各的",
+      "text": "在美国带一家人玩,常常语言对不上:爸妈只听得懂中文,自己习惯看英文,同行的朋友可能又是别的语言。一份讲解只能照顾一个人,别人干站着。\n\n分享一个免费网页,同一条路线、同一件作品,讲解可以切成六种语言:中文、英文、西班牙语、韩语、越南语、日语。谁点开都是自己的母语。\n\n比如波士顿自由之路,爸妈用中文听,你自己用英文,一部手机轮着来,谁都不落下。中文是地道真人配音,不是机器翻译腔。\n\n手机打开就能用,不用下载 App,也不用注册。带不同的人出门都用得上,先收藏📌",
+      "tags": "#美国旅游 #带父母旅行 #留学生 #自由之路 #中文讲解 #多语言",
+      "visual": "首图放语言切换的那一排按钮(六种语言);第二张放中文讲解正在播放的界面。"
+    },
+    {
+      "id": "x-ug-label",
+      "lang": "en",
+      "pain": "cannot read the label",
+      "page": "/universal-gallery",
+      "channels": [
+        "x"
+      ],
+      "text": "Standing in a museum, staring at a label you cannot read? Type the number on it into our free Universal Gallery: what it is, who made it, where it hangs, in your language. No app, no account.",
+      "tags": "#travel #museums",
+      "visual": "The Universal Gallery film, or a screenshot of a result."
+    },
+    {
+      "id": "x-ug-reading",
+      "lang": "en",
+      "pain": "wants a real reading, not just facts",
+      "page": "/universal-gallery",
+      "channels": [
+        "x"
+      ],
+      "text": "New in our free gallery: point it at ANY artwork and it writes you a real guide on the spot, in your language. Not just the label, a proper reading of what to notice while you stand there.",
+      "tags": "#arttravel #museums",
+      "visual": "Screenshot of a generated reading on a searched work."
+    },
+    {
+      "id": "x-met",
+      "lang": "en",
+      "pain": "lost inside the museum",
+      "page": "/met",
+      "channels": [
+        "x"
+      ],
+      "text": "Your phone map goes grey the moment you step inside the Met. Ours does not. Pick the rooms you want and footprints walk you room to room, with times measured on foot by a person. Free.",
+      "tags": "#TheMet #NYC",
+      "visual": "Screenshot of the Met footprint sheet with a route drawn."
+    },
+    {
+      "id": "x-trail",
+      "lang": "en",
+      "pain": "the walk feels too big",
+      "page": "/freedom-trail",
+      "channels": [
+        "x"
+      ],
+      "text": "Boston's Freedom Trail is 16 stops and most people quit halfway. We measured it: 44 minutes of real walking, and every stop has a 5 minute audio guide, now in Chinese too. Free.",
+      "tags": "#Boston #FreedomTrail",
+      "visual": "Screenshot of the trail page with the medallion and the pick row."
+    },
+    {
+      "id": "x-planner",
+      "lang": "en",
+      "pain": "planning overwhelm",
+      "page": "/trip-planner",
+      "channels": [
+        "x"
+      ],
+      "text": "Planning a New York or DC day should not take a day. Drop your stops on our free planner and each one lights up or dims by drive time, traffic and closing hours, before you hit a locked door.",
+      "tags": "#tripplanning #travel",
+      "visual": "Screenshot of the planner with a lit and dimmed route."
+    }
+  ]
 }
