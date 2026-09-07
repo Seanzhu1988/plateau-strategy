@@ -1,24 +1,7 @@
 {
  "year": 2026,
- "week": 36,
+ "week": 37,
  "posts": [
-  {
-   "id": "met-lost-en",
-   "lang": "en",
-   "pain": "lost inside the museum",
-   "page": "/met",
-   "channels": [
-    "facebook",
-    "instagram"
-   ],
-   "text": "The map on your phone goes grey the moment you step inside the Met. Ours does not. Pick the rooms you want and footprints walk you room to room with honest times, measured on foot by a person, not estimated. Free, in your browser.",
-   "tags": "#TheMet #NYCtravel #museumday",
-   "visual": "Screenshot of the Met footprint sheet with a route drawn.",
-   "links": {
-    "facebook": "https://plateaustrategy.io/met?utm_source=facebook",
-    "instagram": "https://plateaustrategy.io/met?utm_source=instagram"
-   }
-  },
   {
    "id": "trail-honest-en",
    "lang": "en",
@@ -37,20 +20,20 @@
    }
   },
   {
-   "id": "trail-zh",
-   "lang": "zh",
-   "pain": "父母听不懂英文讲解",
-   "page": "/freedom-trail",
+   "id": "planner-en",
+   "lang": "en",
+   "pain": "planning overwhelm",
+   "page": "/trip-planner",
    "channels": [
-    "xiaohongshu",
-    "wechat"
+    "facebook",
+    "instagram"
    ],
-   "text": "波士顿自由之路,全程中文语音讲解来了。16个景点,每个都有5分钟的深度讲解,是地道的普通话配音,不是那种机器翻译腔。全程走路其实只要44分钟,可以走全程,也可以只走市中心一半。免费,不用下载App,打开网页就能听。带爸妈来玩的,先收藏。",
-   "tags": "#波士顿旅游 #自由之路 #美国东部 #带父母旅行 #博物馆",
-   "visual": "小红书首图用步道铜牌照片,第二张放中文讲解播放界面截图。",
+   "text": "Planning a New York or DC day should not take a day. Drop your stops on our free planner and watch each one light up or dim by drive time, traffic and closing hours, so the impossible plan dies before you are standing in front of a closed door.",
+   "tags": "#tripplanning #NYC #WashingtonDC",
+   "visual": "Screenshot of the planner with a lit and dimmed route.",
    "links": {
-    "xiaohongshu": "https://plateaustrategy.io/freedom-trail?utm_source=xiaohongshu",
-    "wechat": "https://plateaustrategy.io/freedom-trail?utm_source=wechat"
+    "facebook": "https://plateaustrategy.io/trip-planner?utm_source=facebook",
+    "instagram": "https://plateaustrategy.io/trip-planner?utm_source=instagram"
    }
   },
   {
@@ -68,6 +51,23 @@
    "links": {
     "xiaohongshu": "https://plateaustrategy.io/universal-gallery?utm_source=xiaohongshu",
     "wechat": "https://plateaustrategy.io/universal-gallery?utm_source=wechat"
+   }
+  },
+  {
+   "id": "met-zh",
+   "lang": "zh",
+   "pain": "大都会太大会迷路",
+   "page": "/met",
+   "channels": [
+    "xiaohongshu",
+    "wechat"
+   ],
+   "text": "大都会博物馆一进门,手机地图就变灰了。我们画了一张脚印地图:先选好想看的展厅,它会一间一间带你走,每段路的时间都是真人走出来量的,不是拍脑袋估的。中文界面,免费,网页打开就能用。",
+   "tags": "#大都会博物馆 #纽约攻略 #博物馆逛展",
+   "visual": "脚印路线图截屏,配一张星空展厅照片。",
+   "links": {
+    "xiaohongshu": "https://plateaustrategy.io/met?utm_source=xiaohongshu",
+    "wechat": "https://plateaustrategy.io/met?utm_source=wechat"
    }
   },
   {
@@ -105,22 +105,6 @@
    }
   },
   {
-   "id": "rednote-family",
-   "lang": "zh",
-   "pain": "带长辈出游讲解听不懂",
-   "page": "/destination-book",
-   "channels": [
-    "rednote"
-   ],
-   "title": "带爸妈在美国玩 讲解听不懂?",
-   "text": "带爸妈或者长辈在美国旅游,最大的问题是讲解全是英文,他们听不懂,只能干看。\n\n这个免费网页把景点和博物馆的讲解做成了语音,而且不止中文,英文、西班牙语、韩语、越南语都有,一家人各听各的。\n\n是地道的配音,不是机器翻译腔。手机网页打开就能听,不用下载 App。\n\n带家里长辈出门的先收藏,能省不少事📌",
-   "tags": "#带父母旅行 #美国旅游攻略 #华人 #中文讲解 #长辈旅行",
-   "visual": "首图放讲解播放界面或一家人看展的实拍;第二张放语言切换的界面。",
-   "links": {
-    "rednote": "https://plateaustrategy.io/destination-book?utm_source=rednote"
-   }
-  },
-  {
    "id": "rednote-planner",
    "lang": "zh",
    "pain": "自由行一天路线排不好",
@@ -137,18 +121,19 @@
    }
   },
   {
-   "id": "x-ug-reading",
-   "lang": "en",
-   "pain": "wants a real reading, not just facts",
+   "id": "rednote-roundup",
+   "lang": "zh",
+   "pain": "在美国旅游需要一份免费工具合集",
    "page": "/universal-gallery",
    "channels": [
-    "x"
+    "rednote"
    ],
-   "text": "New in our free gallery: point it at ANY artwork and it writes you a real guide on the spot, in your language. Not just the label, a proper reading of what to notice while you stand there.",
-   "tags": "#arttravel #museums",
-   "visual": "Screenshot of a generated reading on a searched work.",
+   "title": "在美国旅游 必存的免费网站合集",
+   "text": "整理了几个在美国旅游一直在用的免费网页,都不用下载 App,网页打开就能用,先收藏:\n\n1 博物馆标签看不懂:输标签编号,中文告诉你这是什么、谁做的、在几号厅。\n\n2 博物馆里迷路:选好展厅,脚印地图一间一间带你走,时间是真人量的。\n\n3 一天怎么排:放进想去的地方,自动按路况和关门时间排顺。\n\n4 波士顿自由之路:16 个景点全程中文语音讲解。\n\n全部免费,中文界面。出发前先存起来📌",
+   "tags": "#美国旅游攻略 #纽约旅游 #免费好用 #旅行必备 #博物馆打卡",
+   "visual": "首图用大字封面 在美国旅游必存的免费网站,可以放四宫格拼图。",
    "links": {
-    "x": "https://plateaustrategy.io/universal-gallery?utm_source=x"
+    "rednote": "https://plateaustrategy.io/universal-gallery?utm_source=rednote"
    }
   },
   {
@@ -179,6 +164,21 @@
    "visual": "Screenshot of the trail page with the medallion and the pick row.",
    "links": {
     "x": "https://plateaustrategy.io/freedom-trail?utm_source=x"
+   }
+  },
+  {
+   "id": "x-planner",
+   "lang": "en",
+   "pain": "planning overwhelm",
+   "page": "/trip-planner",
+   "channels": [
+    "x"
+   ],
+   "text": "Planning a New York or DC day should not take a day. Drop your stops on our free planner and each one lights up or dims by drive time, traffic and closing hours, before you hit a locked door.",
+   "tags": "#tripplanning #travel",
+   "visual": "Screenshot of the planner with a lit and dimmed route.",
+   "links": {
+    "x": "https://plateaustrategy.io/trip-planner?utm_source=x"
    }
   }
  ]
