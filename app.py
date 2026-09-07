@@ -3059,6 +3059,15 @@ def seattle_3d_js():
     return send_file(os.path.join(BASE_DIR, "seattle-3d.js"), mimetype="application/javascript")
 
 
+@app.route("/approach-trigger.js")
+def approach_trigger_js():
+    """The guide notices you are arriving: zones grown from each landmark's own
+    height and footprint, a state machine per landmark, one voice at a time.
+    Shared, so the Freedom Trail and every later walk use the same file."""
+    return send_file(os.path.join(BASE_DIR, "approach-trigger.js"),
+                     mimetype="application/javascript")
+
+
 @app.route("/scene-mount.js")
 def scene_mount_js():
     """One live mount for every hand-rolled scene: hand it a host and a scene

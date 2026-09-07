@@ -255,6 +255,7 @@
 <script src="/vendor/leaflet/leaflet.js"></script>
 <script src="/dc-3d.js"></script>
 <script src="/scene-mount.js"></script>
+<script src="/approach-trigger.js"></script>
 <script>
 (function () {
     "use strict";
@@ -811,6 +812,10 @@
        its story, and starts its guide if one is recorded. Freedom Trail behaves
        this way too; this is written for the Mall's own page and data. */
     var locked = false, watchId = null, youMarker = null, reached = {}, wakeLock = null;
+    /* Built after the trail loads, because it needs the stops. Null until then,
+       and every caller checks, so a page that never finishes loading its trail
+       simply never arms rather than throwing on the first position. */
+    var trigger = null;
     var lockBtn = document.getElementById("nmLock"), followBtn = document.getElementById("nmFollow");
     var locEl = document.getElementById("nmLoc"), consentEl = document.getElementById("nmConsent");
     function dist(a, b, c, d) {
@@ -820,20 +825,36 @@
     }
     function stopFollow(msg) {
         if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+        /* followBtn is no longer a control the reader sees, but it is still in
+           the markup and still carries the aria state, so it is kept in step
+           rather than left claiming the map is being followed. */
         followBtn.textContent = T("Follow me on the map"); followBtn.setAttribute("aria-pressed", "false");
+        if (trigger) trigger.reset();          /* a fresh lock is a fresh visit */
         try { if (wakeLock) { wakeLock.release(); wakeLock = null; } } catch (e) {}
         if (msg) locEl.textContent = msg;
     }
+    /* ONE TAP ARMS THE WHOLE THING. [SEAN, APPROACH_TRIGGER.md decision 1:
+       "one action turns on the walk, the map follow, and the trigger
+       together".] It took two before: this button only revealed a second one,
+       and that second button was the tap that actually asked for a position
+       AND the tap that unlocked audio autoplay in the browser. A walker who
+       locked the walk and put the phone away got nothing at all.
+
+       The privacy line is written to the page BEFORE the position is asked
+       for, so the browser's own permission dialog opens on top of an
+       explanation rather than instead of one. That ordering is the reason the
+       two steps existed, and it is kept. */
     lockBtn.addEventListener("click", function () {
         if (!stops.length) return;
         locked = !locked;
         lockBtn.textContent = locked ? T("Walk locked") + " \u00b7 " + stops.length + " " + T("stops") : T("Lock the walk");
         lockBtn.setAttribute("aria-pressed", locked ? "true" : "false");
-        consentEl.hidden = !locked; followBtn.hidden = !locked;
-        if (!locked) stopFollow(T("Unlocked."));
+        consentEl.hidden = !locked;
+        if (!locked) { stopFollow(T("Unlocked.")); return; }
+        arm();
     });
-    followBtn.addEventListener("click", function () {
-        if (watchId !== null) { stopFollow(T("The map is no longer following you. Your walk stays locked.")); return; }
+    function arm() {
+        if (watchId !== null) return;
         if (!navigator.geolocation) { locEl.textContent = T("This browser cannot share a location."); return; }
         if (!map) paintMap();
         try { document.getElementById("nmAudio").load(); } catch (e) {}   /* this tap lets a stop's guide start later */
@@ -846,24 +867,30 @@
                 var pts = stops.map(function (s) { return [s.lat, s.lon]; }); pts.push([lat, lon]);
                 map.invalidateSize(); map.fitBounds(L.latLngBounds(pts), { padding: [24, 24] });
                 followBtn.textContent = T("Stop following"); followBtn.setAttribute("aria-pressed", "true");
-                try { if (navigator.wakeLock) navigator.wakeLock.request("screen").then(function (w) { wakeLock = w; }); } catch (e) {}
+                /* A try/catch cannot catch a rejected promise. Chrome refuses the screen
+                   lock whenever the page is not visible and the rejection went
+                   unhandled, so every locked walk that started with the tab in the
+                   background logged an error nobody could act on. */
+                try { if (navigator.wakeLock) navigator.wakeLock.request("screen")
+                    .then(function (w) { wakeLock = w; })
+                    .catch(function () {}); } catch (e) {}
             } else { youMarker.setLatLng([lat, lon]); }
             var best = null;
             stops.forEach(function (s) { var d = dist(lat, lon, s.lat, s.lon); if (!best || d < best.d) best = { s: s, d: d }; });
             if (!best) return;
             locEl.textContent = Math.round(best.d) + " m " + T("from") + " " + best.s.n + ". " + best.s.name + (acc ? " \u00b7 \u00b1" + acc + " m" : "");
-            if (best.d <= 60 && acc <= 80 && !reached[best.s.n]) {
-                reached[best.s.n] = true;
-                show(best.s.model || "", true);
-                var au = document.getElementById("nmAudio");
-                if (au.getAttribute("src")) { var pr = au.play(); if (pr && pr.catch) pr.catch(function () { locEl.textContent += " " + T("Tap play to hear the guide."); }); }
-            }
+            /* The flat sixty metres that used to live here is now one case
+               inside approach-trigger.js: the radius a stop gets when nobody
+               has measured the building. A measured stop gets a ring grown
+               from its own height and footprint, which is why the Washington
+               Monument now speaks at 135 m and the Lincoln Memorial at 84. */
+            if (trigger) trigger.update(lat, lon, acc);
         }, function (err) {
             locEl.textContent = (err && err.code === 1) ? T("Location was not shared. The walk stays locked; the map will not follow.")
                                                        : T("No position yet. Try again outdoors.");
             stopFollow();
         }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
-    });
+    }
 
     /* Times and unit words are assembled here, so the language switcher cannot
        repaint them by walking text nodes. The engine says so itself and fires
@@ -918,6 +945,25 @@
         if (!t) { listEl.innerHTML = ""; return; }
         trail = t;
         stops = t.stops || [];
+        /* The zones are computed here, once, from each stop's own height and
+           footprint. Ten of the eighteen have no published pair yet and keep
+           the flat sixty metres they have always had, so this can only add
+           reach, never take it away. */
+        if (window.ApproachTrigger) {
+            trigger = window.ApproachTrigger.create({
+                stops: stops,
+                onEvent: function (e) {
+                    if (e.type !== "narrate") return;      /* phases 2 to 4 listen for the rest */
+                    show(e.stop.model || "", true);
+                    var au = document.getElementById("nmAudio");
+                    if (!au.getAttribute("src")) return;
+                    var pr = au.play();
+                    if (pr && pr.catch) pr.catch(function () {
+                        locEl.textContent += " " + T("Tap play to hear the guide.");
+                    });
+                }
+            });
+        }
         stats(t); paintList(); paintMap();
         fetch("/api/destinations").then(function (r) { return r.json(); }).then(function (d) {
             dests = {}; destByName = {};

@@ -321,7 +321,10 @@
       "https://commons.wikimedia.org/wiki/Special:FilePath/US%20Capitol%20dome%20Jan%202006.jpg",
       "https://commons.wikimedia.org/wiki/Special:FilePath/Capitol%20at%20Dusk%202.jpg",
       "https://commons.wikimedia.org/wiki/Special:FilePath/US%20Capitol%20east%20side.JPG"
-     ]
+     ],
+     "height_m": 87.8,
+     "footprint_m": 238.0,
+     "size_source": "dc-form-capitol.js header, 288 ft to the Statue of Freedom's crest; OSM tags 87.6 m. Footprint from the OSM outline."
     },
     {
      "n": 2,
@@ -378,7 +381,10 @@
       "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Air%20and%20Space%20Museum%2C%20Washington%2C%20DC%20%2821%20September%202023%29%2024.jpg",
       "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Air%20and%20Space%20Museum%2C%20Washington%2C%20DC%20%2821%20September%202023%29%2061.jpg",
       "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Air%20and%20Space%20Museum%2C%20Washington%2C%20DC%20%2821%20September%202023%29%2028.jpg"
-     ]
+     ],
+     "height_m": 25.2,
+     "footprint_m": 135.1,
+     "size_source": "dc-form-airspace.js header, 82 ft 9 in, with OSM relation 16159112 agreeing. Footprint from the OSM outline."
     },
     {
      "n": 5,
@@ -397,7 +403,10 @@
       "https://commons.wikimedia.org/wiki/Special:FilePath/Edouard%20Manet%20-%20The%20Plum%20-%20National%20Gallery%20of%20Art.jpg",
       "https://commons.wikimedia.org/wiki/Special:FilePath/Peter%20Paul%20Rubens%20-%20The%20Fall%20of%20Phaeton%20%28National%20Gallery%20of%20Art%29.jpg",
       "https://commons.wikimedia.org/wiki/Special:FilePath/Paris%2C%20rue%20du%20Havre%20by%20Jean%20B%C3%A9raud%20-%20National%20Gallery%20of%20Art.jpg"
-     ]
+     ],
+     "height_m": 41.3,
+     "footprint_m": 245.4,
+     "size_source": "OSM height tag and building outline."
     },
     {
      "n": 6,
@@ -416,7 +425,10 @@
       "https://commons.wikimedia.org/wiki/Special:FilePath/Hirshhorn%20closed%20government%20shutdown%20Washington%20DC%202025-10-15%2012-19-45.jpg",
       "https://commons.wikimedia.org/wiki/Special:FilePath/Exterior%20Views%20of%20Hirshhorn%20Museum%20and%20Sculpture%20Garden%2C%20Smithsonian%2C%20on%20the%20National%20Mall%20in%20Washington%2C%20DC%20%2814e305c3-37ea-449e-811c-afcde98b849a%29.jpg",
       "https://commons.wikimedia.org/wiki/Special:FilePath/Hirshhorn%20Museum%20-Washington%20DC%20-%20USA%20-%20panoramio.jpg"
-     ]
+     ],
+     "height_m": 25.0,
+     "footprint_m": 70.0,
+     "size_source": "dc-form-hirshhorn.js header citing Wikipedia: 82 ft (25 m) high, 231 ft (70 m) diameter. OSM's outline here is the plaza, not the drum."
     },
     {
      "n": 7,
@@ -454,7 +466,10 @@
       "https://commons.wikimedia.org/wiki/Special:FilePath/Taxidermied%20lion%20-%20National%20Museum%20of%20Natural%20History%2C%20Washington%2C%20D.C.%20%282013%29%20-%2007.jpg",
       "https://commons.wikimedia.org/wiki/Special:FilePath/African%20elephant%20-%20National%20Museum%20of%20Natural%20History%2C%20Washington%2C%20D.C.%20%282013%29%20-%2003.jpg",
       "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Museum%20of%20Natural%20History%20.jpg"
-     ]
+     ],
+     "height_m": 24.0,
+     "footprint_m": 279.3,
+     "size_source": "OSM building:levels x 4 m and the building outline."
     },
     {
      "n": 9,
@@ -492,7 +507,10 @@
       "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Museum%20of%20African%20American%20History%20and%20Culture%20in%20February%202020.jpg",
       "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Museum%20of%20African%20American%20History%20and%20Culture%20%2897901%29.jpg",
       "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Museum%20of%20African%20American%20History%20and%20Culture%20-%20exterior%2020250405.jpg"
-     ]
+     ],
+     "height_m": 18.1,
+     "footprint_m": 84.9,
+     "size_source": "OSM height tag and building outline."
     },
     {
      "n": 11,
@@ -511,7 +529,10 @@
       "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Nighttime_View_of_the_Washington_Monument_and_Reflecting_Pool.jpg/1280px-Nighttime_View_of_the_Washington_Monument_and_Reflecting_Pool.jpg",
       "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Washington_Monument_DSC_0205.jpg/1280px-Washington_Monument_DSC_0205.jpg",
       "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Washington_Monument_F9K60333.jpg/1280px-Washington_Monument_F9K60333.jpg"
-     ]
+     ],
+     "height_m": 169.2,
+     "footprint_m": 16.8,
+     "size_source": "dc-form-monument.js header: 555 ft to the apex, 55 ft square at the foot."
     },
     {
      "n": 12,
@@ -568,7 +589,10 @@
       "https://commons.wikimedia.org/wiki/Special:FilePath/Statue%20of%20Abraham%20Lincoln%2C%20Lincoln%20Memorial%20%282024%29-L1005507.jpg",
       "https://commons.wikimedia.org/wiki/Special:FilePath/Abraham%20Lincoln%20v2.jpg",
       "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Lincoln_Memorial_interior_with_statue.jpg/1280px-Lincoln_Memorial_interior_with_statue.jpg"
-     ]
+     ],
+     "height_m": 30.2,
+     "footprint_m": 57.8,
+     "size_source": "dc-form-lincoln.js header, 99 ft foundation to roofline; 189 ft 8 in long."
     },
     {
      "n": 15,
