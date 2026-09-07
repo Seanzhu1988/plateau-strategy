@@ -132,8 +132,44 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
       120 checks, a full turn by five tilts in both framings, no label out of
       its box, and on a phone all five labels land at the identical
       coordinate before and after.
-- [ ] Empire State: the base is 424 by 187 ft, so from some angles it reads
+- [x] Empire State: the base is 424 by 187 ft, so from some angles it reads
       as square. Verify the footprint proportion on screen against the number.
+      **Done 2026-09-07**, and the sweep is wider than the claim. Measured on
+      the page's own projection, not derived: at the default camera, yaw -0.7
+      and pitch 0.22, the base draws 98.9 by 37.3 viewBox units, 2.65 to 1
+      against a true 2.267. Through a full turn at that pitch the drawn ratio
+      runs 10.39 to 1 along the short face down to 0.495 to 1 along the long
+      one, passing through 1.000 at yaw 249 degrees and by symmetry at 69, 111
+      and 291. The honest number is drawn at exactly four angles of 360: 45,
+      135, 225 and 315. A closed-form check of the same projection puts square
+      at 68.9 degrees, agreeing with the measurement to a quarter degree, so
+      two routes agree. The base is no sliver either, 98.9 units of a 720 box
+      and 17.9 tall. None of it is an error: a 424 by 187 ft building
+      foreshortens exactly like that, and faking it would break the page's own
+      promise that every dimension is real. The defect beside it was that the
+      page never stated the plan, all four fact cards being heights, so a
+      reader stopped at a foreshortened angle had nothing to correct them. A
+      fifth card carries the footprint and the know block explains the swing,
+      in the same voice the bridge uses for its six-pixel arches.
+- [ ] Draw the footprint on the model, not only on a card. Today's verification
+      put 424 by 187 ft on a fact card because the drawing swings between
+      10:1 and 1:2 as it turns. The model-side answer is a dimension line on
+      the ground plane at the base, which would stay true at every yaw because
+      it is drawn in the same projection as the thing it measures. The care
+      needed is the one the 2026-09-02 and 09-05 entries paid for: a fifth
+      label on this model has to clear the four already placed, so it must run
+      the same check, a full turn by five tilts from the -0.14 floor to the
+      0.75 ceiling, and prove no label leaves the 720 by 620 box. If it cannot
+      fit at the phone framing, it should not be drawn there rather than
+      shoved.
+- [ ] The Empire State setback widths are the only numbers in either model with
+      no stated source. `nyc-3d.js` carries a steps table, 304, 268, 232, 196,
+      168 and 140 ft at floors 21, 25, 30, 72, 81 and 85, while baseW and baseD
+      trace to the published 424 by 187 and every height traces to a published
+      figure. The page promises every dimension is the real one, so either
+      find the published plan widths and cite them in the comment beside the
+      table, or say in the comment that the massing steps are indicative, the
+      way the window bands and the parapet heights already do.
 
 ## Also on the list
 
@@ -550,3 +586,50 @@ Note: the branch was 7 ahead and 2 behind at the start and was rebased onto
 origin/main cleanly. destinations.json, gallery_items.json, the two gallery
 tallies and three gallery_scripts files are another session's uncommitted work
 and were left untouched, verified by checksum before the rebase and after.
+
+### 2026-09-07
+Trimmed: two, both on the front page and both the same trap wearing two
+costumes, modern.css winning with `!important` where the author's rule had
+only specificity. First, the hero's largest line declares line-height 1.22 and
+rendered 1.62, because it is a `<p>` and modern.css sets
+`p, li, .sub, ... { line-height: 1.62 !important }`; an important declaration
+beats an ID prefix, so the biggest statement on the site set on body leading.
+At 1280px that was 90.46px of slug under 55.84px type, a 181px box for two
+lines, while the h1 directly beneath it sets at 1.08 and reads as one block.
+Now 68.12px and 136px, and 43.03 to 32.40 on a phone. Second, the iTicket chip
+was invisible: text rgba(231,236,245,.62) and border rgba(255,255,255,.20), a
+dark-hero palette on a white hero, measured at 1.11:1 contrast. Its two
+siblings escaped because they are `<a>` and modern.css recolours links; a
+`<span>` is not a link, so nothing rescued this one. Muted ink is the same grey
+the ghost link beside it renders, 5.05:1. Then the chrome, for the same reason
+in reverse: modern.css strips `<a>` back to plain text, 0px border and 1.6px
+padding, so both live actions render as words while the span kept the full
+pill, 1px border, 24px side padding, 56px tall against their 44. The only
+thing in that row that looked like a button was the only one that does
+nothing. All three now share one 44px line, and the two live ones keep their
+underline, so the distinction is carried by the mark that means it.
+3D: the top backlog item, the Empire State footprint. Numbers above.
+Checkers: map sound, 83% full, unchanged. i18n 40 composed strings, unchanged,
+none attempted and none added, the day's new copy being static HTML that
+build_i18n already reads from landmarks.html. Script lengths 1 out of band, the
+same Chinese overview, left alone again on purpose.
+Worth writing down, because it nearly cost the verification: the Browser pane
+went hidden partway through and every screenshot after a scroll came back
+white while the DOM measured correctly. That reads exactly like a page that
+has broken. It had not. Scrolling to top and pinning the block at
+position:fixed got a real frame back. A blank screenshot is a claim about the
+pane, not about the page, and the two have to be told apart before anything is
+reported.
+For Sean, not touched: /iticket exists and returns 200, a properly written
+page whose own eyebrow says IN DEVELOPMENT, NOT TAKING BOOKINGS. The hero chip
+that names iTicket is a `<span>` that goes nowhere, so a visitor curious about
+it has no way to reach the page that would answer them. Making it a link is a
+one-tag change, but the CSS comment beside it says plainly that clicking was
+meant to do nothing, and silently reversing a decision the author wrote down
+is not a daily-polish call. The other session's uncommitted work,
+destinations.json, gallery_items.json, the two gallery tallies and twelve
+gallery_scripts files, was left untouched; the branch was one behind at the
+start and rebased onto origin/main cleanly with the autostash restored.
+Commits: "The hero's biggest line stops setting on body leading, and the dead
+chip stops being the only button" and "Empire State: the footprint is verified,
+and the page finally states it".
