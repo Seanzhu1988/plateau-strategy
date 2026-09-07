@@ -1383,7 +1383,18 @@
             + 'is not published anywhere, and is set here by proportion.'
       },
       'paul-revere': {
-        opts: { yaw: 2.35, pitch: 0.30 },
+        /* THE CAMERA WAS POINTED AT THE BACK OF THE HOUSE. [SEAN 2026-09-06:
+           "did you try to build the realistic the freedom trail 3d models, i
+           dont see them changed".] He could not see it because at yaw 2.35 the
+           reader is behind the building: 33 of the model's 201 faces survive
+           the cull, 16 percent, and every one of the features that makes this
+           the Paul Revere House sits on the front. Rendered at that angle it
+           is a brown box with two chimneys. Turned round, the leaded casements,
+           the clapboard courses, the jettied second storey and the door are
+           all there, because they were built. This file already records the
+           same fault being fixed once for the State House; it was fixed for
+           that building only, and this one kept it. */
+        opts: { yaw: -0.62, pitch: 0.30 },
         sub: 'The Paul Revere House, built about 1680 and the oldest building left '
            + 'in downtown Boston. Thirty feet six inches across the front and '
            + 'eighteen feet two deep, one room to a floor, four bays with three '
