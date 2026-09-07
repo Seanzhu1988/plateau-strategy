@@ -1359,6 +1359,61 @@ scene file) and has been LOOKED at from more than one angle.
   arms-armor in the rebuilt list above. The rooms still object-in-a-box are
   greek-roman, lehman, grand-stair, euro-paintings and nineteenth-century.
 
+  ADVANCED 2026-09-07 by the landmark routine, and the advance is exactly the
+  one the entry above asked for, so the next run starts past it. The route
+  that unblocked arms-armor was run on gallery 162: fetch objects and filter
+  on their own GalleryNumber field. It works, and the court's SCALE is now
+  published rather than guessed. Twenty six objects were read this run and
+  every one carries GalleryNumber 162 on its own record:
+    247000, "Marble statue of a youthful Hercules", H. 97 3/16 in. (246.9 cm),
+      which is 8.10 ft and is the tallest thing verified in the court;
+    247001, "Marble statue of a bearded Hercules", H. without pedestal
+      93 3/4 in. (238.20 cm), 7.81 ft;
+    247105, "Marble statue of a togatus", H. 72 in. (182.9 cm);
+    254925, "Marble statue of Hermes", 71 1/4 x 29 1/2 x 23 1/2 in.;
+    246993, "Marble statue of a girl", H. with plinth 175.3 cm;
+    247003, "Marble statue of a seated muse", H. as restored 66 in.;
+    246994, "Marble statue of a woman", H. 65 in.;
+    254697, "Marble statue of Aphrodite", H. with plinth 62 1/2 in.;
+    248141, "Marble statue of a draped seated man", H. 51 1/2 in.;
+    248132, "Marble statue of an old woman", H. 49 5/8 in.;
+    256403, "Marble Statue Group of the Three Graces", 48 7/16 x 39 3/8 in.;
+    254819, the sarcophagus with the Triumph of Dionysos and the Seasons,
+      ca. 260-270 CE, 34 x 85 x 36 1/4 in., which is the court's signature
+      object and is 7 ft 1 in long;
+    245585, sarcophagus with garlands and the myth of Theseus and Ariadne,
+      31 x 85 3/4 x 28 in.;
+    254590, sarcophagus with the myth of Selene and Endymion, H. 28 1/2 in.
+  So the vertical scale of the lower storey is settled the way the Medieval
+  Hall's was: a colossal Hercules standing 8.10 ft sets the floor to cornice
+  minimum, and a two storey atrium above it follows.
+
+  STILL REFUSED, and only one number is missing now: the PERISTYLE COLUMN
+  COUNT. The Met's own press text calls the room "a monumental, skylit
+  peristyle", so the colonnade is the feature a visitor names, and checklist
+  item 9 is not satisfied without it while checklist item 1 forbids drawing it
+  on a derived module. Two precedents in this file say the same thing about a
+  count in the most prominent feature, this entry's own first refusal and the
+  american one, so it was not overturned on a run that had no new evidence
+  about columns. Deriving a count from an intercolumniation rule would be a
+  guess wearing a measurement's clothes.
+
+  WHAT IS LEFT TO FIND is therefore narrow: the number of columns on one side
+  of the gallery 162 peristyle, or a plan that shows them. The Kevin Roche
+  office's drawings and a 2007 architectural review remain the named routes.
+  A photograph counted the way the american facade was counted would also do
+  it, and unlike that facade a colonnade in a skylit court separates cleanly
+  from its background, so the photograph route is likely EASIER here than it
+  was there.
+
+  THE COLLECTION API RATE LIMITS, which no entry here had recorded and which
+  cost this run its build. After roughly two hundred object fetches in a few
+  minutes the search endpoint returned HTTP 403 and then an Incapsula block
+  page to both urllib and curl, with or without a browser User-Agent. Object
+  fetches by id were fine up to that point. Pace the calls, cache what comes
+  back to a file the moment it arrives, and do the research for every room a
+  run intends to build in ONE paced pass before any building starts.
+
 - moma, the Museum of Modern Art exterior (2026-09-05, the landmark routine).
   CLAIMED at the start of the run, then RELEASED unbuilt, and the claim was
   removed rather than left to block another builder. The reason is the
