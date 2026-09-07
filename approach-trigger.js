@@ -55,6 +55,30 @@
     return 2 * R_EARTH * Math.asin(Math.sqrt(a));
   }
 
+  /* Initial great-circle bearing, degrees clockwise from north. "Initial"
+     matters: over a couple of miles the difference from the final bearing is
+     a fraction of a degree, but using the right one costs nothing. */
+  function bearing(lat1, lon1, lat2, lon2) {
+    var p1 = lat1 * Math.PI / 180, p2 = lat2 * Math.PI / 180;
+    var dl = (lon2 - lon1) * Math.PI / 180;
+    var y = Math.sin(dl) * Math.cos(p2);
+    var x = Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dl);
+    return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+  }
+
+  /* Which way to look, from the difference between where the landmark is and
+     which way the walker is facing. The bands are wide on purpose: a phone
+     heading is worth a few degrees at best, so "on your right" covers a
+     quadrant rather than pretending to point. */
+  function sideOf(brg, heading) {
+    if (heading == null || isNaN(heading)) return null;
+    var t = ((brg - heading + 540) % 360) - 180;      /* -180 .. 180 */
+    if (t > -30 && t <= 30) return "ahead";
+    if (t > 30 && t <= 150) return "right";
+    if (t < -30 && t >= -150) return "left";
+    return "behind";
+  }
+
   /* Three radii from two numbers. Height drives how early a thing can be seen,
      footprint drives its presence on the ground, and the clamps stop either
      one running away: an obelisk cannot announce itself from a mile, and a
@@ -88,7 +112,8 @@
            footprint because it is what you see first down a long axis. */
         weight: (s.height_m || 0) * 2 + (s.footprint_m || 0),
         state: "dormant",
-        spoken: false
+        spoken: false,
+        arrivedSaid: false
       });
     }
     return out;
@@ -103,9 +128,18 @@
      inward or outward without comparing strings. */
   var RANK = { dormant: 0, sighted: 1, approaching: 2, arrived: 3 };
 
+  /* Above this height a walker has to raise their eyes, and being told so is
+     the difference between finding the Monument and walking past its base. */
+  var LOOK_UP_M = 25;
+
   function create(opts) {
     var o = opts || {};
     var marks = prepare(o.stops || []);
+    /* Heading, in order of trust: the fix's own course while moving, then the
+       compass the page feeds in, then the line between the last two fixes.
+       A walker standing still has no course and no derived heading, which is
+       why the compass is worth asking for. */
+    var lastFix = null, compass = null;
     var onEvent = typeof o.onEvent === "function" ? o.onEvent : function () {};
     /* A fix fuzzier than the zone is deep is not evidence of arrival. The gate
        is the old page's 80 m, kept because it was tuned on real walks, but it
@@ -123,8 +157,14 @@
        radius on the Mall that never happens, the stops are a median 288 m
        apart; at the heads-up radius of a tall building it happens constantly,
        which is why the ordering is here in phase 1 rather than waiting. */
-    function update(lat, lon, accuracy) {
+    function update(lat, lon, accuracy, course) {
       var acc = accuracy == null ? 0 : accuracy;
+      var heading = (course != null && !isNaN(course)) ? course : null;
+      if (heading == null && lastFix && distance(lastFix[0], lastFix[1], lat, lon) > 8) {
+        heading = bearing(lastFix[0], lastFix[1], lat, lon);
+      }
+      if (heading == null) heading = compass;
+      if (!lastFix || distance(lastFix[0], lastFix[1], lat, lon) > 8) lastFix = [lat, lon];
       var live = [], i, m, d, z;
       for (i = 0; i < marks.length; i++) {
         m = marks[i];
@@ -172,22 +212,53 @@
       for (i = 0; i < live.length; i++) {
         var L = live[i];
         if (!L.crossed) continue;
-        if (L.z === "approaching" || L.z === "arrived") {
+
+        /* ARRIVAL IS ITS OWN EVENT. It used to be folded in with the narrate
+           branch, so a walker who had already heard the description got no
+           arrival at all: the state machine moved to "arrived" and nothing was
+           emitted. Walking to the foot of the Washington Monument still read
+           "coming up ahead". Arrival now speaks whether or not the description
+           has played, once per visit. */
+        if (L.z === "arrived") {
+          /* Order matters, and it is the reverse of what reads naturally in
+             code: the description is started FIRST and the arrival line is
+             emitted LAST, because both write the same one line on screen and
+             the walker standing at the door should be left looking at "you are
+             here", not at "coming up ahead". Tested by walking to the foot of
+             the Monument, which is where the first attempt read wrong. */
+          var stop = null;
+          if (!L.m.spoken) { L.m.spoken = true; onEvent(cue("narrate", L, lat, lon, heading)); stop = L.m.stop; }
+          if (!L.m.arrivedSaid) { L.m.arrivedSaid = true; onEvent(cue("arrived", L, lat, lon, heading)); }
+          if (stop) return stop;
+          continue;
+        }
+        if (L.z === "approaching") {
           if (L.m.spoken) continue;            /* a landmark speaks once a visit */
           L.m.spoken = true;
-          onEvent({ type: "narrate", stop: L.m.stop, distance: Math.round(L.d),
-                    measured: L.m.measured, rings: L.m.rings });
+          onEvent(cue("narrate", L, lat, lon, heading));
           return L.m.stop;
         }
-        /* phase 2 listens here for "sighted" */
-        onEvent({ type: L.z, stop: L.m.stop, distance: Math.round(L.d),
-                  measured: L.m.measured, rings: L.m.rings });
+        onEvent(cue(L.z, L, lat, lon, heading));
       }
       return null;
     }
 
+    function cue(type, L, lat, lon, heading) {
+      var brg = bearing(lat, lon, L.m.stop.lat, L.m.stop.lon);
+      return {
+        type: type, stop: L.m.stop, distance: Math.round(L.d),
+        measured: L.m.measured, rings: L.m.rings,
+        bearing: Math.round(brg),
+        side: sideOf(brg, heading),
+        lookUp: (L.m.stop.height_m || 0) >= LOOK_UP_M
+      };
+    }
+
     return {
       update: update,
+      /* The page hands the compass in rather than the module listening for it,
+         because the permission prompt belongs to a user gesture the page owns. */
+      setCompass: function (deg) { compass = (deg == null || isNaN(deg)) ? null : deg; },
       /* For the page's status line and for anyone checking the sizing without
          walking to Washington. */
       describe: function () {
@@ -196,10 +267,11 @@
         });
       },
       reset: function () {
-        marks.forEach(function (m) { m.state = "dormant"; m.spoken = false; });
+        marks.forEach(function (m) { m.state = "dormant"; m.spoken = false; m.arrivedSaid = false; });
       }
     };
   }
 
-  root.ApproachTrigger = { create: create, ringsFor: ringsFor, distance: distance, FLAT_M: FLAT_M };
+  root.ApproachTrigger = { create: create, ringsFor: ringsFor, distance: distance,
+                           bearing: bearing, sideOf: sideOf, FLAT_M: FLAT_M };
 })(typeof window !== "undefined" ? window : this);

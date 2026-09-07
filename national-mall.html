@@ -79,6 +79,7 @@
                     border-radius: 12px; cursor: grab; touch-action: pan-y;
                     border: 1px solid #e2ded4; overflow: hidden; }
         .nm-stage:active { cursor: grabbing; }
+        .nm-cue { display: block; width: 100%; font-weight: 640; color: #12305b; }
         .nm-stage-note { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center;
                          margin: .55rem 0 0; font-size: .82rem; color: #8a8378; }
         /* The site's stylesheet strips fills from every button on purpose:
@@ -237,6 +238,7 @@
                     <button type="button" id="nmLock" aria-pressed="false">Lock the walk</button>
                     <button type="button" id="nmFollow" aria-pressed="false" hidden>Follow me on the map</button>
                     <span id="nmLoc" aria-live="polite"></span>
+                    <span id="nmCue" class="nm-cue" aria-live="polite" hidden></span>
                 </div>
                 <p class="nm-consent" id="nmConsent" hidden>Your position stays on this phone and is drawn on the map here. We never send it to our server. The map loads tiles for the area on screen, as any map does.</p>
                 <div id="nmMap"></div>
@@ -730,6 +732,42 @@
         }
     }
 
+    /* Which way to look, written for this walker in this moment. Shown on the
+       page always; spoken only ahead of a recording, so the phone's own voice
+       is a lead-in rather than a second narrator. */
+    var SPEAK_CUES = true;
+    function cueText(e) {
+        var f = window.psxFmt, nm = e.stop.name;
+        /* Standing at the door, "coming up ahead" is simply wrong, and it was
+           what the base ring said until this was tested on a walk toward the
+           Monument: the same six words at 420 m and at 40. Arrival gets its
+           own line. */
+        if (e.type === "arrived") {
+            var here = f ? f("{name}, you are here", { name: nm }) : nm + ", you are here";
+            return e.lookUp ? here + " " + T("Look up.") : here;
+        }
+        var line = !e.side || e.side === "ahead" ? (f ? f("{name}, coming up ahead", { name: nm }) : nm + ", coming up ahead")
+                 : e.side === "right" ? (f ? f("{name}, on your right", { name: nm }) : nm + ", on your right")
+                 : e.side === "left"  ? (f ? f("{name}, on your left", { name: nm })  : nm + ", on your left")
+                 : (f ? f("{name}, behind you", { name: nm }) : nm + ", behind you");
+        if (e.lookUp) line += " " + T("Look up.");
+        return line;
+    }
+    function sayCue(e, speak) {
+        var el = document.getElementById("nmCue");
+        if (!el) return;
+        el.textContent = cueText(e);
+        el.hidden = false;
+        if (!speak || !SPEAK_CUES) return;
+        try {
+            if (!window.speechSynthesis) return;
+            var u = new SpeechSynthesisUtterance(el.textContent);
+            u.lang = document.documentElement.lang || "en";
+            u.rate = 1.0;
+            window.speechSynthesis.speak(u);
+        } catch (err) {}
+    }
+
     function paintList() {
         listEl.innerHTML = "";
         stops.forEach(function (s) {
@@ -851,8 +889,32 @@
         lockBtn.setAttribute("aria-pressed", locked ? "true" : "false");
         consentEl.hidden = !locked;
         if (!locked) { stopFollow(T("Unlocked.")); return; }
+        /* PHASE 3, the permission half. iPhone will only grant the compass from
+           inside a user gesture, and this tap is the only one the walk has. A
+           refusal is not an error: the module falls back to the course in the
+           fix, and standing still simply gives no side. */
+        try {
+            var DOE = window.DeviceOrientationEvent;
+            if (DOE && typeof DOE.requestPermission === "function") {
+                DOE.requestPermission().then(function (r) {
+                    if (r === "granted") listenCompass();
+                }).catch(function () {});
+            } else if (DOE) { listenCompass(); }
+        } catch (e) {}
         arm();
     });
+    function listenCompass() {
+        window.addEventListener("deviceorientationabsolute", onHeading, true);
+        window.addEventListener("deviceorientation", onHeading, true);
+    }
+    function onHeading(ev) {
+        if (!trigger) return;
+        /* iOS reports a true heading of its own; everyone else gives alpha,
+           which is degrees counter-clockwise from north. */
+        var h = (ev.webkitCompassHeading != null) ? ev.webkitCompassHeading
+              : (ev.absolute && ev.alpha != null) ? (360 - ev.alpha) % 360 : null;
+        if (h != null && !isNaN(h)) trigger.setCompass(h);
+    }
     function arm() {
         if (watchId !== null) return;
         if (!navigator.geolocation) { locEl.textContent = T("This browser cannot share a location."); return; }
@@ -884,7 +946,10 @@
                has measured the building. A measured stop gets a ring grown
                from its own height and footprint, which is why the Washington
                Monument now speaks at 135 m and the Lincoln Memorial at 84. */
-            if (trigger) trigger.update(lat, lon, acc);
+            /* The fix's own course is the best heading there is, and it only
+               exists while the walker is actually moving. The module falls back
+               to the line between fixes, then to the compass. */
+            if (trigger) trigger.update(lat, lon, acc, pos.coords.heading);
         }, function (err) {
             locEl.textContent = (err && err.code === 1) ? T("Location was not shared. The walk stays locked; the map will not follow.")
                                                        : T("No position yet. Try again outdoors.");
@@ -953,7 +1018,18 @@
             trigger = window.ApproachTrigger.create({
                 stops: stops,
                 onEvent: function (e) {
-                    if (e.type !== "narrate") return;      /* phases 2 to 4 listen for the rest */
+                    /* PHASE 2. The heads-up: seen from far enough away to be
+                       worth turning your head for, and deliberately quiet. It
+                       does not open the stop or start any audio; it only says
+                       the thing is coming. */
+                    if (e.type === "sighted") { sayCue(e, false); return; }
+                    if (e.type === "arrived") { sayCue(e, false); return; }
+                    if (e.type !== "narrate") return;
+                    /* PHASE 3. Left and right cannot be recorded: they depend
+                       on which way this walker is facing. So the line is built
+                       here and spoken by the phone, and the recording we made
+                       follows it. */
+                    sayCue(e, true);
                     show(e.stop.model || "", true);
                     var au = document.getElementById("nmAudio");
                     if (!au.getAttribute("src")) return;

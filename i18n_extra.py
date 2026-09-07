@@ -3629,3 +3629,52 @@ EXTRA.update({
         "\u2190 \u8fd4\u56de{name}", "\u2190 Volver a {name}",
         "\u2190 {name}(\uc73c)\ub85c \ub3cc\uc544\uac00\uae30", "\u2190 Quay l\u1ea1i {name}"],
 })
+
+
+# The approach trigger's spoken cue. One pattern per direction rather than a
+# word glued onto a name: Korean and Vietnamese put the place before the
+# preposition, so concatenation reads backwards in both.
+EXTRA.update({
+    "{name}, coming up ahead": [
+        "{name}\uff0c\u5c31\u5728\u524d\u9762", "{name}, justo delante",
+        "{name}, \ubc14\ub85c \uc55e\uc5d0 \uc788\uc2b5\ub2c8\ub2e4", "{name}, ngay pha\u0301i tr\u01b0\u01a1\u0301c m\u0103\u0323t"],
+    "{name}, on your right": [
+        "{name}\uff0c\u5728\u4f60\u53f3\u624b\u8fb9", "{name}, a su derecha",
+        "{name}, \uc624\ub978\ucabd\uc5d0 \uc788\uc2b5\ub2c8\ub2e4", "{name}, b\xean pha\u0309i cu\u0309a ba\u0323n"],
+    "{name}, on your left": [
+        "{name}\uff0c\u5728\u4f60\u5de6\u624b\u8fb9", "{name}, a su izquierda",
+        "{name}, \uc67c\ucabd\uc5d0 \uc788\uc2b5\ub2c8\ub2e4", "{name}, b\xean tra\u0301i cu\u0309a ba\u0323n"],
+    "{name}, behind you": [
+        "{name}\uff0c\u5728\u4f60\u8eab\u540e", "{name}, detr\xe1s de usted",
+        "{name}, \ub4a4\ucabd\uc5d0 \uc788\uc2b5\ub2c8\ub2e4", "{name}, \u01a1\u0309 phi\u0301a sau ba\u0323n"],
+    "Look up.": ["\u62ac\u5934\u770b\u3002", "Mire hacia arriba.", "\uc704\ub97c \ubcf4\uc138\uc694.", "H\xe3y nh\xecn l\xean."],
+})
+
+
+# The Empire State footprint lines, added by the landmark routine on 2026-09-07
+# without translations, which blocked every pack rebuild after it. Nothing
+# shipped to a reader in any language until these existed.
+EXTRA.update({
+    "424 by 187 ft": ["424 \xd7 187 \u82f1\u5c3a", "424 por 187 pies", "424 \xd7 187\ud53c\ud2b8", "424 \xd7 187 foot"],
+    "the base, more than twice as wide as it is deep": [
+        "\u5e95\u5ea7\uff0c\u5bbd\u5ea6\u662f\u8fdb\u6df1\u7684\u4e24\u500d\u6709\u4f59",
+        "la base, m\xe1s del doble de ancha que de profunda",
+        "\uae30\ub2e8\ubd80, \uae4a\uc774\uc758 \ub450 \ubc30\uac00 \ub118\ub294 \ud3ed",
+        "ph\u1ea7n \u0111\u1ebf, r\u1ed9ng h\u01a1n g\u1ea5p \u0111\xf4i chi\u1ec1u s\xe2u"],
+    "The base is a long rectangle, not a square.": [
+        "\u5e95\u5ea7\u662f\u4e00\u4e2a\u72ed\u957f\u7684\u77e9\u5f62\uff0c\u800c\u4e0d\u662f\u6b63\u65b9\u5f62\u3002",
+        "La base es un rect\xe1ngulo alargado, no un cuadrado.",
+        "\uae30\ub2e8\ubd80\ub294 \uc815\uc0ac\uac01\ud615\uc774 \uc544\ub2c8\ub77c \uae38\uac8c \ubed7\uc740 \uc9c1\uc0ac\uac01\ud615\uc785\ub2c8\ub2e4.",
+        "Ph\u1ea7n \u0111\u1ebf l\xe0 m\u1ed9t h\xecnh ch\u1eef nh\u1eadt d\xe0i, kh\xf4ng ph\u1ea3i h\xecnh vu\xf4ng."],
+    "424 by 187 feet, more than twice as wide as it is deep. The drawing cannot hold that still: turn the model and the footprint you see runs from about 10 to 1, looking along the short face, down to about 1 to 2 looking along the long one, passing through square on the way. That is foreshortening, the same thing your eye does standing on the corner, and it is why the shape is written on a card rather than left to the picture.": [
+        "424 \xd7 187 \u82f1\u5c3a\uff0c\u5bbd\u5ea6\u662f\u8fdb\u6df1\u7684\u4e24\u500d\u6709\u4f59\u3002\u56fe\u753b\u65e0\u6cd5\u628a\u8fd9\u4e00\u70b9\u56fa\u5b9a\u4e0b\u6765\uff1a\u8f6c\u52a8\u6a21\u578b\uff0c\u4f60\u770b\u5230\u7684\u5e73\u9762\u6bd4\u4f8b\u4f1a\u4ece\u6cbf\u77ed\u8fb9\u770b\u65f6\u7684\u7ea6 10 \u6bd4 1\uff0c\u53d8\u5230\u6cbf\u957f\u8fb9\u770b\u65f6\u7684\u7ea6 1 \u6bd4 2\uff0c\u4e2d\u9014\u4f1a\u7ecf\u8fc7\u6b63\u65b9\u5f62\u3002\u8fd9\u5c31\u662f\u900f\u89c6\u7f29\u77ed\uff0c\u4e0e\u4f60\u7ad9\u5728\u8857\u89d2\u65f6\u773c\u775b\u6240\u505a\u7684\u4e00\u6837\uff0c\u4e5f\u6b63\u56e0\u5982\u6b64\uff0c\u8fd9\u4e2a\u5f62\u72b6\u5199\u5728\u5361\u7247\u4e0a\uff0c\u800c\u4e0d\u662f\u4ea4\u7ed9\u56fe\u753b\u3002",
+        "424 por 187 pies, m\xe1s del doble de ancho que de profundo. El dibujo no puede fijar eso: gire el modelo y la planta que ve pasa de unos 10 a 1, mirando por la cara corta, a cerca de 1 a 2 mirando por la larga, pasando por el cuadrado en el camino. Eso es el escorzo, lo mismo que hace su ojo en la esquina, y por eso la forma va escrita en una ficha y no se deja a la imagen.",
+        "424 \xd7 187\ud53c\ud2b8\ub85c, \uae4a\uc774\uc758 \ub450 \ubc30\uac00 \ub118\ub294 \ud3ed\uc785\ub2c8\ub2e4. \uadf8\ub9bc\uc740 \uadf8\uac83\uc744 \uace0\uc815\ud574 \uc8fc\uc9c0 \ubabb\ud569\ub2c8\ub2e4. \ubaa8\ub378\uc744 \ub3cc\ub9ac\uba74 \ubcf4\uc774\ub294 \ubc14\ub2e5 \ube44\uc728\uc740 \uc9e7\uc740 \uba74\uc744 \ub530\ub77c \ubcfc \ub54c \uc57d 10 \ub300 1\uc5d0\uc11c \uae34 \uba74\uc744 \ub530\ub77c \ubcfc \ub54c \uc57d 1 \ub300 2\uae4c\uc9c0 \ubcc0\ud558\uba70, \uadf8 \uc0ac\uc774\uc5d0 \uc815\uc0ac\uac01\ud615\uc744 \uc9c0\ub098\uac11\ub2c8\ub2e4. \uadf8\uac83\uc774 \ub2e8\ucd95\ubc95\uc774\uba70, \ubaa8\ud2b1\uc774\uc5d0 \uc11c \uc788\ub294 \ub2f9\uc2e0\uc758 \ub208\uc774 \ud558\ub294 \uc77c\uacfc \uac19\uc2b5\ub2c8\ub2e4. \uadf8\ub798\uc11c \uc774 \ud615\ud0dc\ub294 \uadf8\ub9bc\uc5d0 \ub9e1\uae30\uc9c0 \uc54a\uace0 \uce74\ub4dc\uc5d0 \uc801\uc5b4 \ub461\ub2c8\ub2e4.",
+        "424 \xd7 187 foot, r\u1ed9ng h\u01a1n g\u1ea5p \u0111\xf4i chi\u1ec1u s\xe2u. B\u1ea3n v\u1ebd kh\xf4ng gi\u1eef \u0111\u01b0\u1ee3c \u0111i\u1ec1u \u0111\xf3: xoay m\xf4 h\xecnh v\xe0 t\u1ef7 l\u1ec7 m\u1eb7t b\u1eb1ng b\u1ea1n th\u1ea5y ch\u1ea1y t\u1eeb kho\u1ea3ng 10 tr\xean 1 khi nh\xecn d\u1ecdc m\u1eb7t ng\u1eafn, xu\u1ed1ng c\xf2n kho\u1ea3ng 1 tr\xean 2 khi nh\xecn d\u1ecdc m\u1eb7t d\xe0i, \u0111i qua h\xecnh vu\xf4ng tr\xean \u0111\u01b0\u1eddng. \u0110\xf3 l\xe0 s\u1ef1 r\xfat ng\u1eafn theo ph\u1ed1i c\u1ea3nh, ch\xednh l\xe0 \u0111i\u1ec1u m\u1eaft b\u1ea1n l\xe0m khi \u0111\u1ee9ng \u1edf g\xf3c ph\u1ed1, v\xe0 v\xec th\u1ebf h\xecnh d\u1ea1ng \u0111\u01b0\u1ee3c ghi tr\xean m\u1ed9t t\u1ea5m th\u1ebb ch\u1ee9 kh\xf4ng \u0111\u1ec3 m\u1eb7c cho b\u1ee9c tranh."],
+})
+
+EXTRA.update({
+    "{name}, you are here": [
+        "{name}\uff0c\u4f60\u5df2\u7ecf\u5230\u4e86", "{name}, ya ha llegado",
+        "{name}, \ub3c4\ucc29\ud588\uc2b5\ub2c8\ub2e4", "{name}, b\u1ea1n \u0111\xe3 \u0111\u1ebfn n\u01a1i"],
+})
