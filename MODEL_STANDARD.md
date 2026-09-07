@@ -173,8 +173,10 @@ queue instead. Remove a line the moment its work lands or is abandoned.
   object-in-a-box LANDMARKS entries. A live session taking one of these
   should claim it here first.
 
-- american, not built at all. The only Mall place with no dc-form file. This is
-  the routine's own next queue item, so it is claimed here to stop a duplicate.
+- american, BUILT AND COMMITTED 2026-09-07 by the landmark routine as
+  dc-form-american.js. The claim is released; the entry below is kept because
+  six runs of dead ends are worth more written down than deleted, and because a
+  future run with a more frontal photograph should re-check the slot list.
   BLOCKED A FOURTH TIME, 2026-09-06, but the block MOVED, and the next run
   starts a long way past where the last three did.
 
@@ -602,6 +604,65 @@ above is not paperwork, it is the lock.
 
 
 ## Rebuilt to this standard
+
+- american, the National Museum of American History (2026-09-07, the landmark
+  routine). The LAST Mall place without a dc-form file, blocked five times on
+  one number and unblocked on the sixth by looking at a magnified crop instead
+  of at a luminance profile. All sixteen Mall rebuilds are now done.
+  BUILT FROM: 496 by 226 ft (OSM way 445808462, and the photograph confirms the
+  496 to the foot); 67.3 ft tall (the OSM 20.5 m tag, a NAMED GAP, no
+  architect's height reached by six runs); pink Tennessee marble sandblasted
+  over 16 3/8 in precast sandwich panels; a broad platform base; "modernist
+  shadow cornices"; a "compact rectangular mass" that "culminates in a recessed
+  attic story"; PPG Greylite solar gray glass; and the design idea that decides
+  the whole model, SAH's "modern rendition of a peripteral temple on the model
+  of the Lincoln Memorial", where the colonnade is made of WALL: "rectangular
+  slabs of wall set vertically ... held away from the inner wall by vertical
+  windows of solar gray glass".
+  THE COUNT, drawn to the foot: eight slots at plus and minus 19.9, 86.7, 154.5
+  and 221.8 ft from the centre of the front, a 67.3 ft module with the innermost
+  pair straddling the centre. The eighth is the inferred partner of the one a
+  tree hides, and it is labelled inferred in the file. So the slabs are nine
+  real planes on each long face, five on each end, each a separate object with
+  its own two returns into the recess. Not lines painted on a box.
+  WHAT THE PICTURE SHOWED AND THE NUMBERS DID NOT, twice.
+  First, THE PAINTER'S TRAP A NINTH TIME: the attic roof and the cornice are
+  sorted by their FARTHEST corner, so they painted before the far side's slab
+  returns and eight bright stripes ran ACROSS the roof. Arithmetic passed it;
+  one look caught it. Fixed by computing the nearest and farthest plan corners
+  and giving the glass core, the cornice, the attic and its cap explicit
+  depths, so the core sits behind everything and the top masses in front.
+  Second, A SMALLER ONE WORTH RECORDING because it cost a whole render: the
+  panel joints were first drawn as hand-built SVG polyline strings, and the
+  renderer's FIRST pass measures the drawing by walking the point list a poly
+  is handed. A string is not a point list, and render_room.js died with
+  "pts.forEach is not a function" before drawing anything. Every mark goes
+  through ctx.poly, including a hairline.
+  CHECKLIST, all nine: (1) eight slots and their nine slabs drawn as real
+  separate objects at the measured count; the 9.6 ft panel joints are texture
+  and claim no count, which is what the magnified crop says they are. (2) the
+  shadow cornice, the terrace deck, its lower apron and the attic setback are
+  four horizontal breaks, each its own slab. (3) a broad platform base with a
+  lower apron; no step COUNT is claimed because none is published. (4) not a
+  flat lid: a recessed attic storey with its own thin cap, which is the thing
+  SAH says the mass culminates in. (5) two tones per material through a light
+  vector, plus the returns, which is where the "alternation of light and shade"
+  actually comes from. (6) a ground shadow under the terrace footprint.
+  (7) heights TRUE at 67.3 ft on a 496 ft front; the place height in dc-3d.js
+  is 21 m, which is that same tag. (8) HONESTLY PARTIAL, and said rather than
+  claimed: a 4 ft slot on a 496 ft facade is about two pixels at full-map
+  scale. It survives because each slot carries a bright marble return beside a
+  dark glass ground, and in the 4x crop it reads exactly as the photograph
+  does. Drawing it wider would make it legible by making it false. (9) the one
+  thing a visitor names IS the wall-slab colonnade, and it is the model.
+  NAMED GAPS, in the file's own header: the height; the slot width and the 2 ft
+  the slabs stand proud, bounded by the 4.0 ft the end recesses measure; the
+  attic setback; the step count; and the north and end elevations, which carry
+  the measured module by the building's symmetry and by arithmetic on the
+  measured 226 ft depth, both flagged as derived rather than seen.
+  NOT DRAWN, declared: the full storey by which the Constitution Avenue side
+  sits below the Mall terrace. This renderer has one flat ground plane, so the
+  drop cannot be drawn and is not faked.
 
 - egyptian, Gallery 100, the Mastaba Tomb of Perneb (2026-09-07, the landmark
   routine). The SEVENTH Met interior rebuilt from an object in a box into a
