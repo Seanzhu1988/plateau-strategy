@@ -13268,9 +13268,29 @@ h1{font-size:1.5rem;color:var(--ink);margin:0;letter-spacing:-.01em}
  </div>
  <div id="app" hidden>
    <div class="top">
-     <h1>Traffic</h1>
+     <h1>Pulse</h1>
      <div style="text-align:right"><span class="live"><span class="dot"></span><b id="online">0</b>&nbsp;online</span><div class="upd" id="upd"></div></div>
    </div>
+   <div class="card" id="revcard" hidden>
+     <p class="hd">Revenue <span id="revage"></span></p>
+     <div class="two">
+       <div><div class="n" id="rtoday">$0</div><div class="l">earned today</div></div>
+       <div><div class="n" id="rharv">0</div><div class="l">harvests today</div></div>
+     </div>
+     <div class="spark" id="rspark" style="margin:.9rem 0 .2rem"></div>
+     <div class="two" style="margin-top:.6rem">
+       <div><div class="n" id="r7">$0</div><div class="l" id="r7l">7 days</div></div>
+       <div><div class="n" id="r30">$0</div><div class="l" id="r30l">30 days</div></div>
+     </div>
+     <p class="hd" style="margin-top:1.1rem">Where it comes from, 7 days</p>
+     <div id="rlanes"></div>
+     <p class="hd" style="margin-top:1.1rem">What earns most, 7 days</p>
+     <div id="rcoins"></div>
+     <p class="hd" style="margin-top:1.1rem">Banked against the open book</p>
+     <div id="rnet"></div>
+     <p class="empty" id="rnote" style="margin-top:.6rem"></p>
+   </div>
+   <p class="hd" style="margin:1.4rem 0 .5rem">Traffic</p>
    <div class="tiles">
      <div class="tile"><div class="n" id="tvis">0</div><div class="l">Visitors today</div></div>
      <div class="tile"><div class="n" id="tviews">0</div><div class="l">Views today</div></div>
@@ -13418,6 +13438,48 @@ function rows(el,items,kind){
     return '<div class="rw"><span class="nm">'+esc(nm)+'</span><span class="bar"><i style="width:'+w+'%"></i></span><span class="v">'+num(it.n)+'</span></div>';
   }).join('');
 }
+function money(v,dp){var n=Math.abs(Number(v)||0);
+  return (v<0?'-$':'$')+n.toLocaleString(undefined,{minimumFractionDigits:dp,maximumFractionDigits:dp});}
+function rev(d){
+  var card=document.getElementById('revcard');
+  if(!d||!d.ok){card.hidden=true;return;}
+  card.hidden=false;
+  // The age rides with the numbers: if the bot stops pushing, say so rather than
+  // showing a stale figure that still looks live.
+  var age=document.getElementById('revage');
+  age.textContent=d.stale?(' \u00b7 last sent '+(d.age_min==null?'never':d.age_min+' min ago')):'';
+  age.style.color=d.stale?'#a8443a':'';
+  document.getElementById('rtoday').textContent=money(d.today.revenue,2);
+  document.getElementById('rharv').textContent=num(d.today.harvests);
+  var sp=(d.daily||[]).map(function(x){return x.revenue;});
+  var mx=Math.max.apply(null,sp.concat([1]));
+  document.getElementById('rspark').innerHTML=sp.map(function(v){
+    return '<div title="'+money(v,2)+'" style="height:'+Math.max(2,Math.round((v/mx)*64))+'px"></div>';}).join('');
+  document.getElementById('r7').textContent=money(d.stretch.d7,0);
+  document.getElementById('r30').textContent=money(d.stretch.d30,0);
+  document.getElementById('r7l').textContent=num(d.stretch.d7_n)+' harvests, 7 days';
+  document.getElementById('r30l').textContent=num(d.stretch.d30_n)+' harvests, 30 days';
+  function bars(el,pairs){
+    el=document.getElementById(el);
+    if(!pairs||!pairs.length){el.innerHTML='<p class="empty">Nothing yet.</p>';return;}
+    var m=Math.max.apply(null,pairs.map(function(p){return p[1];}).concat([1]));
+    el.innerHTML=pairs.map(function(p){
+      var w=Math.max(3,Math.round((p[1]/m)*100));
+      return '<div class="rw"><span class="nm">'+esc(p[0])+'</span><span class="bar"><i style="width:'+w+'%"></i></span><span class="v">'+money(p[1],p[1]>=100?0:2)+'</span></div>';
+    }).join('');
+  }
+  bars('rlanes',d.by_lane); bars('rcoins',d.by_coin);
+  // Banked and paper always together: under the bot's no-loss rule winners are
+  // harvested out, so a red open book is what is still working, not a loss.
+  var o=d.open||{};
+  document.getElementById('rnet').innerHTML=
+    '<div class="rw"><span class="nm">Banked, lifetime</span><span class="v">'+money(d.realized_life,2)+'</span></div>'+
+    '<div class="rw"><span class="nm">Paper, '+num(o.bags)+' bags still growing</span><span class="v">'+money(o.paper,2)+'</span></div>'+
+    '<div class="rw"><span class="nm">True net</span><span class="v">'+money(d.true_net,2)+'</span></div>';
+  document.getElementById('rnote').textContent=
+    num(o.near_green)+' of '+num(o.bags)+' bags are within 5% of turning green. '+
+    'Winners are harvested out, so what stays open is the part still working, not a realized loss.';
+}
 function render(d){
   document.getElementById('login').hidden=true;document.getElementById('app').hidden=false;
   document.getElementById('online').textContent=num(d.online);
@@ -13431,6 +13493,7 @@ function render(d){
     return '<div title="'+v+'" style="height:'+Math.max(2,Math.round((v/mx)*64))+'px"></div>';}).join('');
   rows('channels',d.channels,'ch');rows('landings',d.landings,'pg');
   rows('pages',d.pages,'pg');rows('places',d.places,'pl');
+  rev(d.revenue);
   srch(d.searches);
   wl(d.worklist);
   loadMe();
@@ -13474,8 +13537,6 @@ load();setInterval(load,45000);
 </script></body></html>"""
 
 
-@app.route("/api/pulse")
-@owner_required
 def _pulse_searches(n=6):
     """What people typed into the gallery, arranged by what it costs us.
 
@@ -13556,6 +13617,64 @@ def _pulse_worklist():
         return {"ok": False}
 
 
+# ======================================================================
+# 💵 REVENUE, pushed up from the trading bot [SEAN 2026-09-07 "merge it to the
+# traffic pulse"]. The bot runs at home on a private address, so the phone
+# cannot reach it off the house WiFi. Instead of opening a tunnel into the
+# machine that holds the money, the bot PUSHES a small snapshot here and the
+# pulse reads it like any other number. Only these few figures ever leave the
+# Mac — never the dashboard, never an order route.
+#
+# Reading is owner-gated with the rest of the pulse. Writing needs a shared key
+# that lives only in the environment, and with no key set the door is CLOSED,
+# not open, so a missing config can never publish his book to the world.
+# ======================================================================
+REVENUE_PATH = _data_path("revenue_pulse.json")
+REVENUE_PUSH_KEY = (os.environ.get("REVENUE_PUSH_KEY") or "").strip()
+
+
+def _revenue_snapshot():
+    """The last snapshot the bot sent, with its own age attached.
+
+    Age travels WITH the numbers on purpose: if the bot stops pushing, a stale
+    figure that still looks live is worse than no figure, so the page can say
+    how old it is rather than quietly implying it is current.
+    """
+    try:
+        with open(REVENUE_PATH) as f:
+            d = json.load(f)
+    except Exception:
+        return {"ok": False}
+    ts = float(d.get("pushed_at") or 0)
+    d["age_min"] = int((time.time() - ts) / 60) if ts else None
+    d["stale"] = (d["age_min"] is None) or (d["age_min"] > 45)
+    d["ok"] = True
+    return d
+
+
+@app.route("/api/revenue/push", methods=["POST"])
+def api_revenue_push():
+    if not REVENUE_PUSH_KEY:
+        return jsonify({"ok": False, "error": "push key not configured"}), 503
+    sent = (request.headers.get("X-Revenue-Key") or "").strip()
+    if not hmac.compare_digest(sent, REVENUE_PUSH_KEY):
+        return jsonify({"ok": False, "error": "bad key"}), 401
+    body = request.get_json(silent=True) or {}
+    if not isinstance(body, dict) or "today" not in body:
+        return jsonify({"ok": False, "error": "payload not recognised"}), 400
+    body["pushed_at"] = time.time()
+    try:
+        tmp = REVENUE_PATH + ".tmp"
+        with open(tmp, "w") as f:
+            json.dump(body, f)
+        os.replace(tmp, REVENUE_PATH)
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+    return jsonify({"ok": True})
+
+
+@app.route("/api/pulse")
+@owner_required
 def api_pulse():
     data = _load_traffic()
     days = data.get("days", {})
@@ -13599,6 +13718,7 @@ def api_pulse():
         "landings": agg("landings", 7, 6),
         "places": agg("places", 7, 6),
         "spark": spark,
+        "revenue": _revenue_snapshot(),
         "searches": _pulse_searches(),
         "worklist": _pulse_worklist(),
         "updated": datetime.datetime.now().strftime("%b %-d, %-I:%M %p"),
