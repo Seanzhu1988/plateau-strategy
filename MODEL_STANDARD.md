@@ -168,8 +168,227 @@ queue instead. Remove a line the moment its work lands or is abandoned.
 
 - american, not built at all. The only Mall place with no dc-form file. This is
   the routine's own next queue item, so it is claimed here to stop a duplicate.
+  BLOCKED A FOURTH TIME, 2026-09-06, but the block MOVED, and the next run
+  starts a long way past where the last three did.
 
-After these: Boston, the nine Freedom Trail buildings, in batches.
+  THE PHOTOGRAPH ROUTE IS OPEN. The third run recorded it as shut because
+  upload.wikimedia.org returns a block page to this sandbox's curl. It is not
+  shut; it was the wrong door. Through the BROWSER PANE:
+    https://commons.wikimedia.org/wiki/Special:FilePath/<FILE NAME>?width=3840
+  loads and renders. Do not guess a /thumb/x/xx/ hash path, that is a 404, and
+  do not ask for a non-standard width, that is a 400. Better still, a Wikimedia
+  image document is SAME ORIGIN as its own img element, so
+    var img=document.images[0]; c.width=3840; c.height=2160;
+    ctx.drawImage(img,0,0); ctx.getImageData(x,y,w,h)
+  works, and the facade can be MEASURED in pixels rather than eyeballed. Draw
+  into a canvas and replaceChildren(canvas) in ONE javascript_exec call to look
+  at a magnified crop; two calls loses the image, because clearing the body
+  destroys it. The pane is hidden, so scroll and hover time out: screenshot,
+  get_page_text and javascript_exec all work, and computer zoom does not crop.
+
+  THE PHOTOGRAPH: "National Museum of American History - 2026
+  (55256384290).jpg" from Category:Architecture of the National Museum of
+  American History, 8375 x 4711, a near-frontal Mall facade in low sun.
+  MEASURED IN IT at width=3840, so the next run does not re-derive the frame:
+  sky meets roof at y=658; the RECESSED ATTIC STOREY is the band y=660 to 735,
+  visibly set back with its own shadow line, which confirms the SAH prose;
+  the main facade is y=740 to 1040; trees intrude below y=1050 and below y=900
+  at the left, so the only clean scanline is y=780 to 800. The facade spans
+  x=672 to 3264, and against the published 496 ft that is 5.23 px per foot.
+  The two DEEP end recesses sit at x=784-806 and x=3102-3124, symmetric about
+  x=1954, which is how we know the shot is square enough to count from.
+
+  AND THE COUNT STILL DID NOT FALL OUT, which is the honest part. A brightness
+  profile across the clean scanline is dominated by a regular period of about
+  50 px, which at 5.23 px/ft is 9.6 ft: that is the PRECAST PANEL joint module,
+  not the piers, and it matches the published 16 3/8 in precast sandwich panel
+  construction. In this photograph the sun is nearly frontal, so the vertical
+  window slots between the piers are mid-grey, not dark, and brightness alone
+  will not separate a pier from its recess. Counting the 50 px rhythm and
+  calling it piers would put a guessed count in the model's most prominent
+  feature dressed up as a measurement, which is worse than the gap.
+
+  BLOCKED A FIFTH TIME, 2026-09-06 evening, by the landmark routine, and the
+  block moved again. The photograph route WORKS, the method now works, and what
+  is missing is one specific number. Read this before touching the count again.
+
+  THE INHERITED FRAME IS WRONG AND WAS THE FOURTH RUN'S REAL ERROR. That run
+  recorded "the facade spans x=672 to 3264, and against the published 496 ft
+  that is 5.23 px per foot". It does not. Re-measured this run at the same
+  width=3840 by scanning luminance rows for the sky/roof boundary: the roofline
+  is at y=657, which the fourth run had right, but at y=660 the sky is bright
+  (229 to 254) from x=200 out to x=1000 and again from x=3300 to x=3700, and
+  the main mass reads dark (76 to 175) only from x=1020 to x=3250. The tall
+  block is 2230 px wide in this frame, not 2592, and the 5.23 px/ft figure that
+  every later inference rested on is 30 percent out. Anything derived from it
+  in the entry above should be re-derived, including the two "deep end
+  recesses" at x=784 and x=3102, which cannot both be on a block that starts
+  at x=1020.
+
+  THE RAKING-LIGHT SHOT THE PLAN ASKED FOR IS THIS SAME PHOTOGRAPH. Step 1 of
+  the fourth run's plan said to go find one. It did not need to: in
+  "National Museum of American History - 2026 (55256384290).jpg" the sun is low
+  and from the left, and in the band ABOVE THE TREES the window slots are
+  genuinely dark. The fourth run's clean scanline, y=780 to 800, is BELOW the
+  treeline and is why brightness would not separate a pier from its recess
+  there. The clean band is y=700 to 800, above the foliage and below the
+  cornice.
+
+  THE MEASUREMENT, which is repeatable in one call. Column-mean luminance over
+  x=520..3400, y=700..800, threshold at mean minus 45 percent of the mean-to-
+  min range (th=99, mean=135, min=55, max=176), gives six dark runs centred at
+  x = 795, 1139, 1490, 2396, 2755, 3113, of widths 22, 12, 6, 6, 14, 22 px.
+  The centre-to-centre gaps are 344, 351, 906, 359, 358. So there IS a regular
+  module of about 353 px with one span of 906 px, about 2.6 modules, in the
+  middle: that wide middle span is the blank marble centre bay, confirmed by
+  eye in a 1:1 crop where a broad plain pier stands between two inscribed
+  recessed bays carrying the Franklin text. This is a real architectural
+  rhythm, not the 50 px precast joint the fourth run correctly refused.
+
+  WHY IT IS STILL NOT A COUNT, stated plainly so a sixth run does not mistake
+  progress for an answer. Two things are missing and both are small.
+    a. The slot at x=795 lies OUTSIDE the main block, which starts at x=1020,
+       so only five of the six runs are on the facade at all. Left of the wide
+       centre there are two slots, right of it three. That asymmetry is not
+       perspective, which compresses but does not delete; the likeliest cause
+       is a tree crown clipping the top band on the left, and it means the
+       detector is under-counting on one side.
+    b. It is NOT established that the tall block from x=1020 to x=3250 IS the
+       published 496 ft frontage rather than the central mass with lower wings
+       either side. Until that is settled the 353 px module cannot be turned
+       into feet, and 2230/353 = 6.3 bays is arithmetic, not a count.
+  Six bays with a double-width centre is the shape the evidence points at. It
+  is NOT written into a model on this evidence, because a guessed count in the
+  building's most prominent feature is exactly what checklist item 1 forbids,
+  and the fourth run was right to refuse for the same reason.
+
+  WHAT THE SIXTH RUN SHOULD DO, and it is now two calls, not a research task:
+    1. Settle (b) from the aerial: "Aerial view of National Museum of American
+       History.jpg" shows whether the Mall frontage is one flat 496 ft plane or
+       a centre block with wings. That single fact converts 353 px to feet.
+    2. Settle (a) by running the same dark-run detector on a HIGHER band,
+       y=690..730, which is above more of the foliage, and by widening the
+       threshold sweep: report the run centres at th = mean minus 30, 40, 50
+       and 60 percent and take the count that is stable across all four. A
+       count that moves with the threshold is not a count.
+  Do not re-derive the frame, the roofline, the clean band or the module. They
+  are measured above.
+
+  THE SIXTH RUN RAN THAT PLAN, 2026-09-06 night, by the landmark routine.
+  BOTH CALLS WERE MADE. One of the two questions is now SETTLED, the other is
+  proven UNANSWERABLE FROM THIS PHOTOGRAPH, and that second result is the
+  useful one because it stops a seventh run measuring this image again.
+
+  STEP 2, THE HIGHER BAND, IS A DEAD END. Do not retry it. Column-mean
+  luminance over y=690..730 gives mean 146, min 89, and the threshold sweep
+  yields six weak runs at minus 30 percent, three at minus 40, and ZERO at
+  minus 50 and minus 60, all of them clustered at x=1250 and x=2515 rather
+  than spread on a module. The reason is structural, not photographic: that
+  band IS the recessed attic storey, and the attic has no piers. The clean
+  band y=700..800 remains the only one.
+
+  THE SWEEP ON THE CLEAN BAND REPRODUCES THE FIFTH RUN EXACTLY, which is
+  worth knowing since nothing else here survived. At minus 50 percent the six
+  runs sit at x = 795, 1139, 1489, 2396, 2755, 3113, matching the fifth run's
+  795, 1139, 1490, 2396, 2755, 3113 to within a pixel. Minus 60 gives the same
+  six. Minus 40 gives seven, the extra at x=1852. Minus 30 collapses into 15
+  noise runs. So the count is stable across three of the four thresholds, not
+  four, and the module of about 353 px with one central span of about 906 px
+  is real and repeatable.
+
+  STEP 1 IS SETTLED, AND IT WAS SETTLED BY LOOKING, not by the aerial. Three
+  1:1 crops of the band y=660..990, taken at x=200..1400, 1400..2600 and
+  2600..3800, show one continuous wall of BROAD plain marble piers separated
+  by NARROW dark glass slots carrying horizontal glazing bars, with the
+  recessed attic above it and a broad blank inscribed centre bay. There are no
+  lower flanking wings anywhere in the frame. The Mall frontage is one plane,
+  exactly as the SAH prose says.
+
+  AND THAT DEMOLISHES BOTH INHERITED FRAMES. The fifth run's "tall block from
+  x=1020 to x=3250" is the RECESSED ATTIC, not the main mass. Two independent
+  checks say so. First, luminance sampled every 10 px along y=600 reads 225 to
+  251 across the ENTIRE width from x=0 to x=3840, so that row is unbroken sky
+  and the roofline lies below it at every column, which cannot be true of a
+  centre block with sky beside it at y=660 unless the thing ending at x=1020
+  and x=3250 sits ABOVE the main roof. Second, the right-hand 1:1 crop shows
+  the attic parapet ending at about x=3365 with sky above and the pier-and-slot
+  facade running on underneath it to the edge of the picture.
+
+  SO THIS PHOTOGRAPH CAN NEVER GIVE THE COUNT, and that is the finding. The
+  left end of the building is in frame at about x=264. The right end is NOT in
+  frame: the facade runs out of the picture. With only one end visible there is
+  no span to divide into 496 ft, so no px per foot exists here, and the 353 px
+  module cannot be turned into feet however well it is measured. Every attempt
+  since the fourth run has been trying to scale an image that does not contain
+  the object being scaled. The fourth run's 5.23 px/ft and the fifth run's
+  2230 px block were both answers to that impossible question.
+
+  A LOCAL-CONTRAST DETECTOR WAS ALSO TRIED and is recorded as a negative so it
+  is not tried again: column mean minus a 240 px moving average, thresholded at
+  minus 10, over y=700..790 across the full width, returns 36 runs which merge
+  to about 23 centres with gaps of 216, 155, 142, 209, 155, 142 and so on. The
+  216 plus 142 pair sums to the 353 module, so the rhythm is there, but the
+  detector also fires on panel joints and tree edges and cannot be trusted to
+  count on its own.
+
+  WHAT THE SEVENTH RUN SHOULD DO, and it is now ONE requirement, not a method:
+  find a Mall-facade photograph with BOTH ENDS of the 496 ft frontage inside
+  the frame. Nothing else is missing. The detector is written and proven, the
+  clean band is known, the module is measured, the massing is settled. With
+  both ends in one frame the px per foot falls out of the two end faces and the
+  module becomes feet in a single call. Candidates not yet opened, from
+  Category:National Museum of American History on Commons, are the wide
+  elevations and any aerial that shows the whole Mall front square on. If no
+  such photograph exists, the count still has to come off the NCPC PDF or an
+  HABS sheet, and this entry should say so rather than let an eighth run
+  re-measure a picture that has now twice been proved too narrow.
+
+  THE BROWSER MECHANICS, confirmed again this run and worth the two lines:
+  document.body.replaceChildren(canvas) DESTROYS document.images[0], so the
+  NEXT javascript_exec call throws "provided value is not of type
+  HTMLImageElement". Re-navigate before every call that touches the image, and
+  batch navigate plus exec plus screenshot into ONE browser_batch.
+
+  WHAT THE FIFTH RUN SHOULD DO, in order, and it should be cheap now:
+    1. A RAKING-LIGHT photograph, where the recesses are genuinely dark. Not
+       yet tried, from the same category: "American History Museum by Matthew
+       Bisanz.JPG", "National Museum of American History (53832039979).jpg"
+       (5184x3240), "National Museum of American History, Washington, D.C.
+       (2013) - 01/03/04/05.JPG". One of these is shot with the sun down the
+       facade; the dark runs then count themselves.
+    2. Failing that, profile the EDGES, not the brightness: a horizontal
+       gradient magnitude summed over the band y=780..1000 peaks at every
+       pier arris whatever the lighting, and the pier module is the peak
+       spacing that is NOT 50 px.
+    3. "Aerial view of National Museum of American History.jpg" gives the roof
+       and confirms the attic setback depth, which is currently unmeasured.
+  The plan and height are already settled below and do not need redoing.
+
+- nineteenth-century is DONE, 2026-09-06, by the landmark routine.
+- euro-paintings is DONE, 2026-09-06, by the landmark routine, as Gallery 637.
+- lehman is DONE, 2026-09-06, by the landmark routine, as Gallery 959.
+- grand-stair is DONE, 2026-09-06, by the landmark routine: the floor 1 node
+  now draws grandStair(), the same flight the floor 2 node already drew, and
+  the key left the LANDMARKS table. It is the one stair seen from each end.
+  THE MET INTERIORS ARE NOW FINISHED except greek-roman, which is REFUSED on
+  published dimensions and should stay refused until a source is found. Queue
+  item 5 is closed. The next run should go to the top of the queue instead:
+  american is the only Mall place with no dc-form file and is blocked three
+  times over, so unless a run can reach an HABS sheet or LOOK at a photograph,
+  the honest next work is a rebuild pass over the older trail-3d.js and
+  nyc-3d.js models against the nine-item checklist.
+
+THE FREEDOM TRAIL IS FINISHED, corrected 2026-09-06 by the landmark routine,
+because this file said otherwise and a run nearly rebuilt five buildings that
+already exist. All nine stops have a committed trail-form-*.js built to this
+standard: bunker-hill, constitution, faneuil-hall, old-north, old-south,
+old-state-house, paul-revere, state-house, and park-street, which needed no
+rebuild. The entries for state-house, bunker-hill, old-south, old-north and
+faneuil-hall still sit under "Researched this run, NOT built" further down;
+they are BUILT, and the sections are kept only for the research they carry.
+Queue item 2 is closed. So is item 3, New York, and the Met exterior half of
+item 4. The ONLY open rebuild-queue items are MoMA, blocked on a tool, and
+american, blocked on a count.
 
 
 - constitution is REBUILT, 2026-09-05, by the landmark routine; see below.
@@ -193,6 +412,118 @@ above is not paperwork, it is the lock.
 
 
 ## Rebuilt to this standard
+
+- lehman, Gallery 959, the tapestry room (2026-09-06, the landmark routine).
+  The SIXTH Met interior rebuilt from an object in a box into a room, built in
+  the same run as gallery 637 and cheaper for it, because every trap the first
+  one hit was already known.
+  PUBLISHED, the Met's collection API, read this run, both objects verified on
+  their own GalleryNumber field = 959: object 459205, Bernard van Orley, "The
+  Last Supper", ca. 1525-28, "131 7/8 x 137 13/16 in."; object 459227,
+  "Emperor Vespasian Cured by Veronica's Veil", ca. 1510, "135 1/2" x 135"".
+  Two Netherlandish tapestries, each OVER ELEVEN FEET SQUARE, drawn at exactly
+  those numbers. Department 15 is the Robert Lehman Collection.
+  DERIVED, on the Medieval Hall rule that the object fixes the scale and the
+  plan rectangle does not: the back wall is 2.6 hangings, near 30 ft, and the
+  plan's 180:105 proportion gives 17.5 ft of depth.
+  NAMED GAPS: the gallery's own height, length and depth are published nowhere
+  reached; the 16 ft wall is what an eleven foot three hanging plus a base and
+  a cornice requires, not a measurement; hanging height, cornice, panelled
+  dado and doorway are drawing decisions.
+  WHAT THE RENDER SHOWED AND THE NUMBERS DID NOT: at true size the two
+  hangings run from just above the dado to just under the cornice and leave
+  almost no bare wall in the room. That is the fact the old canvas in a box
+  hid, and it is why an eleven foot number is worth a room. The side hanging
+  was recentred from 0.42 to 0.47 of the depth after the first look so it
+  clears both ends of its wall.
+  THE THREE GALLERY 637 LESSONS WERE APPLIED BEFORE THEY COULD COST A RENDER,
+  which is the argument for building two rooms in one run rather than one: the
+  key left the LANDMARKS table, the side hanging and the doorway sort after
+  the side walls, and no ceiling is drawn.
+  LOOKED at twice: default, and yaw 0.70 pitch 0.44.
+
+- euro-paintings, Gallery 637, a Dutch and Flemish room (2026-09-06, the
+  landmark routine). The FIFTH Met interior rebuilt from an object in a box
+  into a room, and the first where the plan node stood for a whole SUITE: the
+  old entry was one canvas, h 4.7 by w 4.5, standing for forty galleries. A
+  suite has no envelope, so this is one gallery and says so.
+  PUBLISHED, the Met's collection API, read this run, both objects verified on
+  their own GalleryNumber field = 637: object 679844, Joachim Beuckelaer,
+  "Fish Market", 1568, "50 5/8 x 68 7/8 in."; object 436622, Frans Hals,
+  "Merrymakers at Shrovetide", ca. 1616-17, "51 3/4 x 39 1/4 in." Drawn at
+  exactly those numbers and nothing else.
+  THE FILTER EARNED ITS KEEP AGAIN: Vermeer's "Young Woman with a Water
+  Pitcher" came back on the same sweep at 18 by 16 in. and is LEFT OUT,
+  because its GalleryNumber is 614. Same lesson as gallery 812, now twice.
+  THE DEPARTMENT MAP, so the next run does not lose a fetch budget to it:
+  departmentId 11 is European Paintings and 12 is European SCULPTURE and
+  decorative arts, not the Lehman Collection, which is 15. A dept-12 sweep run
+  by mistake this session did turn up something worth keeping for whoever
+  builds a period room: object 196910, Robert Adam's Dining Room from
+  Lansdowne House, gallery 515, carries a CONFIRMED room measurement,
+  "17 ft. 11 in. x 46 ft. 9 in. x 24 ft. 1 in.", which is rarer than any
+  painting dimension and is a complete room handed over for free.
+  DERIVED and declared: no dimension of gallery 637 is published anywhere
+  reached, so the room keeps the floor plan's 195:140 proportion at near 44 by
+  32 ft on a 22 ft wall. NAMED GAPS: ceiling height, rail height, dado height,
+  wall colour, bay count, and which wall each picture hangs on.
+  WHAT THE RENDER SHOWED AND THE NUMBERS DID NOT, three things, and the first
+  is the one that generalises to every remaining Met room:
+  (1) THE ROOM DID NOT EXIST ON THE FIRST LOOK. It rendered as the old flat
+  canvas, because the fallback loop at the foot of met-rooms.js rewrites
+  MET_ROOMS for every key still in the LANDMARKS table and it runs AFTER the
+  literal that registers the new room. Registering a room is not enough; the
+  key has to LEAVE that table. A comment now sits where the entry was.
+  (2) The Hals and the enfilade doorway came back invisible. A side wall's own
+  inner face is drawn from this eye and painted over both; they sort after it
+  now. Every number was right and the wall was blank.
+  (3) The dado at 3 ft cut straight across the bottom of the Fish Market,
+  because a 50 inch picture on the 57 inch centre line starts at 32 inches.
+  Both heights were drawing decisions and the dado gave way, at 2.4 ft.
+  NOT DRAWN, declared: the laylight. Gallery 637 is one of the skylit rooms,
+  and the gallery 812 rule was applied before it could cost a render, since a
+  horizontal plane at ceiling height projects down across the floor whatever
+  depth it is given. The lit cove carries the top light.
+  LOOKED at three times: the first render that came back as the old canvas,
+  the default after the fix, and yaw 0.72 pitch 0.42.
+
+- nineteenth-century, Gallery 812, the great Salon room (2026-09-06, the
+  landmark routine). The FOURTH Met interior rebuilt from an object in a box
+  into a room. The route is the arms-armor one and it worked again: fetch
+  department highlights and filter on each object's own GalleryNumber field.
+  PUBLISHED, the Met's collection API, read this run, both verified
+  GalleryNumber 812: object 435702, Rosa Bonheur, "The Horse Fair", 1852-55,
+  "96 1/4 x 199 1/2 in." = 8 ft 0 1/4 by SIXTEEN FEET SEVEN AND A HALF; and
+  object 438820, Courbet, "Young Ladies of the Village", 1851-52,
+  "76 3/4 x 102 3/4 in." Both drawn at exactly those numbers.
+  WHAT THE FILTER ALSO DID, which is half its value: Courbet's "Woman with a
+  Parrot", 51 by 77 in., came back on the same sweep and is LEFT OUT, because
+  its GalleryNumber is 811, the room next door. A search tells you what to
+  draw; the gallery field tells you what not to.
+  DERIVED and declared: the gallery's own dimensions are published nowhere
+  reached, so the painting fixes the scale, near 36 1/2 by 27 ft at 2.2 Horse
+  Fairs long. NAMED GAPS: the 20 ft ceiling, the picture rail height, the
+  wall colour, which wall each painting hangs on, and the two-foot bottom
+  rail are all drawing decisions and say so in the file.
+  WHAT THE RENDER SHOWED AND THE NUMBERS DID NOT, and it generalises to every
+  room still to be rebuilt: a LAYLIGHT CANNOT BE DRAWN AT ALL in these rooms.
+  Sorted the usual way it painted over the back wall and the Horse Fair, the
+  Dendur glass wall one storey up. Pushed behind the back wall it STILL came
+  out as a pale streak lying across the floor, because a horizontal plane at
+  ceiling height, seen from above and outside, projects down into the room
+  whatever its depth. Sorting is not the lever. The room is a roofless
+  cutaway, so it has no ceiling and cannot show a thing in the ceiling; the
+  wall cove carries the top light and the laylight is a declared gap.
+  It was identified by a CONTROL RENDER with the side canvas switched off,
+  which is the cheap move worth copying: when two candidates could be making
+  one smear, delete one and look again.
+  LOOKED at three times: before the depth change, after it, and after removal.
+
+  MET INTERIORS REMAINING after this run: greek-roman (REFUSED on published
+  dimensions, see below), lehman, grand-stair and euro-paintings. NOTE for
+  the next run: the Met API WAF blocked this run after about 350 object
+  fetches, two requests in parallel is enough to trigger it, and it stayed
+  blocked. Fetch one department per run, serially, and stop while ahead.
 
 - arms-armor, the Equestrian Court, Met gallery 371 (2026-09-06, the landmark
   routine). The THIRD Met interior rebuilt from an object in a box into a room,
@@ -1027,6 +1358,61 @@ scene file) and has been LOOKED at from more than one angle.
   it is fetching objects and filtering on their own GalleryNumber field. See
   arms-armor in the rebuilt list above. The rooms still object-in-a-box are
   greek-roman, lehman, grand-stair, euro-paintings and nineteenth-century.
+
+  ADVANCED 2026-09-07 by the landmark routine, and the advance is exactly the
+  one the entry above asked for, so the next run starts past it. The route
+  that unblocked arms-armor was run on gallery 162: fetch objects and filter
+  on their own GalleryNumber field. It works, and the court's SCALE is now
+  published rather than guessed. Twenty six objects were read this run and
+  every one carries GalleryNumber 162 on its own record:
+    247000, "Marble statue of a youthful Hercules", H. 97 3/16 in. (246.9 cm),
+      which is 8.10 ft and is the tallest thing verified in the court;
+    247001, "Marble statue of a bearded Hercules", H. without pedestal
+      93 3/4 in. (238.20 cm), 7.81 ft;
+    247105, "Marble statue of a togatus", H. 72 in. (182.9 cm);
+    254925, "Marble statue of Hermes", 71 1/4 x 29 1/2 x 23 1/2 in.;
+    246993, "Marble statue of a girl", H. with plinth 175.3 cm;
+    247003, "Marble statue of a seated muse", H. as restored 66 in.;
+    246994, "Marble statue of a woman", H. 65 in.;
+    254697, "Marble statue of Aphrodite", H. with plinth 62 1/2 in.;
+    248141, "Marble statue of a draped seated man", H. 51 1/2 in.;
+    248132, "Marble statue of an old woman", H. 49 5/8 in.;
+    256403, "Marble Statue Group of the Three Graces", 48 7/16 x 39 3/8 in.;
+    254819, the sarcophagus with the Triumph of Dionysos and the Seasons,
+      ca. 260-270 CE, 34 x 85 x 36 1/4 in., which is the court's signature
+      object and is 7 ft 1 in long;
+    245585, sarcophagus with garlands and the myth of Theseus and Ariadne,
+      31 x 85 3/4 x 28 in.;
+    254590, sarcophagus with the myth of Selene and Endymion, H. 28 1/2 in.
+  So the vertical scale of the lower storey is settled the way the Medieval
+  Hall's was: a colossal Hercules standing 8.10 ft sets the floor to cornice
+  minimum, and a two storey atrium above it follows.
+
+  STILL REFUSED, and only one number is missing now: the PERISTYLE COLUMN
+  COUNT. The Met's own press text calls the room "a monumental, skylit
+  peristyle", so the colonnade is the feature a visitor names, and checklist
+  item 9 is not satisfied without it while checklist item 1 forbids drawing it
+  on a derived module. Two precedents in this file say the same thing about a
+  count in the most prominent feature, this entry's own first refusal and the
+  american one, so it was not overturned on a run that had no new evidence
+  about columns. Deriving a count from an intercolumniation rule would be a
+  guess wearing a measurement's clothes.
+
+  WHAT IS LEFT TO FIND is therefore narrow: the number of columns on one side
+  of the gallery 162 peristyle, or a plan that shows them. The Kevin Roche
+  office's drawings and a 2007 architectural review remain the named routes.
+  A photograph counted the way the american facade was counted would also do
+  it, and unlike that facade a colonnade in a skylit court separates cleanly
+  from its background, so the photograph route is likely EASIER here than it
+  was there.
+
+  THE COLLECTION API RATE LIMITS, which no entry here had recorded and which
+  cost this run its build. After roughly two hundred object fetches in a few
+  minutes the search endpoint returned HTTP 403 and then an Incapsula block
+  page to both urllib and curl, with or without a browser User-Agent. Object
+  fetches by id were fine up to that point. Pace the calls, cache what comes
+  back to a file the moment it arrives, and do the research for every room a
+  run intends to build in ONE paced pass before any building starts.
 
 - moma, the Museum of Modern Art exterior (2026-09-05, the landmark routine).
   CLAIMED at the start of the run, then RELEASED unbuilt, and the claim was

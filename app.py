@@ -11745,6 +11745,19 @@ def _seed_book_fields_once():
             return                      # no disk: the repo copy IS the book
         with open(shipped_path) as f:
             shipped = json.load(f)
+        # The SHIPPED book can carry the same split as the live one, and then
+        # the heal below is undone inside this very function. The cities loop
+        # at the end re-adds any chapter the heal just retired, because it asks
+        # only whether the shipped key is missing from the live book, and the
+        # heal is exactly what made it missing. Worse, the row under that key
+        # then fails to match its live twin, which the heal moved to the
+        # canonical key, so it is appended a second time and the curated fields
+        # ride on the duplicate rather than on the row the page shows.
+        # Measured on a fixture carrying the split: 3 entries in, 4 out, the
+        # retired chapter back on the filter row, and the live row's slug still
+        # None. Healing the shipped copy first, in memory and never on disk,
+        # makes both loops speak the same keys.
+        _heal_chapters(shipped)
         with _LOCK:
             try:
                 with open(live_path) as f:
