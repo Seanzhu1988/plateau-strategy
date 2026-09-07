@@ -54,7 +54,7 @@
     { k: "airspace",  n: "Air and Space Museum",      lat: 38.88833, lon: -77.02000, h: 24,  form: "block" },
     { k: "gallery",   n: "National Gallery of Art",   lat: 38.89139, lon: -77.02000, h: 26,  form: "block" },
     { k: "natural",   n: "Natural History Museum",    lat: 38.89130, lon: -77.02590, h: 28,  form: "domed" },
-    { k: "american",  n: "American History Museum",   lat: 38.89111, lon: -77.03000, h: 24,  form: "block" },
+    { k: "american",  n: "American History Museum",   lat: 38.89111, lon: -77.03000, h: 21,  form: "block" },
     { k: "monument",  n: "Washington Monument",       lat: 38.88947, lon: -77.03524, h: 169, form: "obelisk" },
     { k: "wwii",      n: "World War II Memorial",     lat: 38.88944, lon: -77.04056, h: 13,  form: "plaza" },
     { k: "vietnam",   n: "Vietnam Veterans Memorial", lat: 38.89111, lon: -77.04778, h: 3,   form: "wall" },

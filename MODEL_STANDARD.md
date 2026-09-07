@@ -249,6 +249,68 @@ queue instead. Remove a line the moment its work lands or is abandoned.
   magnified crop rather than off a luminance profile. That last one is the
   cheapest and has not been tried.
 
+  UNBLOCKED, 2026-09-07, by the landmark routine, on the sixth attempt and by
+  the one door the fifth run named as cheapest and untried: LOOKING at a
+  magnified crop instead of at a luminance profile. The count is measured, the
+  build is no longer blocked, and the next run should go straight to writing
+  dc-form-american.js.
+
+  WHAT THE PICTURE SHOWED AND FIVE RUNS OF ARITHMETIC DID NOT. At 2x the Mall
+  facade is NOT a colonnade of narrow piers. It is a small number of very wide
+  blank marble planes separated by NARROW dark vertical window slots, with a
+  fine ashlar-like grid of panel joints across the marble. That single look
+  explains every previous failure: the earlier runs were hunting a short
+  period because they expected columns, they FOUND the real period, about 68
+  ft, and then REJECTED it in the fifth run's own words as "far too wide for
+  the modern equivalent of columns". The rejection was the error, not the
+  measurement. SAH says "rectangular slabs of wall set vertically", and a slab
+  of wall is not a column. Eight slots in a marble wall is the model.
+
+  MEASURED THIS RUN, and this is the number to build from. Same photograph,
+  same frame, which reproduces exactly: facade x=672 to 3264 at width=3840,
+  2592 px against the published 496 ft = 5.2258 px per foot. Column-mean
+  luminance over the clean band y=755 to 800, thresholded at 0.65 of the row
+  mean (row mean 136), gives SEVEN dark vertical runs and nothing else:
+    784-805, 1133-1146, 1487-1492, 1849-1850, 2393-2398, 2748-2761, 3102-3123
+  The EIGHTH, near x=2057, is the symmetric partner of 1849 and is obscured by
+  the tree and the plaza sculpture; it is inferred, and it is labelled as
+  inferred wherever it is used.
+  SYMMETRIZED about the centre, x=1953.5, which is where the two end recesses
+  put it to the pixel, the eight slots sit at offsets of
+    plus and minus 19.9, 86.7, 154.5 and 221.8 FEET
+  from the centre of the 496 ft front. Successive differences are 66.8, 67.8
+  and 67.3 ft: a uniform module of 67.3 ft, with the innermost pair straddling
+  the centre 39.8 ft apart. That is a measurement with a repeatable frame, not
+  a module chosen to look right.
+  A DISAGREEMENT, named rather than smoothed: the fifth run's autocorrelation
+  list was 784, 1141, 1500, 1849, 2215, 2570, 2752, 3112. The two lists agree
+  on five slots and differ on the two right of centre, 2215 and 2570 against
+  2393 and 2748. The symmetric reading is preferred because the two end
+  recesses are independently symmetric about 1953.5 to within a pixel and the
+  0.65 threshold list satisfies that symmetry while the autocorrelation list
+  does not. A future run with a more frontal photograph should re-check it.
+  THE 9.6 FT RHYTHM IS TEXTURE, CONFIRMED BY EYE. The 50 px period the fourth
+  run found is the precast panel joint, and in the magnified crop it is
+  plainly visible as a fine grid of course lines across the marble, matching
+  the published 16 3/8 in precast sandwich panels. Draw it as texture, and let
+  it claim no count.
+  THE RECESSED ATTIC IS CONFIRMED VISUALLY, not just in prose: the band
+  y=660 to 735 stands back from the main wall below it with its own shadow
+  line along the top of the main facade. The SAH "compact rectangular mass
+  culminates in a recessed attic story" is a thing you can see.
+  TWO BROWSER-PANE FACTS, recorded so the next run does not lose a call to
+  either. First, replaceChildren DESTROYS document.images[0], so EVERY
+  measurement call must be preceded by a fresh navigate; a second javascript
+  call in a row fails with a drawImage TypeError and the notes above understate
+  how easy that is to hit. Second, computer zoom's REGION CROP IS NOT SUPPORTED
+  in this pane: it returns the full screenshot and says so. Magnify by drawing
+  a crop into a canvas at an explicit scale with imageSmoothingEnabled=false,
+  and stack two or three crops as rows in one canvas to see a long facade.
+  STILL A NAMED GAP, and it does not block the build: no published height was
+  found in any source reached, so the OSM tag of 20.5 m stands with its
+  caveat. The dc-3d.js place height was CORRECTED from 24 to 21 this run, which
+  is that tag in feet.
+
   AND THE COUNT STILL DID NOT FALL OUT, which is the honest part. A brightness
   profile across the clean scanline is dominated by a regular period of about
   50 px, which at 5.23 px/ft is 9.6 ft: that is the PRECAST PANEL joint module,
