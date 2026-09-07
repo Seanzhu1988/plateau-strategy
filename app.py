@@ -13171,6 +13171,8 @@ _PULSE_HTML = r"""<!doctype html><html lang="en"><head>
 body{margin:0;background:var(--paper);color:var(--body);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
  padding:calc(env(safe-area-inset-top) + 1rem) 1rem calc(env(safe-area-inset-bottom) + 2rem);-webkit-font-smoothing:antialiased}
 .wrap{max-width:560px;margin:0 auto}
+.hd2{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:1rem 0 .35rem}
+.sub{font-size:.85rem;color:var(--muted);margin:0 0 .2rem}
 .top{display:flex;align-items:baseline;justify-content:space-between;gap:.6rem;margin:0 0 1rem}
 h1{font-size:1.5rem;color:var(--ink);margin:0;letter-spacing:-.01em}
 .upd{font-size:.76rem;color:var(--muted);text-align:right}
@@ -13235,6 +13237,10 @@ h1{font-size:1.5rem;color:var(--ink);margin:0;letter-spacing:-.01em}
    <div class="card"><p class="hd">What pulls them in, 7 days</p><div id="landings"></div></div>
    <div class="card"><p class="hd">Most read, 7 days</p><div id="pages"></div></div>
    <div class="card"><p class="hd">Where they are, 7 days</p><div id="places"></div></div>
+   <div class="card" id="srchcard" hidden><p class="hd">What they came looking for</p>
+    <p class="sub" id="srchsum"></p>
+    <p class="hd2">Asked for, and we had nothing</p><div id="srchmiss"></div>
+    <p class="hd2">Found, but nobody has written it</p><div id="srchunw"></div></div>
    <div class="card" id="mecard"><p class="hd">You</p>
      <div id="mestatus" class="me">Checking whether this device counts.</div>
      <div class="mebtns">
@@ -13255,6 +13261,26 @@ function chName(s){return CH[s]||(s.charAt(0).toUpperCase()+s.slice(1));}
 function place(s){var p=(s||'').split('|');return p[2]||p[1]||p[0]||'Somewhere';}
 function pageName(p){return p==='/'?'Home':p;}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];});}
+/* The searches are ranked by what they cost us rather than by popularity, so
+   they get their own renderer: no bars, because a bar invites you to read the
+   biggest one as the best one, and here the whole point is that every row is
+   something we failed to answer. */
+function srch(d){
+  var c=document.getElementById('srchcard');
+  if(!d||!d.ok){c.hidden=true;return;}
+  c.hidden=false;
+  document.getElementById('srchsum').textContent=
+    num(d.total)+' searches, '+num(d.distinct)+' different things, '+num(d.unanswered)+' answered with nothing.';
+  function list(el,items,empty){
+    el=document.getElementById(el);
+    if(!items||!items.length){el.innerHTML='<p class="empty">'+empty+'</p>';return;}
+    el.innerHTML=items.map(function(it){
+      return '<div class="rw"><span class="nm">'+esc(it.q)+'</span><span class="v">'+num(it.n)+'</span></div>';
+    }).join('');
+  }
+  list('srchmiss',d.missed,'Nothing went unanswered.');
+  list('srchunw',d.unwritten,'Everything asked for has a reading.');
+}
 function rows(el,items,kind){
   el=document.getElementById(el);
   if(!items||!items.length){el.innerHTML='<p class="empty">Nothing yet.</p>';return;}
@@ -13278,6 +13304,7 @@ function render(d){
     return '<div title="'+v+'" style="height:'+Math.max(2,Math.round((v/mx)*64))+'px"></div>';}).join('');
   rows('channels',d.channels,'ch');rows('landings',d.landings,'pg');
   rows('pages',d.pages,'pg');rows('places',d.places,'pl');
+  srch(d.searches);
   loadMe();
 }
 function meRender(d){
@@ -13321,6 +13348,72 @@ load();setInterval(load,45000);
 
 @app.route("/api/pulse")
 @owner_required
+def _pulse_searches(n=6):
+    """What people typed into the gallery, arranged by what it costs us.
+
+    [SEAN 2026-09-07: "enhance the pulse, of what people is actually searching
+    so i can see there interest for our next built" ... "the pulse is in my
+    phone tracking traffic".]
+
+    Traffic says how many came. This says what they wanted, and the ranking is
+    deliberately not "most popular". A query we answer well is already done;
+    the ones worth a build are the two kinds of failure:
+
+      missed    they searched and we returned nothing at all.
+      unwritten they found the museum's catalogue line and no reading of ours,
+                which is the thing this site exists to add.
+
+    gallery_log has called `wanted` the most valuable list it keeps since the
+    day it was written. It has never appeared anywhere the owner actually
+    looks, which is a phone.
+    """
+    try:
+        d = gallery_log.summary(top=60, recent=1)
+    except Exception:
+        return {"ok": False}
+
+    written = set()
+    try:
+        with open(os.path.join(BASE_DIR, "gallery_items.json"), encoding="utf-8") as f:
+            for v in (json.load(f).get("items") or {}).values():
+                for fld in ("title", "artist"):
+                    t = (v.get(fld) or "").strip().lower()
+                    if t:
+                        written.add(t)
+    except Exception:
+        pass
+
+    # OUR OWN TYPING IS NOT DEMAND. Testing this site puts strings into the
+    #    same log a traveller writes to, and on a phone "test, 5" sitting at the
+    #    top of what-to-write-next is worse than showing nothing. The record
+    #    itself is append-only and is left exactly as it is; this hides a short
+    #    explicit list from the view only. Anything not on the list is shown, so
+    #    a real search can never be filtered away by a clever guess.
+    OURS = {"test", "testing", "zzzqqxnotathing", "asdf", "aaa", "xxx"}
+
+    def is_written(q):
+        ql = (q or "").strip().lower()
+        return any(ql in w or w in ql for w in written) if ql else False
+
+    def ours(q):
+        return (q or "").strip().lower() in OURS
+
+    missed = [{"q": e.get("q"), "n": e.get("misses", 0)}
+              for e in d.get("wanted", []) if not ours(e.get("q"))][:n]
+    unwritten = [{"q": e.get("q"), "n": e.get("count", 0)}
+                 for e in d.get("top", [])
+                 if e.get("hits", 0) > 0 and not ours(e.get("q"))
+                 and not is_written(e.get("q"))][:n]
+    return {
+        "ok": True,
+        "total": d.get("searches_total", 0),
+        "distinct": d.get("distinct", 0),
+        "unanswered": d.get("unanswered", 0),
+        "missed": missed,
+        "unwritten": unwritten,
+    }
+
+
 def api_pulse():
     data = _load_traffic()
     days = data.get("days", {})
@@ -13364,6 +13457,7 @@ def api_pulse():
         "landings": agg("landings", 7, 6),
         "places": agg("places", 7, 6),
         "spark": spark,
+        "searches": _pulse_searches(),
         "updated": datetime.datetime.now().strftime("%b %-d, %-I:%M %p"),
     })
 
