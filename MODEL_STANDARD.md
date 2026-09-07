@@ -413,6 +413,75 @@ above is not paperwork, it is the lock.
 
 ## Rebuilt to this standard
 
+- egyptian, Gallery 100, the Mastaba Tomb of Perneb (2026-09-07, the landmark
+  routine). The SEVENTH Met interior rebuilt from an object in a box into a
+  room, and the LAST one available: with this, all 15 rooms on the plan have an
+  interior drawn, and map_lint says so.
+  PUBLISHED, the Met's collection API, read this run, both objects verified on
+  their own GalleryNumber field = 100: object 543937, "Mastaba Tomb of Perneb",
+  Dynasty 5, ca. 2381-2323 BCE, limestone and paint, from Saqqara,
+  "H. 482.2 cm (15 ft. 9 13/16 in.)"; object 543903, "Striding Figure",
+  ca. 2575-2465 BCE, "H. 89.5 cm (35 1/4 in.)". Drawn at exactly 15.8177 ft and
+  exactly 2.9365 ft and nothing else.
+  PUBLISHED IN PROSE, and it is what turns a block into a building: the mastaba
+  "is divided into four rooms, including a decorated main offering chapel and a
+  secondary offering chamber with a separate entrance", the serdab joins that
+  chamber "by a slot through which the smell of incense and chants could pass",
+  the burial shaft sits "to the right side of the main offering chamber", and
+  "visitors can enter the tomb and walk through its rooms" (Wikipedia, Tomb of
+  Perneb, read this run, citing the Met). Two doorways, both open, both
+  person-sized, is a published COUNT, not a composition choice.
+  THE STYLE WAS ADDED TO THE BOOK FIRST, as the routine requires: STYLES.md now
+  carries "The Old Kingdom mastaba" beside Egyptian Revival, which was America
+  borrowing a shape rather than the shape itself. Its tells are the flat top,
+  the four battered walls, a block much wider than tall and longer than wide,
+  courses of cut limestone, two doorways, and the false door inside.
+  NAMED GAPS, declared and not guessed: the tomb's WIDTH and DEPTH are published
+  nowhere reached. The API gives a height and nothing else; the museum's own
+  object page answers a script with an HTTP 429 bot check, exactly as SAH
+  ARCHIPEDIA and the museum's architecture page do; archive.org has the
+  excavation vessels but not Ransom's 1916 handbook. Two attempts, then the
+  hunt stopped. Also gaps: the gallery's own dimensions, the 22 ft ceiling that
+  fixes feet to plan units, the 0.09 batter, both doorway sizes and their
+  spacing, the nine course lines, the plinth and the bench.
+  WHAT THE RENDER SHOWED AND THE NUMBERS DID NOT, and this is the run's finding:
+  THE STYLE BOOK CAUGHT ITS OWN MODEL. The fallback table's old 20 by 12 ft was
+  drawn first, because keeping the existing figure looked like the conservative
+  choice. At 20 ft the block is only 1.27 times its own published height and it
+  stood up in the render as a PYLON, which is the case the mastaba entry had
+  been written to call wrong ten minutes earlier. So the footprint was rederived
+  from the published FORM rather than from the old number, at 32 by 21 ft, which
+  is the shallowest block that is both wider than tall and longer than wide. The
+  general lesson: when a dimension is a named gap, inheriting the previous
+  guess is not neutral, and the STYLE is a stronger constraint on it than the
+  file's own history.
+  Two smaller things the picture showed: the Striding Figure at 35 inches hugged
+  the left wall and read as a smudge rather than a ruler, so it moved onto open
+  floor; and the doorways at 3.4 ft read as slots on a 32 ft face rather than as
+  something a person walks through, which is the one fact gallery 100 is famous
+  for, so they widened to 4.2 and 3.2 ft.
+  NOT DRAWN, declared: the two small obelisks that stood at the western corners
+  of the courtyard at Saqqara, because the same source says they "are no longer
+  part of the museum exhibit" and this is the gallery, not Saqqara; and no
+  cavetto cornice or torus roll, because neither was verified this run and a
+  mastaba's tell is a plain flat top.
+  THE FALLBACK TRAP WAS AVOIDED BEFORE IT COST A RENDER, which is now three runs
+  in a row it has been paid for once and never again: the "egyptian" key LEFT
+  the LANDMARKS table, with a comment where it was.
+  CHECKLIST, all nine: (1) two doorways drawn as two doorways with recessed
+  jambs, at the published count; the nine course lines are stone texture and
+  claim no count. (2) the courses are the horizontal breaks, and a cornice
+  would be WRONG here. (3) the tomb stands on the gallery floor slab, which is
+  what it does at the Met. (4) the roof is a flat lid and the header says so,
+  because a mastaba that comes to a point is a pyramid. (5) two tones per
+  material through ctx.shade. (6) a contact shadow was MISSING on the first
+  pass and was added. (7) heights true to the published centimetre, both
+  objects. (8) openings near-black on limestone, checked at 900 px. (9) the one
+  thing a visitor names about gallery 100 is that you can walk into a
+  4,400-year-old tomb, and the doorways are open, dark and person-sized.
+  LOOKED at four times: the pylon, the corrected bench, the widened doorways,
+  and yaw 0.70 pitch 0.44.
+
 - lehman, Gallery 959, the tapestry room (2026-09-06, the landmark routine).
   The SIXTH Met interior rebuilt from an object in a box into a room, built in
   the same run as gallery 637 and cheaper for it, because every trap the first

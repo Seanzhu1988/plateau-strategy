@@ -146,6 +146,49 @@ between an obelisk and a spike.
 
 ---
 
+## The Old Kingdom mastaba
+
+*Dynasty 5, about 2381 to 2323 BCE. Here: the Mastaba Tomb of Perneb, Saqqara,
+standing in Met gallery 100.*
+
+The Egyptian Revival entry above is America borrowing a shape. This is the
+shape itself, two thousand years before a Greek cut a column. A mastaba is a
+tomb chapel, and the Arabic word for it is the word for a mud-brick bench,
+which is the only description anyone has ever needed: a low rectangular block
+with a flat top and walls that lean in.
+
+**Tells**
+- A **flat top**. A mastaba that comes to a point is a pyramid, and a pyramid
+  is a different building for a different person.
+- Walls **battered**, leaning inward as they rise, all four of them. The top
+  face is inset from the base on every side; that inset is the whole form.
+- **Much wider than it is tall, and longer than it is wide.** It is a bench.
+  Drawn as tall as it is wide it stops being a mastaba and becomes a pylon.
+- Cut limestone, laid in courses, and painted. Perneb's is limestone and paint
+  by the Met's own record.
+- **Not solid.** Perneb's block holds four rooms: a decorated main offering
+  chapel, a secondary offering chamber with its own separate entrance, a
+  serdab sealed except for a slot cut so incense and chanting could reach the
+  statue inside it, and a burial shaft on the right of the main chapel going
+  down to the chamber underground. So the front carries **two doorways**, not
+  one, and a person can walk in.
+- The back wall of the chapel carries a **false door**. That is the point of
+  the entire building: the place where the dead man comes out to be fed.
+
+**Wrong if** the top is pitched or pointed, the sides are vertical, an arch
+appears anywhere (there is none in the Old Kingdom, and the standing rule at
+the head of this book says so), or the block is drawn solid with a single
+ceremonial entrance.
+
+**Our numbers.** Height **15 ft 9 13/16 in**, which is 482.2 cm, from the Met's
+own record for object 543937. That is the only dimension of this tomb that is
+published anywhere reached, and the width and depth are a **named gap**, not a
+measurement. The batter is drawn at 0.09, harder than the 0.075 of a temple
+wall and much harder than an obelisk's 0.033, because a bench leans more than a
+shaft does; that figure is a drawing decision and no source gives it.
+
+---
+
 ## Post-medieval English, the First Period house
 
 The oldest thing on the Freedom Trail is not Georgian and must not be drawn as

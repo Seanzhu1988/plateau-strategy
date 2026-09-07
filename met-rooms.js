@@ -263,8 +263,10 @@
 
   var LANDMARKS = {
     /* kind, then feet. canvas is height then width, as the Met lists them. */
-    "egyptian":           { kind: "mass",   h: 15.8, w: 20, d: 12, lean: 0.09,
-                            fill: "#c7b294", note: "Mastaba Tomb of Perneb, height published" },
+    /* egyptian left this table on 2026-09-07: it is gallery 100 now, an
+       actual room with the tomb standing in it. A key that stays here is
+       overwritten by the fallback loop at the foot of this file, which runs
+       AFTER MET_ROOMS is built, so registering the room is not enough. */
     "greek-roman":        { kind: "figure", h: 6.4,  w: 1.7, d: 2.1, fill: "#ded8cc" },
     /* lehman left this table on 2026-09-06: it is gallery 959 now, an actual
        room. A key that stays here is overwritten by the fallback loop at the
@@ -1783,6 +1785,148 @@
     return out;
   }
 
+  /* ---------------- Gallery 100, the Mastaba Tomb of Perneb ----------------
+     The plan's `egyptian` node was a battered box in the LANDMARKS fallback
+     table, standing in for a tomb a person can walk into. It is a room now.
+
+     PUBLISHED, the Met's collection API, read this run, both objects verified
+     on their own GalleryNumber field = 100:
+       object 543937, "Mastaba Tomb of Perneb", Dynasty 5, ca. 2381-2323 BCE,
+         limestone and paint, from Saqqara, "H. 482.2 cm (15 ft. 9 13/16 in.)";
+       object 543903, "Striding Figure", ca. 2575-2465 BCE, "H. 89.5 cm
+         (35 1/4 in.)".
+     The tomb is drawn at exactly 15.82 ft and the figure at exactly 2.94 ft.
+
+     PUBLISHED in prose, and it is what makes this a building rather than a
+     block: the mastaba "is divided into four rooms, including a decorated main
+     offering chapel and a secondary offering chamber with a separate
+     entrance", the serdab is joined to that chamber "by a slot through which
+     the smell of incense and chants could pass", the burial shaft is "located
+     to the right side of the main offering chamber", and "visitors can enter
+     the tomb and walk through its rooms" (Wikipedia, Tomb of Perneb, read this
+     run, citing the Met). Hence TWO doorways on the front, both open, both big
+     enough for a person, and no cornice.
+
+     NAMED GAPS, declared rather than guessed. The tomb's WIDTH and DEPTH are
+     published nowhere reached: the API gives a height and nothing else, the
+     museum's own object page answers a script with a bot check, and the 1916
+     handbook was not found. So the footprint is derived from the published
+     FORM instead, which is the one thing about a mastaba that is not in doubt:
+     it is a bench, much wider than it is tall and longer than it is wide. 32
+     by 21 ft against a true 15.82 ft height is the shallowest block that
+     satisfies both of those and no source gives it. The fallback table's old
+     20 by 12 was drawn first and the render threw it out: at 20 ft the block
+     is 1.27 times its own height and stands up as a PYLON, which is the case
+     the styles book calls wrong. Also gaps: the gallery's own
+     dimensions, the 22 ft ceiling that fixes feet to plan units, the batter at
+     0.09, the two doorway sizes and where they sit on the front, the plinth,
+     and the bench.
+
+     NOT DRAWN, declared. The two small obelisks that stood at the western
+     corners of the courtyard at Saqqara: the same source says they "are no
+     longer part of the museum exhibit", and this is the gallery, not Saqqara.
+     No cavetto cornice and no torus roll either, because neither was verified
+     this run, and absence is honest where invention is not. */
+  function gallery100(ctx) {
+    var r = ctx.room, z = ctx.zBase, P = ctx.project, out = [];
+    var wall = ctx.wall || 26;
+    var F = wall / 22;                    /* 22 ft ceiling fixes the scale */
+
+    var GWALL = "#cdc4b2", GWALL_D = "#aca493";
+    var GFLOOR = "#b9b1a2", GFLOOR_D = "#9a9384";
+    var LIME = "#cbb490", LIME_D = "#a7906c";
+    var DARK = "#241d15", PLINTH = "#6f6656", PLINTH_D = "#57503f";
+    var STAT = "#8d8271", STAT_D = "#6d6454";
+    var BENCH = "#54493c", BENCH_D = "#3d352b";
+
+    /* the gallery keeps the plan node's 150:130 proportion at 52 ft across */
+    var GW = 52 * F, GD = 52 * (r.h / r.w) * F;
+    var cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+    var x1 = cx - GW / 2, x2 = cx + GW / 2, y1 = cy - GD / 2, y2 = cy + GD / 2;
+
+    out.push(flat(ctx, r.x, r.y, r.x + r.w, r.y + r.h, z, "#e0d8c6", "#bdb5a5", 0.5, -1e9));
+    out.push(flat(ctx, x1, y1, x2, y2, z + 0.1, GFLOOR, GFLOOR_D, 0.5, -9.99e8));
+
+    var T = Math.max(1.2, GW * 0.022);
+    out = out.concat(mass(ctx, x1, y1, x2, y1 + T, z, wall, GWALL, GWALL_D, -9.80e8));
+    out = out.concat(mass(ctx, x1, y1, x1 + T, y2, z, wall, GWALL, GWALL_D, -9.00e8));
+    out = out.concat(mass(ctx, x2 - T, y1, x2, y2, z, wall, GWALL, GWALL_D, -9.00e8));
+
+    /* THE TOMB. 15.82 ft true, flat topped, battered on all four sides, set
+       back in the room with its front turned to the eye so the doorways read.
+       LEAN_MASTABA is a drawing decision; see the styles book. */
+    var LEAN_M = 0.09;
+    var TH = 15.8177 * F;                 /* 482.2 cm, to the published inch */
+    var TW = 32 * F, TD = 21 * F;         /* named gap, form only: a bench */
+    var tx1 = cx - TW / 2, tx2 = cx + TW / 2;
+    var ty2 = cy + GD * 0.06, ty1 = ty2 - TD;
+
+    /* contact shadow, checklist item 6. Nothing here casts light, so a
+       fifteen foot block set straight on a floor slab floats without one. */
+    out.push(flat(ctx, tx1 - 0.6, ty1 - 0.6, tx2 + 1.1, ty2 + 1.1, z + 0.12,
+                  "#9d9689", null, 0, -9.90e8));
+
+    out = out.concat(batteredMass(ctx, tx1, ty1, tx2, ty2, z + 0.15, TH,
+                                  LEAN_M, LIME, -8.60e8));
+
+    /* the course lines. Cut limestone laid in courses is what stops a battered
+       mass reading as one poured lump, and the block is stone, not concrete.
+       Each course inset by the batter it has climbed, so they follow the lean. */
+    if (ctx.faceVisible(0, 1)) {
+      var courses = 9;
+      for (var c = 1; c < courses; c++) {
+        var t = TH * c / courses, ins = LEAN_M * t;
+        out.push({ svg: ctx.poly([P(tx1 + ins, ty2 - ins, z + 0.15 + t),
+                                  P(tx2 - ins, ty2 - ins, z + 0.15 + t),
+                                  P(tx2 - ins, ty2 - ins, z + 0.15 + t + 0.06 * F),
+                                  P(tx1 + ins, ty2 - ins, z + 0.15 + t + 0.06 * F)],
+                                 LIME_D, null, 0), depth: -8.55e8 + c * 0.01 });
+      }
+
+      /* THE TWO DOORWAYS. Published that there are two and that a person walks
+         through them; their size and spacing are drawing decisions. Each is a
+         recessed jamb with a dark opening inside it, drawn on the sloping face
+         so the reveal leans with the wall. */
+      var door = function (ucen, dw, dh, dep) {
+        var q = function (hw, h) {
+          var i0 = LEAN_M * 0, i1 = LEAN_M * h;
+          return [P(ucen - hw, ty2 - i0, z + 0.15),
+                  P(ucen + hw, ty2 - i0, z + 0.15),
+                  P(ucen + hw, ty2 - i1, z + 0.15 + h),
+                  P(ucen - hw, ty2 - i1, z + 0.15 + h)];
+        };
+        out.push({ svg: ctx.poly(q(dw / 2 + 0.55 * F, dh + 0.55 * F), LIME_D,
+                                 "#8d7855", 0.4), depth: dep });
+        out.push({ svg: ctx.poly(q(dw / 2, dh), DARK, "#171209", 0.4), depth: dep + 0.02 });
+      };
+      /* main offering chapel, then the secondary chamber's separate entrance */
+      door(cx - TW * 0.14, 4.2 * F, 8.2 * F, -8.50e8);
+      door(cx + TW * 0.25, 3.2 * F, 7.2 * F, -8.50e8);
+    }
+
+    /* THE STRIDING FIGURE, object 543903, at its published 35 1/4 in, on a
+       plinth whose height is a drawing decision. It is here because a 35 inch
+       statue standing beside the front is what tells the eye the wall behind it
+       is nearly sixteen feet, which no photograph of this gallery manages. */
+    var sx = cx - TW * 0.30, sy = y2 - GD * 0.20;
+    var PL = 3.0 * F, PW = 1.5 * F;
+    out = out.concat(mass(ctx, sx - PW / 2, sy - PW / 2, sx + PW / 2, sy + PW / 2,
+                          z + 0.1, PL, PLINTH, PLINTH_D, -8.00e8));
+    var SH = 2.9365 * F, SW = 0.62 * F, SD = 0.72 * F;
+    out = out.concat(mass(ctx, sx - SW / 2, sy - SD / 2, sx + SW / 2, sy + SD / 2,
+                          z + 0.1 + PL, SH * 0.62, STAT, STAT_D, -7.90e8));
+    out = out.concat(mass(ctx, sx - SW * 0.34, sy - SD * 0.30, sx + SW * 0.34,
+                          sy + SD * 0.30, z + 0.1 + PL + SH * 0.62, SH * 0.38,
+                          STAT, STAT_D, -7.88e8));
+
+    /* a 6 ft bench, 17 in high: the one object a body already knows the size
+       of. A drawing decision, as it was in gallery 959. */
+    var bcy = y2 - GD * 0.14;
+    out = out.concat(mass(ctx, cx + TW * 0.10, bcy - 0.8 * F, cx + TW * 0.10 + 6 * F,
+                          bcy + 0.8 * F, z + 0.1, (17 / 12) * F, BENCH, BENCH_D, -7.50e8));
+    return out;
+  }
+
   window.MET_ROOMS = { dendur: dendur, 'great-hall': greatHall,
                       'american-court': americanCourt,
                       'asian-astor': astorCourt,
@@ -1792,6 +1936,7 @@
                       'nineteenth-century': gallery812,
                       'euro-paintings': gallery637,
                       lehman: gallery959,
+                      egyptian: gallery100,
                       modern: modern, 'grand-stair-2': grandStair,
                       'grand-stair': grandStair };
   Object.keys(LANDMARKS).forEach(function (k) { window.MET_ROOMS[k] = landmark; });
