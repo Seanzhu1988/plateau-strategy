@@ -13275,25 +13275,6 @@ h1{font-size:1.5rem;color:var(--ink);margin:0;letter-spacing:-.01em}
      <h1>Pulse</h1>
      <div style="text-align:right"><span class="live"><span class="dot"></span><b id="online">0</b>&nbsp;online</span><div class="upd" id="upd"></div></div>
    </div>
-   <div class="card" id="revcard" hidden>
-     <p class="hd">Revenue <span id="revage"></span></p>
-     <div class="two">
-       <div><div class="n" id="rtoday">$0</div><div class="l">earned today</div></div>
-       <div><div class="n" id="rharv">0</div><div class="l">harvests today</div></div>
-     </div>
-     <div class="spark" id="rspark" style="margin:.9rem 0 .2rem"></div>
-     <div class="two" style="margin-top:.6rem">
-       <div><div class="n" id="r7">$0</div><div class="l" id="r7l">7 days</div></div>
-       <div><div class="n" id="r30">$0</div><div class="l" id="r30l">30 days</div></div>
-     </div>
-     <p class="hd" style="margin-top:1.1rem">Where it comes from, 7 days</p>
-     <div id="rlanes"></div>
-     <p class="hd" style="margin-top:1.1rem">What earns most, 7 days</p>
-     <div id="rcoins"></div>
-     <p class="hd" style="margin-top:1.1rem">Banked against the open book</p>
-     <div id="rnet"></div>
-     <p class="empty" id="rnote" style="margin-top:.6rem"></p>
-   </div>
    <p class="hd" style="margin:1.4rem 0 .5rem">Traffic</p>
    <div class="tiles">
      <div class="tile"><div class="n" id="tvis">0</div><div class="l">Visitors today</div></div>
@@ -13315,6 +13296,25 @@ h1{font-size:1.5rem;color:var(--ink);margin:0;letter-spacing:-.01em}
     <p class="sub" id="srchsum"></p>
     <p class="hd2">Asked for, and we had nothing</p><div id="srchmiss"></div>
     <p class="hd2">Found, but nobody has written it</p><div id="srchunw"></div></div>
+   <div class="card" id="revcard" hidden>
+     <p class="hd">Revenue <span id="revage"></span></p>
+     <div class="two">
+       <div><div class="n" id="rtoday">$0</div><div class="l">earned today</div></div>
+       <div><div class="n" id="rharv">0</div><div class="l">harvests today</div></div>
+     </div>
+     <div class="spark" id="rspark" style="margin:.9rem 0 .2rem"></div>
+     <div class="two" style="margin-top:.6rem">
+       <div><div class="n" id="r7">$0</div><div class="l" id="r7l">7 days</div></div>
+       <div><div class="n" id="r30">$0</div><div class="l" id="r30l">30 days</div></div>
+     </div>
+     <p class="hd" style="margin-top:1.1rem">Where it comes from, 7 days</p>
+     <div id="rlanes"></div>
+     <p class="hd" style="margin-top:1.1rem">What earns most, 7 days</p>
+     <div id="rcoins"></div>
+     <p class="hd" style="margin-top:1.1rem">Banked against the open book</p>
+     <div id="rnet"></div>
+     <p class="empty" id="rnote" style="margin-top:.6rem"></p>
+   </div>
    <div class="card" id="mecard"><p class="hd">You</p>
      <div id="mestatus" class="me">Checking whether this device counts.</div>
      <div class="mebtns">
