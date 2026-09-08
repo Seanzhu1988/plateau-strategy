@@ -151,17 +151,42 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
       reader stopped at a foreshortened angle had nothing to correct them. A
       fifth card carries the footprint and the know block explains the swing,
       in the same voice the bridge uses for its six-pixel arches.
-- [ ] Draw the footprint on the model, not only on a card. Today's verification
-      put 424 by 187 ft on a fact card because the drawing swings between
-      10:1 and 1:2 as it turns. The model-side answer is a dimension line on
-      the ground plane at the base, which would stay true at every yaw because
-      it is drawn in the same projection as the thing it measures. The care
-      needed is the one the 2026-09-02 and 09-05 entries paid for: a fifth
-      label on this model has to clear the four already placed, so it must run
-      the same check, a full turn by five tilts from the -0.14 floor to the
-      0.75 ceiling, and prove no label leaves the 720 by 620 box. If it cannot
-      fit at the phone framing, it should not be drawn there rather than
-      shoved.
+- [x] Draw the footprint on the model, not only on a card. **Done 2026-09-08**,
+      and the drawing was the easy half. Two dimension runs lie in the ground
+      plane, 30 ft off the wall each measures, with a tick at each end and a
+      witness line back to the corner, so they foreshorten by exactly the
+      amount the wall beside them does: that is the whole point, and it is why
+      a card could not do it. Each run is built on the side the eye is on,
+      because lines in this renderer carry no depth test at all and are painted
+      after every face, so a run left on the far side is drawn straight through
+      the limestone. Which side is near is arithmetic, not taste: a ground
+      point's depth is (x sin yaw + y cos yaw) cos pitch, so the long run
+      follows the sign of cos yaw and the short run the sign of sin yaw.
+      Three things had to be measured, and two of them were my own defects.
+      First, the label engine LIFTS a block off the drawing to the nearer clear
+      edge, which is right for a label that names a thing and wrong for a
+      figure that measures one: "187 ft" was carried from the pavement to y 75,
+      beside "1,454 ft to the tip", 285 units above the run it belongs to. So a
+      mark may now be pinned, and a pinned label keeps the place its point
+      gives it. Second, pinning alone put text on text: 39 overlapping label
+      pairs across a full turn by three tilts against none before, 32 of them a
+      dimension figure written across "Fifth Avenue", because the pavement is
+      the one place the engine's step-down search cannot use. A pinned label
+      now tries its own line, then one up, then one down, then two of each, and
+      if none is clear it is NOT DRAWN, which is this page's own rule from the
+      phone framing: absent beats shoved. Third, `r: 0` did not remove the dot,
+      because `m.r || 4` reads a deliberate zero as "not given"; the bridge
+      form file had already met this and worked around it with `r: 0.01`.
+      The sweep, on the rendered SVG: a full turn by five tilts from the -0.14
+      floor to the 0.75 ceiling, open and closed, 1,076 and 1,074 label blocks,
+      **no label outside the 720 by 620 box and no text on text**, against 840
+      and 0 before. Ten figures of 480 are dropped rather than shoved. My
+      "appending the two marks last cannot disturb the four already placed" was
+      WRONG and the measurement caught it: the runs join the ink skyline, which
+      moved the Fifth Avenue block up to 20.7 units at some angles. At the
+      phone framing the three overlapping pairs are **identical with and
+      without the footprint**, so this adds none there; they are a pre-existing
+      defect of that framing, noted below.
 - [ ] The Empire State setback widths are the only numbers in either model with
       no stated source. `nyc-3d.js` carries a steps table, 304, 268, 232, 196,
       168 and 140 ft at floors 21, 25, 30, 72, 81 and 85, while baseW and baseD
@@ -213,6 +238,19 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
       judge a search answered only when the top result is a strong match
       (exact item number, or a title that actually contains the query), and
       record the rest as unanswered.
+
+- [ ] **Three label pairs overlap on the Empire State at the phone framing**,
+      and they are nothing to do with the footprint: measured on 2026-09-08
+      across a full turn by five tilts at a 276 px stage, the same three pairs
+      appear with the footprint drawn and with it suppressed, in the same
+      counts. They are "open air, 1,050 ft, the one people mean" against "the
+      entrance and the line", and "Fifth Avenue" against the same note. At that
+      stage width the type is 28 units against a 620 unit box, so two
+      two-line blocks near the base have nowhere to go and the engine's
+      step-down search runs into the floor. The pinned label's small local
+      search built for the footprint would probably serve here too, but a
+      NAMED label must always appear, so it cannot use the same
+      do-not-draw fallback and needs its own answer.
 
 - [ ] The 3D models' own labels (Manhattan tower, the promenade, 86th floor,
       and as of 2026-09-01 also "the pointed arch" and its note, so this debt
@@ -633,3 +671,58 @@ start and rebased onto origin/main cleanly with the autostash restored.
 Commits: "The hero's biggest line stops setting on body leading, and the dead
 chip stops being the only button" and "Empire State: the footprint is verified,
 and the page finally states it".
+
+### 2026-09-08
+Checkers first: the map is sound at 83% full, and the one script outside its
+band is the Chinese trail overview that is deliberately left alone.
+
+Trimmed, and all three are the same defect wearing different clothes, a
+placeholder or a field promising something the reader cannot see. A placeholder
+cannot wrap, so whatever does not fit is simply gone, and every time it was the
+useful half that went. The Universal Gallery's search bar, which rides on the
+Met and MoMA pages, wanted 498.5 px of text in a 265.4 px field on a 375 px
+phone: 47% cut, and what a visitor lost was that they may type the number off
+the label instead of spelling the name. The field now says what fits the
+narrowest phone, 162.4 px against the 210.4 px a 320 px screen offers, and the
+whole sentence moved to the note under it, which wraps.
+
+The Destination Book was worse and it was not a phone problem at all. Its
+filter card is a STACK of five labelled rows, but paper.css says "any row of
+chips is a row" and lists `.filters` among them, so the card itself was laid
+out as a flex row and its five rows flowed side by side. Measured at 1280 px:
+the rows sat at y 232, 340, 340, 392 and 389, so Type shared a line with
+Category and Stars with Search; the five 76 px labels started at three
+different left edges, 119.4, 558.9 and 451.5, instead of one column; and the
+search input, the main control of the page, was squeezed to 185.1 px with 58%
+of its placeholder cut off. After: five rows at 232, 334, 376, 418 and 460,
+every label at 119.4, the input 958.8 px, nothing clipped. The rule is right
+for the other three `.filters` on this site, which really are bare containers a
+script fills with chips, so the fix is one line in this page's own style block
+below paper.css and touches nothing else. On the phone the search field also
+drops to its own full-width line below 560 px and its placeholder was
+shortened, 409.3 px of text to 199.7 px in 268.6 px of room; the wish field
+kept both of its examples in 252.5 px where the long version wanted 378.2.
+
+A near miss worth writing down: the wrapped masthead nav on a phone leaves a
+208.4 px gap on the left of a 335 px row, which looks like the kind of thing
+Sean reports as crooked. Measuring `/met` before changing anything showed the
+same nav is ONE row there with a 143.7 px gap inside a container the header's
+grid stretches, so `justify-content: flex-end` is load-bearing on about twenty
+pages and switching it would have moved every single-row nav off the right
+edge. Left alone.
+
+3D: the footprint now sits on the model, ticked off above. Three of my own
+defects were caught by measuring rather than by looking: a lift that carried a
+dimension figure 285 units off its own run, 39 overlapping label pairs where
+there had been none, and `r: 0` still drawing a dot because `m.r || 4` reads
+zero as absent. Final sweep, a full turn by five tilts, open and closed: no
+label outside the box, no text on text, and ten figures of 480 dropped rather
+than shoved.
+
+Housekeeping: `gallery-search.js` does not appear in today's commits because a
+session running in this same worktree committed my in-flight edit into 514fe6d
+while I was still measuring. Nothing is lost and it will go out with the push,
+but the change is recorded under someone else's message, not mine.
+
+Commits: "Every placeholder says what it can actually show" and "The Empire
+State's footprint, drawn where it can be checked".

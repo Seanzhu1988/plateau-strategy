@@ -796,6 +796,63 @@
        the ones where the Fifth Avenue front is on the far side of the
        building (yaw 0.9), where the engine's own halo fallback applies. */
     var FIFTH_Y = 75;
+
+    /* ---- THE FOOTPRINT, drawn on the model and not only on a card ----
+
+       The plan is 424 by 187 ft, and this drawing swings between about 10:1
+       and 1:2 as it turns, passing through square at four angles of 360. That
+       is what a 424 by 187 ft building does seen from a moving eye, and not
+       an error, but a reader stopped at one of those four angles has nothing
+       in the picture to correct them. A fact card can STATE the plan; only a
+       line drawn in the SAME projection as the building can SHOW it, because
+       it foreshortens by exactly the amount the wall beside it does.
+
+       Two runs, each on the side of the building the eye is on, because lines
+       in this renderer carry no depth test at all: they are painted after
+       every face, so a run left on the far side would be drawn straight
+       through the limestone. Which side is near is not a guess. For a point
+       on the ground the projected depth is (x sin yaw + y cos yaw) cos pitch,
+       so the long run, which varies in x at a fixed y, is nearer at the sign
+       of cos yaw, and the short run at the sign of sin yaw.
+
+       FP_OFF was measured, not chosen. The frame is 720 by 620 with the eye
+       at oy 560, so there are only 60 units below the origin, and a run set
+       too far out swings past the bottom of the box as the reader tilts up:
+       at the 0.75 ceiling the worst corner of the short run projects to
+       560 + sqrt((212+OFF+tick/2)^2 + 93.5^2) x 0.30 x sin(0.75), which
+       passes 616 at about 32 ft. The sweep below confirmed it on the rendered
+       SVG rather than on this arithmetic. */
+    /* FP_FIG stands the figure a further 26 ft out from its own run, on the
+       side away from the building. Anchored on the run itself the two
+       figures sat in the same corner of the box as the Fifth Avenue block,
+       which is a two line label pinned to the storefront, and the pavement
+       is the one place a label cannot step down to get out of the way. */
+    var FP_OFF = 30, FP_TICK = 22, FP_EXT = 10, FP_FIG = 26;
+    if (o.footprint !== false) {
+      var fyaw = (o.cam && typeof o.cam.yaw === 'number') ? o.cam.yaw : 0;
+      function fsgn(v) { return v < 0 ? -1 : 1; }
+      var FYS = fsgn(Math.cos(fyaw)) * (BD + FP_OFF);
+      var FXS = fsgn(Math.sin(fyaw)) * (BW + FP_OFF);
+      function dimLine(ax, ay, bx, by) {
+        lines.push({ a: P(ax, ay, 0), b: P(bx, by, 0),
+                     colour: C.label, width: 1.1, opacity: 0.85 });
+      }
+      /* the 424 ft run, standing off the long face */
+      dimLine(-BW, FYS, BW, FYS);
+      [-BW, BW].forEach(function (x) {
+        dimLine(x, FYS - FP_TICK / 2, x, FYS + FP_TICK / 2);
+        /* the witness line back to the corner it measures, so there is no
+           doubt which edge the run belongs to */
+        dimLine(x, FYS - fsgn(FYS) * FP_EXT, x, fsgn(FYS) * BD);
+      });
+      /* the 187 ft run, standing off the short face */
+      dimLine(FXS, -BD, FXS, BD);
+      [-BD, BD].forEach(function (y) {
+        dimLine(FXS - FP_TICK / 2, y, FXS + FP_TICK / 2, y);
+        dimLine(FXS - fsgn(FXS) * FP_EXT, y, fsgn(FXS) * BW, y);
+      });
+    }
+
     if (o.marks !== false) {
       marks.push({ at: P(-20, 0, ES.tip + 24 + tipUp), text: '1,454 ft to the tip' });
       marks.push({ at: P(0, 0, ES.obs102 + lift(ES.obs86)), fill: C.hi,
@@ -805,6 +862,22 @@
                    sub: 'the entrance and the line' });
       marks.push({ at: P(W30 / 2 - 5, D81 / 2 - 3, ES.obs86), fill: C.navy, text: '86th floor',
                    sub: 'open air, 1,050 ft, the one people mean' });
+      /* The two numbers go on LAST, and that is the whole safety argument for
+         them. This scene does not ask for roomForLabels, so the engine places
+         marks in the order they are handed over, first come first served. The
+         four positions above were settled by a thirteen-view sweep and are
+         not this change's to disturb; appending means they are placed exactly
+         as they were, and the two new ones take only what is left over.
+         No dot: r 0. A dimension run already has ticks saying where it starts
+         and stops, and a dot would be a claim about a POINT where these two
+         are claims about a LENGTH. Single lines, no note, so each asks the
+         placer for about a third of the height a floor label does. */
+      if (o.footprint !== false) {
+        marks.push({ at: P(0, FYS + fsgn(FYS) * FP_FIG, 0), r: 0, pin: true,
+                     fill: C.label, text: '424 ft' });
+        marks.push({ at: P(FXS + fsgn(FXS) * FP_FIG, 0, 0), r: 0, pin: true,
+                     fill: C.label, text: '187 ft' });
+      }
     }
     return { w: 720, h: 620, faces: f, lines: lines, marks: marks };
   };

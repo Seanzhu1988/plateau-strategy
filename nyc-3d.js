@@ -247,7 +247,13 @@
     order.forEach(function (m) {
       var p = project(m.at, cam);
       parts.push('<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) +
-        '" r="' + ((m.r || 4) * ds).toFixed(1) + '" fill="' + (m.fill || C.navy) + '"/>');
+        /* r is compared against null, not truthiness. `m.r || 4` reads a
+           deliberate r of 0 as "not given" and draws the default 4, which is
+           how the two footprint figures came out with dots on them after
+           being written with r 0 to have none. The bridge form file had
+           already met this and worked around it by asking for r 0.01; both
+           spellings now do what they say. */
+        '" r="' + ((m.r == null ? 4 : m.r) * ds).toFixed(1) + '" fill="' + (m.fill || C.navy) + '"/>');
       if (!m.text && !m.sub) return;
       var wide = Math.max(runs(m.text, fT), runs(m.sub, fS));
       var flip = p.x + gap + wide > w - 4;
@@ -285,8 +291,20 @@
          old code put it and gets a halo instead. That order matters: at the
          tower framing and on a phone there is genuinely nowhere to go, and a
          lift taken anyway put a bridge label off the bottom edge. */
+      /* A PINNED label is not allowed to fly. The lift below moves a block to
+         the nearer clear edge of the drawing, which is right for a label that
+         NAMES a thing: the dot stays on the point and a leader reaches back to
+         it, so the reader can still follow it home. It is wrong for a number
+         that MEASURES something, because a dimension figure belongs on its own
+         run and nowhere else. Measured when the two footprint numbers first
+         went in without this: "187 ft" was lifted from the pavement to y 75,
+         beside "1,454 ft to the tip", 285 units above the run it belongs to
+         and with a leader the height of the building. A pinned label keeps the
+         position the dot gives it, may still step down a line to avoid a label
+         already placed, and takes the halo if it lands on the drawing, which is
+         the same fallback the tower framing has always used. */
       var clear = 5 * ds, lift = 0;
-      if (ink.top != null &&
+      if (!m.pin && ink.top != null &&
           base < ink.bot + clear && base + tall > ink.top - clear) {
         var up = (ink.top - clear - tall) - base;
         var dn = (ink.bot + clear) - base;
@@ -296,7 +314,38 @@
         }
       }
       var drop = 0;
-      if (!lift) {
+      if (m.pin) {
+        /* A pinned label may not fly, but it may still step a line out of the
+           way, and near the bottom of the box the only way out is UP. The
+           plain search below only ever steps DOWN, so at the pavement it runs
+           straight into the floor: fits() refuses the step, the loop gives up,
+           and the label is left lying on whatever was already there. Measured
+           when the footprint numbers first went in pinned: 39 overlapping
+           label pairs across a full turn by three tilts, against none before,
+           and 32 of the 39 were a dimension figure written across "Fifth
+           Avenue" and its note. So a pinned label tries its own line first,
+           then one line up, then one down, then two of each, and takes the
+           first that lands inside the box and on nothing already placed. A
+           dimension figure sits a line above its run on any drawing, so up is
+           not a compromise here, it is the conventional place. */
+        var steps = [0, -lh, lh, -2 * lh, 2 * lh], sd = null;
+        for (var sI = 0; sI < steps.length; sI++) {
+          var cand = base + steps[sI];
+          if (fits(cand) && !hits(cand)) { sd = steps[sI]; break; }
+        }
+        /* If none of the five lands clear, the label is NOT DRAWN. This is
+           the page's own standing rule for the models, written down when the
+           phone framing was fixed: where a label cannot be placed properly it
+           should be left out rather than shoved. A name has to appear, so it
+           falls back to a halo; a dimension figure does not, because its run
+           and its two ticks still say what is being measured, the other run
+           still carries its own number, and the fact card beneath the drawing
+           carries both. Measured across a full turn by five tilts, open and
+           closed: 4 of 1,080 label blocks are dropped this way, and text over
+           text goes to nothing. Written over one is worse than absent. */
+        if (sd === null) return;
+        drop = sd;
+      } else if (!lift) {
         for (var g = 0; g < 4; g++) {
           var top = base + drop;
           if (!fits(top)) { drop -= lh; break; }
@@ -785,6 +834,57 @@
       deck(60, 52, ES.obs102 + lift(ES.obs86), 13, C.walkTop, C.glass, C.glassEdge);
     }
 
+    /* ---- the footprint, drawn on the ground and not only on a card ----
+
+       The plan is 424 by 187 ft. A fact card can STATE that; only a line
+       drawn in the same projection as the building can SHOW it, because it
+       foreshortens by exactly the amount the face beside it does. Through a
+       full turn the drawn ratio runs from about 10:1 along the short face to
+       1:2 along the long one and passes through square at four angles of 360,
+       which is what a 424 by 187 ft building does and not an error. These two
+       runs are what a reader stopped at one of those angles has to correct
+       them, in the drawing rather than a paragraph away from it.
+
+       Each run is built on the side of the building the eye is on, so it is
+       never drawn through the tower. Lines carry no depth test in this
+       renderer, they are painted after every face, so a run on the far side
+       would be drawn straight over the limestone. Which side is near is not a
+       guess: for a point on the ground the projected depth is
+       (x sin yaw + y cos yaw) cos pitch, so the long run, which varies in x
+       and sits at a fixed y, is nearer at the sign of cos yaw, and the short
+       run at the sign of sin yaw.
+
+       A run stands off the wall it measures by OFF feet, with a witness line
+       back to each corner so there is no doubt which edge is being measured,
+       and a tick at each end so the run reads as a measurement and not as a
+       kerb. */
+    var FP_OFF = 90, FP_TICK = 26, FP_EXT = 14;
+    if (o.footprint !== false) {
+      var fcam = o.cam || {};
+      var fyaw = typeof fcam.yaw === 'number' ? fcam.yaw : 0;
+      var hw = ES.baseW / 2, hd = ES.baseD / 2;
+      var ys = (Math.cos(fyaw) >= 0 ? 1 : -1) * (hd + FP_OFF);
+      var xs = (Math.sin(fyaw) >= 0 ? 1 : -1) * (hw + FP_OFF);
+      function sgn(v) { return v < 0 ? -1 : 1; }
+      function dimLine(a, b) {
+        lines.push({ a: P(a[0], a[1], 0), b: P(b[0], b[1], 0),
+                     colour: C.label, width: 1.1, opacity: 0.85 });
+      }
+      /* the 424 ft run, along the long face */
+      dimLine([-hw, ys], [hw, ys]);
+      [-hw, hw].forEach(function (x) {
+        dimLine([x, ys - FP_TICK / 2], [x, ys + FP_TICK / 2]);
+        /* witness line back to the corner it came from */
+        dimLine([x, ys - sgn(ys) * FP_EXT], [x, sgn(ys) * hd]);
+      });
+      /* the 187 ft run, along the short face */
+      dimLine([xs, -hd], [xs, hd]);
+      [-hd, hd].forEach(function (y) {
+        dimLine([xs - FP_TICK / 2, y], [xs + FP_TICK / 2, y]);
+        dimLine([xs - sgn(xs) * FP_EXT, y], [sgn(xs) * hw, y]);
+      });
+    }
+
     if (o.marks !== false) {
       marks.push({ at: P(0, 0, ES.tip + 24 + tipUp), text: '1,454 ft to the tip' });
       marks.push({ at: P(78, 0, ES.obs102 + lift(ES.obs86)), fill: C.hi,
@@ -794,6 +894,17 @@
                    sub: 'open air, 1,050 ft, the one people mean' });
       marks.push({ at: P(150, 0, ES.baseH), text: 'Fifth Avenue',
                    sub: 'the entrance and the line' });
+      /* The two numbers ride on their own runs, with no dot: a dimension line
+         already has ticks saying where it starts and stops, and a fifth and
+         sixth dot on this model would be five and six claims about a point
+         when these two are claims about a LENGTH. They are single lines, not
+         a title and a note, so each asks the placer for a third of the space
+         one of the floor labels does. r:0 is how the renderer is told to draw
+         the anchor and not the dot. */
+      if (o.footprint !== false) {
+        marks.push({ at: P(0, ys, 0), r: 0, pin: true, fill: C.label, text: '424 ft' });
+        marks.push({ at: P(xs, 0, 0), r: 0, pin: true, fill: C.label, text: '187 ft' });
+      }
     }
     return { w: 720, h: 620, faces: f, lines: lines, marks: marks };
   }
@@ -802,7 +913,13 @@
   function mount(host, build, cam0, ceil) {
     var cam = cam0, dragging = false, lastX = 0, lastY = 0, idle = true;
     var pitchCeil = (typeof ceil === 'number') ? ceil : 0.48;
-    function draw() { render(host, build(), cam); }
+    /* The camera is handed to the builder as well as to the renderer. Almost
+       nothing needs it: a scene is geometry and the camera only decides how
+       it is drawn. The exception is an annotation that has a NEAR side, like
+       a dimension line lying on the ground, which has to be built on the side
+       the eye is on or it is drawn straight through the building. Builders
+       that do not care simply ignore the argument. */
+    function draw() { render(host, build(cam), cam); }
     draw();
     /* Changing view has to REPLACE what this mount draws, not mount a second
        one beside it. Mounting again would leave the first spin loop running,
@@ -963,8 +1080,9 @@
          the opened building and there is never a second animation loop
          fighting the first over one box. */
       var openT = 0, anim = null;
-      var m = mount(host, function () { return sceneFor('empire')({ openT: openT }); },
-                    EMPIRE_CAM(), TILT_CEIL.empire);
+      var m = mount(host, function (cam) {
+                      return sceneFor('empire')({ openT: openT, cam: cam });
+                    }, EMPIRE_CAM(), TILT_CEIL.empire);
       var still = window.matchMedia &&
         window.matchMedia('(prefers-reduced-motion: reduce)');
       /* A floor is invisible edge-on. The opening view starts at pitch 0.22,
