@@ -2135,7 +2135,7 @@
                     </div>
                     <div class="psx-cards">
                         <div class="psx-card" data-arm="operations">
-                            <h3 class="psx-card-title">Free trip mapping</h3>
+                            <h3 class="psx-card-title">Trip mapping</h3>
                             <p class="psx-card-desc">Map your next trip on a real map: every stop lights up or dims by drive time, traffic and closing hours. Free to anyone, no sign-in.</p>
                             <a class="psx-card-link" href="/trip-planner">Map your trip →</a>
                         </div>
@@ -2891,7 +2891,7 @@
                                               body.value = (body.value ? body.value.replace(/\s*$/, '') + ' ' : '') + t.trim();
                                             } else { interim += t; }
                                           }
-                                          note.textContent = interim ? '… ' + interim : 'Listening. Tap to stop.';
+                                          note.textContent = interim ? '… ' + interim : (window.psxT ? psxT('Listening. Tap to stop.') : 'Listening. Tap to stop.');
                                         };
                                         rec.onerror = function (ev) {
                                           note.textContent = (ev && ev.error === 'not-allowed')
@@ -3469,16 +3469,40 @@
             var d = await psxJSON('/api/traffic/summary');
             var s = d && d.ok && d.site;
             if (!s || !s.show || !s.week) return;
+            /* Every piece of this line goes through psxFmt, including the
+               month name, which takes the reader's chosen language rather than
+               the browser's. The line used to be built by concatenation and so
+               could never be translated: a French reader saw "112,175 mots
+               écrits" hanging off "538 visits in the last seven days". The
+               checker missed it because the assignment and the English sit on
+               different lines and it scans one line at a time. */
+            var lang = null;
+            try { lang = localStorage.getItem('ps_lang'); } catch (e) {}
+            var loc = (lang && lang !== 'en') ? lang : undefined;
             var since = '';
             if (s.since) {
                 var dt = new Date(s.since + 'T00:00:00');
                 if (!isNaN(dt)) {
-                    since = ' · ' + s.all_time.toLocaleString() + ' since '
-                          + dt.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+                    since = ' · ' + psxFmt('{n} since {month}', {
+                        n: s.all_time.toLocaleString(),
+                        month: dt.toLocaleDateString(loc, { month: 'long', year: 'numeric' })
+                    });
                 }
             }
-            el.textContent = s.week.toLocaleString()
-                + ' visits in the last seven days' + since;
+            /* [SEAN 2026-09-07: "write how many words was written?"] Beside
+               the visitor count, how much there is to read. Built with psxFmt
+               rather than glued together, because a line a page assembles from
+               a number can never be looked up whole by the translator: the
+               dictionary would need an entry for every possible count. The
+               PATTERN is translated and the number dropped in after. */
+            var written = '';
+            if (s.words_written) {
+                written = ' · ' + (window.psxFmt
+                    ? psxFmt('{n} words written', { n: s.words_written.toLocaleString() })
+                    : s.words_written.toLocaleString() + ' words written');
+            }
+            el.textContent = psxFmt('{n} visits in the last seven days',
+                                    { n: s.week.toLocaleString() }) + since + written;
             el.hidden = false;
         })();
 
@@ -4200,7 +4224,9 @@
 
           var live = $('rusaLive');
           if (live) {
-            live.textContent = ideas + (ideas === 1 ? ' idea posted' : ' ideas posted')
+            live.textContent = window.psxFmt
+                    ? psxFmt(ideas === 1 ? '{n} idea posted' : '{n} ideas posted', { n: ideas })
+                    : ideas + (ideas === 1 ? ' idea posted' : ' ideas posted')
               + ' · ' + trades.length + (trades.length === 1 ? ' trade asked for' : ' trades asked for')
               + ' · ' + opinions.length + (opinions.length === 1 ? ' opinion published' : ' opinions published');
           }

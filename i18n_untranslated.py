@@ -61,7 +61,11 @@ def englishy(line):
             if WORDS.search(body):
                 return body
     return None
-SAFE = re.compile(r"\b(?:psxFmt|T)\s*\(")
+# psxT is the site's own whole-string translator and belongs here as much as
+# psxFmt does. It was missing, and because "psxT" has no word boundary before
+# the T, \bT did not catch it either: every correct use of psxT was reported
+# as a fault. A gate that fails correct code is a gate people learn to ignore.
+SAFE = re.compile(r"\b(?:psxFmt|psxT|T)\s*\(")
 
 
 def scan(path):

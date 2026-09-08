@@ -12973,6 +12973,96 @@ def api_traffic_places():
 PUBLIC_TRAFFIC_MIN = int(os.environ.get("PUBLIC_TRAFFIC_MIN", "100"))
 
 
+_WORDS_CACHE = {"at": 0, "n": 0, "by": {}}
+
+
+def _words_written():
+    """How many words this site has actually written, counted, not claimed.
+
+    [SEAN 2026-09-07, pointing at the visits line: "write how many words was
+    written?"] Beside a visitor count, this is the other half of the picture:
+    what a visitor came for, and how much of it there is to read.
+
+    WHAT IS COUNTED, and why only this. English originals: the stories in the
+    Destination Book, the spoken guides, the gallery and museum and trail
+    scripts, and the walking notes on each stop. NOT the translations, and this
+    is a deliberate choice rather than an oversight, for two reasons. A word
+    count of eight translations of the same paragraph is the same paragraph
+    counted nine times, which flatters. And Chinese, Japanese and Korean do not
+    put spaces between words, so `len(text.split())` reads a whole Chinese
+    story as one word; a number that means one thing in five languages and
+    something else in three is not a number worth printing.
+
+    So this is the size of the original writing. It undercounts the work and it
+    never overstates it, which is the right way round.
+
+    Cached for ten minutes: the overnight routines add to this corpus hourly,
+    and the count walks every story on the site.
+    """
+    now = time.time()
+    if _WORDS_CACHE["n"] and now - _WORDS_CACHE["at"] < 600:
+        return _WORDS_CACHE
+
+    def words(t):
+        return len(str(t or "").split())
+
+    by = {}
+    try:
+        # public_book, not the raw store: this number is printed on a public
+        # page, so it should describe writing a visitor can actually read.
+        entries = (public_book() or {}).get("entries") or []
+        by["book"] = sum(words(e.get("story_en")) + words(e.get("desc")) + words(e.get("tip"))
+                         for e in entries)
+    except Exception:
+        by["book"] = 0
+    for key, name in (("guide_scripts.json", "guides"),):
+        try:
+            with open(os.path.join(BASE_DIR, key), encoding="utf-8") as f:
+                d = json.load(f) or {}
+            by[name] = sum(words(v) for k, v in d.items()
+                           if not k.startswith("_") and isinstance(v, str))
+        except Exception:
+            by[name] = 0
+    for folder, name in (("gallery_scripts", "gallery"), ("museum_scripts", "museums"),
+                         ("trail_scripts", "trails")):
+        n = 0
+        for root, _dirs, files in os.walk(os.path.join(BASE_DIR, folder)):
+            for fn in files:
+                if fn.endswith(".txt"):
+                    try:
+                        with open(os.path.join(root, fn), encoding="utf-8") as f:
+                            n += words(f.read())
+                    except Exception:
+                        pass
+        by[name] = n
+    try:
+        with open(os.path.join(BASE_DIR, "trails.json"), encoding="utf-8") as f:
+            tr = json.load(f) or {}
+        by["stops"] = sum(words(st.get("desc")) + words(st.get("yiki"))
+                          for t in tr.get("trails", []) for st in t.get("stops", []))
+    except Exception:
+        by["stops"] = 0
+    try:
+        with open(os.path.join(BASE_DIR, "landmark_stories.json"), encoding="utf-8") as f:
+            ls = json.load(f) or {}
+        skip = tuple("_" + c for c in _LANGS.TRANSLATED)
+
+        def deep(o):
+            if isinstance(o, str):
+                return words(o)
+            if isinstance(o, dict):
+                return sum(deep(v) for k, v in o.items() if not str(k).endswith(skip))
+            if isinstance(o, list):
+                return sum(deep(v) for v in o)
+            return 0
+        by["landmarks"] = deep(ls)
+    except Exception:
+        by["landmarks"] = 0
+
+    _WORDS_CACHE.update({"at": now, "n": sum(by.values()), "by": by})
+    return _WORDS_CACHE
+
+
 @app.route("/api/traffic/summary")
 def api_traffic_summary():
     """Public, aggregate-only traffic numbers, no per-visitor detail, no
@@ -13078,6 +13168,10 @@ def api_traffic_summary():
                         # is not a lie; a discouraging true number is still a
                         # bad thing to volunteer.
                         "show": all_time >= PUBLIC_TRAFFIC_MIN,
+                        # The other half of the note: how much there is to
+                        # read. This one is always shown, because unlike a
+                        # visitor count it cannot be discouragingly small.
+                        "words_written": _words_written()["n"],
                     }})
 
 
