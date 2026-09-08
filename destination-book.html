@@ -236,6 +236,44 @@
 </style>
     <link rel="stylesheet" href="/paper.css">
     <style>
+      /* This card is a STACK of labelled rows, not a row of chips.
+
+         paper.css says "any row of chips is a row" and lists
+         `.chips, .filters, .frow, [id$="Chips"] ...` as display:flex. That is
+         right for the other three `.filters` on this site, which are bare
+         containers a script fills with chips. It is wrong here, because this
+         `.filters` is the CARD that holds five `.frow` rows, so making it a
+         flex row laid its five rows out side by side.
+
+         Measured at 1280px before the fix: the five rows sat at y 232, 340,
+         340, 392 and 389, so Type shared a line with Category and Stars with
+         Search; the five 76px labels started at three different left edges
+         (119.4, 558.9 and 451.5) instead of one column; and the search input,
+         the main control of this page, was squeezed to 185.1px with 58% of its
+         placeholder cut off. After: five rows at 232, 334, 376, 418, 460,
+         every label at 119.4, and the input 958.8px with nothing clipped.
+
+         The page's own `.filters` rule is in the style block ABOVE this one,
+         which is why it loses: same specificity, earlier in the document than
+         paper.css. This block loads after, so it wins without !important. */
+      .filters { display: block; }
+
+      /* The search field gets its own line on a phone.
+
+         A placeholder cannot wrap, so whatever does not fit is simply gone,
+         and what a visitor loses here is the half that says you may type a
+         place the book does not have yet and it will be added. Measured at
+         375px: the row is 296.2px, the 76px label and the gap leave 213.8px
+         for the field, 186.2px inside its padding, against a placeholder that
+         wanted 409.3px, so 54% was cut. Shortening the sentence was not enough
+         on its own, so the field also drops to its own full-width line below
+         560px: 268.6px of room at 375px and 213.6px at 320px, against 199.7px
+         of text. Nothing is lost from the page either way, the SEARCH label
+         beside it already supplies the verb. */
+      @media (max-width: 560px) {
+        .filters .frow input[type="text"] { flex: 1 1 100%; }
+      }
+
       /* The model on a card. The picture is the door and the model is behind
          it, so a reader who only wants the opening hours never loads a
          renderer, which is the rule the thumbnail was written for. */
@@ -298,7 +336,7 @@
             <div class="frow"><span class="flab">Category</span><span id="catChips"></span></div>
             <div class="frow"><span class="flab">Stars</span><span id="starFilter"></span><span class="star-hint">tap to cycle 5★ → 1★</span></div>
             <div class="frow"><span class="flab">Search</span>
-                <input type="text" id="q" placeholder="Search the book, or type a new place to suggest &amp; add…" oninput="render()"></div>
+                <input type="text" id="q" placeholder="A place, or add a new one…" oninput="render()"></div>
             <div id="suggest"></div>
         </div>
         <div class="count" id="count"></div>
@@ -320,7 +358,15 @@
             <h3>🌟 What do you wish was in this book?</h3>
             <p class="sub">Tell us the place you want to see, or the kind of thing you're looking for. Every wish tells us what to add next, and where travelers want a guide. No account, no email needed.</p>
             <div class="wishrow">
-                <input type="text" id="wishText" maxlength="120" placeholder="e.g. rooftop bar with a skyline view, or Space Needle"
+                <!-- The examples are the placeholder's whole job here, because the
+                     line above already explains what a wish is. The long version
+                     wanted 378.2px in a 268.6px field on a 375px phone, so 29% was
+                     cut and what went was the second example, the NAMED place,
+                     which is half of what the two examples exist to show. This
+                     keeps both kinds in 252.5px: a kind of place, and a place by
+                     name. Honest residue: a 320px screen offers 213.6px, so the
+                     last word is still clipped there, by 39px rather than 110. -->
+                <input type="text" id="wishText" maxlength="120" placeholder="e.g. a rooftop bar, or Space Needle"
                        onkeydown="if(event.key==='Enter')sendWish()">
                 <select id="wishKind">
                     <option value="place">A place</option>
