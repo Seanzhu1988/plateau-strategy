@@ -28,7 +28,8 @@ import re
 import sys
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-LANGS = ["zh", "es", "ko", "vi", "ja"]
+import languages as _LANGS   # the ONE list of site languages
+LANGS = list(_LANGS.PACK_ORDER)
 MIN_COVERAGE = 80          # percent of visible strings a public page must have
 
 # The pages a visitor can reach and read. Owner surfaces and private rooms are

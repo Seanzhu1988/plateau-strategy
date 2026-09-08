@@ -492,7 +492,7 @@ EXTRA = {
         "· búsqueda por Nominatim · una herramienta gratuita de Plateau Strategy Solution Lab",
         "· 검색은 Nominatim · Plateau Strategy Solution Lab의 무료 도구",
         "· tìm kiếm bởi Nominatim · công cụ miễn phí của Plateau Strategy Solution Lab"],
-    "Night after Day": ["第", "Noche después del día", "다음 날 밤", "Đêm sau ngày"],
+    "Night after Day": ["过夜 · 第", "Noche después del día", "다음 날 밤", "Đêm sau ngày"],
     "Day": ["天", "Día", "일차", "Ngày"],
     "should start from wherever you sleep, otherwise it plans your morning from your original start point. Have you already got somewhere?": [
         "天应该从您过夜的地方出发，否则系统会按最初的起点安排早上的行程。您订好住处了吗？",

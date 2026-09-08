@@ -639,18 +639,28 @@ if missing:
 # hundred rows. A language that lives in one file can be added, reviewed
 # and corrected without touching a single existing translation, and the
 # next language after it costs one more file, not another edit everywhere.
-LANGS_ORDER = ["zh", "es", "ko", "vi", "ja"]
+# THE LANGUAGE SET IS NOT WRITTEN HERE. It lives in languages.py, because it
+# used to be written down in nine places and nobody could keep nine in step:
+# Japanese shipped while check_i18n.py still checked four languages, so the one
+# gate that could have caught a missing Japanese line could not see Japanese.
+import languages as LANGS_DEF
+LANGS_ORDER = LANGS_DEF.PACK_ORDER          # every language that gets a pack
+COLUMN_ORDER = LANGS_DEF.COLUMN_ORDER       # the four carried as row columns
 SIDE_LANGS = {}
-for side in ("ja",):
+for side in LANGS_DEF.SIDE:
     try:
-        with open(os.path.join(PROJ, "i18n_%s.json" % side), encoding="utf-8") as f:
+        with open(os.path.join(PROJ, LANGS_DEF.side_file(side)), encoding="utf-8") as f:
             SIDE_LANGS[side] = json.load(f)
     except Exception:
+        # A side language with no file yet is not an error: it is a language
+        # that has been declared and not written. Its pack comes out empty and
+        # every line falls back to English, which is exactly what a reader
+        # should see until the words exist.
         SIDE_LANGS[side] = {}
 
 DICT = {}
 for k, vals in TR.items():
-    DICT[k] = {LANGS_ORDER[i]: vals[i] for i in range(4)}
+    DICT[k] = {COLUMN_ORDER[i]: vals[i] for i in range(len(COLUMN_ORDER))}
     for side, table in SIDE_LANGS.items():
         v = table.get(k)
         if v:
@@ -661,7 +671,7 @@ ENGINE = r'''/* Plateau Strategy Solution Lab -- site-wide line-by-line translat
    Persists the reader's choice and re-translates dynamically-injected content. */
 (function () {
   var DICT = __DICT__;   // kept for shape; the real strings arrive in a pack
-  var LANGS = [["en", "English"], ["zh", "中文"], ["es", "Español"], ["ko", "한국어"], ["vi", "Tiếng Việt"], ["ja", "日本語"]];
+  var LANGS = __LANGS__;
   var KEY = "ps_lang";
   // ?lang=zh wins over the stored choice, and is then stored, so a
   // language-targeted ad lands on the page already in that language instead of
@@ -917,10 +927,12 @@ for lang in LANGS_ORDER:
 
 # The engine is written after the packs, because it carries their fingerprint.
 PACKV = _stamp.hexdigest()[:10]
-out = ENGINE.replace("__DICT__", "{}").replace("__PACKV__", PACKV)
+out = (ENGINE.replace("__DICT__", "{}")
+              .replace("__LANGS__", json.dumps(LANGS_DEF.switcher_pairs(), ensure_ascii=False))
+              .replace("__PACKV__", PACKV))
 open(os.path.join(PROJ, "i18n.js"), "w", encoding="utf-8").write(out)
 
 print("\nwrote i18n.js  (engine only, %d bytes, packs stamped %s)" % (len(out), PACKV))
 for lang, n, b in sizes:
     print("      i18n.%s.js  %d entries, %d bytes" % (lang, n, b))
-print("      a reader now downloads the engine plus one pack, not all four")
+print("      a reader downloads the engine plus ONE pack, not all %d" % len(LANGS_ORDER))

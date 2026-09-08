@@ -65,6 +65,7 @@ RULES IT KEEPS
 from __future__ import annotations
 
 import json
+import languages as _LANGS   # the ONE list of site languages
 import os
 import re
 import time
@@ -511,7 +512,7 @@ def _measured_numbers(text, lang="en"):
     return out
 
 
-def audit_story(stories, facts, langs=("en", "zh", "es", "ko", "vi")):
+def audit_story(stories, facts, langs=None):
     """Read the prose back against the numbers it is allowed to use.
 
     Two checks, and neither is a judgement about the world.
@@ -519,10 +520,14 @@ def audit_story(stories, facts, langs=("en", "zh", "es", "ko", "vi")):
     UNSUPPORTED MEASUREMENT. Every figure carrying a unit is looked for in
     the fact table. One that is absent is flagged for a person to look at.
 
-    DISAGREEING TRANSLATIONS. The same story in five languages should carry
+    DISAGREEING TRANSLATIONS. The same story in every language should carry
     the same measurements. When the English says 1,595 feet and the Spanish
     says 1,495 pies, one is a typo, and this is the only check that will ever
     catch it, because nobody proof-reads five languages against each other."""
+    # The language set comes from languages.py so a story written in a newly
+    # added language is audited too, instead of silently skipped.
+    langs = tuple(langs or _LANGS.CODES)
+
     known = set()
     for f in facts:
         try:

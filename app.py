@@ -17,6 +17,7 @@ import os
 import sqlite3
 import re
 import json
+import languages as _LANGS   # the ONE list of site languages
 import time
 import hashlib
 import hmac
@@ -2182,7 +2183,7 @@ def api_guide_languages():
     except Exception:
         base = {}
     out = []
-    for lang in ("en", "zh", "es", "ko", "vi", "ja"):
+    for lang in _LANGS.CODES:
         name = "guide_scripts.json" if lang == "en" else "guide_scripts.%s.json" % lang
         try:
             with open(os.path.join(BASE_DIR, name), encoding="utf-8") as f:
@@ -10987,15 +10988,13 @@ def idea_page(aid):
     # nothing is worse than no button, because the reader concludes the site
     # is broken rather than that the work has not been done yet.
     trs = {} if locked else _translations_for(a.get("title"), a.get("body"))
-    LANG_NAMES = {"zh": "\u4e2d\u6587", "es": "Espa\u00f1ol",
-                  "ko": "\ud55c\uad6d\uc5b4", "vi": "Ti\u1ebfng Vi\u1ec7t",
-                  "ja": "\u65e5\u672c\u8a9e"}
+    LANG_NAMES = {c: _LANGS.ENDONYM[c] for c in _LANGS.TRANSLATED}
     # Every language is always offered. A missing one is not hidden, it is
     # translated the moment a reader taps it, through the same engine and
     # the same anchored store as the background path. Hiding the button was
     # honest once; with live translation behind it, offering is honest.
     buttons = ['<button class="lang-opt" data-l="en" aria-current="true">English</button>']
-    for code in ("zh", "es", "ko", "vi", "ja"):
+    for code in _LANGS.TRANSLATED:
         buttons.append('<button class="lang-opt" data-l="%s"%s>%s</button>'
                        % (code, "" if code in trs else ' data-missing="1"',
                           LANG_NAMES[code]))
@@ -11828,9 +11827,12 @@ def _seed_book_fields_once():
                     live.setdefault("entries", []).append(srce)
                     changed = True
                     continue
-                for fld in ("admission_usd", "tickets_url", "slug", "ferry", "audio",
-                            "story_en", "story_zh", "story_es", "story_ko",
-                            "story_vi"):
+                # The story columns come from languages.py, not a typed list.
+                # They were typed once and a new language's stories then sat in
+                # the repo file and never reached production, because this sync
+                # did not know the column existed.
+                for fld in (["admission_usd", "tickets_url", "slug", "ferry", "audio"]
+                            + _LANGS.story_fields()):
                     if fld in srce and tgt.get(fld) != srce[fld]:
                         tgt[fld] = srce[fld]
                         changed = True

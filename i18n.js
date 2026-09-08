@@ -3,7 +3,7 @@
    Persists the reader's choice and re-translates dynamically-injected content. */
 (function () {
   var DICT = {};   // kept for shape; the real strings arrive in a pack
-  var LANGS = [["en", "English"], ["zh", "中文"], ["es", "Español"], ["ko", "한국어"], ["vi", "Tiếng Việt"], ["ja", "日本語"]];
+  var LANGS = [["en", "English"], ["zh", "中文"], ["es", "Español"], ["ko", "한국어"], ["vi", "Tiếng Việt"], ["ja", "日本語"], ["fr", "Français"], ["de", "Deutsch"], ["pt", "Português"]];
   var KEY = "ps_lang";
   // ?lang=zh wins over the stored choice, and is then stored, so a
   // language-targeted ad lands on the page already in that language instead of
@@ -203,7 +203,7 @@
        only versions href and src attributes it can see in the markup,
        and this URL is built in script, so the browser would serve its
        cached copy of yesterday's translations for as long as it kept it. */
-    sc.src = "/i18n." + l + ".js?v=7f0da24d02";
+    sc.src = "/i18n." + l + ".js?v=dd325513fc";
     sc.async = true;
     // A pack that fails to load must leave English standing rather than a
     // half-translated page, so there is nothing to undo here.

@@ -199,3 +199,118 @@ Two things it taught that are worth keeping:
 - Chinese and Spanish are hand-tuned and were checked by a reader. Where DeepL
   and the hand-written version differ, the hand-written one ships, DeepL is
   accurate but flatter, which is the exact fault that took two passes to fix.
+
+## The routine, from 2026-09-07
+
+[SEAN: "also we put language routine, every 24 hours this language will try to
+refine theirselves if there is new built it get language to be aligned, now i
+want mininum 7 languages to be formed at this moment. if it lack of accuratecy
+read some high volume social media post and learn them."]
+
+English is written here every day: a new page, a new button, a landmark the
+overnight routine wrote. Every one of those lines is born untranslated and
+nothing used to notice. `build_i18n.py` refuses to write packs while a visitor
+page has an untranslated line, which catches the worst case loudly, and it is
+also why four untranslated Empire State lines stopped every pack in every
+language from rebuilding for a whole day on 2026-09-07. **A gate with no routine
+behind it eventually blocks the thing it protects.** So the gate stays, and the
+routine walks in front of it.
+
+### One list of languages
+
+`languages.py` is the only place the set is written down. It used to be written
+in nine: `build_i18n.py` twice, `app.py` three times, `translator.py`,
+`gallery_reader.py`, `landmark_pipeline.py`, `i18n_coverage.py` and
+`check_i18n.py`. The proof that nobody can keep nine in step is already in the
+repo: Japanese shipped in August and `check_i18n.py` still checked four
+languages, so the one gate that could have caught a missing Japanese line was
+blind to Japanese by construction. Adding language ten is one entry in that
+file.
+
+Nine languages as of 2026-09-07: English, Chinese, Spanish, Korean, Vietnamese,
+Japanese, French, German, Portuguese. Each carries a `why` naming the reader it
+is for, because a language is a promise and one nobody can name should not be
+made.
+
+### The daily pass
+
+`language_routine.py` owns the mechanical half, which is the half a machine
+should own.
+
+    python3 language_routine.py status     what every language is missing
+    python3 language_routine.py gaps --lang fr -n 250 --out /tmp/fr.json
+    python3 language_routine.py apply --lang fr -f /tmp/fr_done.json
+    python3 language_routine.py verify     the checks, exit 1 on a fault
+    python3 language_routine.py bounds     re-derive the length bounds
+    python3 language_routine.py stories    book coverage, per language
+    python3 language_routine.py build      rebuild the packs
+
+It does not translate. Translation is judgement, so the daily task does it: read
+`gaps`, write the words, hand them to `apply`. The split is deliberate, so the
+checks run against the translator's output instead of a program marking its own
+homework.
+
+The queue is ordered by who is waiting: a line on many pages beats a line on
+one, a visitor page beats an agent page, a page people actually open beats one
+nobody has, and among equals the short line goes first.
+
+### The checks, and why each one exists
+
+A wrong translation is worse than a missing one: a missing one shows English, a
+wrong one shows confidence. So nothing is written until it passes.
+
+- **Placeholders.** `psxFmt` translates the pattern and drops the values in
+  afterwards, so `{n} travellers` must still contain `{n}`. Drop it and the
+  sentence renders with a hole; rename it and the page prints the literal `{n}`.
+- **Long dashes.** Sean's standing rule for everything a person reads. The
+  server enforces it for posted content; nothing enforced it here.
+- **Echo.** A translation identical to its English is an untranslated line
+  wearing a translated line's clothes, and it is invisible in a coverage count.
+  Deliberate ones are named in `i18n_keep_english.json`, so a choice looks like
+  a choice and a miss looks like a miss.
+- **Markup.** The engine sets `textContent`, so a helpfully added `<b>` prints
+  as literal angle brackets.
+- **Fragments.** One character standing in for three or more English words. 住宿
+  for "Somewhere to sleep" is right; 第 for "Night after Day" was the tail of a
+  sentence that got cut, and it was live on the trip planner until this check
+  found it.
+- **Length.** Measured, not guessed. The first version of the table was invented
+  and flagged 32 lines of which 31 were correct. The bounds now come from this
+  site's own 1,117 translated sentences per language, floor just under the 0.005
+  percentile. `bounds` re-derives them.
+
+Two files hold judgement so the daily report can be clean: `i18n_keep_english.json`
+for lines deliberately identical everywhere, `i18n_checked.json` for lines a
+person looked at and passed. **A report that is never clean stops being read**,
+which costs more than the checks are worth.
+
+Faults on a line a reader can see now are reported apart from faults on the 841
+dictionary entries no page shows any more. Flattening that difference is how a
+real defect hides in a crowd of harmless ones.
+
+### Reading how people actually write
+
+Sean's last sentence, and the useful reading of it. What high-volume posts teach
+is not sentences worth copying, it is **what people call things**. A traveller
+searches for the name they would type, and a translation that invents its own
+name for a place is one nobody can search for and nobody can match to the sign
+in front of them. So the weekly step reads how our places are actually referred
+to, records the name in `i18n_glossary.json` with where it was seen, and every
+later translation is held to it.
+
+Register and slang are deliberately not copied. This is a licensed guide's
+voice, the table above already says why colloquial reads as uneducated in
+Chinese business writing, and a tour that talks like a comment section reads as
+unserious.
+
+The seeded glossary already found a real disagreement: the Freedom Trail is
+自由之路 in Chinese and Con Đường Tự Do in Vietnamese, both translated, while
+Spanish, French, German and Portuguese keep "Freedom Trail". The trail is signed
+in English. That is a searchability question, not a taste question, and the
+glossary is where it gets settled once.
+
+### What the packs cost a reader
+
+The engine ships empty and fetches one pack. An English reader downloads no pack
+at all. Nine languages cost the reader nothing extra; they cost the routine
+time, which is the right place for the cost to land.

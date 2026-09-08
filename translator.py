@@ -40,12 +40,13 @@ API_URL = "https://api.anthropic.com/v1/messages"
 # more naturally for prose. Overridable: TRANSLATE_MODEL=claude-opus-5 for the
 # smoothest, or claude-haiku-4-5-20251001 to go back to cheap and fast.
 MODEL = os.environ.get("TRANSLATE_MODEL", "claude-sonnet-5")
-LANGS = [l.strip() for l in os.environ.get("TRANSLATE_LANGS", "zh,es,ko,vi,ja").split(",") if l.strip()]
+import languages as _LANGS   # the ONE list of site languages
+LANGS = [l.strip() for l in os.environ.get(
+    "TRANSLATE_LANGS", ",".join(_LANGS.TRANSLATED)).split(",") if l.strip()]
 MAX_PARAS = 80                          # a post, not a book
 _LOCK = threading.Lock()
 
-LANG_NAMES = {"zh": "Simplified Chinese", "es": "Spanish",
-              "ko": "Korean", "vi": "Vietnamese", "ja": "Japanese"}
+LANG_NAMES = {c: _LANGS.ENGLISH_NAME[c] for c in _LANGS.TRANSLATED}
 
 
 def content_hash(title, body):

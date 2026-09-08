@@ -54,8 +54,8 @@ MODEL = os.environ.get("GALLERY_MODEL", "claude-sonnet-5")
 # The languages the site already speaks. A reading is written directly in the
 # reader's language, never English then translated, because the point is the
 # person who cannot read the label in front of them.
-LANG_NAMES = {"en": "English", "zh": "Simplified Chinese", "es": "Spanish",
-              "ko": "Korean", "vi": "Vietnamese", "ja": "Japanese"}
+import languages as _LANGS   # the ONE list of site languages
+LANG_NAMES = {c: _LANGS.ENGLISH_NAME[c] for c in _LANGS.CODES}
 
 # A runaway loop, or somebody poking the endpoint with a script, must not become
 # a bill. Cache makes real use nearly free; this caps the misses. Generous

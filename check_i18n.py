@@ -87,7 +87,10 @@ try:
 except Exception:
     pass
 
-LANGS = ["zh", "es", "ko", "vi"]
+# This said ["zh","es","ko","vi"] while the site shipped Japanese, so the one
+# gate that could have caught a missing Japanese line was blind to Japanese.
+import languages as _LANGS   # the ONE list of site languages
+LANGS = list(_LANGS.PACK_ORDER)
 
 
 def load_dict():

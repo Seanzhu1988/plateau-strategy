@@ -1,0 +1,124 @@
+{
+ "_why": "What we call our own places, in each language. [SEAN 2026-09-07: 'if it lack of accuratecy read some high volume social media post and learn them.'] What real posts teach is not sentences worth copying, it is WHAT PEOPLE CALL THINGS: a Korean traveller writes the name they would search for, and a translation that invents its own name for a place is one nobody can search and nobody can match to a sign. Register and slang are deliberately NOT copied; this is a licensed guide's voice, and a tour that talks like a comment section reads as unserious. Every entry says where it came from.",
+ "_rule": "A name in here is binding: later translations use it and are not free to invent a second one. A name NOT in here falls back to the rule in TRANSLATION.md, which is that venue names stay as the sign reads.",
+ "_seeded": "2026-09-07, from what zh/es/ko/vi had already chosen",
+ "terms": {
+  "The National Mall": {
+   "zh": "国家广场",
+   "es": "El National Mall",
+   "ko": "내셔널 몰",
+   "vi": "National Mall",
+   "fr": "Le National Mall",
+   "de": "Die National Mall",
+   "pt": "O National Mall",
+   "_source": "the site's own earlier translations, 2026-09-07"
+  },
+  "The Freedom Trail": {
+   "zh": "自由之路",
+   "es": "El Freedom Trail",
+   "ko": "프리덤 트레일",
+   "vi": "Con Đường Tự Do",
+   "fr": "Le Freedom Trail",
+   "de": "Der Freedom Trail",
+   "pt": "A Freedom Trail",
+   "_source": "the site's own earlier translations, 2026-09-07"
+  },
+  "Universal Gallery": {
+   "zh": "环球画廊",
+   "es": "Galería Universal",
+   "ko": "유니버설 갤러리",
+   "vi": "Phòng Trưng Bày Cho Mọi Người",
+   "fr": "Galerie universelle",
+   "de": "Universalgalerie",
+   "pt": "Galeria universal",
+   "_source": "the site's own earlier translations, 2026-09-07"
+  },
+  "Destination Book": {
+   "zh": "目的地手册",
+   "es": "Libro de destinos",
+   "ko": "여행지 북",
+   "vi": "Sổ điểm đến",
+   "ja": "デスティネーション・ブック",
+   "fr": "Carnet de destinations",
+   "de": "Reiseziel-Buch",
+   "pt": "Livro de destinos",
+   "_source": "the site's own earlier translations, 2026-09-07"
+  },
+  "Trip Planner": {
+   "zh": "行程规划",
+   "es": "Planificador de viaje",
+   "ko": "여행 플래너",
+   "vi": "Lập kế hoạch chuyến đi",
+   "ja": "旅程プランナー",
+   "fr": "Planificateur de voyage",
+   "de": "Reiseplaner",
+   "pt": "Planejador de viagem",
+   "_source": "the site's own earlier translations, 2026-09-07"
+  },
+  "Inside the Met": {
+   "zh": "走进大都会博物馆",
+   "es": "Dentro del Met",
+   "ko": "메트로폴리탄 미술관 내부",
+   "vi": "Bên trong bảo tàng Met",
+   "ja": "メトロポリタン美術館の中で",
+   "fr": "À l'intérieur du Met",
+   "de": "Im Met",
+   "pt": "Por dentro do Met",
+   "_source": "the site's own earlier translations, 2026-09-07"
+  },
+  "Inside MoMA": {
+   "zh": "走进MoMA",
+   "es": "Dentro del MoMA",
+   "ko": "MoMA 내부",
+   "vi": "Bên trong MoMA",
+   "fr": "À l'intérieur du MoMA",
+   "de": "Im MoMA",
+   "pt": "Por dentro do MoMA",
+   "_source": "the site's own earlier translations, 2026-09-07"
+  },
+  "Free Tools": {
+   "zh": "免费工具",
+   "es": "Herramientas gratuitas",
+   "ko": "무료 도구",
+   "vi": "Công cụ miễn phí",
+   "ja": "無料ツール",
+   "fr": "Outils gratuits",
+   "de": "Kostenlose Tools",
+   "pt": "Ferramentas gratuitas",
+   "_source": "the site's own earlier translations, 2026-09-07"
+  },
+  "Road Trip Planner": {
+   "zh": "长途自驾规划",
+   "es": "Planificador de viajes por carretera",
+   "ko": "로드트립 플래너",
+   "vi": "Lập kế hoạch đường dài",
+   "ja": "ロードトリップ・プランナー",
+   "fr": "Planificateur de road trip",
+   "de": "Roadtrip-Planer",
+   "pt": "Planejador de road trip",
+   "_source": "the site's own earlier translations, 2026-09-07"
+  },
+  "Footprints": {
+   "zh": "足迹",
+   "es": "Pisadas",
+   "ko": "발자국",
+   "vi": "Dấu chân",
+   "ja": "足あと",
+   "fr": "Empreintes",
+   "de": "Fußspuren",
+   "pt": "Pegadas",
+   "_source": "the site's own earlier translations, 2026-09-07"
+  },
+  "Book a Ride": {
+   "zh": "预约用车",
+   "es": "Reservar un viaje",
+   "ko": "차량 예약",
+   "vi": "Đặt xe",
+   "ja": "配車を予約",
+   "fr": "Réserver un trajet",
+   "de": "Fahrt buchen",
+   "pt": "Reservar uma corrida",
+   "_source": "the site's own earlier translations, 2026-09-07"
+  }
+ }
+}
