@@ -26,6 +26,47 @@ MoMA: the building's own architecture (moma-3d.js).
 Seattle (seattle-3d.js): space-needle, pier66-walk. BOTH NOW MOUNTED on
 tours.html, each with its own camera.
 
+## MoMA, the next rebuild in the queue, and where its numbers are NOT
+
+Written 2026-09-08 by the landmark routine after Park Street was finished,
+with time left over and spent on the next item rather than on a guess. The
+rebuild queue's item 4 is the Met exterior and MoMA; MoMA is the weaker model
+by far, 196 lines that EXTRUDE the 2D floor plan's rooms rather than draw the
+53rd Street elevation, so it is the one worth doing. It was not built this run
+because the standard's first rule held: real published dimensions or do not
+build it, and none were found in the time available.
+
+DEAD ENDS, so the next run does not re-walk them:
+- `Museum_of_Modern_Art` wikitext, fetched raw, 115 KB: it is an INSTITUTION
+  article. The only building number in it is Taniguchi's 630,000 sq ft of
+  floor area, which is not an elevation. No storey count, no facade width, no
+  height, no bay module.
+- `11_West_53rd_Street`, `Museum_of_Modern_Art_(building)` and
+  `Abby_Aldrich_Rockefeller_Sculpture_Garden` all return a 1,954 byte HTML
+  error page to `action=raw`, which is what a NON-EXISTENT article looks like
+  through curl. There is no dedicated building article to mine.
+
+WHAT TO TRY NEXT, in this order:
+1. The NYC Landmarks Preservation Commission designation report. The Goodwin
+   and Stone facade of 1939 is a designated interior/exterior landmark and LPC
+   reports carry storey counts, bay modules, materials and lot dimensions in
+   prose. The LP number is not known here; find it, then the PDF is at
+   s-media.nyc.gov and `osascript -l JavaScript pdftext.js FILE.pdf` reads it,
+   as recorded in MODEL_STANDARD.md.
+2. The photograph route through the browser pane, which is OPEN and is written
+   up in full in MODEL_STANDARD.md under the American History entry. A
+   near-frontal 53rd Street elevation can be MEASURED in pixels against any
+   one published dimension to give every other one.
+3. MoMA's own press releases for the 2004 and 2019 openings, which published
+   gallery square footage and the atrium height.
+
+AND A PIECE OF PLUMBING BOTH ITEM 4 MODELS NEED FIRST. `trail-3d.js` resolves
+`window.TRAIL_FORMS` at DRAW time through `sceneFor()`, which is what lets a
+rebuild land as its own file without touching the 2,700 line host. Neither
+`met-3d.js` nor `moma-3d.js` has that hook: moma-3d.js ends at a plain
+`window.MOMA3D = api`. Add the same three line `sceneFor` indirection before
+building, or the rebuild has to be surgery on the host file.
+
 ## How to get dimensions here, learned the hard way
 
 Two techniques, both proven on 2026-09-01, worth trying BEFORE a search:

@@ -50,10 +50,19 @@
         host.className = (host.className ? host.className + " " : "") + "psx-galsearch";
         host.innerHTML =
             '<span class="gs-kicker">THE UNIVERSAL GALLERY</span>' +
-            '<input type="search" placeholder="Standing in front of something? A name, or the number on the label…"' +
+            /* The placeholder is short on purpose. The long invitation used to
+               live in here, and a placeholder cannot wrap: measured on a 375px
+               phone it was 498.5px of text in a 265.4px box, so 47% of it was
+               cut off and the half a visitor lost was the useful half, the one
+               that says you can type the number instead of the name. The whole
+               sentence now sits in the note below, which wraps, and the field
+               keeps only what fits the narrowest phone: 162.4px against the
+               210.4px a 320px screen offers. */
+            '<input type="search" placeholder="A name, or a number…"' +
             ' autocomplete="off" aria-label="Search any artwork">' +
             '<div class="gs-out"></div>' +
-            '<p class="gs-note">Any artwork, any museum. A number wins when you cannot spell the name.</p>';
+            '<p class="gs-note">Standing in front of something? Any artwork, any museum. ' +
+            'The number on the label wins when you cannot spell the name.</p>';
         var input = host.querySelector("input");
         var out = host.querySelector(".gs-out");
         var note = host.querySelector(".gs-note");
