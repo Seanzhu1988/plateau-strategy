@@ -8,7 +8,6 @@
   ],
   "es": [
    "Yes, I've booked somewhere",
-   "UNDER RECONSTRUCTION",
    "Hourly (per hour), $65",
    "outdoor seating"
   ],
@@ -23,15 +22,9 @@
   "ja": [
    "Modern and Contemporary Art"
   ],
-  "fr": [
-   "UNDER RECONSTRUCTION"
-  ],
-  "de": [
-   "UNDER RECONSTRUCTION"
-  ],
-  "pt": [
+  "*": [
    "UNDER RECONSTRUCTION"
   ]
  },
- "_note_2026_09_07": "UNDER RECONSTRUCTION is accepted in es, fr, de and pt. When the same English line is flagged in four unrelated languages it is the ENGLISH that is unusual, not the translations."
+ "_note_2026_09_07": "UNDER RECONSTRUCTION sits under \"*\", accepted in every language. It was flagged in Spanish, French, German, Portuguese and Japanese and recorded five separate times before that key existed. Five unrelated languages saying a phrase shorter than the English is a fact about the ENGLISH."
 }

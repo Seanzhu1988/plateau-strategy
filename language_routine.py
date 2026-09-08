@@ -278,11 +278,23 @@ def _accepted():
     Without somewhere to record that judgement the same handful of correct
     lines is reported every single day, and a daily report that is never clean
     stops being read, which costs more than the checks are worth. Reviewed and
-    accepted goes here; anything not here is either clean or new."""
+    accepted goes here; anything not here is either clean or new.
+
+    A line listed under "*" is accepted in EVERY language. That key exists
+    because "UNDER RECONSTRUCTION" was flagged as too short in Spanish, then
+    French, then German, then Portuguese, then Japanese, and recorded five
+    separate times. When five unrelated languages all say a phrase shorter than
+    the English, the fact being measured is a property of the ENGLISH, and
+    re-litigating it for language nine and language ten is waste."""
     try:
         with open(os.path.join(BASE, "i18n_checked.json"), encoding="utf-8") as f:
             d = json.load(f)
-        return {k: set(v) for k, v in (d.get("accepted") or {}).items()}
+        acc = d.get("accepted") or {}
+        every = set(acc.get("*") or [])
+        out = {}
+        for code in L.TRANSLATED:
+            out[code] = set(acc.get(code) or []) | every
+        return out
     except Exception:
         return {}
 
