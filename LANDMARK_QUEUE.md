@@ -26,6 +26,36 @@ MoMA: the building's own architecture (moma-3d.js).
 Seattle (seattle-3d.js): space-needle, pier66-walk. BOTH NOW MOUNTED on
 tours.html, each with its own camera.
 
+## The Met exterior, item 4's other half: a defect found by LOOKING, 2026-09-08
+
+Not fixed this run, and deliberately. The landmark routine rendered
+`met:closed` and `met:open` to judge whether met-3d.js needs the rebuild the
+queue lists, and both renders show the same thing:
+
+  THREE SKYLIGHT BANKS FLOATING IN THE SKY, high above and behind the Fifth
+  Avenue facade, attached to nothing, at a diagonal that belongs to a
+  different projection from the elevation under them.
+
+This is worth reading beside `met-3d.js` line 543, which says of the curb the
+banks stand on: "Without it the glass is drawn clear of the roof with nothing
+under it and reads as three planks hanging in the sky, which is what the first
+render of this model showed." The curb is in the code and the planks are still
+in the picture, so whatever was fixed then is not what is wrong now.
+
+The likely shape of it, from reading `build()`: the drawing is a HYBRID. The
+Fifth Avenue front is a flat elevation card, while the shell and its roof are
+drawn in the axonometric the interior floors use. `roof()` is pushed with
+`depth: 1e8`, so it paints LAST, over everything, while the shell body it
+belongs to is hidden behind the facade card. The curb boxes are presumably
+drawn correctly and simply land behind that card. That is a guess from the
+source and it is labelled a guess; the render is the fact.
+
+WHY IT WAS LEFT. The queue lists the Met exterior for a REBUILD to the model
+standard, not a patch, and a rushed edit to the graphic that fronts the whole
+Met section is worse than a defect written down. The next run that takes item
+4 starts with this in hand: render both states FIRST, and treat the depth
+given to `roof()` as the first suspect.
+
 ## MoMA, the next rebuild in the queue, and where its numbers are NOT
 
 Written 2026-09-08 by the landmark routine after Park Street was finished,
