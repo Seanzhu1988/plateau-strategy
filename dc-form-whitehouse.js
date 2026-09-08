@@ -61,7 +61,9 @@
  *   North Portico           42.8 ft wide, projects 17.0 ft
  *   South Portico           62.2 ft wide, projects 24.4 ft
  *   West Wing               104 x 100 ft, centre 309 ft west, 65 ft south
- *   West Colonnade          126 x 60 ft, height 7 m, centre 149 ft west
+ *   West Colonnade          the OSM way is 126 x 60 ft and height 7 m, but that
+ *                           polygon takes in the Rose Garden edge; the covered
+ *                           walk itself is drawn 14 ft wide
  *   State Ballroom site     265 x 328 ft, centre 218 ft east, 121 ft south
  *
  * ================= NAMED GAPS AND ONE DISAGREEMENT =================
@@ -80,8 +82,12 @@
  * rooms: a tall State Floor, a lower Second Floor, a cornice, an attic behind
  * the balustrade. Derived, and labelled as derived at each line below.
  *
- * COLUMN DIAMETER is not published. Taken as 4.5 ft, which is nine diameters
- * to the 42 ft shaft, the ordinary Ionic proportion.
+ * COLUMN DIAMETER is not published. Drawn at 6 ft, which is seven diameters to
+ * the 42 ft shaft. Nine diameters, 4.5 ft, is the textbook Ionic proportion and
+ * is what this file used first; at the size this map draws, 4.5 ft columns were
+ * hairlines nobody could pick out, so they were thickened deliberately. Stocky,
+ * on purpose, and said here rather than left as a header that disagrees with
+ * its own code.
  *
  * ================= WHAT A VISITOR ACTUALLY SEES IN 2026 =================
  *
@@ -100,6 +106,43 @@
  *
  * OSM STILL CARRIES AN "East Wing" POLYGON at the old position. It is stale.
  * It is deliberately not drawn.
+ *
+ * ================= WHAT AN ADVERSARIAL REVIEW CHANGED =================
+ *
+ * MODEL_STANDARD's rule is that the builder never certifies its own work, so an
+ * architecture critic was pointed at this file and told to refute it. It scored
+ * the first version 5 out of 10 and was right about all of this:
+ *
+ *   the North Portico had NO PEDIMENT. A prostyle tetrastyle front without one
+ *     is not this building, and the header named tetrastyle, prostyle, Ionic
+ *     and porte cochere without ever naming the pediment, so the omission
+ *     passed its own audit;
+ *   the central three bays' windows carried a HIGHER depth bias than the
+ *     columns, so the sashes painted across all four shafts;
+ *   the balustrade existed on TWO of four elevations, and hid nothing: the
+ *     band above the cornice measured 47 percent of the facade against about
+ *     20 on the real building;
+ *   the 1927 shed dormers were the same colour as the roof behind them and
+ *     only two feet of them cleared the rail, so a published, dated feature was
+ *     invisible in every render;
+ *   the lunette fanlight was on the SOUTH wall. The north/south sign error was
+ *     fixed everywhere except that one line, which is how that class of bug
+ *     survives a fix;
+ *   the east and west elevations were blank slabs;
+ *   the South Portico roof was a closed disc whose far half sat up over the hip
+ *     and read as a satellite dish;
+ *   the Truman Balcony, named in this header as the most photographed thing on
+ *     this side, was a 1 ft slab in the same colour as the string course it
+ *     landed on;
+ *   the carriage drive ran five feet clear of the portico and was buried under
+ *     the forecourt, so the porte cochere was asserted and not built;
+ *   and the header said the columns were 4.5 ft when the code drew 6.0.
+ *
+ * All of the above are fixed. What is NOT fixed and is worth someone's time:
+ * the West Wing and the Oval Office are blank boxes with no windows, the West
+ * Colonnade stops 46 ft short of the wing it is supposed to reach, and the
+ * segmental pediments are drawn as clipped trapezoids rather than shallow
+ * arches.
  */
 (function () {
   var H = (typeof window !== "undefined" && window.DC3D && window.DC3D.helpers) || null;
@@ -128,9 +171,12 @@
                                   dark, and is what a column silhouettes against */
     var GLASS   = "#4a5560";   /* window glass, dark enough to survive map scale */
     var SASH    = "#e8e4d8";   /* the painted frame around it */
-    var ROOFSL  = "#a49d90";   /* slate above the balustrade. Darker than this
-                                  and the roof, which is mostly hidden in life,
-                                  became the largest thing in the picture. */
+    var ROOFSL  = "#c2bbac";   /* slate above the balustrade. It has been darker
+                                  twice and both times the roof, which is mostly
+                                  hidden in life, became the largest thing in
+                                  the picture. Close to the wall tone on purpose. */
+    var DORMER  = "#e6e1d4";   /* the 1927 shed dormers, painted, not slate: at
+                                  the roof's own colour they vanished into it */
     var STONE_E = "#b8b1a1";   /* edges */
     var LAWN    = "#c7d2bb";
     var DRIVE   = "#ded8cb";
@@ -148,8 +194,10 @@
     var SEC   = 32;           /* derived: a tall State Floor, 22.3 ft */
     var CORN  = 52;           /* derived: Second Floor 20 ft, then the cornice */
     var CORNT = 56;           /* cornice slab 4 ft */
-    var BALT  = 62;           /* balustrade 6 ft, at the wall line */
-    var ATTIC = 65;           /* the 1927 third floor, set back behind it */
+    var BALT  = 64;           /* balustrade 8 ft, at the wall line. It was 6 and
+                                 the parapet hid nothing, which made a header
+                                 that says "the roofline is hidden" false. */
+    var ATTIC = 66;           /* the 1927 third floor, set back behind it */
     var ROOF  = TOP_FT;       /* 70 ft, published */
 
     /* ---------- plan, in feet from the centre of the residence ---------- */
@@ -199,23 +247,39 @@
        disappears at 900 pixels, which is checklist item 8. */
     /* +v is NORTH in the Mall's frame, which is the frame this whole file
        works in. The first version had both facades on the wrong side. */
-    function windowN(u, z0, wdt, hgt, pediment) {
+    function windowN(u, z0, wdt, hgt, pediment, back) {
       if (!ctx.faceVisible(0, 1)) return [];
-      var out = [], v = HD + 0.35;
-      out = out.concat(prism(u, v, wdt + 1.4, 0.7, wdt + 1.4, 0.7, z0 - 0.7, hgt + 1.4, SASH, NEAR + 40));
-      out = out.concat(prism(u, v + 0.2, wdt, 0.4, wdt, 0.4, z0, hgt, GLASS, NEAR + 41));
+      var out = [], v = HD + 0.35, BACK = back || 0;
+      out = out.concat(prism(u, v, wdt + 1.4, 0.7, wdt + 1.4, 0.7, z0 - 0.7, hgt + 1.4, SASH, NEAR + 40 + BACK));
+      out = out.concat(prism(u, v + 0.2, wdt, 0.4, wdt, 0.4, z0, hgt, GLASS, NEAR + 41 + BACK));
       if (pediment === "triangular") {
         /* tapered to a point: a real pediment silhouette at this scale */
         out = out.concat(prism(u, v + 0.2, wdt + 2.2, 0.5, 0.8, 0.5,
-                               z0 + hgt + 0.5, 2.6, TRIM, NEAR + 42));
+                               z0 + hgt + 0.5, 2.6, TRIM, NEAR + 42 + BACK));
       } else if (pediment === "segmental") {
         /* the shallower, rounder alternative: taper to half, not to a point */
         out = out.concat(prism(u, v + 0.2, wdt + 2.2, 0.5, wdt * 0.55, 0.5,
-                               z0 + hgt + 0.5, 1.8, TRIM, NEAR + 42));
+                               z0 + hgt + 0.5, 1.8, TRIM, NEAR + 42 + BACK));
       } else if (pediment === "flat") {
         out = out.concat(prism(u, v + 0.2, wdt + 2.0, 0.5, wdt + 2.0, 0.5,
-                               z0 + hgt + 0.5, 0.9, TRIM, NEAR + 42));
+                               z0 + hgt + 0.5, 0.9, TRIM, NEAR + 42 + BACK));
       }
+      return out;
+    }
+
+    /* THE END ELEVATIONS WERE BLANK. windowN early-returns unless the north
+       face shows and windowS unless the south does, so nothing at all was drawn
+       on the two ends, and every oblique view showed an 85 by 46 ft cream slab
+       with two string courses on it. Both ends are in shot from the Ellipse and
+       from Pennsylvania Avenue.
+       THE BAY COUNT ON THE ENDS IS NOT PUBLISHED. Five is inferred from the
+       north front's own rhythm: 168 ft over eleven bays is 15.27 ft, and 85 ft
+       6 in holds five and a half of those. Inferred, and said so here. */
+    function windowEnd(side, v, z0, wdt, hgt) {
+      if (!ctx.faceVisible(side, 0)) return [];
+      var out = [], u = side * (HW + 0.35);
+      out = out.concat(prism(u, v, 0.7, wdt + 1.4, 0.7, wdt + 1.4, z0 - 0.7, hgt + 1.4, SASH, NEAR + 40));
+      out = out.concat(prism(u + side * 0.2, v, 0.4, wdt, 0.4, wdt, z0, hgt, GLASS, NEAR + 41));
       return out;
     }
 
@@ -239,11 +303,16 @@
 
     /* the carriage drive under the North Portico, which is why the portico is
        a porte cochere and why the ground floor is hidden on that side */
-    items.push({ svg: ctx.poly([ctx.project(X(-190), Y(HD + 22), 0.20),
-                                ctx.project(X(190),  Y(HD + 22), 0.20),
-                                ctx.project(X(190),  Y(HD + 74), 0.20),
-                                ctx.project(X(-190), Y(HD + 74), 0.20)], DRIVE, STONE_E, 0.4),
-                 depth: -1e9 + 2 });
+    /* It ran from HD+22 to HD+74 at ground level, which is five feet clear of a
+       portico that ends at HD+17 and, worse, underneath the raised forecourt
+       that spans the same ground. So it was a detached pale rectangle nobody
+       could drive on. It now sits ON the forecourt and runs UNDER the portico,
+       which is the whole reason the portico is a porte cochere. */
+    items.push({ svg: ctx.poly([ctx.project(X(-190), Y(HD - 2), Z(NGRD) + 0.06),
+                                ctx.project(X(190),  Y(HD - 2), Z(NGRD) + 0.06),
+                                ctx.project(X(190),  Y(HD + 52), Z(NGRD) + 0.06),
+                                ctx.project(X(-190), Y(HD + 52), Z(NGRD) + 0.06)], DRIVE, STONE_E, 0.4),
+                 depth: NEAR + 6 });
 
     items.push(H.shadow(ctx, [[X(-HW), Y(-HD)], [X(HW), Y(-HD)],
                               [X(HW), Y(HD)], [X(-HW), Y(HD)]], Z(ROOF)));
@@ -280,19 +349,26 @@
        Floor and flat ones above. */
     for (var b = 0; b < BAYS; b++) {
       var u = -HW + BAYW * (b + 0.5);
+      /* The central three bays sit BEHIND the portico. Their windows carried a
+         higher bias than the columns, so the sashes painted across all four
+         shafts and the aprons buried the bases. Behind means behind. */
       var central = (b >= 4 && b <= 6);
+      var back = central ? -30 : 0;
       var ped = central ? "flat" : ((b % 2 === 0) ? "triangular" : "segmental");
       if (central && b === 5) {
-        /* the door, and the lunette fanlight over it */
-        items = items.concat(windowN(u, NGRD + 1.2, 7.0, 13.0, null));
-        if (ctx.faceVisible(0, -1)) {
-          items = items.concat(prism(u, -HD - 0.55, 7.6, 0.5, 3.2, 0.5,
-                                     NGRD + 14.6, 2.6, SASH, NEAR + 43));
+        /* the door, and the lunette fanlight over it. The fanlight was drawn
+           on the SOUTH wall until a critic found it hanging in the middle of
+           the Blue Room bow: the north/south sign error was fixed everywhere
+           except this one line, which is how that class of bug survives. */
+        items = items.concat(windowN(u, NGRD + 1.2, 7.0, 13.0, null, back));
+        if (ctx.faceVisible(0, 1)) {
+          items = items.concat(prism(u, HD + 0.55, 7.6, 0.5, 3.2, 0.5,
+                                     NGRD + 14.6, 2.6, SASH, NEAR + 9));
         }
       } else {
-        items = items.concat(windowN(u, STATE + 4.5, 6.2, 12.5, ped));
+        items = items.concat(windowN(u, STATE + 4.5, 6.2, 12.5, ped, back));
       }
-      items = items.concat(windowN(u, SEC + 4.0, 6.2, 9.5, "flat"));
+      items = items.concat(windowN(u, SEC + 4.0, 6.2, 9.5, "flat", back));
       /* the south front carries its own windows; the bow takes the middle */
       if (b < 4 || b > 6) {
         items = items.concat(windowS(u, SGRD + 2.5, 6.2, 6.0));
@@ -300,6 +376,16 @@
         items = items.concat(windowS(u, SEC + 4.0, 6.2, 9.5));
       }
     }
+
+    /* the five bays on each end, inferred from the north front's rhythm */
+    [-1, 1].forEach(function (side) {
+      for (var eb = 0; eb < 5; eb++) {
+        var ev = -HD + (HD * 2) * ((eb + 0.5) / 5);
+        items = items.concat(windowEnd(side, ev, SGRD + 2.5, 6.2, 6.0));
+        items = items.concat(windowEnd(side, ev, STATE + 4.5, 6.2, 12.5));
+        items = items.concat(windowEnd(side, ev, SEC + 4.0, 6.2, 9.5));
+      }
+    });
 
     /* ================= 4. the North Portico, 1830 ================= */
     /* Four columns, published as tetrastyle, prostyle so they stand in one
@@ -314,8 +400,10 @@
          render showed: four white sticks nobody could pick out. Its bias is
          BELOW the columns' own, because the second render put the shade in
          front of them and painted the portico out entirely. */
-      items = items.concat(prism(0, HD + NP_OUT / 2 + 0.5, NP_W + 2, NP_OUT - 1,
-                                 NP_W + 2, NP_OUT - 1, NGRD, CORN - NGRD,
+      /* it ends at v = HD + 12, half a foot BEHIND the column faces at 12.5,
+         so the columns stand clear of it instead of being embedded in it */
+      items = items.concat(prism(0, HD + 6.5, NP_W + 2, 11,
+                                 NP_W + 2, 11, NGRD, CORN - NGRD,
                                  PORTE, NEAR + 15));
       var npv = HD + NP_OUT - COL_D * 0.75;        /* the column row, on the NORTH */
       for (var c = 0; c < 4; c++) {
@@ -337,6 +425,15 @@
       }
       items = items.concat(prism(0, HD + NP_OUT / 2, NP_W + 9, NP_OUT + 2,
                                  NP_W + 9, NP_OUT + 2, CORNT + 4.9, 0.8, TRIM, NEAR + 63));
+      /* THE PEDIMENT. A prostyle tetrastyle front with no pediment is not this
+         building, and the first version had none: the header named
+         "tetrastyle", "prostyle", "Ionic" and "porte cochere" and never named
+         the pediment, so the omission passed its own audit. Low pitched, plain
+         tympanum, sitting on the entablature over the four columns. */
+      items = items.concat(prism(0, HD + NP_OUT / 2, NP_W + 11, NP_OUT + 3,
+                                 NP_W + 11, NP_OUT + 3, CORNT + 5.7, 1.1, TRIM, NEAR + 64));
+      items = items.concat(prism(0, HD + NP_OUT / 2, NP_W + 9, NP_OUT + 2,
+                                 3.0, NP_OUT + 2, CORNT + 6.8, 7.5, PAINT, NEAR + 65));
     }
 
     /* ================= 5. the South Portico, 1824 ================= */
@@ -374,13 +471,28 @@
          objection and now the most photographed thing on this side. It sits
          INSIDE the ring of columns, which is why its radius is smaller than
          theirs: drawn wider, it painted the columns out. */
-      items = items.concat(atDepth(H.ngon(ctx, X(0), Y(BOWC), W(R - 3.0), Z(SEC - 1.0),
-                                  Z(1.0), 12, TRIM, STONE_E), NEAR + 18));
+      /* Named in the header as "the most photographed thing on this side" and
+         then drawn as a 1 ft slab in TRIM, landing exactly on the TRIM string
+         course at SEC, so it disappeared into it. Thicker, its own tone, and a
+         band of shade underneath, which is the strongest horizontal here. */
+      items = items.concat(atDepth(H.ngon(ctx, X(0), Y(BOWC), W(R - 2.2), Z(SEC - 2.4),
+                                  Z(0.9), 12, SHADOW, STONE_E), NEAR + 17));
+      items = items.concat(atDepth(H.ngon(ctx, X(0), Y(BOWC), W(R - 2.2), Z(SEC - 1.5),
+                                  Z(1.5), 12, COLUMN, STONE_E), NEAR + 18));
       for (var tb = 0; tb <= 7; tb++) {
         var ta = Math.PI * (0.12 + 0.76 * (tb / 7));
         items = items.concat(prism((R - 3.0) * Math.cos(ta) * -1,
                                    BOWC - (R - 3.0) * Math.sin(ta),
                                    1.3, 1.3, 1.3, 1.3, SEC, 3.4, PAINT, NEAR + 19));
+      }
+
+      /* the Blue Room windows. A bow with no openings is a drum. */
+      for (var bw = 0; bw < 3; bw++) {
+        var ba = Math.PI * (0.28 + 0.44 * (bw / 2));
+        var bwu = -(R - 6) * Math.cos(ba), bwv = BOWC - (R - 6) * Math.sin(ba);
+        items = items.concat(prism(bwu, bwv, 6.6, 6.6, 6.6, 6.6, STATE + 3.5, 14.5, SASH, NEAR + 13.4));
+        items = items.concat(prism(bwu, bwv, 5.4, 5.4, 5.4, 5.4, STATE + 4.0, 13.5, GLASS, NEAR + 13.5));
+        items = items.concat(prism(bwu, bwv, 5.0, 5.0, 5.0, 5.0, SEC + 4.0, 9.0, GLASS, NEAR + 13.6));
       }
 
       /* SIX Ionic columns, published, stepping out and around the bow */
@@ -401,8 +513,19 @@
       });
 
       /* the portico roof, and the balustrade on it */
-      items = items.concat(atDepth(H.ngon(ctx, X(0), Y(BOWC), W(R + 2.2), Z(CORN),
-                                  Z(CORNT - CORN), 12, TRIM, STONE_E), NEAR + 30));
+      /* THE SOUTH HALF ONLY. Drawn as a closed twelve sided disc, its northern
+         half projected up over the dark hip and read as a drum lid sitting on
+         the roof: the single most conspicuous artifact in the model. The
+         balusters above it were already an arc; the roof is one now too. */
+      for (var pr = 0; pr < 9; pr++) {
+        var pa0 = Math.PI * (0.04 + 0.92 * (pr / 9));
+        var pa1 = Math.PI * (0.04 + 0.92 * ((pr + 1) / 9));
+        var pmu = -(R + 1.1) * Math.cos((pa0 + pa1) / 2);
+        var pmv = BOWC - (R + 1.1) * Math.sin((pa0 + pa1) / 2);
+        var seg = (R + 2.2) * Math.PI * 0.92 / 9;
+        items = items.concat(prism(pmu, pmv, seg * 1.15, 4.6, seg * 1.15, 4.6,
+                                   CORN, CORNT - CORN, TRIM, NEAR + 30 + pr * 0.01));
+      }
       for (var sb = 0; sb <= 8; sb++) {
         var sa = Math.PI * (0.08 + 0.84 * (sb / 8));
         items = items.concat(prism((R + 1.0) * Math.cos(sa) * -1,
@@ -416,11 +539,19 @@
        1927 third floor with its long shed dormers, published. Drawing a flat
        top here would fail checklist item 4 on a building whose roofline is
        one of its most recognisable things. */
-    var BALN = 26;
+    /* All FOUR elevations. It ran along the north and south only, so every
+       three quarter view showed a bare cornice slab on the ends with the attic
+       block standing behind it. */
+    var BALN = 26, BALE = 13;
     for (var i = 0; i <= BALN; i++) {
       var bu = -HW + (HW * 2) * (i / BALN);
       items = items.concat(prism(bu, -HD - 1.0, 1.6, 1.6, 1.6, 1.6, CORNT, BALT - CORNT, PAINT, NEAR + 10));
       items = items.concat(prism(bu, HD + 1.0, 1.6, 1.6, 1.6, 1.6, CORNT, BALT - CORNT, PAINT, NEAR + 10));
+    }
+    for (var ie = 1; ie < BALE; ie++) {
+      var bv = -HD + (HD * 2) * (ie / BALE);
+      items = items.concat(prism(-HW - 1.0, bv, 1.6, 1.6, 1.6, 1.6, CORNT, BALT - CORNT, PAINT, NEAR + 10));
+      items = items.concat(prism(HW + 1.0, bv, 1.6, 1.6, 1.6, 1.6, CORNT, BALT - CORNT, PAINT, NEAR + 10));
     }
     items = items.concat(prism(0, 0, HW * 2 + 3.4, 2.0, HW * 2 + 3.4, 2.0, BALT, 1.0, TRIM, NEAR + 11));
     items = items.concat(prism(0, 0, HW * 2 + 3.4, HD * 2 + 3.4, HW * 2 + 3.4, HD * 2 + 3.4,
@@ -431,16 +562,29 @@
     items = items.concat(prism(0,  HD + 1.0, HW * 2 + 3, 2.6, HW * 2 + 3, 2.6, BALT, 1.0, TRIM, NEAR + 12));
 
     /* the attic storey, set back behind the balustrade */
-    items = items.concat(prism(0, 0, HW * 2 - 12, HD * 2 - 12, HW * 2 - 12, HD * 2 - 12,
+    items = items.concat(prism(0, 0, HW * 2 - 30, HD * 2 - 22, HW * 2 - 30, HD * 2 - 22,
                                CORNT, ATTIC - CORNT, PAINT_D, NEAR + 13));
     /* the shed dormers: one long run each side, which is what 1927 added */
-    items = items.concat(prism(0, -HD + 11, HW * 2 - 26, 5, HW * 2 - 26, 5,
-                               ATTIC - 5.5, 5.5, ROOFSL, NEAR + 14));
-    items = items.concat(prism(0,  HD - 11, HW * 2 - 26, 5, HW * 2 - 26, 5,
-                               ATTIC - 5.5, 5.5, ROOFSL, NEAR + 14));
+    /* Published, dated, and invisible in the first three renders: they were
+       ROOFSL against a ROOFSL roof and only two feet of them cleared the rail.
+       Painted, taller, and with their window band dark enough to read. */
+    [-1, 1].forEach(function (sd) {
+      items = items.concat(prism(0, sd * (HD - 10), HW * 2 - 24, 5.5, HW * 2 - 24, 5.5,
+                                 ATTIC - 8.5, 8.5, DORMER, NEAR + 14));
+      /* discrete panes, not one long strip. Drawn as a single 134 ft ribbon it
+         read from above as a dark stripe painted across the roof, which is the
+         opposite of what a run of dormers looks like. */
+      for (var dw = 0; dw < 9; dw++) {
+        var du = -(HW - 16) + (HW - 16) * 2 * (dw / 8);
+        items = items.concat(prism(du, sd * (HD - 10) + sd * 0.5, 7.5, 0.5, 7.5, 0.5,
+                                   ATTIC - 6.6, 4.0, GLASS, NEAR + 15));
+      }
+      items = items.concat(prism(0, sd * (HD - 10), HW * 2 - 22, 6.4, HW * 2 - 22, 6.4,
+                                 ATTIC, 0.7, TRIM, NEAR + 16));
+    });
     /* the hip roof over the attic, tapered so the top is not a flat plate */
-    items = items.concat(prism(0, 0, HW * 2 - 14, HD * 2 - 14, HW * 2 - 40, HD * 2 - 30,
-                               ATTIC, ROOF - ATTIC, ROOFSL, NEAR + 15));
+    items = items.concat(prism(0, 0, HW * 2 - 30, HD * 2 - 22, HW * 2 - 52, HD * 2 - 34,
+                               ATTIC, ROOF - ATTIC, ROOFSL, NEAR + 17));
     /* chimneys, which the house has and a lid does not */
     [-58, -20, 20, 58].forEach(function (cu2) {
       items = items.concat(prism(cu2, 0, 4.5, 4.5, 4.5, 4.5, ROOF - 1, 7, PAINT_D, NEAR + 16));
@@ -470,20 +614,20 @@
        2025 and the State Ballroom is going up in its place, on a footprint
        OSM traces at 265 by 328 ft, larger than the house it stands beside.
        Drawn as fence, pad and frame, because that is what is there. */
-    items.push({ svg: ctx.poly([ctx.project(X(85), Y(-285), 0.30),
+    items.push({ svg: ctx.poly([ctx.project(X(102), Y(-285), 0.30),
                                 ctx.project(X(350), Y(-285), 0.30),
                                 ctx.project(X(350), Y(43),  0.30),
-                                ctx.project(X(85),  Y(43),  0.30)], DIRT, STONE_E, 0.4),
+                                ctx.project(X(102),  Y(43),  0.30)], DIRT, STONE_E, 0.4),
                  depth: -1e9 + 3 });
     /* the hoarding around it */
     for (var f = 0; f <= 16; f++) {
-      var fu = 85 + (350 - 85) * (f / 16);
+      var fu = 102 + (350 - 102) * (f / 16);
       items = items.concat(prism(fu, 43, 3, 1.2, 3, 1.2, 0.3, 9, FENCE, NEAR + 30));
       items = items.concat(prism(fu, -285, 3, 1.2, 3, 1.2, 0.3, 9, FENCE, NEAR + 30));
     }
     for (var f2 = 0; f2 <= 18; f2++) {
       var fv = -285 + (43 + 285) * (f2 / 18);
-      items = items.concat(prism(85, fv, 1.2, 3, 1.2, 3, 0.3, 9, FENCE, NEAR + 30));
+      items = items.concat(prism(102, fv, 1.2, 3, 1.2, 3, 0.3, 9, FENCE, NEAR + 30));
       items = items.concat(prism(350, fv, 1.2, 3, 1.2, 3, 0.3, 9, FENCE, NEAR + 30));
     }
     /* The steel frame. Reported in August 2026 as "framing assembled for the
