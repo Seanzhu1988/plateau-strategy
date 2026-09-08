@@ -694,6 +694,124 @@
      ]
     }
    ]
+  },
+  {
+   "id": "mount-rushmore",
+   "city": "keystone",
+   "name": "Mount Rushmore",
+   "summary": "Eight stops around the memorial in walking order, from the Avenue of Flags to the base of the carving and back up past Borglum's studio. Under a mile on paved path, with 422 stairs on one side of the loop. No entrance fee, but parking is a concession charge and the America the Beautiful pass does not cover it.",
+   "stops": [
+    {
+     "name": "Avenue of Flags",
+     "lat": 43.87676,
+     "lon": -103.45553,
+     "inside_min": 10,
+     "desc": "Fifty six flags: fifty states, one district, three territories and two commonwealths. Put up in 1976 for the Bicentennial, at a visitor's suggestion. Walk between them and the faces are framed at the far end.",
+     "yiki": "Find your own flag on the way in. They are in alphabetical order, and the avenue is the one place at this memorial designed to be walked down rather than stood at.",
+     "n": 1,
+     "est": true,
+     "walk_m_from_prev": 0,
+     "walk_min_from_prev": 0,
+     "book_slug": null
+    },
+    {
+     "name": "Grand View Terrace",
+     "lat": 43.87702,
+     "lon": -103.45613,
+     "inside_min": 15,
+     "desc": "The head-on view, and the one on every postcard. Each face is sixty feet from chin to hairline. Washington's is the only one carved with any detail below the chin, because the money ran out.",
+     "yiki": "The plan was heads to the waist. What stopped it was funding, not design, so what you are looking at is an unfinished sculpture that everyone has agreed to treat as finished.",
+     "n": 2,
+     "est": true,
+     "walk_m_from_prev": 56,
+     "walk_min_from_prev": 1,
+     "book_slug": "mount-rushmore",
+     "photos": [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Mount_Rushmore_detail_view_(100_MP).jpg?width=1280"
+     ]
+    },
+    {
+     "name": "Lincoln Borglum Visitor Center",
+     "lat": 43.87715,
+     "lon": -103.45612,
+     "inside_min": 30,
+     "desc": "The museum under the terrace, named for the sculptor's son, who took over when his father died in March 1941 and finished the carving that October. Free.",
+     "yiki": "Go here before the trail, not after. The film and the models explain what you are about to walk under, and the trail is better when you know what the drill marks are.",
+     "n": 3,
+     "est": true,
+     "walk_m_from_prev": 14,
+     "walk_min_from_prev": 1,
+     "book_slug": null
+    },
+    {
+     "name": "Presidential Trail",
+     "lat": 43.87718,
+     "lon": -103.45741,
+     "inside_min": 40,
+     "desc": "A 0.6 mile paved loop from the Grand View Terrace that takes you to the base of the mountain. The section down toward the Sculptor's Studio is 422 stairs, so the loop is one way round if steps are a problem.",
+     "yiki": "Walk it counter-clockwise. That puts the stairs going down rather than up, and it saves the closest viewpoint for last.",
+     "n": 4,
+     "est": true,
+     "walk_m_from_prev": 103,
+     "walk_min_from_prev": 1,
+     "book_slug": null
+    },
+    {
+     "name": "Under the faces",
+     "lat": 43.87763,
+     "lon": -103.45887,
+     "inside_min": 15,
+     "desc": "The closest the public gets. From directly underneath the proportions stop working and you see it as what it is: a mountain with 450,000 tons blasted off it, about nine tenths of that by dynamite.",
+     "yiki": "Look for the talus, the rubble field below the carving. It was never cleared, and it is every ton that came off the faces, still lying where it fell.",
+     "n": 5,
+     "est": true,
+     "walk_m_from_prev": 127,
+     "walk_min_from_prev": 2,
+     "book_slug": null
+    },
+    {
+     "name": "Lakota, Nakota and Dakota Heritage Village",
+     "lat": 43.87729,
+     "lon": -103.45417,
+     "inside_min": 25,
+     "desc": "On the Nature Trail below the studio. The Black Hills were granted to the Lakota in perpetuity by the 1868 Treaty of Fort Laramie and taken back after 1876. The mountain's older name is Tȟuŋkášila Šákpe, the Six Grandfathers.",
+     "yiki": "In 1980 the Supreme Court ruled the Sioux had never received just compensation for the Black Hills. The award has been refused and sits uncollected, because taking it would be accepting payment for land never agreed to be sold.",
+     "n": 6,
+     "est": true,
+     "walk_m_from_prev": 379,
+     "walk_min_from_prev": 5,
+     "book_slug": null
+    },
+    {
+     "name": "Sculptor's Studio",
+     "lat": 43.8785,
+     "lon": -103.45464,
+     "inside_min": 20,
+     "desc": "Gutzon Borglum's working studio, with the plaster model the carving was measured from. Ranger talks run here through the season.",
+     "yiki": "The model is one twelfth scale. Every point on the mountain was transferred from it by a pointing machine, a boom and a plumb line, which is how you carve a face sixty feet tall and get the eyes right.",
+     "n": 7,
+     "est": true,
+     "walk_m_from_prev": 140,
+     "walk_min_from_prev": 2,
+     "book_slug": null
+    },
+    {
+     "name": "Evening Lighting Ceremony",
+     "lat": 43.87733,
+     "lon": -103.45645,
+     "inside_min": 45,
+     "desc": "In the amphitheater below the terrace, nightly from the Friday of Memorial Day weekend to the end of September. It is the best attended ranger programme in the entire National Park Service.",
+     "yiki": "Come back for it rather than trying to fit it into the same visit. The faces lit against a dark mountain are a different sight from the daytime one, and the amphitheater fills early in July and August.",
+     "n": 8,
+     "est": true,
+     "walk_m_from_prev": 195,
+     "walk_min_from_prev": 3,
+     "book_slug": null
+    }
+   ],
+   "length_m": 1014,
+   "walk_min_total": 15,
+   "inside_min_total": 200
   }
  ]
 }

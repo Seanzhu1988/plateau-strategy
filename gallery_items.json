@@ -244,6 +244,228 @@
    "script": "gallery_scripts/native-veterans-memorial.txt",
    "teaser": "Congress approved it in 1994 and nobody built it for twenty six years, and the cloths tied to the four lances were put there by visitors, who are invited to add one.",
    "minutes": 3
+  },
+  "si-nmah:greensboro-lunch-counter": {
+   "title": "The Greensboro Lunch Counter",
+   "artist": "F. W. Woolworth Company store fittings",
+   "date": "1960",
+   "museum": "National Museum of American History",
+   "city": "Washington",
+   "item_number": "",
+   "where": "Unity Square, second floor, west wing",
+   "script": "gallery_scripts/greensboro-lunch-counter.txt",
+   "teaser": "The first Black customers served here were the store's own cooks, told to bring dressy clothes to work and change out of their uniforms first.",
+   "minutes": 4,
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Greensboro_sit-in_counter.jpg?width=1100"
+   ],
+   "source_url": "https://americanhistory.si.edu/explore/exhibitions/greensboro-lunch-counter"
+  },
+  "si-nmnh:USNM555000": {
+   "title": "The Nation's T. rex",
+   "artist": "Tyrannosaurus rex, found by Kathy Wankel, Montana",
+   "date": "about 66 million years old, found 1988",
+   "museum": "National Museum of Natural History",
+   "city": "Washington",
+   "item_number": "USNM 555000",
+   "where": "The David H. Koch Hall of Fossils, Deep Time, ground floor",
+   "script": "gallery_scripts/nations-t-rex.txt",
+   "teaser": "It came out of the ground with the first complete Tyrannosaurus arm anybody had ever found, and the cast pieces on the mount are a different shade on purpose so you can see how much of it is real.",
+   "minutes": 5,
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Tyrannosaurus_rex_at_the_Smithsonian_NMNH.jpg?width=1100",
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Original_Wankel_rex.jpg?width=1100"
+   ],
+   "source_url": "https://naturalhistory.si.edu/explore/dinosaurs-fossils/nations-t-rex"
+  },
+  "nga:1942.9.97": {
+   "title": "Woman Holding a Balance",
+   "artist": "Johannes Vermeer",
+   "date": "about 1664",
+   "museum": "National Gallery of Art",
+   "city": "Washington",
+   "item_number": "1942.9.97",
+   "where": "West Building, main floor, the Dutch galleries",
+   "script": "gallery_scripts/woman-holding-a-balance.txt",
+   "teaser": "Everyone is told she is weighing gold. Look at the pans. They are empty, and that is the whole painting.",
+   "minutes": 3,
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Johannes_Vermeer_-_Woman_Holding_a_Balance_-_Google_Art_Project.jpg?width=1100"
+   ],
+   "source_url": "https://www.nga.gov/artworks/1236-woman-holding-balance"
+  },
+  "si-air:A19280021000": {
+   "title": "Spirit of St. Louis",
+   "artist": "Ryan Airlines, designed by Donald Hall with Charles Lindbergh",
+   "date": "1927",
+   "museum": "National Air and Space Museum",
+   "city": "Washington",
+   "item_number": "A19280021000",
+   "where": "National Air and Space Museum, National Mall. Galleries reopened in stages after the renovation and this aircraft has moved, so check the map at the door.",
+   "script": "gallery_scripts/spirit-of-st-louis.txt",
+   "teaser": "Walk to the nose and look for the windshield. There isn't one. He crossed the Atlantic seeing only out the side windows.",
+   "minutes": 3,
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Spirit_of_St._Louis.jpg?width=1100"
+   ],
+   "source_url": "https://airandspace.si.edu/collection-objects/ryan-nyp-spirit-st-louis-charles-lindbergh/nasm_A19280021000"
+  },
+  "si-nmaahc:SC.0031": {
+   "title": "Southern Railway Car No. 1200",
+   "artist": "Built by Pullman, partitioned by Southern Railway",
+   "date": "1922, converted 1940",
+   "museum": "National Museum of African American History and Culture",
+   "city": "Washington",
+   "item_number": "SC.0031",
+   "where": "Defending Freedom, Defining Freedom: Era of Segregation, history galleries, Concourse level 2",
+   "script": "gallery_scripts/southern-railway-car-1200.txt",
+   "teaser": "The segregated car you walk through. Pullman built it in 1922 with no partition, somebody welded that wall in eighteen years later, and two 500 ton cranes lowered it into this building three years before there were walls to stop them.",
+   "minutes": 3,
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Men%E2%80%99s_restroom_and_smoking_lounge_in_a_Southern_Railway_Company_car_at_the_National_Museum_of_African_American_History_and_Culture.jpg?width=1100"
+   ],
+   "source_url": "https://nmaahc.si.edu/object/nmaahc_SC.0031"
+  },
+  "si-nmnh:A21128": {
+   "title": "The African Bush Elephant in the Rotunda",
+   "artist": "Mounted by William L. Brown with Norman Deaton; hide donated by Josef Fenykovi",
+   "date": "shot November 1955, unveiled March 1959",
+   "museum": "National Museum of Natural History",
+   "city": "Washington",
+   "item_number": "A21128",
+   "where": "The Rotunda, ground floor, straight ahead from the National Mall entrance",
+   "script": "gallery_scripts/rotunda-elephant.txt",
+   "teaser": "The tusks you are looking at are fiberglass, the real ones weigh ninety three pounds each, and the taxidermist went to the National Zoo to watch live elephants so he could get the walk right.",
+   "minutes": 5,
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/The_iconic_African_elephant_specimen_at_the_center_of_the_Smithsonian_National_Museum_of_Natural_History.jpg?width=1100",
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Unveiling_of_F%C3%A9nyk%C3%B6vi_Elephant_%288723821786%29.jpg?width=1100"
+   ],
+   "source_url": "https://naturalhistory.si.edu/exhibits/african-bush-elephant"
+  },
+  "si-hmsg:belief-doubt": {
+   "title": "Belief+Doubt",
+   "artist": "Barbara Kruger",
+   "date": "2012",
+   "museum": "Hirshhorn Museum and Sculpture Garden",
+   "city": "Washington",
+   "item_number": "belief-doubt",
+   "where": "Lower level. Ride the escalator down from the lobby. It covers the walls, the floor and the escalator sides, and runs on into the bookstore. Free, no ticket.",
+   "script": "gallery_scripts/belief-and-doubt.txt",
+   "teaser": "The largest artwork in the building is the one everyone walks over on the way to the bathrooms, and it is asking who is beyond the law.",
+   "minutes": 3
+  },
+  "si-nmai:prism-window": {
+   "title": "The Prism Window, Potomac Atrium",
+   "artist": "Charles Ross; design by Johnpaul Jones (Cherokee/Choctaw), from an idea of Donna House (Navajo/Oneida)",
+   "date": "2004",
+   "museum": "National Museum of the American Indian",
+   "city": "Washington",
+   "item_number": "prism-window",
+   "where": "The Potomac, the round atrium just inside the east entrance. The window is in the south wall, on your right as you come in.",
+   "script": "gallery_scripts/nmai-prism-window.txt",
+   "teaser": "Eight prisms in the south wall throw the spectrum in stacked bands across the atrium floor, and it only happens near the middle of a clear day.",
+   "minutes": 3,
+   "source_url": "https://www.si.edu/newsdesk/factsheets/national-museum-american-indian-national-mall"
+  },
+  "si-nmah:1199660": {
+   "title": "Abraham Lincoln's Top Hat",
+   "artist": "J. Y. Davis, hatter, Washington",
+   "date": "worn 14 April 1865",
+   "museum": "National Museum of American History",
+   "city": "Washington",
+   "item_number": "1199660",
+   "where": "The American Presidency: A Glorious Burden. Take a floor map at the door and go straight to it.",
+   "script": "gallery_scripts/lincoln-top-hat.txt",
+   "teaser": "The Smithsonian was given it in 1867 and ordered its own staff never to show it or speak of it. The public did not see the hat again for twenty six years.",
+   "minutes": 4,
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Lincoln%27s%2Bhat.jpg?width=1100"
+   ],
+   "source_url": "https://americanhistory.si.edu/collections/object/nmah_1199660"
+  },
+  "nga:1977.76.1": {
+   "title": "Untitled (the Calder mobile)",
+   "artist": "Alexander Calder",
+   "date": "1976",
+   "museum": "National Gallery of Art",
+   "city": "Washington",
+   "item_number": "1977.76.1",
+   "where": "East Building, hanging in the atrium",
+   "script": "gallery_scripts/calder-untitled-mobile.txt",
+   "teaser": "Seventy six feet across and it weighs about as much as a motorcycle. In the steel Calder actually wanted, it would have weighed three tons and never moved.",
+   "minutes": 4,
+   "copyright": true,
+   "source_url": "https://www.nga.gov/artworks/56517-untitled"
+  },
+  "si-nmaahc:2013.57": {
+   "title": "Cabin from Point of Pines Plantation",
+   "artist": "Built by enslaved carpenters, Edisto Island, South Carolina",
+   "date": "1853",
+   "museum": "National Museum of African American History and Culture",
+   "city": "Washington",
+   "item_number": "2013.57",
+   "where": "Slavery and Freedom, history galleries, Concourse level 3, the lowest floor",
+   "script": "gallery_scripts/point-of-pines-cabin.txt",
+   "teaser": "Sixteen feet by twenty, with nine to twelve people sleeping in the loft. It is not a reconstruction, and families were still living in it in the 1980s.",
+   "minutes": 3,
+   "source_url": "https://www.si.edu/object/nmaahc_2013.57"
+  },
+  "si-hmsg:66.4340": {
+   "title": "The Burghers of Calais",
+   "artist": "Auguste Rodin",
+   "date": "1884-1889",
+   "museum": "Hirshhorn Museum and Sculpture Garden",
+   "city": "Washington",
+   "item_number": "66.4340",
+   "where": "Hirshhorn Sculpture Garden, across Jefferson Drive from the museum building. The garden has been closed for a four-year rebuild and reopens 31 October 2026, with the Burghers among the works going back out. Free, no ticket.",
+   "script": "gallery_scripts/burghers-of-calais.txt",
+   "teaser": "Six men walking out to what they think is their execution, and Rodin refused to give them a hero, a pedestal, or a front to photograph.",
+   "minutes": 3
+  },
+  "si-nmai:americans-tomahawk": {
+   "title": "Tomahawk Missile, in Americans",
+   "artist": "United States Navy",
+   "date": "on view since 2018",
+   "museum": "National Museum of the American Indian",
+   "city": "Washington",
+   "item_number": "americans-tomahawk",
+   "where": "Americans, the central gallery titled Indians Everywhere, third floor. Free, no ticket.",
+   "script": "gallery_scripts/americans-tomahawk.txt",
+   "teaser": "A real flight test cruise missile carrying a Powhatan word, in the same room as the exhibition's Pocahontas gallery, and the curators refuse to tell you whether that is honor or trophy taking.",
+   "minutes": 4,
+   "source_url": "https://www.si.edu/exhibitions/americans-event-exhib-6183"
+  },
+  "si-nmah:julia-childs-kitchen": {
+   "title": "Julia Child's Kitchen",
+   "artist": "Designed by Paul Cushing Child",
+   "date": "1961",
+   "museum": "National Museum of American History",
+   "city": "Washington",
+   "item_number": "julia-childs-kitchen",
+   "where": "Food: Transforming the American Table, first floor, east wing. Walk the whole glass circuit, not just the first window.",
+   "script": "gallery_scripts/julia-childs-kitchen.txt",
+   "teaser": "Her husband drew the outline of every pot on the pegboard, and built the counters two inches tall because she was six foot two.",
+   "minutes": 3,
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Julia_Child's_kitchen_at_the_Smithsonian_-_13729507563.jpg?width=1100"
+   ]
+  },
+  "si-air:A19510007000": {
+   "title": "Bell X-1 Glamorous Glennis",
+   "artist": "Bell Aircraft Corporation",
+   "date": "1946",
+   "museum": "National Air and Space Museum",
+   "city": "Washington",
+   "item_number": "A19510007000",
+   "where": "Boeing Milestones of Flight Hall, the main entrance hall",
+   "script": "gallery_scripts/bell-x-1.txt",
+   "teaser": "The last problem before the sound barrier was a door. With two broken ribs Yeager could not pull the hatch shut, so they cut down a broom handle.",
+   "minutes": 3,
+   "images": [
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Bell_X-1_color.jpg?width=1100"
+   ],
+   "source_url": "https://airandspace.si.edu/collection-objects/bell-x-1-glamorous-glennis/nasm_A19510007000"
   }
  }
 }

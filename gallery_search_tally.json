@@ -17,19 +17,19 @@
 },
 "wright flyer": {
 "q": "wright flyer",
-"count": 5,
+"count": 7,
 "first": 1788618840,
-"hits": 5,
+"hits": 7,
 "misses": 0,
-"last": 1788706068
+"last": 1788756458
 },
 "hope diamond": {
 "q": "hope diamond",
-"count": 10,
+"count": 14,
 "first": 1788618843,
-"hits": 10,
+"hits": 14,
 "misses": 0,
-"last": 1788727617
+"last": 1788824867
 },
 "nighthawks": {
 "q": "nighthawks",
@@ -97,11 +97,11 @@
 },
 "test": {
 "q": "test",
-"count": 2,
+"count": 5,
 "first": 1788713250,
-"hits": 2,
+"hits": 5,
 "misses": 0,
-"last": 1788731270
+"last": 1788792409
 },
 "ginevra de' benci": {
 "q": "Ginevra de' Benci",
@@ -185,11 +185,11 @@
 },
 "hirshhorn": {
 "q": "Hirshhorn",
-"count": 1,
+"count": 2,
 "first": 1788731292,
-"hits": 1,
+"hits": 2,
 "misses": 0,
-"last": 1788731292
+"last": 1788781659
 },
 "mark bradford": {
 "q": "Mark Bradford",
@@ -230,5 +230,357 @@
 "hits": 1,
 "misses": 0,
 "last": 1788734864
+},
+"greensboro lunch counter": {
+"q": "Greensboro lunch counter",
+"count": 1,
+"first": 1788738453,
+"hits": 1,
+"misses": 0,
+"last": 1788738453
+},
+"nation's t. rex": {
+"q": "Nation's T. rex",
+"count": 1,
+"first": 1788745667,
+"hits": 1,
+"misses": 0,
+"last": 1788745667
+},
+"wankel rex": {
+"q": "wankel rex",
+"count": 1,
+"first": 1788745668,
+"hits": 1,
+"misses": 0,
+"last": 1788745668
+},
+"usnm 555000": {
+"q": "USNM 555000",
+"count": 1,
+"first": 1788745668,
+"hits": 1,
+"misses": 0,
+"last": 1788745668
+},
+"tyrannosaurus": {
+"q": "tyrannosaurus",
+"count": 1,
+"first": 1788745669,
+"hits": 1,
+"misses": 0,
+"last": 1788745669
+},
+"woman holding a balance": {
+"q": "Woman Holding a Balance",
+"count": 1,
+"first": 1788749220,
+"hits": 1,
+"misses": 0,
+"last": 1788749220
+},
+"vermeer": {
+"q": "Vermeer",
+"count": 1,
+"first": 1788749225,
+"hits": 1,
+"misses": 0,
+"last": 1788749225
+},
+"spirit of st. louis": {
+"q": "Spirit of St. Louis",
+"count": 1,
+"first": 1788752836,
+"hits": 1,
+"misses": 0,
+"last": 1788752836
+},
+"southern railway car no. 1200": {
+"q": "Southern Railway Car No. 1200",
+"count": 3,
+"first": 1788756403,
+"hits": 3,
+"misses": 0,
+"last": 1788756479
+},
+"southern railway 1200": {
+"q": "Southern Railway 1200",
+"count": 1,
+"first": 1788756417,
+"hits": 1,
+"misses": 0,
+"last": 1788756417
+},
+"segregated railway car": {
+"q": "segregated railway car",
+"count": 4,
+"first": 1788756424,
+"hits": 4,
+"misses": 0,
+"last": 1788756488
+},
+"lunch counter": {
+"q": "lunch counter",
+"count": 1,
+"first": 1788756454,
+"hits": 1,
+"misses": 0,
+"last": 1788756454
+},
+"segregated car nmaahc": {
+"q": "segregated car NMAAHC",
+"count": 1,
+"first": 1788756480,
+"hits": 1,
+"misses": 0,
+"last": 1788756480
+},
+"the segregated railway car": {
+"q": "the segregated railway car",
+"count": 1,
+"first": 1788756491,
+"hits": 1,
+"misses": 0,
+"last": 1788756491
+},
+"elephant": {
+"q": "elephant",
+"count": 1,
+"first": 1788770829,
+"hits": 1,
+"misses": 0,
+"last": 1788770829
+},
+"african bush elephant rotunda": {
+"q": "African Bush Elephant Rotunda",
+"count": 1,
+"first": 1788770831,
+"hits": 1,
+"misses": 0,
+"last": 1788770831
+},
+"henry elephant smithsonian": {
+"q": "Henry elephant Smithsonian",
+"count": 1,
+"first": 1788770839,
+"hits": 1,
+"misses": 0,
+"last": 1788770839
+},
+"belief": {
+"q": "belief",
+"count": 3,
+"first": 1788781637,
+"hits": 3,
+"misses": 0,
+"last": 1788781639
+},
+"belief+doubt": {
+"q": "Belief+Doubt",
+"count": 1,
+"first": 1788781646,
+"hits": 1,
+"misses": 0,
+"last": 1788781646
+},
+"barbara kruger": {
+"q": "Barbara Kruger",
+"count": 1,
+"first": 1788781656,
+"hits": 1,
+"misses": 0,
+"last": 1788781656
+},
+"prism": {
+"q": "prism",
+"count": 1,
+"first": 1788788838,
+"hits": 1,
+"misses": 0,
+"last": 1788788838
+},
+"prism window": {
+"q": "Prism Window",
+"count": 1,
+"first": 1788788844,
+"hits": 1,
+"misses": 0,
+"last": 1788788844
+},
+"prism window potomac": {
+"q": "prism window potomac",
+"count": 1,
+"first": 1788788846,
+"hits": 1,
+"misses": 0,
+"last": 1788788846
+},
+"potomac atrium": {
+"q": "Potomac Atrium",
+"count": 1,
+"first": 1788788847,
+"hits": 1,
+"misses": 0,
+"last": 1788788847
+},
+"lincoln top hat": {
+"q": "Lincoln top hat",
+"count": 1,
+"first": 1788792416,
+"hits": 1,
+"misses": 0,
+"last": 1788792416
+},
+"abraham lincoln's top hat": {
+"q": "Abraham Lincoln's Top Hat",
+"count": 1,
+"first": 1788792426,
+"hits": 1,
+"misses": 0,
+"last": 1788792426
+},
+"calder mobile": {
+"q": "Calder mobile",
+"count": 1,
+"first": 1788796046,
+"hits": 1,
+"misses": 0,
+"last": 1788796046
+},
+"untitled (the calder mobile)": {
+"q": "Untitled (the Calder mobile)",
+"count": 1,
+"first": 1788796054,
+"hits": 1,
+"misses": 0,
+"last": 1788796054
+},
+"calder": {
+"q": "Calder",
+"count": 1,
+"first": 1788796058,
+"hits": 1,
+"misses": 0,
+"last": 1788796058
+},
+"east building atrium mobile": {
+"q": "East Building atrium mobile",
+"count": 1,
+"first": 1788796059,
+"hits": 1,
+"misses": 0,
+"last": 1788796059
+},
+"point of pines": {
+"q": "Point of Pines",
+"count": 1,
+"first": 1788799615,
+"hits": 1,
+"misses": 0,
+"last": 1788799615
+},
+"slave cabin": {
+"q": "slave cabin",
+"count": 1,
+"first": 1788799622,
+"hits": 1,
+"misses": 0,
+"last": 1788799622
+},
+"edisto island": {
+"q": "Edisto Island",
+"count": 1,
+"first": 1788799624,
+"hits": 1,
+"misses": 0,
+"last": 1788799624
+},
+"burghers of calais": {
+"q": "Burghers of Calais",
+"count": 2,
+"first": 1788803221,
+"hits": 2,
+"misses": 0,
+"last": 1788803241
+},
+"burghers": {
+"q": "Burghers",
+"count": 1,
+"first": 1788803228,
+"hits": 1,
+"misses": 0,
+"last": 1788803228
+},
+"tomahawk": {
+"q": "Tomahawk",
+"count": 2,
+"first": 1788806807,
+"hits": 2,
+"misses": 0,
+"last": 1788806812
+},
+"tomahawk missile": {
+"q": "Tomahawk Missile",
+"count": 1,
+"first": 1788806813,
+"hits": 1,
+"misses": 0,
+"last": 1788806813
+},
+"indians everywhere": {
+"q": "Indians Everywhere",
+"count": 1,
+"first": 1788806815,
+"hits": 1,
+"misses": 0,
+"last": 1788806815
+},
+"americans nmai": {
+"q": "Americans NMAI",
+"count": 1,
+"first": 1788806817,
+"hits": 0,
+"misses": 1,
+"last": 1788806817
+},
+"julia child's kitchen": {
+"q": "Julia Child's Kitchen",
+"count": 1,
+"first": 1788814034,
+"hits": 1,
+"misses": 0,
+"last": 1788814034
+},
+"julia child kitchen": {
+"q": "Julia Child kitchen",
+"count": 1,
+"first": 1788814043,
+"hits": 1,
+"misses": 0,
+"last": 1788814043
+},
+"bell x-1": {
+"q": "Bell X-1",
+"count": 1,
+"first": 1788824875,
+"hits": 1,
+"misses": 0,
+"last": 1788824875
+},
+"glamorous glennis": {
+"q": "Glamorous Glennis",
+"count": 1,
+"first": 1788824876,
+"hits": 1,
+"misses": 0,
+"last": 1788824876
+},
+"sound barrier": {
+"q": "sound barrier",
+"count": 1,
+"first": 1788824878,
+"hits": 1,
+"misses": 0,
+"last": 1788824878
 }
 }

@@ -13,7 +13,9 @@ Freedom Trail (trail-3d.js): THE WHOLE WALK (scene key "walk", built
 2026-09-03 sixth run, MOUNTED on freedom-trail.html as "The whole walk, all
 sixteen" at yaw -0.30 pitch 0.55), plus bunker-hill, old-north, faneuil-hall,
 state-house, old-state-house, old-south, constitution, paul-revere,
-park-street. Nine of the ten buildings the routine listed. park-street is
+park-street. Nine of the ten buildings the routine listed.
+All nine now have their own trail-form-<k>.js and are at the model
+standard; park-street was the last, raised 2026-09-08. park-street is
 MOUNTED on freedom-trail.html as Stop 3, at yaw -2.5 so the Tremont front
 faces the reader, and as of 2026-09-03 it is a WHOLE CHURCH: the brick body
 is built from the Sanborn numbers the last run measured, so the steeple no

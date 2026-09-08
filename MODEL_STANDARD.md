@@ -605,6 +605,45 @@ above is not paperwork, it is the lock.
 
 ## Rebuilt to this standard
 
+- park-street, Park Street Church, Boston (2026-09-08, the landmark routine).
+  The last Freedom Trail stop without its own form file, and NOT one of the
+  boxes this standard was written against: six earlier runs had already given
+  it published massing and a steeple that closes on Bowen's 217 ft 9 in
+  exactly. All of that is carried over untouched. Three checklist items were
+  open and only those three are new: item 5, the 78 by 103 ft brick body was
+  ONE brick tone, so it and the tower now carry course lines, a texture in the
+  plane of the wall claiming no count; item 8, the body windows were glass on
+  brick with a hairline between, so each now has the reveal a two foot wall
+  gives it, struck in a darker brick rather than in stone; item 3, two granite
+  treads under the Tremont doors, which had opened straight off the ground.
+  WHAT WAS DELIBERATELY NOT ADDED, and it is the reason STYLES.md is read
+  before the geometry is chosen. The obvious move on a two storey brick church
+  is a belt course between the ranks of window, and the neighbouring Old North
+  file has one. STYLES.md, "The Federal spired tower", forbids it here in
+  as many words: the flanks get "a water table below and a cornice at the
+  eaves and nothing between", and "the flanks are ornamented like the front"
+  is listed under Wrong if. So the brick got texture and depth and no new
+  mouldings.
+  WHAT THE PICTURE SHOWED AND THE NUMBERS DID NOT. Two things, both caught by
+  looking. First, the coursing loop ran to `CZ`, the eaves cornice height,
+  which `var` hoists but which is assigned twenty lines LATER in the function.
+  The comparison was against undefined, every loop was `z < NaN`, and the
+  whole texture silently drew nothing while the file passed `node --check` and
+  rendered without an error. Second, with that fixed the body was coursed and
+  the TOWER was still a plain red block beside it, so from the Park Street
+  flank the same brick read as two different materials. Neither is visible in
+  any count.
+  BUILT FROM, all unchanged from the scene it replaces: Bowen's Picture of
+  Boston 1833 via the 1903 preservation pamphlet for every steeple stage;
+  Sanborn 1885 sheet 12, lettered on the plan, for 40 ft to the eaves and 2
+  storeys; the deed for the 80 by 118 ft lot; and about 78 by 103 ft with a
+  39 ft semicircular east end SCALED off that plan at 6.04 px per foot and
+  declared scaled.
+  NAMED GAPS, carried forward in the file's own header: no published roof
+  pitch, so the model still stops at the published eaves under a lead grey
+  stopping plane; no published window count, size or sill on the body; no
+  published column diameter; no published step count or riser.
+
 - american, the National Museum of American History (2026-09-07, the landmark
   routine). The LAST Mall place without a dc-form file, blocked five times on
   one number and unblocked on the sixth by looking at a magnified crop instead
