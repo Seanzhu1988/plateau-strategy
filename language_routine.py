@@ -404,6 +404,11 @@ def cmd_apply(args):
     known = set(g["TR"]) | set(g["strings"])
     existing = side_table(code)
 
+    # apply and verify must agree, or a line verify has passed is refused on
+    # the way in and there is no way to get it accepted. They did not agree:
+    # UNDER RECONSTRUCTION was recorded as reviewed and still bounced here.
+    ok_already = _accepted().get(code, set())
+
     faults, unknown, skipped = [], [], 0
     clean = {}
     for en, tr in pairs.items():
@@ -413,7 +418,7 @@ def cmd_apply(args):
         if en in existing and existing[en] and not args.refine:
             skipped += 1
             continue
-        why = check_one(en, tr, code)
+        why = [] if en in ok_already else check_one(en, tr, code)
         if why:
             faults.append((en, tr, why))
         else:

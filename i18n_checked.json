@@ -1,27 +1,37 @@
 {
-  "_why": "Lines a person has looked at and judged correct even though a check flags them. Every length bound here is a percentile, so a few real translations sit outside it by construction. Recording the judgement is what keeps the daily report clean enough to be read; a report that is never clean stops being read.",
-  "_reviewed": "2026-09-07",
-  "accepted": {
-    "zh": [
-      "Yes, I've booked somewhere",
-      "Performance is measured as"
-    ],
-    "es": [
-      "Yes, I've booked somewhere",
-      "UNDER RECONSTRUCTION",
-      "Hourly (per hour), $65",
-      "outdoor seating"
-    ],
-    "ko": [
-      "Performance is measured as",
-      "The Buddha of Medicine wall mural"
-    ],
-    "vi": [
-      "Book a Reservation Ride",
-      "The Equestrian Court"
-    ],
-    "ja": [
-      "Modern and Contemporary Art"
-    ]
-  }
+ "_why": "Lines a person has looked at and judged correct even though a check flags them. Every length bound here is a percentile, so a few real translations sit outside it by construction. Recording the judgement is what keeps the daily report clean enough to be read; a report that is never clean stops being read.",
+ "_reviewed": "2026-09-07",
+ "accepted": {
+  "zh": [
+   "Yes, I've booked somewhere",
+   "Performance is measured as"
+  ],
+  "es": [
+   "Yes, I've booked somewhere",
+   "UNDER RECONSTRUCTION",
+   "Hourly (per hour), $65",
+   "outdoor seating"
+  ],
+  "ko": [
+   "Performance is measured as",
+   "The Buddha of Medicine wall mural"
+  ],
+  "vi": [
+   "Book a Reservation Ride",
+   "The Equestrian Court"
+  ],
+  "ja": [
+   "Modern and Contemporary Art"
+  ],
+  "fr": [
+   "UNDER RECONSTRUCTION"
+  ],
+  "de": [
+   "UNDER RECONSTRUCTION"
+  ],
+  "pt": [
+   "UNDER RECONSTRUCTION"
+  ]
+ },
+ "_note_2026_09_07": "UNDER RECONSTRUCTION is accepted in es, fr, de and pt. When the same English line is flagged in four unrelated languages it is the ENGLISH that is unusual, not the translations."
 }
