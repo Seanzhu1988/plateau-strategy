@@ -553,10 +553,19 @@
       items = items.concat(prism(-HW - 1.0, bv, 1.6, 1.6, 1.6, 1.6, CORNT, BALT - CORNT, PAINT, NEAR + 10));
       items = items.concat(prism(HW + 1.0, bv, 1.6, 1.6, 1.6, 1.6, CORNT, BALT - CORNT, PAINT, NEAR + 10));
     }
-    items = items.concat(prism(0, 0, HW * 2 + 3.4, 2.0, HW * 2 + 3.4, 2.0, BALT, 1.0, TRIM, NEAR + 11));
-    items = items.concat(prism(0, 0, HW * 2 + 3.4, HD * 2 + 3.4, HW * 2 + 3.4, HD * 2 + 3.4,
-                               BALT, 0, TRIM, NEAR + 11));
-    /* the rail along the north and south runs, so the balusters read as a
+    /* TWO LINES USED TO SIT HERE AND THEY DREW A LID.
+       They were an abandoned first attempt at the rail below, left in rather
+       than deleted, and positioned on the building's centreline instead of its
+       edge. The second passed HEIGHT ZERO with the full footprint, and a zero
+       height prism still emits its top face, so it painted one flat plate the
+       size of the whole building at 64 ft. The attic hid it only where the
+       attic's inset footprint reached; in the fifteen foot ring outside that it
+       showed as a pale deck resting on the roof, which is exactly the lid this
+       file's own header claims to have avoided.
+       A reviewer found it by ABLATION rather than by reading: deleting the one
+       call made the artifact vanish with an identical diff box. They were also
+       the only two zero-area polygons in a scene of 1,164.
+       the rail along the north and south runs, so the balusters read as a
        balustrade rather than as a row of loose posts */
     items = items.concat(prism(0, -HD - 1.0, HW * 2 + 3, 2.6, HW * 2 + 3, 2.6, BALT, 1.0, TRIM, NEAR + 12));
     items = items.concat(prism(0,  HD + 1.0, HW * 2 + 3, 2.6, HW * 2 + 3, 2.6, BALT, 1.0, TRIM, NEAR + 12));
@@ -659,6 +668,19 @@
                                  2.2, (GY - 1) * GS, 2.2, (GY - 1) * GS,
                                  26, 2.0, STEEL, NEAR + 33));
     }
+    /* the site's own ground shadow. Every other mass here has one and this did
+       not, which is the checklist's item 6: nothing in this renderer casts
+       light, so a 62 ft steel frame with no shadow floats. */
+    /* H.shadow returns a fixed depth of -1e9 + 2, which sits UNDER the dirt pad
+       at -1e9 + 3, so drawn plainly it was buried and invisible: dead geometry,
+       which is what the lid above was. Lifted over the pad so it darkens the
+       ground it actually falls on, and thrown from the frame's real 62 ft so
+       the offset is long enough to see. */
+    var frameShadow = H.shadow(ctx, [[X(G0U - 16), Y(G0V - 16)], [X(G0U + (GX - 1) * GS + 16), Y(G0V - 16)],
+                                     [X(G0U + (GX - 1) * GS + 16), Y(G0V + (GY - 1) * GS + 16)],
+                                     [X(G0U - 16), Y(G0V + (GY - 1) * GS + 16)]], Z(62));
+    items.push({ svg: frameShadow.svg, depth: -1e9 + 4 });
+
     /* one upper beam run over the tall bay, so the 70 ft reads as real */
     items = items.concat(prism(G0U + GS / 2, G0V + 3 * GS, GS, 2.2, GS, 2.2,
                                62, 2.2, STEEL, NEAR + 34));
