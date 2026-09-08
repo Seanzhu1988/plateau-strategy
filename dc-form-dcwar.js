@@ -190,6 +190,12 @@
     /* One tone, not alternating. LOOKING caught that too: alternating tones
        on six rings turned a smooth dome into a ziggurat. Ten fine rings with
        one fill and no stroke read as a curve. */
+    /* 2026-09-08, the OWED item from the build run, and LOOKING showed it was
+       worse than the note said. Each ring was a CYLINDER of its own bottom
+       radius, so it stood proud of the ring above it, and ngon caps a ring
+       with a full bright DISC rather than an annulus. Ten of those and a
+       saucer read as a stepped beehive with a white plate on every course.
+       The rings are frusta now, r0 to r1, and only the crown keeps a top. */
     var DN = 10;
     for (var di = 0; di < DN; di++) {
       var t0 = di / DN, t1 = (di + 1) / DN;
@@ -197,7 +203,9 @@
       var r1 = DOME_R * Math.sqrt(Math.max(0, 1 - t1 * t1));
       items = items.concat(H.ngon(ctx, cx, cy, Math.max(r0, DOME_R * 0.08),
                                   z + DOME_H * t0, DOME_H * (t1 - t0) + 0.01,
-                                  20, MARB, null));
+                                  20, MARB, null,
+                                  { r1: Math.max(r1, DOME_R * 0.08),
+                                    noTop: di < DN - 1 }));
     }
 
     /* --- ground shadow (checklist 6) ------------------------------------ */

@@ -78,7 +78,13 @@
     /* ---------- materials: two tones come from ctx.shade ---------- */
     var GRAN  = "#c6b0a3";   /* Swenson pink granite aggregate precast */
     var GRAND = "#ab9488";   /* the same mix, one tone down, for the coping */
-    var PIER  = "#7d736a";   /* the piers, which stand in the drum's own shade all day */
+    /* 2026-09-08. Two critics agreed the piers were tonally invisible: 104,95,88
+       against an under-drum of 97,92,86, seven levels out of 255, so a drum on
+       legs read as a drum on the ground. They are granite-clad like the drum
+       and a photograph shows them catching bounce off a 2.7 acre plaza, so
+       they are lit, not black; what is black is the void BEHIND them. */
+    var PIER  = "#a2958a";   /* the piers, in the drum's shade but bounce-lit off the plaza */
+    var SOFFIT= "#8a8078";   /* the drum's underside: shaded, but a lit ceiling, not a void */
     var RECES = "#8d7568";   /* the balcony recess, always in its own shade */
     var GLASS = "#4b5a63";   /* the courtyard's large rectangular windows */
     var WATER = "#a8bcc4";
@@ -135,7 +141,7 @@
       }
     }
     /* a rectangular pier, drawn as a box */
-    function box(cu, cv, w, d, z0, h, fill) {
+    function box(cu, cv, w, d, z0, h, fill, top) {
       var hu = w / 2, hv = d / 2;
       var lo = [[cu-hu,cv-hv],[cu+hu,cv-hv],[cu+hu,cv+hv],[cu-hu,cv+hv]];
       var nrm = [[0,-1],[1,0],[0,1],[-1,0]];
@@ -146,6 +152,10 @@
               pt(lo[j][0],lo[j][1],z0+h), pt(lo[i][0],lo[i][1],z0+h)],
              fill, nrm[i][0], nrm[i][1], 0, 0);
       }
+      /* a pier with no top face ends in a line where it meets the soffit. */
+      if (top) push([pt(lo[0][0],lo[0][1],z0+h), pt(lo[1][0],lo[1][1],z0+h),
+                     pt(lo[2][0],lo[2][1],z0+h), pt(lo[3][0],lo[3][1],z0+h)],
+                    fill, 0, 0, 1, 0);
     }
 
     /* ---------- 1. the plaza, its shadow, and the fountain ---------- */
@@ -159,17 +169,24 @@
        daylight under the ring vanished and an 82 ft drum on legs read as a
        tyre lying on the grass. What a photograph actually shows through
        that gap is deep shade, so deep shade is what is drawn. */
-    ring(R * 1.005, RI, 0.10, "#6d6760", -1e9 + 2.2);
+    ring(R * 1.005, RI, 0.10, "#4e4842", -1e9 + 2.2);
     /* the court's own floor, half in the drum's shade. Left at plaza tone it
        showed through the 14 ft gap as a hard white arc along the wall base. */
     ring(RI, FR, 0.12, "#b3aca1", -1e9 + 2.3);
     disc(FR, 0.55, WATER, -1e9 + 2.4);
 
-    /* ---------- 2. the four piers ---------- */
+    /* ---------- 2. the lift: the soffit, then the four piers ----------
+       The drum's UNDERSIDE, at 14 ft, was never drawn at all, so from any low
+       camera the eye went straight from plaza to sky through the building and
+       the 14 ft of daylight read as a shadow line rather than as air. It is a
+       ceiling: shaded, because it never sees the sun, but bounce-lit off the
+       plaza and far lighter than the void beyond it. Painted before the piers
+       so they stand against it. */
+    ring(R, RI, ZP, SOFFIT);
     var RP = (R + RI) / 2;
     [45, 135, 225, 315].forEach(function (deg) {
       var u = deg * Math.PI / 180;
-      box(RP * Math.cos(u), RP * Math.sin(u), 34, 34, 0, ZP, PIER);
+      box(RP * Math.cos(u), RP * Math.sin(u), 34, 34, 0, ZP, PIER, true);
     });
 
     /* ---------- 3. the courtyard wall, glazed, painted first ---------- */

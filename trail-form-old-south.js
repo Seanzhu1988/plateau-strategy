@@ -249,6 +249,38 @@
                                    SLATE_E, 0.6), depth: depthOf(q) });
         }
       }
+      /* THE HIP END ITSELF, 2026-09-08. The build run left this OWED as "a
+         pale wedge of roof reads as a void rather than as a hip", and
+         guessed the cause: the far slope showing past the ridge. LOOKING at
+         yaw -2.30 showed a white triangle over a third of the roof, and the
+         geometry says why, which is not what the note guessed. The two long
+         slopes taper correctly to the hip rafter, from the eave corner at y0
+         in to xm at yh; what neither of them covers is the triangle BETWEEN
+         those two rafters. On a hipped roof that triangle is the end slope,
+         a real surface, and it was never drawn at all. So the roof had a
+         hole in it and the reader was seeing the sky through it.
+         It faces -y, so it is culled the way the gable at +y is.
+         Drawn in the SAME strips as the long slopes, not as one clean
+         triangle to the apex. As a triangle it left a pale sliver along the
+         hip rafter, because the long slopes approximate that rafter as a
+         chord across each strip while a triangle runs straight to the point;
+         two different lines, and daylight between them. Sharing the
+         quantisation makes the edges identical and the seam shut. */
+      if (ctx.faceVisible(0, -1)) {
+        for (var k = 0; k < N; k++) {
+          var ka = y0 + (L * k) / N; if (ka >= yh) break;
+          var kc = y0 + (L * (k + 1)) / N;
+          var fA = Math.min(1, (ka - y0) / HIP), fB = Math.min(1, (kc - y0) / HIP);
+          var wA = halfW * (1 - fA), wB = halfW * (1 - fB);
+          var hq = [P(-wA, ka, EAVE + (RIDGE - EAVE) * fA),
+                    P( wA, ka, EAVE + (RIDGE - EAVE) * fA),
+                    P( wB, kc, EAVE + (RIDGE - EAVE) * fB),
+                    P(-wB, kc, EAVE + (RIDGE - EAVE) * fB)];
+          out.push({ svg: ctx.poly(hq, ctx.shade(SLATE, 0, -0.55, 0.5), SLATE_E, 0.6),
+                     depth: depthOf(hq) });
+        }
+      }
+
       /* the gable at the tower end, and its two raking cornices */
       if (ctx.faceVisible(0, 1)) {
         var t = [P(x0, y1, EAVE), P(x1, y1, EAVE), P(xm, y1, RIDGE)];

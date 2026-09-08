@@ -140,24 +140,50 @@
   }
 
   /* An N-sided prism, for the round things. A drum with twelve sides reads as
-     a cylinder at any size this map draws, and the renderer can sort it. */
-  function ngon(ctx, cx, cy, r, z0, h, n, fill, edge) {
-    var P = ctx.project, out = [], pts = [];
+     a cylinder at any size this map draws, and the renderer can sort it.
+
+     opt, all optional and all added 2026-09-08 to close the dcwar dome debt:
+       r1     the radius at the TOP. Given, the ring is a frustum instead of
+              a cylinder, which is the whole difference between a dome and a
+              beehive. A stack of cylinders each drawn at its own BOTTOM
+              radius steps out under every ring above it, and those steps are
+              real geometry: no amount of shading hides them.
+       noTop  suppress the top face. ngon's top is a full DISC, not an
+              annulus, so inside a stack every ring but the crown paints a
+              bright plate that oversails the ring above it.
+       nz     force the vertical component of the side normal. Left alone a
+              frustum computes its own from the slope, so shading follows the
+              curve and the dome brightens toward the crown. */
+  function ngon(ctx, cx, cy, r, z0, h, n, fill, edge, opt) {
+    var P = ctx.project, out = [], pts = [], top = [];
+    opt = opt || {};
+    var rt = opt.r1 === undefined ? r : opt.r1;
     for (var i = 0; i < n; i++) {
       var a = (i / n) * Math.PI * 2;
       pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]);
+      top.push([cx + rt * Math.cos(a), cy + rt * Math.sin(a)]);
     }
+    /* The outward normal of a sloping face tilts up by the slope itself:
+       the face rises h while the radius changes by (rt - r), so a ring that
+       narrows going up faces partly at the sky. */
+    var dr = rt - r, sl = Math.sqrt(h * h + dr * dr) || 1;
+    var nzz = opt.nz === undefined ? (-dr / sl) : opt.nz;
+    var hz = Math.sqrt(Math.max(0, 1 - nzz * nzz));
     for (var i2 = 0; i2 < n; i2++) {
       var a0 = pts[i2], a1 = pts[(i2 + 1) % n];
+      var b0 = top[i2], b1 = top[(i2 + 1) % n];
       var mx = (a0[0] + a1[0]) / 2 - cx, my = (a0[1] + a1[1]) / 2 - cy;
       var l = Math.sqrt(mx * mx + my * my) || 1;
       var nx = mx / l, ny = my / l;
       if (!ctx.faceVisible(nx, ny)) continue;
-      var q = [P(a0[0],a0[1],z0), P(a1[0],a1[1],z0), P(a1[0],a1[1],z0+h), P(a0[0],a0[1],z0+h)];
-      out.push({ svg: ctx.poly(q, ctx.shade(fill, nx, ny, 0), edge, 0.4), depth: depthOf(q) });
+      var q = [P(a0[0],a0[1],z0), P(a1[0],a1[1],z0), P(b1[0],b1[1],z0+h), P(b0[0],b0[1],z0+h)];
+      out.push({ svg: ctx.poly(q, ctx.shade(fill, nx * hz, ny * hz, nzz), edge, 0.4),
+                 depth: depthOf(q) });
     }
-    var top = pts.map(function (p) { return P(p[0], p[1], z0 + h); });
-    out.push({ svg: ctx.poly(top, ctx.shade(fill, 0, 0, 1), edge, 0.4), depth: depthOf(top) });
+    if (!opt.noTop) {
+      var tp = top.map(function (p) { return P(p[0], p[1], z0 + h); });
+      out.push({ svg: ctx.poly(tp, ctx.shade(fill, 0, 0, 1), edge, 0.4), depth: depthOf(tp) });
+    }
     return out;
   }
 
@@ -178,12 +204,19 @@
      rotunda that meant a square dome on a round building. Sixteen sides
      per ring is round at any size this map draws. */
   function dome(ctx, cx, cy, r, z0, h, fill, edge) {
-    var out = [], n = 7;
+    /* Rings are FRUSTA and only the crown keeps its top face. As a stack of
+       cylinders each ring stood proud of the one above it and capped itself
+       with a full bright disc, so the Capitol and the Jefferson both wore a
+       ziggurat. Twelve rings, because the steps are gone and the cost of a
+       finer stack is now only sides. */
+    var out = [], n = 12;
     for (var i = 0; i < n; i++) {
       var t0 = i / n, t1 = (i + 1) / n;
       var r0 = r * Math.cos(t0 * Math.PI / 2);
+      var r1 = r * Math.cos(t1 * Math.PI / 2);
       out = out.concat(ngon(ctx, cx, cy, Math.max(r0, r * 0.06), z0 + h * t0,
-                            h * (t1 - t0), 16, fill, edge));
+                            h * (t1 - t0), 16, fill, edge,
+                            { r1: Math.max(r1, r * 0.06), noTop: i < n - 1 }));
     }
     return out;
   }

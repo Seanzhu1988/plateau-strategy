@@ -2159,3 +2159,106 @@ scene file) and has been LOOKED at from more than one angle.
   OSM-footprint route used for the Castle and NMAAHC would give a plan but
   still no height, and a five storey box of correct plan is exactly the
   model Sean called unacceptable.
+
+## The build queue is dry, and the OWED list is the queue now (2026-09-08)
+
+Every item of the rebuild queue is closed. The Mall has 21 dc-form files and
+only `american` has none, blocked on a count no source this file has reached
+will give. The Freedom Trail has all nine. New York has three. The Met
+exterior is done and `map_lint` reports 15 of 15 rooms with an interior
+drawn, so item 5 is closed and so is the older note about `modern` and
+`grand-stair-2`. MoMA is blocked on a tool.
+
+So a run that opens this file and finds nothing to BUILD is not a run with
+nothing to do, and it should not invent a landmark to stay busy. Twenty-odd
+entries above end with the same sentence: the two adversarial critics did not
+fit inside the run's 25 minute ceiling, and here is what is owed, worst
+first. Step 4 of the standard is not optional, so a model carrying named,
+unaddressed defects is not finished. THAT is the queue. Work it worst first,
+three models a run, one fix each, and strike the items as they are paid.
+
+- dcwar OWED (a) is PAID, and the fix went where the note said it belonged,
+  in the shared helper, so it was never only about this building.
+  WHAT LOOKING SHOWED THAT THE NOTE DID NOT. The note called the dome
+  "ribbed rather than smooth". The render at yaw -0.55 showed a stepped
+  BEEHIVE: ten courses, each with a bright white plate on top of it, and a
+  staircase silhouette. The note had it as a shading problem. It was
+  geometry. `ngon` was being handed one radius, so every ring was a CYLINDER
+  drawn at its own BOTTOM radius and stood proud of the ring above it, and
+  `ngon` caps a ring with a full DISC, not an annulus, so each of those
+  ledges was also painted at full brightness with nz = 1. No amount of
+  shading hides a real step.
+  THE FIX, in dc-3d.js and therefore in every dome on the site: `ngon` takes
+  an optional `{ r1, noTop, nz }`. Given `r1` a ring is a FRUSTUM, and given
+  `noTop` it keeps no lid, so a stack is a smooth surface with one crown.
+  The side normal now tilts up by the ring's own slope, which is what makes
+  the dome brighten toward the top instead of reading as a stack of collars.
+  The shared `dome()` uses it and went from 7 rings to 12, since the cost of
+  a finer stack is now only sides. dcwar's own ten-ring loop had already
+  computed r1 and thrown it away; it passes it now.
+  Verified at yaw -0.55 pitch 0.30 and yaw -2.10 pitch 0.22, and BECAUSE it
+  is a shared helper, on both other callers: the Capitol and the Jefferson
+  were rendered before committing and both improved, neither regressed.
+  A shared edit has to be looked at on every model it touches, not only on
+  the one that motivated it.
+  STILL OWED on dcwar: (b) the columns are eight-sided prisms and "fluted"
+  is carried only by shading; (c) no source says whether the Doric frieze
+  carries triglyphs, so it is drawn plain.
+
+- hirshhorn OWED (a) and (b) are PAID as one fix, because they are one
+  defect. The two critics agreed the piers were tonally invisible, measured
+  at 104,95,88 against an under-drum of 97,92,86. The render showed the
+  consequence rather than the cause: a drum sitting FLAT ON THE PLAZA with a
+  single dark tab under it. The 14 ft lift was there in the geometry and
+  correct in proportion, about 15% of the wall, and it read as a shadow line
+  at the wall base. A Hirshhorn on the ground is not the Hirshhorn; the
+  building is a hollow drum held in the air on four piers.
+  THE FIX, all of it in service of one thing, making the lift read: the
+  drum's SOFFIT at z = 14 was never drawn at all, so from any low camera the
+  eye went from plaza to sky straight through the building; it is drawn now
+  as its own bounce-lit plane, a shaded ceiling and not a void. The piers
+  are lightened to #a2958a, granite-clad and catching bounce off 2.7 acres
+  of plaza, and given a top face where they meet the soffit. The ground
+  under the drum is deepened to #4e4842, so what is dark is the void BEHIND
+  the piers rather than the piers themselves.
+  Verified at pitch 0.30, the angle the site actually opens at, where two
+  lit piers now stand in a dark void under the drum, and at pitch 0.10,
+  where the soffit, the piers, the court floor and the fountain all read
+  through the gap.
+  STILL OWED on hirshhorn, unchanged: (c) the courtyard's inner wall is the
+  brightest surface in the model, because outward=false hands ctx.shade a
+  normal pointing at the camera and a 96 ft shaft is lit like a sunlit
+  facade; (d) per-segment flat shading puts 44 bands on a wall published as
+  blank, and stroke=fill leaves a 44-spoke starburst on the ring top, which
+  the render shows plainly inside the courtyard; (e) the courtyard glazing
+  is two ribbons against a source that says "large rectangular windows";
+  (f) the shadow ring is concentric, i.e. sun at the zenith, while the walls
+  are directionally lit; (g) the plaza disc's corner reads as a sheet of
+  paper under the model at some yaws.
+
+- old-south OWED (a) is PAID, and THE NOTE'S OWN DIAGNOSIS WAS WRONG, which
+  is the finding worth keeping from this run. It recorded "a pale wedge of
+  roof still reads as a void rather than as a hip" and named the cause: "the
+  far slope shows past the ridge there". At yaw -2.30 the render shows a
+  WHITE TRIANGLE over roughly a third of the roof, and reading the geometry
+  says why. The two long slopes taper correctly, from the eave corner at y0
+  in to xm at yh, which is the hip rafter. What neither of them covers is
+  the region BETWEEN those two rafters, and on a hipped roof that region is
+  the end slope, a real surface. It was never drawn. The roof had a hole in
+  it and the reader was seeing the background through it. Nothing was
+  showing past anything.
+  A guessed cause in an OWED note is a hypothesis, not a diagnosis. Read the
+  geometry before paying the debt, or you will shade a hole.
+  THE FIX: draw the hip end, culled on (0,-1) the way the gable at +y is.
+  Drawn first as one clean triangle to the apex, which LOOKING then caught
+  leaving a pale sliver along the hip rafter: the long slopes approximate
+  that rafter as a chord across each of 8 strips, a triangle runs straight
+  to the point, and daylight sits between two different lines. The hip face
+  is built from the SAME strip boundaries and the same z, so the edges are
+  identical and the seam is shut.
+  Verified at yaw -2.30, where the hole was, and at the page's own -0.62,
+  where the end is culled and nothing changed.
+  STILL OWED on old-south: (b) the three octagons carry one round window
+  each struck on a plane rather than on the facet, so at some yaws it will
+  drift off the facet edge, and octDetail already does this correctly;
+  (c) the belfry louvres read as a radiator at map scale.
