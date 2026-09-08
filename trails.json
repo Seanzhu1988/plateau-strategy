@@ -299,9 +299,9 @@
    "city": "dc",
    "name": "The National Mall",
    "summary": "Two miles along one straight axis, from the Capitol to the Lincoln Memorial and round the Tidal Basin to Jefferson: eighteen stops, most of them free, and the only walk in the country where you can see the next monument from the one you are standing at. Distances are straight-line along the Mall's straight paths, marked as estimates, not routed.",
-   "length_m": 6204,
-   "walk_min_total": 79,
-   "inside_min_total": 1130,
+   "length_m": 7638,
+   "walk_min_total": 96,
+   "inside_min_total": 1160,
    "distances_estimated": true,
    "stops": [
     {
@@ -514,12 +514,35 @@
     },
     {
      "n": 11,
+     "name": "The White House",
+     "lat": 38.89765,
+     "lon": -77.03655,
+     "inside_min": 30,
+     "walk_m_from_prev": 797,
+     "walk_min_from_prev": 10,
+     "est": true,
+     "book_slug": "white-house",
+     "desc": "Hoban's house of 1800, seen from the Ellipse: the south front with its six column bow and the Truman Balcony. Three floors on this side and two on the other, because the ground falls away. Free to look at, and inside only by a request made weeks ahead through Congress.",
+     "yiki": "This one is a real detour and it is worth knowing the cost: the museums to the Monument is a four minute walk, and going by the White House makes it about twenty two. It is 900 m off the Mall's axis, in President's Park, not on the Mall at all. Walk round to Pennsylvania Avenue for the four column portico everyone photographs, then come back down to the Monument. The east lawn is a construction site: the East Wing came down in October 2025 and the new State Ballroom is going up in its place. Check the Park Service page on the day, parts of President's Park have been closed through 2026 for security work.",
+     "model": "whitehouse",
+     "photos": [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/WhiteHouseSouthFacade.JPG?width=1280",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/NorthFacade.jpg?width=1280",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/NorthFacadeSpring.jpg?width=1280",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/White_House_lawn_(1).tif?width=1280"
+     ],
+     "height_m": 21.3,
+     "footprint_m": 51.2,
+     "size_source": "White House Historical Association: 70 ft high on the south, 168 ft long."
+    },
+    {
+     "n": 12,
      "name": "Washington Monument",
      "lat": 38.88947,
      "lon": -77.03524,
      "inside_min": 45,
-     "walk_m_from_prev": 280,
-     "walk_min_from_prev": 4,
+     "walk_m_from_prev": 917,
+     "walk_min_from_prev": 11,
      "est": true,
      "book_slug": "washington-monument",
      "desc": "The tallest stone structure in the world, and the colour changes a third of the way up where construction stopped for twenty-two years. Tickets for the top are timed and free.",
@@ -535,7 +558,7 @@
      "size_source": "dc-form-monument.js header: 555 ft to the apex, 55 ft square at the foot."
     },
     {
-     "n": 12,
+     "n": 13,
      "name": "World War II Memorial",
      "lat": 38.88944,
      "lon": -77.04056,
@@ -554,7 +577,7 @@
      ]
     },
     {
-     "n": 13,
+     "n": 14,
      "name": "Vietnam Veterans Memorial",
      "lat": 38.89111,
      "lon": -77.04778,
@@ -573,7 +596,7 @@
      ]
     },
     {
-     "n": 14,
+     "n": 15,
      "name": "Lincoln Memorial",
      "lat": 38.88928,
      "lon": -77.05014,
@@ -595,7 +618,7 @@
      "size_source": "dc-form-lincoln.js header, 99 ft foundation to roofline; 189 ft 8 in long."
     },
     {
-     "n": 15,
+     "n": 16,
      "name": "Korean War Veterans Memorial",
      "lat": 38.88778,
      "lon": -77.04722,
@@ -614,7 +637,7 @@
      ]
     },
     {
-     "n": 16,
+     "n": 17,
      "name": "Martin Luther King Jr. Memorial",
      "lat": 38.88611,
      "lon": -77.04417,
@@ -633,7 +656,7 @@
      ]
     },
     {
-     "n": 17,
+     "n": 18,
      "name": "Franklin Delano Roosevelt Memorial",
      "lat": 38.88389,
      "lon": -77.04444,
@@ -652,7 +675,7 @@
      ]
     },
     {
-     "n": 18,
+     "n": 19,
      "name": "Jefferson Memorial",
      "lat": 38.88139,
      "lon": -77.03667,

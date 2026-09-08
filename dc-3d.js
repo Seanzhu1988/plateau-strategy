@@ -72,6 +72,17 @@
     { k: "botanic",   n: "Botanic Garden",             lat: 38.88800, lon: -77.01300, h: 20,  form: "block" },
     { k: "holocaust", n: "Holocaust Memorial Museum",  lat: 38.88667, lon: -77.03250, h: 24,  form: "block" },
     { k: "dcwar",     n: "DC War Memorial",            lat: 38.88750, lon: -77.04360, h: 14,  form: "rotunda" },
+    /* THE WHITE HOUSE IS NOT ON THE MALL, and this flag is that fact.
+       It stands in President's Park, 915 m north of the Washington Monument
+       and a little west. Every visitor thinks of it as part of the same walk,
+       and the walk includes it, so it needs a model. But putting it in the
+       WHOLE-MALL drawing would stretch that drawing's north edge by 900 m of
+       ground with nothing on it, and the camera fits to content, so the
+       two-mile axis the drawing exists to show would shrink by about a third
+       to make room for empty lawn. off:true keeps it out of the aggregate and
+       still gives it its own scene, which is the one the stop page mounts.
+       Height 21.3 m is the published 70 ft on the south front. */
+    { k: "whitehouse", n: "The White House", lat: 38.89765, lon: -77.03655, h: 21.3, form: "block", off: true, pad: 0 },
   ];
   /* The Tidal Basin: an irregular water body, drawn as its rough outline
      rather than a rectangle, because the Jefferson Memorial stands ON its
@@ -331,7 +342,7 @@
     return function (ctx) {
       var pts = PLACES.map(function (p) {
         var c = xy(p.lat, p.lon);
-        return { k: p.k, n: p.n, x: c.x, y: c.y, h: p.h, form: p.form };
+        return { k: p.k, n: p.n, x: c.x, y: c.y, h: p.h, form: p.form, off: !!p.off, pad: p.pad };
       });
       var out = [];
       /* A single building gets a pad of ground its own size, not the Mall.
@@ -341,13 +352,23 @@
       if (only) {
         var one = pts.filter(function (p) { return p.k === only; })[0];
         if (!one) return out;
-        var pad = Math.max(one.h, 40) * 2.2;
-        out.push(ground(ctx, one.x - pad, one.y - pad, one.x + pad, one.y + pad, 0, C.lawn));
+        /* A place whose form draws its own ground says so with pad:0. The
+           White House complex is 700 ft wide, the standard square pad is 176 m,
+           and drawing both left a visible seam where one rectangle of lawn
+           ended inside another. One ground, drawn by whoever knows how big the
+           place is. */
+        var pad = one.pad === 0 ? 0 : (one.pad || Math.max(one.h, 40) * 2.2);
+        if (pad > 0) {
+          out.push(ground(ctx, one.x - pad, one.y - pad, one.x + pad, one.y + pad, 0, C.lawn));
+        }
         var f1 = EXT[one.k] || FORMS[one.form] || FORMS.block;
         return out.concat(f1(ctx, { x: one.x, y: one.y, h: Math.max(one.h, MIN_H) * VE, form: one.form }, s, 1));
       }
-      var minX = Math.min.apply(null, pts.map(function (p) { return p.x; })) - 400;
-      var maxX = Math.max.apply(null, pts.map(function (p) { return p.x; })) + 400;
+      /* places flagged off the Mall keep their own scene and stay out of this
+         one, so neither the lawn nor the camera stretches to reach them */
+      var onMall = pts.filter(function (q) { return !q.off; });
+      var minX = Math.min.apply(null, onMall.map(function (p) { return p.x; })) - 400;
+      var maxX = Math.max.apply(null, onMall.map(function (p) { return p.x; })) + 400;
       /* south to the far shore of the Tidal Basin, so the water sits on
          ground rather than floating past the lawn's edge */
       out.push(ground(ctx, minX, -1150, maxX, 300, 0, C.lawn));
@@ -361,7 +382,7 @@
       /* the Tidal Basin, outlined from its real shoreline */
       var basin = TIDAL.map(function (ll) { var c = xy(ll[0], ll[1]); return ctx.project(c.x, c.y, 0.4); });
       out.push({ svg: ctx.poly(basin, C.water, C.edge, 0.4), depth: -1e9 + 1 });
-      pts.forEach(function (p) {
+      onMall.forEach(function (p) {
         if (only && only !== p.k) return;
         var f = EXT[p.k] || FORMS[p.form] || FORMS.block;
         var q = { x: p.x, y: p.y, h: Math.max(p.h, MIN_H) * VE, form: p.form };
