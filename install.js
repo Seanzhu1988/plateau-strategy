@@ -35,6 +35,11 @@
             "  font: inherit !important; font-weight: 700 !important;" +
             "  border-radius: 999px !important; text-decoration: none !important;" +
             "  cursor: pointer !important; min-height: 0 !important; min-width: 0 !important;" +
+            // width too: booking.html carries a bare `button { width: 100% }` for its
+            // own submit, which caught this button and drew it 325 wide by 25 tall in
+            // a 375 header, a 13:1 pill with the glyph parked at the far left. A page
+            // rule beats an id-less button, so the id has to name its own width.
+            "  width: auto !important; flex: 0 0 auto !important;" +
             "  display: inline-flex !important; align-items: center; gap: .3rem; }" +
             "#psxShare { font-size: .82rem !important; border: 1px solid #d3d3da !important;" +
             "  background: #fff !important; color: #1f3a5f !important;" +
@@ -216,9 +221,15 @@
         b.style.cssText = "font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;" +
             "border:1px solid #d3d3da;border-radius:999px;background:#fff;color:#1f3a5f;" +
             "padding:.28rem .75rem;margin-left:.6rem;display:inline-flex;align-items:center;" +
-            "gap:.3rem;vertical-align:middle";
+            "gap:.3rem;vertical-align:middle;width:auto;flex:0 0 auto";
         b.addEventListener("click", share);
+        // Most headers carry a .right group and the button joins it. A few,
+        // booking.html among them, have no such group, so the button becomes a
+        // direct flex child of <header>, wraps to its own line and sits at the
+        // far LEFT while every other page puts it on the right. Pushing the
+        // free margin to its left restores the one place a reader looks for it.
         var right = head.querySelector(".right");
+        if (!right) b.style.marginLeft = "auto";
         (right || head).appendChild(b);
     }
 
