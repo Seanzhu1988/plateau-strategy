@@ -215,10 +215,65 @@ queue instead. Remove a line the moment its work lands or is abandoned.
   and MoMA all have form files and ledger lines, and greek-roman, lehman,
   grand-stair, euro-paintings and nineteenth-century have since been done, so
   the note above is stale on those five. What is left in met-rooms.js, all of
-  it PRE-STANDARD: americanCourt, astorCourt, dendur, greatHall. `modern` and
+  it PRE-STANDARD: astorCourt, dendur, greatHall. americanCourt was done
+  2026-09-09, so THE MET INTERIOR QUEUE IS DOWN TO THREE. `modern` and
   `grand-stair-2` are not work: grand-stair-2 is the same grandStair function
   that was done 2026-09-06, and modern is the honest skip the routine's own
   queue allows.
+
+- american-court, the Charles Engelhard Court, BUILT AND COMMITTED 2026-09-09
+  by the landmark routine. The claim below is released. THE BLOCK IS CLEARED
+  AND THE PREVIOUS RUN'S PLAN WAS WRONG: it said to read the Dimensions field
+  off the Met object page through the browser pane. The page loads fine
+  through the pane, and it HAS NO DIMENSIONS FIELD AT ALL. Its Overview lists
+  title, architect, date, geography, culture, medium, credit line, object
+  number and department, and stops. No future run should spend itself there.
+  WHAT UNBLOCKED IT INSTEAD: Stokes, Iconography of Manhattan Island, plate
+  1825-F-25 (Deak 343), whose own engraved caption is the dimension, "Branch
+  Bank of U. S. erected 1825 - front 75 feet". Two independent witnesses to
+  the same 75 ft, an Alamy listing of the Stokes plate and the NYPL Digital
+  Collections scan of it, Hades-118424-54550, which is on Commons and which
+  turned out to be a near-ORTHOGRAPHIC ELEVATION of the exact facade. So the
+  one published number arrived with a measured drawing attached to it.
+  THE METHOD, and it is the park-street method: the 75 ft front spans image
+  x 576 to 3200 in the 3840 px Commons rendering, which is 35.0 px per foot,
+  and every other dimension is SCALED off that plate at that rate and declared
+  scaled, never quoted as published. Ground line y 2696, first-floor cornice
+  y 1960 giving a 21.0 ft ground storey, main cornice y 1200 giving 42.7 ft to
+  the eaves, pediment apex y 928 giving 50.5 ft overall, projecting centre
+  x 1344 to 2440 giving 31.3 ft or 3 of the 7 bays, and the four columns at
+  x 1496, 1800, 2096, 2376.
+  ONE PUBLISHED COUNT CAME FROM AN UNEXPECTED PLACE, and it is worth the note
+  for every future Met room: the AUDIO GUIDE transcript is on the object page
+  and it is curatorial prose. Met audio 3801, Morrison Heckscher, says "on the
+  second-floor level, four columns in the Greek Ionic order support a simple
+  triangular pediment". That settled both the count and the fact that they do
+  NOT run the full height. The old model had eight full-height stubs.
+  ALL SEVEN FAILING CHECKLIST ITEMS ARE PAID. Item 1, four columns as four
+  columns standing clear of the wall with shafts, bases and capitals in three
+  tones. Item 2, two storeys with the string course at 21.0 ft that the
+  published "two-story" fact demands and the old single colossal storey had
+  nowhere to put. Item 3, a plinth and four treads under the arched door.
+  Item 5, two marble tones plus a darker reveal struck into every opening.
+  Item 6, a ground shadow. Item 9, the court itself: a glass roof and a piece
+  of sculpture, so a visitor can tell they are standing in a glassed courtyard.
+  The pediment is seated ON the projecting centre and its entablature instead
+  of set back behind it, which is what made it float.
+  WHAT THE PICTURE SHOWED AND THE NUMBERS DID NOT, twice, on one run. First,
+  the glass roof drawn as a FILLED pale plane was opaque and the size of the
+  room, so the court read as a swimming pool with a model standing in it; the
+  cure was to draw only the lattice members and leave the openings empty,
+  rather than to give the plane a depth. That is the sixth time a large flat
+  surface has wrecked what it sits over in this file and the FIRST time the
+  answer was not a depth argument. Second, the court was drawn to the room box
+  while the facade was drawn at true foot scale, and since the room box is
+  about five times the facade's width in feet, the building shrank to a chip
+  in a field. The court is now an envelope in FEET around the 75 ft front,
+  96 by 74, declared an envelope and claiming no size. Neither defect is
+  visible in any count and both survived node --check.
+  NAMED GAPS, carried in the file's own header: no published height, storey
+  height, bay module, column diameter or step count exists anywhere this run
+  could reach, and no published dimension for the Engelhard Court itself.
 
 - american-court, the Charles Engelhard Court, CLAIMED 2026-09-09 and NOT
   BUILT. Researched, looked at, diagnosed, and deliberately left alone,

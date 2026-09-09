@@ -511,49 +511,242 @@
      The glass roof is drawn as its FRAMING BARS, not as a sheet. A sheet the
      size of the room painted over the room, which is the mistake the Dendur
      glass wall made, and bars read as a skylight anyway. */
+  /* ------------- The Charles Engelhard Court, Met gallery 700 -------------
+     The object everyone photographs here is the FACADE OF THE SECOND BRANCH
+     BANK OF THE UNITED STATES, Martin Euclid Thompson, 15 Wall Street, built
+     1822 to 1824, demolished 1915, the facade saved by Met president Robert
+     W. de Forest and reconstructed in 1924 as the front of the American Wing.
+     It is now the south wall of the glassed Engelhard Court.
+
+     PUBLISHED, and it is the one number the whole model is scaled from:
+     the front is 75 FEET. Stokes, Iconography of Manhattan Island, plate
+     1825-F-25 (Deak 343), whose own engraved caption reads "Branch Bank of
+     U. S. erected 1825 - front 75 feet"; the same plate is NYPL Digital
+     Collections Hades-118424-54550.
+     PUBLISHED counts, from the Met's object page for the facade (object
+     852570, object number AW.BankFacade) and from the Met's audio guide 3801,
+     Morrison Heckscher, curator of the American Wing: TWO storeys, SEVEN
+     bays, a PROJECTING CENTRE SECTION CAPPED BY A PEDIMENT, and on the
+     second-floor level FOUR COLUMNS in the Greek Ionic order carrying that
+     pediment. Marble. Vertical rectangular windows. Ionic capitals and some
+     Greek cornice mouldings over an English Palladian composition.
+
+     SCALED, not published, and declared as scaled. Every other dimension is
+     measured off that same Stokes plate, which is a near-orthographic
+     elevation, at 35.0 pixels per foot (the 75 ft front spans image x 576 to
+     3200 in the 3840 px Commons rendering):
+       ground line          image y 2696
+       first-floor cornice  image y 1960   ->  21.0 ft, the ground storey
+       main cornice         image y 1200   ->  42.7 ft to the eaves
+       pediment apex        image y  928   ->  50.5 ft overall
+       projecting centre    image x 1344 to 2440  ->  31.3 ft, 3 of the 7 bays
+       the four columns at  image x 1496, 1800, 2096, 2376
+     NAMED GAPS. No published height, storey height, bay module, column
+     diameter or step count exists anywhere this run could reach; the Met's
+     own object page carries no Dimensions field at all, which corrects the
+     previous run's plan to read one there. Everything above the width is
+     therefore scaled off the engraving and must not be quoted as published.
+     No published dimension for the COURT itself either, so the court is drawn
+     as an envelope around the facade rather than to a size. */
   function americanCourt(ctx) {
     var r = ctx.room, z = ctx.zBase, P = ctx.project, out = [];
     var wall = ctx.wall || 26;
-    var MARBLE = "#e8e4d8", MARBLE_D = "#b3ad9c", SHADOW = "#d9d4c6";
 
-    var W = r.w * 0.74, H = wall * 0.74;
-    var cx = r.x + r.w / 2, y0 = r.y + r.h * 0.30;
+    /* two marble tones plus the shadowed reveal, so the facade is not one
+       grey slab; checklist item 5 */
+    var MARBLE = "#efece1", MARBLE_D = "#d3cebd", REVEAL = "#b8b2a0",
+        SHADOW = "#c9c3b1", GLASS = "#dbe4e6", GLASS_D = "#aab6ba",
+        BRONZE = "#6d6350";
+
+    /* 75 ft of front, fitted to the room and to the wall height the scene
+       gives us; k is feet-to-scene-units and everything below is in FEET. */
+    var FW = 75, FH = 50.5;
+    var k = Math.min((r.w * 0.80) / FW, (wall * 0.86) / FH);
+    var F = k;                                   /* one foot */
+    var W = FW * F;
+    var cx = r.x + r.w / 2, y0 = r.y + r.h * 0.34;
     var x1 = cx - W / 2, x2 = cx + W / 2;
-    var D = Math.max(2.2, W * 0.030);
+    var D = 3.0 * F;                             /* wall thickness, scaled */
+    var PROJ = 1.6 * F;                          /* how far the centre steps out */
 
-    out.push(flat(ctx, r.x, r.y, r.x + r.w, r.y + r.h, z + 0.4, "#efe9dc", "#cdc4b0", 0.5, -1e9));
+    var HG = 21.0 * F;      /* ground storey, to the first-floor cornice */
+    var HC = 42.7 * F;      /* to the main cornice */
+    var HA = 50.5 * F;      /* to the pediment apex */
+    var PLINTH = 1.4 * F;
 
-    /* The wall behind everything, at an explicit depth. Sorted on its own
-       corners it painted over the columns standing in front of it, which is
-       the third time a large flat surface has done that here. */
-    out = out.concat(batteredMass(ctx, x1, y0, x2, y0 + D, z, H, 0, SHADOW, -9.8e8));
+    /* THE COURT, drawn at the SAME foot scale as the facade instead of over
+       the whole room box. Drawn to the room, the court swallowed the building
+       and the picture read as a model standing on a lake. No published court
+       dimension was reachable, so the extent is an envelope around the 75 ft
+       front, declared as an envelope and claiming no size. */
+    var CW = 96 * F, CD = 74 * F;
+    var qx1 = cx - CW / 2, qx2 = cx + CW / 2;
+    var qy1 = y0 - 4 * F, qy2 = y0 - 4 * F + CD;
 
-    var pw = W * 0.40;
-    out = out.concat(batteredMass(ctx, cx - pw/2, y0 - D*1.2, cx + pw/2, y0, z, H, 0, MARBLE, -9.7e8));
+    out.push(flat(ctx, qx1, qy1, qx2, qy2, z + 0.4, "#e9e3d5", "#c9c1ac", 0.5, -1e9));
 
-    /* SEVEN BAYS, columns paired across the projecting centre. They stand
-       clear of the wall now and are drawn after it. */
-    var bay = W / 7;
-    for (var i = 0; i <= 7; i++) {
-      var bx = x1 + bay * i;
-      var pair = (i >= 2 && i <= 5);
-      var cw = Math.max(1.1, bay * 0.13);
-      var yy = pair ? y0 - D*1.2 : y0;
-      out = out.concat(batteredMass(ctx, bx - cw, yy - cw*2.2, bx + cw, yy - 0.3,
-                                    z, H * 0.72, 0.012, "#f4f1e8", -9.5e8 + i));
-      out = out.concat(batteredMass(ctx, bx - cw*1.6, yy - cw*2.6, bx + cw*1.6, yy - 0.1,
-                                    z + H*0.72, H*0.05, -0.10, "#faf8f1", -9.4e8 + i));
+    /* THE GLASS ROOF. Drawn as a LATTICE, not a filled sheet. Filled, it was
+       an opaque pale blue plane the size of the room and the court read as a
+       swimming pool; that is the sixth time in this file a large flat surface
+       has wrecked what it sits over, and the cure this time is to draw only
+       the members and leave the openings empty rather than to give the plane
+       a depth. */
+    var GZ = z + wall * 0.93;
+    var gi;
+    for (gi = 0; gi <= 8; gi++) {
+      var gx = qx1 + (CW * gi) / 8;
+      out.push(flat(ctx, gx - 0.30 * F, qy1, gx + 0.30 * F, qy2, GZ,
+                    GLASS_D, null, 0, -9.95e8));
+    }
+    for (gi = 0; gi <= 5; gi++) {
+      var gy = qy1 + (CD * gi) / 5;
+      out.push(flat(ctx, qx1, gy - 0.30 * F, qx2, gy + 0.30 * F, GZ + 0.05,
+                    GLASS, null, 0, -9.94e8));
     }
 
-    /* the pediment over the centre */
-    var pz = z + H, ph = H * 0.26;
-    var yy2 = y0 - D*1.2;
-    out.push({ svg: ctx.poly([P(cx - pw/2 - 3, yy2, pz), P(cx + pw/2 + 3, yy2, pz),
-                              P(cx, yy2, pz + ph)],
-                             ctx.shade(MARBLE, 0, -1, 0.3), MARBLE_D, 0.7), depth: -9.3e8 });
-    /* the entablature it sits on, so the pediment has something to rest upon */
-    out = out.concat(batteredMass(ctx, cx - pw/2 - 3, yy2 - 1, cx + pw/2 + 3, y0, z + H*0.77,
-                                  H*0.10, 0, "#f7f4ec", -9.35e8));
+    /* GROUND SHADOW. Without it the facade floated; checklist item 6. */
+    out.push(flat(ctx, x1 - 1.2 * F, y0 + D, x2 + 1.2 * F, y0 + D + 5.5 * F, z + 0.5,
+                  SHADOW, null, 0, -9.90e8));
+
+    /* ---- the body of the facade, in three pieces so the centre PROJECTS ---
+       Depths are explicit and ordered back to front: flanking wings, then the
+       projecting centre, then the columns, then the pediment. The pediment
+       used to sit BEHIND the centre it is supposed to cap and read as a bar
+       hanging in daylight; it is seated on the centre now. */
+    var pw = 31.3 * F;                     /* the projecting centre, 3 bays */
+    var pl = cx - pw / 2, pr = cx + pw / 2;
+    var yF = y0;                           /* front face of the wings */
+    var yP = y0 - PROJ;                    /* front face of the centre */
+
+    /* plinth under the whole front; checklist item 3, it sat on bare floor */
+    out = out.concat(mass(ctx, x1 - 0.8 * F, yP - 0.6 * F, x2 + 0.8 * F, y0 + D,
+                          z, PLINTH, MARBLE_D, REVEAL, -9.86e8));
+
+    /* the two flanking wings, two bays each */
+    out = out.concat(mass(ctx, x1, yF, pl, y0 + D, z + PLINTH, HC - PLINTH,
+                          MARBLE, REVEAL, -9.84e8));
+    out = out.concat(mass(ctx, pr, yF, x2, y0 + D, z + PLINTH, HC - PLINTH,
+                          MARBLE, REVEAL, -9.84e8));
+
+    /* the projecting centre */
+    out = out.concat(mass(ctx, pl, yP, pr, y0 + D, z + PLINTH, HC - PLINTH,
+                          MARBLE, REVEAL, -9.80e8));
+
+    /* THE STRING COURSE at the first-floor cornice, 21.0 ft up. The whole
+       facade was drawn as one colossal storey and the published fact is two,
+       so this is the horizontal break that was missing; checklist item 2. */
+    function belt(bx1, by, bx2, zz, dep) {
+      return mass(ctx, bx1 - 0.4 * F, by - 0.4 * F, bx2 + 0.4 * F, y0 + D,
+                  zz, 0.9 * F, MARBLE_D, REVEAL, dep);
+    }
+    out = out.concat(belt(x1, yF, pl, z + HG, -9.78e8));
+    out = out.concat(belt(pr, yF, x2, z + HG, -9.78e8));
+    out = out.concat(belt(pl, yP, pr, z + HG, -9.76e8));
+
+    /* ---- SEVEN BAYS OF WINDOWS, two storeys, vertical rectangles ----
+       Bay centres are the seven twelfths of the 75 ft front read off the
+       plate. Each opening gets a reveal struck in the darker marble so it
+       reads as cut into a wall rather than painted on it. */
+    var bay = FW / 7 * F;
+    for (var i = 0; i < 7; i++) {
+      var bxc = x1 + bay * (i + 0.5);
+      var centre = (i >= 2 && i <= 4);
+      var fy = centre ? yP : yF;
+      var dep = centre ? -9.60e8 : -9.64e8;
+      var ww = 3.6 * F;
+      /* ground storey: the centre bay is the ARCHED DOORWAY on the plate */
+      if (i === 3) {
+        out.push(flat(ctx, bxc - ww * 0.62, fy - 0.35, bxc + ww * 0.62, fy - 0.35,
+                      z + PLINTH, REVEAL, null, 0, dep));
+        out = out.concat(mass(ctx, bxc - ww * 0.62, fy - 0.5, bxc + ww * 0.62, fy - 0.2,
+                              z + PLINTH, 12.5 * F, "#5f574a", BRONZE, dep));
+        /* the arched head, an n-gon so the arch is an arch */
+        var arc = [], ar = ww * 0.62, az = z + PLINTH + 12.5 * F;
+        for (var a = 0; a <= 14; a++) {
+          var th = Math.PI * (a / 14);
+          arc.push(P(bxc - Math.cos(th) * ar, fy - 0.35, az + Math.sin(th) * ar * 0.8));
+        }
+        out.push({ svg: ctx.poly(arc, "#6a6153", REVEAL, 0.6), depth: dep - 1e6 });
+      } else {
+        out = out.concat(mass(ctx, bxc - ww / 2, fy - 0.5, bxc + ww / 2, fy - 0.2,
+                              z + PLINTH + 4.0 * F, 9.5 * F, "#6f675a", REVEAL, dep));
+      }
+      /* upper storey: tall vertical windows, each with the little cornice
+         cap the plate shows over them */
+      var uz = z + HG + 1.4 * F;
+      out = out.concat(mass(ctx, bxc - ww / 2, fy - 0.5, bxc + ww / 2, fy - 0.2,
+                            uz, 12.0 * F, "#6f675a", REVEAL, dep));
+      out = out.concat(mass(ctx, bxc - ww * 0.72, fy - 0.7, bxc + ww * 0.72, fy - 0.15,
+                            uz + 12.0 * F, 0.8 * F, MARBLE_D, REVEAL, dep - 2e6));
+    }
+
+    /* ---- THE FOUR IONIC COLUMNS, second-floor level only ----
+       Published as four, and published as standing at the second-floor level,
+       not running the whole height; the last model had eight stubs stuck flat
+       to the wall for its full height, reading as pilasters. They stand clear
+       of the projecting centre and are drawn after it. Shaft and capital are
+       given different tones because they were the same before. */
+    var colZ = z + HG + 0.9 * F, colH = HC - HG - 3.4 * F;
+    var cxs = [1496, 1800, 2096, 2376];      /* image px on the Stokes plate */
+    for (var ci = 0; ci < 4; ci++) {
+      var fx = cx + ((cxs[ci] - 1888) / 35.0) * F;   /* 1888 px = the centre line */
+      var cr = 1.15 * F;
+      out = out.concat(batteredMass(ctx, fx - cr, yP - PROJ * 0.55 - cr,
+                                    fx + cr, yP - PROJ * 0.55 + cr,
+                                    colZ, colH, 0.010, "#f6f3ea", -9.50e8 + ci));
+      /* the Ionic capital, wider and in a different tone */
+      out = out.concat(mass(ctx, fx - cr * 1.55, yP - PROJ * 0.55 - cr * 1.35,
+                            fx + cr * 1.55, yP - PROJ * 0.55 + cr * 1.35,
+                            colZ + colH, 1.3 * F, "#fbf9f2", MARBLE_D, -9.46e8 + ci));
+      /* and a base, so the shafts do not grow out of nothing */
+      out = out.concat(mass(ctx, fx - cr * 1.35, yP - PROJ * 0.55 - cr * 1.25,
+                            fx + cr * 1.35, yP - PROJ * 0.55 + cr * 1.25,
+                            colZ - 0.7 * F, 0.7 * F, MARBLE_D, REVEAL, -9.52e8 + ci));
+    }
+
+    /* THE ENTABLATURE the columns carry, then THE PEDIMENT SEATED ON IT.
+       Both are pushed forward to the column line so the pediment caps the
+       projecting centre instead of floating behind it. */
+    var eZ = z + HC - 2.1 * F, eY = yP - PROJ * 0.55 - 1.3 * F;
+    out = out.concat(mass(ctx, pl - 0.5 * F, eY, pr + 0.5 * F, y0 + D,
+                          eZ, 2.1 * F, "#f7f4ec", REVEAL, -9.40e8));
+    /* the main cornice, carried right across the wings as well */
+    out = out.concat(mass(ctx, x1 - 0.9 * F, yF - 0.9 * F, pl, y0 + D,
+                          z + HC - 1.5 * F, 1.5 * F, "#f7f4ec", REVEAL, -9.42e8));
+    out = out.concat(mass(ctx, pr, yF - 0.9 * F, x2 + 0.9 * F, y0 + D,
+                          z + HC - 1.5 * F, 1.5 * F, "#f7f4ec", REVEAL, -9.42e8));
+
+    var pz = z + HC, ph = HA - HC;
+    out.push({ svg: ctx.poly([P(pl - 0.5 * F, eY, pz), P(pr + 0.5 * F, eY, pz),
+                              P(cx, eY, pz + ph)],
+                             ctx.shade(MARBLE, 0, -1, 0.28), REVEAL, 0.7),
+               depth: -9.30e8 });
+    /* the raking cornice, a shade darker, so the tympanum is not one flat tone */
+    out.push({ svg: ctx.poly([P(pl - 1.1 * F, eY - 0.3, pz), P(pr + 1.1 * F, eY - 0.3, pz),
+                              P(pr + 1.1 * F, eY - 0.3, pz + 0.8 * F),
+                              P(pl - 1.1 * F, eY - 0.3, pz + 0.8 * F)],
+                             MARBLE_D, REVEAL, 0.6), depth: -9.28e8 });
+
+    /* THE STEPS up to the arched door; the facade opened straight off the
+       floor before. Four treads, and the count is SCALED off the plate, not
+       published. */
+    for (var s = 0; s < 4; s++) {
+      var sw2 = 11.0 * F - s * 0.5 * F;
+      out = out.concat(mass(ctx, cx - sw2, yP - 3.2 * F + s * 0.8 * F, cx + sw2,
+                            yP + 0.2, z + s * (PLINTH / 4),
+                            PLINTH / 4, MARBLE_D, REVEAL, -9.24e8 + s));
+    }
+
+    /* ONE PIECE OF SCULPTURE in the court, because the court is a sculpture
+       court and a visitor names the sculpture before the wall behind it.
+       Size is not published; it is drawn at a plausible pedestal-and-figure
+       scale and claims no identity. */
+    var sx = cx - CW * 0.31, sy = qy1 + CD * 0.66;
+    out = out.concat(mass(ctx, sx - 1.5 * F, sy - 1.5 * F, sx + 1.5 * F, sy + 1.5 * F,
+                          z + 0.5, 3.4 * F, "#ded8ca", REVEAL, -8.0e8));
+    out = out.concat(batteredMass(ctx, sx - 0.9 * F, sy - 0.9 * F, sx + 0.9 * F,
+                                  sy + 0.9 * F, z + 0.5 + 3.4 * F, 6.2 * F, 0.05,
+                                  "#c9b48c", -7.9e8));
     return out;
   }
 
