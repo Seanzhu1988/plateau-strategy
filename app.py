@@ -3365,6 +3365,9 @@ PUBLIC_PAGES = [
     ("/landmarks", "0.8", "monthly"),
     ("/iticket", "0.5", "monthly"),
     ("/national-mall", "0.8", "monthly"),
+    # Search Console: "no referring sitemaps" for the Freedom Trail, and the
+    # test client agreed. The row was never added when the page was.
+    ("/freedom-trail", "0.8", "monthly"),
     # The page that sells the tours. It was in neither this list, nor the
     # site index, nor any link on any page, so the only way to reach it was
     # a social post. For a licensed guide whose tours are the product, that
