@@ -208,6 +208,63 @@ queue instead. Remove a line the moment its work lands or is abandoned.
   object-in-a-box LANDMARKS entries. A live session taking one of these
   should claim it here first.
 
+- THE MET INTERIOR QUEUE IS DOWN TO FOUR, established 2026-09-09 by the
+  landmark routine, which spent its run resolving the queue and researching
+  the next room rather than building. Everything else in the routine's queue
+  is finished: the Mall's 16, the Freedom Trail's 9, NYC's 3, the Met exterior
+  and MoMA all have form files and ledger lines, and greek-roman, lehman,
+  grand-stair, euro-paintings and nineteenth-century have since been done, so
+  the note above is stale on those five. What is left in met-rooms.js, all of
+  it PRE-STANDARD: americanCourt, astorCourt, dendur, greatHall. `modern` and
+  `grand-stair-2` are not work: grand-stair-2 is the same grandStair function
+  that was done 2026-09-06, and modern is the honest skip the routine's own
+  queue allows.
+
+- american-court, the Charles Engelhard Court, CLAIMED 2026-09-09 and NOT
+  BUILT. Researched, looked at, diagnosed, and deliberately left alone,
+  because the one number the build needs is not published anywhere the run
+  could reach and this standard's first rule is real dimensions or do not
+  build it.
+  WHAT THE RESEARCH SETTLED, and it is enough to build the counts from. The
+  object in the court is the facade of the SECOND BRANCH BANK OF THE UNITED
+  STATES, Martin Euclid Thompson, Wall Street, built 1822 to 1824, demolished
+  1915, the facade saved by Met president Robert de Forest and installed 1924
+  as the south entrance of the new American Wing, later absorbed into the
+  Engelhard Court. Published and countable: it is a TWO STOREY, SEVEN BAY
+  facade with a PROJECTING CENTRE SECTION CAPPED BY A PEDIMENT, in marble,
+  with IONIC capitals and Greek cornice mouldings over a mid eighteenth
+  century English Palladian composition rather than a Greek Revival one.
+  Source: the Met's own object page for the facade, object 852570, and the
+  Met's 2009 American Wing press release.
+  THE NAMED GAP, and the reason the run stopped. No published height, width
+  or bay module was reachable. The Met object page carries a Dimensions field
+  and would settle it, but metmuseum.org returned HTTP 429 to this sandbox and
+  the collection API returned an empty record for 852570. The next run should
+  try the object page THROUGH THE BROWSER PANE, which is the same door that
+  unblocked the american museum photograph, and read the Dimensions field
+  there. Until that number exists the facade must not be given a size.
+  WHAT THE PICTURE SHOWED AND THE NUMBERS DID NOT. The current room renders
+  as one grey slab on an empty floor, and seven of the nine checklist items
+  fail in a way no count in the file reveals. The header says seven bays and
+  the render does show seven, so item 1 half passes and then breaks: the
+  columns are stubs stuck to the wall face reading as pilasters, and their
+  capitals are the same tone as their shafts. The pediment FLOATS. It is set
+  back from the projecting centre it is supposed to cap, so it and the
+  entablature slab under it read as two bars hanging behind the columns with
+  daylight between them and the thing they rest on. Item 2 fails outright:
+  the facade is drawn as ONE colossal storey when the published fact is two
+  storeys, so there is no string course and no horizontal break anywhere.
+  Item 3 fails, it sits straight on the floor with no plinth or step. Item 5
+  fails, the whole facade is a single grey. Item 6 fails, no ground shadow,
+  which is why it floats in the picture. And item 9 fails for the ROOM rather
+  than the object: the Engelhard Court is a glassed courtyard and the render
+  has no court, no glass roof and no sculpture, so the one thing a visitor
+  names is absent.
+  SO THE NEXT RUN'S ORDER OF WORK IS FIXED: get the Dimensions field through
+  the browser pane, then two storeys with a string course between them,
+  then the pediment seated on the projecting centre instead of behind it,
+  then plinth, two marble tones, and a ground shadow.
+
 - american, BUILT AND COMMITTED 2026-09-07 by the landmark routine as
   dc-form-american.js. The claim is released; the entry below is kept because
   six runs of dead ends are worth more written down than deleted, and because a
