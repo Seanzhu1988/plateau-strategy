@@ -455,6 +455,27 @@
     document.getElementById('roomBarAdd').textContent =
       picked.indexOf(k) >= 0 ? '✓ In your walk · tap to remove' : '+ Add to my walk';
     document.getElementById('roomBarHear').hidden = !(c.one_line || (c.highlights || []).length);
+
+    /* The exhibits themselves. Written as text rather than drawn over the room,
+       which is the whole reason the numbered markers came off the model. */
+    var line = document.getElementById('roomBarLine');
+    if (line) line.textContent = c.one_line || '';
+    var ol = document.getElementById('roomBarHl');
+    if (ol) {
+      ol.textContent = '';
+      (c.highlights || []).forEach(function (h) {
+        if (!h || !(h.work || h.note)) return;
+        var li = document.createElement('li');
+        if (h.work) {
+          var b = document.createElement('b');
+          b.textContent = h.work;
+          li.appendChild(b);
+          if (h.note) li.appendChild(document.createTextNode(' \u00b7 '));
+        }
+        if (h.note) li.appendChild(document.createTextNode(h.note));
+        ol.appendChild(li);
+      });
+    }
   }
   function roomBarHide() {
     if (roomBar) roomBar.hidden = true;

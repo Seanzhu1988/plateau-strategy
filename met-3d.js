@@ -921,7 +921,40 @@
       ty = ty + (ty2 - ty) * focusT;
     }
 
-    var body = svg.slice(1).join("");
+    /* ONE HONEST TARGET PER ROOM. [SEAN: "the click is very not practical
+       because i couldnt click on it. looks like it needs very specific spot".]
+       He was right and it was uneven rather than merely small: sampling a
+       5x5 grid over each room in the open model, the Great Hall answered on
+       68% of points and the American Court 72%, while Dendur, Arms and Armor
+       and Medieval answered on NONE, and the Grand Stair on 4%. A click had
+       to land on a drawn face of that room, so a room whose faces are hidden
+       behind a neighbour's wall, or which is mostly glass and air, had almost
+       no surface to hit even though it looks like a room you could touch.
+       These quads are the footprint of each room at its own ceiling height,
+       invisible, painted nowhere, and last in the drawing so nothing sits on
+       top of them. Floor 2 after floor 1, matching the order everything else
+       is drawn in, so an upper room wins where they overlap. */
+    var hits = "";
+    if (openT > 0.5 && R) {
+      var hkeys = Object.keys(R).sort(function (a, b) {
+        return ((R[a] && R[a].f) || 1) - ((R[b] && R[b].f) || 1);
+      });
+      for (var hi = 0; hi < hkeys.length; hi++) {
+        var hk = hkeys[hi], hr = R[hk];
+        if (!hr) continue;
+        var hz = (hr.f === 2 ? (exploded ? WALL + gap : WALL) : 0) + WALL + 0.5;
+        var q = [project(hr.x * KX, hr.y, hz),
+                 project((hr.x + hr.w) * KX, hr.y, hz),
+                 project((hr.x + hr.w) * KX, hr.y + hr.h, hz),
+                 project(hr.x * KX, hr.y + hr.h, hz)];
+        hits += '<polygon data-room="' + hk + '" fill="none" pointer-events="all"' +
+                ' style="cursor:pointer" points="' +
+                q.map(function (c) { return c[0].toFixed(1) + "," + c[1].toFixed(1); }).join(" ") +
+                '"/>';
+      }
+    }
+
+    var body = svg.slice(1).join("") + hits;
     var out = svg[0] + '<g transform="translate(' + tx.toFixed(1) + "," + ty.toFixed(1) +
            ") scale(" + k.toFixed(4) + ')">' + body + "</g>";
     if (closedCaption) {

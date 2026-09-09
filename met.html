@@ -62,6 +62,14 @@
                      padding: .45rem 0; min-height: 40px; text-decoration: underline;
                      text-underline-offset: 3px; }
   .room-bar .rb-name { font-weight: 700; font-size: .95rem; color: #14110c; }
+  .room-bar .rb-line { flex-basis: 100%; margin: .2rem 0 0; font-size: .9rem;
+                       line-height: 1.5; color: #6b655b; }
+  .room-bar .rb-line:empty { display: none; }
+  .room-bar .rb-hl { flex-basis: 100%; margin: .5rem 0 .2rem; padding-left: 1.3rem;
+                     font-size: .9rem; line-height: 1.55; color: #6b655b; }
+  .room-bar .rb-hl:empty { display: none; }
+  .room-bar .rb-hl li { margin-bottom: .35rem; }
+  .room-bar .rb-hl b { color: #14110c; font-weight: 700; }
   .leg-impossible { display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap;
                     padding: .7rem 0; border-top: 1px solid #eee9dd;
                     font-size: .92rem; color: #8a5a1e; }
@@ -256,6 +264,19 @@
       <span class="rb-name" id="roomBarName"></span>
       <button id="roomBarAdd" type="button"></button>
       <button id="roomBarHear" type="button">▶ Hear this room</button>
+      <!-- WHAT TO LOOK AT, WHICH HAD QUIETLY STOPPED APPEARING ANYWHERE.
+           The numbered markers used to float over the focused room until Sean
+           said they blocked the view ("its still blocking view more like those
+           123 and words maybe take them off"), so met-3d.js stopped drawing
+           them for any room with a real interior, on the stated grounds that
+           "the highlights are not lost, they are in the room bar". They were
+           not in the room bar. Nobody noticed while a handful of rooms still
+           had no interior and kept their markers; when the last interior was
+           built the last of them went too, and all fifteen rooms fell silent
+           about their own exhibits. Here they are, as a list beside the
+           drawing rather than furniture standing in front of it. -->
+      <p class="rb-line" id="roomBarLine"></p>
+      <ol class="rb-hl" id="roomBarHl"></ol>
     </div>
     <div class="sheet-body">
       <div id="svgHost"></div>
