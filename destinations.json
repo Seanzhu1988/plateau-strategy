@@ -5745,7 +5745,9 @@
    "lon": -73.96365,
    "slug": "columbia-college-walk",
    "desc": "116th Street between Broadway and Amsterdam, closed to traffic and turned into the campus's main axis. The gates at each end are the way in.",
-   "tip": "The campus has controlled access at times; check the university's visitor page. The walk itself is usually open."
+   "tip": "The campus has controlled access at times; check the university's visitor page. The walk itself is usually open.",
+   "audio": "/media/audio/ivy-columbia-stop-1.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Alma Mater",
@@ -5758,7 +5760,9 @@
    "lon": -73.96213,
    "slug": "columbia-alma-mater",
    "desc": "Daniel Chester French's bronze of 1903 on the steps of Low Library, the seated figure with her arms open. The owl hidden in her robe is the thing students are told to find.",
-   "tip": "The steps are the best place on campus to sit with a coffee."
+   "tip": "The steps are the best place on campus to sit with a coffee.",
+   "audio": "/media/audio/ivy-columbia-stop-2.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Low Memorial Library",
@@ -5771,7 +5775,9 @@
    "lon": -73.96183,
    "slug": "columbia-low-memorial-library",
    "desc": "McKim's domed centrepiece of 1897, granite, with the largest all-granite dome in the country. A library for only a few decades; now the administration, with the Visitors Center inside.",
-   "tip": "The Visitors Center is inside on the ground floor. Free."
+   "tip": "The Visitors Center is inside on the ground floor. Free.",
+   "audio": "/media/audio/ivy-columbia-stop-3.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Butler Library",
@@ -5788,7 +5794,9 @@
    "dining": {
     "hours_text": "Mo-Th 09:00-23:00"
    },
-   "updated_at": "2026-09-09T04:58:10"
+   "updated_at": "2026-09-09T04:58:10",
+   "audio": "/media/audio/ivy-columbia-stop-4.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "The Sundial",
@@ -5801,7 +5809,9 @@
    "lon": -73.96253,
    "slug": "columbia-sundial",
    "desc": "The granite base in the middle of College Walk that carried a sixteen-ton green granite sphere from 1885 until 1946, when the sphere cracked and was removed. The base is a speakers' platform now.",
-   "tip": "Meet here; everyone knows it."
+   "tip": "Meet here; everyone knows it.",
+   "audio": "/media/audio/ivy-columbia-stop-5.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Hamilton Hall",
@@ -5814,7 +5824,9 @@
    "lon": -73.96168,
    "slug": "columbia-hamilton-hall",
    "desc": "The Columbia College building of 1907 with the statue of Alexander Hamilton outside, class of 1778. Occupied by students in 1968 and again in 2024.",
-   "tip": "Not open to visitors."
+   "tip": "Not open to visitors.",
+   "audio": "/media/audio/ivy-columbia-stop-6.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Philosophy Hall",
@@ -5827,7 +5839,9 @@
    "lon": -73.96094,
    "slug": "columbia-philosophy-hall",
    "desc": "The 1910 building on the east side of campus with a cast of Rodin's Thinker outside the door. FM radio was worked out inside it by Edwin Armstrong in the 1930s.",
-   "tip": "The Thinker is one of the original casts; touch is allowed, climbing is not."
+   "tip": "The Thinker is one of the original casts; touch is allowed, climbing is not.",
+   "audio": "/media/audio/ivy-columbia-stop-7.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Avery Hall",
@@ -5840,7 +5854,9 @@
    "lon": -73.96094,
    "slug": "columbia-avery-hall",
    "desc": "Home of the architecture school and the Avery Architectural and Fine Arts Library, the largest architecture library in the country.",
-   "tip": "The library is for scholars, but ask; the exhibition cases are often open."
+   "tip": "The library is for scholars, but ask; the exhibition cases are often open.",
+   "audio": "/media/audio/ivy-columbia-stop-8.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Earl Hall",
@@ -5853,7 +5869,9 @@
    "lon": -73.9627,
    "slug": "columbia-earl-hall",
    "desc": "The domed building of 1902 on the west side of Low, built for religious and student life, and the home of the university's chaplaincies.",
-   "tip": "Open on weekdays."
+   "tip": "Open on weekdays.",
+   "audio": "/media/audio/ivy-columbia-stop-9.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Pupin Hall",
@@ -5866,7 +5884,9 @@
    "lon": -73.9614,
    "slug": "columbia-pupin-hall",
    "desc": "The physics building of 1927 at the north end of campus. Here in 1939 the uranium atom was split in the United States for the first time, and the work that became the Manhattan Project began. A National Historic Landmark.",
-   "tip": "Not open to visitors; the plaque is outside."
+   "tip": "Not open to visitors; the plaque is outside.",
+   "audio": "/media/audio/ivy-columbia-stop-10.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Benjamin Franklin on a bench",

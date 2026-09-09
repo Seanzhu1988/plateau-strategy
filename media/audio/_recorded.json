@@ -469,6 +469,83 @@
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 455
  },
+ "ivy-columbia-overview.mp3": {
+  "chars": 1593,
+  "settings": null,
+  "sig": "77d60becbc63",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 288
+ },
+ "ivy-columbia-stop-1.mp3": {
+  "chars": 4347,
+  "settings": null,
+  "sig": "8c44d7c11dc2",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 774
+ },
+ "ivy-columbia-stop-10.mp3": {
+  "chars": 4506,
+  "settings": null,
+  "sig": "660da76ceb7b",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 783
+ },
+ "ivy-columbia-stop-2.mp3": {
+  "chars": 3971,
+  "settings": null,
+  "sig": "a33271fa4d95",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 755
+ },
+ "ivy-columbia-stop-3.mp3": {
+  "chars": 4226,
+  "settings": null,
+  "sig": "2e675720751d",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 766
+ },
+ "ivy-columbia-stop-4.mp3": {
+  "chars": 4099,
+  "settings": null,
+  "sig": "a9a1ebe05e76",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 728
+ },
+ "ivy-columbia-stop-5.mp3": {
+  "chars": 3927,
+  "settings": null,
+  "sig": "3c4837eeaed6",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 717
+ },
+ "ivy-columbia-stop-6.mp3": {
+  "chars": 4254,
+  "settings": null,
+  "sig": "20e27ad062d3",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 717
+ },
+ "ivy-columbia-stop-7.mp3": {
+  "chars": 3941,
+  "settings": null,
+  "sig": "f416a3c3fe56",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 713
+ },
+ "ivy-columbia-stop-8.mp3": {
+  "chars": 4301,
+  "settings": null,
+  "sig": "6e26a21c11da",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 757
+ },
+ "ivy-columbia-stop-9.mp3": {
+  "chars": 4225,
+  "settings": null,
+  "sig": "6b4cb43e08dd",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 744
+ },
  "ivy-harvard-overview.mp3": {
   "chars": 1738,
   "settings": null,
