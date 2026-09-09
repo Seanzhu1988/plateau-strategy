@@ -5404,7 +5404,9 @@
    "lon": -72.92815,
    "slug": "yale-phelps-gate",
    "desc": "The archway from the New Haven Green into the Old Campus, under Phelps Hall of 1896. Every Yale student walks in through it in their first week and out through it at Commencement.",
-   "tip": "Start on the Green so you see the gate the way the city sees it, then go through."
+   "tip": "Start on the Green so you see the gate the way the city sees it, then go through.",
+   "audio": "/media/audio/ivy-yale-stop-1.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Connecticut Hall",
@@ -5417,7 +5419,9 @@
    "lon": -72.92885,
    "slug": "yale-connecticut-hall",
    "desc": "The oldest building at Yale, brick, finished in 1752, and the only one left of the old brick row. Nathan Hale lived in it as a student; his statue stands outside.",
-   "tip": "Not open to visitors. The statue and the front are on the Old Campus path."
+   "tip": "Not open to visitors. The statue and the front are on the Old Campus path.",
+   "audio": "/media/audio/ivy-yale-stop-2.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Old Campus",
@@ -5430,7 +5434,9 @@
    "lon": -72.92852,
    "slug": "yale-old-campus",
    "desc": "The quadrangle of first-year dormitories, elm trees and paths, where the college lived for its first two centuries. The statue of Theodore Dwight Woolsey, president in the 1850s, sits with a bright toe.",
-   "tip": "Free, open in daylight. Tours from the visitor centre on Elm Street start near here."
+   "tip": "Free, open in daylight. Tours from the visitor centre on Elm Street start near here.",
+   "audio": "/media/audio/ivy-yale-stop-3.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Harkness Tower",
@@ -5443,7 +5449,9 @@
    "lon": -72.9294,
    "slug": "yale-harkness-tower",
    "desc": "James Gamble Rogers's 216 foot Gothic tower of 1921, the tallest thing on campus, with a carillon of 54 bells that plays most evenings. Part of Memorial Quadrangle, now Branford and Saybrook colleges.",
-   "tip": "Carillon concerts are free; check the guild's schedule. Tower climbs are only through the guild."
+   "tip": "Carillon concerts are free; check the guild's schedule. Tower climbs are only through the guild.",
+   "audio": "/media/audio/ivy-yale-stop-4.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Yale University Art Gallery",
@@ -5456,7 +5464,9 @@
    "lon": -72.93067,
    "slug": "yale-university-art-gallery",
    "desc": "The oldest university art museum in the country, 1832, in three joined buildings, the newest Louis Kahn's of 1953, his first major work. Van Gogh's Night Cafe is here, and Trumbull's paintings of the Revolution.",
-   "tip": "Free, closed Mondays. The Trumbull gallery is the reason the museum exists."
+   "tip": "Free, closed Mondays. The Trumbull gallery is the reason the museum exists.",
+   "audio": "/media/audio/ivy-yale-stop-5.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Yale Center for British Art",
@@ -5477,7 +5487,9 @@
      "air conditioned"
     ]
    },
-   "updated_at": "2026-09-09T00:56:44"
+   "updated_at": "2026-09-09T00:56:44",
+   "audio": "/media/audio/ivy-yale-stop-6.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Cross Campus",
@@ -5490,7 +5502,9 @@
    "lon": -72.92727,
    "slug": "yale-cross-campus",
    "desc": "The lawn between the Old Campus and the Sterling library, with the Bass Library under it. The Women's Table by Maya Lin, a granite fountain, counts the women enrolled at Yale each year from 1701.",
-   "tip": "The Bass Library entrance is the glass box at the west end. The lawn is the campus living room."
+   "tip": "The Bass Library entrance is the glass box at the west end. The lawn is the campus living room.",
+   "audio": "/media/audio/ivy-yale-stop-7.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Sterling Memorial Library",
@@ -5503,7 +5517,9 @@
    "lon": -72.9291,
    "slug": "yale-sterling-memorial-library",
    "desc": "A cathedral for books, 1930, James Gamble Rogers: the nave is the entrance hall, the circulation desk is the altar, and the tower behind holds fifteen storeys of stacks.",
-   "tip": "The nave is open to visitors; the stacks are not. Quiet, please."
+   "tip": "The nave is open to visitors; the stacks are not. Quiet, please.",
+   "audio": "/media/audio/ivy-yale-stop-8.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Beinecke Rare Book and Manuscript Library",
@@ -5516,7 +5532,9 @@
    "lon": -72.92732,
    "slug": "yale-beinecke-library",
    "desc": "Gordon Bunshaft's windowless marble box of 1963. The walls are Vermont marble an inch and a quarter thick, thin enough to glow amber inside. A Gutenberg Bible and an Audubon are on show in the glass tower of books.",
-   "tip": "Free, with an exhibition hall open most days. The sunken sculpture court outside is Noguchi's."
+   "tip": "Free, with an exhibition hall open most days. The sunken sculpture court outside is Noguchi's.",
+   "audio": "/media/audio/ivy-yale-stop-9.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Woolsey Hall",
@@ -5529,7 +5547,9 @@
    "lon": -72.92614,
    "slug": "yale-woolsey-hall",
    "desc": "The 1901 concert hall at the corner of Grove and College, with the Newberry organ inside and the rotunda entrance whose walls carry the names of Yale's war dead.",
-   "tip": "Concerts are the way in; many are free. The rotunda is open when the building is."
+   "tip": "Concerts are the way in; many are free. The rotunda is open when the building is.",
+   "audio": "/media/audio/ivy-yale-stop-10.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Palmer Square",
@@ -6111,7 +6131,13 @@
    "lon": -71.40016,
    "slug": "brown-sciences-library",
    "desc": "The fourteen-storey concrete tower of 1971, the SciLi, the tallest building on College Hill and the view from the top of Thayer Street.",
-   "tip": "The ground floor and the science center are open; the upper floors are card access."
+   "tip": "The ground floor and the science center are open; the upper floors are card access.",
+   "dining": {
+    "flags": [
+     "air conditioned"
+    ]
+   },
+   "updated_at": "2026-09-09T10:01:28"
   },
   {
    "name": "Hanover Inn",
@@ -6137,7 +6163,11 @@
    "lon": -72.28859,
    "slug": "dartmouth-green",
    "desc": "The five-acre lawn in the middle of the college and the town, cleared of pines in the 1770s, where the bonfire is built every autumn and the snow sculpture every winter.",
-   "tip": "The Green is public. The bonfire is Homecoming weekend in October."
+   "tip": "The Green is public. The bonfire is Homecoming weekend in October.",
+   "dining": {
+    "hours_text": "24/7"
+   },
+   "updated_at": "2026-09-09T10:01:42"
   },
   {
    "name": "Dartmouth Hall and Dartmouth Row",

@@ -546,6 +546,83 @@
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 735
  },
+ "ivy-yale-overview.mp3": {
+  "chars": 1651,
+  "settings": null,
+  "sig": "0c78ac79882b",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 308
+ },
+ "ivy-yale-stop-1.mp3": {
+  "chars": 3946,
+  "settings": null,
+  "sig": "8454941a1dd6",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 727
+ },
+ "ivy-yale-stop-10.mp3": {
+  "chars": 3961,
+  "settings": null,
+  "sig": "28fcb8d367a2",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 724
+ },
+ "ivy-yale-stop-2.mp3": {
+  "chars": 3935,
+  "settings": null,
+  "sig": "0649cfdade6f",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 726
+ },
+ "ivy-yale-stop-3.mp3": {
+  "chars": 4205,
+  "settings": null,
+  "sig": "9c9149e10154",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 760
+ },
+ "ivy-yale-stop-4.mp3": {
+  "chars": 4077,
+  "settings": null,
+  "sig": "9fbd46463ef4",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 730
+ },
+ "ivy-yale-stop-5.mp3": {
+  "chars": 4253,
+  "settings": null,
+  "sig": "342b5b886b66",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 780
+ },
+ "ivy-yale-stop-6.mp3": {
+  "chars": 4224,
+  "settings": null,
+  "sig": "6f52b46d51fe",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 761
+ },
+ "ivy-yale-stop-7.mp3": {
+  "chars": 4288,
+  "settings": null,
+  "sig": "12a7e07e42b6",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 785
+ },
+ "ivy-yale-stop-8.mp3": {
+  "chars": 4174,
+  "settings": null,
+  "sig": "b1a52e283d71",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 736
+ },
+ "ivy-yale-stop-9.mp3": {
+  "chars": 3980,
+  "settings": null,
+  "sig": "7cbaa0c0b601",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 722
+ },
  "philadelphia-overview.mp3": {
   "chars": 1449,
   "settings": null,
