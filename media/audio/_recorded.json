@@ -282,6 +282,12 @@
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 761
  },
+ "guide-eisenhower-executive-office-building.mp3": {
+  "chars": 4185,
+  "sig": "cb95028c141b",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 726
+ },
  "guide-empire-state-building.mp3": {
   "chars": 4266,
   "sig": "7b294e6428fa",
@@ -311,6 +317,12 @@
   "sig": "bf8f0bc83a07",
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 454
+ },
+ "guide-library-of-congress.mp3": {
+  "chars": 4260,
+  "sig": "f3ffd2460ba3",
+  "voice": "6nukEV6JAgCcOkdtH5FM",
+  "words": 775
  },
  "guide-lincoln-memorial-steps.mp3": {
   "chars": 2805,

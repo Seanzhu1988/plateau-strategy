@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Walking tour, Plateau Strategy Solution Lab</title>
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+    <meta name="description" content="A walking tour in stop order, with a map, the time each stop really takes, a guide's note at every stop, and recordings where they exist.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Plateau Strategy Solution Lab">
+    <meta property="og:title" content="A walking tour, in stop order">
+    <meta property="og:description" content="Every stop on a map, with the time it really takes and a guide's note.">
+    <meta property="og:image" content="https://plateaustrategy.io/share-card.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+    <link rel="stylesheet" href="/paper.css">
+    <script src="/psx-net.js"></script>
+    <link rel="stylesheet" href="/modern.css">
+    <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
+    <style>
+        /* ONE PAGE FOR EVERY TOUR THAT HAS NO HAND-BUILT PAGE OF ITS OWN.
+           [SEAN 2026-09-08: the Ivy League as "one of tour mechanism ... eight
+           schools ... combine into one tour ... in different cities ... become
+           one tour individually into different city too."]
+
+           national-mall.html is the reference implementation (TOUR_STANDARD.md)
+           and this page takes its shape: stats line, map, the stops in order,
+           one selected stop with its note, photo and recording. It drops the
+           3D stage because none of these tours has models yet, and a stage
+           showing honest grey boxes would be a promise the page cannot keep.
+           When a tour earns models the Mall page's stage can be lifted in.
+
+           The id comes from the URL, /tour/<id>. A trail draws its stops. A
+           COLLECTION (kind: "collection", a members list, no stops) draws its
+           members as one map and a list of cards, each a link to that member's
+           own page, so the Ivy League is one tour here and eight tours there
+           without any stop living in two places. */
+        header img { height: 42px; width: 42px; border-radius: 50%; }
+        header .brand { font-size: 1.2rem; font-weight: 800; }
+
+        .tw-wrap { max-width: 980px; margin: 2rem auto 4rem; padding: 0 1.2rem; }
+        .tw-eyebrow { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+                      color: #8a8378; font-weight: 700; }
+        .tw-eyebrow a { color: inherit; }
+        .tw-wrap h1 { margin: .35rem 0 .5rem; font-size: clamp(1.7rem, 4.4vw, 2.5rem);
+                      letter-spacing: -.02em; line-height: 1.15; }
+        .tw-lead { margin: 0 0 1.1rem; font-size: 1.03rem; line-height: 1.65;
+                   color: #55504a; max-width: 46rem; }
+        .tw-stats { display: flex; flex-wrap: wrap; gap: .4rem 1.5rem; margin: 0 0 1.6rem;
+                    padding: .8rem 0; border-top: 1px solid #e6e1d8; border-bottom: 1px solid #e6e1d8; }
+        .tw-stat { font-size: .94rem; color: #6b655b; }
+        .tw-stat b { font-size: 1.06rem; color: #14110c; font-weight: 750; margin-right: .28rem; }
+
+        .tw-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+                   gap: 1.6rem; align-items: start; }
+        @media (max-width: 780px) { .tw-cols { grid-template-columns: 1fr; } }
+
+        #twMap { width: 100%; height: 360px; border-radius: 12px; border: 1px solid #e2ded4;
+                 background: #f5f1e8; }
+        #twMap .leaflet-tile-pane { opacity: .6; }
+        #twMap .leaflet-control-attribution { font-size: .58rem !important; }
+        .leaflet-container { background: #f5f1e8; font: inherit; }
+
+        .tw-list-h { margin: 1.4rem 0 .6rem; font-size: .72rem; letter-spacing: .14em;
+                     text-transform: uppercase; color: #8a8378; font-weight: 700; }
+        .tw-list { list-style: none; margin: 0; padding: 0; }
+        .tw-list li { border-bottom: 1px solid #efebe3; }
+        #twList .tw-stop { display: flex; gap: .75rem; align-items: baseline; width: 100%;
+                   background: none; border: 0 !important; border-left: 3px solid transparent !important;
+                   border-radius: 8px !important; font: inherit; text-align: left;
+                   padding: .62rem .5rem !important; cursor: pointer; color: inherit;
+                   font-weight: inherit !important; }
+        #twList .tw-stop[aria-current="true"] { border-left-color: #12305b !important; }
+        .tw-stop[aria-current="true"] .tw-name { color: #12305b; font-weight: 750; }
+        .tw-stop .n { font-size: .78rem; font-weight: 750; color: #12305b; min-width: 1.4rem; }
+        .tw-name { display: block; font-weight: 600; }
+        .tw-meta { display: block; font-size: .8rem; color: #8a8378; margin-top: .1rem; }
+        .tw-au { margin-left: auto; font-size: .78rem; color: #12305b; }
+
+        .tw-now { margin: 1rem 0 0; padding: .9rem 1rem; background: #faf8f4;
+                  border: 1px solid #e6e1d8; border-radius: 10px; }
+        .tw-now[hidden] { display: none !important; }
+        .tw-now h2 { margin: 0 0 .3rem; font-size: 1.12rem; letter-spacing: -.01em; }
+        .tw-now p { margin: 0 0 .6rem; font-size: .95rem; line-height: 1.6; color: #55504a; }
+        /* The guide's aside, second person, one thing to notice. Set apart
+           from the description the way the Freedom Trail sets Yiki's notes. */
+        .tw-note { margin: .55rem 0 .6rem; padding-left: .85rem; border-left: 2px solid #cfc9bd;
+                   color: #4a453d; font-size: .93rem; line-height: 1.6; }
+        .tw-note .tw-guide { font-weight: 750; color: #12305b; margin-right: .5rem; }
+        .tw-show img { width: 100%; border-radius: 8px; display: block; margin: .4rem 0 .6rem; }
+        .tw-guideplay { display: flex; gap: .6rem; align-items: center; margin: .5rem 0 .8rem;
+                        font-size: .88rem; color: #6b655b; }
+        .tw-guideplay audio { width: 100%; }
+        .tw-noguide { font-size: .84rem; color: #8a8378; }
+        .tw-tip { font-size: .88rem; color: #6b655b; }
+        .tw-tip b { color: #14110c; }
+
+        /* A collection: one card per member, the map holds all of them. */
+        .tw-cards { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem; }
+        .tw-card { border: 1px solid #e6e1d8; border-radius: 10px; padding: .85rem 1rem;
+                   background: #faf8f4; }
+        .tw-card h2 { margin: 0 0 .25rem; font-size: 1.05rem; }
+        .tw-card h2 a { color: #12305b; text-decoration: none; border-bottom: 2px solid #12305b; }
+        .tw-card p { margin: 0 0 .35rem; font-size: .9rem; line-height: 1.55; color: #55504a; }
+        .tw-card .tw-meta { font-size: .8rem; }
+        .tw-foot { margin: 1.6rem 0 0; font-size: .84rem; color: #8a8378; line-height: 1.55; }
+        .tw-error { padding: 1rem; border: 1px solid #e6c9c9; border-radius: 10px; color: #6b3b3b; }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="right">
+            <a href="/destination-book">Destination Book</a>
+            <a href="/trip-planner">Trip Planner</a>
+            <a href="/">Home</a>
+        </div>
+    </header>
+
+    <div class="tw-wrap">
+        <p class="tw-eyebrow" id="twEyebrow"></p>
+        <h1 id="twTitle">Loading the tour&hellip;</h1>
+        <p class="tw-lead" id="twLead"></p>
+
+        <div class="tw-stats" id="twStats" hidden>
+            <span class="tw-stat"><b id="twStops"></b>stops</span>
+            <span class="tw-stat"><b id="twMiles"></b>miles</span>
+            <span class="tw-stat"><b id="twWalk"></b>walking</span>
+            <span class="tw-stat"><b id="twInside"></b>inside</span>
+        </div>
+
+        <div class="tw-cols">
+            <div>
+                <div id="twMap"></div>
+                <div class="tw-now" id="twNow" hidden>
+                    <h2 id="twNowName"></h2>
+                    <div class="tw-show" id="twShow" hidden><img id="twShowImg" alt="" loading="lazy"></div>
+                    <div class="tw-note" id="twNote" hidden></div>
+                    <div class="tw-guideplay" id="twGuide" hidden><span>Listen:</span><audio id="twAudio" controls preload="none"></audio></div>
+                    <p class="tw-noguide" id="twNoGuide" hidden>No recording for this stop yet.</p>
+                    <p id="twNowDesc"></p>
+                    <p class="tw-tip" id="twTip" hidden></p>
+                </div>
+            </div>
+            <div>
+                <p class="tw-list-h" id="twListH">The walk, in order</p>
+                <ul class="tw-list" id="twList"></ul>
+                <ul class="tw-cards" id="twCards" hidden></ul>
+            </div>
+        </div>
+
+        <p class="tw-foot" id="twFoot">Distances are straight-line estimates between stops, not walking routes.
+           Times inside are what a visitor who actually stops really spends.</p>
+    </div>
+
+<script src="/i18n.js"></script>
+<script src="/vendor/leaflet/leaflet.js"></script>
+<script>
+(function () {
+    "use strict";
+    /* psxT answers null for a line the pack has no entry for, and the
+       English reader loads no pack at all, so every miss falls back to the
+       English written here (the Mall page does the same). */
+    function T(en) { return (window.psxT ? window.psxT(en) : en) || en; }
+    function F(p, v) {
+        var out = window.psxFmt ? window.psxFmt(p, v) : null;
+        return out || p.replace(/\{(\w+)\}/g, function (_, k) { return v[k]; });
+    }
+
+    var id = (location.pathname.match(/\/tour\/([a-z0-9-]+)/) || [])[1] || "";
+    var listEl = document.getElementById("twList"), cardsEl = document.getElementById("twCards");
+    var map = null, layer = null, dots = {}, stops = [], trail = null, dests = {}, recorded = {}, current = -1;
+    var audioEl = document.getElementById("twAudio");
+
+    function minutes(m) {
+        m = Math.round(m || 0);
+        if (m < 60) return m + " " + T("min");
+        var h = Math.floor(m / 60), r = m % 60;
+        return r ? h + " " + T("hr") + " " + r + " " + T("min") : h + " " + T("hr");
+    }
+
+    function fail(msg) {
+        document.getElementById("twTitle").textContent = T("This tour is not here");
+        var p = document.getElementById("twLead");
+        p.className = "tw-error"; p.textContent = msg;
+    }
+
+    function ensureMap() {
+        if (map) return map;
+        map = L.map("twMap", { scrollWheelZoom: false });
+        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    { attribution: "&copy; OpenStreetMap contributors", maxZoom: 19 }).addTo(map);
+        return map;
+    }
+
+    /* ---------------- one trail ---------------- */
+    function paintTrail(t) {
+        trail = t; stops = t.stops || [];
+        var city = t.city ? (window.PSX_CITY_NAMES || {})[t.city] || t.city : "";
+        var eyebrow = document.getElementById("twEyebrow");
+        eyebrow.textContent = "";
+        if (t.collection) {
+            var a = document.createElement("a");
+            a.href = "/tour/" + t.collection;
+            a.textContent = T("Part of the Ivy League tour");
+            eyebrow.appendChild(a);
+            if (city) eyebrow.appendChild(document.createTextNode(" · " + city));
+        } else {
+            eyebrow.textContent = city;
+        }
+        document.getElementById("twTitle").textContent = t.name;
+        document.getElementById("twLead").textContent = t.summary || "";
+        document.title = t.name + ", Plateau Strategy Solution Lab";
+
+        var st = document.getElementById("twStats"); st.hidden = false;
+        document.getElementById("twStops").textContent = stops.length;
+        document.getElementById("twMiles").textContent = ((t.length_m || 0) / 1609.344).toFixed(1);
+        document.getElementById("twWalk").textContent = minutes(t.walk_min_total);
+        document.getElementById("twInside").textContent = minutes(t.inside_min_total);
+
+        listEl.innerHTML = "";
+        stops.forEach(function (s, i) {
+            var li = document.createElement("li");
+            var b = document.createElement("button");
+            b.type = "button"; b.className = "tw-stop";
+            var meta = [];
+            if (s.walk_min_from_prev) meta.push(minutes(s.walk_min_from_prev) + " " + T("walk"));
+            if (s.inside_min) meta.push(minutes(s.inside_min) + " " + T("inside"));
+            b.innerHTML = '<span class="n"></span><span><span class="tw-name"></span><span class="tw-meta"></span></span><span class="tw-au"></span>';
+            b.querySelector(".n").textContent = s.n;
+            b.querySelector(".tw-name").textContent = s.name;
+            b.querySelector(".tw-meta").textContent = meta.join(" · ");
+            b.addEventListener("click", function () { show(i, true); });
+            li.appendChild(b); listEl.appendChild(li);
+        });
+
+        var m = ensureMap();
+        if (layer) layer.remove();
+        layer = L.layerGroup().addTo(m);
+        var line = stops.map(function (s) { return [s.lat, s.lon]; });
+        if (line.length > 1) L.polyline(line, { color: "#12305b", weight: 3, opacity: .75 }).addTo(layer);
+        stops.forEach(function (s, i) {
+            var d = L.circleMarker([s.lat, s.lon], { radius: 6, color: "#12305b", weight: 2,
+                                                     fillColor: "#fff", fillOpacity: 1 }).addTo(layer);
+            d.bindTooltip(s.n + ". " + s.name, { direction: "top", offset: [0, -6] });
+            d.on("click", function () { show(i, true); });
+            dots[i] = d;
+        });
+        setTimeout(function () {
+            m.invalidateSize();
+            if (line.length) m.fitBounds(L.latLngBounds(line).pad(0.15));
+        }, 60);
+        show(0, false);
+    }
+
+    function audioFor(s, entry) {
+        /* Recordings are read from the manifest, never probed: a page that
+           asks for eleven files that do not exist teaches everyone to ignore
+           errors (TOUR_STANDARD.md, the traps). Two homes: a trail stop
+           recorded by the trail recorder as <trail>-stop-<n>.mp3, or the book
+           entry's own guide. */
+        var lang = null;
+        try { lang = localStorage.getItem("ps_lang"); } catch (e) {}
+        var cands = [];
+        if (lang && lang !== "en") cands.push(trail.id + "-stop-" + s.n + "." + lang + ".mp3");
+        cands.push(trail.id + "-stop-" + s.n + ".mp3");
+        for (var i = 0; i < cands.length; i++) if (recorded[cands[i]]) return "/media/audio/" + cands[i];
+        if (entry && entry.audio) return entry.audio;
+        return "";
+    }
+
+    function silence() {
+        try { audioEl.pause(); } catch (e) {}
+        if (audioEl.getAttribute("src")) { audioEl.removeAttribute("src"); try { audioEl.load(); } catch (e) {} }
+    }
+
+    function show(i, fromUser) {
+        var s = stops[i]; if (!s) return;
+        current = i;
+        Array.prototype.forEach.call(listEl.querySelectorAll(".tw-stop"), function (b, k) {
+            b.setAttribute("aria-current", k === i ? "true" : "false");
+        });
+        Object.keys(dots).forEach(function (k) {
+            dots[k].setStyle({ fillColor: String(k) === String(i) ? "#12305b" : "#fff", radius: String(k) === String(i) ? 8 : 6 });
+        });
+        if (map && fromUser) map.panTo([s.lat, s.lon]);
+
+        var entry = s.book_slug ? dests[s.book_slug] : null;
+        var box = document.getElementById("twNow"); box.hidden = false;
+        document.getElementById("twNowName").textContent = s.n + ". " + s.name;
+        document.getElementById("twNowDesc").textContent = s.desc || (entry && entry.desc) || "";
+        var note = document.getElementById("twNote");
+        if (s.yiki) {
+            note.hidden = false; note.innerHTML = "";
+            var g = document.createElement("span"); g.className = "tw-guide"; g.textContent = "Yiki";
+            note.appendChild(g); note.appendChild(document.createTextNode(s.yiki));
+        } else { note.hidden = true; note.textContent = ""; }
+        var tip = document.getElementById("twTip");
+        if (entry && entry.tip) { tip.hidden = false; tip.innerHTML = ""; var b = document.createElement("b"); b.textContent = T("Tip") + " "; tip.appendChild(b); tip.appendChild(document.createTextNode(entry.tip)); }
+        else { tip.hidden = true; tip.textContent = ""; }
+        var showEl = document.getElementById("twShow"), img = document.getElementById("twShowImg");
+        var photo = entry && (entry.photo || (entry.photos && entry.photos[0]));
+        if (photo) { img.src = typeof photo === "string" ? photo : (photo.src || ""); img.alt = s.name; showEl.hidden = !img.src; }
+        else { showEl.hidden = true; img.removeAttribute("src"); }
+
+        silence();
+        var src = audioFor(s, entry);
+        var gp = document.getElementById("twGuide"), ng = document.getElementById("twNoGuide");
+        if (src) { audioEl.setAttribute("src", src); gp.hidden = false; ng.hidden = true; }
+        else { gp.hidden = true; ng.hidden = false; }
+        Array.prototype.forEach.call(listEl.querySelectorAll(".tw-stop"), function (b, k) {
+            var st = stops[k]; var e = st.book_slug ? dests[st.book_slug] : null;
+            b.querySelector(".tw-au").textContent = audioFor(st, e) ? "♪" : "";
+        });
+    }
+
+    /* ---------------- a collection ---------------- */
+    function paintCollection(t, all) {
+        document.getElementById("twEyebrow").textContent = T("Eight campuses, eight cities");
+        document.getElementById("twTitle").textContent = t.name;
+        document.getElementById("twLead").textContent = t.summary || "";
+        document.title = t.name + ", Plateau Strategy Solution Lab";
+        document.getElementById("twListH").textContent = T("The campuses, in the order they were founded");
+        listEl.hidden = true; cardsEl.hidden = false; cardsEl.innerHTML = "";
+        document.getElementById("twNow").hidden = true;
+        document.getElementById("twFoot").textContent = T("Each campus is its own walking tour in its own city. Open one to see its stops, its map and its notes.");
+        var byId = {}; all.forEach(function (x) { byId[x.id] = x; });
+        var members = (t.members || []).map(function (m) { return byId[m]; }).filter(Boolean);
+        members.sort(function (a, b) { return (a.founded || 0) - (b.founded || 0); });
+        var m = ensureMap(); if (layer) layer.remove(); layer = L.layerGroup().addTo(m);
+        var pts = [];
+        var totalStops = 0, totalInside = 0;
+        members.forEach(function (x) {
+            var li = document.createElement("li"); li.className = "tw-card";
+            var h = document.createElement("h2"); var a = document.createElement("a");
+            a.href = "/tour/" + x.id; a.textContent = x.school || x.name; h.appendChild(a); li.appendChild(h);
+            var meta = document.createElement("span"); meta.className = "tw-meta";
+            var city = (window.PSX_CITY_NAMES || {})[x.city] || x.city || "";
+            meta.textContent = F("{city} · founded {year} · {n} stops · {walk} walking · {inside} inside",
+                { city: city, year: x.founded || "", n: (x.stops || []).length, walk: minutes(x.walk_min_total), inside: minutes(x.inside_min_total) });
+            li.appendChild(meta);
+            var p = document.createElement("p"); p.textContent = x.summary || ""; li.appendChild(p);
+            cardsEl.appendChild(li);
+            totalStops += (x.stops || []).length; totalInside += x.inside_min_total || 0;
+            var s0 = (x.stops || [])[0];
+            if (s0) {
+                pts.push([s0.lat, s0.lon]);
+                var d = L.circleMarker([s0.lat, s0.lon], { radius: 9, color: "#12305b", weight: 2, fillColor: "#fff", fillOpacity: 1 }).addTo(layer);
+                d.bindTooltip(x.school || x.name, { permanent: true, direction: "right", offset: [8, 0] });
+                d.on("click", function () { location.href = "/tour/" + x.id; });
+            }
+        });
+        var st = document.getElementById("twStats"); st.hidden = false;
+        document.getElementById("twStops").textContent = totalStops;
+        document.getElementById("twMiles").parentNode.hidden = true;
+        document.getElementById("twWalk").parentNode.hidden = true;
+        document.getElementById("twInside").textContent = minutes(totalInside);
+        setTimeout(function () { m.invalidateSize(); if (pts.length) m.fitBounds(L.latLngBounds(pts).pad(0.2)); }, 60);
+    }
+
+    /* ---------------- boot ---------------- */
+    if (!id) { fail(T("No tour was named in the address.")); return; }
+    var trailsP = fetch("/api/trails").then(function (r) { return r.json(); });
+    var destsP = fetch("/api/destinations").then(function (r) { return r.json(); }).catch(function () { return {}; });
+    var recP = fetch("/media/audio/_recorded.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
+    Promise.all([trailsP, destsP, recP]).then(function (res) {
+        var all = (res[0] && res[0].trails) || [];
+        dests = {};
+        ((res[1] && res[1].entries) || []).forEach(function (e) { if (e.slug) dests[e.slug] = e; });
+        window.PSX_CITY_NAMES = (res[1] && res[1].cities) || {};
+        recorded = res[2] || {};
+        var t = null;
+        for (var i = 0; i < all.length; i++) if (all[i] && all[i].id === id) { t = all[i]; break; }
+        if (!t) { fail(F("There is no tour called {id}.", { id: id })); return; }
+        if (t.kind === "collection") paintCollection(t, all); else paintTrail(t);
+    }).catch(function (e) { fail(T("The tour could not be loaded.")); });
+})();
+</script>
+</body>
+</html>

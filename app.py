@@ -3370,11 +3370,32 @@ PUBLIC_PAGES = [
     # a social post. For a licensed guide whose tours are the product, that
     # is the front door bricked up. [SEAN 2026-09-05: "check all of them".]
     ("/tours", "0.9", "weekly"),
+    # Every tour in trails.json that has no page of its own is served at
+    # /tour/<id>; they are added to the sitemap below, from the file, so a
+    # tour cannot be built and left unreachable (TOUR_STANDARD.md, "a way in").
     ("/agent", "0.6", "monthly"),
     ("/renter", "0.6", "monthly"),
     ("/deflator", "0.5", "monthly"),
     ("/board", "0.4", "monthly"),
 ]
+
+def _tour_pages():
+    """(/tour/<id>, priority, changefreq) for every trail without a hand-built
+    page. The two that have one keep it; the rest are reachable only here."""
+    handmade = {"freedom-trail": "/freedom-trail", "national-mall": "/national-mall"}
+    out = []
+    try:
+        with open(os.path.join(BASE_DIR, "trails.json"), encoding="utf-8") as f:
+            for t in (json.load(f).get("trails") or []):
+                tid = t.get("id")
+                if tid and tid not in handmade:
+                    out.append(("/tour/" + tid, "0.8", "monthly"))
+    except Exception:
+        pass
+    return out
+
+
+PUBLIC_PAGES = PUBLIC_PAGES + _tour_pages()
 OWNER_ONLY_PATHS = ["/dispatch", "/setup", "/archive", "/api/", "/deflator", "/discovery", "/pulse"]
 SITE_ORIGIN = os.environ.get("SITE_ORIGIN", "https://plateaustrategy.io").rstrip("/")
 # Referrers from our own pages are not a traffic source, they are navigation.
@@ -5911,6 +5932,31 @@ def page_national_mall():
 @app.route("/freedom-trail")
 def freedom_trail_page():
     return send_file(os.path.join(BASE_DIR, "freedom-trail.html"))
+
+
+@app.route("/tour/<tid>")
+def tour_page(tid):
+    """One page for every tour that has no hand-built page of its own.
+
+    [SEAN 2026-09-08: the Ivy League as a tour MECHANISM: eight campuses that
+    combine into one tour and are each a tour in their own city.] The page
+    reads /api/trails and draws the trail whose id is in the URL; a
+    collection (kind: "collection", members) draws its members as one map of
+    cards. An unknown id is a real 404, not a page that says "loading" for
+    ever: a crawler must never index /tour/anything as a page.
+    """
+    tid = (tid or "").strip().lower()
+    try:
+        with open(os.path.join(BASE_DIR, "trails.json"), encoding="utf-8") as f:
+            ids = {t.get("id") for t in (json.load(f).get("trails") or [])}
+    except Exception:
+        ids = set()
+    if tid not in ids:
+        return ("<div style='font-family:system-ui;padding:2rem'><h1>No such tour</h1>"
+                "<p><a href='/tours'>All tours &rarr;</a></p></div>", 404)
+    resp = send_file(os.path.join(BASE_DIR, "tour.html"))
+    resp.headers["Cache-Control"] = "no-cache"
+    return resp
 
 
 @app.route("/api/name/status")

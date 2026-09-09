@@ -175,6 +175,18 @@ adversarial review the routine's 25 minute ceiling cannot fit. The landmark
 routine must SKIP anything listed here and take the next unclaimed item in its
 queue instead. Remove a line the moment its work lands or is abandoned.
 
+- eeob and loc, BUILT AND REVIEWED 2026-09-08 (dc-form-eeob.js, dc-form-loc.js):
+  the Library of Congress passed two architecture rounds (5.5 then 8.5, no
+  blocking) and a rendering review (8.5, no blocking); the EEOB went 4 then
+  6.5 then a third round, with the rendering review finding a real geometry
+  fault (pavilions that projected 6 ft inverted their roof tapers into
+  self-intersecting quads) that is fixed and counted at zero. Two lessons
+  worth more than the buildings: (1) a polygon whose corners are listed
+  (low, high, high, low) is a LINE, and the drum windows of the Library were
+  invisible until a critic counted them; (2) an inset on a taper must be
+  clamped to the mass it sits on, or a shallow projection turns its roof
+  inside out. Claims released.
+
 - indian, rebuild in progress. LAWNC was undeclared so the form threw on every
   draw and the museum was never drawn at all; that is fixed and committed. The
   roof still reads as a flat mesa from above, a landscape tree paints on top of

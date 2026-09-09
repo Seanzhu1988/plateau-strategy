@@ -752,5 +752,14 @@
  "There is no tour called {id}.": "{id} というツアーはありません。",
  "The tour could not be loaded.": "ツアーを読み込めませんでした。",
  "{city} · founded {year} · {n} stops · {walk} walking · {inside} inside": "{city} · {year}年創立 · {n}か所 · 徒歩 {walk} · 見学 {inside}",
- "Distances are straight-line estimates between stops, not walking routes.": "距離は立ち寄り先の間の直線距離の目安で、実際の歩行ルートではありません。"
+ "Distances are straight-line estimates between stops, not walking routes.": "距離は立ち寄り先の間の直線距離の目安で、実際の歩行ルートではありません。",
+ "NEW · EIGHT CAMPUSES": "新着 · 八つのキャンパス",
+ "The Ivy League": "アイビーリーグ",
+ "Eight universities in eight cities, each a walking tour of its own, from Harvard Yard to Cornell's gorges, with every stop on a map, the time it really takes, and a guide's note at each.": "八つの街の八つの大学、それぞれが独立した徒歩ツアー。ハーバード・ヤードからコーネルの渓谷まで、すべての立ち寄り先を地図に載せ、実際にかかる時間とガイドのメモを添えました。",
+ "Pick a campus →": "キャンパスを選ぶ →",
+ "PHILADELPHIA WALK": "フィラデルフィアを歩く",
+ "Independence Hall to the Art Museum": "独立記念館から美術館へ",
+ "Nineteen stops across the city where the country was written: the Liberty Bell, the three halls of the first government, the oldest street of houses, the market, City Hall and the Rocky steps.": "国が書かれた街を横切る十九か所：自由の鐘、最初の政府の三つの議事堂、最古の住宅街、市場、市庁舎、そしてロッキーの階段。",
+ "Walk Philadelphia →": "フィラデルフィアを歩く →",
+ "Twenty-one stops from the Capitol and the Library of Congress to the Jefferson Memorial, by way of the White House. Turn each building in your hand before you stand in front of it.": "連邦議会議事堂と議会図書館からホワイトハウスを経てジェファーソン記念館まで二十一か所。建物の前に立つ前に、手の中で回してみてください。"
 }

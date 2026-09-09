@@ -83,6 +83,16 @@
        still gives it its own scene, which is the one the stop page mounts.
        Height 21.3 m is the published 70 ft on the south front. */
     { k: "whitehouse", n: "The White House", lat: 38.89765, lon: -77.03655, h: 21.3, form: "block", off: true, pad: 0 },
+    /* Its neighbour, the same reasoning: President's Park, not the Mall.
+       Height 41.0 m is the published 134'-7" of the centre pavilions above
+       the pavement (georgewbush-whitehouse.archives.gov EEOB fast facts). */
+    { k: "eeob", n: "Eisenhower Executive Office Building", lat: 38.897496, lon: -77.038648, h: 41.0, form: "block", off: true, pad: 0 },
+    /* THE LIBRARY OF CONGRESS IS ON THE MALL'S OWN AXIS, 400 m east of the
+       Capitol across First Street, so unlike the two above it stays in the
+       whole-Mall drawing: it stretches the east edge by a tenth and shows the
+       Capitol with its real neighbour. Height 59.4 m is the published 195 ft
+       to the top of the dome (aoc.gov; bluffton.edu Jefferson Building page). */
+    { k: "loc", n: "Library of Congress", lat: 38.888711, lon: -77.004698, h: 59.4, form: "domed" },
   ];
   /* The Tidal Basin: an irregular water body, drawn as its rough outline
      rather than a rectangle, because the Jefferson Memorial stands ON its

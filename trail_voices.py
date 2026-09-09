@@ -50,10 +50,38 @@ import voice_guides as vg          # the ElevenLabs call, the manifest, the fing
 import guide_voices as gv          # who reads the trail in which language
 
 BASE = os.path.dirname(os.path.abspath(__file__))
+
+# ANY TRAIL, NOT ONLY THE FREEDOM TRAIL. [SEAN 2026-09-08: "phliadelphia use
+# YIKI voice"] --trail <id> picks a trail from trails.json; its scripts live
+# in trail_scripts/<id>/stop-NN.txt and record to media/audio/<id>-stop-N.mp3,
+# which is the name the generic tour page and the Mall page both look for.
+# The Freedom Trail keeps its original file names (trail-stop-N.mp3) because
+# its page already plays them; renaming recordings that exist is how a page
+# goes silent. The stop count comes from trails.json, never from a constant.
 TRAIL = "freedom-trail"
+if "--trail" in sys.argv:
+    try:
+        TRAIL = sys.argv[sys.argv.index("--trail") + 1].strip().lower()
+    except Exception:
+        pass
 SCRIPTS = os.path.join(BASE, "trail_scripts", TRAIL)
 OUTDIR = os.path.join(BASE, "media", "audio")
-STOPS = 16
+LEGACY_PREFIX = {"freedom-trail": "trail-stop-"}
+
+
+def _stop_count(trail):
+    try:
+        import json
+        with open(os.path.join(BASE, "trails.json"), encoding="utf-8") as f:
+            for t in json.load(f).get("trails", []):
+                if t.get("id") == trail:
+                    return len(t.get("stops") or [])
+    except Exception:
+        pass
+    return 0
+
+
+STOPS = _stop_count(TRAIL) or (16 if TRAIL == "freedom-trail" else 0)
 
 # About 700 words is five minutes at an unhurried narrating pace. An English stop
 # shorter than this is a card, not a deep guide, and is held back until it grows.
@@ -66,7 +94,8 @@ def script_path(n, lang):
 
 
 def out_path(n, lang):
-    name = "trail-stop-%d.mp3" % n if lang == "en" else "trail-stop-%d.%s.mp3" % (n, lang)
+    prefix = LEGACY_PREFIX.get(TRAIL, TRAIL + "-stop-")
+    name = "%s%d.mp3" % (prefix, n) if lang == "en" else "%s%d.%s.mp3" % (prefix, n, lang)
     return os.path.join(OUTDIR, name)
 
 
@@ -76,7 +105,10 @@ def out_path(n, lang):
 # like everything else, so a change of words OR of voice makes it stale and
 # the next run remakes it without anyone having to remember.
 def overview_paths(lang):
-    script = os.path.join(BASE, "trail_scripts", "freedom-trail-%s.txt" % lang)
+    script = os.path.join(BASE, "trail_scripts", "%s-%s.txt" % (TRAIL, lang))
+    if TRAIL != "freedom-trail":
+        return script, os.path.join(OUTDIR, "%s-overview.mp3" % TRAIL if lang == "en"
+                                    else "%s-overview.%s.mp3" % (TRAIL, lang))
     out = os.path.join(OUTDIR, "trail-freedom.mp3" if lang == "en"
                        else "trail-freedom.%s.mp3" % lang)
     return script, out
@@ -92,6 +124,9 @@ def main():
         except Exception:
             pass
 
+    if not STOPS:
+        print("No trail called %s in trails.json, or it has no stops." % TRAIL)
+        return 1
     who = gv.reader_for("trail", lang)
     if not who:
         print("No trail reader chosen for %s yet. Set one in guide_voices.py, "

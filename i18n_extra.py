@@ -3728,3 +3728,29 @@ EXTRA.update({
     "Distances are straight-line estimates between stops, not walking routes.": [
         "各站之间的距离为直线估算，并非实际步行路线。", "Las distancias son estimaciones en línea recta entre paradas, no rutas a pie.", "거리는 정거장 사이의 직선 추정치이며 실제 도보 경로가 아닙니다.", "Khoảng cách là ước tính đường thẳng giữa các điểm dừng, không phải lộ trình đi bộ."],
 })
+
+# ---- landing page: the Ivy League and Philadelphia cards, 2026-09-08 ----
+EXTRA.update({
+    "NEW · EIGHT CAMPUSES": [
+        "新 · 八所校园", "NUEVO · OCHO CAMPUS", "신규 · 여덟 캠퍼스", "MỚI · TÁM KHUÔN VIÊN"],
+    "The Ivy League": [
+        "常春藤联盟", "La Ivy League", "아이비리그", "Ivy League"],
+    "Eight universities in eight cities, each a walking tour of its own, from Harvard Yard to Cornell's gorges, with every stop on a map, the time it really takes, and a guide's note at each.": [
+        "八所大学，八座城市，每所都是一条独立的步行路线：从哈佛园到康奈尔的峡谷，每一站都在地图上，标明真实所需时间，并附导游讲解。", "Ocho universidades en ocho ciudades, cada una un recorrido a pie propio, desde Harvard Yard hasta las gargantas de Cornell, con cada parada en el mapa, el tiempo que realmente lleva y una nota del guía en cada una.", "여덟 개 도시의 여덟 개 대학, 각각이 독립된 도보 투어입니다. 하버드 야드에서 코넬의 협곡까지, 모든 정거장을 지도에 담고 실제 소요 시간과 가이드의 메모를 함께 드립니다.", "Tám trường đại học ở tám thành phố, mỗi trường là một hành trình đi bộ riêng, từ Harvard Yard đến các hẻm núi của Cornell, mọi điểm dừng đều có trên bản đồ, thời gian thực tế và ghi chú của hướng dẫn viên."],
+    "Pick a campus →": [
+        "选择一所校园 →", "Elige un campus →", "캠퍼스 고르기 →", "Chọn một khuôn viên →"],
+    "PHILADELPHIA WALK": [
+        "费城步行", "PASEO POR FILADELFIA", "필라델피아 산책", "ĐI BỘ PHILADELPHIA"],
+    "Independence Hall to the Art Museum": [
+        "从独立厅到艺术博物馆", "Del Independence Hall al Museo de Arte", "독립기념관에서 미술관까지", "Từ Independence Hall đến Bảo tàng Nghệ thuật"],
+    "Nineteen stops across the city where the country was written: the Liberty Bell, the three halls of the first government, the oldest street of houses, the market, City Hall and the Rocky steps.": [
+        "穿越这座写下美国的城市，共十九站：自由钟、第一届政府的三座厅堂、最古老的民居街道、市场、市政厅和洛奇台阶。", "Diecinueve paradas por la ciudad donde se escribió el país: la Campana de la Libertad, las tres salas del primer gobierno, la calle de casas más antigua, el mercado, el Ayuntamiento y las escaleras de Rocky.", "나라가 쓰여진 도시를 가로지르는 열아홉 정거장: 자유의 종, 첫 정부의 세 홀, 가장 오래된 주택가, 시장, 시청, 그리고 로키 계단.", "Mười chín điểm dừng qua thành phố nơi đất nước được viết nên: Chuông Tự do, ba tòa nhà của chính phủ đầu tiên, con phố nhà ở cổ nhất, khu chợ, Tòa thị chính và bậc thang Rocky."],
+    "Walk Philadelphia →": [
+        "走进费城 →", "Recorre Filadelfia →", "필라델피아 걷기 →", "Đi bộ Philadelphia →"],
+})
+
+# ---- National Mall lead, twenty-one stops, 2026-09-08 ----
+EXTRA.update({
+    "Twenty-one stops from the Capitol and the Library of Congress to the Jefferson Memorial, by way of the White House. Turn each building in your hand before you stand in front of it.": [
+        "从国会大厦和国会图书馆出发，途经白宫，直到杰斐逊纪念堂，共二十一站。在亲临每座建筑之前，先把它放在手中转一转。", "Veintiuna paradas desde el Capitolio y la Biblioteca del Congreso hasta el Monumento a Jefferson, pasando por la Casa Blanca. Gira cada edificio en tu mano antes de plantarte delante de él.", "국회의사당과 의회도서관에서 백악관을 거쳐 제퍼슨 기념관까지 스물한 정거장. 건물 앞에 서기 전에 손안에서 먼저 돌려 보세요.", "Hai mươi mốt điểm dừng từ Điện Capitol và Thư viện Quốc hội, qua Nhà Trắng, đến Đài tưởng niệm Jefferson. Hãy xoay từng tòa nhà trong tay trước khi đứng trước nó."],
+})

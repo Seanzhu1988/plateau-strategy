@@ -50,6 +50,31 @@ land because every stop falls back to honest massing. Never block a tour on them
 
 ---
 
+## Collections: one tour made of tours
+
+[SEAN 2026-09-08: the Ivy League as "one of tour mechanism ... eight schools
+... combine into one tour ... in different cities ... become one tour
+individually into different city too ... make sure this different tours not
+conflicting each other".]
+
+A trail is one walk in one city. A COLLECTION is a trail in trails.json with
+`kind: "collection"`, a `members` list of trail ids, a name and a summary, and
+no stops of its own. Each member carries `collection: "<id>"` and its own
+`city`, so it is found from the collection page and from its city alike. The
+rule that keeps them from conflicting is that nothing is copied: a stop lives
+in exactly one trail, a book entry has exactly one slug, and the collection
+owns nothing but the list. Penn and the Philadelphia walk share a city and not
+one stop.
+
+`/tour/<id>` serves every trail that has no hand-built page (tour.html). A
+trail id draws its stops; a collection id draws its members as cards on one
+map, each a link to the member's own page. The sitemap adds every such id from
+the file, so a tour cannot be built and left unreachable.
+
+Trail recordings for these pages: `python3 trail_voices.py --trail <id>`
+reads trail_scripts/<id>/stop-NN.txt and records media/audio/<id>-stop-N.mp3
+in the trail voice (Yiki in English, Pangge in Chinese, per guide_voices.py).
+
 ## The route
 
 - Coordinates from a real source, never estimated. Wikidata `P625` is usually
