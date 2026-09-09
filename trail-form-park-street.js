@@ -67,7 +67,7 @@
   var ground = H.ground, slab = H.slab, box = H.box, archOpening = H.archOpening,
       roundWindow = H.roundWindow, octStage = H.octStage, octDetail = H.octDetail,
       columnAt = H.columnAt, balustrade = H.balustrade,
-      wallRun = H.wallRun, apseRun = H.apseRun;
+      wallRun = H.wallRun, apseRun = H.apseRun, shadow = H.shadow;
 
   function parkStreet(ctx) {
     var BRICK = "#9a4b3a", BRICK_E = "#6d3327", BRICK_D = "#89412f";
@@ -148,10 +148,30 @@
        PUBLISHED lot, 80 by 118, is untouched; only the grass around it
        moved, and no published dimension is involved in it either way. */
     (function () {
-      var q = [ctx.project(bx0 - 21, by0 - 6, 0.15), ctx.project(bx1 - 4, by0 - 6, 0.15),
-               ctx.project(bx1 - 4, byS + APSE_R - 5, 0.15),
-               ctx.project(bx0 - 21, byS + APSE_R - 5, 0.15)];
-      out.push({ svg: ctx.poly(q, "#a9a294", null, 0), depth: -9e8 });
+      /* PAID 2026-09-09, and the OWED note's own diagnosis was incomplete.
+         It recorded "a thin band on the -x side rather than a shadow" and
+         blamed the light's direction. The direction was the one correct
+         thing here: the sun is off +x,+y and the shadow does go to -x,-y.
+         What the RENDER showed, cropped to the base, was the apse standing
+         OFF the mat: the shadow was an axis-aligned rectangle inset four
+         feet inside the +x wall and five feet short of the apse tip, so the
+         round east end -- half this building's plan -- overhung it and met
+         bright pavement with nothing under it. A rectangle cannot be the
+         shadow of a building with a semicircular end.
+         It now takes the real FOOTPRINT, walls plus the one foot of water
+         table, the straight bays and then the apse swept as an arc, and the
+         shared helper sweeps that outline along the light by 0.9 of the
+         40 ft eaves. Touching the base is a property of the sweep, not of a
+         chosen offset, so the gap cannot come back. */
+      var WT = 1.0;      /* the water table, one foot proud; PL below is the
+                            same foot, declared after this block, so it is
+                            written out here rather than read before it is set */
+      var foot = [[bx0 - WT, by0 - WT], [bx1 + WT, by0 - WT]];
+      for (var a = 0; a <= 18; a++) {
+        var t = (a / 18) * Math.PI;                 /* 0 at +x, PI at -x */
+        foot.push([(APSE_R + WT) * Math.cos(t), byS + (APSE_R + WT) * Math.sin(t)]);
+      }
+      out.push(shadow(ctx, foot, EAVE, 0.15));
     })();
 
     /* the water table, one foot proud of the wall and one foot of stone */

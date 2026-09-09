@@ -2262,3 +2262,85 @@ three models a run, one fix each, and strike the items as they are paid.
   each struck on a plane rather than on the facet, so at some yaws it will
   drift off the facet edge, and octDetail already does this correctly;
   (c) the belfry louvres read as a radiator at map scale.
+
+### Paid 2026-09-09 (the landmark routine)
+
+- THE TRAIL SHADOW, park-street OWED (a), and it was the shared fix the note
+  asked for: "worth solving once for all of them rather than five times."
+  WHAT LOOKING SHOWED THAT THE NOTE DID NOT. The note read "Park Street's
+  shadow falls away from the page's default camera, so it reads as a thin
+  band on the -x side rather than as a shadow" and blamed the light's
+  DIRECTION. The direction was the one thing that was right: LIGHT is
+  [0.60,0.30,0.68], the sun stands off +x and +y, and that shadow does go to
+  -x,-y. Cropped to the base, the render showed the real fault: the shadow
+  was an axis-aligned RECTANGLE, inset four feet inside the +x wall and five
+  feet short of the apse tip, under a building whose east end is a
+  SEMICIRCLE of radius 39. Half the plan overhung its own shadow and met
+  bright pavement with nothing under it. A rectangle cannot be the shadow of
+  a building with a round end. That is the old-south lesson a second time: a
+  guessed cause in an OWED note is a hypothesis, not a diagnosis.
+  READING THE OTHER STOPS THEN FOUND A WORSE FAULT THAN THE ONE FILED.
+  Three forms had each hand-copied a private shadow helper and the copies had
+  drifted apart, two rgba fills at different opacities and one opaque colour
+  with a stroke. Every call in all three passed a POSITIVE dx,dy, which
+  throws the shadow TOWARD the light: bunker-hill (7,4), (6,3.5), (3,1.8),
+  old-north (9,5), faneuil-hall (7,4). Three stops were shading the ground on
+  the sunny side and lighting it on the shaded one. Nobody had filed it,
+  because a shadow on the wrong side still looks like a shadow.
+  THE FIX, in trail-3d.js and therefore in every stop: one shadow helper,
+  ported from dc-3d.js where this idiom was already correct. It takes the
+  FOOTPRINT, not a rectangle, and sweeps it along the light, so the outline
+  and the outline slid by (dx,dy) walked back make one polygon that always
+  touches the base it belongs to. A gap under the building is now impossible
+  rather than merely absent. Park Street hands it the real plan, the straight
+  bays and the apse as an arc. rectFoot() keeps the rectangle-and-centre call
+  the simple stops read well with, and their last argument is now the casting
+  mass's HEIGHT, not an offset.
+  THE LENGTH IS CAPPED, and that is a drawing decision, declared and not
+  buried: 0.9 of Bunker Hill's published 221 ft is a 199 ft finger across a
+  30 ft footprint, and the stage fits itself to everything the scene draws,
+  shadows included, so it doubles the frame's width and halves the monument.
+  That is the pad lesson from Park Street and Old South a fourth time. The
+  sweep is held to 1.4 of the footprint's own longest span.
+  Verified by LOOKING at every model the shared edit touches, which is the
+  dcwar rule: park-street at yaw -0.62 and -2.10, bunker-hill, old-north and
+  faneuil-hall at -0.62. All four now throw left, away from the sun, and none
+  regressed.
+  STILL OWED on the trail: (b) the Revere house's two pavement pads overlap
+  at the corner and read as two rectangles rather than as a courtyard and a
+  street; (c) the Old State House roof is the largest surface in that model
+  and carries nothing, and no source reached publishes dormers or plant.
+
+- THE MET STAIRCASE, met OWED (a), "the staircase has no cheek walls, so from
+  an oblique angle it fans out as a stack of loose planks beside the building
+  rather than as masonry." The note was right about the picture and the
+  render at yaw -1.15 confirms it exactly: six thin boards with daylight
+  between their ends, leaning on the front.
+  THE CAUSE IS SIMPLER THAN "NO CHEEK WALLS". Reading the loop, each step was
+  a tread quad and a front riser and NOTHING ELSE. The flight had no end
+  faces at all, so the eye was seeing each tread's edge in turn. Nothing was
+  missing but the sides.
+  SO THE FIX IS FACES, NOT A CHEEK WALL, and that distinction is the point.
+  The Met's real flanking plinths have no published width in any source this
+  file has reached, and an invented parapet is worse than an honest absence.
+  A face that the drawn solid already implies is not an invention: it is a
+  face that was left out. New sideQuad() beside frontQuad(), and each step
+  draws its end at its own half-width from the plaza to its own tread. The
+  flight SPLAYS, 58 half-width at the top to 76 at the street, and push order
+  is paint order here, so the wider lower courses paint over the narrower
+  ones above and the stack resolves into one raking cheek that steps out as
+  it descends, which is what a splayed flight does.
+  THE HOUR THIS COST, and the trap worth writing down: after the edit the
+  render looked UNCHANGED and two crops of the stair showed nothing, which
+  reads as a fix that did not fire. The polygons were there. met-3d.js wraps
+  its output in <g transform="translate(...) scale(3.1203)">, so the raw
+  coordinates in the SVG are NOT screen coordinates, and every guess about
+  where to crop was wrong by that transform. What settled it in one render
+  was drawing the new faces in #ff0000: they appeared instantly, exactly at
+  the flight's left end, correctly raked. WHEN A CHANGE SHOULD BE VISIBLE AND
+  IS NOT, COLOUR IT AND RENDER ONCE, before doubting the geometry or the
+  arithmetic. Verified in stone at yaw -1.15 pitch 0.42.
+  STILL OWED on the Met: (b) the roof is still the largest surface in the
+  model and carries nothing but the three banks; (c) the wings away from the
+  front run are still flat slabs drawn by shellSolid, and bays there are a
+  separate and larger change.

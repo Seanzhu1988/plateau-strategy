@@ -99,13 +99,19 @@
   var roundWindow = H.roundWindow, slab = H.slab, gableRoof = H.gableRoof;
   var octStage = H.octStage, domeCap = H.domeCap, depthOf = H.depthOf;
 
-  function shadow(ctx, cx, cy, w, d, z, dx, dy) {
-    var P = ctx.project;
-    return { svg: ctx.poly([P(cx - w / 2 + dx, cy - d / 2 + dy, z),
-                            P(cx + w / 2 + dx, cy - d / 2 + dy, z),
-                            P(cx + w / 2 + dx, cy + d / 2 + dy, z),
-                            P(cx - w / 2 + dx, cy + d / 2 + dy, z)],
-                           "#a9ae9c", "#a9ae9c", 0.3), depth: -9.9e8 };
+  /* The private copy of this helper is GONE, 2026-09-09. Three stops had each
+     hand-copied it and the copies had drifted -- two rgba fills at different
+     opacities and one opaque colour with a stroke -- but the fault that
+     mattered was in the CALLS: every one passed a positive dx,dy, which
+     throws the shadow TOWARD the light. LIGHT is [0.60,0.30,0.68], the sun
+     stands off +x and +y, and a shadow goes to -x,-y. These stops were
+     shading the ground on the sunny side and lighting it on the shaded one.
+     trail-3d.js now owns one shadow for every stop: it sweeps a FOOTPRINT
+     along the light by 0.9 of the height, capped so it cannot set the frame.
+     This wrapper keeps the rectangle-and-centre call these scenes read well
+     with; the last argument is now the casting mass's HEIGHT, not an offset. */
+  function shadow(ctx, cx, cy, w, d, z, h) {
+    return H.shadow(ctx, H.rectFoot(cx, cy, w, d), h, z);
   }
 
   function faneuilHall(ctx) {
@@ -141,7 +147,7 @@
        everything drawn, and a wide apron shrinks the building on the page;
        that is the Bunker Hill lesson and it costs nothing to obey. */
     out.push(ground(ctx, 0, 0, 120, 120, 0, PAVE, KERB));
-    out.push(shadow(ctx, 0, 0, W + 14, L + 14, 0.02, 7, 4));
+    out.push(shadow(ctx, 0, 0, W + 14, L + 14, 0.02, 55));  /* eaves, not the cupola */
     out = out.concat(slab(ctx, 0, 0, W + 8, L + 8, 0.02, 0.9, "#cfc9bb", KERB, -9.85e8));
 
     /* the granite water table, then the brick above it: two masses, so the

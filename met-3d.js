@@ -278,6 +278,19 @@
     return { svg: poly([pa, pb, pc, pd], fill, edge, sw || 0.6),
              depth: Math.max(pa[2], pb[2]) };
   }
+  /* a quad standing on a SIDE of the front's t axis: d-range across, z up.
+     sgn is which way it faces, +1 toward growing t. Written 2026-09-09 to
+     close the ends of the grand staircase, which had none. */
+  function sideQuad(t, d1, d2, z1, z2, sgn, fill, edge, sw) {
+    var nx = FR.u[0] * sgn, ny = FR.u[1] * sgn;
+    if (!faceVisible(nx, ny)) return null;
+    var a = fp(t, d1), b = fp(t, d2);
+    var pa = project(a[0], a[1], z2), pb = project(b[0], b[1], z2),
+        pc = project(b[0], b[1], z1), pd = project(a[0], a[1], z1);
+    return { svg: poly([pa, pb, pc, pd], shade(fill, nx, ny, 0), edge, sw || 0.5),
+             depth: Math.max(pa[2], pb[2]) };
+  }
+
   /* THE FIFTH AVENUE FRONT, rebuilt 2026-09-05 to MODEL_STANDARD.md.
    * Published, and quoted so the next reader does not repeat the search:
    * Richard Morris Hunt's Beaux-Arts front opened December 1902; it is
@@ -527,6 +540,32 @@
       var riser = frontQuad(FR.tC - hw, FR.tC + hw, d2, zt - PLAT_Z / 6, zt,
                             shadeN(C.f1Top), C.shellEdge, 0.4);
       if (riser) stepParts.push(riser.svg);
+      /* THE ENDS OF THE FLIGHT, PAID 2026-09-09. The OWED note read "the
+         staircase has no cheek walls, so from an oblique angle it fans out
+         as a stack of loose planks beside the building rather than as
+         masonry", and the render at yaw -1.15 shows exactly that: six thin
+         boards with daylight logic at either end, leaning on the front.
+         Reading the geometry says why, and it is simpler than the note
+         guessed. Nothing was missing but the SIDES: each step was a tread
+         quad and a front riser and nothing else, so the flight had no end
+         faces at all and the eye was seeing each tread's edge in turn.
+         NO DIMENSION IS INVENTED HERE, which is why the fix is faces and not
+         a cheek wall. The Met's real flanking plinths have no published
+         width in any source this file has reached, and an invented parapet
+         is worse than an honest absence. A face that the drawn solid already
+         implies is not an invention: it is a face that was left out.
+         The flight SPLAYS, 58 half-width at the top to 76 at the street, so
+         each end face is drawn at its own step's half-width and runs from
+         the plaza to that step's tread. Lower steps are wider and are pushed
+         later, and push order is paint order here, so the wider courses paint
+         over the narrower ones above them and the stack resolves into one
+         raking masonry cheek that steps out as it descends, which is what a
+         splayed flight does. */
+      [-1, 1].forEach(function (sgn) {
+        var end = sideQuad(FR.tC + sgn * hw, d1, d2, 0, zt, sgn,
+                           C.f1Top, C.shellEdge, 0.5);
+        if (end) stepParts.push(end.svg);
+      });
       push(stepParts.join(""));        /* each step nearer the street */
     }
     return out;

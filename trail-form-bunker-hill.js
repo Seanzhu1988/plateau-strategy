@@ -67,14 +67,19 @@
       pyramidion = H.pyramidion, box = H.box, panel = H.panel,
       columnAt = H.columnAt, octStage = H.octStage;
 
-  /* Nothing in this renderer casts light, so a mass without a shadow floats.
-     Drawn on the ground plane, offset toward the light, at a depth just
-     above the pad so it never paints over the thing casting it. */
-  function shadow(ctx, cx, cy, w, d, z, dx, dy) {
-    var P = ctx.project;
-    var q = [P(cx - w / 2 + dx, cy - d / 2 + dy, z), P(cx + w / 2 + dx, cy - d / 2 + dy, z),
-             P(cx + w / 2 + dx, cy + d / 2 + dy, z), P(cx - w / 2 + dx, cy + d / 2 + dy, z)];
-    return { svg: ctx.poly(q, "rgba(90,96,86,0.20)", null, 0), depth: -1e9 + 2 };
+  /* The private copy of this helper is GONE, 2026-09-09. Three stops had each
+     hand-copied it and the copies had drifted -- two rgba fills at different
+     opacities and one opaque colour with a stroke -- but the fault that
+     mattered was in the CALLS: every one passed a positive dx,dy, which
+     throws the shadow TOWARD the light. LIGHT is [0.60,0.30,0.68], the sun
+     stands off +x and +y, and a shadow goes to -x,-y. These stops were
+     shading the ground on the sunny side and lighting it on the shaded one.
+     trail-3d.js now owns one shadow for every stop: it sweeps a FOOTPRINT
+     along the light by 0.9 of the height, capped so it cannot set the frame.
+     This wrapper keeps the rectangle-and-centre call these scenes read well
+     with; the last argument is now the casting mass's HEIGHT, not an offset. */
+  function shadow(ctx, cx, cy, w, d, z, h) {
+    return H.shadow(ctx, H.rectFoot(cx, cy, w, d), h, z);
   }
 
   function bunkerHill(ctx) {
@@ -90,7 +95,7 @@
     var cx = 0, cy = 0;
     /* the published 50 by 50 foundation, showing as the terrace it really
        is; the stepped plinth above it is the visible base */
-    out.push(shadow(ctx, cx, cy, 62, 62, 0.32, 7, 4));
+    out.push(shadow(ctx, cx, cy, 62, 62, 0.32, 221));   /* the published shaft */
     out = out.concat(slab(ctx, cx, cy, 50, 50, 0.3, 2.2, G_LIGHT, G_EDGE, -9.90e8));
     out = out.concat(slab(ctx, cx, cy, 42, 42, 2.5, 2.2, G_LIGHT, G_EDGE, -9.88e8));
     out = out.concat(slab(ctx, cx, cy, 35, 35, 4.7, 2.3, G_LIGHT, G_EDGE, -9.86e8));
@@ -148,7 +153,7 @@
 
     /* ---- the Lodge, 1902 ---- */
     var lx = 0, ly = 62, LW = 50, LD = 38, LH = 19;
-    out.push(shadow(ctx, lx, ly, LW + 10, LD + 8, 0.32, 6, 3.5));
+    out.push(shadow(ctx, lx, ly, LW + 10, LD + 8, 0.32, 28));  /* the lodge */
     /* podium, then the granite wall, then a cornice band and a parapet:
        three horizontal breaks, which is what stops a 50 ft box reading as a
        box */
@@ -207,7 +212,7 @@
 
     /* ---- the Prescott statue ---- */
     var sx = lx + 46, sy = ly;
-    out.push(shadow(ctx, sx, sy, 9, 9, 0.32, 3, 1.8));
+    out.push(shadow(ctx, sx, sy, 9, 9, 0.32, 12));      /* Prescott on his base */
     out = out.concat(slab(ctx, sx, sy, 7.0, 7.0, 0.3, 1.1, G_LIGHT, G_EDGE, -9.82e8));
     out = out.concat(slab(ctx, sx, sy, 5.2, 5.2, 1.4, 5.4, GRANITE, G_EDGE, 4000));
     out = out.concat(slab(ctx, sx, sy, 6.0, 6.0, 6.8, 0.7, G_LIGHT, G_EDGE, 4050));

@@ -57,11 +57,19 @@
       archOpening = H.archOpening, panel = H.panel, octStage = H.octStage,
       octSpire = H.octSpire;
 
-  function shadow(ctx, cx, cy, w, d, z, dx, dy) {
-    var P = ctx.project;
-    var q = [P(cx - w / 2 + dx, cy - d / 2 + dy, z), P(cx + w / 2 + dx, cy - d / 2 + dy, z),
-             P(cx + w / 2 + dx, cy + d / 2 + dy, z), P(cx - w / 2 + dx, cy + d / 2 + dy, z)];
-    return { svg: ctx.poly(q, "rgba(88,84,74,0.22)", null, 0), depth: -1e9 + 2 };
+  /* The private copy of this helper is GONE, 2026-09-09. Three stops had each
+     hand-copied it and the copies had drifted -- two rgba fills at different
+     opacities and one opaque colour with a stroke -- but the fault that
+     mattered was in the CALLS: every one passed a positive dx,dy, which
+     throws the shadow TOWARD the light. LIGHT is [0.60,0.30,0.68], the sun
+     stands off +x and +y, and a shadow goes to -x,-y. These stops were
+     shading the ground on the sunny side and lighting it on the shaded one.
+     trail-3d.js now owns one shadow for every stop: it sweeps a FOOTPRINT
+     along the light by 0.9 of the height, capped so it cannot set the frame.
+     This wrapper keeps the rectangle-and-centre call these scenes read well
+     with; the last argument is now the casting mass's HEIGHT, not an offset. */
+  function shadow(ctx, cx, cy, w, d, z, h) {
+    return H.shadow(ctx, H.rectFoot(cx, cy, w, d), h, z);
   }
 
   /* A window as a Georgian window: a light stone surround struck first, the
@@ -88,7 +96,7 @@
 
     out.push(ground(ctx, 0, 0, 190, 200, 0, GRASS, "#a8b09a"));
     out.push(ground(ctx, 0, 0, 104, 136, 0.3, PAVE, "#bfb9aa"));
-    out.push(shadow(ctx, 0, 4, W + 22, LEN + 16, 0.32, 9, 5));
+    out.push(shadow(ctx, 0, 4, W + 22, LEN + 16, 0.32, 45));  /* the brick body, not the 191 ft steeple */
 
     /* THE WATER TABLE. The published foundation is rubblestone; where it
        meets the brick a Georgian church puts a stone offset, and without it

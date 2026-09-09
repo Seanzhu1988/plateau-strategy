@@ -73,6 +73,56 @@
     return { svg: ctx.poly(q, fill, edge, 0.5), depth: -1e9 };
   }
 
+  /* A GROUND SHADOW, one helper for every stop, ported from dc-3d.js where
+     this was already right. Three trail forms had each hand-copied a private
+     version of it and the three had drifted apart: two different fills, one
+     of them opaque with a stroke, and -- the fault that matters -- an offset
+     passed as POSITIVE dx,dy, which throws the shadow TOWARD the light.
+     LIGHT is [0.60,0.30,0.68], so the sun stands off +x and +y and a shadow
+     goes to -x,-y. Three stops were lighting the ground on the sunny side.
+
+     It takes the FOOTPRINT, not a rectangle. A shadow is the silhouette of
+     the thing, and Park Street's east end is a semicircle: a rectangle there
+     left the apse standing off the mat's edge on bright pavement, which is
+     what LOOKING showed and what the OWED note had recorded only as "a thin
+     band". The polygon is swept along the light: the outline, then the
+     outline slid by (dx,dy) walked back, so the shadow always touches the
+     base it belongs to and never opens a gap under the building.
+
+     The length scales with HEIGHT, h * 0.9, so a 217 ft steeple throws
+     further than a 30 ft house. A fixed offset was the other half of "thin".
+     THE LENGTH IS CAPPED, and that cap is a drawing decision rather than a
+     solar one, so it is declared here and not buried. The stage fits itself
+     to everything the scene draws, shadows included: 0.9 of the Bunker Hill
+     obelisk's 221 ft is a 199 ft finger across a 30 ft footprint, which
+     doubles the frame's width and halves the monument. That is the pad
+     lesson from Park Street and Old South a fourth time. The sweep is held
+     to 1.4 of the footprint's own longest span, so it always anchors the
+     mass and never sets the frame. Below that cap it is the true 0.9h. */
+  var LIGHT_DIR = { x: -0.60, y: -0.30 };
+  function shadow(ctx, footprint, h, z) {
+    var P = ctx.project, pts = [], i;
+    var bx0 = Infinity, by0 = Infinity, bx1 = -Infinity, by1 = -Infinity;
+    for (i = 0; i < footprint.length; i++) {
+      bx0 = Math.min(bx0, footprint[i][0]); bx1 = Math.max(bx1, footprint[i][0]);
+      by0 = Math.min(by0, footprint[i][1]); by1 = Math.max(by1, footprint[i][1]);
+    }
+    var reach = Math.min(h * 0.9, 1.4 * Math.max(bx1 - bx0, by1 - by0));
+    var dx = LIGHT_DIR.x * reach, dy = LIGHT_DIR.y * reach;
+    var zz = z == null ? 0.3 : z;
+    for (i = 0; i < footprint.length; i++) pts.push(P(footprint[i][0], footprint[i][1], zz));
+    for (i = footprint.length - 1; i >= 0; i--) {
+      pts.push(P(footprint[i][0] + dx, footprint[i][1] + dy, zz));
+    }
+    return { svg: ctx.poly(pts, "#000", null, 0, ' opacity="0.16"'), depth: -1e9 + 2 };
+  }
+
+  /* the footprint of a plain rectangle, for the stops that are one */
+  function rectFoot(cx, cy, w, d) {
+    return [[cx - w / 2, cy - d / 2], [cx + w / 2, cy - d / 2],
+            [cx + w / 2, cy + d / 2], [cx - w / 2, cy + d / 2]];
+  }
+
   /* ---------------- Stop 16: Bunker Hill Monument ----------------
      Solomon Willard, begun 1825, finished 1842, dedicated 17 June 1843.
      221 feet of Quincy granite, 30 feet square at the base tapering to 15.4
@@ -2714,5 +2764,6 @@
                archOpening: archOpening, roundWindow: roundWindow, panel: panel,
                octStage: octStage, octSpire: octSpire, octDetail: octDetail,
                domeCap: domeCap, columnAt: columnAt, balustrade: balustrade,
-               wallRun: wallRun, apseRun: apseRun } };
+               wallRun: wallRun, apseRun: apseRun,
+               shadow: shadow, rectFoot: rectFoot } };
 })();
