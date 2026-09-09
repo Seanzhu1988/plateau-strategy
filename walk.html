@@ -259,23 +259,37 @@
      hammer it and lag the announcements. */
   async function loadPlaces(pos) {
     var d = 0.012;                                   // ~1.3km box
+    /* nwr, NOT node. Asking only for nodes asks only for things mapped as a
+       single point, which is how a statue or a plaque is mapped and is NOT how
+       a building is: a landmark of any size is a way, sometimes a relation.
+       Measured against live OpenStreetMap around the Seattle Center, the old
+       node-only query returned 49 named places and the Space Needle was not
+       one of them; the same query as nwr returns 58 and the Space Needle is
+       there, a way tagged tourism=attraction. So the guide walked a visitor
+       past the most famous thing in the city naming the sculptures around it.
+       "out center" is what makes this usable: it hands back one point for a
+       way or a relation instead of its whole outline. */
     var q = '[out:json][timeout:25];(' +
-      'node["tourism"~"attraction|museum|artwork|viewpoint"](' +
+      'nwr["tourism"~"attraction|museum|artwork|viewpoint"](' +
         (pos.lat - d) + ',' + (pos.lon - d) + ',' + (pos.lat + d) + ',' + (pos.lon + d) + ');' +
-      'node["historic"](' +
+      'nwr["historic"](' +
         (pos.lat - d) + ',' + (pos.lon - d) + ',' + (pos.lat + d) + ',' + (pos.lon + d) + ');' +
-      ');out body 200;';
+      ');out center 200;';
     var r = await psxFetch('https://overpass-api.de/api/interpreter',
                            { method: 'POST', body: q });
     if (!r || !r.ok) { log('Could not load places nearby, the guide needs them.', true); return; }
     var j = null;
     try { j = await r.json(); } catch (e) { return; }
-    places = (j.elements || []).filter(function (el) {
-      return el.tags && el.tags.name && el.lat && el.lon;
-    }).map(function (el) {
-      return { id: 'osm' + el.id, name: el.tags.name, lat: el.lat, lon: el.lon,
+    /* A node carries its own lat/lon; a way or relation carries the centre
+       point that "out center" computed. Read whichever it has, or the ways
+       would arrive with no position and be dropped exactly as before. */
+    places = (j.elements || []).map(function (el) {
+      var lat = (el.lat != null) ? el.lat : (el.center && el.center.lat);
+      var lon = (el.lon != null) ? el.lon : (el.center && el.center.lon);
+      if (!el.tags || !el.tags.name || lat == null || lon == null) return null;
+      return { id: 'osm' + el.id, name: el.tags.name, lat: lat, lon: lon,
                blurb: el.tags.description || el.tags['description:en'] || '' };
-    });
+    }).filter(Boolean);
     log(places.length + ' places loaded around you.', true);
   }
 
