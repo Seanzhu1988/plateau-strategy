@@ -3708,6 +3708,18 @@ def api_site_map():
     return jsonify(out)
 
 
+# Google Search Console ownership proof [SEAN 2026-09-08 "do it for me"].
+# Google hands out a filename and expects it served at the root with exactly
+# this body; the token is not a secret, it only proves the site is ours.
+GOOGLE_VERIFY_FILE = "google245f4f67937d9022.html"
+
+
+@app.route("/" + GOOGLE_VERIFY_FILE)
+def google_site_verification():
+    return Response("google-site-verification: " + GOOGLE_VERIFY_FILE,
+                    mimetype="text/html")
+
+
 @app.route("/robots.txt")
 def robots_txt():
     lines = ["User-agent: *"]
