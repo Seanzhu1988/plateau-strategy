@@ -5951,13 +5951,95 @@ def tour_page(tid):
     tid = (tid or "").strip().lower()
     try:
         with open(os.path.join(BASE_DIR, "trails.json"), encoding="utf-8") as f:
-            ids = {t.get("id") for t in (json.load(f).get("trails") or [])}
+            trails = {t.get("id"): t for t in (json.load(f).get("trails") or [])}
     except Exception:
-        ids = set()
-    if tid not in ids:
+        trails = {}
+    t = trails.get(tid)
+    if not t:
         return ("<div style='font-family:system-ui;padding:2rem'><h1>No such tour</h1>"
                 "<p><a href='/tours'>All tours &rarr;</a></p></div>", 404)
-    resp = send_file(os.path.join(BASE_DIR, "tour.html"))
+
+    # The body is drawn by the client from /api/trails, which is the right
+    # design for a map. The HEAD is not: served as the file stands, all
+    # thirteen tours carry the same title and the same description, so a
+    # crawler sees thirteen copies of one page and indexes one of them. The
+    # tour's own name, summary and stop list already sit in trails.json, so
+    # the head is written here, per tour, before the file goes out.
+    doc = open(os.path.join(BASE_DIR, "tour.html"), encoding="utf-8").read()
+    esc = html.escape
+    name = (t.get("name") or "A walking tour").strip()
+    summary = re.sub(r"\s+", " ", (t.get("summary") or "")).strip()
+    stops = t.get("stops") or []
+    members = t.get("members") or []
+
+    bits = []
+    if stops:
+        bits.append("%d stops" % len(stops))
+    elif members:
+        bits.append("%d walks" % len(members))
+    if t.get("walk_min_total"):
+        bits.append("%s minutes of walking" % t["walk_min_total"])
+    facts = ", ".join(bits)
+    desc = summary or ("%s: %s." % (name, facts) if facts else name)
+    if len(desc) > 300:
+        desc = desc[:297].rsplit(" ", 1)[0] + "..."
+    meta_desc = desc if len(desc) <= 155 else desc[:152].rsplit(" ", 1)[0] + "..."
+
+    # Two tours have a hand-built page of their own. This one still answers,
+    # because a link to it must not break, but it points the crawler there
+    # rather than competing with it.
+    handmade = {"freedom-trail": "/freedom-trail", "national-mall": "/national-mall"}
+    canon = SITE_ORIGIN + handmade.get(tid, "/tour/" + tid)
+
+    ld = {"@context": "https://schema.org", "@type": "TouristTrip",
+          "name": name, "url": canon, "description": desc}
+    if t.get("length_m"):
+        try:
+            ld["distance"] = "%.1f km" % (float(t["length_m"]) / 1000.0)
+        except (TypeError, ValueError):
+            pass
+    if stops:
+        ld["itinerary"] = {"@type": "ItemList", "numberOfItems": len(stops),
+                           "itemListElement": [
+                               {"@type": "ListItem", "position": i + 1,
+                                "item": {"@type": "TouristAttraction",
+                                         "name": st.get("name") or ""}}
+                               for i, st in enumerate(stops) if st.get("name")]}
+    elif members:
+        ld["itinerary"] = {"@type": "ItemList", "numberOfItems": len(members),
+                           "itemListElement": [
+                               {"@type": "ListItem", "position": i + 1,
+                                "name": (trails.get(m) or {}).get("name") or m,
+                                "url": "%s/tour/%s" % (SITE_ORIGIN, m)}
+                               for i, m in enumerate(members)]}
+
+    head = {
+        "<title>Walking tour, Plateau Strategy Solution Lab</title>":
+            "<title>%s | Plateau Strategy Solution Lab</title>" % esc(name),
+        '<meta name="description" content="A walking tour in stop order, with a map, '
+        'the time each stop really takes, a guide\'s note at every stop, and '
+        'recordings where they exist.">':
+            '<meta name="description" content="%s">' % esc(meta_desc),
+        '<meta property="og:title" content="A walking tour, in stop order">':
+            '<meta property="og:title" content="%s">' % esc(name),
+        '<meta property="og:description" content="Every stop on a map, with the time '
+        'it really takes and a guide\'s note.">':
+            '<meta property="og:description" content="%s">' % esc(meta_desc),
+    }
+    for a, b in head.items():
+        if a in doc:
+            doc = doc.replace(a, b, 1)
+
+    extra = ('<link rel="canonical" href="%s">'
+             '<meta property="og:url" content="%s">'
+             '<meta name="twitter:title" content="%s">'
+             '<meta name="twitter:description" content="%s">'
+             '<script type="application/ld+json">%s</script>'
+             % (esc(canon), esc(canon), esc(name), esc(meta_desc),
+                json.dumps(ld, ensure_ascii=False).replace("</", "<\\/")))
+    doc = doc.replace("</head>", extra + "</head>", 1)
+
+    resp = Response(doc, mimetype="text/html")
     resp.headers["Cache-Control"] = "no-cache"
     return resp
 
