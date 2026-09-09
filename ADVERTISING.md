@@ -164,13 +164,15 @@ Once the number exists, send it over and it goes into both files in one edit.
 ### The canonical description, use this everywhere, unchanged
 
 **Superseded 2026-09-08 for the Business Profile** [SEAN "at this point we only run
-online no human taking calls"]. The paragraph now on the listing, 588 chars, no
+online no human taking calls" and "lets not talk about rental car because we are
+facing robottaxi issue might make a change": the Tesla rental line is OUT of every
+listing until Sean says otherwise]. The paragraph now on the listing, 540 chars, no
 URL (Google forbids one in the description):
 
 > Plateau Strategy Solution Lab is a licensed guide's online travel service based
 > in Seattle. Flat-rate Tesla airport transfers to Seattle-Tacoma International
-> Airport (SEA), $75 flat, and Tesla rentals for rideshare drivers, both reserved
-> online. Free planning tools on our website: a Destination Book with a guide's
+> Airport (SEA), $75 flat, reserved online. Free planning tools on our website:
+> a Destination Book with a guide's
 > tip and story for every place, a Trip Planner, and self-guided walking tours
 > with audio for Washington DC, New York and Boston. We operate online only and
 > do not take phone calls; every reservation and question goes through the
