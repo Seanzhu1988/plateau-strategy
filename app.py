@@ -34,6 +34,7 @@ import worklist as worklist_mod
 import urllib.parse
 import shutil
 import html
+import unicodedata
 from functools import wraps
 from flask import (Flask, request, jsonify, send_file, session, Response,
                    redirect, make_response, abort)
@@ -3351,6 +3352,7 @@ PUBLIC_PAGES = [
     ("/", "1.0", "daily"),
     ("/trip-planner", "0.9", "weekly"),
     ("/destination-book", "0.9", "daily"),
+    ("/destinations", "0.8", "weekly"),
     ("/road-trip", "0.9", "weekly"),
     ("/factor-clock", "0.8", "weekly"),
     ("/walk", "0.8", "weekly"),
@@ -3816,6 +3818,19 @@ def sitemap_xml():
                 "    <changefreq>monthly</changefreq>",
                 "    <priority>0.7</priority>",
                 "  </url>"]
+    # Every public place in the book, its own page. The book is one URL to a
+    # crawler; these are the addresses a search for one exact place can land on.
+    try:
+        _pages, _cities = _dest_pages()
+        for _slug, _e in sorted(_pages.items()):
+            out += ["  <url>",
+                    "    <loc>%s/destination/%s</loc>" % (SITE_ORIGIN, html.escape(_slug)),
+                    "    <lastmod>%s</lastmod>" % ((_e.get("added_at") or today)[:10]),
+                    "    <changefreq>monthly</changefreq>",
+                    "    <priority>0.6</priority>",
+                    "  </url>"]
+    except Exception:
+        pass
     # Every artwork travellers keep looking up, each its own guide page. Demand
     # written by the searchers themselves: a work earns a sitemap row once more
     # than one person has asked for it, so a Chinese or English search for that
@@ -4438,10 +4453,320 @@ def _public_book_entries(entries):
     return [e for e in entries or [] if _may_publish(e)]
 
 
+# ---------- one address per place ----------
+#
+# The book is one URL with every place inside it, which a search engine reads
+# as one page about "destinations". Nobody searches for that. A traveller
+# searches for the Brooklyn Bridge, or 布鲁克林大桥, or Chelsea Market. These
+# pages give every public place its own address, its own title, and its story
+# in every language it has been written in, so that exact search has a page
+# of ours to land on.
+#
+# Every read here goes through public_book(), like every other route. Nothing
+# private can get a page because nothing private ever comes out of that door.
+
+_SLUG_STRIP = re.compile(r"[^a-z0-9]+")
+
+
+def _dest_slug(entry):
+    """A stable address for a place. Records that carry a slug keep it; the
+    rest derive one from the name with accents folded, so Toruń still reads."""
+    s = (entry.get("slug") or "").strip().lower()
+    if s:
+        return s
+    base = unicodedata.normalize("NFKD", entry.get("name") or "")
+    base = base.encode("ascii", "ignore").decode("ascii").lower()
+    return _SLUG_STRIP.sub("-", base).strip("-")
+
+
+def _stamp_page_slugs(entries):
+    """Give every entry its page address, in file order so the API and the
+    page agree. A name shared by two cities gets the city appended to the
+    second, so no page shadows another."""
+    seen = set()
+    for e in entries or []:
+        s = _dest_slug(e)
+        if s and s in seen:
+            s = "%s-%s" % (s, (e.get("city") or "other").lower())
+        if s:
+            seen.add(s)
+        e["page_slug"] = s or None
+    return entries
+
+
+def _dest_pages():
+    """slug -> public entry, plus the city labels."""
+    d = public_book()
+    entries = _stamp_page_slugs(d.get("entries") or [])
+    return {e["page_slug"]: e for e in entries if e.get("page_slug")}, d.get("cities") or {}
+
+
+def _dest_paragraphs(text):
+    return "".join("<p>%s</p>" % html.escape(p.strip())
+                   for p in re.split(r"\n\s*\n", text or "") if p.strip())
+
+
+def _dest_photo_credit(photo):
+    """A Wikimedia thumbnail names its own file; link the credit to the file
+    page, which is where the licence and the photographer live."""
+    m = re.search(r"/wikipedia/commons/(?:thumb/)?[0-9a-f]/[0-9a-f]{2}/([^/]+)", photo or "")
+    if m:
+        return "https://commons.wikimedia.org/wiki/File:" + m.group(1), "Wikimedia Commons"
+    return photo, "photo source"
+
+
+def _dest_num(v):
+    """Coordinates arrive as floats from the curated list and as strings from
+    the geocoder's records. A page must read both or it serves a 500."""
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def _dest_clock(minutes):
+    try:
+        h, m = divmod(int(minutes), 60)
+        return "%d:%02d" % (h % 24, m)
+    except (TypeError, ValueError):
+        return ""
+
+
+_DEST_CSS = """
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#faf8f4;color:#14110c;line-height:1.6}
+header{background:#14110c;color:#fff;padding:.9rem 1.4rem;display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap}
+header .brand{color:#fff;font-weight:800;text-decoration:none;display:flex;align-items:center;gap:.6rem}
+header .brand img{height:34px;width:34px;border-radius:50%;border:2px solid rgba(255,255,255,.2)}
+header nav{margin-left:auto;display:flex;gap:1rem;flex-wrap:wrap}
+header nav a{color:#c9c3b8;text-decoration:none;font-size:.9rem;font-weight:600}
+header nav a:hover{color:#fff}
+main{max-width:760px;margin:1.6rem auto 3rem;padding:0 1.2rem}
+.crumbs{font-size:.85rem;color:#6b655b;margin-bottom:.6rem}
+.crumbs a{color:#6b655b}
+h1{font-size:2rem;line-height:1.2;font-weight:800;margin-bottom:.5rem}
+h2{font-size:1.15rem;font-weight:800;margin:1.8rem 0 .6rem}
+.badges{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem}
+.badge{font-size:.75rem;font-weight:700;padding:.2rem .7rem;border-radius:999px;border:1.5px solid #e6e2da;color:#6b655b;background:#fffdf9}
+figure{margin:0 0 1.2rem}
+figure img{width:100%;max-height:440px;object-fit:cover;border-radius:12px;display:block}
+figcaption{font-size:.75rem;color:#6b655b;margin-top:.3rem}
+figcaption a{color:#6b655b}
+.lead{font-size:1.1rem;margin-bottom:.9rem}
+.tip{background:#fffdf9;border:1px solid #e6e2da;border-left:4px solid #1f3a5f;border-radius:8px;padding:.7rem .9rem;margin-bottom:.9rem}
+.meta{color:#6b655b;font-size:.9rem}
+.story p{margin-bottom:.9rem}
+details{border:1px solid #e6e2da;border-radius:8px;background:#fffdf9;padding:.5rem .9rem;margin-bottom:.5rem}
+summary{cursor:pointer;font-weight:700}
+details p{margin:.6rem 0}
+.cta{display:flex;flex-wrap:wrap;gap:.6rem;margin:1.6rem 0}
+.cta a{display:inline-block;font-weight:700;border:1.5px solid #1f3a5f;border-radius:999px;padding:.5rem 1.1rem;color:#1f3a5f;text-decoration:none;font-size:.92rem}
+.cta a.primary{background:#1f3a5f;color:#fff}
+.near{list-style:none}
+.near li{padding:.45rem 0;border-bottom:1px solid #e6e2da}
+.near a{color:#1f3a5f;font-weight:600;text-decoration:none}
+.near span{color:#6b655b;font-size:.85rem;margin-left:.4rem}
+footer{max-width:760px;margin:0 auto 2rem;padding:0 1.2rem;font-size:.85rem;color:#6b655b}
+footer a{color:#6b655b}
+.index h2{margin-top:1.6rem}
+.index ul{list-style:none;columns:2;column-gap:2rem}
+.index li{padding:.25rem 0;break-inside:avoid}
+.index a{color:#1f3a5f;text-decoration:none;font-weight:600}
+@media (max-width:560px){.index ul{columns:1}h1{font-size:1.6rem}}
+"""
+
+
+def _dest_head(title, desc, url, image, extra_meta="", ld_blocks=()):
+    esc = html.escape
+    out = ['<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">',
+           '<meta name="viewport" content="width=device-width, initial-scale=1">',
+           "<title>%s | Plateau Strategy Solution Lab</title>" % esc(title),
+           '<meta name="description" content="%s">' % esc(desc),
+           '<link rel="canonical" href="%s">' % esc(url),
+           '<meta property="og:site_name" content="Plateau Strategy Solution Lab">',
+           '<meta property="og:url" content="%s">' % esc(url),
+           '<meta property="og:title" content="%s">' % esc(title),
+           '<meta property="og:description" content="%s">' % esc(desc),
+           '<meta property="og:image" content="%s">' % esc(image),
+           '<meta name="twitter:card" content="summary_large_image">',
+           '<meta name="twitter:title" content="%s">' % esc(title),
+           '<meta name="twitter:description" content="%s">' % esc(desc),
+           '<meta name="twitter:image" content="%s">' % esc(image),
+           '<link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">',
+           extra_meta,
+           "<style>%s</style>" % _DEST_CSS]
+    for ld in ld_blocks:
+        out.append('<script type="application/ld+json">%s</script>'
+                   % json.dumps(ld, ensure_ascii=False).replace("</", "<\\/"))
+    out.append('</head><body><header><a class="brand" href="/">'
+               '<img src="/plateau-logo.svg" alt="">Plateau Strategy</a>'
+               '<nav><a href="/destinations">Destinations</a>'
+               '<a href="/destination-book">Destination Book</a>'
+               '<a href="/trip-planner">Trip Planner</a></nav></header>')
+    return "".join(out)
+
+
+_DEST_FOOT = ('<footer><p>Plateau Strategy Solution Lab, a licensed guide\'s free tools. '
+              '<a href="/destinations">Every destination</a> · '
+              '<a href="/destination-book">the Destination Book</a> · '
+              '<a href="/tips">travel tips</a></p></footer></body></html>')
+
+
+@app.route("/destinations")
+def destinations_index():
+    """Every public place, city by city, each a link to its own page. This is
+    the page a crawler walks to find the rest, and the page a person lands on
+    from a breadcrumb."""
+    esc = html.escape
+    pages, cities = _dest_pages()
+    by_city = {}
+    for slug, e in pages.items():
+        by_city.setdefault(e.get("city") or "other", []).append((e.get("name") or "", slug, e))
+    order = sorted(by_city, key=lambda c: (-len(by_city[c]), c))
+    url = SITE_ORIGIN + "/destinations"
+    desc = ("%d places worth a visit across %d cities, each with a licensed guide's tip "
+            "and its story. Attractions and restaurants, free to read." % (len(pages), len(order)))
+    ld = {"@context": "https://schema.org", "@type": "CollectionPage",
+          "name": "Destinations", "url": url, "description": desc}
+    body = [_dest_head("Destinations", desc, url, SITE_ORIGIN + "/share-card.jpg", ld_blocks=[ld]),
+            '<main class="index"><h1>Destinations</h1><p class="lead">%s</p>' % esc(desc)]
+    for c in order:
+        label = cities.get(c) or by_city[c][0][2].get("city_label") or c
+        body.append('<h2 id="%s">%s <span style="color:#6b655b;font-weight:600">(%d)</span></h2><ul>'
+                    % (esc(c), esc(str(label)), len(by_city[c])))
+        for name, slug, e in sorted(by_city[c]):
+            kind = " · restaurant" if e.get("type") == "restaurant" else ""
+            body.append('<li><a href="/destination/%s">%s</a>%s</li>' % (esc(slug), esc(name), kind))
+        body.append("</ul>")
+    body.append("</main>" + _DEST_FOOT)
+    return "".join(body)
+
+
+@app.route("/destination/<slug>")
+def destination_page(slug):
+    """One place, one address: title, photo, the guide's tip, the story in every
+    language it has, and the three nearest places, so a crawler has somewhere
+    to walk next."""
+    import math
+    esc = html.escape
+    pages, cities = _dest_pages()
+    e = pages.get(slug)
+    if not e:
+        return "No such place.", 404
+    name = e.get("name") or ""
+    city_code = e.get("city") or "other"
+    city = str(cities.get(city_code) or e.get("city_label") or city_code)
+    kind = e.get("type") or "attraction"
+    desc = re.sub(r"\s+", " ", (e.get("desc") or "").strip())
+    tip = (e.get("tip") or "").strip()
+    photo = e.get("photo") or ""
+    story_en = (e.get("story_en") or "").strip()
+    url = "%s/destination/%s" % (SITE_ORIGIN, slug)
+    title = "%s, %s" % (name, city)
+    meta_desc = (desc or re.sub(r"\s+", " ", story_en) or "%s in %s" % (name, city))[:155]
+    lat, lon = _dest_num(e.get("lat")), _dest_num(e.get("lon"))
+
+    ld = {"@context": "https://schema.org",
+          "@type": "Restaurant" if kind == "restaurant" else "TouristAttraction",
+          "name": name, "url": url, "description": meta_desc,
+          "address": {"@type": "PostalAddress", "addressLocality": city,
+                      "addressCountry": e.get("country") or "US"}}
+    if lat is not None and lon is not None:
+        ld["geo"] = {"@type": "GeoCoordinates", "latitude": lat, "longitude": lon}
+    if photo:
+        ld["image"] = photo
+    if kind != "restaurant" and not e.get("price"):
+        ld["isAccessibleForFree"] = True
+    crumbs = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Destinations", "item": SITE_ORIGIN + "/destinations"},
+        {"@type": "ListItem", "position": 2, "name": city, "item": "%s/destinations#%s" % (SITE_ORIGIN, city_code)},
+        {"@type": "ListItem", "position": 3, "name": name, "item": url}]}
+    extra = '<meta property="og:type" content="place">'
+    if lat is not None and lon is not None:
+        extra += ('<meta property="place:location:latitude" content="%s">'
+                  '<meta property="place:location:longitude" content="%s">' % (lat, lon))
+
+    out = [_dest_head(title, meta_desc, url, photo or SITE_ORIGIN + "/share-card.jpg",
+                      extra_meta=extra, ld_blocks=[ld, crumbs]),
+           '<main><p class="crumbs"><a href="/destinations">Destinations</a> &rsaquo; '
+           '<a href="/destinations#%s">%s</a></p>' % (esc(city_code), esc(city)),
+           "<h1>%s</h1>" % esc(name),
+           '<div class="badges"><span class="badge">%s</span><span class="badge">%s</span>'
+           % (esc(city), "Restaurant" if kind == "restaurant" else "Attraction")]
+    if e.get("cat"):
+        out.append('<span class="badge">%s</span>' % esc(str(e["cat"])))
+    if e.get("price"):
+        out.append('<span class="badge">%s</span>' % esc(str(e["price"])))
+    out.append("</div>")
+    if photo:
+        href, label = _dest_photo_credit(photo)
+        out.append('<figure><img src="%s" alt="%s" loading="eager">'
+                   '<figcaption>Photo: <a href="%s" rel="noopener">%s</a></figcaption></figure>'
+                   % (esc(photo), esc(name), esc(href), esc(label)))
+    if desc:
+        out.append('<p class="lead">%s</p>' % esc(desc))
+    if tip:
+        out.append('<p class="tip"><b>Guide\'s tip.</b> %s</p>' % esc(tip))
+    meta_bits = []
+    if e.get("close") is not None:
+        meta_bits.append("Open till %s" % _dest_clock(e["close"]))
+    if e.get("visit"):
+        meta_bits.append("about %s min for a visit" % esc(str(e["visit"])))
+    if meta_bits:
+        out.append('<p class="meta">%s</p>' % " · ".join(meta_bits))
+    if story_en:
+        out.append('<section class="story"><h2>The story</h2>%s</section>' % _dest_paragraphs(story_en))
+    others = []
+    for lang in _LANGS.LANGUAGES:
+        code = lang["code"]
+        if code == "en":
+            continue
+        txt = (e.get("story_" + code) or "").strip()
+        if txt:
+            others.append('<details lang="%s"><summary>%s</summary>%s</details>'
+                          % (esc(code), esc(lang["endonym"]), _dest_paragraphs(txt)))
+    if others:
+        out.append('<section><h2>The story in other languages</h2>%s</section>' % "".join(others))
+    q = urllib.parse.quote(name)
+    out.append('<div class="cta">'
+               '<a class="primary" href="/destination-book?q=%s&utm_source=destination_page">'
+               'Open in the Destination Book &rarr;</a>'
+               '<a href="/trip-planner?utm_source=destination_page">Plan a day around it &rarr;</a>'
+               '</div>' % q)
+
+    # The three nearest public places in the same city, so every page leads on.
+    near = []
+    if lat is not None and lon is not None:
+        for s2, o in pages.items():
+            if s2 == slug or (o.get("city") or "other") != city_code:
+                continue
+            la, lo = _dest_num(o.get("lat")), _dest_num(o.get("lon"))
+            if la is None or lo is None:
+                continue
+            dx = (lo - lon) * math.cos(math.radians(lat)) * 111.32
+            dy = (la - lat) * 110.57
+            near.append((math.hypot(dx, dy), o.get("name") or "", s2))
+        near.sort()
+    if near:
+        out.append('<section><h2>Nearby in %s</h2><ul class="near">' % esc(city))
+        for km, n2, s2 in near[:3]:
+            dist = "%.0f m" % (km * 1000) if km < 1 else "%.1f km" % km
+            out.append('<li><a href="/destination/%s">%s</a><span>%s away</span></li>' % (esc(s2), esc(n2), dist))
+        out.append("</ul></section>")
+    out.append("</main>" + _DEST_FOOT)
+    payload = json.dumps({"name": name, "city": city_code}).replace("</", "<\\/")
+    out.append("<script>(function(){var p=%s;var k='psx_place_viewed_'+p.city.toLowerCase()+'|'+p.name.toLowerCase();"
+               "try{if(localStorage.getItem(k))return;localStorage.setItem(k,'1')}catch(e){}"
+               "fetch('/api/destinations/view',{method:'POST',headers:{'Content-Type':'application/json'},"
+               "body:JSON.stringify(p)}).catch(function(){})})();</script>" % payload)
+    return "".join(out)
+
+
 @app.route("/api/destinations")
 def api_destinations():
     try:
         data = public_book()
+        _stamp_page_slugs(data.get("entries") or [])
         # ride the crowd's real stay times AND star ratings along with each place
         times = _visit_all()
         ratings = _ratings_all()

@@ -78,6 +78,8 @@
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1.1rem 1.2rem;
             display: flex; flex-direction: column; gap: 0.5rem; }
         .entry h3 { font-size: 1.05rem; color: #14110c; }
+        .entry h3 a.pl { color: inherit; text-decoration: none; }
+        .entry h3 a.pl:hover { text-decoration: underline; }
         .badges { display: flex; flex-wrap: wrap; gap: 0.35rem; }
         .badge { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
             padding: 0.18rem 0.55rem; border-radius: 6px; }
@@ -781,8 +783,10 @@
        one place needs no new page: it lands on the book showing that place.
        The tag says the visit came from a share, which is the only way the
        traffic count can tell a shared link apart from a search engine. */
-    function shareDest(i, name) {
-        const url = location.origin + '/destination-book?q=' + encodeURIComponent(name)
+    function shareDest(i, name, slug) {
+        const url = slug
+            ? location.origin + '/destination/' + slug + '?utm_source=share&utm_medium=link&utm_campaign=destination'
+            : location.origin + '/destination-book?q=' + encodeURIComponent(name)
                   + '&utm_source=share&utm_medium=link&utm_campaign=destination';
         const btn = document.getElementById('shr_' + i);
         function said(msg) {
@@ -897,7 +901,9 @@
             const gk = e.city || 'other';
             if (!groups.has(gk)) groups.set(gk, []);
             groups.get(gk).push({ t: tierOf(e), html: '<div class="entry">'
-                + '<h3>' + esc(e.name) + '</h3>'
+                + '<h3>' + (e.page_slug
+                    ? '<a class="pl" href="/destination/' + esc(e.page_slug) + '">' + esc(e.name) + '</a>'
+                    : esc(e.name)) + '</h3>'
                 + '<div class="badges">'
                 +   '<span class="badge b-city">' + esc(T(DATA.cities[e.city] || e.city)) + '</span>'
                 +   '<span class="badge ' + (e.type === 'restaurant' ? 'b-rest' : 'b-attr') + '">'
@@ -956,7 +962,8 @@
                 +   '<div class="cmt-body" id="cmt_' + i + '"></div>'
                 + '</div>'
                 + '<button class="shrbtn" id="shr_' + i + '" onclick="shareDest(' + i + ', '
-                +   JSON.stringify(e.name).replace(/"/g, '&quot;') + ')">'
+                +   JSON.stringify(e.name).replace(/"/g, '&quot;') + ', '
+                +   JSON.stringify(e.page_slug || '').replace(/"/g, '&quot;') + ')">'
                 +   SHARE_ICON + '<span>' + T('Share this place') + '</span></button>'
                 + '</div>' });
         });
