@@ -629,8 +629,17 @@ if missing:
     if blocking:
         print("\n%d of those are on visitor pages. NOT writing the packs until "
               "every visible visitor line has a translation." % len(blocking))
+        # NAME THE PAGE. _page_of has always known it and this line never
+        # printed it, so a blocked build said only that some sentence
+        # somewhere was untranslated. On 2026-09-09 a scheduled routine
+        # added two lines to landmarks.html at 11:32 and every pack in
+        # every language stopped being written for the rest of the day;
+        # tracing it back to the file took a git log and a guess. A routine
+        # can block this at three in the morning with nobody to ask, so the
+        # failure has to say where to look.
         for s in blocking[:400]:
-            print("   VISITOR:", repr(s))
+            where = ", ".join(sorted(_page_of(s) & VISITOR)) or "unknown page"
+            print("   VISITOR [%s]: %s" % (where, repr(s)))
         sys.exit(1)
     print("\nAll missing lines are on internal pages, writing the packs anyway.")
 
