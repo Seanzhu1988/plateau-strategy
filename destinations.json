@@ -339,7 +339,11 @@
      "step-free"
     ]
    },
-   "updated_at": "2026-09-01T02:51:29"
+   "updated_at": "2026-09-01T02:51:29",
+   "story_ja": "この建物を囲む三十六本の柱は、リンカーンが亡くなった日に連邦を構成していた州の数と同じです。柱の上の帯状の部分には、州の名前と加盟した年が一つずつ刻まれています。さらに上には四十八の名前が並びます。1922年5月30日にこの記念堂が完成した時点で存在していた州です。アラスカとハワイは間に合わず、壁ではなく広場の床の銘板に名前が入りました。\n\n柱はまっすぐに見えますが、実際は違います。設計者のヘンリー・ベーコンは一本ずつわずかに内側へ傾けました。高さ13メートルの列を本当に垂直に並べると、外へ倒れていくように見えてしまうからです。外壁はコロラド産の大理石、中に座るリンカーン像はジョージア産の大理石で、高さ5.8メートル、二十八個の石を組み合わせ、継ぎ目が見えないように仕上げてあります。\n\n階段を上る時は足元を見てください。一段に I HAVE A DREAM と1963年8月28日の日付が刻まれています。キング牧師が立った場所です。ほとんどの人は気づかずに通り過ぎていきます。",
+   "story_fr": "Trente-six colonnes entourent le bâtiment, une par État que comptait l'Union le jour de la mort de Lincoln, et chacune est nommée sur la frise, avec sa date d'entrée. Plus haut figurent quarante-huit autres noms, les États qui existaient lors de l'inauguration du mémorial, le 30 mai 1922. L'Alaska et Hawaï sont arrivés trop tard pour le mur et ont eu une plaque sur l'esplanade.\n\nLes colonnes semblent droites. Elles ne le sont pas. Henry Bacon les a légèrement inclinées vers l'intérieur, parce qu'à treize mètres de hauteur une rangée parfaitement verticale donne l'impression de s'écarter. L'extérieur est en marbre du Colorado. Le Lincoln assis à l'intérieur est en marbre de Géorgie, près de six mètres, taillé en vingt-huit blocs ajustés jusqu'à faire disparaître les joints.\n\nEn montant, regardez par terre. Une marche porte les mots I HAVE A DREAM et la date du 28 août 1963. Elle marque l'endroit où King se tenait. La plupart des visiteurs passent dessus sans la voir.",
+   "story_de": "Sechsunddreißig Säulen umstehen das Gebäude, eine für jeden Staat, der am Todestag Lincolns zur Union gehörte. Auf dem Fries darüber steht jeder Name mit dem Jahr des Beitritts. Weiter oben folgen achtundvierzig weitere Namen: die Staaten, die es bei der Einweihung am 30. Mai 1922 gab. Alaska und Hawaii kamen zu spät für die Wand und bekamen stattdessen eine Tafel auf dem Vorplatz.\n\nDie Säulen wirken senkrecht. Sie sind es nicht. Henry Bacon ließ jede einzelne leicht nach innen neigen, weil eine wirklich senkrechte Reihe auf dreizehn Metern Höhe aussieht, als würde sie auseinanderfallen. Außen ist der Bau aus Colorado-Marmor. Der sitzende Lincoln im Inneren ist Marmor aus Georgia, knapp sechs Meter hoch, aus achtundzwanzig Blöcken geschnitten und so gefügt, dass die Fugen verschwinden.\n\nBeim Hinaufgehen nach unten schauen. In eine Stufe sind die Worte I HAVE A DREAM und das Datum 28. August 1963 gemeißelt. Sie markiert die Stelle, an der King stand. Die meisten gehen darüber hinweg, ohne sie zu bemerken.",
+   "story_pt": "Trinta e seis colunas cercam o edifício, uma para cada estado que formava a União no dia em que Lincoln morreu, e todas aparecem no friso com o nome e a data de entrada. Mais acima estão outros quarenta e oito nomes, os estados que existiam quando o memorial foi inaugurado, em 30 de maio de 1922. O Alasca e o Havaí chegaram tarde demais para a parede e ganharam uma placa na explanada.\n\nAs colunas parecem retas. Não são. Henry Bacon inclinou cada uma levemente para dentro, porque a treze metros de altura uma fileira perfeitamente vertical parece estar se abrindo. O exterior é mármore do Colorado. O Lincoln sentado lá dentro é mármore da Geórgia, quase seis metros, cortado em vinte e oito blocos e ajustado até as juntas desaparecerem.\n\nAo subir, olhe para o chão. Um degrau traz as palavras I HAVE A DREAM e a data, 28 de agosto de 1963. Marca onde King esteve. Quase todo mundo passa por cima sem ver."
   },
   {
    "name": "Washington Monument",
@@ -6314,7 +6318,9 @@
    "lon": -75.14991,
    "slug": "independence-visitor-center",
    "desc": "The Park Service's front desk for the whole historic district, on Independence Mall. Timed tickets for Independence Hall are issued here in the morning.",
-   "tip": "Free tickets for Independence Hall are released daily; in summer they go by mid-morning."
+   "tip": "Free tickets for Independence Hall are released daily; in summer they go by mid-morning.",
+   "audio": "/media/audio/philadelphia-stop-1.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Liberty Bell Center",
@@ -6327,7 +6333,9 @@
    "lon": -75.15028,
    "slug": "liberty-bell-center",
    "desc": "The bell, cast in London in 1752, recast twice in Philadelphia, cracked beyond repair by 1846, and the words on it from Leviticus that the abolitionists made famous. Free, with an exhibition on the way in.",
-   "tip": "Free, no ticket, but there is a security queue. Early or late is quicker."
+   "tip": "Free, no ticket, but there is a security queue. Early or late is quicker.",
+   "audio": "/media/audio/philadelphia-stop-2.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Independence Hall",
@@ -6340,7 +6348,9 @@
    "lon": -75.15002,
    "slug": "independence-hall",
    "desc": "The Pennsylvania State House, finished in 1753, where the Declaration of Independence was adopted in July 1776 and the Constitution signed in September 1787. A World Heritage Site. Rangers take you into the Assembly Room.",
-   "tip": "Ticketed, free, by ranger tour only. The ticket comes from the Visitor Center."
+   "tip": "Ticketed, free, by ranger tour only. The ticket comes from the Visitor Center.",
+   "audio": "/media/audio/philadelphia-stop-3.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Congress Hall",
@@ -6353,7 +6363,9 @@
    "lon": -75.15064,
    "slug": "congress-hall",
    "desc": "The county courthouse of 1789 next door, which housed the Congress of the United States from 1790 to 1800 while Philadelphia was the capital. Washington's second inauguration and Adams's first were here.",
-   "tip": "Free, ranger-led, no ticket needed."
+   "tip": "Free, ranger-led, no ticket needed.",
+   "audio": "/media/audio/philadelphia-stop-4.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Old City Hall",
@@ -6366,7 +6378,9 @@
    "lon": -75.14941,
    "slug": "old-city-hall-philadelphia",
    "desc": "The 1791 city hall on the other side of Independence Hall, which housed the Supreme Court of the United States for its first decade.",
-   "tip": "Free, when open; hours vary."
+   "tip": "Free, when open; hours vary.",
+   "audio": "/media/audio/philadelphia-stop-5.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Second Bank of the United States",
@@ -6379,7 +6393,9 @@
    "lon": -75.14841,
    "slug": "second-bank-of-the-united-states",
    "desc": "William Strickland's marble Greek temple of 1824, the Parthenon on Chestnut Street, and the portrait gallery inside with Charles Willson Peale's paintings of the founders from life.",
-   "tip": "Free. Check the Park Service for hours; it has closed for periods."
+   "tip": "Free. Check the Park Service for hours; it has closed for periods.",
+   "audio": "/media/audio/philadelphia-stop-6.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Carpenters' Hall",
@@ -6392,7 +6408,9 @@
    "lon": -75.14721,
    "slug": "carpenters-hall",
    "desc": "The guild hall of 1774 where the First Continental Congress met in September that year, still owned by the Carpenters' Company that built it.",
-   "tip": "Free, closed Mondays, and Tuesdays in winter."
+   "tip": "Free, closed Mondays, and Tuesdays in winter.",
+   "audio": "/media/audio/philadelphia-stop-7.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Museum of the American Revolution",
@@ -6405,7 +6423,9 @@
    "lon": -75.14584,
    "slug": "museum-of-the-american-revolution",
    "desc": "Opened 2017 on Third Street, with Washington's actual headquarters tent at the end of the visit, shown in a short film before the curtain rises on it.",
-   "tip": "Paid admission. Allow ninety minutes."
+   "tip": "Paid admission. Allow ninety minutes.",
+   "audio": "/media/audio/philadelphia-stop-8.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Franklin Court and the Benjamin Franklin Museum",
@@ -6418,7 +6438,9 @@
    "lon": -75.14679,
    "slug": "franklin-court",
    "desc": "The site of Franklin's house, marked by Robert Venturi's steel ghost frame of 1976, with the museum underground, the working print shop, and the post office he founded still selling stamps.",
-   "tip": "The court is free; the museum underground is paid. Post office and print shop free."
+   "tip": "The court is free; the museum underground is paid. Post office and print shop free.",
+   "audio": "/media/audio/philadelphia-stop-9.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Christ Church",
@@ -6431,7 +6453,9 @@
    "lon": -75.14388,
    "slug": "christ-church-philadelphia",
    "desc": "The Georgian church of 1727 to 1744 whose 1754 steeple made it the tallest building in the colonies for fifty years. Washington, Franklin and Betsy Ross had pews. Franklin is buried in the churchyard up the street.",
-   "tip": "Donation requested. The burial ground at 5th and Arch is a separate small fee."
+   "tip": "Donation requested. The burial ground at 5th and Arch is a separate small fee.",
+   "audio": "/media/audio/philadelphia-stop-10.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Betsy Ross House",
@@ -6444,7 +6468,9 @@
    "lon": -75.14464,
    "slug": "betsy-ross-house",
    "desc": "The small brick house on Arch Street where Betsy Ross, upholsterer, is said to have sewn the first stars and stripes in 1776. The story came from her grandson a century later; the house is real.",
-   "tip": "Small paid admission; the courtyard is free."
+   "tip": "Small paid admission; the courtyard is free.",
+   "audio": "/media/audio/philadelphia-stop-11.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Elfreth's Alley",
@@ -6457,7 +6483,9 @@
    "lon": -75.14238,
    "slug": "elfreths-alley",
    "desc": "Thirty-two houses on a lane off Second Street, lived in since 1703, the oldest continuously inhabited residential street in the country. Two are a museum; the rest are homes.",
-   "tip": "The street is free; the museum houses are a small fee. Please keep voices down."
+   "tip": "The street is free; the museum houses are a small fee. Please keep voices down.",
+   "audio": "/media/audio/philadelphia-stop-12.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "National Constitution Center",
@@ -6470,7 +6498,9 @@
    "lon": -75.14916,
    "slug": "national-constitution-center",
    "desc": "The museum of the Constitution at the north end of Independence Mall, 2003, with the live show that opens every visit and the hall of bronze signers you can stand among.",
-   "tip": "Paid admission. Allow an hour and a quarter."
+   "tip": "Paid admission. Allow an hour and a quarter.",
+   "audio": "/media/audio/philadelphia-stop-13.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Reading Terminal Market",
@@ -6483,7 +6513,9 @@
    "lon": -75.159,
    "slug": "reading-terminal-market",
    "desc": "The public market of 1892 under the old railway shed at 12th and Arch, open six days a week: Amish stands, cheesesteaks, roast pork, the Dutch Eating Place, and the best lunch in the city.",
-   "tip": "Busiest at lunchtime. The Pennsylvania Dutch stalls close early."
+   "tip": "Busiest at lunchtime. The Pennsylvania Dutch stalls close early.",
+   "audio": "/media/audio/philadelphia-stop-14.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Philadelphia City Hall",
@@ -6496,7 +6528,9 @@
    "lon": -75.163894,
    "slug": "philadelphia-city-hall",
    "desc": "The largest city hall in the country, 1871 to 1901, Second Empire, with the 37 foot bronze of William Penn on top of a 548 foot tower. By a gentlemen's agreement nothing in the city was built taller until 1987. The tower has an observation deck under Penn's feet.",
-   "tip": "Tower tours are ticketed and small; book ahead. The courtyard is free."
+   "tip": "Tower tours are ticketed and small; book ahead. The courtyard is free.",
+   "audio": "/media/audio/philadelphia-stop-15.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "LOVE Park",
@@ -6509,7 +6543,9 @@
    "lon": -75.16572,
    "slug": "love-park",
    "desc": "JFK Plaza at the start of the Parkway, with Robert Indiana's LOVE sculpture of 1976 and the view straight up the Parkway to the Art Museum.",
-   "tip": "Free. The fountain runs in summer."
+   "tip": "Free. The fountain runs in summer.",
+   "audio": "/media/audio/philadelphia-stop-16.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Rodin Museum",
@@ -6522,7 +6558,9 @@
    "lon": -75.17395,
    "slug": "rodin-museum",
    "desc": "The largest collection of Rodin outside Paris, in a small Beaux-Arts pavilion and garden of 1929 on the Parkway, with the Thinker at the gate and the Gates of Hell at the door.",
-   "tip": "Pay-what-you-wish. Closed Tuesdays."
+   "tip": "Pay-what-you-wish. Closed Tuesdays.",
+   "audio": "/media/audio/philadelphia-stop-17.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Philadelphia Museum of Art and the Rocky Steps",
@@ -6535,7 +6573,9 @@
    "lon": -75.18092,
    "slug": "philadelphia-museum-of-art",
    "desc": "The Greek temple on the hill at the end of the Parkway, 1928, with 72 steps that Rocky ran up in 1976 and the statue of him at the bottom. Inside, one of the great collections: Duchamp, Cezanne's Large Bathers, the medieval cloister, the Japanese teahouse.",
-   "tip": "Paid admission; pay-what-you-wish on the first Sunday and Friday evenings. The steps and the view are free."
+   "tip": "Paid admission; pay-what-you-wish on the first Sunday and Friday evenings. The steps and the view are free.",
+   "audio": "/media/audio/philadelphia-stop-18.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Eastern State Penitentiary",
@@ -6548,7 +6588,9 @@
    "lon": -75.17267,
    "slug": "eastern-state-penitentiary",
    "desc": "The prison of 1829 that invented solitary confinement and was copied by three hundred prisons worldwide, closed in 1971 and left to decay. Al Capone's cell is furnished as he had it.",
-   "tip": "Paid admission. Ten minutes' walk north of the museum."
+   "tip": "Paid admission. Ten minutes' walk north of the museum.",
+   "audio": "/media/audio/philadelphia-stop-19.mp3",
+   "audio_kind": "trail"
   }
  ]
 }

@@ -469,6 +469,146 @@
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 455
  },
+ "philadelphia-overview.mp3": {
+  "chars": 1449,
+  "settings": null,
+  "sig": "088685a84166",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 274
+ },
+ "philadelphia-stop-1.mp3": {
+  "chars": 4142,
+  "settings": null,
+  "sig": "ad505bb9d6c5",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 778
+ },
+ "philadelphia-stop-10.mp3": {
+  "chars": 3812,
+  "settings": null,
+  "sig": "e4bc13213cc7",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 709
+ },
+ "philadelphia-stop-11.mp3": {
+  "chars": 3958,
+  "settings": null,
+  "sig": "f8cf58977498",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 741
+ },
+ "philadelphia-stop-12.mp3": {
+  "chars": 3795,
+  "settings": null,
+  "sig": "d3afb98b332d",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 701
+ },
+ "philadelphia-stop-13.mp3": {
+  "chars": 3793,
+  "settings": null,
+  "sig": "37a667b651da",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 725
+ },
+ "philadelphia-stop-14.mp3": {
+  "chars": 3982,
+  "settings": null,
+  "sig": "ba4a11975514",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 744
+ },
+ "philadelphia-stop-15.mp3": {
+  "chars": 3833,
+  "settings": null,
+  "sig": "e12a4e47e47b",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 734
+ },
+ "philadelphia-stop-16.mp3": {
+  "chars": 4125,
+  "settings": null,
+  "sig": "884f5d8e58d8",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 775
+ },
+ "philadelphia-stop-17.mp3": {
+  "chars": 3572,
+  "settings": null,
+  "sig": "5cde6d777ea6",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 703
+ },
+ "philadelphia-stop-18.mp3": {
+  "chars": 3655,
+  "settings": null,
+  "sig": "a2f57a9a104b",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 700
+ },
+ "philadelphia-stop-19.mp3": {
+  "chars": 3925,
+  "settings": null,
+  "sig": "f9607036b1c0",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 745
+ },
+ "philadelphia-stop-2.mp3": {
+  "chars": 4160,
+  "settings": null,
+  "sig": "1936dcaffa35",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 786
+ },
+ "philadelphia-stop-3.mp3": {
+  "chars": 4280,
+  "settings": null,
+  "sig": "2fa79a1ba981",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 781
+ },
+ "philadelphia-stop-4.mp3": {
+  "chars": 3917,
+  "settings": null,
+  "sig": "ed34bd480fc5",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 717
+ },
+ "philadelphia-stop-5.mp3": {
+  "chars": 4037,
+  "settings": null,
+  "sig": "c6b615485856",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 731
+ },
+ "philadelphia-stop-6.mp3": {
+  "chars": 4024,
+  "settings": null,
+  "sig": "04f29a9752bc",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 714
+ },
+ "philadelphia-stop-7.mp3": {
+  "chars": 3911,
+  "settings": null,
+  "sig": "28f7f19803c0",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 707
+ },
+ "philadelphia-stop-8.mp3": {
+  "chars": 3676,
+  "settings": null,
+  "sig": "e28b9c34860a",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 716
+ },
+ "philadelphia-stop-9.mp3": {
+  "chars": 4003,
+  "settings": null,
+  "sig": "23ba8cfc62ea",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 749
+ },
  "trail-freedom.mp3": {
   "chars": 4416,
   "sig": "f6de97569292",
