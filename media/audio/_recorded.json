@@ -469,6 +469,83 @@
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 455
  },
+ "ivy-harvard-overview.mp3": {
+  "chars": 1738,
+  "settings": null,
+  "sig": "2246c7ffbe5b",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 322
+ },
+ "ivy-harvard-stop-1.mp3": {
+  "chars": 3842,
+  "settings": null,
+  "sig": "98233cb5b2a2",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 723
+ },
+ "ivy-harvard-stop-10.mp3": {
+  "chars": 4326,
+  "settings": null,
+  "sig": "1ec641e4de0f",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 780
+ },
+ "ivy-harvard-stop-2.mp3": {
+  "chars": 4380,
+  "settings": null,
+  "sig": "400915642248",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 792
+ },
+ "ivy-harvard-stop-3.mp3": {
+  "chars": 4036,
+  "settings": null,
+  "sig": "1ff82611c20e",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 719
+ },
+ "ivy-harvard-stop-4.mp3": {
+  "chars": 4096,
+  "settings": null,
+  "sig": "35702bf8b104",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 763
+ },
+ "ivy-harvard-stop-5.mp3": {
+  "chars": 3935,
+  "settings": null,
+  "sig": "c77b120493b4",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 723
+ },
+ "ivy-harvard-stop-6.mp3": {
+  "chars": 4006,
+  "settings": null,
+  "sig": "535ba7000dd4",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 719
+ },
+ "ivy-harvard-stop-7.mp3": {
+  "chars": 4093,
+  "settings": null,
+  "sig": "bf91c5ded1c8",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 742
+ },
+ "ivy-harvard-stop-8.mp3": {
+  "chars": 4319,
+  "settings": null,
+  "sig": "ed8f75045079",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 766
+ },
+ "ivy-harvard-stop-9.mp3": {
+  "chars": 3983,
+  "settings": null,
+  "sig": "05fc96b984eb",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 735
+ },
  "philadelphia-overview.mp3": {
   "chars": 1449,
   "settings": null,
