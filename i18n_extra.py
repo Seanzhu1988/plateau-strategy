@@ -3711,6 +3711,18 @@ EXTRA.update({
         "收听：", "Escuchar:", "듣기:", "Nghe:"],
     "Another walk in {city}": [
         "{city}的另一条步行路线", "Otro paseo en {city}", "{city}의 또 다른 산책", "Một lối đi bộ khác ở {city}"],
+    "Every destination": [
+        "全部目的地", "Todos los destinos", "모든 목적지", "Tất cả điểm đến"],
+    "The Walks": [
+        "步行路线", "Los paseos", "도보 코스", "Các lối đi bộ"],
+    "Travel tips": [
+        "旅行提示", "Consejos de viaje", "여행 팁", "Mẹo du lịch"],
+    "Gallery Guides": [
+        "展品导览", "Guías de galería", "갤러리 가이드", "Hướng dẫn phòng tranh"],
+    "Favorite Places": [
+        "喜爱的地点", "Lugares favoritos", "좋아하는 장소", "Địa điểm yêu thích"],
+    "Walks & Guides": [
+        "步行与导览", "Paseos y guías", "도보와 가이드", "Đi bộ và hướng dẫn"],
     "Part of the Ivy League tour": [
         "常春藤联盟之旅的一部分", "Parte del recorrido de la Ivy League", "아이비리그 투어의 일부", "Một phần của hành trình Ivy League"],
     "Eight campuses, eight cities": [
