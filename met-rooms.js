@@ -760,60 +760,225 @@
      through a white wall. That is the landmark, so that is what is drawn,
      along with the roofed walkway on one side. A framed painting was never
      going to say any of this. */
+  /* ------------------------------------------------------------------
+     GALLERY 217, THE ASTOR CHINESE GARDEN COURT
+     Published and traceable: the court is "roughly 59 feet by 40"
+     (Christian Science Monitor, 7 July 1981, on the opening), and it was
+     built by 27 Chinese engineers and craftsmen in the same report. The
+     Met's own object record for it lists the materials this draws in:
+     Taihu rocks, a granite terrace, ceramic tile flooring, roof tiles,
+     nan wood columns, pine beams, gingko latticework, brass fittings.
+     It copies a courtyard in the Garden of the Master of the Fishing Nets,
+     Suzhou.
+     COUNTED FROM PHOTOGRAPHS, not from memory, because the old version of
+     this room was a plank on six dark posts and a grey oval, and every one
+     of those four facts is wrong. Two Commons photographs of this court
+     were read this run:
+       "Astor court colonnade" - the corridor columns are ROUND and BARE
+       pale honey nan wood, the beams and brackets above them are near
+       BLACK, and a low pierced balustrade runs between the column feet.
+       The roof is grey barrel tile finishing in a round eave-drip course,
+       and the light above is a DIAGONAL glazed diagrid.
+       "Astor court moon gate" - the gate is a true circle cut through a
+       thick wall, ringed in grey bluestone with a thin dark timber outer
+       edge, standing on a flat raised sill, and what shows through it is
+       the DARK of a passage, not glass.
+     THE NAMED GAP, left as a gap: no published column count for the
+     corridor was found, so the run of columns is drawn continuing past the
+     edge of the court rather than closed at a total. It claims a rhythm,
+     which the photograph shows, and does not claim a number, which nothing
+     read this run publishes. The Winter 1980-81 Metropolitan Museum
+     Bulletin, "A Chinese Garden Court", is the named route to it.
+     ------------------------------------------------------------------ */
   function astorCourt(ctx) {
     var r = ctx.room, z = ctx.zBase, P = ctx.project, out = [];
     var wall = ctx.wall || 26;
     var FT = 1.1;
-    var CW = 59, CD = 40;
+    var CW = 59, CD = 40;                       /* published, 1981 */
     var k = Math.min((r.w * 0.86) / CW, (r.h * 0.78) / CD, FT);
     var W = CW * k, D = CD * k;
     var cx = r.x + r.w / 2, cy = r.y + r.h / 2;
     var x1 = cx - W/2, x2 = cx + W/2, y1 = cy - D/2, y2 = cy + D/2;
-    var PLASTER = "#eceae2", TILE = "#6f6255", TIMBER = "#8a5f43", STONE = "#cfc9bb";
 
-    out.push(flat(ctx, x1, y1, x2, y2, z + 0.4, "#e6e0d2", "#c3bba7", 0.5, -1e9));
+    /* Two tones per material, which is checklist item 6. Plaster is not one
+       white, tile is not one grey, and the timber here is genuinely TWO
+       timbers: pale bare column, near-black beam. */
+    var PLASTER = "#eceae2", PLASTER_D = "#cdcabf";
+    var TILE = "#5f5b57", TILE_D = "#46433f";
+    var BEAM = "#3a2c22", BEAM_D = "#291f18";
+    var NAN = "#c08e56", NAN_D = "#9a6c3c";     /* bare nan wood, not lacquer */
+    var BLUE = "#9aa5a4", BLUE_D = "#77817f";   /* the bluestone gate ring */
+    var ROCK = "#cfc9bb", PAVE = "#ded8ca";
+
+    /* the granite terrace the whole court stands on */
+    out.push(flat(ctx, x1, y1, x2, y2, z + 0.4, PAVE, "#bdb5a2", 0.5, -1e9));
+    /* paving joints: a texture in the plane of the floor, claiming no count */
+    for (var pv = 1; pv < 9; pv++) {
+      var pvx = x1 + W * (pv / 9);
+      out.push({ svg: ctx.poly([P(pvx, y1, z + 0.5), P(pvx, y2, z + 0.5)],
+                               "none", "#c7bfad", 0.4), depth: -9.99e8 });
+    }
 
     var H = wall * 0.62;
-    /* The white plastered wall carrying the moon gate, at an EXPLICIT depth.
-       Left to sort on its own corners it painted straight over the gate, and
-       the gate is the entire reason this room is worth drawing. That is the
-       fourth time in this file a large flat surface has buried what stands in
-       front of it; large planes get an explicit depth, always. */
-    out = out.concat(batteredMass(ctx, x1, y1, x2, y1 + 2.2, z, H, 0, PLASTER, -9.8e8));
 
-    /* THE MOON GATE, a true circle. Drawn as an n-gon opening on the wall
-       face; a circle is the one shape here that must not be approximated
-       with a rectangle, because the circle IS the subject. */
-    var rr = H * 0.34, mcx = cx, mcz = z + H * 0.46;
-    var ring = [];
-    for (var a = 0; a < 28; a++) {
-      var th = (a / 28) * Math.PI * 2;
-      ring.push(P(mcx + Math.cos(th) * rr, y1 - 0.3, mcz + Math.sin(th) * rr));
-    }
-    out.push({ svg: ctx.poly(ring, "#c6d0cc", "#8e9a94", 0.8), depth: -9.5e8 });
-    /* the moulded surround, so the circle reads as cut THROUGH a wall */
-    var ring2 = [];
-    for (var a2 = 0; a2 < 28; a2++) {
-      var th2 = (a2 / 28) * Math.PI * 2;
-      ring2.push(P(mcx + Math.cos(th2) * rr * 1.13, y1 - 0.15, mcz + Math.sin(th2) * rr * 1.13));
-    }
-    out.push({ svg: ctx.poly(ring2, "#dcd9cf", "#a9a294", 0.7), depth: -9.6e8 });
+    /* THE WHITE WALL carrying the moon gate, at an EXPLICIT depth. Left to
+       sort on its own corners it painted straight over the gate, and the
+       gate is the entire reason this room is worth drawing. That is the
+       fourth time in this file a large flat surface has buried what stands
+       in front of it; large planes get an explicit depth, always. */
+    out = out.concat(mass(ctx, x1, y1, x2, y1 + 2.2, z, H, PLASTER, PLASTER_D, -9.8e8));
 
-    /* the roofed walkway down one side: posts and a tiled sweep */
-    var n = 5;
-    for (var i = 0; i <= n; i++) {
-      var px = x1 + (W * 0.62) * (i / n) + W * 0.19;
-      out = out.concat(batteredMass(ctx, px - 1.1, y2 - 4, px + 1.1, y2 - 1.8, z, H * 0.66, 0.01, TIMBER));
+    /* THE MOON GATE, a true circle cut through a thick wall, in the left
+       half of the wall so the corridor can stand along the right of it.
+       Three rings, outermost first: dark timber edge, bluestone surround,
+       then the dark of the passage itself. A circle is the one shape here
+       that must not be approximated, because the circle IS the subject. */
+    var rr = H * 0.33, mcx = cx - W * 0.27, mcz = z + H * 0.44;
+    function ring(rad, yy, fill, stroke, dep) {
+      var pts = [];
+      for (var a = 0; a < 40; a++) {
+        var th = (a / 40) * Math.PI * 2;
+        pts.push(P(mcx + Math.cos(th) * rad, yy, mcz + Math.sin(th) * rad));
+      }
+      out.push({ svg: ctx.poly(pts, fill, stroke, 0.6), depth: dep });
     }
-    out = out.concat(batteredMass(ctx, x1 + W*0.17, y2 - 5.2, x1 + W*0.83, y2 - 0.6,
-                                  z + H * 0.66, H * 0.10, 0.06, TILE));
+    ring(rr * 1.20, y1 - 0.36, BEAM, BEAM_D, -9.62e8);      /* timber edge */
+    ring(rr * 1.10, y1 - 0.34, BLUE, BLUE_D, -9.58e8);      /* bluestone */
+    ring(rr,        y1 - 0.30, "#5c554d", "#463f39", -9.54e8); /* the passage */
+    /* the flat raised sill the circle stands on, which is why a moon gate
+       reads as a doorway and not as a porthole */
+    out = out.concat(mass(ctx, mcx - rr * 0.92, y1 - 0.5, mcx + rr * 0.92, y1 + 0.1,
+                          z, 1.4 * FT, BLUE, BLUE_D, -9.50e8));
+    /* the carved plaque above it, which both photographs show */
+    out = out.concat(mass(ctx, mcx - rr * 0.42, y1 - 0.45, mcx + rr * 0.42, y1 - 0.1,
+                          mcz + rr * 1.34, 2.2 * FT, "#9c7d5c", "#7b6046", -9.52e8));
 
-    /* the rockery, which is the other half of a scholar's garden */
-    [[0.16, 0.46, 0.36], [0.26, 0.58, 0.24], [0.10, 0.62, 0.17]].forEach(function (rk, ri) {
-      var rx = x1 + W * rk[0], ry = y1 + D * rk[1], rs = H * rk[2];
-      out = out.concat(batteredMass(ctx, rx - rs*0.55, ry - rs*0.45, rx + rs*0.55, ry + rs*0.45,
-                                    z, rs, 0.22, STONE, -9.2e8 + ri));
+    /* PIERCED LATTICE WINDOWS in the white wall, right of the gate, the
+       gingko latticework the Met's own materials list names. Two of them,
+       because two are what the colonnade photograph shows on that wall. */
+    [0.10, 0.30].forEach(function (fr) {
+      var wx = cx + W * fr, ww = 3.4 * FT, wz = z + H * 0.52;
+      out.push({ svg: ctx.poly([P(wx - ww, y1 - 0.2, wz - ww), P(wx + ww, y1 - 0.2, wz - ww),
+                                P(wx + ww, y1 - 0.2, wz + ww), P(wx - ww, y1 - 0.2, wz + ww)],
+                               "#d8d4c8", "#8f887a", 0.6), depth: -9.7e8 });
+      for (var g = 1; g < 4; g++) {
+        var gu = -ww + (2 * ww) * (g / 4);
+        out.push({ svg: ctx.poly([P(wx + gu, y1 - 0.22, wz - ww), P(wx + gu, y1 - 0.22, wz + ww)],
+                                 "none", "#8f887a", 0.5), depth: -9.69e8 });
+        out.push({ svg: ctx.poly([P(wx - ww, y1 - 0.22, wz + gu), P(wx + ww, y1 - 0.22, wz + gu)],
+                                 "none", "#8f887a", 0.5), depth: -9.69e8 });
+      }
     });
+
+    /* THE COVERED WALKWAY. Round bare columns, a near-black beam across
+       their heads, a barrel-tile roof, and the low pierced balustrade that
+       runs between the column feet. The run is deliberately cut by the edge
+       of the court rather than closed: see the named gap above. */
+    var wy1 = y1 + 2.4, wy2 = y1 + 2.4 + 9 * FT;     /* corridor depth */
+    var colH = H * 0.70, colR = 0.62 * FT;
+    var runX1 = cx - W * 0.03, runX2 = x2 + 3;       /* runs off the edge */
+    var bay = 7.2 * FT, cols = [];
+    for (var bx = runX1; bx <= runX2; bx += bay) cols.push(bx);
+
+    function post(px, py, rad, hgt, fill, dark) {
+      var lo = [], hi = [], N = 10;
+      for (var a = 0; a < N; a++) {
+        var th = (a / N) * Math.PI * 2;
+        lo.push([px + Math.cos(th) * rad, py + Math.sin(th) * rad]);
+      }
+      for (var b = 0; b < N; b++) {
+        var b2 = (b + 1) % N;
+        var nx = Math.cos(((b + 0.5) / N) * Math.PI * 2), ny = Math.sin(((b + 0.5) / N) * Math.PI * 2);
+        if (!ctx.faceVisible(nx, ny)) continue;
+        var q = [P(lo[b][0], lo[b][1], z), P(lo[b2][0], lo[b2][1], z),
+                 P(lo[b2][0], lo[b2][1], z + hgt), P(lo[b][0], lo[b][1], z + hgt)];
+        out.push({ svg: ctx.poly(q, ctx.shade(fill, nx, ny, 0), dark, 0.4), depth: depthOf(q) });
+      }
+    }
+
+    /* the balustrade first, so a column stands in front of its own rail */
+    out = out.concat(mass(ctx, runX1 - bay * 0.5, wy2 - 0.9, runX2, wy2, z,
+                          2.6 * FT, "#dcd6c8", "#b4ab98", -8.9e8));
+    for (var pb = runX1 - bay * 0.5; pb < runX2; pb += bay * 0.34) {
+      out = out.concat(mass(ctx, pb + bay * 0.10, wy2 - 0.95, pb + bay * 0.24, wy2 + 0.05,
+                            z + 0.9 * FT, 1.2 * FT, "#8f887a", "#6f6a5f", -8.88e8));
+    }
+
+    cols.forEach(function (px) {
+      post(px, wy2 - 1.6, colR, colH, NAN, NAN_D);       /* the outer file */
+      post(px, wy1 + 0.9, colR, colH, NAN, NAN_D);       /* against the wall */
+    });
+
+    /* the near-black beam over the column heads, then the bracket blocks */
+    out = out.concat(mass(ctx, runX1 - bay * 0.5, wy2 - 2.4, runX2, wy2 - 1.0,
+                          z + colH, 1.5 * FT, BEAM, BEAM_D, -8.7e8));
+    cols.forEach(function (px) {
+      out = out.concat(mass(ctx, px - 1.4 * FT, wy2 - 2.6, px + 1.4 * FT, wy2 - 0.8,
+                            z + colH + 1.5 * FT, 0.9 * FT, BEAM, BEAM_D, -8.68e8));
+    });
+
+    /* THE ROOF. Grey barrel tile, pitched back toward the wall, finishing
+       in the round eave-drip course that gives a Chinese eave its scallop.
+       Drawn as a shallow leaning slab plus the drip circles; the scallop is
+       the tell, and without it a tile roof reads as a plank. */
+    var rz = z + colH + 2.6 * FT;
+    out = out.concat(mass(ctx, runX1 - bay * 0.6, wy2 - 3.4, runX2, wy1 - 0.6, rz,
+                          1.5 * FT, TILE, TILE_D, -8.6e8));
+    out = out.concat(mass(ctx, runX1 - bay * 0.6, wy1 - 0.6, runX2, wy1 + 1.0,
+                          rz + 1.5 * FT, 2.4 * FT, TILE, TILE_D, -8.58e8));
+    /* the drip course: a row of round eave tiles along the front edge */
+    for (var dx = runX1 - bay * 0.6; dx < runX2; dx += 1.5 * FT) {
+      var dpt = [];
+      for (var da = 0; da < 10; da++) {
+        var dth = (da / 10) * Math.PI * 2;
+        dpt.push(P(dx + Math.cos(dth) * 0.62 * FT, wy2 - 3.5,
+                   rz + 0.15 * FT + Math.sin(dth) * 0.62 * FT));
+      }
+      out.push({ svg: ctx.poly(dpt, TILE_D, "#3a3835", 0.35), depth: -8.55e8 });
+    }
+
+    /* THE ROCKERY. A standing Taihu stele against the white wall, which is
+       what the colonnade photograph shows, and low rocks in the open court.
+       Taihu limestone is pierced and irregular; drawn leaning, never as a
+       pyramid, because a pyramid is the box this standard was written
+       against. */
+    var sx = cx - W * 0.40, sy = y1 + 4.5;
+    out = out.concat(batteredMass(ctx, sx - 1.5, sy - 1.2, sx + 1.5, sy + 1.2,
+                                  z, H * 0.52, -0.10, ROCK, -9.1e8));
+    out = out.concat(batteredMass(ctx, sx - 0.9, sy - 0.8, sx + 1.9, sy + 0.9,
+                                  z + H * 0.52, H * 0.16, 0.30, ROCK, -9.09e8));
+    [[0.14, 0.70, 0.20], [0.26, 0.80, 0.13], [0.40, 0.66, 0.10]].forEach(function (rk, ri) {
+      var rx = x1 + W * rk[0], ry = y1 + D * rk[1], rs = H * rk[2];
+      out = out.concat(batteredMass(ctx, rx - rs * 0.62, ry - rs * 0.42,
+                                    rx + rs * 0.58, ry + rs * 0.46,
+                                    z, rs, -0.06, ROCK, -8.4e8 + ri));
+    });
+
+    /* THE SKYLIGHT. The court is roofed by a glazed DIAGONAL grid, and it is
+       the reason a visitor knows this garden is indoors. Drawn overhead as
+       diamonds, at the far end of the sort so nothing below is touched. */
+    var gz = z + wall * 0.98, step = 7 * FT;
+    /* Sorted at the FAR end, not the near one. Drawn last it painted over
+       the whole court, which is the same painter's-depth trap a floor plane
+       sets, arriving this time from above. And each diagonal is CLIPPED to
+       the court: swept unbounded it drew a grid across the empty page and
+       the room stopped reading as a room. */
+    function skyLine(ax, ay, bx, by) {
+      var t0 = 0, t1 = 1, dx = bx - ax;
+      if (dx !== 0) {
+        var ta = (x1 - ax) / dx, tb = (x2 - ax) / dx;
+        t0 = Math.max(0, Math.min(ta, tb));
+        t1 = Math.min(1, Math.max(ta, tb));
+      }
+      if (t1 <= t0) return;
+      out.push({ svg: ctx.poly([P(ax + dx * t0, ay + (by - ay) * t0, gz),
+                                P(ax + dx * t1, ay + (by - ay) * t1, gz)],
+                               "none", "#b9c6cc", 0.5), depth: -9.995e8 });
+    }
+    for (var s1 = -D; s1 < W + D; s1 += step) {
+      skyLine(x1 + s1, y1, x1 + s1 + D, y2);
+      skyLine(x1 + s1, y2, x1 + s1 + D, y1);
+    }
     return out;
   }
 

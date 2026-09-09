@@ -752,6 +752,85 @@ above is not paperwork, it is the lock.
 
 ## Rebuilt to this standard
 
+- asian-astor, the Astor Chinese Garden Court, Met gallery 217 (2026-09-09,
+  the landmark routine). What it replaced was the clearest example in this
+  file of the thing Sean called unacceptable: a flat grey plate with an OVAL
+  hole in it, three grey pyramids, and a plank on six dark posts. Every one
+  of those four readings is wrong, and the picture said so before any
+  research did.
+  PUBLISHED and traceable, reached this run: the court is "roughly 59 feet
+  by 40" and was built by "27 Chinese engineers and craftsmen trained in
+  traditional crafts", both in the Christian Science Monitor of 7 July 1981,
+  reporting the opening
+  (https://www.csmonitor.com/1981/0707/070701.html). The Met's own record
+  for gallery 217 lists the materials: Taihu rocks, granite terrace, ceramic
+  tile flooring, roof tiles and door frames, nan wood columns, pine beams,
+  gingko latticework, brass fittings. It copies a courtyard in the Garden of
+  the Master of the Fishing Nets, Suzhou. The 59 by 40 was already in the
+  file and is kept; the FABRIC standing on that plan is what changed.
+  COUNTED FROM PHOTOGRAPHS, which is the route this file already names as
+  legitimate and which no run had used on this room. Two Wikimedia Commons
+  photographs were read as images this run, not described from memory:
+  "Astor court colonnade" and "Astor court moon gate".
+    The colonnade photograph settles four things. The corridor columns are
+    ROUND and BARE pale honey nan wood, not dark lacquered posts. The beams
+    and brackets over their heads are near BLACK, so the walkway is TWO
+    timbers in strong contrast and drawing it in one brown loses the whole
+    reading. A low pierced balustrade runs between the column feet. And the
+    light above is a DIAGONAL glazed diagrid, which is the single feature
+    that tells a visitor this garden is indoors.
+    The moon gate photograph settles three more. The gate is a true circle
+    cut through a THICK wall, ringed in grey bluestone with a thin dark
+    timber outer edge, standing on a flat raised sill at about knee height.
+    What shows through it is the DARK of a passage. The old model drew pale
+    blue-grey glass, which turned a doorway into a porthole.
+  THE NAMED GAP, left open rather than guessed. No published column count
+  for the corridor was found. Item 1 forbids drawing a colonnade on a
+  derived count, so the run of columns is drawn CONTINUING PAST the edge of
+  the court instead of closing at a total: it claims the rhythm the
+  photograph shows and claims no number. The named route to the number is
+  the Winter 1980-81 Metropolitan Museum Bulletin, "A Chinese Garden Court:
+  The Astor Court at The Metropolitan Museum of Art" by Alfreda Murck and
+  Wen Fong. metmuseum.org rate-limited this run with HTTP 429 after two
+  fetches, which is the same block the greek-roman entry recorded, so the
+  Bulletin was not reached.
+  WHAT THE PICTURE SHOWED AND THE NUMBERS DID NOT. The skylight was drawn at
+  a NEAR depth and swept unbounded, so it painted a grid over the entire
+  court and out across the empty page: the room stopped reading as a room.
+  Same painter's-depth trap this file has now recorded seven times, arriving
+  from ABOVE for the first time rather than from a floor or a wall. Fixed
+  two ways, because it was two faults: sorted at the far end so it draws
+  first, and each diagonal clipped to the court's own x range. Nothing in
+  the face counts or the bounding box would ever have shown it.
+  OWED, and listed so the next run starts past it rather than rediscovering
+  it. All four were seen in the render and none is a guess:
+    (a) the standing Taihu stele reads as a pale tapered BIN. The negative
+        lean flares it as it rises, which is right for a Taihu rock and
+        wrong at this width; it wants to be slender and pierced, and a
+        pierced hole is the tell of Taihu limestone.
+    (b) the three court rocks are still CUBES, untouched from the version
+        this replaced, and cubes are the box the standard was written
+        against.
+    (c) the round eave-drip tiles read as white dots along the INSIDE of the
+        eave rather than as a scalloped course along its front edge. The y
+        of that row is wrong, not the idea.
+    (d) the two gingko lattice windows are drawn and then hidden behind the
+        roof, so the wall reads blank. Either raise them or move them left
+        of the corridor.
+
+- modern, the Modern and Contemporary galleries. NOT BUILT, and the negative
+  is reported so a later run does not spend itself rediscovering it. The
+  render is an empty grey box with one BLANK canvas and a bench, which is
+  exactly the shape Sean rejected, so the instinct is to fill it. The queue
+  says to check met-art.js first, and met-art.js carries NO signature work
+  for this key at all: there is no entry for `modern`, where asian-astor and
+  islamic both have theirs. A gallery with no listed work and no published
+  room dimension gets nothing. Absence over invention: an empty box that
+  claims nothing is honest, and a room furnished from imagination is a
+  liability on a licensed guide's site. What would unblock it is an entry in
+  met-art.js naming a work actually hung there, with the Met's own published
+  dimensions for it, which is how egyptian and lehman were unblocked.
+
 - park-street, Park Street Church, Boston (2026-09-08, the landmark routine).
   The last Freedom Trail stop without its own form file, and NOT one of the
   boxes this standard was written against: six earlier runs had already given
