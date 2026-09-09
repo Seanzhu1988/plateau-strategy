@@ -35,7 +35,7 @@ convert, or keep. Each line is checkable, no judgement calls.
       anyone who does not run JavaScript
 
 **Free channels used up first, ads are the expensive option, not the first one**
-- [ ] Google Business Profile claimed (free, highest-intent local traffic)
+- [~] Google Business Profile CREATED 2026-09-08, unverified (free, highest-intent local traffic). Primary category `Tour operator` (Sean's pick; Google has no `Car service` category), service area Seattle + Bellevue, website with utm_source=google_business, no phone yet. Verification needs Sean's mailing address, entered by him at business.google.com. Secondary categories to add once verified: Airport shuttle service, Car rental agency, Tour guide.
 - [ ] At least a few hotel or agency partners live in the Agent Program, 
       commission-only distribution, no ad spend, already built
 
