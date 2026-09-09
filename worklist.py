@@ -131,7 +131,35 @@ def tick(path, qid, done=True):
         return it
 
 
-def grouped(path, country=None):
+def counts(path, have_names=None):
+    """Totals for the pulse card, with `have` computed the same way as grouped.
+
+    Kept beside grouped so the number on the card and the ticks behind it can
+    never disagree.
+    """
+    items = load(path).get("items", {})
+    return {"ok": bool(items), "total": len(items),
+            "done": sum(1 for v in items.values() if v.get("done")),
+            "have": sum(1 for v in items.values() if _has(v, have_names))}
+
+
+def _has(it, have_names):
+    """Is this place already in the Destination Book?
+
+    Recomputed from the book when the caller passes its names, which is what
+    the tick endpoint has always promised: "the flag beside it is recomputed
+    from the book itself and is never written from here". It was not. The
+    stored flag was a snapshot taken on the one scan and the book grew 103
+    entries underneath it, so four places the site now carries still read as
+    missing. Falls back to the stored value when no names are supplied, so an
+    older caller keeps working.
+    """
+    if have_names is None:
+        return bool(it.get("have"))
+    return _norm(it.get("name", "")) in have_names
+
+
+def grouped(path, country=None, have_names=None):
     """State, then town, then the places, which is the order the work happens in.
 
     Regions are ordered by how much is left rather than alphabetically: the
@@ -151,10 +179,10 @@ def grouped(path, country=None):
         town = reg["towns"].setdefault(t, {"town": t, "places": []})
         town["places"].append({"qid": qid, "name": it.get("name", ""),
                                "links": it.get("links", 0),
-                               "done": bool(it.get("done")), "have": bool(it.get("have"))})
+                               "done": bool(it.get("done")), "have": _has(it, have_names)})
         reg["total"] += 1
         reg["done"] += 1 if it.get("done") else 0
-        reg["have"] += 1 if it.get("have") else 0
+        reg["have"] += 1 if _has(it, have_names) else 0
 
     out = []
     for reg in regions.values():

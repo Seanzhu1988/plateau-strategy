@@ -3518,14 +3518,43 @@ def api_room_leave():
 WORKLIST_PATH = _data_path("worklist.json")
 
 
+_BOOK_NAMES_CACHE = {"stamp": None, "names": frozenset()}
+
+
+def _book_place_names():
+    """Every name in the Destination Book, normalised for matching only.
+
+    The worklist's "already in the book" flag is meant to be a statement of
+    fact recomputed from the book, not a stored snapshot, but the book is 1.9
+    MB and the pulse polls its counts, so re-reading it every few seconds is
+    not acceptable. Cached on the file's own mtime and size: a poll costs a
+    stat when nothing has changed, and the first read after a write pays for
+    the parse. No expiry, because the file changing IS the expiry.
+    """
+    try:
+        st = os.stat(_data_path("destinations.json"))
+        stamp = (st.st_mtime_ns, st.st_size)
+    except OSError:
+        return _BOOK_NAMES_CACHE["names"]
+    if _BOOK_NAMES_CACHE["stamp"] != stamp:
+        names = frozenset(
+            worklist_mod._norm(e.get("name") or "")
+            for e in (_book_raw().get("entries") or [])
+            if e.get("name"))
+        _BOOK_NAMES_CACHE["names"] = names - {""}
+        _BOOK_NAMES_CACHE["stamp"] = stamp
+    return _BOOK_NAMES_CACHE["names"]
+
+
 @app.route("/api/worklist")
 @owner_required
 def api_worklist():
     """The job list, state then town then place. Owner only: it is a plan of
     what this company is going to build, which is not a stranger's business."""
     try:
-        return jsonify({"ok": True, **worklist_mod.grouped(WORKLIST_PATH,
-                                                           request.args.get("country") or None)})
+        return jsonify({"ok": True, **worklist_mod.grouped(
+            WORKLIST_PATH, request.args.get("country") or None,
+            have_names=_book_place_names())})
     except Exception as e:
         return jsonify({"ok": False, "error": str(e)}), 500
 
@@ -14194,11 +14223,7 @@ def _pulse_worklist():
     pull all of them to show three numbers; the card fetches the rest on the
     tap that opens it."""
     try:
-        d = worklist_mod.load(WORKLIST_PATH)
-        items = d.get("items", {})
-        return {"ok": bool(items), "total": len(items),
-                "done": sum(1 for v in items.values() if v.get("done")),
-                "have": sum(1 for v in items.values() if v.get("have"))}
+        return worklist_mod.counts(WORKLIST_PATH, _book_place_names())
     except Exception:
         return {"ok": False}
 
