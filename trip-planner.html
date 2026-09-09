@@ -1472,7 +1472,7 @@
     async function overnightFind(){
         const last = lastStopOfDay();
         const c = last || coordOf(st.pos);
-        $('ovMsg').textContent = 'Looking for places to stay near ' + (last ? last.name : 'your last stop') + '…';
+        $('ovMsg').textContent = T('Looking for places to stay near {place}…', { place: last ? last.name : T('your last stop') });
         try {
             const q = '[out:json][timeout:25];(' +
                 'nwr(around:6000,' + c.lat.toFixed(5) + ',' + c.lon.toFixed(5) +
@@ -1493,7 +1493,7 @@
                 $('ovMsg').textContent = 'Nothing mapped nearby. Type where you are staying instead.';
                 return;
             }
-            $('ovMsg').textContent = out.length + ' found near ' + (last ? last.name : 'your last stop') + ':';
+            $('ovMsg').textContent = T('{n} found near {place}:', { n: out.length, place: last ? last.name : T('your last stop') });
             $('ovList').innerHTML = out.slice(0, 12).map(h =>
                 '<button class="ov-hotel" onclick="pickStay(' + h.lat + ',' + h.lon + ',&quot;' +
                 escj(h.name).replace(/"/g, '&quot;') + '&quot;)">🏨 ' + escj(h.name) +
@@ -3220,7 +3220,7 @@
             else {
                 fetch('/api/pricing').then(r => r.json()).then(p => {
                     const fee = (p && isFinite(p.platform_fee)) ? p.platform_fee : 5;
-                    feeEl.textContent = '💳 A $' + fee + ' platform connection fee applies to this trip, it’s how the site keeps these tools free.';
+                    feeEl.textContent = T('💳 A ${fee} platform connection fee applies to this trip, it’s how the site keeps these tools free.', { fee: fee });
                     feeEl.style.display = 'block';
                 }).catch(() => { feeEl.style.display = 'none'; });
             }
