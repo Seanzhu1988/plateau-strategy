@@ -1,4 +1,5 @@
 /* dc-form-hirshhorn.js: the Hirshhorn Museum and Sculpture Garden.
+ * MODEL_STANDARD_EXEMPT: 3 no steps or plinth, the drum is lifted 14 ft on four piers over an open plaza
  *
  * Rebuilt to MODEL_STANDARD.md. What stood here before was the generic
  * "drum" form: a squat 12-sided plug with a 16-sided lid on top, solid all

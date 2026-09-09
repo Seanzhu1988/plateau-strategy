@@ -119,6 +119,23 @@ it, from more than one angle, before it is committed.
 
 ## The mechanics
 
+- **Ask the machine first.** `python3 model_audit.py` lists every model that
+  ships, checks it against the five items a machine can read (2, 3, 4, 5, 6)
+  and the two it can read weakly (1, 8), reads this file's ledger and OWED
+  list, and prints the table worst first. `--owed` shows only what is not
+  finished; `--strict` exits 1 if any shipped model fails a checkable item,
+  which is the hook for the routine. Items 7 and 9 are NOT checked, because
+  no machine here knows the published height or what a visitor names, so a
+  clean row means the checkable half passed and nothing more. Only step 4
+  closes a model. [SEAN 2026-09-08 "apply to all build"]
+- **Declare what does not apply, in the file.** A wall cut into the ground
+  has no roof; an obelisk has no cornice; a ship has no string course. Item 4
+  already says to write that in the header. The machine-readable form is one
+  line in the file's comment header, reason required:
+  `MODEL_STANDARD_EXEMPT: 4 the memorial is a cut into the ground, no roof`
+  Seven models carry these as of 2026-09-08. An exemption with no reason is
+  not an exemption.
+
 - One file per building: `dc-form-<k>.js` registers
   `window.DC_FORMS[k] = function (ctx, p, s, VE) { ... }` and is loaded after
   the host renderer. Several can be built at once without touching each

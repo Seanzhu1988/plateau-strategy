@@ -1,4 +1,5 @@
 /* dc-form-monument.js: the Washington Monument as a massing model.
+ * MODEL_STANDARD_EXEMPT: 2 no horizontal break, the 150 ft colour change is a flat shift with no ledge
  *
  * Every dimension below is a research fact converted to metres:
  *   shaft foot          55 ft square           = 16.764 m

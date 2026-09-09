@@ -1,4 +1,7 @@
 /* dc-form-vietnam.js: the Vietnam Veterans Memorial.
+ * MODEL_STANDARD_EXEMPT: 2 no cornice or string course, the memorial is a wall cut into the ground
+ * MODEL_STANDARD_EXEMPT: 3 no plinth or steps, the wall is cut into the ground and the path runs along its base
+ * MODEL_STANDARD_EXEMPT: 4 no roof, the memorial is a cut into the ground, not a building
  *
  * Rebuilt to MODEL_STANDARD.md. What stood here before was the generic "wall"
  * form: a low slab lying on the lawn. The Vietnam Veterans Memorial is not a

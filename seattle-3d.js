@@ -130,6 +130,7 @@
   }
 
   function spaceNeedle(ctx) {
+    /* MODEL_STANDARD_EXEMPT: 2 no cornice or string course, it is a tower on three legs under a saucer */
     /* COLOUR, and it is a research question rather than a taste one. The
        published 1962 scheme is "Orbital Olive paint for the body, Astronaut
        White for the legs, Re-entry Red for the saucer, and Galaxy Gold for the

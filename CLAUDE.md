@@ -45,6 +45,14 @@ A change that has not been looked at on a phone is not finished.
   in page copy, articles, blueprints, or any written content. Use commas or
   periods. The server enforces this for posted content; write it that way by
   hand too.
+- **Every 3D model answers the model standard, and the machine asks first.**
+  `MODEL_STANDARD.md` is the method; `python3 model_audit.py --owed` is the
+  check. Run it before touching any model and before saying a model is done.
+  A row that fails a checkable item is a defect to fix, not a note to file;
+  a row marked NO RECORD or self-decl is a model nobody has recorded a verdict
+  on. The two items a machine cannot check, true heights and the one thing a
+  visitor names, are closed only by looking and by the two adversarial
+  critics of step 4. [SEAN 2026-09-08 "i need this to apply to all build"]
 - **Music on the site has to be ours.** A famous record carries two copyrights,
   one on the recording and one on the song, and the few seconds everyone
   recognises is exactly the protected part, so a short clip is not a way around

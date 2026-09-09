@@ -1,4 +1,5 @@
 /* trail-form-constitution.js - USS Constitution, "Old Ironsides", rebuilt to
+ * MODEL_STANDARD_EXEMPT: 2 no cornice or string course, it is a ship
  * MODEL_STANDARD.md. Registers window.TRAIL_FORMS["constitution"] and takes
  * over from the scene of the same name in trail-3d.js.
  *

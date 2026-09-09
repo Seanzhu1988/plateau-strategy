@@ -1,4 +1,5 @@
 /* dc-form-korean.js: the Korean War Veterans Memorial, West Potomac Park.
+ * MODEL_STANDARD_EXEMPT: 2 no cornice, the memorial is a walked field of nineteen figures beside a wall
  *
  * Built to MODEL_STANDARD.md. What stood here before was the generic "plaza"
  * form: one pale box 70 by 38 metres. This memorial is not a mass at all. It

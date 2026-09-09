@@ -1,4 +1,5 @@
 /* dc-form-wwii.js: the National World War II Memorial.
+ * MODEL_STANDARD_EXEMPT: 4 no roof, a sunken oval plaza ringed by pillars, the two 43 ft arches are open
  *
  * Rebuilt to MODEL_STANDARD.md. What stood here before was the generic
  * "plaza" form: one pale box, 70 m across, two metres tall. The WWII
