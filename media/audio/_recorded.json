@@ -546,6 +546,90 @@
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 735
  },
+ "ivy-princeton-overview.mp3": {
+  "chars": 1492,
+  "settings": null,
+  "sig": "a00454376d7a",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 269
+ },
+ "ivy-princeton-stop-1.mp3": {
+  "chars": 4178,
+  "settings": null,
+  "sig": "e9e4de5f44f0",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 752
+ },
+ "ivy-princeton-stop-10.mp3": {
+  "chars": 4012,
+  "settings": null,
+  "sig": "4c23a052255b",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 727
+ },
+ "ivy-princeton-stop-11.mp3": {
+  "chars": 4130,
+  "settings": null,
+  "sig": "6790989768e1",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 721
+ },
+ "ivy-princeton-stop-2.mp3": {
+  "chars": 4023,
+  "settings": null,
+  "sig": "c2a00fdc6357",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 732
+ },
+ "ivy-princeton-stop-3.mp3": {
+  "chars": 4510,
+  "settings": null,
+  "sig": "7b9d3f252769",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 792
+ },
+ "ivy-princeton-stop-4.mp3": {
+  "chars": 3981,
+  "settings": null,
+  "sig": "97b7e40faa7b",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 713
+ },
+ "ivy-princeton-stop-5.mp3": {
+  "chars": 4134,
+  "settings": null,
+  "sig": "2c697f0fa89d",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 737
+ },
+ "ivy-princeton-stop-6.mp3": {
+  "chars": 4233,
+  "settings": null,
+  "sig": "8629009748ae",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 743
+ },
+ "ivy-princeton-stop-7.mp3": {
+  "chars": 4274,
+  "settings": null,
+  "sig": "3087fe2388c5",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 749
+ },
+ "ivy-princeton-stop-8.mp3": {
+  "chars": 4125,
+  "settings": null,
+  "sig": "eabc697e00e6",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 730
+ },
+ "ivy-princeton-stop-9.mp3": {
+  "chars": 4278,
+  "settings": null,
+  "sig": "b607b53cf252",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 769
+ },
  "ivy-yale-overview.mp3": {
   "chars": 1651,
   "settings": null,

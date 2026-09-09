@@ -5562,7 +5562,9 @@
    "lon": -74.66129,
    "slug": "princeton-palmer-square",
    "desc": "The town's green, laid out in the 1930s opposite the campus gate, with the shops and the Nassau Inn round it. Nassau Street, the town's main street, is the line between Princeton the town and Princeton the university.",
-   "tip": "Park in the garage behind the square. Everything on this walk is on foot from here."
+   "tip": "Park in the garage behind the square. Everything on this walk is on foot from here.",
+   "audio": "/media/audio/ivy-princeton-stop-1.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "FitzRandolph Gate",
@@ -5581,7 +5583,9 @@
      "step-free"
     ]
    },
-   "updated_at": "2026-09-09T01:57:16"
+   "updated_at": "2026-09-09T01:57:16",
+   "audio": "/media/audio/ivy-princeton-stop-2.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Nassau Hall",
@@ -5594,7 +5598,9 @@
    "lon": -74.65933,
    "slug": "princeton-nassau-hall",
    "desc": "1756, the largest stone building in the colonies when it was built, named for William of Orange. It was the whole college for decades, took cannon fire in the Battle of Princeton in 1777, and housed the Continental Congress from June to November 1783, which makes it a former capital of the United States.",
-   "tip": "The Faculty Room inside is sometimes open. The tigers are always there."
+   "tip": "The Faculty Room inside is sometimes open. The tigers are always there.",
+   "audio": "/media/audio/ivy-princeton-stop-3.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Cannon Green",
@@ -5607,7 +5613,9 @@
    "lon": -74.6591,
    "slug": "princeton-cannon-green",
    "desc": "The lawn behind Nassau Hall with a Revolutionary War cannon buried muzzle down in the middle, the prize in a long feud with Rutgers, who stole it once.",
-   "tip": "Bonfires are held here when Princeton beats Harvard and Yale in the same football season."
+   "tip": "Bonfires are held here when Princeton beats Harvard and Yale in the same football season.",
+   "audio": "/media/audio/ivy-princeton-stop-4.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "East Pyne Hall and Chancellor Green",
@@ -5620,7 +5628,9 @@
    "lon": -74.6584,
    "slug": "princeton-east-pyne",
    "desc": "Two of the older buildings east of Nassau Hall: Chancellor Green, the octagonal library of 1873 with a stained glass dome, now a cafe and reading room, and East Pyne, the courtyard building of 1897 with statues of the college's early presidents.",
-   "tip": "Chancellor Green cafe is open to anyone. Good coffee, glass dome."
+   "tip": "Chancellor Green cafe is open to anyone. Good coffee, glass dome.",
+   "audio": "/media/audio/ivy-princeton-stop-5.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Firestone Library",
@@ -5639,7 +5649,9 @@
      "step-free"
     ]
    },
-   "updated_at": "2026-09-09T02:57:36"
+   "updated_at": "2026-09-09T02:57:36",
+   "audio": "/media/audio/ivy-princeton-stop-6.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Princeton University Chapel",
@@ -5658,7 +5670,9 @@
      "step-free"
     ]
    },
-   "updated_at": "2026-09-09T02:57:47"
+   "updated_at": "2026-09-09T02:57:47",
+   "audio": "/media/audio/ivy-princeton-stop-7.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Prospect House",
@@ -5671,7 +5685,9 @@
    "lon": -74.65664,
    "slug": "princeton-prospect-house",
    "desc": "The Italianate villa of 1850s in the middle of campus, the president's house from 1878 to 1968. Woodrow Wilson lived here as president and his wife Ellen laid out the flower garden behind it. Now the faculty club.",
-   "tip": "The house is the faculty club; the garden is open to walk through."
+   "tip": "The house is the faculty club; the garden is open to walk through.",
+   "audio": "/media/audio/ivy-princeton-stop-8.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Princeton University Art Museum",
@@ -5684,7 +5700,9 @@
    "lon": -74.65788,
    "slug": "princeton-university-art-museum",
    "desc": "The university's museum, free, with a collection from ancient China to Warhol. A new building by David Adjaye replaced the old one on this site; check the museum's own page for current hours and what is on view.",
-   "tip": "Free. Check hours before you come; the building is new and they change."
+   "tip": "Free. Check hours before you come; the building is new and they change.",
+   "audio": "/media/audio/ivy-princeton-stop-9.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Blair Hall and Blair Arch",
@@ -5697,7 +5715,9 @@
    "lon": -74.66149,
    "slug": "princeton-blair-hall",
    "desc": "The first Collegiate Gothic dormitory at Princeton, 1897, with the great arch and steps that once led down to the railway station. The trains stopped here until the station moved.",
-   "tip": "The arch is a favourite for a cappella groups; if you hear singing, that is why."
+   "tip": "The arch is a favourite for a cappella groups; if you hear singing, that is why.",
+   "audio": "/media/audio/ivy-princeton-stop-10.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Alexander Hall",
@@ -5710,7 +5730,9 @@
    "lon": -74.66059,
    "slug": "princeton-alexander-hall",
    "desc": "The Romanesque auditorium of 1894, brownstone and granite with a carved frieze across the front, Richardson's manner a decade after Richardson. Richardson Auditorium inside seats the university's concerts.",
-   "tip": "Concerts are the way in. The exterior carving is the free part."
+   "tip": "Concerts are the way in. The exterior carving is the free part.",
+   "audio": "/media/audio/ivy-princeton-stop-11.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "College Walk",
