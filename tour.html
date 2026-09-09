@@ -51,6 +51,9 @@
                     padding: .8rem 0; border-top: 1px solid #e6e1d8; border-bottom: 1px solid #e6e1d8; }
         .tw-stat { font-size: .94rem; color: #6b655b; }
         .tw-stat b { font-size: 1.06rem; color: #14110c; font-weight: 750; margin-right: .28rem; }
+        .tw-also { margin: -1.2rem 0 1.6rem; font-size: .94rem; color: #6b655b; }
+        .tw-also a { color: #1f3a5f; font-weight: 600; text-decoration: none; }
+        .tw-also a:hover { text-decoration: underline; }
 
         .tw-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
                    gap: 1.6rem; align-items: start; }
@@ -131,6 +134,8 @@
             <span class="tw-stat"><b id="twInside"></b>inside</span>
         </div>
 
+        <p class="tw-also" id="twAlso" hidden></p>
+
         <div class="tw-cols">
             <div>
                 <div id="twMap"></div>
@@ -195,10 +200,62 @@
         return map;
     }
 
+    /* A city code the destination book has never heard of still has to read
+       as a place: "new-haven" is New Haven, not a slug. */
+    function cityName(code) {
+        if (!code) return "";
+        var known = (window.PSX_CITY_NAMES || {})[code];
+        if (known) return known;
+        return String(code).split("-").map(function (w) {
+            return w ? w.charAt(0).toUpperCase() + w.slice(1) : w;
+        }).join(" ");
+    }
+
+    /* TWO WALKS IN ONE CITY ARE NEIGHBOURS, NOT RIVALS. A campus sits in its
+       own quarter, well away from the old town: Penn is 1.8 km from
+       Independence Hall, Harvard Yard 4.4 km from Boston Common, and no stop
+       on any walk is within 400 m of a stop on another. So a visitor wants
+       both and needs to know they do not overlap.
+
+       Matched on the ground rather than by label, because the label is not
+       enough: Penn and the Philadelphia walk share a city code, but Harvard
+       is Cambridge while the Freedom Trail is Boston, and a visitor does not
+       care about the line between them. Measured across all 66 pairs, the
+       closest unrelated pair is Princeton to Philadelphia at 59.7 km, so
+       15 km separates the true neighbours from everything else with room to
+       spare in both directions. */
+    function metresBetween(a, b) {
+        var best = null;
+        (a.stops || []).forEach(function (x) {
+            (b.stops || []).forEach(function (y) {
+                if (x.lat == null || y.lat == null) return;
+                var dy = (y.lat - x.lat) * 110570;
+                var dx = (y.lon - x.lon) * Math.cos(x.lat * Math.PI / 180) * 111320;
+                var d = Math.sqrt(dx * dx + dy * dy);
+                if (best === null || d < best) best = d;
+            });
+        });
+        return best;
+    }
+
+    function neighbours(t, all) {
+        var out = [];
+        (all || []).forEach(function (x) {
+            if (!x || x.id === t.id || x.kind === "collection") return;
+            var d = metresBetween(t, x);
+            var sameCity = !!(x.city && t.city && x.city === t.city);
+            if (sameCity || (d !== null && d <= 15000)) out.push({ trail: x, d: d });
+        });
+        out.sort(function (p, q) {
+            return (p.d === null ? Infinity : p.d) - (q.d === null ? Infinity : q.d);
+        });
+        return out;
+    }
+
     /* ---------------- one trail ---------------- */
-    function paintTrail(t) {
+    function paintTrail(t, all) {
         trail = t; stops = t.stops || [];
-        var city = t.city ? (window.PSX_CITY_NAMES || {})[t.city] || t.city : "";
+        var city = cityName(t.city);
         var eyebrow = document.getElementById("twEyebrow");
         eyebrow.textContent = "";
         if (t.collection) {
@@ -219,6 +276,19 @@
         document.getElementById("twMiles").textContent = ((t.length_m || 0) / 1609.344).toFixed(1);
         document.getElementById("twWalk").textContent = minutes(t.walk_min_total);
         document.getElementById("twInside").textContent = minutes(t.inside_min_total);
+
+        var also = document.getElementById("twAlso");
+        also.textContent = "";
+        neighbours(t, all).forEach(function (n, i) {
+            if (i) also.appendChild(document.createTextNode(" \u00b7 "));
+            also.appendChild(document.createTextNode(
+                F("Another walk in {city}", { city: cityName(n.trail.city) }) + ": "));
+            var link = document.createElement("a");
+            link.href = "/tour/" + n.trail.id;
+            link.textContent = n.trail.name;
+            also.appendChild(link);
+        });
+        also.hidden = !also.firstChild;
 
         listEl.innerHTML = "";
         stops.forEach(function (s, i) {
@@ -374,7 +444,7 @@
         var t = null;
         for (var i = 0; i < all.length; i++) if (all[i] && all[i].id === id) { t = all[i]; break; }
         if (!t) { fail(F("There is no tour called {id}.", { id: id })); return; }
-        if (t.kind === "collection") paintCollection(t, all); else paintTrail(t);
+        if (t.kind === "collection") paintCollection(t, all); else paintTrail(t, all);
     }).catch(function (e) { fail(T("The tour could not be loaded.")); });
 })();
 </script>

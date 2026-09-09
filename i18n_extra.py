@@ -3709,6 +3709,8 @@ EXTRA.update({
 EXTRA.update({
     "Listen:": [
         "收听：", "Escuchar:", "듣기:", "Nghe:"],
+    "Another walk in {city}": [
+        "{city}的另一条步行路线", "Otro paseo en {city}", "{city}의 또 다른 산책", "Một lối đi bộ khác ở {city}"],
     "Part of the Ivy League tour": [
         "常春藤联盟之旅的一部分", "Parte del recorrido de la Ivy League", "아이비리그 투어의 일부", "Một phần của hành trình Ivy League"],
     "Eight campuses, eight cities": [
