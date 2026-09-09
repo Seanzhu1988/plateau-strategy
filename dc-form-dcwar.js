@@ -66,7 +66,9 @@
  *   no published entablature depth (split 2 + 1.5 from the 47 ft remainder);
  *   no published dome rise or profile (given the remainder, drawn as a
  *   saucer); no published statement that the frieze carries triglyphs, so
- *   none is drawn; no published inscription band height on the base.
+ *   none is drawn; no published inscription band height on the base;
+ *   no published flute count, so the shaft carries the Doric order's
+ *   canonical twenty and the number is the order's, not this building's.
  *
  * SCALE. p.h arrives as max(14, MIN_H=12) = 14 m, which IS the published
  * 47 ft, so no correction was needed and the true 0.3048 m per foot is used
@@ -146,11 +148,21 @@
     for (var ci = 0; ci < COL_N; ci++) {
       var ca = (ci / COL_N) * Math.PI * 2 + Math.PI / 12;
       var kx = cx + RING_R * Math.cos(ca), ky = cy + RING_R * Math.sin(ca);
-      /* Doric: no base moulding. Shaft, then abacus. Eight sides so the
-         flutes read as a round shaft rather than a post. */
-      var shaft = H.ngon(ctx, kx, ky, COL_D / 2, z, COL_H, 8, MARB, null);
-      /* a fluted shaft is darker on its own flank than a smooth one; the
-         shade the helper applies is per-face, which is exactly the effect */
+      /* Doric: no base moulding. Shaft, then abacus.
+         THE SHAFT WAS EIGHT SIDES and the comment here claimed that made it
+         read round. The render said otherwise: three faces showed, two of
+         them at nearly one tone, and twelve round columns read as twelve
+         flat posts with a hard seam down each. A monopteros is a ring of
+         CYLINDERS seen against daylight, and a post ring is not that.
+         Twenty facets now, which is the Doric order's own flute count, so
+         each facet is one flute and the arrises between them are the real
+         edges. Twenty is the ORDER's number, taken from the definition of
+         Greek Doric, NOT a measured figure for this memorial: no source
+         reached gives this building's flute count, and the header says so.
+         At 900 pixels a shaft is about twelve wide, so one channel is under
+         a pixel, and what the facets buy is the thing a visitor names, a
+         round marble shaft turning in the light, not countable grooves. */
+      var shaft = H.ngon(ctx, kx, ky, COL_D / 2, z, COL_H, 20, MARB, null);
       var abac  = H.prism(ctx, kx, ky, COL_D * 1.15, COL_D * 1.15,
                           COL_D * 1.15, COL_D * 1.15, z + COL_H, 0.9 * FT,
                           MARB2, C.edge);

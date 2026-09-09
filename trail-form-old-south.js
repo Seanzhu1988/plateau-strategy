@@ -367,10 +367,32 @@
     var mapBx = function (u, z) { return P(tx0 + 1.2, u, z); };
     [[mapB, tx0 + 1.2, tx1 - 1.2, DS + 0.2], [mapBx, ty0 + 1.2, ty1 - 1.2, DS + 0.3]]
       .forEach(function (m) {
-        out.push(panel(ctx, m[0], m[1] + 2.2, m[2] - 2.2, BELL0 + 2, BELL1 - 3.2,
+        /* OWED (c) PAID 2026-09-09. "The belfry louvres read as a radiator
+           at map scale." The crop showed exactly that: nine stripes of dark
+           and near-white at EQUAL weight, edge to edge across three quarters
+           of the face, which is a heat sink and not a bell chamber.
+           Two things were wrong and only one of them was the slat count.
+           A louvre blade seen from the street is mostly its own UNDERSIDE,
+           in shade, with the sun catching a thin top arris. So the light
+           should be a line, not half the area: the ground stays the dark
+           #3d4a44 it already was, the blades thin to 0.45 ft on a 1.9 ft
+           pitch, and the dark now carries three quarters of the opening as
+           it does on the building.
+           The second thing: the opening ran 13.2 ft across a 17.6 ft face,
+           so there was no jamb left to read as wall. It is inset to 10.4,
+           which leaves 3.6 ft of belfry either side and turns a grille back
+           into an opening in something. */
+        /* The jamb is a FRACTION of the face, not a fixed 3.6 ft. The tower
+           is 20 ft across and 11 ft deep, so a constant inset that leaves a
+           proper jamb on the front leaves a 1.4 ft slit on the side, which
+           the render showed as a row of dashes. Twenty per cent each side on
+           whichever face this is: 10.6 ft of opening on the front, 5.2 on
+           the flank, and the same proportion on both. */
+        var jamb = (m[2] - m[1]) * 0.20;
+        out.push(panel(ctx, m[0], m[1] + jamb, m[2] - jamb, BELL0 + 2, BELL1 - 3.2,
                        "#3d4a44", TRIM_E, m[3] + 0.05));
-        for (var z = BELL0 + 3; z < BELL1 - 3.6; z += 1.6) {
-          out.push(panel(ctx, m[0], m[1] + 2.2, m[2] - 2.2, z, z + 0.7, TRIM_D, null, m[3] + 0.07));
+        for (var z = BELL0 + 3.1; z < BELL1 - 3.6; z += 1.9) {
+          out.push(panel(ctx, m[0], m[1] + jamb, m[2] - jamb, z, z + 0.45, TRIM_D, null, m[3] + 0.07));
         }
         out.push(panel(ctx, m[0], m[1] - 0.5, m[2] + 0.5, BELL1 - 1.4, BELL1, TRIM, TRIM_E, m[3] + 0.09));
       });

@@ -110,6 +110,23 @@
       for (var i = 0; i < N; i++) {
         var u0 = a(i), u1 = a(i + 1);
         if (test && !test((u0 + u1) / 2)) continue;
+        /* THE STARBURST. Every segment of this ring carries the same colour,
+           and the stroke is that colour too, and still the render showed 44
+           pale spokes fanning across the roof. Colouring the stroke red
+           found them exactly: they are these radial edges. Two abutting
+           quads each antialias their shared edge against what is BEHIND
+           them, and two partial coverages do not add up to one, so a
+           hairline of plaza and sky survives between every pair. A stroke
+           in the same colour cannot close it, because the stroke has an
+           antialiased edge of its own.
+           So the quads OVERLAP instead. Each one runs a twelfth of a
+           segment past its neighbour's start, about a fifth of a degree,
+           three or four pixels at this radius and nothing at all in plan.
+           The lap stops at the end of a tested arc, because the balcony
+           floor is drawn with a test and must not run out over the blank
+           wall by even a foot. */
+        var lap = (a(1) - a(0)) / 12;
+        if (!test || test((a(i + 1) + a(i + 2)) / 2)) u1 += lap;
         var q = [pt(rOut * Math.cos(u0), rOut * Math.sin(u0), z),
                  pt(rOut * Math.cos(u1), rOut * Math.sin(u1), z),
                  pt(rIn  * Math.cos(u1), rIn  * Math.sin(u1), z),

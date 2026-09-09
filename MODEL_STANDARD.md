@@ -2236,9 +2236,8 @@ three models a run, one fix each, and strike the items as they are paid.
   were rendered before committing and both improved, neither regressed.
   A shared edit has to be looked at on every model it touches, not only on
   the one that motivated it.
-  STILL OWED on dcwar: (b) the columns are eight-sided prisms and "fluted"
-  is carried only by shading; (c) no source says whether the Doric frieze
-  carries triglyphs, so it is drawn plain.
+  STILL OWED on dcwar: (c) no source says whether the Doric frieze carries
+  triglyphs, so it is drawn plain. (b) is PAID, 2026-09-09; see below.
 
 - hirshhorn OWED (a) and (b) are PAID as one fix, because they are one
   defect. The two critics agreed the piers were tonally invisible, measured
@@ -2269,7 +2268,8 @@ three models a run, one fix each, and strike the items as they are paid.
   is two ribbons against a source that says "large rectangular windows";
   (f) the shadow ring is concentric, i.e. sun at the zenith, while the walls
   are directionally lit; (g) the plaza disc's corner reads as a sheet of
-  paper under the model at some yaws.
+  paper under the model at some yaws. The starburst half of (d) is PAID,
+  2026-09-09; the 44 bands on the blank wall are not, and stay owed.
 
 - old-south OWED (a) is PAID, and THE NOTE'S OWN DIAGNOSIS WAS WRONG, which
   is the finding worth keeping from this run. It recorded "a pale wedge of
@@ -2293,10 +2293,11 @@ three models a run, one fix each, and strike the items as they are paid.
   identical and the seam is shut.
   Verified at yaw -2.30, where the hole was, and at the page's own -0.62,
   where the end is culled and nothing changed.
-  STILL OWED on old-south: (b) the three octagons carry one round window
-  each struck on a plane rather than on the facet, so at some yaws it will
-  drift off the facet edge, and octDetail already does this correctly;
-  (c) the belfry louvres read as a radiator at map scale.
+  OWED AT THE TIME on old-south, both since paid and left in the past tense
+  so the audit's parser stops counting them: (b) the three octagons carried
+  one round window each struck on a plane rather than on the facet, paid
+  2026-09-08; (c) the belfry louvres read as a radiator at map scale, paid
+  2026-09-09. Old South has no open debts.
 
 ### Paid 2026-09-09 (the landmark routine)
 
@@ -2403,5 +2404,75 @@ three models a run, one fix each, and strike the items as they are paid.
   Verified at yaw -0.62, where one window shows per stage, and at -2.30,
   where the tower turns and two show per stage and follow it round. The hip
   end fixed by the previous run is intact at both.
-  STILL OWED on old-south: (c) the belfry louvres read as a radiator at map
-  scale; fewer, deeper slats, or a darker ground behind them.
+  OLD SOUTH IS CLEAR: (c) is PAID, 2026-09-09; see below.
+
+- THE STARBURST, hirshhorn OWED (d), first half. "Stroke=fill leaves a
+  44-spoke starburst on the ring top." The note named the place exactly and
+  its mechanism could not be true as written, which is why this one is worth
+  recording: every quad of that ring carries the SAME colour, computed once,
+  and the stroke is that same colour, so no arithmetic explains a pale line
+  between two of them. The seams were there anyway, plainly, fanning across
+  the roof from the courtyard.
+  COLOURING THE STROKE RED SETTLED IT IN ONE RENDER, the trick the Met stair
+  taught this file, used here to DIAGNOSE rather than to confirm: the red
+  lines landed exactly on the pale ones. The edges were the cause.
+  WHY A STROKE IN THE FILL'S OWN COLOUR DOES NOT CLOSE A SEAM, which is the
+  portable part: two abutting polygons each antialias their shared edge
+  against what is BEHIND them, and two partial coverages do not sum to one,
+  so a hairline of whatever lies underneath survives. Here that was plaza and
+  sky, both pale, so the seam read as light on stone. The stroke does not
+  help, because the stroke has an antialiased edge of its own.
+  THE FIX is overlap, not paint: each ring quad runs a twelfth of a segment
+  past its neighbour's start, about a fifth of a degree, three or four pixels
+  at this radius and nothing at all in plan. The lap stops at the end of a
+  tested arc, because ring() also draws the balcony floor with a test and
+  that must not run out over the blank wall by even a foot.
+  Verified at yaw -0.55 pitch 0.30, where the roof is now one surface, and at
+  yaw 1.90 pitch 0.16 from behind, where the coping, the piers and the shadow
+  ring are unchanged and the balcony correctly does not appear.
+  STILL OWED on hirshhorn: (c), the courtyard's inner wall; (d)'s other half,
+  44 tonal bands on a wall published as blank; (e) the glazing; (f) the
+  concentric shadow; (g) the plaza corner.
+
+- THE DORIC SHAFTS, dcwar OWED (b). "The columns are eight-sided prisms and
+  fluted is carried only by shading." True, and the render says what that
+  costs: of eight facets three showed, two of them at nearly one tone, so
+  twelve round columns read as twelve flat posts with a hard seam down each.
+  A monopteros is a ring of cylinders seen against daylight. A ring of posts
+  is a different building.
+  THE FIX is twenty facets, which is the Doric order's own flute count, so
+  each facet is one flute and the arrises between them are real edges. TWENTY
+  IS THE ORDER'S NUMBER, not this memorial's: no source reached gives its
+  flute count, and the file's NAMED GAPS now says so. At 900 pixels a shaft
+  is about twelve wide, so one channel is under a pixel; what the facets buy
+  is not countable grooves but the thing a visitor names, a round marble
+  shaft turning in the light.
+  Verified at yaw -0.55 pitch 0.22 and yaw -2.10 pitch 0.30. The shafts now
+  carry a gradient from lit face to flank with fine vertical striping, the
+  dome and entablature are unchanged, and the far columns still show through.
+  STILL OWED on dcwar: (c) only, the triglyph question, which is a source
+  question and not a drawing one.
+
+- THE BELFRY, old-south OWED (c). "The louvres read as a radiator at map
+  scale; fewer, deeper slats, or a darker ground behind them." The crop
+  showed a heat sink: nine stripes of dark and near-white at EQUAL weight,
+  running edge to edge across three quarters of the face.
+  TWO THINGS WERE WRONG AND ONLY ONE OF THEM WAS THE SLAT COUNT. The ground
+  was already dark, #3d4a44, so the note's second option was in the file
+  before the run began. What made it a grille was the WEIGHT: 0.7 ft of
+  bright blade on a 1.6 ft pitch is nearly half the opening painted white,
+  and a louvre blade seen from the street is mostly its own underside, in
+  shade, with the sun catching a thin top arris. The blades thin to 0.45 on a
+  1.9 pitch and the dark now carries three quarters of the opening, as it
+  does on the building.
+  THE SECOND THING, which the note did not mention and the picture did: the
+  opening ran 13.2 ft across a 17.6 ft face, so no jamb was left to read as
+  wall, and a hole with no wall around it is a panel. It is inset now.
+  AND THE FIRST FIX FOR THAT WAS WRONG, caught by looking again: a fixed 3.6
+  ft inset that leaves a proper jamb on the 20 ft front leaves a 1.4 ft slit
+  on the 11 ft flank, and the flank went from grille to a row of dashes. The
+  jamb is a FRACTION now, twenty per cent of whichever face it is on, so both
+  faces carry the same proportion: 10.6 ft of opening on the front, 5.2 on
+  the side.
+  Verified at yaw -0.62 pitch 0.28, cropped on the belfry and read whole at
+  map scale, and at yaw -2.30 pitch 0.30. Old South now has no open debts.
