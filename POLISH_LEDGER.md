@@ -187,8 +187,17 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
       phone framing the three overlapping pairs are **identical with and
       without the footprint**, so this adds none there; they are a pre-existing
       defect of that framing, noted below.
-- [ ] The Empire State setback widths are the only numbers in either model with
-      no stated source. `nyc-3d.js` carries a steps table, 304, 268, 232, 196,
+- [x] The Empire State setback widths are the only numbers in either model with
+      no stated source. **Done 2026-09-09**, and the finding is that one width
+      is real and the rest are not. The 60 ft setback above the 5th story is
+      published and takes 424 to 304, which is the table's first entry. The
+      same rule on the 187 ft face gives 67 against the 172 drawn, and 67 is
+      impossible on the page's own 28 ft window-to-core figure, so the depth
+      column is unsourced from its first entry down. Above floor 21 nothing is
+      published, and the widths falling 36, 36, 36 then 28, 28 give away that
+      they were constructed. Named indicative at the table, in the header and
+      on the page. Executable code proved identical, 646 lines either side.
+      NOT done, and left as its own item below: redrawing them. `nyc-3d.js` carries a steps table, 304, 268, 232, 196,
       168 and 140 ft at floors 21, 25, 30, 72, 81 and 85, while baseW and baseD
       trace to the published 424 by 187 and every height traces to a published
       figure. The page promises every dimension is the real one, so either
@@ -197,6 +206,17 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
       way the window bands and the parapet heights already do.
 
 ## Also on the list
+
+- [ ] **The Empire State setback depths are the fat side of plausible, and
+      redrawing them is a separate job from admitting it.** Measured
+      2026-09-09: the model draws 172 ft at the first setback where the
+      published 60 ft a side would give 67, and the page's own quoted 28 ft
+      window-to-core limit suggests a real plate nearer 116. Correcting the
+      column would narrow the silhouette, so it needs a cited plan width per
+      setback first, and then the full label sweep the other geometry changes
+      got, a turn by five tilts open and closed. Do not do it from arithmetic
+      alone: the whole point of the 09-09 entry is that a plausible-looking
+      number with no source is what got us here.
 
 - [ ] **Yiki's Chinese trail overview runs 6:26 against Jason's 5:09**, and
       the page calls both a five minute narration. Measured by
@@ -266,6 +286,50 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
       articles 75%. Small gaps, quick wins.
 
 ## Done
+
+### 2026-09-09
+Trimmed: the Share button on /book was drawn **325 by 25** in a 375 px header,
+a 13:1 pill with the glyph parked at the far left, against **33 by 44** on
+/universal-gallery. Cause was not the header, which is a row with
+align-items: center and the button at flex-grow 0; it was booking.html's own
+inline `button { width: 100% }`, written for its big blue submit and inherited
+by an injected button that never named a width. Ids outrank a bare tag
+selector, so `#psxShare` now sets `width: auto !important; flex: 0 0 auto`,
+which defends all three injected buttons against any page that adds such a
+rule later. That fixed the shape and left it orphaned at the far LEFT on its
+own wrapped line, because plantShare falls back to `(right || head)` and
+booking.html has no `.right` group, so a direct header child now takes
+`margin-left: auto` and returns to the one place a reader looks. Measured
+after: /book **33 x 25 at x 322**, right edge 355, against /walks x 314 and
+/universal-gallery x 314; at 1280 px /book is 81 x 32 ending at 1260 against
+/tours and /rent-a-tesla at 82 x 32. Controls unchanged on every other page,
+same width, same height, same x. Also swept: all 55 internal links resolve
+against the 360 routes, and the geometric sweep found no overflow, no clipped
+text and no sideways scroll on /tips, /walks, /destination-book, /landmarks at
+375 and 1280.
+3D: closed the setback-source item, and the answer is one number real and the
+rest not. The floors are published and so is exactly one width: the setback
+above the 5th story is 60 ft deep on all sides, which takes the 424 ft face to
+424 - 120 = 304, and 304 is the first entry in the table, so it is real. The
+same rule on the 187 ft face gives 67 while the model draws 172; neither is
+citable, and 67 cannot be right because the page's own quoted limit of about
+28 ft from window to core puts a floor plate nearer 116. Above floor 21 nothing
+is published, and the table's own shape convicts it: the widths fall **36 ft a
+step** from 304 to 196 then **28 ft a step** to 140, and the depths fall 12,
+12, 16, 14, 14. Real setbacks follow lot lines and a zoning envelope and do not
+land on a repeating decrement. So they are named INDICATIVE MASSING at the
+table, and the two places that promised otherwise were corrected: the file
+header's "EVERY DIMENSION HERE IS REAL" now carries the one stated exception,
+and the page's lede and its honest paragraph now tell a reader which numbers
+were drawn to look right rather than measured. The drawing is untouched and it
+was proved rather than assumed: strip every comment and string-safe scan both
+versions and the executable content is **646 lines before and 646 after,
+identical**.
+Checkers after: map sound at 83%, 35 composed strings and 127 scripts with 3
+out of band, all three unchanged, no regression.
+Commits: "The Share button was 325 px wide on /book, and the cause was the
+page's own button rule" and "Empire State setbacks: one width is published,
+the rest are indicative, and the file now says so".
 
 - **2026-08-30 · the styles book.** The Brooklyn Bridge towers are Gothic
   Revival and their openings had been drawn as triangles. A Gothic arch is

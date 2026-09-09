@@ -7,7 +7,10 @@
  * sun in the upper left. That is what makes a drawing read as a model.
  *
  * EVERY DIMENSION HERE IS REAL, checked against the record and written in
- * feet, so the proportions on screen are the proportions in the air:
+ * feet, so the proportions on screen are the proportions in the air, with one
+ * stated exception: the Empire State setback WIDTHS above the fifth floor,
+ * which no published plan was found for and which are marked indicative at
+ * the table itself. Every other number below traces to the record.
  *
  *   Brooklyn Bridge, opened 1883. Main span 1,595.5 ft, side spans 930 ft
  *   each, total 6,016 ft. Towers 276.5 ft above mean high water. The roadway
@@ -28,7 +31,8 @@
  *   Observatories on the 86th, about 1,050 ft, and the 102nd, about 1,224 ft.
  *
  * The models are massing, not survey drawings: the shapes and heights are
- * true, the window pattern is indicative. The pages say so.
+ * true, the window pattern and the Empire State setback widths are
+ * indicative. The pages say so.
  */
 (function () {
   'use strict';
@@ -765,7 +769,37 @@
     }
 
     /* the massing, floor by floor in the real setback order: the five storey
-       base, the steps at 21, 25 and 30, the long shaft, then 72, 81, 85. */
+       base, the steps at 21, 25 and 30, the long shaft, then 72, 81, 85.
+
+       WHICH FLOORS step is published and so is the FIRST width; the widths
+       above floor 21 are not, and this table is the one place in either model
+       where a number has no source. Said plainly rather than left to be
+       assumed:
+
+       The floors are the record's own list, 21st, 25th, 30th, 72nd, 81st and
+       85th, and they exist because the 1916 Zoning Act required a tower to
+       step back as it rose. One setback carries a published figure with it:
+       the setback above the 5th story is 60 ft deep on all sides. Taken off
+       the 424 ft face that gives 424 - 120 = 304, which is the 304 below, so
+       that number is real.
+
+       The same rule on the 187 ft face gives 67, and this model draws 172.
+       Neither is citable and 67 cannot be right: the page's own quoted limit
+       of about 28 ft from window to core puts a floor plate nearer 116 ft
+       than 67. So the depth column is unsourced from its first entry down.
+
+       Above floor 21 nothing is published at all, and the shape of the table
+       gives away that it was constructed: the widths fall 36 ft a step from
+       304 to 196, then 28 ft a step to 140, and the depths fall 12, 12, 16,
+       14, 14. Real setbacks follow lot lines and a zoning envelope and do not
+       land on a repeating decrement. Read every width and depth above the
+       fifth floor as INDICATIVE MASSING, in the same class as the window
+       bands and the parapet heights: the proportions are believable and the
+       step ORDER is true, but no plan was consulted for them.
+
+       To promote them to real, a cited plan width per setback is what is
+       needed, and the drawing then wants re-measuring, because the depths
+       here are the fat side of plausible and the silhouette would narrow. */
     var steps = [
       { to: 5,   w: ES.baseW, d: ES.baseD },
       { to: 21,  w: 304, d: 172 },
