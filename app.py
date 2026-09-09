@@ -3373,6 +3373,24 @@ PUBLIC_PAGES = [
     # a social post. For a licensed guide whose tours are the product, that
     # is the front door bricked up. [SEAN 2026-09-05: "check all of them".]
     ("/tours", "0.9", "weekly"),
+    # THE SAME GAP, FOUND A THIRD TIME AND THEN CLOSED FOR GOOD.
+    # [SEAN 2026-09-09: "mets museum had pages missing can you check that too".]
+    # He was right, and it was not only the Met: ten pages answered 200, carried
+    # no noindex, and were in no sitemap. The Met and MoMA guides and the
+    # Universal Gallery are among the largest things on this site, and the Walks
+    # index is the page a crawler would use to reach every other walk.
+    # A test now enumerates the routes and fails when a public page is missing,
+    # because this list has been patched one forgotten page at a time.
+    ("/met", "0.8", "monthly"),
+    ("/moma", "0.8", "monthly"),
+    ("/universal-gallery", "0.8", "weekly"),
+    ("/walks", "0.8", "weekly"),
+    ("/trips", "0.7", "monthly"),
+    ("/favorite-place", "0.7", "monthly"),
+    ("/map", "0.6", "monthly"),
+    ("/professionals", "0.5", "monthly"),
+    ("/name-protection", "0.3", "yearly"),
+    ("/privacy", "0.3", "yearly"),
     # Every tour in trails.json that has no page of its own is served at
     # /tour/<id>; they are added to the sitemap below, from the file, so a
     # tour cannot be built and left unreachable (TOUR_STANDARD.md, "a way in").
