@@ -290,12 +290,10 @@
  "NEW · THE INDOOR GUIDE": "新着 · 屋内ガイド",
  "NEW · THE MODERN MUSEUM": "新着 · 近代美術館",
  "NEW · THE OUTDOOR GUIDE": "新着 · 屋外ガイド",
- "NEW · THE WASHINGTON WALK": "新着 · ワシントン散策",
  "Name": "お名前",
  "Name or initials (optional)": "お名前またはイニシャル（任意）",
  "Need to cancel a reservation?": "ご予約をキャンセルなさいますか。",
  "New York in the Destination Book": "デスティネーション・ブックのニューヨーク",
- "New York, standing up": "立ち上がるニューヨーク",
  "New agent?": "はじめてのエージェントの方",
  "New driver?": "はじめてのドライバーの方",
  "New here? Just fill this in, we'll create your account.": "はじめての方は、こちらにご記入いただくだけ。あとはこちらでアカウントをおつくりします。",
@@ -737,5 +735,10 @@
  "🚗 Customer": "🚗 お客様",
  "🚧 Under Development": "🚧 開発中",
  "🛳️ Cruise": "🛳️ クルーズ",
- "🤝 Agent": "🤝 エージェント"
+ "🤝 Agent": "🤝 エージェント",
+ "New York City 3D models": "ニューヨーク市の3Dモデル",
+ "WASHINGTON DC WALK": "ワシントンDC散策",
+ "Boston Walking Tour": "ボストン ウォーキングツアー",
+ "A place, or add a new one…": "場所を探す、または新しく追加…",
+ "e.g. a rooftop bar, or Space Needle": "例：ルーフトップバー、またはスペースニードル"
 }

@@ -59,11 +59,26 @@ EXTRA = {
     "walk": ["\u6b65\u884c", "a pie", "\ub3c4\ubcf4", "\u0111i b\u1ed9"],
 
     # ---- the National Mall card on the front page ----
-    "NEW \u00b7 THE WASHINGTON WALK": [
-        "\u65b0 \u00b7 \u534e\u76db\u987f\u6b65\u884c\u7ebf",
-        "NUEVO \u00b7 EL PASEO DE WASHINGTON",
-        "\uc2e0\uaddc \u00b7 \uc6cc\uc2f1\ud134 \uac77\uae30",
-        "M\u1edaI \u00b7 CHUY\u1ebeN \u0110I B\u1ed8 WASHINGTON"],
+    "WASHINGTON DC WALK": [
+        "\u534e\u76db\u987f\u7279\u533a\u6b65\u884c\u7ebf",
+        "PASEO POR WASHINGTON DC",
+        "\uc6cc\uc2f1\ud134 DC \uac77\uae30",
+        "CHUY\u1ebeN \u0110I B\u1ed8 WASHINGTON DC"],
+    "Boston Walking Tour": [
+        "\u6ce2\u58eb\u987f\u5f92\u6b65\u4e4b\u65c5",
+        "Recorrido a pie por Boston",
+        "\ubcf4\uc2a4\ud134 \ub3c4\ubcf4 \ud22c\uc5b4",
+        "Tour \u0111i b\u1ed9 Boston"],
+    "A place, or add a new one\u2026": [
+        "\u4e00\u4e2a\u5730\u70b9\uff0c\u6216\u65b0\u589e\u4e00\u4e2a\u2026",
+        "Un lugar, o a\u00f1ade uno nuevo\u2026",
+        "\uc7a5\uc18c\ub97c \ucc3e\uac70\ub098 \uc0c8\ub85c \ucd94\uac00\u2026",
+        "M\u1ed9t \u0111\u1ecba \u0111i\u1ec3m, ho\u1eb7c th\u00eam m\u1edbi\u2026"],
+    "e.g. a rooftop bar, or Space Needle": [
+        "\u4f8b\u5982\uff1a\u5c4b\u9876\u9152\u5427\uff0c\u6216\u592a\u7a7a\u9488\u5854",
+        "p. ej. un bar en la azotea, o la Space Needle",
+        "\uc608: \ub8e8\ud504\ud0d1 \ubc14, \ub610\ub294 \uc2a4\ud398\uc774\uc2a4 \ub2c8\ub4e4",
+        "v\u00ed d\u1ee5: qu\u00e1n bar tr\u00ean s\u00e2n th\u01b0\u1ee3ng, ho\u1eb7c Space Needle"],
     "Eighteen stops from the Capitol to the Jefferson Memorial in walking order, with the time each one really takes. Turn the Capitol, the Lincoln and the Washington Monument in your hand before you stand in front of them.": [
         "\u4ece\u56fd\u4f1a\u5927\u53a6\u5230\u6770\u65bb\u900a\u7eaa\u5ff5\u5802\uff0c\u5341\u516b\u7ad9\u6309\u6b65\u884c\u987a\u5e8f\u6392\u5217\uff0c\u5e76\u6807\u660e\u6bcf\u4e00\u7ad9\u771f\u6b63\u9700\u8981\u7684\u65f6\u95f4\u3002\u5728\u4eb2\u4e34\u73b0\u573a\u4e4b\u524d\uff0c\u5148\u5728\u624b\u4e2d\u8f6c\u52a8\u56fd\u4f1a\u5927\u53a6\u3001\u6797\u80af\u7eaa\u5ff5\u5802\u548c\u534e\u76db\u987f\u7eaa\u5ff5\u7891\u3002",
         "Dieciocho paradas desde el Capitolio hasta el Monumento a Jefferson en orden de recorrido, con el tiempo que lleva cada una de verdad. Gira el Capitolio, el Lincoln y el Monumento a Washington en la mano antes de plantarte delante de ellos.",
@@ -3089,16 +3104,16 @@ EXTRA.update({
 # these are the words it found waiting.
 EXTRA.update({
  # ---- landmarks.html, the two New York models ----
- "New York, standing up": [
-     "纽约，立起来看",
-     "Nueva York, en pie",
-     "뉴욕, 세워서 보기",
-     "New York, dựng đứng"],
- "New York, standing up · Brooklyn Bridge and the Empire State Building": [
-     "纽约，立起来看 · 布鲁克林大桥与帝国大厦",
-     "Nueva York en pie · El puente de Brooklyn y el Empire State",
-     "뉴욕, 세워서 보기 · 브루클린 브리지와 엠파이어 스테이트 빌딩",
-     "New York dựng đứng · Cầu Brooklyn và tòa Empire State"],
+ "New York City 3D models": [
+        "\u7ebd\u7ea6\u5e02 3D \u6a21\u578b",
+        "Modelos 3D de Nueva York",
+        "\ub274\uc695\uc2dc 3D \ubaa8\ub378",
+        "M\u00f4 h\u00ecnh 3D th\u00e0nh ph\u1ed1 New York"],
+ "New York City 3D models \u00b7 Brooklyn Bridge and the Empire State Building": [
+        "\u7ebd\u7ea6\u5e02 3D \u6a21\u578b \u00b7 \u5e03\u9c81\u514b\u6797\u5927\u6865\u4e0e\u5e1d\u56fd\u5927\u53a6",
+        "Modelos 3D de Nueva York \u00b7 el puente de Brooklyn y el Empire State Building",
+        "\ub274\uc695\uc2dc 3D \ubaa8\ub378 \u00b7 \ube0c\ub8e8\ud074\ub9b0 \ub2e4\ub9ac\uc640 \uc5e0\ud30c\uc774\uc5b4 \uc2a4\ud14c\uc774\ud2b8 \ube4c\ub529",
+        "M\u00f4 h\u00ecnh 3D th\u00e0nh ph\u1ed1 New York \u00b7 C\u1ea7u Brooklyn v\u00e0 T\u00f2a nh\u00e0 Empire State"],
  "Two landmarks drawn as models you can take hold of and turn, with the questions a visitor actually has answered underneath. Every dimension here is the real one, in feet.": [
      "两座地标做成可以用手转动的模型，下面回答游客真正会问的问题。这里的每一个尺寸都是真实数据，单位为英尺。",
      "Dos monumentos dibujados como maquetas que puedes agarrar y girar, con las preguntas que un visitante se hace de verdad respondidas debajo. Cada medida es la real, en pies.",

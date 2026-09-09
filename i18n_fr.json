@@ -114,11 +114,8 @@
  "NEW · THE INDOOR GUIDE": "NOUVEAU · LE GUIDE D'INTÉRIEUR",
  "NEW · THE MODERN MUSEUM": "NOUVEAU · LE MUSÉE MODERNE",
  "NEW · THE OUTDOOR GUIDE": "NOUVEAU · LE GUIDE DE PLEIN AIR",
- "NEW · THE WASHINGTON WALK": "NOUVEAU · LA MARCHE DE WASHINGTON",
  "Name": "Nom",
  "New York in the Destination Book": "New York dans le carnet de destinations",
- "New York, standing up": "New York, debout",
- "New York, standing up · Brooklyn Bridge and the Empire State Building": "New York, debout · le pont de Brooklyn et l'Empire State Building",
  "New agent?": "Nouvel agent ?",
  "New driver?": "Nouveau chauffeur ?",
  "New here? Just fill this in, we'll create your account.": "Nouveau ici ? Remplissez ceci, nous créons votre compte.",
@@ -308,5 +305,11 @@
  "🔒 Security Parameter": "🔒 Paramètre de sécurité",
  "🚗 Customer": "🚗 Client",
  "🚧 Under Development": "🚧 En cours de développement",
- "🤝 Agent": "🤝 Agent"
+ "🤝 Agent": "🤝 Agent",
+ "New York City 3D models": "Modèles 3D de New York",
+ "New York City 3D models · Brooklyn Bridge and the Empire State Building": "Modèles 3D de New York · le pont de Brooklyn et l'Empire State Building",
+ "WASHINGTON DC WALK": "LA MARCHE DE WASHINGTON DC",
+ "Boston Walking Tour": "Visite à pied de Boston",
+ "A place, or add a new one…": "Un lieu, ou ajoutez-en un…",
+ "e.g. a rooftop bar, or Space Needle": "p. ex. un bar sur un toit, ou la Space Needle"
 }
