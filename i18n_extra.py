@@ -2363,7 +2363,7 @@ EXTRA_SKIP |= {"ST., 40′ R.O.W.", "62′-0″", "78′-0″", "N"}
 EXTRA.update({
     "Everything here": ["这里的每一样东西", "Todo lo que hay aquí", "여기 있는 모든 것", "Mọi thứ ở đây nè"],
     "A financial institution built to grow businesses and ideas.": ["一家专门帮企业和点子长大的金融机构。", "Una institución financiera hecha para hacer crecer negocios e ideas.", "사업과 아이디어를 키우려고 만든 금융 기관이에요.", "Một tổ chức tài chính sinh ra để giúp doanh nghiệp và ý tưởng lớn lên."],
-    "We built this from scratch, out of our own ideas: rides, rentals, and free trip tools that people use. Now we use what we have built to back other people's businesses and ideas. What is the economic moat you want to build? Let's sink it.": ["这些都是我们从零一点点做出来的，全凭自己的点子：叫车、租车，还有大家都在用的免费行程工具。现在，我们想拿做出来的这些，去帮别人的生意和点子也滋养起来。你想给自己挖一条什么样的护城河？我们一起把它挖深。", "Lo hicimos todo desde cero, con nuestras propias ideas: viajes, alquileres y herramientas de viaje gratis que la gente usa. Ahora usamos lo que hemos creado para apoyar los negocios e ideas de otros. ¿Qué foso económico quieres construir? Vamos a cavarlo bien hondo.", "저희만의 아이디어로 이걸 처음부터 하나하나 만들었어요. 사람들이 실제로 쓰는 차량 서비스, 렌탈, 무료 여행 도구요. 이제 그렇게 쌓아온 걸로 다른 분들의 사업과 아이디어를 받쳐드려요. 어떤 경제적 해자를 쌓고 싶으세요? 저희랑 같이 깊게 파 봐요.", "Chúng mình dựng nên tất cả từ con số không, bằng chính ý tưởng của mình: dịch vụ đi xe, cho thuê xe và mấy công cụ lên lịch trình miễn phí mà mọi người đang dùng. Giờ thì chúng mình lấy những gì đã dựng được để tiếp sức cho doanh nghiệp và ý tưởng của người khác. Bạn muốn xây hào kinh tế kiểu nào? Cùng nhau đào cho thật sâu nhé."],
+    "We built this from scratch, out of our own ideas: rides and free trip tools that people use. Now we use what we have built to back other people's businesses and ideas. What is the economic moat you want to build? Let's sink it.": ["这些都是我们从零一点点做出来的，全凭自己的点子：叫车，还有大家都在用的免费行程工具。现在，我们想拿做出来的这些，去帮别人的生意和点子也滋养起来。你想给自己挖一条什么样的护城河？我们一起把它挖深。", "Lo hicimos todo desde cero, con nuestras propias ideas: viajes y herramientas de viaje gratis que la gente usa. Ahora usamos lo que hemos creado para apoyar los negocios e ideas de otros. ¿Qué foso económico quieres construir? Vamos a cavarlo bien hondo.", "저희만의 아이디어로 이걸 처음부터 하나하나 만들었어요. 사람들이 실제로 쓰는 차량 서비스와 무료 여행 도구요. 이제 그렇게 쌓아온 걸로 다른 분들의 사업과 아이디어를 받쳐드려요. 어떤 경제적 해자를 쌓고 싶으세요? 저희랑 같이 깊게 파 봐요.", "Chúng mình dựng nên tất cả từ con số không, bằng chính ý tưởng của mình: dịch vụ đi xe và mấy công cụ lên lịch trình miễn phí mà mọi người đang dùng. Giờ thì chúng mình lấy những gì đã dựng được để tiếp sức cho doanh nghiệp và ý tưởng của người khác. Bạn muốn xây hào kinh tế kiểu nào? Cùng nhau đào cho thật sâu nhé."],
     "Share your idea": ["说说你的想法", "Comparte tu idea", "아이디어를 들려주세요", "Chia sẻ ý tưởng của bạn nhé"],
     "Try our services": ["来试试我们的服务", "Prueba nuestros servicios", "서비스를 한번 써 보세요", "Dùng thử dịch vụ của chúng mình nhé"],
     "TRY OUR SERVICES": ["来试试我们的服务", "PRUEBA NUESTROS SERVICIOS", "서비스를 한번 써 보세요", "DÙNG THỬ DỊCH VỤ CỦA CHÚNG MÌNH"],
@@ -3699,4 +3699,32 @@ EXTRA.update({
     "{name}, you are here": [
         "{name}\uff0c\u4f60\u5df2\u7ecf\u5230\u4e86", "{name}, ya ha llegado",
         "{name}, \ub3c4\ucc29\ud588\uc2b5\ub2c8\ub2e4", "{name}, b\u1ea1n \u0111\xe3 \u0111\u1ebfn n\u01a1i"],
+})
+
+# ---- /tour/<id>: the generic tour page, 2026-09-08 ----
+EXTRA.update({
+    "Listen:": [
+        "收听：", "Escuchar:", "듣기:", "Nghe:"],
+    "Part of the Ivy League tour": [
+        "常春藤联盟之旅的一部分", "Parte del recorrido de la Ivy League", "아이비리그 투어의 일부", "Một phần của hành trình Ivy League"],
+    "Eight campuses, eight cities": [
+        "八所校园，八座城市", "Ocho campus, ocho ciudades", "여덟 개의 캠퍼스, 여덟 개의 도시", "Tám khuôn viên, tám thành phố"],
+    "The campuses, in the order they were founded": [
+        "各校园，按建校先后排列", "Los campus, en el orden en que se fundaron", "캠퍼스, 설립 순서대로", "Các khuôn viên, theo thứ tự thành lập"],
+    "Each campus is its own walking tour in its own city. Open one to see its stops, its map and its notes.": [
+        "每所校园都是所在城市里独立的步行路线。打开任意一所，查看站点、地图和讲解。", "Cada campus es un recorrido a pie propio en su propia ciudad. Abre uno para ver sus paradas, su mapa y sus notas.", "각 캠퍼스는 그 도시 안의 독립된 도보 투어입니다. 하나를 열어 정거장, 지도, 안내 노트를 확인하세요.", "Mỗi khuôn viên là một hành trình đi bộ riêng trong thành phố của nó. Mở một khuôn viên để xem các điểm dừng, bản đồ và ghi chú."],
+    "Tip": [
+        "提示", "Consejo", "팁", "Mẹo"],
+    "This tour is not here": [
+        "没有这条路线", "Este recorrido no está aquí", "이 투어는 여기 없습니다", "Không có hành trình này"],
+    "No tour was named in the address.": [
+        "网址中没有指定路线。", "La dirección no indica ningún recorrido.", "주소에 투어가 지정되지 않았습니다.", "Địa chỉ không nêu tên hành trình nào."],
+    "There is no tour called {id}.": [
+        "没有名为 {id} 的路线。", "No hay ningún recorrido llamado {id}.", "{id}(이)라는 투어는 없습니다.", "Không có hành trình nào tên là {id}."],
+    "The tour could not be loaded.": [
+        "路线加载失败。", "No se pudo cargar el recorrido.", "투어를 불러오지 못했습니다.", "Không tải được hành trình."],
+    "{city} · founded {year} · {n} stops · {walk} walking · {inside} inside": [
+        "{city} · 建于 {year} 年 · {n} 站 · 步行 {walk} · 参观 {inside}", "{city} · fundada en {year} · {n} paradas · {walk} a pie · {inside} dentro", "{city} · {year}년 설립 · {n}개 정거장 · 도보 {walk} · 내부 {inside}", "{city} · thành lập {year} · {n} điểm dừng · đi bộ {walk} · bên trong {inside}"],
+    "Distances are straight-line estimates between stops, not walking routes.": [
+        "各站之间的距离为直线估算，并非实际步行路线。", "Las distancias son estimaciones en línea recta entre paradas, no rutas a pie.", "거리는 정거장 사이의 직선 추정치이며 실제 도보 경로가 아닙니다.", "Khoảng cách là ước tính đường thẳng giữa các điểm dừng, không phải lộ trình đi bộ."],
 })

@@ -607,7 +607,7 @@
  "Washington Crossing the Delaware": "デラウェア川を渡るワシントン",
  "We are not showing a return figure, because none has been earned. A number written down before it is earned is a promise.": "利回りの数字は出していません。まだ何も得られていないからです。手にする前に書いた数字は、ただの約束になってしまいますから。",
  "We built our own tools instead of renting someone else's: dispatch, invoicing, the driver and agent paperwork, and the trip-planning tools. Because it is ours, the customer and the data stay with us, and we fix it ourselves the day something breaks.": "他社のシステムを借りるのではなく、自分たちで道具をつくりました。配車、請求、ドライバーやエージェントの手続き、それに旅づくりのツールです。自分たちのものだからこそ、お客さまもデータも手元に残るし、不具合が出たその日に自分たちで直せます。",
- "We built this from scratch, out of our own ideas: rides, rentals, and free trip tools that people use. Now we use what we have built to back other people's businesses and ideas. What is the economic moat you want to build? Let's sink it.": "私たちは自分たちのアイデアだけを元手に、ゼロからこれをつくってきました。みんなが使ってくれる配車、レンタル、無料の旅行ツールです。今度は、そうしてつくったものを使って、他の人のビジネスやアイデアを応援していきます。あなたがつくりたい経済的な堀って、どんなものですか。一緒に深く掘っていきましょう。",
+ "We built this from scratch, out of our own ideas: rides and free trip tools that people use. Now we use what we have built to back other people's businesses and ideas. What is the economic moat you want to build? Let's sink it.": "私たちは自分たちのアイデアだけを元手に、ゼロからこれをつくってきました。みんなが使ってくれる配車と無料の旅行ツールです。今度は、そうしてつくったものを使って、他の人のビジネスやアイデアを応援していきます。あなたがつくりたい経済的な堀って、どんなものですか。一緒に深く掘っていきましょう。",
  "We invoice for our own service and never hold a customer's funds in escrow. Every payout to a driver or guide takes an explicit owner approval, money never moves on its own.": "私たちは自分たちのサービスについて請求するだけで、お客様の資金をお預かりすることはありません。ドライバーやガイドへの支払いには必ず所有者のはっきりした承認が必要で、お金がひとりでに動くことはありません。",
  "We never hold your money": "お金をお預かりしません",
  "We never touch the money.": "私たちが、そのお金に触れることは一切ありません。",
@@ -740,5 +740,17 @@
  "WASHINGTON DC WALK": "ワシントンDC散策",
  "Boston Walking Tour": "ボストン ウォーキングツアー",
  "A place, or add a new one…": "場所を探す、または新しく追加…",
- "e.g. a rooftop bar, or Space Needle": "例：ルーフトップバー、またはスペースニードル"
+ "e.g. a rooftop bar, or Space Needle": "例：ルーフトップバー、またはスペースニードル",
+ "Listen:": "聞く：",
+ "Part of the Ivy League tour": "アイビーリーグツアーの一部",
+ "Eight campuses, eight cities": "八つのキャンパス、八つの街",
+ "The campuses, in the order they were founded": "キャンパス、創立順に",
+ "Each campus is its own walking tour in its own city. Open one to see its stops, its map and its notes.": "各キャンパスは、その街ごとの独立した徒歩ツアーです。ひとつ開くと、立ち寄り先、地図、メモが見られます。",
+ "Tip": "ヒント",
+ "This tour is not here": "このツアーはありません",
+ "No tour was named in the address.": "アドレスにツアー名がありません。",
+ "There is no tour called {id}.": "{id} というツアーはありません。",
+ "The tour could not be loaded.": "ツアーを読み込めませんでした。",
+ "{city} · founded {year} · {n} stops · {walk} walking · {inside} inside": "{city} · {year}年創立 · {n}か所 · 徒歩 {walk} · 見学 {inside}",
+ "Distances are straight-line estimates between stops, not walking routes.": "距離は立ち寄り先の間の直線距離の目安で、実際の歩行ルートではありません。"
 }
