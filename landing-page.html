@@ -8,7 +8,15 @@
     <meta name="description" content="Flat-rate Tesla airport transfers in Seattle, $75 to Sea, Tac, quoted before you book and unchanged after. Reserve any hour. Free trip-planning tools, no account needed.">
     <link rel="canonical" href="https://plateaustrategy.io/">
     <meta name="theme-color" content="#070b16">
-    <link rel="icon" type="image/svg+xml" href="plateau-logo.svg">
+    <!-- THE ICON GOOGLE PICKS UP. Three things were wrong here. The href was
+         relative, so on any page not at the root it resolved against that
+         page's own folder and returned nothing. The only raster icon declared
+         was 32 px, and Google asks for a square that is a multiple of 48; we
+         already shipped a 192 px icon (48 x 4) and never pointed at it. And a
+         second, conflicting icon link sat 1,900 lines below this one.
+         Largest first, because that is the order a browser reads them in. -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
 
     <!-- Social / link previews -->
     <meta property="og:type" content="website">
@@ -36,7 +44,7 @@
           "@id": "https://plateaustrategy.io/#org",
           "name": "Plateau Strategy Solution Lab",
           "url": "https://plateaustrategy.io/",
-          "logo": "https://plateaustrategy.io/share-card.jpg",
+          "logo": {"@type": "ImageObject", "url": "https://plateaustrategy.io/plateau-logo.png", "width": 1024, "height": 1024},
           "_comment_identity": "WHAT AN AI READS WHEN IT ASKS WHO THIS IS. Google's AI Overview was asked about this company on 2026-09-09 and answered that the name does not point to a recognised business and sounds like executive-coaching or consulting jargon. That was a fair reading of what we told it: the previous description here led with 'an integrated business ecosystem across transportation, real estate and finance', which names four industries and no checkable fact. An entity is recognised when the claim is concrete enough to be confirmed somewhere else, so this now leads with the things a stranger could verify: a price, a route, named cities, a licence.",
           "description": "A Seattle company running flat-rate Tesla airport transfers to Seattle-Tacoma International Airport at $75, and licensed walking tours, which also publishes free travel-planning tools: a destination book, a trip planner, and self-guided audio walks of Washington DC, New York, Boston and Philadelphia. It has further arms in real estate and finance.",
           "knowsAbout": ["Airport transfers", "Walking tours", "Travel planning", "Seattle", "Washington DC", "New York City", "Boston", "Philadelphia"],
@@ -51,7 +59,7 @@
           "name": "Plateau Strategy Solution Lab",
           "url": "https://plateaustrategy.io/",
           "image": "https://plateaustrategy.io/share-card.jpg",
-          "logo": "https://plateaustrategy.io/share-card.jpg",
+          "logo": {"@type": "ImageObject", "url": "https://plateaustrategy.io/plateau-logo.png", "width": 1024, "height": 1024},
           "parentOrganization": { "@id": "https://plateaustrategy.io/#org" },
           "description": "Flat-rate Tesla airport transfers and car service in the Seattle area, including Seattle-Tacoma International Airport.",
           "email": "plateaustrategy@gmail.com",
@@ -1932,7 +1940,6 @@
     <link rel="stylesheet" href="/modern.css">
     <script src="/psx-net.js"></script>
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
 <link rel="manifest" href="/site.webmanifest">
 <meta name="apple-mobile-web-app-title" content="Plateau">
 <meta name="theme-color" content="#1f3a5f">
