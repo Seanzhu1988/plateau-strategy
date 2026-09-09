@@ -13,7 +13,8 @@
    So a room may register an interior here, and only Dendur has one. Others
    come later; a room with no entry keeps the plain box and loses nothing.
 
-   The temple's proportions are its REAL published ones, 43 by 21 by 16 feet,
+   The temple's proportions are its REAL published ones, 41 by 21 by 21 feet
+   from the Met's own record for object 547802,
    and the pool is the published 30 feet across. The room envelope around
    them is the schematic's, not a survey, and the caption on the page says
    so. Style vocabulary comes from styles-3d.js: an Egyptian wall BATTERS,
@@ -113,126 +114,267 @@
              depth: (depth === undefined ? depthOf(q) : depth) };
   }
 
+  /* A rounded TORUS roll: the thin proud band that runs up every corner and
+     along the top of an Egyptian wall, under the cavetto. Published for this
+     building by name: "rounded tori at the corners and tops of its walls".
+     Drawn as one shallow band that stands proud of the wall it caps, because
+     at this size a real half-round would read as a smudge. */
+  function roll(ctx, x1, y1, x2, y2, z, h, out_, fill) {
+    var P = ctx.project, items = [];
+    var norm = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+    var b = [[x1 - out_, y1 - out_], [x2 + out_, y1 - out_],
+             [x2 + out_, y2 + out_], [x1 - out_, y2 + out_]];
+    for (var i = 0; i < 4; i++) {
+      if (!ctx.faceVisible(norm[i][0], norm[i][1])) continue;
+      var j = (i + 1) % 4;
+      var q = [P(b[i][0], b[i][1], z), P(b[j][0], b[j][1], z),
+               P(b[j][0], b[j][1], z + h), P(b[i][0], b[i][1], z + h)];
+      items.push({ svg: ctx.poly(q, ctx.shade(fill, norm[i][0], norm[i][1], 0), SAND_D, 0.5),
+                   depth: depthOf(q) });
+    }
+    return items;
+  }
+
+  /* One column of the pronaos, as a column: a shaft of real diameter, a
+     torus band at its foot, and a COMPOSITE capital that flares out at the
+     top. Checklist item 1 asks for the real count drawn as real objects, and
+     the published count on this facade is two. */
+  function column(ctx, cx, cy, rad, z, h) {
+    var P = ctx.project, out = [], N = 10;
+    function ring(r, zz) {
+      var pts = [];
+      for (var a = 0; a < N; a++) {
+        var th = (a / N) * Math.PI * 2;
+        pts.push(P(cx + Math.cos(th) * r, cy + Math.sin(th) * r, zz));
+      }
+      return pts;
+    }
+    var base = z + rad * 0.30, cap = z + h - rad * 1.15;
+    var lo = ring(rad, base), hi = ring(rad * 0.94, cap);
+    for (var a2 = 0; a2 < N; a2++) {
+      var b2 = (a2 + 1) % N;
+      var th2 = ((a2 + 0.5) / N) * Math.PI * 2;
+      var nx = Math.cos(th2), ny = Math.sin(th2);
+      if (!ctx.faceVisible(nx, ny)) continue;
+      var q = [lo[a2], lo[b2], hi[b2], hi[a2]];
+      out.push({ svg: ctx.poly(q, ctx.shade(SAND_L, nx, ny, 0), SAND_D, 0.4),
+                 depth: depthOf(q) });
+    }
+    /* the foot roll and the composite capital: lotus blossoms, published, so
+       the top flares wider than the shaft rather than sitting flush */
+    out = out.concat(roll(ctx, cx - rad, cy - rad, cx + rad, cy + rad,
+                          z, rad * 0.30, rad * 0.10, SAND));
+    out = out.concat(cornice(ctx, cx - rad * 0.94, cy - rad * 0.94,
+                             cx + rad * 0.94, cy + rad * 0.94,
+                             cap, rad * 1.15, rad * 0.62, SAND_L));
+    return out;
+  }
+
   /* ---------------- Gallery 131, the Temple of Dendur ---------------- */
   function dendur(ctx) {
     var r = ctx.room, z = ctx.zBase, out = [];
     var P = ctx.project;
 
-    /* Laid out along the room's long axis. The temple faces EAST, which it
-       still does inside the museum: the orientation was kept when it was
-       rebuilt here. So, west to east: the raked cliff wall, the temple on its
-       platform, the gate standing in front of it, then the pool. */
-    var x0 = r.x + 8, x1e = r.x + r.w - 8;
+    /* PUBLISHED, and every number below is traceable.
+       The Met's own record for its own object, 547802, gallery 131: temple
+       proper L 12.50 m (41 ft), W 6.40 m (21 ft), H 6.40 m (21 ft); gate
+       H 8.08 m (26.5 ft), W 3.66 m (12 ft), D 3.35 m (11 ft). Aeolian
+       sandstone, completed by 10 CE.
+       The Wikipedia article on the temple gives 42.7 by 21.5 by SIXTEEN
+       feet, and that sixteen is the one real disagreement between the two
+       sources. It is reconciled here rather than averaged: the pronaos front
+       stands TALLER than the block behind it, so 21 ft is the facade and 16
+       ft is the rear roof. That reading is an interpretation, said out loud,
+       and it is why the roof STEPS DOWN westward instead of running flat.
+       Also published and used: two columns on the pronaos with composite
+       lotus capitals; rounded tori at the corners and tops of the walls,
+       capped by a cavetto cornice, on both temple and gate; a winged sun
+       disk over the gate and over the temple entrance; and a dromos running
+       30 ft (9.1 m) from the gate to the temple. Room facts from the same
+       article: pool in FRONT, raked wall BEHIND, stippled glass ceiling and
+       NORTH wall, temple still facing EAST. */
+    var tLen = 41 * FT, tWid = 21 * FT;
+    var htFront = 21 * FT, htRear = 16 * FT;
+    var proLen = 13 * FT;                     /* the pronaos bay of the 41 */
+    var gW = 12 * FT, gD = 11 * FT, gH = 26.5 * FT;
+    var dromos = 30 * FT, poolW = 30 * FT;
+
     var yc = r.y + r.h / 2;
-
-    /* The Met's own record for its own object: temple proper 41 ft long,
-       21 wide, 21 high. An earlier pass used 43 by 21 by 16 from a secondary
-       source, whose 16 was the height to the roof rather than overall. When
-       the museum publishes dimensions for the thing it owns, that is the
-       source. */
-    var tLen = 41 * FT, tWid = 21 * FT, tHt = 21 * FT;
-    var poolW = 30 * FT;
-
-    var tX1 = x0 + 20, tX2 = tX1 + tLen;
+    var tX1 = r.x + 14, tX2 = tX1 + tLen;     /* west end, east facade */
+    var pX1 = tX2 - proLen;                   /* where the pronaos begins */
     var tY1 = yc - tWid / 2, tY2 = yc + tWid / 2;
+    var plat = 2.4 * FT;
 
-    /* the gallery floor, so the interior sits on something */
-    out.push(flat(ctx, r.x, r.y, r.x + r.w, r.y + r.h, z + 0.4, "#efe9dc", "#cdc4b0", 0.5, -1e9));
+    /* THE GALLERY FLOOR. Explicit depth, at the back of the queue: a plane
+       this wide has a nearer corner than anything standing on it, and sorted
+       by its own corners it paints last and buries the room. */
+    out.push(flat(ctx, r.x - 10, r.y - 10, r.x + r.w + 10, r.y + r.h + 10,
+                  z + 0.4, "#efe9dc", "#cdc4b0", 0.5, -1e9));
 
-    /* THE POOL. Thirty feet across, published. It is not decoration: it
-       stands for the Nile, which ran in front of the temple where it was. */
-    var pX1 = x1e - poolW - 6, pX2 = x1e - 6;
-    out.push(flat(ctx, pX1, r.y + 12, pX2, r.y + r.h - 12, z + 0.7, WATER, "#8fa3ad", 0.7, -9.9e8));
-
-    /* THE RAKED WALL behind, which stands for the cliffs of the west bank.
-       Drawn as a leaning plane, taller at the back, because that is the
-       gesture: the room slopes up behind the temple the way the ground did. */
-    var cW = 9, cH = tHt * 1.05;
-    var cq = [P(x0 - 6, r.y + 6, z), P(x0 - 6, r.y + r.h - 6, z),
-              P(x0 - 6 + cW, r.y + r.h - 6, z + cH), P(x0 - 6 + cW, r.y + 6, z + cH)];
-    /* The normal faces INTO the room, which is the side anyone can see. Lit
-       from behind it came out a near-black wedge, the one thing in the room
-       the eye went to, and it is meant to be the quietest surface here. */
-    out.push({ svg: ctx.poly(cq, ctx.shade(CLIFF, 0.9, 0, 0.4), "#c4bba7", 0.5),
-               depth: -9.8e8 });
-
-    /* THE PLATFORM the temple stands on, with its short flight of steps. */
-    var plat = 2.2 * FT;
-    out.push(flat(ctx, tX1 - 5, tY1 - 5, tX2 + 5, tY2 + 5, z + plat, SAND_L, SAND_D, 0.6, -9.7e8));
-    for (var s = 0; s < 3; s++) {
-      var sh = plat * (1 - s / 3);
-      out.push(flat(ctx, tX2 + 5 + s * 3, tY1 + 6, tX2 + 8 + s * 3, tY2 - 6, z + sh, SAND_L, SAND_D, 0.5));
+    /* THE GLASS, the north wall, behind everything but the floor. It is the
+       wall you look TOWARD in the real room, not a pane you look through, so
+       it is a backdrop with mullions rather than a sheet laid over the
+       gallery. The stipple is what diffuses Nubian light onto the stone. */
+    var gy = r.y - 6, gtop = z + htFront * 1.9;
+    var gq = [P(r.x - 10, gy, z), P(r.x + r.w + 10, gy, z),
+              P(r.x + r.w + 10, gy, gtop), P(r.x - 10, gy, gtop)];
+    out.push({ svg: ctx.poly(gq, GLASS, "#c3ced4", 0.6, ' opacity="0.55"'),
+               depth: -9.96e8 });
+    for (var m = 0; m <= 12; m++) {
+      var mx = r.x - 10 + (r.w + 20) * (m / 12);
+      var mq = [P(mx - 0.5, gy, z), P(mx + 0.5, gy, z),
+                P(mx + 0.5, gy, gtop), P(mx - 0.5, gy, gtop)];
+      out.push({ svg: ctx.poly(mq, "#b9c6cd", null, 0, ' opacity="0.6"'),
+                 depth: -9.955e8 });
     }
 
-    /* THE TEMPLE. Battered walls, then the cavetto that throws back out. */
-    out = out.concat(batteredMass(ctx, tX1, tY1, tX2, tY2, z + plat, tHt, LEAN, SAND));
-    out = out.concat(cornice(ctx, tX1 + LEAN * tHt, tY1 + LEAN * tHt,
-                             tX2 - LEAN * tHt, tY2 - LEAN * tHt,
-                             z + plat + tHt, 3.2, 3.0, SAND_L));
+    /* THE RAKED WALL behind the temple, standing for the cliffs of the west
+       bank. Lit from the room side, which is the only side anyone sees. */
+    var cW = 10, cH = htFront * 1.15;
+    var cq = [P(tX1 - 12, r.y + 4, z), P(tX1 - 12, r.y + r.h - 4, z),
+              P(tX1 - 12 + cW, r.y + r.h - 4, z + cH), P(tX1 - 12 + cW, r.y + 4, z + cH)];
+    out.push({ svg: ctx.poly(cq, ctx.shade(CLIFF, 0.9, 0, 0.4), "#c4bba7", 0.5),
+               depth: -9.9e8 });
+    /* its top edge, so the rake reads as a mass leaning back and not as a
+       loose flap of paper standing on the floor */
+    var ct = [P(tX1 - 12 + cW, r.y + 4, z + cH), P(tX1 - 12 + cW, r.y + r.h - 4, z + cH),
+              P(tX1 - 12 + cW - 3, r.y + r.h - 4, z + cH), P(tX1 - 12 + cW - 3, r.y + 4, z + cH)];
+    out.push({ svg: ctx.poly(ct, ctx.shade(CLIFF, 0, 0, 1), "#c4bba7", 0.5),
+               depth: -9.89e8 });
 
-    /* The pronaos: two columns joined by screen walls, on the east face.
-       Screen walls are the Egyptian answer to a colonnade, waist-high panels
-       between the shafts, and they are why the front reads as solid-with-gaps
-       rather than as a row of posts. */
-    var colR = 1.7 * FT, colH = tHt * 0.82;
+    /* THE POOL, thirty feet across and published. It stands for the Nile,
+       which ran in front of the temple where the temple stood. */
+    var gX1 = tX2 + dromos, gX2 = gX1 + gD;
+    var pW1 = gX2 + 6, pW2 = pW1 + poolW;
+    out.push(flat(ctx, pW1, r.y + 10, pW2, r.y + r.h - 10, z + 0.7,
+                  WATER, "#8fa3ad", 0.7, -9.8e8));
+
+    /* GROUND SHADOWS. The renderer's light runs from the west-north, so the
+       shadow of every mass falls that way. Nothing here casts one on its
+       own, and without them the stone floats, which is exactly what the last
+       render did. */
+    function shadow(x1, y1, x2, y2) {
+      return flat(ctx, x1 - 4, y1 - 3, x2 - 1, y2 - 1, z + 0.5,
+                  "#000000", null, 0, -9.7e8);
+    }
+    var sh1 = shadow(tX1, tY1, tX2, tY2);
+    sh1.svg = sh1.svg.replace('/>', ' opacity="0.10"/>');
+    out.push(sh1);
+    var sh2 = shadow(gX1, yc - gW / 2, gX2, yc + gW / 2);
+    sh2.svg = sh2.svg.replace('/>', ' opacity="0.10"/>');
+    out.push(sh2);
+
+    /* THE PLATFORM, with a short flight of real steps down to the pool end.
+       Steps as a stack of shrinking slabs, which is the checklist's rule. */
+    out.push(flat(ctx, tX1 - 6, tY1 - 7, gX2 + 5, tY2 + 7, z + plat,
+                  SAND_L, SAND_D, 0.6, -9.6e8));
+    for (var s = 0; s < 3; s++) {
+      out.push(flat(ctx, gX2 + 5 + s * 2.4, tY1 + 2, gX2 + 7.4 + s * 2.4, tY2 - 2,
+                    z + plat * (1 - (s + 1) / 4), SAND_L, SAND_D, 0.5, -9.5e8 + s));
+    }
+
+    /* THE TEMPLE, in two blocks so the roof steps down, each with its own
+       torus roll and cavetto. West block first: antechamber and sanctuary. */
+    out = out.concat(batteredMass(ctx, tX1, tY1, pX1, tY2, z + plat, htRear, LEAN, SAND));
+    var rIn = LEAN * htRear;
+    out = out.concat(roll(ctx, tX1 + rIn, tY1 + rIn, pX1, tY2 - rIn,
+                          z + plat + htRear - 1.0, 1.0, 0.5, SAND));
+    out = out.concat(cornice(ctx, tX1 + rIn, tY1 + rIn, pX1, tY2 - rIn,
+                             z + plat + htRear, 2.6, 2.4, SAND_L));
+
+    /* THE PRONAOS. Its two side walls are solid returns; between them stand
+       the two columns, the two waist-high screen walls, and the doorway.
+       Sizes across the 21 ft front: a 2 ft return each side, a 3.5 ft screen
+       wall, a 2.5 ft column, a 5 ft doorway. */
+    var pIn = LEAN * htFront;
+    var halfW = tWid / 2, colR = 1.25 * FT;
+    var doorH = 12 * FT, screenH = 6.2 * FT;
+    /* The porch is drawn as a SOLID block first and then opened, rather than
+       assembled out of loose fins. Built the other way round it rendered as a
+       skeleton with daylight through it, because the two side walls were the
+       only thing standing and there was nothing behind them.
+       What is open in the real facade, and so is cut back into this face as a
+       recess: the two bays above the screen walls, and the doorway. */
+    out = out.concat(batteredMass(ctx, pX1, tY1, tX2, tY2, z + plat, htFront, LEAN, SAND));
+
+    var fx = tX2 - LEAN * htFront * 0.06;       /* just inside the east face */
+    function recess(y1, y2, zz, hh, fill) {
+      var q = [P(fx, y1, zz), P(fx, y2, zz), P(fx, y2, zz + hh), P(fx, y1, zz + hh)];
+      if (!ctx.faceVisible(1, 0)) return null;
+      return { svg: ctx.poly(q, fill, "#4a3d2c", 0.4), depth: depthOf(q) + 0.4 };
+    }
+    var lintelZ = z + plat + htFront - 3.0 * FT;
+    /* the two open bays, between each column and the side wall, above the
+       screen wall and under the architrave */
+    [[tY1 + 2 * FT, yc - 5 * FT], [yc + 5 * FT, tY2 - 2 * FT]].forEach(function (yy) {
+      var it = recess(yy[0], yy[1], z + plat + screenH, lintelZ - (z + plat + screenH), "#6b5940");
+      if (it) out.push(it);
+    });
+    /* the doorway itself, full height between the columns */
+    var dr = recess(yc - 2.5 * FT, yc + 2.5 * FT, z + plat, doorH, "#5c4c37");
+    if (dr) out.push(dr);
+
+    /* the two screen walls, standing PROUD of the face so they read as the
+       waist-high panels they are and not as paint on a wall */
+    [[tY1 + 2 * FT, yc - 5 * FT], [yc + 5 * FT, tY2 - 2 * FT]].forEach(function (yy) {
+      out = out.concat(batteredMass(ctx, tX2 - 0.3, yy[0], tX2 + 0.9, yy[1],
+                                    z + plat, screenH, 0.02, SAND_L));
+    });
+    /* the two columns, standing in the facade in front of the open bays */
     [-1, 1].forEach(function (sd) {
-      var cx = tX2 + 2, cy = yc + sd * tWid * 0.26;
-      var seg = [];
-      for (var a = 0; a < 8; a++) {
-        var th = (a / 8) * Math.PI * 2;
-        seg.push([cx + Math.cos(th) * colR, cy + Math.sin(th) * colR]);
-      }
-      var lo = seg.map(function (q) { return P(q[0], q[1], z + plat); });
-      var hi = seg.map(function (q) { return P(q[0], q[1], z + plat + colH); });
-      for (var a2 = 0; a2 < 8; a2++) {
-        var b2 = (a2 + 1) % 8;
-        var quad = [lo[a2], lo[b2], hi[b2], hi[a2]];
-        var nx = Math.cos((a2 / 8) * Math.PI * 2), ny = Math.sin((a2 / 8) * Math.PI * 2);
-        if (!ctx.faceVisible(nx, ny)) continue;
-        out.push({ svg: ctx.poly(quad, ctx.shade(SAND_L, nx, ny, 0), SAND_D, 0.4),
-                   depth: depthOf(quad) });
-      }
-      /* the plant capital, a flared block, which is what an Egyptian column
-         carries instead of a scroll or an acanthus */
-      out = out.concat(cornice(ctx, cx - colR, cy - colR, cx + colR, cy + colR,
-                               z + plat + colH, 2.4, 1.6, SAND_L));
+      out = out.concat(column(ctx, tX2 + colR * 0.45, yc + sd * 3.75 * FT,
+                              colR, z + plat, htFront - 3.0 * FT));
     });
-    /* the screen wall between and beside the columns */
-    out = out.concat(batteredMass(ctx, tX2 + 0.6, tY1 + 2, tX2 + 3.4, tY2 - 2,
-                                  z + plat, colH * 0.42, 0.05, SAND_L));
+    /* the architrave the columns carry, spanning the whole front */
+    out = out.concat(batteredMass(ctx, tX2 - 0.3, tY1 + 0.4, tX2 + colR * 1.05, tY2 - 0.4,
+                                  lintelZ, 3.0 * FT, 0.02, SAND));
+    /* the WINGED SUN DISK over the entrance, published for this doorway */
+    var wq = [P(tX2 + colR * 1.06, yc - 3.2 * FT, z + plat + htFront - 2.4 * FT),
+              P(tX2 + colR * 1.06, yc + 3.2 * FT, z + plat + htFront - 2.4 * FT),
+              P(tX2 + colR * 1.06, yc + 3.2 * FT, z + plat + htFront - 0.9 * FT),
+              P(tX2 + colR * 1.06, yc - 3.2 * FT, z + plat + htFront - 0.9 * FT)];
+    if (ctx.faceVisible(1, 0)) out.push({ svg: ctx.poly(wq, "#8a7351", "#6d5a3f", 0.4),
+                                          depth: depthOf(wq) + 0.3 });
+    var fIn = LEAN * htFront;
+    out = out.concat(roll(ctx, pX1, tY1 + fIn, tX2, tY2 - fIn,
+                          z + plat + htFront - 1.0, 1.0, 0.5, SAND));
+    out = out.concat(cornice(ctx, pX1, tY1 + fIn, tX2, tY2 - fIn,
+                             z + plat + htFront, 3.0, 2.8, SAND_L));
 
-    /* THE GATE, a pylon standing free in front of the temple. Two battered
-       masses flanking the opening, leaning harder than the temple, with the
-       same cavetto over the top. Its size is set by eye against the temple;
-       the temple's numbers are published, the gate's are not, and the caption
-       says which is which. */
-    var gX1 = tX2 + 16, gX2 = gX1 + 7 * FT, gH = tHt * 1.12;
-    var gapH = tWid * 0.30;
-    [[yc - tWid * 0.62, yc - gapH / 2], [yc + gapH / 2, yc + tWid * 0.62]].forEach(function (yy) {
-      out = out.concat(batteredMass(ctx, gX1, yy[0], gX2, yy[1], z + 0.8, gH, LEAN_PYLON, SAND));
-      out = out.concat(cornice(ctx, gX1 + LEAN_PYLON * gH, yy[0] + LEAN_PYLON * gH,
-                               gX2 - LEAN_PYLON * gH, yy[1] - LEAN_PYLON * gH,
-                               z + 0.8 + gH, 2.8, 2.6, SAND_L));
+    /* THE GATE. One mass 12 ft wide and 11 ft deep, not two towers: the
+       published width leaves a doorway with a pier either side and a lintel
+       over the top, and the last render's pair of free-standing wedges was
+       the reading that made it look like two obelisks in the water. */
+    var gY1 = yc - gW / 2, gY2 = yc + gW / 2;
+    var gDoorW = 5 * FT, gDoorH = 15 * FT;
+    var gLean = LEAN_PYLON;
+    [[gY1, yc - gDoorW / 2], [yc + gDoorW / 2, gY2]].forEach(function (yy) {
+      out = out.concat(batteredMass(ctx, gX1, yy[0], gX2, yy[1], z + plat, gH, gLean, SAND));
     });
-
-    /* THE GLASS. The north wall is stippled glass, chosen to diffuse daylight
-       the way the Nubian sky did.
-
-       It was drawn LAST, on the reasoning that glass is translucent so it
-       could sit in front of anything. That was wrong twice over. A full-height
-       wall the width of the room, painted after everything else, simply covers
-       the room: at 34 percent it turned the whole gallery into a pale sheet
-       with the temple somewhere behind it. And it is the same sorting mistake
-       the floor had, in the other direction, because a plane this large cannot
-       be ordered by its nearest corner either.
-
-       In the actual Sackler Wing this glass is the far wall you look TOWARD,
-       not a pane you look through. So it is a backdrop: behind everything but
-       the floor, and faint enough to read as light rather than as a surface. */
-    var gq = [P(r.x, r.y, z), P(r.x + r.w, r.y, z),
-              P(r.x + r.w, r.y, z + tHt * 1.9), P(r.x, r.y, z + tHt * 1.9)];
-    out.push({ svg: ctx.poly(gq, GLASS, "#c3ced4", 0.6, ' opacity="0.55"'),
-               depth: -9.95e8 });
+    /* the lintel across the opening, which is what makes it a gate */
+    out = out.concat(batteredMass(ctx, gX1 + gLean * gDoorH, yc - gDoorW / 2,
+                                  gX2 - gLean * gDoorH, yc + gDoorW / 2,
+                                  z + plat + gDoorH, gH - gDoorH, gLean, SAND));
+    /* the dark of the passage through it */
+    var pq = [P(gX2 - gLean * gH * 0.2, yc - gDoorW / 2, z + plat),
+              P(gX2 - gLean * gH * 0.2, yc + gDoorW / 2, z + plat),
+              P(gX2 - gLean * gH * 0.2, yc + gDoorW / 2, z + plat + gDoorH),
+              P(gX2 - gLean * gH * 0.2, yc - gDoorW / 2, z + plat + gDoorH)];
+    if (ctx.faceVisible(1, 0)) out.push({ svg: ctx.poly(pq, "#4f4130", "#3f3426", 0.4),
+                                          depth: depthOf(pq) + 0.05 });
+    /* its winged sun disk, published in the same sentence as the temple's */
+    var gwz = z + plat + gDoorH + 1.4 * FT;
+    var gw = [P(gX2 - gLean * gH * 0.2 + 0.15, yc - 3.0 * FT, gwz),
+              P(gX2 - gLean * gH * 0.2 + 0.15, yc + 3.0 * FT, gwz),
+              P(gX2 - gLean * gH * 0.2 + 0.15, yc + 3.0 * FT, gwz + 1.6 * FT),
+              P(gX2 - gLean * gH * 0.2 + 0.15, yc - 3.0 * FT, gwz + 1.6 * FT)];
+    if (ctx.faceVisible(1, 0)) out.push({ svg: ctx.poly(gw, "#8a7351", "#6d5a3f", 0.4),
+                                          depth: depthOf(gw) + 0.3 });
+    var gIn = gLean * gH;
+    out = out.concat(roll(ctx, gX1 + gIn, gY1 + gIn, gX2 - gIn, gY2 - gIn,
+                          z + plat + gH - 1.0, 1.0, 0.5, SAND));
+    out = out.concat(cornice(ctx, gX1 + gIn, gY1 + gIn, gX2 - gIn, gY2 - gIn,
+                             z + plat + gH, 3.0, 2.8, SAND_L));
 
     return out;
   }

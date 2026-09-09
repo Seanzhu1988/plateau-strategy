@@ -752,6 +752,49 @@ above is not paperwork, it is the lock.
 
 ## Rebuilt to this standard
 
+- dendur, Gallery 131, the Temple of Dendur (2026-09-09, the landmark
+  routine). What it replaced was one brown box on a plate: no columns, no
+  doorway, no cornice you could see, and a gate drawn as TWO free-standing
+  wedges standing IN the pool, which read as a pair of obelisks in water.
+  PUBLISHED, reached this run, and every number traceable. The Met's own
+  collection record for its own object, 547802, gallery 131: temple proper
+  L 12.50 m (41 ft), W 6.40 m (21 ft), H 6.40 m (21 ft); gate H 8.08 m
+  (26.5 ft), W 3.66 m (12 ft), D 3.35 m (11 ft); Aeolian sandstone,
+  completed by 10 CE. From the Wikipedia article on the temple: two columns
+  on the pronaos with composite lotus capitals; three sections, pronaos then
+  antechamber then sanctuary; rounded tori at the corners and tops of the
+  walls, capped by a cavetto cornice, on BOTH temple and gate; a winged sun
+  disk over the gate and over the temple entrance; a dromos running 30 ft
+  (9.1 m) from the gate to the temple; and for the room, a reflecting pool
+  in FRONT, a sloping wall BEHIND, a stippled glass ceiling and NORTH wall,
+  and the temple still facing EAST.
+  THE ONE DISAGREEMENT BETWEEN SOURCES, reconciled out loud rather than
+  averaged. The Met says the temple is 21 ft high; Wikipedia says 16. Both
+  are kept: the pronaos front stands at 21 and the block behind it at 16, so
+  the roof STEPS DOWN westward. That is an interpretation, it is stated in
+  the file's own header, and it is the single change that stops the temple
+  reading as a box.
+  WHAT THE PICTURE SHOWED AND THE NUMBERS DID NOT, twice. First build: the
+  porch was assembled out of loose fins, two side walls and a screen wall
+  and two columns with nothing behind them, and it rendered as a SKELETON
+  with daylight through it sitting on the rear block. Rebuilt the other way
+  round, as a solid battered mass with the openings cut back into its east
+  face as recesses and the columns and screen walls standing PROUD of it, it
+  reads. The lesson generalises: in a painter's renderer, open a solid, do
+  not assemble a void. Second, the cliff wall had no thickness and read as a
+  loose flap of paper; it now carries a top edge.
+  TWO THINGS LEFT FOR THE NEXT RUN, both seen in a render and neither fixed
+  for the ceiling. (1) The temple faces EAST and the page's default camera
+  looks from the south-west, so the whole facade, its two columns, its
+  doorway and its sun disk, is on the FAR side and heavily foreshortened.
+  Render `node render_room.js dendur 2.5 0.35` to look at it; from there it
+  reads correctly. Whether the page should carry a different default yaw for
+  this one room is a real question and was not answered here. (2) From that
+  facade angle the north glass wall and the raked cliff are the NEAR walls
+  and are not culled, so they paint across the pool and the temple. The
+  standard already names the fix: cull by the wall's inner normal, as
+  greatHall does. It does not show at the default angle.
+
 - asian-astor, the Astor Chinese Garden Court, Met gallery 217 (2026-09-09,
   the landmark routine). What it replaced was the clearest example in this
   file of the thing Sean called unacceptable: a flat grey plate with an OVAL
