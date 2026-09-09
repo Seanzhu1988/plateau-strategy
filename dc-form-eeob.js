@@ -257,7 +257,14 @@
       strips.forEach(function (f) {
         if (!ctx.faceVisible(f[4], f[5])) return;
         tops.forEach(function (z, i) {
-          items = items.concat(box(f[0], f[1], f[2], f[3], z - 1.2, z, TRIM, depth + i));
+          var dd = depth;
+          if (depth == null) {
+            var P2 = ctx.project;
+            var q2 = f[4] ? [P2(X(f[4] > 0 ? f[1] : f[0]), Y(f[2]), 0), P2(X(f[4] > 0 ? f[1] : f[0]), Y(f[3]), 0), P2(X(f[4] > 0 ? f[1] : f[0]), Y(f[3]), Z(WALL5)), P2(X(f[4] > 0 ? f[1] : f[0]), Y(f[2]), Z(WALL5))]
+                         : [P2(X(f[0]), Y(f[5] > 0 ? f[3] : f[2]), 0), P2(X(f[1]), Y(f[5] > 0 ? f[3] : f[2]), 0), P2(X(f[1]), Y(f[5] > 0 ? f[3] : f[2]), Z(WALL5)), P2(X(f[0]), Y(f[5] > 0 ? f[3] : f[2]), Z(WALL5))];
+            dd = H.depthOf(q2) + 0.4 - i;
+          }
+          items = items.concat(box(f[0], f[1], f[2], f[3], z - 1.2, z, TRIM, dd == null ? undefined : dd + (depth == null ? 0 : i)));
         });
       });
     }
@@ -331,27 +338,45 @@
     /* decorate one outer face: nx,ny is its outward normal; (a0..a1) runs
        along it; c is the wall plane coordinate on the normal axis */
     var TIERS5 = TIERS.concat([[WALL, WALL5]]);
-    function facade(nx, ny, a0, a1, c, depBase, tiers, roofZ) {
+    function facade(nx, ny, a0, a1, c, depBase, tiers, roofZ, winsOnly) {
       if (!ctx.faceVisible(nx, ny)) return;
       tiers = tiers || TIERS; roofZ = roofZ === undefined ? WING : roofZ;
+      /* A null depBase means NATURAL depth for everything on this face. The
+         return faces of the pavilions use it: at a NEAR depth their column
+         tiers painted straight through the corner mansard standing in front
+         of them. Natural depth sorts a 2 ft proud attachment after its own
+         wall and before anything nearer, which is all a face needs. */
+      /* Plain natural depth lost to the wall itself (the wall's key is its
+         farthest corner, and the renderer's sort put the wall last), so the
+         face is ANCHORED: the attachments take the wall face's own key plus
+         a hair, which paints them right after their wall and before any
+         mass whose key is nearer, such as a corner mansard in front. */
+      var anchor = null;
+      if (depBase == null) {
+        var P = ctx.project, cc = c + (nx + ny) * 0.01;
+        var q4 = nx ? [P(X(cc), Y(a0), 0), P(X(cc), Y(a1), 0), P(X(cc), Y(a1), Z(roofZ)), P(X(cc), Y(a0), Z(roofZ))]
+                    : [P(X(a0), Y(cc), 0), P(X(a1), Y(cc), 0), P(X(a1), Y(cc), Z(roofZ)), P(X(a0), Y(cc), Z(roofZ))];
+        anchor = H.depthOf(q4) + 0.5;
+      }
+      function D(n) { return depBase == null ? anchor + n * 0.001 : depBase + n; }
       var along = a1 - a0, n = Math.max(2, Math.round(along / BAY));
       var bay = along / n;
       for (var i = 0; i <= n; i++) {
         var a = a0 + i * bay;
         /* the pier: a pair of columns on each tier */
         tiers.forEach(function (t, ti) {
-          items = items.concat(pair(nx, ny, a, c, t[0], t[1], depBase + 20 + ti * 4));
+          items = items.concat(pair(nx, ny, a, c, t[0], t[1], D(20 + ti * 4)));
         });
         if (i === n) break;
         /* the window in the bay, on every storey incl. the arched ground one */
         var mid = a + bay / 2;
-        var wins = [[GRD + 4, L1 - 3], [L1 + 3, L2 - 3.5], [L2 + 3, L3 - 3.5], [L3 + 3, L4 - 3.5], [L4 + 3, WALL - 4]];
-        if (tiers.length > 4) wins.push([WALL + 3, WALL5 - 4]);
+        var wins = winsOnly || [[GRD + 4, L1 - 3], [L1 + 3, L2 - 3.5], [L2 + 3, L3 - 3.5], [L3 + 3, L4 - 3.5], [L4 + 3, WALL - 4]];
+        if (!winsOnly && tiers.length > 4) wins.push([WALL + 3, WALL5 - 4]);
         wins.forEach(function (w, wi) {
           var wu = nx ? c + nx * 0.5 : mid, wv = ny ? c + ny * 0.5 : mid;
           var du = nx ? 0.6 : 5.2, dv = ny ? 0.6 : 5.2;
           items = items.concat(box(wu - du / 2, wu + du / 2, wv - dv / 2, wv + dv / 2,
-                                   w[0], w[1], GLASS, depBase + 40 + wi));
+                                   w[0], w[1], GLASS, D(40 + wi)));
           nWin++;
         });
         /* a dormer in the mansard over every bay */
@@ -359,8 +384,8 @@
         var du2 = nx ? 3.5 : 4.5, dv2 = ny ? 3.5 : 4.5;
         var wu2 = nx ? c + nx * 0.2 : mid, wv2 = ny ? c + ny * 0.2 : mid;
         items = items.concat(box(wu2 - du2 / 2, wu2 + du2 / 2, wv2 - dv2 / 2, wv2 + dv2 / 2,
-                                 dz0, dz0 + 6.5, DORMER, depBase + 60, nx ? 3.5 : 1.2, ny ? 3.5 : 1.2));
-        items = items.concat(box(wu2 - 1.6, wu2 + 1.6, wv2 - 1.6, wv2 + 1.6, dz0 + 1, dz0 + 5, GLASS, depBase + 61));
+                                 dz0, dz0 + 6.5, DORMER, D(60), nx ? 3.5 : 1.2, ny ? 3.5 : 1.2));
+        items = items.concat(box(wu2 - 1.6, wu2 + 1.6, wv2 - 1.6, wv2 + 1.6, dz0 + 1, dz0 + 5, GLASS, D(61)));
       }
     }
     /* the four long outer faces, between the pavilions */
@@ -383,6 +408,47 @@
       else if (q[0] <= -PAVX + 1)  facade(-1, 0, q[2], q[3], q[0], NEAR + 100, tl, rz);
       else if (q[3] >= NP_OUT - 1) facade( 0, 1, q[0], q[1], q[3], NEAR + 100, tl, rz);
       else                         facade( 0, -1, q[0], q[1], q[2], NEAR + 100, tl, rz);
+    });
+
+    /* ---------- the RETURN faces of every pavilion ----------
+       A pavilion is a mass, so it has sides: the strip that projects past
+       the wall plane shows all its tiers, and on the centre pavilions the
+       fifth tier rides above the wing roof along the pavilion's whole depth.
+       The first three drafts dressed only the front; a third critic found
+       "a return wall the height of the whole pavilion, bare" beside a fully
+       columned front. Same tiers, same windows, same string courses. */
+    PAVS.forEach(function (q) {
+      var ctr = q[5] === "centre", tl = ctr ? TIERS5 : TIERS, rz = ctr ? PAV3 : CRNR;
+      var ew = q[1] >= PAVX - 1 || q[0] <= -PAVX + 1;      /* an east or west pavilion */
+      if (ew) {
+        var x0 = q[1] >= PAVX - 1 ? HX : -PAVX, x1 = q[1] >= PAVX - 1 ? PAVX : -HX;   /* the projecting strip */
+        [[0, 1, q[3]], [0, -1, q[2]]].forEach(function (f) {
+          facade(f[0], f[1], x0, x1, f[2], null, tl, rz);
+          breaks([[x0, x1, f[2] - (f[1] < 0 ? 1 : 0), f[2] + (f[1] > 0 ? 1 : 0), 0, f[1]]], [L1, L2, L3, L4], null);
+          items = items.concat(box(x0, x1, f[2] - (f[1] < 0 ? 3 : 0), f[2] + (f[1] > 0 ? 3 : 0), ctr ? WALL5 : WALL, ctr ? CORN5 : CORN, TRIM));
+          if (ctr) {
+            /* Along the BURIED depth the fifth tier stands behind the wing
+               mansard (84 to 102 ft against a roof that runs 88 to 101), so
+               its windows are not seen and are not drawn; only the cornice
+               above the roofline is, at NATURAL depth. At a NEAR depth it
+               painted as a pale plank across the slate, which a fourth
+               critic found on four roofs. */
+            var b0, b1;
+            if (q[1] >= PAVX - 1) { b0 = q[0]; b1 = HX; } else { b0 = -HX; b1 = q[1]; }
+            items = items.concat(box(b0, b1, f[2] - (f[1] < 0 ? 3 : 0), f[2] + (f[1] > 0 ? 3 : 0), WALL5, CORN5, TRIM));
+          }
+        });
+      } else {
+        var north = q[3] >= NP_OUT - 1;
+        var y0 = north ? HYN : q[2], y1 = north ? q[3] : HYS;              /* the projecting strip */
+        [[1, 0, q[1]], [-1, 0, q[0]]].forEach(function (f) {
+          facade(f[0], f[1], y0, y1, f[2], null, tl, rz);
+          breaks([[f[2] - (f[0] < 0 ? 1 : 0), f[2] + (f[0] > 0 ? 1 : 0), y0, y1, f[0], 0]], [L1, L2, L3, L4], null);
+          items = items.concat(box(f[2] - (f[0] < 0 ? 3 : 0), f[2] + (f[0] > 0 ? 3 : 0), y0, y1, WALL5, CORN5, TRIM));
+          var c0 = north ? q[2] : HYS, c1 = north ? HYN : q[3];
+          items = items.concat(box(f[2] - (f[0] < 0 ? 3 : 0), f[2] + (f[0] > 0 ? 3 : 0), c0, c1, WALL5, CORN5, TRIM));
+        });
+      }
     });
 
     /* ---------- roofs: slate mansards, dormers already placed ----------
