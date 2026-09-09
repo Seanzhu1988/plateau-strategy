@@ -393,10 +393,36 @@
       out = out.concat(octStage(ctx, 0, ty1 - 3.6, s[2], s[3], s[0], s[1] - 1.6, TRIM, TRIM_E, d));
       out = out.concat(octStage(ctx, 0, ty1 - 3.6, s[3] + 1.1, s[3] + 1.1,
                                 s[1] - 1.6, s[1], TRIM_D, TRIM_E, d + 200));
-      /* a round window on the facets that face us, which is what the older
-         description gives every octagon */
-      out.push(roundWindow(ctx, function (u, z) { return P(u, ty1 - 3.6 + s[2] * 0.92, z); },
-                           0, s[0] + (s[1] - s[0]) * 0.45, s[2] * 0.30, "#2f3a40", TRIM_E, d + 400));
+      /* A ROUND WINDOW ON THE FACETS THAT FACE US, which is what the older
+         description gives every octagon. OWED (b) PAID 2026-09-09: this was
+         one window struck on a plane of CONSTANT Y, mapping u straight onto
+         world x at y = centre + r * 0.92. An octagon has no such plane. The
+         window therefore sat on a flat sheet in front of the stage rather
+         than on any facet, and at any yaw that turned the tower it drifted
+         off the facet it was supposed to be in. octDetail already does this
+         correctly and this is its method, brought here: walk the eight
+         facets on octStage's own angles, keep the ones the camera can see,
+         and strike each window on THAT facet, positioned along the facet
+         normal and running along the facet's tangent.
+         The radius is interpolated up the TAPER rather than taken from the
+         bottom, because these stages narrow as they rise: at 45 percent of
+         the way up, s[2] is already too wide and was pushing the window
+         proud of the stone. Nothing here is a new published number; the
+         window size and height keep the fractions the model already used. */
+      var ocy = ty1 - 3.6;
+      var zw = s[0] + (s[1] - s[0]) * 0.45;
+      var zTop = s[1] - 1.6;
+      var tw = zTop > s[0] ? (zw - s[0]) / (zTop - s[0]) : 0;
+      var rw = (s[2] + (s[3] - s[2]) * tw) * 0.995;
+      for (var fi = 0; fi < 8; fi += 2) {
+        var am = ((fi + 0.5) / 8) * Math.PI * 2;
+        var fnx = Math.cos(am), fny = Math.sin(am);
+        if (!ctx.faceVisible(fnx, fny)) continue;
+        out.push(roundWindow(ctx, (function (wx, wy, ux, uy) {
+          return function (u, z) { return P(wx + ux * u, wy + uy * u, z); };
+        })(rw * fnx, ocy + rw * fny, -Math.sin(am), Math.cos(am)),
+          0, zw, s[2] * 0.30, "#2f3a40", TRIM_E, d + 400));
+      }
     });
 
     /* THE PUBLISHED SPIRE: twenty feet of copper, and the gilded Drowne vane

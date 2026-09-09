@@ -2344,3 +2344,29 @@ three models a run, one fix each, and strike the items as they are paid.
   model and carries nothing but the three banks; (c) the wings away from the
   front run are still flat slabs drawn by shellSolid, and bays there are a
   separate and larger change.
+
+- OLD SOUTH OWED (b) is PAID. "The three octagons carry one round window each
+  struck on a plane rather than on the facet, so at some yaws it will drift
+  off the facet edge, and octDetail already does this correctly." The note
+  was exactly right, which is worth recording after two runs in which the
+  note's diagnosis was the thing that was wrong.
+  The map function read `function (u, z) { return P(u, ty1 - 3.6 + s[2] *
+  0.92, z); }`: u went straight onto world x and y was a CONSTANT. An octagon
+  has no plane of constant y, so the window was a disc hanging on a flat
+  sheet in front of the stage, and it only looked right at the one yaw the
+  build was checked at.
+  THE FIX is octDetail's method brought here: walk the eight facets on
+  octStage's own angles, keep the ones ctx.faceVisible admits, and strike
+  each window on THAT facet, placed along the facet normal and running along
+  its tangent. A closure per facet, because a var loop would hand every
+  window the last facet's numbers.
+  ONE THING THE NOTE DID NOT MENTION AND THE GEOMETRY DID: these stages
+  TAPER, and the window was placed at the BOTTOM radius s[2] while sitting 45
+  percent of the way up. It was pushed proud of the stone it belongs to. The
+  radius is now interpolated up the taper. No new published number is
+  involved; the window's size and height keep the fractions already there.
+  Verified at yaw -0.62, where one window shows per stage, and at -2.30,
+  where the tower turns and two show per stage and follow it round. The hip
+  end fixed by the previous run is intact at both.
+  STILL OWED on old-south: (c) the belfry louvres read as a radiator at map
+  scale; fewer, deeper slats, or a darker ground behind them.
