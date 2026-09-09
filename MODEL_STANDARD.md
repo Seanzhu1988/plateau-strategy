@@ -177,10 +177,16 @@ queue instead. Remove a line the moment its work lands or is abandoned.
 
 - eeob and loc, BUILT AND REVIEWED 2026-09-08 (dc-form-eeob.js, dc-form-loc.js):
   the Library of Congress passed two architecture rounds (5.5 then 8.5, no
-  blocking) and a rendering review (8.5, no blocking); the EEOB went 4 then
-  6.5 then a third round, with the rendering review finding a real geometry
-  fault (pavilions that projected 6 ft inverted their roof tapers into
-  self-intersecting quads) that is fixed and counted at zero. Two lessons
+  blocking) and a rendering review (8.5, no blocking); the EEOB went 4, 6.5,
+  5.5 and 5.5 across FOUR architecture rounds, each round's blocker a
+  different one (columns sub-pixel; a roof taper inverted by a 6 ft
+  projection; bare pavilion return faces; cornice bands painting across the
+  slate at a NEAR depth), each fixed and the fix looked at from the angles
+  the critic named, but the last fix was NOT put to a fifth refuter: the
+  model stands on the builder's eye for that one, and the header says so.
+  Honest reading: the refuters never ran out of things to find; the last
+  score with everything fixed is unknown, and a later session with budget
+  should run one more round before calling it passed. Two lessons
   worth more than the buildings: (1) a polygon whose corners are listed
   (low, high, high, low) is a LINE, and the drum windows of the Library were
   invisible until a critic counted them; (2) an inset on a taper must be
