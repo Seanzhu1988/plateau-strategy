@@ -663,6 +663,16 @@
 
     /* Two tones per material, checklist item 6. Indiana limestone is warm,
        so the lit tone goes yellower, not whiter. */
+    /* a straight lerp between two hex tones. Needed because a gradient asked
+       for through ctx.shade's normal is clamped flat on an unlit wall; see
+       the pendentive band note below. */
+    function mixHex(h0, h1, t) {
+      var n0 = parseInt(h0.slice(1), 16), n1 = parseInt(h1.slice(1), 16);
+      var r = Math.round(((n0 >> 16 & 255)) + (((n1 >> 16 & 255)) - ((n0 >> 16 & 255))) * t);
+      var g = Math.round(((n0 >> 8 & 255)) + (((n1 >> 8 & 255)) - ((n0 >> 8 & 255))) * t);
+      var b = Math.round(((n0 & 255)) + (((n1 & 255)) - ((n0 & 255))) * t);
+      return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    }
     var LIME = "#e0d7c2", LIME_D = "#b5aa91", LIME_L = "#efe8d7",
         SHADE = "#c8bda4", DARK = "#8e846e",
         MOSAIC = "#e9e2d2", YELLOW = "#d8c489", SKY = "#f4f1e6";
@@ -811,15 +821,19 @@
           /* the spandrel: up the pier, in along the ring, then DOWN THE ARCH
              CURVE back to the springing. Drawn with a straight lower edge and
              a tip below the springing it was a bolt hanging in mid-air. */
-          var pend = [P(ax, yy - sgn * 0.55, z + sp),
-                      P(ax, yy - sgn * 0.55, zring),
-                      P(bx2 + c * dr * 0.72, yy - sgn * 0.55, zring)];
           var tIn = Math.acos(Math.min(1, (dr * 0.72) / R));
-          for (var q = 0; q <= 7; q++) {
-            var tq = tIn * (1 - q / 7);
-            pend.push(P(bx2 + c * R * Math.cos(tq), yy - sgn * 0.55,
-                        z + sp + R * Math.sin(tq)));
-          }
+          /* the same outline as before, expressed as two boundaries read at a
+             height h above the springing: the pier edge is the constant x =
+             ax, and the inner edge follows the arch circle of radius R until
+             the arc ends and then runs straight up to the dome ring. At
+             h = R sin(tIn) the two agree exactly, R cos(tIn) = dr * 0.72, so
+             this reproduces the hard-won silhouette to the foot and adds no
+             geometry of its own. */
+          var hTop = zring - (z + sp), hArc = R * Math.sin(tIn);
+          var xIn = function (h) {
+            return h <= hArc ? bx2 + c * Math.sqrt(Math.max(0, R * R - h * h))
+                             : bx2 + c * dr * 0.72;
+          };
           /* A PENDENTIVE IS CONCAVE, and this one was lit like a flat panel
              turned up to the sun. The normal carried +0.42 in z, which tilts
              the surface UP toward the light, and the base was SHADE, so each
@@ -833,8 +847,47 @@
              this is the shading of a concave corner, not new geometry, and no
              source is involved, so it is declared as the drawing decision it
              is. */
-          out.push({ svg: ctx.poly(pend, ctx.shade(LIME_D, 0, sgn * 0.9, -0.3), DARK, 0.5),
-                     depth: -9.42e8 });
+          /* AND A GRADIENT ACROSS IT, not one tone. The note this pays said the
+             concavity was "asserted by tone rather than described by a
+             gradient across the surface", and the render agreed: one flat
+             dark wedge. A pendentive is deepest in shade at its bottom tip,
+             where the surface is furthest into the corner and its own
+             overhang stands between it and the skylight, and it opens toward
+             the light as it spreads out to the dome ring. So the polygon is
+             now a stack of twelve horizontal bands and the normal's vertical
+             term ramps from -0.60 at the tip to +0.15 at the ring. Twelve
+             because at this scale a band is three or four pixels and fewer
+             read as steps; the bands OVERLAP by a fifth of a band, the
+             hirshhorn's own lesson, because two abutting quads each
+             antialias their shared edge against what is behind them and two
+             partial coverages do not make one.
+             AND THE RAMP LIVES IN THE BASE COLOUR, NOT IN THE NORMAL, which
+             cost a render to learn and is the finding worth keeping. The
+             first version ramped the normal's z from -0.60 to +0.15 and the
+             picture came back with a FLAT wedge, so the bands were drawn in
+             #ff0000 and appeared instantly, correctly shaped, and uniformly
+             red. The cause is the shader's own floor: d = 0.55nx + 0.35ny +
+             0.72nz and f = 0.62 + 0.38 max(0, d), so on the wall whose ny is
+             negative every one of those normals gives d < 0, f floors at
+             0.62, and the whole ramp collapses to one tone. A gradient asked
+             for through the normal cannot survive a clamp. The normal is
+             therefore left exactly as the pendentive-concavity fix set it,
+             (0, sgn * 0.9, -0.3), and the ramp is a lerp of the BASE from a
+             deep corner tone to LIME_D.
+             This is a drawing decision about shading, declared as one. No
+             source gives the light in this room and none is cited. */
+          var KB = 12, lapB = hTop / KB / 5;
+          for (var b = 0; b < KB; b++) {
+            var h0 = hTop * b / KB, h1 = hTop * (b + 1) / KB;
+            if (b < KB - 1) h1 += lapB;
+            var band = [P(ax, yy - sgn * 0.55, z + sp + h0),
+                        P(xIn(h0), yy - sgn * 0.55, z + sp + h0),
+                        P(xIn(h1), yy - sgn * 0.55, z + sp + h1),
+                        P(ax, yy - sgn * 0.55, z + sp + h1)];
+            var tb = (b + 0.5) / KB;
+            var fB = ctx.shade(mixHex("#7f776a", LIME_D, tb), 0, sgn * 0.9, -0.3);
+            out.push({ svg: ctx.poly(band, fB, fB, 0.5), depth: -9.42e8 });
+          }
         });
       });
 

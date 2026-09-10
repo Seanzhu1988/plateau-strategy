@@ -2571,7 +2571,8 @@ three models a run, one fix each, and strike the items as they are paid.
   (f) the shadow ring is concentric, i.e. sun at the zenith, while the walls
   are directionally lit; (g) the plaza disc's corner reads as a sheet of
   paper under the model at some yaws. The starburst half of (d) is PAID,
-  2026-09-09; the 44 bands on the blank wall are not, and stay owed.
+  2026-09-09; the 44 bands on the blank wall are not, and stay owed. (e) IS
+  PAID, 2026-09-10, see THE COURTYARD WAS A GLASS DRUM below.
 
 - old-south OWED (a) is PAID, and THE NOTE'S OWN DIAGNOSIS WAS WRONG, which
   is the finding worth keeping from this run. It recorded "a pale wedge of
@@ -2680,7 +2681,10 @@ three models a run, one fix each, and strike the items as they are paid.
   STILL OWED on the Met: (b) the roof is still the largest surface in the
   model and carries nothing but the three banks; (c) the wings away from the
   front run are still flat slabs drawn by shellSolid, and bays there are a
-  separate and larger change.
+  separate and larger change. BOTH WERE LOOKED AT 2026-09-10 and are ONE
+  SOURCE-BLOCKED PROBLEM, not two drawing debts; see met OWED (b) AND (c) ARE
+  ONE SOURCE-BLOCKED PROBLEM at the end of this queue for the routes tried,
+  the codes they returned, and why nothing was invented on the roof.
 
 - OLD SOUTH OWED (b) is PAID. "The three octagons carry one round window each
   struck on a plane rather than on the facet, so at some yaws it will drift
@@ -2741,7 +2745,8 @@ three models a run, one fix each, and strike the items as they are paid.
   courtyard reads as a dark shaft, which is what it should be. It stays on
   the list, but a run picking it up should first find an angle that shows
   it rather than trusting the note. (f) IS PAID, 2026-09-10, see THE SUN WAS
-  AT THE ZENITH below. Also still owed: (e) the glazing; (g) the plaza corner.
+  AT THE ZENITH below. (e) THE GLAZING IS PAID, 2026-09-10, see THE COURTYARD
+  WAS A GLASS DRUM below. Also still owed: (g) the plaza corner.
 
 - A PENDENTIVE IS CONCAVE, great-hall's half-owed shading, PAID 2026-09-10
   by the landmark routine, and it is THE SAME FAULT AS THE HIRSHHORN'S
@@ -2768,9 +2773,10 @@ three models a run, one fix each, and strike the items as they are paid.
   FLAT, so the concavity is now asserted by tone rather than described by a
   gradient across the surface. That is a smaller fault than the one paid and
   it goes on the list rather than being called finished.
-  STILL OWED on great-hall: the flat dark reading above, which wants a
-  gradient across the spandrel rather than one tone; the plain field between
-  the arches, reduced but not answered; and the two critics.
+  STILL OWED on great-hall: the gradient across the spandrel IS PAID,
+  2026-09-10, see A GRADIENT CANNOT BE ASKED FOR THROUGH A NORMAL at the end
+  of this queue. The plain field between the arches is reduced but not
+  answered, and the two critics are still owed.
 
 - TWO SHEETS OF PAPER, trail OWED (b), PAID 2026-09-10 by the landmark
   routine, and the note was RIGHT but understated. It said the Revere
@@ -2802,8 +2808,9 @@ three models a run, one fix each, and strike the items as they are paid.
   do not line up, so nine feet of street runs past the corner. That is a
   smaller fault than the one paid and it is left honestly on the list rather
   than fixed in the same pass unlooked at.
-  STILL OWED on the Revere house: the notch above; and the two adversarial
-  critics did not fit inside this run's 25 minute ceiling.
+  STILL OWED on the Revere house: the notch above IS PAID, 2026-09-10, see
+  THE NOTCH at the end of this queue; the two adversarial critics are still
+  owed.
 
 - THE SUN WAS AT THE ZENITH, hirshhorn OWED (f), PAID 2026-09-10 by the
   landmark routine. The note read "the shadow ring is concentric, i.e. sun at
@@ -2966,3 +2973,131 @@ three models a run, one fix each, and strike the items as they are paid.
   which is one of the room's published signatures, is only half seen. And as
   every entry above says: the two adversarial critics did not fit inside the
   run's 25 minute ceiling.
+
+- THE COURTYARD WAS A GLASS DRUM, hirshhorn OWED (e), PAID 2026-09-10 by the
+  landmark routine. The note read "the courtyard glazing is two ribbons
+  against a source that says large rectangular windows", and the render said
+  it plainly before any code was opened: one smooth dark band running the
+  whole 361 ft of the inner circumference, with no articulation anywhere on
+  it. A RIBBON IS A POSITIVE CLAIM THE SOURCE DOES NOT MAKE. "Large
+  rectangular windows" is plural discrete rectangles; a continuous band of
+  glass is a different building, and the one thing every photograph of this
+  court shows is concrete piers standing between the openings.
+  THE FIX IS A SOLID OPENED, NOT A BAND BROKEN, which is the Dendur lesson
+  again. The courtyard wall is granite everywhere the windows are not, full
+  height on the piers and as spandrels above, between and below the openings,
+  so the drum is never seen through. The glass sits 1.2 ft BACK into it with a
+  radial reveal at each end of each opening and a sill under it. What stood
+  before had the glass at RI - 0.6, which is INSIDE the courtyard radius, so
+  it was proud of its own wall: a mirror hung on a facade rather than a window
+  cut into one.
+  THE RHYTHM IS AN ASSUMPTION AND IS IN NAMED GAPS. No source reached gives a
+  window count, a bay width or a pier width. Three of every four of the
+  drawing's 44 segments are glazed, so eleven openings of 24.6 ft sit between
+  eleven piers of 8.2 ft: one bay per 32.8 ft. What is claimed is the READING
+  the source gives; the eleven is not claimed as published and falls out of
+  the 44 the drawing already used for roundness. sah-archipedia.org's page for
+  this building, DC-01-ML03, returned HTTP 403 to two attempts and is the
+  named route to a fuller published description.
+  WHAT THE PICTURE SHOWED AND THE NUMBERS DID NOT. After the first build two
+  dark slivers stood on the ROOF. A jamb's normal is TANGENTIAL, so
+  ctx.faceVisible passed it on the NEAR half of the court where the wall it
+  belongs to is culled: the same fault this file records for the balcony
+  recess, arriving through a different door. Every reveal now also asks
+  whether the courtyard wall at its own angle is drawn, using that wall's own
+  inward normal, and both angles were checked because the slivers only exist
+  on the near side. Verified at yaw -0.62 pitch 0.30 and yaw -2.10 pitch 0.36.
+  STILL OWED on hirshhorn: (c) which did not reproduce and wants an angle
+  found first; (d)'s flat-shading residue on the right flank; (g) the plaza
+  disc's corner.
+
+- A GRADIENT CANNOT BE ASKED FOR THROUGH A NORMAL, great-hall's remaining
+  spandrel debt, PAID 2026-09-10 by the landmark routine, and the reason it
+  took two attempts is the finding worth keeping.
+  The note said the concavity was "asserted by tone rather than described by a
+  gradient across the surface", and it was right: one polygon, one flat dark
+  wedge. A pendentive is deepest in shade at its bottom tip, where the surface
+  is furthest into the corner and its own overhang stands between it and the
+  skylight, and it opens toward the light as it spreads out to the dome ring.
+  THE OUTLINE IS UNTOUCHED, which matters because it was hard won. The same
+  silhouette is now expressed as two boundaries read at a height h above the
+  springing: the pier edge is the constant x = ax, and the inner edge follows
+  the arch circle of radius R until the arc ends and then runs straight up to
+  the ring. At h = R sin(tIn) the two agree exactly, R cos(tIn) = dr * 0.72,
+  so twelve horizontal bands reproduce the polygon to the foot and add no
+  geometry. They overlap by a fifth of a band, the hirshhorn's own antialiasing
+  lesson, because two abutting quads each antialias their shared edge against
+  what is behind them.
+  THE FIRST VERSION RAMPED THE NORMAL AND CAME BACK FLAT. nz went from -0.60
+  at the tip to +0.15 at the ring and the picture showed no change at all, so
+  the bands were drawn in #ff0000 and appeared instantly, correctly shaped,
+  and UNIFORMLY RED. The cause is the shader's own floor: d = 0.55nx + 0.35ny
+  + 0.72nz and f = 0.62 + 0.38 max(0, d), so on the wall whose ny is negative
+  every one of those normals gives d < 0, f floors at 0.62, and the whole ramp
+  collapses to one tone. THE GENERAL RULE, which belongs beside "colour it and
+  render once": a gradient asked for through the normal dies inside the clamp,
+  so a ramp must live in the BASE COLOUR. New mixHex() lerps LIME_D toward a
+  deep corner tone across the bands, and the normal is left exactly as the
+  pendentive-concavity fix set it, (0, sgn * 0.9, -0.3). It is a drawing
+  decision about shading, declared as one; no source gives the light in this
+  room and none is cited. Verified at yaw -0.30 pitch 0.14, where the whole
+  spandrel is exposed and the ramp reads from dark corner to open ring, and at
+  yaw -0.62 pitch 0.30, where the dome eclipses all but the darkest band,
+  which is correct.
+  STILL OWED on great-hall: the plain field between the arches, reduced twice
+  now and still one tone over a large surface; the domes' size against their
+  bays, which the render keeps raising and no note has yet stated; and the two
+  critics.
+
+- THE NOTCH, paul-revere's last junction debt, PAID 2026-09-10 by the landmark
+  routine. Abutting along a line was not enough. The street pad ran from
+  x = -34 while the courtyard's east edge is x = -25, so nine feet of grey
+  paving stood out past the brick corner and the outline of the paved ground
+  went east, jumped twenty feet north, and went east again: a T junction with
+  a step in it, not a corner. The render showed the pale tongue poking into
+  the grass exactly there, and the before and after crops differ in nothing
+  else.
+  The street's west end now lands ON the courtyard's east edge. The pad's
+  width was never published: the source gives the HOUSE as 48 ft along North
+  Square, and 68 was that plus ten feet of slack each side, a drawing choice.
+  Fifty-nine still covers the whole 48 ft front and ten feet east of it, so
+  nothing the source does say is given up.
+  THE HOUR THIS NEARLY COST, and it is a tooling note every run here will
+  want. Two crops of the junction came back BYTE-IDENTICAL and read as a fix
+  that did not fire. It had fired: the diff of the two SVGs shows the pad's
+  west end moving 43 px, from 388.4 to 431.5. The crops were simply in the
+  wrong place, because qlmanage renders a 900x700 viewBox into a 1400x1400
+  SQUARE, so PNG x = svg x * 1.5556 and PNG y = svg y * 1.5556 + 155.5.
+  BEFORE GUESSING A CROP, DIFF THE SVG AND CONVERT ITS COORDINATES; the
+  transform is not the identity and no amount of looking at the wrong 300
+  pixels will show a change that is 200 pixels away.
+  Paul Revere's house now has no open junction debts. STILL OWED: the two
+  adversarial critics.
+
+- met OWED (b) AND (c) ARE ONE SOURCE-BLOCKED PROBLEM, looked at 2026-09-10
+  and deliberately NOT built, which is the standard's own first rule doing its
+  job rather than a run running out of time.
+  The render confirms the note exactly: the roof is a vast flat cream plate,
+  by far the largest surface in the model, carrying three thin skylight
+  ribbons in one corner and nothing at all across the other two thirds. The
+  facade reads as though glued to a card.
+  WHAT IT WANTS AND WHY IT CANNOT HAVE IT YET. The two candidates are the Iris
+  and B. Gerald Cantor Roof Garden, which opened 1 August 1987 on the roof of
+  the Lila Acheson Wallace Wing and is the one roof feature a guide would
+  name, and the wings at their real several heights. NEITHER HAS A PUBLISHED
+  DIMENSION THIS RUN COULD REACH. The Met's own event page for the roof garden
+  returned HTTP 429, the same rate limit the dendur, asian-astor and
+  greek-roman entries each record; sah-archipedia returned 403; and a general
+  search returns the 1987 opening and the Central Park view and no area,
+  footprint or level. The repo's own met-map.js ROOMS are a SCHEMATIC
+  diagram, not a survey, and the three existing skylight banks do not even
+  align with the euro-paintings box, so deriving skylight fields from them
+  would be deriving from a drawing.
+  AND ONE THING THE NOTE ASKS FOR IS ALREADY A DECLARED SIMPLIFICATION, not a
+  defect: the model is the real outline EXTRUDED to one height, which is what
+  met-3d.js says it is. Roof furniture invented on top of that would break the
+  declaration and give the model a false specificity. Absence over invention.
+  THE NAMED ROUTES for a run that can reach them: the Cantor Roof Garden's
+  footprint or capacity from a Met event or press document; the wing heights
+  from the New York City Landmarks Preservation Commission exterior
+  designation report, LP-0972 being the interior one this file already uses.

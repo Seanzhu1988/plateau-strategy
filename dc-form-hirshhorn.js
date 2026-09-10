@@ -43,6 +43,15 @@
  *     centred on north: an assumption, on its own line.
  *   - whether the inner court is CONCENTRIC with the outer drum is not
  *     published in any source reached this run. Drawn concentric.
+ *   - the courtyard WINDOW COUNT, bay width and pier width are not published
+ *     in any source reached. aviewoncities gives "large rectangular windows"
+ *     and nothing more; sah-archipedia.org/buildings/DC-01-ML03 returned HTTP
+ *     403 to two attempts this run and is the named route to a fuller
+ *     description. Eleven openings of 24.6 ft between eleven piers of 8.2 ft
+ *     are drawn, three of every four of the 44 segments the drawing already
+ *     uses: an assumption, on its own line. What the source supports is the
+ *     READING, discrete large rectangles separated by concrete, not the
+ *     eleven.
  *   - the ground-level lobby volume under the drum is not documented in the
  *     sources reached, so nothing is invented there; the plaza runs under
  *     the building, which is the view every photograph shows.
@@ -245,12 +254,79 @@
       box(RP * Math.cos(u), RP * Math.sin(u), 34, 34, 0, ZP, PIER, true);
     });
 
-    /* ---------- 3. the courtyard wall, glazed, painted first ---------- */
-    wall(RI, ZP, ZT, GRAN, false, null, 0);
-    /* the large rectangular windows of the interior circle, on the two
-       gallery levels, held just inside the wall so they paint over it */
-    wall(RI - 0.6, Z1 + 4.5, Z2 - 4.5, GLASS, false, null, 0.12);
-    wall(RI - 0.6, Z2 + 4.5, ZT - 8.0, GLASS, false, null, 0.12);
+    /* ---------- 3. the courtyard wall and its windows, painted first ----------
+
+       THE WINDOWS, OWED (e). The source published in this file's header says
+       the courtyard facade is "defined by large rectangular WINDOWS", plural
+       and rectangular. What stood here was two continuous ribbons of glass
+       running the whole 361 ft of the inner circumference, and the render
+       said what that costs: one smooth dark band with no articulation
+       anywhere on it, which is a glazed drum and not a wall with windows in
+       it. A ribbon is a positive claim the source does not make.
+
+       So the wall is now SOLID granite everywhere the windows are not, and
+       the glass is set 1.2 ft BACK into it, with a radial reveal at each end
+       of each opening and a sill under it. That is the Dendur lesson again:
+       open a solid, do not assemble a void. Glass proud of its own wall,
+       which is what RI - 0.6 drew, is a mirror hung on a facade.
+
+       THE RHYTHM IS AN ASSUMPTION, on its own line, and it is in NAMED GAPS.
+       No source reached this run gives a window count, a bay width or a pier
+       width for the inner court. Three of every four of the drawing's 44
+       segments are glazed, so eleven openings of 24.6 ft sit between eleven
+       piers of 8.2 ft on a 361 ft circumference: one bay per 32.8 ft. What
+       is claimed is the READING the source gives, large rectangular openings
+       separated by concrete. The eleven is not claimed as published, and it
+       falls out of the 44 the drawing already uses for roundness. */
+    var WD_ = 1.2;                       /* the glass sits this far into the wall */
+    var PER = 4;                         /* segments per bay: ASSUMED, see above */
+    function segIx(u) { return Math.round((u / (Math.PI * 2)) * N - 0.5); }
+    function isWin(u)  { return (((segIx(u) % PER) + PER) % PER) !== 0; }
+    function isPier(u) { return !isWin(u); }
+
+    /* the piers, full height, and the spandrels across the openings: between
+       them the drum stays solid, so nothing is ever seen through it */
+    wall(RI, ZP, ZT, GRAN, false, isPier, 0);
+    wall(RI, ZP,       Z1 + 4.5, GRAN, false, isWin, 0);
+    wall(RI, Z2 - 4.5, Z2 + 4.5, GRAN, false, isWin, 0);
+    wall(RI, ZT - 8.0, ZT,       GRAN, false, isWin, 0);
+    /* the glass itself, recessed, so it paints before the wall that frames it */
+    wall(RI + WD_, Z1 + 4.5, Z2 - 4.5, GLASS, false, isWin, 0);
+    wall(RI + WD_, Z2 + 4.5, ZT - 8.0, GLASS, false, isWin, 0);
+
+    /* one end reveal of an opening. Without these, two cylinders 1.2 ft
+       apart leave a radial gap at every jamb and an oblique view looks
+       straight through the drum to the sky. dir picks the side that faces
+       INTO the opening, which is the only one a viewer in the court sees. */
+    /* AND THE JAMBS AND SILLS MUST BE CULLED THE WAY THEIR OWN WALL IS, which
+       the render caught and no count would. A jamb's normal is TANGENTIAL, so
+       ctx.faceVisible passed it on the NEAR half of the court, where the wall
+       it belongs to is culled: two dark slivers stood on the roof, the same
+       fault this file records for the balcony recess. Every reveal now also
+       asks whether the courtyard wall at its own angle is drawn, using that
+       wall's own inward normal. */
+    function courtFaces(u) { return ctx.faceVisible(-Math.cos(u), -Math.sin(u)); }
+    function jamb(u, dir, z0, z1) {
+      var c = Math.cos(u), s2 = Math.sin(u);
+      var nx = -s2 * dir, ny = c * dir;
+      if (!ctx.faceVisible(nx, ny) || !courtFaces(u)) return;
+      push([pt(RI * c, RI * s2, z0), pt((RI + WD_) * c, (RI + WD_) * s2, z0),
+            pt((RI + WD_) * c, (RI + WD_) * s2, z1), pt(RI * c, RI * s2, z1)],
+           RECES, nx, ny, 0, 0.02);
+    }
+    for (var w = 0; w < N / PER; w++) {
+      var uA = a(w * PER + 1), uB = a(w * PER + PER);
+      [[Z1 + 4.5, Z2 - 4.5], [Z2 + 4.5, ZT - 8.0]].forEach(function (zz) {
+        jamb(uA,  1, zz[0], zz[1]);
+        jamb(uB, -1, zz[0], zz[1]);
+        /* the sill: the camera looks DOWN at the far inner wall, so the
+           upward face of the reveal shows and the soffit above does not.
+           Only the sill is drawn; the soffit is left out rather than drawn
+           with an upward normal and lit as though it were one. */
+        ring(RI + WD_, RI, zz[0], RECES, undefined,
+             function (u) { return u > uA - 1e-9 && u < uB + 1e-9 && courtFaces(u); });
+      });
+    }
 
     /* ---------- 4. the ring's top ---------- */
     ring(R, RI, ZT, GRAN);

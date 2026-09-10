@@ -140,9 +140,22 @@
        far that a weathered courtyard looks like new chimney work.
        Second, the courtyard stops at y = 16, which is the street pad's own
        near edge, so the two now ABUT along a line instead of crossing. An L
-       reads as a corner; a cross reads as two sheets of paper. */
+       reads as a corner; a cross reads as two sheets of paper.
+       THE NOTCH, third change and the last of this junction. Abutting along a
+       line was not enough: the street pad ran from x = -34 while the
+       courtyard's east edge is x = -25, so nine feet of grey paving stood
+       out past the brick corner and the outline of the paved ground went
+       east, jumped twenty feet north, and went east again. That is a T
+       junction with a step in it, not a corner, and the render showed the
+       grey strip poking out beyond the brick exactly there. The street's
+       west end now lands ON the courtyard's east edge, so the two make one
+       L with a single corner. The pad's width was never published: the
+       source gives the HOUSE as 48 ft along North Square, and 68 was that
+       plus ten feet of slack each side, a drawing choice. Fifty-nine still
+       covers the whole 48 ft front and ten feet east of it, so nothing the
+       source does say is given up. */
     out.push(ground(ctx, x0 - 13, -10.5, 24, 53, 0.15, BRICKPAVE, BRICKKERB));
-    out.push(ground(ctx, 0, y1 + 11, 68, 20, 0.15, PAVE, KERB));
+    out.push(ground(ctx, 4.5, y1 + 11, 59, 20, 0.15, PAVE, KERB));
 
     /* CHECKLIST 6: a ground shadow, thrown away from LIGHT = [0.6,0.3,0.68],
        so down and to the left in plan. */
