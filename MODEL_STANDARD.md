@@ -221,6 +221,19 @@ queue instead. Remove a line the moment its work lands or is abandoned.
   that was done 2026-09-06, and modern is the honest skip the routine's own
   queue allows.
 
+- THE QUEUE IS DOWN TO ONE ROOM, established 2026-09-10 by the landmark
+  routine, which re-read the ledger before writing anything. asian-astor was
+  done 2026-09-09 and dendur was done 2026-09-09, so the note above is stale
+  on both. `greatHall` is the LAST pre-standard room in met-rooms.js and the
+  last open item in the whole rebuild queue.
+
+- great-hall, the Met's Great Hall, BUILT AND COMMITTED 2026-09-10 by the
+  landmark routine. The claim is released. THE REBUILD QUEUE IS NOW EMPTY:
+  the Mall's 16, the Freedom Trail's 9, NYC's 3, the Met exterior, MoMA, and
+  every Met interior except `greek-roman`, which stays REFUSED on published
+  dimensions, and `modern`, which is the honest skip. See the ledger entry
+  below for what it replaced, the sources, and what is still OWED on it.
+
 - american-court, the Charles Engelhard Court, BUILT AND COMMITTED 2026-09-09
   by the landmark routine. The claim below is released. THE BLOCK IS CLEARED
   AND THE PREVIOUS RUN'S PLAN WAS WRONG: it said to read the Dimensions field
@@ -2710,3 +2723,75 @@ three models a run, one fix each, and strike the items as they are paid.
   the side.
   Verified at yaw -0.62 pitch 0.28, cropped on the belfry and read whole at
   map scale, and at yaw -2.30 pitch 0.30. Old South now has no open debts.
+
+- great-hall, the Met's Great Hall, met-rooms.js (2026-09-10, the landmark
+  routine). THE LAST PRE-STANDARD ROOM ON THE SITE, and the clearest surviving
+  case of the thing Sean called unacceptable. What it replaced, seen in a
+  render before a line was changed: ONE flat wall with three arch-shaped holes
+  punched through it, four thin sticks standing in front of it for the "paired
+  columns", and the three saucer domes drawn as single quads that came out as
+  SLIVERS lying flat against the wall, reading as three awnings. No second
+  wall, no floor pattern, no balcony, no colonnade, no niche, no pendentive,
+  no skylight. Not a room, and no arithmetic would ever have said so.
+  PUBLISHED, reached this run, and the whole model is built from these two.
+  The NYC Landmarks Preservation Commission designation report LP-0972, "The
+  Metropolitan Museum of Art, Main Floor Interior", 1977, at
+  s-media.nyc.gov/agencies/lpc/lp/0972.pdf, read locally through pdftext.js:
+  three bays divided by piers carrying arches which support three SAUCER
+  DOMES with CIRCULAR SKYLIGHTS; the arches rise above DENTILED CORNICES
+  acting as pier capitals; the pendentives are PANELED and a ring of CLOSELY
+  SPACED BRACKETS encircles each dome's base; a second-floor gallery balcony
+  on an entablature that runs right round the room, frieze panelled with
+  acorns and sunflowers, dentiled cornice, and above it a limestone railing
+  with PIERCED STONE PANELS; colonnades of FOUR FLUTED IONIC COLUMNS; FOUR
+  ornamental niches set in the BASES of the piers in the east and west walls,
+  each arched under a pediment; two transverse passageways at the north and
+  south ends behind the screens of columns; warm-toned INDIANA LIMESTONE;
+  the Grand Staircase behind the WESTERN colonnade. And the Met's own press
+  release, "The Great Hall of The Metropolitan Museum of Art", 2010 general
+  information: the ceilings "soar SEVENTY-FIVE FEET high"; "three immense
+  saucer-shaped domes and EIGHT dramatic arches springing from enormous
+  masonry piers"; a mosaic floor that is "an aggregate of bits of marble
+  framed by strips of YELLOW MARBLE"; colonnades at "the north, west, and
+  south ends".
+  TWO SOURCES RECONCILED OUT LOUD, the Dendur rule. LP-0972 puts a colonnade
+  at "each side of the room"; the Met names north, west and south. They agree
+  once you notice the east side is the Fifth Avenue vestibule, so three
+  colonnades of four columns are drawn and none on the east.
+  THE PLAN IS A NAMED GAP, and this is the run's honest limit. No length,
+  width, bay module or dome diameter is published anywhere reached: not
+  LP-0972, which carries no dimension at all, not the press release, not the
+  Met's event pages, and two fetches of the Met's own release returned 429.
+  Only the HEIGHT is published. So the plan is DERIVED from that one number
+  and the derivation is written in the file's header rather than buried:
+  square bays, the dome ring inscribed in the bay, a semicircular arch of the
+  bay's span, a saucer rising 0.16 of its diameter, so 75 = A + W/2 + 0.16W
+  and W = 48 puts the pier capital at 43.3 ft. 144 ft of bays plus the two
+  published end passageways. NONE of that may be quoted as published. The
+  EIGHT ARCHES are likewise an interpretation, declared: the count is
+  published, the arrangement is not, and they are drawn six on the long walls
+  and two closing the ends.
+  WHAT THE PICTURE SHOWED AND THE NUMBERS DID NOT, and it was fatal. The
+  first build passed `node --check` and drew 1,100 polygons, and every dome
+  hung on a single downward-pointing CONE: three lampshades on stems. The
+  cause was the pendentives. They were built as free diagonals spanning the
+  room from the bay's floor corners up to the dome ring, and `faceVisible`
+  culled two of the four, so the two survivors met at the bay centre and
+  fused into a funnel. A PENDENTIVE IS A CORNER, NOT A STRUT: it is drawn in
+  the WALL PLANE now, at the top corners of each bay, on the same cutaway
+  test as the wall it belongs to. The domes were also hovering clear of the
+  arcade with daylight under them, so the bracket ring came down to the arch
+  crown and the saucer is held to the lesser of the bay and the hall width.
+  Verified at yaw -0.62 pitch 0.30, where the funnel is gone and the domes
+  sit on the wall head.
+  OWED, all three seen in the render and none of them a guess, listed so the
+  next run starts past them: (a) the pendentives now read as PALE FLAT WEDGES
+  standing above the entablature rather than as concave corners, and the one
+  on the near wall reads as a lightning bolt; they want to be darker than the
+  wall and to spring from the pier, not from mid-air. (b) the niche pediments
+  FLOAT a clear gap above their own niches; the arch top and the pediment
+  base were computed from different terms. (c) the domes overlap the wall
+  head and hide the pierced balcony behind them at this yaw, so the railing,
+  which is one of the room's published signatures, is only half seen. And as
+  every entry above says: the two adversarial critics did not fit inside the
+  run's 25 minute ceiling.
