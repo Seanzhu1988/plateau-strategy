@@ -805,8 +805,18 @@
     /* ---- the three SAUCER DOMES, on paneled pendentives, with the ring of
        closely spaced brackets and the circular skylight, all published ---- */
     for (var i2 = 0; i2 < BAYS; i2++) {
-      var bx2 = x1 + end + bay * (i2 + 0.5), dr = Math.min(bay, WD) * 0.38;
-      var zring = z + sp + bay * 0.41;            /* the arch crowns */
+      /* THE DOME IS INSCRIBED IN ITS BAY, which is what this file's own
+         derivation at the top of greatHall already says and what the code
+         did not do: SPRING = HT - W/2 - 0.16W means the pendentive ring
+         rides at sp + W/2 and the crown lands on the published 75 ft
+         ceiling. The old dome was radius 0.38W on a ring at 0.41W, so it
+         was 76 percent of its published size, its crown stopped 4.7 ft
+         short, and it read as a parasol on a stalk with daylight under the
+         rim. The bracket ring flares to dr * 1.05, so dr is 0.475W and the
+         rim, not the shell, is what lands on W/2 and goes tangent to its
+         neighbour at the pier. */
+      var bx2 = x1 + end + bay * (i2 + 0.5), dr = Math.min(bay, WD) * 0.475;
+      var zring = z + sp + bay * 0.50;            /* the pendentive ring */
 
       /* PANELED PENDENTIVES, drawn IN THE WALL PLANE at the top corners of
          the bay, which is where a pendentive actually is. The first build
@@ -909,7 +919,9 @@
          stack of collars: every ring runs from its own radius to the next
          one's, and only the crown carries a lid. The lid is the published
          CIRCULAR SKYLIGHT, so it is sky, not stone. */
-      var rise = dr * 0.32, N2 = 9;
+      /* the rise is not a ratio of the dome, it is whatever puts the crown
+         on the ceiling: 0.16W less the bracket band the ring already spent. */
+      var rise = H - (sp + bay * 0.50) - H * 0.020, N2 = 9;
       for (var t2 = 0; t2 < N2; t2++) {
         var f0 = t2 / N2, f1 = (t2 + 1) / N2;
         var r0 = dr * Math.cos(f0 * Math.PI / 2.35), r1 = dr * Math.cos(f1 * Math.PI / 2.35);

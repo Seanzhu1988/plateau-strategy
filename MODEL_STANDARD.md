@@ -2581,6 +2581,47 @@ first. Step 4 of the standard is not optional, so a model carrying named,
 unaddressed defects is not finished. THAT is the queue. Work it worst first,
 three models a run, one fix each, and strike the items as they are paid.
 
+- THE DOMES WERE 76 PERCENT OF THEIR PUBLISHED SIZE, great-hall's last
+  unstated debt, PAID 2026-09-10 by the landmark routine. The note read "the
+  domes' size against their bays, which the render keeps raising and no note
+  has yet stated". The render states it: three saucers hovering on stalks,
+  each one clear of its own bay on both sides, with daylight under the rim and
+  a band of blank wall above every crown. Parasols, not domes.
+  IT IS THE ARCADE BUG AGAIN, and that is the finding worth keeping: for the
+  SECOND time on this model the header's derivation was right and the code did
+  not follow it. greatHall computes `SPRING = HT - W/2 - 0.16 * W`, which is
+  the 75 ft ceiling read backwards and says exactly where a dome on
+  pendentives goes: the ring rides at `sp + W/2`, the shell is inscribed in
+  the bay so neighbours go tangent at the pier, and 0.16W of rise puts the
+  crown ON the ceiling. The code had `zring = sp + bay * 0.41` and
+  `dr = bay * 0.38`, a radius of 0.38W where the derivation says 0.5W, so the
+  dome was 76 percent of its published diameter, and `rise = dr * 0.32` landed
+  the crown at 70.3 ft in a room published at 75. Nearly five feet, 6 percent
+  of the room's height, was empty over every dome.
+  THE FIX is three coupled constants implementing one derivation, the same
+  shape as the arcade fix: the ring goes to `sp + bay * 0.50`, `dr` to 0.475W,
+  and the rise is no longer a ratio of the dome at all but whatever puts the
+  crown on the ceiling, `H - (sp + bay * 0.50) - H * 0.020`, the last term
+  being the bracket band the ring has already spent. dr is 0.475 and not 0.5
+  because the bracket ring flares to `dr * 1.05`, so it is the RIM that lands
+  on W/2 and goes tangent to its neighbour, which is the thing the eye reads.
+  No published number moved; LP-0972 and the Met's 2010 press release are
+  unchanged, and the only figure quoted is still the 75 ft ceiling.
+  Verified at yaw -0.30 pitch 0.14, where the crowns now reach the wall head
+  and the blank band above them is gone, and at yaw -0.62 pitch 0.30, where
+  the three domes read as one arcade of tangent saucers instead of three
+  separate umbrellas.
+  STILL OWED on great-hall: the plain field between the arches, reduced twice
+  and still one tone over a large surface; and the residue this fix exposes
+  rather than hides, which the second angle states plainly and which no
+  earlier note had reached: the domes are seated correctly in plan and height
+  but still stand PROUD OF THE WALL PLANE, so from a raking yaw the rim
+  overhangs into the room on a visible stalk and the pendentives read as four
+  dark stubs rather than as the corners of a vault. That is a junction, not a
+  size, and it wants its own run. And the two adversarial critics, which did
+  not fit inside this run's 25 minute ceiling.
+
+
 - THE ARCADE WAS UPSIDE DOWN, great-hall OWED (a), (b) and (c), all three
   PAID 2026-09-10 by the landmark routine, and the cause was one bug none of
   the three notes had found. THE FILE'S OWN DERIVATION WAS NOT FOLLOWED BY
