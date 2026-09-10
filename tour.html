@@ -359,6 +359,7 @@
 
         var entry = s.book_slug ? dests[s.book_slug] : null;
         var box = document.getElementById("twNow"); box.hidden = false;
+        if (fromUser) { try { box.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (e) {} }
         document.getElementById("twNowName").textContent = s.n + ". " + s.name;
         document.getElementById("twNowDesc").textContent = s.desc || (entry && entry.desc) || "";
         var note = document.getElementById("twNote");
@@ -378,8 +379,14 @@
         silence();
         var src = audioFor(s, entry);
         var gp = document.getElementById("twGuide"), ng = document.getElementById("twNoGuide");
-        if (src) { audioEl.setAttribute("src", src); gp.hidden = false; ng.hidden = true; }
-        else { gp.hidden = true; ng.hidden = false; }
+        if (src) {
+            audioEl.setAttribute("src", src); gp.hidden = false; ng.hidden = true;
+            /* A tap on a stop is a user gesture, so the guide starts itself:
+               no scrolling to hunt for a play button, the same behaviour as the
+               walk's approach trigger. Only on a real tap, never on the silent
+               first open, which the browser would refuse anyway. */
+            if (fromUser) { try { var pr = audioEl.play(); if (pr && pr.catch) pr.catch(function () {}); } catch (e) {} }
+        } else { gp.hidden = true; ng.hidden = false; }
         Array.prototype.forEach.call(listEl.querySelectorAll(".tw-stop"), function (b, k) {
             var st = stops[k]; var e = st.book_slug ? dests[st.book_slug] : null;
             b.querySelector(".tw-au").textContent = audioFor(st, e) ? "♪" : "";
