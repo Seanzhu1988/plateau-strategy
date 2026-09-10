@@ -770,6 +770,64 @@ above is not paperwork, it is the lock.
 
 ## Rebuilt to this standard
 
+- THE CHIMNEY WAS NEVER IN FRONT OF ANYTHING, paul-revere OWED (a) and (b),
+  BOTH PAID 2026-09-10 by the landmark routine, and (a)'s cause was a comment
+  in this file's own model boasting about the thing that broke it.
+  (a) THE GEOMETRY WAS ALREADY RIGHT and no coordinate moved. The stack
+  straddles the ridge at y -4.5 to 4.5, rises from EAVE-3 to RIDGE+5.4, and
+  sits inside the wall line at x0+3.4, so it passes through the roof exactly
+  as a First Period masonry core should. What was wrong was the DEPTH. The
+  block carried `d = 3e6` and a header that read "their depth is a constant
+  past every roof strip: nothing in this scene stands in front of a stack".
+  The roof does. That constant painted the whole 25 ft shaft over the near
+  roof slope and over the gable wall, from three feet under the eave upward,
+  so the brick ran down the front of the house with roof visible either side
+  of it. A brick pier standing beside the house, which is what the critic saw
+  and what the note said. The fix is one word in two calls: drop the override
+  and let `box()` take its natural depth. That is also the physically true
+  answer here, and it is worth writing down because the same trap will come
+  again: the near roof slope reaches y = 16.85 and the gable wall triangle
+  stands at x = -25.85, so BOTH are nearer the camera than the stack and now
+  correctly paint over it, while the far slope's nearest point is its own
+  eave at y = -15.6, farther than the stack, so it stays behind. The brick
+  now shows exactly where a chimney shows, above the roof, and the ell's
+  small stack, which had always used natural depth, needed nothing.
+  THE GENERAL LESSON, and it is the ninth painter's trap in this project but
+  the first in this direction: every earlier one was a face BURIED by a
+  neighbour that painted later. This is the inverse, a face FORCED to the
+  front by a constant, and it is more dangerous because it looks deliberate.
+  A hand-set depth is a claim that nothing in the scene can ever stand in
+  front of this object. On a chimney that claim is false by construction.
+  (b) THE SHADOW WAS A HAND-ROLLED RECTANGLE and the fix was the one line the
+  note predicted. trail-3d.js line 103 has carried `shadow(ctx, footprint, h,
+  z)` since the three drifted private copies were unified, and paul-revere
+  never called it: it built four points at line 163 and threw a plain
+  parallelogram down and left of a building that is an L with a lean-to, at
+  its own opaque #9d9689, which is why a first look read it as a third paving
+  pad. It now passes the published L as one loop, the 48 by 30 main block and
+  the 16 by 16 rear ell, with RIDGE as the caster. VERIFIED in the SVG, not
+  assumed: exactly one `opacity="0.16"` path, twelve points, six of footprint
+  and six of offset, and `#9d9689` no longer appears anywhere in the output.
+  WHAT THE PICTURE SHOWED AND THE NUMBERS DID NOT, and it is honest rather
+  than flattering: the shared helper's 0.16 black on this pale grass reads
+  FAINTLY at map scale. It is the correct shape and the trail's own shared
+  tone, and it is a real improvement on a shadow that read as pavement, but
+  from yaw -1.95 it is close to invisible. That is a tone question for the
+  helper and therefore for the whole trail, not for this house, so nothing
+  was changed here to chase it.
+  SEEN AT TWO ANGLES, yaw -0.55 and yaw -1.95, both pitch 0.22, before and
+  after. STILL OWED on the Revere house: (c) the brick courtyard and the
+  street pad still carry different colours across their shared corner and the
+  eye sorts them as two sheets, and (d) the door is an unframed dark hole
+  while every window has a bright frame, so checklist item 3 is unpaid at the
+  one opening a visitor walks through. The two adversarial critics of step 4
+  did not run inside this run's ceiling, so the verdict rests on the four
+  renders.
+  GREAT-HALL WAS CLAIMED BY THIS RUN AND NOT REACHED. Its domes standing
+  proud of the wall plane are UNTOUCHED and still owed; the claim is released
+  here so the next run can take it without checking whether a half-finished
+  edit is sitting on disk.
+
 - HIRSHHORN IS CLEAR. (c), (d)'s residue and (g) all PAID, 2026-09-10, the
   landmark routine, and the last three debts on the model the audit had been
   calling the worst-owing on the Mall. All three were seen in a render, twice.

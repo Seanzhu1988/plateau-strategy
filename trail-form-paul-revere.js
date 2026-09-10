@@ -76,6 +76,7 @@
 (function () {
   var H = (window.TRAIL3D && window.TRAIL3D.helpers) || {};
   var box = H.box, panel = H.panel, ground = H.ground, depthOf = H.depthOf;
+  var shadow = H.shadow;
 
   function paulRevere(ctx) {
     /* CHECKLIST 5, two tones per material and more where a material has
@@ -158,12 +159,17 @@
     out.push(ground(ctx, 4.5, y1 + 11, 59, 20, 0.15, PAVE, KERB));
 
     /* CHECKLIST 6: a ground shadow, thrown away from LIGHT = [0.6,0.3,0.68],
-       so down and to the left in plan. */
-    (function () {
-      var q = [P(x0 - 12, ey0 - 7, 0.25), P(x1 - 4, ey0 - 7, 0.25),
-               P(x1 - 4, y1 - 5, 0.25), P(x0 - 12, y1 - 5, 0.25)];
-      out.push({ svg: ctx.poly(q, SHADOW, null, 0), depth: -9e8 });
-    })();
+       so down and to the left in plan.
+       PAID 2026-09-10, the Revere house's OWED (b). This was four hand-rolled
+       points making a plain parallelogram offset down and left of a building
+       that is an L with a lean-to, so what landed on the grass was a third
+       paving pad. trail-3d.js line 103 has carried
+       `shadow(ctx, footprint, h, z)` since the three drifted private copies
+       were unified, and it was simply never called here. The footprint below
+       is the published L, walked as one loop: the 48 by 30 main block and the
+       16 by 16 rear ell. RIDGE is what casts. */
+    out.push(shadow(ctx, [[x1, y1], [x1, y0], [ex1, y0], [ex1, ey0],
+                          [ex0, ey0], [ex0, y1]], RIDGE, 0.25));
 
     /* ---- CHECKLIST 3: a base. The house does not stand on the pavement,
        it stands on a granite underpinning that steps out from the sill. ---- */
@@ -363,11 +369,28 @@
          given a shorter neck above the ridge, so it reads as the core the
          house is built around. The plan size remains ASSUMED: no source
          reached publishes it. */
+      /* PAID 2026-09-10, the Revere house's OWED (a), and the cause was the
+         constant depth this block's own header boasted about. `d` = 3e6 put
+         the stack in front of EVERY face in the scene, so its whole 25 ft
+         shaft was painted over the near roof slope and over the gable wall,
+         from three feet under the eave upward, with the roof visible either
+         side of it. That is a brick pier standing beside the house, which is
+         exactly what the critic saw. The geometry was already right: the
+         stack straddles the ridge at y -4.5 to 4.5 and rises through it. The
+         DEPTH was wrong.
+         Natural depth is the fix, and it is the physically true one here.
+         The near roof slope reaches y = 16.85 and the gable wall triangle
+         stands at x = -25.85, so both are NEARER the camera than the stack
+         and now paint over it; the far slope's nearest point is its own eave
+         at y = -15.6, farther than the stack, so it stays behind. The brick
+         therefore shows exactly where a chimney shows: above the roof.
+         The comment this replaces said "nothing in this scene stands in
+         front of a stack". The roof does. */
       var cx = x0 + 3.4;
       out = out.concat(box(ctx, cx - 3.6, cx + 3.6, -4.5, 4.5, EAVE - 3, RIDGE + 4.2,
-                           BRICK, BRICK_E, BRICK_D, d).parts);
+                           BRICK, BRICK_E, BRICK_D).parts);
       out = out.concat(box(ctx, cx - 4.3, cx + 4.3, -5.2, 5.2, RIDGE + 4.2, RIDGE + 5.4,
-                           BRICK_D, BRICK_E, BRICK, d + 1).parts);
+                           BRICK_D, BRICK_E, BRICK).parts);
       /* the ell's stack takes its depth from its own geometry, NOT the
          constant above: the ell stands behind the main block and its chimney
          must be able to go behind the main roof, which a constant past every
