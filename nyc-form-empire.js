@@ -858,10 +858,28 @@
       marks.push({ at: P(0, 0, ES.obs102 + lift(ES.obs86)), fill: C.hi,
                    text: '102nd floor',
                    sub: 'enclosed, 1,224 ft, the small one' });
-      marks.push({ at: P(-BW - SF, FIFTH_Y, 8), text: 'Fifth Avenue',
-                   sub: 'the entrance and the line' });
+      /* The 86th goes BEFORE Fifth Avenue, and the swap is the whole fix for
+         the one collision this model had left. Placement is first come first
+         served, so the order these two are handed over decides which of them
+         gets the clear line when both want the bottom of the box. Measured on
+         a 276px stage, a full turn by nine tilts, 5,561 label blocks: the
+         only text ever written on other text was "open air, 1,050 ft, the one
+         people mean" lying across "the entrance and the line", and it happened
+         because Fifth Avenue chose first and left the wider block nowhere. At
+         the 0.75 tilt ceiling the 86th floor block wants y 498 to 580 in a 620
+         unit box, so one line down is 628, past the floor, and the search had
+         nowhere legal to go.
+         The 86th block is 471 units wide against Fifth Avenue's 301, and a
+         wide label has the fewest places it can fit, so it is the one that
+         must choose first. That is the same rule the bridge already runs under
+         the name roomForLabels; this scene cannot simply switch that on,
+         because the flag also grows the frame, which this tall drawing was
+         measured not to want. Two marks in the right order buy the ordering
+         without the reframing. */
       marks.push({ at: P(W30 / 2 - 5, D81 / 2 - 3, ES.obs86), fill: C.navy, text: '86th floor',
                    sub: 'open air, 1,050 ft, the one people mean' });
+      marks.push({ at: P(-BW - SF, FIFTH_Y, 8), text: 'Fifth Avenue',
+                   sub: 'the entrance and the line' });
       /* The two numbers go on LAST, and that is the whole safety argument for
          them. This scene does not ask for roomForLabels, so the engine places
          marks in the order they are handed over, first come first served. The
