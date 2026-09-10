@@ -2509,10 +2509,10 @@ three models a run, one fix each, and strike the items as they are paid.
   consequence of a single inverted term that the header had already written
   down correctly. Sources unchanged, LP-0972 and the Met's 2010 press
   release; no new dimension is claimed.
-  STILL OWED on great-hall: the wall above the arch crowns is still a large
-  plain field at the corners; the pendentives read as flat pale panels rather
-  than concave corners; and the two adversarial critics did not fit inside
-  the run's 25 minute ceiling.
+  STILL OWED on great-hall: the pendentive half IS PAID, 2026-09-10, see A
+  PENDENTIVE IS CONCAVE below, and the plain field at the corners is reduced
+  by the same fix rather than answered; the two adversarial critics did not
+  fit inside the run's 25 minute ceiling.
 
 - dcwar OWED (a) is PAID, and the fix went where the note said it belonged,
   in the shared helper, so it was never only about this building.
@@ -2742,6 +2742,35 @@ three models a run, one fix each, and strike the items as they are paid.
   the list, but a run picking it up should first find an angle that shows
   it rather than trusting the note. (f) IS PAID, 2026-09-10, see THE SUN WAS
   AT THE ZENITH below. Also still owed: (e) the glazing; (g) the plaza corner.
+
+- A PENDENTIVE IS CONCAVE, great-hall's half-owed shading, PAID 2026-09-10
+  by the landmark routine, and it is THE SAME FAULT AS THE HIRSHHORN'S
+  COURTYARD IN ANOTHER ROOM, which is why both were paid in one pass. The
+  spandrel's outline had already been fixed, so what was left was the tone:
+  each one rendered PALER than the wall it is cut into and read as a flat
+  wedge stuck on rather than as a corner tucked under a dome.
+  THE CAUSE IS ONE TERM. The fill was `ctx.shade(SHADE, 0, sgn, 0.42)`. That
+  +0.42 in z tilts the surface UP toward the light, so a recess was handed
+  the normal of a sunlit roof slope, and the base tone was SHADE, the palest
+  of the three wall greys. Hand ctx.shade a normal that faces the light and
+  it will draw you a lit face wherever you put it, which is exactly what the
+  hirshhorn's `outward=false` note records about a 96 ft courtyard shaft.
+  THE FIX changes no geometry, and that is worth saying plainly because the
+  outline here was hard won: the normal now points into the room and DOWN,
+  `(0, sgn * 0.9, -0.3)`, and the base drops from SHADE to LIME_D. It is a
+  drawing decision about shading, not a claim about the building; no source
+  is involved and none is cited.
+  WHAT THE PICTURE SHOWED, and the second half is not a claim of success.
+  The pale-flap reading is gone: the eight corners now read as recess, and
+  the large plain field the same OWED note complains about is REDUCED as a
+  side effect, because the corners of the upper wall are no longer one
+  unbroken pale sheet. But they have swung from too pale to fairly dark and
+  FLAT, so the concavity is now asserted by tone rather than described by a
+  gradient across the surface. That is a smaller fault than the one paid and
+  it goes on the list rather than being called finished.
+  STILL OWED on great-hall: the flat dark reading above, which wants a
+  gradient across the spandrel rather than one tone; the plain field between
+  the arches, reduced but not answered; and the two critics.
 
 - TWO SHEETS OF PAPER, trail OWED (b), PAID 2026-09-10 by the landmark
   routine, and the note was RIGHT but understated. It said the Revere

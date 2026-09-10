@@ -820,7 +820,20 @@
             pend.push(P(bx2 + c * R * Math.cos(tq), yy - sgn * 0.55,
                         z + sp + R * Math.sin(tq)));
           }
-          out.push({ svg: ctx.poly(pend, ctx.shade(SHADE, 0, sgn, 0.42), DARK, 0.5),
+          /* A PENDENTIVE IS CONCAVE, and this one was lit like a flat panel
+             turned up to the sun. The normal carried +0.42 in z, which tilts
+             the surface UP toward the light, and the base was SHADE, so each
+             one came out paler than the wall it is cut into and read as a
+             flat wedge stuck on. It is the hirshhorn's courtyard fault in
+             another room: hand ctx.shade a normal that faces the light and a
+             recess is drawn as a sunlit face.
+             The surface curves back and DOWN into the corner under the dome,
+             so the normal now points into the room and downward, and the base
+             drops from SHADE to LIME_D. Nothing about the outline changes:
+             this is the shading of a concave corner, not new geometry, and no
+             source is involved, so it is declared as the drawing decision it
+             is. */
+          out.push({ svg: ctx.poly(pend, ctx.shade(LIME_D, 0, sgn * 0.9, -0.3), DARK, 0.5),
                      depth: -9.42e8 });
         });
       });
