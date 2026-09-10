@@ -183,6 +183,7 @@ const JOBS = [
      through the same builder. The city Sean actually sells tours in had no
      picture in the book at all. */
   ["space-needle",    () => window.SEATTLE3D.scenes["space-needle"],  -0.62, 0.16],
+  ["smith-tower",     () => window.SEATTLE3D.scenes["smith-tower"],   -0.62, 0.20],
 ];
 
 /* The two New York landmarks, through their own renderer. */

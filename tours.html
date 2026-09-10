@@ -190,6 +190,25 @@
     off a ship point at, so here it is.</p>
   </section>
 
+  <!-- Smith Tower, drawn from published dimensions rather than a stock
+       photograph. seattle-3d.js carries the sources and names the one gap,
+       the footprint, which no reachable source publishes and which is
+       DERIVED there from the published floor area. Degrades to nothing at
+       all if the script fails to load. -->
+  <section>
+    <h2>The one the tour actually walks to</h2>
+    <p>484 feet to the tip of the spire, 462 to the roof, 38 floors, and for seventeen
+    years the tallest building west of the Mississippi. Two storeys of local granite at
+    the pavement, white terra cotta for everything above it, and a pyramid that is the
+    final three floors with an eight foot glass dome at its point. The observation deck
+    on the 35th sits directly under that pyramid. Drag it.</p>
+    <div id="smStage" style="background:#eef0ea;border-radius:10px;overflow:hidden;
+         max-width:640px;margin:0 auto;touch-action:pan-y"></div>
+    <p class="note">Gaggin &amp; Gaggin of Syracuse, opened the 4th of July 1914, at Second
+    Avenue and Yesler Way. It stands in Pioneer Square, so unlike the Needle it is on the
+    walking tours above.</p>
+  </section>
+
   <!-- The Pier 66 walk, drawn as a cut section from a measured route and
        measured ground. The route is OSRM foot routing over OpenStreetMap and
        every height is a USGS 3DEP query, one per vertex; seattle-3d.js carries
@@ -322,6 +341,11 @@ async function sendTourInquiry(e){
      so the mount is left to take them rather than repeating them here. */
   var walk = document.getElementById('walkStage');
   if (walk && window.SEATTLE3D) { window.SEATTLE3D.mount(walk, 'pier66-walk'); }
+  /* A 462 ft tower on a 108 ft base wants the same near-level camera the
+     Needle gets: pitch 0.34 looks along the shaft without laying the pyramid
+     flat, and it is the angle the model was checked at. */
+  var sm = document.getElementById('smStage');
+  if (sm && window.SEATTLE3D) { window.SEATTLE3D.mount(sm, 'smith-tower', {yaw:-0.62, pitch:0.34}); }
 })();
 </script>
 <script src="/i18n.js"></script>

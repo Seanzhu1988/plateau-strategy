@@ -765,6 +765,85 @@ above is not paperwork, it is the lock.
 
 ## Rebuilt to this standard
 
+- smith-tower, Seattle (2026-09-10, the landmark routine). NEW, not a rebuild:
+  queue item C, and the last building in Seattle with no geometry at all. The
+  city Sean actually sells tours in, and the one landmark on this site that
+  stands in Pioneer Square where the walking tours already go, so it is the
+  model most likely to sell a tour.
+  PUBLISHED AND TRACEABLE, every number read this run: 484 ft to the tip of the
+  spire and 462 ft to the roof, 38 floors, opened 4 July 1914, Gaggin & Gaggin
+  of Syracuse, Neoclassical, 7 elevators (8 in the design phase), the 35th
+  floor observation deck that was the Chinese Room, an 8 ft wide glass dome at
+  the point lit blue, 304,350 sq ft of floor area and 13 suites in the tower
+  (Wikipedia, Smith Tower); a TWO storey base of local granite with white terra
+  cotta above it and a pyramidal cap making up the FINAL THREE storeys, and
+  1,276 concrete piles 22 ft long (via search this run).
+  THE NAMED GAP IS THE PLAN, and it is named rather than eyeballed. No source
+  reached this run publishes the footprint in feet: SAH Archipedia and
+  HistoryLink both returned HTTP 403. So the plan is DERIVED from the one
+  published area figure, with the derivation written into the file so it can be
+  checked or overturned: the 38 floors split 22 + 13 + 3, which is where three
+  independent published figures land at once (Wikipedia's own garbled "22-story
+  base", the cap published as the final three, and THIRTEEN suites in thirteen
+  tower floors, one each); a 60 ft tower square then leaves 11,707 sq ft a floor
+  over 22 base floors, so a base 108 ft square, and a Seattle downtown quarter
+  block is about 111 ft. It lands where the lot is and it is still a
+  derivation. Storey height is not assumed either: 462 over 38 is 12.16 ft,
+  which puts floor 35 exactly at the tower cornice directly under the pyramid,
+  where the published deck is. That internal agreement is the cross-check.
+  WHAT THE PICTURE SHOWED AND THE NUMBERS DID NOT, three things, and the first
+  is the painter's trap for the ninth time in this project. (1) THE TOWER SHAFT
+  HAD NO WINDOWS AT ALL. Its 65 reveals were computed, correct, and invisible,
+  because `bays()` derived its own depth from its height (4e5 + z0*100 = 427k)
+  while the shaft wall it sat on was pinned at 8e5, so the wall painted last
+  and buried them. Nothing in the arithmetic said so: the faces existed, the
+  count was right, the header described them. Only the render did. `bays()`
+  takes an explicit depth now, like every other slab here. This is checklist
+  item 1 failing QUIETLY, which the standard already calls the most common
+  failure, and the mechanism is worth restating: a helper that computes its own
+  depth cannot know what it is standing on. (2) The pyramid was a little hat. I
+  had set its apex to `zRoof - 10`, so the published final-three-storeys cap
+  drew 23 ft tall instead of 33. The published roof height is 462 and the apex
+  belongs AT it. (3) "Glistening white terra cotta" rendered GREY. The colour
+  was right at #eae5d9 and the shading is not wrong either: a vertical face
+  with nz 0 and a negative dot against the light gets 0.55 of its own colour,
+  so a white building loses forty-five percent of its whiteness on two of four
+  faces. Lifting the stone rather than the light fixed it.
+  AND ONE MORE THAT ONLY A SECOND LOOK GIVES: with the bays finally drawn, the
+  shaft read as a flat field of isolated squares, which is a 1960s office block
+  with a 1914 window count. A terra cotta skyscraper is RIBBED. Vertical piers
+  now stand proud on every bay division of both the base block and the tower,
+  and that vertical reading is half of what makes this building recognisable
+  from the end of a street. Correct counts are not the same as the right
+  building, which is exactly why the checklist has nine items and not one.
+  CHECKLIST, all nine: (1) 9 bays a face below and 5 above, 490 reveals plus
+  their piers, drawn; (2) water table, granite string course, base cornice,
+  tower cornice, each its own proud slab; (3) granite plinth and the published
+  two-storey granite base; (4) the pyramid IS the roof, three storeys of it,
+  with the glass dome and the spire to 484; (5) two tones everywhere through
+  ctx.shade, verified at two yaws so each face is seen lit and shaded;
+  (6) ground shadow, the footprint convention, named in the file as the device
+  it is; (7) heights TRUE, 462 and 484 exactly, nothing scaled; (8) reveals in
+  #414c57 against white terra cotta, the strongest contrast on the building;
+  (9) the thing a visitor names is the white pyramid on the slender shaft, and
+  it is the whole silhouette.
+  LIVE, not just rendered: a stage on tours.html between the Needle and the
+  Pier 66 walk, in the order a Pioneer Square tour meets them, and a thumbnail
+  job in make_thumbs.js. destination-book.html already mounts seattle by key.
+  LEFT FOR A LATER RUN, seen and not fixed: the pyramid has no bracketed
+  cornice and no dormers, and the granite storeys have flat openings where the
+  real ground floor has arches. Both are real and neither stops the building
+  being this building.
+
+- grand-stair, the Met Great Stair Hall (recorded 2026-09-10, not built this
+  run). BOOKKEEPING ONLY, and it is worth a line because a queue that cannot
+  see finished work will build it twice. Item 5 of the rebuild queue listed
+  fifteen Met interiors and this one carried no ledger entry, which read as
+  unbuilt. It is not: it already has 24 real treads with risers, raked solid
+  parapets with a brass rail, the arch at the head, faceVisible culling, and
+  the Tiepolo at its published 220 by 128 5/8 inches. It was built to this
+  standard and never entered here. Nothing was changed.
+
 - dendur, Gallery 131, the Temple of Dendur (2026-09-09, the landmark
   routine). What it replaced was one brown box on a plate: no columns, no
   doorway, no cornice you could see, and a gate drawn as TWO free-standing

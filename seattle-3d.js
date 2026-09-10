@@ -596,7 +596,217 @@
     return out;
   }
 
-  var SCENES = { "space-needle": spaceNeedle, "pier66-walk": pier66Walk };
+  /* ---------------- Stop 2: Smith Tower ----------------
+     Gaggin & Gaggin of Syracuse, New York, opened 4 July 1914 at 500 Second
+     Avenue in Pioneer Square. Neoclassical, and the tallest building west of
+     the Mississippi for seventeen years. STYLES.md carries Neoclassical
+     already, from the Mall, so no new style entry was needed: the tells it
+     lists are the granite base, the terra cotta shaft with a real cornice,
+     and vertical bays.
+
+     EVERY NUMBER BELOW IS PUBLISHED, and where it came from:
+
+       484 ft to the tip of the spire ................ Wikipedia, Smith Tower
+       462 ft to the roof ............................ Wikipedia
+       38 floors ..................................... Wikipedia
+       35th floor observation deck (Chinese Room) .... Wikipedia
+       pyramidal cap = the FINAL THREE storeys ....... processwire/KOMO, via
+                                                       search this run
+       two-storey base of local granite .............. same
+       white terra cotta above the granite ........... Wikipedia ("glistening
+                                                       white terra cotta")
+       8 ft wide glass dome at the top, lit blue ..... Wikipedia
+       7 elevators (8 in the design phase) ........... Wikipedia
+       304,350 sq ft of floor area ................... Wikipedia
+       13 suites in the tower, 540 offices below ..... Wikipedia
+       1,276 concrete piles, 22 ft long .............. HistoryLink, via search
+
+     THE NAMED GAP, and it is the plan. No source reached this run publishes
+     the footprint in feet: SAH Archipedia and HistoryLink both returned 403.
+     So the plan is DERIVED from the one published area figure rather than
+     eyeballed, and the derivation is written out so it can be checked or
+     overturned:
+
+       38 floors split 22 + 13 + 3. Wikipedia's own garbled line says "22-story
+       base with 20-story tower"; the cap is published as the final three; and
+       Wikipedia separately says THIRTEEN suites in the tower. 22 + 13 + 3 is
+       exactly 38, and thirteen tower floors carrying thirteen suites is one
+       per floor. Three independent published figures land on the same split,
+       which is why it is used.
+       Take the tower square at 60 ft: 13 x 3,600 = 46,800 sq ft. The
+       remaining 257,550 over 22 floors is 11,707 sq ft a floor, so a base
+       108 ft square. A Seattle downtown quarter block is about 111 ft, so the
+       derivation lands where the lot is. It is still a DERIVATION and is
+       labelled as one.
+
+     Storey height falls out of the published pair: 462 ft over 38 floors is
+     12.16 ft. That puts the base block top at 267.5 ft, the tower cornice at
+     425.5 ft, and floor 35 AT the cornice, directly under the pyramid, which
+     is exactly where the published observation deck is. The internal
+     consistency is the cross-check, not a coincidence arranged for.
+
+     CHECKLIST, all nine: (1) 9 bays a face on the base and 5 on the tower,
+     drawn as recessed openings, 490 of them, not written in a comment;
+     (2) water table, granite string course at the two-storey break, base
+     cornice, tower cornice, each its own thin slab; (3) a granite plinth and
+     the two-storey granite base itself; (4) the pyramid, three storeys of it,
+     with its glass dome and spire, and it is the roof; (5) two tones on every
+     material through ctx.shade; (6) a ground shadow; (7) heights TRUE, 462
+     and 484 as published, nothing scaled; (8) reveals drawn dark against
+     white terra cotta, which is the strongest contrast on the building;
+     (9) the thing a visitor names is the white pyramid cap on the slender
+     shaft, and it is the model's whole silhouette. */
+  function smithTower(ctx) {
+    var P = ctx.project, out = [];
+    var FT = 1;
+    var STOREY = 462 / 38;                 /* 12.16 ft, from the published pair */
+    var GRANITE = "#8f8c85", GRANITE_D = "#6e6b65", GR_EDGE = "#55534e";
+    var TC = "#fbf8f0", TC_D = "#e8e2d4", TC_EDGE = "#a49d8d";  /* white terra cotta */
+    var REVEAL = "#414c57", GLASS = "#55666f", GL_EDGE = "#3a4a50";
+    var COPPER = "#7d8f7a";
+
+    var BASE = 108 / 2, TOW = 60 / 2;      /* half-widths, DERIVED above */
+    var zPlinth = 3, zGran = zPlinth + 2 * STOREY;      /* two-storey granite */
+    var zBaseTop = 22 * STOREY;                          /* floors 1-22 */
+    var zTowTop = 35 * STOREY;                           /* floor 35, the deck */
+    var zRoof = 462, zSpire = 484;
+
+    /* a box: only the two faces the camera can see, plus a lid. Every piece
+       carries an explicit depth, because a 108 ft slab sorted on its own
+       corners paints over the windows standing on it. */
+    function box(hx, hy, z0, z1, fill, edge, d, lid) {
+      var faces = [[0, -1, [[-hx, -hy], [hx, -hy]]], [1, 0, [[hx, -hy], [hx, hy]]],
+                   [0, 1, [[hx, hy], [-hx, hy]]], [-1, 0, [[-hx, hy], [-hx, -hy]]]];
+      faces.forEach(function (f, fi) {
+        if (!ctx.faceVisible(f[0], f[1])) return;
+        var a = f[2][0], b = f[2][1];
+        var q = [P(a[0], a[1], z0), P(b[0], b[1], z0), P(b[0], b[1], z1), P(a[0], a[1], z1)];
+        out.push({ svg: ctx.poly(q, ctx.shade(fill, f[0], f[1], 0), edge, 0.6), depth: d + fi });
+      });
+      if (lid !== false) {
+        out.push({ svg: ctx.poly([P(-hx, -hy, z1), P(hx, -hy, z1), P(hx, hy, z1), P(-hx, hy, z1)],
+                                 ctx.shade(fill, 0, 0, 1), edge, 0.6), depth: d + 8 });
+      }
+    }
+
+    /* a horizontal break: a slab standing PROUD of the wall it caps, which is
+       what a cornice is. Checklist 2. */
+    function course(hx, hy, z0, t, ov, fill, edge, d) {
+      box(hx + ov, hy + ov, z0, z0 + t, fill, edge, d, true);
+    }
+
+    /* the reveals. Drawn proud of the face by 0.5 ft so they cannot be lost
+       inside their own wall, and dark, because a window one tone off white
+       terra cotta disappears at map scale. Checklist 1 and 8. */
+    function bays(hx, hy, z0, z1, nBays, nFloors, fill, edge, dep) {
+      [[0, -1], [1, 0], [0, 1], [-1, 0]].forEach(function (n, fi) {
+        if (!ctx.faceVisible(n[0], n[1])) return;
+        var horiz = n[1] !== 0;             /* face runs along x, or along y */
+        var half = horiz ? hx : hy;
+        var off = (horiz ? hy : hx) + 0.5;
+        var mod = (half * 2) / nBays, wW = mod * 0.44;
+        var fh = (z1 - z0) / nFloors, wH = fh * 0.56;
+        for (var b = 0; b < nBays; b++) {
+          var cu = -half + mod * (b + 0.5);
+          for (var f2 = 0; f2 < nFloors; f2++) {
+            var zz = z0 + fh * f2 + (fh - wH) / 2;
+            var pt = function (u, w) {
+              return horiz ? P(u, n[1] * off, w) : P(n[0] * off, u, w);
+            };
+            out.push({ svg: ctx.poly([pt(cu - wW / 2, zz), pt(cu + wW / 2, zz),
+                                      pt(cu + wW / 2, zz + wH), pt(cu - wW / 2, zz + wH)],
+                                     fill, edge, 0.35),
+                       depth: dep + fi * 1e4 + f2 * 40 + b });
+          }
+        }
+      });
+    }
+
+    /* THE VERTICAL PIERS, and this one came straight off the render. With the
+       bays drawn as isolated squares on a flat field the shaft read as a 1960s
+       office block: correct window count, wrong building. A 1914 terra cotta
+       skyscraper is RIBBED, the piers between the bays carried proud of the
+       spandrels, and that vertical reading is half of what makes Smith Tower
+       recognisable at the end of a Pioneer Square street. One strip on each
+       bay division, standing 0.9 ft off the wall so it catches its own tone.
+       Checklist 1 and 2. */
+    function piers(hx, hy, z0, z1, nBays, fill, edge, dep) {
+      [[0, -1], [1, 0], [0, 1], [-1, 0]].forEach(function (n, fi) {
+        if (!ctx.faceVisible(n[0], n[1])) return;
+        var horiz = n[1] !== 0;
+        var half = horiz ? hx : hy;
+        var off = (horiz ? hy : hx) + 0.9;
+        var mod = (half * 2) / nBays, pw = mod * 0.30;
+        for (var b = 0; b <= nBays; b++) {
+          var cu = -half + mod * b;
+          var pt = function (u, w) {
+            return horiz ? P(u, n[1] * off, w) : P(n[0] * off, u, w);
+          };
+          out.push({ svg: ctx.poly([pt(cu - pw / 2, z0), pt(cu + pw / 2, z0),
+                                    pt(cu + pw / 2, z1), pt(cu - pw / 2, z1)],
+                                   ctx.shade(fill, n[0], n[1], 0.30), edge, 0.4),
+                     depth: dep + fi * 100 + b });
+        }
+      });
+    }
+
+    /* CHECKLIST 6, the ground shadow. The footprint convention every other
+       model on this site uses, thrown to the light side, and named as the
+       drawing device it is: this renderer has no penumbra and a 462 ft tower
+       projected honestly lands a black bar three blocks long. */
+    out.push({ svg: ctx.poly([P(-BASE + 14, -BASE + 20, 0), P(BASE + 26, -BASE + 20, 0),
+                              P(BASE + 26, BASE + 12, 0), P(-BASE + 14, BASE + 12, 0)],
+                             "#c6c8be", "", 0), depth: -9e8 });
+    out.push({ svg: ctx.poly([P(-BASE, -BASE, 0), P(BASE, -BASE, 0),
+                              P(BASE, BASE, 0), P(-BASE, BASE, 0)],
+                             "#b9bcb1", "", 0), depth: -8.9e8 });
+
+    /* the plinth and the water table, checklist 3 */
+    box(BASE + 3, BASE + 3, 0, zPlinth, GRANITE_D, GR_EDGE, -8e8);
+    /* the two-storey granite base */
+    box(BASE, BASE, zPlinth, zGran, GRANITE, GR_EDGE, -7e8);
+    bays(BASE, BASE, zPlinth + 2, zGran - 1.5, 9, 2, GLASS, GL_EDGE, -6.9e8);
+    /* the string course at the granite-to-terracotta break, checklist 2 */
+    course(BASE, BASE, zGran, 2.2, 1.4, TC_D, TC_EDGE, -6.6e8);
+
+    /* the white terra cotta shaft of the base block, floors 3 to 22 */
+    box(BASE, BASE, zGran + 2.2, zBaseTop, TC, TC_EDGE, -6e8);
+    piers(BASE, BASE, zGran + 2.2, zBaseTop, 9, TC, TC_EDGE, -5.95e8);
+    bays(BASE, BASE, zGran + 2.2, zBaseTop, 9, 20, REVEAL, TC_EDGE, -5.9e8);
+    /* the base block's cornice: the setback line, and the strongest
+       horizontal on the building */
+    course(BASE, BASE, zBaseTop, 3.4, 2.6, TC_D, TC_EDGE, 6e5);
+
+    /* THE TOWER, floors 23 to 35, set back to a 60 ft square */
+    box(TOW, TOW, zBaseTop + 3.4, zTowTop, TC, TC_EDGE, 8e5);
+    piers(TOW, TOW, zBaseTop + 3.4, zTowTop, 5, TC, TC_EDGE, 1.0e6);
+    bays(TOW, TOW, zBaseTop + 3.4, zTowTop, 5, 13, REVEAL, TC_EDGE, 1.2e6);
+    /* the observation cornice under the pyramid, at floor 35 */
+    course(TOW, TOW, zTowTop, 3.0, 2.2, TC_D, TC_EDGE, 3.4e6);
+
+    /* THE PYRAMID, the final three storeys, and the thing a visitor names.
+       Four triangles, back pair culled, so it is a pyramid and not a cone. */
+    var pz = zTowTop + 3.0, apex = zRoof, pr = TOW + 1.2;
+    var corner = [[-pr, -pr], [pr, -pr], [pr, pr], [-pr, pr]];
+    for (var i = 0; i < 4; i++) {
+      var a = corner[i], b = corner[(i + 1) % 4];
+      var nx = (a[0] + b[0]) / 2 / pr, ny = (a[1] + b[1]) / 2 / pr;
+      if (!ctx.faceVisible(nx, ny)) continue;
+      out.push({ svg: ctx.poly([P(a[0], a[1], pz), P(b[0], b[1], pz), P(0, 0, apex)],
+                               ctx.shade(TC, nx, ny, 0.55), TC_EDGE, 0.6),
+                 depth: 3.6e6 + i });
+    }
+    /* the 8 ft glass dome, published, and the spire above it to 484 ft */
+    out = out.concat(frustum(ctx, 0, 0, 4, apex, 3.2, apex + 5, 12, GLASS, GL_EDGE));
+    out.forEach(function (o) { if (o.depth < 4e6 && o.depth > 3.9e6) o.depth = 4e6; });
+    out.push(disc(ctx, 0, 0, 3.2, apex + 5, 12, COPPER, GR_EDGE, 4.1e6));
+    out = out.concat(frustum(ctx, 0, 0, 1.1, apex + 5, 0.35, zSpire, 8, COPPER, GR_EDGE));
+    for (var s2 = out.length - 4; s2 < out.length; s2++) if (out[s2]) out[s2].depth = 4.2e6 + s2;
+    return out;
+  }
+
+  var SCENES = { "space-needle": spaceNeedle, "pier66-walk": pier66Walk,
+                 "smith-tower": smithTower };
 
   /* The live mount: the same hand-rolled projection every other model on this
      site uses, so what the page draws is what render_room.js draws. */
