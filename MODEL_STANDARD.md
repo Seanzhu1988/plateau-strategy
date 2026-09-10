@@ -1,5 +1,10 @@
 # The model standard
 
+**Its name is the Landmark Standard**, the one word we use for it in talk:
+every dimension sourced, built only from those facts, rendered and looked at,
+and signed off by two independent critics, with the one thing a visitor names
+actually there. "Build it to the Landmark Standard" means this whole file.
+
 Sean, 2026-09-03, on the first National Mall models: "the 3D model needs to be
 realist, the one you have is unacceptable." On the rebuilt Capitol, Lincoln,
 Jefferson and Washington Monument: "now it looked better, I might need this
