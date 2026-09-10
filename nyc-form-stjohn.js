@@ -57,6 +57,9 @@
  *     dome", Construction History 32(2), 2017, 39-65. Peer reviewed; the
  *     source of the 93 ft shell diameter.
  *     https://infoscience.epfl.ch/record/232928
+ * [V] Vertical Access, building envelope consultants to the cathedral:
+ *     "A Guastavino tile dome, 162 feet high at the apex."
+ *     https://vertical-access.com/projects/the-cathedral-church-of-st-john-the-divine-interior/
  * [S] The cathedral itself. https://www.stjohndivine.org/visit/explore-the-cathedral
  *
  * ============================ THE TWO-ERA TRAP ============================
@@ -89,8 +92,12 @@
  *                              Cram's third redesign of 1929 took the front
  *                              from three portals to five                [L]
  *   nave bays                  FOUR double bays a side, each split into
- *                              sub-bays by narrower flying buttresses;
- *                              seven chapels a side, one per sub-bay      [L]
+ *                              sub-bays by narrower flying buttresses, so
+ *                              EIGHT sub-bays a side; seven chapels a side,
+ *                              one per sub-bay, "except for the easternmost
+ *                              sub-bays, which contain entryways at floor
+ *                              level". Seven chapels in eight bays is not a
+ *                              contradiction; the eighth is the way in.  [L]
  *   central aisle              50 ft wide, the width of West 112th Street
  *                              between the building lines                 [L]
  *   nave section               FIVE aisles wide (Cram, after Bourges)     [L]
@@ -105,7 +112,15 @@
  *                              WITH CEMENT STUCCO. The tile everyone knows
  *                              is the INSIDE of this shell; from the street
  *                              it is rendered, not terracotta.            [L]
- *   dome apex                  162 ft (49 m)                             [Z]
+ *   dome apex                  162 ft above the floor. Hall's 1924 guide,
+ *                              which is the cathedral's own, states it and in
+ *                              the same breath explains the rival figure:
+ *                              "The present dome is temporary; the PERMANENT
+ *                              VAULT will be 200 feet above the floor." The
+ *                              200 ft that circulates is the vault that was
+ *                              never built, applied to the dome that was.
+ *                              Corroborated at 162 by the building's own
+ *                              envelope consultants.                   [H][V]
  *   the eight granite columns  54 ft tall, 6 ft diameter; lower drum 38 ft
  *                              and 90 short tons, upper 17 ft and 40 short
  *                              tons; quarried at Vinalhaven, Maine        [L]
@@ -136,8 +151,14 @@
  *                              fire; three of the four crossing piers are
  *                              rough and unfaced                          [L]
  *   address and orientation    1047 Amsterdam Avenue, between W 110th and
- *                              W 113th; the building runs WEST-EAST and is
- *                              NOT aligned to the street grid            [L]
+ *                              W 113th. The building runs west to east
+ *                              RELATIVE TO THE MANHATTAN GRID, and it is the
+ *                              grid that sits off true north, so liturgical
+ *                              east is not compass east. The west front is on
+ *                              Amsterdam; the apse faces Morningside Drive.
+ *                              An earlier draft of this file said the
+ *                              building was NOT aligned to the grid, which is
+ *                              backwards.                                 [L]
  *
  * ============================ DERIVED =====================================
  * The arithmetic is the whole claim, so it is shown rather than asserted.
@@ -162,14 +183,13 @@
  *   leaves 3.5 ft of ledge a side, which is what a dome on pendentives does.
  *   Those two numbers were published separately and agree.
  *
- *   THE NORTH TOWER IS THE NAVE ROOF. St Peter's 177 ft and the nave ridge's
- *   174 ft are within 3 ft, which is why the source says the tower reaches
- *   the roof of the nave. The model puts them at their own published heights
- *   and lets them land where they land.
+ *   THE NORTH TOWER IS THE NAVE ROOF, exactly. St Peter and the nave ridge
+ *   are BOTH published at 177 ft, which is why the report says the tower
+ *   reaches the roof of the nave. They are drawn at that one height.
  *
- *   ROOF DEPTH. Ridge 174 minus vault 124 = 50 ft of structure between the
- *   inside of the vault and the outside of the ridge. That is the depth the
- *   nave roof is drawn with.
+ *   ROOF DEPTH. Ridge 177 minus vault 124 = 53 ft between the inside of the
+ *   vault and the outside of the ridge. Both operands are published, so the
+ *   depth is derived and not chosen.
  *
  *   THE WEST FRONT IS WIDER THAN THE NAVE. 207 ft against 146 ft, so the
  *   towers stand 30.5 ft proud on each side. That overhang is the west front
@@ -190,11 +210,15 @@
  * Drawn to look right, NOT measured. Every one is detail inside a silhouette
  * that is entirely published:
  *   - aisle roof height, and the height of the choir and apse roofs
- *   - the number of nave bays, clerestory windows and arcade openings
+ *   - the clerestory and arcade opening sizes (the bay COUNT is sourced)
  *   - buttress depth and step count
  *   - the depth the chapels project from the ambulatory
- *   - all colours; the stone is published as granite and limestone but no
- *     source seen gives a tone, and the roof covering is not sourced at all
+ *   - the exact tones. The MATERIALS are now sourced and the colours follow
+ *     them: cream Lake Mohegan granite, oxidised standing-seam copper, cement
+ *     stucco on the dome, poured concrete on the temporary wall. What is
+ *     unsourced is the precise hex, not the choice of material. An earlier
+ *     draft of this list claimed the roof covering was "not sourced at all",
+ *     which stopped being true when the designation report was read.
  * Nothing here is traced from a copyrighted drawing.
  *
  * Coordinates are FEET. Origin at the centre of the crossing, z up from the
@@ -223,7 +247,13 @@
 
   /* UNSOURCED heights, declared above */
   var Z_AISLE = 62, Z_CHOIR_EAVE = 96, Z_CHOIR_RIDGE = 138, Z_AMB = 54, Z_CHAPEL = 46;
-  var Z_NAVE_EAVE = P.ridge - 50;      /* 124, the vault line, from DERIVED */
+  /* THE VAULT IS A PUBLISHED NUMBER, so the eaves ARE it rather than being
+     computed back from the ridge. Written as ridge - 50 it silently became
+     127 the moment the ridge was corrected from 174 to 177, while the comment
+     beside it still claimed 124 and P.vault sat in the FACTS block driving
+     nothing at all. The roof depth now falls out of the two published
+     figures instead: 177 - 124 = 53 ft. */
+  var Z_NAVE_EAVE = P.vault;
 
   /* ---- materials. Tones UNSOURCED; the stone types are not ---- */
   var STONE = { top: '#dcd8cf', sun: '#d2cdc2', shade: '#c4bfb3' };  /* limestone and granite */
@@ -271,9 +301,28 @@
       var dx = b[0] - a[0], dy = b[1] - a[1], m = Math.sqrt(dx * dx + dy * dy) || 1;
       return [dy / m, -dx / m, 0];
     }
+    /* WALLS ARE TILED FOR THE SAME REASON ROOFS ARE, and not tiling them
+       was the worst defect in the first build. The painter sorts on centroid
+       depth, and a nave wall is 248 ft long, so its centroid sits 124 ft from
+       its own ends while the windows in it spread across the whole run. The
+       openings carry a 6 unit lead; the depth spread of the wall they sit on
+       is nearer 56. Measured at the shipped camera, TWENTY of the thirty-six
+       near-side openings were painted over by the very wall they pierce,
+       including exterior windows hidden by the arcade wall standing inside an
+       empty nave. Cutting every wall into runs no longer than TILE_MAX puts
+       each fragment's centroid beside its own openings and takes that from
+       twenty to nine; the rest is interior geometry, dealt with separately. */
     function wallQ(a, b, z0, z1, mat, fo) {
-      emit([[a[0], a[1], z0], [b[0], b[1], z0], [b[0], b[1], z1], [a[0], a[1], z1]],
-           outward(a, b), mat, fo);
+      var n = outward(a, b);
+      var L = Math.sqrt((b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1]));
+      var k = Math.max(1, Math.ceil(L / TILE_MAX));
+      for (var i = 0; i < k; i++) {
+        var t0 = i / k, t1 = (i + 1) / k;
+        var p0 = [a[0] + (b[0] - a[0]) * t0, a[1] + (b[1] - a[1]) * t0];
+        var p1 = [a[0] + (b[0] - a[0]) * t1, a[1] + (b[1] - a[1]) * t1];
+        emit([[p0[0], p0[1], z0], [p1[0], p1[1], z0],
+              [p1[0], p1[1], z1], [p0[0], p0[1], z1]], n, mat, fo);
+      }
     }
 
     /* THE PAINTER'S TRAP, the same one the Empire State met: a long roof's
@@ -321,9 +370,16 @@
        centre, and parallel joints are the tell of a hole cut in a slab. */
     function opening(cx, cz, w, totalH, rise, plane, n, mat, ringMat) {
       var a = w / 2, spring = totalH - rise;
+      /* THE FIRST ARC POINT IS THE SPRINGING, AND IT WAS ALREADY PUSHED.
+         pointedArch starts at [-a, 0] in its own frame, which lands on
+         [-a, spring] in the wall's, exactly where the jamb already ended.
+         The duplicate made pts[0], pts[1] and pts[2] collinear, so
+         H.normal returned [0,0,0] for EVERY opening on the building: 65
+         faces whose winding was never corrected and whose shading was a
+         flat constant on the sunlit and shaded flanks alike. Start at 1. */
       var arc = ST.pointedArch(w, rise, 14);
       var pts = [[-a, 0], [-a, spring]];
-      arc.forEach(function (p) { pts.push([p[0], spring + p[1]]); });
+      for (var ai = 1; ai < arc.length; ai++) pts.push([arc[ai][0], spring + arc[ai][1]]);
       pts.push([a, 0]);
       /* Place the 2D opening frame into the world. Three cases, because the
          chevet needs one the two axis-aligned ones cannot express: a chapel
@@ -449,7 +505,11 @@
                 { axis: 'y', at: X_W }, [-1, 0, 0], DARK, TRIM);
       });
       /* the trumeau: the stone pier splitting the centre portal's doors */
-      emit([[X_W, -1.6, 0], [X_W, 1.6, 0], [X_W, 1.6, 40], [X_W, -1.6, 40]],
+      /* A trumeau stops at the lintel; it does not split the tympanum above
+         it. The centre portal's springing is 62 * (1 - 1.15/(1.15+0.5)) and
+         works out at 22.9 ft, so that is where this one ends. It was drawn to
+         40 and ran 17 ft up into the arch head. */
+      emit([[X_W, -1.6, 0], [X_W, 1.6, 0], [X_W, 1.6, 22.9], [X_W, -1.6, 22.9]],
            [-1, 0, 0], TRIM, { bias: WALL_BIAS + 9 });
       /* THE GREAT ROSE: 40 ft across, 10,000 pieces of glass, Connick.
          Drawn as real tracery - an outer ring, an eye, and spokes between -
@@ -564,7 +624,10 @@
 
     /* ===================== 6. THE CHOIR, Heins & LaFarge, Romanesque ===
        145 ft by 56 ft, with the 14 ft ambulatory outside it. From here east
-       every arch is ROUND. */
+       the CHOIR AND AMBULATORY are round-arched, which is Heins & LaFarge's
+       own Romanesque. The seven chapels beyond them are not: see the chevet
+       below. "Everything east of the crossing is round" was the first
+       draft's claim and it is too broad. */
     (function choir() {
       var hc = P.choirW / 2;                       /* 28 */
       /* the ambulatory, low, wrapping the choir */
@@ -630,11 +693,17 @@
         }
         emit(quad.map(function (p) { return [p[0], p[1], Z_CHAPEL]; }), [0, 0, 1],
              ROOF, { bias: 2 });
-        /* The chapel's own round-headed window, on its outer face. The face
-           points out along the chapel's own radius, so the opening frame is
-           built from that radius: origin at the middle of the outer wall,
-           running across it on the perpendicular. */
-        opening(0, 12, 14, 24, roundRise(14),
+        /* THESE WINDOWS ARE POINTED, and getting that wrong was the sharpest
+           finding of the review. The east end being Romanesque is true of its
+           STRUCTURE, and the chapels are the exception: they were given to
+           four different practices, and Vaughan's three, Cram's one and the
+           axial St Saviour are all Gothic of one kind or another. LP-2585
+           describes the chapel facades as pointed-arch fenestration. So the
+           round arch stops at the ambulatory and choir, which are Heins &
+           LaFarge's own work, and the chapels ringing them are pointed.
+           The face points out along the chapel's own radius, so the opening
+           frame is built from that radius. */
+        opening(0, 12, 14, 26, lancetRise(14),
                 { axis: 'free', o: [bx, by], u: [-st, ct] }, [ct, st, 0], GLASS);
       }
     })();
