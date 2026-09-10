@@ -5161,10 +5161,29 @@ def _gal_wikidata(q, limit=8):
     import requests as _rq
     H = {"User-Agent": "PlateauStrategySolutionLab/1.0 (universal gallery)"}
     try:
-        r = _rq.get("https://www.wikidata.org/w/api.php", timeout=12, headers=H,
-                    params={"action": "wbsearchentities", "format": "json",
-                            "language": "en", "limit": limit, "search": q})
-        ids = [x["id"] for x in (r.json().get("search") or [])]
+        # A traveller often types the title AND the artist, "Open Window
+        # Matisse", but wbsearchentities matches the whole string against a
+        # work's own title, so that trailing artist word makes it miss. Only
+        # when the exact query finds nothing, retry with an end word, or the
+        # first word, dropped, which recovers the bare title. Purely additive:
+        # a query that already hits is never touched, and the extra calls only
+        # happen on a search that was returning nothing anyway.
+        terms = [q]
+        toks = q.split()
+        if len(toks) >= 3:
+            terms += [" ".join(toks[:-1]), " ".join(toks[1:])]
+        if len(toks) >= 4:
+            terms.append(" ".join(toks[:-2]))
+        _seen_t = set()
+        terms = [t for t in terms if not (t in _seen_t or _seen_t.add(t))]
+        ids = []
+        for term in terms[:4]:
+            rr = _rq.get("https://www.wikidata.org/w/api.php", timeout=12, headers=H,
+                         params={"action": "wbsearchentities", "format": "json",
+                                 "language": "en", "limit": limit, "search": term})
+            ids = [x["id"] for x in (rr.json().get("search") or [])]
+            if ids:
+                break
         if not ids:
             return []
         r2 = _rq.get("https://www.wikidata.org/w/api.php", timeout=15, headers=H,
