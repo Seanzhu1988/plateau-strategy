@@ -797,7 +797,7 @@ above is not paperwork, it is the lock.
   paying one, check that the object it names can even produce the defect. A
   round plaza cannot grow a corner, and that sentence was sitting in the OWED
   list for six days.
-  STILL OWED on hirshhorn: NOTHING. The two adversarial critics of step 4 did
+  DEBTS CLEARED on hirshhorn. STILL OWED: nothing. The two adversarial critics of step 4 did
   not run inside this run's ceiling, so the verdict rests on two renders at
   yaw -0.55 pitch 0.30, before and after, plus the full-Mall check.
 

@@ -144,6 +144,15 @@ def ledger():
     for m in re.finditer(r"STILL OWED on ([a-z0-9-]+)[^:]*:(.*?)(?=\n\n|\n- |\Z)", md, re.S):
         items = re.findall(r"\(([a-z])\)", m.group(2))
         owed[m.group(1)] = len(items) or 1
+    # A model whose debts have all been paid needs a way to SAY so, and until
+    # 2026-09-10 it had none. The scan above is last-match-wins by file
+    # position, while new ledger entries are prepended to the top of the
+    # Rebuilt section, so a fresh "STILL OWED: NOTHING" always lost to the
+    # older line it was superseding. hirshhorn was reported as 3 open with
+    # all three paid, which is how a routine gets sent to rediscover
+    # finished work. An explicit marker settles it and outranks position.
+    for m in re.finditer(r"DEBTS CLEARED on ([a-z0-9-]+)", md):
+        owed[m.group(1)] = 0
     return done, owed
 
 
