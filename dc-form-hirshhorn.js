@@ -151,6 +151,19 @@
         if (test && !test(um)) continue;
         var nx = Math.cos(um) * (outward ? 1 : -1), ny = Math.sin(um) * (outward ? 1 : -1);
         if (!ctx.faceVisible(nx, ny)) continue;
+        /* THE BANDS, and they are the STARBURST again on a vertical surface.
+           The ring above says it: two abutting quads each antialias their
+           shared edge against what is BEHIND them, two partial coverages do
+           not add up to one, and a stroke in the same colour cannot close a
+           hairline because the stroke has an antialiased edge of its own.
+           So these quads OVERLAP too, by a twelfth of a segment. The lap
+           stops where a tested arc ends, and where the NEXT segment faces
+           away, so a lap can never run out past the silhouette. */
+        var lap = (a(1) - a(0)) / 12;
+        var un = (a(i + 1) + a(i + 2)) / 2;
+        if ((!test || test(un)) &&
+            ctx.faceVisible(Math.cos(un) * (outward ? 1 : -1),
+                            Math.sin(un) * (outward ? 1 : -1))) u1 += lap;
         push([pt(r * Math.cos(u0), r * Math.sin(u0), z0),
               pt(r * Math.cos(u1), r * Math.sin(u1), z0),
               pt(r * Math.cos(u1), r * Math.sin(u1), z1),
