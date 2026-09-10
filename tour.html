@@ -139,6 +139,13 @@
         <div class="tw-cols">
             <div>
                 <div id="twMap"></div>
+                <div class="tw-walkbar" id="twWalkbar" hidden>
+                    <button type="button" id="twLock" aria-pressed="false">Lock the walk</button>
+                    <button type="button" id="twFollow" aria-pressed="false" hidden>Follow me on the map</button>
+                    <span id="twLoc" aria-live="polite"></span>
+                </div>
+                <p class="tw-consent" id="twConsent" hidden>Your position stays on this phone and is drawn on the map here. We never send it to our server.</p>
+                <span id="twCue" class="tw-cue" aria-live="polite" hidden></span>
                 <div class="tw-now" id="twNow" hidden>
                     <h2 id="twNowName"></h2>
                     <div class="tw-show" id="twShow" hidden><img id="twShowImg" alt="" loading="lazy"></div>
@@ -160,8 +167,18 @@
            Times inside are what a visitor who actually stops really spends.</p>
     </div>
 
+<style>
+  .tw-walkbar{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:.6rem 0 .2rem}
+  .tw-walkbar button{min-height:44px;padding:.5rem .9rem;border-radius:10px;border:1px solid #12305b;background:#12305b;color:#fff;font:inherit;font-weight:600;cursor:pointer}
+  .tw-walkbar button[hidden]{display:none}
+  .tw-walkbar #twLoc{font-size:.85rem;color:#55504a}
+  .tw-consent{font-size:.8rem;color:#6b655b;line-height:1.5;margin:.2rem 0 .4rem}
+  .tw-cue{display:block;font-size:.95rem;font-weight:600;color:#12305b;margin:.2rem 0 .4rem}
+  .tw-you{width:16px;height:16px;border-radius:50%;background:#a4161a;border:3px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.3)}
+</style>
 <script src="/i18n.js"></script>
 <script src="/vendor/leaflet/leaflet.js"></script>
+<script src="/approach-trigger.js"></script>
 <script>
 (function () {
     "use strict";
@@ -322,6 +339,8 @@
             m.invalidateSize();
             if (line.length) m.fitBounds(L.latLngBounds(line).pad(0.15));
         }, 60);
+        var wb = document.getElementById("twWalkbar"); if (wb) wb.hidden = false;
+        makeTrigger();
         show(0, false);
     }
 
@@ -344,6 +363,128 @@
     function silence() {
         try { audioEl.pause(); } catch (e) {}
         if (audioEl.getAttribute("src")) { audioEl.removeAttribute("src"); try { audioEl.load(); } catch (e) {} }
+    }
+
+    /* ---------- lock the walk, the map follows you, the guide meets you ----------
+       Ported from the National Mall so every tour behaves the same way. Lock
+       arms the walk and asks for the compass (iPhone grants it only from a
+       gesture); Follow turns the live position on. Inside a stop's zone the
+       shared approach-trigger opens the stop and the guide plays itself. The
+       position is read on the phone and drawn here, never sent to our server. */
+    var trigger = null, locked = false, watchId = null, youMarker = null, wakeLock = null;
+    var lockBtn, followBtn, locEl, consentEl, cueEl;
+
+    function nearestStop(lat, lon) {
+        var best = null;
+        stops.forEach(function (s) {
+            var d = window.ApproachTrigger.distance(lat, lon, s.lat, s.lon);
+            if (!best || d < best.d) best = { s: s, d: d };
+        });
+        return best;
+    }
+    function cueText(e) {
+        var nm = e.stop.name;
+        if (e.type === "arrived") {
+            var here = F("{name}, you are here", { name: nm });
+            return e.lookUp ? here + " " + T("Look up.") : here;
+        }
+        var line = (!e.side || e.side === "ahead") ? F("{name}, coming up ahead", { name: nm })
+                 : e.side === "right" ? F("{name}, on your right", { name: nm })
+                 : e.side === "left"  ? F("{name}, on your left", { name: nm })
+                 : F("{name}, behind you", { name: nm });
+        if (e.lookUp) line += " " + T("Look up.");
+        return line;
+    }
+    function sayCue(e, speak) {
+        if (!cueEl) return;
+        cueEl.textContent = cueText(e); cueEl.hidden = false;
+        if (!speak) return;
+        try {
+            if (!window.speechSynthesis) return;
+            var u = new SpeechSynthesisUtterance(cueEl.textContent);
+            u.lang = document.documentElement.lang || "en"; u.rate = 1.0;
+            window.speechSynthesis.speak(u);
+        } catch (err) {}
+    }
+    function onTriggerEvent(e) {
+        if (e.type === "sighted" || e.type === "arrived") { sayCue(e, false); return; }
+        if (e.type !== "narrate") return;
+        sayCue(e, true);
+        var idx = stops.indexOf(e.stop);
+        if (idx >= 0) show(idx, true);
+    }
+    function makeTrigger() {
+        if (!window.ApproachTrigger || !stops.length) return;
+        trigger = window.ApproachTrigger.create({ stops: stops, onEvent: onTriggerEvent });
+    }
+    function listenCompass() {
+        window.addEventListener("deviceorientationabsolute", onHeading, true);
+        window.addEventListener("deviceorientation", onHeading, true);
+    }
+    function onHeading(ev) {
+        if (!trigger) return;
+        var h = (ev.webkitCompassHeading != null) ? ev.webkitCompassHeading
+              : (ev.absolute && ev.alpha != null) ? (360 - ev.alpha) % 360 : null;
+        if (h != null && !isNaN(h)) trigger.setCompass(h);
+    }
+    function stopFollow(msg) {
+        if (watchId !== null) { try { navigator.geolocation.clearWatch(watchId); } catch (e) {} watchId = null; }
+        if (youMarker && map) { try { map.removeLayer(youMarker); } catch (e) {} youMarker = null; }
+        if (followBtn) { followBtn.textContent = T("Follow me on the map"); followBtn.setAttribute("aria-pressed", "false"); }
+        try { if (wakeLock) { wakeLock.release(); wakeLock = null; } } catch (e) {}
+        if (msg && locEl) locEl.textContent = msg;
+    }
+    function arm() {
+        if (!navigator.geolocation) { if (locEl) locEl.textContent = T("This browser cannot share a location."); return; }
+        var m = ensureMap();
+        if (locEl) locEl.textContent = T("Asking to use your location...");
+        if (followBtn) followBtn.hidden = false;
+        watchId = navigator.geolocation.watchPosition(function (pos) {
+            var lat = pos.coords.latitude, lon = pos.coords.longitude, acc = Math.round(pos.coords.accuracy || 0);
+            if (!youMarker) {
+                youMarker = L.marker([lat, lon], { icon: L.divIcon({ className: "", iconSize: [16, 16],
+                    iconAnchor: [8, 8], html: '<div class="tw-you"></div>' }) }).addTo(m);
+                if (followBtn) { followBtn.textContent = T("Stop following"); followBtn.setAttribute("aria-pressed", "true"); }
+                try { if (navigator.wakeLock) navigator.wakeLock.request("screen").then(function (w) { wakeLock = w; }).catch(function () {}); } catch (e) {}
+            } else { youMarker.setLatLng([lat, lon]); }
+            var best = nearestStop(lat, lon);
+            if (best && locEl) locEl.textContent = Math.round(best.d) + " m " + T("from") + " " + best.s.n + ". " + best.s.name + (acc ? " · ±" + acc + " m" : "");
+            if (trigger) trigger.update(lat, lon, acc, pos.coords.heading);
+        }, function (err) {
+            if (locEl) locEl.textContent = (err && err.code === 1)
+                ? T("Location was not shared. The walk stays locked; the map will not follow.")
+                : T("No position yet. Try again outdoors.");
+            stopFollow();
+        }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+    }
+    function wireWalk() {
+        lockBtn = document.getElementById("twLock");
+        followBtn = document.getElementById("twFollow");
+        locEl = document.getElementById("twLoc");
+        consentEl = document.getElementById("twConsent");
+        cueEl = document.getElementById("twCue");
+        if (!lockBtn) return;
+        lockBtn.textContent = T("Lock the walk");
+        followBtn.textContent = T("Follow me on the map");
+        lockBtn.addEventListener("click", function () {
+            if (!stops.length) return;
+            locked = !locked;
+            lockBtn.textContent = locked ? T("Walk locked") + " · " + stops.length + " " + T("stops") : T("Lock the walk");
+            lockBtn.setAttribute("aria-pressed", locked ? "true" : "false");
+            if (consentEl) consentEl.hidden = !locked;
+            if (!locked) { if (trigger) trigger.reset(); stopFollow(T("Unlocked.")); return; }
+            try {
+                var DOE = window.DeviceOrientationEvent;
+                if (DOE && typeof DOE.requestPermission === "function") {
+                    DOE.requestPermission().then(function (r) { if (r === "granted") listenCompass(); }).catch(function () {});
+                } else if (DOE) { listenCompass(); }
+            } catch (e) {}
+            arm();
+        });
+        followBtn.addEventListener("click", function () {
+            if (watchId !== null) { stopFollow(T("The map is no longer following you. Your walk stays locked.")); return; }
+            if (locked) arm();
+        });
     }
 
     function show(i, fromUser) {
@@ -395,6 +536,7 @@
 
     /* ---------------- a collection ---------------- */
     function paintCollection(t, all) {
+        var _wb = document.getElementById("twWalkbar"); if (_wb) _wb.hidden = true;
         document.getElementById("twEyebrow").textContent = T("Eight campuses, eight cities");
         document.getElementById("twTitle").textContent = t.name;
         document.getElementById("twLead").textContent = t.summary || "";
@@ -439,6 +581,7 @@
 
     /* ---------------- boot ---------------- */
     if (!id) { fail(T("No tour was named in the address.")); return; }
+    wireWalk();
     var trailsP = fetch("/api/trails").then(function (r) { return r.json(); });
     var destsP = fetch("/api/destinations").then(function (r) { return r.json(); }).catch(function () { return {}; });
     var recP = fetch("/media/audio/_recorded.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
