@@ -203,7 +203,7 @@
        only versions href and src attributes it can see in the markup,
        and this URL is built in script, so the browser would serve its
        cached copy of yesterday's translations for as long as it kept it. */
-    sc.src = "/i18n." + l + ".js?v=adf838c366";
+    sc.src = "/i18n." + l + ".js?v=b8116f749d";
     sc.async = true;
     // A pack that fails to load must leave English standing rather than a
     // half-translated page, so there is nothing to undo here.
