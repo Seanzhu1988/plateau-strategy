@@ -406,10 +406,158 @@
                n, ringMat || TRIM, { bias: WALL_BIAS + 7, stroke: JOINT, width: 0.4 });
         }
       }
+      /* hand the frame back so tracery can be laid in the SAME plane by the
+         same arithmetic, rather than a second copy of it that can drift */
+      return place;
     }
     /* the two settings, named, so a call site says which style it is in */
     function roundRise(w) { return w / 2; }          /* Romanesque  */
     function lancetRise(w) { return w * 1.15; }      /* Gothic: 1.15 > 0.866 */
+
+    /* ================= THE DETAIL LAYER ===============================
+       A correct massing still reads as a blocky church, because what makes
+       a Gothic building look Gothic is not its outline: it is bar tracery,
+       flying buttresses, pinnacles and parapets. Every piece below is
+       described in LP-2585, so this is detail the record asks for rather
+       than decoration invented to fill a wall.
+       ================================================================= */
+
+    /* BAR TRACERY: two lancets below a rose. LP-2585, of the nave: "The
+       arched chapel and clerestory windows all consist of TWO LANCETS BELOW
+       A ROSE." That one sentence covers thirty-two openings, which is the
+       most repeated element on the building, and they were all drawn as one
+       empty pointed hole. A single hole with a ring round it reads closer to
+       Romanesque than to Gothic; the mullion and the rose are the difference.
+       Drawn as TRIM laid over the glass with a lead that beats the window's
+       own depth spread, the lesson the great rose already taught. */
+    function tracery(cx, cz, w, totalH, rise, plane, n, place) {
+      var spring = totalH - rise, half = w / 2;
+      var sill = 0.16 * (totalH - rise);
+      var B = WALL_BIAS + 18;
+      /* cz IS ALREADY IN place(). Written as place(u, cz + v) every bar was
+         drawn at cz + cz + v, roughly TWICE its own height, so the tracery of
+         each window climbed out of its opening and stood on the roof: a row
+         of thin stone crooks along both slopes that looked for all the world
+         like the model was sprouting weeds. Three rounds of bias-hunting went
+         past it, because the shapes were in the sky where no wall could
+         plausibly cover them and the arithmetic looked innocent. It was not a
+         paint-order bug at all; it was a coordinate added twice. */
+      function bar(u0, v0, u1, v1, t) {           /* one stone bar, t wide */
+        var du = u1 - u0, dv = v1 - v0, L = Math.sqrt(du * du + dv * dv) || 1;
+        var px = -dv / L * t, pv = du / L * t;
+        emit([place(u0 + px, v0 + pv), place(u1 + px, v1 + pv),
+              place(u1 - px, v1 - pv), place(u0 - px, v0 - pv)],
+             n, TRIM, { bias: B });
+      }
+      /* the central mullion, sill to springing: this is what makes it TWO */
+      bar(0, sill, 0, spring, 0.55);
+      /* each sub-lancet's own little arch head, struck at the same family */
+      [-1, 1].forEach(function (side) {
+        var sc = side * w * 0.24, sw = w * 0.36;
+        var sub = ST.pointedArch(sw, sw * 1.15, 7);
+        for (var i = 0; i < sub.length - 1; i++) {
+          bar(sc + sub[i][0], spring * 0.72 + sub[i][1],
+              sc + sub[i + 1][0], spring * 0.72 + sub[i + 1][1], 0.4);
+        }
+      });
+      /* the rose in the head, between the sub-arches and the apex */
+      var rr = w * 0.17, rz = spring + rise * 0.40, seg = 14;
+      for (var k = 0; k < seg; k++) {
+        var a0 = (k / seg) * Math.PI * 2, a1 = ((k + 1) / seg) * Math.PI * 2;
+        bar(rr * Math.cos(a0), rz + rr * Math.sin(a0),
+            rr * Math.cos(a1), rz + rr * Math.sin(a1), 0.34);
+      }
+    }
+
+    /* A FLYING BUTTRESS. LP-2585: the nave facades are "four double bays,
+       divided by ARCHED BUTTRESSES", each further split "by narrower FLYING
+       BUTTRESSES". These carry the vault's outward thrust over the aisle and
+       down the pier, and they are the single most recognisable thing on the
+       outside of a French Gothic nave. Drawn as a real arc from the pier head
+       to the clerestory wall, not a straight prop. */
+    function flyer(x, yPier, yWall, zPier, zWall, s) {
+      var N = 9, t = 2.1;
+      for (var i = 0; i < N; i++) {
+        var u0 = i / N, u1 = (i + 1) / N;
+        function pt(u) {
+          var y = yPier + (yWall - yPier) * u;
+          /* a quarter arc: rises fast off the pier, flattens into the wall */
+          var z = zPier + (zWall - zPier) * Math.sin(u * Math.PI / 2);
+          return [y, z];
+        }
+        var a = pt(u0), b = pt(u1);
+        /* the flyer's own thickness, drawn as a ribbon with a top and a side */
+        /* BIAS 1, NOT 13. Given the wall's own lead these arcs painted over
+           the nave roof standing in front of them, so the FAR side's flyers
+           and pinnacles came through the roof as a row of thin stems and the
+           model appeared to be sprouting weeds. A flyer stands in open air
+           over the aisle; it needs no lead at all, and depth alone sorts it.
+           The ribbon is also deepened from 5 to 7 ft so it reads as stone
+           rather than as a wire when seen near edge-on.
+
+           AND THE LEAD IS NEGATIVE, which took two passes to get right. At
+           bias 1 the far side's arcs still came through the clerestory wall
+           that stands in front of them, because the margin is genuinely
+           tiny: measured at this camera the wall's centroid sits about 152
+           deep and the top of a far flyer about 150.7, so a couple of
+           segments won and printed as stems over the roof. A flyer never
+           needs to paint over anything, so it is pushed behind instead. The
+           NEAR side is unaffected: it stands bodily in front of the same
+           wall and wins on depth by fifty units, not by one. */
+        emit([[x - t, a[0], a[1]], [x + t, a[0], a[1]],
+              [x + t, b[0], b[1]], [x - t, b[0], b[1]]], [0, 0, 1], STONE,
+             { bias: -4 });
+        emit([[x + t, a[0], a[1]], [x + t, b[0], b[1]],
+              [x + t, b[0], b[1] - 7], [x + t, a[0], a[1] - 7]], [1, 0, 0], STONE,
+             { bias: -4 });
+        emit([[x - t, a[0], a[1]], [x - t, b[0], b[1]],
+              [x - t, b[0], b[1] - 7], [x - t, a[0], a[1] - 7]], [-1, 0, 0], STONE,
+             { bias: -4 });
+      }
+    }
+
+    /* A PINNACLE. The weight that stands on a buttress pier to turn the
+       thrust down into it. Without them a Gothic buttress reads as a shelf. */
+    function pinnacle(x, y, z, w, h) {
+      var hw = w / 2, t = z + h * 0.45;
+      block(x - hw, x + hw, y - hw, y + hw, z, t, TRIM, { bias: -8 });
+      /* THE SPIRELET, four triangles from the top square to one apex. Written
+         first with a conditional picking each corner, which produced
+         degenerate triangles and rendered as a spray of thin spikes: the
+         model grew what looked like weeds along both aisle roofs. Corners are
+         now named explicitly and walked in order, which is longer and cannot
+         collapse. */
+      var c = [[x - hw, y - hw], [x + hw, y - hw], [x + hw, y + hw], [x - hw, y + hw]];
+      for (var i = 0; i < 4; i++) {
+        var a = c[i], b = c[(i + 1) % 4];
+        var nx = (a[0] + b[0]) / 2 - x, ny = (a[1] + b[1]) / 2 - y;
+        var ln = Math.sqrt(nx * nx + ny * ny) || 1;
+        emit([[a[0], a[1], t], [b[0], b[1], t], [x, y, z + h]],
+             [nx / ln * 0.8, ny / ln * 0.8, 0.6], TRIM, { bias: -4 });
+      }
+    }
+
+    /* A PARAPET, which LP-2585 calls "carved parapets": the low wall that
+       hides the gutter and finishes the wall head. It is what stops a roof
+       from looking like a lid set on a box. */
+    function parapet(x0, x1, y, h, s) {
+      block(x0, x1, Math.min(y, y + s * 1.6), Math.max(y, y + s * 1.6), h, h + 4.5, TRIM);
+    }
+
+    /* A GABLED DORMER, also LP-2585, on the nave roof. */
+    function dormer(x, yEave, zEave, zRidge, s, w) {
+      /* A dormer sits ON the slope and is small. Drawn first as a deep block
+         standing proud of the eaves it read as a green crate on the roof, and
+         two of them flanked the west gable like packing cases. It is now a
+         low face in the roof plane with its own little gable, which is what a
+         dormer is. */
+      var hw = w / 2, yD = yEave - s * 5, zD = zEave + 7;
+      block(x - hw, x + hw, Math.min(yEave, yD), Math.max(yEave, yD), zEave - 1, zD, TRIM);
+      emit([[x - hw, yD, zD], [x + hw, yD, zD], [x, yD, zD + 4.5]],
+           [0, s, 0], TRIM, { bias: WALL_BIAS + 6 });
+      opening(x, zEave + 0.5, w * 0.42, 8, lancetRise(w * 0.42),
+              { axis: 'x', at: yD }, [0, s, 0]);
+    }
 
     /* ===================== 1. THE GROUND ============================== */
     (function ground() {
@@ -423,36 +571,74 @@
        Aisles first so the clerestory stands on them. */
     (function nave() {
       var yO = P.naveW / 2, yI = P.crossW / 2;   /* 73 outer, 50 to the arcade */
+      var BAY = P.naveL / 8;
       [-1, 1].forEach(function (s) {
         var ya = s * yI, yb = s * yO;
         block(X_NAVE_W, X_CR_W, Math.min(ya, yb), Math.max(ya, yb), 0, Z_AISLE, STONE);
-        /* EIGHT sub-bays a side, which is SOURCED, not chosen: the LPC
-           records four double bays each side, split into sub-bays by
-           narrower flying buttresses, with seven chapels a side, one per
-           sub-bay. This was drawn with five before the designation report
-           was read. */
+        /* EIGHT sub-bays a side, SOURCED: four double bays each split by
+           narrower flying buttresses, seven chapels a side one per sub-bay,
+           "except for the easternmost sub-bays, which contain entryways". */
         for (var i = 0; i < 8; i++) {
-          var cx = X_NAVE_W + (i + 0.5) * (P.naveL / 8);
-          opening(cx, 16, 13, 30, lancetRise(13), { axis: 'x', at: yb }, [0, s, 0]);
+          var cx = X_NAVE_W + (i + 0.5) * BAY;
+          var pl = opening(cx, 16, 13, 32, lancetRise(13), { axis: 'x', at: yb }, [0, s, 0]);
+          tracery(cx, 16, 13, 32, lancetRise(13), null, [0, s, 0], pl);
         }
-        /* BUTTRESSES. A Gothic wall is piers and glass, and this is where the
-           wall went. Stepped, UNSOURCED depth, on the bay divisions. */
+        /* THE BUTTRESS PIERS, now stepped rather than one slab. LP-2585 calls
+           the bay divisions "arched buttresses" and the sub-bay ones
+           "narrower flying buttresses", so the pier alternates: a deep one on
+           each double-bay division, a slimmer one between. Each is set back in
+           stages as it rises, which is what a buttress does and what a single
+           block cannot show, and each carries a pinnacle to weight it. */
         for (var b = 0; b <= 8; b++) {
-          var bx = X_NAVE_W + b * (P.naveL / 8);
-          block(bx - 4, bx + 4, Math.min(yb, yb + s * 9), Math.max(yb, yb + s * 9),
-                0, Z_AISLE + 8, STONE_D);
+          var bx = X_NAVE_W + b * BAY;
+          var major = (b % 2 === 0);
+          var wHalf = major ? 5 : 3.2, proj = major ? 13 : 8.5;
+          var y0 = yb, y1 = yb + s * proj;
+          /* three set-offs: each stage shorter and shallower than the one below */
+          for (var st2 = 0; st2 < 3; st2++) {
+            var f = 1 - st2 * 0.26;
+            var yy = yb + s * proj * f;
+            block(bx - wHalf * f, bx + wHalf * f,
+                  Math.min(yb, yy), Math.max(yb, yy),
+                  0, (Z_AISLE + 10) * (0.55 + 0.225 * st2), STONE_D);
+          }
+          pinnacle(bx, yb + s * proj * 0.5, Z_AISLE + 10, major ? 9 : 6.5, major ? 22 : 14);
+          /* THE FLYER, over the aisle roof and into the clerestory wall */
+          flyer(bx, yb + s * proj * 0.45, s * yI, Z_AISLE + 12, Z_NAVE_EAVE - 16, s);
         }
+        parapet(X_NAVE_W, X_CR_W, yb, Z_AISLE, s);
       });
       /* the clerestory: the tall lit box over the arcade */
       block(X_NAVE_W, X_CR_W, -yI, yI, Z_AISLE, Z_NAVE_EAVE, STONE);
       [-1, 1].forEach(function (s) {
         for (var i = 0; i < 8; i++) {
-          var cx = X_NAVE_W + (i + 0.5) * (P.naveL / 8);
-          opening(cx, Z_AISLE + 14, 18, 44, lancetRise(18), { axis: 'x', at: s * yI }, [0, s, 0]);
+          var cx = X_NAVE_W + (i + 0.5) * BAY;
+          var pl = opening(cx, Z_AISLE + 14, 18, 46, lancetRise(18),
+                           { axis: 'x', at: s * yI }, [0, s, 0]);
+          tracery(cx, Z_AISLE + 14, 18, 46, lancetRise(18), null, [0, s, 0], pl);
+        }
+        parapet(X_NAVE_W, X_CR_W, s * yI, Z_NAVE_EAVE, s);
+      });
+      /* the roof, then the gabled dormers LP-2585 records on it */
+      /* ONE ROOF FROM THE WEST FRONT TO THE CROSSING. It ran only from the
+         nave's west end, leaving the 50 ft of narthex bare above the vault
+         line, and through that gap the nave's own west gable showed as a pale
+         arrow floating beside the rose window. The narthex is under the same
+         roof as the nave; now it is drawn that way. */
+      roofGable(X_W, X_CR_W, yI, Z_NAVE_EAVE, P.ridge, ROOF);
+      [-1, 1].forEach(function (s) {
+        for (var d = 0; d < 4; d++) {
+          dormer(X_NAVE_W + (d + 0.5) * (P.naveL / 4), s * yI, Z_NAVE_EAVE + 6,
+                 P.ridge, s, 13);
         }
       });
-      /* the roof: ridge 174 over eaves 124, the 50 ft from DERIVED */
-      roofGable(X_NAVE_W, X_CR_W, yI, Z_NAVE_EAVE, P.ridge, ROOF);
+      /* THE ROOF ENDS WERE OPEN HOLES. roofGable draws two slopes and no
+         ends, so the nave roof gaped over the crossing and the west gable
+         stood as a lone triangle with 50 ft of air behind it. Both closed. */
+      emit([[X_CR_W, -yI, Z_NAVE_EAVE], [X_CR_W, yI, Z_NAVE_EAVE], [X_CR_W, 0, P.ridge]],
+           [1, 0, 0], STONE, { bias: WALL_BIAS + 1 });
+      /* the west end of that roof is closed by the west front's own gable at
+         x = X_W, so no second triangle is drawn here */
     })();
 
     /* a pitched roof between two eaves, ridge along x */
@@ -552,9 +738,50 @@
         }
         emit(eye, [-1, 0, 0], TRIM, { bias: B_EYE });
       })();
+      /* THE FIVE BAYS ARE FORMED BY BUTTRESSES, not merely spaced. LP-2585:
+         five bays "formed by arched buttresses", their niches "of which ONLY
+         THE NORTHERNMOST TWO presently contain statues", the rest being
+         "blocks of stone yet to be carved". That last detail is the whole
+         building in miniature, so it is drawn: two niches filled, four empty.
+         Without these the west front was one flat slab with holes in it. */
+      [-124, -62, 62, 124].forEach(function (by, bi) {
+        block(X_W - 6, X_W + 2, by / 2 - 5, by / 2 + 5, 0, Z_NAVE_EAVE - 12, STONE);
+        pinnacle(X_W - 2, by / 2, Z_NAVE_EAVE - 12, 9, 22);
+        /* the niche, and whether anything stands in it. bi counts from the
+           SOUTH, so the northernmost two are the last two. */
+        var filled = (bi >= 2);
+        emit([[X_W - 6.2, by / 2 - 2.6, 54], [X_W - 6.2, by / 2 + 2.6, 54],
+              [X_W - 6.2, by / 2 + 2.6, 68], [X_W - 6.2, by / 2 - 2.6, 68]],
+             [-1, 0, 0], DARK, { bias: WALL_BIAS + 6 });
+        if (filled) {
+          block(X_W - 7.4, X_W - 6.0, by / 2 - 1.5, by / 2 + 1.5, 55, 66, TRIM);
+        }
+      });
       /* the gable over the central bay, between the towers */
       emit([[X_W, -yN, Z_NAVE_EAVE], [X_W, yN, Z_NAVE_EAVE], [X_W, 0, P.ridge]],
            [-1, 0, 0], STONE, { bias: WALL_BIAS + 1 });
+      /* THE FOURTEEN-FOOT CARVED CRUCIFIX on the gable, LP-2585. */
+      block(X_W - 2, X_W + 0.5, -1.2, 1.2, P.ridge, P.ridge + 14, TRIM);
+      block(X_W - 2, X_W + 0.5, -4.5, 4.5, P.ridge + 8.5, P.ridge + 11, TRIM);
+      /* THE LESSER ROSE, below the great one: LP-2585 records a second rose
+         under the first, a seven-pointed star "relating to the Apocalypse". */
+      (function lesserRose() {
+        var cz = 84, R = 9, seg = 28;
+        function at(u, v) { return [X_W, u, cz + v]; }
+        var ring = [];
+        for (var i = 0; i < seg; i++) {
+          var a = (i / seg) * Math.PI * 2;
+          ring.push(at(R * Math.cos(a), R * Math.sin(a)));
+        }
+        emit(ring, [-1, 0, 0], GLASS, { bias: WALL_BIAS + 20 });
+        for (var k = 0; k < 7; k++) {          /* seven points, not eight */
+          var t = (k / 7) * Math.PI * 2 - Math.PI / 2, wdt = 0.8;
+          var cc = Math.cos(t), ss = Math.sin(t);
+          emit([at(-wdt * ss, wdt * cc), at(R * cc - wdt * ss, R * ss + wdt * cc),
+                at(R * cc + wdt * ss, R * ss - wdt * cc), at(wdt * ss, -wdt * cc)],
+               [-1, 0, 0], TRIM, { bias: WALL_BIAS + 28 });
+        }
+      })();
     })();
 
     /* ===================== 4. THE CROSSING AND THE DOME ================
@@ -667,11 +894,19 @@
       for (var k = 0; k < plan.length - 1; k++) {
         wallQ(plan[k], plan[k + 1], 0, Z_AMB + 26, STONE_D, { bias: WALL_BIAS });
       }
-      /* its roof, laid as a fan of tiles */
+      /* ITS ROOF IS HIPPED, not flat, and it carries a bronze Angel Gabriel:
+         LP-2585 describes a "standing-seam hipped roof, topped by a bronze
+         statue of a trumpeting Angel Gabriel". Drawn flat it read as a lid. */
+      var apexZ = Z_AMB + 26 + 20;
       for (var m = 0; m < plan.length - 1; m++) {
-        emit([[cx, 0, Z_AMB + 26], plan[m].concat(Z_AMB + 26), plan[m + 1].concat(Z_AMB + 26)],
-             [0, 0, 1], ROOF, { bias: 2 });
+        emit([[cx, 0, apexZ], plan[m].concat(Z_AMB + 26), plan[m + 1].concat(Z_AMB + 26)],
+             [plan[m][0] - cx, plan[m][1], 0.8], ROOF, { bias: 2 });
       }
+      /* Gabriel: a small bronze figure, deliberately slight. It is 20 ft of
+         statue on a 600 ft building and drawing it larger would be a lie. */
+      var GAB = { top: '#7d8b6f', sun: '#6f7d62', shade: '#616e55' };
+      block(cx - 1.6, cx + 1.6, -1.6, 1.6, apexZ, apexZ + 11, GAB);
+      block(cx - 4.5, cx + 4.5, -1.1, 1.1, apexZ + 7, apexZ + 8.6, GAB);
       /* THE SEVEN. Spread over the half-round, each a small block with a
          round-arched window, because this end is Romanesque. */
       for (var c = 0; c < 7; c++) {
@@ -684,7 +919,27 @@
            ambulatory's outer wall already stands at 42, so the chapels have
            58 - 42 = 16 ft to live in and no more. That is now DERIVED from
            the total length rather than chosen, and the length closes. */
-        var d0 = AMB_R, d1 = AMB_R + (P.apseL - AMB_R), hw = 15;
+        /* THE SEVEN ARE NOT SEVEN OF THE SAME THING, and drawing them as
+           identical boxes was the flattest part of this model. Hall's 1924
+           guide gives each chapel's own length and width, and they differ a
+           lot: the two at the ends of the half-round are much the largest,
+           the axial one is next, and the four between are the small ones.
+             St James      66 x 39      St Ambrose   50 x 27
+             St Ambrose... St Martin    50 x 27      St Saviour   56 x 30.5
+             St Columba    50 x 27      St Boniface  48.5 x 28
+             St Ansgarius  66 x 41
+           Those lengths are measured inside the chapel and include the bay
+           that sits within the ambulatory ring, so they cannot be used as
+           radial projections without pushing the building past its own
+           published 601 ft. What IS used is their RATIO: the axial chapel is
+           given the whole 16 ft the apse compartment leaves, and the others
+           are scaled against it, so the relative sizes are Hall's even though
+           the absolute projection is the one the total length allows. */
+        var HALL = [[66, 39], [50, 27], [50, 27], [56, 30.5], [50, 27], [48.5, 28], [66, 41]];
+        var axialL = HALL[3][0], room = P.apseL - AMB_R;
+        var d0 = AMB_R;
+        var d1 = AMB_R + room * (HALL[c][0] / axialL);
+        var hw = 15 * (HALL[c][1] / HALL[3][1]);
         var ax = cx + d0 * ct, ay = d0 * st, bx = cx + d1 * ct, by = d1 * st;
         var px = -st * hw, py = ct * hw;
         var quad = [[ax + px, ay + py], [bx + px, by + py], [bx - px, by - py], [ax - px, ay - py]];
