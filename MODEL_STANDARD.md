@@ -807,6 +807,13 @@ above is not paperwork, it is the lock.
   and are not culled, so they paint across the pool and the temple. The
   standard already names the fix: cull by the wall's inner normal, as
   greatHall does. It does not show at the default angle.
+  (2) IS PAID, 2026-09-10. Both surfaces are culled by their INWARD normal,
+  the glass on faceVisible(0, 1) and the cliff on faceVisible(1, 0), and
+  BOTH angles were checked because each surface has to survive one and
+  vanish from the other: at the page default the glass is the far wall and
+  is drawn while the cliff is culled from in front of the temple, and at
+  yaw 2.5 they swap and the pool reads clean. (1), the default camera
+  looking at the temple from behind, is STILL OPEN and is a page question.
 
 - asian-astor, the Astor Chinese Garden Court, Met gallery 217 (2026-09-09,
   the landmark routine). What it replaced was the clearest example in this
@@ -2459,6 +2466,54 @@ first. Step 4 of the standard is not optional, so a model carrying named,
 unaddressed defects is not finished. THAT is the queue. Work it worst first,
 three models a run, one fix each, and strike the items as they are paid.
 
+- THE ARCADE WAS UPSIDE DOWN, great-hall OWED (a), (b) and (c), all three
+  PAID 2026-09-10 by the landmark routine, and the cause was one bug none of
+  the three notes had found. THE FILE'S OWN DERIVATION WAS NOT FOLLOWED BY
+  ITS OWN CODE. met-rooms.js derives the room from the single published
+  number, the 75 ft ceiling: 75 = A + W/2 + 0.16W, so the arch SPRINGS at the
+  pier capital, 43.3 ft, and crowns at 62. greatHall drew it the other way
+  up, `archPts(bx, bay * 0.78, sp - bay * 0.39, ...)`, springing at 24.6 ft
+  and crowning at 43.3.
+  TWO CONSEQUENCES, and no count, bounding box or `node --check` would ever
+  report either. The gallery entablature runs 26.9 to 33.4 ft and was
+  therefore painted straight ACROSS the arcade, so the eight published
+  arches were invisible and the upper wall read as one blank grey slab. And
+  30.7 ft of the 75 ft wall, 41 PERCENT OF THE ROOM'S HEIGHT, sat empty above
+  the domes, because the domes were sitting at 44 ft in a 75 ft room.
+  THE FIX is one line of arithmetic in each of three places: both arch
+  recesses spring from `sp`, and the dome ring rides up to the crown at
+  `sp + bay * 0.41`. The domes then clear the balcony instead of overlapping
+  it, so the pierced stone railing LP-0972 calls a signature of the room is
+  visible along its whole length. That was OWED (c), paid as a side effect of
+  fixing something else entirely.
+  (a), the pendentives that read as grey lightning bolts hanging in mid-air:
+  A SPANDREL IS BOUNDED BELOW BY THE ARCH CURVE, and this one was drawn with
+  a straight lower edge and a tip BELOW the springing, which is what left it
+  hanging. It now springs from the pier at `sp`, runs up to the ring, in
+  along it, and back DOWN THE ARCH CURVE on eight samples.
+  (b), the niche pediments floating clear of their niches like arrows: A
+  PEDIMENT STANDS ON AN ENTABLATURE, NEVER ON AIR. The bare triangle now sits
+  on a band seated on the arch crown at `z + nh`, the same term the arch apex
+  is computed from, so the two cannot drift apart again.
+  WHAT THE PICTURE SHOWED AND THE NUMBERS DID NOT, twice on one model. The
+  ledger's three OWED items were all real and all SYMPTOMS; the render is
+  what showed a blank slab where an arcade belonged, and the blank slab is
+  what sent the run to the derivation. And the first pendentive fix shaded
+  them off DARK, which turned them from bolts into SLOTS PUNCHED THROUGH THE
+  WALL; they are mid-tone now. Verified at yaw -0.62 pitch 0.30, the angle
+  the original entry cites, and at the page default.
+  THE LESSON, and it is a new one for this file: WHEN A MODEL HAS A DERIVED
+  PLAN WRITTEN IN ITS HEADER, CHECK THE CODE AGAINST THE DERIVATION BEFORE
+  BELIEVING ANY OWED NOTE ABOUT IT. Three separate defects were recorded over
+  two runs, each described accurately, and every one of them was a
+  consequence of a single inverted term that the header had already written
+  down correctly. Sources unchanged, LP-0972 and the Met's 2010 press
+  release; no new dimension is claimed.
+  STILL OWED on great-hall: the wall above the arch crowns is still a large
+  plain field at the corners; the pendentives read as flat pale panels rather
+  than concave corners; and the two adversarial critics did not fit inside
+  the run's 25 minute ceiling.
+
 - dcwar OWED (a) is PAID, and the fix went where the note said it belonged,
   in the shared helper, so it was never only about this building.
   WHAT LOOKING SHOWED THAT THE NOTE DID NOT. The note called the dome
@@ -2677,9 +2732,17 @@ three models a run, one fix each, and strike the items as they are paid.
   Verified at yaw -0.55 pitch 0.30, where the roof is now one surface, and at
   yaw 1.90 pitch 0.16 from behind, where the coping, the piers and the shadow
   ring are unchanged and the balcony correctly does not appear.
-  STILL OWED on hirshhorn: (c), the courtyard's inner wall; (d)'s other half,
-  44 tonal bands on a wall published as blank; (e) the glazing; (f) the
-  concentric shadow; (g) the plaza corner.
+  STILL OWED on hirshhorn, updated 2026-09-10: (d)'s other half is REDUCED,
+  not paid. Most of what the render showed were antialiasing HAIRLINES, not
+  shading, and wall() now overlaps its quads by a twelfth of a segment as
+  ring() already did, so the front of the drum reads as one smooth cylinder;
+  genuine tonal steps survive on the right flank where the gradient is
+  steepest, and that residue is the flat-shading half the note named.
+  (c) WAS LOOKED AT AND DID NOT REPRODUCE: at the standard angle the
+  courtyard reads as a dark shaft, which is what it should be. It stays on
+  the list, but a run picking it up should first find an angle that shows
+  it rather than trusting the note. Also still owed: (e) the glazing;
+  (f) the concentric shadow; (g) the plaza corner.
 
 - THE DORIC SHAFTS, dcwar OWED (b). "The columns are eight-sided prisms and
   fluted is carried only by shading." True, and the render says what that
@@ -2784,8 +2847,10 @@ three models a run, one fix each, and strike the items as they are paid.
   crown and the saucer is held to the lesser of the bay and the hall width.
   Verified at yaw -0.62 pitch 0.30, where the funnel is gone and the domes
   sit on the wall head.
-  OWED, all three seen in the render and none of them a guess, listed so the
-  next run starts past them: (a) the pendentives now read as PALE FLAT WEDGES
+  OWED (a), (b) and (c) are ALL PAID, 2026-09-10, and the cause of all three
+  sat underneath them; see THE ARCADE WAS UPSIDE DOWN below. The original
+  note is kept in the past tense for the research it carries: (a) the
+  pendentives read as PALE FLAT WEDGES
   standing above the entablature rather than as concave corners, and the one
   on the near wall reads as a lightning bolt; they want to be darker than the
   wall and to spring from the pier, not from mid-air. (b) the niche pediments
