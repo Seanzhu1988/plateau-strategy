@@ -216,31 +216,41 @@
        it is a backdrop with mullions rather than a sheet laid over the
        gallery. The stipple is what diffuses Nubian light onto the stone. */
     var gy = r.y - 6, gtop = z + htFront * 1.9;
-    var gq = [P(r.x - 10, gy, z), P(r.x + r.w + 10, gy, z),
-              P(r.x + r.w + 10, gy, gtop), P(r.x - 10, gy, gtop)];
-    out.push({ svg: ctx.poly(gq, GLASS, "#c3ced4", 0.6, ' opacity="0.55"'),
-               depth: -9.96e8 });
-    for (var m = 0; m <= 12; m++) {
-      var mx = r.x - 10 + (r.w + 20) * (m / 12);
-      var mq = [P(mx - 0.5, gy, z), P(mx + 0.5, gy, z),
-                P(mx + 0.5, gy, gtop), P(mx - 0.5, gy, gtop)];
-      out.push({ svg: ctx.poly(mq, "#b9c6cd", null, 0, ' opacity="0.6"'),
-                 depth: -9.955e8 });
+    /* CULLED BY ITS INWARD NORMAL. From the facade angle this wall is between
+       the camera and the temple, and a backdrop spanning the gallery has a
+       nearer corner than the temple standing in front of it, so it painted
+       across the pool and the stone. Drawn only when its inside faces us. */
+    if (ctx.faceVisible(0, 1)) {
+      var gq = [P(r.x - 10, gy, z), P(r.x + r.w + 10, gy, z),
+                P(r.x + r.w + 10, gy, gtop), P(r.x - 10, gy, gtop)];
+      out.push({ svg: ctx.poly(gq, GLASS, "#c3ced4", 0.6, ' opacity="0.55"'),
+                 depth: -9.96e8 });
+      for (var m = 0; m <= 12; m++) {
+        var mx = r.x - 10 + (r.w + 20) * (m / 12);
+        var mq = [P(mx - 0.5, gy, z), P(mx + 0.5, gy, z),
+                  P(mx + 0.5, gy, gtop), P(mx - 0.5, gy, gtop)];
+        out.push({ svg: ctx.poly(mq, "#b9c6cd", null, 0, ' opacity="0.6"'),
+                   depth: -9.955e8 });
+      }
     }
 
     /* THE RAKED WALL behind the temple, standing for the cliffs of the west
        bank. Lit from the room side, which is the only side anyone sees. */
     var cW = 10, cH = htFront * 1.15;
-    var cq = [P(tX1 - 12, r.y + 4, z), P(tX1 - 12, r.y + r.h - 4, z),
-              P(tX1 - 12 + cW, r.y + r.h - 4, z + cH), P(tX1 - 12 + cW, r.y + 4, z + cH)];
-    out.push({ svg: ctx.poly(cq, ctx.shade(CLIFF, 0.9, 0, 0.4), "#c4bba7", 0.5),
-               depth: -9.9e8 });
-    /* its top edge, so the rake reads as a mass leaning back and not as a
-       loose flap of paper standing on the floor */
-    var ct = [P(tX1 - 12 + cW, r.y + 4, z + cH), P(tX1 - 12 + cW, r.y + r.h - 4, z + cH),
-              P(tX1 - 12 + cW - 3, r.y + r.h - 4, z + cH), P(tX1 - 12 + cW - 3, r.y + 4, z + cH)];
-    out.push({ svg: ctx.poly(ct, ctx.shade(CLIFF, 0, 0, 1), "#c4bba7", 0.5),
-               depth: -9.89e8 });
+    /* CULLED THE SAME WAY: it stands at the WEST end, so from the temple's
+       own facade angle it lies between the camera and the temple. */
+    if (ctx.faceVisible(1, 0)) {
+      var cq = [P(tX1 - 12, r.y + 4, z), P(tX1 - 12, r.y + r.h - 4, z),
+                P(tX1 - 12 + cW, r.y + r.h - 4, z + cH), P(tX1 - 12 + cW, r.y + 4, z + cH)];
+      out.push({ svg: ctx.poly(cq, ctx.shade(CLIFF, 0.9, 0, 0.4), "#c4bba7", 0.5),
+                 depth: -9.9e8 });
+      /* its top edge, so the rake reads as a mass leaning back and not as a
+         loose flap of paper standing on the floor */
+      var ct = [P(tX1 - 12 + cW, r.y + 4, z + cH), P(tX1 - 12 + cW, r.y + r.h - 4, z + cH),
+                P(tX1 - 12 + cW - 3, r.y + r.h - 4, z + cH), P(tX1 - 12 + cW - 3, r.y + 4, z + cH)];
+      out.push({ svg: ctx.poly(ct, ctx.shade(CLIFF, 0, 0, 1), "#c4bba7", 0.5),
+                 depth: -9.89e8 });
+    }
 
     /* THE POOL, thirty feet across and published. It stands for the Nile,
        which ran in front of the temple where the temple stood. */
