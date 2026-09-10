@@ -375,7 +375,10 @@
             "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Museum%20of%20the%20American%20Indian%20%2821%20September%202023%29%2030.jpg",
             "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Museum%20of%20the%20American%20Indian%20%2821%20September%202023%29%2028.jpg",
             "https://commons.wikimedia.org/wiki/Special:FilePath/National%20Museum%20of%20the%20American%20Indian%203.jpg"
-          ]
+          ],
+          "height_m": 42.0,
+          "footprint_m": 80.0,
+          "size_source": "dc-form-indian.js header: OSM lidar height 42 m; 80 by 40 m massing."
         },
         {
           "n": 5,
@@ -600,7 +603,10 @@
             "https://commons.wikimedia.org/wiki/Special:FilePath/National%20World%20War%20II%20Memorial%20drained%20for%20maintenance%2C%201%20February%202024.jpg",
             "https://commons.wikimedia.org/wiki/Special:FilePath/World%20War%20II%20Monument%20and%20Lincoln%20Memorial.jpg",
             "https://commons.wikimedia.org/wiki/Special:FilePath/U.S.%20Army%20Brass%20Quintet%20and%20Ceremonial%20Band%20supported%20a%20Memorial%20Day%20Ceremony%20at%20the%20World%20War%20II%20Memorial%20in%20Washington%2C%20D.C.%20on%20May%2024%2C%202025%20-%2013.jpg"
-          ]
+          ],
+          "height_m": 13.1,
+          "footprint_m": 103.0,
+          "size_source": "dc-form-wwii.js header: two 43 ft (13 m) arches; plaza 337 ft 10 in (103 m) long."
         },
         {
           "n": 16,
@@ -619,7 +625,10 @@
             "https://commons.wikimedia.org/wiki/Special:FilePath/Vietnam%20Memorial%20Wall%20with%20Washington%20Monument.jpg",
             "https://commons.wikimedia.org/wiki/Special:FilePath/Vietnam%20Veterans%20Memorial%20in%20Washington%2C%20D.C.jpg",
             "https://commons.wikimedia.org/wiki/Special:FilePath/Ceremony%20honoring%20Vietnam%20War%20veterans%20at%20the%20Vietnam%20Veterans%20Memorial%20in%20Washington%2C%20March%2029%2C%202025%20-%203.jpg"
-          ]
+          ],
+          "height_m": 3.1,
+          "footprint_m": 75.2,
+          "size_source": "dc-form-vietnam.js header: 10.1 ft (3.1 m) tall at the apex; each wall 246 ft 9 in (75.2 m) long."
         },
         {
           "n": 17,
@@ -660,7 +669,10 @@
             "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Korean_War_Veterans_Memorial_%2849736164073%29.jpg/1280px-Korean_War_Veterans_Memorial_%2849736164073%29.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Korean_War_Veterans_Memorial_%28wall%29.jpg/1280px-Korean_War_Veterans_Memorial_%28wall%29.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Korean_War_Veterans_Memorial_Pool_of_Remembrance%2C_July_2017_01.jpg/1280px-Korean_War_Veterans_Memorial_Pool_of_Remembrance%2C_July_2017_01.jpg"
-          ]
+          ],
+          "height_m": 3.7,
+          "footprint_m": 70.0,
+          "size_source": "dc-form-korean.js header: mural wall approx 12 ft (3.7 m) high; 70 by 38 m field."
         },
         {
           "n": 19,
@@ -717,7 +729,10 @@
             "https://commons.wikimedia.org/wiki/Special:FilePath/Jefferson%20Memorial%20At%20Dusk%201.jpg",
             "https://commons.wikimedia.org/wiki/Special:FilePath/Jefferson%20Memorial%20Washington%20April%202017%20001.jpg",
             "https://commons.wikimedia.org/wiki/Special:FilePath/12072012%20Jefferson%20Memorial%2004.jpg"
-          ]
+          ],
+          "height_m": 39.3,
+          "footprint_m": 50.3,
+          "size_source": "dc-form-jefferson.js header: overall height 129 ft (39 m), diameter 165 ft (50 m)."
         }
       ]
     },
