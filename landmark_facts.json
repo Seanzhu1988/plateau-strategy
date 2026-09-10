@@ -122,6 +122,190 @@
      "retrieved": "2026-08-31"
     }
    ]
+  },
+  "st-john-the-divine": {
+   "name": "The Cathedral of St John the Divine",
+   "facts": [
+    {
+     "kind": "length",
+     "value": 601,
+     "unit": "ft",
+     "measured": "exterior west to east",
+     "source": "Wikipedia",
+     "source_url": "https://en.wikipedia.org/wiki/Cathedral_of_St._John_the_Divine",
+     "origin": "human",
+     "note": "the published compartments narthex 50 + nave 248 + crossing 100 + choir 145 + apse 58 sum to exactly this",
+     "retrieved": "2026-09-10"
+    },
+    {
+     "kind": "area",
+     "value": 121000,
+     "unit": "sq ft",
+     "measured": "interior floor",
+     "source": "Wikipedia",
+     "source_url": "https://en.wikipedia.org/wiki/Cathedral_of_St._John_the_Divine",
+     "origin": "human",
+     "note": "",
+     "retrieved": "2026-09-10"
+    },
+    {
+     "kind": "height",
+     "value": 124,
+     "unit": "ft",
+     "measured": "nave vault, interior",
+     "source": "Wikipedia",
+     "source_url": "https://en.wikipedia.org/wiki/Cathedral_of_St._John_the_Divine",
+     "origin": "human",
+     "note": "",
+     "retrieved": "2026-09-10"
+    },
+    {
+     "kind": "height",
+     "value": 174,
+     "unit": "ft",
+     "measured": "nave roof ridge, exterior",
+     "source": "Wikipedia",
+     "source_url": "https://en.wikipedia.org/wiki/Cathedral_of_St._John_the_Divine",
+     "origin": "human",
+     "note": "",
+     "retrieved": "2026-09-10"
+    },
+    {
+     "kind": "height",
+     "value": 177,
+     "unit": "ft",
+     "measured": "north west tower, St Peter, AS BUILT",
+     "source": "Wikipedia",
+     "source_url": "https://en.wikipedia.org/wiki/Cathedral_of_St._John_the_Divine",
+     "origin": "human",
+     "note": "level with the nave roof; unfinished",
+     "retrieved": "2026-09-10"
+    },
+    {
+     "kind": "height",
+     "value": 227,
+     "unit": "ft",
+     "measured": "south west tower, St Paul, AS BUILT",
+     "source": "Wikipedia",
+     "source_url": "https://en.wikipedia.org/wiki/Cathedral_of_St._John_the_Divine",
+     "origin": "human",
+     "note": "reached in the 1982-1992 stonecutting campaign; unfinished",
+     "retrieved": "2026-09-10"
+    },
+    {
+     "kind": "height",
+     "value": 266,
+     "unit": "ft",
+     "measured": "west towers AS DESIGNED",
+     "source": "Wikipedia",
+     "source_url": "https://en.wikipedia.org/wiki/Cathedral_of_St._John_the_Divine",
+     "origin": "human",
+     "note": "never built",
+     "retrieved": "2026-09-10"
+    },
+    {
+     "kind": "height",
+     "value": 162,
+     "unit": "ft",
+     "measured": "crossing dome apex",
+     "source": "architecturalwonders.substack.com",
+     "source_url": "https://architecturalwonders.substack.com/p/rafael-guastavino-and-the-cathedral",
+     "origin": "human",
+     "note": "165 ft above the crossing floor also circulates; no source seen settles the difference",
+     "retrieved": "2026-09-10"
+    },
+    {
+     "kind": "diameter",
+     "value": 93,
+     "unit": "ft",
+     "measured": "Guastavino crossing dome",
+     "source": "Wikipedia",
+     "source_url": "https://en.wikipedia.org/wiki/Cathedral_of_St._John_the_Divine",
+     "origin": "human",
+     "note": "terracotta tile in three layers, laid without centering, built in 15 weeks, 1909; intended to be temporary",
+     "retrieved": "2026-09-10"
+    },
+    {
+     "kind": "diameter",
+     "value": 40,
+     "unit": "ft",
+     "measured": "great west rose window",
+     "source": "Wikipedia",
+     "source_url": "https://en.wikipedia.org/wiki/Cathedral_of_St._John_the_Divine",
+     "origin": "human",
+     "note": "10,000 pieces of glass, Charles Connick; largest rose window in the US",
+     "retrieved": "2026-09-10"
+    },
+    {
+     "kind": "width",
+     "value": 207,
+     "unit": "ft",
+     "measured": "west front / narthex",
+     "source": "Wikipedia",
+     "source_url": "https://en.wikipedia.org/wiki/Cathedral_of_St._John_the_Divine",
+     "origin": "human",
+     "note": "five bays",
+     "retrieved": "2026-09-10"
+    },
+    {
+     "kind": "width",
+     "value": 146,
+     "unit": "ft",
+     "measured": "nave, including aisles",
+     "source": "Wikipedia",
+     "source_url": "https://en.wikipedia.org/wiki/Cathedral_of_St._John_the_Divine",
+     "origin": "human",
+     "note": "",
+     "retrieved": "2026-09-10"
+    },
+    {
+     "kind": "width",
+     "value": 330,
+     "unit": "ft",
+     "measured": "transept span AS DESIGNED",
+     "source": "Wikipedia",
+     "source_url": "https://en.wikipedia.org/wiki/Cathedral_of_St._John_the_Divine",
+     "origin": "human",
+     "note": "never completed; the south transept was never built",
+     "retrieved": "2026-09-10"
+    },
+    {
+     "kind": "count",
+     "value": 7,
+     "unit": "chapels",
+     "measured": "Chapels of the Tongues, radiating off the ambulatory",
+     "source": "divinestone.org",
+     "source_url": "https://divinestone.org/blog/the-seven-chapels-of-tongues/",
+     "origin": "human",
+     "note": "north to south: Ansgar, Boniface, Columba, Saviour, Martin, Ambrose, James",
+     "retrieved": "2026-09-10"
+    },
+    {
+     "kind": "height",
+     "value": 54,
+     "unit": "ft",
+     "measured": "each of the eight choir granite columns",
+     "source": "Wikipedia",
+     "source_url": "https://en.wikipedia.org/wiki/Cathedral_of_St._John_the_Divine",
+     "origin": "human",
+     "note": "6 ft diameter; drums of 38 ft / 90 short tons and 17 ft / 40 short tons, which sum to 55 not 54 - the sources do not close this one foot",
+     "retrieved": "2026-09-10"
+    },
+    {
+     "kind": "capacity",
+     "value": 8600,
+     "unit": "seats",
+     "measured": "seating",
+     "source": "Wikipedia",
+     "source_url": "https://en.wikipedia.org/wiki/Cathedral_of_St._John_the_Divine",
+     "origin": "human",
+     "note": "",
+     "retrieved": "2026-09-10"
+    }
+   ],
+   "style": "Byzantine and Romanesque Revival at the east end (Heins & LaFarge, from 1892); French Gothic at the nave and west front (Ralph Adams Cram, from 1911)",
+   "unfinished": "About two thirds built. Unbuilt: the west towers above their present stubs, the south transept, and the steeple designed to replace the temporary crossing dome.",
+   "note": "Drawn as nyc-form-stjohn.js. Unsourced in that model and declared there: aisle and choir roof heights, bay and window counts, buttress sizes, chapel projection depth (constrained by the published 601 ft total), and all colours."
   }
  }
 }

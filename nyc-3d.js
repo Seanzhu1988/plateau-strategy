@@ -1053,7 +1053,12 @@
      at a time against the scene's own frame, 0.24 is the last angle where
      nothing leaves the top. The span and empire ceilings were re-measured the
      same way and are unchanged. */
-  var TILT_CEIL = { span: 0.44, tower: 0.24, empire: 0.75 };
+  /* stjohn's ceiling is PROVISIONAL until it is swept against the built
+     model the way span, tower and empire were. A long low building crops at
+     a different angle from a tower, and guessing it is how the bridge's
+     cornice ended up 55 units above the frame. Measured value replaces this
+     one before the model ships. */
+  var TILT_CEIL = { span: 0.44, tower: 0.24, empire: 0.75, stjohn: 0.55 };
 
   var EMPIRE_CAM = function () { return makeCam(-0.7, 0.22, 1, 360, 560); };
 
@@ -1075,6 +1080,14 @@
      so east needs sin(yaw) > 0 and south needs cos(yaw) < 0, which is any yaw
      between a right angle and a straight one. 2.24 sits in the middle of it. */
   var TRUMP_CAM = function () { return makeCam(2.24, 0.19, 1, 356, 566); };
+  /* St John the Divine is a LONG building, 601 ft of it, and the two halves
+     are in different styles: Romanesque at the east end, Gothic at the west.
+     A camera square onto either end shows one style and hides the other, so
+     the default is the three-quarter from the south-west that carries the
+     west front AND the flank running away to the crossing dome, which is the
+     one view where the seam between the two architects is on screen at once.
+     The pitch is low because the thing to see is a wall, not a roof. */
+  var STJOHN_CAM = function () { return makeCam(-2.45, 0.17, 1, 360, 400); };
   var SCENES = { bridge: bridgeScene, empire: empireScene };
   function sceneFor(k) {
     var EXT = (typeof window !== 'undefined' && window.NYC_FORMS) || {};
@@ -1108,6 +1121,14 @@
       if (!(window.NYC_FORMS && window.NYC_FORMS.trump)) return null;
       return mount(host, function () { return sceneFor('trump')({}); },
                    TRUMP_CAM(), TILT_CEIL.empire);
+    },
+    /* The cathedral. Like Trump Tower it exists only as a form file, so a
+       page that has not loaded nyc-form-stjohn.js gets nothing rather than a
+       half drawn church. */
+    stjohn: function (host) {
+      if (!(window.NYC_FORMS && window.NYC_FORMS.stjohn)) return null;
+      return mount(host, function () { return sceneFor('stjohn')({}); },
+                   STJOHN_CAM(), TILT_CEIL.stjohn);
     },
     empire: function (host) {
       /* The builder reads openT live, so the same mount draws the solid and

@@ -206,6 +206,49 @@
     <div class="lm-story" id="story-empire-state" hidden></div>
   </section>
 
+  <section class="lm-sec">
+    <h2 class="lm-h">The Cathedral of St John the Divine</h2>
+    <p class="lm-sub">Begun 1892, still unfinished, and two different buildings
+       pretending to be one.</p>
+    <div class="lm-stage" id="stjohnStage"></div>
+    <p class="lm-turn">Drag it to turn, and up or down to tilt.</p>
+    <p class="lm-turn">Turn it end to end and watch the arches change. At the
+       east end they are round; along the nave they are pointed. That is not a
+       drawing style, it is two architects.</p>
+
+    <div class="lm-facts">
+      <div class="lm-fact"><b>601 ft</b><span>west to east, longer than the Empire State is wide</span></div>
+      <div class="lm-fact"><b>124 ft</b><span>to the top of the nave vault inside</span></div>
+      <div class="lm-fact"><b>1892</b><span>ground broken, and still not finished</span></div>
+      <div class="lm-fact"><b>7</b><span>chapels radiating off the east end</span></div>
+      <div class="lm-fact"><b>15 weeks</b><span>to build the dome that was meant to be temporary</span></div>
+    </div>
+
+    <div class="lm-know">
+      <p><b>It changed architects and changed style halfway.</b> Heins &amp;
+         LaFarge won the competition in 1891 and built the east end
+         Romanesque, with round arches. Ralph Adams Cram took over in 1911 and
+         built the nave and the west front French Gothic, with pointed ones.
+         Walk from the door to the altar and you walk out of one century's
+         idea of a cathedral into another's.</p>
+      <p><b>The dome was a stopgap.</b> Rafael Guastavino Jr. laid a tile dome
+         over the crossing in 1909 in fifteen weeks, without scaffolding
+         underneath it, to cover the space until the great steeple could be
+         raised. The steeple was never raised. The temporary dome is still
+         there and is now the thing people come to see.</p>
+      <p><b>The towers stop, and you can see where.</b> St Peter, on the north,
+         stops at 177 feet. St Paul, on the south, got to about 227 in a
+         stonecutting campaign that ran from 1982 to 1992 and then stopped
+         too. Both were drawn to reach 266. Look at the west front and you are
+         looking at unfinished work, not a finished design.</p>
+      <p><b>Go and see it in the afternoon.</b> The great rose over the west
+         door is forty feet across and holds ten thousand pieces of glass, and
+         it faces west, so the late light is what lights it from behind.</p>
+    </div>
+
+    <div class="lm-story" id="story-st-john-divine" hidden></div>
+  </section>
+
   <section id="composedWrap" hidden>
     <h2>Built from the record</h2>
     <p class="lm-lead">These are not drawn by hand. Each one is composed from
@@ -237,6 +280,11 @@
 <script>
   var bridge = NYC3D.bridge(document.getElementById('bridgeStage'));
   var empire = NYC3D.empire(document.getElementById('empireStage'));
+  /* The cathedral exists ONLY as a form file, so NYC3D.stjohn returns null
+     until nyc-form-stjohn.js has landed. It is mounted after the fetch below
+     rather than here, because mounting nothing and redrawing it later would
+     leave an empty box on the page in the meantime. */
+  var stjohn = null;
 
   /* The rebuilt New York landmarks, asked for rather than named here.
 
@@ -259,7 +307,12 @@
         el.src = '/nyc-form-' + n + '.js';
         el.onload = el.onerror = function () {
           if (--left) return;
-          [bridge, empire].forEach(function (v) {
+          /* the cathedral is mounted here, once its form is on the page */
+          if (!stjohn && NYC3D.stjohn) {
+            try { stjohn = NYC3D.stjohn(document.getElementById('stjohnStage')); }
+            catch (e) { stjohn = null; }
+          }
+          [bridge, empire, stjohn].forEach(function (v) {
             if (v && v.redraw) { try { v.redraw(); } catch (e) {} }
           });
         };

@@ -3806,3 +3806,51 @@ EXTRA.update({
     "Look up any artwork by name or label number · Plateau Strategy": [
         "按名称或展签编号查找任何艺术品 · Plateau Strategy", "Busca cualquier obra por nombre o número de cartela · Plateau Strategy", "작품 이름이나 라벨 번호로 검색 · Plateau Strategy", "Tra cứu mọi tác phẩm theo tên hoặc số nhãn · Plateau Strategy"],
 })
+
+# ---- St John the Divine, and the Seattle lines that were blocking too ----
+EXTRA.update({
+    "The Cathedral of St John the Divine": [
+        "圣约翰大教堂", "La Catedral de San Juan el Divino", "세인트 존 더 디바인 대성당", "Nhà thờ chính tòa St John the Divine"],
+    "Begun 1892, still unfinished, and two different buildings pretending to be one.": [
+        "1892 年动工，至今未完工，两座不同的建筑假装成一座。", "Comenzada en 1892, aún sin terminar, y dos edificios distintos que fingen ser uno.", "1892년에 착공해 아직도 미완성이며, 서로 다른 두 건물이 하나인 척하고 있습니다.", "Khởi công năm 1892, đến nay vẫn chưa hoàn thành, và là hai công trình khác nhau giả vờ là một."],
+    "Turn it end to end and watch the arches change. At the east end they are round; along the nave they are pointed. That is not a drawing style, it is two architects.": [
+        "把它从头转到尾，看拱券的变化。东端是圆拱，中殿沿线是尖拱。这不是绘图风格的差别，而是两位建筑师。", "Gíralo de un extremo al otro y mira cómo cambian los arcos. En el extremo este son de medio punto; a lo largo de la nave son apuntados. No es un estilo de dibujo, son dos arquitectos.", "끝에서 끝까지 돌려 보며 아치가 어떻게 달라지는지 보세요. 동쪽 끝은 반원 아치이고 신랑을 따라서는 첨두 아치입니다. 그리는 방식의 차이가 아니라 건축가가 두 사람입니다.", "Xoay từ đầu này sang đầu kia và xem các vòm thay đổi. Ở đầu phía đông chúng tròn; dọc gian giữa chúng nhọn. Đó không phải là phong cách vẽ, đó là hai kiến trúc sư."],
+    "601 ft": [
+        "601 英尺", "601 pies", "601피트", "601 foot"],
+    "west to east, longer than the Empire State is wide": [
+        "自西向东，比帝国大厦的宽度还长", "de oeste a este, más largo que el ancho del Empire State", "서에서 동으로, 엠파이어 스테이트 빌딩의 너비보다 깁니다", "từ tây sang đông, dài hơn cả chiều rộng của tòa Empire State"],
+    "124 ft": [
+        "124 英尺", "124 pies", "124피트", "124 foot"],
+    "to the top of the nave vault inside": [
+        "到中殿拱顶内侧的高度", "hasta lo alto de la bóveda de la nave por dentro", "내부 신랑 궁륭 꼭대기까지", "lên tới đỉnh vòm gian giữa bên trong"],
+    "ground broken, and still not finished": [
+        "破土动工，至今仍未完工", "se puso la primera piedra, y sigue sin terminarse", "착공했고, 아직도 끝나지 않았습니다", "động thổ, và vẫn chưa xong"],
+    "chapels radiating off the east end": [
+        "从东端呈放射状排列的礼拜堂", "capillas que irradian desde el extremo este", "동쪽 끝에서 방사형으로 뻗은 예배당", "các nguyện đường tỏa ra từ đầu phía đông"],
+    "15 weeks": [
+        "15 周", "15 semanas", "15주", "15 tuần"],
+    "to build the dome that was meant to be temporary": [
+        "建成那座本应是临时的穹顶", "para construir la cúpula que iba a ser provisional", "임시로 지으려 했던 돔을 짓는 데 걸린 시간", "để dựng mái vòm vốn chỉ định làm tạm"],
+    "It changed architects and changed style halfway.": [
+        "它中途换了建筑师，也换了风格。", "Cambió de arquitectos y de estilo a mitad de camino.", "중간에 건축가가 바뀌었고 양식도 바뀌었습니다.", "Công trình đổi kiến trúc sư và đổi luôn phong cách giữa chừng."],
+    "Heins & LaFarge won the competition in 1891 and built the east end Romanesque, with round arches. Ralph Adams Cram took over in 1911 and built the nave and the west front French Gothic, with pointed ones. Walk from the door to the altar and you walk out of one century's idea of a cathedral into another's.": [
+        "海因斯与拉法基在 1891 年赢得竞赛，把东端建成罗马式，用圆拱。拉尔夫·亚当斯·克拉姆于 1911 年接手，把中殿和西立面建成法国哥特式，用尖拱。从大门走到祭坛，你就从一个世纪对大教堂的想象，走进了另一个世纪的想象。", "Heins & LaFarge ganaron el concurso en 1891 y levantaron el extremo este románico, con arcos de medio punto. Ralph Adams Cram tomó el relevo en 1911 y construyó la nave y la fachada oeste en gótico francés, con arcos apuntados. Camina de la puerta al altar y saldrás de la idea que un siglo tenía de una catedral para entrar en la de otro.", "하인스 앤 라파지가 1891년 공모전에서 이겨 동쪽 끝을 반원 아치의 로마네스크로 지었습니다. 1911년 랠프 애덤스 크램이 이어받아 신랑과 서쪽 정면을 첨두 아치의 프랑스 고딕으로 지었습니다. 문에서 제단까지 걸어가면 한 세기가 생각한 대성당에서 다른 세기가 생각한 대성당으로 걸어 들어가게 됩니다.", "Heins & LaFarge thắng cuộc thi năm 1891 và xây đầu phía đông theo lối Romanesque với vòm tròn. Ralph Adams Cram tiếp quản năm 1911 và xây gian giữa cùng mặt tiền phía tây theo lối Gothic Pháp với vòm nhọn. Đi từ cửa vào tới bàn thờ là bạn bước ra khỏi hình dung của một thế kỷ về nhà thờ chính tòa để bước vào hình dung của một thế kỷ khác."],
+    "The dome was a stopgap.": [
+        "那座穹顶原本只是权宜之计。", "La cúpula fue una solución provisional.", "그 돔은 임시방편이었습니다.", "Mái vòm vốn chỉ là giải pháp tạm."],
+    "Rafael Guastavino Jr. laid a tile dome over the crossing in 1909 in fifteen weeks, without scaffolding underneath it, to cover the space until the great steeple could be raised. The steeple was never raised. The temporary dome is still there and is now the thing people come to see.": [
+        "1909 年，小拉斐尔·瓜斯塔维诺用十五周在十字交叉部上方砌起一座瓷砖穹顶，下方没有搭脚手架，只为在大尖塔建起之前把空间遮住。那座尖塔从未建起。这座临时穹顶至今还在，如今反倒成了人们特地来看的东西。", "Rafael Guastavino hijo levantó en 1909 una cúpula de rasilla sobre el crucero en quince semanas, sin cimbra debajo, para cubrir el espacio hasta que pudiera alzarse la gran aguja. La aguja nunca se alzó. La cúpula provisional sigue ahí y es hoy lo que la gente viene a ver.", "라파엘 과스타비노 2세는 1909년 열다섯 주 만에 교차부 위에 타일 돔을 올렸습니다. 아래에 비계도 없이, 거대한 첨탑이 올라갈 때까지 공간을 덮어 두려는 것이었습니다. 첨탑은 끝내 올라가지 않았습니다. 임시 돔은 아직 그대로 있고, 이제는 사람들이 보러 오는 바로 그것이 되었습니다.", "Năm 1909, Rafael Guastavino Jr. xây một mái vòm gạch men trên phần giao trong mười lăm tuần, bên dưới không hề có giàn giáo, để che khoảng không cho tới khi dựng được ngọn tháp lớn. Ngọn tháp ấy không bao giờ được dựng. Mái vòm tạm vẫn còn đó và giờ chính là thứ người ta tìm đến để xem."],
+    "The towers stop, and you can see where.": [
+        "两座塔楼戛然而止，而且你看得出停在哪里。", "Las torres se interrumpen, y se ve dónde.", "탑은 도중에 멈췄고, 어디서 멈췄는지 눈에 보입니다.", "Hai tháp dừng lại giữa chừng, và bạn nhìn thấy được chỗ dừng."],
+    "St Peter, on the north, stops at 177 feet. St Paul, on the south, got to about 227 in a stonecutting campaign that ran from 1982 to 1992 and then stopped too. Both were drawn to reach 266. Look at the west front and you are looking at unfinished work, not a finished design.": [
+        "北侧的圣彼得塔停在 177 英尺。南侧的圣保罗塔在 1982 至 1992 年的一次石作工程中升到约 227 英尺，然后也停了。两座塔的图纸都画到 266 英尺。看着西立面，你看到的是未完成的工程，而不是完成的设计。", "San Pedro, al norte, se detiene a 177 pies. San Pablo, al sur, llegó a unos 227 en una campaña de cantería que fue de 1982 a 1992 y luego también se detuvo. Ambas estaban dibujadas para alcanzar 266. Mira la fachada oeste y estarás mirando una obra sin terminar, no un diseño terminado.", "북쪽의 성 베드로 탑은 177피트에서 멈춥니다. 남쪽의 성 바울 탑은 1982년부터 1992년까지 이어진 석공 작업으로 약 227피트까지 올라갔다가 역시 멈췄습니다. 둘 다 266피트까지 그려져 있었습니다. 서쪽 정면을 보면 완성된 설계가 아니라 끝나지 않은 공사를 보고 있는 것입니다.", "Tháp St Peter ở phía bắc dừng ở 177 foot. Tháp St Paul ở phía nam lên tới khoảng 227 foot trong đợt thi công đá kéo dài từ 1982 đến 1992 rồi cũng dừng. Cả hai đều được vẽ để đạt 266 foot. Nhìn mặt tiền phía tây là bạn đang nhìn một công trình dang dở, không phải một thiết kế đã hoàn tất."],
+    "Go and see it in the afternoon.": [
+        "下午去看它。", "Ve a verla por la tarde.", "오후에 가서 보세요.", "Hãy đến xem vào buổi chiều."],
+    "The great rose over the west door is forty feet across and holds ten thousand pieces of glass, and it faces west, so the late light is what lights it from behind.": [
+        "西门之上的大玫瑰窗直径四十英尺，嵌着一万片玻璃；它朝西，所以从背后把它点亮的，正是傍晚的光。", "El gran rosetón sobre la puerta oeste mide doce metros de lado a lado y reúne diez mil piezas de vidrio; mira al oeste, así que es la luz del final del día la que lo enciende por detrás.", "서쪽 문 위의 대장미창은 지름이 40피트이고 유리 조각 1만 개로 이루어져 있습니다. 서쪽을 향해 있어서 그것을 뒤에서 밝히는 것은 늦은 오후의 빛입니다.", "Cửa sổ hoa hồng lớn phía trên cửa tây rộng bốn mươi foot và ghép từ mười nghìn mảnh kính; nó quay về hướng tây, nên thứ thắp sáng nó từ phía sau chính là ánh chiều."],
+    "The one the tour actually walks to": [
+        "导览真正会走到的那一座", "La que el recorrido pisa de verdad", "투어가 실제로 걸어서 가는 곳", "Nơi mà tour thực sự đi bộ tới"],
+    "484 feet to the tip of the spire, 462 to the roof, 38 floors, and for seventeen years the tallest building west of the Mississippi. Two storeys of local granite at the pavement, white terra cotta for everything above it, and a pyramid that is the final three floors with an eight foot glass dome at its point. The observation deck on the 35th sits directly under that pyramid. Drag it.": [
+        "塔尖 484 英尺，屋顶 462 英尺，38 层，曾在十七年间是密西西比河以西最高的建筑。临街两层是本地花岗岩，其上全为白色赤陶，顶部金字塔即最后三层，尖端有一座八英尺的玻璃穹顶。35 层的观景台就在那座金字塔正下方。拖动它试试。", "484 pies hasta la punta de la aguja, 462 hasta el tejado, 38 plantas, y durante diecisiete años el edificio más alto al oeste del Misisipi. Dos pisos de granito local a pie de calle, terracota blanca para todo lo que queda por encima, y una pirámide formada por las tres últimas plantas con una cúpula de vidrio de ocho pies en su vértice. El mirador de la planta 35 está justo debajo de esa pirámide. Arrástralo.", "첨탑 끝까지 484피트, 지붕까지 462피트, 38층, 그리고 십칠 년 동안 미시시피강 서쪽에서 가장 높은 건물이었습니다. 길가 두 개 층은 이 지역 화강암이고 그 위는 모두 흰 테라코타이며, 마지막 세 개 층이 피라미드를 이루고 그 꼭짓점에 8피트 유리 돔이 있습니다. 35층 전망대는 바로 그 피라미드 아래에 있습니다. 끌어서 돌려 보세요.", "484 foot tới đỉnh chóp, 462 foot tới mái, 38 tầng, và trong mười bảy năm là tòa nhà cao nhất phía tây sông Mississippi. Hai tầng sát đường bằng đá granit địa phương, toàn bộ phía trên là gốm trắng, và một kim tự tháp chính là ba tầng cuối với mái vòm kính cao tám foot ở đỉnh. Đài quan sát ở tầng 35 nằm ngay dưới kim tự tháp đó. Hãy kéo để xoay."],
+    "Gaggin & Gaggin of Syracuse, opened the 4th of July 1914, at Second Avenue and Yesler Way. It stands in Pioneer Square, so unlike the Needle it is on the walking tours above.": [
+        "锡拉丘兹的 Gaggin & Gaggin 事务所设计，1914 年 7 月 4 日启用，位于第二大道与耶斯勒路口。它坐落在先锋广场，因此与太空针塔不同，上面那些步行导览会走到它。", "Obra de Gaggin & Gaggin, de Syracuse, inaugurada el 4 de julio de 1914, en la Segunda Avenida con Yesler Way. Está en Pioneer Square, así que, a diferencia de la Needle, sí aparece en los recorridos a pie de arriba.", "시러큐스의 Gaggin & Gaggin 설계로 1914년 7월 4일 문을 열었으며, 2번가와 예슬러 웨이가 만나는 곳에 있습니다. 파이어니어 스퀘어에 있어서 스페이스 니들과 달리 위의 도보 투어에 포함됩니다.", "Do Gaggin & Gaggin ở Syracuse thiết kế, khánh thành ngày 4 tháng 7 năm 1914, tại góc Second Avenue và Yesler Way. Tòa nhà nằm ở Pioneer Square nên khác với Space Needle, nó có trong các tour đi bộ ở trên."],
+})
