@@ -45,7 +45,7 @@ A change that has not been looked at on a phone is not finished.
   in page copy, articles, blueprints, or any written content. Use commas or
   periods. The server enforces this for posted content; write it that way by
   hand too.
-- **Every 3D model answers the model standard, and the machine asks first.**
+- **Every 3D model answers the model standard, the Landmark Standard, and the machine asks first.**
   `MODEL_STANDARD.md` is the method; `python3 model_audit.py --owed` is the
   check. Run it before touching any model and before saying a model is done.
   A row that fails a checkable item is a defect to fix, not a note to file;

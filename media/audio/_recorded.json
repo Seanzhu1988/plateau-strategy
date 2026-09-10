@@ -251,6 +251,22 @@
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 95
  },
+ "film-universal-gallery.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
+ "gallery-cypresses.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
+ "gallery-nighthawks.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
+ "gallery-the-starry-night.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
  "guide-air-and-space-museum.mp3": {
   "chars": 2836,
   "sig": "279c34000cf5",
@@ -269,6 +285,10 @@
   "sig": "6df829a70542",
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 526
+ },
+ "guide-bainbridge-island-ferry.zh.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
  },
  "guide-ben-s-chili-bowl.mp3": {
   "chars": 2716,
@@ -337,6 +357,10 @@
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 515
  },
+ "guide-lincoln-memorial.zh.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
  "guide-martin-luther-king-jr-memorial.mp3": {
   "chars": 2662,
   "sig": "51c7ea8abe1a",
@@ -392,6 +416,10 @@
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 547
  },
+ "guide-pike-place-market.zh.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
  "guide-smithsonian-castle.mp3": {
   "chars": 2634,
   "sig": "596511b53bbd",
@@ -405,6 +433,10 @@
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 531
  },
+ "guide-space-needle.zh.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
  "guide-staten-island-ferry.mp3": {
   "adopted": true,
   "chars": 2735,
@@ -412,12 +444,20 @@
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 527
  },
+ "guide-staten-island-ferry.zh.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
  "guide-the-met-museum.mp3": {
   "adopted": true,
   "chars": 2803,
   "sig": "76d225b75ea1",
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 531
+ },
+ "guide-the-met-museum.zh.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
  },
  "guide-trump-tower.mp3": {
   "chars": 13434,
@@ -468,6 +508,10 @@
   "sig": "3909bb224585",
   "voice": "6nukEV6JAgCcOkdtH5FM",
   "words": 455
+ },
+ "intro-disco.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
  },
  "ivy-columbia-overview.mp3": {
   "chars": 1593,
@@ -784,6 +828,70 @@
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 722
  },
+ "met-american-court.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
+ "met-arms-armor.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
+ "met-asian-astor.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
+ "met-dendur.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
+ "met-egyptian.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
+ "met-egyptian.zh.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
+ "met-euro-paintings.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
+ "met-grand-stair.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
+ "met-great-hall.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
+ "met-greek-roman.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
+ "met-islamic.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
+ "met-lehman.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
+ "met-medieval.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
+ "met-modern.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
+ "met-nineteenth-century.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
+ "met-opening.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
+ },
  "philadelphia-overview.mp3": {
   "chars": 1449,
   "settings": null,
@@ -923,6 +1031,10 @@
   "sig": "23ba8cfc62ea",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 749
+ },
+ "security-parameter-jason.mp3": {
+  "adopted": true,
+  "voice": "JZLpE3AGwpKYZI2X65hN"
  },
  "trail-freedom.mp3": {
   "chars": 4416,
