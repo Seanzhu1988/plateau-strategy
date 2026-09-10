@@ -2581,6 +2581,43 @@ first. Step 4 of the standard is not optional, so a model carrying named,
 unaddressed defects is not finished. THAT is the queue. Work it worst first,
 three models a run, one fix each, and strike the items as they are paid.
 
+- PAUL REVERE'S CRITICS, done inline 2026-09-10 by the landmark routine and
+  NOT FIXED, because the run's ceiling arrived first and this standard says
+  look before committing. The house owed only "the two adversarial critics",
+  which is a debt no future run can act on, so the run spent its tail turning
+  it into named work. Rendered at yaw -0.55 pitch 0.22 and read against the
+  nine checklist items. Four findings, worst first:
+    a. THE GREAT CHIMNEY DOES NOT PASS THROUGH THE ROOF. It stands clear of
+       the roof plane in front of it, with sky visible either side of the
+       stack at the slope, so it reads as a brick pier standing beside the
+       house rather than a flue coming out of it. The rear stack does the
+       same. This is the junction family the notch belonged to, not a size.
+    b. THE GROUND SHADOW IS NOT THE BUILDING'S SILHOUETTE, and the cause is
+       in the file rather than in the picture. trail-3d.js line 103 carries a
+       shared `shadow(ctx, footprint, h, z)` written for exactly this, which
+       takes the FOOTPRINT and walks the offset outline, and it is exported at
+       line 2768. paul-revere does not call it. It hand-rolls a four point
+       rectangle at line 163, so what lands on the grass is a plain
+       parallelogram offset down and left of a building that is an L with a
+       lean-to. VERIFIED, not guessed: `#9d9689` appears exactly once in the
+       SVG at 193.9,402.5 to 628.0,455.8, so the polygon is drawn and on
+       screen, and the defect is its SHAPE. At its own tone against the grass
+       it reads as a third paving pad, which is why the first look through
+       this run called item 6 a fail. It is not a fail, it is a wrong shape.
+    c. THE TWO PAVING PADS ARE TWO TONES AND STILL READ AS TWO SHEETS. The
+       notch fix of earlier today made them one L in PLAN, and the render
+       confirms the corner is clean, but the brick courtyard and the street
+       pad carry different colours across that corner, so the eye still sorts
+       them as two overlapping rectangles rather than as ground.
+    d. THE DOOR IS AN UNFRAMED HOLE. Every window has a bright frame and
+       leaded lights; the entrance is a dark rectangle with no frame, sill,
+       hood or tread, so checklist item 3, steps as stacked slabs, is unpaid
+       at the one opening a visitor actually walks through.
+  STILL OWED on the Revere house: a, b, c and d above. (b) is the cheapest
+  and is a one line swap to a helper that already exists; (a) is the one the
+  eye goes to first.
+
+
 - THE DOMES WERE 76 PERCENT OF THEIR PUBLISHED SIZE, great-hall's last
   unstated debt, PAID 2026-09-10 by the landmark routine. The note read "the
   domes' size against their bays, which the render keeps raising and no note
