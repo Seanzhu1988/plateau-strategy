@@ -353,6 +353,33 @@ button[title='Remove']:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.
   padding: revert !important;
 }
 
+/* "Keep their own shape" was only half true above: that block takes the
+   underline off an icon control and gives its padding back, but the button
+   rule strips background, radius and shadow with !important and nothing
+   ever handed those back. So the trip planner's six map controls, which
+   the page itself writes as a 34px white chip with a soft shadow, were
+   painting as bare glyphs straight onto the map tiles: the satellite one
+   sat on the Hudson, and "clear the trip" had no edge at all, while
+   Leaflet's own zoom pair kept its white box two centimetres above them
+   because those are <a> and this rule only reaches <button>. Give the
+   chip back, and only to this one container: .itin-tools writes
+   background:none itself and means it. */
+.map-actions button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip) {
+  background: rgba(255,255,255,0.96) !important;
+  border-radius: 9px !important;
+  box-shadow: 0 2px 8px rgba(15,23,42,0.22) !important;
+}
+
+/* The follow control's lit state went the same way and had been dead longer,
+   measured before this chip was written: the page paints it #1b4d8f when it
+   is tracking you, without !important, so transparent beat it and "follow my
+   position" looked identical on and off. A state that says nothing is worse
+   than no state at all, so it is carried at the same weight as the chip. */
+.map-actions button#followBtn.on {
+  background: #1b4d8f !important;
+  color: #fff !important;
+}
+
 /* The map's starting-point control styles itself and is a pin, not a word.
    It was excluded from the button rules on purpose, which now leaves it the
    only filled control on the page, flagged rather than quietly changed,
