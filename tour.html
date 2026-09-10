@@ -193,7 +193,7 @@
 
     var id = (location.pathname.match(/\/tour\/([a-z0-9-]+)/) || [])[1] || "";
     var listEl = document.getElementById("twList"), cardsEl = document.getElementById("twCards");
-    var map = null, layer = null, dots = {}, stops = [], trail = null, dests = {}, recorded = {}, current = -1;
+    var map = null, layer = null, dots = {}, stops = [], trail = null, dests = {}, recorded = {}, current = -1, VOICE_NAMES = {};
     var audioEl = document.getElementById("twAudio");
 
     function minutes(m) {
@@ -353,8 +353,16 @@
         var lang = null;
         try { lang = localStorage.getItem("ps_lang"); } catch (e) {}
         var cands = [];
-        if (lang && lang !== "en") cands.push(trail.id + "-stop-" + s.n + "." + lang + ".mp3");
-        cands.push(trail.id + "-stop-" + s.n + ".mp3");
+        /* The Freedom Trail was recorded before trails had ids, as
+           trail-stop-N.mp3 (trail_voices.py LEGACY_PREFIX). Without this
+           alias /tour/freedom-trail never found its own sixteen recordings
+           in either language and fell through to the book's card audio. */
+        var prefixes = [trail.id + "-stop-"];
+        if (trail.id === "freedom-trail") prefixes.push("trail-stop-");
+        prefixes.forEach(function (pre) {
+            if (lang && lang !== "en") cands.push(pre + s.n + "." + lang + ".mp3");
+        });
+        prefixes.forEach(function (pre) { cands.push(pre + s.n + ".mp3"); });
         for (var i = 0; i < cands.length; i++) if (recorded[cands[i]]) return "/media/audio/" + cands[i];
         if (entry && entry.audio) return entry.audio;
         return "";
@@ -504,10 +512,23 @@
         document.getElementById("twNowName").textContent = s.n + ". " + s.name;
         document.getElementById("twNowDesc").textContent = s.desc || (entry && entry.desc) || "";
         var note = document.getElementById("twNote");
-        if (s.yiki) {
+        /* WHO IS SPEAKING comes from the ledger row of the file that will
+           actually play, never from a literal. This line used to say "Yiki"
+           unconditionally, so a Chinese stop read by Haoran would have been
+           captioned Yiki. The name map is the casting table served at
+           /api/guide-voices, so a recast changes the caption with no edit
+           here. Yiki's aside (s.yiki) is hers: it shows only under her own
+           English file; under another guide's file the name alone shows. */
+        var picked = audioFor(s, entry);
+        var pickedRow = picked ? (recorded[picked.split("/").pop()] || null) : null;
+        var who = (pickedRow && VOICE_NAMES[pickedRow.voice]) || "";
+        var isYikiFile = !!picked && picked === "/media/audio/" + trail.id + "-stop-" + s.n + ".mp3";
+        var label = who || ((s.yiki && (isYikiFile || !picked)) ? "Yiki" : "");
+        var aside = (s.yiki && (isYikiFile || !picked)) ? s.yiki : "";
+        if (label || aside) {
             note.hidden = false; note.innerHTML = "";
-            var g = document.createElement("span"); g.className = "tw-guide"; g.textContent = "Yiki";
-            note.appendChild(g); note.appendChild(document.createTextNode(s.yiki));
+            if (label) { var g = document.createElement("span"); g.className = "tw-guide"; g.textContent = label; note.appendChild(g); }
+            if (aside) note.appendChild(document.createTextNode(aside));
         } else { note.hidden = true; note.textContent = ""; }
         var tip = document.getElementById("twTip");
         if (entry && entry.tip) { tip.hidden = false; tip.innerHTML = ""; var b = document.createElement("b"); b.textContent = T("Tip") + " "; tip.appendChild(b); tip.appendChild(document.createTextNode(entry.tip)); }
@@ -518,7 +539,7 @@
         else { showEl.hidden = true; img.removeAttribute("src"); }
 
         silence();
-        var src = audioFor(s, entry);
+        var src = picked;
         var gp = document.getElementById("twGuide"), ng = document.getElementById("twNoGuide");
         if (src) {
             audioEl.setAttribute("src", src); gp.hidden = false; ng.hidden = true;
@@ -585,12 +606,14 @@
     var trailsP = fetch("/api/trails").then(function (r) { return r.json(); });
     var destsP = fetch("/api/destinations").then(function (r) { return r.json(); }).catch(function () { return {}; });
     var recP = fetch("/media/audio/_recorded.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
-    Promise.all([trailsP, destsP, recP]).then(function (res) {
+    var voicesP = fetch("/api/guide-voices").then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
+    Promise.all([trailsP, destsP, recP, voicesP]).then(function (res) {
         var all = (res[0] && res[0].trails) || [];
         dests = {};
         ((res[1] && res[1].entries) || []).forEach(function (e) { if (e.slug) dests[e.slug] = e; });
         window.PSX_CITY_NAMES = (res[1] && res[1].cities) || {};
         recorded = res[2] || {};
+        VOICE_NAMES = (res[3] && res[3].names) || {};
         var t = null;
         for (var i = 0; i < all.length; i++) if (all[i] && all[i].id === id) { t = all[i]; break; }
         if (!t) { fail(F("There is no tour called {id}.", { id: id })); return; }

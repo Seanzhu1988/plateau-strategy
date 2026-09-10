@@ -5898,6 +5898,25 @@ def universal_gallery_page():
     return send_file(os.path.join(BASE_DIR, "universal-gallery.html"))
 
 
+@app.route("/api/guide-voices")
+def api_guide_voices():
+    """Voice id to guide name, straight from the casting table, so a page can
+    caption who is speaking from a recording's ledger row instead of a
+    literal. Honours the GUIDE_VOICE_* environment overrides through
+    gv.voice_id, so a recast needs no page edit. Public: it is the narrators'
+    first names and nothing else."""
+    try:
+        import guide_voices as gv
+        names = {}
+        for k, g in gv.GUIDES.items():
+            vid = gv.voice_id(k)
+            if vid:
+                names[vid] = g["name"]
+        return jsonify({"ok": True, "names": names})
+    except Exception as e:
+        return jsonify({"ok": False, "names": {}, "error": str(e)})
+
+
 @app.route("/api/trails")
 def api_trails():
     """The walkable trails, as data. One file, read fresh, no cache to go stale."""

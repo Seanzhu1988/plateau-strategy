@@ -62,6 +62,18 @@ GUIDES = {
         # a walking guide talks to somebody on their feet in the street.
         "settings": {"speed": 0.95},
     },
+    "haoran": {
+        "name": "Haoran",
+        "voice_id": "",                          # [SEAN 2026-09-10 "use haoran"]
+        "job": "the new trails, in Chinese",
+        "language": "zh",
+        # Sean added Haoran to the library on 2026-09-10 for the campus and
+        # Philadelphia walks. The id is left EMPTY here on purpose: the API
+        # key cannot list the library (no voices_read), so the id has to be
+        # read off the ElevenLabs page and set as GUIDE_VOICE_HAORAN in .env,
+        # or written here. Until then every Chinese trail recording refuses,
+        # which is the module's rule: never borrow another guide's voice.
+    },
 }
 
 
@@ -99,7 +111,11 @@ def settings_for(guide):
 # predicted how it sounds; his ear recast it, and this file records the ruling.
 BY_LANGUAGE = {
     "guide":   {"en": "jason",  "zh": "pangge"},
-    "trail":   {"en": "yiki",   "zh": "pangge"},
+    # Haoran takes the Chinese trail from 2026-09-10 [SEAN "use haoran to make
+    # the chinese audio"]. Freedom Trail's sixteen Chinese stops were recorded
+    # by Pangge before that and stand as recorded; the recorder only remakes a
+    # file whose script or voice changed, so they are not re-cut by this line.
+    "trail":   {"en": "yiki",   "zh": "haoran"},
     "gallery": {"en": "adrian", "zh": "adrian"},
     # MoMA's rooms are indoors, so the house voice reads them. [SEAN "by
     # jason"] No zh entry yet on purpose: when the Chinese scripts are
