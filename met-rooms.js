@@ -698,9 +698,9 @@
         var bx = x1 + end + bay * (i + 0.5);
         /* THE ARCH: a semicircle of the bay's span springing from the pier
            capital. The recess is the darker stone behind it, not a hole. */
-        out.push({ svg: ctx.poly(archPts(bx, bay * 0.78, sp - bay * 0.39, yy - sgn * 0.25, 20),
+        out.push({ svg: ctx.poly(archPts(bx, bay * 0.78, sp, yy - sgn * 0.25, 20),
                                  SHADE, DARK, 0.5), depth: -9.66e8 });
-        out.push({ svg: ctx.poly(archPts(bx, bay * 0.70, sp - bay * 0.35, yy - sgn * 0.45, 20),
+        out.push({ svg: ctx.poly(archPts(bx, bay * 0.70, sp, yy - sgn * 0.45, 20),
                                  "#bdb29a", DARK, 0.4), depth: -9.64e8 });
       }
 
@@ -733,9 +733,18 @@
           var nw = pw * 1.5, nh = gl * 0.52;
           out.push({ svg: ctx.poly(archPts(px, nw * 2, nh - nw, yy - sgn * 0.95, 14),
                                    "#a89c84", DARK, 0.5), depth: -9.55e8 });
-          out.push({ svg: ctx.poly([P(px - nw * 1.35, yy - sgn * 1.05, z + nh + nw * 0.10),
-                                    P(px + nw * 1.35, yy - sgn * 1.05, z + nh + nw * 0.10),
-                                    P(px, yy - sgn * 1.05, z + nh + nw * 0.85)],
+          /* the pediment stands on its own ENTABLATURE, seated on the arch
+             crown at z + nh. Drawn as a bare triangle it floated clear of its
+             own niche and read as an arrow. */
+          var pb = z + nh, pt = pb + nw * 0.20;
+          out.push({ svg: ctx.poly([P(px - nw * 1.35, yy - sgn * 1.05, pb),
+                                    P(px + nw * 1.35, yy - sgn * 1.05, pb),
+                                    P(px + nw * 1.35, yy - sgn * 1.05, pt),
+                                    P(px - nw * 1.35, yy - sgn * 1.05, pt)],
+                                   LIME_L, LIME_D, 0.5), depth: -9.545e8 });
+          out.push({ svg: ctx.poly([P(px - nw * 1.35, yy - sgn * 1.05, pt),
+                                    P(px + nw * 1.35, yy - sgn * 1.05, pt),
+                                    P(px, yy - sgn * 1.05, pt + nw * 0.62)],
                                    LIME_L, LIME_D, 0.5), depth: -9.54e8 });
         }
       }
@@ -777,7 +786,7 @@
        closely spaced brackets and the circular skylight, all published ---- */
     for (var i2 = 0; i2 < BAYS; i2++) {
       var bx2 = x1 + end + bay * (i2 + 0.5), dr = Math.min(bay, WD) * 0.38;
-      var zring = z + sp + bay * 0.02;            /* the arch crowns */
+      var zring = z + sp + bay * 0.41;            /* the arch crowns */
 
       /* PANELED PENDENTIVES, drawn IN THE WALL PLANE at the top corners of
          the bay, which is where a pendentive actually is. The first build
@@ -788,11 +797,20 @@
       walls.forEach(function (wl) {
         var yy = wl[0], sgn = wl[1];
         [-1, 1].forEach(function (c) {
-          var ax = bx2 + c * bay * 0.48;
-          out.push({ svg: ctx.poly([P(ax, yy - sgn * 0.55, z + sp - bay * 0.30),
-                                    P(ax, yy - sgn * 0.55, zring),
-                                    P(bx2 + c * dr * 0.72, yy - sgn * 0.55, zring)],
-                                   ctx.shade(SHADE, 0, sgn, 0.28), DARK, 0.5),
+          var ax = bx2 + c * bay * 0.48, R = bay * 0.39;
+          /* the spandrel: up the pier, in along the ring, then DOWN THE ARCH
+             CURVE back to the springing. Drawn with a straight lower edge and
+             a tip below the springing it was a bolt hanging in mid-air. */
+          var pend = [P(ax, yy - sgn * 0.55, z + sp),
+                      P(ax, yy - sgn * 0.55, zring),
+                      P(bx2 + c * dr * 0.72, yy - sgn * 0.55, zring)];
+          var tIn = Math.acos(Math.min(1, (dr * 0.72) / R));
+          for (var q = 0; q <= 7; q++) {
+            var tq = tIn * (1 - q / 7);
+            pend.push(P(bx2 + c * R * Math.cos(tq), yy - sgn * 0.55,
+                        z + sp + R * Math.sin(tq)));
+          }
+          out.push({ svg: ctx.poly(pend, ctx.shade(SHADE, 0, sgn, 0.42), DARK, 0.5),
                      depth: -9.42e8 });
         });
       });
