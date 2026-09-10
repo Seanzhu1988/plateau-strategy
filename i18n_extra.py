@@ -1577,13 +1577,13 @@ EXTRA.update({
     "Plateau Strategy Solution Lab · Seattle": ["Plateau Strategy Solution Lab · 西雅图", "Plateau Strategy Solution Lab · Seattle", "Plateau Strategy Solution Lab · 시애틀", "Plateau Strategy Solution Lab · Seattle"],
     "We build one business at a time": ["我们一次只做一门生意", "Construimos un negocio a la vez", "한 번에 하나의 사업을 세웁니다", "Chúng tôi xây từng doanh nghiệp một"],
     "Transportation is the one that runs today: flat-rate Tesla rides across Seattle, cars rented to drivers who earn with them, and trip-planning tools anyone can use free. It pays for what comes next. Every other arm is listed below with the stage it is honestly at, including the ones not finished.": [
-        "今天真正在运转的是出行：西雅图全城的特斯拉一口价接送、租给司机让他们靠车挣钱，以及任何人都能免费使用的行程规划工具。它养着接下来要做的事。下面列出的每一块业务都如实标明所处阶段，包括那些还没做完的。",
+        "今天真正在运转的是出行：西雅图全城的特斯拉固定价格接送、租给司机让他们靠车挣钱，以及任何人都能免费使用的行程规划工具。它养着接下来要做的事。下面列出的每一块业务都如实标明所处阶段，包括那些还没做完的。",
         "El transporte es el que funciona hoy: viajes en Tesla a tarifa fija por Seattle, coches alquilados a conductores que ganan con ellos, y herramientas de planificación de viajes que cualquiera puede usar gratis. Paga lo que viene después. Cada una de las demás ramas aparece abajo con la etapa en la que honestamente está, incluidas las que no están terminadas.",
         "오늘 실제로 돌아가는 것은 교통입니다: 시애틀 전역의 정액 테슬라 운행, 그것으로 수입을 올리는 기사들에게 빌려주는 차량, 그리고 누구나 무료로 쓰는 여행 계획 도구. 이것이 다음에 올 것들을 먹여 살립니다. 나머지 각 부문은 아래에 지금 있는 단계 그대로, 아직 끝나지 않은 것까지 포함해, 적어 두었습니다.",
         "Vận tải là mảng đang thực sự chạy hôm nay: những chuyến Tesla giá trọn gói khắp Seattle, xe cho tài xế thuê để họ kiếm sống, và các công cụ lập kế hoạch chuyến đi ai cũng dùng miễn phí. Nó nuôi những gì đến sau. Mọi nhánh khác đều được liệt kê bên dưới kèm đúng giai đoạn thật của nó, kể cả những nhánh chưa xong."],
     "Book a ride": ["预约用车", "Reservar un viaje", "차량 예약", "Đặt xe"],
     "Partner with us": ["与我们合作", "Colabora con nosotros", "함께 협력하기", "Hợp tác với chúng tôi"],
-    "Flat fare to Sea, Tac": ["到西雅图机场一口价", "Tarifa fija a Sea, Tac", "시택 공항까지 정액 요금", "Giá trọn gói tới Sea, Tac"],
+    "Flat fare to Sea, Tac": ["到西雅图机场固定价格", "Tarifa fija a Sea, Tac", "시택 공항까지 정액 요금", "Giá trọn gói tới Sea, Tac"],
     "Book any hour": ["任何时段都能预约", "Reserva a cualquier hora", "언제든 예약 가능", "Đặt bất kỳ giờ nào"],
     "Every vehicle": ["每一辆车", "Todos los vehículos", "모든 차량", "Mọi xe"],
     "THE COMPANY": ["公司", "LA EMPRESA", "회사", "CÔNG TY"],
@@ -1601,7 +1601,7 @@ EXTRA.update({
         "Doanh nghiệp này nuôi doanh nghiệp kia. Điều đó chỉ có ý nghĩa nếu chúng tôi nói rõ mảng nào đang kiếm được tiền hôm nay và mảng nào còn đang xây, nên chúng tôi nói thẳng."],
     "Operating": ["运营中", "En operación", "운영 중", "Đang vận hành"],
     "Flat-rate Tesla rides in Seattle at $75 to Sea, Tac, cars rented to drivers who keep the fare, and a commission programme for hotels and agents. This is the business that earns.": [
-        "西雅图的特斯拉一口价接送，到机场 75 美元；把车租给司机，车费归他们；另有面向酒店和代理人的佣金计划。这是真正在赚钱的那门生意。",
+        "西雅图的特斯拉固定价格接送，到机场 75 美元；把车租给司机，车费归他们；另有面向酒店和代理人的佣金计划。这是真正在赚钱的那门生意。",
         "Viajes en Tesla a tarifa fija en Seattle, 75 $ a Sea, Tac, coches alquilados a conductores que se quedan la tarifa, y un programa de comisiones para hoteles y agentes. Este es el negocio que gana dinero.",
         "시애틀에서 시택 공항까지 75달러 정액 테슬라 운행, 요금을 그대로 가져가는 기사에게 빌려주는 차량, 그리고 호텔·에이전트를 위한 수수료 프로그램. 실제로 돈을 버는 사업입니다.",
         "Những chuyến Tesla giá trọn gói ở Seattle, 75 $ tới Sea, Tac, xe cho tài xế thuê và họ giữ trọn tiền cước, cùng chương trình hoa hồng cho khách sạn và đại lý. Đây là mảng đang thực sự kiếm ra tiền."],
@@ -1630,11 +1630,11 @@ EXTRA.update({
         "Một dự án nghiên cứu giao dịch tự động đang trong giai đoạn xác minh riêng tư, xây dựng hồ sơ có thể kiểm toán. Không bán gì và không nhận tiền, bạn có thể theo dõi kết quả."],
     "More financial products coming soon.": ["更多金融产品即将推出。", "Próximamente más productos financieros.", "더 많은 금융 상품이 곧 나옵니다.", "Sắp có thêm các sản phẩm tài chính."],
     "A Seattle car service: flat-rate Tesla rides to Sea, Tac and around the city, plus trip-planning tools that are free to use.": [
-        "西雅图的一家用车服务：到机场及市内各处的特斯拉一口价接送，外加可免费使用的行程规划工具。",
+        "西雅图的一家用车服务：到机场及市内各处的特斯拉固定价格接送，外加可免费使用的行程规划工具。",
         "Un servicio de coches en Seattle: viajes en Tesla a tarifa fija a Sea, Tac y por la ciudad, más herramientas de planificación gratuitas.",
         "시애틀의 차량 서비스입니다: 시택 공항과 시내를 오가는 정액 테슬라 운행, 그리고 무료로 쓰는 여행 계획 도구.",
         "Một dịch vụ xe tại Seattle: những chuyến Tesla giá trọn gói tới Sea, Tac và quanh thành phố, cùng các công cụ lập kế hoạch miễn phí."],
-    "Flat-rate Tesla rides, Seattle and Sea, Tac.": ["特斯拉一口价接送，西雅图市内及机场。", "Viajes en Tesla a tarifa fija, Seattle y Sea, Tac.", "정액 테슬라 운행, 시애틀과 시택 공항.", "Chuyến Tesla giá trọn gói, Seattle và Sea, Tac."],
+    "Flat-rate Tesla rides, Seattle and Sea, Tac.": ["特斯拉固定价格接送，西雅图市内及机场。", "Viajes en Tesla a tarifa fija, Seattle y Sea, Tac.", "정액 테슬라 운행, 시애틀과 시택 공항.", "Chuyến Tesla giá trọn gói, Seattle và Sea, Tac."],
     "Optional, fills your name and email. You can just type them instead.": [
         "可选，会自动填入您的姓名和邮箱。您也可以直接手动输入。",
         "Opcional: rellena tu nombre y correo. También puedes escribirlos tú.",
@@ -1684,7 +1684,7 @@ EXTRA.update({
     "2 days": ["2 天", "2 días", "2일", "2 ngày"],
 
     # --- fares, as the booking form lists them ---
-    "Airport Pickup (flat), $75": ["机场接送（一口价）, $75", "Recogida en aeropuerto (fija), $75", "공항 픽업(정액), $75", "Đón sân bay (giá cố định), 75 $"],
+    "Airport Pickup (flat), $75": ["机场接送（固定价格）, $75", "Recogida en aeropuerto (fija), $75", "공항 픽업(정액), $75", "Đón sân bay (giá cố định), 75 $"],
     "Downtown Transfer, $45": ["市区接送, $45", "Traslado al centro, $45", "다운타운 이동, $45", "Đưa đón trung tâm, 45 $"],
     "Hourly (per hour), $65": ["按小时计（每小时）, $65", "Por hora, $65", "시간제(시간당), $65", "Theo giờ, 65 $"],
 
@@ -3477,7 +3477,7 @@ EXTRA.update({
  "Private Group Walking Tour": [
      "私人团徒步游", "Tour a pie para grupo privado",
      "프라이빗 그룹 도보 투어", "Tour đi bộ nhóm riêng"],
- "$395 flat": ["一口价 395 美元", "395 $ fijos", "정액 395달러", "trọn gói 395 đô"],
+ "$395 flat": ["固定价格 395 美元", "395 $ fijos", "정액 395달러", "trọn gói 395 đô"],
  "3 hours · up to 6 people · route built with you": [
      "3小时 · 最多6人 · 路线和你一起定",
      "3 horas · hasta 6 personas · ruta diseñada contigo",
@@ -3529,7 +3529,7 @@ EXTRA.update({
      "派克市场半日游：每人89美元", "Pike Place, 89 $/persona",
      "파이크 플레이스 반일, 1인 89달러", "Pike Place nửa ngày, 89 đô"],
  "Private Group, $395 flat": [
-     "私人团：一口价395美元", "Grupo privado, 395 $ fijos",
+     "私人团：固定价格395美元", "Grupo privado, 395 $ fijos",
      "프라이빗 그룹, 정액 395달러", "Nhóm riêng, trọn gói 395 đô"],
  "Not sure yet, tell me what fits": [
      "还没想好，帮我看看哪个合适", "Aún no lo sé, dime qué encaja",
