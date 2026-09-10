@@ -2644,9 +2644,8 @@ three models a run, one fix each, and strike the items as they are paid.
   dcwar rule: park-street at yaw -0.62 and -2.10, bunker-hill, old-north and
   faneuil-hall at -0.62. All four now throw left, away from the sun, and none
   regressed.
-  STILL OWED on the trail: (b) the Revere house's two pavement pads overlap
-  at the corner and read as two rectangles rather than as a courtyard and a
-  street; (c) the Old State House roof is the largest surface in that model
+  STILL OWED on the trail: (b) IS PAID, 2026-09-10, see TWO SHEETS OF PAPER
+  below; (c) the Old State House roof is the largest surface in that model
   and carries nothing, and no source reached publishes dormers or plant.
 
 - THE MET STAIRCASE, met OWED (a), "the staircase has no cheek walls, so from
@@ -2743,6 +2742,39 @@ three models a run, one fix each, and strike the items as they are paid.
   the list, but a run picking it up should first find an angle that shows
   it rather than trusting the note. (f) IS PAID, 2026-09-10, see THE SUN WAS
   AT THE ZENITH below. Also still owed: (e) the glazing; (g) the plaza corner.
+
+- TWO SHEETS OF PAPER, trail OWED (b), PAID 2026-09-10 by the landmark
+  routine, and the note was RIGHT but understated. It said the Revere
+  house's "two pavement pads overlap at the corner"; measured from the two
+  `ground()` calls, which take a CENTRE and a size, the courtyard covered
+  x[-49,-25] y[-37,25] and North Square covered x[-34,34] y[16,36], so they
+  shared a nine foot square, and the render showed a hard stepped seam
+  running through it. Two ground planes at the same z is not something a
+  face count or a bounding box can report.
+  THE SOURCE HAD ALREADY MADE THE DISTINCTION AND THE DRAWING HAD DROPPED
+  IT. The article calls the courtyard "paved in brick"; North Square is a
+  street. They are two materials and they were being drawn in one tone,
+  PAVE, with one kerb. So the deeper fault was not the overlap, it was that
+  nothing but position told them apart, and position is exactly what the
+  overlap destroyed.
+  THE FIX is one line each. The courtyard takes a brick paving tone, and it
+  now stops at y = 16, which is the street pad's own near edge, so the two
+  ABUT along a line instead of crossing. An L reads as a corner; a cross
+  reads as two sheets of paper. The brick tone itself is a DRAWING DECISION
+  and is declared as one in the form: no source gives it, so it is PAVE
+  warmed and darkened toward the chimney brick, far enough to read as
+  another material and not so far that a weathered courtyard looks like new
+  chimney work.
+  WHAT THE PICTURE SHOWED AFTER THE FIX, recorded rather than claimed away:
+  the crossing seam is gone and the two surfaces now read as a brick
+  courtyard on the -x side and street paving across the front, which is what
+  the note asked for. The junction is still a visible notch, because the
+  courtyard's east edge at x = -25 and the street pad's west end at x = -34
+  do not line up, so nine feet of street runs past the corner. That is a
+  smaller fault than the one paid and it is left honestly on the list rather
+  than fixed in the same pass unlooked at.
+  STILL OWED on the Revere house: the notch above; and the two adversarial
+  critics did not fit inside this run's 25 minute ceiling.
 
 - THE SUN WAS AT THE ZENITH, hirshhorn OWED (f), PAID 2026-09-10 by the
   landmark routine. The note read "the shadow ring is concentric, i.e. sun at

@@ -88,6 +88,8 @@
     var DOOR = "#43352b", DOOR_E = "#2c2119";
     var STONE = "#b0aa9c", STONE_E = "#847e71";
     var PAVE = "#cdb9a6", KERB = "#a8917d", SHADOW = "#9d9689", GRASS = "#c2c9b4";
+    /* the published brick courtyard, a different material from the street */
+    var BRICKPAVE = "#b3907c", BRICKKERB = "#916f5d";
     var out = [], P = ctx.project;
 
     /* THE PUBLISHED PLAN. Front (east) at +y, 48 ft wide; 30 ft deep. */
@@ -121,8 +123,25 @@
        Bunker Hill and Old South both learned this. ---- */
     out.push(ground(ctx, -4, -8, 104, 100, 0, GRASS, "#a8b09a"));
     /* the published brick courtyard, on the -x side where the real one is,
-       and North Square's own paving in front of the east elevation */
-    out.push(ground(ctx, x0 - 13, -6, 24, 62, 0.15, PAVE, KERB));
+       and North Square's own paving in front of the east elevation.
+       THEY USED TO CROSS. Both were centred rectangles in one tone, and
+       their extents were x[-49,-25] y[-37,25] and x[-34,34] y[16,36], which
+       share a nine foot square. The render showed the two of them lapping at
+       the corner with a hard stepped seam through the overlap, and the OWED
+       note read it exactly right: two rectangles rather than a courtyard and
+       a street. No arithmetic reports two ground planes at the same z.
+       TWO CHANGES, and the first is the one the source already made. The
+       courtyard is published as "paved in brick" and North Square is a
+       street, so they are not the same surface and should never have been
+       the same colour; the courtyard now takes a brick paving tone. The
+       exact tone is a DRAWING DECISION, declared here rather than buried:
+       no source gives it, so it is PAVE warmed and darkened toward the
+       chimney brick, far enough to read as a different material and not so
+       far that a weathered courtyard looks like new chimney work.
+       Second, the courtyard stops at y = 16, which is the street pad's own
+       near edge, so the two now ABUT along a line instead of crossing. An L
+       reads as a corner; a cross reads as two sheets of paper. */
+    out.push(ground(ctx, x0 - 13, -10.5, 24, 53, 0.15, BRICKPAVE, BRICKKERB));
     out.push(ground(ctx, 0, y1 + 11, 68, 20, 0.15, PAVE, KERB));
 
     /* CHECKLIST 6: a ground shadow, thrown away from LIGHT = [0.6,0.3,0.68],
