@@ -2741,8 +2741,53 @@ three models a run, one fix each, and strike the items as they are paid.
   (c) WAS LOOKED AT AND DID NOT REPRODUCE: at the standard angle the
   courtyard reads as a dark shaft, which is what it should be. It stays on
   the list, but a run picking it up should first find an angle that shows
-  it rather than trusting the note. Also still owed: (e) the glazing;
-  (f) the concentric shadow; (g) the plaza corner.
+  it rather than trusting the note. (f) IS PAID, 2026-09-10, see THE SUN WAS
+  AT THE ZENITH below. Also still owed: (e) the glazing; (g) the plaza corner.
+
+- THE SUN WAS AT THE ZENITH, hirshhorn OWED (f), PAID 2026-09-10 by the
+  landmark routine. The note read "the shadow ring is concentric, i.e. sun at
+  the zenith, while the walls are directionally lit", and unlike the two
+  notes struck earlier today it was RIGHT ON ITS OWN CAUSE. The render showed
+  it before any code was opened: a perfect dark annulus, exactly centred, sat
+  under a drum whose right flank is the lit one. No face count, bounding box
+  or `node --check` reports a shadow pointing nowhere.
+  THE CAUSE was the drift trail-3d.js already recorded once. dc-3d.js has a
+  shadow() helper with the sun in it, and eight of the Mall's forms use it;
+  hirshhorn hand-rolled `ring(R*1.12, RI*0.99, ...)` at the origin instead,
+  because the helper sweeps a FILLED outline and filling this outline would
+  pave a courtyard that is open to the sky. Having opted out of the helper it
+  also opted out of the helper's sun.
+  THE FIX keeps the annulus and sweeps it. `ring()` takes an optional centre
+  offset, and the shadow is five copies from the base ring to the top ring
+  slid by H.LIGHT_DIR times ZT * 0.9, which is the same reach convention
+  shadow() declares for every other building, so a 96 ft drum now throws as
+  far for its height as its neighbours do. The union of the copies is the
+  true shadow of an open cylinder. Five is enough because the sweep is 56 ft
+  and the annulus is 72 ft wide, so consecutive copies overlap by more than
+  half, and the fill is one flat opaque tone, so an overlap cannot show.
+  ONE VECTOR, NOT A SIXTH COPY OF IT. LIGHT_DIR is now exported from
+  dc-3d.js helpers rather than restated in the form. trail-3d.js records
+  three stops that each kept a private copy of this constant and one of them
+  had the SIGN wrong, lighting the ground on the sunny side; a form that
+  cannot use shadow() should still not be allowed its own sun.
+  VERIFIED BY ARITHMETIC AND THEN BY LOOKING, in that order, because a sign
+  error here is invisible if you only glance. At the page default yaw the
+  offset projects LEFT and slightly UP the screen while the brightest wall
+  normal projects RIGHT, so shadow and highlight are on opposite sides. Then
+  both renders agree: at yaw -0.30 the shadow reaches left and the plaza is
+  clear on the sunlit right, and from behind at yaw 1.90 pitch 0.16 it has
+  swapped to the right with the lit flank on the left. The whole Mall was
+  re-rendered as a regression and is unchanged.
+  THE COURTYARD SURVIVES THE SWEEP, which is why the annulus was worth
+  keeping: the hole is the intersection of the copies' holes, a lens about
+  59 ft across rather than a 115 ft circle, and that is the honest answer,
+  because a courtyard floor under a 96 ft wall really is lit only where the
+  sun still reaches through the opening from both ends of the sweep.
+  Sources unchanged; no new dimension is claimed. R 115.5 ft, RI 57.5 ft,
+  ZP 14 ft, ZT 96 ft are the ones already in the form's header.
+  OWED: the two adversarial critics did not fit inside this run's 25 minute
+  ceiling, and hirshhorn still carries (c) unreproduced, (d)'s flat-shading
+  residue, (e) the glazing and (g) the plaza corner.
 
 - THE DORIC SHAFTS, dcwar OWED (b). "The columns are eight-sided prisms and
   fluted is carried only by shading." True, and the render says what that

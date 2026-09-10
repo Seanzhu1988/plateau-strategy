@@ -440,7 +440,15 @@
   PLACES.forEach(function (p) { scenes["only-" + p.k] = mall({ only: p.k }); });
   var api = { mall: mall, places: PLACES, xy: xy, MIN_H: MIN_H, scenes: scenes,
               helpers: { prism: prism, ngon: ngon, dome: dome, colonnade: colonnade,
-                         pyramid: pyramid, shadow: shadow, depthOf: depthOf, C: C } };
+                         pyramid: pyramid, shadow: shadow, depthOf: depthOf, C: C,
+                         /* THE ONE SUN. A form that cannot use shadow() because
+                            its silhouette is not a filled outline, the Hirshhorn
+                            being the only one so far, still has to throw its
+                            shadow the same way as every neighbour. It reads the
+                            vector from here rather than restating it, which is
+                            the drift trail-3d.js recorded when three stops each
+                            kept a private copy and one had the sign wrong. */
+                         LIGHT_DIR: LIGHT_DIR } };
   if (typeof window !== "undefined") window.DC3D = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
 })();

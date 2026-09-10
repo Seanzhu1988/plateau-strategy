@@ -106,7 +106,8 @@
 
     /* a flat ring lying in the z plane, one quad per segment so the hole
        stays a hole. A single polygon here would paint the courtyard shut. */
-    function ring(rOut, rIn, z, fill, depth, test) {
+    function ring(rOut, rIn, z, fill, depth, test, ox, oy) {
+      ox = ox || 0; oy = oy || 0;
       for (var i = 0; i < N; i++) {
         var u0 = a(i), u1 = a(i + 1);
         if (test && !test((u0 + u1) / 2)) continue;
@@ -127,10 +128,10 @@
            wall by even a foot. */
         var lap = (a(1) - a(0)) / 12;
         if (!test || test((a(i + 1) + a(i + 2)) / 2)) u1 += lap;
-        var q = [pt(rOut * Math.cos(u0), rOut * Math.sin(u0), z),
-                 pt(rOut * Math.cos(u1), rOut * Math.sin(u1), z),
-                 pt(rIn  * Math.cos(u1), rIn  * Math.sin(u1), z),
-                 pt(rIn  * Math.cos(u0), rIn  * Math.sin(u0), z)];
+        var q = [pt(ox + rOut * Math.cos(u0), oy + rOut * Math.sin(u0), z),
+                 pt(ox + rOut * Math.cos(u1), oy + rOut * Math.sin(u1), z),
+                 pt(ox + rIn  * Math.cos(u1), oy + rIn  * Math.sin(u1), z),
+                 pt(ox + rIn  * Math.cos(u0), oy + rIn  * Math.sin(u0), z)];
         var f = ctx.shade(fill, 0, 0, 1);
         items.push({ svg: ctx.poly(q, f, f, 0.7),
                      depth: depth === undefined ? H.depthOf(q) : depth });
@@ -194,7 +195,31 @@
        2.7 acre pad cannot shrink the building into a speck, the mistake the
        whole-Mall fit made once already */
     disc(194, 0.15, PAVE, -1e9 + 1.0);   /* 2.7 acres is r = 194 ft; r = 150 was 1.62 acres, a cited number the drawing did not keep */
-    ring(R * 1.12, RI * 0.99, 0.05, "#a49d92", -1e9 + 2.0);   /* the shadow the drum throws on the plaza, a RING: the courtyard is open to the sky */
+    /* THE SHADOW, OWED (f). It was one concentric annulus, which is the sun
+       standing at the zenith, on a drum lit hard from the upper left: the
+       render showed a perfect dark ring under a building whose right flank
+       is in shade, and no arithmetic would ever have complained.
+       A DRUM IS NOT A BLOCK, which is why this cannot call H.shadow: that
+       helper sweeps a filled outline, and filling this outline would pave
+       the courtyard, which is open to the sky. So the ANNULUS is swept
+       instead, from the base ring to the top ring slid away from the sun.
+       The union of the copies is the true shadow of an open cylinder, and
+       the hole survives it as a lens rather than a circle, because the
+       courtyard floor really is lit only where the sun still reaches
+       through the opening from both ends of the sweep.
+       The direction is H.LIGHT_DIR, the same vector the shading uses, read
+       from dc-3d.js rather than restated here. The reach is ZT * 0.9, the
+       same drawing convention shadow() declares for every other building on
+       the Mall, so this shadow is as long as its neighbours' for its height.
+       Five copies: the sweep is 56 ft and the annulus is 72 ft wide, so
+       consecutive copies overlap by more than half and the fill is one flat
+       opaque tone, which means an overlap cannot show. */
+    var SH_D = ZT * 0.9;
+    for (var sI = 0; sI <= 4; sI++) {
+      var sT = sI / 4;
+      ring(R * 1.12, RI * 0.99, 0.05, "#a49d92", -1e9 + 2.0, null,
+           H.LIGHT_DIR.x * SH_D * sT, H.LIGHT_DIR.y * SH_D * sT);
+    }
     /* The dark under-drum. LOOKING is what forced this: with the ground
        beneath the building drawn the same tone as the plaza, the 14 ft of
        daylight under the ring vanished and an 82 ft drum on legs read as a
