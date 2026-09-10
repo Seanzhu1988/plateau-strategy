@@ -765,6 +765,42 @@ above is not paperwork, it is the lock.
 
 ## Rebuilt to this standard
 
+- HIRSHHORN IS CLEAR. (c), (d)'s residue and (g) all PAID, 2026-09-10, the
+  landmark routine, and the last three debts on the model the audit had been
+  calling the worst-owing on the Mall. All three were seen in a render, twice.
+  (c) AND (d) WERE ONE MISTAKE, so they took one line. The courtyard wall was
+  the BRIGHTEST surface in the whole model, and the cause is in `wall()`:
+  `outward=false` negates the segment normal, so the far side of the shaft
+  hands ctx.shade a vector pointing back at the camera, and a 96 ft light well
+  gets lit like a south-facing facade. The physics runs the other way. A shaft
+  that deep sees almost no direct sun; what reaches it is bounce off the
+  opposite wall, arriving from everywhere at once. So an inward wall now takes
+  a FIXED ambient normal instead of its own. That is (c), and (d) came free:
+  with every segment handed the same vector, the 44 per-segment tones collapse
+  to one and the bands come off a wall the source calls blank. The outward
+  walls are untouched, because a street facade really is directionally lit and
+  already read correctly. Two debts, one line, and the render shows the shaft
+  dark and even where it used to glow.
+  (g) WAS MISATTRIBUTED, and that is the finding worth keeping. It has read
+  "the plaza disc's corner reads as a sheet of paper" since 09-04, and a disc
+  HAS NO CORNER, so no edit inside dc-form-hirshhorn.js could ever have paid
+  it. The corner belonged to the HOST: dc-3d.js lays a standard 176 m square
+  lawn pad under every single-building render unless the place declares
+  `pad: 0`, which is the host's own documented way of saying "this form draws
+  its own ground". Hirshhorn draws a 194 ft plaza disc for its published 2.7
+  acres and had simply never declared it, so it got both, and the square
+  underneath was the paper. One data field, `pad: 0`, and the square is gone.
+  Verified: `dc:mall` still renders, map_lint sound, and pad is only consulted
+  on the single-building path so no other Mall model moved.
+  THE GENERAL LESSON, because this cost two runs: a debt names the thing the
+  writer BELIEVED was at fault, not necessarily the thing that is. Before
+  paying one, check that the object it names can even produce the defect. A
+  round plaza cannot grow a corner, and that sentence was sitting in the OWED
+  list for six days.
+  STILL OWED on hirshhorn: NOTHING. The two adversarial critics of step 4 did
+  not run inside this run's ceiling, so the verdict rests on two renders at
+  yaw -0.55 pitch 0.30, before and after, plus the full-Mall check.
+
 - smith-tower, Seattle (2026-09-10, the landmark routine). NEW, not a rebuild:
   queue item C, and the last building in Seattle with no geometry at all. The
   city Sean actually sells tours in, and the one landmark on this site that

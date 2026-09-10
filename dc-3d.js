@@ -66,7 +66,14 @@
     /* the expansion: the rest of the Mall's museums and the ground works
        that give the west end its shape */
     { k: "castle",    n: "Smithsonian Castle",         lat: 38.88875, lon: -77.02600, h: 44,  form: "castle" },
-    { k: "hirshhorn", n: "Hirshhorn Museum",           lat: 38.88816, lon: -77.02297, h: 25,  form: "drum" },
+    /* pad: 0 because this form draws its OWN ground: a 194 ft plaza disc for
+       the published 2.7 acres. It never declared it, so the host laid its
+       standard 176 m SQUARE pad underneath as well, and that square is what
+       hirshhorn OWED (g) has been calling "the plaza disc's corner reads as a
+       sheet of paper" since 09-04. A disc has no corner. The corner was the
+       host's pad, so the debt was misattributed to the model and no edit
+       inside dc-form-hirshhorn.js could ever have paid it. */
+    { k: "hirshhorn", n: "Hirshhorn Museum",           lat: 38.88816, lon: -77.02297, h: 25,  form: "drum", pad: 0 },
     { k: "nmaahc",    n: "African American History Museum", lat: 38.89111, lon: -77.03278, h: 26, form: "corona" },
     { k: "indian",    n: "American Indian Museum",     lat: 38.88830, lon: -77.01660, h: 30,  form: "block" },
     { k: "botanic",   n: "Botanic Garden",             lat: 38.88800, lon: -77.01300, h: 20,  form: "block" },

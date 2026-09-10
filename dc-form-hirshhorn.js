@@ -174,11 +174,28 @@
         if ((!test || test(un)) &&
             ctx.faceVisible(Math.cos(un) * (outward ? 1 : -1),
                             Math.sin(un) * (outward ? 1 : -1))) u1 += lap;
+        /* hirshhorn OWED (c) AND the flat-shading residue of (d), PAID as
+           ONE change, because they are one mistake. The courtyard wall was
+           the BRIGHTEST surface in the model: outward=false negates the
+           normal, so the far side of the shaft hands ctx.shade a vector
+           pointing back at the camera and a 96 ft light well gets lit like
+           a south facade. The physics is the other way round. A shaft that
+           deep sees almost no direct sun; what reaches it is bounce off the
+           opposite wall, which arrives from everywhere at once.
+           So an inward wall is shaded from a FIXED ambient normal instead of
+           its own. That is (c) fixed, and it pays (d) as a side effect: with
+           every segment handed the same vector, the 44 per-segment tones
+           collapse to one and the bands come off a wall the source calls
+           blank. Two debts, one line, and the second was free.
+           The outward walls are untouched: a street facade IS directionally
+           lit and reads correctly today. */
+        var su = outward ? nx : -0.28, sv = outward ? ny : -0.16,
+            sw = outward ? 0 : 0.12;
         push([pt(r * Math.cos(u0), r * Math.sin(u0), z0),
               pt(r * Math.cos(u1), r * Math.sin(u1), z0),
               pt(r * Math.cos(u1), r * Math.sin(u1), z1),
               pt(r * Math.cos(u0), r * Math.sin(u0), z1)],
-             fill, nx, ny, 0, bias);
+             fill, su, sv, sw, bias);
       }
     }
     /* a rectangular pier, drawn as a box */
