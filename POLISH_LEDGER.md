@@ -217,6 +217,16 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
       got, a turn by five tilts open and closed. Do not do it from arithmetic
       alone: the whole point of the 09-09 entry is that a plausible-looking
       number with no source is what got us here.
+      **Searched 2026-09-10 and BLOCKED on sources.** The published record
+      carries exactly one setback width, the 60 ft above the 5th story that
+      is already in the table, and nothing at all above floor 21. Leasing
+      material publishes RENTABLE square feet per floor, not plan dimensions,
+      and NYC rentable is grossed up over usable by an unstated loss factor,
+      which is why the 78th reads 23,186 sq ft against a drawn gross of
+      19,824: the number can neither confirm nor disprove a width. The
+      original Shreve, Lamb and Harmon drawings are in Columbia's Avery
+      archive and are not online. So this stays open, and what it needs is an
+      archive visit or a published plan, not another search.
 
 - [ ] **Yiki's Chinese trail overview runs 6:26 against Jason's 5:09**, and
       the page calls both a five minute narration. Measured by
@@ -259,18 +269,30 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
       (exact item number, or a title that actually contains the query), and
       record the rest as unanswered.
 
-- [ ] **Three label pairs overlap on the Empire State at the phone framing**,
-      and they are nothing to do with the footprint: measured on 2026-09-08
-      across a full turn by five tilts at a 276 px stage, the same three pairs
-      appear with the footprint drawn and with it suppressed, in the same
-      counts. They are "open air, 1,050 ft, the one people mean" against "the
-      entrance and the line", and "Fifth Avenue" against the same note. At that
-      stage width the type is 28 units against a 620 unit box, so two
-      two-line blocks near the base have nowhere to go and the engine's
-      step-down search runs into the floor. The pinned label's small local
-      search built for the footprint would probably serve here too, but a
-      NAMED label must always appear, so it cannot use the same
-      do-not-draw fallback and needs its own answer.
+- [x] **Label pairs overlap on the Empire State at the phone framing.**
+      **Done 2026-09-10**, and two of the three reported pairs never existed.
+      Measured on the rendered SVG, a full turn by nine tilts at a 276 px
+      stage, 5,561 label blocks: ONE collision, "open air, 1,050 ft, the one
+      people mean" across "the entrance and the line", identical closed and
+      open, every instance at the 0.75 tilt ceiling, no "Fifth Avenue" pair
+      and nothing outside the box. Nor is it simply a narrow stage: at the
+      ceiling the count runs 14, 6, 0, 0, 4, 8, 2 at widths 260, 276, 290,
+      321, 340, 375, 420 and zero from 500 up, non-monotonic in type size
+      against the box, so no width gate and no single ceiling answers it.
+      The fix suggested here, giving a named label the pinned figures' local
+      search, was built and measured WORSE, 6 pairs to 60: an upward step
+      takes the one clear line a later label had, that label then finds
+      nothing and falls back onto an earlier one. Reverted; nyc-3d.js is byte
+      for byte what it was. What works is two marks in the other order. The
+      86th block is 471 units wide against Fifth Avenue's 301 and must choose
+      first, which is the bridge's own roomForLabels rule bought without the
+      flag that also grows the frame. After, at the ceiling: 340 goes 4 to 0,
+      375 8 to 0, 420 2 to 0, 276 6 to 1, 260 14 to 9, and at the two widths
+      this page really produces, 266 at a 320px viewport and 321 at 375, the
+      full turn by nine tilts is ZERO overlaps and zero outside the box,
+      closed and open. Label positions are identical at 1000, 321 and 266 on
+      a normalised sweep that ignores paint order, and dropped dimension
+      figures are unchanged at 18, 62 and 80 of 240.
 
 - [ ] The 3D models' own labels (Manhattan tower, the promenade, 86th floor,
       and as of 2026-09-01 also "the pointed arch" and its note, so this debt
@@ -286,6 +308,52 @@ daily task is `site-polish-daily`. Two jobs each run, in this order:
       articles 75%. Small gaps, quick wins.
 
 ## Done
+
+### 2026-09-10
+Checkers first: map sound at 83% full, 35 composed strings, 161 scripts with
+the one deliberately deferred Chinese overview out of band. All three
+unchanged after the day's work.
+Trimmed: the trip planner's six map controls were bare glyphs painted
+straight onto the map tiles. The page writes them as a 34px white chip with
+a soft shadow; modern.css strips background, radius and shadow off every
+button with !important, and the exception block that exists for icon
+controls, whose own comment promises they "keep their own shape", only ever
+took the underline off and gave the padding back. Nothing gave the shape
+back. Measured before: background rgba(0,0,0,0), border 0, radius 0, shadow
+none, against Leaflet's zoom control at the same x with rgb(255,255,255) and
+a 2px radius, and Leaflet keeps its box only because those are <a> and the
+rule reaches <button>. After: all six at rgba(255,255,255,0.96), radius 9px,
+shadow 0 2px 8px, 34 wide, 44 tall on a phone and 34 on a desktop. Scoped to
+this one container: .itin-tools writes background:none itself and means it,
+verified unchanged. The follow control's lit state went the same way and had
+been dead longer, the page painting it #1b4d8f without !important, so
+"follow my position" looked identical on and off; proved pre-existing by
+deleting today's rule from the live sheet, then fixed at the same weight.
+Also swept and clean: every internal link on every page resolves against the
+360 routes, and /trip-planner, /moma and /tours show no overflow, no clipped
+text and no sideways scroll at 375.
+3D: closed the phone-framing label item, and the finding is that the fix it
+proposed makes things five times worse. Numbers in the item above and in the
+commit. The setback-depth item was searched and is BLOCKED on sources: one
+width is published, nothing above floor 21 is, leasing square footage is
+rentable and grossed up so it cannot settle a dimension, and the original
+drawings are in an archive that is not online. Recorded there rather than
+guessed at.
+Two lessons worth keeping. A CSS transition frozen in a hidden browser pane
+outranks even an inline !important, because transitions sit above important
+author styles in the cascade and rAF is paused while the pane is not shown,
+so any colour read off a transitioned property there is the OLD value: three
+separate measurements said black-on-navy until transitions were disabled.
+And in this pane the viewport emulation is lost on every navigate, which
+once produced a header reading 1,144 defects with every link at a negative
+x, all of it an artifact of clientWidth 0. Re-apply the size after every
+navigate, and abort a sweep that sees a viewport under 300.
+Commits: "The trip planner's six map controls were bare glyphs on the map
+tiles" and "Empire State: the last text-on-text goes, and the obvious fix
+was wrong".
+Note: the branch was 5 behind and 6 ahead of origin/main and was NOT rebased,
+because another session has seven uncommitted files in this worktree. None
+of them overlaps the four files upstream touched.
 
 ### 2026-09-09
 Trimmed: the Share button on /book was drawn **325 by 25** in a 375 px header,
