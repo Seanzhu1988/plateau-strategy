@@ -6,15 +6,15 @@
     <title>National Mall self-guided GPS walking tour &middot; Plateau Strategy</title>
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-    <meta name="description" content="A free self-guided GPS walking tour of the National Mall, twenty-one stops from the Capitol to the Jefferson Memorial. The map follows you and each stop opens as you approach. No app to download, it opens in your browser.">
+    <meta name="description" content="A free self-guided GPS walking tour of the National Mall, from the Capitol to the Jefferson Memorial. The map follows you and each stop opens as you approach. No app to download, it opens in your browser.">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Plateau Strategy Solution Lab">
     <meta property="og:url" content="https://plateaustrategy.io/national-mall">
-    <meta property="og:title" content="The National Mall, twenty-one stops in walking order">
+    <meta property="og:title" content="The National Mall, every stop in walking order">
     <meta property="og:description" content="Turn each building before you stand in front of it, and see the time every stop really takes.">
     <meta property="og:image" content="https://plateaustrategy.io/share-card.jpg">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="The National Mall, twenty-one stops in walking order">
+    <meta name="twitter:title" content="The National Mall, every stop in walking order">
     <meta name="twitter:description" content="Turn each building before you stand in front of it, and see the time every stop really takes.">
     <meta name="twitter:image" content="https://plateaustrategy.io/share-card.jpg">
     <link rel="canonical" href="https://plateaustrategy.io/national-mall">
@@ -135,7 +135,7 @@
            name of those 18 items it will start playing instead of scroll up to
            play, hit it again it will stop".] The player at the top of the page
            is fine when you are already looking at it and useless when you are
-           eighteen rows down the list, which is where a reader actually is.
+           far down the list, which is where a reader actually is.
            The mark is drawn in CSS rather than set as a character: a play
            triangle and a pause bar are both emoji on some systems and boxes on
            others, and this one has to be legible on every phone. */
@@ -188,9 +188,9 @@
 {
  "@context": "https://schema.org",
  "@type": "TouristTrip",
- "name": "The National Mall, twenty-one stops from the Capitol to the Jefferson Memorial",
+ "name": "The National Mall, from the Capitol to the Jefferson Memorial",
  "url": "https://plateaustrategy.io/national-mall",
- "description": "Twenty-one stops on the National Mall in walking order, with the time each one really takes, and the Capitol, the Lincoln Memorial and the Washington Monument as models you can turn before you stand in front of them.",
+ "description": "Every stop on the National Mall in walking order, with the time each one really takes, and the Capitol, the Lincoln Memorial and the Washington Monument as models you can turn before you stand in front of them.",
  "touristType": "Walking tour",
  "itinerary": {
   "@type": "ItemList",
@@ -225,7 +225,7 @@
     <div class="nm-wrap">
         <p class="nm-eyebrow">Washington, DC</p>
         <h1>The National Mall</h1>
-        <p class="nm-lead">Twenty-one stops from the Capitol and the Library of Congress to the Jefferson
+        <p class="nm-lead">From the Capitol and the Library of Congress to the Jefferson
            Memorial, by way of the White House. Turn each building in your hand before you stand in front of it.</p>
         <p class="nm-dedication i18n-skip">This tour is in memory of my beloved friend, Dave Wetherby.</p>
 
@@ -484,7 +484,7 @@
         paintResume();
         paintRows();
     }
-    /* Eleven of the eighteen stops have no recording yet. Hiding the player and
+    /* Most stops have no recording yet. Hiding the player and
        saying nothing made that read as a fault: tap a stop, get silence, no idea
        whether the guide is broken or simply not made. Say which. */
     function sayNoGuide(on) {
@@ -622,7 +622,7 @@
            stop first, so the page still has to ask which files exist.
 
            It used to ask by firing a HEAD request per stop and reading the 404.
-           Eleven of the eighteen stops have no recording, so every single visit
+           Most stops have no recording, so every single visit
            produced eleven failed requests and eleven red lines in the console.
            That is not just waste: it BURIES real errors. Auditing this very page
            I found twelve console errors, and had to read the network log one row
@@ -1037,7 +1037,7 @@
         trail = t;
         stops = t.stops || [];
         /* The zones are computed here, once, from each stop's own height and
-           footprint. Ten of the eighteen have no published pair yet and keep
+           footprint. The stops with no published pair yet keep
            the flat sixty metres they have always had, so this can only add
            reach, never take it away. */
         if (window.ApproachTrigger) {

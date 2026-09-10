@@ -43,6 +43,15 @@
  *     centred on north: an assumption, on its own line.
  *   - whether the inner court is CONCENTRIC with the outer drum is not
  *     published in any source reached this run. Drawn concentric.
+ *   - the courtyard WINDOW COUNT, bay width and pier width are not published
+ *     in any source reached. aviewoncities gives "large rectangular windows"
+ *     and nothing more; sah-archipedia.org/buildings/DC-01-ML03 returned HTTP
+ *     403 to two attempts this run and is the named route to a fuller
+ *     description. Eleven openings of 24.6 ft between eleven piers of 8.2 ft
+ *     are drawn, three of every four of the 44 segments the drawing already
+ *     uses: an assumption, on its own line. What the source supports is the
+ *     READING, discrete large rectangles separated by concrete, not the
+ *     eleven.
  *   - the ground-level lobby volume under the drum is not documented in the
  *     sources reached, so nothing is invented there; the plaza runs under
  *     the building, which is the view every photograph shows.
@@ -106,7 +115,8 @@
 
     /* a flat ring lying in the z plane, one quad per segment so the hole
        stays a hole. A single polygon here would paint the courtyard shut. */
-    function ring(rOut, rIn, z, fill, depth, test) {
+    function ring(rOut, rIn, z, fill, depth, test, ox, oy) {
+      ox = ox || 0; oy = oy || 0;
       for (var i = 0; i < N; i++) {
         var u0 = a(i), u1 = a(i + 1);
         if (test && !test((u0 + u1) / 2)) continue;
@@ -127,10 +137,10 @@
            wall by even a foot. */
         var lap = (a(1) - a(0)) / 12;
         if (!test || test((a(i + 1) + a(i + 2)) / 2)) u1 += lap;
-        var q = [pt(rOut * Math.cos(u0), rOut * Math.sin(u0), z),
-                 pt(rOut * Math.cos(u1), rOut * Math.sin(u1), z),
-                 pt(rIn  * Math.cos(u1), rIn  * Math.sin(u1), z),
-                 pt(rIn  * Math.cos(u0), rIn  * Math.sin(u0), z)];
+        var q = [pt(ox + rOut * Math.cos(u0), oy + rOut * Math.sin(u0), z),
+                 pt(ox + rOut * Math.cos(u1), oy + rOut * Math.sin(u1), z),
+                 pt(ox + rIn  * Math.cos(u1), oy + rIn  * Math.sin(u1), z),
+                 pt(ox + rIn  * Math.cos(u0), oy + rIn  * Math.sin(u0), z)];
         var f = ctx.shade(fill, 0, 0, 1);
         items.push({ svg: ctx.poly(q, f, f, 0.7),
                      depth: depth === undefined ? H.depthOf(q) : depth });
@@ -151,6 +161,19 @@
         if (test && !test(um)) continue;
         var nx = Math.cos(um) * (outward ? 1 : -1), ny = Math.sin(um) * (outward ? 1 : -1);
         if (!ctx.faceVisible(nx, ny)) continue;
+        /* THE BANDS, and they are the STARBURST again on a vertical surface.
+           The ring above says it: two abutting quads each antialias their
+           shared edge against what is BEHIND them, two partial coverages do
+           not add up to one, and a stroke in the same colour cannot close a
+           hairline because the stroke has an antialiased edge of its own.
+           So these quads OVERLAP too, by a twelfth of a segment. The lap
+           stops where a tested arc ends, and where the NEXT segment faces
+           away, so a lap can never run out past the silhouette. */
+        var lap = (a(1) - a(0)) / 12;
+        var un = (a(i + 1) + a(i + 2)) / 2;
+        if ((!test || test(un)) &&
+            ctx.faceVisible(Math.cos(un) * (outward ? 1 : -1),
+                            Math.sin(un) * (outward ? 1 : -1))) u1 += lap;
         push([pt(r * Math.cos(u0), r * Math.sin(u0), z0),
               pt(r * Math.cos(u1), r * Math.sin(u1), z0),
               pt(r * Math.cos(u1), r * Math.sin(u1), z1),
@@ -181,7 +204,31 @@
        2.7 acre pad cannot shrink the building into a speck, the mistake the
        whole-Mall fit made once already */
     disc(194, 0.15, PAVE, -1e9 + 1.0);   /* 2.7 acres is r = 194 ft; r = 150 was 1.62 acres, a cited number the drawing did not keep */
-    ring(R * 1.12, RI * 0.99, 0.05, "#a49d92", -1e9 + 2.0);   /* the shadow the drum throws on the plaza, a RING: the courtyard is open to the sky */
+    /* THE SHADOW, OWED (f). It was one concentric annulus, which is the sun
+       standing at the zenith, on a drum lit hard from the upper left: the
+       render showed a perfect dark ring under a building whose right flank
+       is in shade, and no arithmetic would ever have complained.
+       A DRUM IS NOT A BLOCK, which is why this cannot call H.shadow: that
+       helper sweeps a filled outline, and filling this outline would pave
+       the courtyard, which is open to the sky. So the ANNULUS is swept
+       instead, from the base ring to the top ring slid away from the sun.
+       The union of the copies is the true shadow of an open cylinder, and
+       the hole survives it as a lens rather than a circle, because the
+       courtyard floor really is lit only where the sun still reaches
+       through the opening from both ends of the sweep.
+       The direction is H.LIGHT_DIR, the same vector the shading uses, read
+       from dc-3d.js rather than restated here. The reach is ZT * 0.9, the
+       same drawing convention shadow() declares for every other building on
+       the Mall, so this shadow is as long as its neighbours' for its height.
+       Five copies: the sweep is 56 ft and the annulus is 72 ft wide, so
+       consecutive copies overlap by more than half and the fill is one flat
+       opaque tone, which means an overlap cannot show. */
+    var SH_D = ZT * 0.9;
+    for (var sI = 0; sI <= 4; sI++) {
+      var sT = sI / 4;
+      ring(R * 1.12, RI * 0.99, 0.05, "#a49d92", -1e9 + 2.0, null,
+           H.LIGHT_DIR.x * SH_D * sT, H.LIGHT_DIR.y * SH_D * sT);
+    }
     /* The dark under-drum. LOOKING is what forced this: with the ground
        beneath the building drawn the same tone as the plaza, the 14 ft of
        daylight under the ring vanished and an 82 ft drum on legs read as a
@@ -207,12 +254,79 @@
       box(RP * Math.cos(u), RP * Math.sin(u), 34, 34, 0, ZP, PIER, true);
     });
 
-    /* ---------- 3. the courtyard wall, glazed, painted first ---------- */
-    wall(RI, ZP, ZT, GRAN, false, null, 0);
-    /* the large rectangular windows of the interior circle, on the two
-       gallery levels, held just inside the wall so they paint over it */
-    wall(RI - 0.6, Z1 + 4.5, Z2 - 4.5, GLASS, false, null, 0.12);
-    wall(RI - 0.6, Z2 + 4.5, ZT - 8.0, GLASS, false, null, 0.12);
+    /* ---------- 3. the courtyard wall and its windows, painted first ----------
+
+       THE WINDOWS, OWED (e). The source published in this file's header says
+       the courtyard facade is "defined by large rectangular WINDOWS", plural
+       and rectangular. What stood here was two continuous ribbons of glass
+       running the whole 361 ft of the inner circumference, and the render
+       said what that costs: one smooth dark band with no articulation
+       anywhere on it, which is a glazed drum and not a wall with windows in
+       it. A ribbon is a positive claim the source does not make.
+
+       So the wall is now SOLID granite everywhere the windows are not, and
+       the glass is set 1.2 ft BACK into it, with a radial reveal at each end
+       of each opening and a sill under it. That is the Dendur lesson again:
+       open a solid, do not assemble a void. Glass proud of its own wall,
+       which is what RI - 0.6 drew, is a mirror hung on a facade.
+
+       THE RHYTHM IS AN ASSUMPTION, on its own line, and it is in NAMED GAPS.
+       No source reached this run gives a window count, a bay width or a pier
+       width for the inner court. Three of every four of the drawing's 44
+       segments are glazed, so eleven openings of 24.6 ft sit between eleven
+       piers of 8.2 ft on a 361 ft circumference: one bay per 32.8 ft. What
+       is claimed is the READING the source gives, large rectangular openings
+       separated by concrete. The eleven is not claimed as published, and it
+       falls out of the 44 the drawing already uses for roundness. */
+    var WD_ = 1.2;                       /* the glass sits this far into the wall */
+    var PER = 4;                         /* segments per bay: ASSUMED, see above */
+    function segIx(u) { return Math.round((u / (Math.PI * 2)) * N - 0.5); }
+    function isWin(u)  { return (((segIx(u) % PER) + PER) % PER) !== 0; }
+    function isPier(u) { return !isWin(u); }
+
+    /* the piers, full height, and the spandrels across the openings: between
+       them the drum stays solid, so nothing is ever seen through it */
+    wall(RI, ZP, ZT, GRAN, false, isPier, 0);
+    wall(RI, ZP,       Z1 + 4.5, GRAN, false, isWin, 0);
+    wall(RI, Z2 - 4.5, Z2 + 4.5, GRAN, false, isWin, 0);
+    wall(RI, ZT - 8.0, ZT,       GRAN, false, isWin, 0);
+    /* the glass itself, recessed, so it paints before the wall that frames it */
+    wall(RI + WD_, Z1 + 4.5, Z2 - 4.5, GLASS, false, isWin, 0);
+    wall(RI + WD_, Z2 + 4.5, ZT - 8.0, GLASS, false, isWin, 0);
+
+    /* one end reveal of an opening. Without these, two cylinders 1.2 ft
+       apart leave a radial gap at every jamb and an oblique view looks
+       straight through the drum to the sky. dir picks the side that faces
+       INTO the opening, which is the only one a viewer in the court sees. */
+    /* AND THE JAMBS AND SILLS MUST BE CULLED THE WAY THEIR OWN WALL IS, which
+       the render caught and no count would. A jamb's normal is TANGENTIAL, so
+       ctx.faceVisible passed it on the NEAR half of the court, where the wall
+       it belongs to is culled: two dark slivers stood on the roof, the same
+       fault this file records for the balcony recess. Every reveal now also
+       asks whether the courtyard wall at its own angle is drawn, using that
+       wall's own inward normal. */
+    function courtFaces(u) { return ctx.faceVisible(-Math.cos(u), -Math.sin(u)); }
+    function jamb(u, dir, z0, z1) {
+      var c = Math.cos(u), s2 = Math.sin(u);
+      var nx = -s2 * dir, ny = c * dir;
+      if (!ctx.faceVisible(nx, ny) || !courtFaces(u)) return;
+      push([pt(RI * c, RI * s2, z0), pt((RI + WD_) * c, (RI + WD_) * s2, z0),
+            pt((RI + WD_) * c, (RI + WD_) * s2, z1), pt(RI * c, RI * s2, z1)],
+           RECES, nx, ny, 0, 0.02);
+    }
+    for (var w = 0; w < N / PER; w++) {
+      var uA = a(w * PER + 1), uB = a(w * PER + PER);
+      [[Z1 + 4.5, Z2 - 4.5], [Z2 + 4.5, ZT - 8.0]].forEach(function (zz) {
+        jamb(uA,  1, zz[0], zz[1]);
+        jamb(uB, -1, zz[0], zz[1]);
+        /* the sill: the camera looks DOWN at the far inner wall, so the
+           upward face of the reveal shows and the soffit above does not.
+           Only the sill is drawn; the soffit is left out rather than drawn
+           with an upward normal and lit as though it were one. */
+        ring(RI + WD_, RI, zz[0], RECES, undefined,
+             function (u) { return u > uA - 1e-9 && u < uB + 1e-9 && courtFaces(u); });
+      });
+    }
 
     /* ---------- 4. the ring's top ---------- */
     ring(R, RI, ZT, GRAN);

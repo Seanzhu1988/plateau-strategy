@@ -221,6 +221,19 @@ queue instead. Remove a line the moment its work lands or is abandoned.
   that was done 2026-09-06, and modern is the honest skip the routine's own
   queue allows.
 
+- THE QUEUE IS DOWN TO ONE ROOM, established 2026-09-10 by the landmark
+  routine, which re-read the ledger before writing anything. asian-astor was
+  done 2026-09-09 and dendur was done 2026-09-09, so the note above is stale
+  on both. `greatHall` is the LAST pre-standard room in met-rooms.js and the
+  last open item in the whole rebuild queue.
+
+- great-hall, the Met's Great Hall, BUILT AND COMMITTED 2026-09-10 by the
+  landmark routine. The claim is released. THE REBUILD QUEUE IS NOW EMPTY:
+  the Mall's 16, the Freedom Trail's 9, NYC's 3, the Met exterior, MoMA, and
+  every Met interior except `greek-roman`, which stays REFUSED on published
+  dimensions, and `modern`, which is the honest skip. See the ledger entry
+  below for what it replaced, the sources, and what is still OWED on it.
+
 - american-court, the Charles Engelhard Court, BUILT AND COMMITTED 2026-09-09
   by the landmark routine. The claim below is released. THE BLOCK IS CLEARED
   AND THE PREVIOUS RUN'S PLAN WAS WRONG: it said to read the Dimensions field
@@ -751,6 +764,56 @@ above is not paperwork, it is the lock.
 
 
 ## Rebuilt to this standard
+
+- dendur, Gallery 131, the Temple of Dendur (2026-09-09, the landmark
+  routine). What it replaced was one brown box on a plate: no columns, no
+  doorway, no cornice you could see, and a gate drawn as TWO free-standing
+  wedges standing IN the pool, which read as a pair of obelisks in water.
+  PUBLISHED, reached this run, and every number traceable. The Met's own
+  collection record for its own object, 547802, gallery 131: temple proper
+  L 12.50 m (41 ft), W 6.40 m (21 ft), H 6.40 m (21 ft); gate H 8.08 m
+  (26.5 ft), W 3.66 m (12 ft), D 3.35 m (11 ft); Aeolian sandstone,
+  completed by 10 CE. From the Wikipedia article on the temple: two columns
+  on the pronaos with composite lotus capitals; three sections, pronaos then
+  antechamber then sanctuary; rounded tori at the corners and tops of the
+  walls, capped by a cavetto cornice, on BOTH temple and gate; a winged sun
+  disk over the gate and over the temple entrance; a dromos running 30 ft
+  (9.1 m) from the gate to the temple; and for the room, a reflecting pool
+  in FRONT, a sloping wall BEHIND, a stippled glass ceiling and NORTH wall,
+  and the temple still facing EAST.
+  THE ONE DISAGREEMENT BETWEEN SOURCES, reconciled out loud rather than
+  averaged. The Met says the temple is 21 ft high; Wikipedia says 16. Both
+  are kept: the pronaos front stands at 21 and the block behind it at 16, so
+  the roof STEPS DOWN westward. That is an interpretation, it is stated in
+  the file's own header, and it is the single change that stops the temple
+  reading as a box.
+  WHAT THE PICTURE SHOWED AND THE NUMBERS DID NOT, twice. First build: the
+  porch was assembled out of loose fins, two side walls and a screen wall
+  and two columns with nothing behind them, and it rendered as a SKELETON
+  with daylight through it sitting on the rear block. Rebuilt the other way
+  round, as a solid battered mass with the openings cut back into its east
+  face as recesses and the columns and screen walls standing PROUD of it, it
+  reads. The lesson generalises: in a painter's renderer, open a solid, do
+  not assemble a void. Second, the cliff wall had no thickness and read as a
+  loose flap of paper; it now carries a top edge.
+  TWO THINGS LEFT FOR THE NEXT RUN, both seen in a render and neither fixed
+  for the ceiling. (1) The temple faces EAST and the page's default camera
+  looks from the south-west, so the whole facade, its two columns, its
+  doorway and its sun disk, is on the FAR side and heavily foreshortened.
+  Render `node render_room.js dendur 2.5 0.35` to look at it; from there it
+  reads correctly. Whether the page should carry a different default yaw for
+  this one room is a real question and was not answered here. (2) From that
+  facade angle the north glass wall and the raked cliff are the NEAR walls
+  and are not culled, so they paint across the pool and the temple. The
+  standard already names the fix: cull by the wall's inner normal, as
+  greatHall does. It does not show at the default angle.
+  (2) IS PAID, 2026-09-10. Both surfaces are culled by their INWARD normal,
+  the glass on faceVisible(0, 1) and the cliff on faceVisible(1, 0), and
+  BOTH angles were checked because each surface has to survive one and
+  vanish from the other: at the page default the glass is the far wall and
+  is drawn while the cliff is culled from in front of the temple, and at
+  yaw 2.5 they swap and the pool reads clean. (1), the default camera
+  looking at the temple from behind, is STILL OPEN and is a page question.
 
 - asian-astor, the Astor Chinese Garden Court, Met gallery 217 (2026-09-09,
   the landmark routine). What it replaced was the clearest example in this
@@ -2403,6 +2466,54 @@ first. Step 4 of the standard is not optional, so a model carrying named,
 unaddressed defects is not finished. THAT is the queue. Work it worst first,
 three models a run, one fix each, and strike the items as they are paid.
 
+- THE ARCADE WAS UPSIDE DOWN, great-hall OWED (a), (b) and (c), all three
+  PAID 2026-09-10 by the landmark routine, and the cause was one bug none of
+  the three notes had found. THE FILE'S OWN DERIVATION WAS NOT FOLLOWED BY
+  ITS OWN CODE. met-rooms.js derives the room from the single published
+  number, the 75 ft ceiling: 75 = A + W/2 + 0.16W, so the arch SPRINGS at the
+  pier capital, 43.3 ft, and crowns at 62. greatHall drew it the other way
+  up, `archPts(bx, bay * 0.78, sp - bay * 0.39, ...)`, springing at 24.6 ft
+  and crowning at 43.3.
+  TWO CONSEQUENCES, and no count, bounding box or `node --check` would ever
+  report either. The gallery entablature runs 26.9 to 33.4 ft and was
+  therefore painted straight ACROSS the arcade, so the eight published
+  arches were invisible and the upper wall read as one blank grey slab. And
+  30.7 ft of the 75 ft wall, 41 PERCENT OF THE ROOM'S HEIGHT, sat empty above
+  the domes, because the domes were sitting at 44 ft in a 75 ft room.
+  THE FIX is one line of arithmetic in each of three places: both arch
+  recesses spring from `sp`, and the dome ring rides up to the crown at
+  `sp + bay * 0.41`. The domes then clear the balcony instead of overlapping
+  it, so the pierced stone railing LP-0972 calls a signature of the room is
+  visible along its whole length. That was OWED (c), paid as a side effect of
+  fixing something else entirely.
+  (a), the pendentives that read as grey lightning bolts hanging in mid-air:
+  A SPANDREL IS BOUNDED BELOW BY THE ARCH CURVE, and this one was drawn with
+  a straight lower edge and a tip BELOW the springing, which is what left it
+  hanging. It now springs from the pier at `sp`, runs up to the ring, in
+  along it, and back DOWN THE ARCH CURVE on eight samples.
+  (b), the niche pediments floating clear of their niches like arrows: A
+  PEDIMENT STANDS ON AN ENTABLATURE, NEVER ON AIR. The bare triangle now sits
+  on a band seated on the arch crown at `z + nh`, the same term the arch apex
+  is computed from, so the two cannot drift apart again.
+  WHAT THE PICTURE SHOWED AND THE NUMBERS DID NOT, twice on one model. The
+  ledger's three OWED items were all real and all SYMPTOMS; the render is
+  what showed a blank slab where an arcade belonged, and the blank slab is
+  what sent the run to the derivation. And the first pendentive fix shaded
+  them off DARK, which turned them from bolts into SLOTS PUNCHED THROUGH THE
+  WALL; they are mid-tone now. Verified at yaw -0.62 pitch 0.30, the angle
+  the original entry cites, and at the page default.
+  THE LESSON, and it is a new one for this file: WHEN A MODEL HAS A DERIVED
+  PLAN WRITTEN IN ITS HEADER, CHECK THE CODE AGAINST THE DERIVATION BEFORE
+  BELIEVING ANY OWED NOTE ABOUT IT. Three separate defects were recorded over
+  two runs, each described accurately, and every one of them was a
+  consequence of a single inverted term that the header had already written
+  down correctly. Sources unchanged, LP-0972 and the Met's 2010 press
+  release; no new dimension is claimed.
+  STILL OWED on great-hall: the pendentive half IS PAID, 2026-09-10, see A
+  PENDENTIVE IS CONCAVE below, and the plain field at the corners is reduced
+  by the same fix rather than answered; the two adversarial critics did not
+  fit inside the run's 25 minute ceiling.
+
 - dcwar OWED (a) is PAID, and the fix went where the note said it belonged,
   in the shared helper, so it was never only about this building.
   WHAT LOOKING SHOWED THAT THE NOTE DID NOT. The note called the dome
@@ -2460,7 +2571,8 @@ three models a run, one fix each, and strike the items as they are paid.
   (f) the shadow ring is concentric, i.e. sun at the zenith, while the walls
   are directionally lit; (g) the plaza disc's corner reads as a sheet of
   paper under the model at some yaws. The starburst half of (d) is PAID,
-  2026-09-09; the 44 bands on the blank wall are not, and stay owed.
+  2026-09-09; the 44 bands on the blank wall are not, and stay owed. (e) IS
+  PAID, 2026-09-10, see THE COURTYARD WAS A GLASS DRUM below.
 
 - old-south OWED (a) is PAID, and THE NOTE'S OWN DIAGNOSIS WAS WRONG, which
   is the finding worth keeping from this run. It recorded "a pale wedge of
@@ -2533,9 +2645,8 @@ three models a run, one fix each, and strike the items as they are paid.
   dcwar rule: park-street at yaw -0.62 and -2.10, bunker-hill, old-north and
   faneuil-hall at -0.62. All four now throw left, away from the sun, and none
   regressed.
-  STILL OWED on the trail: (b) the Revere house's two pavement pads overlap
-  at the corner and read as two rectangles rather than as a courtyard and a
-  street; (c) the Old State House roof is the largest surface in that model
+  STILL OWED on the trail: (b) IS PAID, 2026-09-10, see TWO SHEETS OF PAPER
+  below; (c) the Old State House roof is the largest surface in that model
   and carries nothing, and no source reached publishes dormers or plant.
 
 - THE MET STAIRCASE, met OWED (a), "the staircase has no cheek walls, so from
@@ -2570,7 +2681,10 @@ three models a run, one fix each, and strike the items as they are paid.
   STILL OWED on the Met: (b) the roof is still the largest surface in the
   model and carries nothing but the three banks; (c) the wings away from the
   front run are still flat slabs drawn by shellSolid, and bays there are a
-  separate and larger change.
+  separate and larger change. BOTH WERE LOOKED AT 2026-09-10 and are ONE
+  SOURCE-BLOCKED PROBLEM, not two drawing debts; see met OWED (b) AND (c) ARE
+  ONE SOURCE-BLOCKED PROBLEM at the end of this queue for the routes tried,
+  the codes they returned, and why nothing was invented on the roof.
 
 - OLD SOUTH OWED (b) is PAID. "The three octagons carry one round window each
   struck on a plane rather than on the facet, so at some yaws it will drift
@@ -2621,9 +2735,127 @@ three models a run, one fix each, and strike the items as they are paid.
   Verified at yaw -0.55 pitch 0.30, where the roof is now one surface, and at
   yaw 1.90 pitch 0.16 from behind, where the coping, the piers and the shadow
   ring are unchanged and the balcony correctly does not appear.
-  STILL OWED on hirshhorn: (c), the courtyard's inner wall; (d)'s other half,
-  44 tonal bands on a wall published as blank; (e) the glazing; (f) the
-  concentric shadow; (g) the plaza corner.
+  STILL OWED on hirshhorn, updated 2026-09-10: (d)'s other half is REDUCED,
+  not paid. Most of what the render showed were antialiasing HAIRLINES, not
+  shading, and wall() now overlaps its quads by a twelfth of a segment as
+  ring() already did, so the front of the drum reads as one smooth cylinder;
+  genuine tonal steps survive on the right flank where the gradient is
+  steepest, and that residue is the flat-shading half the note named.
+  (c) WAS LOOKED AT AND DID NOT REPRODUCE: at the standard angle the
+  courtyard reads as a dark shaft, which is what it should be. It stays on
+  the list, but a run picking it up should first find an angle that shows
+  it rather than trusting the note. (f) IS PAID, 2026-09-10, see THE SUN WAS
+  AT THE ZENITH below. (e) THE GLAZING IS PAID, 2026-09-10, see THE COURTYARD
+  WAS A GLASS DRUM below. Also still owed: (g) the plaza corner.
+
+- A PENDENTIVE IS CONCAVE, great-hall's half-owed shading, PAID 2026-09-10
+  by the landmark routine, and it is THE SAME FAULT AS THE HIRSHHORN'S
+  COURTYARD IN ANOTHER ROOM, which is why both were paid in one pass. The
+  spandrel's outline had already been fixed, so what was left was the tone:
+  each one rendered PALER than the wall it is cut into and read as a flat
+  wedge stuck on rather than as a corner tucked under a dome.
+  THE CAUSE IS ONE TERM. The fill was `ctx.shade(SHADE, 0, sgn, 0.42)`. That
+  +0.42 in z tilts the surface UP toward the light, so a recess was handed
+  the normal of a sunlit roof slope, and the base tone was SHADE, the palest
+  of the three wall greys. Hand ctx.shade a normal that faces the light and
+  it will draw you a lit face wherever you put it, which is exactly what the
+  hirshhorn's `outward=false` note records about a 96 ft courtyard shaft.
+  THE FIX changes no geometry, and that is worth saying plainly because the
+  outline here was hard won: the normal now points into the room and DOWN,
+  `(0, sgn * 0.9, -0.3)`, and the base drops from SHADE to LIME_D. It is a
+  drawing decision about shading, not a claim about the building; no source
+  is involved and none is cited.
+  WHAT THE PICTURE SHOWED, and the second half is not a claim of success.
+  The pale-flap reading is gone: the eight corners now read as recess, and
+  the large plain field the same OWED note complains about is REDUCED as a
+  side effect, because the corners of the upper wall are no longer one
+  unbroken pale sheet. But they have swung from too pale to fairly dark and
+  FLAT, so the concavity is now asserted by tone rather than described by a
+  gradient across the surface. That is a smaller fault than the one paid and
+  it goes on the list rather than being called finished.
+  STILL OWED on great-hall: the gradient across the spandrel IS PAID,
+  2026-09-10, see A GRADIENT CANNOT BE ASKED FOR THROUGH A NORMAL at the end
+  of this queue. The plain field between the arches is reduced but not
+  answered, and the two critics are still owed.
+
+- TWO SHEETS OF PAPER, trail OWED (b), PAID 2026-09-10 by the landmark
+  routine, and the note was RIGHT but understated. It said the Revere
+  house's "two pavement pads overlap at the corner"; measured from the two
+  `ground()` calls, which take a CENTRE and a size, the courtyard covered
+  x[-49,-25] y[-37,25] and North Square covered x[-34,34] y[16,36], so they
+  shared a nine foot square, and the render showed a hard stepped seam
+  running through it. Two ground planes at the same z is not something a
+  face count or a bounding box can report.
+  THE SOURCE HAD ALREADY MADE THE DISTINCTION AND THE DRAWING HAD DROPPED
+  IT. The article calls the courtyard "paved in brick"; North Square is a
+  street. They are two materials and they were being drawn in one tone,
+  PAVE, with one kerb. So the deeper fault was not the overlap, it was that
+  nothing but position told them apart, and position is exactly what the
+  overlap destroyed.
+  THE FIX is one line each. The courtyard takes a brick paving tone, and it
+  now stops at y = 16, which is the street pad's own near edge, so the two
+  ABUT along a line instead of crossing. An L reads as a corner; a cross
+  reads as two sheets of paper. The brick tone itself is a DRAWING DECISION
+  and is declared as one in the form: no source gives it, so it is PAVE
+  warmed and darkened toward the chimney brick, far enough to read as
+  another material and not so far that a weathered courtyard looks like new
+  chimney work.
+  WHAT THE PICTURE SHOWED AFTER THE FIX, recorded rather than claimed away:
+  the crossing seam is gone and the two surfaces now read as a brick
+  courtyard on the -x side and street paving across the front, which is what
+  the note asked for. The junction is still a visible notch, because the
+  courtyard's east edge at x = -25 and the street pad's west end at x = -34
+  do not line up, so nine feet of street runs past the corner. That is a
+  smaller fault than the one paid and it is left honestly on the list rather
+  than fixed in the same pass unlooked at.
+  STILL OWED on the Revere house: the notch above IS PAID, 2026-09-10, see
+  THE NOTCH at the end of this queue; the two adversarial critics are still
+  owed.
+
+- THE SUN WAS AT THE ZENITH, hirshhorn OWED (f), PAID 2026-09-10 by the
+  landmark routine. The note read "the shadow ring is concentric, i.e. sun at
+  the zenith, while the walls are directionally lit", and unlike the two
+  notes struck earlier today it was RIGHT ON ITS OWN CAUSE. The render showed
+  it before any code was opened: a perfect dark annulus, exactly centred, sat
+  under a drum whose right flank is the lit one. No face count, bounding box
+  or `node --check` reports a shadow pointing nowhere.
+  THE CAUSE was the drift trail-3d.js already recorded once. dc-3d.js has a
+  shadow() helper with the sun in it, and eight of the Mall's forms use it;
+  hirshhorn hand-rolled `ring(R*1.12, RI*0.99, ...)` at the origin instead,
+  because the helper sweeps a FILLED outline and filling this outline would
+  pave a courtyard that is open to the sky. Having opted out of the helper it
+  also opted out of the helper's sun.
+  THE FIX keeps the annulus and sweeps it. `ring()` takes an optional centre
+  offset, and the shadow is five copies from the base ring to the top ring
+  slid by H.LIGHT_DIR times ZT * 0.9, which is the same reach convention
+  shadow() declares for every other building, so a 96 ft drum now throws as
+  far for its height as its neighbours do. The union of the copies is the
+  true shadow of an open cylinder. Five is enough because the sweep is 56 ft
+  and the annulus is 72 ft wide, so consecutive copies overlap by more than
+  half, and the fill is one flat opaque tone, so an overlap cannot show.
+  ONE VECTOR, NOT A SIXTH COPY OF IT. LIGHT_DIR is now exported from
+  dc-3d.js helpers rather than restated in the form. trail-3d.js records
+  three stops that each kept a private copy of this constant and one of them
+  had the SIGN wrong, lighting the ground on the sunny side; a form that
+  cannot use shadow() should still not be allowed its own sun.
+  VERIFIED BY ARITHMETIC AND THEN BY LOOKING, in that order, because a sign
+  error here is invisible if you only glance. At the page default yaw the
+  offset projects LEFT and slightly UP the screen while the brightest wall
+  normal projects RIGHT, so shadow and highlight are on opposite sides. Then
+  both renders agree: at yaw -0.30 the shadow reaches left and the plaza is
+  clear on the sunlit right, and from behind at yaw 1.90 pitch 0.16 it has
+  swapped to the right with the lit flank on the left. The whole Mall was
+  re-rendered as a regression and is unchanged.
+  THE COURTYARD SURVIVES THE SWEEP, which is why the annulus was worth
+  keeping: the hole is the intersection of the copies' holes, a lens about
+  59 ft across rather than a 115 ft circle, and that is the honest answer,
+  because a courtyard floor under a 96 ft wall really is lit only where the
+  sun still reaches through the opening from both ends of the sweep.
+  Sources unchanged; no new dimension is claimed. R 115.5 ft, RI 57.5 ft,
+  ZP 14 ft, ZT 96 ft are the ones already in the form's header.
+  OWED: the two adversarial critics did not fit inside this run's 25 minute
+  ceiling, and hirshhorn still carries (c) unreproduced, (d)'s flat-shading
+  residue, (e) the glazing and (g) the plaza corner.
 
 - THE DORIC SHAFTS, dcwar OWED (b). "The columns are eight-sided prisms and
   fluted is carried only by shading." True, and the render says what that
@@ -2667,3 +2899,205 @@ three models a run, one fix each, and strike the items as they are paid.
   the side.
   Verified at yaw -0.62 pitch 0.28, cropped on the belfry and read whole at
   map scale, and at yaw -2.30 pitch 0.30. Old South now has no open debts.
+
+- great-hall, the Met's Great Hall, met-rooms.js (2026-09-10, the landmark
+  routine). THE LAST PRE-STANDARD ROOM ON THE SITE, and the clearest surviving
+  case of the thing Sean called unacceptable. What it replaced, seen in a
+  render before a line was changed: ONE flat wall with three arch-shaped holes
+  punched through it, four thin sticks standing in front of it for the "paired
+  columns", and the three saucer domes drawn as single quads that came out as
+  SLIVERS lying flat against the wall, reading as three awnings. No second
+  wall, no floor pattern, no balcony, no colonnade, no niche, no pendentive,
+  no skylight. Not a room, and no arithmetic would ever have said so.
+  PUBLISHED, reached this run, and the whole model is built from these two.
+  The NYC Landmarks Preservation Commission designation report LP-0972, "The
+  Metropolitan Museum of Art, Main Floor Interior", 1977, at
+  s-media.nyc.gov/agencies/lpc/lp/0972.pdf, read locally through pdftext.js:
+  three bays divided by piers carrying arches which support three SAUCER
+  DOMES with CIRCULAR SKYLIGHTS; the arches rise above DENTILED CORNICES
+  acting as pier capitals; the pendentives are PANELED and a ring of CLOSELY
+  SPACED BRACKETS encircles each dome's base; a second-floor gallery balcony
+  on an entablature that runs right round the room, frieze panelled with
+  acorns and sunflowers, dentiled cornice, and above it a limestone railing
+  with PIERCED STONE PANELS; colonnades of FOUR FLUTED IONIC COLUMNS; FOUR
+  ornamental niches set in the BASES of the piers in the east and west walls,
+  each arched under a pediment; two transverse passageways at the north and
+  south ends behind the screens of columns; warm-toned INDIANA LIMESTONE;
+  the Grand Staircase behind the WESTERN colonnade. And the Met's own press
+  release, "The Great Hall of The Metropolitan Museum of Art", 2010 general
+  information: the ceilings "soar SEVENTY-FIVE FEET high"; "three immense
+  saucer-shaped domes and EIGHT dramatic arches springing from enormous
+  masonry piers"; a mosaic floor that is "an aggregate of bits of marble
+  framed by strips of YELLOW MARBLE"; colonnades at "the north, west, and
+  south ends".
+  TWO SOURCES RECONCILED OUT LOUD, the Dendur rule. LP-0972 puts a colonnade
+  at "each side of the room"; the Met names north, west and south. They agree
+  once you notice the east side is the Fifth Avenue vestibule, so three
+  colonnades of four columns are drawn and none on the east.
+  THE PLAN IS A NAMED GAP, and this is the run's honest limit. No length,
+  width, bay module or dome diameter is published anywhere reached: not
+  LP-0972, which carries no dimension at all, not the press release, not the
+  Met's event pages, and two fetches of the Met's own release returned 429.
+  Only the HEIGHT is published. So the plan is DERIVED from that one number
+  and the derivation is written in the file's header rather than buried:
+  square bays, the dome ring inscribed in the bay, a semicircular arch of the
+  bay's span, a saucer rising 0.16 of its diameter, so 75 = A + W/2 + 0.16W
+  and W = 48 puts the pier capital at 43.3 ft. 144 ft of bays plus the two
+  published end passageways. NONE of that may be quoted as published. The
+  EIGHT ARCHES are likewise an interpretation, declared: the count is
+  published, the arrangement is not, and they are drawn six on the long walls
+  and two closing the ends.
+  WHAT THE PICTURE SHOWED AND THE NUMBERS DID NOT, and it was fatal. The
+  first build passed `node --check` and drew 1,100 polygons, and every dome
+  hung on a single downward-pointing CONE: three lampshades on stems. The
+  cause was the pendentives. They were built as free diagonals spanning the
+  room from the bay's floor corners up to the dome ring, and `faceVisible`
+  culled two of the four, so the two survivors met at the bay centre and
+  fused into a funnel. A PENDENTIVE IS A CORNER, NOT A STRUT: it is drawn in
+  the WALL PLANE now, at the top corners of each bay, on the same cutaway
+  test as the wall it belongs to. The domes were also hovering clear of the
+  arcade with daylight under them, so the bracket ring came down to the arch
+  crown and the saucer is held to the lesser of the bay and the hall width.
+  Verified at yaw -0.62 pitch 0.30, where the funnel is gone and the domes
+  sit on the wall head.
+  OWED (a), (b) and (c) are ALL PAID, 2026-09-10, and the cause of all three
+  sat underneath them; see THE ARCADE WAS UPSIDE DOWN below. The original
+  note is kept in the past tense for the research it carries: (a) the
+  pendentives read as PALE FLAT WEDGES
+  standing above the entablature rather than as concave corners, and the one
+  on the near wall reads as a lightning bolt; they want to be darker than the
+  wall and to spring from the pier, not from mid-air. (b) the niche pediments
+  FLOAT a clear gap above their own niches; the arch top and the pediment
+  base were computed from different terms. (c) the domes overlap the wall
+  head and hide the pierced balcony behind them at this yaw, so the railing,
+  which is one of the room's published signatures, is only half seen. And as
+  every entry above says: the two adversarial critics did not fit inside the
+  run's 25 minute ceiling.
+
+- THE COURTYARD WAS A GLASS DRUM, hirshhorn OWED (e), PAID 2026-09-10 by the
+  landmark routine. The note read "the courtyard glazing is two ribbons
+  against a source that says large rectangular windows", and the render said
+  it plainly before any code was opened: one smooth dark band running the
+  whole 361 ft of the inner circumference, with no articulation anywhere on
+  it. A RIBBON IS A POSITIVE CLAIM THE SOURCE DOES NOT MAKE. "Large
+  rectangular windows" is plural discrete rectangles; a continuous band of
+  glass is a different building, and the one thing every photograph of this
+  court shows is concrete piers standing between the openings.
+  THE FIX IS A SOLID OPENED, NOT A BAND BROKEN, which is the Dendur lesson
+  again. The courtyard wall is granite everywhere the windows are not, full
+  height on the piers and as spandrels above, between and below the openings,
+  so the drum is never seen through. The glass sits 1.2 ft BACK into it with a
+  radial reveal at each end of each opening and a sill under it. What stood
+  before had the glass at RI - 0.6, which is INSIDE the courtyard radius, so
+  it was proud of its own wall: a mirror hung on a facade rather than a window
+  cut into one.
+  THE RHYTHM IS AN ASSUMPTION AND IS IN NAMED GAPS. No source reached gives a
+  window count, a bay width or a pier width. Three of every four of the
+  drawing's 44 segments are glazed, so eleven openings of 24.6 ft sit between
+  eleven piers of 8.2 ft: one bay per 32.8 ft. What is claimed is the READING
+  the source gives; the eleven is not claimed as published and falls out of
+  the 44 the drawing already used for roundness. sah-archipedia.org's page for
+  this building, DC-01-ML03, returned HTTP 403 to two attempts and is the
+  named route to a fuller published description.
+  WHAT THE PICTURE SHOWED AND THE NUMBERS DID NOT. After the first build two
+  dark slivers stood on the ROOF. A jamb's normal is TANGENTIAL, so
+  ctx.faceVisible passed it on the NEAR half of the court where the wall it
+  belongs to is culled: the same fault this file records for the balcony
+  recess, arriving through a different door. Every reveal now also asks
+  whether the courtyard wall at its own angle is drawn, using that wall's own
+  inward normal, and both angles were checked because the slivers only exist
+  on the near side. Verified at yaw -0.62 pitch 0.30 and yaw -2.10 pitch 0.36.
+  STILL OWED on hirshhorn: (c) which did not reproduce and wants an angle
+  found first; (d)'s flat-shading residue on the right flank; (g) the plaza
+  disc's corner.
+
+- A GRADIENT CANNOT BE ASKED FOR THROUGH A NORMAL, great-hall's remaining
+  spandrel debt, PAID 2026-09-10 by the landmark routine, and the reason it
+  took two attempts is the finding worth keeping.
+  The note said the concavity was "asserted by tone rather than described by a
+  gradient across the surface", and it was right: one polygon, one flat dark
+  wedge. A pendentive is deepest in shade at its bottom tip, where the surface
+  is furthest into the corner and its own overhang stands between it and the
+  skylight, and it opens toward the light as it spreads out to the dome ring.
+  THE OUTLINE IS UNTOUCHED, which matters because it was hard won. The same
+  silhouette is now expressed as two boundaries read at a height h above the
+  springing: the pier edge is the constant x = ax, and the inner edge follows
+  the arch circle of radius R until the arc ends and then runs straight up to
+  the ring. At h = R sin(tIn) the two agree exactly, R cos(tIn) = dr * 0.72,
+  so twelve horizontal bands reproduce the polygon to the foot and add no
+  geometry. They overlap by a fifth of a band, the hirshhorn's own antialiasing
+  lesson, because two abutting quads each antialias their shared edge against
+  what is behind them.
+  THE FIRST VERSION RAMPED THE NORMAL AND CAME BACK FLAT. nz went from -0.60
+  at the tip to +0.15 at the ring and the picture showed no change at all, so
+  the bands were drawn in #ff0000 and appeared instantly, correctly shaped,
+  and UNIFORMLY RED. The cause is the shader's own floor: d = 0.55nx + 0.35ny
+  + 0.72nz and f = 0.62 + 0.38 max(0, d), so on the wall whose ny is negative
+  every one of those normals gives d < 0, f floors at 0.62, and the whole ramp
+  collapses to one tone. THE GENERAL RULE, which belongs beside "colour it and
+  render once": a gradient asked for through the normal dies inside the clamp,
+  so a ramp must live in the BASE COLOUR. New mixHex() lerps LIME_D toward a
+  deep corner tone across the bands, and the normal is left exactly as the
+  pendentive-concavity fix set it, (0, sgn * 0.9, -0.3). It is a drawing
+  decision about shading, declared as one; no source gives the light in this
+  room and none is cited. Verified at yaw -0.30 pitch 0.14, where the whole
+  spandrel is exposed and the ramp reads from dark corner to open ring, and at
+  yaw -0.62 pitch 0.30, where the dome eclipses all but the darkest band,
+  which is correct.
+  STILL OWED on great-hall: the plain field between the arches, reduced twice
+  now and still one tone over a large surface; the domes' size against their
+  bays, which the render keeps raising and no note has yet stated; and the two
+  critics.
+
+- THE NOTCH, paul-revere's last junction debt, PAID 2026-09-10 by the landmark
+  routine. Abutting along a line was not enough. The street pad ran from
+  x = -34 while the courtyard's east edge is x = -25, so nine feet of grey
+  paving stood out past the brick corner and the outline of the paved ground
+  went east, jumped twenty feet north, and went east again: a T junction with
+  a step in it, not a corner. The render showed the pale tongue poking into
+  the grass exactly there, and the before and after crops differ in nothing
+  else.
+  The street's west end now lands ON the courtyard's east edge. The pad's
+  width was never published: the source gives the HOUSE as 48 ft along North
+  Square, and 68 was that plus ten feet of slack each side, a drawing choice.
+  Fifty-nine still covers the whole 48 ft front and ten feet east of it, so
+  nothing the source does say is given up.
+  THE HOUR THIS NEARLY COST, and it is a tooling note every run here will
+  want. Two crops of the junction came back BYTE-IDENTICAL and read as a fix
+  that did not fire. It had fired: the diff of the two SVGs shows the pad's
+  west end moving 43 px, from 388.4 to 431.5. The crops were simply in the
+  wrong place, because qlmanage renders a 900x700 viewBox into a 1400x1400
+  SQUARE, so PNG x = svg x * 1.5556 and PNG y = svg y * 1.5556 + 155.5.
+  BEFORE GUESSING A CROP, DIFF THE SVG AND CONVERT ITS COORDINATES; the
+  transform is not the identity and no amount of looking at the wrong 300
+  pixels will show a change that is 200 pixels away.
+  Paul Revere's house now has no open junction debts. STILL OWED: the two
+  adversarial critics.
+
+- met OWED (b) AND (c) ARE ONE SOURCE-BLOCKED PROBLEM, looked at 2026-09-10
+  and deliberately NOT built, which is the standard's own first rule doing its
+  job rather than a run running out of time.
+  The render confirms the note exactly: the roof is a vast flat cream plate,
+  by far the largest surface in the model, carrying three thin skylight
+  ribbons in one corner and nothing at all across the other two thirds. The
+  facade reads as though glued to a card.
+  WHAT IT WANTS AND WHY IT CANNOT HAVE IT YET. The two candidates are the Iris
+  and B. Gerald Cantor Roof Garden, which opened 1 August 1987 on the roof of
+  the Lila Acheson Wallace Wing and is the one roof feature a guide would
+  name, and the wings at their real several heights. NEITHER HAS A PUBLISHED
+  DIMENSION THIS RUN COULD REACH. The Met's own event page for the roof garden
+  returned HTTP 429, the same rate limit the dendur, asian-astor and
+  greek-roman entries each record; sah-archipedia returned 403; and a general
+  search returns the 1987 opening and the Central Park view and no area,
+  footprint or level. The repo's own met-map.js ROOMS are a SCHEMATIC
+  diagram, not a survey, and the three existing skylight banks do not even
+  align with the euro-paintings box, so deriving skylight fields from them
+  would be deriving from a drawing.
+  AND ONE THING THE NOTE ASKS FOR IS ALREADY A DECLARED SIMPLIFICATION, not a
+  defect: the model is the real outline EXTRUDED to one height, which is what
+  met-3d.js says it is. Roof furniture invented on top of that would break the
+  declaration and give the model a false specificity. Absence over invention.
+  THE NAMED ROUTES for a run that can reach them: the Cantor Roof Garden's
+  footprint or capacity from a Met event or press document; the wing heights
+  from the New York City Landmarks Preservation Commission exterior
+  designation report, LP-0972 being the interior one this file already uses.
