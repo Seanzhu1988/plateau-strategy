@@ -308,6 +308,70 @@
       }
     }
 
+    /* ---- THE +x GABLE END AND THE BACK, which the first build left bare.
+       It was drawn for the page's opening yaw alone, where only +y and -x
+       face the camera, and the header says every other face "is culled".
+       That is true for one frame. The trail page turns the model slowly the
+       moment it loads and a reader can drag it, so within seconds the back
+       and the far gable came round as flat dark clapboard without one window
+       or course line: 33 drawn items from behind against 201 from the front,
+       which is a box. A house has four sides. Window positions on these two
+       faces are NOT published; the pairs follow the front's 12 ft bay module
+       and the -x end's one pair per storey, a drawing decision declared here
+       rather than passed off as a fact. ---- */
+    if (ctx.faceVisible(1, 0)) {
+      var hLo = lower.walls["1,0"], hUp = upper.walls["1,0"];
+      if (hLo !== undefined) {
+        clapboard(mapX(x1), y0, y1, SILL, OVER - 1.4, hLo);
+        diamondPair(mapX(x1), 0, SILL + 1.9, SILL + 6.4, hLo);
+      }
+      if (hUp !== undefined) {
+        clapboard(mapX(x1 + PROJ), y0, y1 + PROJ, OVER + 1.2, EAVE, hUp);
+        diamondPair(mapX(x1 + PROJ), 0, OVER + 2.6, OVER + 7.4, hUp);
+        out.push(panel(ctx, mapX(x1 + PROJ), y0, y1 + PROJ, OVER - 0.1, OVER + 1.1,
+                       CLAP_D, CLAP_E, hUp + 0.2));
+      }
+      /* the ell's own +x flank, which faces the courtyard */
+      var eLoH = eLower.walls["1,0"], eUpH = eUpper.walls["1,0"];
+      if (eLoH !== undefined) {
+        clapboard(mapX(ex1), ey0, ey1, SILL, OVER - 1.4, eLoH);
+        diamondPair(mapX(ex1), ey0 + 8, SILL + 1.9, SILL + 6.4, eLoH);
+      }
+      if (eUpH !== undefined) {
+        clapboard(mapX(ex1), ey0 - PROJ, ey1, OVER + 1.2, EAVE, eUpH);
+        diamondPair(mapX(ex1), ey0 + 8, OVER + 2.6, OVER + 7.4, eUpH);
+      }
+    }
+    if (ctx.faceVisible(0, -1)) {
+      /* the main block's back where the ell does not cover it, from the
+         ell's east side to the house's east end: bays three and four */
+      var bLo = lower.walls["0,-1"], bUp = upper.walls["0,-1"];
+      if (bLo !== undefined) {
+        clapboard(mapY(y0), ex1, x1, SILL, OVER - 1.4, bLo);
+        [2, 3].forEach(function (b) {
+          diamondPair(mapY(y0), x0 + BAY * (b + 0.5), SILL + 1.9, SILL + 6.4, bLo);
+        });
+      }
+      if (bUp !== undefined) {
+        clapboard(mapY(y0), ex1, x1 + PROJ, OVER + 1.2, EAVE, bUp);
+        [2, 3].forEach(function (b) {
+          diamondPair(mapY(y0), x0 + BAY * (b + 0.5), OVER + 2.6, OVER + 7.4, bUp);
+        });
+      }
+      /* and the ell's end, with HABS's "similar overhang" */
+      var eLoB = eLower.walls["0,-1"], eUpB = eUpper.walls["0,-1"];
+      if (eLoB !== undefined) {
+        clapboard(mapY(ey0), ex0, ex1, SILL, OVER - 1.4, eLoB);
+        diamondPair(mapY(ey0), ex0 + 8, SILL + 1.9, SILL + 6.4, eLoB);
+      }
+      if (eUpB !== undefined) {
+        clapboard(mapY(ey0 - PROJ), ex0 - PROJ, ex1, OVER + 1.2, EAVE, eUpB);
+        diamondPair(mapY(ey0 - PROJ), ex0 + 8, OVER + 2.6, OVER + 7.4, eUpB);
+        out.push(panel(ctx, mapY(ey0 - PROJ), ex0 - PROJ, ex1, OVER - 0.1, OVER + 1.1,
+                       CLAP_D, CLAP_E, eUpB + 0.2));
+      }
+    }
+
     /* ================= THE ROOFS =================
        CHECKLIST 4: the published gable runs PARALLEL to the street, so the
        ridge runs along x here and the shared helper, whose ridge runs along
