@@ -122,14 +122,36 @@ def out_path(slug, lang, tier="guide"):
 
 
 def voice_for(lang):
-    """A per-language reader if one is set, then the guide's own voice, then
-    the house override, then Jason. GUIDE_VOICE_ID exists because the guide is
-    a stranger walking beside a traveller, not the butler answering Sean, and
-    the two should not be forced to share a throat."""
-    return (os.environ.get("ELEVENLABS_VOICE_ID_%s" % lang.upper(), "").strip()
-            or os.environ.get("GUIDE_VOICE_ID", "").strip()
-            or os.environ.get("ELEVENLABS_VOICE_ID", "").strip()
-            or DEFAULT_VOICE)
+    """The voice that reads the guides in this language, or None.
+
+    English keeps its old chain exactly: a per-language override, then the
+    guide's own voice, then the house override, then Jason. GUIDE_VOICE_ID
+    exists because the guide is a stranger walking beside a traveller, not the
+    butler answering Sean, and the two should not be forced to share a throat.
+
+    Every OTHER language is decided by the casting table in guide_voices.py,
+    the same table the trail and MoMA recorders read. This used to fall
+    through to Jason for any language at all, so `--lang zh` would have
+    recorded the Chinese guides in Jason's voice, an American reading
+    Mandarin, which guide_voices.py rules out by name. It was caught on
+    2026-09-10 by a dry run printing Jason's id for zh right after Haoran was
+    cast. GUIDE_VOICE_ID and ELEVENLABS_VOICE_ID say nothing about language,
+    so they may no longer choose a voice for one. An explicit per-language
+    override (ELEVENLABS_VOICE_ID_ZH) is a person choosing for that language,
+    and still wins. No reader cast means None, and main() refuses."""
+    explicit = os.environ.get("ELEVENLABS_VOICE_ID_%s" % lang.upper(), "").strip()
+    if explicit:
+        return explicit
+    if lang == "en":
+        return (os.environ.get("GUIDE_VOICE_ID", "").strip()
+                or os.environ.get("ELEVENLABS_VOICE_ID", "").strip()
+                or DEFAULT_VOICE)
+    try:
+        import guide_voices as gv
+        who = gv.reader_for("guide", lang)
+        return gv.voice_id(who) if who else None
+    except Exception:
+        return None
 
 
 def load_scripts(lang, tier="guide"):
@@ -417,6 +439,11 @@ def main():
             voice = sys.argv[sys.argv.index("--voice") + 1].strip()
         except Exception:
             pass
+    if not voice:
+        print("No guide reader cast for %s. Cast one in guide_voices.py "
+              "(BY_LANGUAGE['guide']) or pass --voice, then run again. Refusing "
+              "rather than reading %s in somebody else's voice." % (lang, lang))
+        return 1
     scripts = load_scripts(lang, tier)
     manifest = load_manifest()
     os.makedirs(OUTDIR, exist_ok=True)
