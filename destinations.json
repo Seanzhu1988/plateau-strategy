@@ -5899,7 +5899,9 @@
    "lon": -75.19696,
    "slug": "penn-franklin-bench",
    "desc": "George Lundeen's bronze of 1987 at 37th and Locust: Franklin on a park bench reading a newspaper, with room beside him. The founder of the university, sitting in the middle of it.",
-   "tip": "The most photographed spot at Penn. Come early if you want the bench to yourself."
+   "tip": "The most photographed spot at Penn. Come early if you want the bench to yourself.",
+   "audio": "/media/audio/ivy-penn-stop-1.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Locust Walk",
@@ -5912,7 +5914,9 @@
    "lon": -75.19369,
    "slug": "penn-locust-walk",
    "desc": "The brick path that replaced Locust Street through the campus in the 1960s, lined with the older houses and halls, the way every student gets to class.",
-   "tip": "Busiest between classes on the hour."
+   "tip": "Busiest between classes on the hour.",
+   "audio": "/media/audio/ivy-penn-stop-2.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "The Split Button",
@@ -5925,7 +5929,9 @@
    "lon": -75.19369,
    "slug": "penn-split-button",
    "desc": "Claes Oldenburg's sixteen-foot aluminium button of 1981 in front of Van Pelt Library, split in the middle. The joke is on the statue of Franklin nearby, whose waistcoat could have lost it.",
-   "tip": "Students sit in the split."
+   "tip": "Students sit in the split.",
+   "audio": "/media/audio/ivy-penn-stop-3.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Van Pelt-Dietrich Library",
@@ -5938,7 +5944,9 @@
    "lon": -75.19393,
    "slug": "penn-van-pelt-library",
    "desc": "The main library, 1962, with the rare books on the top floor and Franklin's own reading chair upstairs among the university's founding papers.",
-   "tip": "Visitors may enter the lobby; the sixth-floor special collections take a booking."
+   "tip": "Visitors may enter the lobby; the sixth-floor special collections take a booking.",
+   "audio": "/media/audio/ivy-penn-stop-4.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "College Green and the Franklin statue",
@@ -5951,7 +5959,9 @@
    "lon": -75.19367,
    "slug": "penn-college-green",
    "desc": "The lawn in front of College Hall with John Boyle's standing bronze of Franklin, 1899, moved here from City Hall in 1939.",
-   "tip": "The Green is where the university gathers for Commencement."
+   "tip": "The Green is where the university gathers for Commencement.",
+   "audio": "/media/audio/ivy-penn-stop-5.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "College Hall",
@@ -5970,7 +5980,9 @@
      "step-free"
     ]
    },
-   "updated_at": "2026-09-09T06:59:20"
+   "updated_at": "2026-09-09T06:59:20",
+   "audio": "/media/audio/ivy-penn-stop-6.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Houston Hall",
@@ -5983,7 +5995,9 @@
    "lon": -75.19388,
    "slug": "penn-houston-hall",
    "desc": "The first student union in the country, 1896, still the students' building: food, meeting rooms, a great hall with a fireplace.",
-   "tip": "Open daily; cafes inside."
+   "tip": "Open daily; cafes inside.",
+   "audio": "/media/audio/ivy-penn-stop-7.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Irvine Auditorium",
@@ -5996,7 +6010,9 @@
    "lon": -75.19299,
    "slug": "penn-irvine-auditorium",
    "desc": "The Gothic pile of 1932 at 34th and Spruce with the Curtis Organ inside, one of the largest organs in the world, built for the 1926 Sesquicentennial exposition.",
-   "tip": "Organ recitals are free and rare; check the schedule."
+   "tip": "Organ recitals are free and rare; check the schedule.",
+   "audio": "/media/audio/ivy-penn-stop-8.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Fisher Fine Arts Library",
@@ -6009,7 +6025,9 @@
    "lon": -75.19272,
    "slug": "penn-fisher-fine-arts-library",
    "desc": "Frank Furness's red sandstone library of 1891, a National Historic Landmark, with a four-storey reading room under a skylight and the stacks in a glass and iron tower behind. Louis Kahn taught here and loved it.",
-   "tip": "Visitors welcome to the reading room; quiet."
+   "tip": "Visitors welcome to the reading room; quiet.",
+   "audio": "/media/audio/ivy-penn-stop-9.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Penn Museum",
@@ -6022,7 +6040,9 @@
    "lon": -75.19129,
    "slug": "penn-museum",
    "desc": "The University of Pennsylvania Museum of Archaeology and Anthropology, 1899, with the Sphinx of Ramses II, the largest sphinx in the western hemisphere, the Royal Tombs of Ur, and the Chinese rotunda.",
-   "tip": "Paid admission; free for Penn ID. Closed Mondays."
+   "tip": "Paid admission; free for Penn ID. Closed Mondays.",
+   "audio": "/media/audio/ivy-penn-stop-10.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Van Wickle Gates",
@@ -6035,7 +6055,9 @@
    "lon": -71.40447,
    "slug": "brown-van-wickle-gates",
    "desc": "The wrought iron gates on Prospect Street, 1901. Opened inward once a year for the new class in September and outward once for the graduates in May; walking through them any other time is said to bring bad luck.",
-   "tip": "The view down College Street to the State House dome is from right here."
+   "tip": "The view down College Street to the State House dome is from right here.",
+   "audio": "/media/audio/ivy-brown-stop-1.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "University Hall",
@@ -6048,7 +6070,9 @@
    "lon": -71.40385,
    "slug": "brown-university-hall",
    "desc": "The oldest building at Brown, brick, 1770, the whole college for its first decades and a barracks and hospital for French and American troops in the Revolution. A National Historic Landmark.",
-   "tip": "Not open to visitors."
+   "tip": "Not open to visitors.",
+   "audio": "/media/audio/ivy-brown-stop-2.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Manning Hall",
@@ -6061,7 +6085,9 @@
    "lon": -71.40387,
    "slug": "brown-manning-hall",
    "desc": "The Greek Revival chapel of 1834, a Doric temple twice the size of its model at Paestum, now the university's chapel.",
-   "tip": "Sometimes open for services."
+   "tip": "Sometimes open for services.",
+   "audio": "/media/audio/ivy-brown-stop-3.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Carrie Tower",
@@ -6074,7 +6100,9 @@
    "lon": -71.40449,
    "slug": "brown-carrie-tower",
    "desc": "The brick and stone clock tower of 1904 at the corner of the green, built by Paul Bajnotti of Turin for his wife Carrie, a Brown family granddaughter. Love is strong as death, says the inscription.",
-   "tip": "The clock still keeps time."
+   "tip": "The clock still keeps time.",
+   "audio": "/media/audio/ivy-brown-stop-4.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "John Hay Library",
@@ -6087,7 +6115,9 @@
    "lon": -71.40497,
    "slug": "brown-john-hay-library",
    "desc": "The marble library of 1910, named for Lincoln's secretary, and the home of the special collections: the Lincoln papers, the H. P. Lovecraft papers, and a collection of toy soldiers.",
-   "tip": "Exhibitions open to visitors on weekdays."
+   "tip": "Exhibitions open to visitors on weekdays.",
+   "audio": "/media/audio/ivy-brown-stop-5.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "John D. Rockefeller Jr. Library",
@@ -6108,7 +6138,9 @@
      "air conditioned"
     ]
    },
-   "updated_at": "2026-09-09T09:00:52"
+   "updated_at": "2026-09-09T09:00:52",
+   "audio": "/media/audio/ivy-brown-stop-6.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Sayles Hall",
@@ -6121,7 +6153,9 @@
    "lon": -71.40258,
    "slug": "brown-sayles-hall",
    "desc": "The Romanesque hall of 1881 with the portraits of every president and the Hutchings-Votey organ, played at midnight before Halloween.",
-   "tip": "Open for events; the organ concert on Halloween eve is a tradition."
+   "tip": "Open for events; the organ concert on Halloween eve is a tradition.",
+   "audio": "/media/audio/ivy-brown-stop-7.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "John Carter Brown Library",
@@ -6134,7 +6168,9 @@
    "lon": -71.40244,
    "slug": "brown-john-carter-brown-library",
    "desc": "The 1904 Beaux-Arts library on the green holding one of the world's great collections of early Americana: books and maps printed before 1825 about the Americas.",
-   "tip": "Free, weekdays; the reading room is for scholars, the exhibitions for everyone."
+   "tip": "Free, weekdays; the reading room is for scholars, the exhibitions for everyone.",
+   "audio": "/media/audio/ivy-brown-stop-8.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Faunce House",
@@ -6147,7 +6183,9 @@
    "lon": -71.40292,
    "slug": "brown-faunce-house",
    "desc": "The 1904 student union, now the Stephen Robert Campus Center, with the Blue Room cafe and the arch students walk through to the green.",
-   "tip": "Cafe open to all."
+   "tip": "Cafe open to all.",
+   "audio": "/media/audio/ivy-brown-stop-9.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Soldiers Memorial Gate",
@@ -6160,7 +6198,9 @@
    "lon": -71.40056,
    "slug": "brown-soldiers-memorial-gate",
    "desc": "The brick and limestone gate of 1921 at the top of Lincoln Field, the memorial to the Brown men who died in the First World War.",
-   "tip": "Free."
+   "tip": "Free.",
+   "audio": "/media/audio/ivy-brown-stop-10.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Sciences Library",
@@ -6179,7 +6219,9 @@
      "air conditioned"
     ]
    },
-   "updated_at": "2026-09-09T10:01:28"
+   "updated_at": "2026-09-09T10:01:28",
+   "audio": "/media/audio/ivy-brown-stop-11.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Hanover Inn",
@@ -6192,7 +6234,9 @@
    "lon": -72.28875,
    "slug": "dartmouth-hanover-inn",
    "desc": "The college's own hotel on the south side of the Green, on the site of a tavern that has served the college since the 1780s.",
-   "tip": "The porch is a fine place to end the walk with a drink."
+   "tip": "The porch is a fine place to end the walk with a drink.",
+   "audio": "/media/audio/ivy-dartmouth-stop-1.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Dartmouth Green",
@@ -6209,7 +6253,9 @@
    "dining": {
     "hours_text": "24/7"
    },
-   "updated_at": "2026-09-09T10:01:42"
+   "updated_at": "2026-09-09T10:01:42",
+   "audio": "/media/audio/ivy-dartmouth-stop-2.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Dartmouth Hall and Dartmouth Row",
@@ -6222,7 +6268,9 @@
    "lon": -72.28706,
    "slug": "dartmouth-hall",
    "desc": "The white clapboard row on the east side of the Green: Dartmouth Hall of 1784, burned and rebuilt in brick painted white in 1906, with Wentworth and Thornton either side. The picture of the college.",
-   "tip": "Not open to visitors."
+   "tip": "Not open to visitors.",
+   "audio": "/media/audio/ivy-dartmouth-stop-3.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Rollins Chapel",
@@ -6235,7 +6283,9 @@
    "lon": -72.28722,
    "slug": "dartmouth-rollins-chapel",
    "desc": "The Romanesque chapel of 1885, granite and brownstone, now used for services of many faiths and for concerts.",
-   "tip": "Open most days."
+   "tip": "Open most days.",
+   "audio": "/media/audio/ivy-dartmouth-stop-4.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Webster Hall and Rauner Library",
@@ -6248,7 +6298,9 @@
    "lon": -72.28817,
    "slug": "dartmouth-rauner-library",
    "desc": "Webster Hall of 1907, named for Daniel Webster, class of 1801, converted in 2000 into the Rauner Special Collections Library, which holds the college's charter of 1769 and the Robert Frost papers.",
-   "tip": "Free, open weekdays."
+   "tip": "Free, open weekdays.",
+   "audio": "/media/audio/ivy-dartmouth-stop-5.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Baker Library and the Orozco murals",
@@ -6261,7 +6313,9 @@
    "lon": -72.28867,
    "slug": "dartmouth-baker-library",
    "desc": "The 1928 library with the bell tower modelled on Independence Hall, and in its reserve reading room downstairs the Epic of American Civilization, twenty-four fresco panels painted by Jose Clemente Orozco between 1932 and 1934, a National Historic Landmark.",
-   "tip": "Free, daily. The murals are in the Orozco Room on the lower level; ask at the desk."
+   "tip": "Free, daily. The murals are in the Orozco Room on the lower level; ask at the desk.",
+   "audio": "/media/audio/ivy-dartmouth-stop-6.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Sanborn House",
@@ -6274,7 +6328,9 @@
    "lon": -72.28917,
    "slug": "dartmouth-sanborn-house",
    "desc": "The 1929 English department building with a panelled library where tea is served every weekday afternoon at four, a tradition since the building opened.",
-   "tip": "Tea at 4 pm weekdays during term. Visitors are welcome."
+   "tip": "Tea at 4 pm weekdays during term. Visitors are welcome.",
+   "audio": "/media/audio/ivy-dartmouth-stop-7.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Parkhurst Hall",
@@ -6287,7 +6343,9 @@
    "lon": -72.28995,
    "slug": "dartmouth-parkhurst-hall",
    "desc": "The administration building of 1911 on the west side of the Green, the president's office, occupied by students in the protest of 1969.",
-   "tip": "Not open to visitors."
+   "tip": "Not open to visitors.",
+   "audio": "/media/audio/ivy-dartmouth-stop-8.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Collis Center",
@@ -6300,7 +6358,9 @@
    "lon": -72.28996,
    "slug": "dartmouth-collis-center",
    "desc": "The student centre, built round College Hall of 1901, with the cafe and common rooms where the campus eats between classes.",
-   "tip": "Open daily; cafes inside."
+   "tip": "Open daily; cafes inside.",
+   "audio": "/media/audio/ivy-dartmouth-stop-9.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Hopkins Center for the Arts",
@@ -6313,7 +6373,9 @@
    "lon": -72.28816,
    "slug": "dartmouth-hopkins-center",
    "desc": "Wallace Harrison's arts centre of 1962, with the arched glass front. Harrison designed it before the Metropolitan Opera House at Lincoln Center, which it resembles for a reason.",
-   "tip": "The lobby is open; concerts and films most nights."
+   "tip": "The lobby is open; concerts and films most nights.",
+   "audio": "/media/audio/ivy-dartmouth-stop-10.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Hood Museum of Art",
@@ -6326,7 +6388,9 @@
    "lon": -72.28737,
    "slug": "dartmouth-hood-museum",
    "desc": "The college museum, Charles Moore's building of 1985 expanded by Tod Williams and Billie Tsien in 2019, with Assyrian reliefs from Nimrud among the oldest objects in any American college collection.",
-   "tip": "Free, closed Mondays."
+   "tip": "Free, closed Mondays.",
+   "audio": "/media/audio/ivy-dartmouth-stop-11.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Willard Straight Hall",
@@ -6339,7 +6403,9 @@
    "lon": -76.48565,
    "slug": "cornell-willard-straight-hall",
    "desc": "The student union of 1925, on Ho Plaza, the campus's meeting place. Taken over by armed students in 1969 in the protest that made the cover of Newsweek.",
-   "tip": "Open daily; the cafes are the easiest lunch on campus."
+   "tip": "Open daily; the cafes are the easiest lunch on campus.",
+   "audio": "/media/audio/ivy-cornell-stop-1.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Sage Chapel",
@@ -6352,7 +6418,9 @@
    "lon": -76.48446,
    "slug": "cornell-sage-chapel",
    "desc": "The 1875 chapel with the mosaic apse, where Ezra Cornell and Andrew Dickson White, the founders, are buried in the memorial antechapel.",
-   "tip": "Open daily; Sunday services are non-denominational by the founders' rule."
+   "tip": "Open daily; Sunday services are non-denominational by the founders' rule.",
+   "audio": "/media/audio/ivy-cornell-stop-2.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "McGraw Tower",
@@ -6365,7 +6433,9 @@
    "lon": -76.48504,
    "slug": "cornell-mcgraw-tower",
    "desc": "The 173-foot clock tower of 1891 with the Cornell Chimes, twenty-one bells played by students three times a day, and 161 steps to the top.",
-   "tip": "Free climbs during concerts; check the chimes schedule."
+   "tip": "Free climbs during concerts; check the chimes schedule.",
+   "audio": "/media/audio/ivy-cornell-stop-3.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Uris Library and Libe Slope",
@@ -6378,7 +6448,9 @@
    "lon": -76.48529,
    "slug": "cornell-uris-library",
    "desc": "The 1891 library beside the tower with the A. D. White reading room, the one that looks like a Victorian dream of a library. Libe Slope falls away from the front door down to West Campus and the lake view.",
-   "tip": "Visitors welcome in the White Library; quiet. The slope is the campus's front lawn."
+   "tip": "Visitors welcome in the White Library; quiet. The slope is the campus's front lawn.",
+   "audio": "/media/audio/ivy-cornell-stop-4.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Ezra Cornell statue",
@@ -6391,7 +6463,9 @@
    "lon": -76.48521,
    "slug": "cornell-ezra-cornell-statue",
    "desc": "The bronze of the founder of 1919 on the Arts Quad, facing his co-founder across the grass. Legend says the two statues meet at midnight when a virgin walks between them.",
-   "tip": "The quad is the heart of the old campus."
+   "tip": "The quad is the heart of the old campus.",
+   "audio": "/media/audio/ivy-cornell-stop-5.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Morrill Hall",
@@ -6404,7 +6478,9 @@
    "lon": -76.48532,
    "slug": "cornell-morrill-hall",
    "desc": "The first building on campus, 1868, grey stone, named for the senator whose land-grant act paid for the university.",
-   "tip": "Not open to visitors."
+   "tip": "Not open to visitors.",
+   "audio": "/media/audio/ivy-cornell-stop-6.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Andrew Dickson White statue",
@@ -6417,7 +6493,9 @@
    "lon": -76.48391,
    "slug": "cornell-andrew-dickson-white-statue",
    "desc": "The seated bronze of the first president, 1915, on the east side of the Arts Quad, facing Ezra Cornell.",
-   "tip": "The Arts Quad benches are the best in Ithaca."
+   "tip": "The Arts Quad benches are the best in Ithaca.",
+   "audio": "/media/audio/ivy-cornell-stop-7.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Goldwin Smith Hall",
@@ -6430,7 +6508,9 @@
    "lon": -76.4834,
    "slug": "cornell-goldwin-smith-hall",
    "desc": "The Beaux-Arts arts building of 1906 behind White's statue, home of the humanities and of the Temple of Zeus cafe, named for the plaster casts that used to stand in it.",
-   "tip": "Open weekdays; the cafe is the best coffee on the quad."
+   "tip": "Open weekdays; the cafe is the best coffee on the quad.",
+   "audio": "/media/audio/ivy-cornell-stop-8.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Andrew Dickson White House",
@@ -6443,7 +6523,9 @@
    "lon": -76.48194,
    "slug": "cornell-a-d-white-house",
    "desc": "The first president's own house of 1871, brick and Gothic, now the Society for the Humanities, with the library he built inside.",
-   "tip": "Lectures inside are open to the public; the house otherwise is not."
+   "tip": "Lectures inside are open to the public; the house otherwise is not.",
+   "audio": "/media/audio/ivy-cornell-stop-9.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Johnson Museum of Art",
@@ -6456,7 +6538,9 @@
    "lon": -76.48621,
    "slug": "cornell-johnson-museum",
    "desc": "I. M. Pei's concrete museum of 1973 on the edge of Fall Creek gorge, nicknamed the sewing machine, with a fifth-floor gallery of Asian art and the best view of the lake on campus.",
-   "tip": "Free, closed Mondays."
+   "tip": "Free, closed Mondays.",
+   "audio": "/media/audio/ivy-cornell-stop-10.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Sibley Hall",
@@ -6469,7 +6553,9 @@
    "lon": -76.4841,
    "slug": "cornell-sibley-hall",
    "desc": "The domed building of the 1870s at the north end of the Arts Quad, home of the architecture school, with the Fine Arts Library under the dome.",
-   "tip": "The architecture studios are open; the library under the dome is worth a look."
+   "tip": "The architecture studios are open; the library under the dome is worth a look.",
+   "audio": "/media/audio/ivy-cornell-stop-11.mp3",
+   "audio_kind": "trail"
   },
   {
    "name": "Independence Visitor Center",
