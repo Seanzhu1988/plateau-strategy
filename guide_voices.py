@@ -55,7 +55,10 @@ GUIDES = {
     "pangge": {
         "name": "Pangge",
         "voice_id": "hFamrilbAE6WDMtWgKvu",      # "pangge, chinese radio voice"
-        "job": "the guides and the trail, in Chinese",
+        # RETIRED 2026-09-10 [SEAN "replace the chinese guide to haoran
+        # asap"]. Kept, with his id, so the ledger rows he recorded stay
+        # readable; no job in BY_LANGUAGE points at him any more.
+        "job": "retired: Haoran took the Chinese on 2026-09-10",
         "language": "zh",
         # [SEAN, after hearing the first three trail recordings: "pangge
         # slowdown little bit maybe 5%"] A radio voice reads at radio pace;
@@ -64,15 +67,16 @@ GUIDES = {
     },
     "haoran": {
         "name": "Haoran",
-        "voice_id": "",                          # [SEAN 2026-09-10 "use haoran"]
-        "job": "the new trails, in Chinese",
+        "voice_id": "pU9NaAwkoR3v0Mrg3uKz",      # "Haoran - Deep, Calm and Steady"
+        "job": "every Chinese recording: the guides and every trail",
         "language": "zh",
-        # Sean added Haoran to the library on 2026-09-10 for the campus and
-        # Philadelphia walks. The id is left EMPTY here on purpose: the API
-        # key cannot list the library (no voices_read), so the id has to be
-        # read off the ElevenLabs page and set as GUIDE_VOICE_HAORAN in .env,
-        # or written here. Until then every Chinese trail recording refuses,
-        # which is the module's rule: never borrow another guide's voice.
+        # Sean added Haoran to his library on 2026-09-10, then made him the
+        # whole Chinese voice [SEAN "replace the chinese guide to haoran
+        # asap"]. The API key cannot read the library (no voices_read), so
+        # the id was read off Sean's own My Voices page, from the card named
+        # "Haoran - Deep, Calm and Steady" (Chinese, Mandarin Beijing), and it
+        # matches the id the public voice library lists for him. Two sources
+        # agreeing is the check; a wrong id records in a stranger's voice.
     },
 }
 
@@ -110,11 +114,15 @@ def settings_for(guide):
 # the Chinese goes home to him. A description of a voice has never once
 # predicted how it sounds; his ear recast it, and this file records the ruling.
 BY_LANGUAGE = {
-    "guide":   {"en": "jason",  "zh": "pangge"},
-    # Haoran takes the Chinese trail from 2026-09-10 [SEAN "use haoran to make
-    # the chinese audio"]. Freedom Trail's sixteen Chinese stops were recorded
-    # by Pangge before that and stand as recorded; the recorder only remakes a
-    # file whose script or voice changed, so they are not re-cut by this line.
+    "guide":   {"en": "jason",  "zh": "haoran"},
+    # Haoran is the Chinese voice for every job from 2026-09-10 [SEAN "use
+    # haoran to make the chinese audio", then "replace the chinese guide to
+    # haoran asap"]. That includes the Freedom Trail's Chinese stops, which
+    # Pangge recorded first: the recorder marks a file stale when its VOICE
+    # changes, not only its words, so the next run re-cuts every one of them.
+    # (An earlier note here said they would stand as recorded. That was
+    # wrong about the recorder, and after Sean's second word it is wrong
+    # about the intent too.)
     "trail":   {"en": "yiki",   "zh": "haoran"},
     "gallery": {"en": "adrian", "zh": "adrian"},
     # MoMA's rooms are indoors, so the house voice reads them. [SEAN "by

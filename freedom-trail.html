@@ -583,7 +583,7 @@
     }
 
     // Who narrates the trail, and in which file, depends on the language the
-    // reader is on: Yiki walks it in English, Pangge walks it in Chinese.
+    // reader is on: Yiki walks it in English, Haoran walks it in Chinese.
     // [SEAN recast it by ear: Yiki is an English-market voice, so English is
     // the language she does not strain in; Pangge is native Mandarin radio.]
     // A language with no trail voice recorded gets no play button rather than
@@ -595,7 +595,7 @@
     }
     function trailGuide(lang) {
         if (lang === "en") return { name: "Yiki", suffix: "" };
-        if (lang === "zh") return { name: "Pangge", suffix: ".zh" };
+        if (lang === "zh") return { name: "Haoran", suffix: ".zh" };
         return null;                    // es, ko, vi: no trail voice yet
     }
 
@@ -631,7 +631,7 @@
                           { leg: L.leg, inside: s.inside_min })
                       : T("{inside} min here", { inside: s.inside_min }));
             // The deep five minute narration for this stop, in the reader's own
-            // language: Yiki reads the English, Pangge the Chinese. Every stop is
+            // language: Yiki reads the English, Haoran the Chinese. Every stop is
             // the same, the three that once carried a book card included, so the
             // button plays that stop's own recording or nothing at all, never a
             // card in a different voice. verifyPlays drops it until the file lands.
@@ -1194,6 +1194,7 @@
         var VOICE_NAMES = { "6nukEV6JAgCcOkdtH5FM": "Jason",
                             "JZLpE3AGwpKYZI2X65hN": "Yiki",
                             "hFamrilbAE6WDMtWgKvu": "Pangge",
+                            "pU9NaAwkoR3v0Mrg3uKz": "Haoran",
                             "agczkAUlHLowaNnL72Cc": "Adrian" };
         var VOICES = {
             en: { file: "/media/audio/trail-freedom.mp3",

@@ -3,7 +3,7 @@
 
     python3 trail_voices.py               # record the stops that are missing or changed
     python3 trail_voices.py --dry         # say what it would record, spend nothing
-    python3 trail_voices.py --lang zh     # record the Chinese stops (Pangge)
+    python3 trail_voices.py --lang zh     # record the Chinese stops (Haoran)
     python3 trail_voices.py --force       # redo everything, even unchanged stops
 
 Where the words live. One plain text file per stop, in trail_scripts/freedom-trail/,
@@ -12,7 +12,7 @@ for another language. One file, one stop, so a rewrite is a small readable diff
 and not a needle in a JSON haystack.
 
 Who reads it. The trail has two voices and they are not interchangeable: Yiki
-walks it in English, Pangge walks it in Chinese, Sean's recast by ear after her
+walks it in English, Haoran walks it in Chinese (Pangge until 2026-09-10), Sean's recast by ear after her
 Chinese came out Americanized. This script does not choose; it asks
 guide_voices.py, the one place that record is kept, so the trail sounds the
 same here as everywhere else on the site. A language with no reader chosen yet
