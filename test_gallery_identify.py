@@ -57,6 +57,22 @@ def provider_response(candidates=None, label="Example artifact label", stop="end
     return response
 
 
+def provider_error(status, message, error_type="invalid_request_error"):
+    response = G.requests.Response()
+    response.status_code = status
+    response._content = json.dumps({"error": {"type": error_type, "message": message}}).encode()
+    return response
+
+
+def dimension_header(width, height):
+    """Enough PNG metadata to inspect dimensions, without allocating pixels."""
+    def chunk(kind, value):
+        return struct.pack(">I", len(value)) + kind + value + struct.pack(">I", zlib.crc32(kind + value))
+    return (b"\x89PNG\r\n\x1a\n"
+            + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0))
+            + chunk(b"IDAT", zlib.compress(b"\0")) + chunk(b"IEND", b""))
+
+
 class PhotoIntakeTests(unittest.TestCase):
     def test_jpeg_pixels_are_preserved_and_orientation_applied_without_metadata(self):
         raw = photo("JPEG", metadata=True)
@@ -101,12 +117,17 @@ class PhotoIntakeTests(unittest.TestCase):
             G.prepare_image(photo(size=(2, 2)))
 
     def test_dimension_bomb_is_rejected_before_pixel_decode(self):
-        def chunk(kind, value):
-            return struct.pack(">I", len(value)) + kind + value + struct.pack(">I", zlib.crc32(kind + value))
-        raw = (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", 30000, 30000, 8, 2, 0, 0, 0))
-               + chunk(b"IDAT", zlib.compress(b"\0")) + chunk(b"IEND", b""))
-        with self.assertRaises(ValueError):
-            G.prepare_image(raw)
+        for width, height in ((6000, 4000), (8000, 6000), (30000, 30000), (12001, 16)):
+            with self.subTest(size=(width, height)), self.assertRaises(G.PhotoTooLargeError):
+                G.prepare_image(dimension_header(width, height))
+
+    def test_valid_high_resolution_photo_is_rejected_before_decode(self):
+        # Synthetic in-memory JPEG: no private photo is used or persisted.
+        raw = photo("JPEG", (6000, 4000))
+        with patch.object(Image.Image, "load", side_effect=AssertionError("must not decode oversized photo")):
+            with self.assertRaises(G.PhotoTooLargeError):
+                G.prepare_image(raw)
+        self.assertTrue(issubclass(G.PhotoTooLargeError, ValueError))
 
     def test_animation_is_rejected(self):
         frames = [Image.new("RGB", (64, 64), color) for color in ("red", "blue")]
@@ -201,8 +222,19 @@ class IdentifyRouteTests(unittest.TestCase):
     def test_oversized_fake_bytes_rejected_before_provider(self):
         response = self.upload(b"\xff\xd8\xff" + b"0" * G.MAX_IMAGE_BYTES)
         self.assertEqual(response.status_code, 413)
-        self.assertEqual(response.get_json()["reason"], "bad_image")
+        self.assertEqual(response.get_json()["reason"], "photo_too_large")
         self.post.assert_not_called()
+
+    def test_phone_resolution_and_pixel_bombs_have_specific_error_without_spend(self):
+        for size in ((6000, 4000), (8000, 6000), (30000, 30000)):
+            with self.subTest(size=size):
+                response = self.upload(dimension_header(*size))
+                self.assertEqual(response.status_code, 413)
+                self.assertEqual(response.json["reason"], "photo_too_large")
+                self.assertNotIn("damaged", response.json["message"])
+        self.post.assert_not_called()
+        with sqlite3.connect(os.path.join(self.folder.name, "gallery_identify_usage.sqlite3")) as db:
+            self.assertEqual(db.execute("SELECT count(*) FROM monthly").fetchone()[0], 0)
 
     def test_duplicate_files_and_remote_url_are_rejected(self):
         data = MultiDict([("consent", G.CONSENT_VERSION),
@@ -300,6 +332,60 @@ class IdentifyRouteTests(unittest.TestCase):
             self.assertEqual(response.get_json()["reason"], reason)
             self.assertEqual(response.get_json()["candidates"], [])
             self.assertNotIn("private-account-detail", response.get_data(as_text=True))
+
+    def test_provider_failures_are_allowlisted_and_private_details_never_leave_server(self):
+        private = "private-account@example.test sk-ant-do-not-leak SECRET-CUSTOMER-ID"
+        cases = [
+            (400, "Your credit balance is too low to access the API. " + private,
+             "invalid_request_error", "provider_billing"),
+            (402, private, "billing_error", "provider_billing"),
+            (401, private, "authentication_error", "provider_auth"),
+            (403, private, "permission_error", "provider_auth"),
+            (404, "model: unavailable-model " + private, "not_found_error", "provider_model_unavailable"),
+            (400, "This model is not available. " + private, "invalid_request_error", "provider_model_unavailable"),
+            (429, private, "rate_limit_error", "provider_rate_limited"),
+            (400, private, "invalid_request_error", "provider_unavailable"),
+            (500, private, "api_error", "provider_unavailable"),
+            (529, private, "overloaded_error", "provider_unavailable"),
+        ]
+        for status, message, error_type, reason in cases:
+            with self.subTest(status=status, reason=reason):
+                self.post.reset_mock()
+                self.post.return_value = provider_error(status, message, error_type)
+                with self.assertLogs(self.app.logger, level="WARNING") as logs:
+                    response = self.upload()
+                self.assertEqual(response.status_code, 503)
+                self.assertEqual(response.json["reason"], reason)
+                self.assertEqual(response.json["candidates"], [])
+                self.assertEqual(response.json["label_text"], "")
+                self.assertEqual(response.json["visual_description"], "")
+                self.assertIn("reason=" + reason, logs.output[0])
+                self.assertIn("status=" + str(status), logs.output[0])
+                for output in (response.get_data(as_text=True), "\n".join(logs.output)):
+                    self.assertNotIn(private, output)
+                    self.assertNotIn("sk-ant", output)
+                    self.assertNotIn("private-account", output)
+                    self.assertNotIn(message, output)
+                self.post.assert_called_once()  # A provider failure never causes a paid retry.
+                if reason == "provider_rate_limited":
+                    self.assertEqual(response.headers["Retry-After"], "60")
+        # Every attempted provider call retains its reservation on failure.
+        with sqlite3.connect(os.path.join(self.folder.name, "gallery_identify_usage.sqlite3")) as db:
+            self.assertEqual(db.execute("SELECT sum(requests) FROM monthly").fetchone()[0], len(cases))
+
+    def test_unparseable_or_oversized_provider_error_body_is_generic_and_private(self):
+        for body in (b"<html>secret-private-account</html>",
+                     b'{"error":{"message":"credit balance is too low ' + b"secret-private-account " * 500 + b'"}}'):
+            with self.subTest(size=len(body)):
+                failure = provider_error(400, "")
+                failure._content = body
+                self.post.return_value = failure
+                with self.assertLogs(self.app.logger, level="WARNING") as logs:
+                    response = self.upload()
+                self.assertEqual(response.status_code, 503)
+                self.assertEqual(response.json["reason"], "provider_unavailable")
+                self.assertNotIn("secret-private-account", response.get_data(as_text=True))
+                self.assertNotIn("secret-private-account", "\n".join(logs.output))
 
     def test_invalid_or_truncated_provider_output_is_not_a_match(self):
         cases = [provider_response(stop="max_tokens"), provider_response()]

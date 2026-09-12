@@ -6158,6 +6158,11 @@ def gallery_ui_styles():
     return send_file(os.path.join(BASE_DIR, "gallery-ui.css"), mimetype="text/css")
 
 
+@app.route("/gallery-photo-input.js")
+def gallery_photo_input_script():
+    return send_file(os.path.join(BASE_DIR, "gallery-photo-input.js"), mimetype="application/javascript")
+
+
 @app.route("/api/guide-voices")
 def api_guide_voices():
     """Voice id to guide name, straight from the casting table, so a page can

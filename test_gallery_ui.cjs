@@ -8,7 +8,7 @@ const path = require('node:path');
 const source = fs.readFileSync(path.join(__dirname, 'gallery-ui.js'), 'utf8');
 
 class Element {
-  constructor() { this.listeners = {}; this.dataset = {}; this.value = ''; this.textContent = ''; this.innerHTML = ''; this.hidden = false; this.checked = false; this.disabled = false; this.isConnected = true; this.open = false; this.clicks = 0; this.classList = {toggle() {}, add() {}, remove() {}}; }
+  constructor(id = '') { this.id = id; this.listeners = {}; this.dataset = {}; this.value = ''; this.textContent = ''; this.innerHTML = ''; this.hidden = false; this.checked = false; this.disabled = false; this.isConnected = true; this.open = false; this.clicks = 0; this.classList = {toggle() {}, add() {}, remove() {}}; }
   addEventListener(name, handler) { (this.listeners[name] ||= []).push(handler); }
   dispatch(name, additions = {}) { for (const handler of this.listeners[name] || []) handler.call(this, {target: this, currentTarget: this, preventDefault() {}, ...additions}); }
   querySelectorAll() { return []; }
@@ -24,41 +24,52 @@ class Element {
   insertAdjacentHTML(_position, html) { this.innerHTML += html; }
 }
 
-function setup(url = '/universal-gallery') {
+function setup(url = '/universal-gallery', options = {}) {
   const elements = new Map();
-  function el(id) { if (!elements.has(id)) elements.set(id, new Element()); return elements.get(id); }
+  function el(id) { if (!elements.has(id)) elements.set(id, new Element(id)); return elements.get(id); }
   const doc = new Element();
   doc.getElementById = el;
   doc.querySelectorAll = () => [];
   doc.documentElement = {lang: 'en'};
   doc.body = {dataset: {galleryPage: 'search'}};
   doc.readyState = 'complete';
-  const requests = [], timers = new Map();
+  const requests = [], preparations = [], timers = new Map();
   let timerId = 0, selectedLang = 'en';
   const browserWindow = new Element();
   browserWindow.psxLang = () => selectedLang;
+  if (options.prepare !== null) browserWindow.PSXGalleryPhoto = {
+    prepare(file, preparationOptions) {
+      preparations.push({file, options: preparationOptions});
+      return options.prepare ? options.prepare(file, preparationOptions) : Promise.resolve(file);
+    }
+  };
   class MockFormData { constructor() { this.fields = {}; } append(key, value) { this.fields[key] = value; } }
   const ctx = {
     document: doc, window: browserWindow, location: new URL(url, 'http://example.test'),
     URL, URLSearchParams, AbortController, FormData: MockFormData, Set, console,
-    setTimeout(callback) { const id = ++timerId; timers.set(id, callback); return id; },
+    setTimeout(callback, delay = 0) { const id = ++timerId; timers.set(id, {callback, delay}); return id; },
     clearTimeout(id) { timers.delete(id); },
     fetch(requestURL, options = {}) { return new Promise((resolve, reject) => { requests.push({url: requestURL, options, resolve, reject}); }); }
   };
   ctx.history = {replaceState(_a, _b, next) { ctx.location = new URL(next, ctx.location.origin); }};
   vm.runInNewContext(source, ctx, {filename: 'gallery-ui.js'});
   function type(value) { el('ugFind').value = value; el('ugFind').dispatch('input'); }
-  function runTimers() { const pending = Array.from(timers.values()); timers.clear(); pending.forEach(callback => callback()); }
+  function runTimers(maxDelay = 1000) {
+    const pending = Array.from(timers.entries()).filter(([, timer]) => timer.delay <= maxDelay);
+    pending.forEach(([id]) => timers.delete(id));
+    pending.forEach(([, timer]) => timer.callback());
+  }
   async function respond(index, body, status = 200) { requests[index].resolve({ok: status < 400, status, json: async () => body}); await tick(); }
   function changeLanguage(value) { selectedLang = value; doc.documentElement.lang = value; doc.dispatch('psx:lang', {detail: value}); }
-  return {el, ctx, requests, type, runTimers, respond, changeLanguage};
+  return {el, ctx, requests, preparations, timers, type, runTimers, respond, changeLanguage};
 }
 function tick() { return new Promise(resolve => setImmediate(resolve)); }
-function photo(page) {
+async function photo(page) {
   const image = new Blob(['image bytes'], {type: 'image/jpeg'});
   page.el('ugPhotoToggle').dispatch('click');
   page.el('ugPhotoYes').dispatch('click');
-  page.el('ugUpload').files = [image]; page.el('ugUpload').dispatch('change');
+  page.el('ugCamera').files = [image]; page.el('ugCamera').dispatch('change');
+  await tick();
   return image;
 }
 function cardHost(page) {
@@ -131,7 +142,7 @@ test('editing a photo-derived query keeps confirmation mode until a deliberate t
 });
 
 test('one Yes automatically identifies and repeated picker or retry taps cannot duplicate a paid call', async () => {
-  const page = setup(); photo(page);
+  const page = setup(); await photo(page);
   assert.equal(page.el('ugIdentify').disabled, true);
   assert.equal(page.requests.length, 1);
   assert.equal(page.requests[0].options.body.fields.consent, 'anthropic-photo-search-v1');
@@ -139,7 +150,7 @@ test('one Yes automatically identifies and repeated picker or retry taps cannot 
   assert.equal(page.el('ugIdentify').disabled, true);
   page.el('ugPhotoForm').dispatch('submit');
   assert.equal(page.requests.length, 1);
-  assert.equal(page.el('ugUpload').clicks, 1);
+  assert.equal(page.el('ugCamera').clicks, 1);
   // Removing the photograph cannot falsely cancel a provider job on the server.
   page.el('ugPhotoRemove').dispatch('click');
   assert.equal(page.requests[0].options.signal.aborted, false);
@@ -188,15 +199,222 @@ test('the one-question design declares both processing and publishing and has no
   assert.doesNotMatch(html, /type="checkbox"|<fieldset/);
 });
 
-test('canceling the native picker consumes consent so an unrelated file cannot upload later', () => {
+test('canceling either native picker consumes consent so an unrelated file cannot upload later', async () => {
+  for (const [entry, picker] of [['ugPhotoToggle', 'ugCamera'], ['ugPhotoLibrary', 'ugUpload']]) {
+    const page = setup(); page.el(entry).dispatch('click'); page.el('ugPhotoYes').dispatch('click');
+    page.el(picker).dispatch('cancel');
+    page.el(picker).files = [new Blob(['photo'], {type: 'image/jpeg'})]; page.el(picker).dispatch('change');
+    await tick();
+    assert.equal(page.preparations.length, 0);
+    assert.equal(page.requests.length, 0);
+  }
+});
+
+test('Yes immediately opens the intended camera or library without waiting for a timer or promise', () => {
+  for (const [entry, picker] of [['ugPhotoToggle', 'ugCamera'], ['ugEmptyPhoto', 'ugCamera'], ['ugPhotoRetake', 'ugCamera'], ['ugPhotoLibrary', 'ugUpload'], ['ugPhotoPick', 'ugUpload']]) {
+    const page = setup(); page.el(entry).dispatch('click');
+    assert.equal(page.el('ugCamera').clicks + page.el('ugUpload').clicks, 0);
+    page.el('ugPhotoYes').dispatch('click');
+    assert.equal(page.el(picker).clicks, 1, entry + ' opens its picker inside the Yes handler');
+    assert.equal(page.el('ugCamera').clicks + page.el('ugUpload').clicks, 1);
+    assert.equal(page.el('ugPhotoConsentDialog').open, false);
+    assert.equal(page.preparations.length, 0);
+    assert.equal(page.requests.length, 0);
+  }
+});
+
+test('a selected file cannot cross from an unapproved library picker into the camera flow', async () => {
   const page = setup(); page.el('ugPhotoToggle').dispatch('click'); page.el('ugPhotoYes').dispatch('click');
-  page.el('ugUpload').dispatch('cancel');
   page.el('ugUpload').files = [new Blob(['photo'], {type: 'image/jpeg'})]; page.el('ugUpload').dispatch('change');
+  await tick();
+  assert.equal(page.preparations.length, 0);
   assert.equal(page.requests.length, 0);
 });
 
+test('phone input accepts an empty MIME or large original only through successful normalization', async () => {
+  for (const type of ['', 'image/heic', 'image/jpeg']) {
+    const normalized = new Blob(['sanitized pixels'], {type: 'image/jpeg'});
+    const page = setup('/universal-gallery', {prepare: async () => normalized});
+    const original = new Blob([new Uint8Array(7 * 1024 * 1024)], {type});
+    page.el('ugPhotoLibrary').dispatch('click'); page.el('ugPhotoYes').dispatch('click');
+    page.el('ugUpload').files = [original]; page.el('ugUpload').dispatch('change');
+    await tick();
+    assert.equal(page.preparations.length, 1);
+    assert.equal(page.preparations[0].file, original);
+    assert.equal(page.requests.length, 1);
+    assert.equal(page.requests[0].options.body.fields.photo, normalized);
+    assert.notEqual(page.requests[0].options.body.fields.photo, original);
+    assert.equal(page.requests[0].options.body.fields.consent, 'anthropic-photo-search-v1');
+    page.el('ugPhotoRemove').dispatch('click');
+  }
+});
+
+test('damaged or unsupported preparation failures never upload raw files and release camera controls', async () => {
+  for (const [code, message] of [['invalid_image', /could not be prepared/], ['unsupported_format', /cannot read that photo format/], ['image_too_large', /too large/]]) {
+    const page = setup('/universal-gallery', {prepare: async () => { throw Object.assign(new Error(code), {code}); }});
+    await photo(page);
+    assert.equal(page.requests.length, 0);
+    assert.match(page.el('ugPhotoStatus').textContent, message);
+    assert.equal(page.el('ugPhotoToggle').disabled, false);
+    assert.equal(page.el('ugPhotoLibrary').disabled, false);
+    assert.equal(page.el('ugIdentify').disabled, true);
+    page.el('ugPhotoForm').dispatch('submit');
+    assert.equal(page.requests.length, 0, 'retry cannot bypass failed normalization');
+  }
+});
+
+test('a missing preparation helper fails closed instead of uploading the original photograph', async () => {
+  const page = setup('/universal-gallery', {prepare: null});
+  await photo(page);
+  assert.equal(page.requests.length, 0);
+  assert.match(page.el('ugPhotoStatus').textContent, /could not be prepared/);
+  assert.equal(page.el('ugIdentify').disabled, true);
+  assert.equal(page.el('ugPhotoToggle').disabled, false);
+});
+
+test('preparing a photograph is single flight and removing it suppresses a late normalized result', async () => {
+  let finish;
+  const page = setup('/universal-gallery', {prepare: () => new Promise(resolve => { finish = resolve; })});
+  await photo(page);
+  const signal = page.preparations[0].options.signal;
+  assert.equal(page.requests.length, 0);
+  assert.equal(page.el('ugPhotoToggle').disabled, true);
+  assert.equal(page.el('ugPhotoLibrary').disabled, true);
+  assert.match(page.el('ugPhotoStatus').textContent, /Preparing your photo/);
+  page.el('ugPhotoToggle').dispatch('click'); page.el('ugPhotoYes').dispatch('click');
+  page.el('ugCamera').dispatch('change'); page.el('ugPhotoForm').dispatch('submit');
+  assert.equal(page.preparations.length, 1);
+  assert.equal(page.el('ugCamera').clicks, 1);
+  page.el('ugPhotoRemove').dispatch('click');
+  assert.equal(signal.aborted, true);
+  assert.equal(page.el('ugPhotoToggle').disabled, false);
+  finish(new Blob(['sanitized pixels'], {type: 'image/jpeg'})); await tick();
+  assert.equal(page.requests.length, 0);
+  assert.equal(page.el('ugPreviewImage').src, undefined);
+  assert.equal(page.el('ugIdentify').disabled, true);
+});
+
+test('an ordinary text search abandons pending preparation and preserves its result after late normalization', async () => {
+  let finish;
+  const page = setup('/universal-gallery', {prepare: () => new Promise(resolve => { finish = resolve; })});
+  await photo(page);
+  page.el('ugFind').value = 'Current vase';
+  page.el('ugSearchForm').dispatch('submit');
+  assert.equal(page.preparations[0].options.signal.aborted, true);
+  assert.equal(page.requests.length, 1);
+  assert.match(page.requests[0].url, /q=Current%20vase/);
+  assert.doesNotMatch(page.requests[0].url, /origin=photo|discover=0/);
+  await page.respond(0, {ok: true, results: [{artifact_id: 'a_current', title: 'Current vase'}]});
+  const currentResults = page.el('ugFound').innerHTML;
+  finish(new Blob(['late sanitized photo'], {type: 'image/jpeg'})); await tick();
+  assert.equal(page.requests.length, 1, 'abandoned preparation cannot initiate a paid POST');
+  assert.equal(page.el('ugFound').innerHTML, currentResults);
+  assert.match(currentResults, /Current vase/);
+  assert.equal(page.el('ugPreviewImage').src, undefined);
+  assert.equal(page.el('ugPhotoToggle').disabled, false);
+});
+
+test('typing or clearing during preparation cancels before the search debounce can become a paid photo flow', async () => {
+  for (const query of ['Current vase', '']) {
+    let finish;
+    const page = setup('/universal-gallery', {prepare: () => new Promise(resolve => { finish = resolve; })});
+    await photo(page);
+    page.type(query);
+    assert.equal(page.preparations[0].options.signal.aborted, true);
+    finish(new Blob(['late sanitized photo'], {type: 'image/jpeg'})); await tick();
+    assert.equal(page.requests.length, 0, 'typing cancels preparation before any debounce runs');
+    page.runTimers();
+    assert.equal(page.requests.length, query ? 1 : 0);
+    if (query) {
+      assert.match(page.requests[0].url, /q=Current%20vase/);
+      assert.doesNotMatch(page.requests[0].url, /origin=photo|discover=0/);
+      await page.respond(0, {ok: true, results: [{artifact_id: 'a_current', title: 'Current vase'}]});
+      assert.match(page.el('ugFound').innerHTML, /Current vase/);
+    }
+    assert.equal(page.el('ugFind').value, query);
+    assert.equal(page.el('ugPreviewImage').src, undefined);
+    assert.equal(page.el('ugPhotoToggle').disabled, false);
+  }
+});
+
+test('a stalled recognition unlocks at its deadline without an automatic paid retry', async () => {
+  const page = setup(); await photo(page);
+  assert.equal(page.requests.length, 1);
+  page.runTimers(89999); await tick();
+  assert.equal(page.el('ugPhotoToggle').disabled, true);
+  assert.equal(page.requests[0].options.signal.aborted, false);
+  page.runTimers(90000); await tick();
+  assert.equal(page.requests[0].options.signal.aborted, true);
+  assert.equal(page.el('ugPhotoToggle').disabled, false);
+  assert.equal(page.el('ugPhotoLibrary').disabled, false);
+  assert.equal(page.el('ugIdentify').disabled, false);
+  assert.equal(page.el('ugIdentify').hidden, false);
+  assert.match(page.el('ugPhotoStatus').textContent, /did not finish in time/);
+  assert.equal(page.requests.length, 1);
+  page.runTimers(90000); await tick();
+  assert.equal(page.requests.length, 1, 'time alone never starts another paid call');
+  page.el('ugPhotoForm').dispatch('submit'); page.el('ugPhotoForm').dispatch('submit');
+  assert.equal(page.requests.length, 2, 'one deliberate retry is single flight');
+  assert.equal(page.preparations.length, 1, 'retry reuses the sanitized photograph');
+  await page.respond(1, {ok: false, reason: 'no_match'});
+  assert.equal(page.el('ugPhotoToggle').disabled, false);
+  page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('the identification deadline also covers a stalled JSON response body', async () => {
+  const page = setup(); await photo(page);
+  page.requests[0].resolve({ok: true, status: 200, json: () => new Promise(() => {})});
+  await tick();
+  page.runTimers(90000); await tick();
+  assert.equal(page.el('ugIdentify').disabled, false);
+  assert.match(page.el('ugPhotoStatus').textContent, /did not finish in time/);
+  assert.equal(page.requests.length, 1);
+  page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('a late timed-out recognition cannot replace or unlock a newer camera flow', async () => {
+  const page = setup(); await photo(page);
+  page.runTimers(90000); await tick();
+  await photo(page);
+  assert.equal(page.requests.length, 2);
+  const currentPreview = page.el('ugPreviewImage').src;
+  await page.respond(0, {ok: true, candidates: [{query: 'Stale sculpture'}]});
+  assert.equal(page.requests.length, 2);
+  assert.equal(page.el('ugPreviewImage').src, currentPreview);
+  assert.equal(page.el('ugCandidates').innerHTML, '');
+  assert.equal(page.el('ugPhotoToggle').disabled, true);
+  await page.respond(1, {ok: true, candidates: [{query: 'Current vase'}]});
+  assert.match(page.requests[2].url, /q=Current%20vase/);
+  assert.equal(page.el('ugPhotoToggle').disabled, false);
+  page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('successful recognition clears its deadline and cannot later display a timeout', async () => {
+  const page = setup(); await photo(page);
+  await page.respond(0, {ok: false, reason: 'no_match'});
+  const status = page.el('ugPhotoStatus').textContent;
+  assert.match(status, /could not identify a reliable match/);
+  page.runTimers(90000); await tick();
+  assert.equal(page.el('ugPhotoStatus').textContent, status);
+  assert.equal(page.requests[0].options.signal.aborted, false);
+  assert.equal(page.requests.length, 1);
+  page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('provider billing is explained as our paused service, never as an unrecognized photograph', async () => {
+  for (const [reason, expected] of [['provider_billing', /paused on our side/], ['no_match', /could not identify a reliable match/], ['provider_auth', /temporarily unavailable/], ['provider_model_unavailable', /temporarily unavailable/], ['provider_rate_limited', /Photo search is busy/]]) {
+    const page = setup(); await photo(page);
+    await page.respond(0, {ok: false, reason}, reason === 'no_match' ? 200 : 503);
+    assert.match(page.el('ugPhotoStatus').textContent, expected);
+    if (reason !== 'no_match') assert.doesNotMatch(page.el('ugPhotoStatus').textContent, /could not identify|clearer photograph/);
+    assert.equal(page.el('ugIdentify').hidden, false);
+    assert.equal(page.requests.length, 1);
+    page.el('ugPhotoRemove').dispatch('click');
+  }
+});
+
 test('identification automatically searches the strongest candidate in the gallery before external catalogues', async () => {
-  const page = setup(); photo(page); page.el('ugPhotoForm').dispatch('submit');
+  const page = setup(); await photo(page); page.el('ugPhotoForm').dispatch('submit');
   await page.respond(0, {ok: true, candidates: [{title: 'Vessel', query: 'Vessel', confidence: 'low'}, {title: 'Cypresses', query: '49.30', confidence: 'high'}]});
   assert.equal(page.el('ugFind').value, '49.30');
   assert.match(page.requests[1].url, /q=49.30/);
@@ -238,7 +456,7 @@ test('an archive match automatically checks other museum versions without asking
 });
 
 test('manual OCR correction keeps the photograph and its existing permission', async () => {
-  const page = setup(); photo(page, true); page.el('ugPhotoForm').dispatch('submit');
+  const page = setup(); await photo(page); page.el('ugPhotoForm').dispatch('submit');
   await page.respond(0, {ok: true, candidates: [{query: 'Vessel 12'}]});
   const preview = page.el('ugPreviewImage').src;
   page.type('Vessel 123'); page.runTimers();
@@ -246,20 +464,20 @@ test('manual OCR correction keeps the photograph and its existing permission', a
   assert.match(page.requests[2].url, /q=Vessel%20123/);
   assert.match(page.requests[2].url, /discover=0/);
   assert.equal(page.el('ugPreviewImage').src, preview);
-  assert.equal(page.el('ugUpload').clicks, 1);
+  assert.equal(page.el('ugCamera').clicks, 1);
   page.el('ugSearchForm').dispatch('submit');
   assert.match(page.requests[3].url, /discover=0/);
   page.el('ugPhotoRemove').dispatch('click');
 });
 
 test('late identification suggestions cannot replace a newer user query or clear', async () => {
-  const page = setup(); photo(page, true); page.el('ugPhotoForm').dispatch('submit');
+  const page = setup(); await photo(page); page.el('ugPhotoForm').dispatch('submit');
   page.type('Corrected 123'); page.runTimers();
   await page.respond(0, {ok: true, candidates: [{query: 'Stale 999'}]});
   assert.equal(page.el('ugFind').value, 'Corrected 123');
   assert.equal(page.requests.length, 2);
   assert.match(page.el('ugCandidates').innerHTML, /Stale 999/);
-  assert.equal(page.el('ugUpload').clicks, 1);
+  assert.equal(page.el('ugCamera').clicks, 1);
   page.el('ugPhotoForm').dispatch('submit');
   page.type('');
   await page.respond(2, {ok: true, candidates: [{query: 'Another stale 999'}]});
@@ -270,7 +488,7 @@ test('late identification suggestions cannot replace a newer user query or clear
 });
 
 test('legible label text is searched when vision has no identity candidate', async () => {
-  const page = setup(); photo(page); page.el('ugPhotoForm').dispatch('submit');
+  const page = setup(); await photo(page); page.el('ugPhotoForm').dispatch('submit');
   await page.respond(0, {ok: true, candidates: [], label_text: '  49.30  '});
   assert.equal(page.el('ugFind').value, '49.30');
   assert.match(page.requests[1].url, /q=49.30/);
@@ -278,15 +496,15 @@ test('legible label text is searched when vision has no identity candidate', asy
   page.el('ugPhotoRemove').dispatch('click');
 });
 
-test('closing the photo panel or changing language preserves private preview without another question', () => {
-  const page = setup(); photo(page, true);
+test('closing the photo panel or changing language preserves private preview without another question', async () => {
+  const page = setup(); await photo(page);
   const preview = page.el('ugPreviewImage').src;
   page.el('ugPhotoClose').dispatch('click');
   assert.equal(page.el('ugPreviewImage').src, preview);
   assert.equal(page.el('ugPhotoConsentDialog').open, false);
   page.changeLanguage('zh');
   assert.equal(page.el('ugPreviewImage').src, preview);
-  assert.equal(page.el('ugUpload').clicks, 1);
+  assert.equal(page.el('ugCamera').clicks, 1);
   page.el('ugPhotoRemove').dispatch('click');
   assert.equal(page.el('ugPreviewImage').src, undefined);
 });
@@ -330,7 +548,7 @@ test('no-engine confirmation keeps an honest pending discovery without a Written
 });
 
 test('publication permission uploads the exact photograph only after confirmed attachment token', async () => {
-  const page = setup(); const original = photo(page, true); page.el('ugPhotoForm').dispatch('submit');
+  const page = setup(); const original = await photo(page); page.el('ugPhotoForm').dispatch('submit');
   await page.respond(0, {ok: true, candidates: [{query: 'Vessel', confidence: 'high'}]});
   await page.respond(1, {ok: true, can_generate: false, results: [{artifact_id: 'a_vessel', title: 'Vessel'}]});
   assert.equal(page.requests.length, 3, 'no photo retained during identification or search');
@@ -348,7 +566,7 @@ test('publication permission uploads the exact photograph only after confirmed a
 });
 
 test('removing the photo while opening an artifact is pending prevents publication', async () => {
-  const page = setup(); photo(page, true); page.el('ugPhotoForm').dispatch('submit');
+  const page = setup(); await photo(page); page.el('ugPhotoForm').dispatch('submit');
   await page.respond(0, {ok: true, candidates: [{query: 'Vessel'}]});
   await page.respond(1, {ok: true, can_generate: false, results: [{artifact_id: 'a_vessel', title: 'Vessel'}]});
   const card = cardHost(page); card.click();
@@ -360,7 +578,7 @@ test('removing the photo while opening an artifact is pending prevents publicati
 });
 
 test('photo attachment failure leaves the story independent and allows a separate retry', async () => {
-  const page = setup(); photo(page, true); page.el('ugPhotoForm').dispatch('submit');
+  const page = setup(); await photo(page); page.el('ugPhotoForm').dispatch('submit');
   await page.respond(0, {ok: true, candidates: [{query: 'Vessel'}]});
   await page.respond(1, {ok: true, can_generate: true, results: [{artifact_id: 'a_vessel', title: 'Vessel', story_available: true}]});
   const card = cardHost(page); card.click();
@@ -380,7 +598,7 @@ test('photo attachment failure leaves the story independent and allows a separat
 });
 
 test('unmatched photo clues are saved as research without publishing or pretending a story exists', async () => {
-  const page = setup(); photo(page, true); page.el('ugPhotoForm').dispatch('submit');
+  const page = setup(); await photo(page); page.el('ugPhotoForm').dispatch('submit');
   await page.respond(0, {ok: true, label_text: 'Vessel 123', candidates: [{query: 'Vessel 123', title: 'Vessel', confidence: 'low'}]});
   await page.respond(1, {ok: true, results: []});
   await page.respond(2, {ok: true, results: []});
@@ -401,7 +619,7 @@ test('unmatched photo clues are saved as research without publishing or pretendi
 });
 
 test('a useful unidentified-photo description is saved automatically without inventing a title', async () => {
-  const page = setup(); photo(page);
+  const page = setup(); await photo(page);
   const description = 'A small bronze vessel with two handles and a raised geometric pattern.';
   await page.respond(0, {ok: false, reason: 'no_match', candidates: [], label_text: '', visual_description: description}, 200);
   assert.equal(page.requests[1].url, '/api/gallery/research');
@@ -418,7 +636,7 @@ test('a useful unidentified-photo description is saved automatically without inv
 });
 
 test('a blank or unusably short description does not create an imaginary discovery', async () => {
-  const page = setup(); photo(page);
+  const page = setup(); await photo(page);
   await page.respond(0, {ok: true, candidates: [], label_text: '', visual_description: 'Unknown'});
   assert.equal(page.requests.length, 1);
   assert.equal(page.el('ugIdentify').hidden, false);
@@ -426,7 +644,7 @@ test('a blank or unusably short description does not create an imaginary discove
 });
 
 test('automatic discovery research is bounded to four catalogue queries with at most two parallel alternatives', async () => {
-  const page = setup(); photo(page);
+  const page = setup(); await photo(page);
   await page.respond(0, {ok: true, candidates: [{query: 'Name one', title: 'Name two', item_number: '123', confidence: 'high'}, {query: 'Name four'}]});
   await page.respond(1, {ok: true, results: []});
   await page.respond(2, {ok: true, results: []});
@@ -441,7 +659,7 @@ test('automatic discovery research is bounded to four catalogue queries with at 
 });
 
 test('a strong third hypothesis leads with its explicit accession instead of free prose', async () => {
-  const page = setup(); photo(page);
+  const page = setup(); await photo(page);
   await page.respond(0, {ok: true, candidates: [
     {title: 'Weak first', query: 'Weak first', confidence: 'low'},
     {title: 'Possible second', query: 'Possible second', confidence: 'medium'},
@@ -458,7 +676,7 @@ test('a strong third hypothesis leads with its explicit accession instead of fre
 });
 
 test('all ranked identity hypotheses and useful OCR precede variants of a weak guess', async () => {
-  const page = setup(); photo(page);
+  const page = setup(); await photo(page);
   await page.respond(0, {ok: true, label_text: 'Bronze ceremonial vessel 1889', candidates: [
     {query: 'Weak guess', title: 'Another weak wording', confidence: 'low'},
     {query: 'Possible vessel', title: 'Another possible wording', confidence: 'medium'},
@@ -480,7 +698,7 @@ test('all ranked identity hypotheses and useful OCR precede variants of a weak g
 });
 
 test('a bare year in OCR is not treated as a concrete artifact label number', async () => {
-  const page = setup(); photo(page);
+  const page = setup(); await photo(page);
   await page.respond(0, {ok: true, label_text: '1889', candidates: []});
   assert.equal(page.requests.length, 1);
   assert.equal(page.el('ugFind').value, '');
@@ -490,7 +708,7 @@ test('a bare year in OCR is not treated as a concrete artifact label number', as
 });
 
 test('partial empty collections retry once and keep a private discovery instead of a definitive miss', async () => {
-  const page = setup(); photo(page);
+  const page = setup(); await photo(page);
   const description = 'A bronze vessel with a narrow neck and two decorative handles.';
   await page.respond(0, {ok: true, candidates: [{query: 'Bronze vessel'}], visual_description: description});
   await page.respond(1, {ok: true, results: []});
@@ -511,7 +729,7 @@ test('partial empty collections retry once and keep a private discovery instead 
 });
 
 test('failed catalogue HTTP requests get one safe retry and preserve useful recognition text', async () => {
-  const page = setup(); photo(page);
+  const page = setup(); await photo(page);
   const description = 'A carved stone figure holding a small round object in both hands.';
   await page.respond(0, {ok: true, candidates: [{query: 'Stone figure'}], label_text: 'Figure 123', visual_description: description});
   await page.respond(1, {ok: true, results: []});
@@ -532,7 +750,7 @@ test('failed catalogue HTTP requests get one safe retry and preserve useful reco
 });
 
 test('even storage failure leaves the useful description visible without claiming it was saved', async () => {
-  const page = setup(); photo(page);
+  const page = setup(); await photo(page);
   await page.respond(0, {ok: true, candidates: [], visual_description: 'A tall blue glass vase with a flared rim and slender base.'});
   await page.respond(1, {ok: false, reason: 'temporary'}, 503);
   assert.match(page.el('ugFound').innerHTML, /blue glass vase/);
@@ -543,10 +761,10 @@ test('even storage failure leaves the useful description visible without claimin
 });
 
 test('a second photograph saves independently while stale research completion cannot replace its discovery', async () => {
-  const page = setup(); photo(page);
+  const page = setup(); await photo(page);
   await page.respond(0, {ok: true, candidates: [], visual_description: 'An old bronze bowl with a deeply patterned surface.'});
   assert.equal(page.requests[1].url, '/api/gallery/research');
-  photo(page);
+  await photo(page);
   await page.respond(2, {ok: true, candidates: [], visual_description: 'A new blue glass vase with a broad and flared rim.'});
   assert.equal(page.requests[3].url, '/api/gallery/research', 'the older save does not block the new photograph');
   assert.match(JSON.parse(page.requests[3].options.body).visual_description, /new blue glass vase/);
@@ -563,11 +781,11 @@ test('a second photograph saves independently while stale research completion ca
 
 test('rapid replacement photos bound research concurrency and resume only the current waiting flow', async () => {
   const page = setup();
-  photo(page); await page.respond(0, {ok: true, visual_description: 'First vessel with decorative handles and a wide base.'});
-  photo(page); await page.respond(2, {ok: true, visual_description: 'Second vessel with a painted band and a narrow neck.'});
-  photo(page); await page.respond(4, {ok: true, visual_description: 'Third vessel with a round opening and a raised foot.'});
+  await photo(page); await page.respond(0, {ok: true, visual_description: 'First vessel with decorative handles and a wide base.'});
+  await photo(page); await page.respond(2, {ok: true, visual_description: 'Second vessel with a painted band and a narrow neck.'});
+  await photo(page); await page.respond(4, {ok: true, visual_description: 'Third vessel with a round opening and a raised foot.'});
   assert.equal(page.requests.length, 5, 'the third flow waits while two saves are in flight');
-  photo(page); await page.respond(5, {ok: true, visual_description: 'Fourth current vessel with a blue surface and two handles.'});
+  await photo(page); await page.respond(5, {ok: true, visual_description: 'Fourth current vessel with a blue surface and two handles.'});
   assert.equal(page.requests.length, 6);
   await page.respond(1, {ok: true, saved: true, id: 'r_first'});
   assert.equal(page.requests[6].url, '/api/gallery/research');
@@ -581,7 +799,7 @@ test('rapid replacement photos bound research concurrency and resume only the cu
 });
 
 test('four failed hypotheses share a single retry budget, never four paid recognition retries', async () => {
-  const page = setup(); photo(page);
+  const page = setup(); await photo(page);
   await page.respond(0, {ok: true, label_text: 'Museum label words', candidates: [
     {query: 'First hypothesis'}, {query: 'Second hypothesis'}, {query: 'Third hypothesis'}
   ]});
@@ -599,7 +817,7 @@ test('four failed hypotheses share a single retry budget, never four paid recogn
 });
 
 test('a catalogue outage leaves the saved story visible and never replaces it with pending research', async () => {
-  const page = setup(); photo(page);
+  const page = setup(); await photo(page);
   await page.respond(0, {ok: true, candidates: [{query: 'Cypresses'}], visual_description: 'A painting of dark green trees under a softly patterned sky.'});
   await page.respond(1, {ok: true, results: [{artifact_id: 'a_saved', title: 'Cypresses', story_available: true, written: true}]});
   await page.respond(2, {ok: false, reason: 'temporary'}, 503);
@@ -612,7 +830,7 @@ test('a catalogue outage leaves the saved story visible and never replaces it wi
 });
 
 test('a failed archive lookup still searches the museum collections automatically', async () => {
-  const page = setup(); photo(page);
+  const page = setup(); await photo(page);
   await page.respond(0, {ok: true, candidates: [{query: 'Vessel'}]});
   await page.respond(1, {ok: false, reason: 'temporary'}, 503);
   assert.match(page.requests[2].url, /discover=0&origin=photo/);

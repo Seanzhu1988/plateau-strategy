@@ -56,6 +56,8 @@ jobs:
       - name: Check gallery JavaScript
         run: |
           node --check gallery-ui.js
+          node --check gallery-photo-input.js
           node --check gallery-search.js
           node --test test_gallery_ui.cjs
+          node --test test_gallery_photo_input.cjs
           node --test test_pulse_ui.js

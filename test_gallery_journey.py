@@ -77,6 +77,18 @@ class GalleryJourneyTests(unittest.TestCase):
         self.assertTrue(result["artifact_id"])
         return result
 
+    def test_camera_preparer_is_served_before_controller(self):
+        with self.client.get('/universal-gallery') as response:
+            self.assertEqual(response.status_code, 200)
+            html = response.get_data(as_text=True)
+        # The production response rewrites shared asset versions for caching.
+        self.assertLess(html.index('/gallery-photo-input.js?'), html.index('/gallery-ui.js?'))
+        with self.client.get('/gallery-photo-input.js?v=1') as response:
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.mimetype, 'application/javascript')
+            self.assertIn('root.PSXGalleryPhoto', response.get_data(as_text=True))
+        self.assertEqual(self.provider.call_count, 0)
+
     def write(self, artifact_id):
         response = self.client.post("/api/gallery/generate", json={"artifact_id": artifact_id, "lang": "en"})
         self.assertEqual(response.status_code, 200)

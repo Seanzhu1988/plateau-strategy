@@ -51,6 +51,11 @@ MAX_PREPARED_PIXELS = 2_500_000
 PROVIDER_TIMEOUT = (5, 45)
 _DECODE_SLOTS = threading.BoundedSemaphore(2)
 
+
+class PhotoTooLargeError(ValueError):
+    """A valid-looking photo exceeds our safe in-memory decode boundary."""
+
+
 _CANDIDATE_FIELDS = {"title": 200, "artist": 160, "museum": 160,
                      "item_number": 80, "query": 240, "confidence": 10, "reason": 350}
 _CANDIDATE_SCHEMA = {
@@ -126,7 +131,52 @@ def _response(reason, message, status=200, **extra):
     response.headers["Cache-Control"] = "no-store"
     if reason == "rate_limited":
         response.headers["Retry-After"] = "3600"
+    elif reason == "provider_rate_limited":
+        response.headers["Retry-After"] = "60"
     return response
+
+
+def _provider_failure(response):
+    """Classify provider failures without returning or logging their text.
+
+    The provider can include account details in errors. Read only a bounded
+    error envelope to select one of our own fixed reason codes. Never include
+    the envelope, exception, request headers or provider message in a response.
+    """
+    status = getattr(response, "status_code", None)
+    status = status if isinstance(status, int) and 100 <= status <= 599 else 0
+    error_type, message = "", ""
+    if response is not None:
+        try:
+            content = response.content
+            if isinstance(content, bytes) and len(content) <= 8192:
+                payload = json.loads(content)
+                error = payload.get("error") if isinstance(payload, dict) else None
+                if isinstance(error, dict):
+                    if isinstance(error.get("type"), str):
+                        error_type = error["type"].lower()
+                    if isinstance(error.get("message"), str):
+                        message = error["message"].lower()
+        except (ValueError, TypeError):
+            pass
+    if (status == 402 or error_type == "billing_error"
+            or (status == 400 and any(clue in message for clue in (
+                "credit balance is too low", "insufficient credits", "insufficient credit balance")))):
+        reason = "provider_billing"
+    elif status in (401, 403):
+        reason = "provider_auth"
+    elif status == 429:
+        reason = "provider_rate_limited"
+    elif (status in (400, 404) and "model" in message and (
+            error_type == "not_found_error" or any(clue in message for clue in (
+                "not found", "not_found", "not available", "unavailable", "does not exist", "unsupported")))):
+        reason = "provider_model_unavailable"
+    else:
+        reason = "provider_unavailable"
+    current_app.logger.warning("Gallery photo provider failure: reason=%s status=%d", reason, status)
+    if reason == "provider_rate_limited":
+        return _response(reason, "Photo search is busy. Please try again in a minute.", 503)
+    return _response(reason, "Photo search is temporarily offline. You can still search by name or label number.", 503)
 
 
 def _setting(name, default, ceiling):
@@ -219,8 +269,10 @@ def _magic(raw):
 
 def prepare_image(raw):
     """Decode all pixels, orient, bound size and re-encode without metadata."""
-    if not raw or len(raw) > MAX_IMAGE_BYTES:
-        raise ValueError("Choose a JPEG, PNG or WebP picture up to 6 MB.")
+    if not raw:
+        raise ValueError("Choose a JPEG, PNG or WebP picture.")
+    if len(raw) > MAX_IMAGE_BYTES:
+        raise PhotoTooLargeError("This photo is too large. Choose a smaller copy up to 6 MB.")
     kind = _magic(raw)
     if not kind:
         raise ValueError("Choose a JPEG, PNG or WebP picture.")
@@ -229,9 +281,11 @@ def prepare_image(raw):
             warnings.simplefilter("error", Image.DecompressionBombWarning)
             with Image.open(io.BytesIO(raw), formats=[kind]) as image:
                 width, height = image.size
-                if (width < 16 or height < 16 or width > MAX_DIMENSION
-                        or height > MAX_DIMENSION or width * height > MAX_PIXELS):
-                    raise ValueError("Use a picture between 16 pixels and 20 megapixels.")
+                if (width > MAX_DIMENSION or height > MAX_DIMENSION
+                        or width * height > MAX_PIXELS):
+                    raise PhotoTooLargeError("This photo is too large. Choose a smaller copy up to 20 megapixels.")
+                if width < 16 or height < 16:
+                    raise ValueError("Choose a picture at least 16 pixels wide and high.")
                 if getattr(image, "n_frames", 1) != 1:
                     raise ValueError("Choose a still picture, not an animation.")
                 image.verify()
@@ -252,8 +306,9 @@ def prepare_image(raw):
                 output = io.BytesIO()
                 clean.save(output, format="JPEG", quality=88, optimize=True)
                 return output.getvalue()
-    except (UnidentifiedImageError, OSError, SyntaxError, Image.DecompressionBombWarning,
-            Image.DecompressionBombError) as exc:
+    except (Image.DecompressionBombWarning, Image.DecompressionBombError) as exc:
+        raise PhotoTooLargeError("This photo is too large. Choose a smaller copy up to 20 megapixels.") from exc
+    except (UnidentifiedImageError, OSError, SyntaxError) as exc:
         raise ValueError("This picture is damaged or could not be read. Try another photo.") from exc
 
 
@@ -328,7 +383,7 @@ def _parse_candidates(payload):
 @gallery_identify_bp.route("/api/gallery/identify", methods=["POST"])
 def identify():
     if request.content_length and request.content_length > MAX_REQUEST_BYTES:
-        return _response("bad_image", "Choose a picture up to 6 MB.", 413)
+        return _response("photo_too_large", "This photo is too large. Choose a smaller copy up to 6 MB.", 413)
     try:
         if not _reserve("attempt"):
             return _response("rate_limited", "You have tried several photos. Please try again later.", 429)
@@ -341,7 +396,9 @@ def identify():
         finally:
             _DECODE_SLOTS.release()
     except RequestEntityTooLarge:
-        return _response("bad_image", "Choose a picture up to 6 MB.", 413)
+        return _response("photo_too_large", "This photo is too large. Choose a smaller copy up to 6 MB.", 413)
+    except PhotoTooLargeError as exc:
+        return _response("photo_too_large", str(exc), 413)
     except (ValueError, BadRequest) as exc:
         return _response("bad_image", str(exc) if isinstance(exc, ValueError)
                          else "The photo upload was incomplete. Please try again.", 400)
@@ -380,12 +437,14 @@ def identify():
             return _response("no_match", "This photo could not identify an artifact. Try a clear photo of the object or its label.")
         result = _parse_candidates(provider_payload)
     except requests.Timeout:
+        current_app.logger.warning("Gallery photo provider failure: reason=provider_timeout status=0")
         return _response("provider_timeout", "Photo search took too long. Try again or enter the label text.", 504)
-    except requests.RequestException:
+    except requests.RequestException as exc:
         # Provider error bodies may include account details. Do not forward them.
-        return _response("provider_unavailable", "Photo search is temporarily unavailable. Try a title or label number.", 503)
+        return _provider_failure(exc.response)
     except (ValueError, TypeError, KeyError):
-        return _response("invalid_response", "The photo result was incomplete. Try another angle or the label text.", 502)
+        current_app.logger.warning("Gallery photo provider failure: reason=invalid_response status=200")
+        return _response("invalid_response", "Photo search returned an incomplete result. Try again or search by name.", 502)
     if not result["candidates"]:
         return _response("no_match", result["reason"] or "No clear match yet. Include the object and a readable label.",
                          label_text=result["label_text"], visual_description=result["visual_description"])

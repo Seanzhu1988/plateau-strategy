@@ -41,6 +41,7 @@
     </form>
     <div class="ug-secondary-nav">
       <button type="button" id="ugPhotoToggle" aria-expanded="false" aria-controls="ugPhotoPanel"><svg aria-hidden="true" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 6l1.5-2h5L16 6h4a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1z"/><circle cx="12" cy="12.5" r="4"/></svg><span data-ug-text="photoSearch">Search with a photograph</span></button>
+      <button type="button" id="ugPhotoLibrary" data-ug-text="choosePhoto">Choose a photo</button>
       <a id="ugArchiveLink" href="/universal-gallery/archives" data-ug-text="archiveLink">Written by us artifact archives</a>
     </div>
     <dialog id="ugPhotoConsentDialog" class="ug-photo-dialog" aria-labelledby="ugPhotoDialogTitle" aria-describedby="ugPhotoDialogText ugPhotoDialogNote">
@@ -54,9 +55,10 @@
       <p data-ug-text="photoIntro">Take a photo, check the match, discover its story.</p>
       <form id="ugPhotoForm">
         <div class="ug-photo-choices">
-          <input id="ugCamera" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden>
-          <input id="ugUpload" type="file" accept="image/jpeg,image/png,image/webp" hidden>
-          <button id="ugPhotoPick" type="button" data-ug-text="choosePhoto">Take or choose a photo</button>
+          <input id="ugCamera" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" capture="environment" hidden>
+          <input id="ugUpload" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" hidden>
+          <button id="ugPhotoRetake" type="button" data-ug-text="camera">Take a photograph</button>
+          <button id="ugPhotoPick" type="button" data-ug-text="choosePhoto">Choose a photo</button>
         </div>
         <div id="ugPhotoPreview" class="ug-photo-preview" hidden><img id="ugPreviewImage" alt="Your photograph for identification"><button id="ugPhotoRemove" type="button" data-ug-text="removePhoto">Remove photograph</button></div>
         <input id="ugMuseum" type="hidden" value="">
@@ -81,6 +83,7 @@
     <footer class="ug-foot"><p data-ug-text="sourceNote">Collection records belong to their museums. Our stories are separately credited, with AI assistance identified where used.</p><a href="/gallery-guides" data-ug-text="browseGuides">Explore our museum guides</a></footer>
   </main>
   <script src="/i18n.js"></script>
-  <script src="/gallery-ui.js?v=5" defer></script>
+  <script src="/gallery-photo-input.js?v=1" defer></script>
+  <script src="/gallery-ui.js?v=6" defer></script>
 </body>
 </html>

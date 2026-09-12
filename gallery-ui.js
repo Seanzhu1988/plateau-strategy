@@ -12,7 +12,8 @@
   var seq = 0, timer = null, searchController = null, cardControllers = new Set();
   var rows = [], canGenerate = false, page = 1, photoOrigin = false, savedSearchOnly = false;
   var photoFile = null, photoURL = null, photoSeq = 0, photoController = null, photoBusy = false, candidates = [], labelText = '', visualDescription = '';
-  var pickerConsent = false, permittedPhoto = null, consentOpener = null;
+  var pickerConsent = false, permittedPhoto = null, consentOpener = null, photoPickerTarget = 'ugCamera';
+  var photoPreparing = false, photoPrepareController = null;
   var selectedResultSeq = -1;
   var storyJobs = new Set(), confirmationJobs = new Set(), attachmentJobs = new Set(), attachmentRetries = new Map();
   var researchJobs = new Set(), pendingResearch = null, researchSavedSeq = -1;
@@ -31,7 +32,7 @@
     archiveLink: ['Written by us artifact archives', '我们撰写的藏品故事档案'],
     photoHeading: ['Your photograph', '你的照片'], close: ['Close', '关闭'],
     photoIntro: ['Take a photo, check the match, discover its story.', '拍张照片，确认藏品，发现它的故事。'],
-    camera: ['Take a photograph', '拍摄照片'], choosePhoto: ['Take or choose a photo', '拍照或选择照片'],
+    camera: ['Take a photograph', '拍摄照片'], choosePhoto: ['Choose a photo', '选择照片'],
     removePhoto: ['Remove photograph', '移除照片'], museumHint: ['Museum or location, if you know it', '博物馆或所在地（选填）'],
     addDetails: ['Add a museum or location (optional)', '补充博物馆或所在地（选填）'],
     identify: ['Try photo search again', '重试照片搜索'], optional: ['Optional', '选填'],
@@ -106,18 +107,22 @@
     storyMissing: ['We have not written this story in your selected language yet.', '这篇故事还没有当前所选语言的版本。'],
     collectionPhoto: ['Collection photograph', '馆藏照片'], noImage: ['Image unavailable. Check the collection source.', '暂无图片，请查阅馆藏来源。'],
     photoWaiting: ['Choose a photograph first.', '请先选择照片。'], photoConsentNeeded: ['Please read and select the photo identification consent before continuing.', '继续前，请阅读并勾选照片识别授权。'],
-    photoLarge: ['Please choose a photograph smaller than 6 MB.', '请选择小于 6 MB 的照片。'],
+    photoLarge: ['This photo is too large. Take a new photo or choose a smaller copy.', '这张照片太大，请重新拍照或选择较小的副本。'],
     photoType: ['Please use a JPEG, PNG or WebP photograph. On iPhone, you can choose a compatible image from Photos.', '请使用 JPEG、PNG 或 WebP 照片。iPhone 用户可以从照片中选择兼容的图片。'],
     photoReady: ['Photo ready.', '照片已准备好。'],
+    photoPreparing: ['Preparing your photo…', '正在处理照片…'],
+    photoPrepareFailed: ['Your photo could not be prepared. Take a new photo or choose a JPEG.', '无法处理这张照片，请重新拍照或选择 JPEG 照片。'],
+    photoFormat: ['This browser cannot read that photo format. Take a new photo or choose a JPEG.', '此浏览器无法读取该照片格式，请重新拍照或选择 JPEG 照片。'],
     photoIdentifying: ['Reading the object and its label…', '正在识别藏品和展签…'],
     photoUnavailable: ['Photo identification is not connected yet. Search the title, artist, or museum label instead.', '照片识别尚未连接。请先使用作品名称、艺术家或展签编号搜索。'],
     photoNoMatch: ['We could not identify a reliable match. Try a clearer photograph of the label, or search its words directly.', '未能找到可靠匹配。请试试更清晰的展签照片，或直接搜索标签上的文字。'],
     photoCorrupt: ['This photograph could not be read. Please choose another JPEG, PNG or WebP image.', '无法读取这张照片，请选择其他 JPEG、PNG 或 WebP 图片。'],
     photoFailed: ['Identification did not finish. You can try again or search the words on the label.', '识别未能完成，可以重试，或搜索展签上的文字。'],
-    photoTimeout: ['Identification took too long. Try again with a clear photograph of the label.', '识别时间过长，请使用清晰的展签照片重试。'],
+    photoTimeout: ['Photo search did not finish in time. Your photo is ready if you want to try again.', '照片搜索未及时完成，照片已保留，可以重试。'],
     photoRateLimit: ['Photo search is busy. Please wait a minute before trying again.', '照片搜索目前繁忙，请稍等一分钟后重试。'],
     photoLimit: ['Photo identification has reached its current allowance. You can still search by title, artist or label number.', '照片识别已达到当前额度，仍可使用名称、艺术家或藏品编号搜索。'],
     photoProviderError: ['Photo identification is temporarily unavailable. Please try again later or search the words on the label.', '照片识别服务暂时无法使用，请稍后重试，或搜索展签上的文字。'],
+    photoServicePaused: ['Photo identification is paused on our side. You can still search by name or label.', '网站照片识别服务暂时暂停，仍可搜索名称或展签文字。'],
     labelRead: ['Text found on the label', '识别到的展签文字'],
     possibleMatches: ['Other possible matches', '其他可能的匹配'],
     checkCollection: ['Find this in the collections', '在馆藏中核对'], possible: ['Possible match', '可能匹配'],
@@ -230,7 +235,7 @@
   }
   async function search(query, fromPhoto, includeCatalogues, bringIntoView) {
     invalidate(); clearResults(); photoOrigin = !!fromPhoto;
-    if (!fromPhoto && photoFile) removePhoto();
+    if (!fromPhoto && (photoFile || photoPreparing)) removePhoto();
     if (!archive && query.length < 2) { if (query) stamp(status, t('minQuery')); setLocation(query); return; }
     var mine = seq, requestLang = lang();
     searchController = new AbortController();
@@ -487,6 +492,9 @@
   }, true);
   document.getElementById('ugSearchForm').addEventListener('submit', function (event) { event.preventDefault(); page = 1; search(input.value.trim(), photoOrigin); });
   input.addEventListener('input', function () {
+    // Typing starts a new journey immediately, before the search debounce.
+    // An unsubmitted prepared photo must not start a paid job over that query.
+    if (photoPreparing) removePhoto();
     invalidate(); clearResults(); page = 1;
     var query = input.value.trim();
     if (!archive && query.length < 2) { setLocation(query); return; }
@@ -494,6 +502,8 @@
   });
   function removePhoto() {
     ++photoSeq;
+    if (photoPrepareController) photoPrepareController.abort();
+    photoPrepareController = null; photoPreparing = false;
     // A submitted identification keeps its single-flight lock until the server
     // answers. Aborting only the browser would leave a paid provider call alive.
     if (photoController && !photoBusy) photoController.abort();
@@ -506,6 +516,7 @@
     document.getElementById('ugPhotoPanel').classList.remove('has-photo');
     document.getElementById('ugIdentify').disabled = true; document.getElementById('ugIdentify').hidden = true;
     stamp(document.getElementById('ugPhotoStatus'), '');
+    syncPhotoActions();
   }
   function showPhoto(open) {
     var panel = document.getElementById('ugPhotoPanel'); if (!panel) return;
@@ -514,12 +525,15 @@
     else document.getElementById('ugPhotoPick').focus();
   }
   function syncPhotoActions() {
-    ['ugPhotoToggle', 'ugEmptyPhoto', 'ugPhotoPick'].forEach(function (id) { document.getElementById(id).disabled = photoBusy; });
-    document.getElementById('ugIdentify').disabled = photoBusy || !photoFile || permittedPhoto !== photoFile;
+    ['ugPhotoToggle', 'ugEmptyPhoto', 'ugPhotoPick', 'ugPhotoLibrary', 'ugPhotoRetake'].forEach(function (id) {
+      var action = document.getElementById(id); if (action) action.disabled = photoBusy || photoPreparing;
+    });
+    document.getElementById('ugIdentify').disabled = photoBusy || photoPreparing || !photoFile || permittedPhoto !== photoFile;
   }
   function requestPhoto(event) {
-    if (photoBusy) return;
+    if (photoBusy || photoPreparing) return;
     pickerConsent = false; consentOpener = event && event.currentTarget || document.getElementById('ugPhotoToggle');
+    photoPickerTarget = consentOpener.id === 'ugPhotoLibrary' || consentOpener.id === 'ugPhotoPick' ? 'ugUpload' : 'ugCamera';
     var dialog = document.getElementById('ugPhotoConsentDialog');
     if (dialog.open) return;
     dialog.showModal(); document.getElementById('ugPhotoYes').focus();
@@ -532,22 +546,36 @@
   }
   function acceptPhoto() {
     var dialog = document.getElementById('ugPhotoConsentDialog');
-    if (!dialog.open || photoBusy) return;
+    if (!dialog.open || photoBusy || photoPreparing) return;
     pickerConsent = true; dialog.close();
     // Keep the native picker in this trusted click handler. Deferring it until
     // a promise or timer would break camera access in mobile browsers.
-    var picker = document.getElementById('ugUpload'); picker.value = ''; picker.click();
+    var picker = document.getElementById(photoPickerTarget); picker.value = ''; picker.click();
   }
-  function selectPhoto(event) {
-    var file = event.target.files && event.target.files[0]; if (!file) return;
-    if (!pickerConsent || photoBusy) { event.target.value = ''; return; }
+  async function selectPhoto(event) {
+    var file = event.target.files && event.target.files[0];
+    if (!file) { pickerConsent = false; return; }
+    if (!pickerConsent || photoBusy || photoPreparing || event.target.id !== photoPickerTarget) { event.target.value = ''; return; }
     removePhoto(); invalidate(); clearResults(); photoOrigin = false; var note = document.getElementById('ugPhotoStatus');
     showPhoto(true);
-    if (file.size > 6 * 1024 * 1024) { stamp(note, t('photoLarge'), true); return; }
-    if (!/^image\/(jpeg|png|webp)$/.test(file.type)) { stamp(note, t('photoType'), true); return; }
-    photoFile = file; permittedPhoto = file; photoURL = URL.createObjectURL(file);
-    document.getElementById('ugPhotoPanel').classList.add('has-photo');
-    document.getElementById('ugPreviewImage').src = photoURL; document.getElementById('ugPhotoPreview').hidden = false;
+    var controller = new AbortController(), mine = photoSeq;
+    photoPrepareController = controller; photoPreparing = true; syncPhotoActions(); stamp(note, t('photoPreparing'));
+    try {
+      if (!window.PSXGalleryPhoto || typeof window.PSXGalleryPhoto.prepare !== 'function') throw new Error('preparation_unavailable');
+      var prepared = await window.PSXGalleryPhoto.prepare(file, {signal: controller.signal});
+      if (mine !== photoSeq || controller.signal.aborted) return;
+      // Consent follows this sanitized copy of the selected photograph only.
+      photoFile = prepared; permittedPhoto = prepared; photoURL = URL.createObjectURL(prepared);
+      document.getElementById('ugPhotoPanel').classList.add('has-photo');
+      document.getElementById('ugPreviewImage').src = photoURL; document.getElementById('ugPhotoPreview').hidden = false;
+    } catch (error) {
+      if (mine !== photoSeq || controller.signal.aborted) return;
+      var reason = error.code || error.reason;
+      stamp(note, t(reason === 'image_too_large' ? 'photoLarge' : reason === 'unsupported_format' ? 'photoFormat' : 'photoPrepareFailed'), true);
+      return;
+    } finally {
+      if (photoPrepareController === controller) { photoPrepareController = null; photoPreparing = false; syncPhotoActions(); }
+    }
     identifyPhoto();
   }
   function cleanQuery(value) { return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim().slice(0, 80) : ''; }
@@ -603,7 +631,7 @@
   }
   async function identifyPhoto(event) {
     if (event) event.preventDefault(); var note = document.getElementById('ugPhotoStatus');
-    if (photoBusy) return;
+    if (photoBusy || photoPreparing) return;
     if (!photoFile) { stamp(note, t('photoWaiting'), true); return; }
     if (permittedPhoto !== photoFile) { stamp(note, t('photoConsentNeeded'), true); return; }
     var mine = ++photoSeq, searchAtIdentification = seq, btn = document.getElementById('ugIdentify'); photoOrigin = true;
@@ -612,8 +640,18 @@
     var body = new FormData(); body.append('photo', photoFile); body.append('museum', document.getElementById('ugMuseum').value.trim());
     body.append('query', input.value.trim()); body.append('lang', lang()); body.append('consent', 'anthropic-photo-search-v1');
     btn.hidden = true; syncPhotoActions(); document.getElementById('ugCandidates').innerHTML = ''; stamp(note, t('photoIdentifying'));
+    var deadline;
     try {
-      var data = await jsonFetch('/api/gallery/identify', {method: 'POST', body: body, signal: controller.signal});
+      // Bound both fetch and response-body reads. No automatic paid retry.
+      // This exceeds the server's provider timeout and also releases a stuck
+      // browser transport which does not settle promptly after abort.
+      var timeout = new Promise(function (_, reject) {
+        deadline = setTimeout(function () {
+          var error = new Error('photo_timeout'); error.data = {reason: 'provider_timeout'};
+          reject(error); controller.abort();
+        }, 90000);
+      });
+      var data = await Promise.race([jsonFetch('/api/gallery/identify', {method: 'POST', body: body, signal: controller.signal}), timeout]);
       if (mine !== photoSeq) return;
       presentIdentification(data, seq === searchAtIdentification);
       if (!candidates.length && !labelQuery() && !visualDescription) btn.hidden = false;
@@ -625,14 +663,16 @@
         error.status === 413 ? 'photoLarge' :
         ['bad_image','invalid_image','corrupt_image','unsupported_image','unsupported_type'].indexOf(reason) !== -1 ? 'photoCorrupt' :
         reason === 'no_match' ? 'photoNoMatch' : reason === 'provider_timeout' ? 'photoTimeout' :
-        ['busy','rate_limited'].indexOf(reason) !== -1 ? 'photoRateLimit' : reason === 'monthly_limit' ? 'photoLimit' :
-        ['provider_unavailable','invalid_response'].indexOf(reason) !== -1 ? 'photoProviderError' : 'photoFailed';
+        ['busy','rate_limited','provider_rate_limited'].indexOf(reason) !== -1 ? 'photoRateLimit' : reason === 'monthly_limit' ? 'photoLimit' :
+        reason === 'provider_billing' ? 'photoServicePaused' :
+        ['provider_unavailable','provider_auth','provider_model_unavailable','invalid_response'].indexOf(reason) !== -1 ? 'photoProviderError' : 'photoFailed';
       stamp(note, t(message), true);
       btn.hidden = false;
       if (reason === 'no_match' && error.data && (error.data.label_text || error.data.visual_description)) presentIdentification(error.data, seq === searchAtIdentification);
     } finally {
+      clearTimeout(deadline);
       if (photoController === controller) {
-        photoBusy = false;
+        photoBusy = false; photoController = null;
         syncPhotoActions();
       }
     }
@@ -685,6 +725,8 @@
     document.getElementById('ugPhotoToggle').addEventListener('click', requestPhoto);
     document.getElementById('ugEmptyPhoto').addEventListener('click', requestPhoto);
     document.getElementById('ugPhotoPick').addEventListener('click', requestPhoto);
+    document.getElementById('ugPhotoLibrary').addEventListener('click', requestPhoto);
+    document.getElementById('ugPhotoRetake').addEventListener('click', requestPhoto);
     document.getElementById('ugPhotoYes').addEventListener('click', acceptPhoto);
     document.getElementById('ugPhotoNo').addEventListener('click', declinePhoto);
     document.getElementById('ugPhotoConsentDialog').addEventListener('cancel', declinePhoto);
@@ -692,7 +734,9 @@
     document.getElementById('ugPhotoRemove').addEventListener('click', function () { removePhoto(); invalidate(); clearResults(); photoOrigin = false; setLocation(input.value.trim()); });
     document.getElementById('ugPhotoText').addEventListener('click', function () { removePhoto(); photoOrigin = false; showPhoto(false); search(input.value.trim(), false); input.focus(); });
     document.getElementById('ugCamera').addEventListener('change', selectPhoto); document.getElementById('ugUpload').addEventListener('change', selectPhoto);
-    document.getElementById('ugUpload').addEventListener('cancel', function () { pickerConsent = false; if (consentOpener) consentOpener.focus(); });
+    ['ugCamera', 'ugUpload'].forEach(function (id) {
+      document.getElementById(id).addEventListener('cancel', function () { pickerConsent = false; if (consentOpener) consentOpener.focus(); });
+    });
     document.getElementById('ugPhotoForm').addEventListener('submit', identifyPhoto);
     document.getElementById('ugResearchSave').addEventListener('click', saveResearch);
     document.getElementById('ugCandidates').addEventListener('click', function (event) {
