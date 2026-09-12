@@ -126,3 +126,10 @@ seeded_articles.json
 # write's staging file, same as footprints above, and must be ignored too.
 discovery_store.json
 discovery_store.json.tmp
+
+# Universal Gallery runtime archive, demand and paid-request reservations.
+# These belong on DATA_DIR, not in a source release, including SQLite sidecars.
+gallery_archive.sqlite3*
+gallery_identify_usage.sqlite3*
+gallery_readings_runtime.json
+gallery_readings_runtime.json.tmp

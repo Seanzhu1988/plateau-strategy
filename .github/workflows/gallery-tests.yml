@@ -1,0 +1,55 @@
+name: Universal Gallery regression tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'app.py'
+      - 'discovery.py'
+      - 'gallery*'
+      - 'universal-gallery.html'
+      - 'gallery_scripts/**'
+      - 'test*gallery*'
+      - 'requirements.txt'
+      - '.github/workflows/gallery-tests.yml'
+  pull_request:
+    paths:
+      - 'app.py'
+      - 'discovery.py'
+      - 'gallery*'
+      - 'universal-gallery.html'
+      - 'gallery_scripts/**'
+      - 'test*gallery*'
+      - 'requirements.txt'
+      - '.github/workflows/gallery-tests.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  gallery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DISCOVERY_ENABLED: 'false'
+      DISPATCH_REMINDERS: 'false'
+      ANTHROPIC_API_KEY: ''
+      ELEVENLABS_API_KEY: ''
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install production dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Verify isolated archive, language, camera and queue journeys
+        run: |
+          python -m unittest test_gallery_archive test_gallery_journey test_discovery_gallery_bridge test_gallery_identify -v
+          python test_gallery_generate.py
+      - name: Check gallery JavaScript
+        run: |
+          node --check gallery-ui.js
+          node --check gallery-search.js
+          node --test test_gallery_ui.cjs

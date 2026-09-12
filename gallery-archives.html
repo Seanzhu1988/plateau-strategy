@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Written by us artifact archives · Plateau Strategy</title>
+  <meta name="description" content="Original stories attached to the artworks and objects discovered in Universal Gallery. Search the archive and return to a story.">
+  <link rel="canonical" href="https://plateaustrategy.io/universal-gallery/archives">
+  <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+  <link rel="stylesheet" href="/paper.css">
+  <link rel="stylesheet" href="/modern.css">
+  <link rel="stylesheet" href="/gallery-ui.css?v=2">
+  <script src="/psx-net.js"></script>
+</head>
+<body data-gallery-page="archive">
+  <a class="ug-skip" href="#ugMain">Skip to archive</a>
+  <header><img src="/plateau-logo.svg" alt="" width="42" height="42"><a class="brand" href="/">Plateau Strategy</a><nav class="right" aria-label="Main navigation"><a href="/universal-gallery" data-ug-text="backGallery">Universal Gallery</a><a href="/destination-book">Destination Book</a></nav></header>
+  <main id="ugMain" class="ug-wrap">
+    <div class="ug-intro"><p class="ug-context" data-ug-text="archiveContext">The Universal Gallery collection</p><h1 class="ug-archive-title" data-ug-text="archiveLink">Written by us artifact archives</h1><p class="ug-lede" data-ug-text="archiveIntro">A place for the stories we have made. Each one belongs to an object, and travels with it whenever someone searches again.</p></div>
+    <form id="ugSearchForm" class="ug-search-form" role="search"><label for="ugFind" data-ug-text="archiveSearch">Search our stories</label><div class="ug-search-line"><input id="ugFind" name="q" type="search" maxlength="80" autocomplete="off" placeholder="Artwork, artist or museum"><button class="ug-primary" type="submit" data-ug-text="search">Search</button></div><div class="ug-archive-filter"><label for="ugArchiveLang" data-ug-text="storyLanguage">Story language</label><select id="ugArchiveLang"><option value="en">English</option><option value="zh">中文</option><option value="es">Español</option><option value="ko">한국어</option><option value="vi">Tiếng Việt</option><option value="ja">日本語</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="pt">Português</option></select><a href="/universal-gallery" data-ug-text="searchCollections">Search all the collections</a></div></form>
+    <p id="ugStatus" class="ug-status" role="status" aria-live="polite" aria-atomic="true"></p>
+    <section id="ugFound" aria-label="Original artifact stories" aria-busy="false"></section>
+    <div id="ugEmpty" class="ug-empty" hidden><h2 data-ug-text="archiveEmpty">No stories here yet</h2><p data-ug-text="archiveEmptyHelp">Try another title or story language. You can also look for the object in the Universal Gallery.</p><a href="/universal-gallery" data-ug-text="searchCollections">Search all the collections</a></div>
+    <nav id="ugPagination" class="ug-pagination" aria-label="Archive pages" hidden><button id="ugPrevious" type="button" data-ug-text="previous">Previous</button><span id="ugPageNumber"></span><button id="ugNext" type="button" data-ug-text="next">Next</button></nav>
+    <footer class="ug-foot"><p data-ug-text="sourceNote">Collection records belong to their museums. Our stories are separately credited, with AI assistance identified where used.</p></footer>
+  </main>
+  <script src="/i18n.js"></script>
+  <script src="/gallery-ui.js?v=2" defer></script>
+</body>
+</html>

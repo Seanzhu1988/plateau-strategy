@@ -12,3 +12,6 @@ gunicorn>=21.0
 # and a privacy feature must not vanish because somebody else's package tree
 # changed.
 cryptography>=42.0
+# Decode visitor photos and re-encode in memory without metadata. Production
+# Python 3.11 supports the current Pillow security release.
+Pillow>=12.3.0,<13

@@ -30,6 +30,7 @@ import datetime
 
 import discovery as discovery_mod
 import gallery_log
+import gallery_archive
 import worklist as worklist_mod
 import urllib.parse
 import shutil
@@ -300,6 +301,11 @@ def _get_secret():
 
 app = Flask(__name__)
 app.secret_key = _get_secret()
+
+# Phone photos are decoded in memory and may reach the fixed identification
+# provider only after the visitor's explicit consent. No photo is retained.
+from gallery_identify import gallery_identify_bp
+app.register_blueprint(gallery_identify_bp)
 
 
 # ---------- owner authentication (protects the dispatch control center) ----------
@@ -4962,6 +4968,56 @@ def name_protection_page():
 # ======================================================================
 
 _GAL_CACHE = {}
+from concurrent.futures import ThreadPoolExecutor, wait as _gallery_wait
+_GAL_EXECUTOR = ThreadPoolExecutor(max_workers=8, thread_name_prefix="gallery-source")
+_GAL_SLOTS = threading.BoundedSemaphore(8)
+
+
+def _gallery_photo_signer():
+    from itsdangerous import URLSafeTimedSerializer
+    return URLSafeTimedSerializer(app.secret_key, salt="gallery-source-candidate-v1")
+
+
+def _gallery_provider(fn, q):
+    try:
+        return fn(q)
+    finally:
+        _GAL_SLOTS.release()
+
+
+def _gallery_finish(payload, q, lang, cached):
+    """Live archive enrichment happens even when source responses are cached."""
+    rows = list(payload.get("results") or [])
+    rows.extend(gallery_archive.search_known(q))
+    if request.args.get("discover") == "0":
+        # Camera suggestions are transient source candidates. Only the
+        # visitor's explicit confirmation can put a new one in the archive.
+        candidates, seen = [], set()
+        for row in rows:
+            keys = gallery_archive.identities(row)
+            if not keys or keys[0] in seen:
+                continue
+            seen.add(keys[0])
+            known = gallery_archive.resolve(row)
+            if known:
+                candidates.append(gallery_archive.get_artifact(known["artifact_id"], lang))
+            else:
+                facts = gallery_archive.clean_facts(row)
+                # Signed source facts travel with the candidate, so any web
+                # worker can confirm it without storing an unconfirmed guess.
+                token = "p_" + _gallery_photo_signer().dumps(facts)
+                candidates.append(dict(facts, artifact_id=token, discovery_status="unconfirmed",
+                                       confirmed=False, new_discovery=False, written=False,
+                                       story_available=False, has_narrative=False, story_languages=[],
+                                       story_url=None, provenance=None))
+            if len(candidates) >= 16:
+                break
+        return jsonify({**payload, "results": candidates, "ok": True, "cached": cached,
+                        "lang": lang, "can_generate": _gallery_can_generate(), "new_discoveries": 0})
+    enriched = gallery_archive.enrich(rows, q, lang)
+    enriched["results"] = enriched["results"][:16]
+    return jsonify({**payload, **enriched, "ok": True, "cached": cached,
+                    "lang": lang, "can_generate": _gallery_can_generate()})
 
 
 def _gal_get(url, timeout=12):
@@ -5002,12 +5058,15 @@ _GAL_HOMES = {
 def _gal_met(q, limit=8):
     """The Met's open access collection. Free, no key, CC0 on public domain."""
     out = []
+    deadline = time.monotonic() + 16
     s = _gal_get("https://collectionapi.metmuseum.org/public/collection/v1/search?q="
                  + urllib.parse.quote(q))
-    for oid in (s or {}).get("objectIDs") or []:
-        if len(out) >= limit:
+    for oid in ((s or {}).get("objectIDs") or [])[:limit*2]:
+        remaining = deadline - time.monotonic()
+        if len(out) >= limit or remaining <= 0:
             break
-        o = _gal_get("https://collectionapi.metmuseum.org/public/collection/v1/objects/%s" % oid)
+        o = _gal_get("https://collectionapi.metmuseum.org/public/collection/v1/objects/%s" % oid,
+                     timeout=min(5, remaining))
         if not o or not o.get("title"):
             continue
         # Every public-domain view the Met holds of this object: the main one,
@@ -5022,6 +5081,8 @@ def _gal_met(q, limit=8):
                     shots.append(u)
         row = {
             "source": "The Met, New York",
+            "provider": "met", "source_object_id": str(oid),
+            "source_url": o.get("objectURL") or "https://www.metmuseum.org/art/collection/search/%s" % oid,
             "title": o.get("title"),
             "artist": o.get("artistDisplayName") or "",
             "date": o.get("objectDate") or "",
@@ -5067,6 +5128,8 @@ def _gal_aic(q, limit=8):
                     ids.append(i)
         row = {
             "source": "Art Institute of Chicago",
+            "provider": "aic", "source_object_id": str(x.get("id") or ""),
+            "source_url": "https://www.artic.edu/artworks/%s" % x.get("id"),
             "title": x.get("title"),
             "artist": x.get("artist_title") or "",
             "date": x.get("date_display") or "",
@@ -5123,6 +5186,7 @@ def _gal_moma(q, limit=8):
         for t, a2, dt, acc, ov, img, oid in rows:
             out.append({
                 "source": "Museum of Modern Art",
+                "provider": "moma", "source_object_id": str(oid),
                 "title": t, "artist": a2 or "", "date": dt or "",
                 "item_number": acc or "",
                 "where": ov or "",
@@ -5286,7 +5350,8 @@ def _gal_wikidata(q, limit=8):
             "date": r["date"] or "",
             "item_number": r["inv"] or "",
             "where": labels.get(r["coll_qid"], "") or "",
-            "on_view": bool(r["coll_qid"]),
+            # A collection relationship does not establish current display.
+            "on_view": None,
             "image": ("https://commons.wikimedia.org/wiki/Special:FilePath/"
                       + urllib.parse.quote(r["image_file"]) + "?width=420"),
             "images": ["https://commons.wikimedia.org/wiki/Special:FilePath/"
@@ -5295,6 +5360,7 @@ def _gal_wikidata(q, limit=8):
             "museum_lat": (coll_pos.get(r["coll_qid"]) or (None, None))[0],
             "museum_lon": (coll_pos.get(r["coll_qid"]) or (None, None))[1],
             "wikidata": r["qid"],
+            "provider": "wikidata", "source_url": "https://www.wikidata.org/wiki/" + r["qid"],
         })
     return out
 
@@ -5308,6 +5374,10 @@ def api_gallery_search():
     complicated part of the file for no gain. Cached for an hour: these
     collections change on the timescale of exhibitions, not seconds."""
     q = (request.args.get("q") or "").strip()[:80]
+    lang = (request.args.get("lang") or "en").strip().lower()
+    if lang not in _LANGS.CODES:
+        lang = "en"
+    learn = request.args.get("discover") != "0"
     if len(q) < 2:
         return jsonify({"ok": False, "error": "Type at least two characters.", "results": []})
     ck = q.lower()
@@ -5317,7 +5387,7 @@ def api_gallery_search():
         # the museum forever, so teaching from the cache costs nothing and
         # keeps the hour after a popular search from being a learning blackout.
         try:
-            for r in (hit[1].get("results") or [])[:6]:
+            for r in ((hit[1].get("results") or [])[:6] if learn else []):
                 m = r.get("source") or ""
                 if m:
                     discovery_mod.record_gallery(m, r.get("city") or "",
@@ -5329,33 +5399,44 @@ def api_gallery_search():
         # clearest measure of demand, and it used to leave no trace at all.
         try:
             _rows = hit[1].get("results") or []
-            gallery_log.record(q, len(_rows),
+            if learn:
+                gallery_log.record(q, len(_rows),
                                [r.get("source") for r in _rows if r.get("source")],
                                cached=True)
         except Exception:
             pass
-        return jsonify({"ok": True, "cached": True, **hit[1]})
-    results = []
+        return _gallery_finish(dict(hit[1]), q, lang, True)
+    results = gallery_archive.search_known(q)
+    exact = [r for r in results if (r.get("item_number") or "").lower().replace(" ", "") == q.lower().replace(" ", "")]
+    if exact:
+        return _gallery_finish({"query": q, "results": exact, "sources": ["Saved artifact archive"]}, q, lang, True)
+    pending = []
     for fn in (_gal_met, _gal_aic, _gal_moma, _gal_wikidata):
+        if _GAL_SLOTS.acquire(blocking=False):
+            pending.append(_GAL_EXECUTOR.submit(_gallery_provider, fn, q))
+    completed, unfinished = _gallery_wait(pending, timeout=18)
+    source_failures = 0
+    for future in completed:
         try:
-            results.extend(fn(q))
+            for source_row in future.result():
+                results.append(dict(source_row, catalogue_observed_at=time.time()))
         except Exception:
-            pass
+            source_failures += 1
     # THE MUSEUM'S OWN WORD BEATS SECOND-HAND KNOWLEDGE. Wikidata knows which
     # collection holds a work but not whether it hangs today, so for MoMA works
     # it answered "on view at the Museum of Modern Art" for a painting the
     # museum's own dataset marks off view. When the dataset (rows carrying
     # dataset_date) has a work, any other row claiming the same title at MoMA
     # is the same object known less well, and it is dropped.
-    _moma_titles = set()
+    _moma_accessions = set()
     for r in results:
-        if r.get("dataset_date"):
-            _moma_titles.add((r.get("title") or "").strip().lower())
-    if _moma_titles:
+        if r.get("dataset_date") and r.get("item_number"):
+            _moma_accessions.add((r.get("item_number") or "").strip().lower())
+    if _moma_accessions:
         results = [r for r in results
                    if r.get("dataset_date")
                    or "modern art" not in (r.get("source") or "").lower()
-                   or (r.get("title") or "").strip().lower() not in _moma_titles]
+                   or (r.get("item_number") or "").strip().lower() not in _moma_accessions]
     # RANKING, and why one rule is not enough.
     #
     # An exact item number is the strongest signal there is: somebody is standing
@@ -5392,10 +5473,12 @@ def api_gallery_search():
                        ("title", "artist", "museum", "item_number", "teaser")).lower()
         if not (qflat in hay or (words and all(w in hay for w in words))):
             continue
-        key = ((v.get("title") or "").strip().lower(),
+        key = (gallery_archive.institution(v.get("museum")),
+               (v.get("title") or "").strip().lower(),
                (v.get("item_number") or "").strip().lower())
         results = [r for r in results
-                   if ((r.get("title") or "").strip().lower(),
+                   if (gallery_archive.institution(r.get("museum") or r.get("source")),
+                       (r.get("title") or "").strip().lower(),
                        (r.get("item_number") or "").strip().lower()) != key]
         row = dict(v)
         row.pop("script", None)
@@ -5470,7 +5553,7 @@ def api_gallery_search():
     # Both go to Discovery. Wrapped, and after the results are assembled, so a
     # discovery failure can never cost somebody their search. [SEAN]
     try:
-        if results:
+        if results and learn:
             seen_museums, seen_cities = set(), set()
             for r in results[:6]:
                 m = r.get("source") or ""
@@ -5499,13 +5582,13 @@ def api_gallery_search():
                 discovery_mod.record_artwork(r.get("title"), r.get("source"), r.get("city"),
                                              r.get("item_number"), r.get("image"),
                                              r.get("wikidata"), r.get("artist"))
-        else:
+        elif learn:
             discovery_mod.record_gallery_miss(q)
     except Exception as e:
         app.logger.warning("gallery discovery hook failed: %s", e)
 
     payload = {"query": q, "results": results[:16],
-               "sources": ["The Met, New York", "Art Institute of Chicago",
+               "sources": ["The Met, New York", "Art Institute of Chicago", "Museum of Modern Art",
                            "Wikidata and Wikimedia Commons, worldwide"],
                # Whether a searched work can be READ, not just listed. The page
                # offers the reading button only when there is an engine behind
@@ -5513,18 +5596,18 @@ def api_gallery_search():
                "can_generate": _gallery_can_generate(),
                # Said out loud, because a gallery that silently lacks MoMA looks
                # like a gallery that cannot find The Starry Night.
-               "not_covered": ["MoMA", "the Louvre", "the Vatican Museums",
-                               "the Uffizi", "the Prado"]}
+               "partial": bool(unfinished or source_failures), "not_covered": []}
     _GAL_CACHE[ck] = (time.time(), payload)
     if len(_GAL_CACHE) > 300:
         _GAL_CACHE.clear()
     try:
-        gallery_log.record(q, len(results),
+        if learn:
+            gallery_log.record(q, len(results),
                            [r.get("source") for r in results if r.get("source")],
                            cached=False)
     except Exception:
         pass                      # a search must never fail because of its log
-    return jsonify({"ok": True, "cached": False, **payload})
+    return _gallery_finish(payload, q, lang, False)
 
 
 @app.route("/api/gallery/items")
@@ -5549,6 +5632,61 @@ def api_gallery_items():
             os.path.join(BASE_DIR, v.get("script", "")))
         out[k] = row
     return jsonify({"ok": True, "items": out})
+
+
+def _gallery_language():
+    lang = (request.args.get("lang") or "en").strip().lower()
+    return lang if lang in _LANGS.CODES else "en"
+
+
+@app.route("/api/gallery/archive")
+def api_gallery_archive():
+    page = request.args.get("page", default=1, type=int)
+    return jsonify(gallery_archive.archive(request.args.get("q", "")[:80], _gallery_language(), page or 1))
+
+
+@app.route("/api/gallery/artifacts/<artifact_id>")
+def api_gallery_artifact(artifact_id):
+    artifact = gallery_archive.get_artifact(artifact_id, _gallery_language())
+    if not artifact:
+        return jsonify({"ok": False, "reason": "not_found"}), 404
+    return jsonify({"ok": True, "artifact": artifact, "can_generate": _gallery_can_generate()})
+
+
+@app.route("/api/gallery/artifacts/<artifact_id>/story")
+def api_gallery_artifact_story(artifact_id):
+    lang = _gallery_language()
+    story = gallery_archive.get_story(artifact_id, lang)
+    if story:
+        return jsonify({"ok": True, **story})
+    artifact = gallery_archive.get_artifact(artifact_id, lang)
+    if not artifact:
+        return jsonify({"ok": False, "reason": "not_found"}), 404
+    return jsonify({"ok": False, "reason": "story_missing",
+                    "available_languages": artifact["story_languages"],
+                    "fallback_lang": "en" if "en" in artifact["story_languages"] else None}), 404
+
+
+@app.route("/api/gallery/discover", methods=["POST"])
+def api_gallery_discover():
+    data = request.get_json(silent=True) or {}
+    if not isinstance(data, dict) or not isinstance(data.get("artifact_id"), str):
+        return jsonify({"ok": False, "reason": "need_work"}), 400
+    lang = data.get("lang", "en")
+    if lang not in _LANGS.CODES:
+        lang = "en"
+    artifact_id = data["artifact_id"]
+    if artifact_id.startswith("p_"):
+        try:
+            candidate = _gallery_photo_signer().loads(artifact_id[2:], max_age=900)
+        except Exception:
+            return jsonify({"ok": False, "reason": "candidate_expired", "message": "Search again to confirm this object."}), 410
+        remembered = gallery_archive.enrich([candidate], lang=lang)
+        artifact_id = remembered["results"][0]["artifact_id"]
+    artifact = gallery_archive.confirm(artifact_id, lang)
+    if not artifact:
+        return jsonify({"ok": False, "reason": "not_found"}), 404
+    return jsonify({"ok": True, "saved": True, "artifact": artifact})
 
 
 @app.route("/api/gallery/narrative/<path:key>")
@@ -5600,12 +5738,15 @@ def api_gallery_generate():
     and capped, so the second reader of a work pays nothing and no runaway can
     become a bill. Without a key it says so honestly and the search still shows
     every fact it always did."""
-    data = request.get_json(force=True, silent=True) or {}
+    data = request.get_json(silent=True) or {}
+    if not isinstance(data, dict):
+        return jsonify({"ok": False, "reason": "need_work"}), 400
 
     def clean(k, n=200):
         return _no_tags(str(data.get(k) or "").strip())[:n]
 
     facts = {
+        "artifact_id": clean("artifact_id", 100),
         "title": clean("title", 200),
         "artist": clean("artist", 200),
         "date": clean("date", 80),
@@ -5616,23 +5757,25 @@ def api_gallery_generate():
         "source_url": clean("source_url", 400),
         "copyright": bool(data.get("copyright")),
     }
-    lang = (data.get("lang") or "en").strip().lower()[:5]
+    lang = str(data.get("lang") or "en").strip().lower()
+    if lang not in _LANGS.CODES:
+        return jsonify({"ok": False, "reason": "unsupported_language"}), 400
     # Tie generation to a real object: a title and the museum that holds it. A
     # search row always carries both; this keeps the endpoint from being a free
     # essay generator for arbitrary prompts.
-    if len(facts["title"]) < 2 or len(facts["museum"]) < 2:
+    if not facts["artifact_id"] and (len(facts["title"]) < 2 or len(facts["museum"]) < 2):
         return jsonify({"ok": False, "reason": "need_work"}), 400
+    canonical = gallery_archive.resolve(facts)
+    if not canonical:
+        return jsonify({"ok": False, "reason": "unknown_artifact", "message": "Find the artifact in search first."}), 404
     try:
         import gallery_reader
     except Exception:
         return jsonify({"ok": False, "reason": "no_engine"}), 200
-    if not gallery_reader.available():
-        return jsonify({"ok": False, "reason": "no_engine"}), 200
-    res = gallery_reader.read_for(facts, lang)
-    if not res:
-        return jsonify({"ok": False, "reason": "failed"}), 200
-    return jsonify({"ok": True, "text": res["text"], "minutes": res.get("minutes"),
-                    "cached": bool(res.get("cached"))})
+    res = gallery_reader.read_for(canonical, lang)
+    if not res or not res.get("text"):
+        return jsonify({"ok": False, "reason": (res or {}).get("reason", "failed")}), 200
+    return jsonify({"ok": True, **res})
 
 
 @app.route("/api/gallery/queue")
@@ -5643,7 +5786,8 @@ def api_gallery_queue():
     The writing is the product, so this is the list that decides what to write
     next: most asked for, first."""
     try:
-        return jsonify({"ok": True, "queue": discovery_mod.artwork_queue(60)})
+        return jsonify({"ok": True, "queue": discovery_mod.artwork_queue(60),
+                        "writing": gallery_archive.queue_status()})
     except Exception as e:
         return jsonify({"ok": False, "queue": [], "error": str(e)}), 500
 
@@ -5894,8 +6038,24 @@ def api_gallery_here():
 
 
 @app.route("/universal-gallery")
-def universal_gallery_page():
+@app.route("/universal-gallery/artifacts/<artifact_id>")
+def universal_gallery_page(artifact_id=None):
     return send_file(os.path.join(BASE_DIR, "universal-gallery.html"))
+
+
+@app.route("/universal-gallery/archives")
+def universal_gallery_archives_page():
+    return send_file(os.path.join(BASE_DIR, "gallery-archives.html"))
+
+
+@app.route("/gallery-ui.js")
+def gallery_ui_script():
+    return send_file(os.path.join(BASE_DIR, "gallery-ui.js"), mimetype="application/javascript")
+
+
+@app.route("/gallery-ui.css")
+def gallery_ui_styles():
+    return send_file(os.path.join(BASE_DIR, "gallery-ui.css"), mimetype="text/css")
 
 
 @app.route("/api/guide-voices")
@@ -15617,6 +15777,10 @@ try:
     discovery_mod.set_book_bridge(_book_unvoiced, _book_set_audio,
                                   plant=_scout_plant, thin=_book_thin,
                                   enrich=_book_enrich)
+    def _gallery_process_next():
+        import gallery_archive
+        return gallery_archive.process_next()
+    discovery_mod.set_gallery_bridge(_gallery_process_next)
     discovery_mod.start_thread()
 except Exception:
     pass

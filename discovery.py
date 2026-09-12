@@ -688,12 +688,54 @@ _book_set_audio = None  # callback: (city, name, url) -> bool
 _book_plant = None     # callback: (payload) -> add-route result
 _book_thin = None      # callback: () -> entries that could still be improved
 _book_enrich = None    # callback: (city, name, desc, dining) -> bool
+_gallery_process = None  # callback: () -> one durable gallery queue result
 
 
 def set_book_bridge(list_unvoiced, set_audio, plant=None, thin=None, enrich=None):
     global _book_list, _book_set_audio, _book_plant, _book_thin, _book_enrich
     _book_list, _book_set_audio = list_unvoiced, set_audio
     _book_plant, _book_thin, _book_enrich = plant, thin, enrich
+
+
+def set_gallery_bridge(process_next):
+    """Keep gallery writing separate from destination and voice refinement."""
+    global _gallery_process
+    _gallery_process = process_next
+
+
+def gallery_refine():
+    """Run at most one queued gallery story per hour, never from a GET route.
+
+    The archive owns durable work leases and the shared writing budget. This
+    bridge only supplies a bounded scheduler tick. Stamp the attempt first so
+    unavailable providers do not turn the ten-minute loop into a retry storm.
+    """
+    if not _gallery_process:
+        return {"ok": False, "status": "no_bridge"}
+    now = int(time.time())
+    with _LOCK:
+        s = _load()
+        if now - s.get("last_gallery", 0) < 3600:
+            return {"ok": True, "status": "not_due"}
+        s["last_gallery"] = now
+        _save(s)
+    try:
+        result = _gallery_process() or {"ok": True, "status": "idle"}
+        if not isinstance(result, dict):
+            result = {"ok": True, "status": "processed"}
+    except Exception:
+        # Artifact-specific errors and backoff live in the archive. Neither a
+        # gallery exception nor destination refinement can stop the other.
+        result = {"ok": False, "status": "failed"}
+    with _LOCK:
+        s = _load()
+        s["last_gallery_result"] = {
+            "ok": bool(result.get("ok", True)),
+            "status": str(result.get("status") or result.get("reason") or "processed")[:80],
+            "at": now,
+        }
+        _save(s)
+    return result
 
 
 def _narration(e):
@@ -974,6 +1016,10 @@ def start_thread():
                     plant_discoveries()          # the book grows itself
                 if (time.time() - s.get("last_refine", 0)) >= 3600:
                     data_refine()                # and improves what it has
+            except Exception:
+                pass
+            try:
+                gallery_refine()
             except Exception:
                 pass
             time.sleep(600)

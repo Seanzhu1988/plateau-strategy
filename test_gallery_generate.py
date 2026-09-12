@@ -14,6 +14,7 @@ import sys
 import tempfile
 
 os.environ["DISPATCH_REMINDERS"] = "false"
+os.environ["DISCOVERY_ENABLED"] = "false"
 os.environ.pop("ANTHROPIC_API_KEY", None)          # default state: no engine
 tmp = tempfile.mkdtemp()
 os.environ["DATA_DIR"] = tmp                        # store lands in a throwaway dir
@@ -22,6 +23,10 @@ import app as A                                                # noqa: E402
 import gallery_reader as GR                                    # noqa: E402
 
 A.app.config["TESTING"] = True
+# Collection availability is not part of this reader contract test. Never
+# make a test run depend on museum uptime or write into the live discovery.
+for _provider in ("_gal_met", "_gal_aic", "_gal_moma", "_gal_wikidata"):
+    setattr(A, _provider, lambda *args, **kwargs: [])
 fails = []
 
 

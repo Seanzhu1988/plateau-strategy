@@ -1,657 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Look up any artwork by name or label number &middot; Plateau Strategy</title>
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="manifest" href="/site.webmanifest">
-    <meta name="description" content="A free museum guide to any artwork. Search by name, or by the item number printed on its label, and find where it hangs and what to notice when you get there. No app, it opens in your browser.">
-    <!-- Social preview. Without these a shared link shows as a bare URL
-         with no image or title, which is most of the click-through gone.
-         og:image is the site card, which is live and 70KB. -->
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Plateau Strategy Solution Lab">
-    <meta property="og:url" content="https://plateaustrategy.io/universal-gallery">
-    <meta property="og:title" content="Universal Gallery, find any artwork">
-    <meta property="og:description" content="Search by name, or by the number printed on the label, and find where it hangs and what to notice when you get there.">
-    <meta property="og:image" content="https://plateaustrategy.io/share-card.jpg">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Universal Gallery, find any artwork">
-    <meta name="twitter:description" content="Search by name, or by the number printed on the label, and find where it hangs and what to notice when you get there.">
-    <meta name="twitter:image" content="https://plateaustrategy.io/share-card.jpg">
-    <link rel="canonical" href="https://plateaustrategy.io/universal-gallery">
-    <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
-    <link rel="stylesheet" href="/paper.css">
-    <script src="/psx-net.js"></script>
-    <link rel="stylesheet" href="/modern.css">
-    <style>
-        header img { height: 42px; width: 42px; border-radius: 50%; }
-        header .brand { font-size: 1.2rem; font-weight: 800; }
-        .ug-wrap { max-width: 900px; margin: 2rem auto 4rem; padding: 0 1.2rem; }
-        .ug-title { font-size: 2rem; font-weight: 800; color: #14110c; margin: 0 0 .4rem; line-height: 1.15; }
-        .ug-lede { color: #4a453d; margin: 0 0 1.4rem; }
-        /* The film row: an id outranks modern.css's button flattener. */
-        #ugFilmRow { margin: .6rem 0 0; }
-        #ugFilmBtn { font: inherit !important; font-size: .85rem !important; font-weight: 700 !important;
-            border: 1px solid #d3d3da !important; border-radius: 999px !important;
-            background: #fff !important; color: #1f3a5f !important; cursor: pointer !important;
-            padding: .35rem .9rem !important; min-height: 0 !important; min-width: 0 !important; }
-        #ugFilm { display: block; width: 100%; max-width: 720px; border-radius: 12px;
-            margin: .7rem 0 .3rem; background: #14161f; }
-        #ugFind { width: 100%; font: inherit; padding: .8rem .9rem !important; min-height: 48px;
-                  border: 1px solid #d3d3da !important; border-radius: 6px !important;
-                  box-sizing: border-box; background: #fff !important; color: #14110c !important; }
-        .ug-hint { font-size: .85rem; color: #6b655b; margin: .5rem 0 1.2rem; }
-        /* THE WATERMARK. [SEAN 2026-09-05, drawn on paper: "any museum ->
-           original search -> shown written by us Enhanced -> when not
-           available show original until available -> watermark -> museum
-           original / written by us enhanced".] Every row now says which of the
-           two it is. A catalogue line the museum publishes and a reading that
-           exists nowhere else were arriving in identical clothes, so the one
-           thing this site makes was indistinguishable from the one thing
-           anybody can already get. A pill rather than a literal watermark
-           across the text: a watermark over words is unreadable, and this one
-           has to survive translation. */
-        .ug-mark { display: inline-block; font-size: .64rem; font-weight: 800;
-                   letter-spacing: .12em; text-transform: uppercase;
-                   border: 1px solid #d9d5cd; border-radius: 999px;
-                   padding: .2rem .6rem; margin: 0 0 .55rem;
-                   color: #6b655b; background: #fbfaf8; }
-        .ug-mark.is-ours { color: #14403f; border-color: #b6d3cd; background: #eef6f3; }
-        /* THE ARCHIVE. [SEAN 2026-09-06: "it's not necessary to show all the
-           written by us exhibitions ... once we have a lot, there's no way that
-           you can really scroll all those exhibitions. Therefore it should be
-           kept in the same page but archived."] He is right, and eight was the
-           only number where dumping every card worked: it went to ten while
-           this was being written, and the hourly routine adds one an idle hour.
-           So the writing is banded by museum, the way the Destination Book
-           bands by city, because a reader standing in one museum wants that
-           museum. The first band is open and the rest are shut, always, so the
-           page is never empty and never a wall no matter how long the archive
-           gets. The ids are here because modern.css puts a rose underline and
-           no padding on every button on the site, with !important. */
-        #ugWritten .ug-band { border-top: 1px solid #eae5dc; }
-        #ugWritten .ug-band:first-of-type { border-top: 0; }
-        #ugWritten .ug-band-h { display: flex !important; width: 100%;
-            align-items: baseline; gap: .6rem; cursor: pointer;
-            border: 0 !important; border-radius: 0 !important;
-            padding: .85rem .1rem !important; text-align: left;
-            font: inherit !important; font-weight: 700 !important;
-            color: #14110c !important; }
-        #ugWritten .ug-band-h .ug-n { font-size: .72rem; font-weight: 700;
-            letter-spacing: .1em; color: #8a8378; font-variant-numeric: tabular-nums; }
-        #ugWritten .ug-band-h .ug-caret { margin-left: auto; color: #8a8378;
-            font-size: .8rem; transition: transform .15s ease; }
-        #ugWritten .ug-band-h[aria-expanded="true"] .ug-caret { transform: rotate(90deg); }
-        #ugWritten .ug-row { display: block !important; width: 100%;
-            border: 0 !important; border-radius: 6px !important;
-            padding: .5rem .55rem !important; text-align: left;
-            font: inherit !important; font-weight: inherit !important;
-            color: #14110c !important; cursor: pointer; }
-        #ugWritten .ug-row:hover { background: #f6f3ee !important; }
-        #ugWritten .ug-row-t { font-weight: 640; }
-        #ugWritten .ug-row-a { display: block; font-size: .82rem; color: #6b655b; }
-        #ugWritten .ug-band-b { padding: 0 0 .7rem; }
-        #ugWritten .ug-row-card { padding: 0 0 .6rem; }
-        /* A quiet live line, shown only when two or more travellers are here,
-           so it never announces a lonely one. The dot pulses to say "now", and
-           stops for anyone who asked their device to reduce motion. */
-        .ug-live { display: inline-flex; align-items: center; gap: .5rem;
-                   margin: 0 0 1.1rem; font-size: .9rem; font-weight: 600; color: #2f7d4a; }
-        /* [hidden] sets display:none, but the flex rule above would override it,
-           so say it plainly: hidden means gone. */
-        .ug-live[hidden] { display: none; }
-        .ug-live-dot { flex: 0 0 auto; width: 9px; height: 9px; border-radius: 50%;
-                       background: #35a85f; box-shadow: 0 0 0 0 rgba(53,168,95,.45);
-                       animation: ug-pulse 2.2s infinite; }
-        @keyframes ug-pulse {
-            0%   { box-shadow: 0 0 0 0 rgba(53,168,95,.45); }
-            70%  { box-shadow: 0 0 0 8px rgba(53,168,95,0); }
-            100% { box-shadow: 0 0 0 0 rgba(53,168,95,0); } }
-        @media (prefers-reduced-motion: reduce) { .ug-live-dot { animation: none; } }
-        .ug-sec { font-size: .72rem; font-weight: 800; letter-spacing: .14em;
-                  text-transform: uppercase; color: #6b655b; margin: 1.8rem 0 .6rem; }
-        .ug-card { border: 1px solid #e6e6ea; border-radius: 10px; padding: 1rem 1.1rem;
-                   margin: 0 0 .8rem; background: #fff; }
-        /* A ROW, NOT A POSTER. The first version stacked a 260px image on top of
-           the text, which made every result about 490px tall with a large empty
-           area beside the picture: sixteen results came to nearly eight thousand
-           pixels of scrolling, and on a narrow screen those tall blocks read as
-           cards running into each other. A fixed square thumbnail beside the
-           text is enough to recognise an object, which is all it is for. */
-        .ug-card { display: flex; gap: .9rem; align-items: flex-start; }
-        .ug-img { flex: 0 0 104px; width: 104px; height: 104px; object-fit: cover;
-                  border-radius: 6px; background: #f1efe8; display: block; margin: 0; }
-        .ug-body { flex: 1 1 auto; min-width: 0; }
-        .ug-src { font-size: .74rem; color: #6b655b; margin: .1rem 0 .5rem; }
-        @media (max-width: 480px) {
-            .ug-img { flex-basis: 76px; width: 76px; height: 76px; }
-        }
-        .ug-h { font-weight: 800; color: #14110c; }
-        .ug-by { color: #4a453d; font-size: .95rem; margin: .1rem 0 .5rem; }
-        .ug-tags { display: flex; gap: .4rem; flex-wrap: wrap; margin: 0 0 .55rem; }
-        .ug-tag { font-size: .72rem; font-weight: 700; letter-spacing: .06em;
-                  text-transform: uppercase; color: #1f3a5f; border: 1px solid #d3d3da;
-                  border-radius: 999px; padding: .18rem .55rem; }
-        .ug-tag.num { color: #14110c; font-family: ui-monospace, Menlo, monospace;
-                      text-transform: none; letter-spacing: 0; }
-        .ug-teas { color: #33302a; }
-        /* The container carries an id so these can outrank modern.css, whose
-           site-wide button rule sits behind eight :not() clauses and no
-           class-based selector can beat it. Written with a class first, which
-           left the button 48px wide and 82px tall with the label wrapped
-           inside it: it did not look like a button and did not click like one.
-           Fourth page today to hit this. */
-        /* One matched pair, not two labels of different lengths. Each button
-           takes an equal share of the row and centres its text, so Read it and
-           Listen line up with each other and with the card, and the left one
-           does not jump when it flips to Hide. */
-        #ugWritten .ug-read, #ugFound .ug-read {
-                   font: inherit !important; font-weight: 700 !important; cursor: pointer;
-                   flex: 1 1 8rem !important; padding: .55rem 1rem !important; min-height: 44px;
-                   border: 1px solid #1f3a5f !important; border-radius: 6px !important;
-                   background: #fff !important; color: #1f3a5f !important;
-                   display: inline-flex !important; align-items: center;
-                   justify-content: center !important; white-space: nowrap; }
-        #ugWritten .ug-read:hover, #ugFound .ug-read:hover {
-                   background: #1f3a5f !important; color: #fff !important; }
-        .ug-actions { display: flex; gap: .5rem; flex-wrap: wrap;
-                      align-items: stretch; margin-top: .8rem; }
-        .ug-player { margin-top: .8rem; }
-        .ug-player audio { width: 100%; max-width: 460px; }
-        .ug-text { white-space: pre-wrap; color: #33302a; margin-top: .8rem;
-                   border-top: 1px solid #e6e6ea; padding-top: .8rem; line-height: 1.75; }
-        /* THE PICTURE, shown large while you read or listen. It sizes to the
-           column and never pushes the page sideways: the image is width 100%,
-           the frame is a single grid cell so several photographs of the same
-           object stack in place and cross-fade rather than making the card
-           taller. On a phone this is the full width of the text column. */
-        .ug-stage { margin-top: .9rem; max-width: 560px; }
-        .ug-frame { display: grid; border-radius: 8px; overflow: hidden;
-                    background: #f1efe8; }
-        .ug-shot { grid-area: 1 / 1; width: 100%; height: auto; display: block;
-                   opacity: 0; transition: opacity .45s ease; }
-        .ug-shot.on { opacity: 1; }
-        .ug-dots { display: flex; gap: .35rem; justify-content: center;
-                   flex-wrap: wrap; margin: .55rem 0 .1rem; }
-        .ug-dot { width: 34px; height: 34px; display: inline-flex; cursor: pointer;
-                  align-items: center; justify-content: center; }
-        .ug-dot::before { content: ""; width: 9px; height: 9px; border-radius: 50%;
-                          background: #c7c3b8; transition: background .2s, transform .2s; }
-        .ug-dot.on::before { background: #1f3a5f; transform: scale(1.4); }
-        .ug-img.ug-tap { cursor: pointer; }
-        /* A work still under copyright: no picture, an honest line, and a link
-           to the original. We reproduce nothing we are not free to. */
-        .ug-rights { margin-top: .8rem; padding: .7rem .85rem; border: 1px solid #e6e6ea;
-                     border-radius: 8px; background: #faf9f6; color: #6b655b;
-                     font-size: .9rem; line-height: 1.5; }
-        .ug-rights a { color: #1f3a5f; font-weight: 700; white-space: nowrap; }
-        .ug-none { color: #6b655b; }
-        .ug-foot { border-top: 1px solid #e6e6ea; margin-top: 2.4rem; padding-top: 1rem;
-                   font-size: .88rem; color: #6b655b; }
-        @media (max-width: 640px) { .ug-title { font-size: 1.55rem; } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Universal Gallery · Plateau Strategy</title>
+  <meta name="description" content="Find an artwork by its name, museum label, or photograph. Discover the museum's record and original stories from Plateau Strategy.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Universal Gallery">
+  <meta property="og:description" content="An object, a discovery, a story to return to. Search the collections or identify an artwork from a photograph.">
+  <meta property="og:image" content="https://plateaustrategy.io/share-card.jpg">
+  <link rel="canonical" href="https://plateaustrategy.io/universal-gallery">
+  <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="stylesheet" href="/paper.css">
+  <link rel="stylesheet" href="/modern.css">
+  <link rel="stylesheet" href="/gallery-ui.css?v=2">
+  <script src="/psx-net.js"></script>
 </head>
-<body>
-    <header>
-        <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
-        <span class="brand">Plateau Strategy Solution Lab</span>
-        <div class="right">
-            <a href="/destination-book">Destination Book</a>
-            <a href="/trip-planner">Trip Planner</a>
-            <a href="/">Home</a>
-        </div>
-    </header>
-
-    <div class="ug-wrap">
-        <h1 class="ug-title">Universal Gallery</h1>
-        <p class="ug-lede">Any museum, one artwork at a time. What it is, where it hangs, and
-           what to notice while you are standing there. Where we have written the work you
-           get our reading; where we have not, you get the museum's own record until we do.</p>
-
-        <p class="ug-live" id="ugLive" hidden><span class="ug-live-dot" aria-hidden="true"></span>
-           <span><b id="ugLiveN">0</b> <span class="ug-live-txt">travellers are exploring right now</span></span></p>
-
-        <input id="ugFind" placeholder="A name, or the number on the label…" autocomplete="off"
-               aria-label="Search by artwork name or item number">
-        <p class="ug-hint">You do not have to spell it. Every museum prints an item number on
-           the label, and that number is enough. Try <b>49.30</b> or <b>1942.51</b>.</p>
-
-        <!-- The three minute film, cut from real screens of this very page.
-             [SEAN "what i mean is in the site"] Folded behind one quiet row so
-             the search stays the hero and nobody downloads 2MB of video they
-             did not ask for: preload none, plays on the tap that reveals it. -->
-        <p id="ugFilmRow"><button id="ugFilmBtn" type="button">&#9654; Watch how it works, 1 minute</button></p>
-        <div id="ugFilmBox" hidden>
-            <video id="ugFilm" controls preload="none" playsinline
-                   poster="/media/universal-gallery-poster.jpg"
-                   src="/media/universal-gallery-film.mp4"></video>
-        </div>
-
-        <!-- One search, one surface. The two tabs that stood here made the
-             reader choose a door before they knew what was behind either, and
-             whichever one they were not standing in was invisible. Now the
-             results say for themselves which is a museum's catalogue line and
-             which is ours. -->
-        <div id="ugWritten"></div>
-        <div id="ugFound" hidden></div>
-
-        <p class="ug-more" style="margin:1.5rem 0 0;text-align:center;font-size:.95rem"><a href="/gallery-guides" style="color:#1d4c4f;font-weight:600">Browse the works travellers look up most &rarr;</a></p>
+<body data-gallery-page="search">
+  <a class="ug-skip" href="#ugMain">Skip to search</a>
+  <header>
+    <img src="/plateau-logo.svg" alt="" width="42" height="42">
+    <a class="brand" href="/">Plateau Strategy</a>
+    <nav class="right" aria-label="Main navigation"><a href="/destination-book">Destination Book</a><a href="/trip-planner">Trip Planner</a></nav>
+  </header>
+  <main id="ugMain" class="ug-wrap">
+    <div class="ug-intro">
+      <p class="ug-context" data-ug-text="context">Art, objects and the stories they carry</p>
+      <h1 data-ug-text="title">Universal Gallery</h1>
+      <p class="ug-lede" data-ug-text="lede">Start with something that caught your eye. Find its museum record, discover our story, and give the next visitor more to explore.</p>
     </div>
-
-<script>
-(function () {
-    var written = {}, timer = null, canGen = false, found = {}, haveWritten = false;
-
-    // The reader's language, for a reading written on the spot in it. The
-    // i18n runtime is the source of truth; the html lang is the fallback.
-    function curLang() {
-        try { if (window.psxLang) return psxLang(); } catch (e) {}
-        return (document.documentElement.lang || "en").slice(0, 2) || "en";
-    }
-
-    /* This page had no translate helper, so the archive's own words went
-       through a T that did not exist. The error landed in the items fetch's
-       catch and was swallowed whole, which is why the section rendered empty
-       and the console stayed clean. */
-    function T(en) { return (window.psxT ? window.psxT(en) : en) || en; }
-    function esc(s) {
-        return String(s == null ? "" : s).replace(/[&<>"]/g,
-            function (c) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; });
-    }
-    // An empty box shows what we have written; a typed one shows the search.
-    // No tabs, so there is nothing to keep in sync and nothing hidden behind a
-    // control the reader never pressed.
-    function showTab(which) {
-        var found = which === "found";
-        document.getElementById("ugWritten").hidden = found;
-        document.getElementById("ugFound").hidden = !found;
-    }
-    function card(it, key, fk) {
-        // Every real photograph the museum published of this object. A single
-        // painting has one; the Met and the Art Institute often hold several
-        // (a detail, the reverse), and those become the slideshow. A work still
-        // under copyright shows no picture at all, only a line and a link.
-        var pics = it.copyright ? []
-                   : (it.images && it.images.length) ? it.images
-                   : (it.image ? [it.image] : []);
-        var rights = it.copyright
-            ? '<div class="ug-rights">This work is still under copyright, so we ' +
-              'cannot show it here.' +
-              (it.source_url ? ' <a href="' + esc(it.source_url) +
-                 '" target="_blank" rel="noopener">See the original →</a>' : '') +
-              '</div>'
-            : '';
-        var stage = pics.length
-            ? '<div class="ug-stage" hidden>' +
-                '<div class="ug-frame">' +
-                  pics.map(function (u, i) {
-                      return '<img class="ug-shot' + (i === 0 ? ' on' : '') + '" src="' +
-                             esc(u) + '" alt="' + esc(it.title) +
-                             '" loading="lazy" onerror="__ugShot(this)">';
-                  }).join("") +
-                '</div>' +
-                (pics.length > 1
-                  ? '<div class="ug-dots" aria-hidden="true">' +
-                      pics.map(function (u, i) {
-                          return '<span class="ug-dot' + (i === 0 ? ' on' : '') +
-                                 '" data-i="' + i + '"></span>';
-                      }).join("") +
-                    '</div>'
-                  : '') +
-              '</div>'
-            : '';
-        // A curated work has a written narrative to read or hear. A searched
-        // work has none, but when there is an engine behind it we can write one
-        // on the spot, in the reader's language, for a work nobody here has
-        // ever written about. That reading, for anything you can point at, is
-        // the thing the facts alone are not.
-        // A searched row that is ours carries its own gallery_key, so the
-        // reading we already wrote is opened by key rather than written a
-        // second time by the engine.
-        var gk = key || it.gallery_key || "";
-        var curated = !!(gk && it.has_narrative);
-        var canRead = curated || (!gk && canGen && it.title);
-        // WHICH OF THE TWO THIS IS, said on every row. [SEAN, drawn.]
-        var mark = curated
-            ? '<div class="ug-mark is-ours">Written by us · enhanced</div>'
-            : '<div class="ug-mark">Museum original</div>';
-        return '<div class="ug-card" data-k="' + esc(gk) +
-               '" data-fk="' + esc(fk || "") + '">' +
-            // The photograph is the point of this page for somebody standing in
-            // a gallery: it is how they confirm they are in front of the right
-            // object. It is always a REAL photograph from the museum's own open
-            // collection or Wikimedia Commons, never a generated one, because
-            // an image that is confidently almost-right would defeat exactly
-            // the thing it is here to do. Tapping it opens the same picture
-            // large, so the little thumbnail is a way in, not the whole view.
-            (it.image && !it.copyright
-              ? '<img class="ug-img' + (pics.length ? ' ug-tap' : '') + '" src="' +
-                esc(it.image) + '" alt="' + esc(it.title) +
-                '" loading="lazy" onerror="this.remove()">'
-              : '') +
-            '<div class="ug-body">' + mark +
-            '<div class="ug-h">' + esc(it.title) + '</div>' +
-            '<div class="ug-by">' + esc(it.artist || "Maker unrecorded") +
-            (it.date ? ", " + esc(it.date) : "") + '</div>' +
-            // The museum and the room are two different facts, but Wikidata often
-            // gives the same string for both, which printed "Museo del Prado"
-            // twice on the same row and read as a bug. One tag unless they
-            // genuinely differ.
-            (function () {
-                var house = it.museum || it.source || "";
-                var room = (it.where && it.where !== house) ? it.where : "";
-                return '<div class="ug-tags">' +
-                  (house ? '<span class="ug-tag">' + esc(house) + '</span>' : '') +
-                  (room ? '<span class="ug-tag">' + esc(room) + '</span>' : '') +
-                  (it.item_number ? '<span class="ug-tag num">' + esc(it.item_number) + '</span>' : '') +
-                '</div>';
-            })() +
-            (it.image ? '<div class="ug-src">Photograph from ' +
-                        esc(it.wikidata ? "Wikimedia Commons" : (it.source || "the museum")) +
-                        '</div>' : '') +
-            (it.teaser ? '<div class="ug-teas">' + esc(it.teaser) + '</div>' : '') +
-            rights +
-            (curated
-                ? '<div class="ug-actions">' +
-                    '<button class="ug-read">Read it, ' + (it.minutes || 3) + ' min</button>' +
-                    (it.audio ? '<button class="ug-read ug-listen">Listen</button>' : '') +
-                  '</div>'
-                : (canRead
-                    ? '<div class="ug-actions">' +
-                        '<button class="ug-read ug-gen">Read this work</button>' +
-                      '</div>'
-                    : '')) +
-            stage +
-            (curated ? '<div class="ug-player" hidden></div>' : '') +
-            (canRead ? '<div class="ug-text" hidden></div>' : '') +
-            '</div></div>';
-    }
-
-    /* The catch covers the FETCH, not the drawing. It used to wrap both, so a
-       bug in the render read exactly like a museum being unreachable: an empty
-       section and a clean console. A network failure still falls back to the
-       search; a broken render is now allowed to say so. */
-    fetch("/api/gallery/items")
-        .then(function (r) { return r.json(); })
-        .catch(function () { return null; })
-        .then(function (d) {
-            if (!d) { showTab("found"); return; }   // unreachable: the search still works
-            written = d.items || {};
-            var keys = Object.keys(written);
-            if (!keys.length) { showTab("found"); return; }
-            haveWritten = true;
-            paintArchive(keys);
-        });
-
-    // THE PICTURE, and when it is on show. It appears whenever the narrative is
-    // being read or heard, and can also be opened on its own by tapping the
-    // thumbnail. One rule decides it: show the stage if the reader wants it, or
-    // if either the text or the audio is open; otherwise put it away and stop
-    // the slideshow so it is not cycling in a card nobody is looking at.
-    function slide(stage, idx) {
-        var shots = stage.querySelectorAll(".ug-shot"),
-            dots = stage.querySelectorAll(".ug-dot");
-        if (!shots.length) return;
-        idx = ((idx % shots.length) + shots.length) % shots.length;
-        shots.forEach(function (s, i) { s.classList.toggle("on", i === idx); });
-        dots.forEach(function (d, i) { d.classList.toggle("on", i === idx); });
-        stage.dataset.idx = idx;
-    }
-    function startShow(stage) {
-        if (stage.querySelectorAll(".ug-shot").length < 2 || stage.dataset.timer) return;
-        stage.dataset.timer = String(setInterval(function () {
-            slide(stage, (parseInt(stage.dataset.idx || "0", 10) + 1));
-        }, 5000));
-    }
-    function stopShow(stage) {
-        if (stage.dataset.timer) { clearInterval(+stage.dataset.timer); stage.dataset.timer = ""; }
-    }
-    function syncStage(host) {
-        var stage = host.querySelector(".ug-stage"); if (!stage) return;
-        var text = host.querySelector(".ug-text"), pl = host.querySelector(".ug-player");
-        var open = host.dataset.pic === "1" ||
-                   (text && !text.hidden) || (pl && !pl.hidden);
-        stage.hidden = !open;
-        if (open) { startShow(stage); } else { stopShow(stage); }
-    }
-    // A picture whose url fails is dropped, itself and its dot, so a broken link
-    // never leaves a torn image on the page: the same graceful-failure rule the
-    // thumbnail already used, extended to the slideshow.
-    window.__ugShot = function (img) {
-        var stage = img.closest(".ug-stage"); if (!stage) return;
-        var shots = Array.prototype.slice.call(stage.querySelectorAll(".ug-shot"));
-        var i = shots.indexOf(img), dot = stage.querySelectorAll(".ug-dot")[i];
-        if (dot) dot.remove();
-        img.remove();
-        var left = stage.querySelectorAll(".ug-shot");
-        if (!left.length) { stopShow(stage); stage.remove(); return; }
-        if (!stage.querySelector(".ug-shot.on")) slide(stage, 0);
-        if (left.length < 2) {
-            var dc = stage.querySelector(".ug-dots"); if (dc) dc.remove();
-            stopShow(stage);
-        }
-    };
-
-    // One handler for the whole page: the cards are rebuilt on every search, and
-    // rebinding a listener per card is how you end up with four of them.
-    // Listen: built on first press, so a page of twenty artworks does not open
-    // twenty audio connections nobody asked for.
-    /* Banded by museum, because the reader is standing in one of them. Sorted
-       by how much we have written about each, so the deepest is first and is
-       the one left open. A single museum gets no band at all: a heading over
-       one group labels the page rather than the group, which is the rule the
-       Destination Book already follows. */
-    function paintArchive(keys) {
-        var groups = {}, order = [];
-        keys.forEach(function (k) {
-            var m = String(written[k].museum || written[k].source || "").trim() ||
-                    T("Elsewhere");
-            if (!groups[m]) { groups[m] = []; order.push(m); }
-            groups[m].push(k);
-        });
-        order.sort(function (a, b) {
-            return groups[b].length - groups[a].length || a.localeCompare(b);
-        });
-        var one = order.length === 1;
-        var html = '<div class="ug-sec">' + esc(T("Written by us")) +
-                   ' <span class="ug-n">' + keys.length + '</span></div>';
-        order.forEach(function (m, i) {
-            var open = one || i === 0;
-            var rows = groups[m].map(function (k) {
-                var it = written[k];
-                return '<button type="button" class="ug-row" data-k="' + esc(k) + '">' +
-                         '<span class="ug-row-t">' + esc(it.title) + '</span>' +
-                         '<span class="ug-row-a">' + esc(it.artist || T("Maker unrecorded")) +
-                         (it.date ? ", " + esc(it.date) : "") + '</span>' +
-                       '</button><div class="ug-row-card" hidden></div>';
-            }).join("");
-            html += '<div class="ug-band">' +
-                (one ? "" :
-                  '<button type="button" class="ug-band-h" aria-expanded="' + open + '">' +
-                    '<span>' + esc(m) + '</span>' +
-                    '<span class="ug-n">' + groups[m].length + '</span>' +
-                    '<span class="ug-caret" aria-hidden="true">&rsaquo;</span>' +
-                  '</button>') +
-                '<div class="ug-band-b"' + (open ? "" : " hidden") + '>' + rows + '</div>' +
-              '</div>';
-        });
-        document.getElementById("ugWritten").innerHTML = html;
-    }
-
-    document.addEventListener("click", function (e) {
-        /* Open a museum, or open one work inside it. The card is built on the
-           tap rather than up front, so an archive of two hundred works costs
-           two hundred short rows and not two hundred cards with pictures. */
-        var bh = e.target.closest(".ug-band-h");
-        if (bh) {
-            var body = bh.nextElementSibling;
-            var willOpen = body.hidden;
-            body.hidden = !willOpen;
-            bh.setAttribute("aria-expanded", String(willOpen));
-            return;
-        }
-        var row = e.target.closest(".ug-row");
-        if (row) {
-            var box = row.nextElementSibling, k = row.getAttribute("data-k");
-            if (!box.hidden) { box.hidden = true; box.innerHTML = ""; return; }
-            box.innerHTML = card(written[k], k);
-            box.hidden = false;
-            return;
-        }
-        var dot = e.target.closest(".ug-dot");
-        if (dot) {
-            var st = dot.closest(".ug-stage");
-            slide(st, parseInt(dot.getAttribute("data-i"), 10) || 0);
-            stopShow(st); startShow(st);          // restart the clock from the reader's pick
-            return;
-        }
-        var thumb = e.target.closest(".ug-img.ug-tap");
-        if (thumb) {
-            var th = thumb.closest(".ug-card");
-            th.dataset.pic = th.dataset.pic === "1" ? "" : "1";
-            syncStage(th);
-            return;
-        }
-        var L = e.target.closest(".ug-listen");
-        if (L) {
-            var host = L.closest(".ug-card"), key = host.getAttribute("data-k");
-            var pl = host.querySelector(".ug-player"), it = written[key] || {};
-            if (!pl.dataset.built) {
-                pl.innerHTML = '<audio controls preload="none" src="' + it.audio + '"></audio>' +
-                    '<div style="display:flex;gap:.4rem;align-items:center;color:#6b655b;font-size:.82rem;margin:.35rem 0 0"><svg class="hs-ear" viewBox="0 0 24 24" width="12" height="12" fill="currentColor" aria-hidden="true" style="vertical-align:-1px"><path d="M7.2 2.5a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66A4.1 4.1 0 0 0 7.2 2.5zm9.6 0a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66a4.1 4.1 0 0 0-1.7-8.34z"/></svg> Headphones, please, for the people around you.</div>';
-                pl.dataset.built = "1";
-            }
-            pl.hidden = !pl.hidden;
-            L.textContent = pl.hidden ? "Listen" : "Hide the audio";
-            syncStage(host);
-            return;
-        }
-        // A searched work with no written guide: write one on the spot. The
-        // gen button also carries the ug-read class, so it is caught here first,
-        // before the curated reader below tries to look it up by a key it has
-        // not got.
-        var G = e.target.closest(".ug-gen");
-        if (G) {
-            var gh = G.closest(".ug-card"), gbox = gh.querySelector(".ug-text");
-            var it = found[gh.getAttribute("data-fk")] || {};
-            if (!gbox.hidden) { gbox.hidden = true; G.textContent = "Read this work"; syncStage(gh); return; }
-            if (gbox.dataset.loaded) { gbox.hidden = false; G.textContent = "Hide"; syncStage(gh); return; }
-            G.textContent = "Writing a reading…"; G.disabled = true;
-            fetch("/api/gallery/generate", {
-                method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    title: it.title, artist: it.artist, date: it.date,
-                    museum: it.museum || it.source, where: it.where,
-                    item_number: it.item_number, city: it.city,
-                    copyright: !!it.copyright, source_url: it.source_url,
-                    lang: curLang()
-                })
-            }).then(function (r) { return r.json(); }).then(function (d) {
-                G.disabled = false;
-                if (d && d.ok) {
-                    gbox.textContent = d.text; gbox.dataset.loaded = "1";
-                    gbox.hidden = false; G.textContent = "Hide"; syncStage(gh);
-                } else {
-                    G.textContent = (d && d.reason === "no_engine")
-                        ? "Reading not available here" : "Could not write it, try again";
-                }
-            }).catch(function () { G.disabled = false; G.textContent = "Could not write it, try again"; });
-            return;
-        }
-        var b = e.target.closest(".ug-read"); if (!b) return;
-        var host = b.closest(".ug-card"), box = host.querySelector(".ug-text");
-        var key = host.getAttribute("data-k");
-        if (!box.hidden) { box.hidden = true; b.textContent = "Read it, " +
-            ((written[key] || {}).minutes || 3) + " min"; syncStage(host); return; }
-        if (box.dataset.loaded) { box.hidden = false; b.textContent = "Hide"; syncStage(host); return; }
-        b.textContent = "Opening…";
-        fetch("/api/gallery/narrative/" + encodeURIComponent(key))
-            .then(function (r) { return r.json(); })
-            .then(function (d) {
-                box.textContent = d.ok ? d.text : "That one is not written yet.";
-                box.dataset.loaded = "1"; box.hidden = false; b.textContent = "Hide";
-                syncStage(host);
-            })
-            .catch(function () { b.textContent = "Could not open it"; });
-    });
-
-    function search(q) {
-        var host = document.getElementById("ugFound");
-        if (q.length < 2) { host.innerHTML = ""; return; }
-        host.innerHTML = '<div class="ug-sec">Searching the collections</div>';
-        fetch("/api/gallery/search?q=" + encodeURIComponent(q))
-            .then(function (r) { return r.json(); })
-            .then(function (d) {
-                var rs = d.results || [];
-                canGen = !!d.can_generate;
-                if (!rs.length) {
-                    host.innerHTML = '<div class="ug-sec">Found in the collections</div>' +
-                        '<p class="ug-none">Nothing matching that. We can search the Met and ' +
-                        'the Art Institute of Chicago, which publish their collections openly. ' +
-                        (d.not_covered ? esc(d.not_covered.join(", ")) + ' do not, so their ' +
-                         'works only appear here once we have written them ourselves.' : '') +
-                        '</p>';
-                    return;
-                }
-                // Stash each row so the reading button can hand its facts back
-                // to the server without smuggling them through the DOM.
-                found = {};
-                host.innerHTML = '<div class="ug-sec">Found in the collections, ' +
-                    rs.length + '</div>' + rs.map(function (r, i) {
-                        var fk = "f" + i; found[fk] = r; return card(r, null, fk);
-                    }).join("");
-            })
-            .catch(function () { host.innerHTML = '<p class="ug-none">Search failed. Try again.</p>'; });
-    }
-    document.getElementById("ugFind").addEventListener("input", function () {
-        var v = this.value.trim();
-        clearTimeout(timer);
-        // Typing takes you straight to the search. Empty the box and you are
-        // back among the works we have written.
-        showTab(v.length >= 2 || !haveWritten ? "found" : "written");
-        timer = setTimeout(function () { search(v); }, 350);   // one request per pause, not per keystroke
-    });
-    // Arriving with ?q= (from a museum page's embedded search bar) starts the
-    // search already typed, so the hand-off loses nothing. This has to run
-    // AFTER the input listener above is attached: it works by firing that same
-    // input event, and dispatching it into a box nobody is listening to yet is
-    // how the hand-off used to arrive and quietly do nothing.
-    (function () {
-        try {
-            var q = new URLSearchParams(location.search).get("q");
-            if (q) { var f = document.getElementById("ugFind"); f.value = q;
-                     f.dispatchEvent(new Event("input", { bubbles: true })); }
-        } catch (e) {}
-    })();
-
-    // The live line: how many travellers are here right now, shown only when
-    // that is two or more. Polling also keeps this reader counted while the tab
-    // stays open, so a quiet page does not empty out the moment nobody clicks.
-    function live() {
-        fetch("/api/gallery/here", { headers: { "Accept": "application/json" } })
-            .then(function (r) { return r.json(); })
-            .then(function (d) {
-                var n = (d && d.here) || 0, box = document.getElementById("ugLive");
-                if (n >= 2) { document.getElementById("ugLiveN").textContent = n; box.hidden = false; }
-                else { box.hidden = true; }
-            })
-            .catch(function () {});
-    }
-    live();
-    setInterval(live, 40000);
-})();
-</script>
-<script>
-/* One tap reveals the film and starts it; the button steps aside. The tap is
-   a user gesture, so play() is allowed to make sound. */
-document.getElementById("ugFilmBtn").addEventListener("click", function () {
-    document.getElementById("ugFilmBox").hidden = false;
-    this.parentNode.hidden = true;
-    document.getElementById("ugFilm").play().catch(function () {});
-});
-</script>
-<script src="/i18n.js"></script>
+    <form id="ugSearchForm" class="ug-search-form" role="search">
+      <label for="ugFind" data-ug-text="searchLabel">Artwork, artist or label number</label>
+      <div class="ug-search-line">
+        <input id="ugFind" name="q" type="search" maxlength="80" autocomplete="off" placeholder="Try Cypresses or 49.30" aria-describedby="ugSearchHint">
+        <button type="submit" class="ug-primary" data-ug-text="search">Search</button>
+      </div>
+      <p id="ugSearchHint" class="ug-note" data-ug-text="searchHint">The number on the museum label is often the closest match.</p>
+    </form>
+    <div class="ug-secondary-nav">
+      <button type="button" id="ugPhotoToggle" aria-expanded="false" aria-controls="ugPhotoPanel"><svg aria-hidden="true" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 6l1.5-2h5L16 6h4a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1z"/><circle cx="12" cy="12.5" r="4"/></svg><span data-ug-text="photoSearch">Search with a photograph</span></button>
+      <a id="ugArchiveLink" href="/universal-gallery/archives" data-ug-text="archiveLink">Written by us artifact archives</a>
+    </div>
+    <section id="ugPhotoPanel" class="ug-photo-panel" aria-labelledby="ugPhotoHeading" hidden>
+      <div class="ug-section-heading"><h2 id="ugPhotoHeading" data-ug-text="photoHeading">What are you looking at?</h2><button id="ugPhotoClose" type="button" data-ug-text="close">Close</button></div>
+      <p data-ug-text="photoIntro">Photograph the object or its museum label. We will suggest possible matches for you to check against the collection.</p>
+      <form id="ugPhotoForm">
+        <div class="ug-photo-choices">
+          <label class="ug-file-control" for="ugCamera"><span data-ug-text="camera">Take a photograph</span><input id="ugCamera" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"></label>
+          <label class="ug-file-control" for="ugUpload"><span data-ug-text="choosePhoto">Choose a photograph</span><input id="ugUpload" type="file" accept="image/jpeg,image/png,image/webp"></label>
+        </div>
+        <div id="ugPhotoPreview" class="ug-photo-preview" hidden><img id="ugPreviewImage" alt="Your photograph for identification"><button id="ugPhotoRemove" type="button" data-ug-text="removePhoto">Remove photograph</button></div>
+        <label for="ugMuseum" data-ug-text="museumHint">Museum or location, if you know it</label>
+        <input id="ugMuseum" type="text" maxlength="160" autocomplete="off" placeholder="Optional">
+        <label class="ug-consent" for="ugPhotoConsent"><input id="ugPhotoConsent" type="checkbox"><span data-ug-text="photoConsent">I agree to send this photo and the details I enter to Anthropic for artifact identification. The site removes photo metadata and does not save the photo.</span></label>
+        <div class="ug-actions"><button id="ugIdentify" type="submit" class="ug-primary" disabled data-ug-text="identify">Find possible matches</button></div>
+        <p class="ug-note" data-ug-text="photoPrivacy">Your photograph is sent for identification. It is not published or added to the archive. Only an object you confirm can become a discovery.</p>
+        <p id="ugPhotoStatus" class="ug-status" role="status" aria-live="polite"></p>
+        <div id="ugCandidates"></div>
+      </form>
+    </section>
+    <p id="ugStatus" class="ug-status" role="status" aria-live="polite" aria-atomic="true"></p>
+    <section id="ugFound" aria-label="Artwork search results" aria-busy="false"></section>
+    <div id="ugEmpty" class="ug-empty" hidden>
+      <h2 data-ug-text="noMatch">No matching object yet</h2>
+      <p data-ug-text="noMatchHelp">Try the title or accession number exactly as it appears on the label. A photograph of the label can help when the name is difficult to read.</p>
+      <button type="button" id="ugEmptyPhoto" data-ug-text="photoSearch">Search with a photograph</button>
+    </div>
+    <div id="ugWelcome" class="ug-welcome">
+      <p data-ug-text="welcome">Our stories stay with the objects. When you find an artwork we have written about, look for “Provided by us” beside it.</p>
+      <p class="ug-note" data-ug-text="welcomeNext">Newly discovered objects help our collection grow. The archive has its own quiet home, ready when you want it.</p>
+    </div>
+    <footer class="ug-foot"><p data-ug-text="sourceNote">Collection records belong to their museums. Our stories are separately credited, with AI assistance identified where used.</p><a href="/gallery-guides" data-ug-text="browseGuides">Explore our museum guides</a></footer>
+  </main>
+  <script src="/i18n.js"></script>
+  <script src="/gallery-ui.js?v=2" defer></script>
 </body>
 </html>
