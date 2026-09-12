@@ -30,6 +30,7 @@ import threading
 import time
 import warnings
 
+import gallery_credentials
 import requests
 from flask import Blueprint, current_app, jsonify, request
 from PIL import Image, ImageOps, UnidentifiedImageError
@@ -105,7 +106,7 @@ reason under forty words. Write plain language without long dashes.
 
 
 def available():
-    return bool(os.environ.get("ANTHROPIC_API_KEY", "").strip())
+    return bool(gallery_credentials.api_key())
 
 
 def _text(value, limit):
@@ -359,7 +360,7 @@ def identify():
         # Owner-authorized Anthropic integration. The mandatory visitor consent,
         # image validation and atomic allowance reservation all precede this call.
         response = requests.post(API_URL, timeout=PROVIDER_TIMEOUT, headers={
-            "x-api-key": os.environ.get("ANTHROPIC_API_KEY", "").strip(),
+            "x-api-key": gallery_credentials.api_key(),
             "anthropic-version": "2023-06-01", "content-type": "application/json",
         }, json={
             "model": os.environ.get("GALLERY_VISION_MODEL", "").strip() or DEFAULT_MODEL,

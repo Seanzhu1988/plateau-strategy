@@ -16,6 +16,7 @@ import json
 import os
 import time
 import gallery_archive
+import gallery_credentials
 
 try:
     import requests
@@ -78,7 +79,7 @@ def available():
     that never offered it. This is the fact the search asks before showing the
     button at all.
     """
-    return requests is not None and bool(os.environ.get("ANTHROPIC_API_KEY", "").strip())
+    return requests is not None and bool(gallery_credentials.api_key())
 
 
 def _store_path():
@@ -265,7 +266,7 @@ def read_for(facts, lang):
     if reservation["status"] != "reserved":
         return {"reason": reservation["status"]}
     token = reservation["token"]
-    key_env = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+    key_env = gallery_credentials.api_key()
     text = None
     try:
         r = requests.post(API_URL, timeout=120, headers={
