@@ -158,6 +158,7 @@ def database():
             id TEXT PRIMARY KEY, dedupe_key TEXT NOT NULL UNIQUE,
             query TEXT NOT NULL, museum TEXT NOT NULL, languages TEXT NOT NULL,
             clues TEXT NOT NULL, label_text TEXT NOT NULL,
+            visual_description TEXT NOT NULL DEFAULT '',
             status TEXT NOT NULL DEFAULT 'needs_research',
             first_seen REAL NOT NULL, last_seen REAL NOT NULL,
             sightings INTEGER NOT NULL DEFAULT 1);
@@ -168,6 +169,13 @@ def database():
             attempted INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(hour,client_hash));
           CREATE TABLE IF NOT EXISTS worker_state (name TEXT PRIMARY KEY, until REAL NOT NULL);
         """)
+        if "visual_description" not in {r[1] for r in db.execute("PRAGMA table_info(research_queue)")}:
+            # Another worker can reach the same migration concurrently. Take
+            # the write lock, then recheck before adding the optional column.
+            db.execute("BEGIN IMMEDIATE")
+            if "visual_description" not in {r[1] for r in db.execute("PRAGMA table_info(research_queue)")}:
+                db.execute("ALTER TABLE research_queue ADD COLUMN visual_description TEXT NOT NULL DEFAULT ''")
+            db.commit()
         yield db
         db.commit()
     except Exception:
@@ -579,7 +587,7 @@ def _research_text(value, limit):
     return " ".join(value.split())[:limit]
 
 
-def save_research(query, museum="", lang="en", candidate_clues=None, label_text=""):
+def save_research(query, museum="", lang="en", candidate_clues=None, label_text="", visual_description=""):
     """Keep unverified textual clues privately, never publish an invented work.
 
     No photographs, file names, source URLs or visitor identifiers are accepted.
@@ -589,6 +597,7 @@ def save_research(query, museum="", lang="en", candidate_clues=None, label_text=
         raise ValueError("Unsupported story language")
     query, museum = _research_text(query, 240), _research_text(museum, 240)
     label_text = _research_text(label_text, 1200)
+    visual_description = _research_text(visual_description, 1200)
     fields = {"title": 240, "artist": 240, "museum": 240, "item_number": 160,
               "query": 240, "confidence": 20, "reason": 500}
     clues = []
@@ -606,11 +615,17 @@ def save_research(query, museum="", lang="en", candidate_clues=None, label_text=
                      ("title", "artist", "item_number")).strip() for c in clues), "")[:240]
     if not query:
         query = label_text[:240]
+    description_only = not query and len(normalize(visual_description)) >= 20
+    if description_only:
+        query = "Unidentified artifact"
     if len(normalize(query)) < 2:
         raise ValueError("Add an artifact name, label text, or useful search clue")
     if not museum:
         museum = next((c["museum"] for c in clues if c.get("museum")), "")
-    key = normalize(query) + "|" + institution(museum)
+    # A generic display title is not an identity. Different unidentified
+    # objects remain separate research drafts even at the same museum.
+    identity = "visual:" + normalize(visual_description) if description_only else normalize(query)
+    key = identity + "|" + institution(museum)
     research_id = "r_" + hashlib.sha256(key.encode()).hexdigest()[:24]
     now = time.time()
     with database() as db:
@@ -618,18 +633,21 @@ def save_research(query, museum="", lang="en", candidate_clues=None, label_text=
         previous = db.execute("SELECT * FROM research_queue WHERE dedupe_key=?", (key,)).fetchone()
         if previous:
             requested = list(dict.fromkeys(json.loads(previous["languages"]) + [lang]))
-            db.execute("UPDATE research_queue SET last_seen=?,sightings=sightings+1,languages=? WHERE id=?",
-                       (now, json.dumps(requested), previous["id"]))
+            visual_description = previous["visual_description"] or visual_description
+            db.execute("UPDATE research_queue SET last_seen=?,sightings=sightings+1,languages=?,"
+                       "visual_description=? WHERE id=?",
+                       (now, json.dumps(requested), visual_description, previous["id"]))
             research_id, duplicate = previous["id"], True
         else:
             if db.execute("SELECT COUNT(*) FROM research_queue").fetchone()[0] >= RESEARCH_LIMIT:
                 raise ResearchQueueFull("The research inbox is full. Please try again later")
             db.execute("INSERT INTO research_queue(id,dedupe_key,query,museum,languages,clues,label_text,"
-                       "first_seen,last_seen) VALUES(?,?,?,?,?,?,?,?,?)",
+                       "visual_description,first_seen,last_seen) VALUES(?,?,?,?,?,?,?,?,?,?)",
                        (research_id, key, query, museum, json.dumps([lang]),
-                        json.dumps(clues, ensure_ascii=False), label_text, now, now))
+                        json.dumps(clues, ensure_ascii=False), label_text, visual_description, now, now))
             duplicate = False
     return {"id": research_id, "status": "needs_research", "saved": True, "duplicate": duplicate,
+            "visual_description": visual_description,
             "message": "Saved for research. The artifact has not been verified and no story has been published."}
 
 
@@ -686,6 +704,7 @@ def queue_status(limit=30):
                     "items": [{"id": r["id"], "status": r["status"], "query": r["query"],
                                "museum": r["museum"], "languages": json.loads(r["languages"]),
                                "candidate_clues": json.loads(r["clues"]), "label_text": r["label_text"],
+                               "visual_description": r["visual_description"],
                                "first_seen": r["first_seen"], "last_seen": r["last_seen"],
                                "sightings": r["sightings"]} for r in research_rows]}}
 

@@ -39,7 +39,7 @@ def photo(kind="PNG", size=(96, 64), metadata=False, transparent=False):
     return output.getvalue()
 
 
-def provider_response(candidates=None, label="Example artifact label", stop="end_turn"):
+def provider_response(candidates=None, label="Example artifact label", stop="end_turn", visual_description=None):
     if candidates is None:
         candidates = [{"title": "The Starry Night", "artist": "Vincent van Gogh",
                        "museum": "Museum of Modern Art", "item_number": "472.1941",
@@ -47,12 +47,13 @@ def provider_response(candidates=None, label="Example artifact label", stop="end
                        "reason": "The label names the title and artist. Confirm the collection result."}]
     response = Mock()
     response.raise_for_status.return_value = None
-    response.json.return_value = {
-        "stop_reason": stop, "content": [{"type": "text", "text": json.dumps({
-            "candidates": candidates, "label_text": label,
-            "reason": "Check the museum's collection record." if candidates else "The label is not readable.",
-        })}],
-    }
+    result = {"candidates": candidates, "label_text": label,
+              "reason": "Check the museum's collection record." if candidates else "The label is not readable."}
+    # Most older fixtures deliberately omit the new field to check compatibility.
+    if visual_description is not None:
+        result["visual_description"] = visual_description
+    response.json.return_value = {"stop_reason": stop,
+                                  "content": [{"type": "text", "text": json.dumps(result)}]}
     return response
 
 
@@ -236,6 +237,59 @@ class IdentifyRouteTests(unittest.TestCase):
         self.assertFalse(response.get_json()["ok"])
         self.assertEqual(response.get_json()["reason"], "no_match")
         self.assertEqual(response.get_json()["label_text"], "Gift of Example Collection")
+
+    def test_visual_description_is_sanitized_and_not_saved_by_identification(self):
+        self.post.return_value = provider_response(visual_description="<b>A rounded vessel</b>\n with a narrow neck\u2014and blue\x00 decoration.")
+        response = self.upload()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["visual_description"], "A rounded vessel with a narrow neck, and blue decoration.")
+        self.assertTrue(response.json["needs_confirmation"])
+        with sqlite3.connect(os.path.join(self.folder.name, "gallery_identify_usage.sqlite3")) as db:
+            self.assertNotIn("rounded vessel", "\n".join(db.iterdump()))
+        self.post.assert_called_once()
+        schema = self.post.call_args.kwargs["json"]["output_config"]["format"]["schema"]
+        self.assertIn("visual_description", schema["required"])
+        self.assertEqual(schema["properties"]["visual_description"]["type"], "string")
+
+    def test_unknown_artifact_keeps_visual_draft_without_fabricating_identity(self):
+        description = "A small standing object with a broad flat base and a ridged green surface."
+        self.post.return_value = provider_response([], label="", visual_description=description)
+        response = self.upload()
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.json["ok"])
+        self.assertEqual(response.json["reason"], "no_match")
+        self.assertEqual(response.json["candidates"], [])
+        self.assertEqual(response.json["label_text"], "")
+        self.assertEqual(response.json["visual_description"], description)
+        self.assertTrue(response.json["needs_confirmation"])
+
+    def test_visual_description_is_bounded_even_if_provider_ignores_prompt(self):
+        self.post.return_value = provider_response(visual_description="青色的圆形容器。" * 250)
+        response = self.upload()
+        self.assertEqual(len(response.json["visual_description"]), 1200)
+
+    def test_legacy_provider_payload_and_nonartifact_errors_have_empty_visual_draft(self):
+        response = self.upload()
+        self.assertEqual(response.json["visual_description"], "")
+        self.post.return_value = provider_response([], label="", visual_description="")
+        self.assertEqual(self.upload().json["visual_description"], "")
+        self.post.return_value = provider_response(stop="refusal", visual_description="Must not leak this refusal text")
+        self.assertEqual(self.upload().json["visual_description"], "")
+
+    def test_nontext_visual_description_is_rejected(self):
+        self.post.return_value = provider_response(visual_description={"invented_title": "Not a visual draft"})
+        response = self.upload()
+        self.assertEqual(response.status_code, 502)
+        self.assertEqual(response.json["reason"], "invalid_response")
+        self.assertEqual(response.json["visual_description"], "")
+
+    def test_visual_draft_prompt_limits_uncertain_claims_and_private_details(self):
+        self.upload()
+        prompt = self.post.call_args.kwargs["json"]["system"]
+        self.assertIn("without inventing its title, maker, culture", prompt)
+        self.assertIn("Mention material only when the", prompt)
+        self.assertIn("Do not describe nearby people, faces, private information", prompt)
+        self.assertIn("If no artifact is visible, visual_description must be an empty string", prompt)
 
     def test_timeouts_and_provider_failures_never_return_fake_candidates(self):
         for error, reason, status in ((G.requests.Timeout(), "provider_timeout", 504),

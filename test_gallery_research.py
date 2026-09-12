@@ -2,6 +2,7 @@
 import concurrent.futures
 import json
 import os
+import sqlite3
 import tempfile
 import threading
 import unittest
@@ -150,6 +151,66 @@ class ResearchTests(unittest.TestCase):
         with patch.dict(os.environ, {"GALLERY_RESEARCH_HOURLY_LIMIT": "3"}), \
                 concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
             self.assertEqual(sum(executor.map(attempt, range(6))), 3)
+
+    def test_visual_description_only_is_private_and_not_a_verified_story(self):
+        description = "A dark metal vessel with a broad circular rim and three short feet."
+        saved = archive.save_research("", visual_description=description, lang="zh")
+        self.assertEqual(saved["status"], "needs_research")
+        self.assertEqual(saved["visual_description"], description)
+        self.assertFalse(saved["duplicate"])
+        item = archive.queue_status()["research"]["items"][0]
+        self.assertEqual(item["query"], "Unidentified artifact")
+        self.assertEqual(item["visual_description"], description)
+        self.assertEqual(archive.search_known("Unidentified artifact"), [])
+        self.assertEqual(archive.archive()["stats"]["artifacts"], 0)
+        self.assertEqual(archive.archive()["total"], 0)
+        with self.assertRaises(ValueError):
+            archive.save_research("", visual_description="unknown")
+
+    def test_different_visual_drafts_do_not_merge_under_generic_title(self):
+        description = "A dark metal vessel with a broad circular rim and three short feet."
+        first = archive.save_research("", museum="The Met", visual_description=description)
+        repeated = archive.save_research("", museum="The Metropolitan Museum of Art",
+                                         visual_description="  " + description.upper() + "  ")
+        different = archive.save_research("", museum="The Met",
+                                           visual_description="A carved stone bird with a long neck and a square base.")
+        self.assertTrue(repeated["duplicate"])
+        self.assertEqual(first["id"], repeated["id"])
+        self.assertNotEqual(first["id"], different["id"])
+        self.assertEqual(len(archive.queue_status()["research"]["items"]), 2)
+
+    def test_existing_query_gains_one_bounded_draft_without_overwriting_it(self):
+        first = archive.save_research("Unidentified vessel")
+        draft = "<A vessel>\x00 with a round rim. " + "v" * 2000
+        second = archive.save_research("Unidentified vessel", visual_description=draft)
+        self.assertEqual(first["id"], second["id"])
+        self.assertTrue(second["duplicate"])
+        self.assertEqual(len(second["visual_description"]), 1200)
+        self.assertNotIn("<", second["visual_description"])
+        self.assertNotIn("\x00", second["visual_description"])
+        third = archive.save_research("Unidentified vessel", visual_description="Replacement description should not erase the first draft.")
+        self.assertEqual(second["visual_description"], third["visual_description"])
+
+    def test_older_research_schema_migrates_additively_under_concurrent_access(self):
+        with sqlite3.connect(archive.path()) as db:
+            db.execute("CREATE TABLE research_queue (id TEXT PRIMARY KEY,dedupe_key TEXT NOT NULL UNIQUE,"
+                       "query TEXT NOT NULL,museum TEXT NOT NULL,languages TEXT NOT NULL,clues TEXT NOT NULL,"
+                       "label_text TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'needs_research',"
+                       "first_seen REAL NOT NULL,last_seen REAL NOT NULL,sightings INTEGER NOT NULL DEFAULT 1)")
+            db.execute("INSERT INTO research_queue VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+                       ("r_legacy", "legacy object|", "Legacy object", "", '["en"]', '[]', "Old label", "needs_research", 1, 1, 1))
+        barrier = threading.Barrier(6)
+        def upgrade(_):
+            barrier.wait()
+            return archive.save_research("Legacy object", visual_description="A preserved draft description of the legacy object.")
+        with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
+            results = list(executor.map(upgrade, range(6)))
+        self.assertEqual({r["id"] for r in results}, {"r_legacy"})
+        with archive.database() as db:
+            row = db.execute("SELECT * FROM research_queue WHERE id='r_legacy'").fetchone()
+        self.assertEqual(row["label_text"], "Old label")
+        self.assertEqual(row["sightings"], 7)
+        self.assertEqual(row["visual_description"], "A preserved draft description of the legacy object.")
 
 
 if __name__ == "__main__":

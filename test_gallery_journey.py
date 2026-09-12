@@ -259,6 +259,18 @@ class GalleryJourneyTests(unittest.TestCase):
                                                        "wsgi.input_terminated": True, "CONTENT_LENGTH": ""})
         self.assertEqual(response.status_code, 413)
 
+    def test_unidentified_photo_keeps_its_description_without_inventing_a_public_story(self):
+        first_description = "A carved stone figure with a rounded head and a narrow rectangular base."
+        second_description = "A shallow ceramic bowl with a blue pattern around the outer rim."
+        first = self.client.post("/api/gallery/research", json={"visual_description": first_description}).get_json()
+        second = self.client.post("/api/gallery/research", json={"visual_description": second_description}).get_json()
+        self.assertTrue(first["ok"])
+        self.assertEqual(first["visual_description"], first_description)
+        self.assertEqual(first["status"], "needs_research")
+        self.assertNotEqual(first["id"], second["id"])
+        self.assertEqual(gallery_archive.search_known("Unidentified artifact"), [])
+        self.assertEqual(self.client.get("/api/gallery/archive?q=Unidentified").get_json()["total"], 0)
+
     def test_research_public_submission_has_hourly_limit(self):
         with mock.patch.dict(os.environ, {"GALLERY_RESEARCH_HOURLY_LIMIT": "1"}):
             response = self.client.post("/api/gallery/research", json={"query": "Private research fixture"})

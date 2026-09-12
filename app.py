@@ -5756,7 +5756,8 @@ def api_gallery_research():
     try:
         saved = gallery_archive.save_research(
             data.get("query", ""), data.get("museum", ""), lang,
-            data.get("candidate_clues"), data.get("label_text", ""))
+            data.get("candidate_clues"), data.get("label_text", ""),
+            visual_description=data.get("visual_description", ""))
     except ValueError:
         return jsonify({"ok": False, "reason": "need_clues",
                         "message": "Add an artifact name or a few words from its label."}), 400

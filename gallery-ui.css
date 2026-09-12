@@ -70,8 +70,9 @@ body[data-gallery-page] header .right a { display: inline-flex; align-items: cen
 .ug-photo-choices { display: flex; gap: 1.2rem; flex-wrap: wrap; margin: 1rem 0 1.2rem; }
 #ugMain .ug-file-control { position: relative; overflow: hidden; }
 .ug-file-control input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-.ug-photo-preview { display: flex; flex-direction: column; align-items: flex-start; gap: .6rem; margin: 1rem 0; }
-.ug-photo-preview img { width: min(100%, 320px); max-height: 300px; object-fit: contain; }
+.ug-photo-preview { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin: .8rem 0; }
+.ug-photo-preview img { width: min(40%, 130px); max-height: 130px; object-fit: contain; }
+.ug-photo-panel.has-photo > p { display: none; }
 #ugMain #ugMuseum { width: min(100%, 480px); }
 #ugMain .ug-consent { display: flex; align-items: flex-start; gap: .7rem; max-width: 650px; margin-top: 1rem; line-height: 1.6; }
 #ugMain .ug-photo-permissions { border: 0; border-top: 1px solid #e6e2da; padding: 1rem 0 0; margin: 1.5rem 0 0; min-width: 0; max-width: 680px; }
@@ -90,6 +91,12 @@ body[data-gallery-page] header .right a { display: inline-flex; align-items: cen
 .ug-candidates h3 { font-family: inherit; font-size: 1rem; margin: 0 0 .25rem; }
 .ug-candidates p { font-size: .88rem; color: #6b655b; margin: .3rem 0; line-height: 1.6; }
 .ug-photo-alternatives summary { color: #4a453d; font-size: .87rem; min-height: 44px; line-height: 44px; cursor: pointer; }
+.ug-photo-dialog { width: min(100% - 2.4rem, 430px); max-height: calc(100% - 2.4rem); box-sizing: border-box; padding: 1.5rem; background: #fff; color: #14110c; border: 1px solid #e6e2da; border-radius: 0; }
+.ug-photo-dialog::backdrop { background: rgba(20, 17, 12, .35); }
+#ugMain .ug-photo-dialog h2 { margin: 0 0 .8rem; font-size: 1.6rem; line-height: 1.2; font-weight: 500; }
+.ug-photo-dialog p { color: #4a453d; line-height: 1.65; margin: 0 0 .8rem; }
+.ug-photo-dialog .ug-note { font-size: .84rem; color: #6b655b; }
+.ug-photo-dialog .ug-actions { margin-top: 1rem; }
 .ug-photo-details summary { color: #6b655b; font-size: .87rem; min-height: 44px; line-height: 1.6; padding: .65rem 0; cursor: pointer; }
 .ug-archive-filter { display: flex; align-items: center; gap: .5rem 1rem; flex-wrap: wrap; margin-top: 1rem; }
 .ug-archive-filter a { margin-left: auto; font-size: .85rem; color: #4a453d; min-height: 44px; display: inline-flex; align-items: center; }

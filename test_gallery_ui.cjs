@@ -8,14 +8,18 @@ const path = require('node:path');
 const source = fs.readFileSync(path.join(__dirname, 'gallery-ui.js'), 'utf8');
 
 class Element {
-  constructor() { this.listeners = {}; this.dataset = {}; this.value = ''; this.textContent = ''; this.innerHTML = ''; this.hidden = false; this.checked = false; this.disabled = false; this.isConnected = true; this.classList = {toggle() {}, add() {}}; }
+  constructor() { this.listeners = {}; this.dataset = {}; this.value = ''; this.textContent = ''; this.innerHTML = ''; this.hidden = false; this.checked = false; this.disabled = false; this.isConnected = true; this.open = false; this.clicks = 0; this.classList = {toggle() {}, add() {}, remove() {}}; }
   addEventListener(name, handler) { (this.listeners[name] ||= []).push(handler); }
-  dispatch(name, additions = {}) { for (const handler of this.listeners[name] || []) handler.call(this, {target: this, preventDefault() {}, ...additions}); }
+  dispatch(name, additions = {}) { for (const handler of this.listeners[name] || []) handler.call(this, {target: this, currentTarget: this, preventDefault() {}, ...additions}); }
   querySelectorAll() { return []; }
   querySelector() { return null; }
   setAttribute(name, value) { this[name] = value; }
   removeAttribute(name) { delete this[name]; }
   focus() {}
+  click() { ++this.clicks; this.dispatch('click'); }
+  showModal() { this.open = true; }
+  close() { this.open = false; }
+  scrollIntoView() { this.scrolled = true; }
   remove() { this.isConnected = false; }
   insertAdjacentHTML(_position, html) { this.innerHTML += html; }
 }
@@ -50,11 +54,11 @@ function setup(url = '/universal-gallery') {
   return {el, ctx, requests, type, runTimers, respond, changeLanguage};
 }
 function tick() { return new Promise(resolve => setImmediate(resolve)); }
-function photo(page, publish = false) {
+function photo(page) {
   const image = new Blob(['image bytes'], {type: 'image/jpeg'});
+  page.el('ugPhotoToggle').dispatch('click');
+  page.el('ugPhotoYes').dispatch('click');
   page.el('ugUpload').files = [image]; page.el('ugUpload').dispatch('change');
-  page.el('ugPhotoConsent').checked = true; page.el('ugPhotoConsent').dispatch('change');
-  page.el('ugPhotoPublish').checked = publish;
   return image;
 }
 function cardHost(page) {
@@ -126,21 +130,16 @@ test('editing a photo-derived query keeps confirmation mode until a deliberate t
   assert.equal(page.ctx.location.searchParams.has('origin'), false);
 });
 
-test('photo consent toggling cannot submit a second paid call while one is pending', async () => {
-  const page = setup();
-  const image = new Blob(['image bytes'], {type: 'image/jpeg'});
-  page.el('ugUpload').files = [image]; page.el('ugUpload').dispatch('change');
+test('one Yes automatically identifies and repeated picker or retry taps cannot duplicate a paid call', async () => {
+  const page = setup(); photo(page);
   assert.equal(page.el('ugIdentify').disabled, true);
-  page.el('ugPhotoConsent').checked = true; page.el('ugPhotoConsent').dispatch('change');
-  assert.equal(page.el('ugIdentify').disabled, false);
-  page.el('ugPhotoForm').dispatch('submit');
   assert.equal(page.requests.length, 1);
   assert.equal(page.requests[0].options.body.fields.consent, 'anthropic-photo-search-v1');
-  page.el('ugPhotoConsent').checked = false; page.el('ugPhotoConsent').dispatch('change');
-  page.el('ugPhotoConsent').checked = true; page.el('ugPhotoConsent').dispatch('change');
+  page.el('ugPhotoToggle').dispatch('click'); page.el('ugPhotoYes').dispatch('click');
   assert.equal(page.el('ugIdentify').disabled, true);
   page.el('ugPhotoForm').dispatch('submit');
   assert.equal(page.requests.length, 1);
+  assert.equal(page.el('ugUpload').clicks, 1);
   // Removing the photograph cannot falsely cancel a provider job on the server.
   page.el('ugPhotoRemove').dispatch('click');
   assert.equal(page.requests[0].options.signal.aborted, false);
@@ -159,6 +158,43 @@ test('provider photo consent is required and absent by default', () => {
   page.el('ugPhotoRemove').dispatch('click');
 });
 
+test('camera tap asks one question; declining or Escape opens no picker and sends nothing', () => {
+  const page = setup(); page.el('ugPhotoToggle').dispatch('click');
+  assert.equal(page.el('ugPhotoConsentDialog').open, true);
+  assert.equal(page.el('ugUpload').clicks, 0);
+  page.el('ugPhotoNo').dispatch('click');
+  assert.equal(page.el('ugPhotoConsentDialog').open, false);
+  page.el('ugPhotoYes').dispatch('click');
+  assert.equal(page.el('ugUpload').clicks, 0);
+  page.el('ugPhotoToggle').dispatch('click'); page.el('ugPhotoConsentDialog').dispatch('cancel');
+  assert.equal(page.el('ugPhotoConsentDialog').open, false);
+  assert.equal(page.requests.length, 0);
+});
+
+test('the photo entry link opens the same consent dialog instead of a form', () => {
+  const page = setup('/universal-gallery?photo=1');
+  assert.equal(page.el('ugPhotoConsentDialog').open, true);
+  assert.equal(page.el('ugUpload').clicks, 0);
+  assert.equal(page.requests.length, 0);
+});
+
+test('the one-question design declares both processing and publishing and has no questionnaire', () => {
+  const html = fs.readFileSync(path.join(__dirname, 'universal-gallery.html'), 'utf8');
+  assert.match(html, /id="ugPhotoConsentDialog"/);
+  assert.match(html, /send the photo to Anthropic/);
+  assert.match(html, /open the matching artifact.*public page/);
+  assert.match(html, /share the photo and artwork/);
+  assert.match(html, /No people or private details/);
+  assert.doesNotMatch(html, /type="checkbox"|<fieldset/);
+});
+
+test('canceling the native picker consumes consent so an unrelated file cannot upload later', () => {
+  const page = setup(); page.el('ugPhotoToggle').dispatch('click'); page.el('ugPhotoYes').dispatch('click');
+  page.el('ugUpload').dispatch('cancel');
+  page.el('ugUpload').files = [new Blob(['photo'], {type: 'image/jpeg'})]; page.el('ugUpload').dispatch('change');
+  assert.equal(page.requests.length, 0);
+});
+
 test('identification automatically searches the strongest candidate in the gallery before external catalogues', async () => {
   const page = setup(); photo(page); page.el('ugPhotoForm').dispatch('submit');
   await page.respond(0, {ok: true, candidates: [{title: 'Vessel', query: 'Vessel', confidence: 'low'}, {title: 'Cypresses', query: '49.30', confidence: 'high'}]});
@@ -166,9 +202,14 @@ test('identification automatically searches the strongest candidate in the galle
   assert.match(page.requests[1].url, /q=49.30/);
   assert.match(page.requests[1].url, /discover=0&origin=photo&scope=archive/);
   await page.respond(1, {ok: true, results: [{artifact_id: 'a_existing', title: 'Cypresses', story_available: true, written: true}]});
-  assert.equal(page.requests.length, 2, 'known archive matches do not trigger an external search');
+  assert.equal(page.requests.length, 3, 'known archive matches remain visible while other collections are checked');
+  assert.match(page.el('ugFound').innerHTML, /Cypresses/);
+  await page.respond(2, {ok: true, results: [{artifact_id: 'a_existing', title: 'Cypresses'}]});
   assert.match(page.el('ugFound').innerHTML, /Provided by us/);
   assert.match(page.el('ugFound').innerHTML, /data-action="confirm"/);
+  assert.match(page.el('ugFound').innerHTML, /Open artifact/);
+  assert.doesNotMatch(page.el('ugFound').innerHTML, /data-action="read"/);
+  assert.equal(page.el('ugFound').scrolled, true);
   assert.match(page.el('ugCandidates').innerHTML, /data-candidate="0"/);
   page.el('ugPhotoRemove').dispatch('click');
 });
@@ -184,11 +225,10 @@ test('empty archive results expand to catalogues without auto-saving photo guess
   assert.doesNotMatch(page.el('ugFound').innerHTML, /Provided by us/);
 });
 
-test('an archive match still offers other museum versions without losing photo confirmation', async () => {
+test('an archive match automatically checks other museum versions without asking another question', async () => {
   const page = setup('/universal-gallery?q=Sunflowers&origin=photo&discover=0');
   await page.respond(0, {ok: true, results: [{artifact_id: 'a_saved', title: 'Sunflowers in London'}]});
-  assert.match(page.el('ugFound').innerHTML, /Search museum collections too/);
-  page.el('ugFound').dispatch('click', {target: {closest: () => ({dataset: {action: 'search-catalogues'}})}});
+  assert.doesNotMatch(page.el('ugFound').innerHTML, /Search museum collections too/);
   assert.equal(page.requests.length, 2);
   assert.match(page.requests[1].url, /discover=0/);
   assert.doesNotMatch(page.requests[1].url, /scope=archive/);
@@ -197,7 +237,7 @@ test('an archive match still offers other museum versions without losing photo c
   assert.match(page.el('ugFound').innerHTML, /data-action="confirm"/);
 });
 
-test('manual OCR correction keeps the photograph and both consent choices for later confirmation', async () => {
+test('manual OCR correction keeps the photograph and its existing permission', async () => {
   const page = setup(); photo(page, true); page.el('ugPhotoForm').dispatch('submit');
   await page.respond(0, {ok: true, candidates: [{query: 'Vessel 12'}]});
   const preview = page.el('ugPreviewImage').src;
@@ -206,8 +246,7 @@ test('manual OCR correction keeps the photograph and both consent choices for la
   assert.match(page.requests[2].url, /q=Vessel%20123/);
   assert.match(page.requests[2].url, /discover=0/);
   assert.equal(page.el('ugPreviewImage').src, preview);
-  assert.equal(page.el('ugPhotoConsent').checked, true);
-  assert.equal(page.el('ugPhotoPublish').checked, true);
+  assert.equal(page.el('ugUpload').clicks, 1);
   page.el('ugSearchForm').dispatch('submit');
   assert.match(page.requests[3].url, /discover=0/);
   page.el('ugPhotoRemove').dispatch('click');
@@ -220,7 +259,7 @@ test('late identification suggestions cannot replace a newer user query or clear
   assert.equal(page.el('ugFind').value, 'Corrected 123');
   assert.equal(page.requests.length, 2);
   assert.match(page.el('ugCandidates').innerHTML, /Stale 999/);
-  assert.equal(page.el('ugPhotoPublish').checked, true);
+  assert.equal(page.el('ugUpload').clicks, 1);
   page.el('ugPhotoForm').dispatch('submit');
   page.type('');
   await page.respond(2, {ok: true, candidates: [{query: 'Another stale 999'}]});
@@ -239,30 +278,29 @@ test('legible label text is searched when vision has no identity candidate', asy
   page.el('ugPhotoRemove').dispatch('click');
 });
 
-test('closing the photo panel or changing language preserves private preview and upfront choices', () => {
+test('closing the photo panel or changing language preserves private preview without another question', () => {
   const page = setup(); photo(page, true);
   const preview = page.el('ugPreviewImage').src;
   page.el('ugPhotoClose').dispatch('click');
   assert.equal(page.el('ugPreviewImage').src, preview);
-  assert.equal(page.el('ugPhotoPublish').checked, true);
+  assert.equal(page.el('ugPhotoConsentDialog').open, false);
   page.changeLanguage('zh');
   assert.equal(page.el('ugPreviewImage').src, preview);
-  assert.equal(page.el('ugPhotoConsent').checked, true);
-  assert.equal(page.el('ugPhotoPublish').checked, true);
+  assert.equal(page.el('ugUpload').clicks, 1);
   page.el('ugPhotoRemove').dispatch('click');
-  assert.equal(page.el('ugPhotoPublish').checked, false);
+  assert.equal(page.el('ugPreviewImage').src, undefined);
 });
 
 test('confirmation opens an existing selected-language story without generating or uploading by default', async () => {
   const page = setup('/universal-gallery?q=Cypresses&origin=photo');
   await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'a_existing', title: 'Cypresses', story_available: true}]});
   const card = cardHost(page); card.click(); card.click();
-  assert.equal(page.requests.length, 2, 'double confirmation is single flight');
-  await page.respond(1, {ok: true, saved: true, attachment_token: 'token', can_generate: true, artifact: {artifact_id: 'a_existing', title: 'Cypresses', story_available: true}});
-  assert.match(page.requests[2].url, /artifacts\/a_existing\/story\?lang=en/);
-  await page.respond(2, {ok: true, text: 'An existing story.', lang: 'en', provenance: {kind: 'editorial'}});
+  assert.equal(page.requests.length, 3, 'double confirmation is single flight');
+  await page.respond(2, {ok: true, saved: true, attachment_token: 'token', can_generate: true, artifact: {artifact_id: 'a_existing', title: 'Cypresses', story_available: true}});
+  assert.match(page.requests[3].url, /artifacts\/a_existing\/story\?lang=en/);
+  await page.respond(3, {ok: true, text: 'An existing story.', lang: 'en', provenance: {kind: 'editorial'}});
   assert.equal(card.text.textContent, 'An existing story.');
-  assert.equal(page.requests.length, 3);
+  assert.equal(page.requests.length, 4);
   assert.equal(page.requests.some(request => /\/generate|\/photo$/.test(request.url)), false);
 });
 
@@ -270,13 +308,13 @@ test('a newly confirmed artifact writes once and is marked only after real story
   const page = setup('/universal-gallery?q=Vessel&origin=photo&lang=zh');
   await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'p_new', title: 'Vessel'}]});
   const card = cardHost(page); card.click();
-  await page.respond(1, {ok: true, saved: true, can_generate: true, artifact: {artifact_id: 'a_new', title: 'Vessel', story_available: false}, writing_status: 'pending'});
-  assert.equal(page.requests[2].url, '/api/gallery/generate');
-  assert.equal(JSON.parse(page.requests[2].options.body).lang, 'zh');
+  await page.respond(2, {ok: true, saved: true, can_generate: true, artifact: {artifact_id: 'a_new', title: 'Vessel', story_available: false}, writing_status: 'pending'});
+  assert.equal(page.requests[3].url, '/api/gallery/generate');
+  assert.equal(JSON.parse(page.requests[3].options.body).lang, 'zh');
   assert.notEqual(card.children.get('.ug-mark').textContent, '由我们提供');
   card.click(); card.click(card.actions.get('generate'));
-  assert.equal(page.requests.length, 3, 'repeat clicks cannot duplicate generation');
-  await page.respond(2, {ok: true, text: '这件藏品的故事。', lang: 'zh', provenance: {kind: 'ai_assisted'}});
+  assert.equal(page.requests.length, 4, 'repeat clicks cannot duplicate generation');
+  await page.respond(3, {ok: true, text: '这件藏品的故事。', lang: 'zh', provenance: {kind: 'ai_assisted'}});
   assert.equal(card.text.textContent, '这件藏品的故事。');
   assert.equal(card.children.get('.ug-mark').textContent, '由我们提供');
 });
@@ -285,8 +323,8 @@ test('no-engine confirmation keeps an honest pending discovery without a Written
   const page = setup('/universal-gallery?q=Vessel&origin=photo');
   await page.respond(0, {ok: true, can_generate: false, results: [{artifact_id: 'p_new', title: 'Vessel'}]});
   const card = cardHost(page); card.click();
-  await page.respond(1, {ok: true, saved: true, can_generate: false, artifact: {artifact_id: 'a_new', title: 'Vessel', story_available: false}, writing_status: 'pending'});
-  assert.equal(page.requests.length, 2);
+  await page.respond(2, {ok: true, saved: true, can_generate: false, artifact: {artifact_id: 'a_new', title: 'Vessel', story_available: false}, writing_status: 'pending'});
+  assert.equal(page.requests.length, 3);
   assert.equal(card.children.get('.ug-card-status').textContent, 'Saved. A story will be added when writing is available.');
   assert.notEqual(card.children.get('.ug-mark').textContent, 'Provided by us');
 });
@@ -295,29 +333,29 @@ test('publication permission uploads the exact photograph only after confirmed a
   const page = setup(); const original = photo(page, true); page.el('ugPhotoForm').dispatch('submit');
   await page.respond(0, {ok: true, candidates: [{query: 'Vessel', confidence: 'high'}]});
   await page.respond(1, {ok: true, can_generate: false, results: [{artifact_id: 'a_vessel', title: 'Vessel'}]});
-  assert.equal(page.requests.length, 2, 'no photo retained during identification or search');
+  assert.equal(page.requests.length, 3, 'no photo retained during identification or search');
   const card = cardHost(page); card.click();
-  await page.respond(2, {ok: true, saved: true, can_generate: false, attachment_token: 'signed-match', artifact: {artifact_id: 'a_vessel', title: 'Vessel'}, writing_status: 'pending'});
-  assert.equal(page.requests[3].url, '/api/gallery/artifacts/a_vessel/photo');
-  assert.equal(page.requests[3].options.body.fields.photo, original);
-  assert.equal(page.requests[3].options.body.fields.publication_consent, 'gallery-photo-publication-v1');
-  assert.equal(page.requests[3].options.body.fields.attachment_token, 'signed-match');
-  await page.respond(3, {ok: true, photo: {photo_id: 'photo_1', url: '/api/gallery/photos/photo_1', kind: 'visitor_photo'}});
+  await page.respond(3, {ok: true, saved: true, can_generate: false, attachment_token: 'signed-match', artifact: {artifact_id: 'a_vessel', title: 'Vessel'}, writing_status: 'pending'});
+  assert.equal(page.requests[4].url, '/api/gallery/artifacts/a_vessel/photo');
+  assert.equal(page.requests[4].options.body.fields.photo, original);
+  assert.equal(page.requests[4].options.body.fields.publication_consent, 'gallery-photo-publication-v1');
+  assert.equal(page.requests[4].options.body.fields.attachment_token, 'signed-match');
+  await page.respond(4, {ok: true, photo: {photo_id: 'photo_1', url: '/api/gallery/photos/photo_1', kind: 'visitor_photo'}});
   assert.equal(card.children.get('.ug-photo-attachment').textContent, '');
   assert.match(card.host.innerHTML, /Visitor photograph/);
   assert.match(card.host.innerHTML, /Separate from the museum/);
   page.el('ugPhotoRemove').dispatch('click');
 });
 
-test('unchecking optional publication while confirmation is pending prevents photo upload', async () => {
+test('removing the photo while opening an artifact is pending prevents publication', async () => {
   const page = setup(); photo(page, true); page.el('ugPhotoForm').dispatch('submit');
   await page.respond(0, {ok: true, candidates: [{query: 'Vessel'}]});
   await page.respond(1, {ok: true, can_generate: false, results: [{artifact_id: 'a_vessel', title: 'Vessel'}]});
   const card = cardHost(page); card.click();
-  page.el('ugPhotoPublish').checked = false;
-  await page.respond(2, {ok: true, saved: true, can_generate: false, attachment_token: 'signed-match', artifact: {artifact_id: 'a_vessel', title: 'Vessel'}, writing_status: 'pending'});
-  assert.equal(page.requests.length, 3);
-  assert.match(card.children.get('.ug-photo-attachment').textContent, /permission is not selected/);
+  page.el('ugPhotoRemove').dispatch('click');
+  await page.respond(3, {ok: true, saved: true, can_generate: false, attachment_token: 'signed-match', artifact: {artifact_id: 'a_vessel', title: 'Vessel'}, writing_status: 'pending'});
+  assert.equal(page.requests.length, 4);
+  assert.equal(page.requests.some(request => /\/photo$/.test(request.url)), false);
   page.el('ugPhotoRemove').dispatch('click');
 });
 
@@ -326,18 +364,18 @@ test('photo attachment failure leaves the story independent and allows a separat
   await page.respond(0, {ok: true, candidates: [{query: 'Vessel'}]});
   await page.respond(1, {ok: true, can_generate: true, results: [{artifact_id: 'a_vessel', title: 'Vessel', story_available: true}]});
   const card = cardHost(page); card.click();
-  await page.respond(2, {ok: true, saved: true, can_generate: true, attachment_token: 'signed-match', artifact: {artifact_id: 'a_vessel', title: 'Vessel', story_available: true}});
-  assert.match(page.requests[3].url, /\/photo$/);
-  assert.match(page.requests[4].url, /\/story\?lang=en$/);
-  await page.respond(3, {ok: false, reason: 'temporary'}, 503);
-  await page.respond(4, {ok: true, text: 'Saved story remains readable.', lang: 'en'});
+  await page.respond(3, {ok: true, saved: true, can_generate: true, attachment_token: 'signed-match', artifact: {artifact_id: 'a_vessel', title: 'Vessel', story_available: true}});
+  assert.match(page.requests[4].url, /\/photo$/);
+  assert.match(page.requests[5].url, /\/story\?lang=en$/);
+  await page.respond(4, {ok: false, reason: 'temporary'}, 503);
+  await page.respond(5, {ok: true, text: 'Saved story remains readable.', lang: 'en'});
   assert.equal(card.text.textContent, 'Saved story remains readable.');
   assert.match(card.children.get('.ug-photo-attachment').textContent, /photo was not added/);
   card.click(card.actions.get('retry-photo'));
-  assert.match(page.requests[5].url, /\/photo$/);
-  assert.equal(page.requests[5].options.body.fields.attachment_token, 'signed-match');
+  assert.match(page.requests[6].url, /\/photo$/);
+  assert.equal(page.requests[6].options.body.fields.attachment_token, 'signed-match');
   assert.equal(page.requests.filter(request => /\/story\?/.test(request.url)).length, 1);
-  await page.respond(5, {ok: true, photos: [{url: '/api/gallery/photos/photo_2'}]});
+  await page.respond(6, {ok: true, photos: [{url: '/api/gallery/photos/photo_2'}]});
   page.el('ugPhotoRemove').dispatch('click');
 });
 
@@ -346,17 +384,65 @@ test('unmatched photo clues are saved as research without publishing or pretendi
   await page.respond(0, {ok: true, label_text: 'Vessel 123', candidates: [{query: 'Vessel 123', title: 'Vessel', confidence: 'low'}]});
   await page.respond(1, {ok: true, results: []});
   await page.respond(2, {ok: true, results: []});
+  await page.respond(3, {ok: true, results: []});
   assert.equal(page.el('ugResearch').hidden, false);
   page.el('ugResearchSave').dispatch('click'); page.el('ugResearchSave').dispatch('click');
-  assert.equal(page.requests.length, 4);
-  assert.equal(page.requests[3].url, '/api/gallery/research');
-  const body = JSON.parse(page.requests[3].options.body);
+  assert.equal(page.requests.length, 5);
+  assert.equal(page.requests[4].url, '/api/gallery/research');
+  const body = JSON.parse(page.requests[4].options.body);
   assert.equal(body.candidate_clues[0].confidence, 'low');
   assert.equal(body.label_text, 'Vessel 123');
   assert.equal(body.photo, undefined);
-  await page.respond(3, {ok: true, saved: true, id: 'r_123', status: 'needs_research'});
+  await page.respond(4, {ok: true, saved: true, id: 'r_123', status: 'needs_research'});
   assert.match(page.el('ugResearchStatus').textContent, /saved for research/);
   assert.match(page.el('ugResearchStatus').textContent, /photo stays private/);
-  assert.equal(page.el('ugFound').innerHTML, '');
+  assert.match(page.el('ugFound').innerHTML, /Identity not yet verified/);
   page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('a useful unidentified-photo description is saved automatically without inventing a title', async () => {
+  const page = setup(); photo(page);
+  const description = 'A small bronze vessel with two handles and a raised geometric pattern.';
+  await page.respond(0, {ok: false, reason: 'no_match', candidates: [], label_text: '', visual_description: description}, 200);
+  assert.equal(page.requests[1].url, '/api/gallery/research');
+  const body = JSON.parse(page.requests[1].options.body);
+  assert.equal(body.query, '');
+  assert.equal(body.visual_description, description);
+  assert.equal(page.el('ugFind').value, '');
+  await page.respond(1, {ok: true, saved: true, id: 'r_desc', status: 'needs_research'});
+  assert.match(page.el('ugFound').innerHTML, /New discovery/);
+  assert.match(page.el('ugFound').innerHTML, /Identity not yet verified/);
+  assert.match(page.el('ugFound').innerHTML, /small bronze vessel/);
+  assert.doesNotMatch(page.el('ugFound').innerHTML, /Provided by us|<img/);
+  page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('a blank or unusably short description does not create an imaginary discovery', async () => {
+  const page = setup(); photo(page);
+  await page.respond(0, {ok: true, candidates: [], label_text: '', visual_description: 'Unknown'});
+  assert.equal(page.requests.length, 1);
+  assert.equal(page.el('ugIdentify').hidden, false);
+  page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('automatic discovery research is bounded to three catalogue queries', async () => {
+  const page = setup(); photo(page);
+  await page.respond(0, {ok: true, candidates: [{query: 'Name one', title: 'Name two', item_number: '123', confidence: 'high'}, {query: 'Name four'}]});
+  await page.respond(1, {ok: true, results: []});
+  await page.respond(2, {ok: true, results: []});
+  await page.respond(3, {ok: true, results: []});
+  await page.respond(4, {ok: true, results: []});
+  assert.equal(page.requests.filter(request => /\/search\?/.test(request.url) && !/scope=archive/.test(request.url)).length, 3);
+  assert.equal(page.requests[5].url, '/api/gallery/research');
+  page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('late museum results never replace an artifact the visitor already opened', async () => {
+  const page = setup('/universal-gallery?q=Cypresses&origin=photo');
+  await page.respond(0, {ok: true, results: [{artifact_id: 'a_saved', title: 'Cypresses', story_available: true}]});
+  const original = page.el('ugFound').innerHTML;
+  const card = cardHost(page); card.click();
+  await page.respond(1, {ok: true, results: [{artifact_id: 'p_other', title: 'Another work'}]});
+  assert.equal(page.el('ugFound').innerHTML, original);
+  assert.equal(page.requests.filter(request => /\/discover$/.test(request.url)).length, 1);
 });

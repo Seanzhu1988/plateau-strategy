@@ -65,9 +65,11 @@ _OUTPUT_SCHEMA = {
                        "description": "Zero to three tentative artifact identities."},
         "label_text": {"type": "string",
                        "description": "Only legible object-label text, or an empty string."},
+        "visual_description": {"type": "string",
+                               "description": "At most 1200 characters describing only the visible artifact's form, appearance and visually supported material. No identity or historical claims. Empty if no artifact is visible."},
         "reason": {"type": "string"},
     },
-    "required": ["candidates", "label_text", "reason"], "additionalProperties": False,
+    "required": ["candidates", "label_text", "visual_description", "reason"], "additionalProperties": False,
 }
 _SYSTEM = """Help a museum visitor search for artworks and historical artifacts.
 Inspect the picture and any legible collection label. Return up to three
@@ -81,6 +83,17 @@ label text. Omit illegible words rather than inventing a transcription.
 Do not infer a museum from visual style or invent an accession number. Unknown
 fields must be empty strings. A suggested title or museum is a clue, not proof.
 Do not generate URLs, stories, articles, or publication claims.
+visual_description is a short factual visual draft, at most 1200 characters,
+about the artifact's visible form, surface, colour and decoration. Describe a
+genuine unidentified artifact without inventing its title, maker, culture,
+date, history, purpose, value or provenance. Mention material only when the
+photograph supports it; otherwise describe its appearance without asserting
+composition. This draft is not a verified identity or a historical story.
+Do not describe nearby people, faces, private information or personal details.
+If no artifact is visible, visual_description must be an empty string. A
+readable label alone may inform label_text but cannot establish visible form.
+An empty candidates array does not prevent a useful visual_description when
+an artifact is visible but its identity is unknown.
 If no artifact is visible, or evidence is insufficient for a useful candidate,
 return an empty candidates array and explain how to improve the photo. Never
 return a candidate just to fill the response. High confidence needs a clear
@@ -104,7 +117,8 @@ def _text(value, limit):
 
 def _response(reason, message, status=200, **extra):
     payload = {"ok": False, "reason": reason, "message": message,
-               "candidates": [], "label_text": "", "needs_confirmation": True}
+               "candidates": [], "label_text": "", "visual_description": "",
+               "needs_confirmation": True}
     payload.update(extra)
     response = jsonify(payload)
     response.status_code = status
@@ -286,6 +300,7 @@ def _parse_candidates(payload):
     result = json.loads(text)
     if (not isinstance(result, dict) or not isinstance(result.get("candidates"), list)
             or not isinstance(result.get("label_text"), str)
+            or not isinstance(result.get("visual_description", ""), str)
             or not isinstance(result.get("reason"), str)):
         raise ValueError("Invalid response")
     candidates, seen = [], set()
@@ -304,6 +319,8 @@ def _parse_candidates(payload):
             candidates.append(row)
             seen.add(identity)
     return {"candidates": candidates, "label_text": _text(result["label_text"], 2500),
+            "visual_description": _text(re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]", "",
+                                               result.get("visual_description", "")), 1200),
             "reason": _text(result["reason"], 500), "needs_confirmation": True}
 
 
@@ -370,7 +387,7 @@ def identify():
         return _response("invalid_response", "The photo result was incomplete. Try another angle or the label text.", 502)
     if not result["candidates"]:
         return _response("no_match", result["reason"] or "No clear match yet. Include the object and a readable label.",
-                         label_text=result["label_text"])
+                         label_text=result["label_text"], visual_description=result["visual_description"])
     result["ok"] = True
     response = jsonify(result)
     response.headers["Cache-Control"] = "no-store"
