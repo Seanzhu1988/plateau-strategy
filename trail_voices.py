@@ -256,9 +256,11 @@ def main():
         return 1
 
     made, failed = [], []
+    quota_hit = False
     for n, text, op, identity in todo:
         audio, why = vg.record(key, voice, text, settings=tuning)
         if why == "QUOTA":
+            quota_hit = True
             print("\nOut of characters at ElevenLabs. %d recorded this run, %d still "
                   "waiting. Run again to pick up where this stopped."
                   % (len(made), len(todo) - len(made)))
@@ -283,7 +285,11 @@ def main():
     if made and lang == "en":
         print("Nothing to wire: the generic tour page discovers the overview and "
               "stops from the manifest on its next load.")
-    return 0
+    # A quota or API failure means the requested release is incomplete.  The
+    # workflow deliberately commits any successful files first, then reports
+    # this non-zero result so a partial recording can never masquerade as a
+    # green, finished run.
+    return 1 if quota_hit or failed else 0
 
 
 if __name__ == "__main__":

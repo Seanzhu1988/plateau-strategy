@@ -86,6 +86,8 @@ jobs:
           esac
 
       - name: Record
+        id: record
+        continue-on-error: true
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           TRAIL_ID: ${{ inputs.trail }}
@@ -95,8 +97,10 @@ jobs:
           case "${{ inputs.language }}" in
             en) python3 trail_voices.py "${ARGS[@]}" ;;
             zh) python3 trail_voices.py "${ARGS[@]}" --lang zh ;;
-            *)  python3 trail_voices.py "${ARGS[@]}"
-                python3 trail_voices.py "${ARGS[@]}" --lang zh ;;
+            *)  STATUS=0
+                python3 trail_voices.py "${ARGS[@]}" || STATUS=1
+                python3 trail_voices.py "${ARGS[@]}" --lang zh || STATUS=1
+                exit "$STATUS" ;;
           esac
 
       - name: Commit the audio
@@ -115,3 +119,9 @@ jobs:
           # Land it on top of whatever arrived while recording, then push.
           git pull --rebase origin ${{ github.ref_name }}
           git push origin HEAD:${{ github.ref_name }}
+
+      - name: Report an incomplete recording
+        if: steps.record.outcome == 'failure'
+        run: |
+          echo "::error::The requested narration is incomplete. Any successful files were preserved; replenish quota or resolve the API error, then run this trail again."
+          exit 1

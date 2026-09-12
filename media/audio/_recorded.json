@@ -667,13 +667,6 @@
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 735
  },
- "ivy-princeton-overview.mp3": {
-  "chars": 1492,
-  "settings": null,
-  "sig": "a00454376d7a",
-  "voice": "JZLpE3AGwpKYZI2X65hN",
-  "words": 269
- },
  "ivy-princeton-stop-1.mp3": {
   "book_slug": "princeton-palmer-square",
   "chars": 4178,
@@ -725,46 +718,70 @@
   "words": 792
  },
  "ivy-princeton-stop-4.mp3": {
+  "book_slug": "princeton-cannon-green",
   "chars": 3981,
+  "requires_rerecord": true,
   "settings": null,
   "sig": "97b7e40faa7b",
+  "stop": 4,
+  "trail": "ivy-princeton",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 713
  },
  "ivy-princeton-stop-5.mp3": {
+  "book_slug": "princeton-east-pyne",
   "chars": 4134,
+  "requires_rerecord": true,
   "settings": null,
   "sig": "2c697f0fa89d",
+  "stop": 5,
+  "trail": "ivy-princeton",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 737
  },
  "ivy-princeton-stop-6.mp3": {
-  "chars": 4233,
-  "settings": null,
-  "sig": "8629009748ae",
-  "voice": "JZLpE3AGwpKYZI2X65hN",
-  "words": 743
- },
- "ivy-princeton-stop-7.mp3": {
+  "book_slug": "princeton-firestone-library",
   "chars": 4274,
+  "requires_rerecord": true,
   "settings": null,
   "sig": "3087fe2388c5",
+  "stop": 6,
+  "trail": "ivy-princeton",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 749
  },
- "ivy-princeton-stop-8.mp3": {
-  "chars": 4125,
+ "ivy-princeton-stop-7.mp3": {
+  "book_slug": "princeton-university-chapel",
+  "chars": 4233,
+  "requires_rerecord": true,
   "settings": null,
-  "sig": "eabc697e00e6",
+  "sig": "8629009748ae",
+  "stop": 7,
+  "trail": "ivy-princeton",
   "voice": "JZLpE3AGwpKYZI2X65hN",
-  "words": 730
+  "words": 743
  },
- "ivy-princeton-stop-9.mp3": {
+ "ivy-princeton-stop-8.mp3": {
+  "book_slug": "princeton-prospect-house",
   "chars": 4278,
+  "requires_rerecord": true,
   "settings": null,
   "sig": "b607b53cf252",
+  "stop": 8,
+  "trail": "ivy-princeton",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 769
+ },
+ "ivy-princeton-stop-9.mp3": {
+  "book_slug": "princeton-university-art-museum",
+  "chars": 4125,
+  "requires_rerecord": true,
+  "settings": null,
+  "sig": "eabc697e00e6",
+  "stop": 9,
+  "trail": "ivy-princeton",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 730
  },
  "ivy-yale-overview.mp3": {
   "chars": 1651,
