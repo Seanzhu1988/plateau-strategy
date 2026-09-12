@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>New York City 3D models · Bridge, Empire State and St John the Divine</title>
-<meta name="description" content="Three New York landmarks as models you can turn: the Brooklyn Bridge, Empire State Building, and Cathedral of St John the Divine.">
+<meta name="description" content="Three New York landmarks as models you can turn, plus a verified photograph of Greg Wyatt's Peace Fountain while its realistic 3D reconstruction is reviewed.">
     <!-- Social preview. Without these a shared link shows as a bare URL
          with no image or title, which is most of the click-through gone.
          og:image is the site card, which is live and 70KB. -->
@@ -72,7 +72,28 @@
             background:#faf8f4;border-radius:0 8px 8px 0;line-height:1.62}
   .lm-story p{margin:0 0 .8rem}
   .lm-story p:last-child{margin-bottom:0}
+  .lm-photo-proof { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(240px, .65fr);
+                    overflow: hidden; margin: 1.4rem 0 1.2rem; border: 1px solid #d9d5cc;
+                    border-radius: 14px; background: #15211b; color: #f7f3ea;
+                    box-shadow: 0 16px 38px rgba(20, 17, 12, .14); }
+  .lm-photo-proof figure { margin: 0; min-height: 360px; background: #0d1511; }
+  .lm-photo-proof img { display: block; width: 100%; height: 100%; min-height: 360px;
+                        object-fit: cover; object-position: 50% 50%; }
+  .lm-photo-copy { display: flex; flex-direction: column; justify-content: center; padding: 1.35rem; }
+  .lm-photo-copy .proof-badge { align-self: flex-start; margin: 0 0 .8rem; padding: .36rem .58rem;
+                                border: 1px solid rgba(247,243,234,.35); border-radius: 999px;
+                                color: #e6d9b8 !important; font-size: .7rem; font-weight: 800;
+                                letter-spacing: .08em; text-transform: uppercase; }
+  .lm-photo-copy h3 { margin: 0 0 .55rem; color: #fffaf0 !important; font-size: 1.28rem; line-height: 1.2; }
+  .lm-photo-copy p { margin: 0 0 .85rem; color: #ddd8cd !important; font-size: .9rem; line-height: 1.55; }
+  .lm-photo-copy .proof-facts { color: #fffaf0 !important; font-weight: 700; }
+  .lm-photo-copy .proof-credit { margin: auto 0 0; padding-top: .8rem; color: #bcb7ad !important; font-size: .72rem; }
+  .lm-photo-copy a { color: #f2d990 !important; }
   @media (max-width:520px){ .lm-story{padding:1rem} }
+  @media (max-width:720px){
+    .lm-photo-proof { grid-template-columns: 1fr; }
+    .lm-photo-proof figure, .lm-photo-proof img { min-height: 0; aspect-ratio: 4 / 3; }
+  }
 </style>
 <script type="application/ld+json">
 {
@@ -113,6 +134,13 @@
     "addressRegion": "NY",
     "addressCountry": "US"
    }
+  },
+  {
+   "@type": "Sculpture",
+   "name": "Peace Fountain",
+   "creator": { "@type": "Person", "name": "Greg Wyatt" },
+   "dateCreated": "1985",
+   "isPartOf": { "@type": "TouristAttraction", "name": "Cathedral Church of Saint John the Divine" }
   }
  ],
  "publisher": {
@@ -256,6 +284,28 @@
          door is forty feet across and holds ten thousand pieces of glass, and
          it faces west, so the late light is what lights it from behind.</p>
     </div>
+
+    <article class="lm-photo-proof" aria-labelledby="peaceFountainPhotoTitle">
+      <figure>
+        <img loading="lazy" decoding="async"
+             src="/media/peace-fountain-jay-dobkin.jpg"
+             alt="Greg Wyatt's bronze Peace Fountain in front of the Cathedral of St John the Divine">
+      </figure>
+      <div class="lm-photo-copy">
+        <span class="proof-badge">Verified site photograph</span>
+        <h3 id="peaceFountainPhotoTitle">Peace Fountain — the real monument</h3>
+        <p>The first procedural 3D study was removed because its anatomy and
+           silhouette did not match Greg Wyatt's sculpture. Until a permissioned
+           scan or sculpt clears the private realism review, the exact destination
+           is shown here instead of invented geometry.</p>
+        <p class="proof-facts">Greg Wyatt · bronze · 1985 · 40 ft</p>
+        <p class="proof-credit">Photo: Jay Dobkin, 2019 ·
+          <a href="https://commons.wikimedia.org/wiki/File:Peace_Fountain_at_cathedral_of_John_the_Divine_in_NYC_8.jpg"
+             rel="license noopener">Wikimedia Commons, CC BY-SA 4.0</a> ·
+          <a href="https://gregwyattsculpture.com/bronze/peace-fountain" rel="noopener">artist reference</a>
+        </p>
+      </div>
+    </article>
 
     <div class="lm-story" id="story-st-john-divine" hidden></div>
   </section>
