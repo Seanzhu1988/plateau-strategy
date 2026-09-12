@@ -95,6 +95,11 @@
         .tw-guideplay { display: flex; gap: .6rem; align-items: center; margin: .5rem 0 .8rem;
                         font-size: .88rem; color: #6b655b; }
         .tw-guideplay audio { width: 100%; }
+        .tw-overviewplay { max-width: 46rem; margin: -.2rem 0 1.15rem; padding: .72rem .85rem;
+                           border: 1px solid #e6e1d8; border-radius: 10px; background: #faf8f4; }
+        .tw-overviewplay span { display: block; margin: 0 0 .38rem; font-size: .84rem;
+                                font-weight: 700; color: #12305b; }
+        .tw-overviewplay audio { display: block; width: 100%; }
         .tw-noguide { font-size: .84rem; color: #8a8378; }
         .tw-tip { font-size: .88rem; color: #6b655b; }
         .tw-tip b { color: #14110c; }
@@ -126,6 +131,11 @@
         <p class="tw-eyebrow" id="twEyebrow"></p>
         <h1 id="twTitle">Loading the tour&hellip;</h1>
         <p class="tw-lead" id="twLead"></p>
+        <div class="tw-overviewplay" id="twOverview" hidden>
+            <span id="twOverviewLabel">Tour overview</span>
+            <audio id="twOverviewAudio" controls preload="none"></audio>
+        </div>
+        <p class="tw-noguide" id="twNoOverview" hidden></p>
 
         <div class="tw-stats" id="twStats" hidden>
             <span class="tw-stat"><b id="twStops"></b>stops</span>
@@ -195,6 +205,57 @@
     var listEl = document.getElementById("twList"), cardsEl = document.getElementById("twCards");
     var map = null, layer = null, dots = {}, stops = [], trail = null, dests = {}, recorded = {}, current = -1, VOICE_NAMES = {};
     var audioEl = document.getElementById("twAudio");
+    var overviewAudioEl = document.getElementById("twOverviewAudio");
+    overviewAudioEl.addEventListener("play", function () { try { audioEl.pause(); } catch (e) {} });
+    audioEl.addEventListener("play", function () { try { overviewAudioEl.pause(); } catch (e) {} });
+
+    function activeLang() {
+        var lang = (document.documentElement.lang || "en").toLowerCase().slice(0, 2);
+        try { lang = (localStorage.getItem("ps_lang") || lang).toLowerCase().slice(0, 2); } catch (e) {}
+        return lang || "en";
+    }
+
+    function own(obj, key) {
+        return Object.prototype.hasOwnProperty.call(obj || {}, key);
+    }
+
+    /* A hash says the recording matches some words. These optional semantic
+       fields say it matches THIS trail card. Old rows predate the fields and
+       remain valid; once a row makes a semantic claim, a conflict is refused
+       instead of attaching a perfectly good recording to the wrong stop. */
+    function semanticMatch(row, expected) {
+        if (!row) return false;
+        if (own(row, "trail") && row.trail !== expected.trail) return false;
+        if (expected.overview) {
+            if (own(row, "overview") && row.overview !== true) return false;
+            if (own(row, "stop") || own(row, "book_slug")) return false;
+        } else {
+            if (row.overview === true) return false;
+            if (own(row, "stop") && Number(row.stop) !== Number(expected.stop)) return false;
+            if (own(row, "book_slug") && (row.book_slug || null) !== (expected.book_slug || null)) return false;
+        }
+        return true;
+    }
+
+    function basename(url) {
+        return String(url || "").split("?")[0].split("#")[0].split("/").pop();
+    }
+
+    function versioned(url, row) {
+        if (!url || !row || !row.sig) return url || "";
+        return url + (url.indexOf("?") >= 0 ? "&" : "?") + "v=" + encodeURIComponent(row.sig);
+    }
+
+    function noRecordingText(place) {
+        var lang = activeLang();
+        if (lang === "en") return T(place === "overview"
+            ? "No overview recording for this tour yet."
+            : "No recording for this stop yet.");
+        if (lang === "zh") return place === "overview"
+            ? "这个导览还没有中文概览录音。" : "这个站点还没有中文录音。";
+        return F("No {language} recording for this {place} yet.",
+                 { language: lang.toUpperCase(), place: place === "overview" ? "tour overview" : "stop" });
+    }
 
     function minutes(m) {
         m = Math.round(m || 0);
@@ -287,6 +348,7 @@
         document.getElementById("twTitle").textContent = t.name;
         document.getElementById("twLead").textContent = t.summary || "";
         document.title = t.name + " | Plateau Strategy Solution Lab";
+        paintOverview(t);
 
         var st = document.getElementById("twStats"); st.hidden = false;
         document.getElementById("twStops").textContent = stops.length;
@@ -344,14 +406,13 @@
         show(0, false);
     }
 
-    function audioFor(s, entry) {
+    function stopRecording(s, entry) {
         /* Recordings are read from the manifest, never probed: a page that
            asks for eleven files that do not exist teaches everyone to ignore
            errors (TOUR_STANDARD.md, the traps). Two homes: a trail stop
            recorded by the trail recorder as <trail>-stop-<n>.mp3, or the book
            entry's own guide. */
-        var lang = null;
-        try { lang = localStorage.getItem("ps_lang"); } catch (e) {}
+        var lang = activeLang();
         var cands = [];
         /* The Freedom Trail was recorded before trails had ids, as
            trail-stop-N.mp3 (trail_voices.py LEGACY_PREFIX). Without this
@@ -359,13 +420,67 @@
            in either language and fell through to the book's card audio. */
         var prefixes = [trail.id + "-stop-"];
         if (trail.id === "freedom-trail") prefixes.push("trail-stop-");
-        prefixes.forEach(function (pre) {
-            if (lang && lang !== "en") cands.push(pre + s.n + "." + lang + ".mp3");
-        });
-        prefixes.forEach(function (pre) { cands.push(pre + s.n + ".mp3"); });
-        for (var i = 0; i < cands.length; i++) if (recorded[cands[i]]) return "/media/audio/" + cands[i];
-        if (entry && entry.audio) return entry.audio;
-        return "";
+        prefixes.forEach(function (pre) { cands.push(pre + s.n + (lang === "en" ? "" : "." + lang) + ".mp3"); });
+        var identity = { trail: trail.id, stop: s.n, book_slug: s.book_slug || null };
+        for (var i = 0; i < cands.length; i++) {
+            var row = recorded[cands[i]];
+            if (row && semanticMatch(row, identity)) {
+                return { src: versioned("/media/audio/" + cands[i], row), file: cands[i], row: row, trailFile: true };
+            }
+        }
+        /* A destination-card guide is an English fallback only. Playing it
+           after a visitor explicitly chose Chinese is a silent language bug,
+           not a graceful fallback. */
+        if (lang === "en" && entry && entry.audio) {
+            var file = basename(entry.audio), bookRow = recorded[file] || null;
+            if (bookRow && !semanticMatch(bookRow, identity)) return null;
+            return { src: versioned(entry.audio, bookRow), file: file, row: bookRow, trailFile: false };
+        }
+        return null;
+    }
+
+    function audioFor(s, entry) {
+        var picked = stopRecording(s, entry);
+        return picked ? picked.src : "";
+    }
+
+    function overviewRecording(t) {
+        var lang = activeLang(), files = [];
+        if (t.id === "freedom-trail") {
+            /* trail-freedom is the historic on-disk name. Also understand the
+               regular name so a future migration can be gradual. */
+            files.push("trail-freedom" + (lang === "en" ? "" : "." + lang) + ".mp3");
+            files.push(t.id + "-overview" + (lang === "en" ? "" : "." + lang) + ".mp3");
+        } else {
+            files.push(t.id + "-overview" + (lang === "en" ? "" : "." + lang) + ".mp3");
+        }
+        var identity = { trail: t.id, overview: true };
+        for (var i = 0; i < files.length; i++) {
+            var row = recorded[files[i]];
+            if (row && semanticMatch(row, identity)) {
+                return { src: versioned("/media/audio/" + files[i], row), file: files[i], row: row };
+            }
+        }
+        return null;
+    }
+
+    function paintOverview(t) {
+        var wrap = document.getElementById("twOverview");
+        var missing = document.getElementById("twNoOverview");
+        var picked = overviewRecording(t);
+        try { overviewAudioEl.pause(); } catch (e) {}
+        overviewAudioEl.removeAttribute("src");
+        if (picked) {
+            overviewAudioEl.setAttribute("src", picked.src);
+            var who = (picked.row && VOICE_NAMES[picked.row.voice]) || "";
+            document.getElementById("twOverviewLabel").textContent = who
+                ? who + " · " + T("Tour overview") : T("Tour overview");
+            wrap.hidden = false; missing.hidden = true;
+        } else {
+            wrap.hidden = true;
+            missing.textContent = noRecordingText("overview");
+            missing.hidden = false;
+        }
     }
 
     function silence() {
@@ -519,12 +634,13 @@
            /api/guide-voices, so a recast changes the caption with no edit
            here. Yiki's aside (s.yiki) is hers: it shows only under her own
            English file; under another guide's file the name alone shows. */
-        var picked = audioFor(s, entry);
-        var pickedRow = picked ? (recorded[picked.split("/").pop()] || null) : null;
+        var picked = stopRecording(s, entry);
+        var pickedRow = picked && picked.row;
         var who = (pickedRow && VOICE_NAMES[pickedRow.voice]) || "";
-        var isYikiFile = !!picked && picked === "/media/audio/" + trail.id + "-stop-" + s.n + ".mp3";
-        var label = who || ((s.yiki && (isYikiFile || !picked)) ? "Yiki" : "");
-        var aside = (s.yiki && (isYikiFile || !picked)) ? s.yiki : "";
+        var isYikiFile = !!picked && picked.trailFile && activeLang() === "en" && who === "Yiki";
+        var canUseEnglishAside = activeLang() === "en" && (isYikiFile || !picked);
+        var label = who || ((s.yiki && canUseEnglishAside) ? "Yiki" : "");
+        var aside = (s.yiki && canUseEnglishAside) ? s.yiki : "";
         if (label || aside) {
             note.hidden = false; note.innerHTML = "";
             if (label) { var g = document.createElement("span"); g.className = "tw-guide"; g.textContent = label; note.appendChild(g); }
@@ -539,7 +655,8 @@
         else { showEl.hidden = true; img.removeAttribute("src"); }
 
         silence();
-        var src = picked;
+        if (fromUser) { try { overviewAudioEl.pause(); } catch (e) {} }
+        var src = picked ? picked.src : "";
         var gp = document.getElementById("twGuide"), ng = document.getElementById("twNoGuide");
         if (src) {
             audioEl.setAttribute("src", src); gp.hidden = false; ng.hidden = true;
@@ -548,15 +665,34 @@
                walk's approach trigger. Only on a real tap, never on the silent
                first open, which the browser would refuse anyway. */
             if (fromUser) { try { var pr = audioEl.play(); if (pr && pr.catch) pr.catch(function () {}); } catch (e) {} }
-        } else { gp.hidden = true; ng.hidden = false; }
+        } else {
+            gp.hidden = true;
+            ng.textContent = noRecordingText("stop");
+            ng.hidden = false;
+        }
         Array.prototype.forEach.call(listEl.querySelectorAll(".tw-stop"), function (b, k) {
             var st = stops[k]; var e = st.book_slug ? dests[st.book_slug] : null;
             b.querySelector(".tw-au").textContent = audioFor(st, e) ? "♪" : "";
         });
     }
 
+    /* Language changes happen in place. Re-resolve both players from the
+       manifest as soon as i18n announces the new language; otherwise a tour
+       opened in English can keep an English source after 中文 is selected.
+       Both repaint paths are deliberately silent, so switching languages
+       never starts audio without another user gesture. */
+    document.addEventListener("psx:lang", function () {
+        if (!trail || !stops.length) return;
+        paintOverview(trail);
+        show(current >= 0 ? current : 0, false);
+    });
+
     /* ---------------- a collection ---------------- */
     function paintCollection(t, all) {
+        try { overviewAudioEl.pause(); } catch (e) {}
+        overviewAudioEl.removeAttribute("src");
+        document.getElementById("twOverview").hidden = true;
+        document.getElementById("twNoOverview").hidden = true;
         var _wb = document.getElementById("twWalkbar"); if (_wb) _wb.hidden = true;
         document.getElementById("twEyebrow").textContent = T("Eight campuses, eight cities");
         document.getElementById("twTitle").textContent = t.name;

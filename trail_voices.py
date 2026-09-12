@@ -69,19 +69,20 @@ OUTDIR = os.path.join(BASE, "media", "audio")
 LEGACY_PREFIX = {"freedom-trail": "trail-stop-"}
 
 
-def _stop_count(trail):
+def _trail_definition(trail):
     try:
         import json
         with open(os.path.join(BASE, "trails.json"), encoding="utf-8") as f:
             for t in json.load(f).get("trails", []):
                 if t.get("id") == trail:
-                    return len(t.get("stops") or [])
+                    return t
     except Exception:
         pass
-    return 0
+    return {}
 
 
-STOPS = _stop_count(TRAIL) or (16 if TRAIL == "freedom-trail" else 0)
+TRAIL_DEFINITION = _trail_definition(TRAIL)
+STOPS = len(TRAIL_DEFINITION.get("stops") or []) or (16 if TRAIL == "freedom-trail" else 0)
 
 # About 700 words is five minutes at an unhurried narrating pace. An English stop
 # shorter than this is a card, not a deep guide, and is held back until it grows.
@@ -114,6 +115,46 @@ def overview_paths(lang):
     return script, out
 
 
+def semantic_identity(n):
+    """Identity stamped beside the script fingerprint in the audio ledger.
+
+    A fingerprint proves which words were read, but it does not prove which
+    card those words belong to.  That distinction matters when two numbered
+    scripts are accidentally swapped: both MP3s are perfectly current while
+    both are attached to the wrong stop.  Old ledger rows did not carry this
+    identity, so absence is deliberately accepted and backfilled without an
+    ElevenLabs call; a *present but conflicting* identity is never accepted.
+    """
+    if not n:
+        return {"trail": TRAIL, "overview": True}
+    stop = next((s for s in (TRAIL_DEFINITION.get("stops") or [])
+                 if s.get("n") == n), {})
+    return {"trail": TRAIL, "stop": n, "book_slug": stop.get("book_slug")}
+
+
+def semantic_matches(row, expected):
+    """False only for semantic claims that are present and contradictory."""
+    if "trail" in row and row.get("trail") != expected.get("trail"):
+        return False
+    if expected.get("overview"):
+        if "overview" in row and row.get("overview") is not True:
+            return False
+        if "stop" in row or "book_slug" in row:
+            return False
+    else:
+        if row.get("overview") is True:
+            return False
+        if "stop" in row:
+            try:
+                if int(row.get("stop")) != int(expected.get("stop")):
+                    return False
+            except (TypeError, ValueError):
+                return False
+        if "book_slug" in row and row.get("book_slug") != expected.get("book_slug"):
+            return False
+    return True
+
+
 def main():
     dry = "--dry" in sys.argv
     force = "--force" in sys.argv
@@ -138,6 +179,8 @@ def main():
 
     manifest = vg.load_manifest()
     have, todo, thin, missing = [], [], [], []
+    manifest_dirty = False
+    enriched = 0
     # item 0 is the overview; 1..16 are the stops. Labels print as "overview"
     # or the stop number, and the overview skips the five-minute floor because
     # it is an introduction, not a stop guide.
@@ -153,17 +196,35 @@ def main():
             continue
         op = out_path(n, lang) if n else overview_paths(lang)[1]
         row = manifest.get(os.path.basename(op)) or {}
+        identity = semantic_identity(n)
         # Record when missing, when the words or voice changed, or when a file is
         # on disk with no ledger row, that last one being the short placeholders
-        # these deep scripts are here to replace. Never adopt a placeholder.
+        # these deep scripts are here to replace. Never adopt a placeholder. A
+        # semantic conflict also makes the file stale even if its words happen
+        # to match: it has declared that it belongs to another stop.
         stale = (row.get("voice") != voice or row.get("sig") != vg.sig(text)
-                 or row.get("settings") != tuning)
+                 or row.get("settings") != tuning
+                 or not semantic_matches(row, identity))
         if force or not os.path.exists(op) or stale:
-            todo.append((n, text, op))
+            todo.append((n, text, op, identity))
         else:
             have.append(n)
+            # Metadata is free. Backfill it on a genuinely current row rather
+            # than spending paid voice quota merely because an old recorder did
+            # not know the semantic fields yet.
+            if any(k not in row for k in identity):
+                row.update(identity)
+                manifest[os.path.basename(op)] = row
+                manifest_dirty = True
+                enriched += 1
 
-    chars = sum(len(t) for _, t, _ in todo)
+    if manifest_dirty and not dry:
+        vg.save_manifest(manifest)
+    elif manifest_dirty:
+        print("Dry run: %d current ledger row(s) would gain semantic identity."
+              % enriched)
+
+    chars = sum(len(t) for _, t, _, _ in todo)
     print("%s | %s | reader %s (%s) | overview + %d stops: %d current, "
           "%d to record, %d under five minutes, %d without a script"
           % (lang, TRAIL, reader, voice, STOPS, len(have), len(todo),
@@ -182,7 +243,7 @@ def main():
 
     print("Ready to record %d stop(s), %d characters. A paid ElevenLabs plan; "
           "the free tier is 10,000 characters a month." % (len(todo), chars))
-    for n, t, _ in todo:
+    for n, t, _, _ in todo:
         print("  %s  %5d chars" % ("overview" if n == 0 else "stop %2d" % n, len(t)))
 
     if dry:
@@ -195,7 +256,7 @@ def main():
         return 1
 
     made, failed = [], []
-    for n, text, op in todo:
+    for n, text, op, identity in todo:
         audio, why = vg.record(key, voice, text, settings=tuning)
         if why == "QUOTA":
             print("\nOut of characters at ElevenLabs. %d recorded this run, %d still "
@@ -210,7 +271,8 @@ def main():
             f.write(audio)
         manifest[os.path.basename(op)] = {"voice": voice, "sig": vg.sig(text),
                                           "settings": tuning,
-                                          "words": len(text.split()), "chars": len(text)}
+                                          "words": len(text.split()), "chars": len(text),
+                                          **identity}
         vg.save_manifest(manifest)
         made.append(n)
         print("  voiced  %s  %6d bytes"
@@ -219,8 +281,8 @@ def main():
 
     print("\nrecorded %d, failed %d." % (len(made), len(failed)))
     if made and lang == "en":
-        print("Nothing to wire: the page already plays trail-stop-<n>.mp3, so each "
-              "recorded stop replaces its short clip on the next load.")
+        print("Nothing to wire: the generic tour page discovers the overview and "
+              "stops from the manifest on its next load.")
     return 0
 
 
