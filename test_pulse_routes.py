@@ -47,6 +47,14 @@ class PulseRouteTests(unittest.TestCase):
         self.assertIn("no-store", shell.headers["Cache-Control"])
         self.assertIn("Owner sign in", shell.text)
         self.assertNotIn("REVENUE_PUSH_KEY", shell.text)
+        self.assertNotIn('src="/site-auth.js', shell.text)
+        self.assertNotIn('src="/install.js', shell.text)
+
+    def test_visitor_tools_remain_on_the_public_gallery(self):
+        with self.client.get("/universal-gallery") as shell:
+            self.assertEqual(shell.status_code, 200)
+            self.assertIn('src="/site-auth.js', shell.text)
+            self.assertIn('src="/install.js', shell.text)
 
     def test_owner_period_numbers_and_private_cache_control(self):
         today = datetime.date.today()

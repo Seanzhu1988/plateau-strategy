@@ -1434,7 +1434,7 @@ def _compress_and_cache(resp):
             # templates each carrying a tag and drifting. The script does
             # nothing on a page without a header; owner consoles keep
             # their own doors and are left alone.
-            if (not path.startswith(("/dispatch", "/archive", "/access", "/setup"))
+            if (not path.startswith(("/dispatch", "/archive", "/access", "/setup", "/pulse"))
                     and b'src="/site-auth.js' not in stamped
                     and b"</body>" in stamped):
                 stamped = stamped.replace(
@@ -1447,7 +1447,7 @@ def _compress_and_cache(resp):
             # every page, because the share control in the browser chrome is
             # furniture nobody notices. Same injection slot, new tenant;
             # logo-reset.js stays on disk as history but nothing loads it.
-            if (not path.startswith(("/dispatch", "/archive", "/access", "/setup"))
+            if (not path.startswith(("/dispatch", "/archive", "/access", "/setup", "/pulse"))
                     and b'src="/install.js' not in stamped
                     and b"</body>" in stamped):
                 stamped = stamped.replace(

@@ -29,6 +29,11 @@ not cacheable.
 - Expandable phone reports, readable long paths/queries, tap/keyboard chart values,
   and genuinely lazy loading of the place job list. Existing trading snapshot and
   visit-exclusion actions are retained.
+- Production-only follow-up: exclude Pulse from the global visitor sign-in/share
+  script injection, as other owner consoles already are. Otherwise a second
+  reader sign-in button appears above the owner login, which cannot grant owner
+  access. The normal Pulse manifest and browser Add to Home Screen remain;
+  public gallery visitor controls are unchanged and regression-tested.
 
 ## Verification
 
