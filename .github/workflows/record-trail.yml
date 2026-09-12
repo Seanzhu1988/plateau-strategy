@@ -1,7 +1,7 @@
 name: Record trail narration
 
-# Records the deep, five minute per-stop narration for the Freedom Trail and
-# commits the audio back to the repo, so it deploys with everything else. This
+# Records the deep, five minute per-stop narration for a selected walking tour
+# and commits the audio back to the repo, so it deploys with everything else. This
 # runs here, on a GitHub runner, because that is a place that has both the
 # ElevenLabs key and the ability to commit; a sandboxed session has neither.
 #
@@ -13,6 +13,23 @@ name: Record trail narration
 on:
   workflow_dispatch:
     inputs:
+      trail:
+        description: "Which walking tour to record"
+        type: choice
+        default: freedom-trail
+        options:
+          - freedom-trail
+          - national-mall
+          - mount-rushmore
+          - ivy-harvard
+          - ivy-yale
+          - ivy-princeton
+          - ivy-columbia
+          - ivy-penn
+          - ivy-brown
+          - ivy-dartmouth
+          - ivy-cornell
+          - philadelphia
       language:
         description: "Which language to record"
         type: choice
@@ -28,7 +45,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: record-trail
+  group: record-trail-${{ inputs.trail }}
   cancel-in-progress: false
 
 jobs:
@@ -57,30 +74,34 @@ jobs:
       - name: Preview what will record
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          TRAIL_ID: ${{ inputs.trail }}
         run: |
-          FORCE=""
-          [ "${{ inputs.force }}" = "true" ] && FORCE="--force"
+          ARGS=(--trail "$TRAIL_ID")
+          [ "${{ inputs.force }}" = "true" ] && ARGS+=(--force)
           case "${{ inputs.language }}" in
-            en) python3 trail_voices.py --dry $FORCE ;;
-            zh) python3 trail_voices.py --dry --lang zh $FORCE ;;
-            *)  python3 trail_voices.py --dry $FORCE
-                python3 trail_voices.py --dry --lang zh $FORCE ;;
+            en) python3 trail_voices.py "${ARGS[@]}" --dry ;;
+            zh) python3 trail_voices.py "${ARGS[@]}" --dry --lang zh ;;
+            *)  python3 trail_voices.py "${ARGS[@]}" --dry
+                python3 trail_voices.py "${ARGS[@]}" --dry --lang zh ;;
           esac
 
       - name: Record
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          TRAIL_ID: ${{ inputs.trail }}
         run: |
-          FORCE=""
-          [ "${{ inputs.force }}" = "true" ] && FORCE="--force"
+          ARGS=(--trail "$TRAIL_ID")
+          [ "${{ inputs.force }}" = "true" ] && ARGS+=(--force)
           case "${{ inputs.language }}" in
-            en) python3 trail_voices.py $FORCE ;;
-            zh) python3 trail_voices.py --lang zh $FORCE ;;
-            *)  python3 trail_voices.py $FORCE
-                python3 trail_voices.py --lang zh $FORCE ;;
+            en) python3 trail_voices.py "${ARGS[@]}" ;;
+            zh) python3 trail_voices.py "${ARGS[@]}" --lang zh ;;
+            *)  python3 trail_voices.py "${ARGS[@]}"
+                python3 trail_voices.py "${ARGS[@]}" --lang zh ;;
           esac
 
       - name: Commit the audio
+        env:
+          TRAIL_ID: ${{ inputs.trail }}
         run: |
           git config user.name "plateau-recorder"
           git config user.email "actions@users.noreply.github.com"
@@ -90,7 +111,7 @@ jobs:
             exit 0
           fi
           COUNT=$(git diff --cached --name-only | grep -c '\.mp3$' || true)
-          git commit -m "Record Freedom Trail narration ($COUNT audio files)"
+          git commit -m "Record $TRAIL_ID narration ($COUNT audio files)"
           # Land it on top of whatever arrived while recording, then push.
           git pull --rebase origin ${{ github.ref_name }}
           git push origin HEAD:${{ github.ref_name }}
