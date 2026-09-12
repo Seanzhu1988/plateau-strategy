@@ -74,11 +74,23 @@ body[data-gallery-page] header .right a { display: inline-flex; align-items: cen
 .ug-photo-preview img { width: min(100%, 320px); max-height: 300px; object-fit: contain; }
 #ugMain #ugMuseum { width: min(100%, 480px); }
 #ugMain .ug-consent { display: flex; align-items: flex-start; gap: .7rem; max-width: 650px; margin-top: 1rem; line-height: 1.6; }
-#ugMain #ugPhotoConsent { min-height: 20px; height: 20px; width: 20px; flex: 0 0 20px; margin-top: .1rem; accent-color: #1f3a5f; }
+#ugMain .ug-photo-permissions { border: 0; border-top: 1px solid #e6e2da; padding: 1rem 0 0; margin: 1.5rem 0 0; min-width: 0; max-width: 680px; }
+#ugMain .ug-photo-permissions legend { font-size: .95rem; color: #14110c; padding: 0 .6rem 0 0; }
+#ugMain .ug-consent { min-height: 44px; cursor: pointer; }
+#ugMain .ug-consent input { min-height: 20px; height: 20px; width: 20px; flex: 0 0 20px; margin-top: .1rem; accent-color: #1f3a5f; }
+.ug-community-photos { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 1.2rem; max-width: 780px; margin: 1rem 0 0; }
+.ug-community-photo { margin: 0; min-width: 0; }
+.ug-community-photo img { display: block; width: 100%; max-height: 350px; box-sizing: border-box; object-fit: contain; border: 1px solid #e6e2da; padding: .7rem; background: #fff; }
+.ug-community-photo figcaption { font-size: .8rem; color: #6b655b; line-height: 1.6; margin-top: .55rem; }
+.ug-photo-attachment { color: #4a453d; font-size: .85rem; line-height: 1.6; margin-top: .8rem; }
+.ug-photo-attachment.is-error { color: #a3302a; }
+#ugResearch { margin-top: 1rem; }
 .ug-candidates { padding-left: 1.3rem; margin: 1rem 0; }
 .ug-candidates li { padding: .5rem 0 .8rem; border-bottom: 1px solid #e6e2da; }
 .ug-candidates h3 { font-family: inherit; font-size: 1rem; margin: 0 0 .25rem; }
 .ug-candidates p { font-size: .88rem; color: #6b655b; margin: .3rem 0; line-height: 1.6; }
+.ug-photo-alternatives summary { color: #4a453d; font-size: .87rem; min-height: 44px; line-height: 44px; cursor: pointer; }
+.ug-photo-details summary { color: #6b655b; font-size: .87rem; min-height: 44px; line-height: 1.6; padding: .65rem 0; cursor: pointer; }
 .ug-archive-filter { display: flex; align-items: center; gap: .5rem 1rem; flex-wrap: wrap; margin-top: 1rem; }
 .ug-archive-filter a { margin-left: auto; font-size: .85rem; color: #4a453d; min-height: 44px; display: inline-flex; align-items: center; }
 .ug-pagination { display: flex; justify-content: space-between; align-items: center; margin: 1.5rem 0; border-top: 1px solid #e6e2da; padding-top: .7rem; }

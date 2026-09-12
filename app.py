@@ -303,9 +303,12 @@ app = Flask(__name__)
 app.secret_key = _get_secret()
 
 # Phone photos are decoded in memory and may reach the fixed identification
-# provider only after the visitor's explicit consent. No photo is retained.
+# provider only after the visitor's explicit consent. Publishing the clean
+# photo is a separate opt-in, available only after an artifact confirmation.
 from gallery_identify import gallery_identify_bp
+from gallery_photos import gallery_photos_bp
 app.register_blueprint(gallery_identify_bp)
+app.register_blueprint(gallery_photos_bp)
 
 
 # ---------- owner authentication (protects the dispatch control center) ----------
@@ -4985,10 +4988,30 @@ def _gallery_provider(fn, q):
         _GAL_SLOTS.release()
 
 
+def _gallery_result_rank(row, query):
+    """Keep the exact object first; prefer saved stories among relevant peers.
+
+    Applied after live enrichment as a source cache cannot know that another
+    visitor has just written a story. A related story must not displace an
+    exact accession or a more relevant catalogue match.
+    """
+    flat = " ".join(query.lower().split())
+    number = (row.get("item_number") or "").lower().replace(" ", "")
+    if number and number == flat.replace(" ", ""):
+        return (0, 0, 0, 0)
+    title = (row.get("title") or "").lower().strip()
+    artist = (row.get("artist") or "").lower().strip()
+    words = flat.split()
+    hay = title + " " + artist
+    coverage = sum(word in hay for word in words) / max(1, len(words))
+    return (1, -coverage, 0 if flat in (title, artist) else 1,
+            0 if row.get("story_available") else 1)
+
+
 def _gallery_finish(payload, q, lang, cached):
     """Live archive enrichment happens even when source responses are cached."""
     rows = list(payload.get("results") or [])
-    rows.extend(gallery_archive.search_known(q))
+    rows.extend(gallery_archive.search_known(q, lang=lang))
     if request.args.get("discover") == "0":
         # Camera suggestions are transient source candidates. Only the
         # visitor's explicit confirmation can put a new one in the archive.
@@ -5010,11 +5033,11 @@ def _gallery_finish(payload, q, lang, cached):
                                        confirmed=False, new_discovery=False, written=False,
                                        story_available=False, has_narrative=False, story_languages=[],
                                        story_url=None, provenance=None))
-            if len(candidates) >= 16:
-                break
-        return jsonify({**payload, "results": candidates, "ok": True, "cached": cached,
+        candidates.sort(key=lambda row: _gallery_result_rank(row, q))
+        return jsonify({**payload, "results": candidates[:16], "ok": True, "cached": cached,
                         "lang": lang, "can_generate": _gallery_can_generate(), "new_discoveries": 0})
     enriched = gallery_archive.enrich(rows, q, lang)
+    enriched["results"].sort(key=lambda row: _gallery_result_rank(row, q))
     enriched["results"] = enriched["results"][:16]
     return jsonify({**payload, **enriched, "ok": True, "cached": cached,
                     "lang": lang, "can_generate": _gallery_can_generate()})
@@ -5367,12 +5390,7 @@ def _gal_wikidata(q, limit=8):
 
 @app.route("/api/gallery/search")
 def api_gallery_search():
-    """Search every collection we can reach, by name or by item number.
-
-    The museums are asked in parallel would be nicer; they are asked in turn
-    because two sources is not slow and a thread pool here would be the most
-    complicated part of the file for no gain. Cached for an hour: these
-    collections change on the timescale of exhibitions, not seconds."""
+    """Search saved artifacts first on request, or bounded parallel catalogues."""
     q = (request.args.get("q") or "").strip()[:80]
     lang = (request.args.get("lang") or "en").strip().lower()
     if lang not in _LANGS.CODES:
@@ -5380,6 +5398,17 @@ def api_gallery_search():
     learn = request.args.get("discover") != "0"
     if len(q) < 2:
         return jsonify({"ok": False, "error": "Type at least two characters.", "results": []})
+    if request.args.get("scope") == "archive":
+        # A camera hypothesis checks our actual saved collection before any
+        # museum lookup. This read never memorializes an unconfirmed guess.
+        rows = [gallery_archive.get_artifact(row["artifact_id"], lang)
+                for row in gallery_archive.search_known(q, lang=lang)]
+        rows = sorted((row for row in rows if row),
+                      key=lambda row: _gallery_result_rank(row, q))
+        return jsonify({"ok": True, "query": q, "scope": "archive",
+                        "results": rows[:16], "sources": ["Saved artifact archive"],
+                        "lang": lang, "can_generate": _gallery_can_generate(),
+                        "new_discoveries": 0, "cached": True, "partial": False})
     ck = q.lower()
     hit = _GAL_CACHE.get(ck)
     if hit and time.time() - hit[0] < 3600:
@@ -5406,7 +5435,7 @@ def api_gallery_search():
         except Exception:
             pass
         return _gallery_finish(dict(hit[1]), q, lang, True)
-    results = gallery_archive.search_known(q)
+    results = gallery_archive.search_known(q, lang=lang)
     exact = [r for r in results if (r.get("item_number") or "").lower().replace(" ", "") == q.lower().replace(" ", "")]
     if exact:
         return _gallery_finish({"query": q, "results": exact, "sources": ["Saved artifact archive"]}, q, lang, True)
@@ -5686,7 +5715,57 @@ def api_gallery_discover():
     artifact = gallery_archive.confirm(artifact_id, lang)
     if not artifact:
         return jsonify({"ok": False, "reason": "not_found"}), 404
-    return jsonify({"ok": True, "saved": True, "artifact": artifact})
+    from itsdangerous import URLSafeTimedSerializer
+    attachment_token = URLSafeTimedSerializer(
+        app.secret_key, salt="gallery-photo-attachment-v1").dumps({"artifact_id": artifact_id})
+    response = jsonify({"ok": True, "saved": True, "artifact": artifact,
+                        "can_generate": _gallery_can_generate(),
+                        "writing_status": artifact.get("writing_status", "pending"),
+                        "attachment_token": attachment_token})
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.route("/api/gallery/research", methods=["POST"])
+def api_gallery_research():
+    """Keep volunteered identification clues privately, never as proven facts."""
+    if request.content_length and request.content_length > 16384:
+        return jsonify({"ok": False, "reason": "too_large"}), 413
+    if not request.is_json:
+        return jsonify({"ok": False, "reason": "need_clues"}), 400
+    raw = request.stream.read(16385)
+    if len(raw) > 16384:
+        return jsonify({"ok": False, "reason": "too_large"}), 413
+    from gallery_identify import _client_ip
+    if not gallery_archive.allow_research_attempt(_client_ip()):
+        response = jsonify({"ok": False, "reason": "rate_limited",
+                            "message": "You have saved several discoveries. Please try again later."})
+        response.status_code = 429
+        response.headers["Retry-After"] = "3600"
+        response.headers["Cache-Control"] = "no-store"
+        return response
+    try:
+        data = json.loads(raw)
+    except (ValueError, UnicodeDecodeError):
+        return jsonify({"ok": False, "reason": "need_clues"}), 400
+    if not isinstance(data, dict):
+        return jsonify({"ok": False, "reason": "need_clues"}), 400
+    lang = data.get("lang", "en")
+    if not isinstance(lang, str) or lang not in _LANGS.CODES:
+        return jsonify({"ok": False, "reason": "unsupported_language"}), 400
+    try:
+        saved = gallery_archive.save_research(
+            data.get("query", ""), data.get("museum", ""), lang,
+            data.get("candidate_clues"), data.get("label_text", ""))
+    except ValueError:
+        return jsonify({"ok": False, "reason": "need_clues",
+                        "message": "Add an artifact name or a few words from its label."}), 400
+    except gallery_archive.ResearchQueueFull:
+        return jsonify({"ok": False, "reason": "queue_full",
+                        "message": "The research queue is full for now. Please try again later."}), 503
+    response = jsonify({"ok": True, **saved})
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 @app.route("/api/gallery/narrative/<path:key>")

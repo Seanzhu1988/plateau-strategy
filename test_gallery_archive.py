@@ -6,6 +6,7 @@ from pathlib import Path
 import tempfile
 import threading
 import time
+import types
 import unittest
 from unittest.mock import patch
 
@@ -103,6 +104,62 @@ class ArchiveTests(unittest.TestCase):
         self.assertEqual(second["text"], STORY.strip())
         self.requests.post.assert_called_once()
         self.assertEqual(archive.queue_status()["counts"]["complete"], 1)
+
+    def test_confirm_queues_requested_language_and_only_real_text_is_written(self):
+        a = archive.enrich([FACTS])["results"][0]["artifact_id"]
+        pending = archive.confirm(a, "zh")
+        self.assertFalse(pending["written"])
+        self.assertEqual(pending["writing_status"], "pending")
+        archive.confirm(a, "zh")
+        self.assertEqual({r["lang"] for r in archive.queue_status()["items"]}, {"en", "zh"})
+        self.assertEqual(len(archive.queue_status()["items"]), 2)
+        self.save_story(a, "zh")
+        saved = archive.confirm(a, "zh")
+        self.assertTrue(saved["written"])
+        self.assertEqual(saved["writing_status"], "complete")
+        with self.assertRaises(ValueError):
+            archive.confirm(a, "invalid")
+        self.assertIsNone(archive.confirm("a_nonexistent", "en"))
+
+    def test_confirmed_language_precedes_background_english_and_failed_text_retries(self):
+        a = archive.enrich([FACTS])["results"][0]["artifact_id"]
+        archive.confirm(a, "zh")
+        with patch.object(reader, "available", return_value=True), \
+                patch.object(reader, "read_for", return_value={"text": "Not persisted"}) as called:
+            outcome = archive.process_next()
+        self.assertEqual(called.call_args.args[1], "zh")
+        self.assertEqual(outcome["status"], "retry")
+        self.assertEqual(archive.get_artifact(a, "zh")["writing_status"], "retry")
+        self.assertFalse(archive.get_artifact(a, "zh")["written"])
+
+    def test_existing_requested_story_does_not_add_work(self):
+        a = archive.remember(FACTS)["artifact_id"]
+        self.save_story(a, "zh")
+        self.assertEqual(archive.confirm(a, "zh")["writing_status"], "complete")
+        self.assertEqual(archive.queue_status()["items"], [])
+
+    def test_photo_attachments_are_separate_from_official_image(self):
+        a = archive.remember(dict(FACTS, image="https://museum.example/official.jpg"))["artifact_id"]
+        visitor = {"url": "/api/gallery/photos/p_example", "kind": "visitor_photo", "label": "Visitor photograph"}
+        module = types.SimpleNamespace(list_photos=lambda artifact_id: [visitor])
+        with patch.dict("sys.modules", {"gallery_photos": module}):
+            artifact = archive.get_artifact(a)
+        self.assertEqual(artifact["community_photos"], [visitor])
+        self.assertEqual(artifact["image"], "https://museum.example/official.jpg")
+        def offline(artifact_id):
+            raise OSError("Photo storage unavailable")
+        module.list_photos = offline
+        with patch.dict("sys.modules", {"gallery_photos": module}):
+            self.assertEqual(archive.get_artifact(a)["community_photos"], [])
+
+    def test_known_search_promotes_selected_language_story_not_wrong_accession(self):
+        a = archive.remember(FACTS)["artifact_id"]
+        b = archive.remember(dict(FACTS, item_number="2020.16", source_object_id="16",
+                                  source_url="https://museum.example/objects/16"))["artifact_id"]
+        self.save_story(a, "zh")
+        self.assertEqual(archive.search_known("Bronze vessel", lang="zh")[0]["artifact_id"], a)
+        archive.enrich([archive.get_artifact(a)], "2020.16")
+        self.assertEqual(archive.search_known("2020.16", lang="zh")[0]["artifact_id"], b)
 
     def test_saved_facts_story_and_private_demand(self):
         first = archive.enrich([FACTS], "my private query")

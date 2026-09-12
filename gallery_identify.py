@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Photo search hypotheses with visitor consent and no photo storage.
+"""Photo search hypotheses with visitor consent and no identification storage.
 
 The site owner approved Anthropic photo identification with explicit visitor
-consent, metadata removal and no photo saved by this site. The frontend must
-explain the provider and obtain agreement before sending CONSENT_VERSION.
+consent and metadata removal. This identification endpoint saves no photo.
+The frontend must explain the provider and obtain agreement before sending
+CONSENT_VERSION. A separate permission and confirmed collection match are
+required for the optional gallery_photos publication endpoint.
 Collection-source search and visitor confirmation follow this step. A vision
 hypothesis never creates an archive item or publishes a story.
 

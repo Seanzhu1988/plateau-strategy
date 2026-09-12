@@ -15,7 +15,7 @@
   <link rel="manifest" href="/site.webmanifest">
   <link rel="stylesheet" href="/paper.css">
   <link rel="stylesheet" href="/modern.css">
-  <link rel="stylesheet" href="/gallery-ui.css?v=2">
+  <link rel="stylesheet" href="/gallery-ui.css?v=3">
   <script src="/psx-net.js"></script>
 </head>
 <body data-gallery-page="search">
@@ -45,20 +45,27 @@
     </div>
     <section id="ugPhotoPanel" class="ug-photo-panel" aria-labelledby="ugPhotoHeading" hidden>
       <div class="ug-section-heading"><h2 id="ugPhotoHeading" data-ug-text="photoHeading">What are you looking at?</h2><button id="ugPhotoClose" type="button" data-ug-text="close">Close</button></div>
-      <p data-ug-text="photoIntro">Photograph the object or its museum label. We will suggest possible matches for you to check against the collection.</p>
+      <p data-ug-text="photoIntro">Take a photo, check the match, discover its story.</p>
       <form id="ugPhotoForm">
         <div class="ug-photo-choices">
-          <label class="ug-file-control" for="ugCamera"><span data-ug-text="camera">Take a photograph</span><input id="ugCamera" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"></label>
-          <label class="ug-file-control" for="ugUpload"><span data-ug-text="choosePhoto">Choose a photograph</span><input id="ugUpload" type="file" accept="image/jpeg,image/png,image/webp"></label>
+          <input id="ugCamera" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden>
+          <label class="ug-file-control" for="ugUpload"><span data-ug-text="choosePhoto">Take or choose a photo</span><input id="ugUpload" type="file" accept="image/jpeg,image/png,image/webp"></label>
         </div>
         <div id="ugPhotoPreview" class="ug-photo-preview" hidden><img id="ugPreviewImage" alt="Your photograph for identification"><button id="ugPhotoRemove" type="button" data-ug-text="removePhoto">Remove photograph</button></div>
-        <label for="ugMuseum" data-ug-text="museumHint">Museum or location, if you know it</label>
-        <input id="ugMuseum" type="text" maxlength="160" autocomplete="off" placeholder="Optional">
-        <label class="ug-consent" for="ugPhotoConsent"><input id="ugPhotoConsent" type="checkbox"><span data-ug-text="photoConsent">I agree to send this photo and the details I enter to Anthropic for artifact identification. The site removes photo metadata and does not save the photo.</span></label>
-        <div class="ug-actions"><button id="ugIdentify" type="submit" class="ug-primary" disabled data-ug-text="identify">Find possible matches</button></div>
-        <p class="ug-note" data-ug-text="photoPrivacy">Your photograph is sent for identification. It is not published or added to the archive. Only an object you confirm can become a discovery.</p>
+        <details class="ug-photo-details"><summary data-ug-text="addDetails">Add a museum or location (optional)</summary>
+          <label for="ugMuseum" data-ug-text="museumHint">Museum or location, if you know it</label>
+          <input id="ugMuseum" type="text" maxlength="160" autocomplete="off" placeholder="Optional">
+        </details>
+        <fieldset class="ug-photo-permissions">
+          <legend data-ug-text="photoPermissions">Photo permissions</legend>
+          <label class="ug-consent" for="ugPhotoConsent"><input id="ugPhotoConsent" type="checkbox"><span data-ug-text="photoConsent">Send my photo and the details I enter to Anthropic to identify the artwork.</span></label>
+          <label class="ug-consent" for="ugPhotoPublish"><input id="ugPhotoPublish" type="checkbox"><span data-ug-text="photoPublish">Optional: Share my photo with this artifact. I have permission to publish the photo and artwork.</span></label>
+        </fieldset>
+        <div class="ug-actions"><button id="ugIdentify" type="submit" class="ug-primary" disabled data-ug-text="identify">Search with this photo</button></div>
+        <p class="ug-note" data-ug-text="photoPrivacy">Shared only after you confirm the match. Please exclude people or private details. Photo metadata is removed.</p>
         <p id="ugPhotoStatus" class="ug-status" role="status" aria-live="polite"></p>
         <div id="ugCandidates"></div>
+        <button id="ugPhotoText" type="button" data-ug-text="textInstead">Use text search instead</button>
       </form>
     </section>
     <p id="ugStatus" class="ug-status" role="status" aria-live="polite" aria-atomic="true"></p>
@@ -67,6 +74,7 @@
       <h2 data-ug-text="noMatch">No matching object yet</h2>
       <p data-ug-text="noMatchHelp">Try the title or accession number exactly as it appears on the label. A photograph of the label can help when the name is difficult to read.</p>
       <button type="button" id="ugEmptyPhoto" data-ug-text="photoSearch">Search with a photograph</button>
+      <div id="ugResearch" hidden><button type="button" id="ugResearchSave" data-ug-text="research">Not found? Save for research</button><p id="ugResearchStatus" class="ug-status" role="status" aria-live="polite"></p></div>
     </div>
     <div id="ugWelcome" class="ug-welcome">
       <p data-ug-text="welcome">Our stories stay with the objects. When you find an artwork we have written about, look for “Provided by us” beside it.</p>
@@ -75,6 +83,6 @@
     <footer class="ug-foot"><p data-ug-text="sourceNote">Collection records belong to their museums. Our stories are separately credited, with AI assistance identified where used.</p><a href="/gallery-guides" data-ug-text="browseGuides">Explore our museum guides</a></footer>
   </main>
   <script src="/i18n.js"></script>
-  <script src="/gallery-ui.js?v=2" defer></script>
+  <script src="/gallery-ui.js?v=3" defer></script>
 </body>
 </html>

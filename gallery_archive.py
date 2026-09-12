@@ -6,15 +6,19 @@ archive and paid generation reservations across threads and web workers.
 """
 import contextlib
 import hashlib
+import hmac
 import json
 import os
 import re
+import secrets
 import sqlite3
 import time
 import unicodedata
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+import languages
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+RESEARCH_LIMIT = 1000
 FIELDS = {
     "title": 400, "artist": 400, "date": 120, "museum": 240,
     "source": 240, "item_number": 160, "where": 300, "city": 160,
@@ -147,6 +151,21 @@ def database():
             status TEXT NOT NULL DEFAULT 'pending', attempts INTEGER NOT NULL DEFAULT 0,
             next_attempt REAL NOT NULL DEFAULT 0, last_reason TEXT NOT NULL DEFAULT '',
             created REAL NOT NULL, PRIMARY KEY(artifact_id, lang));
+          CREATE TABLE IF NOT EXISTS writing_requests (
+            artifact_id TEXT NOT NULL REFERENCES artifacts(id), lang TEXT NOT NULL,
+            requested_at REAL NOT NULL, PRIMARY KEY(artifact_id, lang));
+          CREATE TABLE IF NOT EXISTS research_queue (
+            id TEXT PRIMARY KEY, dedupe_key TEXT NOT NULL UNIQUE,
+            query TEXT NOT NULL, museum TEXT NOT NULL, languages TEXT NOT NULL,
+            clues TEXT NOT NULL, label_text TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'needs_research',
+            first_seen REAL NOT NULL, last_seen REAL NOT NULL,
+            sightings INTEGER NOT NULL DEFAULT 1);
+          CREATE TABLE IF NOT EXISTS research_settings (
+            name TEXT PRIMARY KEY, value TEXT NOT NULL);
+          CREATE TABLE IF NOT EXISTS research_usage (
+            hour INTEGER NOT NULL, client_hash TEXT NOT NULL,
+            attempted INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(hour,client_hash));
           CREATE TABLE IF NOT EXISTS worker_state (name TEXT PRIMARY KEY, until REAL NOT NULL);
         """)
         yield db
@@ -353,10 +372,22 @@ def _artifact(db, artifact_id, lang):
     stories = db.execute("SELECT lang,kind,model,minutes,updated FROM stories WHERE artifact_id=?",
                          (artifact_id,)).fetchall()
     story = next((s for s in stories if s["lang"] == lang), None)
+    queued = db.execute("SELECT status FROM writing_queue WHERE artifact_id=? AND lang=?",
+                        (artifact_id, lang)).fetchone()
+    community_photos = []
+    try:
+        import gallery_photos
+        community_photos = gallery_photos.list_photos(artifact_id)
+    except (ImportError, OSError, sqlite3.Error):
+        # A missing optional photo module or unavailable image store must not
+        # prevent visitors from reading the original catalogue and its story.
+        pass
     return dict(facts, artifact_id=artifact_id, first_discovered_at=row["first_seen"],
                 last_seen_at=row["last_seen"], discovery_status="remembered", new_discovery=False,
                 written=bool(story), story_available=bool(story), has_narrative=bool(story),
                 story_languages=[s["lang"] for s in stories],
+                writing_status="complete" if story else (queued[0] if queued else "not_queued"),
+                community_photos=community_photos,
                 story_url="/api/gallery/artifacts/%s/story?lang=%s" % (artifact_id, lang) if story else None,
                 artifact_url="/universal-gallery/artifacts/" + artifact_id,
                 provenance=provenance(story) if story else None,
@@ -457,7 +488,7 @@ def enrich(rows, q="", lang="en", count=True):
     return {"results": out, "stats": stats, "new_discoveries": sum(r["new_discovery"] for r in out)}
 
 
-def search_known(q, limit=16):
+def search_known(q, limit=16, lang="en"):
     sync_sources()
     q = normalize(q)[:80]
     tokens = q.split()[:8]
@@ -468,8 +499,11 @@ def search_known(q, limit=16):
         where = " AND ".join("instr(search_text,?)>0" for _ in tokens)
         rows = db.execute("SELECT DISTINCT a.id FROM artifacts a LEFT JOIN query_artifacts qa "
                           "ON qa.artifact_id=a.id AND qa.query=? WHERE (" + where + ") OR qa.query=? "
-                          "ORDER BY demand_count DESC,last_seen DESC LIMIT ?", [q] + tokens + [q, limit]).fetchall()
-        return [_artifact(db, row[0], "en") for row in rows]
+                          "ORDER BY CASE WHEN a.accession=? THEN 0 ELSE 1 END, "
+                          "EXISTS(SELECT 1 FROM stories s WHERE s.artifact_id=a.id AND s.lang=?) DESC, "
+                          "demand_count DESC,last_seen DESC LIMIT ?",
+                          [q] + tokens + [q, q, lang, max(1, min(int(limit), 100))]).fetchall()
+        return [_artifact(db, row[0], lang) for row in rows]
 
 
 def archive(q="", lang="en", page=1, per_page=24):
@@ -489,10 +523,114 @@ def archive(q="", lang="en", page=1, per_page=24):
 
 
 def confirm(artifact_id, lang="en"):
+    if lang not in languages.CODES:
+        raise ValueError("Unsupported story language")
     sync_sources()
     with database() as db:
+        db.execute("BEGIN IMMEDIATE")
+        if not db.execute("SELECT 1 FROM artifacts WHERE id=?", (artifact_id,)).fetchone():
+            return None
         db.execute("UPDATE artifacts SET confirmed_count=confirmed_count+1,last_seen=? WHERE id=?", (time.time(), artifact_id))
+        if not db.execute("SELECT 1 FROM stories WHERE artifact_id=? AND lang=?", (artifact_id, lang)).fetchone():
+            now = time.time()
+            db.execute("INSERT INTO writing_queue(artifact_id,lang,created) VALUES(?,?,?) "
+                       "ON CONFLICT(artifact_id,lang) DO UPDATE SET status=CASE "
+                       "WHEN status='complete' THEN 'pending' ELSE status END", (artifact_id, lang, now))
+            db.execute("INSERT OR IGNORE INTO writing_requests VALUES(?,?,?)", (artifact_id, lang, now))
         return _artifact(db, artifact_id, lang)
+
+
+class ResearchQueueFull(Exception):
+    """Keep existing discoveries intact when the private research inbox is full."""
+
+
+def allow_research_attempt(client_address):
+    """Count every attempt, including invalid bodies, without retaining an IP.
+
+    The server's secret salt and hour form an unlinkable per-hour client key.
+    Old counters expire after 24 hours, and transactions prevent racing limits.
+    """
+    try:
+        limit = max(1, min(int(os.environ.get("GALLERY_RESEARCH_HOURLY_LIMIT", "12")), 1000))
+    except (TypeError, ValueError):
+        limit = 12
+    hour = int(time.time() // 3600)
+    address = str(client_address or "unknown")[:256]
+    with database() as db:
+        db.execute("BEGIN IMMEDIATE")
+        db.execute("INSERT OR IGNORE INTO research_settings VALUES('client_salt',?)", (secrets.token_hex(32),))
+        salt = db.execute("SELECT value FROM research_settings WHERE name='client_salt'").fetchone()[0]
+        client_hash = hmac.new(salt.encode(), (str(hour) + "|" + address).encode(), hashlib.sha256).hexdigest()
+        db.execute("DELETE FROM research_usage WHERE hour<=?", (hour - 24,))
+        row = db.execute("SELECT attempted FROM research_usage WHERE hour=? AND client_hash=?",
+                         (hour, client_hash)).fetchone()
+        attempted = row[0] if row else 0
+        db.execute("INSERT INTO research_usage VALUES(?,?,1) ON CONFLICT(hour,client_hash) "
+                   "DO UPDATE SET attempted=MIN(attempted+1,?)", (hour, client_hash, limit + 1))
+        return attempted < limit
+
+
+def _research_text(value, limit):
+    if not isinstance(value, str):
+        return ""
+    value = unicodedata.normalize("NFKC", value[:limit * 2])
+    value = "".join(c for c in value if c in "\n\t" or not unicodedata.category(c).startswith("C"))
+    value = re.sub(r"[<>]", "", value).replace("\u2014", ",").replace("\u2013", ",")
+    return " ".join(value.split())[:limit]
+
+
+def save_research(query, museum="", lang="en", candidate_clues=None, label_text=""):
+    """Keep unverified textual clues privately, never publish an invented work.
+
+    No photographs, file names, source URLs or visitor identifiers are accepted.
+    Repeat submissions update demand and requested languages, not public facts.
+    """
+    if lang not in languages.CODES:
+        raise ValueError("Unsupported story language")
+    query, museum = _research_text(query, 240), _research_text(museum, 240)
+    label_text = _research_text(label_text, 1200)
+    fields = {"title": 240, "artist": 240, "museum": 240, "item_number": 160,
+              "query": 240, "confidence": 20, "reason": 500}
+    clues = []
+    for clue in (candidate_clues if isinstance(candidate_clues, list) else [])[:3]:
+        if not isinstance(clue, dict):
+            continue
+        clean = {key: _research_text(clue.get(key), limit) for key, limit in fields.items()}
+        clean = {key: value for key, value in clean.items() if value}
+        if clean.get("confidence") not in (None, "low", "medium", "high"):
+            clean.pop("confidence", None)
+        if any(clean.get(key) for key in ("title", "query", "item_number")):
+            clues.append(clean)
+    if not query:
+        query = next((c.get("query") or " ".join(c.get(k, "") for k in
+                     ("title", "artist", "item_number")).strip() for c in clues), "")[:240]
+    if not query:
+        query = label_text[:240]
+    if len(normalize(query)) < 2:
+        raise ValueError("Add an artifact name, label text, or useful search clue")
+    if not museum:
+        museum = next((c["museum"] for c in clues if c.get("museum")), "")
+    key = normalize(query) + "|" + institution(museum)
+    research_id = "r_" + hashlib.sha256(key.encode()).hexdigest()[:24]
+    now = time.time()
+    with database() as db:
+        db.execute("BEGIN IMMEDIATE")
+        previous = db.execute("SELECT * FROM research_queue WHERE dedupe_key=?", (key,)).fetchone()
+        if previous:
+            requested = list(dict.fromkeys(json.loads(previous["languages"]) + [lang]))
+            db.execute("UPDATE research_queue SET last_seen=?,sightings=sightings+1,languages=? WHERE id=?",
+                       (now, json.dumps(requested), previous["id"]))
+            research_id, duplicate = previous["id"], True
+        else:
+            if db.execute("SELECT COUNT(*) FROM research_queue").fetchone()[0] >= RESEARCH_LIMIT:
+                raise ResearchQueueFull("The research inbox is full. Please try again later")
+            db.execute("INSERT INTO research_queue(id,dedupe_key,query,museum,languages,clues,label_text,"
+                       "first_seen,last_seen) VALUES(?,?,?,?,?,?,?,?,?)",
+                       (research_id, key, query, museum, json.dumps([lang]),
+                        json.dumps(clues, ensure_ascii=False), label_text, now, now))
+            duplicate = False
+    return {"id": research_id, "status": "needs_research", "saved": True, "duplicate": duplicate,
+            "message": "Saved for research. The artifact has not been verified and no story has been published."}
 
 
 def reserve(artifact_id, lang, cap):
@@ -531,16 +669,25 @@ def finish(artifact_id, lang, token, text=None, minutes=3, model=""):
 
 
 def queue_status(limit=30):
-    """Owner-only operational view. No raw search text or visitor identities."""
+    """Owner-only inbox with submitted research clues, never visitor identities."""
     sync_sources()
     with database() as db:
         counts = {row[0]: row[1] for row in db.execute("SELECT status,COUNT(*) FROM writing_queue GROUP BY status")}
         rows = db.execute("SELECT q.*,a.facts FROM writing_queue q JOIN artifacts a ON a.id=q.artifact_id "
                           "ORDER BY q.created DESC LIMIT ?", (max(1, min(limit, 100)),)).fetchall()
+        research_counts = {row[0]: row[1] for row in db.execute("SELECT status,COUNT(*) FROM research_queue GROUP BY status")}
+        research_rows = db.execute("SELECT * FROM research_queue ORDER BY last_seen DESC,id LIMIT ?",
+                                   (max(1, min(limit, 100)),)).fetchall()
         return {"counts": counts, "items": [{"artifact_id": r["artifact_id"],
                 "title": json.loads(r["facts"]).get("title"), "lang": r["lang"],
                 "status": r["status"], "attempts": r["attempts"], "last_reason": r["last_reason"],
-                "next_attempt": r["next_attempt"]} for r in rows]}
+                "next_attempt": r["next_attempt"]} for r in rows],
+                "research": {"counts": research_counts, "capacity": RESEARCH_LIMIT,
+                    "items": [{"id": r["id"], "status": r["status"], "query": r["query"],
+                               "museum": r["museum"], "languages": json.loads(r["languages"]),
+                               "candidate_clues": json.loads(r["clues"]), "label_text": r["label_text"],
+                               "first_seen": r["first_seen"], "last_seen": r["last_seen"],
+                               "sightings": r["sightings"]} for r in research_rows]}}
 
 
 def process_next():
@@ -565,8 +712,10 @@ def process_next():
         db.execute("UPDATE writing_queue SET status='complete' WHERE EXISTS "
                    "(SELECT 1 FROM stories s WHERE s.artifact_id=writing_queue.artifact_id AND s.lang=writing_queue.lang)")
         job = db.execute("SELECT q.* FROM writing_queue q JOIN artifacts a ON a.id=q.artifact_id "
+                         "LEFT JOIN writing_requests r ON r.artifact_id=q.artifact_id AND r.lang=q.lang "
                          "WHERE q.status IN ('pending','retry') AND q.next_attempt<=? "
-                         "ORDER BY a.confirmed_count DESC,a.demand_count DESC,q.created LIMIT 1", (now,)).fetchone()
+                         "ORDER BY CASE WHEN r.requested_at IS NOT NULL THEN 0 ELSE 1 END, "
+                         "a.confirmed_count DESC,r.requested_at,a.demand_count DESC,q.created LIMIT 1", (now,)).fetchone()
         if not job:
             return {"status": "idle"}
         artifact_id, lang = job["artifact_id"], job["lang"]
@@ -578,12 +727,17 @@ def process_next():
         result = gallery_reader.read_for(facts, lang)
     except Exception:
         result = {"reason": "failed"}
-    success = bool(result and result.get("text"))
-    reason = "" if success else (result or {}).get("reason", "failed")
     attempts = job["attempts"] + 1
-    status = "complete" if success else "retry"
-    delay = 86400 if reason == "monthly_limit" else min(86400, 3600 * 2 ** min(attempts, 5))
     with database() as db:
+        db.execute("BEGIN IMMEDIATE")
+        # Only durable text completes a job. A response lost before saving is
+        # retryable, and a concurrent successful visitor request wins a race
+        # against this worker's failed or in-progress response.
+        success = bool(db.execute("SELECT 1 FROM stories WHERE artifact_id=? AND lang=?",
+                                  (artifact_id, lang)).fetchone())
+        reason = "" if success else (result or {}).get("reason", "failed")
+        status = "complete" if success else "retry"
+        delay = 86400 if reason == "monthly_limit" else min(86400, 3600 * 2 ** min(attempts, 5))
         db.execute("UPDATE writing_queue SET status=?,last_reason=?,next_attempt=? WHERE artifact_id=? AND lang=?",
                    (status, reason, time.time()+delay, artifact_id, lang))
     return {"status": status, "artifact_id": artifact_id, "reason": reason}
