@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>New York City 3D models · Bridge, Empire State and St John the Divine</title>
-<meta name="description" content="Three New York landmarks as models you can turn: the Brooklyn Bridge, Empire State Building, and Cathedral of St John the Divine with Greg Wyatt's Peace Fountain.">
+<meta name="description" content="Three New York landmarks as models you can turn: the Brooklyn Bridge, Empire State Building, and Cathedral of St John the Divine.">
     <!-- Social preview. Without these a shared link shows as a bare URL
          with no image or title, which is most of the click-through gone.
          og:image is the site card, which is live and 70KB. -->
@@ -12,11 +12,11 @@
     <meta property="og:site_name" content="Plateau Strategy Solution Lab">
     <meta property="og:url" content="https://plateaustrategy.io/landmarks">
     <meta property="og:title" content="New York City 3D models">
-    <meta property="og:description" content="The Brooklyn Bridge, Empire State Building, and Cathedral of St John the Divine with the Peace Fountain as models you can turn.">
+    <meta property="og:description" content="The Brooklyn Bridge, Empire State Building, and Cathedral of St John the Divine as models you can turn.">
     <meta property="og:image" content="https://plateaustrategy.io/share-card.jpg">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="New York City 3D models">
-    <meta name="twitter:description" content="The Brooklyn Bridge, Empire State Building, and Cathedral of St John the Divine with the Peace Fountain as models you can turn.">
+    <meta name="twitter:description" content="The Brooklyn Bridge, Empire State Building, and Cathedral of St John the Divine as models you can turn.">
     <meta name="twitter:image" content="https://plateaustrategy.io/share-card.jpg">
 <link rel="canonical" href="https://plateaustrategy.io/landmarks">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -47,15 +47,15 @@
      came out black with 3px corners. Hence !important here as well, kept to
      this one strip by the id. */
   .lm-views { display: flex; gap: .5rem; margin: .55rem 0 0; flex-wrap: wrap; }
-  #bridgeViews .chip, #stjohnViews .chip { font-family: inherit !important; font-size: .82rem !important;
+  #bridgeViews .chip { font-family: inherit !important; font-size: .82rem !important;
      font-weight: 600 !important; line-height: 1 !important;
      border: 1px solid #d8d4cb !important; background: #fff !important;
      color: #4a453d !important; border-radius: 999px !important;
      padding: .55rem .95rem !important; cursor: pointer;
      box-shadow: none !important; text-decoration: none !important;
      -webkit-appearance: none; appearance: none; }
-  #bridgeViews .chip:hover, #stjohnViews .chip:hover { border-color: #1f3a5f !important; color: #14110c !important; }
-  #bridgeViews .chip[aria-pressed="true"], #stjohnViews .chip[aria-pressed="true"] { border-color: #1f3a5f !important;
+  #bridgeViews .chip:hover { border-color: #1f3a5f !important; color: #14110c !important; }
+  #bridgeViews .chip[aria-pressed="true"] { border-color: #1f3a5f !important;
      color: #1f3a5f !important; background: #f3f6fb !important;
      box-shadow: inset 0 0 0 1px #1f3a5f !important; }
   .lm-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -80,7 +80,7 @@
  "@type": "WebPage",
  "name": "New York City 3D models",
  "url": "https://plateaustrategy.io/landmarks",
- "description": "The Brooklyn Bridge, Empire State Building, and Cathedral of St John the Divine with the Peace Fountain as models you can turn, built from published dimensions and clearly identified visual interpretation.",
+ "description": "The Brooklyn Bridge, Empire State Building, and Cathedral of St John the Divine as models you can turn, built from published dimensions and clearly identified visual interpretation.",
  "about": [
   {
    "@type": "TouristAttraction",
@@ -105,7 +105,7 @@
   },
   {
    "@type": "TouristAttraction",
-   "name": "Cathedral Church of Saint John the Divine and Peace Fountain",
+   "name": "Cathedral Church of Saint John the Divine",
    "address": {
     "@type": "PostalAddress",
     "streetAddress": "1047 Amsterdam Avenue",
@@ -221,12 +221,7 @@
     <p class="lm-sub">Begun 1892, still unfinished, and two different buildings
        pretending to be one.</p>
     <div class="lm-stage" id="stjohnStage"></div>
-    <div class="lm-views" id="stjohnViews">
-      <button type="button" class="chip" data-stjohn-view="whole" aria-pressed="true">Cathedral and Close</button>
-      <button type="button" class="chip" data-stjohn-view="fountain" aria-pressed="false">Peace Fountain close-up</button>
-    </div>
-    <p class="lm-turn">Drag it to turn, and up or down to tilt. Use the close-up
-       to inspect Michael, the dragon and all nine giraffes.</p>
+    <p class="lm-turn">Drag it to turn, and up or down to tilt.</p>
     <p class="lm-turn">Turn it end to end and watch the arches change. At the
        east end they are round; along the nave they are pointed. That is not a
        drawing style, it is two architects.</p>
@@ -237,7 +232,6 @@
       <div class="lm-fact"><b>1892</b><span>ground broken, and still not finished</span></div>
       <div class="lm-fact"><b>7</b><span>chapels radiating off the east end</span></div>
       <div class="lm-fact"><b>15 weeks</b><span>to build the dome that was meant to be temporary</span></div>
-      <div class="lm-fact"><b>40 ft</b><span>Peace Fountain, Greg Wyatt, 1985</span></div>
     </div>
 
     <div class="lm-know">
@@ -261,11 +255,6 @@
       <p><b>Go and see it in the afternoon.</b> The great rose over the west
          door is forty feet across and holds ten thousand pieces of glass, and
          it faces west, so the late light is what lights it from behind.</p>
-      <p><b>The Peace Fountain belongs in this view.</b> Greg Wyatt's 1985 bronze
-         sets the Archangel Michael above the defeated dragon, surrounded by a
-         double helix, sun and moon, crab, lion and lamb, and nine giraffes.
-         The close-up preserves those named motifs. Its position beside the
-         cathedral is an approximate visual placement, not a surveyed point.</p>
     </div>
 
     <div class="lm-story" id="story-st-john-divine" hidden></div>
@@ -371,22 +360,6 @@
       var v = bridge.view(b.getAttribute('data-view'));
       [].forEach.call(box.querySelectorAll('button[data-view]'), function (o) {
         o.setAttribute('aria-pressed', o.getAttribute('data-view') === v ? 'true' : 'false');
-      });
-    });
-  })();
-
-  /* One cathedral mount, two views: the full site and the sculptural detail.
-     The form scripts load asynchronously, so the handler checks for the
-     mounted model only when a reader presses a button. */
-  (function () {
-    var box = document.getElementById('stjohnViews');
-    if (!box) return;
-    box.addEventListener('click', function (e) {
-      var b = e.target.closest('button[data-stjohn-view]');
-      if (!b || !stjohn || !stjohn.view) return;
-      var v = stjohn.view(b.getAttribute('data-stjohn-view'));
-      [].forEach.call(box.querySelectorAll('button[data-stjohn-view]'), function (o) {
-        o.setAttribute('aria-pressed', o.getAttribute('data-stjohn-view') === v ? 'true' : 'false');
       });
     });
   })();

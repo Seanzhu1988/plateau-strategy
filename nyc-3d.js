@@ -1059,8 +1059,7 @@
      until 0.81. The ceiling is 0.75, below that on purpose: past about the
      Empire State's 0.75 a 601 ft building flattens into its own plan and
      stops reading as a building, which is the other thing a ceiling is for. */
-  var TILT_CEIL = { span: 0.44, tower: 0.24, empire: 0.75, stjohn: 0.75,
-                    fountain: 0.75 };
+  var TILT_CEIL = { span: 0.44, tower: 0.24, empire: 0.75, stjohn: 0.75 };
 
   var EMPIRE_CAM = function () { return makeCam(-0.7, 0.22, 1, 360, 560); };
 
@@ -1094,10 +1093,6 @@
      drawing sat 51 units left of centre, measured: solid bbox x 93 to 525 in
      a 720 box. Moved by exactly that, not by eye. */
   var STJOHN_CAM = function () { return makeCam(-0.78, 0.17, 1, 411, 400); };
-  /* The close view is fit against the fountain's full idle-turn sweep, not a
-     single flattering angle. At 14.2 every yaw stays inside a 46 px margin in
-     the 720 x 620 stage; 538 keeps the basin and Michael vertically centred. */
-  var STJOHN_FOUNTAIN_CAM = function () { return makeCam(-1.30, 0.15, 14.2, 360, 538); };
   var SCENES = { bridge: bridgeScene, empire: empireScene };
   function sceneFor(k) {
     var EXT = (typeof window !== 'undefined' && window.NYC_FORMS) || {};
@@ -1107,7 +1102,7 @@
   window.NYC3D = {
     scenes: SCENES, scene: sceneFor, renderTo: render,
     cams: { span: BRIDGE_CAMS.span, tower: BRIDGE_CAMS.tower, empire: EMPIRE_CAM,
-            trump: TRUMP_CAM, stjohn: STJOHN_CAM, fountain: STJOHN_FOUNTAIN_CAM },
+            trump: TRUMP_CAM, stjohn: STJOHN_CAM },
     helpers: { face: face, box: box, project: project, shade: shade, normal: normal,
                makeCam: makeCam, C: C, SUN: SUN, PITCH_FLOOR: PITCH_FLOOR, TILT_CEIL: TILT_CEIL },
     bridge: function (host, opts) {
@@ -1132,53 +1127,16 @@
       return mount(host, function () { return sceneFor('trump')({}); },
                    TRUMP_CAM(), TILT_CEIL.empire);
     },
-    /* The cathedral and the Peace Fountain share ONE mount. The whole-site
-       scene uses the 1,994-face context silhouette; the closer view uses the
-       4,209-face inspection LOD. Both static scenes are built once and cached,
-       because rebuilding thousands of faces during every idle-turn frame is
-       the difference between a model and a phone heater. */
+    /* The cathedral remains one mount. The first Peace Fountain study was
+       intentionally withdrawn from the public view after review; it did not
+       meet the realism standard for a sculptural portrait. */
     stjohn: function (host) {
-      if (!(window.NYC_FORMS && window.NYC_FORMS.stjohn &&
-            window.NYC_FORMS.peaceFountain)) return null;
-      var wholeCache = null, fountainCache = null, view = 'whole';
-      function whole() {
-        if (wholeCache) return wholeCache;
-        var church = sceneFor('stjohn')({});
-        var fountain = sceneFor('peaceFountain')({ detail: 'context' });
-        wholeCache = {
-          w: church.w, h: church.h,
-          faces: church.faces.concat(fountain.faces),
-          lines: (church.lines || []).concat(fountain.lines || []),
-          marks: (church.marks || []).concat([{
-            at: fountain.metadata.anchor, fill: C.hi,
-            text: 'Peace Fountain, 1985',
-            sub: 'Greg Wyatt · 40 ft · site position approximate'
-          }])
-        };
-        return wholeCache;
-      }
-      function closeFountain() {
-        if (!fountainCache) {
-          fountainCache = sceneFor('peaceFountain')({ standalone: true, detail: 'site' });
-          fountainCache.marks = [{
-            at: [0, 0, 40 * 0.82], fill: C.hi,
-            text: 'Peace Fountain · 40 ft', sub: 'Greg Wyatt, 1985'
-          }];
-        }
-        return fountainCache;
-      }
-      function builder() { return view === 'fountain' ? closeFountain() : whole(); }
-      var m = mount(host, builder, STJOHN_CAM(), TILT_CEIL.stjohn);
-      m.view = function (v) {
-        v = v === 'fountain' ? 'fountain' : 'whole';
-        if (v === view) return view;
-        view = v;
-        m.retarget(builder,
-          view === 'fountain' ? STJOHN_FOUNTAIN_CAM() : STJOHN_CAM(),
-          view === 'fountain' ? TILT_CEIL.fountain : TILT_CEIL.stjohn);
-        return view;
-      };
-      return m;
+      if (!(window.NYC_FORMS && window.NYC_FORMS.stjohn)) return null;
+      var scene = null;
+      return mount(host, function () {
+        if (!scene) scene = sceneFor('stjohn')({});
+        return scene;
+      }, STJOHN_CAM(), TILT_CEIL.stjohn);
     },
     empire: function (host) {
       /* The builder reads openT live, so the same mount draws the solid and
