@@ -29,12 +29,12 @@
  *   - The crossing carries a TILE DOME that was meant to be temporary. Rafael
  *     Guastavino Jr. built it in fifteen weeks in 1909, without centering or
  *     scaffolding, to roof the crossing until the great steeple could be
- *     raised. The steeple was never raised. The stopgap is still there, and
- *     it is now the most loved thing on the building.
- *   - The WEST TOWERS STOP. St Peter, on the north, stops at 177 ft, level
- *     with the nave roof. St Paul, on the south, reached about 227 ft in the
- *     stonecutting campaign of 1982 to 1992 and stopped there. Both were
- *     designed to go to 266 ft.
+ *     raised. The steeple was never raised. The stopgap is still there, now
+ *     protected by the bronze-hued copper enclosure completed in 2022.
+ *   - The WEST TOWERS STOP. St Peter, on the north, stops at the third
+ *     stage, about 130 ft, below the gable. St Paul, on the south, reached
+ *     about 227 ft in the stonecutting campaign of 1982 to 1992 and stopped
+ *     there. Both were designed to go to 266 ft.
  *   - The SOUTH TRANSEPT was never built.
  *
  * A model that quietly finished the building would be prettier and would be a
@@ -61,6 +61,14 @@
  *     "A Guastavino tile dome, 162 feet high at the apex."
  *     https://vertical-access.com/projects/the-cathedral-church-of-st-john-the-divine-interior/
  * [S] The cathedral itself. https://www.stjohndivine.org/visit/explore-the-cathedral
+ * [C] Cathedral conservation account, 28 September 2021. The existing dome
+ *     was being encased in a bronze-hued copper enclosure after water damage.
+ *     https://www.stjohndivine.org/about/blog/1/posts/280/conserving-a-guastavino-treasure-at-the-cathedral-watch-our-time-lapse-below
+ * [E] Ennead, Cathedral of Saint John the Divine. Batten-seam copper roof;
+ *     project year 2022.
+ *     https://ennead.com/work/cathedral-of-saint-john-the-divine/
+ *   [W]  Wikipedia, Cathedral of St. John the Divine. Tower heights only,
+ *        and not for St Peter (see THE NORTH TOWER).
  *
  * ============================ THE TWO-ERA TRAP ============================
  * TWO complete and authoritative dimension sets exist for this cathedral and
@@ -101,17 +109,18 @@
  *   central aisle              50 ft wide, the width of West 112th Street
  *                              between the building lines                 [L]
  *   nave section               FIVE aisles wide (Cram, after Bourges)     [L]
- *   north tower, St Peter      177 ft (54 m), level with the nave roof   [L]
+ *   north tower, St Peter      "built only to the third stage"          [L]
+ *                              about 130 ft, MEASURED (see THE NORTH TOWER)
  *   south tower, St Paul       about 227 ft (69 m) after the 1982-1992
- *                              stonecutting campaign                     [L]
- *   towers AS DESIGNED         266 ft (81 m)                             [L]
+ *                              stonecutting campaign                     [W]
+ *   towers AS DESIGNED         266 ft (81 m)                             [W]
  *   crossing dome              93 ft spherical shell [Z]; terracotta tile in
  *                              three layers, laid without centering, built
  *                              in 15 weeks in 1909                        [L]
- *   dome, ON THE OUTSIDE       the dome and its pendentives are COVERED
- *                              WITH CEMENT STUCCO. The tile everyone knows
- *                              is the INSIDE of this shell; from the street
- *                              it is rendered, not terracotta.            [L]
+ *   dome, ON THE OUTSIDE       the historic tile shell, once covered with
+ *                              cement stucco, is now protected by a new
+ *                              bronze-hued, batten-seam COPPER enclosure;
+ *                              the conservation project is dated 2022. [L][C][E]
  *   dome apex                  162 ft above the floor. Hall's 1924 guide,
  *                              which is the cathedral's own, states it and in
  *                              the same breath explains the rival figure:
@@ -183,9 +192,17 @@
  *   leaves 3.5 ft of ledge a side, which is what a dome on pendentives does.
  *   Those two numbers were published separately and agree.
  *
- *   THE NORTH TOWER IS THE NAVE ROOF, exactly. St Peter and the nave ridge
- *   are BOTH published at 177 ft, which is why the report says the tower
- *   reaches the roof of the nave. They are drawn at that one height.
+ *   THE NORTH TOWER IS NOT THE NAVE ROOF, and the first build said it was.
+ *   [W] gives St Peter 177 ft, which is the nave ridge's own number, and
+ *   LP-2585, the as-built authority, says the north tower "is built only to
+ *   the third stage". A photograph of the front settles it, scaled by the
+ *   one dimension on that face the report does publish, the 40 ft rose
+ *   (Wikimedia Commons, "Cathedral of Saint John the Divine, New York"):
+ *   the centre gable stands about 177 ft, agreeing with the ridge; St Peter
+ *   about 130, well below the gable; St Paul about 225. So St Peter is drawn
+ *   at 130 and St Paul keeps 227. The one claim the photograph does not
+ *   support is the report's that St Paul rises "to about the same level as
+ *   the peak of the nave's gable": it stands a full stage above it.
  *
  *   ROOF DEPTH. Ridge 177 minus vault 124 = 53 ft between the inside of the
  *   vault and the outside of the ridge. Both operands are published, so the
@@ -214,16 +231,28 @@
  *   - buttress depth and step count
  *   - the depth the chapels project from the ambulatory
  *   - the exact tones. The MATERIALS are now sourced and the colours follow
- *     them: cream Lake Mohegan granite, oxidised standing-seam copper, cement
- *     stucco on the dome, poured concrete on the temporary wall. What is
+ *     them: cream Lake Mohegan granite, oxidised standing-seam copper, the
+ *     dome's newer bronze-hued copper enclosure, and poured concrete on the
+ *     temporary wall. What is
  *     unsourced is the precise hex, not the choice of material. An earlier
  *     draft of this list claimed the roof covering was "not sourced at all",
  *     which stopped being true when the designation report was read.
  * Nothing here is traced from a copyrighted drawing.
  *
  * Coordinates are FEET. Origin at the centre of the crossing, z up from the
- * cathedral floor, +x EAST toward the apse, so the west front is at -x and
- * +y is north.
+ * cathedral floor, +x EAST toward the apse, so the west front is at -x.
+ *
+ * +y IS SOUTH. Not north. The projector in nyc-3d.js is LEFT-HANDED: a
+ * camera standing west of the building and looking east puts +y on the
+ * RIGHT of the screen, where a right-handed world would put it on the left.
+ * With +y drawn as north the whole cathedral came out as its own mirror
+ * image: St Paul's tower, the tall one, which stands on the SOUTH and is on
+ * your RIGHT as you face the front from Amsterdam Avenue, rendered on the
+ * left, and the built north transept rendered on the south. Nobody who has
+ * stood on the avenue would have taken it for the building. Rather than
+ * flip the projector under the two other landmarks that were built on it,
+ * this file writes every asymmetric part with south at +y, and says so here
+ * once so the next reader does not "correct" it back.
  */
 (function () {
   var H = window.NYC3D.helpers, ST = window.STYLES3D, C = H.C;
@@ -234,7 +263,7 @@
     narthexW: 50, naveL: 248, crossL: 100, choirL: 145, apseL: 58,
     frontW: 207, naveW: 146, crossW: 100, choirW: 56, ambW: 14,
     vault: 124, ridge: 177, domeD: 93, domeApex: 162,
-    towerN: 177, towerS: 227, towerDesign: 266, roseD: 40
+    towerN: 130, towerS: 227, towerDesign: 266, roseD: 40
   };
   /* x edges, from the DERIVED block */
   var X_W = -(P.crossL / 2 + P.naveL + P.narthexW);   /* -348, the west face   */
@@ -261,13 +290,12 @@
   var TRIM = { top: '#e8e4db', sun: '#dfdbd1', shade: '#d3cec3' };   /* sills, copings, the lit edge */
   var GLASS = { top: '#4a5560', sun: '#3f4a55', shade: '#36404a' };  /* leaded glass read from outside */
   var DARK = { top: '#5d564c', sun: '#4f4941', shade: '#443f38' };   /* a portal in shadow */
-  /* THE DOME IS NOT ORANGE FROM OUTSIDE. It was drawn terracotta because the
-     Guastavino tile is the famous thing about it, and that was wrong: the LPC
-     records the dome and its pendentives as COVERED WITH CEMENT STUCCO. The
-     tile everybody pictures is the ceiling, seen from the crossing floor. From
-     the street it is a rendered shell, so that is what is drawn, and the tile
-     is named in the caption instead of painted on the outside. */
-  var DOME = { top: '#d6d0c4', sun: '#cbc5b8', shade: '#bdb7a9' };   /* cement stucco [L] */
+  /* THE FAMOUS TILE IS INSIDE. The historic external cement-stucco covering
+     recorded by the LPC is no longer the surface a visitor sees: after water
+     damage, the Cathedral and Ennead enclosed it in a bronze-hued batten-seam
+     copper roof, completed in 2022. Draw the present exterior, not an older
+     photograph or the terracotta underside. */
+  var DOME = { top: '#926e53', sun: '#826048', shade: '#70523e' };   /* 2022 copper enclosure [C][E] */
   var ROOF = { top: '#7d968b', sun: '#719083', shade: '#638275' };   /* standing-seam copper, oxidised [L] */
   var STOP = { top: '#c8c0b2', sun: '#bcb4a6', shade: '#aea697' };   /* stone that stops: raw, unfinished */
   var CONC = { top: '#b9b6b0', sun: '#adaaa4', shade: '#9f9c96' };   /* poured-in-place concrete, the temporary transept walls [L] */
@@ -320,8 +348,16 @@
         var t0 = i / k, t1 = (i + 1) / k;
         var p0 = [a[0] + (b[0] - a[0]) * t0, a[1] + (b[1] - a[1]) * t0];
         var p1 = [a[0] + (b[0] - a[0]) * t1, a[1] + (b[1] - a[1]) * t1];
-        emit([[p0[0], p0[1], z0], [p1[0], p1[1], z0],
-              [p1[0], p1[1], z1], [p0[0], p0[1], z1]], n, mat, fo);
+        /* TALL WALLS ARE CUT IN HEIGHT TOO. A tower face was one 227 ft tile
+           whose centroid sat 40 ft below the lancets on the face behind it,
+           so a back-facing east lancet painted through St Paul's south wall.
+           Only walls taller than two tiles are split. */
+        var kz = (z1 - z0) > 2 * TILE_MAX ? Math.ceil((z1 - z0) / TILE_MAX) : 1;
+        for (var j = 0; j < kz; j++) {
+          var za = z0 + (z1 - z0) * j / kz, zb = z0 + (z1 - z0) * (j + 1) / kz;
+          emit([[p0[0], p0[1], za], [p1[0], p1[1], za],
+                [p1[0], p1[1], zb], [p0[0], p0[1], zb]], n, mat, fo);
+        }
       }
     }
 
@@ -580,6 +616,12 @@
            "except for the easternmost sub-bays, which contain entryways". */
         for (var i = 0; i < 8; i++) {
           var cx = X_NAVE_W + (i + 0.5) * BAY;
+          if (i === 7) {
+            /* "except for the easternmost sub-bays, which contain entryways
+               at floor level" [L]: a door here, not an eighth chapel window */
+            opening(cx, 0, 10, 20, lancetRise(10), { axis: 'x', at: yb }, [0, s, 0], DARK);
+            continue;
+          }
           var pl = opening(cx, 16, 13, 32, lancetRise(13), { axis: 'x', at: yb }, [0, s, 0]);
           tracery(cx, 16, 13, 32, lancetRise(13), null, [0, s, 0], pl);
         }
@@ -655,82 +697,389 @@
     }
 
     /* ===================== 3. THE WEST FRONT, Cram, Gothic =============
-       207 ft wide against the nave's 146, so each tower stands 30.5 ft proud.
-       Three portals, the great rose, and two towers that stop. */
+       207 ft wide against the nave's 146. LP-2585 describes it in FOUR
+       VERTICAL STAGES "divided by heavily-carved moldings": portals; the
+       arcaded gallery; the rose "within a great pointed, blind arch" with the
+       grisaille windows beside it and "slender lancets" piercing "the
+       recessed arches of the towers"; then the stepped central gable and the
+       top of the half-built south tower. Five bays "formed by arched
+       buttresses", one portal each, the portals GABLED, with "compound
+       arches" and "entryways that are recessed behind secondary arches".
+
+       THE FIRST DRAFT DREW NONE OF THAT DEPTH. It laid five dark arch shapes
+       on one flat slab, put a rose on the slab, and stood two thin 30 ft
+       towers at the ends, and it read as a diagram of a church. What makes
+       this front the front is that nothing on it is flat: every portal is a
+       cave under a gable, the rose sits inside an arch you could walk into,
+       and the towers are 52 ft squares with buttresses at their corners.
+       So the portals are now cut as REAL HOLES through a projecting porch,
+       with three stepped orders receding 12 ft to the doors, and the wall
+       is built from pieces around them rather than one face with a dark
+       patch drawn on it. That is the only way a recess can be seen from an
+       angle: a painted-on shadow does not move when the camera does.
+
+       THE BAY GRID, derived. Towers "square in plan" and "flush with the
+       facade" but protruding 30.5 ft past the nave: an outer side aisle
+       (about 21.5 ft, four side aisles sharing 146 - 60) plus the protrusion
+       makes a 52 ft square, which is also the narthex depth to within 2 ft.
+       Two towers take 104 of the 207; the centre bay is the 60 ft nave (LPC:
+       the centre aisle is "the same width as West 112th Street between the
+       building lines"); that leaves 21.5 ft for each aisle bay, which is why
+       the aisle portals are small and their gables narrow, exactly as they
+       are on the avenue. */
     (function westFront() {
-      var yF = P.frontW / 2;                       /* 103.5 */
-      var yN = P.naveW / 2;                        /* 73    */
-      /* the narthex block behind the front */
-      block(X_W, X_NAVE_W, -yN, yN, 0, Z_NAVE_EAVE, STONE);
-      /* the two towers, at their OWN published heights */
-      var towers = [{ s: 1, z: P.towerN, name: 'St Peter' },
-                    { s: -1, z: P.towerS, name: 'St Paul' }];
+      var yF = P.frontW / 2;                       /* 103.5              */
+      var yN = P.naveW / 2;                        /* 73                 */
+      var TW = 52;                                 /* the tower square   */
+      var yT = yF - TW;                            /* 51.5, tower's inner edge */
+      var yC = 30;                                 /* the centre bay, 60 ft */
+      var D = 12;                                  /* portal depth to the doors */
+      var Z1 = 56, Z2 = 80, Z3 = Z_NAVE_EAVE;      /* the stage moldings */
+      var DEEP = { top: '#b8b3a8', sun: '#aca79b', shade: '#9c978c' };  /* stone inside a recess */
+      var TEAK = { top: '#4a3d31', sun: '#40352a', shade: '#362d24' };  /* the Burmese teak doors [L] */
+      var BRONZE = { top: '#5a5040', sun: '#4f4638', shade: '#433b2f' }; /* Barbedienne's bronze pair [L] */
+      var W_BIAS = WALL_BIAS;                      /* every face here sorts by true depth plus this */
+
+      /* ---- a face on the front plane x = X_W, or on any x plane ---- */
+      function faceAt(x, uv, mat, bias) {
+        emit(uv.map(function (q) { return [x, q[0], q[1]]; }), [-1, 0, 0], mat,
+             { bias: bias === undefined ? W_BIAS : bias });
+      }
+      /* the arch profile of a lancet opening: up the left jamb, over, down */
+      function prof(w, spring, n) {
+        var a = w / 2, arc = ST.pointedArch(w, lancetRise(w), n);
+        var pts = [[-a, 0], [-a, spring]];
+        for (var i = 1; i < arc.length; i++) pts.push([arc[i][0], spring + arc[i][1]]);
+        pts.push([a, 0]);
+        return pts;
+      }
+      /* THE STEPPED ORDERS. One band of quads between two profiles: at the
+         SAME x it is a ring (an archivolt face), at two different x it is the
+         reveal that carries one order back to the next. The reveal normals
+         point into the opening, found by testing against the arch axis, so
+         the sunlit jamb and the shaded jamb come out on the right sides. */
+      function band(cy, A, xa, B, xb, mat, ring) {
+        for (var i = 0; i < A.length - 1; i++) {
+          var p0 = A[i], p1 = A[i + 1], q0 = B[i], q1 = B[i + 1];
+          var n;
+          if (ring) n = [-1, 0, 0];
+          else {
+            var du = p1[0] - p0[0], dv = p1[1] - p0[1];
+            var ny = -dv, nz = du;                     /* one perpendicular */
+            var mu = (p0[0] + p1[0]) / 2, mv = (p0[1] + p1[1]) / 2;
+            if (ny * (0 - mu) + nz * (mv - 4 - mv) < 0) { ny = -ny; nz = -nz; }
+            /* the test point is the axis, a little BELOW the segment, so the
+               soffit of the arch head faces down as well as in */
+            var m = Math.sqrt(ny * ny + nz * nz) || 1;
+            n = [0, ny / m, nz / m];
+          }
+          emit([[xa, cy + p0[0], p0[1]], [xa, cy + p1[0], p1[1]],
+                [xb, cy + q1[0], q1[1]], [xb, cy + q0[0], q0[1]]], n, mat,
+               ring ? { bias: W_BIAS, stroke: JOINT, width: 0.35 } : { bias: W_BIAS });
+        }
+      }
+      /* A GABLED PORCH WITH A PORTAL CUT THROUGH IT. The porch stands 3 ft
+         proud of the wall; the orders step back 4 ft each to the doors at
+         X_W + 9. cy is the bay centre, w the outer opening, Hp its apex,
+         g the porch half-width, ap the gable apex. */
+      function porch(cy, w, Hp, g, ap, centre) {
+        var xP = X_W - 3, xs = [xP, X_W + 1, X_W + 5, X_W + 9];
+        var ws = [w, w * 0.86, w * 0.72, w * 0.58];
+        var sp = Hp - lancetRise(w), n = 8;
+        var P0 = prof(ws[0], sp, n);
+        var base = Hp + 2;                        /* the gable sits on the arch head */
+        /* the porch face: two jambs beside the hole, then the head with the
+           arch bitten out of it and the gable on top, all in one plane */
+        faceAt(xP, [[cy - g, 0], [cy - w / 2, 0], [cy - w / 2, sp], [cy - g, sp]], STONE);
+        faceAt(xP, [[cy + w / 2, 0], [cy + g, 0], [cy + g, sp], [cy + w / 2, sp]], STONE);
+        var head = [[cy - g, sp]];
+        for (var i = 1; i < P0.length - 1; i++) head.push([cy + P0[i][0], P0[i][1]]);
+        head.push([cy + g, sp], [cy + g, base], [cy, ap], [cy - g, base]);
+        faceAt(xP, head, STONE);
+        /* the porch's returns: its two sides and the two rakes, 3 ft deep */
+        [-1, 1].forEach(function (sd) {
+          var yy = cy + sd * g;
+          emit([[xP, yy, 0], [X_W, yy, 0], [X_W, yy, base], [xP, yy, base]], [0, sd, 0], STONE, { bias: W_BIAS });
+          emit([[xP, yy, base], [X_W, yy, base], [X_W, cy, ap], [xP, cy, ap]],
+               [0, sd * 0.6, 0.8], TRIM, { bias: W_BIAS });
+        });
+        /* the three stepped orders: ring, reveal, ring, reveal, ring, reveal */
+        for (var k = 0; k < 3; k++) {
+          var Pa = prof(ws[k], sp, n), Pb = prof(ws[k + 1], sp, n);
+          band(cy, Pa, xs[k], Pb, xs[k], TRIM, true);
+          band(cy, Pb, xs[k], Pb, xs[k + 1], DEEP, false);
+        }
+        /* THE DOORS, 18 ft high [L], and the tympanum above the lintel */
+        var wi = ws[3], xi = xs[3], Pi = prof(wi, sp, n), doorH = 18;
+        faceAt(xi, [[cy - wi / 2, 0], [cy + wi / 2, 0], [cy + wi / 2, doorH], [cy - wi / 2, doorH]],
+               centre ? BRONZE : TEAK);
+        var tym = [[cy - wi / 2, doorH]];
+        for (var j = 2; j < Pi.length - 1; j++) tym.push([cy + Pi[j][0], Pi[j][1]]);
+        tym.push([cy + wi / 2, doorH]);
+        faceAt(xi, tym, TRIM);
+        if (centre) {
+          /* the trumeau carrying St John, and behind the majestas screen the
+             LESSER ROSE, "seven divisions relating to the Apocalypse" [L]. The
+             first draft hung that rose on the wall between the portals and
+             the great rose; the report puts it in the tympanum. */
+          block(xi - 1.6, xi + 0.2, cy - 1.5, cy + 1.5, 0, doorH, TRIM);
+          var rz = doorH + 11, R = 7.5;
+          var ring = [];
+          for (var q = 0; q < 24; q++) {
+            var a = (q / 24) * Math.PI * 2;
+            ring.push([xi - 0.3, cy + R * Math.cos(a), rz + R * Math.sin(a)]);
+          }
+          emit(ring, [-1, 0, 0], GLASS, { bias: W_BIAS + 1 });
+          for (var s7 = 0; s7 < 7; s7++) {
+            var t = (s7 / 7) * Math.PI * 2 - Math.PI / 2, wd = 0.7;
+            var cc = Math.cos(t), ss = Math.sin(t);
+            emit([[xi - 0.5, cy - wd * ss, rz + wd * cc], [xi - 0.5, cy + R * cc - wd * ss, rz + R * ss + wd * cc],
+                  [xi - 0.5, cy + R * cc + wd * ss, rz + R * ss - wd * cc], [xi - 0.5, cy + wd * ss, rz - wd * cc]],
+                 [-1, 0, 0], TRIM, { bias: W_BIAS + 2 });
+          }
+        }
+        return { base: base, apex: ap };
+      }
+
+      /* ---- the bodies behind the front: narthex and the two towers ----
+         Drawn WITHOUT their west walls, because the front slab in front of
+         them carries the real face and the door panels sit where a west wall
+         would fight them for the same pixels. */
+      var xB = X_W + 9;
+      tileTop(xB, X_NAVE_W, -yN, yN, Z3, STONE);
+      /* the back of the aisle-bay screen, seen from the east above the aisle roof */
+      [-1, 1].forEach(function (s) {
+        var y0 = s * yI_(), y1 = s * yN;
+        emit([[X_NAVE_W, Math.min(y0, y1), Z_AISLE], [X_NAVE_W, Math.max(y0, y1), Z_AISLE],
+              [X_NAVE_W, Math.max(y0, y1), Z3], [X_NAVE_W, Math.min(y0, y1), Z3]], [1, 0, 0], STONE, { bias: W_BIAS });
+      });
+      function yI_() { return P.crossW / 2; }
+
+      /* THE TOWERS. St Peter on the NORTH (which is -y here, see the header)
+         stops at the third stage, about 130 ft (header); St Paul on the south
+         reached about 227 in the 1982-1992 stoneyard campaign [L, W]. Each
+         is a 52 ft square with a clasping buttress at every corner, stepped
+         back at every stage molding, which is what makes a Gothic tower read
+         as a tower and not as a chimney. */
+      var towers = [{ s: -1, z: P.towerN, name: 'St Peter' },
+                    { s: 1, z: P.towerS, name: 'St Paul' }];
       towers.forEach(function (t) {
-        var ya = t.s * yN, yb = t.s * yF;
-        block(X_W, X_NAVE_W, Math.min(ya, yb), Math.max(ya, yb), 0, t.z, STONE);
-        /* THE STOP. Neither tower is finished, so neither gets a parapet or
-           a spire; each gets a band of raw stone at its head, the colour of
-           masonry that was left rather than completed, and a flat top. This
-           is the single most important thing on the west front and it is
-           drawn by NOT drawing something. */
-        block(X_W - 0.4, X_NAVE_W + 0.4, Math.min(ya, yb) - 0.4, Math.max(ya, yb) + 0.4,
-              t.z - 10, t.z, STOP);
-        /* tall lancet belfry openings on the west face */
-        opening((Math.min(ya, yb) + Math.max(ya, yb)) / 2, t.z - 52, 22, 40,
-                lancetRise(22), { axis: 'y', at: X_W }, [-1, 0, 0]);
+        /* 207 ft IS THE WIDTH OVER THE BUTTRESSES: LP-2585 calls it the
+           building's "widest point". So the tower walls stand 4 ft inside that
+           line and the clasping buttresses take the last 4. Drawn first with
+           the walls ON the 207 line, the buttresses carried the front out to
+           221 ft, which is a different building. */
+        var yFw = yF - 4;
+        var ya = Math.min(t.s * yT, t.s * yFw), yb = Math.max(t.s * yT, t.s * yFw);
+        var cy = (ya + yb) / 2;
+        /* body: three walls and a top; the west face comes from the slab */
+        wallQ([xB, ya], [X_NAVE_W, ya], 0, t.z, STONE, { bias: W_BIAS });
+        wallQ([X_NAVE_W, ya], [X_NAVE_W, yb], 0, t.z, STONE, { bias: W_BIAS });
+        wallQ([X_NAVE_W, yb], [xB, yb], 0, t.z, STONE, { bias: W_BIAS });
+        tileTop(xB, X_NAVE_W, ya, yb, t.z, STONE);
+        /* the slab's own returns at the outer corner, X_W to xB */
+        var yOut = t.s * yFw, yOuter = t.s > 0 ? yb : ya;
+        emit([[X_W, yOut, 0], [xB, yOut, 0], [xB, yOut, t.z], [X_W, yOut, t.z]], [0, t.s, 0], STONE, { bias: W_BIAS });
+        /* the west face of the tower, with the porch bitten out of it */
+        var pw = 16, pH = 40, pg = 12, pap = 55;
+        var sp0 = pH - lancetRise(pw), gb = pH + 2;
+        faceAt(X_W, [[ya, 0], [cy - pg, 0], [cy - pg, gb], [ya, gb]], STONE);
+        faceAt(X_W, [[cy + pg, 0], [yb, 0], [yb, gb], [cy + pg, gb]], STONE);
+        faceAt(X_W, [[ya, gb], [cy - pg, gb], [cy, pap], [cy + pg, gb], [yb, gb], [yb, t.z], [ya, t.z]], STONE);
+        porch(cy, pw, pH, pg, pap, false);
+        /* THE STOP: raw stone at the head, and no parapet, no spire. The
+           most important thing on the front, drawn by not drawing more. */
+        block(X_W - 0.4, X_NAVE_W + 0.4, ya - 0.4, yb + 0.4, t.z - 10, t.z, STOP);
+        /* corner buttresses, clasping, stepped at each stage */
+        [[X_W, ya], [X_W, yb], [X_NAVE_W, ya], [X_NAVE_W, yb]].forEach(function (c, ci) {
+          var sx = c[0] === X_W ? -1 : 1, sy = c[1] === ya ? -1 : 1;
+          var stages = [[0, Z1, 9, 7], [Z1, Z2, 8, 5.5], [Z2, Z3, 7, 4], [Z3, t.z - 10, 6, 2.6]];
+          stages.forEach(function (st) {
+            if (st[0] >= t.z - 10) return;
+            var z1 = Math.min(st[1], t.z - 10), wdt = st[2], pr = st[3];
+            var x0 = sx < 0 ? c[0] - pr : c[0] - wdt, x1 = sx < 0 ? c[0] + wdt : c[0] + pr;
+            var py = (c[1] === yOuter) ? Math.min(pr, 4) : pr;   /* never past 207 */
+            var y0 = sy < 0 ? c[1] - py : c[1] - wdt, y1 = sy < 0 ? c[1] + wdt : c[1] + py;
+            block(x0, x1, y0, y1, st[0], z1, STONE);
+          });
+        });
+        /* the stage moldings run round the tower on its three free faces */
+        [Z1, Z2, Z3].forEach(function (zc) {
+          if (zc >= t.z - 10) return;
+          block(X_W - 1.2, X_NAVE_W + 1.2, ya - 1.2 * (t.s < 0 ? 1 : 0) - (t.s > 0 ? 0 : 0),
+                yb + 1.2 * (t.s > 0 ? 1 : 0), zc, zc + 1.6, TRIM);
+        });
+        /* STAGE 2: the gallery runs across the tower too, paired open arches */
+        for (var gy = cy - 15; gy <= cy + 15.1; gy += 6) {
+          opening(gy, 58, 4.4, 18, lancetRise(4.4), { axis: 'y', at: X_W }, [-1, 0, 0], DARK, TRIM);
+        }
+        /* STAGE 3: "slender lancets pierce the recessed arches of the towers" */
+        /* the recessed arch: 32 ft wide, from the stage-2 molding to the
+           stage-3 one, its apex AT the eaves line. Written first with the
+           jambs zero feet tall, which made its first two points one point
+           and its normal [0,0,0] on both towers. */
+        var archW = t.z > Z3 + 40 ? 32 : 30, archTop = Math.min(Z3, t.z - 10);
+        opening(cy, 84, archW, archTop - 84, lancetRise(archW), { axis: 'y', at: X_W }, [-1, 0, 0], STONE_D, TRIM);
+        [-1, 1].forEach(function (sd) {
+          opening(cy + sd * 7, 88, 5, 30, lancetRise(5), { axis: 'y', at: X_W }, [-1, 0, 0], GLASS, TRIM);
+        });
+        /* STAGE 4, St Paul only: the belfry stage that the stoneyard raised
+           and left, two tall lancets and then the stop */
+        if (t.z > Z3 + 40) {
+          [-1, 1].forEach(function (sd) {
+            opening(cy + sd * 8, 134, 7, 46, lancetRise(7), { axis: 'y', at: X_W }, [-1, 0, 0], GLASS, TRIM);
+          });
+        }
+        /* THE OUTER SIDE FACE: LP-2585 gives it "the narthex windows,
+           arcaded galleries, blind arches pierced by lancet windows":
+           a two-lancet-and-rose narthex window over a gallery band. */
+        var xm = (X_W + X_NAVE_W) / 2, nrm = [0, t.s, 0];
+        for (var gx = xm - 15; gx <= xm + 15.1; gx += 6) {
+          opening(gx, 58, 4.4, 18, lancetRise(4.4), { axis: 'x', at: yOut }, nrm, DARK, TRIM);
+        }
+        var plN = opening(xm, 84, 15, 36, lancetRise(15), { axis: 'x', at: yOut }, nrm);
+        tracery(xm, 84, 15, 36, lancetRise(15), null, nrm, plN);
+        if (t.z > Z3 + 40) {
+          var plB = opening(xm, 134, 15, 44, lancetRise(15), { axis: 'x', at: yOut }, nrm);
+          tracery(xm, 134, 15, 44, lancetRise(15), null, nrm, plB);
+        }
+        /* the east face above the aisle roof: one lancet per stage [L] */
+        var yE = t.s * (yN + yFw) / 2;
+        opening(yE, 84, 7, 26, lancetRise(7), { axis: 'y', at: X_NAVE_W }, [1, 0, 0], GLASS, TRIM);
+        if (t.z > Z3 + 40) opening(yE, 134, 7, 40, lancetRise(7), { axis: 'y', at: X_NAVE_W }, [1, 0, 0], GLASS, TRIM);
       });
-      /* FIVE PORTALS IN FIVE BAYS. Drawn with three at first, which was the
-         west front as Cram designed it in 1913 and NOT the one that was
-         built: his third redesign of 1929 took the front from three portals
-         to five, and five is what stands on Amsterdam Avenue. The centre one
-         is the Portal of Paradise, wider than the rest, with the trumeau
-         carrying St John down its middle. */
-      [[0, 34, 62], [-42, 22, 46], [42, 22, 46],
-       [-80, 18, 38], [80, 18, 38]].forEach(function (p) {
-        opening(p[0], 0, p[1], p[2], lancetRise(p[1]),
-                { axis: 'y', at: X_W }, [-1, 0, 0], DARK, TRIM);
+
+      /* ---- the screen between the towers: centre bay, two aisle bays, and
+              the gable, all in the plane x = X_W ---- */
+      /* centre bay wall pieces, around the great porch */
+      /* THE LOWER SCREEN IS CUT ROUND ALL THREE PORCHES. It was two slabs
+         from the towers to the centre porch, standing in front of the two
+         aisle portals whose orders and teak doors recede behind this plane,
+         so the review found two of the five portals blind. Each aisle bay is
+         now three pieces, left, right and a notched head, as the towers are.
+         The centre porch is lower than it was (apex 60, gable 78) so that its
+         gable and the crucifix on it finish below the great arch's field;
+         standing in front of that field, they have to be drawn over it. */
+      var cw = 34, cH = 60, cg = 21, cap = 78;
+      var cgb = cH + 2;
+      [-1, 1].forEach(function (s) {
+        var ac = s * (yC + yT) / 2, apg = 7.5, agb = 32, aap = 46;
+        var a = Math.min(s * yT, s * cg), b = Math.max(s * yT, s * cg);
+        var lo = ac - apg, hi = ac + apg;
+        faceAt(X_W, [[a, 0], [lo, 0], [lo, cgb], [a, cgb]], STONE);
+        faceAt(X_W, [[hi, 0], [b, 0], [b, cgb], [hi, cgb]], STONE);
+        faceAt(X_W, [[lo, agb], [ac, aap], [hi, agb], [hi, cgb], [lo, cgb]], STONE);
       });
-      /* the trumeau: the stone pier splitting the centre portal's doors */
-      /* A trumeau stops at the lintel; it does not split the tympanum above
-         it. The centre portal's springing is 62 * (1 - 1.15/(1.15+0.5)) and
-         works out at 22.9 ft, so that is where this one ends. It was drawn to
-         40 and ran 17 ft up into the arch head. */
-      emit([[X_W, -1.6, 0], [X_W, 1.6, 0], [X_W, 1.6, 22.9], [X_W, -1.6, 22.9]],
-           [-1, 0, 0], TRIM, { bias: WALL_BIAS + 9 });
-      /* THE GREAT ROSE: 40 ft across, 10,000 pieces of glass, Connick.
-         Drawn as real tracery - an outer ring, an eye, and spokes between -
-         because a dark disc is not a rose window, and this is the one thing
-         on this front that everyone photographs. */
-      /* THE BIAS HAS TO BEAT THE ROSE'S OWN DEPTH SPREAD. Drawn first with
-         the tracery one unit in front of the glass, the window came out as a
-         fan in its top half and a blank dark disc in its bottom half. The
-         painter sorts on centroid depth PLUS bias, and a 40 ft wheel standing
-         upright spreads about 20 units of depth between its top and its
-         bottom at the steeper pitches, so a one-unit lead put the lower
-         spokes BEHIND their own glass. The lead now exceeds the spread, and
-         nothing stands in front of this wall for it to jump over. */
+      /* THE HEAD OF THE SCREEN AND THE GABLE, one piece: from the porch base
+         up to the eaves across the full width between the towers, then the
+         gable to the ridge. The gable spans the nave between the towers
+         (103 ft), not the whole 146: the roof behind it is 100 ft wide. */
+      faceAt(X_W, [[-yT, cgb], [-cg, cgb], [0, cap], [cg, cgb], [yT, cgb],
+                   [yT, Z3], [0, P.ridge], [-yT, Z3]], STONE);
+      porch(0, cw, cH, cg, cap, true);
+      /* THE FOURTEEN-FOOT CARVED CRUCIFIX stands on the CENTRE PORTAL'S
+         gable [L], not on the nave gable where the first draft put it. */
+      block(X_W - 4.4, X_W - 2.2, -1.1, 1.1, cap, cap + 14, TRIM);
+      block(X_W - 4.4, X_W - 2.2, -4.2, 4.2, cap + 8.6, cap + 10.8, TRIM);
+      /* the aisle porches, small, between the piers */
+      [-1, 1].forEach(function (s) {
+        var cy = s * (yC + yT) / 2;
+        porch(cy, 10, 30, 7.5, 46, false);
+      });
+
+      /* THE STAGE MOLDINGS across the screen, "heavily-carved" [L]: they are
+         what divides four stages from one tall wall */
+      [Z1, Z2, Z3].forEach(function (zc) {
+        block(X_W - 1.2, X_W + 0.2, -yT, yT, zc, zc + 1.6, TRIM);
+      });
+      /* a coping up both rakes of the gable */
+      [-1, 1].forEach(function (s) {
+        emit([[X_W - 1.4, s * yT, Z3], [X_W - 1.4, s * yT, Z3 + 2.2], [X_W - 1.4, 0, P.ridge + 2.2], [X_W - 1.4, 0, P.ridge]],
+             [-1, 0, 0], TRIM, { bias: W_BIAS + 1 });
+      });
+
+      /* THE BUTTRESS PIERS that form the five bays, with niches "of which
+         only the northernmost two presently contain statues" [L], the rest
+         "blocks of stone yet to be carved", topped by "carved finials". */
+      [-yT, -yC, yC, yT].forEach(function (by) {
+        var isT = Math.abs(by) === yT;
+        var stages = [[0, Z1, 4.2, 7], [Z1, Z2, 3.6, 5.5], [Z2, Z3 + 6, 3.0, 4]];
+        stages.forEach(function (st) {
+          block(X_W - st[3], X_W + 0.3, by - st[2], by + st[2], st[0], st[1], STONE);
+        });
+        pinnacle(X_W - 2, by, Z3 + 6, 6.5, 18);
+        /* the niche at gallery level, and its statue if it has one:
+           north is -y, so the northernmost two are the negative pair */
+        var filled = (by < 0);
+        emit([[X_W - 5.6, by - 2.2, 60], [X_W - 5.6, by + 2.2, 60], [X_W - 5.6, by + 2.2, 74], [X_W - 5.6, by - 2.2, 74]],
+             [-1, 0, 0], DARK, { bias: W_BIAS + 2 });
+        if (filled) block(X_W - 6.8, X_W - 5.4, by - 1.3, by + 1.3, 61, 72, TRIM);
+      });
+
+      /* STAGE 2: "the arcaded gallery consists of paired, open arches,
+         located between the buttresses" [L]: across each aisle bay */
+      [-1, 1].forEach(function (s) {
+        var cy = s * (yC + yT) / 2;
+        [-4.5, 0, 4.5].forEach(function (d) {
+          opening(cy + d, 58, 3.6, 18, lancetRise(3.6), { axis: 'y', at: X_W }, [-1, 0, 0], DARK, TRIM);
+        });
+      });
+
+      /* STAGE 3: THE GREAT ROSE "within a great pointed, blind arch" [L].
+         The arch first, as a recess whose field is the deeper stone, then
+         the rose inside it: 40 ft, 10,000 pieces of glass, Connick. */
+      /* 48 ft across, its field starting at 92 just clear of the crucifix,
+         springing at 100 and pointed at 155, up into the gable, which is where
+         the avenue shows it. It was 52 ft and began at 82, and the review
+         found it painting over the crucifix and the top of the centre portal's
+         gable, both of which stand in front of it. It is BLIND: a shallow
+         recess in the same stone, so its field is the older-stone tone. */
+      var AW = 48;
+      opening(0, 92, AW, 8 + lancetRise(AW), lancetRise(AW),
+              { axis: 'y', at: X_W }, [-1, 0, 0], STONE_D, TRIM);
+      /* a row of small lancet panels under the rose, inside the arch */
+      for (var ly = -16; ly <= 16.1; ly += 8) {
+        opening(ly, 92, 4.2, 6, lancetRise(4.2), { axis: 'y', at: X_W }, [-1, 0, 0], DARK, TRIM);
+      }
       (function theRose() {
+        /* centred at 118 so the wheel sits in the lower two-thirds of the
+           arch and its rim stays inside the arch's narrowing head */
         var cz = 118, R = P.roseD / 2, seg = 40, spokes = 16;
-        var B_GLASS = WALL_BIAS + 6, B_SPOKE = WALL_BIAS + 30, B_EYE = WALL_BIAS + 44;
-        function at(u, v) { return [X_W, u, cz + v]; }
-        /* the glass field */
+        /* THE BIAS HAS TO BEAT THE ROSE'S OWN DEPTH SPREAD: a 40 ft wheel
+           standing upright spreads about 20 units of depth top to bottom at
+           the steeper pitches, and a one-unit lead put the lower spokes
+           BEHIND their own glass. The lead exceeds the spread. */
+        var B_GLASS = WALL_BIAS + 8, B_SPOKE = WALL_BIAS + 30, B_EYE = WALL_BIAS + 44;
+        function at(u, v) { return [X_W - 0.2, u, cz + v]; }
         var ring = [];
         for (var i = 0; i < seg; i++) {
           var a = (i / seg) * Math.PI * 2;
           ring.push(at(R * Math.cos(a), R * Math.sin(a)));
         }
         emit(ring, [-1, 0, 0], GLASS, { bias: B_GLASS });
-        /* the tracery: spokes from the eye out to the ring */
+        /* the outer ring of stone, then spokes from the eye to the ring */
+        for (var i2 = 0; i2 < seg; i2++) {
+          var a0 = (i2 / seg) * Math.PI * 2, a1 = ((i2 + 1) / seg) * Math.PI * 2;
+          emit([at(R * Math.cos(a0), R * Math.sin(a0)), at(R * Math.cos(a1), R * Math.sin(a1)),
+                at((R - 1.3) * Math.cos(a1), (R - 1.3) * Math.sin(a1)), at((R - 1.3) * Math.cos(a0), (R - 1.3) * Math.sin(a0))],
+               [-1, 0, 0], TRIM, { bias: B_SPOKE });
+        }
         for (var k = 0; k < spokes; k++) {
-          var t = (k / spokes) * Math.PI * 2, wdt = 0.9;
+          var t = (k / spokes) * Math.PI * 2, wdt = 0.8;
           var c = Math.cos(t), s2 = Math.sin(t);
           emit([at(R * 0.22 * c - wdt * s2, R * 0.22 * s2 + wdt * c),
                 at(R * c - wdt * s2, R * s2 + wdt * c),
                 at(R * c + wdt * s2, R * s2 - wdt * c),
                 at(R * 0.22 * c + wdt * s2, R * 0.22 * s2 - wdt * c)],
                [-1, 0, 0], TRIM, { bias: B_SPOKE });
+          /* an inner ring at six tenths of the radius, one segment per spoke
+             gap, so the tracery reads as two wheels. The first version drew
+             short tilted bars that met nothing and read as scratches. */
+          var t2 = ((k + 1) / spokes) * Math.PI * 2, r0 = R * 0.6, r1 = r0 + 0.9;
+          emit([at(r0 * Math.cos(t), r0 * Math.sin(t)), at(r0 * Math.cos(t2), r0 * Math.sin(t2)),
+                at(r1 * Math.cos(t2), r1 * Math.sin(t2)), at(r1 * Math.cos(t), r1 * Math.sin(t))],
+               [-1, 0, 0], TRIM, { bias: B_SPOKE });
         }
-        /* the eye */
         var eye = [];
         for (var j = 0; j < seg; j++) {
           var b = (j / seg) * Math.PI * 2;
@@ -738,50 +1087,58 @@
         }
         emit(eye, [-1, 0, 0], TRIM, { bias: B_EYE });
       })();
-      /* THE FIVE BAYS ARE FORMED BY BUTTRESSES, not merely spaced. LP-2585:
-         five bays "formed by arched buttresses", their niches "of which ONLY
-         THE NORTHERNMOST TWO presently contain statues", the rest being
-         "blocks of stone yet to be carved". That last detail is the whole
-         building in miniature, so it is drawn: two niches filled, four empty.
-         Without these the west front was one flat slab with holes in it. */
-      [-124, -62, 62, 124].forEach(function (by, bi) {
-        block(X_W - 6, X_W + 2, by / 2 - 5, by / 2 + 5, 0, Z_NAVE_EAVE - 12, STONE);
-        pinnacle(X_W - 2, by / 2, Z_NAVE_EAVE - 12, 9, 22);
-        /* the niche, and whether anything stands in it. bi counts from the
-           SOUTH, so the northernmost two are the last two. */
-        var filled = (bi >= 2);
-        emit([[X_W - 6.2, by / 2 - 2.6, 54], [X_W - 6.2, by / 2 + 2.6, 54],
-              [X_W - 6.2, by / 2 + 2.6, 68], [X_W - 6.2, by / 2 - 2.6, 68]],
-             [-1, 0, 0], DARK, { bias: WALL_BIAS + 6 });
-        if (filled) {
-          block(X_W - 7.4, X_W - 6.0, by / 2 - 1.5, by / 2 + 1.5, 55, 66, TRIM);
+      /* "multi-faceted carvings in the spandrels above the central arch" */
+      [-1, 1].forEach(function (s) {
+        var ring = [];
+        for (var i = 0; i < 8; i++) {
+          var a = (i / 8) * Math.PI * 2;
+          ring.push([X_W - 0.3, s * 20 + 3.0 * Math.cos(a), 151 + 3.0 * Math.sin(a)]);   /* above the arch ring, under the rakes */
+        }
+        emit(ring, [-1, 0, 0], TRIM, { bias: W_BIAS + 3 });
+      });
+
+      /* STAGE 3, aisle bays: "the stained-glass grisaille windows each
+         contain two lancets and a tracery rose", with "small multi-faceted
+         rose windows over" them [L] */
+      [-1, 1].forEach(function (s) {
+        var cy = s * (yC + yT) / 2;
+        var pl = opening(cy, 84, 11, 30, lancetRise(11), { axis: 'y', at: X_W }, [-1, 0, 0]);
+        tracery(cy, 84, 11, 30, lancetRise(11), null, [-1, 0, 0], pl);
+        var ring = [], R2 = 3.4;
+        for (var i = 0; i < 16; i++) {
+          var a = (i / 16) * Math.PI * 2;
+          ring.push([X_W - 0.2, cy + R2 * Math.cos(a), 119 + R2 * Math.sin(a)]);
+        }
+        emit(ring, [-1, 0, 0], GLASS, { bias: W_BIAS + 6 });
+        for (var k = 0; k < 6; k++) {
+          var t = (k / 6) * Math.PI * 2, cc = Math.cos(t), ss = Math.sin(t);
+          emit([[X_W - 0.4, cy - 0.35 * ss, 119 + 0.35 * cc], [X_W - 0.4, cy + R2 * cc - 0.35 * ss, 119 + R2 * ss + 0.35 * cc],
+                [X_W - 0.4, cy + R2 * cc + 0.35 * ss, 119 + R2 * ss - 0.35 * cc], [X_W - 0.4, cy + 0.35 * ss, 119 - 0.35 * cc]],
+               [-1, 0, 0], TRIM, { bias: W_BIAS + 8 });
         }
       });
-      /* the gable over the central bay, between the towers */
-      emit([[X_W, -yN, Z_NAVE_EAVE], [X_W, yN, Z_NAVE_EAVE], [X_W, 0, P.ridge]],
-           [-1, 0, 0], STONE, { bias: WALL_BIAS + 1 });
-      /* THE FOURTEEN-FOOT CARVED CRUCIFIX on the gable, LP-2585. */
-      block(X_W - 2, X_W + 0.5, -1.2, 1.2, P.ridge, P.ridge + 14, TRIM);
-      block(X_W - 2, X_W + 0.5, -4.5, 4.5, P.ridge + 8.5, P.ridge + 11, TRIM);
-      /* THE LESSER ROSE, below the great one: LP-2585 records a second rose
-         under the first, a seven-pointed star "relating to the Apocalypse". */
-      (function lesserRose() {
-        var cz = 84, R = 9, seg = 28;
-        function at(u, v) { return [X_W, u, cz + v]; }
-        var ring = [];
-        for (var i = 0; i < seg; i++) {
-          var a = (i / seg) * Math.PI * 2;
-          ring.push(at(R * Math.cos(a), R * Math.sin(a)));
+
+      /* STAGE 4: "the stepped central gable contains lancets and a central
+         medallion" [L] */
+      (function medallion() {
+        var cz = 169, R = 3.5, ring = [];   /* above the arch's point, inside the rakes */
+        for (var i = 0; i < 20; i++) {
+          var a = (i / 20) * Math.PI * 2;
+          ring.push([X_W - 0.2, R * Math.cos(a), cz + R * Math.sin(a)]);
         }
-        emit(ring, [-1, 0, 0], GLASS, { bias: WALL_BIAS + 20 });
-        for (var k = 0; k < 7; k++) {          /* seven points, not eight */
-          var t = (k / 7) * Math.PI * 2 - Math.PI / 2, wdt = 0.8;
-          var cc = Math.cos(t), ss = Math.sin(t);
-          emit([at(-wdt * ss, wdt * cc), at(R * cc - wdt * ss, R * ss + wdt * cc),
-                at(R * cc + wdt * ss, R * ss - wdt * cc), at(wdt * ss, -wdt * cc)],
-               [-1, 0, 0], TRIM, { bias: WALL_BIAS + 28 });
+        emit(ring, [-1, 0, 0], GLASS, { bias: W_BIAS + 6 });
+        for (var k = 0; k < 8; k++) {
+          var t = (k / 8) * Math.PI * 2, cc = Math.cos(t), ss = Math.sin(t);
+          emit([[X_W - 0.4, -0.4 * ss, cz + 0.4 * cc], [X_W - 0.4, R * cc - 0.4 * ss, cz + R * ss + 0.4 * cc],
+                [X_W - 0.4, R * cc + 0.4 * ss, cz + R * ss - 0.4 * cc], [X_W - 0.4, 0.4 * ss, cz - 0.4 * cc]],
+               [-1, 0, 0], TRIM, { bias: W_BIAS + 8 });
         }
       })();
+      [-1, 1].forEach(function (s) {
+        /* at 36, not 20: at 20 the arch's own voussoir ring cut them off
+           and only their tips showed */
+        opening(s * 36, 126, 4.2, 11, lancetRise(4.2), { axis: 'y', at: X_W }, [-1, 0, 0], GLASS, TRIM);
+      });
     })();
 
     /* ===================== 4. THE CROSSING AND THE DOME ================
@@ -834,19 +1191,35 @@
          blocked arched openings. It is not a stump of a transept; it is a
          wall where a transept was meant to start. */
       var Z_NT = Z_NAVE_EAVE / 3;                    /* the one-third [L] */
-      block(X_CR_W, X_CR_E, h, h + 58, 0, Z_NT, STONE);
-      block(X_CR_W - 0.4, X_CR_E + 0.4, h + 58 - 0.4, h + 58 + 0.4, Z_NT - 7, Z_NT, STOP);
-      /* the sealed openings: boarded, not glazed, so they are drawn dark and
-         flat rather than as windows */
-      [-30, 0, 30].forEach(function (cx) {
-        opening(cx, 10, 18, 30, lancetRise(18), { axis: 'x', at: h + 58 }, [0, 1, 0], DARK, STOP);
+      /* NORTH IS -y in this file (see the header). 53 ft deep, not 58: at 58
+         the stub reached 108 ft off the axis, wider than the west front, and
+         LP-2585 calls the 207 ft front the building's widest point. */
+      var DN = 53;
+      block(X_CR_W, X_CR_E, -(h + DN), -h, 0, Z_NT, STONE);
+      block(X_CR_W - 0.4, X_CR_E + 0.4, -(h + DN) - 0.4, -(h + DN) + 0.4, Z_NT - 7, Z_NT, STOP);
+      /* BOTH SIDES OF THE CROSSING ARE CLOSED IN CONCRETE. LP-2585: the
+         "temporary north elevation of the crossing is composed of poured in
+         place concrete with buttresses and arched fenestration presently
+         sealed with wood due to the fire in 2001", and the south elevation
+         "is similar". The first build drew concrete on the south only, flush
+         with the stone behind it and without an opening, so it read as stone.
+         Each is now a foot proud, with its buttresses and three arched
+         openings boarded in wood. On the north it rises from the stub's roof. */
+      var WOOD = { top: '#8a6f55', sun: '#7d644c', shade: '#6d5842' };
+      var ZC = Z_NAVE_EAVE - 30;
+      [-1, 1].forEach(function (s) {
+        var y = s * (h + 1), z0 = s > 0 ? 0 : Z_NT;
+        wallQ(s > 0 ? [X_CR_E, y] : [X_CR_W, y], s > 0 ? [X_CR_W, y] : [X_CR_E, y],
+              z0, ZC, CONC, { bias: WALL_BIAS + 2 });
+        for (var bz = 0; bz < 4; bz++) {
+          var bx2 = X_CR_W + (bz + 0.5) * (P.crossL / 4);
+          block(bx2 - 4, bx2 + 4, Math.min(y, y + s * 7), Math.max(y, y + s * 7), z0, ZC - 14, CONC);
+        }
+        [-25, 0, 25].forEach(function (cx) {
+          opening(cx, z0 + 12, 12, s > 0 ? 40 : 30, lancetRise(12),
+                  { axis: 'x', at: y }, [0, s, 0], WOOD, CONC);
+        });
       });
-      /* SOUTH: the temporary concrete wall across the crossing */
-      wallQ([X_CR_W, -h], [X_CR_E, -h], 0, Z_NAVE_EAVE - 30, CONC, { bias: WALL_BIAS + 2 });
-      for (var bz = 0; bz < 4; bz++) {              /* its buttresses */
-        var bx2 = X_CR_W + (bz + 0.5) * (P.crossL / 4);
-        block(bx2 - 5, bx2 + 5, -(h + 7), -h, 0, Z_NAVE_EAVE - 44, CONC);
-      }
     })();
 
     /* ===================== 6. THE CHOIR, Heins & LaFarge, Romanesque ===
@@ -884,29 +1257,76 @@
        drawn as one: a half-polygon at the ambulatory radius, with seven
        chapels standing off it. */
     (function chevet() {
-      var seg = 14, cx = X_CHOIR_E;
-      /* the apse wall, a half-round at the ambulatory radius */
-      var plan = [];
-      for (var i = 0; i <= seg; i++) {
-        var t = -Math.PI / 2 + Math.PI * (i / seg);
-        plan.push([cx + AMB_R * Math.cos(t), AMB_R * Math.sin(t)]);
+      var cx = X_CHOIR_E, hc = P.choirW / 2;
+      function arc(r, n) {
+        var pl = [];
+        for (var i = 0; i <= n; i++) {
+          var t = -Math.PI / 2 + Math.PI * (i / n);
+          pl.push([cx + r * Math.cos(t), r * Math.sin(t)]);
+        }
+        return pl;
       }
-      for (var k = 0; k < plan.length - 1; k++) {
-        wallQ(plan[k], plan[k + 1], 0, Z_AMB + 26, STONE_D, { bias: WALL_BIAS });
+      /* THE APSE WAS HOLLOW. The first build drew the half-round only at the
+         ambulatory's radius, 80 ft tall under a low cone, so the choir roof,
+         138 ft at its ridge, ended over it in an open gable: from the east
+         you looked straight into the roof with Gabriel standing inside it.
+         LP-2585: the apse "contains the seven radiating apsidal chapels, the
+         choir clerestory, and a standing-seam hipped roof topped by" the
+         angel. So it is built as the report reads it, from the inside out:
+         the choir clerestory carried round the half-round at the choir's own
+         radius and up to the choir's eaves, under a hipped roof that climbs
+         to the choir's own ridge and closes it; the ambulatory as a lower
+         ring outside it with a lean-to roof; the chapels beyond. */
+      var outer = arc(AMB_R, 14), apse = arc(hc, 7);
+      function onApse(i) {                    /* 14 steps round the 7-sided apse */
+        if (i % 2 === 0) return apse[i / 2];
+        var a = apse[(i - 1) / 2], b = apse[(i + 1) / 2];
+        return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
       }
-      /* ITS ROOF IS HIPPED, not flat, and it carries a bronze Angel Gabriel:
-         LP-2585 describes a "standing-seam hipped roof, topped by a bronze
-         statue of a trumpeting Angel Gabriel". Drawn flat it read as a lid. */
-      var apexZ = Z_AMB + 26 + 20;
-      for (var m = 0; m < plan.length - 1; m++) {
-        emit([[cx, 0, apexZ], plan[m].concat(Z_AMB + 26), plan[m + 1].concat(Z_AMB + 26)],
-             [plan[m][0] - cx, plan[m][1], 0.8], ROOF, { bias: 2 });
+      var Z_LEAN = Z_AMB + 10;
+      for (var k = 0; k < 14; k++) {
+        wallQ(outer[k], outer[k + 1], 0, Z_AMB, STONE_D, { bias: WALL_BIAS });
+        var i0 = onApse(k), i1 = onApse(k + 1);
+        var mx = (outer[k][0] + outer[k + 1][0]) / 2 - cx, my = (outer[k][1] + outer[k + 1][1]) / 2;
+        emit([[outer[k][0], outer[k][1], Z_AMB], [outer[k + 1][0], outer[k + 1][1], Z_AMB],
+              [i1[0], i1[1], Z_LEAN], [i0[0], i0[1], Z_LEAN]], [mx, my, 60], ROOF, { bias: 2 });
+      }
+      /* the clerestory round the apse, one round-headed light over each
+         chapel: LP-2585's "fourteen stone shields in the spandrels of the
+         clerestory windows above the seven Apsidal Chapels" is seven lights */
+      for (var w = 0; w < 7; w++) {
+        wallQ(apse[w], apse[w + 1], Z_AMB, Z_CHOIR_EAVE, STONE_D, { bias: WALL_BIAS });
+        var ax = apse[w + 1][0] - apse[w][0], ay = apse[w + 1][1] - apse[w][1];
+        var al = Math.sqrt(ax * ax + ay * ay);
+        var mid = [(apse[w][0] + apse[w + 1][0]) / 2, (apse[w][1] + apse[w + 1][1]) / 2];
+        var nx = mid[0] - cx, ny = mid[1], nl = Math.sqrt(nx * nx + ny * ny);
+        opening(0, Z_LEAN + 6, 7, 20, roundRise(7), { axis: 'free', o: mid, u: [ax / al, ay / al] },
+                [nx / nl, ny / nl, 0]);
+      }
+      /* THE HIPPED ROOF climbs to the choir's own ridge, which closes it */
+      var apexZ = Z_CHOIR_RIDGE;
+      for (var m = 0; m < 7; m++) {
+        var hx = (apse[m][0] + apse[m + 1][0]) / 2 - cx, hy = (apse[m][1] + apse[m + 1][1]) / 2;
+        emit([[cx, 0, apexZ], [apse[m][0], apse[m][1], Z_CHOIR_EAVE],
+              [apse[m + 1][0], apse[m + 1][1], Z_CHOIR_EAVE]], [hx, hy, 40], ROOF, { bias: 2 });
       }
       /* Gabriel: a small bronze figure, deliberately slight. It is 20 ft of
          statue on a 600 ft building and drawing it larger would be a lie. */
       var GAB = { top: '#7d8b6f', sun: '#6f7d62', shade: '#616e55' };
       block(cx - 1.6, cx + 1.6, -1.6, 1.6, apexZ, apexZ + 11, GAB);
       block(cx - 4.5, cx + 4.5, -1.1, 1.1, apexZ + 7, apexZ + 8.6, GAB);
+      /* "GABLED BUTTRESSES TOPPED BY TURRETS rise up above the roofs of the
+         chapels to support the apse walls" [L]: one at each end of the
+         half-round and one between each pair of chapels, eight in all */
+      for (var bI = 0; bI <= 7; bI++) {
+        var tb = -Math.PI / 2 + Math.PI * (bI / 7), cb = Math.cos(tb), sb = Math.sin(tb);
+        var r0 = AMB_R - 1, r1 = AMB_R + 9, hw2 = 2.6, zt = Z_AMB + 8;
+        var pb = function (r, sd) { return [cx + r * cb - sd * hw2 * sb, r * sb + sd * hw2 * cb]; };
+        var qb = [pb(r0, -1), pb(r1, -1), pb(r1, 1), pb(r0, 1)];
+        for (var e = 0; e < 4; e++) wallQ(qb[e], qb[(e + 1) % 4], 0, zt, STONE_D, { bias: WALL_BIAS + 1 });
+        emit(qb.map(function (v) { return [v[0], v[1], zt]; }), [0, 0, 1], TRIM, { bias: 2 });
+        pinnacle(cx + (r1 - 2.5) * cb, (r1 - 2.5) * sb, zt, 4.5, 14);
+      }
       /* THE SEVEN. Spread over the half-round, each a small block with a
          round-arched window, because this end is Romanesque. */
       for (var c = 0; c < 7; c++) {
@@ -970,20 +1390,37 @@
        stands well outside the mass it names, so its leader line crosses air
        rather than stone. */
     /* FOUR LABELS, ALL ON THE NEAR SIDE. There were five, and the fifth was
-       the problem: St Peter stands on the NORTH side, which at this camera is
-       the FAR side, so its leader line had to cross the whole roof to reach
-       its own tower and it printed across the stone every time. A caption you
-       have to read through a building is worse than no caption, and the two
-       tower heights are both in the page text below anyway. So the two towers
-       share one label, on the south side, where the eye already is. */
-    marks.push({ at: Pt(-60, -P.frontW / 2 - 30, P.towerS + 52),
+       the problem: a tower label on the FAR side had to cross the whole roof
+       to reach its own tower and printed across the stone every time. A
+       caption you have to read through a building is worse than no caption,
+       and the two tower heights are both in the page text below anyway. So
+       the two towers share one label on the near side, where the eye already
+       is. The shipped camera stands to the SOUTH-WEST, the postcard corner,
+       so the near side is +y, which is SOUTH (header): St Paul's side, the
+       tall tower and the concrete transept wall. */
+    marks.push({ at: Pt(-60, P.frontW / 2 + 30, P.towerS + 52),
                  text: '601 ft, west to east' });
     marks.push({ at: Pt(0, 0, P.domeApex + 26), fill: C.hi,
-                 text: 'Guastavino tile dome, 1909, meant to be temporary' });
-    marks.push({ at: Pt(X_W - 22, -P.frontW / 2 - 30, P.towerS + 12), fill: C.navy,
-                 text: 'the towers stop: St Paul 227 ft, St Peter 177' });
-    marks.push({ at: Pt(X_E + 40, 0, Z_CHAPEL + 26),
-                 text: 'the seven Chapels of the Tongues' });
+                 text: 'Guastavino tile dome, 1909',
+                 sub: 'protected by a copper enclosure completed 2022' });
+    marks.push({ at: Pt(X_W - 22, P.frontW / 2 + 30, P.towerS + 12), fill: C.navy,
+                 text: 'the towers stop: St Paul 227 ft, St Peter about 130' });
+    /* THE CHAPELS LABEL SITS ON A CHAPEL, and it is five words, not six.
+       Measured in the page itself at the shipped camera, because the page
+       places labels by its own rules and a harness dot is not a label:
+         old anchor, 40 ft past the east face and 72 ft up, six words:
+           the text flipped left and lay on 209 polygons of the choir;
+         a dot on the chapel roofs, six words: 301 to 365;
+         the only six-word dot that cleared stood 57 ft out on the pavement,
+           which marks the street, not the chapels.
+       At this corner the six words are wider than the air beside them, so
+       they had nowhere to go. "the Chapels of the Tongues" is their name
+       without the count (the page text below gives the seven), and it fits:
+       with the dot on the south-east chapel's roof the page lifts the label
+       below the drawing with a leader to the dot, on 0 polygons and on no
+       other label. The dot is on the thing it names, which is the promise. */
+    marks.push({ at: Pt(X_CHOIR_E + 39, 39, Z_CHAPEL),
+                 text: 'the Chapels of the Tongues' });
 
     return { w: 720, h: 620, faces: f, lines: lines, marks: marks };
   };

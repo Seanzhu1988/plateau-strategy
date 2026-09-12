@@ -1,4 +1,4 @@
-/* Two New York landmarks as solids you can turn, drawn like the Met's model.
+/* Three New York landmarks as solids you can turn, drawn like the Met's model.
  *
  * Same idiom as met-3d.js and for the same reason: no 3D library, because the
  * person opening this is standing on a bridge or in a lobby line on a phone.
@@ -1053,12 +1053,14 @@
      at a time against the scene's own frame, 0.24 is the last angle where
      nothing leaves the top. The span and empire ceilings were re-measured the
      same way and are unchanged. */
-  /* stjohn's ceiling is PROVISIONAL until it is swept against the built
-     model the way span, tower and empire were. A long low building crops at
-     a different angle from a tower, and guessing it is how the bridge's
-     cornice ended up 55 units above the frame. Measured value replaces this
-     one before the model ships. */
-  var TILT_CEIL = { span: 0.44, tower: 0.24, empire: 0.75, stjohn: 0.55 };
+  /* stjohn, MEASURED 2026-09-10 against the rebuilt model at its shipped
+     camera: swept a hundredth of a radian at a time and at every yaw the idle
+     turn can reach, nothing leaves the top or bottom of the 720 by 620 box
+     until 0.81. The ceiling is 0.75, below that on purpose: past about the
+     Empire State's 0.75 a 601 ft building flattens into its own plan and
+     stops reading as a building, which is the other thing a ceiling is for. */
+  var TILT_CEIL = { span: 0.44, tower: 0.24, empire: 0.75, stjohn: 0.75,
+                    fountain: 0.75 };
 
   var EMPIRE_CAM = function () { return makeCam(-0.7, 0.22, 1, 360, 560); };
 
@@ -1087,7 +1089,15 @@
      west front AND the flank running away to the crossing dome, which is the
      one view where the seam between the two architects is on screen at once.
      The pitch is low because the thing to see is a wall, not a roof. */
-  var STJOHN_CAM = function () { return makeCam(-2.45, 0.17, 1, 360, 400); };
+  /* ox 411, not the site's 360. The origin is the crossing, and the west end
+     reaches 95 ft further from it than the east end does, so at this yaw the
+     drawing sat 51 units left of centre, measured: solid bbox x 93 to 525 in
+     a 720 box. Moved by exactly that, not by eye. */
+  var STJOHN_CAM = function () { return makeCam(-0.78, 0.17, 1, 411, 400); };
+  /* The close view is fit against the fountain's full idle-turn sweep, not a
+     single flattering angle. At 14.2 every yaw stays inside a 46 px margin in
+     the 720 x 620 stage; 538 keeps the basin and Michael vertically centred. */
+  var STJOHN_FOUNTAIN_CAM = function () { return makeCam(-1.30, 0.15, 14.2, 360, 538); };
   var SCENES = { bridge: bridgeScene, empire: empireScene };
   function sceneFor(k) {
     var EXT = (typeof window !== 'undefined' && window.NYC_FORMS) || {};
@@ -1097,7 +1107,7 @@
   window.NYC3D = {
     scenes: SCENES, scene: sceneFor, renderTo: render,
     cams: { span: BRIDGE_CAMS.span, tower: BRIDGE_CAMS.tower, empire: EMPIRE_CAM,
-            trump: TRUMP_CAM },
+            trump: TRUMP_CAM, stjohn: STJOHN_CAM, fountain: STJOHN_FOUNTAIN_CAM },
     helpers: { face: face, box: box, project: project, shade: shade, normal: normal,
                makeCam: makeCam, C: C, SUN: SUN, PITCH_FLOOR: PITCH_FLOOR, TILT_CEIL: TILT_CEIL },
     bridge: function (host, opts) {
@@ -1122,13 +1132,53 @@
       return mount(host, function () { return sceneFor('trump')({}); },
                    TRUMP_CAM(), TILT_CEIL.empire);
     },
-    /* The cathedral. Like Trump Tower it exists only as a form file, so a
-       page that has not loaded nyc-form-stjohn.js gets nothing rather than a
-       half drawn church. */
+    /* The cathedral and the Peace Fountain share ONE mount. The whole-site
+       scene uses the 1,994-face context silhouette; the closer view uses the
+       4,209-face inspection LOD. Both static scenes are built once and cached,
+       because rebuilding thousands of faces during every idle-turn frame is
+       the difference between a model and a phone heater. */
     stjohn: function (host) {
-      if (!(window.NYC_FORMS && window.NYC_FORMS.stjohn)) return null;
-      return mount(host, function () { return sceneFor('stjohn')({}); },
-                   STJOHN_CAM(), TILT_CEIL.stjohn);
+      if (!(window.NYC_FORMS && window.NYC_FORMS.stjohn &&
+            window.NYC_FORMS.peaceFountain)) return null;
+      var wholeCache = null, fountainCache = null, view = 'whole';
+      function whole() {
+        if (wholeCache) return wholeCache;
+        var church = sceneFor('stjohn')({});
+        var fountain = sceneFor('peaceFountain')({ detail: 'context' });
+        wholeCache = {
+          w: church.w, h: church.h,
+          faces: church.faces.concat(fountain.faces),
+          lines: (church.lines || []).concat(fountain.lines || []),
+          marks: (church.marks || []).concat([{
+            at: fountain.metadata.anchor, fill: C.hi,
+            text: 'Peace Fountain, 1985',
+            sub: 'Greg Wyatt · 40 ft · site position approximate'
+          }])
+        };
+        return wholeCache;
+      }
+      function closeFountain() {
+        if (!fountainCache) {
+          fountainCache = sceneFor('peaceFountain')({ standalone: true, detail: 'site' });
+          fountainCache.marks = [{
+            at: [0, 0, 40 * 0.82], fill: C.hi,
+            text: 'Peace Fountain · 40 ft', sub: 'Greg Wyatt, 1985'
+          }];
+        }
+        return fountainCache;
+      }
+      function builder() { return view === 'fountain' ? closeFountain() : whole(); }
+      var m = mount(host, builder, STJOHN_CAM(), TILT_CEIL.stjohn);
+      m.view = function (v) {
+        v = v === 'fountain' ? 'fountain' : 'whole';
+        if (v === view) return view;
+        view = v;
+        m.retarget(builder,
+          view === 'fountain' ? STJOHN_FOUNTAIN_CAM() : STJOHN_CAM(),
+          view === 'fountain' ? TILT_CEIL.fountain : TILT_CEIL.stjohn);
+        return view;
+      };
+      return m;
     },
     empire: function (host) {
       /* The builder reads openT live, so the same mount draws the solid and
