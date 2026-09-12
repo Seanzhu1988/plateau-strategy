@@ -4974,6 +4974,7 @@ _GAL_CACHE = {}
 from concurrent.futures import ThreadPoolExecutor, wait as _gallery_wait
 _GAL_EXECUTOR = ThreadPoolExecutor(max_workers=8, thread_name_prefix="gallery-source")
 _GAL_SLOTS = threading.BoundedSemaphore(8)
+_GAL_SOURCE_CONTEXT = threading.local()
 
 
 def _gallery_photo_signer():
@@ -4982,10 +4983,19 @@ def _gallery_photo_signer():
 
 
 def _gallery_provider(fn, q):
+    _GAL_SOURCE_CONTEXT.partial = False
     try:
-        return fn(q)
+        rows = fn(q)
+        return {"results": rows, "partial": _GAL_SOURCE_CONTEXT.partial}
     finally:
+        _GAL_SOURCE_CONTEXT.partial = False
         _GAL_SLOTS.release()
+
+
+def _gallery_source_failed():
+    # A timeout, missing index or failed object fetch is not a genuine miss.
+    # Thread-local state keeps concurrent museum requests isolated.
+    _GAL_SOURCE_CONTEXT.partial = True
 
 
 def _gallery_result_rank(row, query):
@@ -5036,34 +5046,28 @@ def _gallery_finish(payload, q, lang, cached):
         candidates.sort(key=lambda row: _gallery_result_rank(row, q))
         return jsonify({**payload, "results": candidates[:16], "ok": True, "cached": cached,
                         "lang": lang, "can_generate": _gallery_can_generate(), "new_discoveries": 0})
-    enriched = gallery_archive.enrich(rows, q, lang)
+    enriched = gallery_archive.enrich(rows, q, lang,
+                                     count=bool(rows) or not payload.get("partial"))
     enriched["results"].sort(key=lambda row: _gallery_result_rank(row, q))
     enriched["results"] = enriched["results"][:16]
     return jsonify({**payload, **enriched, "ok": True, "cached": cached,
                     "lang": lang, "can_generate": _gallery_can_generate()})
 
 
-def _gal_get(url, timeout=12):
-    """Fetch one collection API, or None.
-
-    TWO BUGS LIVED IN THE FIRST VERSION OF THESE ELEVEN LINES, and the second
-    was the dangerous one. It reached for urllib.request, which this file has
-    never imported. Corrected to requests, which every other fetch here uses,
-    except that requests is imported LOCALLY inside each of those functions and
-    not at module level, so the bare name raised NameError too.
-
-    Both were invisible, because the bare `except Exception` below caught the
-    NameError and returned None, so the endpoint answered 200 with an empty
-    list in a few milliseconds and looked like a museum with nothing to say.
-    A silent except is how a bug stops being a bug and starts being a feature
-    nobody can find. It now says what went wrong, in the log, once."""
+def _gal_get(url, timeout=12, **kwargs):
+    """Fetch source data while preserving transport failures as incomplete."""
     import requests as _rq                       # local, like every other fetch here
     try:
-        r = _rq.get(url, timeout=timeout,
-                    headers={"User-Agent": "PlateauStrategySolutionLab/1.0"})
-        return r.json() if r.ok else None
-    except Exception as e:
-        app.logger.warning("gallery fetch failed: %s (%s)", url[:70], e)
+        kwargs.setdefault("headers", {"User-Agent": "PlateauStrategySolutionLab/1.0"})
+        r = _rq.get(url, timeout=timeout, **kwargs)
+        r.raise_for_status()
+        data = r.json()
+        if not isinstance(data, dict) or data.get("error"):
+            raise ValueError("Invalid collection response")
+        return data
+    except Exception:
+        _gallery_source_failed()
+        app.logger.warning("gallery collection request unavailable")
         return None
 
 
@@ -5082,11 +5086,14 @@ def _gal_met(q, limit=8):
     """The Met's open access collection. Free, no key, CC0 on public domain."""
     out = []
     deadline = time.monotonic() + 16
-    s = _gal_get("https://collectionapi.metmuseum.org/public/collection/v1/search?q="
-                 + urllib.parse.quote(q))
+    s = _gal_get("https://collectionapi.metmuseum.org/public/collection/v1.1/search?q="
+                 + urllib.parse.quote(q) + "&offset=0&limit=%d" % (limit * 2))
     for oid in ((s or {}).get("objectIDs") or [])[:limit*2]:
         remaining = deadline - time.monotonic()
-        if len(out) >= limit or remaining <= 0:
+        if len(out) >= limit:
+            break
+        if remaining <= 0:
+            _gallery_source_failed()
             break
         o = _gal_get("https://collectionapi.metmuseum.org/public/collection/v1/objects/%s" % oid,
                      timeout=min(5, remaining))
@@ -5185,6 +5192,7 @@ def _gal_moma(q, limit=8):
     and a missing file simply contributes no rows."""
     path = os.path.join(BASE_DIR, "moma.sqlite")
     if not os.path.exists(path):
+        _gallery_source_failed()
         return []
     out = []
     db = sqlite3.connect("file:" + path + "?mode=ro", uri=True)
@@ -5205,6 +5213,7 @@ def _gal_moma(q, limit=8):
                     "WHERE works_fts MATCH ? ORDER BY rank LIMIT ?",
                     (terms, limit)).fetchall()
             except sqlite3.OperationalError:
+                _gallery_source_failed()
                 rows = []
         for t, a2, dt, acc, ov, img, oid in rows:
             out.append({
@@ -5245,8 +5254,17 @@ def _gal_wikidata(q, limit=8):
     right object. An image that is confidently almost-right would defeat that
     exactly, and it would be worse than showing nothing. [SEAN]
     """
-    import requests as _rq
     H = {"User-Agent": "PlateauStrategySolutionLab/1.0 (universal gallery)"}
+    deadline = time.monotonic() + 16
+
+    def fetch(**params):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            _gallery_source_failed()
+            return {}
+        return _gal_get("https://www.wikidata.org/w/api.php", timeout=min(8, remaining),
+                        headers=H, params=params) or {}
+
     try:
         # A traveller often types the title AND the artist, "Open Window
         # Matisse", but wbsearchentities matches the whole string against a
@@ -5265,20 +5283,19 @@ def _gal_wikidata(q, limit=8):
         terms = [t for t in terms if not (t in _seen_t or _seen_t.add(t))]
         ids = []
         for term in terms[:4]:
-            rr = _rq.get("https://www.wikidata.org/w/api.php", timeout=12, headers=H,
-                         params={"action": "wbsearchentities", "format": "json",
-                                 "language": "en", "limit": limit, "search": term})
-            ids = [x["id"] for x in (rr.json().get("search") or [])]
+            rr = fetch(action="wbsearchentities", format="json", language="en", limit=limit, search=term)
+            ids = [x["id"] for x in (rr.get("search") or [])]
             if ids:
                 break
+            if getattr(_GAL_SOURCE_CONTEXT, "partial", False):
+                return []
         if not ids:
             return []
-        r2 = _rq.get("https://www.wikidata.org/w/api.php", timeout=15, headers=H,
-                     params={"action": "wbgetentities", "format": "json",
-                             "languages": "en", "props": "labels|claims",
-                             "ids": "|".join(ids)})
-        ents = r2.json().get("entities") or {}
+        r2 = fetch(action="wbgetentities", format="json", languages="en",
+                   props="labels|claims", ids="|".join(ids))
+        ents = r2.get("entities") or {}
     except Exception as e:
+        _gallery_source_failed()
         app.logger.warning("wikidata search failed: %s", e)
         return []
 
@@ -5307,11 +5324,11 @@ def _gal_wikidata(q, limit=8):
         img_files = allvals(cl, "P18")
         img, inv = (img_files[0] if img_files else None), first(cl, "P217")
         coll, maker = first(cl, "P195"), first(cl, "P170")
-        # Something is an ARTWORK OR ARTIFACT here if a museum holds it, it has
-        # an inventory number, or somebody made it. A person, a town or a film
-        # has none of those, which keeps the results to things you can stand in
-        # front of without needing a list of every type in the world.
-        if not (img and (coll or inv or maker)):
+        # Collection/accession evidence remains useful without a public photo,
+        # especially when the visitor already brought their own. Preserve the
+        # older image+maker fallback, but do not broaden it to every created
+        # entity (films/characters also have creators).
+        if not (coll or inv or (img and maker)):
             continue
         for x in (coll, maker):
             if isinstance(x, str) and x.startswith("Q"):
@@ -5324,12 +5341,10 @@ def _gal_wikidata(q, limit=8):
     labels, coll_loc, coll_pos = {}, {}, {}
     if need_labels:
         try:
-            r3 = _rq.get("https://www.wikidata.org/w/api.php", timeout=15, headers=H,
-                         params={"action": "wbgetentities", "format": "json",
-                                 "languages": "en", "props": "labels|claims",
-                                 "ids": "|".join(list(need_labels)[:40])})
+            r3 = fetch(action="wbgetentities", format="json", languages="en",
+                       props="labels|claims", ids="|".join(sorted(need_labels)[:40]))
             city_qids = set()
-            for k, v in (r3.json().get("entities") or {}).items():
+            for k, v in (r3.get("entities") or {}).items():
                 labels[k] = (v.get("labels", {}).get("en") or {}).get("value", "")
                 # The city the institution sits in: its headquarters first, then
                 # the administrative area it is in, then a plain location. This
@@ -5347,20 +5362,17 @@ def _gal_wikidata(q, limit=8):
                 if isinstance(pt, dict) and pt.get("latitude") is not None:
                     coll_pos[k] = (round(pt["latitude"], 5), round(pt["longitude"], 5))
         except Exception:
-            pass
+            _gallery_source_failed()
     # One more hop turns those location ids into city names.
     city_names = {}
     loc_ids = list(set(coll_loc.values()))
     if loc_ids:
         try:
-            r4 = _rq.get("https://www.wikidata.org/w/api.php", timeout=12, headers=H,
-                         params={"action": "wbgetentities", "format": "json",
-                                 "languages": "en", "props": "labels",
-                                 "ids": "|".join(loc_ids[:40])})
-            for k, v in (r4.json().get("entities") or {}).items():
+            r4 = fetch(action="wbgetentities", format="json", languages="en", props="labels", ids="|".join(loc_ids[:40]))
+            for k, v in (r4.get("entities") or {}).items():
                 city_names[k] = (v.get("labels", {}).get("en") or {}).get("value", "")
         except Exception:
-            pass
+            _gallery_source_failed()
 
     out = []
     for r in rows:
@@ -5376,7 +5388,7 @@ def _gal_wikidata(q, limit=8):
             # A collection relationship does not establish current display.
             "on_view": None,
             "image": ("https://commons.wikimedia.org/wiki/Special:FilePath/"
-                      + urllib.parse.quote(r["image_file"]) + "?width=420"),
+                      + urllib.parse.quote(r["image_file"]) + "?width=420") if r["image_file"] else "",
             "images": ["https://commons.wikimedia.org/wiki/Special:FilePath/"
                        + urllib.parse.quote(f) + "?width=1000" for f in r["image_files"]],
             "city": city_names.get(coll_loc.get(r["coll_qid"], ""), ""),
@@ -5411,7 +5423,7 @@ def api_gallery_search():
                         "new_discoveries": 0, "cached": True, "partial": False})
     ck = q.lower()
     hit = _GAL_CACHE.get(ck)
-    if hit and time.time() - hit[0] < 3600:
+    if hit and not hit[1].get("partial") and time.time() - hit[0] < (3600 if hit[1].get("results") else 60):
         # A cache hit is still a person in a museum. The recorder dedupes on
         # the museum forever, so teaching from the cache costs nothing and
         # keeps the hour after a popular search from being a learning blackout.
@@ -5439,15 +5451,19 @@ def api_gallery_search():
     exact = [r for r in results if (r.get("item_number") or "").lower().replace(" ", "") == q.lower().replace(" ", "")]
     if exact:
         return _gallery_finish({"query": q, "results": exact, "sources": ["Saved artifact archive"]}, q, lang, True)
-    pending = []
+    pending, skipped = [], 0
     for fn in (_gal_met, _gal_aic, _gal_moma, _gal_wikidata):
         if _GAL_SLOTS.acquire(blocking=False):
             pending.append(_GAL_EXECUTOR.submit(_gallery_provider, fn, q))
+        else:
+            skipped += 1
     completed, unfinished = _gallery_wait(pending, timeout=18)
-    source_failures = 0
+    source_failures = skipped + len(unfinished)
     for future in completed:
         try:
-            for source_row in future.result():
+            source = future.result()
+            source_failures += int(source.get("partial", False))
+            for source_row in source.get("results") or []:
                 results.append(dict(source_row, catalogue_observed_at=time.time()))
         except Exception:
             source_failures += 1
@@ -5611,7 +5627,7 @@ def api_gallery_search():
                 discovery_mod.record_artwork(r.get("title"), r.get("source"), r.get("city"),
                                              r.get("item_number"), r.get("image"),
                                              r.get("wikidata"), r.get("artist"))
-        elif learn:
+        elif learn and not source_failures:
             discovery_mod.record_gallery_miss(q)
     except Exception as e:
         app.logger.warning("gallery discovery hook failed: %s", e)
@@ -5625,12 +5641,14 @@ def api_gallery_search():
                "can_generate": _gallery_can_generate(),
                # Said out loud, because a gallery that silently lacks MoMA looks
                # like a gallery that cannot find The Starry Night.
-               "partial": bool(unfinished or source_failures), "not_covered": []}
-    _GAL_CACHE[ck] = (time.time(), payload)
+               "partial": bool(source_failures), "source_failures": source_failures,
+               "search_status": "partial" if source_failures else "complete", "not_covered": []}
+    if not payload["partial"]:
+        _GAL_CACHE[ck] = (time.time(), payload)
     if len(_GAL_CACHE) > 300:
         _GAL_CACHE.clear()
     try:
-        if learn:
+        if learn and (results or not source_failures):
             gallery_log.record(q, len(results),
                            [r.get("source") for r in results if r.get("source")],
                            cached=False)
@@ -5866,8 +5884,10 @@ def api_gallery_queue():
     The writing is the product, so this is the list that decides what to write
     next: most asked for, first."""
     try:
+        import gallery_scout
         return jsonify({"ok": True, "queue": discovery_mod.artwork_queue(60),
-                        "writing": gallery_archive.queue_status()})
+                        "writing": gallery_archive.queue_status(),
+                        "automatic_discovery": gallery_scout.status()})
     except Exception as e:
         return jsonify({"ok": False, "queue": [], "error": str(e)}), 500
 
@@ -15859,7 +15879,14 @@ try:
                                   enrich=_book_enrich)
     def _gallery_process_next():
         import gallery_archive
-        return gallery_archive.process_next()
+        import gallery_scout
+        try:
+            scouting = gallery_scout.run_once()
+        except Exception:
+            app.logger.warning("gallery automatic discovery unavailable")
+            scouting = {"status": "failed"}
+        result = gallery_archive.process_next()
+        return dict(result, automatic_discovery=scouting)
     discovery_mod.set_gallery_bridge(_gallery_process_next)
     discovery_mod.start_thread()
 except Exception:

@@ -19,6 +19,8 @@ import languages
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 RESEARCH_LIMIT = 1000
+RESEARCH_FIELDS = {"historical_context", "research_source_url", "research_provider",
+                   "researched_at", "discovery_origin"}
 FIELDS = {
     "title": 400, "artist": 400, "date": 120, "museum": 240,
     "source": 240, "item_number": 160, "where": 300, "city": 160,
@@ -26,6 +28,9 @@ FIELDS = {
     "wikidata": 32, "source_object_id": 160, "provider": 100,
     "gallery_key": 160, "audio": 1000, "dataset_date": 100,
     "source_kind": 80, "source_label": 160,
+    "medium": 800, "culture": 300, "dimensions": 800, "credit_line": 1000,
+    "period": 300, "discovery_origin": 80, "historical_context": 3500,
+    "research_source_url": 1000, "research_provider": 160,
 }
 _MUSEUMS = {
     "the met new york": "met", "the metropolitan museum of art": "met",
@@ -66,11 +71,12 @@ def clean_facts(facts):
     row["museum"] = row.get("museum") or row.get("source") or ""
     row["source"] = row.get("source") or row["museum"]
     row["source_url"] = _url(row.get("source_url"))
+    row["research_source_url"] = _url(row.get("research_source_url"))
     row["images"] = [str(v)[:1000] for v in (facts.get("images") or [])[:12]]
     for k in ("copyright", "on_view"):
         if isinstance(facts.get(k), bool):
             row[k] = bool(facts[k])
-    for k in ("museum_lat", "museum_lon", "catalogue_observed_at"):
+    for k in ("museum_lat", "museum_lon", "catalogue_observed_at", "researched_at"):
         if isinstance(facts.get(k), (int, float)):
             row[k] = facts[k]
     if not row.get("image") and row["images"] and not row.get("copyright"):
@@ -131,6 +137,10 @@ def database():
             model TEXT, created REAL NOT NULL, updated REAL NOT NULL,
             PRIMARY KEY(artifact_id, lang));
           CREATE INDEX IF NOT EXISTS stories_language ON stories(lang, updated);
+          CREATE TABLE IF NOT EXISTS story_research (
+            artifact_id TEXT NOT NULL, lang TEXT NOT NULL, source TEXT NOT NULL,
+            PRIMARY KEY(artifact_id, lang),
+            FOREIGN KEY(artifact_id,lang) REFERENCES stories(artifact_id,lang));
           CREATE TABLE IF NOT EXISTS queries (
             query TEXT PRIMARY KEY, count INTEGER NOT NULL DEFAULT 0,
             misses INTEGER NOT NULL DEFAULT 0, last_seen REAL NOT NULL);
@@ -218,10 +228,17 @@ def _remember(db, facts):
         # Do not erase a known source URL/photo/curated description with an
         # empty field from a less detailed search provider.
         incoming = {k: v for k, v in facts.items() if v not in (None, "", [])}
+        # Research and catalogue refreshes have independent clocks. Updating
+        # a room cannot roll back a newer historical source, or prevent fresh
+        # research from being attached to an already-known museum object.
+        fresh_research = facts.get("researched_at", 0) > merged.get("researched_at", 0)
+        if merged.get("researched_at", 0) > facts.get("researched_at", 0):
+            incoming = {k: v for k, v in incoming.items() if k not in RESEARCH_FIELDS}
         if merged.get("catalogue_observed_at", 0) > facts.get("catalogue_observed_at", 0):
             # A provider response cached for another query cannot roll back
             # newer catalogue facts. Editorial fields are independently owned.
-            incoming = {k: v for k, v in incoming.items() if k in ("gallery_key", "teaser", "audio")}
+            incoming = {k: v for k, v in incoming.items()
+                        if k in ("gallery_key", "teaser", "audio") or (fresh_research and k in RESEARCH_FIELDS)}
         else:
             if facts.get("copyright"):
                 incoming.update(image="", images=[])
@@ -244,6 +261,7 @@ def _remember(db, facts):
 def _story_put(db, artifact_id, lang, text, minutes, kind, model="", replace=False):
     now = time.time()
     if replace:
+        db.execute("DELETE FROM story_research WHERE artifact_id=? AND lang=?", (artifact_id, lang))
         db.execute("INSERT INTO stories VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(artifact_id,lang) "
                    "DO UPDATE SET text=excluded.text, minutes=excluded.minutes,kind=excluded.kind,"
                    "model=excluded.model,updated=excluded.updated", (artifact_id, lang, text,
@@ -337,6 +355,54 @@ def remember(facts):
     return {"artifact_id": artifact_id, "new_discovery": is_new}
 
 
+def research_source(facts):
+    """Attribution for supported museum evidence, without republishing excerpts."""
+    provider = facts.get("provider")
+    oid = str(facts.get("source_object_id") or "")
+    if not oid.isdigit():
+        return None
+    expected = {"aic": "https://www.artic.edu/artworks/" + oid,
+                "met": "https://www.metmuseum.org/art/collection/search/" + oid}.get(provider)
+    if not expected or _url(facts.get("research_source_url")) != expected:
+        return None
+    label = "Art Institute of Chicago" if provider == "aic" else "The Metropolitan Museum of Art"
+    has_description = provider == "aic" and bool(facts.get("historical_context"))
+    return {"label": label, "url": expected,
+            "license": "CC BY 4.0" if has_description else "CC0",
+            "license_url": "https://creativecommons.org/licenses/by/4.0/" if has_description
+                           else "https://creativecommons.org/publicdomain/zero/1.0/",
+            "adapted": True}
+
+
+def queue_background(facts):
+    """Queue museum-backed English writing without inventing visitor demand."""
+    facts = clean_facts(facts)
+    if (not research_source(facts) or not facts.get("title") or
+            not facts.get("item_number") or not facts.get("date") or
+            not (facts.get("medium") or facts.get("historical_context"))):
+        return {"queued": False, "reason": "insufficient_evidence"}
+    facts["discovery_origin"] = "museum_highlights"
+    sync_sources()
+    with database() as db:
+        db.execute("BEGIN IMMEDIATE")
+        if db.execute("SELECT COUNT(*) FROM writing_queue WHERE status!='complete'").fetchone()[0] >= 200:
+            return {"queued": False, "reason": "queue_full"}
+        artifact_id, _ = _remember(db, facts)
+        if db.execute("SELECT 1 FROM stories WHERE artifact_id=? AND lang='en'", (artifact_id,)).fetchone():
+            return {"queued": False, "artifact_id": artifact_id, "reason": "cached"}
+        inserted = db.execute("INSERT OR IGNORE INTO writing_queue(artifact_id,lang,created) VALUES(?,'en',?)",
+                              (artifact_id, time.time())).rowcount
+    return {"queued": bool(inserted), "artifact_id": artifact_id,
+            "reason": "queued" if inserted else "already_queued"}
+
+
+def generation_facts(artifact_id):
+    """Private persisted research goes to the writer, not the public API."""
+    with database() as db:
+        row = db.execute("SELECT facts FROM artifacts WHERE id=?", (artifact_id,)).fetchone()
+        return dict(json.loads(row[0]), artifact_id=artifact_id) if row else None
+
+
 def resolve(facts):
     """Find persisted facts. Never let a public generation request insert facts."""
     sync_sources()
@@ -358,11 +424,19 @@ def provenance(story):
             "review_status": "site_curated" if kind == "editorial" else "not_human_reviewed"}
 
 
+def _story_research(db, artifact_id, lang):
+    row = db.execute("SELECT source FROM story_research WHERE artifact_id=? AND lang=?",
+                     (artifact_id, lang)).fetchone()
+    return json.loads(row[0]) if row else None
+
+
 def _artifact(db, artifact_id, lang):
     row = db.execute("SELECT * FROM artifacts WHERE id=?", (artifact_id,)).fetchone()
     if not row:
         return None
     facts = json.loads(row["facts"])
+    evidence = _story_research(db, artifact_id, lang)
+    facts.pop("historical_context", None)
     if not facts.get("source_url"):
         # A catalogue search is clearly labelled; it is not an invented object
         # record URL. Accession provenance remains visible beside the link.
@@ -398,7 +472,7 @@ def _artifact(db, artifact_id, lang):
                 community_photos=community_photos,
                 story_url="/api/gallery/artifacts/%s/story?lang=%s" % (artifact_id, lang) if story else None,
                 artifact_url="/universal-gallery/artifacts/" + artifact_id,
-                provenance=provenance(story) if story else None,
+                provenance=provenance(story) if story else None, research_source=evidence,
                 audio=facts.get("audio") if story and story["kind"] == "editorial" and lang == "en" else None,
                 stories=[{"lang": s["lang"], "minutes": s["minutes"], "provenance": provenance(s),
                           "url": "/api/gallery/artifacts/%s/story?lang=%s" % (artifact_id, s["lang"])} for s in stories])
@@ -420,7 +494,8 @@ def get_story(artifact_id, lang="en"):
         return {"artifact_id": artifact_id, "lang": lang, "text": story["text"],
                 "minutes": story["minutes"], "cached": True, "provenance": provenance(story),
                 "audio": facts.get("audio") if story["kind"] == "editorial" and lang == "en" else None,
-                "source_url": facts.get("source_url") or None}
+                "source_url": facts.get("source_url") or None,
+                "research_source": _story_research(db, artifact_id, lang)}
 
 
 def adopt_legacy(facts, old_key, lang):
@@ -672,14 +747,21 @@ def reserve(artifact_id, lang, cap):
         return {"status": "reserved", "token": token}
 
 
-def finish(artifact_id, lang, token, text=None, minutes=3, model=""):
+def finish(artifact_id, lang, token, text=None, minutes=3, model="", research=None):
     with database() as db:
         db.execute("BEGIN IMMEDIATE")
         lease = db.execute("SELECT token FROM generation_leases WHERE artifact_id=? AND lang=?", (artifact_id, lang)).fetchone()
         if not lease or lease[0] != token:
             return False
         if text:
+            existed = db.execute("SELECT 1 FROM stories WHERE artifact_id=? AND lang=?",
+                                  (artifact_id, lang)).fetchone()
             _story_put(db, artifact_id, lang, text, minutes, "ai_assisted", model)
+            if not existed and research:
+                # Credit the exact evidence used by this generation, never
+                # newer artifact facts attached after this story was written.
+                db.execute("INSERT OR IGNORE INTO story_research VALUES(?,?,?)",
+                           (artifact_id, lang, json.dumps(research, ensure_ascii=False)))
             db.execute("UPDATE writing_queue SET status='complete',last_reason='' WHERE artifact_id=? AND lang=?",
                        (artifact_id, lang))
         db.execute("DELETE FROM generation_leases WHERE artifact_id=? AND lang=? AND token=?", (artifact_id, lang, token))

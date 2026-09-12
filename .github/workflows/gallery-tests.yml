@@ -46,7 +46,7 @@ jobs:
         run: python -m pip install -r requirements.txt
       - name: Verify isolated archive, language, camera and queue journeys
         run: |
-          python -m unittest test_gallery_archive test_gallery_journey test_discovery_gallery_bridge test_gallery_identify test_gallery_photos test_gallery_research -v
+          python -m unittest test_gallery_archive test_gallery_journey test_discovery_gallery_bridge test_gallery_identify test_gallery_photos test_gallery_research test_gallery_search_recovery test_gallery_background test_gallery_scout -v
           python test_gallery_generate.py
       - name: Check gallery JavaScript
         run: |

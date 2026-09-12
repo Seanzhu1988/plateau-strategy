@@ -425,15 +425,201 @@ test('a blank or unusably short description does not create an imaginary discove
   page.el('ugPhotoRemove').dispatch('click');
 });
 
-test('automatic discovery research is bounded to three catalogue queries', async () => {
+test('automatic discovery research is bounded to four catalogue queries with at most two parallel alternatives', async () => {
   const page = setup(); photo(page);
   await page.respond(0, {ok: true, candidates: [{query: 'Name one', title: 'Name two', item_number: '123', confidence: 'high'}, {query: 'Name four'}]});
   await page.respond(1, {ok: true, results: []});
   await page.respond(2, {ok: true, results: []});
+  assert.equal(page.requests.length, 5, 'only two alternatives begin together, fitting eight backend source slots');
   await page.respond(3, {ok: true, results: []});
+  assert.equal(page.requests.length, 6, 'the remaining hypothesis gets a slot as soon as one finishes');
   await page.respond(4, {ok: true, results: []});
-  assert.equal(page.requests.filter(request => /\/search\?/.test(request.url) && !/scope=archive/.test(request.url)).length, 3);
+  await page.respond(5, {ok: true, results: []});
+  assert.equal(page.requests.filter(request => /\/search\?/.test(request.url) && !/scope=archive/.test(request.url)).length, 4);
+  assert.equal(page.requests[6].url, '/api/gallery/research');
+  page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('a strong third hypothesis leads with its explicit accession instead of free prose', async () => {
+  const page = setup(); photo(page);
+  await page.respond(0, {ok: true, candidates: [
+    {title: 'Weak first', query: 'Weak first', confidence: 'low'},
+    {title: 'Possible second', query: 'Possible second', confidence: 'medium'},
+    {title: 'Cypresses', query: 'Green trees painted by Van Gogh', item_number: '49.30', confidence: 'high'}
+  ]});
+  assert.equal(page.el('ugFind').value, '49.30');
+  assert.equal(new URL(page.requests[1].url, page.ctx.location).searchParams.get('q'), '49.30');
+  await page.respond(1, {ok: true, results: []});
+  await page.respond(2, {ok: true, results: [{artifact_id: 'p_correct', title: 'Cypresses', confirmed: false}]});
+  assert.equal(page.requests.length, 3, 'a useful result stops automatic alternate queries');
+  assert.match(page.el('ugFound').innerHTML, /Cypresses/);
+  assert.doesNotMatch(page.el('ugFound').innerHTML, /Provided by us/);
+  page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('all ranked identity hypotheses and useful OCR precede variants of a weak guess', async () => {
+  const page = setup(); photo(page);
+  await page.respond(0, {ok: true, label_text: 'Bronze ceremonial vessel 1889', candidates: [
+    {query: 'Weak guess', title: 'Another weak wording', confidence: 'low'},
+    {query: 'Possible vessel', title: 'Another possible wording', confidence: 'medium'},
+    {query: 'Best guess', title: 'Another best wording', confidence: 'high'}
+  ]});
+  await page.respond(1, {ok: true, results: []});
+  await page.respond(2, {ok: true, results: []});
+  assert.equal(page.requests.length, 5, 'two fallback searches are in flight');
+  await page.respond(3, {ok: true, results: []});
+  const queries = page.requests.filter(request => /\/search\?/.test(request.url) && !/scope=archive/.test(request.url))
+    .map(request => new URL(request.url, page.ctx.location).searchParams.get('q'));
+  assert.deepEqual(queries, ['Best guess', 'Possible vessel', 'Weak guess', 'Bronze ceremonial vessel 1889']);
+  assert.equal(queries.includes('1889'), false, 'the year inside label text is not invented into an accession');
+  await page.respond(4, {ok: true, results: []});
+  await page.respond(5, {ok: true, results: [{artifact_id: 'p_ocr', title: 'The label match', confirmed: false}]});
+  assert.match(page.el('ugFound').innerHTML, /The label match/);
+  assert.equal(page.el('ugFind').value, 'Bronze ceremonial vessel 1889');
+  page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('a bare year in OCR is not treated as a concrete artifact label number', async () => {
+  const page = setup(); photo(page);
+  await page.respond(0, {ok: true, label_text: '1889', candidates: []});
+  assert.equal(page.requests.length, 1);
+  assert.equal(page.el('ugFind').value, '');
+  assert.equal(page.el('ugIdentify').hidden, false, 'unusable OCR keeps the existing retry available');
+  assert.match(page.el('ugPhotoStatus').textContent, /could not identify a reliable match/);
+  page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('partial empty collections retry once and keep a private discovery instead of a definitive miss', async () => {
+  const page = setup(); photo(page);
+  const description = 'A bronze vessel with a narrow neck and two decorative handles.';
+  await page.respond(0, {ok: true, candidates: [{query: 'Bronze vessel'}], visual_description: description});
+  await page.respond(1, {ok: true, results: []});
+  await page.respond(2, {ok: true, results: [], partial: true, source_failures: 2});
+  assert.equal(page.requests[3].url, page.requests[2].url, 'one catalogue retry, not another recognition call');
+  await page.respond(3, {ok: true, results: [], partial: true, source_failures: 1});
+  assert.equal(page.el('ugEmpty').hidden, true);
+  assert.match(page.el('ugStatus').textContent, /Some collections are unavailable/);
+  assert.equal(page.requests[4].url, '/api/gallery/research');
+  assert.equal(JSON.parse(page.requests[4].options.body).visual_description, description);
+  await page.respond(4, {ok: true, saved: true, id: 'r_partial'});
+  assert.equal(page.el('ugStatus').textContent, 'Some collections are unavailable. We kept your discovery.');
+  assert.match(page.el('ugFound').innerHTML, /Identity not yet verified/);
+  assert.match(page.el('ugFound').innerHTML, /narrow neck/);
+  assert.equal(page.requests.filter(request => /\/identify$/.test(request.url)).length, 1);
+  assert.equal(page.requests.length, 5);
+  page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('failed catalogue HTTP requests get one safe retry and preserve useful recognition text', async () => {
+  const page = setup(); photo(page);
+  const description = 'A carved stone figure holding a small round object in both hands.';
+  await page.respond(0, {ok: true, candidates: [{query: 'Stone figure'}], label_text: 'Figure 123', visual_description: description});
+  await page.respond(1, {ok: true, results: []});
+  await page.respond(2, {ok: false, reason: 'temporary'}, 503);
+  assert.equal(new URL(page.requests[3].url, page.ctx.location).searchParams.get('q'), 'Figure 123');
+  await page.respond(3, {ok: false, reason: 'temporary'}, 503);
+  assert.equal(page.requests[4].url, page.requests[2].url);
+  await page.respond(4, {ok: false, reason: 'temporary'}, 503);
   assert.equal(page.requests[5].url, '/api/gallery/research');
+  const body = JSON.parse(page.requests[5].options.body);
+  assert.equal(body.visual_description, description);
+  assert.equal(body.label_text, 'Figure 123');
+  assert.equal(body.candidate_clues[0].query, 'Stone figure');
+  await page.respond(5, {ok: true, saved: true, id: 'r_http'});
+  assert.match(page.el('ugFound').innerHTML, /carved stone figure/);
+  assert.equal(page.requests.length, 6);
+  page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('even storage failure leaves the useful description visible without claiming it was saved', async () => {
+  const page = setup(); photo(page);
+  await page.respond(0, {ok: true, candidates: [], visual_description: 'A tall blue glass vase with a flared rim and slender base.'});
+  await page.respond(1, {ok: false, reason: 'temporary'}, 503);
+  assert.match(page.el('ugFound').innerHTML, /blue glass vase/);
+  assert.match(page.el('ugFound').innerHTML, /request could not be saved/);
+  assert.doesNotMatch(page.el('ugFound').innerHTML, /Saved for research|Provided by us/);
+  assert.equal(page.el('ugResearchSave').disabled, false);
+  page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('a second photograph saves independently while stale research completion cannot replace its discovery', async () => {
+  const page = setup(); photo(page);
+  await page.respond(0, {ok: true, candidates: [], visual_description: 'An old bronze bowl with a deeply patterned surface.'});
+  assert.equal(page.requests[1].url, '/api/gallery/research');
+  photo(page);
+  await page.respond(2, {ok: true, candidates: [], visual_description: 'A new blue glass vase with a broad and flared rim.'});
+  assert.equal(page.requests[3].url, '/api/gallery/research', 'the older save does not block the new photograph');
+  assert.match(JSON.parse(page.requests[3].options.body).visual_description, /new blue glass vase/);
+  await page.respond(3, {ok: true, saved: true, id: 'r_new'});
+  const current = page.el('ugFound').innerHTML;
+  assert.match(current, /new blue glass vase/);
+  await page.respond(1, {ok: true, saved: true, id: 'r_old'});
+  assert.equal(page.el('ugFound').innerHTML, current);
+  assert.equal(page.el('ugResearchSave').disabled, true);
+  page.el('ugResearchSave').dispatch('click');
+  assert.equal(page.requests.length, 4, 'a completed flow cannot duplicate its research save');
+  page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('rapid replacement photos bound research concurrency and resume only the current waiting flow', async () => {
+  const page = setup();
+  photo(page); await page.respond(0, {ok: true, visual_description: 'First vessel with decorative handles and a wide base.'});
+  photo(page); await page.respond(2, {ok: true, visual_description: 'Second vessel with a painted band and a narrow neck.'});
+  photo(page); await page.respond(4, {ok: true, visual_description: 'Third vessel with a round opening and a raised foot.'});
+  assert.equal(page.requests.length, 5, 'the third flow waits while two saves are in flight');
+  photo(page); await page.respond(5, {ok: true, visual_description: 'Fourth current vessel with a blue surface and two handles.'});
+  assert.equal(page.requests.length, 6);
+  await page.respond(1, {ok: true, saved: true, id: 'r_first'});
+  assert.equal(page.requests[6].url, '/api/gallery/research');
+  assert.match(JSON.parse(page.requests[6].options.body).visual_description, /Fourth current vessel/);
+  await page.respond(3, {ok: true, saved: true, id: 'r_second'});
+  assert.equal(page.requests.length, 7, 'abandoned queued flows do not start hidden background requests');
+  await page.respond(6, {ok: true, saved: true, id: 'r_fourth'});
+  assert.match(page.el('ugFound').innerHTML, /Fourth current vessel/);
+  assert.doesNotMatch(page.el('ugFound').innerHTML, /Third vessel|Second vessel|First vessel/);
+  page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('four failed hypotheses share a single retry budget, never four paid recognition retries', async () => {
+  const page = setup(); photo(page);
+  await page.respond(0, {ok: true, label_text: 'Museum label words', candidates: [
+    {query: 'First hypothesis'}, {query: 'Second hypothesis'}, {query: 'Third hypothesis'}
+  ]});
+  await page.respond(1, {ok: true, results: []});
+  await page.respond(2, {ok: true, results: [], partial: true});
+  await page.respond(3, {ok: true, results: [], partial: true});
+  await page.respond(4, {ok: true, results: [], partial: true});
+  await page.respond(5, {ok: true, results: [], partial: true});
+  assert.equal(page.requests[6].url, page.requests[2].url);
+  await page.respond(6, {ok: true, results: [], partial: true});
+  assert.equal(page.requests[7].url, '/api/gallery/research');
+  assert.equal(page.requests.filter(request => /\/search\?/.test(request.url) && !/scope=archive/.test(request.url)).length, 5);
+  assert.equal(page.requests.filter(request => /\/identify$/.test(request.url)).length, 1);
+  page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('a catalogue outage leaves the saved story visible and never replaces it with pending research', async () => {
+  const page = setup(); photo(page);
+  await page.respond(0, {ok: true, candidates: [{query: 'Cypresses'}], visual_description: 'A painting of dark green trees under a softly patterned sky.'});
+  await page.respond(1, {ok: true, results: [{artifact_id: 'a_saved', title: 'Cypresses', story_available: true, written: true}]});
+  await page.respond(2, {ok: false, reason: 'temporary'}, 503);
+  assert.match(page.el('ugFound').innerHTML, /Cypresses/);
+  assert.match(page.el('ugFound').innerHTML, /Provided by us/);
+  assert.match(page.el('ugStatus').textContent, /Some museum collections are unavailable/);
+  assert.equal(page.requests.length, 3);
+  assert.equal(page.requests.some(request => /\/research$/.test(request.url)), false);
+  page.el('ugPhotoRemove').dispatch('click');
+});
+
+test('a failed archive lookup still searches the museum collections automatically', async () => {
+  const page = setup(); photo(page);
+  await page.respond(0, {ok: true, candidates: [{query: 'Vessel'}]});
+  await page.respond(1, {ok: false, reason: 'temporary'}, 503);
+  assert.match(page.requests[2].url, /discover=0&origin=photo/);
+  assert.doesNotMatch(page.requests[2].url, /scope=archive/);
+  await page.respond(2, {ok: true, results: [{artifact_id: 'p_found', title: 'Found vessel', confirmed: false}]});
+  assert.match(page.el('ugFound').innerHTML, /Found vessel/);
+  assert.equal(page.requests.length, 3);
   page.el('ugPhotoRemove').dispatch('click');
 });
 
@@ -445,4 +631,38 @@ test('late museum results never replace an artifact the visitor already opened',
   await page.respond(1, {ok: true, results: [{artifact_id: 'p_other', title: 'Another work'}]});
   assert.equal(page.el('ugFound').innerHTML, original);
   assert.equal(page.requests.filter(request => /\/discover$/.test(request.url)).length, 1);
+});
+
+test('researched readings credit the historical museum source, its license and AI adaptation', async () => {
+  const page = setup('/universal-gallery?q=Vessel&origin=photo');
+  await page.respond(0, {ok: true, results: [{artifact_id: 'a_saved', title: 'Vessel', story_available: true}]});
+  const card = cardHost(page); card.click();
+  await page.respond(2, {ok: true, saved: true, artifact: {artifact_id: 'a_saved', title: 'Vessel', story_available: true}});
+  await page.respond(3, {ok: true, text: 'The researched story.', lang: 'en', research_source: {
+    label: 'Museum & Collection', url: 'https://example.org/museum/vessel',
+    license: 'CC BY 4.0', license_url: 'https://creativecommons.org/licenses/by/4.0/', adapted: true
+  }});
+  const html = card.children.get('.ug-read-box').innerHTML;
+  assert.match(html, /Historical source:/);
+  assert.match(html, /Museum &amp; Collection/);
+  assert.match(html, /href="https:\/\/example.org\/museum\/vessel"/);
+  assert.match(html, /href="https:\/\/creativecommons.org\/licenses\/by\/4.0\/"/);
+  assert.match(html, /CC BY 4.0.*Adapted with AI\./);
+  assert.ok(html.indexOf('ug-research-source') > html.indexOf('ug-reading-text'));
+});
+
+test('row source attribution supports Chinese and never renders untrusted links or HTML', async () => {
+  const page = setup('/universal-gallery?q=Vessel&origin=photo&lang=zh');
+  await page.respond(0, {ok: true, results: [{artifact_id: 'a_saved', title: 'Vessel', story_available: true}]});
+  const card = cardHost(page); card.click();
+  await page.respond(2, {ok: true, saved: true, artifact: {artifact_id: 'a_saved', title: 'Vessel', story_available: true,
+    research_source: {label: '<img src=x onerror=alert(1)>', url: 'javascript:alert(1)', license: '<script>unsafe</script>', license_url: 'data:text/html,unsafe', adapted: true}
+  }});
+  await page.respond(3, {ok: true, text: '藏品故事。', lang: 'zh'});
+  const html = card.children.get('.ug-read-box').innerHTML;
+  assert.match(html, /历史资料来源/);
+  assert.match(html, /经 AI 辅助改编/);
+  assert.match(html, /&lt;img src=x onerror=alert\(1\)&gt;/);
+  assert.match(html, /&lt;script&gt;unsafe&lt;\/script&gt;/);
+  assert.doesNotMatch(html, /javascript:|data:text|<script>|<img src=x/);
 });

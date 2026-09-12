@@ -94,7 +94,7 @@ class ArchiveTests(unittest.TestCase):
         self.assertEqual(archive.queue_status()["counts"]["pending"], 1)
         response = self.requests.post.return_value
         self.requests.post.side_effect = None
-        response.json.return_value = {"content": [{"type": "text", "text": STORY}]}
+        response.json.return_value = {"stop_reason": "end_turn", "content": [{"type": "text", "text": STORY}]}
         with patch.object(reader, "available", return_value=True):
             first = reader.read_for({"artifact_id": a}, "en")
         with patch.object(reader, "available", return_value=False):

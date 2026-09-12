@@ -45,7 +45,7 @@ class FakeResponse:
         return None
 
     def json(self):
-        return {"content": [{"type": "text", "text": STORY}]}
+        return {"stop_reason": "end_turn", "content": [{"type": "text", "text": STORY}]}
 
 
 class GalleryJourneyTests(unittest.TestCase):
