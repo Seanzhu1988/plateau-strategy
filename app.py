@@ -14099,421 +14099,22 @@ def api_archive_export():
 # push can be judged instead of guessed. [SEAN "one tab to view the traffic
 # i can save on the screen, avoid unnecessary steps"]
 # ======================================================================
-_PULSE_HTML = r"""<!doctype html><html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="robots" content="noindex,nofollow">
-<title>Traffic Pulse</title>
-<meta name="theme-color" content="#1d4c4f">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Pulse">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="manifest" href="/pulse.webmanifest">
-<style>
-:root{--paper:#faf8f4;--card:#fffdf9;--band:#f5f1e8;--ink:#14110c;--body:#4a453d;--muted:#6b655b;--line:#e6e2da;--accent:#1d4c4f;--good:#1b5e43}
-*{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--body);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
- padding:calc(env(safe-area-inset-top) + 1rem) 1rem calc(env(safe-area-inset-bottom) + 2rem);-webkit-font-smoothing:antialiased}
-.wrap{max-width:560px;margin:0 auto}
-.hd2{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:1rem 0 .35rem}
-.wlr{display:flex;align-items:baseline;gap:.5rem;padding:.6rem .1rem;border-top:1px solid var(--line);cursor:pointer}
-.wlr:first-child{border-top:0}
-.wlr .rg{flex:1;color:var(--ink);font-weight:500}
-.wlr .lf{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
-.nrw{display:flex;align-items:baseline;justify-content:space-between;gap:.7rem;padding:.5rem 0;border-top:1px solid var(--line)}
-.nrw:first-child{border-top:0}
-.nrw .nn{color:var(--ink)}
-.nrw .nv{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
-.wlt{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:.7rem 0 .2rem}
-.wlp{display:flex;align-items:center;gap:.55rem;padding:.4rem 0 .4rem .2rem}
-.wlp .tk{width:22px;height:22px;flex:0 0 auto;border:1.5px solid var(--line);border-radius:5px;
- display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;background:#fff}
-.wlp.on .tk{background:var(--good);border-color:var(--good)}
-.wlp .pn{flex:1;font-size:.92rem}
-.wlp.on .pn{color:var(--muted);text-decoration:line-through}
-.wlp .hv{font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
-.sub{font-size:.85rem;color:var(--muted);margin:0 0 .2rem}
-.top{display:flex;align-items:baseline;justify-content:space-between;gap:.6rem;margin:0 0 1rem}
-h1{font-size:1.5rem;color:var(--ink);margin:0;letter-spacing:-.01em}
-.upd{font-size:.76rem;color:var(--muted);text-align:right}
-.live{display:inline-flex;align-items:center;gap:.4rem;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;font-size:.85rem;color:var(--ink);font-weight:600}
-.dot{width:.5rem;height:.5rem;border-radius:50%;background:var(--good);box-shadow:0 0 0 0 rgba(27,94,67,.5);animation:p 2s infinite}
-@keyframes p{0%{box-shadow:0 0 0 0 rgba(27,94,67,.5)}70%{box-shadow:0 0 0 .5rem rgba(27,94,67,0)}100%{box-shadow:0 0 0 0 rgba(27,94,67,0)}}
-@media (prefers-reduced-motion:reduce){.dot{animation:none}}
-.tiles{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin:0 0 .9rem}
-.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.1rem}
-.tile .n{font-size:2rem;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1}
-.tile .l{font-size:.78rem;color:var(--muted);margin-top:.35rem;text-transform:uppercase;letter-spacing:.04em}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1rem 1.1rem;margin:0 0 .9rem}
-.hd{font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin:0 0 .7rem}
-.spark{display:flex;align-items:flex-end;gap:3px;height:64px}
-.spark div{flex:1;background:var(--accent);border-radius:2px 2px 0 0;min-height:2px;opacity:.85}
-.spark div:last-child{background:var(--good)}
-.two{display:flex;gap:1.4rem}
-.two>div{flex:1}.two .n{font-size:1.4rem;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}.two .l{font-size:.76rem;color:var(--muted)}
-.rw{display:flex;align-items:center;gap:.6rem;margin:.5rem 0}
-.rw .nm{width:38%;font-size:.9rem;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rw .bar{flex:1;height:.55rem;background:var(--band);border-radius:999px;overflow:hidden}
-.rw .bar i{display:block;height:100%;background:var(--accent);border-radius:999px}
-.rw .v{width:2.6rem;text-align:right;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
-.empty{color:var(--muted);font-size:.9rem}
-.me{font-size:.95rem;line-height:1.7}.me b{color:var(--ink);font-weight:600}
-.me .ok{color:var(--good);font-weight:700}.me .warn{color:var(--warn);font-weight:700}
-.mebtns{display:flex;flex-wrap:wrap;gap:.5rem;margin:.7rem 0 0}
-.mebtn{font:inherit;font-weight:700;font-size:.85rem;color:#fff;background:var(--accent);border:none;border-radius:999px;padding:.5rem 1rem;cursor:pointer}
-.menote{color:var(--good);font-size:.82rem;margin:.5rem 0 0;min-height:1rem}
-.foot{text-align:center;color:var(--muted);font-size:.78rem;margin-top:.4rem}
-.foot button{font:inherit;color:var(--accent);background:none;border:none;font-weight:600;cursor:pointer;padding:.4rem}
-#login{max-width:340px;margin:12vh auto 0;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.4rem}
-#login h2{color:var(--ink);font-size:1.2rem;margin:0 0 1rem}
-#login input{width:100%;padding:.7rem .8rem;border:1px solid var(--line);border-radius:9px;font:inherit;margin:0 0 .7rem;background:var(--paper);color:var(--ink)}
-#login button{width:100%;padding:.75rem;border:none;border-radius:999px;background:var(--accent);color:#fff;font:inherit;font-weight:700;cursor:pointer}
-#login .err{color:#a3302a;font-size:.85rem;min-height:1.1rem;margin:.2rem 0 0}
-[hidden]{display:none!important}
-</style></head><body>
-<div class="wrap">
- <div id="login" hidden>
-   <h2>Owner sign in</h2>
-   <input id="u" placeholder="Username" autocomplete="username" autocapitalize="none">
-   <input id="p" type="password" placeholder="Password" autocomplete="current-password">
-   <button onclick="doLogin()">Sign in</button>
-   <p class="err" id="lerr"></p>
- </div>
- <div id="app" hidden>
-   <div class="top">
-     <h1>Pulse</h1>
-     <div style="text-align:right"><span class="live"><span class="dot"></span><b id="online">0</b>&nbsp;online</span><div class="upd" id="upd"></div></div>
-   </div>
-   <p class="hd" style="margin:1.4rem 0 .5rem">Traffic</p>
-   <div class="tiles">
-     <div class="tile"><div class="n" id="tvis">0</div><div class="l">Visitors today</div></div>
-     <div class="tile"><div class="n" id="tviews">0</div><div class="l">Views today</div></div>
-   </div>
-   <div class="card"><p class="hd">Last 14 days</p><div class="spark" id="spark"></div></div>
-   <div class="card"><p class="hd">The stretch</p><div class="two">
-     <div><div class="n" id="v7">0</div><div class="l">visitors, 7 days</div></div>
-     <div><div class="n" id="v30">0</div><div class="l">visitors, 30 days</div></div>
-   </div></div>
-   <div class="card"><p class="hd">Where they come from, 7 days</p><div id="channels"></div></div>
-   <div class="card"><p class="hd">What pulls them in, 7 days</p><div id="landings"></div></div>
-   <div class="card"><p class="hd">Most read, 7 days</p><div id="pages"></div></div>
-   <div class="card"><p class="hd">Where they are, 7 days</p><div id="places"></div></div>
-   <div class="card" id="wlcard" hidden><p class="hd">The job list</p>
-    <p class="sub" id="wlsum"></p>
-    <div id="wlregions"></div></div>
-   <div class="card" id="srchcard" hidden><p class="hd">What they came looking for</p>
-    <p class="sub" id="srchsum"></p>
-    <p class="hd2">Asked for, and we had nothing</p><div id="srchmiss"></div>
-    <p class="hd2">Found, but nobody has written it</p><div id="srchunw"></div></div>
-   <div class="card" id="revcard" hidden>
-     <p class="hd">Revenue <span id="revage"></span></p>
-     <div class="two">
-       <div><div class="n" id="rtoday">$0</div><div class="l">earned today</div></div>
-       <div><div class="n" id="rharv">0</div><div class="l">harvests today</div></div>
-     </div>
-     <div class="spark" id="rspark" style="margin:.9rem 0 .2rem"></div>
-     <div class="two" style="margin-top:.6rem">
-       <div><div class="n" id="r7">$0</div><div class="l" id="r7l">7 days</div></div>
-       <div><div class="n" id="r30">$0</div><div class="l" id="r30l">30 days</div></div>
-     </div>
-     <p class="hd" style="margin-top:1.1rem">Where it comes from, 7 days</p>
-     <div id="rlanes"></div>
-     <p class="hd" style="margin-top:1.1rem">What earns most, 7 days</p>
-     <div id="rcoins"></div>
-     <p class="hd" style="margin-top:1.1rem">Banked against the open book</p>
-     <div id="rnet"></div>
-     <p class="empty" id="rnote" style="margin-top:.6rem"></p>
-   </div>
-   <div class="card" id="mecard"><p class="hd">You</p>
-     <div id="mestatus" class="me">Checking whether this device counts.</div>
-     <div class="mebtns">
-       <button id="meDevice" class="mebtn" hidden></button>
-       <button id="meNet" class="mebtn" hidden>Don't count this wifi</button>
-     </div>
-     <p id="menote" class="menote"></p>
-   </div>
-   <p class="foot">Updates itself. <button onclick="load()">Refresh now</button></p>
- </div>
-</div>
-<script>
-var CH={direct:'Direct',internal:'Internal',google:'Google',bing:'Bing',x:'X',twitter:'X',qr:'QR code',rednote:'RedNote',xiaohongshu:'RedNote',
- facebook:'Facebook',instagram:'Instagram',tips:'Tips pages',reddit:'Reddit',youtube:'YouTube',tiktok:'TikTok',linkedin:'LinkedIn',
- chatgpt:'ChatGPT',perplexity:'Perplexity',claude:'Claude',wechat:'WeChat',yelp:'Yelp',tripadvisor:'Tripadvisor'};
-function num(x){return (x||0).toLocaleString();}
-function chName(s){return CH[s]||(s.charAt(0).toUpperCase()+s.slice(1));}
-function place(s){var p=(s||'').split('|');return p[2]||p[1]||p[0]||'Somewhere';}
-function pageName(p){return p==='/'?'Home':p;}
-function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];});}
-/* The searches are ranked by what they cost us rather than by popularity, so
-   they get their own renderer: no bars, because a bar invites you to read the
-   biggest one as the best one, and here the whole point is that every row is
-   something we failed to answer. */
-/* THE JOB LIST. State, then town, then the place, because that is the order
-   the work actually happens in: you go to a city and do several at once.
-   Regions are ordered by how much is left rather than alphabetically, so the
-   top of the list is the next trip rather than Alabama.
-
-   The rows are collapsed until tapped and the full list is fetched once, on
-   the first tap, because there are hundreds of places and this is a phone. */
-var WL = null, wlOpen = {};
-function wlPaint(){
-  var host = document.getElementById('wlregions');
-  if (!WL) { host.innerHTML = '<p class="empty">Tap to load.</p>'; return; }
-  host.innerHTML = WL.regions.map(function(r){
-    var left = r.total - r.done;
-    var body = '';
-    if (wlOpen[r.region]) {
-      body = r.towns.map(function(t){
-        return (t.town ? '<p class="wlt">' + esc(t.town) + '</p>' : '') +
-          t.places.map(function(p){
-            return '<div class="wlp' + (p.done ? ' on' : '') + '" data-q="' + esc(p.qid) + '">' +
-                   '<span class="tk">' + (p.done ? '\u2713' : '') + '</span>' +
-                   '<span class="pn">' + esc(p.name) + '</span>' +
-                   (p.have ? '<span class="hv">in the book</span>' : '') + '</div>';
-          }).join('');
-      }).join('');
-    }
-    return '<div><div class="wlr" data-r="' + esc(r.region) + '">' +
-           '<span class="rg">' + esc(r.region || 'Elsewhere') + '</span>' +
-           '<span class="lf">' + num(left) + ' left</span></div>' + body + '</div>';
-  }).join('');
-}
-function wlLoad(){
-  if (WL) { wlPaint(); return; }
-  fetch('/api/worklist').then(function(r){return r.json();}).then(function(d){
-    if (d && d.ok) { WL = d; wlPaint(); }
-  }).catch(function(){});
-}
-document.addEventListener('click', function(e){
-  var row = e.target.closest && e.target.closest('.wlr');
-  if (row) { var k = row.getAttribute('data-r'); wlOpen[k] = !wlOpen[k]; wlPaint(); return; }
-  var pl = e.target.closest && e.target.closest('.wlp');
-  if (!pl) return;
-  /* Tick first, save second, and put it back if the save fails. A check mark
-     that lies is worse than one that is slow. */
-  var qid = pl.getAttribute('data-q'), was = pl.classList.contains('on');
-  pl.classList.toggle('on', !was);
-  pl.querySelector('.tk').textContent = !was ? '\u2713' : '';
-  fetch('/api/worklist/tick', {method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({qid: qid, done: !was})})
-    .then(function(r){return r.json();})
-    .then(function(d){
-      if (!d || !d.ok) throw 0;
-      if (WL) WL.regions.forEach(function(r){ r.towns.forEach(function(t){ t.places.forEach(function(p){
-        if (p.qid === qid) { p.done = !was; }
-      });});});
-      wlSum();
-    })
-    .catch(function(){
-      pl.classList.toggle('on', was);
-      pl.querySelector('.tk').textContent = was ? '\u2713' : '';
-    });
-});
-function wlSum(){
-  if (!WL) return;
-  var done = 0, total = 0;
-  WL.regions.forEach(function(r){ r.towns.forEach(function(t){ t.places.forEach(function(p){
-    total++; if (p.done) done++; });});});
-  document.getElementById('wlsum').textContent =
-    num(total) + ' places, ' + num(done) + ' ticked, ' + num(WL.have) + ' already in the book.';
-}
-function wl(d){
-  var c = document.getElementById('wlcard');
-  if (!d || !d.ok || !d.total) { c.hidden = true; return; }
-  c.hidden = false;
-  document.getElementById('wlsum').textContent =
-    num(d.total) + ' places, ' + num(d.done) + ' ticked, ' + num(d.have) + ' already in the book.';
-  wlLoad();
-}
-function srch(d){
-  var c=document.getElementById('srchcard');
-  if(!d||!d.ok){c.hidden=true;return;}
-  c.hidden=false;
-  document.getElementById('srchsum').textContent=
-    num(d.total)+' searches, '+num(d.distinct)+' different things, '+num(d.unanswered)+' answered with nothing.';
-  function list(el,items,empty){
-    el=document.getElementById(el);
-    if(!items||!items.length){el.innerHTML='<p class="empty">'+empty+'</p>';return;}
-    el.innerHTML=items.map(function(it){
-      return '<div class="rw"><span class="nm">'+esc(it.q)+'</span><span class="v">'+num(it.n)+'</span></div>';
-    }).join('');
-  }
-  list('srchmiss',d.missed,'Nothing went unanswered.');
-  list('srchunw',d.unwritten,'Everything asked for has a reading.');
-}
-function rows(el,items,kind){
-  el=document.getElementById(el);
-  if(!items||!items.length){el.innerHTML='<p class="empty">Nothing yet.</p>';return;}
-  var max=items[0].n||1;
-  el.innerHTML=items.map(function(it){
-    var nm=kind==='ch'?chName(it.name):kind==='pl'?place(it.name):pageName(it.name);
-    var w=Math.max(3,Math.round((it.n/max)*100));
-    return '<div class="rw"><span class="nm">'+esc(nm)+'</span><span class="bar"><i style="width:'+w+'%"></i></span><span class="v">'+num(it.n)+'</span></div>';
-  }).join('');
-}
-function money(v,dp){var n=Math.abs(Number(v)||0);
-  return (v<0?'-$':'$')+n.toLocaleString(undefined,{minimumFractionDigits:dp,maximumFractionDigits:dp});}
-function rev(d){
-  var card=document.getElementById('revcard');
-  if(!d||!d.ok){card.hidden=true;return;}
-  card.hidden=false;
-  // The age rides with the numbers: if the bot stops pushing, say so rather than
-  // showing a stale figure that still looks live.
-  var age=document.getElementById('revage');
-  age.textContent=d.stale?(' \u00b7 last sent '+(d.age_min==null?'never':d.age_min+' min ago')):'';
-  age.style.color=d.stale?'#a8443a':'';
-  document.getElementById('rtoday').textContent=money(d.today.revenue,2);
-  document.getElementById('rharv').textContent=num(d.today.harvests);
-  var sp=(d.daily||[]).map(function(x){return x.revenue;});
-  var mx=Math.max.apply(null,sp.concat([1]));
-  document.getElementById('rspark').innerHTML=sp.map(function(v){
-    return '<div title="'+money(v,2)+'" style="height:'+Math.max(2,Math.round((v/mx)*64))+'px"></div>';}).join('');
-  document.getElementById('r7').textContent=money(d.stretch.d7,0);
-  document.getElementById('r30').textContent=money(d.stretch.d30,0);
-  document.getElementById('r7l').textContent=num(d.stretch.d7_n)+' harvests, 7 days';
-  document.getElementById('r30l').textContent=num(d.stretch.d30_n)+' harvests, 30 days';
-  function bars(el,pairs){
-    el=document.getElementById(el);
-    if(!pairs||!pairs.length){el.innerHTML='<p class="empty">Nothing yet.</p>';return;}
-    var m=Math.max.apply(null,pairs.map(function(p){return p[1];}).concat([1]));
-    el.innerHTML=pairs.map(function(p){
-      var w=Math.max(3,Math.round((p[1]/m)*100));
-      return '<div class="rw"><span class="nm">'+esc(p[0])+'</span><span class="bar"><i style="width:'+w+'%"></i></span><span class="v">'+money(p[1],p[1]>=100?0:2)+'</span></div>';
-    }).join('');
-  }
-  bars('rlanes',d.by_lane); bars('rcoins',d.by_coin);
-  // Banked and paper always together: under the bot's no-loss rule winners are
-  // harvested out, so a red open book is what is still working, not a loss.
-  var o=d.open||{};
-  document.getElementById('rnet').innerHTML=
-    '<div class="nrw"><span class="nn">Banked, lifetime</span><span class="nv">'+money(d.realized_life,2)+'</span></div>'+
-    '<div class="nrw"><span class="nn">Paper, '+num(o.bags)+' bags still growing</span><span class="nv">'+money(o.paper,2)+'</span></div>'+
-    '<div class="nrw"><span class="nn">True net</span><span class="nv">'+money(d.true_net,2)+'</span></div>';
-  document.getElementById('rnote').textContent=
-    num(o.near_green)+' of '+num(o.bags)+' bags are within 5% of turning green. '+
-    'Winners are harvested out, so what stays open is the part still working, not a realized loss.';
-}
-function render(d){
-  document.getElementById('login').hidden=true;document.getElementById('app').hidden=false;
-  document.getElementById('online').textContent=num(d.online);
-  document.getElementById('upd').textContent=d.updated||'';
-  document.getElementById('tvis').textContent=num(d.today.visitors);
-  document.getElementById('tviews').textContent=num(d.today.pageviews);
-  document.getElementById('v7').textContent=num(d.d7.visits);
-  document.getElementById('v30').textContent=num(d.d30.visits);
-  var mx=Math.max.apply(null,d.spark.concat([1]));
-  document.getElementById('spark').innerHTML=d.spark.map(function(v){
-    return '<div title="'+v+'" style="height:'+Math.max(2,Math.round((v/mx)*64))+'px"></div>';}).join('');
-  rows('channels',d.channels,'ch');rows('landings',d.landings,'pg');
-  rows('pages',d.pages,'pg');rows('places',d.places,'pl');
-  rev(d.revenue);
-  srch(d.searches);
-  wl(d.worklist);
-  loadMe();
-}
-function meRender(d){
-  var dev=d.device_counted, net=d.network_registered, today=d.in_today_count;
-  document.getElementById('mestatus').innerHTML=
-    (dev?'<span class="warn">This device is being counted.</span>':'<span class="ok">This device is not counted.</span>')
-    +'<br>'+(net?'<span class="ok">This wifi is excluded too.</span>':'This wifi is not excluded yet.');
-  var bd=document.getElementById('meDevice');
-  if(dev){bd.hidden=false;bd.textContent="Don't count this device";}
-  else if(today){bd.hidden=false;bd.textContent="Remove my visits from today";}
-  else{bd.hidden=true;}
-  document.getElementById('meNet').hidden=net;
-}
-function loadMe(){fetch('/api/traffic/me').then(function(r){return r.json();}).then(function(d){if(d&&d.ok)meRender(d);}).catch(function(){});}
-document.getElementById('meDevice').onclick=function(){
-  fetch('/api/traffic/optout').then(function(){return fetch('/api/traffic/forget-today',{method:'POST'});})
-    .then(function(){document.getElementById('menote').textContent='Done. You are out of the count on this device.';loadMe();}).catch(function(){});
-};
-document.getElementById('meNet').onclick=function(){
-  fetch('/api/traffic/networks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({label:'owner wifi'})})
-    .then(function(r){return r.json();}).then(function(){document.getElementById('menote').textContent='This wifi is now excluded.';loadMe();}).catch(function(){});
-};
-function showLogin(){document.getElementById('app').hidden=true;document.getElementById('login').hidden=false;}
-function load(){
-  fetch('/api/pulse',{headers:{'Accept':'application/json'}}).then(function(r){
-    if(r.status===401){showLogin();return null;}return r.json();
-  }).then(function(d){if(d&&d.ok)render(d);}).catch(function(){});
-}
-function doLogin(){
-  var u=document.getElementById('u').value.trim(),p=document.getElementById('p').value;
-  document.getElementById('lerr').textContent='';
-  fetch('/api/owner/login',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({username:u,password:p})}).then(function(r){return r.json();}).then(function(d){
-    if(d&&d.ok){load();}else{document.getElementById('lerr').textContent=(d&&d.error)||'Try again.';}
-  }).catch(function(){document.getElementById('lerr').textContent='Try again.';});
-}
-document.addEventListener('keydown',function(e){if(e.key==='Enter'&&!document.getElementById('login').hidden)doLogin();});
-load();setInterval(load,45000);
-</script></body></html>"""
+# The mobile template lives in pulse.html; private aggregates stay behind owner_required.
 
 
 def _pulse_searches(n=6):
-    """What people typed into the gallery, arranged by what it costs us.
-
-    [SEAN 2026-09-07: "enhance the pulse, of what people is actually searching
-    so i can see there interest for our next built" ... "the pulse is in my
-    phone tracking traffic".]
-
-    Traffic says how many came. This says what they wanted, and the ranking is
-    deliberately not "most popular". A query we answer well is already done;
-    the ones worth a build are the two kinds of failure:
-
-      missed    they searched and we returned nothing at all.
-      unwritten they found the museum's catalogue line and no reading of ours,
-                which is the thing this site exists to add.
-
-    gallery_log has called `wanted` the most valuable list it keeps since the
-    day it was written. It has never appeared anywhere the owner actually
-    looks, which is a phone.
-    """
-    try:
-        d = gallery_log.summary(top=60, recent=1)
-    except Exception:
-        return {"ok": False}
-
-    written = set()
+    """Private search demand, reconciled with the actual saved story archive."""
+    import pulse_summary
+    d = pulse_summary.read_search_log(gallery_log.TALLY_PATH, top=60)
+    curated = {}
     try:
         with open(os.path.join(BASE_DIR, "gallery_items.json"), encoding="utf-8") as f:
-            for v in (json.load(f).get("items") or {}).values():
-                for fld in ("title", "artist"):
-                    t = (v.get(fld) or "").strip().lower()
-                    if t:
-                        written.add(t)
+            curated = json.load(f).get("items") or {}
     except Exception:
         pass
-
-    # OUR OWN TYPING IS NOT DEMAND. Testing this site puts strings into the
-    #    same log a traveller writes to, and on a phone "test, 5" sitting at the
-    #    top of what-to-write-next is worse than showing nothing. The record
-    #    itself is append-only and is left exactly as it is; this hides a short
-    #    explicit list from the view only. Anything not on the list is shown, so
-    #    a real search can never be filtered away by a clever guess.
-    OURS = {"test", "testing", "zzzqqxnotathing", "asdf", "aaa", "xxx"}
-
-    def is_written(q):
-        ql = (q or "").strip().lower()
-        return any(ql in w or w in ql for w in written) if ql else False
-
-    def ours(q):
-        return (q or "").strip().lower() in OURS
-
-    missed = [{"q": e.get("q"), "n": e.get("misses", 0)}
-              for e in d.get("wanted", []) if not ours(e.get("q"))][:n]
-    unwritten = [{"q": e.get("q"), "n": e.get("count", 0)}
-                 for e in d.get("top", [])
-                 if e.get("hits", 0) > 0 and not ours(e.get("q"))
-                 and not is_written(e.get("q"))][:n]
-    return {
-        "ok": True,
-        "total": d.get("searches_total", 0),
-        "distinct": d.get("distinct", 0),
-        "unanswered": d.get("unanswered", 0),
-        "missed": missed,
-        "unwritten": unwritten,
-    }
+    directory = os.environ.get("DATA_DIR", "").strip() or BASE_DIR
+    return pulse_summary.search_summary(d, os.path.join(directory, "gallery_archive.sqlite3"),
+                                        curated_items=curated, n=n)
 
 
 def _pulse_worklist():
@@ -14585,53 +14186,27 @@ def api_revenue_push():
 @app.route("/api/pulse")
 @owner_required
 def api_pulse():
-    data = _load_traffic()
-    days = data.get("days", {})
-    today = datetime.date.today()
-
-    def key(n):
-        return (today - datetime.timedelta(days=n)).isoformat()
-
-    def visitors(rec):
-        return rec.get("unique_visitors", len(rec.get("visitor_ids", [])))
-
-    def window(n):
-        pv = vs = 0
-        for i in range(n):
-            r = days.get(key(i))
-            if r:
-                pv += r.get("pageviews", 0)
-                vs += visitors(r)
-        return pv, vs
-
-    def agg(field, n=7, top=8):
-        m = {}
-        for i in range(n):
-            for k, v in ((days.get(key(i)) or {}).get(field) or {}).items():
-                m[k] = m.get(k, 0) + v
-        return [{"name": k, "n": v} for k, v in
-                sorted(m.items(), key=lambda kv: -kv[1])[:top]]
-
-    trec = days.get(key(0), {})
-    pv7, vs7 = window(7)
-    pv30, vs30 = window(30)
-    spark = [(days.get(key(13 - i)) or {}).get("pageviews", 0) for i in range(14)]
-    return jsonify({
+    import gallery_reader
+    import gallery_scout
+    import pulse_summary
+    data = pulse_summary.traffic_summary(TRAFFIC_PATH, request.args.get("days", 7))
+    directory = os.environ.get("DATA_DIR", "").strip() or BASE_DIR
+    data.update({
         "ok": True,
         "online": _presence_count(),
-        "today": {"pageviews": trec.get("pageviews", 0), "visitors": visitors(trec)},
-        "d7": {"pageviews": pv7, "visits": vs7},
-        "d30": {"pageviews": pv30, "visits": vs30},
-        "channels": agg("sources", 7, 8),
-        "pages": agg("paths", 7, 8),
-        "landings": agg("landings", 7, 6),
-        "places": agg("places", 7, 6),
-        "spark": spark,
         "revenue": _revenue_snapshot(),
         "searches": _pulse_searches(),
         "worklist": _pulse_worklist(),
+        "gallery": pulse_summary.gallery_summary(
+            os.path.join(directory, "gallery_archive.sqlite3"),
+            can_generate=gallery_reader.available(), monthly_cap=gallery_reader.MONTHLY_CAP,
+            scout_enabled=gallery_scout.enabled(), scout_daily_cap=gallery_scout._cap(),
+            discovery_path=os.path.join(directory, "discovery_store.json")),
         "updated": datetime.datetime.now().strftime("%b %-d, %-I:%M %p"),
     })
+    response = jsonify(data)
+    response.headers["Cache-Control"] = "private, no-store"
+    return response
 
 
 @app.route("/pulse.webmanifest")
@@ -14639,7 +14214,7 @@ def pulse_manifest():
     return jsonify({
         "name": "Traffic Pulse", "short_name": "Pulse",
         "start_url": "/pulse", "scope": "/pulse", "display": "standalone",
-        "background_color": "#faf8f4", "theme_color": "#1d4c4f",
+        "background_color": "#ffffff", "theme_color": "#1f3a5f",
         "icons": [{"src": "/icon-32.png", "sizes": "32x32", "type": "image/png"},
                   {"src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png"}],
     })
@@ -14650,7 +14225,10 @@ def pulse_page():
     """The one screen. Owner-gated at the data layer: this shell loads for
     anyone, but every number comes from /api/pulse, which is owner only, so a
     stranger who guesses the address sees a sign-in box and nothing else."""
-    return Response(_PULSE_HTML, mimetype="text/html")
+    with open(os.path.join(BASE_DIR, "pulse.html"), encoding="utf-8") as template:
+        response = Response(template.read(), mimetype="text/html")
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 # ======================================================================

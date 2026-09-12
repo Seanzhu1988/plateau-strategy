@@ -11,6 +11,8 @@ on:
       - 'universal-gallery.html'
       - 'gallery_scripts/**'
       - 'test*gallery*'
+      - 'pulse*'
+      - 'test_pulse*'
       - 'requirements.txt'
       - '.github/workflows/gallery-tests.yml'
   pull_request:
@@ -21,6 +23,8 @@ on:
       - 'universal-gallery.html'
       - 'gallery_scripts/**'
       - 'test*gallery*'
+      - 'pulse*'
+      - 'test_pulse*'
       - 'requirements.txt'
       - '.github/workflows/gallery-tests.yml'
 
@@ -48,8 +52,10 @@ jobs:
         run: |
           python -m unittest test_gallery_archive test_gallery_journey test_discovery_gallery_bridge test_gallery_identify test_gallery_photos test_gallery_research test_gallery_search_recovery test_gallery_background test_gallery_scout test_gallery_credentials -v
           python test_gallery_generate.py
+          python -m unittest test_pulse test_pulse_routes -v
       - name: Check gallery JavaScript
         run: |
           node --check gallery-ui.js
           node --check gallery-search.js
           node --test test_gallery_ui.cjs
+          node --test test_pulse_ui.js
