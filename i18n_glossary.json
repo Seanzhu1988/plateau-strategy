@@ -3,6 +3,10 @@
  "_rule": "A name in here is binding: later translations use it and are not free to invent a second one. A name NOT in here falls back to the rule in TRANSLATION.md, which is that venue names stay as the sign reads.",
  "_seeded": "2026-09-07, from what zh/es/ko/vi had already chosen",
  "terms": {
+  "Boston Common": {
+   "zh": "波士顿公园",
+   "_source": "Sean's explicit narration preference, 2026-09-11: bo shi dun gong yuan; use the same name in text and speech."
+  },
   "The National Mall": {
    "zh": "国家广场",
    "es": "El National Mall",

@@ -1672,9 +1672,12 @@
   "words": 795
  },
  "trail-stop-2.zh.mp3": {
+  "book_slug": null,
   "chars": 1359,
   "settings": null,
   "sig": "ec73ddbfa32f",
+  "stop": 2,
+  "trail": "freedom-trail",
   "voice": "pU9NaAwkoR3v0Mrg3uKz",
   "words": 8
  },
@@ -1685,9 +1688,12 @@
   "words": 763
  },
  "trail-stop-3.zh.mp3": {
+  "book_slug": null,
   "chars": 1403,
   "settings": null,
   "sig": "7937390e40ba",
+  "stop": 3,
+  "trail": "freedom-trail",
   "voice": "pU9NaAwkoR3v0Mrg3uKz",
   "words": 7
  },
@@ -1698,9 +1704,12 @@
   "words": 787
  },
  "trail-stop-4.zh.mp3": {
+  "book_slug": null,
   "chars": 1396,
   "settings": null,
   "sig": "cc2e5d534290",
+  "stop": 4,
+  "trail": "freedom-trail",
   "voice": "pU9NaAwkoR3v0Mrg3uKz",
   "words": 7
  },
@@ -1711,9 +1720,12 @@
   "words": 773
  },
  "trail-stop-5.zh.mp3": {
+  "book_slug": null,
   "chars": 1314,
   "settings": null,
   "sig": "b982bd69d53a",
+  "stop": 5,
+  "trail": "freedom-trail",
   "voice": "pU9NaAwkoR3v0Mrg3uKz",
   "words": 8
  },
@@ -1725,9 +1737,12 @@
   "words": 753
  },
  "trail-stop-6.zh.mp3": {
+  "book_slug": null,
   "chars": 1296,
   "settings": null,
   "sig": "a0cd56ffbde0",
+  "stop": 6,
+  "trail": "freedom-trail",
   "voice": "pU9NaAwkoR3v0Mrg3uKz",
   "words": 7
  },

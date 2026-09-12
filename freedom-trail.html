@@ -133,11 +133,8 @@
         .ft-note { font-size: .9rem; color: #6b655b; }
         .ft-pulse { font-size: .9rem; color: #6b655b; margin: -.6rem 0 1.2rem; }
         .ft-pulse b { color: #1f3a5f; font-weight: 800; }
-        /* Both readings sit on the page. Picking a voice is not the same act as
-           changing the language of the whole site, and somebody who wants the
-           Chinese should not have to do the second to get the first. */
         .ft-voices { display: flex; gap: .5rem; flex-wrap: wrap; margin: .5rem 0 0; }
-        #ftVoiceEn, #ftVoiceZh { font: inherit !important; font-size: .85rem !important;
+        #ftVoiceEn, #ftVoiceZh, #ftAudio .ft-audio-action { font: inherit !important; font-size: .85rem !important;
                    font-weight: 700 !important; cursor: pointer;
                    border: 1px solid #d3d3da !important; border-radius: 999px !important;
                    background: #fff !important; color: #1f3a5f !important;
@@ -146,6 +143,10 @@
                    background: #1f3a5f !important; color: #fff !important;
                    border-color: #1f3a5f !important; }
         #ftVoices[hidden] { display: none !important; }
+        .ft-audio-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin: .7rem 0; }
+        #ftAudio .ft-audio-action:disabled { opacity: .5; cursor: default; }
+        #ftAudio .ft-audio-action[aria-pressed="true"] { background: #1f3a5f !important; color: #fff !important; }
+        #ftAudioStatus { min-height: 1.4em; }
         /* The headphone ask. [SEAN "in every audio we ask them to carry
            headset to respect the general public"] The full line sits by the
            big player, and every stop's Play carries the small earbuds so the
@@ -360,13 +361,20 @@
 
         <p class="ft-pulse" id="ftPulse" hidden></p>
 
-        <div class="ft-audio" id="ftAudio" hidden>
-            <audio controls preload="none" id="ftPlayer"></audio>
-            <p class="ft-note" id="ftNote"></p>
+        <div class="ft-audio i18n-skip" id="ftAudio" hidden>
             <div class="ft-voices" id="ftVoices" hidden>
-                <button id="ftVoiceEn" aria-pressed="true">In English</button>
-                <button id="ftVoiceZh" aria-pressed="false">&#20013;&#25991;</button>
+                <button type="button" id="ftVoiceEn" aria-pressed="true">English</button>
+                <button type="button" id="ftVoiceZh" aria-pressed="false">&#20013;&#25991;</button>
             </div>
+            <div class="ft-audio-actions">
+                <button type="button" class="ft-audio-action" id="ftTourPlay" aria-pressed="false">Play my whole route</button>
+                <button type="button" class="ft-audio-action" id="ftIntroPlay">Introduction only</button>
+                <button type="button" class="ft-audio-action" id="ftAudioPrev" disabled>Previous</button>
+                <button type="button" class="ft-audio-action" id="ftAudioNext" disabled>Next</button>
+            </div>
+            <p class="ft-note" id="ftNote"></p>
+            <audio controls preload="none" id="ftPlayer"></audio>
+            <p class="ft-note" id="ftAudioStatus" role="status" aria-live="polite"></p>
             <p class="hs-note"><svg class="hs-ear" viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M7.2 2.5a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66A4.1 4.1 0 0 0 7.2 2.5zm9.6 0a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66a4.1 4.1 0 0 0-1.7-8.34z"/></svg> Headphones, please, for the people around you.</p>
         </div>
 
@@ -582,22 +590,12 @@
               { mi: mi, total: fmt(all.walk + all.inside) });
     }
 
-    // Who narrates the trail, and in which file, depends on the language the
-    // reader is on: Yiki walks it in English, Haoran walks it in Chinese.
-    // [SEAN recast it by ear: Yiki is an English-market voice, so English is
-    // the language she does not strain in; Pangge is native Mandarin radio.]
-    // A language with no trail voice recorded gets no play button rather than
-    // someone else's voice.
     function pageLang() {
         var l = document.documentElement.lang || "en";
         try { l = localStorage.getItem("ps_lang") || l; } catch (e) {}
         return (l || "en").toLowerCase().slice(0, 2);
     }
-    function trailGuide(lang) {
-        if (lang === "en") return { name: "Yiki", suffix: "" };
-        if (lang === "zh") return { name: "Haoran", suffix: ".zh" };
-        return null;                    // es, ko, vi: no trail voice yet
-    }
+    function audioText(en, zh) { return audioLang === "zh" ? zh : en; }
 
     function render() {
         // One pass: the leg to each kept stop is the ground from the previous
@@ -621,7 +619,6 @@
                 total: fmt(walk + inside) });
 
 
-        var lang = pageLang(), G = trailGuide(lang);
         var host = document.getElementById("ftStops");
         host.innerHTML = trail.stops.map(function (s) {
             var on = included.has(s.n), L = legOf[s.n];
@@ -630,23 +627,19 @@
                 : (on ? T("{leg} min walk · {inside} min here",
                           { leg: L.leg, inside: s.inside_min })
                       : T("{inside} min here", { inside: s.inside_min }));
-            // The deep five minute narration for this stop, in the reader's own
-            // language: Yiki reads the English, Haoran the Chinese. Every stop is
-            // the same, the three that once carried a book card included, so the
-            // button plays that stop's own recording or nothing at all, never a
-            // card in a different voice. verifyPlays drops it until the file lands.
-            var narr = "";
-            if (G) {
-                var primary = "/media/audio/trail-stop-" + s.n + G.suffix + ".mp3";
-                narr = '<div class="ft-byline"><span class="ft-guide">' + G.name + '</span>' +
-                       '<button class="ft-play" data-stop="' + s.n + '" data-audio="' + primary + '">' + resumeLabel(primary) + '</button><span class="hs-mini" title="Headphones, please, for the people around you."><svg class="hs-ear" viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M7.2 2.5a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66A4.1 4.1 0 0 0 7.2 2.5zm9.6 0a4.1 4.1 0 0 0-1.7 7.84V19a1.7 1.7 0 0 0 3.4 0v-8.66a4.1 4.1 0 0 0-1.7-8.34z"/></svg></span></div>';
-            }
+            var segment = recording(s.n);
+            var narr = '<div class="ft-byline i18n-skip">' + (segment
+                ? (segment.voice ? '<span class="ft-guide">' + segment.voice + '</span>' : '') +
+                  '<button type="button" class="ft-play" data-stop="' + s.n + '" data-audio="' + segment.src + '">' + resumeLabel(segment.key) + '</button>'
+                : '<span class="ft-note">' + (audioReady
+                    ? audioText('No English recording for this stop yet.', '这个站点还没有中文录音。')
+                    : audioText('Checking recordings…', '正在检查录音…')) + '</span>') + '</div>';
             // Yiki's written aside stays as text. Her name chip is dropped when
             // she is also the one narrating aloud (the English page, after the
             // recast), so it never reads twice.
             var note = s.yiki
                 ? '<div class="ft-yiki">' +
-                  ((G && G.name === "Yiki") ? "" : '<span class="ft-guide">Yiki</span>') +
+                  ((segment && segment.voice === "Yiki") ? "" : '<span class="ft-guide">Yiki</span>') +
                   s.yiki + '</div>'
                 : "";
             return '<div class="ft-stop' + (on ? '' : ' off') + (locked ? ' locked' : '') + '">' +
@@ -675,7 +668,7 @@
         document.getElementById("ftAll").setAttribute("aria-pressed", mode === "all");
         document.getElementById("ftHalf").setAttribute("aria-pressed", mode === "half");
         stopAudio();            // the list just changed under whatever was playing
-        verifyPlays();
+        syncTourAudio();
     }
 
     // Tick a stop in or out of the walk, until it is locked. All and Downtown
@@ -690,84 +683,180 @@
         render();
     });
 
-    // Every stop plays its guide, in the reader's own language: Jason reads the
-    // trail in English, Yiki in Chinese, each stop its own five minute
-    // narration. One at a time, because two guides talking over each other on a
-    // street corner is worse than silence.
-    //
-    // And an interruption is a bookmark, never a reset. [SEAN "when the play
-    // got interrupted it stopped and disappeared, can you build like continue
-    // from the moment it got interrupted"] These are five minute recordings
-    // listened to on a street; a phone call, a reload, a language switch or a
-    // tap on another stop used to throw the listener back to zero. Now the
-    // position is saved per recording (localStorage, every few seconds and on
-    // every stop), the button comes back as "Continue m:ss", and only actually
-    // finishing a stop clears its bookmark. Under 8 seconds in counts as not
-    // started; within 8 seconds of the end counts as finished.
+    // Keep bookmarks keyed by the unversioned file so a cache refresh does
+    // not discard a listener's place. All manual playback uses one element.
     function posLoad() { try { return JSON.parse(localStorage.getItem("ft_resume") || "{}"); } catch (err) { return {}; } }
     function posSave(m) { try { localStorage.setItem("ft_resume", JSON.stringify(m)); } catch (err) {} }
     function posSet(key, t) { if (!key) return; var m = posLoad(); if (t > 8) m[key] = Math.floor(t); else delete m[key]; posSave(m); }
     function posClear(key) { var m = posLoad(); delete m[key]; posSave(m); }
     function mmss(t) { t = Math.floor(t); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); }
-    function resumeLabel(key) { var t = posLoad()[key]; return t ? "Continue " + mmss(t) : "Play"; }
+    function resumeLabel(key) {
+        var t = posLoad()[key];
+        return t ? audioText("Continue ", "继续 ") + mmss(t) : audioText("Play", "播放");
+    }
 
-    var playing = null, playingBtn = null, playingKey = null;
+    var audioLang = pageLang(), audioManifest = {}, audioReady = false;
+    var audioEl = document.getElementById("ftPlayer"), audioQueue = [], audioIndex = -1;
+    var audioCurrent = null, audioMode = "single", audioRequest = 0, lastMark = 0;
+    var audioGeneration = 0, audioLoadedGeneration = -1, audioExpectedSrc = "";
+    var voiceNames = { "6nukEV6JAgCcOkdtH5FM": "Jason", "JZLpE3AGwpKYZI2X65hN": "Yiki",
+        "hFamrilbAE6WDMtWgKvu": "Pangge", "pU9NaAwkoR3v0Mrg3uKz": "Haoran",
+        "agczkAUlHLowaNnL72Cc": "Adrian" };
+    function recording(n) {
+        if (audioLang !== "en" && audioLang !== "zh") return null;
+        var file = (n == null ? "trail-freedom" : "trail-stop-" + n) +
+            (audioLang === "zh" ? ".zh" : "") + ".mp3";
+        var row = audioManifest[file];
+        if (!row || row.unavailable) return null;
+        var key = "/media/audio/" + file;
+        var stop = trail && trail.stops.filter(function (s) { return s.n === n; })[0];
+        return { n: n, key: key, src: key + (row.sig ? "?v=" + encodeURIComponent(row.sig) : ""),
+            voice: voiceNames[row.voice] || "", title: n == null
+                ? audioText("Introduction", "行程介绍") : n + ". " + (stop ? stop.name : "") };
+    }
+    function audioStatus(text) { document.getElementById("ftAudioStatus").textContent = text || ""; }
+    function audioSave() {
+        // A pause/timeupdate from the previous source may still be queued
+        // while the new source reports time zero. Restore its bookmark first.
+        if (audioCurrent && !audioEl.ended && audioLoadedGeneration === audioGeneration &&
+                audioEl.currentSrc === audioExpectedSrc) posSet(audioCurrent.key, audioEl.currentTime);
+    }
+    function paintAudioButtons() {
+        [].forEach.call(document.querySelectorAll(".ft-play"), function (b) {
+            var seg = recording(+b.dataset.stop);
+            var active = audioCurrent && audioCurrent.n === +b.dataset.stop && !audioEl.paused;
+            b.setAttribute("aria-pressed", String(!!active));
+            b.textContent = active ? audioText("Pause", "暂停") : (seg ? resumeLabel(seg.key) : audioText("Unavailable", "暂不可用"));
+        });
+        document.getElementById("ftTourPlay").setAttribute("aria-pressed", String(audioMode === "tour" && !audioEl.paused));
+        document.getElementById("ftAudioPrev").disabled = audioIndex <= 0;
+        document.getElementById("ftAudioNext").disabled = audioIndex < 0 || audioIndex >= audioQueue.length - 1;
+    }
     function stopAudio() {
-        if (playing) { posSet(playingKey, playing.currentTime); playing.pause(); playing = null; }
-        if (playingBtn) { playingBtn.setAttribute("aria-pressed", "false");
-                          playingBtn.textContent = playingKey ? resumeLabel(playingKey) : "Play";
-                          playingBtn = null; }
-        playingKey = null;
+        audioRequest++;
+        if (audioEl) { audioSave(); audioEl.pause(); }
+        if (audioEl) paintAudioButtons();
+    }
+    function syncTourAudio() {
+        if (!audioEl) return;
+        document.dispatchEvent(new CustomEvent("ft:audio-language"));
+        window.FT_GUIDE = { lang: audioLang, suffix: audioLang === "zh" ? ".zh" : "" };
+        audioQueue = []; audioIndex = -1; audioCurrent = null; audioMode = "single";
+        audioGeneration++; audioLoadedGeneration = -1; audioExpectedSrc = "";
+        audioEl.onloadedmetadata = null;
+        audioEl.removeAttribute("src"); audioEl.load();
+        document.getElementById("ftAudio").hidden = false;
+        document.getElementById("ftVoices").hidden = false;
+        document.getElementById("ftVoiceEn").setAttribute("aria-pressed", String(audioLang === "en"));
+        document.getElementById("ftVoiceZh").setAttribute("aria-pressed", String(audioLang === "zh"));
+        document.getElementById("ftTourPlay").textContent = audioText("Play my whole route", "播放整段行程");
+        document.getElementById("ftIntroPlay").textContent = audioText("Introduction only", "只听行程介绍");
+        document.getElementById("ftAudioPrev").textContent = audioText("Previous", "上一段");
+        document.getElementById("ftAudioNext").textContent = audioText("Next", "下一段");
+        document.getElementById("ftNote").textContent = audioText(
+            "The whole route plays the introduction, then your selected stops in walking order. You can pause between stops.",
+            "整段行程先播放介绍，再按步行顺序播放已选站点。到下一站前可以暂停。");
+        var wanted = trail ? selected() : [];
+        var missing = wanted.filter(function (s) { return !recording(s.n); });
+        var available = wanted.length - missing.length;
+        document.getElementById("ftTourPlay").disabled = !audioReady || (!available && !recording(null));
+        document.getElementById("ftIntroPlay").disabled = !recording(null);
+        audioStatus(!audioReady ? audioText("Checking recordings…", "正在检查录音…")
+            : (audioLang !== "en" && audioLang !== "zh")
+                ? "No recordings in this language yet. Choose English or 中文."
+                : missing.length ? audioText("Recordings pending for stops ", "以下站点的录音尚未完成：") +
+                    missing.map(function (s) { return s.n; }).join(", ") +
+                    audioText(". The whole route skips these stops.", "。整段播放会跳过这些站点。")
+                : audioText(available + " selected stops ready.", "已选的 " + available + " 个站点均可播放。"));
+        paintAudioButtons();
+    }
+    function playSegment(index, andPlay) {
+        stopAudio();
+        if (index < 0 || index >= audioQueue.length) return;
+        audioIndex = index; audioCurrent = audioQueue[index]; lastMark = 0;
+        ++audioRequest;
+        var generation = ++audioGeneration;
+        audioLoadedGeneration = -1;
+        audioExpectedSrc = new URL(audioCurrent.src, document.baseURI).href;
+        audioEl.onloadedmetadata = function () {
+            if (generation !== audioGeneration || !audioCurrent || audioEl.readyState < 1 ||
+                    audioEl.currentSrc !== audioExpectedSrc) return;
+            var t = posLoad()[audioCurrent.key];
+            if (t && audioEl.duration && t < audioEl.duration - 8) {
+                try { audioEl.currentTime = t; } catch (err) {}
+            } else if (t) posClear(audioCurrent.key);
+            audioLoadedGeneration = generation;
+        };
+        audioEl.src = audioCurrent.src;
+        audioEl.dataset.voice = audioLang;
+        document.getElementById("ftNote").textContent = audioCurrent.title +
+            (audioCurrent.voice ? " · " + audioCurrent.voice : "") +
+            (audioMode === "tour" ? " · " + (index + 1) + "/" + audioQueue.length : "");
+        paintAudioButtons();
+        if (andPlay) playCurrent();
+    }
+    function playCurrent() {
+        var request = audioRequest;
+        audioEl.play().catch(function (err) {
+            if (request !== audioRequest || (err && err.name === "AbortError")) return;
+            audioStatus(audioText("Playback paused. Tap the player to continue, or Next to skip this recording.",
+                "播放已暂停。请点播放器继续，或点“下一段”跳过这段录音。"));
+        });
+    }
+    function startSingle(n) {
+        var seg = recording(n); if (!seg) return false;
+        stopAudio(); audioMode = "single"; audioQueue = [seg];
+        audioStatus(""); playSegment(0, true); return true;
     }
     document.addEventListener("click", function (e) {
         var b = e.target.closest(".ft-play"); if (!b) return;
-        var src = b.dataset.audio;
-        if (playingBtn === b) { stopAudio(); return; }
-        stopAudio();
-        var a = new Audio(src);
-        a.addEventListener("loadedmetadata", function () {
-            var t = posLoad()[src];
-            if (t && a.duration && t < a.duration - 8) { try { a.currentTime = t; } catch (err) {} }
-            else if (t) { posClear(src); }        // bookmarked at the very end: done
-        });
-        var lastMark = 0;
-        a.ontimeupdate = function () {            // the bookmark, every few seconds
-            if (a.currentTime - lastMark > 4 || a.currentTime < lastMark) {
-                lastMark = a.currentTime; posSet(src, a.currentTime);
-            }
-        };
-        a.onended = function () { stopAudio(); posClear(src); };
-        a.onerror = function () { b.textContent = "Not recorded"; b.disabled = true; };
-        a.play().then(function () {
-            playing = a; playingBtn = b; playingKey = src;
-            b.setAttribute("aria-pressed", "true"); b.textContent = "Stop";
-        }).catch(function () { b.textContent = "Could not play"; });
+        if (audioCurrent && audioCurrent.n === +b.dataset.stop && !audioEl.ended) {
+            if (audioEl.error) playSegment(audioIndex, true);
+            else if (audioEl.paused) playCurrent(); else stopAudio();
+        } else startSingle(+b.dataset.stop);
     });
-    // Locking the phone or leaving the page is an interruption like any other.
-    window.addEventListener("pagehide", function () {
-        if (playing && playingKey) { posSet(playingKey, playing.currentTime); }
+    document.getElementById("ftTourPlay").addEventListener("click", function () {
+        stopAudio(); audioMode = "tour"; audioQueue = [];
+        var intro = recording(null); if (intro) audioQueue.push(intro);
+        selected().forEach(function (s) { var seg = recording(s.n); if (seg) audioQueue.push(seg); });
+        if (!audioQueue.length) return;
+        playSegment(0, true);
     });
-
-    // A button that does nothing is worse than no button, so each one is checked
-    // against the file before it is left on screen. It prefers the deep
-    // narration, falls back to the book card where one exists, and removes
-    // itself only when neither is really there. This is what lets the same
-    // markup work before and after the recordings land.
-    function head(url, cb) {
-        fetch(url, { method: "HEAD" })
-            .then(function (r) { cb(r.ok); })
-            .catch(function () { cb(false); });
-    }
-    function verifyPlays() {
-        // One voice per stop now, so this is show-or-drop: the stop's own
-        // recording is there and the button stays, or it is not and the byline
-        // goes. No card in another voice to fall back to, nothing to relabel.
-        [].forEach.call(document.querySelectorAll(".ft-play"), function (b) {
-            head(b.dataset.audio, function (ok) {
-                if (!ok) (b.closest(".ft-byline") || b).remove();
-            });
+    document.getElementById("ftIntroPlay").addEventListener("click", function () { startSingle(null); });
+    document.getElementById("ftAudioPrev").addEventListener("click", function () { playSegment(audioIndex - 1, true); });
+    document.getElementById("ftAudioNext").addEventListener("click", function () { playSegment(audioIndex + 1, true); });
+    ["en", "zh"].forEach(function (code) {
+        document.getElementById(code === "en" ? "ftVoiceEn" : "ftVoiceZh").addEventListener("click", function () {
+            if (audioLang === code) return;
+            stopAudio(); audioLang = code;
+            if (trail) render(); else syncTourAudio();
         });
-    }
+    });
+    audioEl.addEventListener("timeupdate", function () {
+        if (audioEl.currentTime - lastMark > 4 || audioEl.currentTime < lastMark) {
+            lastMark = audioEl.currentTime; audioSave();
+        }
+    });
+    audioEl.addEventListener("play", function () {
+        document.dispatchEvent(new CustomEvent("ft:audio-start", { detail: { source: "player" } }));
+        paintAudioButtons();
+    });
+    audioEl.addEventListener("pause", function () { audioSave(); paintAudioButtons(); });
+    audioEl.addEventListener("ended", function () {
+        if (audioCurrent) posClear(audioCurrent.key);
+        if (audioMode === "tour" && audioIndex < audioQueue.length - 1) playSegment(audioIndex + 1, true);
+        else { audioStatus(audioText("Finished. Choose a stop or replay your route.", "播放完毕。可以选择站点，或重听整段行程。")); paintAudioButtons(); }
+    });
+    audioEl.addEventListener("error", function () {
+        if (!audioCurrent) return;
+        audioStatus(audioCurrent.title + audioText(" could not load. Tap Play to retry or Next to skip it.",
+            "暂时无法加载。请点播放重试，或点“下一段”跳过。"));
+    });
+    document.addEventListener("ft:audio-start", function (e) {
+        if (e.detail && e.detail.source !== "player") stopAudio();
+    });
+    window.addEventListener("pagehide", audioSave);
+    window.FT_AUDIO = { recording: recording, isPlaying: function () { return !audioEl.paused; } };
 
     fetch("/api/trails", { cache: "no-store" })
         .then(function (r) { return r.json(); })
@@ -781,7 +870,10 @@
             // Switching language re-reads the stops so the guide who speaks,
             // and the file that plays, follow the reader: Yiki in English,
             // Pangge in Chinese.
-            document.addEventListener("psx:lang", function () { if (trail) { renderTruth(); render(); } });
+            document.addEventListener("psx:lang", function () {
+                audioLang = pageLang();
+                if (trail) { renderTruth(); render(); }
+            });
             // Somebody who already said yes should not be asked again every
             // visit; somebody who said no should not be nagged.
             try {
@@ -1169,94 +1261,18 @@
     });
 
 
-    // Yiki appears when she has been recorded, never as a dead player.
-    // JASON WALKS IT IN ENGLISH, YIKI WALKS IT IN CHINESE. [SEAN]
-    //
-    // Each reads in the language their voice was made for: Yiki is a Mandarin
-    // narrator, so Chinese is the language she does not have an accent in, and
-    // Jason is the reverse.
-    //
-    // BOTH are put on the page, not one. [SEAN] The page used to choose a
-    // reading from the site language and show only that, so a tap on the
-    // language pill that did not reach this page meant Yiki was never offered
-    // at all. Choosing a voice and changing the language of the site are
-    // different acts. The one matching the reader is loaded for them, the other
-    // is one tap away, and a voice not yet recorded never gets a button.
-    (function () {
-        // The names come from the recorder's own ledger, not from the roster.
-        // The roster says who records NEXT; the ledger says whose voice is in
-        // the file on disk, and those disagree exactly while a recast waits
-        // for its recording run. A name over someone else's voice is the
-        // mislabeling this page was cleaned of twice, so an unledgered file
-        // gets no name at all rather than a guessed one. When the new
-        // recordings land, their ledger rows put the right names up without
-        // anyone touching this page.
-        var VOICE_NAMES = { "6nukEV6JAgCcOkdtH5FM": "Jason",
-                            "JZLpE3AGwpKYZI2X65hN": "Yiki",
-                            "hFamrilbAE6WDMtWgKvu": "Pangge",
-                            "pU9NaAwkoR3v0Mrg3uKz": "Haoran",
-                            "agczkAUlHLowaNnL72Cc": "Adrian" };
-        var VOICES = {
-            en: { file: "/media/audio/trail-freedom.mp3",
-                  note: "The whole walk, in English.", btn: "ftVoiceEn",
-                  label: "In English" },
-            zh: { file: "/media/audio/trail-freedom.zh.mp3",
-                  note: "\u4e2d\u6587\uff0c\u5168\u7a0b\u3002", btn: "ftVoiceZh",
-                  label: "\u4e2d\u6587" }
-        };
-        fetch("/media/audio/_recorded.json", { cache: "no-store" })
-            .then(function (r) { return r.ok ? r.json() : {}; })
-            .then(function (m) {
-                Object.keys(VOICES).forEach(function (k) {
-                    var row = m[VOICES[k].file.split("/").pop()];
-                    var who = row && VOICE_NAMES[row.voice];
-                    if (!who) return;
-                    VOICES[k].note = who + (k === "en"
-                        ? ", the whole walk in English." : "\uff0c\u4e2d\u6587\u5168\u7a0b\u3002");
-                    VOICES[k].label = who + (k === "en" ? ", in English" : "\uff0c\u4e2d\u6587");
-                    var btn = document.getElementById(VOICES[k].btn);
-                    if (btn) btn.textContent = VOICES[k].label;
-                    var a = document.getElementById("ftPlayer");
-                    if (a && a.dataset.voice === k)
-                        document.getElementById("ftNote").textContent = VOICES[k].note;
-                });
-            }).catch(function () {});
-        function lang() {
-            var l = (document.documentElement.lang || "en").toLowerCase().slice(0, 2);
-            try { l = (localStorage.getItem("ps_lang") || l).toLowerCase().slice(0, 2); } catch (e) {}
-            return VOICES[l] ? l : "en";
-        }
-        function pick(code, andPlay) {
-            var v = VOICES[code]; if (!v || !v.ok) return;
-            var a = document.getElementById("ftPlayer");
-            if (a.dataset.voice === code) return;
-            a.dataset.voice = code; a.src = v.file;
-            document.getElementById("ftNote").textContent = v.note;
-            Object.keys(VOICES).forEach(function (k) {
-                var b = document.getElementById(VOICES[k].btn);
-                if (b) b.setAttribute("aria-pressed", String(k === code));
-            });
-            if (andPlay) a.play().catch(function () {});   // a tap is a gesture, so allowed
-        }
-        Promise.all(Object.keys(VOICES).map(function (k) {
-            return fetch(VOICES[k].file, { method: "HEAD" })
-                .then(function (r) { VOICES[k].ok = r.ok; })
-                .catch(function () { VOICES[k].ok = false; });
-        })).then(function () {
-            var have = Object.keys(VOICES).filter(function (k) { return VOICES[k].ok; });
-            if (!have.length) return;                     // never a player over a dead file
-            Object.keys(VOICES).forEach(function (k) {
-                var b = document.getElementById(VOICES[k].btn); if (!b) return;
-                if (VOICES[k].ok) b.addEventListener("click", function () { pick(k, true); });
-                else b.hidden = true;
-            });
-            document.getElementById("ftAudio").hidden = false;
-            document.getElementById("ftVoices").hidden = have.length < 2;
-            pick(VOICES[lang()].ok ? lang() : have[0], false);
+    // The recording ledger identifies the voice actually on disk. A recast
+    // changes the label only when the replacement recording is published.
+    fetch("/media/audio/_recorded.json", { cache: "no-store" })
+        .then(function (r) { if (!r.ok) throw new Error("recordings unavailable"); return r.json(); })
+        .then(function (m) {
+            audioManifest = m; audioReady = true;
+            if (trail) render(); else syncTourAudio();
+        }).catch(function () {
+            audioReady = true;
+            if (trail) render(); else syncTourAudio();
+            audioStatus(audioText("Recordings could not be loaded. Please refresh to try again.", "暂时无法获取录音。请刷新页面重试。"));
         });
-        // The site language changing should move this player too.
-        document.addEventListener("psx:lang", function () { pick(lang(), false); });
-    })();
 })();
 </script>
 <script src="/i18n.js"></script>
@@ -1641,15 +1657,18 @@
   function speak(stop) {
     if (!auto.on || !auto.el || auto.saying) return false;
     if (auto.spoken[stop.n]) return false;
-    var src = '/media/audio/trail-stop-' + stop.n +
-              ((window.FT_GUIDE && window.FT_GUIDE.suffix) || '') + '.mp3';
+    var flow = window.FT_AUDIO;
+    if (!flow || flow.isPlaying()) return false;
+    var segment = flow.recording(stop.n);
+    if (!segment) return false;
     auto.spoken[stop.n] = true;
     auto.saying = stop.n;
     try {
-      auto.el.src = src;
+      document.dispatchEvent(new CustomEvent('ft:audio-start', { detail: { source: 'nearby' } }));
+      auto.el.src = segment.src;
       var r = auto.el.play();
-      if (r && r.catch) r.catch(function () { auto.saying = null; });
-    } catch (err) { auto.saying = null; return false; }
+      if (r && r.catch) r.catch(function () { auto.saying = null; delete auto.spoken[stop.n]; });
+    } catch (err) { auto.saying = null; delete auto.spoken[stop.n]; return false; }
     return true;
   }
 
@@ -1657,6 +1676,10 @@
     if (auto.el) { try { auto.el.pause(); } catch (err) {} }
     auto.saying = null;
   }
+  document.addEventListener('ft:audio-start', function (e) {
+    if (e.detail && e.detail.source !== 'nearby') hushAuto();
+  });
+  document.addEventListener('ft:audio-language', function () { hushAuto(); auto.spoken = {}; });
 
   function metres(aLat, aLon, bLat, bLon) {
     var R = 6371000, p1 = aLat * Math.PI / 180, p2 = bLat * Math.PI / 180;
