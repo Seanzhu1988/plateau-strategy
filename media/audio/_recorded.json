@@ -675,37 +675,52 @@
   "words": 269
  },
  "ivy-princeton-stop-1.mp3": {
+  "book_slug": "princeton-palmer-square",
   "chars": 4178,
   "settings": null,
   "sig": "e9e4de5f44f0",
+  "stop": 1,
+  "trail": "ivy-princeton",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 752
  },
  "ivy-princeton-stop-10.mp3": {
+  "book_slug": "princeton-blair-hall",
   "chars": 4012,
   "settings": null,
   "sig": "4c23a052255b",
+  "stop": 10,
+  "trail": "ivy-princeton",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 727
  },
  "ivy-princeton-stop-11.mp3": {
+  "book_slug": "princeton-alexander-hall",
   "chars": 4130,
   "settings": null,
   "sig": "6790989768e1",
+  "stop": 11,
+  "trail": "ivy-princeton",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 721
  },
  "ivy-princeton-stop-2.mp3": {
+  "book_slug": "princeton-fitzrandolph-gate",
   "chars": 4023,
   "settings": null,
   "sig": "c2a00fdc6357",
+  "stop": 2,
+  "trail": "ivy-princeton",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 732
  },
  "ivy-princeton-stop-3.mp3": {
+  "book_slug": "princeton-nassau-hall",
   "chars": 4510,
   "settings": null,
   "sig": "7b9d3f252769",
+  "stop": 3,
+  "trail": "ivy-princeton",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 792
  },
