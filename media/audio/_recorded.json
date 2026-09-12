@@ -513,82 +513,442 @@
   "adopted": true,
   "voice": "JZLpE3AGwpKYZI2X65hN"
  },
+ "ivy-brown-overview.mp3": {
+  "chars": 1572,
+  "overview": true,
+  "settings": null,
+  "sig": "ed0c7449a947",
+  "trail": "ivy-brown",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 285
+ },
+ "ivy-brown-stop-1.mp3": {
+  "book_slug": "brown-van-wickle-gates",
+  "chars": 4468,
+  "settings": null,
+  "sig": "999181b51c2b",
+  "stop": 1,
+  "trail": "ivy-brown",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 790
+ },
+ "ivy-brown-stop-2.mp3": {
+  "book_slug": "brown-university-hall",
+  "chars": 4648,
+  "settings": null,
+  "sig": "af180b8ee3a8",
+  "stop": 2,
+  "trail": "ivy-brown",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 796
+ },
+ "ivy-brown-stop-3.mp3": {
+  "book_slug": "brown-manning-hall",
+  "chars": 4289,
+  "settings": null,
+  "sig": "9ac0a4cc39d5",
+  "stop": 3,
+  "trail": "ivy-brown",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 751
+ },
+ "ivy-brown-stop-4.mp3": {
+  "book_slug": "brown-sayles-hall",
+  "chars": 4454,
+  "settings": null,
+  "sig": "4f3ac3e3cef0",
+  "stop": 4,
+  "trail": "ivy-brown",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 770
+ },
+ "ivy-brown-stop-5.mp3": {
+  "book_slug": "brown-john-carter-brown-library",
+  "chars": 4226,
+  "settings": null,
+  "sig": "5c04a19f554d",
+  "stop": 5,
+  "trail": "ivy-brown",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 736
+ },
+ "ivy-brown-stop-6.mp3": {
+  "book_slug": "brown-carrie-tower",
+  "chars": 4122,
+  "settings": null,
+  "sig": "ccf633533ceb",
+  "stop": 6,
+  "trail": "ivy-brown",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 763
+ },
+ "ivy-brown-stop-7.mp3": {
+  "book_slug": "brown-john-hay-library",
+  "chars": 4120,
+  "settings": null,
+  "sig": "60fedbe505ef",
+  "stop": 7,
+  "trail": "ivy-brown",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 729
+ },
+ "ivy-brown-stop-8.mp3": {
+  "book_slug": "brown-faunce-house",
+  "chars": 4385,
+  "settings": null,
+  "sig": "f426dc65e42e",
+  "stop": 8,
+  "trail": "ivy-brown",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 753
+ },
+ "ivy-brown-stop-9.mp3": {
+  "book_slug": "brown-sciences-library",
+  "chars": 4177,
+  "settings": null,
+  "sig": "f6624bc506d9",
+  "stop": 9,
+  "trail": "ivy-brown",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 747
+ },
  "ivy-columbia-overview.mp3": {
   "chars": 1593,
+  "overview": true,
   "settings": null,
   "sig": "77d60becbc63",
+  "trail": "ivy-columbia",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 288
  },
  "ivy-columbia-stop-1.mp3": {
+  "book_slug": "columbia-college-walk",
   "chars": 4347,
   "settings": null,
   "sig": "8c44d7c11dc2",
+  "stop": 1,
+  "trail": "ivy-columbia",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 774
  },
  "ivy-columbia-stop-10.mp3": {
+  "book_slug": "columbia-pupin-hall",
   "chars": 4506,
   "settings": null,
   "sig": "660da76ceb7b",
+  "stop": 10,
+  "trail": "ivy-columbia",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 783
  },
  "ivy-columbia-stop-2.mp3": {
+  "book_slug": "columbia-alma-mater",
   "chars": 3971,
   "settings": null,
   "sig": "a33271fa4d95",
+  "stop": 2,
+  "trail": "ivy-columbia",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 755
  },
  "ivy-columbia-stop-3.mp3": {
+  "book_slug": "columbia-low-memorial-library",
   "chars": 4226,
   "settings": null,
   "sig": "2e675720751d",
+  "stop": 3,
+  "trail": "ivy-columbia",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 766
  },
  "ivy-columbia-stop-4.mp3": {
+  "book_slug": "columbia-butler-library",
   "chars": 4099,
   "settings": null,
   "sig": "a9a1ebe05e76",
+  "stop": 4,
+  "trail": "ivy-columbia",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 728
  },
  "ivy-columbia-stop-5.mp3": {
+  "book_slug": "columbia-sundial",
   "chars": 3927,
   "settings": null,
   "sig": "3c4837eeaed6",
+  "stop": 5,
+  "trail": "ivy-columbia",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 717
  },
  "ivy-columbia-stop-6.mp3": {
+  "book_slug": "columbia-hamilton-hall",
   "chars": 4254,
   "settings": null,
   "sig": "20e27ad062d3",
+  "stop": 6,
+  "trail": "ivy-columbia",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 717
  },
  "ivy-columbia-stop-7.mp3": {
+  "book_slug": "columbia-philosophy-hall",
   "chars": 3941,
   "settings": null,
   "sig": "f416a3c3fe56",
+  "stop": 7,
+  "trail": "ivy-columbia",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 713
  },
  "ivy-columbia-stop-8.mp3": {
+  "book_slug": "columbia-st-pauls-chapel",
   "chars": 4301,
+  "requires_rerecord": true,
   "settings": null,
   "sig": "6e26a21c11da",
+  "stop": 8,
+  "trail": "ivy-columbia",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 757
  },
  "ivy-columbia-stop-9.mp3": {
+  "book_slug": "columbia-earl-hall",
   "chars": 4225,
   "settings": null,
   "sig": "6b4cb43e08dd",
+  "stop": 9,
+  "trail": "ivy-columbia",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 744
+ },
+ "ivy-cornell-overview.mp3": {
+  "chars": 1549,
+  "overview": true,
+  "settings": null,
+  "sig": "267a637da3a7",
+  "trail": "ivy-cornell",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 290
+ },
+ "ivy-cornell-stop-1.mp3": {
+  "book_slug": "cornell-willard-straight-hall",
+  "chars": 4376,
+  "settings": null,
+  "sig": "3baf20ccb165",
+  "stop": 1,
+  "trail": "ivy-cornell",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 757
+ },
+ "ivy-cornell-stop-10.mp3": {
+  "book_slug": "cornell-fall-creek-suspension-bridge",
+  "chars": 4194,
+  "settings": null,
+  "sig": "c340d91b2f5e",
+  "stop": 10,
+  "trail": "ivy-cornell",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 752
+ },
+ "ivy-cornell-stop-11.mp3": {
+  "book_slug": "cornell-fall-creek-gorge",
+  "chars": 4419,
+  "settings": null,
+  "sig": "0528078c6923",
+  "stop": 11,
+  "trail": "ivy-cornell",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 815
+ },
+ "ivy-cornell-stop-2.mp3": {
+  "book_slug": "cornell-mcgraw-tower",
+  "chars": 4122,
+  "settings": null,
+  "sig": "e65fbb49ac64",
+  "stop": 2,
+  "trail": "ivy-cornell",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 750
+ },
+ "ivy-cornell-stop-3.mp3": {
+  "book_slug": "cornell-uris-library",
+  "chars": 4234,
+  "settings": null,
+  "sig": "1055457fb4b9",
+  "stop": 3,
+  "trail": "ivy-cornell",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 751
+ },
+ "ivy-cornell-stop-4.mp3": {
+  "book_slug": "cornell-libe-slope",
+  "chars": 3845,
+  "settings": null,
+  "sig": "c43eb291108b",
+  "stop": 4,
+  "trail": "ivy-cornell",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 708
+ },
+ "ivy-cornell-stop-5.mp3": {
+  "book_slug": "cornell-arts-quad-founders",
+  "chars": 4072,
+  "settings": null,
+  "sig": "ef41bfb90213",
+  "stop": 5,
+  "trail": "ivy-cornell",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 735
+ },
+ "ivy-cornell-stop-6.mp3": {
+  "book_slug": "cornell-goldwin-smith-hall",
+  "chars": 4479,
+  "settings": null,
+  "sig": "b7d9c2cf532f",
+  "stop": 6,
+  "trail": "ivy-cornell",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 764
+ },
+ "ivy-cornell-stop-7.mp3": {
+  "book_slug": "cornell-sage-chapel",
+  "chars": 4111,
+  "settings": null,
+  "sig": "25561a3eb4f6",
+  "stop": 7,
+  "trail": "ivy-cornell",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 721
+ },
+ "ivy-cornell-stop-8.mp3": {
+  "book_slug": "cornell-a-d-white-house",
+  "chars": 4547,
+  "settings": null,
+  "sig": "b4f8890fb9e7",
+  "stop": 8,
+  "trail": "ivy-cornell",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 792
+ },
+ "ivy-cornell-stop-9.mp3": {
+  "book_slug": "cornell-johnson-museum",
+  "chars": 4165,
+  "settings": null,
+  "sig": "277b72e30174",
+  "stop": 9,
+  "trail": "ivy-cornell",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 761
+ },
+ "ivy-dartmouth-stop-1.mp3": {
+  "book_slug": "dartmouth-hanover-inn",
+  "chars": 4682,
+  "settings": null,
+  "sig": "1e2c34722ddd",
+  "stop": 1,
+  "trail": "ivy-dartmouth",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 811
+ },
+ "ivy-dartmouth-stop-10.mp3": {
+  "book_slug": "dartmouth-hopkins-center",
+  "chars": 4252,
+  "current_script_sig": "dd31249f46b0",
+  "migrated_from": "ivy-dartmouth-stop-9.mp3",
+  "requires_rerecord": true,
+  "settings": null,
+  "sig": "5f570c20b4a8",
+  "stop": 10,
+  "trail": "ivy-dartmouth",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 771
+ },
+ "ivy-dartmouth-stop-11.mp3": {
+  "book_slug": "dartmouth-hood-museum",
+  "chars": 4318,
+  "current_script_sig": "b7f98883f37a",
+  "migrated_from": "ivy-dartmouth-stop-10.mp3",
+  "requires_rerecord": true,
+  "settings": null,
+  "sig": "dbabc05ae1e3",
+  "stop": 11,
+  "trail": "ivy-dartmouth",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 754
+ },
+ "ivy-dartmouth-stop-2.mp3": {
+  "book_slug": "dartmouth-green",
+  "chars": 4093,
+  "settings": null,
+  "sig": "fbd6216ca77c",
+  "stop": 2,
+  "trail": "ivy-dartmouth",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 735
+ },
+ "ivy-dartmouth-stop-3.mp3": {
+  "book_slug": "dartmouth-hall",
+  "chars": 4377,
+  "settings": null,
+  "sig": "07c5b50e9a64",
+  "stop": 3,
+  "trail": "ivy-dartmouth",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 735
+ },
+ "ivy-dartmouth-stop-4.mp3": {
+  "book_slug": "dartmouth-rollins-chapel",
+  "chars": 4124,
+  "settings": null,
+  "sig": "ffebd4ca8fbe",
+  "stop": 4,
+  "trail": "ivy-dartmouth",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 724
+ },
+ "ivy-dartmouth-stop-5.mp3": {
+  "book_slug": "dartmouth-rauner-library",
+  "chars": 4437,
+  "settings": null,
+  "sig": "b8e9a38daeea",
+  "stop": 5,
+  "trail": "ivy-dartmouth",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 762
+ },
+ "ivy-dartmouth-stop-6.mp3": {
+  "book_slug": "dartmouth-baker-library",
+  "chars": 4240,
+  "settings": null,
+  "sig": "30499891e458",
+  "stop": 6,
+  "trail": "ivy-dartmouth",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 746
+ },
+ "ivy-dartmouth-stop-7.mp3": {
+  "book_slug": "dartmouth-sanborn-house",
+  "chars": 4243,
+  "settings": null,
+  "sig": "942d9635f067",
+  "stop": 7,
+  "trail": "ivy-dartmouth",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 768
+ },
+ "ivy-dartmouth-stop-9.mp3": {
+  "book_slug": "dartmouth-collis-center",
+  "chars": 4280,
+  "current_script_sig": "02765c7d99e3",
+  "migrated_from": "ivy-dartmouth-stop-8.mp3",
+  "requires_rerecord": true,
+  "settings": null,
+  "sig": "10d5cdee5bff",
+  "stop": 9,
+  "trail": "ivy-dartmouth",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 752
  },
  "ivy-harvard-overview.mp3": {
   "chars": 1738,
@@ -666,6 +1026,105 @@
   "sig": "05fc96b984eb",
   "voice": "JZLpE3AGwpKYZI2X65hN",
   "words": 735
+ },
+ "ivy-penn-overview.mp3": {
+  "chars": 1464,
+  "overview": true,
+  "settings": null,
+  "sig": "e757bf93e380",
+  "trail": "ivy-penn",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 265
+ },
+ "ivy-penn-stop-1.mp3": {
+  "book_slug": "penn-franklin-bench",
+  "chars": 4552,
+  "settings": null,
+  "sig": "c64e5522d7ac",
+  "stop": 1,
+  "trail": "ivy-penn",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 806
+ },
+ "ivy-penn-stop-10.mp3": {
+  "book_slug": "penn-franklin-field",
+  "chars": 4167,
+  "settings": null,
+  "sig": "abb48687dd26",
+  "stop": 10,
+  "trail": "ivy-penn",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 731
+ },
+ "ivy-penn-stop-2.mp3": {
+  "book_slug": "penn-locust-walk",
+  "chars": 4075,
+  "settings": null,
+  "sig": "86bc5d0cd760",
+  "stop": 2,
+  "trail": "ivy-penn",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 738
+ },
+ "ivy-penn-stop-3.mp3": {
+  "book_slug": "penn-split-button",
+  "chars": 4090,
+  "settings": null,
+  "sig": "c0d4f02f3ca8",
+  "stop": 3,
+  "trail": "ivy-penn",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 724
+ },
+ "ivy-penn-stop-4.mp3": {
+  "book_slug": "penn-college-hall-and-green",
+  "chars": 4279,
+  "settings": null,
+  "sig": "96dab78b34a0",
+  "stop": 4,
+  "trail": "ivy-penn",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 753
+ },
+ "ivy-penn-stop-5.mp3": {
+  "book_slug": "penn-fisher-fine-arts-library",
+  "chars": 4216,
+  "settings": null,
+  "sig": "2bcda37e348d",
+  "stop": 5,
+  "trail": "ivy-penn",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 742
+ },
+ "ivy-penn-stop-6.mp3": {
+  "book_slug": "penn-houston-hall",
+  "chars": 4085,
+  "settings": null,
+  "sig": "7bde67ccd10b",
+  "stop": 6,
+  "trail": "ivy-penn",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 711
+ },
+ "ivy-penn-stop-8.mp3": {
+  "book_slug": "penn-wharton-steinberg-dietrich",
+  "chars": 4614,
+  "settings": null,
+  "sig": "049712e888c1",
+  "stop": 8,
+  "trail": "ivy-penn",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 795
+ },
+ "ivy-penn-stop-9.mp3": {
+  "book_slug": "penn-museum",
+  "chars": 4189,
+  "settings": null,
+  "sig": "7f12210df458",
+  "stop": 9,
+  "trail": "ivy-penn",
+  "voice": "JZLpE3AGwpKYZI2X65hN",
+  "words": 742
  },
  "ivy-princeton-stop-1.mp3": {
   "book_slug": "princeton-palmer-square",

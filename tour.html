@@ -433,7 +433,11 @@
            not a graceful fallback. */
         if (lang === "en" && entry && entry.audio) {
             var file = basename(entry.audio), bookRow = recorded[file] || null;
-            if (bookRow && !semanticMatch(bookRow, identity)) return null;
+            /* A filename in destinations.json is not proof that the binary
+               exists. Require the ledger row here too, or a missing file is
+               advertised with a music note and fails only after the visitor
+               presses play. */
+            if (!bookRow || !semanticMatch(bookRow, identity)) return null;
             return { src: versioned(entry.audio, bookRow), file: file, row: bookRow, trailFile: false };
         }
         return null;
