@@ -3,6 +3,17 @@
 Written down so none of this gets re-argued. Each line is a decision the owner
 made or confirmed, with the reason it stuck.
 
+## Universal Gallery, corrected by Sean on 2026-09-12
+
+Tapping any item opens its saved story or automatically creates and saves that
+item's own story. No second "write story" tap. An unrelated photo-search result
+is a valuable separate discovery, not a reason to suppress writing. Each object
+keeps its own stable archive identity and language-specific stories; a tap never
+confirms that the object matches the original photograph. Merely displaying
+search results does not trigger generation. Reuse saved stories, prevent duplicate
+in-flight work, and retain existing provider/budget limits. Visitor photographs
+remain private and are not published with these stories.
+
 ---
 
 ## Colour

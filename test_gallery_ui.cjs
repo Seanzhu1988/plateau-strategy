@@ -94,7 +94,7 @@ function cardHost(page, row = 0) {
   children.get('.ug-actions').insertAdjacentHTML = (_position, html) => {
     for (const match of html.matchAll(/data-action="([^"]+)"/g)) action(match[1]);
   };
-  function click(btn = view) { assert.ok(btn, 'the requested action must exist'); page.el('ugFound').dispatch('click', {target: {closest: () => btn}}); }
+  function click(...args) { const btn = args.length ? args[0] : view; assert.ok(btn, 'the requested action must exist'); page.el('ugFound').dispatch('click', {target: {closest: () => btn}}); }
   function close() {
     assert.match(children.get('.ug-read-box').innerHTML, /data-action="close-story"/, 'Close must be a real rendered action, not an invented control');
     click(actions.get('close-story') || action('close-story'));
@@ -126,7 +126,7 @@ test('Close item during discover prevents late save responses from opening or ge
   for (const storyAvailable of [false, true]) {
     const page = setup('/universal-gallery?q=Vessel&origin=photo');
     await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'p_selected', title: 'Vessel'}]});
-    const card = cardHost(page); card.click(); card.click(card.actions.get('write-selected'));
+    const card = cardHost(page); card.click(); card.click();
     assert.equal(page.requests[2].url, '/api/gallery/discover');
     card.close(); assert.equal(page.requests[2].options.signal.aborted, true);
     await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_selected', lang: 'en', photo_match_verified: false,
@@ -143,7 +143,7 @@ test('Close item during discover prevents late save responses from opening or ge
 test('Close item during generation permits no late UI reopen, story text or supplied badge', async () => {
   const page = setup('/universal-gallery?q=Vessel&origin=photo');
   await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'p_selected', title: 'Vessel'}]});
-  const card = cardHost(page); card.click(); card.click(card.actions.get('write-selected'));
+  const card = cardHost(page); card.click(); card.click();
   await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_selected', lang: 'en', photo_match_verified: false,
     can_generate: true, artifact: {artifact_id: 'a_selected', title: 'Vessel', story_available: false}});
   assert.equal(page.requests[3].url, '/api/gallery/generate');
@@ -157,19 +157,22 @@ test('Close item during generation permits no late UI reopen, story text or supp
   assert.equal(page.requests.length, 4, 'late completion does not retry or start another job');
 });
 
-test('reopening after a closed save request restores an actionable explicit story button without an automatic retry', async () => {
+test('reopening after a closed save request retries from the same single story action', async () => {
   const page = setup('/universal-gallery?q=Vessel&origin=photo');
   await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'p_selected', title: 'Vessel'}]});
-  const card = cardHost(page); card.click(); const write = card.actions.get('write-selected'); card.click(write); card.close();
+  const card = cardHost(page); card.click(); card.close();
   await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_selected', lang: 'en', photo_match_verified: false,
     can_generate: true, artifact: {artifact_id: 'a_selected', title: 'Vessel'}});
   card.click();
   assert.equal(card.children.get('.ug-read-box').hidden, false);
-  assert.equal(card.actions.get('write-selected').disabled, false, 'Close must not leave the explicit story control permanently disabled');
-  assert.equal(page.requests.length, 3, 'reopening alone never retries the save');
+  assert.equal(page.requests.length, 4, 'one new tap retries the interrupted save');
+  assert.deepEqual(JSON.parse(page.requests[3].options.body), {artifact_id: 'p_selected', lang: 'en', intent: 'write_story'});
+  await page.respond(3, {ok: true, saved: false}, 500);
+  assert.equal(card.actions.get('view-item').disabled, false, 'the same control stays retryable');
+  assert.equal(card.actions.has('write-selected'), false);
 });
 
-test('curiosity about any photo result, including a wrong candidate, performs zero writes or queue requests', async () => {
+test('rendering results is inert and each tapped photo result saves only its own discovery once', async () => {
   for (const canGenerate of [false, true]) {
     const page = setup('/universal-gallery?q=painted%20vase&origin=photo&discover=0');
     await page.respond(0, {ok: true, can_generate: canGenerate, results: [
@@ -177,18 +180,22 @@ test('curiosity about any photo result, including a wrong candidate, performs ze
       {artifact_id: 'p_other', title: 'Interesting but different bowl', confirmed: false, medium: 'Bronze', dimensions: '25 cm'}
     ]});
     const first = cardHost(page, 0), wrong = cardHost(page, 1);
-    first.click(); wrong.click(); wrong.click(); first.click();
-    assert.equal(page.requests.length, 2, 'only the two collection GETs have been sent');
+    assert.equal(page.requests.length, 2, 'merely rendering collection results never writes');
     assert.equal(writes(page).length, 0);
+    first.click(); wrong.click(); wrong.click(); first.click();
+    assert.equal(page.requests.length, 4, 'one discovery request per selected object');
+    assert.deepEqual(writes(page).map(request => JSON.parse(request.options.body)), [
+      {artifact_id: 'p_guess', lang: 'en', intent: 'write_story'}, {artifact_id: 'p_other', lang: 'en', intent: 'write_story'}
+    ]);
     assert.match(wrong.children.get('.ug-read-box').innerHTML, /Interesting but different bowl/);
     assert.match(wrong.children.get('.ug-read-box').innerHTML, /Bronze/);
     assert.doesNotMatch(wrong.children.get('.ug-read-box').innerHTML, /Possible vase/);
     assert.match(wrong.children.get('.ug-read-box').innerHTML, /Photo match not verified/);
-    assert.equal(wrong.actionAdds.filter(name => name === 'write-selected').length, 1);
+    assert.equal(wrong.actionAdds.filter(name => name === 'write-selected').length, 0);
     assert.equal(wrong.actions.has('confirm'), false);
     assert.notEqual(wrong.children.get('.ug-mark').textContent, 'Provided by us');
     page.runTimers(90000); await tick();
-    assert.equal(writes(page).length, 0, 'time does not silently enqueue or generate a story');
+    assert.equal(writes(page).length, 2, 'time does not duplicate the selected jobs');
   }
 });
 
@@ -242,20 +249,19 @@ test('late saved-story responses cannot revive a query, removed photo, old langu
   }
 });
 
-test('explicit story writing selects the intended row exactly once and never confirms the photograph', async () => {
+test('one story tap selects the intended row exactly once and never confirms the photograph', async () => {
   const page = setup('/universal-gallery?q=Vessel&origin=photo');
   await page.respond(0, {ok: true, can_generate: true, results: [
     {artifact_id: 'p_first', title: 'First vessel'}, {artifact_id: 'p_second', title: 'Second vessel'}
   ]});
   const card = cardHost(page, 1); card.click();
-  assert.equal(writes(page).length, 0);
-  const write = card.actions.get('write-selected'); card.click(write); card.click(write);
+  card.click(); card.click();
   assert.equal(writes(page).length, 1);
   assert.deepEqual(JSON.parse(page.requests[2].options.body), {artifact_id: 'p_second', lang: 'en', intent: 'write_story'});
   await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_second', lang: 'en', photo_match_verified: false, can_generate: true, artifact: {artifact_id: 'a_second', title: 'Second vessel'}, writing_status: 'pending'});
   assert.equal(page.requests[3].url, '/api/gallery/generate');
   assert.deepEqual(JSON.parse(page.requests[3].options.body), {artifact_id: 'a_second', lang: 'en'});
-  card.click(write); card.click(card.actions.get('generate'));
+  card.click(); card.click();
   assert.equal(writes(page).length, 2, 'one discovery request and one generation, no repeated provider work');
   await page.respond(3, {ok: true, artifact_id: 'a_second', lang: 'en', text: 'Only the second vessel story.'});
   assert.equal(card.text.textContent, 'Only the second vessel story.');
@@ -263,11 +269,127 @@ test('explicit story writing selects the intended row exactly once and never con
   assert.match(card.children.get('.ug-read-box').innerHTML, /Photo match not verified/);
 });
 
-test('late explicit-story save responses cannot generate after query, photo, language or card ownership changes', async () => {
+test('two newly selected objects keep independent images, identities and stories through reversed completions', async () => {
+  for (const origin of ['', '&origin=photo']) {
+    const page = setup('/universal-gallery?q=Vessels' + origin);
+    await page.respond(0, {ok: true, can_generate: true, results: [
+      {artifact_id: 'p_first', title: 'First vase', image: 'https://museum.example/first.jpg'},
+      {artifact_id: 'a_second', title: 'Unrelated bowl', image: 'https://museum.example/second.jpg'}
+    ]});
+    const before = page.requests.length, first = cardHost(page, 0), second = cardHost(page, 1);
+    assert.equal(writes(page).length, 0, 'rendering either text or photo results is inert');
+    first.click(); second.click(); first.click(); second.click();
+    assert.equal(page.requests.length, before + 2);
+    assert.equal(JSON.parse(page.requests[before].options.body).artifact_id, 'p_first');
+    assert.equal(JSON.parse(page.requests[before + 1].options.body).artifact_id, 'a_second');
+    await page.respond(before + 1, {ok: true, saved: true, requested_artifact_id: 'a_second', lang: 'en',
+      can_generate: true, photo_match_verified: false, artifact: {artifact_id: 'a_second', title: 'Unrelated bowl'}});
+    await page.respond(before, {ok: true, saved: true, requested_artifact_id: 'p_first', lang: 'en',
+      can_generate: true, photo_match_verified: false, artifact: {artifact_id: 'a_first', title: 'First vase'}});
+    assert.deepEqual(JSON.parse(page.requests[before + 2].options.body), {artifact_id: 'a_second', lang: 'en'});
+    assert.deepEqual(JSON.parse(page.requests[before + 3].options.body), {artifact_id: 'a_first', lang: 'en'});
+    first.click(); second.click();
+    assert.equal(page.requests.length, before + 4, 'no duplicate generation while either item is busy');
+    await page.respond(before + 2, {ok: true, artifact_id: 'a_second', lang: 'en', text: 'Only the unrelated bowl story.'});
+    assert.equal(first.text.textContent, ''); assert.equal(second.text.textContent, 'Only the unrelated bowl story.');
+    await page.respond(before + 3, {ok: true, artifact_id: 'a_first', lang: 'en', text: 'Only the first vase story.'});
+    assert.equal(first.text.textContent, 'Only the first vase story.');
+    assert.match(first.children.get('.ug-read-box').innerHTML, /first\.jpg/);
+    assert.doesNotMatch(first.children.get('.ug-read-box').innerHTML, /second\.jpg|Unrelated bowl|artifacts\/a_second/);
+    assert.match(second.children.get('.ug-read-box').innerHTML, /second\.jpg/);
+    assert.doesNotMatch(second.children.get('.ug-read-box').innerHTML, /first\.jpg|First vase|artifacts\/a_first/);
+    first.click(); await page.respond(before + 4, {ok: true, artifact_id: 'a_first', lang: 'en', text: 'Only the first vase story.'});
+    assert.equal(writes(page).length, 4, 'repeat reading reuses saved text without another discovery or generation');
+    assert.equal(page.requests.some(request => /confirm|\/photo$/.test(request.url)), false);
+    assert.doesNotMatch(page.el('ugFound').innerHTML, /data-action="write-selected"|data-action="generate"/);
+  }
+});
+
+test('image, title and card-space taps use the same story action while source links stay independent', async () => {
+  for (const surface of ['image', 'title', 'space']) {
+    const page = setup('/universal-gallery?q=Vase');
+    await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'a_vase', title: 'Vase'}]});
+    const card = cardHost(page);
+    const tap = interactive => page.el('ugFound').dispatch('click', {target: {kind: surface, closest(selector) {
+      if (selector === '[data-action]') return null;
+      if (selector === 'a, button, audio, .ug-read-box') return interactive ? {} : null;
+      return selector === '.ug-artifact' ? card.host : null;
+    }}});
+    tap(true); assert.equal(writes(page).length, 0);
+    tap(false); tap(false);
+    assert.equal(writes(page).length, 1, surface);
+    assert.deepEqual(JSON.parse(writes(page)[0].options.body), {artifact_id: 'a_vase', lang: 'en', intent: 'write_story'});
+  }
+});
+
+test('a pending no-engine story reopens, checks saved text and refreshes availability without duplicate provider work', async () => {
+  const page = setup('/universal-gallery?q=Vase&origin=photo');
+  await page.respond(0, {ok: true, can_generate: false, results: [{artifact_id: 'p_vase', title: 'Vase'}]});
+  const card = cardHost(page); card.click();
+  await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_vase', lang: 'en', can_generate: false,
+    artifact: {artifact_id: 'a_vase', title: 'Vase'}, writing_status: 'queued'});
+  assert.match(card.children.get('.ug-card-status').textContent, /queued/);
+  card.close(); card.click(); card.click();
+  assert.match(page.requests[3].url, /artifacts\/a_vase\/story\?lang=en$/);
+  await page.respond(3, {ok: false, reason: 'story_missing'}, 404);
+  assert.deepEqual(JSON.parse(page.requests[4].options.body), {artifact_id: 'a_vase', lang: 'en', intent: 'write_story'});
+  await page.respond(4, {ok: true, saved: true, requested_artifact_id: 'a_vase', lang: 'en', can_generate: true,
+    artifact: {artifact_id: 'a_vase', title: 'Vase'}});
+  assert.equal(page.requests[5].url, '/api/gallery/generate');
+  await page.respond(5, {ok: true, artifact_id: 'a_vase', lang: 'en', text: 'The queued vase story.'});
+  assert.equal(card.text.textContent, 'The queued vase story.');
+  assert.equal(page.requests.filter(r => r.url === '/api/gallery/generate').length, 1);
+});
+
+test('a failed write can retry on reopening after checking saved text, without resaving the selected object', async () => {
+  const page = setup('/universal-gallery?q=Vase&origin=photo');
+  await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'p_vase', title: 'Vase'}]});
+  const card = cardHost(page); card.click();
+  await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_vase', lang: 'en', can_generate: true,
+    artifact: {artifact_id: 'a_vase', title: 'Vase'}});
+  await page.respond(3, {ok: false, reason: 'provider_disabled'}, 503);
+  page.runTimers(90000); await tick(); assert.equal(page.requests.length, 4, 'no automatic paid retry');
+  card.close(); card.click();
+  assert.match(page.requests[4].url, /artifacts\/a_vase\/story\?lang=en$/);
+  await page.respond(4, {ok: false, reason: 'story_missing'}, 404);
+  assert.equal(page.requests[5].url, '/api/gallery/generate');
+  await page.respond(5, {ok: true, artifact_id: 'a_vase', lang: 'en', text: 'Recovered vase story.'});
+  assert.equal(card.text.textContent, 'Recovered vase story.');
+  assert.equal(page.requests.filter(r => r.url === '/api/gallery/discover').length, 1);
+});
+
+test('stale advertised story flags cannot strand an item when fresh story reads report missing', async () => {
+  const page = setup('/universal-gallery?q=Vase&origin=photo');
+  await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'a_vase', title: 'Vase', story_available: true}]});
+  const card = cardHost(page); card.click();
+  await page.respond(2, {ok: false, reason: 'story_missing'}, 404);
+  assert.equal(page.requests[3].url, '/api/gallery/discover');
+  await page.respond(3, {ok: true, saved: true, requested_artifact_id: 'a_vase', lang: 'en', can_generate: true,
+    artifact: {artifact_id: 'a_vase', title: 'Vase', story_available: true}});
+  await page.respond(4, {ok: false, reason: 'story_missing'}, 404);
+  assert.equal(page.requests[5].url, '/api/gallery/generate');
+  await page.respond(5, {ok: true, artifact_id: 'a_vase', lang: 'en', text: 'Newly saved vase story.'});
+  assert.equal(card.text.textContent, 'Newly saved vase story.');
+});
+
+test('switching to a saved English reading prevents a late Chinese write from replacing it', async () => {
+  const page = setup('/universal-gallery?q=Vase&origin=photo&lang=zh');
+  await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'a_vase', title: 'Vase', story_languages: ['en']}]});
+  const card = cardHost(page); card.click();
+  await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'a_vase', lang: 'zh', can_generate: true,
+    artifact: {artifact_id: 'a_vase', title: 'Vase', story_languages: ['en']}});
+  card.click(card.actions.get('read-en'));
+  assert.equal(page.requests[3].options.signal.aborted, true);
+  await page.respond(4, {ok: true, artifact_id: 'a_vase', lang: 'en', text: 'Selected English story.'});
+  await page.respond(3, {ok: true, artifact_id: 'a_vase', lang: 'zh', text: '不应覆盖英文故事。'});
+  assert.equal(card.text.textContent, 'Selected English story.');
+});
+
+test('late one-tap save responses cannot generate after query, photo, language or card ownership changes', async () => {
   for (const leave of ['query', 'photo', 'language', 'disconnect']) {
     const page = setup('/universal-gallery?q=Vessel&origin=photo');
     await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'p_saved', title: 'Old vessel'}]});
-    const card = cardHost(page); card.click(); card.click(card.actions.get('write-selected'));
+    const card = cardHost(page); card.click(); card.click();
     if (leave === 'query') page.type('Another sculpture');
     if (leave === 'photo') page.el('ugPhotoRemove').dispatch('click');
     if (leave === 'language') page.changeLanguage('zh');
@@ -283,7 +405,7 @@ test('wrong artifact or language returned by generation is refused without a sup
   for (const mismatch of [{artifact_id: 'a_wrong', lang: 'en'}, {artifact_id: 'a_saved', lang: 'zh'}]) {
     const page = setup('/universal-gallery?q=Vessel&origin=photo');
     await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'p_saved', title: 'Selected vessel'}]});
-    const card = cardHost(page); card.click(); card.click(card.actions.get('write-selected'));
+    const card = cardHost(page); card.click(); card.click();
     await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_saved', lang: 'en', photo_match_verified: false, can_generate: true, artifact: {artifact_id: 'a_saved', title: 'Selected vessel'}});
     await page.respond(3, {ok: true, ...mismatch, text: 'Mismatched generated story.'});
     assert.equal(card.text.textContent, ''); assert.notEqual(card.children.get('.ug-mark').textContent, 'Provided by us');
@@ -294,7 +416,7 @@ test('wrong artifact or language returned by generation is refused without a sup
 test('discover response cannot silently retarget an existing selected artifact before paid generation', async () => {
   const page = setup('/universal-gallery?q=Vessel&origin=photo');
   await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'a_selected', title: 'Selected vessel'}]});
-  const card = cardHost(page); card.click(); card.click(card.actions.get('write-selected'));
+  const card = cardHost(page); card.click(); card.click();
   await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'a_selected', photo_match_verified: false, can_generate: true, artifact_id: 'a_other', lang: 'en', artifact: {artifact_id: 'a_other', title: 'Different vase'}});
   assert.equal(page.requests.filter(request => request.url === '/api/gallery/generate').length, 0);
   assert.doesNotMatch(card.children.get('.ug-object-title').innerHTML, /Different vase|a_other/);
@@ -310,31 +432,33 @@ test('wrong or missing discovery echo, wrong language and noncanonical artifacts
   for (const mismatch of cases) {
     const page = setup('/universal-gallery?q=Vessel&origin=photo');
     await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'p_selected', title: 'Selected vessel'}]});
-    const card = cardHost(page); card.click(); card.click(card.actions.get('write-selected'));
+    const card = cardHost(page); card.click(); card.click();
     await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_selected', lang: 'en', photo_match_verified: false,
       can_generate: true, artifact: {artifact_id: 'a_selected', title: 'Selected vessel'}, ...mismatch});
     assert.equal(page.requests.filter(request => request.url === '/api/gallery/generate').length, 0, JSON.stringify(mismatch));
     assert.equal(card.children.get('.ug-object-title').innerHTML, '', 'a rejected response cannot rewrite the card');
-    assert.equal(card.actions.get('write-selected').disabled, false, 'the reader can retry an explicitly failed save');
+    assert.equal(card.actions.get('view-item').disabled, false, 'the reader can retry a failed save');
     assert.notEqual(card.children.get('.ug-mark').textContent, 'Provided by us');
   }
 });
 
-test('an English-only saved story remains available as a read-only choice when Chinese is selected', async () => {
+test('an English-only story remains readable while one tap queues the selected Chinese story', async () => {
   const page = setup('/universal-gallery?q=Vessel&origin=photo&lang=zh');
-  await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'a_english', title: 'Vessel',
+  await page.respond(0, {ok: true, can_generate: false, results: [{artifact_id: 'a_english', title: 'Vessel',
     story_available: false, has_narrative: false, written: true, story_languages: ['en']}]});
   const card = cardHost(page); card.click();
-  assert.equal(page.requests.length, 2, 'view does not automatically generate the missing Chinese story');
+  assert.equal(page.requests.length, 3, 'one tap saves the missing Chinese story request');
+  assert.deepEqual(JSON.parse(page.requests[2].options.body), {artifact_id: 'a_english', lang: 'zh', intent: 'write_story'});
+  await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'a_english', lang: 'zh', photo_match_verified: false,
+    can_generate: false, artifact: {artifact_id: 'a_english', title: 'Vessel', story_languages: ['en']}});
   assert.ok(card.actions.get('read-en')?.isConnected, 'the saved English story must remain discoverable');
-  assert.match(card.children.get('.ug-read-box').innerHTML, /已有其他语言版本/);
   assert.doesNotMatch(card.children.get('.ug-read-box').innerHTML, /尚未撰写|还没有故事/);
   card.click(card.actions.get('read-en'));
-  assert.match(page.requests[2].url, /artifacts\/a_english\/story\?lang=en$/);
-  await page.respond(2, {ok: true, artifact_id: 'a_english', lang: 'en', text: 'Existing English story.'});
+  assert.match(page.requests[3].url, /artifacts\/a_english\/story\?lang=en$/);
+  await page.respond(3, {ok: true, artifact_id: 'a_english', lang: 'en', text: 'Existing English story.'});
   assert.equal(card.text.textContent, 'Existing English story.');
   assert.match(card.children.get('.ug-read-box').innerHTML, /lang="en"/);
-  assert.equal(writes(page).length, 0);
+  assert.equal(writes(page).length, 1, 'reading English does not create a second write');
 });
 
 test('clearing input prevents a late response from restoring old results', async () => {
@@ -358,7 +482,7 @@ test('a newer query wins even when the older response arrives last', async () =>
   assert.doesNotMatch(page.el('ugFound').innerHTML, /First work/);
 });
 
-test('read-only photo browsing survives reload and the real document language event', async () => {
+test('photo-result searches remain non-discovering across reload and the real document language event', async () => {
   const page = setup('/universal-gallery?q=vessel&origin=photo&discover=0');
   assert.match(page.requests[0].url, /discover=0&origin=photo/);
   assert.equal(page.ctx.location.searchParams.get('origin'), 'photo');
@@ -686,7 +810,7 @@ test('identification automatically searches the strongest candidate in the galle
   await page.respond(2, {ok: true, results: [{artifact_id: 'a_existing', title: 'Cypresses'}]});
   assert.match(page.el('ugFound').innerHTML, /Provided by us/);
   assert.match(page.el('ugFound').innerHTML, /data-action="view-item"/);
-  assert.match(page.el('ugFound').innerHTML, /View item/);
+  assert.match(page.el('ugFound').innerHTML, /Read story/);
   assert.doesNotMatch(page.el('ugFound').innerHTML, /data-action="read"/);
   assert.equal(page.el('ugFound').scrolled, true);
   assert.match(page.el('ugCandidates').innerHTML, /data-candidate="0"/);
@@ -783,45 +907,42 @@ test('view opens an existing selected-language story with one GET and no discove
   assert.equal(page.requests.some(request => /\/discover|\/generate|\/photo$/.test(request.url)), false);
 });
 
-test('only the separate explicit story action saves and writes once, then marks real returned text', async () => {
+test('one tap saves and writes once in Chinese, then marks only real returned text', async () => {
   const page = setup('/universal-gallery?q=Vessel&origin=photo&lang=zh');
   await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'p_new', title: 'Vessel'}]});
   const card = cardHost(page); card.click();
-  assert.equal(page.requests.length, 2, 'view itself performs no write or queue operation');
-  card.click(card.actions.get('write-selected')); card.click(card.actions.get('write-selected'));
-  assert.equal(page.requests.length, 3, 'the explicit story request is single flight');
+  card.click(); card.click();
+  assert.equal(page.requests.length, 3, 'the one-tap story request is single flight');
   assert.deepEqual(JSON.parse(page.requests[2].options.body), {artifact_id: 'p_new', lang: 'zh', intent: 'write_story'});
   await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_new', lang: 'zh', photo_match_verified: false, can_generate: true, artifact: {artifact_id: 'a_new', title: 'Vessel', story_available: false}, writing_status: 'pending'});
   assert.equal(page.requests[3].url, '/api/gallery/generate');
   assert.equal(JSON.parse(page.requests[3].options.body).lang, 'zh');
   assert.notEqual(card.children.get('.ug-mark').textContent, '由我们提供');
-  card.click(); card.click(card.actions.get('generate'));
+  card.click(); card.click();
   assert.equal(page.requests.length, 4, 'repeat clicks cannot duplicate generation');
   await page.respond(3, {ok: true, text: '这件藏品的故事。', lang: 'zh', provenance: {kind: 'ai_assisted'}});
   assert.equal(card.text.textContent, '这件藏品的故事。');
   assert.equal(card.children.get('.ug-mark').textContent, '由我们提供');
 });
 
-test('no-engine view creates no queue; only explicit request can save a pending story', async () => {
+test('one tap without a writing engine saves a pending story and never claims written text', async () => {
   const page = setup('/universal-gallery?q=Vessel&origin=photo');
   await page.respond(0, {ok: true, can_generate: false, results: [{artifact_id: 'p_new', title: 'Vessel'}]});
   const card = cardHost(page); card.click();
-  card.click(); assert.equal(page.requests.length, 2, 'read-only browsing must not silently queue a story');
-  card.click(card.actions.get('write-selected'));
+  card.click(); assert.equal(page.requests.length, 3, 'one tap queues exactly one request');
   await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_new', lang: 'en', photo_match_verified: false, can_generate: false, artifact: {artifact_id: 'a_new', title: 'Vessel', story_available: false}, writing_status: 'pending'});
   assert.equal(page.requests.length, 3);
   assert.equal(card.children.get('.ug-card-status').textContent, 'Saved. A story will be added when writing is available.');
   assert.notEqual(card.children.get('.ug-mark').textContent, 'Provided by us');
 });
 
-test('even a legacy attachment token cannot cause an explicit story request to upload a photograph', async () => {
+test('even a legacy attachment token cannot cause a one-tap story request to upload a photograph', async () => {
   const page = setup(); await photo(page); page.el('ugPhotoForm').dispatch('submit');
   await page.respond(0, {ok: true, candidates: [{query: 'Vessel', confidence: 'high'}]});
   await page.respond(1, {ok: true, can_generate: false, results: [{artifact_id: 'a_vessel', title: 'Vessel'}]});
   assert.equal(page.requests.length, 3, 'no photo retained during identification or search');
   const card = cardHost(page); card.click();
-  assert.equal(page.requests.length, 3);
-  card.click(card.actions.get('write-selected'));
+  assert.equal(page.requests.length, 4, 'the item tap saves its own story request');
   await page.respond(3, {ok: true, saved: true, requested_artifact_id: 'a_vessel', lang: 'en', photo_match_verified: false, can_generate: false, attachment_token: 'signed-match', artifact: {artifact_id: 'a_vessel', title: 'Vessel'}, writing_status: 'pending'});
   assert.equal(page.requests.length, 4);
   assert.equal(page.requests.some(request => /\/photo$/.test(request.url)), false);
@@ -830,12 +951,12 @@ test('even a legacy attachment token cannot cause an explicit story request to u
   page.el('ugPhotoRemove').dispatch('click');
 });
 
-test('removing the photo during an explicit story request prevents a late write response from publishing or generating', async () => {
+test('removing the photo during a one-tap story request prevents a late response from publishing or generating', async () => {
   const page = setup(); await photo(page); page.el('ugPhotoForm').dispatch('submit');
   await page.respond(0, {ok: true, candidates: [{query: 'Vessel'}]});
   await page.respond(1, {ok: true, can_generate: false, results: [{artifact_id: 'a_vessel', title: 'Vessel'}]});
   const card = cardHost(page); card.click();
-  card.click(card.actions.get('write-selected'));
+  card.click();
   page.el('ugPhotoRemove').dispatch('click');
   await page.respond(3, {ok: true, saved: true, requested_artifact_id: 'a_vessel', lang: 'en', photo_match_verified: false, can_generate: false, attachment_token: 'signed-match', artifact: {artifact_id: 'a_vessel', title: 'Vessel'}, writing_status: 'pending'});
   assert.equal(page.requests.length, 4);
