@@ -288,6 +288,11 @@
       .db-model-btn:hover .db-model-cue, .db-model-btn.open .db-model-cue { background: #1f3a5f; }
       .m3d { display: none; clear: both; margin: .6rem 0 .2rem; }
       .m3d.on { display: block; }
+      .db-architecture-btn,.db-architecture-link{display:inline-flex;align-items:center;
+        min-height:44px;margin:.35rem .6rem .35rem 0;padding:.35rem 0!important;
+        background:transparent!important;border:0!important;border-bottom:1px solid currentColor!important;
+        border-radius:0!important;color:#1f3a5f;font:inherit;text-decoration:none}
+      .db-architecture-frame{display:block;width:100%;height:950px;border:0;background:#fff}
       .m3d-stage { touch-action: pan-y; cursor: grab; user-select: none;
         border: 1px solid #e6e6ea; border-radius: 10px; overflow: hidden; }
       .m3d-stage:active { cursor: grabbing; }
@@ -325,7 +330,7 @@
  "url": "https://plateaustrategy.io/destination-book",
  "applicationCategory": "TravelApplication",
  "operatingSystem": "Any",
- "description": "A growing guidebook of attractions and restaurants with local tips from a licensed guide, each one openable as a turnable 3D model with a spoken guide, and one tap sends any of them to your trip plan.",
+ "description": "A growing guidebook of attractions and restaurants with local tips, destination stories, selected interactive 3D landmarks and available audio guides. Add places to your trip plan.",
  "offers": {
   "@type": "Offer",
   "price": "0",
@@ -599,20 +604,25 @@
        models. Longest fragment first, because "old state house" also contains
        "state house". */
     const MODELS = {
-        'uss constitution': ['constitution', 'trail', 'constitution'],
-        'faneuil hall': ['faneuil-hall', 'trail', 'faneuil-hall'],
-        'old north church': ['old-north', 'trail', 'old-north'],
-        'old south meeting': ['old-south', 'trail', 'old-south'],
-        'massachusetts state house': ['state-house', 'trail', 'state-house'],
-        'old state house': ['old-state-house', 'trail', 'old-state-house'],
-        'bunker hill': ['bunker-hill', 'trail', 'bunker-hill'],
-        'paul revere house': ['paul-revere', 'trail', 'paul-revere'],
+        'uss constitution': ['constitution', 'architecture', 'constitution'],
+        'faneuil hall': ['faneuil-hall', 'architecture', 'faneuil-hall'],
+        'old north church': ['old-north', 'architecture', 'old-north'],
+        'old south meeting': ['old-south', 'architecture', 'old-south'],
+        'massachusetts state house': ['state-house', 'architecture', 'state-house'],
+        'old state house': ['old-state-house', 'architecture', 'old-state-house'],
+        'bunker hill': ['bunker-hill', 'architecture', 'bunker-hill'],
+        'paul revere house': ['paul-revere', 'architecture', 'paul-revere'],
+        'park street church': ['park-street', 'architecture', 'park-street'],
+        'one world trade center': ['world-trade-center', 'architecture', 'world-trade-center'],
         'brooklyn bridge': ['brooklyn-bridge', 'nyc', 'bridge'],
         'empire state': ['empire-state', 'nyc', 'empire'],
         'space needle': ['space-needle', 'seattle', 'space-needle'],
         'trump tower': ['trump-tower', 'nyc', 'trump']
     };
     function modelOf(e) {
+        if (String(e.page_slug || '') === '9-11-memorial-and-museum') {
+            return ['world-trade-center', 'architecture', 'world-trade-center'];
+        }
         const n = String(e.name || '').toLowerCase();
         let best = null;
         for (const k in MODELS) {
@@ -626,6 +636,12 @@
     function modelThumb(e, i) {
         const m = modelOf(e);
         if (!m) return '';
+        if (m[1] === 'architecture') {
+            return '<button type="button" class="db-architecture-btn i18n-skip" data-architecture-entry="' + i +
+                '" aria-expanded="false" aria-controls="m3d_' + i + '" onclick="openModel(' + i +
+                ', \'architecture\', \'' + m[2] + '\', this)">' +
+                (architectureLang() === 'zh' ? '查看立体建筑与故事' : 'Explore the building in 3D') + '</button>';
+        }
         return '<button class="db-model-btn" onclick="openModel(' + i + ', \'' + m[1]
              + '\', \'' + m[2] + '\', this)" title="Turn it: open the 3D model">'
              + '<img class="db-model" loading="lazy" width="104" height="84" '
@@ -703,6 +719,56 @@
         }).join('') + '</div>';
     }
     const _mounts = {};
+    // BEGIN DB_ARCHITECTURE_BRIDGE
+    let _activeArchitecture = null;
+    function architectureLang() {
+        const lang = window.psxLang ? window.psxLang() : document.documentElement.lang;
+        return String(lang || 'en').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en';
+    }
+    function architectureURL(key, i, embed) {
+        const url = new URL('/architecture', location.origin);
+        url.searchParams.set('model', key); url.searchParams.set('lang', architectureLang());
+        url.searchParams.set('source', 'destination-book');
+        const entry = DATA.entries[i];
+        if (entry && entry.page_slug) url.searchParams.set('destination', entry.page_slug);
+        if (embed) url.searchParams.set('embed', '1');
+        return url.pathname + url.search;
+    }
+    function closeArchitecture() {
+        if (!_activeArchitecture) return;
+        const state = _activeArchitecture;
+        if (state.frame) state.frame.remove();
+        const host = document.getElementById('m3d_' + state.i);
+        if (host) { host.classList.remove('on'); host.innerHTML = ''; }
+        const button = document.querySelector('[data-architecture-entry="' + state.i + '"]');
+        if (button) { button.classList.remove('open'); button.setAttribute('aria-expanded', 'false'); }
+        _activeArchitecture = null;
+    }
+    function openArchitecture(i, key, btn) {
+        const host = document.getElementById('m3d_' + i); if (!host) return;
+        const entry = DATA.entries[i], expected = entry && modelOf(entry);
+        if (!expected || expected[1] !== 'architecture' || expected[2] !== key) return;
+        if (_activeArchitecture && _activeArchitecture.i === i) { closeArchitecture(); return; }
+        closeArchitecture();
+        const frame = document.createElement('iframe'); frame.className = 'db-architecture-frame';
+        frame.loading = 'lazy'; frame.src = architectureURL(key, i, true);
+        frame.title = (entry.name || key) + (architectureLang() === 'zh' ? '，立体建筑与故事' : ', 3D architecture and story');
+        frame.allow = 'fullscreen'; frame.setAttribute('allowfullscreen', '');
+        const link = document.createElement('a'); link.className = 'db-architecture-link i18n-skip';
+        link.href = architectureURL(key, i, false);
+        link.textContent = architectureLang() === 'zh' ? '打开完整建筑页面' : 'Open the full architecture page';
+        host.innerHTML = ''; host.classList.add('on'); host.appendChild(frame); host.appendChild(link);
+        if (btn) { btn.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); }
+        _activeArchitecture = { i: i, key: key, frame: frame };
+    }
+    window.addEventListener('message', function (event) {
+        const frame = _activeArchitecture && _activeArchitecture.frame;
+        if (!frame || event.origin !== location.origin || event.source !== frame.contentWindow ||
+            !event.data || event.data.type !== 'architecture:height') return;
+        const height = Number(event.data.height); if (!Number.isFinite(height)) return;
+      frame.style.height = Math.max(400, Math.min(4000, Math.ceil(height))) + 'px';
+    });
+    // END DB_ARCHITECTURE_BRIDGE
     function setModelView(i, key, v) {
         const m = _mounts[i];
         if (!m) return;
@@ -718,6 +784,8 @@
         }
     }
     function openModel(i, fam, key, btn) {
+        if (fam === 'architecture') { openArchitecture(i, key, btn); return; }
+        closeArchitecture();
         const wrap = document.getElementById('m3d_' + i);
         if (!wrap) return;
         if (wrap.classList.contains('on')) {
@@ -810,6 +878,8 @@
     }
 
     function render(){
+        const architectureToRestore = _activeArchitecture && { i: _activeArchitecture.i, key: _activeArchitecture.key };
+        closeArchitecture();
         const q = $('q').value.trim().toLowerCase();
         const inPlanner = plannerNames();
         // The advance row: admission in real dollars, a ferry's rhythm, the
@@ -1017,6 +1087,10 @@
             + (f.minStars ? ' · showing ' + '★'.repeat(f.minStars) + ' & up' : '');
         renderSuggest(q, shown);
         observeDestViews();
+        if (architectureToRestore) {
+            const button = document.querySelector('[data-architecture-entry="' + architectureToRestore.i + '"]');
+            if (button) openArchitecture(architectureToRestore.i, architectureToRestore.key, button);
+        }
     }
 
     // A place a traveler actually looks at is counted once per browser. More

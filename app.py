@@ -309,6 +309,8 @@ from gallery_identify import gallery_identify_bp
 from gallery_photos import gallery_photos_bp
 app.register_blueprint(gallery_identify_bp)
 app.register_blueprint(gallery_photos_bp)
+from architecture_routes import create_architecture_blueprint
+app.register_blueprint(create_architecture_blueprint(BASE_DIR))
 
 
 # ---------- owner authentication (protects the dispatch control center) ----------
@@ -709,6 +711,8 @@ def _client_ip():
 
 def _skip_traffic():
     """True when this request should not appear in any visitor number."""
+    if request.path == "/architecture" and request.args.get("embed") == "1":
+        return True  # An embedded destination is not a second visitor page view.
     if request.cookies.get(TRAFFIC_OPTOUT_COOKIE) == "1":
         return True
     if session.get("owner"):
@@ -1434,7 +1438,7 @@ def _compress_and_cache(resp):
             # templates each carrying a tag and drifting. The script does
             # nothing on a page without a header; owner consoles keep
             # their own doors and are left alone.
-            if (not path.startswith(("/dispatch", "/archive", "/access", "/setup", "/pulse"))
+            if (not path.startswith(("/dispatch", "/archive", "/access", "/setup", "/pulse", "/architecture"))
                     and b'src="/site-auth.js' not in stamped
                     and b"</body>" in stamped):
                 stamped = stamped.replace(
@@ -1447,7 +1451,7 @@ def _compress_and_cache(resp):
             # every page, because the share control in the browser chrome is
             # furniture nobody notices. Same injection slot, new tenant;
             # logo-reset.js stays on disk as history but nothing loads it.
-            if (not path.startswith(("/dispatch", "/archive", "/access", "/setup", "/pulse"))
+            if (not path.startswith(("/dispatch", "/archive", "/access", "/setup", "/pulse", "/architecture"))
                     and b'src="/install.js' not in stamped
                     and b"</body>" in stamped):
                 stamped = stamped.replace(
@@ -3377,6 +3381,7 @@ PUBLIC_PAGES = [
     # Search Console: "no referring sitemaps" for the Freedom Trail, and the
     # test client agreed. The row was never added when the page was.
     ("/freedom-trail", "0.8", "monthly"),
+    ("/architecture", "0.7", "monthly"),
     # The page that sells the tours. It was in neither this list, nor the
     # site index, nor any link on any page, so the only way to reach it was
     # a social post. For a licensed guide whose tours are the product, that
@@ -4787,6 +4792,24 @@ def destination_page(slug):
         out.append('<p class="lead">%s</p>' % esc(desc))
     if tip:
         out.append('<p class="tip"><b>Guide\'s tip.</b> %s</p>' % esc(tip))
+    if slug == '9-11-memorial-and-museum':
+        out.append('''<section class="destination-architecture i18n-skip">
+          <h2>One World Trade Center and the memorial</h2>
+          <p>Explore the tower, the pools and the stories of the people who designed them.</p>
+          <iframe id="destinationArchitecture" title="One World Trade Center and 9/11 Memorial, interactive 3D and story"
+            src="/architecture?model=world-trade-center&amp;embed=1&amp;lang=en" loading="lazy"
+            allow="fullscreen" style="width:100%;height:1000px;border:0;display:block"></iframe>
+          <p><a href="/architecture?model=world-trade-center">Open the full 3D view</a></p>
+          <script>(function(){
+            var frame=document.getElementById('destinationArchitecture');
+            function updateLanguage(){var lang=new URLSearchParams(location.search).get('lang')||(window.psxLang&&window.psxLang())||document.documentElement.lang||'en';
+              lang=String(lang).toLowerCase().indexOf('zh')===0?'zh':'en';
+              var next=new URL('/architecture',location.origin);next.searchParams.set('model','world-trade-center');next.searchParams.set('embed','1');next.searchParams.set('lang',lang);
+              if(frame.src!==next.href)frame.src=next.href;}
+            window.addEventListener('message',function(event){if(event.origin!==location.origin||event.source!==frame.contentWindow||event.data?.type!=='architecture:height')return;
+              var height=Number(event.data.height);if(Number.isFinite(height))frame.style.height=Math.min(4000,Math.max(400,height))+'px';});
+            document.addEventListener('psx:lang',updateLanguage);updateLanguage();
+          })();</script></section>''')
     meta_bits = []
     if e.get("close") is not None:
         meta_bits.append("Open till %s" % _dest_clock(e["close"]))

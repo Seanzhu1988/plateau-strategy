@@ -4,11 +4,13 @@ import { buildWorldTradeCenter } from './architecture-wtc.js';
 import { buildBostonLandmark, installBostonGeometryHelpers } from './architecture-boston.js';
 import { fitArchitectureView } from './architecture-camera.js';
 import { createArchitectureAssetLoader, shouldDisposeArchitecturePage } from './architecture-assets.js';
+import { architectureViewURL } from './architecture-navigation.js';
 
 const stage = document.querySelector('#stage');
 const loading = document.querySelector('#loading');
 const status = document.querySelector('#status');
 const select = document.querySelector('#landmark');
+const publicView = document.body.dataset.mode === 'public';
 const names = {
   'world-trade-center':'World Trade Center & 9/11 Memorial',
   'state-house':'Massachusetts State House','park-street':'Park Street Church',
@@ -129,10 +131,10 @@ function releaseModel(model) {
 }
 function updateDetails(model,key,selectedId=null,preserveOrbit=false) {
   document.querySelector('#model-title').textContent=model.title||names[key];
-  document.querySelector('#model-description').textContent=descriptions[key];
-  document.querySelector('#notes').textContent=Array.isArray(model.notes)?model.notes.join(' '):model.notes||'See the source record for measured and derived detail.';
+  document.querySelector('#model-description').textContent=publicView?'':descriptions[key];
+  document.querySelector('#notes').textContent=publicView?'':(Array.isArray(model.notes)?model.notes.join(' '):model.notes||'See the source record for measured and derived detail.');
   const sources=document.querySelector('#sources');sources.replaceChildren();
-  (model.sources||[]).forEach(source=>{const li=document.createElement('li'),a=document.createElement('a');
+  (publicView?[]:(model.sources||[])).forEach(source=>{const li=document.createElement('li'),a=document.createElement('a');
     const url=typeof source==='string'?source:source.url;
     if(!url||!/^https:\/\//.test(url))return;
     a.href=url;a.textContent=typeof source==='string'?new URL(url).hostname:(source.label||source.title||new URL(url).hostname);a.target='_blank';a.rel='noopener noreferrer';li.append(a);sources.append(li);
@@ -154,13 +156,14 @@ function updateDetails(model,key,selectedId=null,preserveOrbit=false) {
     });
   }
   defaultView=presets[0];const chosen=presets.find(v=>v.id===selectedId)||defaultView;activePresetId=chosen.id;
-  presets.forEach(v=>{const b=document.createElement('button');b.textContent=v.label;b.setAttribute('aria-pressed',String(v===chosen));b.onclick=()=>{views.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');activePresetId=v.id;userMoved=false;applyView(v);history.replaceState(null,'',`?model=${encodeURIComponent(key)}&view=${encodeURIComponent(v.id)}`);};views.append(b);});
+  presets.forEach(v=>{const b=document.createElement('button');b.textContent=v.label;b.setAttribute('aria-pressed',String(v===chosen));b.onclick=()=>{views.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');activePresetId=v.id;userMoved=false;applyView(v);history.replaceState(null,'',architectureViewURL(location.href,key,v.id));document.dispatchEvent(new CustomEvent('architecture:view'));};views.append(b);});
   if(!preserveOrbit)applyView(chosen);
   const counts={meshes:0,triangles:0};model.group.traverse(o=>{if(o.isMesh){counts.meshes++;counts.triangles+=(o.geometry.index?.count||o.geometry.attributes.position?.count||0)/3*(o.isInstancedMesh?o.count:1);}});
-  document.querySelector('#geometry').textContent=`${counts.meshes.toLocaleString()} mesh groups. ${Math.round(counts.triangles).toLocaleString()} triangles. Real-time lighting and shadows. Model dimensions use feet.`;
+  document.querySelector('#geometry').textContent=publicView?'':`${counts.meshes.toLocaleString()} mesh groups. ${Math.round(counts.triangles).toLocaleString()} triangles. Real-time lighting and shadows. Model dimensions use feet.`;
+  document.dispatchEvent(new CustomEvent('architecture:change',{detail:{key}}));
 }
 async function show(key,initialView=null) {
-  const token=++pending;loading.hidden=false;loading.textContent='Building the view...';status.textContent='';
+  const token=++pending;loading.hidden=false;loading.textContent=publicView?'Opening the 3D view...':'Building the view...';status.textContent='';stage.dataset.status='loading';
   await new Promise(resolve=>requestAnimationFrame(resolve));
   try{
     if(key!=='world-trade-center')await ensureForm(key);
@@ -177,9 +180,9 @@ async function show(key,initialView=null) {
     Object.assign(sun.shadow.camera,{left:-r,right:r,top:r,bottom:-r,near:1,far:extent*5});sun.shadow.camera.updateProjectionMatrix();
     sun.shadow.normalBias=Math.max(.015,extent*.00015);sun.shadow.bias=-.000035;
     updateDetails(active,key,initialView);loading.hidden=true;
-    status.textContent='Private architectural reconstruction. Not a photographic scan.';
-    history.replaceState(null,'',`?model=${encodeURIComponent(key)}&view=${encodeURIComponent(activePresetId)}`);draw();
-  }catch(error){if(token!==pending)return;loading.hidden=false;loading.textContent='This model could not load. Try another model or reload this page.';status.textContent=error.message;console.error(error);}
+    stage.dataset.status='ready';status.textContent=publicView?'':'Private architectural reconstruction. Not a photographic scan.';
+    history.replaceState(null,'',architectureViewURL(location.href,key,activePresetId));document.dispatchEvent(new CustomEvent('architecture:view'));draw();
+  }catch(error){if(token!==pending)return;stage.dataset.status='error';loading.hidden=false;loading.textContent='This model could not load. Try another model or reload this page.';status.textContent=publicView?'':error.message;document.dispatchEvent(new CustomEvent('architecture:error'));console.error(error);}
 }
 const ensureForm=createArchitectureAssetLoader(key=>new Promise((resolve,reject)=>{
   if(!window.TRAIL3D){reject(new Error('The Boston model helper could not load. Reload this page to retry.'));return;}
@@ -197,7 +200,7 @@ async function init(){
     renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.04;
     renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
     renderer.domElement.setAttribute('aria-label','Interactive 3D architectural reconstruction');
-    renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();status.textContent='3D graphics paused. Reload this page to restore the view.';});
+    renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();stage.dataset.status='error';status.textContent='3D graphics paused. Reload this page to restore the view.';document.dispatchEvent(new CustomEvent('architecture:error'));});
     stage.prepend(renderer.domElement);scene=new THREE.Scene();scene.background=new THREE.Color('#e8edf0');
     camera=new THREE.PerspectiveCamera(34,1,.1,50000);
     controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=false;controls.maxPolarAngle=Math.PI*.49;controls.minPolarAngle=.045;controls.enablePan=true;controls.screenSpacePanning=true;
@@ -207,7 +210,7 @@ async function init(){
     makeEnvironment();new ResizeObserver(resize).observe(stage);resize();
     const requested=new URLSearchParams(location.search).get('model');select.value=Object.hasOwn(names,requested)?requested:'world-trade-center';
     select.addEventListener('change',()=>show(select.value));
-    document.querySelector('#reset').onclick=()=>{if(!defaultView||!activeKey)return;document.querySelectorAll('#views button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===0)));activePresetId=defaultView.id;userMoved=false;applyView(defaultView);history.replaceState(null,'',`?model=${encodeURIComponent(activeKey)}&view=${encodeURIComponent(defaultView.id)}`);};
+    document.querySelector('#reset').onclick=()=>{if(!defaultView||!activeKey)return;document.querySelectorAll('#views button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===0)));activePresetId=defaultView.id;userMoved=false;applyView(defaultView);history.replaceState(null,'',architectureViewURL(location.href,activeKey,defaultView.id));document.dispatchEvent(new CustomEvent('architecture:view'));};
     const zoom=factor=>{userMoved=true;camera.position.sub(controls.target).multiplyScalar(factor).add(controls.target);controls.update();draw();};
     document.querySelector('#zoom-in').onclick=()=>zoom(.8);document.querySelector('#zoom-out').onclick=()=>zoom(1.25);
     document.querySelector('#fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.querySelector('.model-view').requestFullscreen();}catch{status.textContent='Full screen is not supported here. Use pinch to zoom.';}};
@@ -216,6 +219,6 @@ async function init(){
     window.addEventListener('pagehide',event=>{cancelAnimationFrame(animation);if(!shouldDisposeArchitecturePage(event))return;disposed=true;controls.dispose();releaseModel(active);renderer.dispose();});
     window.addEventListener('pageshow',event=>{if(event.persisted&&!disposed){resize();cancelAnimationFrame(animation);animation=requestAnimationFrame(frame);}});
     await show(select.value,new URLSearchParams(location.search).get('view'));
-  }catch(error){loading.hidden=false;loading.textContent='The 3D preview needs WebGL graphics. Please try a recent browser with graphics acceleration enabled.';status.textContent=error.message;console.error(error);}
+  }catch(error){stage.dataset.status='error';loading.hidden=false;loading.textContent='The 3D view needs WebGL graphics. Please try a recent browser with graphics acceleration enabled.';status.textContent=publicView?'':error.message;document.dispatchEvent(new CustomEvent('architecture:error'));console.error(error);}
 }
 init();

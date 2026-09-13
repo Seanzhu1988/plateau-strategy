@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Landmarks and their stories | Plateau Strategy</title>
+  <meta name="description" content="Explore Boston and New York landmarks in 3D, with the stories of their makers, materials and history.">
+  <link rel="stylesheet" href="/architecture-preview.css">
+  <link rel="stylesheet" href="/architecture-public.css">
+  <script type="importmap">{"imports":{"three":"/vendor/three/three.module.min.js"}}</script>
+</head>
+<body data-mode="public" class="i18n-skip">
+  <header class="masthead"><a href="/">Plateau Strategy</a><nav><a href="/tours">Walking tours</a><a href="/destination-book">Find a destination</a></nav></header>
+  <main>
+    <div class="intro"><h1>Every landmark has a story.</h1><p>Look closer. Discover the people who made it.</p></div>
+    <div class="studio">
+      <aside class="selection" aria-label="Choose a landmark">
+        <label for="landmark">Explore a destination</label>
+        <select id="landmark">
+          <optgroup label="New York"><option value="world-trade-center">One World Trade Center &amp; 9/11 Memorial</option></optgroup>
+          <optgroup label="Boston Freedom Trail">
+            <option value="state-house">Massachusetts State House</option><option value="park-street">Park Street Church</option>
+            <option value="old-south">Old South Meeting House</option><option value="old-state-house">Old State House</option>
+            <option value="faneuil-hall">Faneuil Hall</option><option value="paul-revere">Paul Revere House</option>
+            <option value="old-north">Old North Church</option><option value="constitution">USS Constitution</option><option value="bunker-hill">Bunker Hill Monument</option>
+          </optgroup>
+        </select>
+        <h2 id="model-title">Explore a landmark</h2><p id="model-description"></p>
+        <nav id="views" aria-label="Camera views"></nav>
+        <div class="story-languages" aria-label="Story language"><button type="button" data-story-language="en" aria-pressed="true">English</button><button type="button" data-story-language="zh" aria-pressed="false">中文</button></div>
+      </aside>
+      <section class="model-view" aria-label="Interactive architectural model">
+        <div id="stage" aria-label="Drag to rotate. Pinch or use the zoom buttons."><p id="loading" role="status">Opening the 3D view...</p></div>
+        <figure id="model-fallback" hidden><img id="model-photo" alt="" decoding="async"><figcaption><span id="photo-caption">Destination photograph</span> <a id="photo-credit" rel="noopener noreferrer" target="_blank">Photo source</a></figcaption></figure>
+        <div class="toolbar"><span id="model-instructions">Drag to turn. Pinch to zoom.</span><div><button id="zoom-in" aria-label="Zoom in">+</button><button id="zoom-out" aria-label="Zoom out">−</button><button id="reset">Reset view</button><button id="fullscreen">Full screen</button></div></div>
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <p class="illustration-label">3D architectural illustration</p>
+      </section>
+    </div>
+    <article id="architecture-story" class="architecture-story" aria-labelledby="story-title">
+      <h2 id="story-title">The story behind the landmark</h2><div id="story-paragraphs"><p>Opening the story...</p></div>
+      <h3 id="look-title">Look for</h3><ul id="story-look"></ul>
+      <p class="story-links"><a id="destination-link" href="/tours">Explore the tour</a><a id="full-model-link" href="/architecture">Open the full 3D view</a></p>
+      <details><summary id="story-sources-title">Sources</summary><ul id="story-sources"></ul></details>
+    </article>
+    <details id="model-notes" hidden><summary>Sources</summary><p id="notes"></p><ul id="sources"></ul><p id="geometry"></p></details>
+  </main>
+  <script type="application/json" id="architecture-context">__ARCHITECTURE_CONTEXT__</script>
+  <script type="module" src="/architecture-public.js"></script>
+  <script src="/trail-3d.js"></script>
+  <script type="module" src="/architecture-preview.js" onerror="document.getElementById('stage').dataset.status='error';document.dispatchEvent(new CustomEvent('architecture:error'));document.getElementById('loading').textContent='The 3D view is unavailable. You can still read the story below.'"></script>
+</body>
+</html>

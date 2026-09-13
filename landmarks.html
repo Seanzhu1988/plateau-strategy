@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>New York City 3D models · Bridge, Empire State and St John the Divine</title>
-<meta name="description" content="Three New York landmarks as models you can turn, plus a verified photograph of Greg Wyatt's Peace Fountain while its realistic 3D reconstruction is reviewed.">
+<meta name="description" content="Explore New York landmarks in 3D, including One World Trade Center and the 9/11 Memorial, and discover the story of Greg Wyatt's bronze Peace Fountain.">
     <!-- Social preview. Without these a shared link shows as a bare URL
          with no image or title, which is most of the click-through gone.
          og:image is the site card, which is live and 70KB. -->
@@ -159,10 +159,16 @@
 
 <div class="lm-wrap">
   <h1 class="lm-title">New York City 3D models</h1>
-  <p class="lm-lede">Three landmarks drawn as models you can take hold of and turn,
-     with the questions a visitor actually has answered underneath. Every
-     dimension here is the real one, in feet, and where a number could not be
-     sourced it is named below rather than quietly drawn.</p>
+  <p class="lm-lede">Explore New York landmarks from more than one angle,
+     with stories to help you notice what matters when you visit. The 3D views
+     are architectural reconstructions, and the Peace Fountain is shown in a photograph.</p>
+
+  <section class="lm-sec" id="worldTradeCenterLink">
+    <h2 class="lm-h" id="worldTradeCenterLinkTitle">One World Trade Center and the 9/11 Memorial</h2>
+    <p class="lm-sub" id="worldTradeCenterLinkCopy">Turn the glass tower, then move closer to the two memorial pools and the spaces they preserve.</p>
+    <p><a href="/architecture?model=world-trade-center&amp;lang=en&amp;source=landmarks" id="worldTradeCenterExplore"
+          style="display:inline-flex;align-items:center;min-height:44px">Explore the tower and memorial in 3D</a></p>
+  </section>
 
   <section class="lm-sec">
     <h2 class="lm-h">The Brooklyn Bridge</h2>
@@ -291,18 +297,18 @@
              src="/media/peace-fountain-jay-dobkin.jpg"
              alt="Greg Wyatt's bronze Peace Fountain in front of the Cathedral of St John the Divine">
       </figure>
-      <div class="lm-photo-copy">
-        <span class="proof-badge">Verified site photograph</span>
-        <h3 id="peaceFountainPhotoTitle">Peace Fountain — the real monument</h3>
-        <p>The first procedural 3D study was removed because its anatomy and
-           silhouette did not match Greg Wyatt's sculpture. Until a permissioned
-           scan or sculpt clears the private realism review, the exact destination
-           is shown here instead of invented geometry.</p>
+      <div class="lm-photo-copy i18n-skip">
+        <span class="proof-badge" id="peaceFountainPhotoBadge">Photograph of the monument</span>
+        <h3 id="peaceFountainPhotoTitle">Peace Fountain, a closer look</h3>
+        <p id="peaceFountainOrigin">Greg Wyatt created this bronze monument in 1985 for the 200th anniversary of the Episcopal Diocese of New York. It was dedicated to children's creativity, an idea that continues in the small bronze animals made by young artists around it.</p>
+        <p id="peaceFountainLook">Start with the winged Archangel Michael, then look for the giraffes, the sun and moon, and the twisting pedestal shaped like DNA. Wyatt brings these forms together as a story of life, conflict and peace. Walk around the sculpture to see how its figures connect.</p>
         <p class="proof-facts">Greg Wyatt · bronze · 1985 · 40 ft</p>
         <p class="proof-credit">Photo: Jay Dobkin, 2019 ·
           <a href="https://commons.wikimedia.org/wiki/File:Peace_Fountain_at_cathedral_of_John_the_Divine_in_NYC_8.jpg"
              rel="license noopener">Wikimedia Commons, CC BY-SA 4.0</a> ·
-          <a href="https://gregwyattsculpture.com/bronze/peace-fountain" rel="noopener">artist reference</a>
+          <a href="https://gregwyattsculpture.com/bronze/peace-fountain" rel="noopener">Greg Wyatt</a> ·
+          <a href="https://www.stjohndivine.org/about/blog/1/posts/25/a-summer-of-sculpture-animals-of-freedom"
+             rel="noopener">Cathedral, Animals of Freedom</a>
         </p>
       </div>
     </article>
@@ -534,6 +540,42 @@
       .catch(function () {});
     document.addEventListener('psx:lang', paint);
   })();
+</script>
+<script>
+// BEGIN LANDMARK_VISITOR_COPY
+(function () {
+  var COPY = {
+    en: {
+      peaceFountainPhotoBadge: 'Photograph of the monument',
+      peaceFountainPhotoTitle: 'Peace Fountain, a closer look',
+      peaceFountainOrigin: "Greg Wyatt created this bronze monument in 1985 for the 200th anniversary of the Episcopal Diocese of New York. It was dedicated to children's creativity, an idea that continues in the small bronze animals made by young artists around it.",
+      peaceFountainLook: 'Start with the winged Archangel Michael, then look for the giraffes, the sun and moon, and the twisting pedestal shaped like DNA. Wyatt brings these forms together as a story of life, conflict and peace. Walk around the sculpture to see how its figures connect.',
+      worldTradeCenterLinkTitle: 'One World Trade Center and the 9/11 Memorial',
+      worldTradeCenterLinkCopy: 'Turn the glass tower, then move closer to the two memorial pools and the spaces they preserve.',
+      worldTradeCenterExplore: 'Explore the tower and memorial in 3D'
+    },
+    zh: {
+      peaceFountainPhotoBadge: '纪念雕塑实景照片',
+      peaceFountainPhotoTitle: '细看和平喷泉',
+      peaceFountainOrigin: '格雷格·怀亚特于1985年创作了这座青铜纪念雕塑，纪念纽约圣公会教区成立200周年。作品献给儿童的创造力，周围那些由孩子们创作的小型青铜动物，也延续着这个想法。',
+      peaceFountainLook: '先看展开双翼的大天使米迦勒，再寻找长颈鹿、太阳与月亮，以及形似DNA双螺旋的底座。怀亚特用这些形象讲述生命、冲突与和平。绕着雕塑走一圈，看看不同角度下的人物与动物如何相互呼应。',
+      worldTradeCenterLinkTitle: '世贸中心一号楼与九一一纪念园',
+      worldTradeCenterLinkCopy: '转动玻璃塔楼，再靠近两座纪念水池，看看这些留白所承载的记忆。',
+      worldTradeCenterExplore: '立体探索塔楼与纪念园'
+    }
+  };
+  function paintVisitorCopy() {
+    var language = window.psxLang ? window.psxLang() : document.documentElement.lang;
+    var lang = String(language || 'en').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en';
+    Object.keys(COPY[lang]).forEach(function (id) {
+      var el = document.getElementById(id); if (el) { el.textContent = COPY[lang][id]; el.classList.add('i18n-skip'); }
+    });
+    var link = document.getElementById('worldTradeCenterExplore');
+    if (link) link.href = '/architecture?model=world-trade-center&lang=' + lang + '&source=landmarks';
+  }
+  paintVisitorCopy(); document.addEventListener('psx:lang', paintVisitorCopy);
+})();
+// END LANDMARK_VISITOR_COPY
 </script>
 </body>
 </html>

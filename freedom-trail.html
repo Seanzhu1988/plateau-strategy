@@ -274,6 +274,13 @@
   .ft-model-pick button[aria-pressed="true"]{background:#1f3a5f;color:#fff}
   .ft-model-stage{background:#eef0ea;border-radius:10px;overflow:hidden}
   .ft-model-note{margin:.7rem 0 0;font-size:.82rem;color:#6b6459;line-height:1.5}
+  .ft-architecture-frame{display:block;width:100%;height:950px;border:0;background:#fff}
+  .ft-stop-model-host:empty{display:none}
+  .ft-stop-model-host{margin:.6rem 0;min-width:0}
+  #ftStops .ft-model-open,.ft-architecture-link{display:inline-flex;align-items:center;
+    min-height:44px;font:inherit;color:#1f3a5f;background:transparent!important;
+    border:0!important;border-bottom:1px solid currentColor!important;border-radius:0!important;
+    padding:.35rem 0!important;margin:.35rem 0!important;text-decoration:none}
   .ft-near{margin:1rem 0 1.4rem;padding:.9rem 1rem;border:1px solid #ded7c6;
            border-radius:10px;background:#faf8f3}
   .ft-near button{font:inherit;font-size:.9rem;padding:.5rem .95rem;border-radius:8px;
@@ -501,10 +508,19 @@
     <div id="ftMini" hidden><div id="ftMap"></div></div>
     <button id="ftMiniClose" hidden aria-label="Put the live map away">&#10005;</button>
 
+<script>
+// The walking-order number and architectural identity are deliberately separate.
+window.FT_MODEL_BY_STOP = {
+  2: 'state-house', 3: 'park-street', 8: 'old-south', 9: 'old-state-house',
+  11: 'faneuil-hall', 12: 'paul-revere', 13: 'old-north',
+  15: 'constitution', 16: 'bunker-hill'
+};
+</script>
 <script src="/vendor/leaflet/leaflet.js"></script>
 <script>
 (function () {
     var trail = null, mode = "all", included = null, locked = false;
+    var initialStopAnchorApplied = false;
     var HALF = 11;              // stops 1 to 11 sit downtown; 12 onward crosses to Charlestown
     var map = null, routeLayer = null, youMarker = null, followId = null;
 
@@ -616,7 +632,7 @@
                   ((segment && segment.voice === "Yiki") ? "" : '<span class="ft-guide">Yiki</span>') +
                   s.yiki + '</div>'
                 : "";
-            return '<div class="ft-stop' + (on ? '' : ' off') + (locked ? ' locked' : '') + '">' +
+            return '<div id="ft-stop-' + s.n + '" class="ft-stop' + (on ? '' : ' off') + (locked ? ' locked' : '') + '">' +
                    '<label class="ft-inc"><input type="checkbox" class="ft-cb" data-n="' + s.n + '"' +
                      (on ? ' checked' : '') + (locked ? ' disabled' : '') +
                      ' aria-label="Include ' + s.name + '"></label>' +
@@ -626,10 +642,22 @@
                    '<div class="ft-meta">' + meta + '</div>' +
                    '<div class="ft-desc">' + s.desc + '</div>' +
                    '<div class="ft-stop-photos i18n-skip" data-stop="' + s.n + '"></div>' +
+                   (window.FT_MODEL_BY_STOP[s.n]
+                     ? '<button type="button" class="ft-model-open i18n-skip" data-ft-model="' +
+                       window.FT_MODEL_BY_STOP[s.n] + '" data-ft-stop="' + s.n +
+                       '" aria-expanded="false" aria-controls="ftStopModel_' + s.n + '">' +
+                       (audioLang === 'zh' ? '查看立体建筑与故事' : 'Explore the building in 3D') + '</button>' +
+                       '<div class="ft-stop-model-host" id="ftStopModel_' + s.n + '"></div>'
+                     : '') +
                    note +
                    '</div></div>';
         }).join("");
         if (typeof feedMiniShows === "function") feedMiniShows(); // fresh hosts, dispose old slideshows
+        document.dispatchEvent(new CustomEvent('ft:stops-rendered', { detail: { language: audioLang } }));
+        if (!initialStopAnchorApplied && /^#ft-stop-(?:[1-9]|1[0-6])$/.test(location.hash)) {
+            var anchor = document.getElementById(location.hash.slice(1));
+            if (anchor) { initialStopAnchorApplied = true; anchor.scrollIntoView({ block: 'start' }); }
+        }
         document.getElementById("ftAll").setAttribute("aria-pressed", mode === "all");
         document.getElementById("ftHalf").setAttribute("aria-pressed", mode === "half");
         stopAudio();            // the list just changed under whatever was playing
@@ -1243,7 +1271,86 @@
     var pick = document.getElementById('ftModelPick');
     var sub = document.getElementById('ftModelSub');
     var note = document.getElementById('ftModelNote');
-    if (!wrap || !stage || !pick || !window.TRAIL3D) return;
+    if (!wrap || !stage || !pick) return;
+    // BEGIN FT_ARCHITECTURE_BRIDGE
+    var activeArchitecture = null, walkView = null, architectureLanguage = null;
+    var architectureStage = document.createElement('div');
+    var walkStage = document.createElement('div');
+    architectureStage.id = 'ftArchitectureStage'; walkStage.id = 'ftWalkStage';
+    walkStage.hidden = true; stage.appendChild(architectureStage); stage.appendChild(walkStage);
+    function architectureLang() {
+      var lang = architectureLanguage || (window.FT_GUIDE && window.FT_GUIDE.lang) ||
+        (window.psxLang ? window.psxLang() : document.documentElement.lang);
+      return String(lang || 'en').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en';
+    }
+    function architectureURL(key, stop, embed) {
+      var url = new URL('/architecture', location.origin);
+      url.searchParams.set('model', key); url.searchParams.set('lang', architectureLang());
+      url.searchParams.set('source', 'freedom-trail');
+      if (stop) url.searchParams.set('stop', String(stop));
+      if (embed) url.searchParams.set('embed', '1');
+      return url.pathname + url.search;
+    }
+    function clearArchitecture() {
+      if (activeArchitecture && activeArchitecture.frame) activeArchitecture.frame.remove();
+      document.querySelectorAll('.ft-stop-model-host').forEach(function (host) { host.innerHTML = ''; });
+      architectureStage.innerHTML = '';
+      document.querySelectorAll('[data-ft-model]').forEach(function (button) { button.setAttribute('aria-expanded', 'false'); });
+      activeArchitecture = null;
+    }
+    function openArchitecture(key, stop, hostId) {
+      if (Object.keys(window.FT_MODEL_BY_STOP).every(function (n) { return window.FT_MODEL_BY_STOP[n] !== key; })) return;
+      var host = document.getElementById(hostId); if (!host) return;
+      clearArchitecture(); walkStage.hidden = true; architectureStage.hidden = false;
+      var frame = document.createElement('iframe');
+      frame.className = 'ft-architecture-frame'; frame.loading = 'lazy';
+      frame.title = architectureLang() === 'zh' ? '立体建筑与目的地故事' : '3D architecture and destination story';
+      frame.src = architectureURL(key, stop, true); frame.allow = 'fullscreen';
+      frame.setAttribute('allowfullscreen', '');
+      var link = document.createElement('a'); link.className = 'ft-architecture-link i18n-skip';
+      link.href = architectureURL(key, stop, false);
+      link.textContent = architectureLang() === 'zh' ? '打开完整建筑页面' : 'Open the full architecture page';
+      host.appendChild(frame); host.appendChild(link);
+      activeArchitecture = { key: key, stop: stop, hostId: hostId, frame: frame };
+      var button = stop && document.querySelector('[data-ft-model="' + key + '"][data-ft-stop="' + stop + '"]');
+      if (button) button.setAttribute('aria-expanded', 'true');
+      if (sub) sub.textContent = '';
+      if (note) note.textContent = '';
+      pick.querySelectorAll('button').forEach(function (b) {
+        b.setAttribute('aria-pressed', b.getAttribute('data-model') === key ? 'true' : 'false');
+      });
+    }
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest && e.target.closest('[data-ft-model]'); if (!b) return;
+      var stop = b.getAttribute('data-ft-stop'), key = b.getAttribute('data-ft-model');
+      if (activeArchitecture && activeArchitecture.hostId === 'ftStopModel_' + stop) { clearArchitecture(); return; }
+      openArchitecture(key, stop, 'ftStopModel_' + stop);
+    });
+    function restoreArchitecture() {
+      if (!activeArchitecture) return;
+      var state = activeArchitecture;
+      if (state.frame && state.frame.isConnected &&
+          new URL(state.frame.src, location.origin).href === new URL(architectureURL(state.key, state.stop, true), location.origin).href) return;
+      openArchitecture(state.key, state.stop, state.hostId);
+    }
+    document.addEventListener('ft:stops-rendered', function (event) {
+      // The tour's own voice switch does not change the page language. This
+      // event precedes syncTourAudio(), so FT_GUIDE still has the old language.
+      if (event.detail && typeof event.detail.language === 'string') architectureLanguage = event.detail.language;
+      restoreArchitecture();
+    });
+    document.addEventListener('psx:lang', function (event) {
+      architectureLanguage = typeof event.detail === 'string' ? event.detail : document.documentElement.lang;
+      restoreArchitecture();
+    });
+    window.addEventListener('message', function (event) {
+      var frame = activeArchitecture && activeArchitecture.frame;
+      if (!frame || event.origin !== location.origin || event.source !== frame.contentWindow ||
+          !event.data || event.data.type !== 'architecture:height') return;
+      var height = Number(event.data.height); if (!Number.isFinite(height)) return;
+      frame.style.height = Math.max(400, Math.min(4000, Math.ceil(height))) + 'px';
+    });
+    // END FT_ARCHITECTURE_BRIDGE
 
     /* The words that go with each model, kept beside the model rather than in
        the markup, so a stop cannot end up captioned as a different building. */
@@ -1457,12 +1564,22 @@
     function show(key) {
       var t = TEXT[key];
       if (!t) return;
-      var view = window.TRAIL3D.mount(stage, key, t.opts);
+      if (key !== 'walk') { openArchitecture(key, null, 'ftArchitectureStage'); return; }
+      clearArchitecture(); architectureStage.hidden = true; walkStage.hidden = false;
+      if (!window.TRAIL3D) {
+        walkStage.textContent = architectureLang() === 'zh' ? '请查看上方的步行路线与站点照片。' : 'Follow the walking route and stop photographs above.';
+        return;
+      }
+      if (!walkView) {
+        walkView = window.TRAIL3D.mount(walkStage, key, t.opts);
+        // The old whole-walk renderer has no dispose method. Mount once and stop its idle redraw.
+        try { walkStage.dispatchEvent(new PointerEvent('pointerdown', { clientX: 0, clientY: 0 }));
+              walkStage.dispatchEvent(new PointerEvent('pointerup', { clientX: 0, clientY: 0 })); } catch (e) {}
+      } else if (walkView.redraw) walkView.redraw();
       /* Held so the form loader above can redraw this exact model the
          moment the rebuilt buildings finish arriving. */
       window.__trailRedraw = function () {
-        if (view && view.redraw) view.redraw();
-        else window.TRAIL3D.mount(stage, key, t.opts);
+        if (!walkStage.hidden && walkView && walkView.redraw) walkView.redraw();
       };
       if (sub) sub.textContent = t.sub;
       if (note) note.textContent = t.note;
