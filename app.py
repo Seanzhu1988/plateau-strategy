@@ -5058,8 +5058,8 @@ def _gallery_finish(payload, q, lang, cached):
     rows = list(payload.get("results") or [])
     rows.extend(gallery_archive.search_known(q, lang=lang))
     if request.args.get("discover") == "0" or request.args.get("origin") == "photo":
-        # Camera search results are not proof of photo identity. Opening one
-        # stays read-only; an explicit story request may archive its source record.
+        # Camera search results are not proof of photo identity. Listing them
+        # stays read-only; tapping an item requests its own saved story.
         candidates, seen = [], set()
         for row in rows:
             keys = gallery_archive.identities(row)
@@ -5757,12 +5757,12 @@ def api_gallery_discover():
     data = request.get_json(silent=True) or {}
     if not isinstance(data, dict) or not isinstance(data.get("artifact_id"), str):
         return jsonify({"ok": False, "reason": "need_work"}), 400
-    # Older pages used an innocuous "Open artifact" button to confirm, queue
-    # and generate automatically. Fail closed for those stale callers too.
+    # A tap requests this item's story, even if it is unrelated to the photo.
+    # Keep the request explicit in the API, without asking for a second tap.
     # Interest in a catalogue result never proves it matches a photograph.
     if data.get("intent") != "write_story":
         return jsonify({"ok": False, "reason": "story_request_required",
-                        "message": "Viewing an item does not save a match or request a story."}), 400
+                        "message": "Open the item's story from the refreshed gallery."}), 400
     lang = data.get("lang", "en")
     if lang not in _LANGS.CODES:
         lang = "en"
@@ -5771,7 +5771,7 @@ def api_gallery_discover():
         try:
             candidate = _gallery_photo_signer().loads(artifact_id[2:], max_age=900)
         except Exception:
-            return jsonify({"ok": False, "reason": "candidate_expired", "message": "Search again to confirm this object."}), 410
+            return jsonify({"ok": False, "reason": "candidate_expired", "message": "Search again to open this item's story."}), 410
         # Store the source record without search-demand side effects. The
         # story request below queues only the language the visitor selected.
         artifact_id = gallery_archive.remember(candidate)["artifact_id"]

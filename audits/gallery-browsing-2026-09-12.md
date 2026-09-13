@@ -1,5 +1,10 @@
 # Gallery browsing and photo identity fix
 
+Historical audit, superseded by Sean's correction: tapping any item must
+automatically open/create/save its own story, including an unrelated discovery.
+The separate writing button described below was a product mistake and is being
+removed. Keep the identity, duplicate-work and visitor-photo privacy protections.
+
 Built and tested locally on 2026-09-12. Sean subsequently authorized pushing completed fixes.
 
 ## Cause and behavior

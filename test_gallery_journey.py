@@ -326,6 +326,50 @@ class GalleryJourneyTests(unittest.TestCase):
             self.assertEqual([r[0] for r in queued], ["zh"], "No automatic extra English story")
         self.assertEqual(self.provider.call_count, 0)
 
+    def test_tapping_two_items_saves_independent_stories_and_reuses_both(self):
+        other = {**FACTS, "title": "Acceptance discovery bowl", "item_number": "TEST-002",
+                 "source_object_id": "002", "source_url": "https://example.org/collection/test-002"}
+        with mock.patch.object(site, "_gal_met", return_value=[dict(FACTS), other]):
+            candidates = self.client.get("/api/gallery/search?q=Acceptance&origin=photo").get_json()["results"]
+        selected = {}
+        for number in ("TEST-001", "TEST-002"):
+            candidate = next(row for row in candidates if row["item_number"] == number)
+            saved = self.client.post("/api/gallery/discover", json={
+                "artifact_id": candidate["artifact_id"], "lang": "en", "intent": "write_story"}).get_json()
+            self.assertTrue(saved["saved"])
+            self.assertFalse(saved["photo_match_verified"])
+            self.assertEqual(saved["artifact"]["item_number"], number)
+            selected[number] = saved["artifact"]["artifact_id"]
+        self.assertNotEqual(selected["TEST-001"], selected["TEST-002"])
+        stories = {number: STORY + " This independent fixture belongs only to " + number + "."
+                   for number in selected}
+        # Finish the unrelated discovery first, then the initial result.
+        for number in ("TEST-002", "TEST-001"):
+            text = stories[number]
+            self.provider.return_value = SimpleNamespace(raise_for_status=lambda: None,
+                json=lambda text=text: {"stop_reason": "end_turn", "content": [{"type": "text", "text": text}]})
+            generated = self.client.post("/api/gallery/generate", json={
+                "artifact_id": selected[number], "lang": "en"}).get_json()
+            self.assertEqual(generated["artifact_id"], selected[number])
+            self.assertEqual(generated["text"], text)
+        self.assertEqual(self.provider.call_count, 2)
+        for number, artifact_id in selected.items():
+            for _ in range(2):
+                saved = self.client.post("/api/gallery/discover", json={
+                    "artifact_id": artifact_id, "lang": "en", "intent": "write_story"}).get_json()
+                self.assertEqual(saved["artifact"]["artifact_id"], artifact_id)
+                cached = self.client.post("/api/gallery/generate", json={
+                    "artifact_id": artifact_id, "lang": "en"}).get_json()
+                self.assertTrue(cached["cached"])
+                self.assertEqual(cached["text"], stories[number])
+        archive = self.client.get("/api/gallery/archive?q=Acceptance").get_json()
+        self.assertEqual({r["artifact_id"] for r in archive["items"]}, set(selected.values()))
+        with gallery_archive.database() as db:
+            self.assertEqual(db.execute("SELECT COUNT(*) FROM artifacts WHERE id IN (?,?)",
+                                       tuple(selected.values())).fetchone()[0], 2)
+            self.assertEqual(db.execute("SELECT SUM(confirmed_count) FROM artifacts").fetchone()[0], 0)
+        self.assertEqual(self.provider.call_count, 2, "Saved discoveries never need duplicate generation")
+
     def test_research_body_is_bounded_without_content_length(self):
         raw = json.dumps({"query": "Private research fixture", "label_text": "x" * 20000}).encode()
         response = self.client.open("/api/gallery/research", method="POST", content_type="application/json",
