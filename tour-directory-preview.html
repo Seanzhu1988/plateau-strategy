@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Explore by city | Tour directory preview</title>
+  <link rel="icon" href="/plateau-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/tour-directory-preview.css">
+</head>
+<body>
+  <a class="skip-link" href="#directory-main">Skip to tours</a>
+  <div class="directory-shell">
+    <header class="directory-header">
+      <a class="brand" href="/">Plateau Strategy</a>
+      <span class="preview-note">Tour directory preview</span>
+    </header>
+    <main id="directory-main">
+      <section class="directory-intro" aria-labelledby="directory-title">
+        <div>
+          <h1 id="directory-title">Find your next walk</h1>
+          <p>Choose a city, see the stops, then open your tour.</p>
+        </div>
+        <form id="directory-search" role="search">
+          <label for="search-input">Search cities, tours or places</label>
+          <div class="search-line">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 5 5"></path></svg>
+            <input id="search-input" type="search" autocomplete="off" placeholder="Boston, Lincoln Memorial, Princeton...">
+            <button type="button" id="clear-search" hidden>Clear</button>
+          </div>
+        </form>
+      </section>
+      <div class="directory-layout">
+        <aside class="city-sidebar" aria-label="Choose a city">
+          <h2 class="section-name">Explore by city</h2>
+          <nav id="city-list" aria-label="Cities"></nav>
+        </aside>
+        <div class="directory-content">
+          <div class="mobile-city">
+            <label for="city-select">City</label>
+            <select id="city-select" aria-label="Choose a city"></select>
+          </div>
+          <section class="tour-selection" aria-labelledby="city-title">
+            <div class="city-title-line"><h2 id="city-title">Washington, DC</h2><p id="result-count" role="status"></p></div>
+            <div id="tour-list" aria-label="Walking tours"></div>
+            <div id="empty-state" hidden>
+              <h3>No matching walk yet</h3>
+              <p>Try a city, a university or a landmark name.</p>
+              <button id="reset-search" type="button" class="text-action">Show all walks</button>
+            </div>
+          </section>
+          <article id="tour-detail" aria-labelledby="tour-title" hidden>
+            <div class="tour-heading">
+              <div><p id="tour-city" class="quiet"></p><h2 id="tour-title"></h2></div>
+              <a id="open-tour" class="primary-action" href="/national-mall">Open tour</a>
+            </div>
+            <p id="tour-summary" class="tour-summary"></p>
+            <dl class="tour-facts"><div><dt>Stops</dt><dd id="stop-count"></dd></div><div><dt>Walking estimate</dt><dd id="walking-time"></dd></div></dl>
+            <p class="walking-note">Between stops only. Leave extra time to look around.</p>
+            <div class="stop-list-heading"><h3>Your stops, in order</h3><p>Tap a place for its story and photograph.</p></div>
+            <ol id="stop-list" class="stop-list"></ol>
+          </article>
+          <div id="load-state" class="load-state" role="status">Loading the walking tours...</div>
+          <div id="load-error" class="load-state" hidden>
+            <h2>The tours could not load</h2><p>Check your connection and try again.</p>
+            <button type="button" id="retry-load" class="text-action">Try again</button>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer><p>One city at a time. More places to explore as the collection grows.</p><a href="/tours">Current tours page</a></footer>
+  </div>
+  <noscript><p class="no-script">This directory needs JavaScript to search and open its stop lists. <a href="/tours">Browse the current tours page.</a></p></noscript>
+  <script type="module" src="/tour-directory-preview.js"></script>
+</body>
+</html>
