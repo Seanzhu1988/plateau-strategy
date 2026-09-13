@@ -20,7 +20,7 @@ function harness() {
     getElementById(id) { return id === 'twShow' ? wrapper : id === 'twShowImg' ? wrapper.image : null; },
     createElement(tag) { assert.equal(tag, 'img'); return image(); }
   };
-  const context = vm.createContext({ document });
+  const context = vm.createContext({ document, URL });
   vm.runInContext(source, context);
   return { context, wrapper, current: () => wrapper.image,
     candidates: (stop, entry) => Array.from(context.stopPhotoCandidates(stop, entry)),
@@ -32,7 +32,7 @@ test('all generic tour classic inline scripts remain valid JavaScript', () => {
     if (/src=|application\/ld\+json|type="module"/.test(match[1])) continue;
     assert.doesNotThrow(() => new vm.Script(match[2], { filename: 'tour.html' }));
   }
-  assert.match(html, /showStopPhoto\(s, entry\);\s+silence\(\);/);
+  assert.match(html, /showStopSlideshow\(s, entry\);\s+silence\(\);/);
 });
 
 test('matching entry photos take priority, with all exact stop alternatives retained', () => {
@@ -40,6 +40,25 @@ test('matching entry photos take priority, with all exact stop alternatives reta
   assert.deepEqual(h.candidates({ photo: '/stop.jpg', photos: ['/stop-2.jpg'] },
     { photo: { src: '/book.jpg' }, photos: ['/book-2.jpg', { src: '/book.jpg' }] }),
   ['/book.jpg', '/book-2.jpg', '/stop.jpg', '/stop-2.jpg']);
+});
+
+test('module-failure fallback refuses unsafe and retired visitor-photo URLs from every source', () => {
+  const bad = ['http://example.org/photo.jpg', 'javascript:alert(1)', '//example.org/photo.jpg',
+    'https://user:pass@example.org/photo.jpg', '/photo.svg', '/photo%2esvg',
+    '/api/gallery/photos/old', 'https://example.org/%2561pi%252fgallery%252fphotos/old',
+    '/a/../gallery_photos/old', '/api//gallery/photos/old'];
+  for (const src of bad) {
+    const h = harness();
+    assert.deepEqual(h.candidates({photo_details:[{src}], photo:src, photos:[src]}, {photo:src, photos:[src]}), [], src);
+  }
+  assert.deepEqual(harness().candidates({photos:['https://museum.example/licensed.jpg', '/public-stop.jpg']}, null),
+    ['https://museum.example/licensed.jpg', '/public-stop.jpg']);
+});
+
+test('reviewed stop metadata takes priority over older entry and stop photos', () => {
+  const h = harness();
+  assert.deepEqual(h.candidates({ photo_details: [{ src: '/reviewed.jpg' }], photos: ['/old-stop.jpg'] },
+    { photo: '/old-entry.jpg' }), ['/reviewed.jpg']);
 });
 
 test('missing or malformed entry photos fall back to stop string and object photos', () => {

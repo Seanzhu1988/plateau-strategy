@@ -6200,9 +6200,30 @@ def api_trails():
     """The walkable trails, as data. One file, read fresh, no cache to go stale."""
     try:
         with open(os.path.join(BASE_DIR, "trails.json"), encoding="utf-8") as f:
-            return jsonify({"ok": True, **json.load(f)})
+            catalog = json.load(f)
+        from tour_photos import read_photo_manifest, with_stop_photos
+        return jsonify({"ok": True, **with_stop_photos(catalog, read_photo_manifest(BASE_DIR))})
     except Exception as e:
         return jsonify({"ok": False, "trails": [], "error": str(e)}), 500
+
+
+@app.get('/tour-stop-photos.json')
+def tour_stop_photos():
+    from tour_photos import read_photo_manifest
+    response = jsonify(read_photo_manifest(BASE_DIR))
+    response.headers['Cache-Control'] = 'no-store'
+    return response
+
+
+@app.get('/tour-stop-slideshow.<extension>')
+def tour_stop_slideshow_asset(extension):
+    if extension not in {'js', 'css'}:
+        return 'Not found', 404
+    response = send_file(os.path.join(BASE_DIR, 'tour-stop-slideshow.' + extension),
+                         mimetype='text/javascript' if extension == 'js' else 'text/css')
+    response.headers['Cache-Control'] = 'no-store'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    return response
 
 
 # ---------------------------------------------------------------- trail pulse

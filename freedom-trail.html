@@ -26,6 +26,7 @@
     <script src="/psx-net.js"></script>
     <link rel="stylesheet" href="/modern.css">
     <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
+    <link rel="stylesheet" href="/tour-stop-slideshow.css">
     <style>
         header img { height: 42px; width: 42px; border-radius: 50%; }
         header .brand { font-size: 1.2rem; font-weight: 800; }
@@ -86,34 +87,7 @@
            for deciding whether to walk at all; this one is for the person who
            is already standing there, so it lives next to that stop's words and
            nowhere else. [SEAN "a slideshow for each one of them"] */
-        #ftStops .ft-mini-show { position: relative; margin: .6rem 0 .2rem; border-radius: 10px;
-                        overflow: hidden; background: #f1efe8; max-width: 420px; }
-        #ftStops .ft-mini-show img { display: block; width: 100%; height: 170px; object-fit: cover; }
-        /* Seventh time. A class with !important STILL loses to modern.css,
-           because its button rule is eight :not() clauses deep and specificity
-           is compared before !important between two important declarations.
-           There are sixteen of these so an id per button is out, but the list
-           has an id, and #ftStops beats nine classes. This file already solved
-           it exactly this way for .ft-play twenty lines up; I wrote the class
-           version first anyway and the arrows came out as bare underlined
-           glyphs, which is what the comment I replaced claimed to prevent. */
-        #ftStops .ft-mini-nav { position: absolute !important; top: 50% !important;
-                       transform: translateY(-50%) !important;
-                       width: 32px !important; height: 32px !important;
-                       min-width: 0 !important; min-height: 0 !important;
-                       border: 0 !important; border-radius: 50% !important;
-                       background: rgba(255,255,255,.92) !important; color: #14110c !important;
-                       font-size: 1.1rem !important; line-height: 1 !important;
-                       text-decoration: none !important; padding: 0 !important;
-                       cursor: pointer !important; display: flex !important;
-                       align-items: center; justify-content: center;
-                       box-shadow: 0 1px 4px rgba(11,8,9,.3) !important; }
-        #ftStops .ft-mini-nav.prev { left: 6px !important; }
-        #ftStops .ft-mini-nav.next { right: 6px !important; }
-        #ftStops .ft-mini-count { position: absolute; right: 8px; bottom: 8px; font-size: .72rem;
-                         font-weight: 700; color: #fff; background: rgba(11,8,9,.6);
-                         border-radius: 999px; padding: .1rem .45rem; }
-        @media (max-width: 640px) { #ftStops .ft-mini-show img { height: 140px; } }
+        #ftStops .ft-stop-photos { margin: .6rem 0 .2rem; max-width: 560px; min-width: 0; }
         .ft-yiki { margin-top: .55rem; color: #4a453d; font-size: .93rem; line-height: 1.6; }
         .ft-yiki .ft-guide { margin-right: .5rem; }
         /* Hung off the list's id: modern.css strips padding and background from
@@ -651,20 +625,11 @@
                    narr +
                    '<div class="ft-meta">' + meta + '</div>' +
                    '<div class="ft-desc">' + s.desc + '</div>' +
-                   ((s.photos || []).length
-                     ? '<div class="ft-mini-show" data-stop="' + s.n + '">' +
-                       '<img data-src="' + pic(s.photos[0], 560) + '" alt="' + s.name.replace(/"/g, "") + '">' +
-                       ((s.photos.length > 1)
-                         ? '<button class="ft-mini-nav prev" data-d="-1" aria-label="Previous picture">&#8249;</button>' +
-                           '<button class="ft-mini-nav next" data-d="1" aria-label="Next picture">&#8250;</button>' +
-                           '<span class="ft-mini-count">1/' + s.photos.length + '</span>'
-                         : '') +
-                       '</div>'
-                     : '') +
+                   '<div class="ft-stop-photos i18n-skip" data-stop="' + s.n + '"></div>' +
                    note +
                    '</div></div>';
         }).join("");
-        if (typeof feedMiniShows === "function") feedMiniShows(); // fresh imgs, fresh queue
+        if (typeof feedMiniShows === "function") feedMiniShows(); // fresh hosts, dispose old slideshows
         document.getElementById("ftAll").setAttribute("aria-pressed", mode === "all");
         document.getElementById("ftHalf").setAttribute("aria-pressed", mode === "half");
         stopAudio();            // the list just changed under whatever was playing
@@ -866,7 +831,6 @@
             included = new Set(trail.stops.map(function (s) { return s.n; }));   // all, to begin
             renderTruth();
             render();
-            wireMiniShows();             // the stop pictures, once the stops exist
             // Switching language re-reads the stops so the guide who speaks,
             // and the file that plays, follow the reader: Yiki in English,
             // Pangge in Chinese.
@@ -1029,68 +993,27 @@
         }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
     }
 
-    // Commons serves the ORIGINAL behind Special:FilePath, and these are three
-    // and four thousand pixels wide. FilePath takes a width, so ask for the
-    // size actually being drawn; the stored URL stays canonical.
-    function pic(url, w) {
-        if (!url) return url;
-        return url + (url.indexOf("?") > -1 ? "&" : "?") + "width=" + w;
-    }
-    // Sixteen stop pictures requested in one burst is exactly what Commons
-    // throttles. Measured, not guessed: the burst loads ten of sixteen, then
-    // zero of sixteen on a cold reload, while ANY single one retried alone
-    // loads instantly. And an <img> that errors stays errored forever. So the
-    // list's pictures are fed one at a time in walking order, a polite beat
-    // apart, and whatever failed gets one second pass. The big slideshow is a
-    // single image and stays out of this queue.
+    // BEGIN BOSTON_STOP_SLIDESHOWS
+    var miniSlides = [], miniVersion = 0, miniModule = null;
     function feedMiniShows() {
-        var imgs = [].slice.call(document.querySelectorAll("#ftStops .ft-mini-show img[data-src]"));
-        var again = [];
-        (function next(i) {
-            if (i >= imgs.length) {
-                if (again.length) { imgs = again.slice(); again = []; setTimeout(function () { next(0); }, 1500); }
-                return;
-            }
-            var im = imgs[i];
-            var done = false;
-            var go = function (ok) {
-                if (done) return; done = true;
-                if (!ok && again.indexOf(im) < 0) again.push(im);
-                setTimeout(function () { next(i + 1); }, 220);
-            };
-            im.onload = function () { go(true); };
-            im.onerror = function () { go(false); };
-            im.src = im.dataset.src;
-            setTimeout(function () { go(im.naturalWidth > 0); }, 9000);
-        })(0);
-    }
-
-    // ------------------------------------------------------- stop pictures
-    // The big overview slideshow that used to sit at the top is gone. [SEAN
-    // "the very top slide show became unnecessary take it off"] He is right:
-    // once every stop carries its own pictures beside its own words, a second
-    // copy of the same photographs above them is repetition, not orientation.
-    // What remains is the per-stop wiring: one delegated handler for all
-    // sixteen, with the position living on the element itself so a list
-    // rebuild cannot leave sixteen counters pointing at the wrong photographs.
-    var miniWired = false;
-    function wireMiniShows() {
-        if (miniWired) return;                       // render() runs again on every toggle
-        miniWired = true;
-        document.getElementById("ftStops").addEventListener("click", function (e) {
-            var nav = e.target.closest(".ft-mini-nav"); if (!nav) return;
-            var box = nav.closest(".ft-mini-show");
-            var stop = (trail.stops || []).find(function (st) {
-                return String(st.n) === box.dataset.stop; });
-            var pics = (stop && stop.photos) || []; if (pics.length < 2) return;
-            var at = ((+box.dataset.at || 0) + (+nav.dataset.d) + pics.length) % pics.length;
-            box.dataset.at = at;
-            var im = box.querySelector("img");
-            im.removeAttribute("data-src");          // it is out of the feed queue now
-            im.src = pic(pics[at], 560);
-            box.querySelector(".ft-mini-count").textContent = (at + 1) + "/" + pics.length;
+        var version = ++miniVersion;
+        miniSlides.forEach(function (controller) { controller.destroy(); }); miniSlides = [];
+        var hosts = [].slice.call(document.querySelectorAll("#ftStops .ft-stop-photos"));
+        if (!hosts.length) return;
+        if (!miniModule) miniModule = import("/tour-stop-slideshow.js");
+        miniModule.then(function (module) {
+            if (version !== miniVersion) return;
+            hosts.forEach(function (host) {
+                var stop = (trail.stops || []).find(function (s) { return String(s.n) === host.dataset.stop; });
+                if (!stop) return;
+                miniSlides.push(module.mountStopSlideshow(host, module.stopPhotosFor(stop), { name: stop.name, language: audioLang }));
+            });
+        }).catch(function () {
+            if (version !== miniVersion) return;
+            hosts.forEach(function (host) { host.textContent = audioLang === "zh" ? "照片暂时无法加载。" : "The photographs could not load."; });
         });
     }
+    // END BOSTON_STOP_SLIDESHOWS
 
     // ---------------------------------------------------------------- consent
     // The browser's own permission dialog is not consent, it is a switch. It

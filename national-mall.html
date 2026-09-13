@@ -23,6 +23,7 @@
     <script src="/psx-net.js"></script>
     <link rel="stylesheet" href="/modern.css">
     <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
+    <link rel="stylesheet" href="/tour-stop-slideshow.css">
     <style>
         header img { height: 42px; width: 42px; border-radius: 50%; }
         header .brand { font-size: 1.2rem; font-weight: 800; }
@@ -155,16 +156,7 @@
            "the 3D, slide show the discription with audio track ... once they
            locked the walk it follows traveller"] Colours are explicit hex, never
            inherited, so a viewer that drops variables still draws them. */
-        .nm-show { position: relative; margin: .5rem 0; background: #0f172a; border-radius: 10px; overflow: hidden; }
-        .nm-show img { display: block; width: 100%; max-height: 300px; object-fit: cover; }
-        /* modern.css strips every button to a rose underline with !important, so these
-           controls carry !important too or they render as bare text (2026-09-04 scan). */
-        .nm-show button { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; min-height: 44px;
-            border: 0 !important; border-radius: 50% !important; background: rgba(15,23,42,.65) !important; color: #ffffff !important;
-            padding: 0 !important; box-shadow: none !important; font-size: 22px; cursor: pointer; }
-        .nm-show #nmPrev { left: 8px; } .nm-show #nmNext { right: 8px; }
-        .nm-show #nmShowN { position: absolute; right: 10px; bottom: 8px; font-size: 12px; color: #ffffff;
-            background: rgba(15,23,42,.65); padding: 2px 8px; border-radius: 10px; }
+        .nm-photo-host { margin: .5rem 0; min-width: 0; }
         .nm-story p { margin: 0 0 .7rem; }
         .nm-guide { display: flex; align-items: center; gap: .6rem; margin: .5rem 0; font-size: .9rem; color: #334155; }
         .nm-guide audio { width: 100%; max-width: 420px; }
@@ -246,12 +238,7 @@
 
                 <div class="nm-now" id="nmNow" hidden>
                     <h2 id="nmNowName"></h2>
-                    <div class="nm-show" id="nmShow" hidden>
-                        <img id="nmShowImg" alt="" loading="lazy">
-                        <button type="button" id="nmPrev" aria-label="Previous picture">&lsaquo;</button>
-                        <button type="button" id="nmNext" aria-label="Next picture">&rsaquo;</button>
-                        <span id="nmShowN"></span>
-                    </div>
+                    <div class="nm-photo-host i18n-skip" id="nmShow" hidden></div>
                     <div class="nm-story" id="nmNowStory" hidden></div>
                     <div class="nm-guide" id="nmGuide" hidden><span>Listen:</span><audio id="nmAudio" controls preload="none"></audio><span class="nm-resume" id="nmResume" hidden></span></div>
                     <p class="nm-nogudie" id="nmNoGuide" hidden>No recording for this stop yet.</p>
@@ -570,21 +557,23 @@
         if (!txt) txt = (e["story_" + L] || "").trim() || (e.story_en || "").trim();
         return txt;
     }
-    var showPics = [], showIdx = 0;
-    function paintShow() {
-        var box = document.getElementById("nmShow"), img = document.getElementById("nmShowImg");
-        if (!showPics.length) { box.hidden = true; img.removeAttribute("src"); return; }
-        box.hidden = false;
-        var u = showPics[showIdx];
-        img.src = u + (u.indexOf("?") > -1 ? "&" : "?") + "width=720";
-        document.getElementById("nmShowN").textContent = (showIdx + 1) + " / " + showPics.length;
-        var one = showPics.length < 2;
-        document.getElementById("nmPrev").hidden = one; document.getElementById("nmNext").hidden = one;
+    // BEGIN MALL_STOP_SLIDESHOW
+    var mallPhotoModule = null, mallPhotoController = null, mallPhotoVersion = 0;
+    function paintShow(stop) {
+        var version = ++mallPhotoVersion, host = document.getElementById("nmShow");
+        if (mallPhotoController) mallPhotoController.destroy();
+        mallPhotoController = null; host.replaceChildren(); host.hidden = !stop;
+        if (!stop) return;
+        if (!mallPhotoModule) mallPhotoModule = import("/tour-stop-slideshow.js");
+        mallPhotoModule.then(function (module) {
+            if (version !== mallPhotoVersion) return;
+            mallPhotoController = module.mountStopSlideshow(host, module.stopPhotosFor(stop, entryFor(stop)), { name: stop.name, language: lang() });
+        }).catch(function () {
+            if (version !== mallPhotoVersion) return;
+            host.textContent = lang() === "zh" ? "照片暂时无法加载。" : "The photographs could not load.";
+        });
     }
-    document.getElementById("nmPrev").addEventListener("click", function () {
-        if (showPics.length) { showIdx = (showIdx + showPics.length - 1) % showPics.length; paintShow(); } });
-    document.getElementById("nmNext").addEventListener("click", function () {
-        if (showPics.length) { showIdx = (showIdx + 1) % showPics.length; paintShow(); } });
+    // END MALL_STOP_SLIDESHOW
     function renderExtras(s) {
         var e = entryFor(s), story = storyFor(e), sb = document.getElementById("nmNowStory");
         if (story) {
@@ -593,7 +582,7 @@
                 var p = document.createElement("p"); p.textContent = para.trim(); sb.appendChild(p); });
             sb.hidden = false; nowDesc.hidden = true;
         } else { sb.hidden = true; nowDesc.hidden = false; }
-        showPics = (s && s.photos) || []; showIdx = 0; paintShow();
+        paintShow(s);
         var g = document.getElementById("nmGuide"), a = document.getElementById("nmAudio");
         var setSrc = function (u) {
             /* Arriving at the next stop is an interruption like any other. The
@@ -672,7 +661,7 @@
         st.hidden = true; st.textContent = "";      /* nothing stale left to surface */
         nowDesc.hidden = false;
         nowName.textContent = "";
-        showPics = []; paintShow();
+        paintShow(null);
         silenceGuide(); sayNoGuide(false);
     }
     function show(key, fromUser) {

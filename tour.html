@@ -18,6 +18,7 @@
     <script src="/psx-net.js"></script>
     <link rel="stylesheet" href="/modern.css">
     <link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
+    <link rel="stylesheet" href="/tour-stop-slideshow.css">
     <style>
         /* ONE PAGE FOR EVERY TOUR THAT HAS NO HAND-BUILT PAGE OF ITS OWN.
            [SEAN 2026-09-08: the Ivy League as "one of tour mechanism ... eight
@@ -91,7 +92,7 @@
         .tw-note { margin: .55rem 0 .6rem; padding-left: .85rem; border-left: 2px solid #cfc9bd;
                    color: #4a453d; font-size: .93rem; line-height: 1.6; }
         .tw-note .tw-guide { font-weight: 750; color: #12305b; margin-right: .5rem; }
-        .tw-show img { width: 100%; border-radius: 8px; display: block; margin: .4rem 0 .6rem; }
+        .tw-photo-host > img { width: 100%; border-radius: 8px; display: block; margin: .4rem 0 .6rem; }
         .tw-guideplay { display: flex; gap: .6rem; align-items: center; margin: .5rem 0 .8rem;
                         font-size: .88rem; color: #6b655b; }
         .tw-guideplay audio { width: 100%; }
@@ -158,7 +159,7 @@
                 <span id="twCue" class="tw-cue" aria-live="polite" hidden></span>
                 <div class="tw-now" id="twNow" hidden>
                     <h2 id="twNowName"></h2>
-                    <div class="tw-show" id="twShow" hidden><img id="twShowImg" alt="" loading="lazy"></div>
+                    <div class="tw-photo-host i18n-skip" id="twShow" hidden><img id="twShowImg" alt="" loading="lazy"></div>
                     <div class="tw-note" id="twNote" hidden></div>
                     <div class="tw-guideplay" id="twGuide" hidden><span>Listen:</span><audio id="twAudio" controls preload="none"></audio></div>
                     <p class="tw-noguide" id="twNoGuide" hidden>No recording for this stop yet.</p>
@@ -226,6 +227,24 @@
             var src = typeof photo === "string" ? photo : photo && photo.src;
             if (typeof src !== "string" || !src.trim()) return;
             src = src.trim();
+            // This path also runs if the slideshow module cannot load.
+            // It needs the same protections as the normal photo renderer.
+            if (/[\u0000-\u001f\\]/.test(src) || /\.svg(?:[?#]|$)/i.test(src)) return;
+            try {
+                var decoded = src;
+                for (var i = 0; i < 8; i++) {
+                    var next = decodeURIComponent(decoded);
+                    if (next === decoded) break;
+                    decoded = next;
+                }
+                if (decodeURIComponent(decoded) !== decoded || /[\u0000-\u001f]/.test(decoded)) return;
+                var normalized = new URL(decoded.replace(/\\/g, "/").replace(/^\/+/g, "/"), "https://tour.invalid");
+                if (/(?:^|\/)(?:api\/gallery\/photos|gallery_photos)(?:\/|$)/i.test(normalized.pathname.replace(/\/+/g, "/")) || /\.svg(?:[?#]|$)/i.test(decoded)) return;
+                if (!/^\/(?!\/)/.test(src)) {
+                    var remote = new URL(src);
+                    if (remote.protocol !== "https:" || remote.username || remote.password) return;
+                }
+            } catch (_) { return; }
             if (result.indexOf(src) < 0) result.push(src);
         }
         function addOwner(owner) {
@@ -233,6 +252,8 @@
             add(owner.photo);
             if (Array.isArray(owner.photos)) owner.photos.forEach(add);
         }
+        if (Array.isArray(stop && stop.photo_details)) stop.photo_details.forEach(add);
+        if (result.length) return result;
         // The matching Destination Book entry has priority. Only this exact
         // stop supplies fallbacks, never the tour, city, or campus as a whole.
         addOwner(entry);
@@ -273,6 +294,32 @@
         next();
     }
     // END EXACT_STOP_PHOTOS
+
+    // BEGIN TOUR_STOP_SLIDESHOW
+    var tourPhotoModule = null, tourPhotoController = null, tourPhotoVersion = 0;
+    function clearTourSlideshow() {
+        ++tourPhotoVersion; ++stopPhotoSequence;
+        if (tourPhotoController) tourPhotoController.destroy();
+        tourPhotoController = null;
+    }
+    function showStopSlideshow(stop, entry) {
+        clearTourSlideshow();
+        var version = tourPhotoVersion, host = document.getElementById("twShow");
+        host.hidden = false;
+        var old = document.getElementById("twShowImg");
+        if (old) { old.onload = old.onerror = null; old.removeAttribute("src"); }
+        if (!tourPhotoModule) tourPhotoModule = import("/tour-stop-slideshow.js");
+        tourPhotoModule.then(function (module) {
+            if (version !== tourPhotoVersion) return;
+            tourPhotoController = module.mountStopSlideshow(host, module.stopPhotosFor(stop, entry), { name: stop.name, language: activeLang() });
+        }).catch(function () {
+            if (version !== tourPhotoVersion) return;
+            host.replaceChildren();
+            var img = document.createElement("img"); img.id = "twShowImg"; host.appendChild(img);
+            showStopPhoto(stop, entry); // Older browser/module failure: exact single-photo fallback.
+        });
+    }
+    // END TOUR_STOP_SLIDESHOW
 
     /* A hash says the recording matches some words. These optional semantic
        fields say it matches THIS trail card. Old rows predate the fields and
@@ -708,7 +755,7 @@
         var tip = document.getElementById("twTip");
         if (entry && entry.tip) { tip.hidden = false; tip.innerHTML = ""; var b = document.createElement("b"); b.textContent = T("Tip") + " "; tip.appendChild(b); tip.appendChild(document.createTextNode(entry.tip)); }
         else { tip.hidden = true; tip.textContent = ""; }
-        showStopPhoto(s, entry);
+        showStopSlideshow(s, entry);
 
         silence();
         if (fromUser) { try { overviewAudioEl.pause(); } catch (e) {} }
@@ -745,6 +792,7 @@
 
     /* ---------------- a collection ---------------- */
     function paintCollection(t, all) {
+        clearTourSlideshow();
         try { overviewAudioEl.pause(); } catch (e) {}
         overviewAudioEl.removeAttribute("src");
         document.getElementById("twOverview").hidden = true;

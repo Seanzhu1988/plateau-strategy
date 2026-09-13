@@ -1,0 +1,2507 @@
+{
+  "version": 1,
+  "checkedAt": "2026-09-13T04:20:21.606Z",
+  "completedAt": "2026-09-13T04:20:46.107Z",
+  "manifest": "tour-stop-photos.json",
+  "manifestSha256": "660296db2a12a560279d2589572d2bfe867749e2d751ae7d8f48e87ba928a1c9",
+  "method": "HEAD",
+  "concurrency": 3,
+  "timeoutMs": 10000,
+  "retries": 0,
+  "imageBodiesDownloaded": false,
+  "limitations": "HEAD headers only. No image bodies downloaded or decoded. Rate limits, access blocks, unsupported HEAD, timeouts and upstream/network failures are inconclusive, not proof of a missing image. No GET fallback or URL modifications.",
+  "summary": {
+    "uniqueUrls": 165,
+    "photoReferences": 165,
+    "byOutcome": {
+      "image_header_ok": 161,
+      "rate_limited_inconclusive": 4
+    },
+    "byStatus": {
+      "200": 161,
+      "429": 4
+    }
+  },
+  "results": [
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c7/Boston_Common_November_2016_001.jpg/1280px-Boston_Common_November_2016_001.jpg",
+      "references": [
+        {
+          "trail": "freedom-trail",
+          "stop": "1",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "318910",
+      "outcome": "image_header_ok",
+      "elapsedMs": 242
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/Massachusetts_State_House%2C_Boston%2C_Massachusetts.jpg/1280px-Massachusetts_State_House%2C_Boston%2C_Massachusetts.jpg",
+      "references": [
+        {
+          "trail": "freedom-trail",
+          "stop": "2",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "293286",
+      "outcome": "image_header_ok",
+      "elapsedMs": 207
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/Park_Street_Church_Boston_DSC_0070_AD.JPG/1280px-Park_Street_Church_Boston_DSC_0070_AD.JPG",
+      "references": [
+        {
+          "trail": "freedom-trail",
+          "stop": "3",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "283463",
+      "outcome": "image_header_ok",
+      "elapsedMs": 220
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Boston%27s_Granary_burial_ground.jpg/1280px-Boston%27s_Granary_burial_ground.jpg",
+      "references": [
+        {
+          "trail": "freedom-trail",
+          "stop": "4",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "558550",
+      "outcome": "image_header_ok",
+      "elapsedMs": 215
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Kings_chapel_boston_2009h.JPG/1280px-Kings_chapel_boston_2009h.JPG",
+      "references": [
+        {
+          "trail": "freedom-trail",
+          "stop": "5",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "340099",
+      "outcome": "image_header_ok",
+      "elapsedMs": 190
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/Benjamin_Franklin_statue%2C_Old_City_Hall%2C_Boston_-_1.JPG/1280px-Benjamin_Franklin_statue%2C_Old_City_Hall%2C_Boston_-_1.JPG",
+      "references": [
+        {
+          "trail": "freedom-trail",
+          "stop": "6",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "876902",
+      "outcome": "image_header_ok",
+      "elapsedMs": 217
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/2017_Old_Corner_Bookstore.jpg/1280px-2017_Old_Corner_Bookstore.jpg",
+      "references": [
+        {
+          "trail": "freedom-trail",
+          "stop": "7",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "417343",
+      "outcome": "image_header_ok",
+      "elapsedMs": 181
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a3/Bost_South_Meeting_house_CIMG0607.JPG",
+      "references": [
+        {
+          "trail": "freedom-trail",
+          "stop": "8",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "495636",
+      "outcome": "image_header_ok",
+      "elapsedMs": 205
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/USA_Old_State_House_1_MA.jpg/1280px-USA_Old_State_House_1_MA.jpg",
+      "references": [
+        {
+          "trail": "freedom-trail",
+          "stop": "9",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "683013",
+      "outcome": "image_header_ok",
+      "elapsedMs": 169
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a7/Site_of_the_Boston_Massacre.jpg/1280px-Site_of_the_Boston_Massacre.jpg",
+      "references": [
+        {
+          "trail": "freedom-trail",
+          "stop": "10",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "950873",
+      "outcome": "image_header_ok",
+      "elapsedMs": 161
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b6/Faneuil_Hall_Boston_Massachusetts.JPG/1280px-Faneuil_Hall_Boston_Massachusetts.JPG",
+      "references": [
+        {
+          "trail": "freedom-trail",
+          "stop": "11",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "864978",
+      "outcome": "image_header_ok",
+      "elapsedMs": 192
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Paul_Revere%E2%80%99s_House_%282006%29.jpg/1280px-Paul_Revere%E2%80%99s_House_%282006%29.jpg",
+      "references": [
+        {
+          "trail": "freedom-trail",
+          "stop": "12",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "305547",
+      "outcome": "image_header_ok",
+      "elapsedMs": 216
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/Old_North_Church_%286001949500%29.jpg/1280px-Old_North_Church_%286001949500%29.jpg",
+      "references": [
+        {
+          "trail": "freedom-trail",
+          "stop": "13",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "627229",
+      "outcome": "image_header_ok",
+      "elapsedMs": 230
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Copp%27s_Hill_Burying_Ground_%2836245p%29.jpg/1280px-Copp%27s_Hill_Burying_Ground_%2836245p%29.jpg",
+      "references": [
+        {
+          "trail": "freedom-trail",
+          "stop": "14",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "420852",
+      "outcome": "image_header_ok",
+      "elapsedMs": 175
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/USS_Constitution_fires_a_17-gun_salute.jpg/1280px-USS_Constitution_fires_a_17-gun_salute.jpg",
+      "references": [
+        {
+          "trail": "freedom-trail",
+          "stop": "15",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "277847",
+      "outcome": "image_header_ok",
+      "elapsedMs": 195
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/eb/Monumento_de_Bunker_Hill%2C_Boston%2C_EE.UU.%2C_2007-08-01_DD_280.jpg",
+      "references": [
+        {
+          "trail": "freedom-trail",
+          "stop": "16",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 429,
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "1990",
+      "outcome": "rate_limited_inconclusive",
+      "retryAfter": "1",
+      "elapsedMs": 109
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/65/2021_Brown_University%2C_Van_Wickle_Gates.jpg/1280px-2021_Brown_University%2C_Van_Wickle_Gates.jpg",
+      "references": [
+        {
+          "trail": "ivy-brown",
+          "stop": "1",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "558095",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1149
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Brown_University_University_Hall_aerial.png/1280px-Brown_University_University_Hall_aerial.png",
+      "references": [
+        {
+          "trail": "ivy-brown",
+          "stop": "2",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "contentLength": "1632476",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1958
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d9/2021_Brown_University%2C_Manning_Hall_from_southwest.jpg/1280px-2021_Brown_University%2C_Manning_Hall_from_southwest.jpg",
+      "references": [
+        {
+          "trail": "ivy-brown",
+          "stop": "3",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "469133",
+      "outcome": "image_header_ok",
+      "elapsedMs": 878
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/2021_Brown_University%2C_Sayles_Hall_from_southwest.jpg/1280px-2021_Brown_University%2C_Sayles_Hall_from_southwest.jpg",
+      "references": [
+        {
+          "trail": "ivy-brown",
+          "stop": "4",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "631907",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1382
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cc/2021_Brown_University%2C_John_Carter_Brown_Library_from_north.jpg/1280px-2021_Brown_University%2C_John_Carter_Brown_Library_from_north.jpg",
+      "references": [
+        {
+          "trail": "ivy-brown",
+          "stop": "5",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "431551",
+      "outcome": "image_header_ok",
+      "elapsedMs": 206
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/Carrie_Tower_-_Brown_University.jpg/1280px-Carrie_Tower_-_Brown_University.jpg",
+      "references": [
+        {
+          "trail": "ivy-brown",
+          "stop": "6",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "748931",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1766
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/2021_Brown_University%2C_John_Hay_Library.jpg/1280px-2021_Brown_University%2C_John_Hay_Library.jpg",
+      "references": [
+        {
+          "trail": "ivy-brown",
+          "stop": "7",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "388964",
+      "outcome": "image_header_ok",
+      "elapsedMs": 227
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/45/2021_Brown_University%2C_Faunce_House.jpg/1280px-2021_Brown_University%2C_Faunce_House.jpg",
+      "references": [
+        {
+          "trail": "ivy-brown",
+          "stop": "8",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "392590",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1386
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/2021_Brown_University%2C_Sciences_Library.jpg/1280px-2021_Brown_University%2C_Sciences_Library.jpg",
+      "references": [
+        {
+          "trail": "ivy-brown",
+          "stop": "9",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "704958",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1903
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/df/Soldiers_Memorial_Gate_%28Brown_University%29.jpg/1280px-Soldiers_Memorial_Gate_%28Brown_University%29.jpg",
+      "references": [
+        {
+          "trail": "ivy-brown",
+          "stop": "10",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "599065",
+      "outcome": "image_header_ok",
+      "elapsedMs": 232
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6c/View_down_Benefit_Street.jpg/1280px-View_down_Benefit_Street.jpg",
+      "references": [
+        {
+          "trail": "ivy-brown",
+          "stop": "11",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "562870",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1563
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/97/WikipediaDayNYC2024_Columbia_campus.jpg/960px-WikipediaDayNYC2024_Columbia_campus.jpg",
+      "references": [
+        {
+          "trail": "ivy-columbia",
+          "stop": "1",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "164511",
+      "outcome": "image_header_ok",
+      "elapsedMs": 90
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c4/Alma_Mater%2C_Columbia_University.jpg/960px-Alma_Mater%2C_Columbia_University.jpg",
+      "references": [
+        {
+          "trail": "ivy-columbia",
+          "stop": "2",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "90462",
+      "outcome": "image_header_ok",
+      "elapsedMs": 83
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Columbia_University_-_Low_Memorial_Library_%2848170370506%29.jpg/960px-Columbia_University_-_Low_Memorial_Library_%2848170370506%29.jpg",
+      "references": [
+        {
+          "trail": "ivy-columbia",
+          "stop": "3",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "222041",
+      "outcome": "image_header_ok",
+      "elapsedMs": 91
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/aa/Butler_Library_Columbia_University.jpg/960px-Butler_Library_Columbia_University.jpg",
+      "references": [
+        {
+          "trail": "ivy-columbia",
+          "stop": "4",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "160536",
+      "outcome": "image_header_ok",
+      "elapsedMs": 91
+    },
+    {
+      "url": "https://eventmanagement.columbia.edu/sites/eventmanagement.columbia.edu/files/content/Venues/Outdoor%20Spaces/Sundial.jpg",
+      "references": [
+        {
+          "trail": "ivy-columbia",
+          "stop": "5",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "651592",
+      "outcome": "image_header_ok",
+      "elapsedMs": 418
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/2014_Columbia_University_Hamilton_Hall_entrance_facade.jpg/960px-2014_Columbia_University_Hamilton_Hall_entrance_facade.jpg",
+      "references": [
+        {
+          "trail": "ivy-columbia",
+          "stop": "6",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "306676",
+      "outcome": "image_header_ok",
+      "elapsedMs": 101
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/82/2014_Columbia_University_Philosophy_Hall_entrance.jpg/960px-2014_Columbia_University_Philosophy_Hall_entrance.jpg",
+      "references": [
+        {
+          "trail": "ivy-columbia",
+          "stop": "7",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "385742",
+      "outcome": "image_header_ok",
+      "elapsedMs": 96
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5a/2014_Columbia_University_St._Paul%27s_Chapel.jpg/960px-2014_Columbia_University_St._Paul%27s_Chapel.jpg",
+      "references": [
+        {
+          "trail": "ivy-columbia",
+          "stop": "8",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "182350",
+      "outcome": "image_header_ok",
+      "elapsedMs": 98
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d7/2014_Columbia_University_Earl_Hall_from_north.jpg/960px-2014_Columbia_University_Earl_Hall_from_north.jpg",
+      "references": [
+        {
+          "trail": "ivy-columbia",
+          "stop": "9",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "328010",
+      "outcome": "image_header_ok",
+      "elapsedMs": 91
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/45/Columbia_University_-_Department_of_Physics_%2848170362276%29.jpg/960px-Columbia_University_-_Department_of_Physics_%2848170362276%29.jpg",
+      "references": [
+        {
+          "trail": "ivy-columbia",
+          "stop": "10",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "204928",
+      "outcome": "image_header_ok",
+      "elapsedMs": 97
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Cornell_University_-_Ho_Plaza%2C_looking_north.jpg/1280px-Cornell_University_-_Ho_Plaza%2C_looking_north.jpg",
+      "references": [
+        {
+          "trail": "ivy-cornell",
+          "stop": "1",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "514301",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1724
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Cornell_University_-_Willard_Straight_Hall_%282025%29.jpg/1280px-Cornell_University_-_Willard_Straight_Hall_%282025%29.jpg",
+      "references": [
+        {
+          "trail": "ivy-cornell",
+          "stop": "1",
+          "photo": 2
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "802220",
+      "outcome": "image_header_ok",
+      "elapsedMs": 2294
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/Cornell_University_-_McGraw_Tower_01.jpg/1280px-Cornell_University_-_McGraw_Tower_01.jpg",
+      "references": [
+        {
+          "trail": "ivy-cornell",
+          "stop": "2",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "816783",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1444
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/Cornell_University_-_Uris_Library_2.jpg/1280px-Cornell_University_-_Uris_Library_2.jpg",
+      "references": [
+        {
+          "trail": "ivy-cornell",
+          "stop": "3",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "437409",
+      "outcome": "image_header_ok",
+      "elapsedMs": 182
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/00/Cornell_University_Slope.jpg",
+      "references": [
+        {
+          "trail": "ivy-cornell",
+          "stop": "4",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "180224",
+      "outcome": "image_header_ok",
+      "elapsedMs": 220
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Cornell_Arts_Quad.JPG/1280px-Cornell_Arts_Quad.JPG",
+      "references": [
+        {
+          "trail": "ivy-cornell",
+          "stop": "5",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "249472",
+      "outcome": "image_header_ok",
+      "elapsedMs": 215
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/74/Statue_of_Ezra_Cornell%2C_founder_of_Cornell_University.jpg/1280px-Statue_of_Ezra_Cornell%2C_founder_of_Cornell_University.jpg",
+      "references": [
+        {
+          "trail": "ivy-cornell",
+          "stop": "5",
+          "photo": 2
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "1148053",
+      "outcome": "image_header_ok",
+      "elapsedMs": 224
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/20/Cornell_University_Goldwin_Smith_Hall_20240526.jpg/1280px-Cornell_University_Goldwin_Smith_Hall_20240526.jpg",
+      "references": [
+        {
+          "trail": "ivy-cornell",
+          "stop": "6",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "379110",
+      "outcome": "image_header_ok",
+      "elapsedMs": 206
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/Cornell_Sage_Chapel_1.jpg/1280px-Cornell_Sage_Chapel_1.jpg",
+      "references": [
+        {
+          "trail": "ivy-cornell",
+          "stop": "7",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "539476",
+      "outcome": "image_header_ok",
+      "elapsedMs": 169
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Cornell_University_-_A._D._White_House.jpg/1280px-Cornell_University_-_A._D._White_House.jpg",
+      "references": [
+        {
+          "trail": "ivy-cornell",
+          "stop": "8",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "730439",
+      "outcome": "image_header_ok",
+      "elapsedMs": 2025
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Cornell_University_-_Herbert_F._Johnson_Museum_of_Art_%282025%29.jpg/1280px-Cornell_University_-_Herbert_F._Johnson_Museum_of_Art_%282025%29.jpg",
+      "references": [
+        {
+          "trail": "ivy-cornell",
+          "stop": "9",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "318532",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1631
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/Cornell_footbridge.jpg/1280px-Cornell_footbridge.jpg",
+      "references": [
+        {
+          "trail": "ivy-cornell",
+          "stop": "10",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "584573",
+      "outcome": "image_header_ok",
+      "elapsedMs": 222
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/Cornell_University_-_Beebe_Lake_and_Triphammer_Falls.jpg/1280px-Cornell_University_-_Beebe_Lake_and_Triphammer_Falls.jpg",
+      "references": [
+        {
+          "trail": "ivy-cornell",
+          "stop": "11",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "374053",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1861
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/Dartmouth_College_campus_2007-06-23_Hanover_Inn_02.JPG/1280px-Dartmouth_College_campus_2007-06-23_Hanover_Inn_02.JPG",
+      "references": [
+        {
+          "trail": "ivy-dartmouth",
+          "stop": "1",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "263669",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1257
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/Dartmouth_College_campus_2007-10-13_-_The_Green_2.JPG/1280px-Dartmouth_College_campus_2007-10-13_-_The_Green_2.JPG",
+      "references": [
+        {
+          "trail": "ivy-dartmouth",
+          "stop": "2",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "350798",
+      "outcome": "image_header_ok",
+      "elapsedMs": 775
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/Dartmouth_Hall%2C_Dartmouth_College_-_general_view.JPG/1280px-Dartmouth_Hall%2C_Dartmouth_College_-_general_view.JPG",
+      "references": [
+        {
+          "trail": "ivy-dartmouth",
+          "stop": "3",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "318963",
+      "outcome": "image_header_ok",
+      "elapsedMs": 159
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/Rollins_Chapel%2C_Dartmouth_College_-_front_facade.JPG/1280px-Rollins_Chapel%2C_Dartmouth_College_-_front_facade.JPG",
+      "references": [
+        {
+          "trail": "ivy-dartmouth",
+          "stop": "4",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "379771",
+      "outcome": "image_header_ok",
+      "elapsedMs": 829
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/Rollins_Chapel%2C_Dartmouth_College_-_oblique_view.JPG/1280px-Rollins_Chapel%2C_Dartmouth_College_-_oblique_view.JPG",
+      "references": [
+        {
+          "trail": "ivy-dartmouth",
+          "stop": "4",
+          "photo": 2
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "901259",
+      "outcome": "image_header_ok",
+      "elapsedMs": 180
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/54/Dartmouth_Rauner_Library_%28Webster_Hall%29_portico_2.jpg/1280px-Dartmouth_Rauner_Library_%28Webster_Hall%29_portico_2.jpg",
+      "references": [
+        {
+          "trail": "ivy-dartmouth",
+          "stop": "5",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "679276",
+      "outcome": "image_header_ok",
+      "elapsedMs": 3687
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/Baker-Library-Dartmouth-College-Hanover-New-Hampshire-05-2018a.jpg/1280px-Baker-Library-Dartmouth-College-Hanover-New-Hampshire-05-2018a.jpg",
+      "references": [
+        {
+          "trail": "ivy-dartmouth",
+          "stop": "6",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "322080",
+      "outcome": "image_header_ok",
+      "elapsedMs": 154
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Sanborn_Library_%28Dartmouth_College%29.jpg/1280px-Sanborn_Library_%28Dartmouth_College%29.jpg",
+      "references": [
+        {
+          "trail": "ivy-dartmouth",
+          "stop": "7",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "465962",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1238
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3c/Parkhurst_Hall%2C_Dartmouth_College.jpg/1280px-Parkhurst_Hall%2C_Dartmouth_College.jpg",
+      "references": [
+        {
+          "trail": "ivy-dartmouth",
+          "stop": "8",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "503363",
+      "outcome": "image_header_ok",
+      "elapsedMs": 209
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/Collis_Center%2C_Dartmouth_College.jpg/1280px-Collis_Center%2C_Dartmouth_College.jpg",
+      "references": [
+        {
+          "trail": "ivy-dartmouth",
+          "stop": "9",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "427927",
+      "outcome": "image_header_ok",
+      "elapsedMs": 210
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/Collis_Center_interior%2C_Dartmouth_College.jpg/1280px-Collis_Center_interior%2C_Dartmouth_College.jpg",
+      "references": [
+        {
+          "trail": "ivy-dartmouth",
+          "stop": "9",
+          "photo": 2
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "305807",
+      "outcome": "image_header_ok",
+      "elapsedMs": 880
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/34/Hopkins-Center-for-the-Arts-Wheelock-St-Hanover-New-Hampshire-05-2018a.jpg/1280px-Hopkins-Center-for-the-Arts-Wheelock-St-Hanover-New-Hampshire-05-2018a.jpg",
+      "references": [
+        {
+          "trail": "ivy-dartmouth",
+          "stop": "10",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "306143",
+      "outcome": "image_header_ok",
+      "elapsedMs": 219
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f6/FINAL_Hood_Museum_Facade_April_2019_Photo_by_Alison_Palizzolo_300ppi.jpg/1280px-FINAL_Hood_Museum_Facade_April_2019_Photo_by_Alison_Palizzolo_300ppi.jpg",
+      "references": [
+        {
+          "trail": "ivy-dartmouth",
+          "stop": "11",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "297691",
+      "outcome": "image_header_ok",
+      "elapsedMs": 168
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/Harvard_Square_in_Cambridge%2C_Massachusetts.jpg/960px-Harvard_Square_in_Cambridge%2C_Massachusetts.jpg",
+      "references": [
+        {
+          "trail": "ivy-harvard",
+          "stop": "1",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "231424",
+      "outcome": "image_header_ok",
+      "elapsedMs": 170
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a0/Johnston_Gate_%28Harvard_Yard%29_-_IMG_8974.JPG/960px-Johnston_Gate_%28Harvard_Yard%29_-_IMG_8974.JPG",
+      "references": [
+        {
+          "trail": "ivy-harvard",
+          "stop": "2",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "282649",
+      "outcome": "image_header_ok",
+      "elapsedMs": 123
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b5/Harvard_University_Massachusetts_Hall.jpg/960px-Harvard_University_Massachusetts_Hall.jpg",
+      "references": [
+        {
+          "trail": "ivy-harvard",
+          "stop": "3",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "289761",
+      "outcome": "image_header_ok",
+      "elapsedMs": 121
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/John_Harvard_statue.jpg/960px-John_Harvard_statue.jpg",
+      "references": [
+        {
+          "trail": "ivy-harvard",
+          "stop": "4",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "330297",
+      "outcome": "image_header_ok",
+      "elapsedMs": 83
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/55/Memorial_Church%2C_Harvard_Campus%2C_Cambridge%2C_Massachusetts.jpg/960px-Memorial_Church%2C_Harvard_Campus%2C_Cambridge%2C_Massachusetts.jpg",
+      "references": [
+        {
+          "trail": "ivy-harvard",
+          "stop": "5",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "423547",
+      "outcome": "image_header_ok",
+      "elapsedMs": 87
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/Widener_Library%2C_Harvard_University.jpg/960px-Widener_Library%2C_Harvard_University.jpg",
+      "references": [
+        {
+          "trail": "ivy-harvard",
+          "stop": "6",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "243734",
+      "outcome": "image_header_ok",
+      "elapsedMs": 80
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/Sever_Hall_%28Harvard_University%29_-_west_facade.JPG/960px-Sever_Hall_%28Harvard_University%29_-_west_facade.JPG",
+      "references": [
+        {
+          "trail": "ivy-harvard",
+          "stop": "7",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "328803",
+      "outcome": "image_header_ok",
+      "elapsedMs": 99
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b5/HarvardArtsMuseums.jpg/960px-HarvardArtsMuseums.jpg",
+      "references": [
+        {
+          "trail": "ivy-harvard",
+          "stop": "8",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "147313",
+      "outcome": "image_header_ok",
+      "elapsedMs": 91
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/Memorial_Hall_%28Harvard_University%29_-_general_view.JPG/960px-Memorial_Hall_%28Harvard_University%29_-_general_view.JPG",
+      "references": [
+        {
+          "trail": "ivy-harvard",
+          "stop": "9",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "464226",
+      "outcome": "image_header_ok",
+      "elapsedMs": 92
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Harvard_Science_Center_from_the_Yard.jpg/960px-Harvard_Science_Center_from_the_Yard.jpg",
+      "references": [
+        {
+          "trail": "ivy-harvard",
+          "stop": "10",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "236564",
+      "outcome": "image_header_ok",
+      "elapsedMs": 95
+    },
+    {
+      "url": "https://live.staticflickr.com/65535/51982514671_dc585f4df6_b.jpg",
+      "references": [
+        {
+          "trail": "ivy-penn",
+          "stop": "1",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": null,
+      "outcome": "image_header_ok",
+      "elapsedMs": 67
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Eastward_view_of_Locust_Walk.jpg/1280px-Eastward_view_of_Locust_Walk.jpg",
+      "references": [
+        {
+          "trail": "ivy-penn",
+          "stop": "2",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "494547",
+      "outcome": "image_header_ok",
+      "elapsedMs": 223
+    },
+    {
+      "url": "https://live.staticflickr.com/65535/53897521253_5b613be191.jpg",
+      "references": [
+        {
+          "trail": "ivy-penn",
+          "stop": "3",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": null,
+      "outcome": "image_header_ok",
+      "elapsedMs": 116
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/43/College_Hall_%28University_of_Pennsylvania%29_-_IMG_6596.JPG/1280px-College_Hall_%28University_of_Pennsylvania%29_-_IMG_6596.JPG",
+      "references": [
+        {
+          "trail": "ivy-penn",
+          "stop": "4",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "437305",
+      "outcome": "image_header_ok",
+      "elapsedMs": 178
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/Fisher_Fine_Arts_Library_-_IMG_6609.JPG/1280px-Fisher_Fine_Arts_Library_-_IMG_6609.JPG",
+      "references": [
+        {
+          "trail": "ivy-penn",
+          "stop": "5",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "275066",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1197
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2a/Fisher_Fine_Arts_Library_at_Night.jpg/1280px-Fisher_Fine_Arts_Library_at_Night.jpg",
+      "references": [
+        {
+          "trail": "ivy-penn",
+          "stop": "5",
+          "photo": 2
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "419846",
+      "outcome": "image_header_ok",
+      "elapsedMs": 210
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d4/The_Spruce_Street_Entrance_of_the_Houston_Hall_of_the_University_of_Pennsylvania.jpg/1280px-The_Spruce_Street_Entrance_of_the_Houston_Hall_of_the_University_of_Pennsylvania.jpg",
+      "references": [
+        {
+          "trail": "ivy-penn",
+          "stop": "6",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "449561",
+      "outcome": "image_header_ok",
+      "elapsedMs": 158
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/da/Irvine_Auditorium_-_UPenn_%2853590619400%29.jpg/1280px-Irvine_Auditorium_-_UPenn_%2853590619400%29.jpg",
+      "references": [
+        {
+          "trail": "ivy-penn",
+          "stop": "7",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "530972",
+      "outcome": "image_header_ok",
+      "elapsedMs": 173
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1f/The_Wharton_School_-_UPenn_20240528.jpg/1280px-The_Wharton_School_-_UPenn_20240528.jpg",
+      "references": [
+        {
+          "trail": "ivy-penn",
+          "stop": "8",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "912852",
+      "outcome": "image_header_ok",
+      "elapsedMs": 212
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/Penn_Museum%27s_Warden_Garden_and_Main_Entrance%2C_Summer_2012.jpg/1280px-Penn_Museum%27s_Warden_Garden_and_Main_Entrance%2C_Summer_2012.jpg",
+      "references": [
+        {
+          "trail": "ivy-penn",
+          "stop": "9",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "381340",
+      "outcome": "image_header_ok",
+      "elapsedMs": 220
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/Franklin_Field%2C_Philadelphia%2C_2024.jpg/1280px-Franklin_Field%2C_Philadelphia%2C_2024.jpg",
+      "references": [
+        {
+          "trail": "ivy-penn",
+          "stop": "10",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "321067",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1079
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cf/Palmer_Square_in_Princeton.jpg/960px-Palmer_Square_in_Princeton.jpg",
+      "references": [
+        {
+          "trail": "ivy-princeton",
+          "stop": "1",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "312405",
+      "outcome": "image_header_ok",
+      "elapsedMs": 89
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cf/FitzRandolph_Gate_with_Nassau_Hall.jpg/960px-FitzRandolph_Gate_with_Nassau_Hall.jpg",
+      "references": [
+        {
+          "trail": "ivy-princeton",
+          "stop": "2",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "478543",
+      "outcome": "image_header_ok",
+      "elapsedMs": 92
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/04/Nassau_Hall_Princeton.JPG/960px-Nassau_Hall_Princeton.JPG",
+      "references": [
+        {
+          "trail": "ivy-princeton",
+          "stop": "3",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "264670",
+      "outcome": "image_header_ok",
+      "elapsedMs": 87
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Cannon_Green_and_Nassau_Hall%2C_Princeton_University.jpg/960px-Cannon_Green_and_Nassau_Hall%2C_Princeton_University.jpg",
+      "references": [
+        {
+          "trail": "ivy-princeton",
+          "stop": "4",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "341862",
+      "outcome": "image_header_ok",
+      "elapsedMs": 91
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/East_Pyne_Building_Princeton_University.jpg/960px-East_Pyne_Building_Princeton_University.jpg",
+      "references": [
+        {
+          "trail": "ivy-princeton",
+          "stop": "5",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "113950",
+      "outcome": "image_header_ok",
+      "elapsedMs": 101
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3f/Victorian_Gothic_-_Princeton%2C_NJ_-_Princeton_University_%28Chancellor_Green_Library%29_%289%29.jpg/960px-Victorian_Gothic_-_Princeton%2C_NJ_-_Princeton_University_%28Chancellor_Green_Library%29_%289%29.jpg",
+      "references": [
+        {
+          "trail": "ivy-princeton",
+          "stop": "5",
+          "photo": 2
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "70091",
+      "outcome": "image_header_ok",
+      "elapsedMs": 98
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/Firestone_Library_Princeton_front.jpg/960px-Firestone_Library_Princeton_front.jpg",
+      "references": [
+        {
+          "trail": "ivy-princeton",
+          "stop": "6",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "315281",
+      "outcome": "image_header_ok",
+      "elapsedMs": 96
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/Chapel_Princeton_University.jpg/960px-Chapel_Princeton_University.jpg",
+      "references": [
+        {
+          "trail": "ivy-princeton",
+          "stop": "7",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "346268",
+      "outcome": "image_header_ok",
+      "elapsedMs": 93
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9f/Prospect_House_-_Princeton_University_%2855143713252%29.jpg/960px-Prospect_House_-_Princeton_University_%2855143713252%29.jpg",
+      "references": [
+        {
+          "trail": "ivy-princeton",
+          "stop": "8",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "166059",
+      "outcome": "image_header_ok",
+      "elapsedMs": 93
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/Princeton_University_Art_Museum.2026.jpg/960px-Princeton_University_Art_Museum.2026.jpg",
+      "references": [
+        {
+          "trail": "ivy-princeton",
+          "stop": "9",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "214941",
+      "outcome": "image_header_ok",
+      "elapsedMs": 869
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/Blair_Arch%2C_Princeton_University%2C_2007.jpg/960px-Blair_Arch%2C_Princeton_University%2C_2007.jpg",
+      "references": [
+        {
+          "trail": "ivy-princeton",
+          "stop": "10",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "360622",
+      "outcome": "image_header_ok",
+      "elapsedMs": 101
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6c/Alexander_Hall%2C_the_home_to_both_the_Princeton_University_Orchestra_and_the_Princeton_Symphony_Orchestra.jpg/960px-Alexander_Hall%2C_the_home_to_both_the_Princeton_University_Orchestra_and_the_Princeton_Symphony_Orchestra.jpg",
+      "references": [
+        {
+          "trail": "ivy-princeton",
+          "stop": "11",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "219883",
+      "outcome": "image_header_ok",
+      "elapsedMs": 99
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8b/Phelps_Hall_from_Old_Campus.JPG/960px-Phelps_Hall_from_Old_Campus.JPG",
+      "references": [
+        {
+          "trail": "ivy-yale",
+          "stop": "1",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "573323",
+      "outcome": "image_header_ok",
+      "elapsedMs": 84
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/Connecticut_Hall%2C_Yale_University.jpg/960px-Connecticut_Hall%2C_Yale_University.jpg",
+      "references": [
+        {
+          "trail": "ivy-yale",
+          "stop": "2",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "221454",
+      "outcome": "image_header_ok",
+      "elapsedMs": 94
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cd/Old_Campus_Courtyard_and_Durfee_Hall%2C_Yale_University%2C_New_Haven%2C_2007.jpg/960px-Old_Campus_Courtyard_and_Durfee_Hall%2C_Yale_University%2C_New_Haven%2C_2007.jpg",
+      "references": [
+        {
+          "trail": "ivy-yale",
+          "stop": "3",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "222501",
+      "outcome": "image_header_ok",
+      "elapsedMs": 89
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c2/2014-04-17-Yale-Old-Campus-Courtyard-Harkness-Tower.jpg/960px-2014-04-17-Yale-Old-Campus-Courtyard-Harkness-Tower.jpg",
+      "references": [
+        {
+          "trail": "ivy-yale",
+          "stop": "4",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "217891",
+      "outcome": "image_header_ok",
+      "elapsedMs": 85
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f1/Yale_University_Art_Gallery_exterior.jpg/960px-Yale_University_Art_Gallery_exterior.jpg",
+      "references": [
+        {
+          "trail": "ivy-yale",
+          "stop": "5",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "239472",
+      "outcome": "image_header_ok",
+      "elapsedMs": 94
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Yale_Center_for_British_Art_%2854106458295%29.jpg/960px-Yale_Center_for_British_Art_%2854106458295%29.jpg",
+      "references": [
+        {
+          "trail": "ivy-yale",
+          "stop": "6",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "145739",
+      "outcome": "image_header_ok",
+      "elapsedMs": 94
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f7/Tree-lined_walk_across_Cross_Campus_above_Bass_Library%2C_Yale_University%2C_New_Haven%2C_Connecticut.jpg/960px-Tree-lined_walk_across_Cross_Campus_above_Bass_Library%2C_Yale_University%2C_New_Haven%2C_Connecticut.jpg",
+      "references": [
+        {
+          "trail": "ivy-yale",
+          "stop": "7",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "687632",
+      "outcome": "image_header_ok",
+      "elapsedMs": 95
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Yale_University_Library_-_Sterling_Memorial_Library_%2854105136782%29.jpg/960px-Yale_University_Library_-_Sterling_Memorial_Library_%2854105136782%29.jpg",
+      "references": [
+        {
+          "trail": "ivy-yale",
+          "stop": "8",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "170279",
+      "outcome": "image_header_ok",
+      "elapsedMs": 87
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bd/Beinecke_Exterior.jpg/960px-Beinecke_Exterior.jpg",
+      "references": [
+        {
+          "trail": "ivy-yale",
+          "stop": "9",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "142650",
+      "outcome": "image_header_ok",
+      "elapsedMs": 88
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/Woolsey_Hall_-_Yale_University_%2854106457850%29.jpg/960px-Woolsey_Hall_-_Yale_University_%2854106457850%29.jpg",
+      "references": [
+        {
+          "trail": "ivy-yale",
+          "stop": "10",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "125813",
+      "outcome": "image_header_ok",
+      "elapsedMs": 79
+    },
+    {
+      "url": "https://www.nps.gov/common/uploads/cropped_image/primary/9639C1ED-BBFC-3F88-14C5927E22F696D5.jpg?width=1600&quality=90&mode=crop",
+      "references": [
+        {
+          "trail": "mount-rushmore",
+          "stop": "1",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": null,
+      "outcome": "image_header_ok",
+      "elapsedMs": 57
+    },
+    {
+      "url": "https://www.nps.gov/common/uploads/cropped_image/primary/D19026BC-BB77-51D2-0C82D91A2121D258.jpg?width=1600&quality=90&mode=crop",
+      "references": [
+        {
+          "trail": "mount-rushmore",
+          "stop": "2",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": null,
+      "outcome": "image_header_ok",
+      "elapsedMs": 47
+    },
+    {
+      "url": "https://www.nps.gov/common/uploads/cropped_image/primary/93553CB2-B988-BC6A-B25D6426D6C08E97.jpg?width=1600&quality=90&mode=crop",
+      "references": [
+        {
+          "trail": "mount-rushmore",
+          "stop": "3",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": null,
+      "outcome": "image_header_ok",
+      "elapsedMs": 40
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fe/Mount_Rushmore_Viewed_from_the_Presidential_Trail_%28fabfaf93-1dd8-b71b-0b57-8519601d72ce%29.JPG/1280px-Mount_Rushmore_Viewed_from_the_Presidential_Trail_%28fabfaf93-1dd8-b71b-0b57-8519601d72ce%29.JPG",
+      "references": [
+        {
+          "trail": "mount-rushmore",
+          "stop": "4",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "373984",
+      "outcome": "image_header_ok",
+      "elapsedMs": 353
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d9/Washington_on_Mt_Rushmore_9-2019.jpg/1280px-Washington_on_Mt_Rushmore_9-2019.jpg",
+      "references": [
+        {
+          "trail": "mount-rushmore",
+          "stop": "5",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "289329",
+      "outcome": "image_header_ok",
+      "elapsedMs": 199
+    },
+    {
+      "url": "https://www.nps.gov/common/uploads/cropped_image/primary/D397F84E-E674-664F-A2434F393CD0B128.jpg?width=1600&quality=90&mode=crop",
+      "references": [
+        {
+          "trail": "mount-rushmore",
+          "stop": "6",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": null,
+      "outcome": "image_header_ok",
+      "elapsedMs": 43
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/13/MtRushmoreSculptorStudio.jpg",
+      "references": [
+        {
+          "trail": "mount-rushmore",
+          "stop": "7",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 429,
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "1990",
+      "outcome": "rate_limited_inconclusive",
+      "retryAfter": "1",
+      "elapsedMs": 90
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/Sculptors_Studio_Interior_Mt_Rushmore_2024.jpg/1280px-Sculptors_Studio_Interior_Mt_Rushmore_2024.jpg",
+      "references": [
+        {
+          "trail": "mount-rushmore",
+          "stop": "7",
+          "photo": 2
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "410079",
+      "outcome": "image_header_ok",
+      "elapsedMs": 204
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/39/Mount_Rusmore_lighting_ceremony.jpg/1280px-Mount_Rusmore_lighting_ceremony.jpg",
+      "references": [
+        {
+          "trail": "mount-rushmore",
+          "stop": "8",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "127477",
+      "outcome": "image_header_ok",
+      "elapsedMs": 167
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Mount_Rushmore_at_night_%28f4eb22ee-155d-4519-3e61-bb4312870fb9%29.JPG/1280px-Mount_Rushmore_at_night_%28f4eb22ee-155d-4519-3e61-bb4312870fb9%29.JPG",
+      "references": [
+        {
+          "trail": "mount-rushmore",
+          "stop": "8",
+          "photo": 2
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "325602",
+      "outcome": "image_header_ok",
+      "elapsedMs": 223
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/US_Capitol_west_side.JPG/1280px-US_Capitol_west_side.JPG",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "1",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "207106",
+      "outcome": "image_header_ok",
+      "elapsedMs": 115
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Thomas_Jefferson_Building-1.jpg/1280px-Thomas_Jefferson_Building-1.jpg",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "2",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "385782",
+      "outcome": "image_header_ok",
+      "elapsedMs": 241
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/United_States_Botanic_Garden_Washington_April_2017_002.jpg/1280px-United_States_Botanic_Garden_Washington_April_2017_002.jpg",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "3",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "499865",
+      "outcome": "image_header_ok",
+      "elapsedMs": 202
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4c/National_Museum_of_the_American_Indian%2C_Washington%2C_D.C_LCCN2011630892.jpg/1280px-National_Museum_of_the_American_Indian%2C_Washington%2C_D.C_LCCN2011630892.jpg",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "4",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "482937",
+      "outcome": "image_header_ok",
+      "elapsedMs": 214
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/06/National_Air_and_Space_Museum%2C_Washington%2C_DC_%2821_September_2023%29_24.jpg/1280px-National_Air_and_Space_Museum%2C_Washington%2C_DC_%2821_September_2023%29_24.jpg",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "5",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "261295",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1385
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/National_Gallery_of_Art_-_West_Building_facade.JPG/1280px-National_Gallery_of_Art_-_West_Building_facade.JPG",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "6",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "203967",
+      "outcome": "image_header_ok",
+      "elapsedMs": 215
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Hirshhorn_Museum_and_Sculpture_Garden_-_exterior.jpg/1280px-Hirshhorn_Museum_and_Sculpture_Garden_-_exterior.jpg",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "7",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "219767",
+      "outcome": "image_header_ok",
+      "elapsedMs": 218
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/18/%27Smithsonian_Castle_in_Washington_DC%27_by_Tania_Dey.JPG",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "8",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 429,
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "1990",
+      "outcome": "rate_limited_inconclusive",
+      "retryAfter": "1",
+      "elapsedMs": 87
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/National_Museum_of_Natural_History_.jpg/1280px-National_Museum_of_Natural_History_.jpg",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "9",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "443550",
+      "outcome": "image_header_ok",
+      "elapsedMs": 204
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/Entrance_of_National_Museum_of_American_History_20240531.jpg/1280px-Entrance_of_National_Museum_of_American_History_20240531.jpg",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "10",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "548790",
+      "outcome": "image_header_ok",
+      "elapsedMs": 2319
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/National_Museum_of_African_American_History_and_Culture_in_February_2020.jpg/1280px-National_Museum_of_African_American_History_and_Culture_in_February_2020.jpg",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "11",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "372031",
+      "outcome": "image_header_ok",
+      "elapsedMs": 214
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/WhiteHouseSouthFacade.JPG/1280px-WhiteHouseSouthFacade.JPG",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "12",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "364571",
+      "outcome": "image_header_ok",
+      "elapsedMs": 199
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Eisenhower_Executive_Office_Building_exterior_from_the_southeast.jpg/1280px-Eisenhower_Executive_Office_Building_exterior_from_the_southeast.jpg",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "13",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "491098",
+      "outcome": "image_header_ok",
+      "elapsedMs": 188
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/Washington_Monument%2C_Washington_DC.jpg/1280px-Washington_Monument%2C_Washington_DC.jpg",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "14",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "554078",
+      "outcome": "image_header_ok",
+      "elapsedMs": 219
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/World_War_II_Monument_and_Lincoln_Memorial_2.jpg/1280px-World_War_II_Monument_and_Lincoln_Memorial_2.jpg",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "15",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "292284",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1044
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4a/Vietnam_Memorial_Wall_with_Washington_Monument.jpg/1280px-Vietnam_Memorial_Wall_with_Washington_Monument.jpg",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "16",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "415745",
+      "outcome": "image_header_ok",
+      "elapsedMs": 213
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/Lincoln_Memorial_east_side.JPG/1280px-Lincoln_Memorial_east_side.JPG",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "17",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "170739",
+      "outcome": "image_header_ok",
+      "elapsedMs": 159
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1f/Aerial_view_of_Korean_War_Veterans_Memorial.jpg/1280px-Aerial_view_of_Korean_War_Veterans_Memorial.jpg",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "18",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "513349",
+      "outcome": "image_header_ok",
+      "elapsedMs": 83
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/Martin_Luther_King%2C_Jr._Memorial_-_Flickr_-_Stabbur%27s_Master.jpg/1280px-Martin_Luther_King%2C_Jr._Memorial_-_Flickr_-_Stabbur%27s_Master.jpg",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "19",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "361614",
+      "outcome": "image_header_ok",
+      "elapsedMs": 176
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c7/Franklin_Roosevelt_Memorial_waterfall.jpg/1280px-Franklin_Roosevelt_Memorial_waterfall.jpg",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "20",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "526381",
+      "outcome": "image_header_ok",
+      "elapsedMs": 172
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Jefferson_Memorial_Washington_April_2017_002.jpg/1280px-Jefferson_Memorial_Washington_April_2017_002.jpg",
+      "references": [
+        {
+          "trail": "national-mall",
+          "stop": "21",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "228659",
+      "outcome": "image_header_ok",
+      "elapsedMs": 151
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fe/Independence_Visitor_Center%2C_Philadelphia%2C_PA.jpg/1280px-Independence_Visitor_Center%2C_Philadelphia%2C_PA.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "1",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "275807",
+      "outcome": "image_header_ok",
+      "elapsedMs": 91
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/Independence_Visitor_Center_Exterior.jpg/1280px-Independence_Visitor_Center_Exterior.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "1",
+          "photo": 2
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "547112",
+      "outcome": "image_header_ok",
+      "elapsedMs": 93
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Liberty_Bell_Center_South.jpg/1280px-Liberty_Bell_Center_South.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "2",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "434683",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1618
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/81/Liberty_Bell_Center_South_%28front_view%29.jpg/1280px-Liberty_Bell_Center_South_%28front_view%29.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "2",
+          "photo": 2
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "360129",
+      "outcome": "image_header_ok",
+      "elapsedMs": 200
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9f/Exterior_of_the_Independence_Hall%2C_Aug_2019.jpg/1280px-Exterior_of_the_Independence_Hall%2C_Aug_2019.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "3",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "313665",
+      "outcome": "image_header_ok",
+      "elapsedMs": 97
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/58/Independence_Hall%2C_Philadelphia_20240528.jpg/1280px-Independence_Hall%2C_Philadelphia_20240528.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "3",
+          "photo": 2
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "391872",
+      "outcome": "image_header_ok",
+      "elapsedMs": 193
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Congress_Hall_exterior.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "4",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 429,
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": "1990",
+      "outcome": "rate_limited_inconclusive",
+      "retryAfter": "1",
+      "elapsedMs": 89
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/97/Congress_Hall_-_Philadelphia_%282642813566%29.jpg/1280px-Congress_Hall_-_Philadelphia_%282642813566%29.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "4",
+          "photo": 2
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "419479",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1110
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Old_City_Hall%2C_Philadelphia%2C_PA.JPG/1280px-Old_City_Hall%2C_Philadelphia%2C_PA.JPG",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "5",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "435736",
+      "outcome": "image_header_ok",
+      "elapsedMs": 259
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/Old_City_Hall_%28Philadelphia%29_%2853586895904%29.jpg/1280px-Old_City_Hall_%28Philadelphia%29_%2853586895904%29.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "5",
+          "photo": 2
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "424411",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1682
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/18/Second_Bank_of_the_United_States%2C_Philadelphia%2C_PA.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "6",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "1176621",
+      "outcome": "image_header_ok",
+      "elapsedMs": 176
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Second_Bank_of_the_United_States_front.jpg/1280px-Second_Bank_of_the_United_States_front.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "6",
+          "photo": 2
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "317587",
+      "outcome": "image_header_ok",
+      "elapsedMs": 223
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/02/Carpenters%27_Hall%2C_Philadelphia%2C_U.S.%2C_May_2015.jpg/1280px-Carpenters%27_Hall%2C_Philadelphia%2C_U.S.%2C_May_2015.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "7",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "462604",
+      "outcome": "image_header_ok",
+      "elapsedMs": 196
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/Carpenters%27_Hall_and_New_Hall_Military_Museum%2C_Philadelphia%2C_2007.jpg/1280px-Carpenters%27_Hall_and_New_Hall_Military_Museum%2C_Philadelphia%2C_2007.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "7",
+          "photo": 2
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "418600",
+      "outcome": "image_header_ok",
+      "elapsedMs": 181
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/54/Museum_of_the_American_Revolution%2C_Philadelphia_PA%2C_2022.jpg/1280px-Museum_of_the_American_Revolution%2C_Philadelphia_PA%2C_2022.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "8",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "583285",
+      "outcome": "image_header_ok",
+      "elapsedMs": 170
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Museum_of_the_American_Revolution%2C_Philadelphia_PA%2C_2022_2.jpg/1280px-Museum_of_the_American_Revolution%2C_Philadelphia_PA%2C_2022_2.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "8",
+          "photo": 2
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "441705",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1103
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8d/Benjamin_Franklin_Museum_in_Philadelphia.jpg/1280px-Benjamin_Franklin_Museum_in_Philadelphia.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "9",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "709124",
+      "outcome": "image_header_ok",
+      "elapsedMs": 3546
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Franklin_Court_-_July_2009_-_Sarah_Stierch_03.jpg/1280px-Franklin_Court_-_July_2009_-_Sarah_Stierch_03.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "9",
+          "photo": 2
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "315182",
+      "outcome": "image_header_ok",
+      "elapsedMs": 215
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/Christ_Church%2C_Philadelphia_12.2021_%28edited%29.jpg/1280px-Christ_Church%2C_Philadelphia_12.2021_%28edited%29.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "10",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "698171",
+      "outcome": "image_header_ok",
+      "elapsedMs": 190
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/Betsy_Ross_House_%2853572939795%29.jpg/1280px-Betsy_Ross_House_%2853572939795%29.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "11",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "415356",
+      "outcome": "image_header_ok",
+      "elapsedMs": 172
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4a/Philadelphia_-_Elfreths_Alley_-_20241031164421.jpg/1280px-Philadelphia_-_Elfreths_Alley_-_20241031164421.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "12",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "1105423",
+      "outcome": "image_header_ok",
+      "elapsedMs": 171
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/National_Constitution_Center_Front.jpg/1280px-National_Constitution_Center_Front.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "13",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "373441",
+      "outcome": "image_header_ok",
+      "elapsedMs": 212
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/Reading_Terminal_Market_entrance_on_12th_Street_north_of_Filbert_Street.jpeg/1280px-Reading_Terminal_Market_entrance_on_12th_Street_north_of_Filbert_Street.jpeg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "14",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "482490",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1570
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b3/Philadelphia_city_hall.jpg/1280px-Philadelphia_city_hall.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "15",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "770119",
+      "outcome": "image_header_ok",
+      "elapsedMs": 210
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/Love_Park_Philadelphia_2025.jpg/1280px-Love_Park_Philadelphia_2025.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "16",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "288930",
+      "outcome": "image_header_ok",
+      "elapsedMs": 1022
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4a/Philadelphia_October_2017_13_%28Rodin_Museum%29.jpg/1280px-Philadelphia_October_2017_13_%28Rodin_Museum%29.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "17",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "481309",
+      "outcome": "image_header_ok",
+      "elapsedMs": 169
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Philadelphia_Museum_of_Art_2016.jpg/1280px-Philadelphia_Museum_of_Art_2016.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "18",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "265258",
+      "outcome": "image_header_ok",
+      "elapsedMs": 793
+    },
+    {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Philadelphia%27s_Eastern_State_Penitentiary%2C_main_gate.jpg/1280px-Philadelphia%27s_Eastern_State_Penitentiary%2C_main_gate.jpg",
+      "references": [
+        {
+          "trail": "philadelphia",
+          "stop": "19",
+          "photo": 1
+        }
+      ],
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "contentLength": "287390",
+      "outcome": "image_header_ok",
+      "elapsedMs": 208
+    }
+  ],
+  "manifestUnchangedAtCompletion": true
+}
