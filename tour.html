@@ -219,6 +219,61 @@
         return Object.prototype.hasOwnProperty.call(obj || {}, key);
     }
 
+    // BEGIN EXACT_STOP_PHOTOS
+    function stopPhotoCandidates(stop, entry) {
+        var result = [];
+        function add(photo) {
+            var src = typeof photo === "string" ? photo : photo && photo.src;
+            if (typeof src !== "string" || !src.trim()) return;
+            src = src.trim();
+            if (result.indexOf(src) < 0) result.push(src);
+        }
+        function addOwner(owner) {
+            if (!owner) return;
+            add(owner.photo);
+            if (Array.isArray(owner.photos)) owner.photos.forEach(add);
+        }
+        // The matching Destination Book entry has priority. Only this exact
+        // stop supplies fallbacks, never the tour, city, or campus as a whole.
+        addOwner(entry);
+        addOwner(stop);
+        return result;
+    }
+
+    var stopPhotoSequence = 0;
+    function showStopPhoto(stop, entry) {
+        var sequence = ++stopPhotoSequence;
+        var showEl = document.getElementById("twShow");
+        var oldImg = document.getElementById("twShowImg");
+        var candidates = stopPhotoCandidates(stop, entry), index = 0;
+        showEl.hidden = true;
+        oldImg.onload = oldImg.onerror = null;
+        oldImg.removeAttribute("src");
+
+        function next() {
+            if (sequence !== stopPhotoSequence) return;
+            var previous = document.getElementById("twShowImg");
+            previous.onload = previous.onerror = null;
+            previous.removeAttribute("src");
+            if (index >= candidates.length) { showEl.hidden = true; return; }
+            // A fresh image keeps a late response from a previous stop or
+            // failed candidate from changing the currently selected photo.
+            var img = document.createElement("img");
+            img.id = "twShowImg";
+            img.alt = stop.name || "";
+            img.loading = "eager"; // The selected photo loads even while hidden.
+            function isCurrent() {
+                return sequence === stopPhotoSequence && document.getElementById("twShowImg") === img;
+            }
+            img.onload = function () { if (isCurrent()) showEl.hidden = false; };
+            img.onerror = function () { if (isCurrent()) next(); };
+            previous.parentNode.replaceChild(img, previous);
+            img.src = candidates[index++];
+        }
+        next();
+    }
+    // END EXACT_STOP_PHOTOS
+
     /* A hash says the recording matches some words. These optional semantic
        fields say it matches THIS trail card. Old rows predate the fields and
        remain valid; once a row makes a semantic claim, a conflict is refused
@@ -653,10 +708,7 @@
         var tip = document.getElementById("twTip");
         if (entry && entry.tip) { tip.hidden = false; tip.innerHTML = ""; var b = document.createElement("b"); b.textContent = T("Tip") + " "; tip.appendChild(b); tip.appendChild(document.createTextNode(entry.tip)); }
         else { tip.hidden = true; tip.textContent = ""; }
-        var showEl = document.getElementById("twShow"), img = document.getElementById("twShowImg");
-        var photo = entry && (entry.photo || (entry.photos && entry.photos[0]));
-        if (photo) { img.src = typeof photo === "string" ? photo : (photo.src || ""); img.alt = s.name; showEl.hidden = !img.src; }
-        else { showEl.hidden = true; img.removeAttribute("src"); }
+        showStopPhoto(s, entry);
 
         silence();
         if (fromUser) { try { overviewAudioEl.pause(); } catch (e) {} }
