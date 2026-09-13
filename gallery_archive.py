@@ -254,15 +254,11 @@ def _search_text(facts):
                      ("title", "artist", "museum", "item_number", "city")))
 
 
-def _remember(db, facts):
-    facts = clean_facts(facts)
-    keys = identities(facts)
-    if not keys or len(facts.get("title", "")) < 2:
-        return None, False
+def _lookup_artifact(db, facts):
+    """One conflict-aware identity lookup for both read and write paths."""
     inst = institution(facts["museum"])
     accession = normalize(facts.get("item_number"))
-    found = None
-    for key in keys:
+    for key in identities(facts):
         candidate = db.execute("SELECT a.* FROM artifacts a JOIN identities i "
                                "ON i.artifact_id=a.id WHERE i.identity=?", (key,)).fetchone()
         if candidate:
@@ -272,8 +268,18 @@ def _remember(db, facts):
                 continue
             if accession and candidate["accession"] and accession != candidate["accession"]:
                 continue
-            found = candidate
-            break
+            return candidate
+    return None
+
+
+def _remember(db, facts):
+    facts = clean_facts(facts)
+    keys = identities(facts)
+    if not keys or len(facts.get("title", "")) < 2:
+        return None, False
+    inst = institution(facts["museum"])
+    accession = normalize(facts.get("item_number"))
+    found = _lookup_artifact(db, facts)
     now = time.time()
     artifact_id = found["id"] if found else "a_" + hashlib.sha256(keys[0].encode()).hexdigest()[:24]
     is_new = found is None
@@ -463,10 +469,9 @@ def resolve(facts):
     if facts.get("artifact_id"):
         return get_artifact(str(facts["artifact_id"]))
     with database() as db:
-        for key in identities(clean_facts(facts)):
-            row = db.execute("SELECT artifact_id FROM identities WHERE identity=?", (key,)).fetchone()
-            if row:
-                return _artifact(db, row[0], "en")
+        row = _lookup_artifact(db, clean_facts(facts))
+        if row:
+            return _artifact(db, row["id"], "en")
     return None
 
 
@@ -652,6 +657,16 @@ def archive(q="", lang="en", page=1, per_page=24):
 
 
 def confirm(artifact_id, lang="en"):
+    """Legacy internal confirmation; browsing must never call this function."""
+    return _request_story(artifact_id, lang, confirmed=True)
+
+
+def request_story(artifact_id, lang="en"):
+    """Queue a story about a collection object, without asserting a photo match."""
+    return _request_story(artifact_id, lang, confirmed=False)
+
+
+def _request_story(artifact_id, lang, confirmed):
     if lang not in languages.CODES:
         raise ValueError("Unsupported story language")
     sync_sources()
@@ -659,7 +674,8 @@ def confirm(artifact_id, lang="en"):
         db.execute("BEGIN IMMEDIATE")
         if not db.execute("SELECT 1 FROM artifacts WHERE id=?", (artifact_id,)).fetchone():
             return None
-        db.execute("UPDATE artifacts SET confirmed_count=confirmed_count+1,last_seen=? WHERE id=?", (time.time(), artifact_id))
+        db.execute("UPDATE artifacts SET confirmed_count=confirmed_count+?,last_seen=? WHERE id=?",
+                   (int(confirmed), time.time(), artifact_id))
         if not db.execute("SELECT 1 FROM stories WHERE artifact_id=? AND lang=?", (artifact_id, lang)).fetchone():
             now = time.time()
             db.execute("INSERT INTO writing_queue(artifact_id,lang,created) VALUES(?,?,?) "

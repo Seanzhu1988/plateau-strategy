@@ -74,6 +74,40 @@ class ArchiveTests(unittest.TestCase):
         self.assertEqual(a, same)
         self.assertNotEqual(a, b)
 
+    def test_resolve_rejects_shared_secondary_ids_with_conflicting_accessions(self):
+        first = dict(FACTS, item_number="A", source_object_id="", wikidata="Q123")
+        a = archive.remember(first)["artifact_id"]
+        self.save_story(a)
+        self.assertEqual(archive.resolve(first)["artifact_id"], a)
+        self.assertIsNone(archive.resolve(dict(first, item_number="B", title="Different vessel")))
+        self.assertEqual(archive.get_story(a)["text"], STORY)
+
+    def test_resolve_accepts_accession_upgrade_and_museum_alias_without_new_identity(self):
+        first = dict(FACTS, item_number="", source_object_id="", museum="The Met, New York")
+        a = archive.remember(first)["artifact_id"]
+        incoming = dict(first, item_number="A", museum="The Metropolitan Museum of Art")
+        self.assertEqual(archive.resolve(incoming)["artifact_id"], a)
+
+    def test_photo_result_never_inherits_story_from_conflicting_source_record(self):
+        first = dict(FACTS, item_number="A", source_object_id="", wikidata="Q123")
+        a = archive.remember(first)["artifact_id"]
+        self.save_story(a)
+        second = dict(first, title="Different interesting vessel", item_number="B")
+        with web.app.test_request_context('/api/gallery/search?q=Different&origin=photo'):
+            payload = web._gallery_finish({"results": [second]}, "Different", "en", False).get_json()
+        candidate = payload["results"][0]
+        self.assertTrue(candidate["artifact_id"].startswith("p_"))
+        self.assertEqual(candidate["item_number"], "B")
+        self.assertFalse(candidate["story_available"])
+        self.assertFalse(candidate["photo_match_verified"])
+        saved = self.client.post('/api/gallery/discover', json={"artifact_id": candidate["artifact_id"],
+                                 "intent": "write_story", "lang": "en"}).get_json()
+        self.assertNotEqual(saved["artifact"]["artifact_id"], a)
+        self.assertEqual(saved["artifact"]["item_number"], "B")
+        self.assertFalse(saved["artifact"]["story_available"])
+        self.assertEqual(saved["requested_artifact_id"], candidate["artifact_id"])
+        self.assertEqual(saved["lang"], "en")
+
     def test_fresh_source_survives_saved_snapshot_and_older_query_cache(self):
         old = dict(FACTS, where="Gallery 1", on_view=True, copyright=False, catalogue_observed_at=100)
         a = archive.enrich([old])["results"][0]["artifact_id"]
@@ -260,7 +294,7 @@ class ArchiveTests(unittest.TestCase):
         self.assertTrue(found["results"][0]["written"])
         self.assertEqual(by_accession["results"][0]["artifact_id"], a)
 
-    def test_photo_candidates_only_persist_on_explicit_confirmation(self):
+    def test_photo_candidates_only_persist_on_explicit_story_request(self):
         with patch.object(web, "_gal_met", return_value=[FACTS]), patch.object(web, "_gal_aic", return_value=[]), \
                 patch.object(web, "_gal_moma", return_value=[]), patch.object(web, "_gal_wikidata", return_value=[]), \
                 patch.object(web.gallery_log, "record") as log:
@@ -269,13 +303,16 @@ class ArchiveTests(unittest.TestCase):
         candidate = suggested["results"][0]
         self.assertTrue(candidate["artifact_id"].startswith("p_"))
         self.assertEqual(archive.archive()["stats"]["artifacts"], 0)
-        tampered = self.client.post("/api/gallery/discover", json={"artifact_id": candidate["artifact_id"] + "x"})
+        tampered = self.client.post("/api/gallery/discover", json={"artifact_id": candidate["artifact_id"] + "x", "intent": "write_story"})
         self.assertEqual(tampered.status_code, 410)
-        accepted = self.client.post("/api/gallery/discover", json={"artifact_id": candidate["artifact_id"]}).json
+        accepted = self.client.post("/api/gallery/discover", json={"artifact_id": candidate["artifact_id"], "intent": "write_story"}).json
         self.assertTrue(accepted["saved"])
         self.assertTrue(accepted["artifact"]["artifact_id"].startswith("a_"))
         self.assertEqual(archive.archive()["stats"]["artifacts"], 1)
         self.assertEqual(archive.queue_status()["counts"]["pending"], 1)
+        self.assertFalse(accepted["photo_match_verified"])
+        with archive.database() as db:
+            self.assertEqual(db.execute("SELECT confirmed_count FROM artifacts").fetchone()[0], 0)
 
     def test_queue_processes_one_and_retry_remains_recoverable(self):
         archive.enrich([FACTS], "bronze vessel")

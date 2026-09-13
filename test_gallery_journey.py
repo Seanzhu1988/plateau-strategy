@@ -193,12 +193,12 @@ class GalleryJourneyTests(unittest.TestCase):
         self.assertEqual(result["results"][0]["artifact_id"], original["artifact_id"])
         self.assertTrue(result["results"][0]["story_available"])
 
-    def test_photo_confirmation_queues_selected_language_without_publication_token(self):
+    def test_explicit_story_request_queues_language_without_confirming_photo(self):
         candidate = self.client.get("/api/gallery/search?q=Acceptance&discover=0&lang=zh").get_json()["results"][0]
         self.assertTrue(candidate["artifact_id"].startswith("p_"))
         self.assertEqual(gallery_archive.search_known("Acceptance"), [])
         with mock.patch.object(gallery_reader, "available", return_value=False):
-            response = self.client.post("/api/gallery/discover", json={"artifact_id": candidate["artifact_id"], "lang": "zh"})
+            response = self.client.post("/api/gallery/discover", json={"artifact_id": candidate["artifact_id"], "lang": "zh", "intent": "write_story"})
         body = response.get_json()
         self.assertTrue(body["ok"])
         self.assertFalse(body["can_generate"])
@@ -206,6 +206,7 @@ class GalleryJourneyTests(unittest.TestCase):
         self.assertEqual(body["writing_status"], "pending")
         self.assertEqual(response.headers["Cache-Control"], "no-store")
         self.assertNotIn("attachment_token", body)
+        self.assertFalse(body["photo_match_verified"])
         artifact_id = body["artifact"]["artifact_id"]
         with gallery_archive.database() as db:
             row = db.execute("SELECT status FROM writing_queue WHERE artifact_id=? AND lang='zh'", (artifact_id,)).fetchone()
@@ -218,7 +219,7 @@ class GalleryJourneyTests(unittest.TestCase):
         artifact_id = self.find()["artifact_id"]
         photo = seed_legacy_photo(self.data.name, artifact_id)
         original = photo.read_bytes()
-        confirmed = self.client.post("/api/gallery/discover", json={"artifact_id": artifact_id}).get_json()
+        confirmed = self.client.post("/api/gallery/discover", json={"artifact_id": artifact_id, "intent": "write_story"}).get_json()
         self.assertTrue(confirmed["saved"])
         self.assertNotIn("attachment_token", confirmed)
         url = "/api/gallery/artifacts/%s/photo" % artifact_id
@@ -274,8 +275,56 @@ class GalleryJourneyTests(unittest.TestCase):
         for data in ([], {"lang": []}, {"query": []}, {"query": ""}):
             response = self.client.post("/api/gallery/research", json=data)
             self.assertEqual(response.status_code, 400)
-        response = self.client.post("/api/gallery/discover", json={"artifact_id": "missing", "lang": []})
+        response = self.client.post("/api/gallery/discover", json={"artifact_id": "missing", "lang": [], "intent": "write_story"})
         self.assertEqual(response.status_code, 404)
+
+    def test_stale_open_button_cannot_archive_confirm_queue_or_generate(self):
+        candidate = self.client.get("/api/gallery/search?q=Acceptance&discover=0").get_json()["results"][0]
+        self.assertFalse(candidate["photo_match_verified"])
+        for intent in (None, "view", "open", "confirm", True, ["write_story"]):
+            response = self.client.post("/api/gallery/discover", json={
+                "artifact_id": candidate["artifact_id"], "intent": intent})
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(response.get_json()["reason"], "story_request_required")
+        self.assertEqual(gallery_archive.search_known("Acceptance"), [])
+        with gallery_archive.database() as db:
+            for table in ("writing_requests", "generation_spend"):
+                self.assertEqual(db.execute("SELECT COUNT(*) FROM " + table).fetchone()[0], 0)
+        self.assertEqual(self.provider.call_count, 0)
+
+    def test_reading_saved_result_never_changes_match_count_or_writing_queue(self):
+        row = self.find()
+        self.write(row["artifact_id"])
+        with gallery_archive.database() as db:
+            before = [tuple(r) for r in db.execute("SELECT * FROM writing_queue")]
+            confirmations = db.execute("SELECT SUM(confirmed_count) FROM artifacts").fetchone()[0]
+        for _ in range(2):
+            self.assertEqual(self.client.get("/api/gallery/artifacts/" + row["artifact_id"] + "/story").status_code, 200)
+        with gallery_archive.database() as db:
+            self.assertEqual(before, [tuple(r) for r in db.execute("SELECT * FROM writing_queue")])
+            self.assertEqual(confirmations, db.execute("SELECT SUM(confirmed_count) FROM artifacts").fetchone()[0])
+        self.assertEqual(self.provider.call_count, 1)
+
+    def test_request_for_interesting_second_result_never_becomes_first_photo_identity(self):
+        other = {**FACTS, "title": "A different interesting bowl", "item_number": "TEST-002",
+                 "source_object_id": "002", "source_url": "https://example.org/collection/test-002"}
+        with mock.patch.object(site, "_gal_met", return_value=[dict(FACTS), other]):
+            result = self.client.get("/api/gallery/search?q=Acceptance&discover=0").get_json()
+        selected = next(r for r in result["results"] if r["item_number"] == "TEST-002")
+        response = self.client.post("/api/gallery/discover", json={"artifact_id": selected["artifact_id"],
+                                   "lang": "zh", "intent": "write_story"}).get_json()
+        self.assertFalse(response["photo_match_verified"])
+        self.assertEqual(response["artifact"]["item_number"], "TEST-002")
+        with gallery_archive.database() as db:
+            row = db.execute("SELECT accession, confirmed_count FROM artifacts WHERE id=?",
+                             (response["artifact"]["artifact_id"],)).fetchone()
+            self.assertEqual(tuple(row), ("test-002", 0))
+            requests = list(db.execute("SELECT artifact_id, lang FROM writing_requests"))
+            self.assertEqual([tuple(r) for r in requests], [(response["artifact"]["artifact_id"], "zh")])
+            queued = list(db.execute("SELECT lang FROM writing_queue WHERE artifact_id=?",
+                                    (response["artifact"]["artifact_id"],)))
+            self.assertEqual([r[0] for r in queued], ["zh"], "No automatic extra English story")
+        self.assertEqual(self.provider.call_count, 0)
 
     def test_research_body_is_bounded_without_content_length(self):
         raw = json.dumps({"query": "Private research fixture", "label_text": "x" * 20000}).encode()

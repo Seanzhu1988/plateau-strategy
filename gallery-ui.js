@@ -1,4 +1,4 @@
-/* One artifact identity across search, stories, the archive and photo confirmation. */
+/* Browse collection objects without treating interest as a confirmed photo match. */
 (function () {
   'use strict';
   var main = document.getElementById('ugMain');
@@ -15,7 +15,8 @@
   var pickerConsent = false, permittedPhoto = null, consentOpener = null, photoPickerTarget = 'ugCamera';
   var photoPreparing = false, photoPrepareController = null;
   var selectedResultSeq = -1;
-  var storyJobs = new Set(), confirmationJobs = new Set();
+  var storyJobs = new Set(), storyRequestJobs = new Set();
+  var cardRevisions = new WeakMap();
   var researchJobs = new Set(), pendingResearch = null, researchSavedSeq = -1;
   var explicitLang = params.get('lang') || '';
   var copy = {
@@ -31,7 +32,7 @@
     savedMatches: ['Matches already in our gallery', '艺廊中已有的匹配藏品'],
     archiveLink: ['Written by us artifact archives', '我们撰写的藏品故事档案'],
     photoHeading: ['Your photograph', '你的照片'], close: ['Close', '关闭'],
-    photoIntro: ['Take a photo, check the match, discover its story.', '拍张照片，确认藏品，发现它的故事。'],
+    photoIntro: ['Take a photo and explore the collection results.', '拍张照片，浏览相关馆藏。'],
     camera: ['Take a photograph', '拍摄照片'], choosePhoto: ['Choose a photo', '选择照片'],
     removePhoto: ['Remove photograph', '移除照片'], museumHint: ['Museum or location, if you know it', '博物馆或所在地（选填）'],
     addDetails: ['Add a museum or location (optional)', '补充博物馆或所在地（选填）'],
@@ -81,8 +82,13 @@
     storyOtherLanguage: ['Our story is available in another language.', '这件藏品的故事已有其他语言版本。'],
     noStory: ['An original story has not been written for this object yet.', '这件藏品暂时还没有原创故事。'],
     aiCreate: ['A new story uses AI assistance and is saved with that credit.', '新故事将使用 AI 协助撰写，并保存这一署名信息。'],
-    confirm: ['Open artifact', '打开藏品'], confirmHint: ['Choose the matching artifact.', '选择匹配的藏品。'],
-    saved: ['Object confirmed and saved to the gallery.', '藏品已确认并保存到艺廊。'],
+    viewItem: ['View item', '查看藏品'],
+    closeItem: ['Close item', '收起藏品'],
+    photoUnverified: ['Photo match not verified.', '尚未核实与照片的匹配。'],
+    browseHint: ['Browse any item. Opening it does not confirm a photo match or create a story.', '可以随意浏览。打开藏品不会确认照片匹配，也不会自动撰写故事。'],
+    storyAbout: ['Story about this collection item', '关于这件馆藏的故事'],
+    requestStory: ['Request a story for this item', '请求撰写这件藏品的故事'],
+    saved: ['Collection item saved for its story. Your photo match is still unverified.', '已保存这件馆藏以撰写故事，照片匹配仍未核实。'],
     queued: ['Object saved. Its story is queued in your selected language and will join the archive when written.', '藏品已保存，所选语言的故事已加入待写队列，完成后会加入故事档案。'],
     queuedNoEngine: ['Saved. A story will be added when writing is available.', '已保存，写作服务可用后会添加故事。'],
     saveFailed: ['The object could not be saved. Please try again.', '藏品保存失败，请重试。'], saving: ['Saving…', '正在保存…'],
@@ -117,7 +123,7 @@
     labelRead: ['Text found on the label', '识别到的展签文字'],
     possibleMatches: ['Other possible matches', '其他可能的匹配'],
     checkCollection: ['Find this in the collections', '在馆藏中核对'], possible: ['Possible match', '可能匹配'],
-    photoConfirmResults: ['Choose the matching artifact.', '选择匹配的藏品。'],
+    photoConfirmResults: ['Explore these collection results. Photo match not verified.', '浏览这些馆藏结果，照片匹配尚未核实。'],
     artifactMissing: ['This object could not be found. Try searching its title or label number.', '未找到这件藏品，请试试搜索名称或编号。']
   };
   function lang() {
@@ -180,6 +186,7 @@
     var pagination = document.getElementById('ugPagination'); if (pagination) pagination.hidden = true;
   }
   function button(action, text, attributes) { return '<button type="button" data-action="' + action + '" ' + (attributes || '') + '>' + esc(text) + '</button>'; }
+  function cardRevision(host) { return cardRevisions.get(host) || 0; }
   function card(row, index) {
     var image = catalogueImage(row);
     var source = safeURL(row.source_url);
@@ -189,7 +196,7 @@
     var house = row.museum || row.source || '';
     var place = row.where && row.where !== house ? row.where : '';
     var actions = '';
-    if (photoOrigin) actions += button('confirm', t('confirm'), 'class="ug-primary"');
+    if (photoOrigin) actions += button('view-item', t('viewItem'), 'class="ug-primary" aria-expanded="false" aria-controls="ugReading' + index + '"');
     if (available && !photoOrigin) actions += button('read', t('read'), 'aria-expanded="false" aria-controls="ugReading' + index + '"');
     else if (!photoOrigin) {
       if (languages.indexOf('en') !== -1 && lang() !== 'en') actions += button('read-en', t('readEnglish'), 'aria-expanded="false" aria-controls="ugReading' + index + '"');
@@ -206,6 +213,7 @@
       (row.item_number ? '<span class="ug-accession">' + esc(t('labelNumber')) + ': ' + esc(row.item_number) + '</span>' : '') +
       (row.on_view === false ? '<span>' + esc(t('notOnView')) + '</span>' : '') + '</p>' +
       (row.teaser ? '<p class="ug-teaser">' + esc(row.teaser) + '</p>' : '') +
+      (photoOrigin ? '<p class="ug-note ug-match-note">' + esc(t('photoUnverified')) + '</p>' : '') +
       '<div class="ug-actions">' + actions + '</div>' +
       (!available && !photoOrigin ? '<p class="ug-note ug-story-note">' + esc(ourStory ? t('storyOtherLanguage') : canGenerate ? t('aiCreate') : t('noStory')) + '</p>' : '') +
       (discovery ? '<p class="ug-discovery">' + esc(discovery) + '</p>' : '') +
@@ -215,6 +223,7 @@
   function render(list) {
     stopAudio(); rows = list;
     output.innerHTML = list.length ? '<h2 class="ug-results-heading">' + esc(t(archive ? 'archiveHeading' : savedSearchOnly ? 'savedMatches' : 'resultHeading')) + '</h2>' +
+      (photoOrigin ? '<p class="ug-note">' + esc(t('browseHint')) + '</p>' : '') +
       list.map(card).join('') : '';
     empty.hidden = list.length !== 0;
     var research = document.getElementById('ugResearch'); if (research) research.hidden = !photoOrigin || list.length !== 0;
@@ -359,14 +368,18 @@
     if (source.adapted === true) line += '. ' + esc(t('adaptedWithAI'));
     return '<p class="ug-note ug-research-source">' + line + '</p>';
   }
+  function collectionFigure(row) {
+    var image = catalogueImage(row), source = safeURL(row.source_url);
+    if (!image) return '';
+    var attribution = [t('collectionPhoto'), row.image_credit || row.source || row.museum || ''].filter(Boolean).join(' · ');
+    return '<figure class="ug-figure"><img class="ug-reading-image" src="' + esc(image) + '" alt="' + esc(row.title) + '"><figcaption>' + esc(attribution) + (source ? ' · <a href="' + esc(source) + '" target="_blank" rel="noopener noreferrer">' + esc(sourceLabel(row)) + '</a>' : '') + '</figcaption></figure>';
+  }
   function showStory(host, row, data, selectedLang) {
     var box = host.querySelector('.ug-read-box');
-    var image = catalogueImage(row);
-    var source = safeURL(row.source_url);
     var audio = data.lang === selectedLang || !data.lang ? safeURL(data.audio, true) : '';
-    var attribution = [t('collectionPhoto'), row.image_credit || row.source || row.museum || ''].filter(Boolean).join(' · ');
     var credit = data.provenance && data.provenance.kind === 'ai_assisted' ? t('aiCredit') : t('editorialCredit');
-    box.innerHTML = (image ? '<figure class="ug-figure"><img class="ug-reading-image" src="' + esc(image) + '" alt="' + esc(row.title) + '"><figcaption>' + esc(attribution) + (source ? ' · <a href="' + esc(source) + '" target="_blank" rel="noopener noreferrer">' + esc(sourceLabel(row)) + '</a>' : '') + '</figcaption></figure>' : '') +
+    box.innerHTML = '<h3>' + esc(row.title) + '</h3>' + (photoOrigin ? '<p class="ug-note">' + esc(t('storyAbout') + '. ' + t('photoUnverified')) + '</p>' : '') +
+      collectionFigure(row) +
       '<p class="ug-reading-credit">' + esc(t('originalCredit')) + '</p><p class="ug-reading-meta">' + esc(credit) + (data.minutes ? ' · ' + esc(data.minutes) + ' ' + esc(t('minuteRead')) : '') + '</p>' +
       (audio ? '<div class="ug-audio-wrap"><audio controls preload="none" aria-label="' + esc(t('listen')) + '" src="' + esc(audio) + '"></audio><p class="ug-note">' + esc(t('headphones')) + '</p></div>' : '') +
       '<div class="ug-reading-text i18n-skip" lang="' + esc(selectedLang) + '"></div>' + historicalAttribution(data, row) + '<div class="ug-actions"><a href="' + artifactURL(row, selectedLang) + '">' + esc(t('permalink')) + '</a>' + button('close-story', t('hideStory')) + '</div>';
@@ -374,14 +387,15 @@
     box.hidden = false;
     var audioNode = box.querySelector('audio');
     if (audioNode) audioNode.addEventListener('error', function () { var note = box.querySelector('.ug-audio-wrap .ug-note'); if (note) note.textContent = t('audioFailed'); }, {once: true});
-    host.querySelectorAll('[data-action="read"], [data-action="read-en"], [data-action="generate"]').forEach(function (node) { node.setAttribute('aria-expanded', 'true'); });
+    host.querySelectorAll('[data-action="view-item"], [data-action="read"], [data-action="read-en"], [data-action="generate"]').forEach(function (node) { node.setAttribute('aria-expanded', 'true'); });
   }
   async function readStory(host, row, generate, selectedLang) {
     if (!row.artifact_id) return;
     var jobKey = row.artifact_id + ':' + selectedLang;
     if (storyJobs.has(jobKey)) return;
     storyJobs.add(jobKey);
-    var mine = seq, note = host.querySelector('.ug-card-status'), controller = new AbortController();
+    var mine = seq, viewRevision = cardRevision(host), note = host.querySelector('.ug-card-status'), controller = new AbortController();
+    controller.galleryHost = host;
     cardControllers.add(controller);
     var buttons = host.querySelectorAll('[data-action="read"], [data-action="read-en"], [data-action="generate"]');
     buttons.forEach(function (node) { node.disabled = true; });
@@ -389,7 +403,9 @@
     try {
       var data = await jsonFetch(generate ? '/api/gallery/generate' : '/api/gallery/artifacts/' + encodeURIComponent(row.artifact_id) + '/story?lang=' + encodeURIComponent(selectedLang),
         generate ? {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({artifact_id: row.artifact_id, lang: selectedLang}), signal: controller.signal} : {signal: controller.signal});
-      if (mine !== seq || !host.isConnected) return;
+      if (mine !== seq || !host.isConnected || viewRevision !== cardRevision(host)) return;
+      // Never put another object's or language's response under this card.
+      if (data.artifact_id && data.artifact_id !== row.artifact_id || data.lang && data.lang !== selectedLang) throw new Error('story_identity_mismatch');
       if (!data.text) throw new Error('empty_story');
       showStory(host, row, data, selectedLang); stamp(note, generate ? t('savedStory') : '');
       // A confirmed catalogue candidate can resolve to an existing archive
@@ -402,24 +418,51 @@
         var oldNote = host.querySelector('.ug-story-note'); if (oldNote) oldNote.remove();
       }
     } catch (error) {
-      if (mine !== seq || error.name === 'AbortError' || !host.isConnected) return;
+      if (mine !== seq || error.name === 'AbortError' || !host.isConnected || viewRevision !== cardRevision(host)) return;
       var reason = error.data && error.data.reason;
-      stamp(note, t(reason === 'story_missing' ? 'storyMissing' : reason === 'in_progress' ? 'storyBusy' : reason === 'no_engine' && row.confirmedByVisitor ? 'queuedNoEngine' : ['no_engine','monthly_limit','unavailable','provider_disabled'].indexOf(reason) !== -1 ? 'unavailable' : 'storyFailed'), true);
+      stamp(note, t(reason === 'story_missing' ? 'storyMissing' : reason === 'in_progress' ? 'storyBusy' : reason === 'no_engine' && row.storyRequested ? 'queuedNoEngine' : ['no_engine','monthly_limit','unavailable','provider_disabled'].indexOf(reason) !== -1 ? 'unavailable' : 'storyFailed'), true);
       if (reason === 'story_missing' && selectedLang !== 'en' && (error.data.available_languages || []).indexOf('en') !== -1 && !host.querySelector('[data-action="read-en"]')) {
         host.querySelector('.ug-actions').insertAdjacentHTML('beforeend', button('read-en', t('readEnglish')));
       }
     } finally { storyJobs.delete(jobKey); cardControllers.delete(controller); if (host.isConnected) buttons.forEach(function (node) { node.disabled = false; }); }
   }
-  async function confirmArtifact(host, row, btn) {
-    if (confirmationJobs.has(row.artifact_id) || row.confirmedByVisitor) return;
-    var jobKey = row.artifact_id, selectedLang = lang(); confirmationJobs.add(jobKey); selectedResultSeq = seq; stamp(status, '');
-    var mine = seq, note = host.querySelector('.ug-card-status'), controller = new AbortController();
+  function viewItem(host, row, btn) {
+    selectedResultSeq = seq; stamp(status, '');
+    // Browsing is read-only: a candidate is not archived, queued or confirmed.
+    // Existing stories can be read, but a missing story requires its own action.
+    if (row.story_available || row.has_narrative) { readStory(host, row, false, lang()); return; }
+    var box = host.querySelector('.ug-read-box');
+    box.innerHTML = '<h3>' + esc(row.title) + '</h3><p class="ug-note">' + esc(t('museumRecord') + '. ' + t('photoUnverified')) + '</p>' +
+      collectionFigure(row) +
+      '<p class="ug-reading-text">' + esc([row.teaser, row.medium, row.culture, row.dimensions].filter(Boolean).join('\n\n')) + '</p>' +
+      '<p class="ug-note ug-story-note">' + esc(t((row.story_languages || []).length ? 'storyOtherLanguage' : 'noStory')) + '</p>' +
+      '<div class="ug-actions">' + button('close-story', t('closeItem')) + '</div>';
+    box.hidden = false; btn.setAttribute('aria-expanded', 'true');
+    if (lang() !== 'en' && (row.story_languages || []).indexOf('en') !== -1 && !host.querySelector('[data-action="read-en"]')) {
+      host.querySelector('.ug-actions').insertAdjacentHTML('beforeend', button('read-en', t('readEnglish')));
+    }
+    if (!host.querySelector('[data-action="write-selected"]') && !row.storyRequested) {
+      host.querySelector('.ug-actions').insertAdjacentHTML('beforeend', button('write-selected', t(canGenerate ? 'create' : 'requestStory')));
+    }
+    stamp(host.querySelector('.ug-card-status'), '');
+  }
+  async function requestSelectedStory(host, row, btn) {
+    if (storyRequestJobs.has(row.artifact_id) || row.storyRequested) return;
+    var jobKey = row.artifact_id, selectedLang = lang(); storyRequestJobs.add(jobKey); selectedResultSeq = seq; stamp(status, '');
+    var mine = seq, viewRevision = cardRevision(host), note = host.querySelector('.ug-card-status'), controller = new AbortController();
+    controller.galleryHost = host;
     cardControllers.add(controller); btn.disabled = true; stamp(note, t('saving'));
     try {
-      var data = await jsonFetch('/api/gallery/discover', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({artifact_id: row.artifact_id, lang: selectedLang}), signal: controller.signal});
-      if (mine !== seq || !host.isConnected) return;
+      var data = await jsonFetch('/api/gallery/discover', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({artifact_id: row.artifact_id, lang: selectedLang, intent: 'write_story'}), signal: controller.signal});
+      if (mine !== seq || !host.isConnected || viewRevision !== cardRevision(host)) return;
       if (!data.saved) throw new Error('not_saved');
-      Object.assign(row, data.artifact || {}); row.confirmedByVisitor = true; stamp(note, t('saved')); stamp(status, '');
+      // A candidate may acquire a canonical ID, but an existing object must
+      // never be retargeted. Bind every save reply to this request/language.
+      var canonical = data.artifact;
+      if (data.requested_artifact_id !== jobKey || data.lang !== selectedLang ||
+          !canonical || typeof canonical.artifact_id !== 'string' || !/^a_/.test(canonical.artifact_id) ||
+          !/^p_/.test(jobKey) && canonical.artifact_id !== jobKey) throw new Error('saved_identity_mismatch');
+      Object.assign(row, data.artifact || {}); row.storyRequested = true; stamp(note, t('saved')); stamp(status, '');
       host.querySelector('.ug-object-title').innerHTML = '<a href="' + artifactURL(row) + '">' + esc(row.title) + '</a>';
       btn.remove(); var hint = host.querySelector('.ug-discovery'); if (hint) hint.textContent = t('remembered');
       var ready = row.story_available || row.has_narrative;
@@ -429,8 +472,8 @@
       if (ready) await readStory(host, row, false, selectedLang);
       else if (enabled) await readStory(host, row, true, selectedLang);
       else stamp(note, t(data.writing_status === 'queued' ? 'queued' : 'queuedNoEngine'));
-    } catch (error) { if (mine === seq && error.name !== 'AbortError') { stamp(note, t('saveFailed'), true); btn.disabled = false; } }
-    finally { confirmationJobs.delete(jobKey); cardControllers.delete(controller); }
+    } catch (error) { if (mine === seq && viewRevision === cardRevision(host) && host.isConnected && error.name !== 'AbortError') { stamp(note, t('saveFailed'), true); btn.disabled = false; } }
+    finally { storyRequestJobs.delete(jobKey); cardControllers.delete(controller); if (host.isConnected && !row.storyRequested) btn.disabled = false; }
   }
   output.addEventListener('click', function (event) {
     var btn = event.target.closest('[data-action]'); if (!btn) return;
@@ -438,12 +481,17 @@
     var host = btn.closest('.ug-artifact'); if (!host) return;
     var row = rows[Number(host.dataset.row)]; if (!row) return;
     var action = btn.dataset.action;
-    if (action === 'confirm') { confirmArtifact(host, row, btn); return; }
+    if (action === 'view-item') { viewItem(host, row, btn); return; }
+    if (action === 'write-selected') { requestSelectedStory(host, row, btn); return; }
     if (action === 'close-story') {
+      cardRevisions.set(host, cardRevision(host) + 1);
+      cardControllers.forEach(function (controller) { if (controller.galleryHost === host) controller.abort(); });
+      stamp(host.querySelector('.ug-card-status'), '');
       var box = host.querySelector('.ug-read-box'); box.querySelectorAll('audio').forEach(function (audio) { audio.pause(); }); box.hidden = true;
       host.querySelectorAll('[aria-expanded]').forEach(function (node) { node.setAttribute('aria-expanded', 'false'); });
-      var read = host.querySelector('[data-action="read"], [data-action="read-en"]'); if (read) read.focus(); return;
+      var read = host.querySelector('[data-action="view-item"], [data-action="read"], [data-action="read-en"]'); if (read) read.focus(); return;
     }
+    if (['read', 'read-en', 'generate'].indexOf(action) === -1) return;
     readStory(host, row, action === 'generate', action === 'read-en' ? 'en' : lang());
   });
   output.addEventListener('error', function (event) {

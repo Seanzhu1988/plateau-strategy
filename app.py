@@ -5022,9 +5022,9 @@ def _gallery_finish(payload, q, lang, cached):
     """Live archive enrichment happens even when source responses are cached."""
     rows = list(payload.get("results") or [])
     rows.extend(gallery_archive.search_known(q, lang=lang))
-    if request.args.get("discover") == "0":
-        # Camera suggestions are transient source candidates. Only the
-        # visitor's explicit confirmation can put a new one in the archive.
+    if request.args.get("discover") == "0" or request.args.get("origin") == "photo":
+        # Camera search results are not proof of photo identity. Opening one
+        # stays read-only; an explicit story request may archive its source record.
         candidates, seen = [], set()
         for row in rows:
             keys = gallery_archive.identities(row)
@@ -5033,14 +5033,15 @@ def _gallery_finish(payload, q, lang, cached):
             seen.add(keys[0])
             known = gallery_archive.resolve(row)
             if known:
-                candidates.append(gallery_archive.get_artifact(known["artifact_id"], lang))
+                candidates.append(dict(gallery_archive.get_artifact(known["artifact_id"], lang),
+                                       photo_match_verified=False))
             else:
                 facts = gallery_archive.clean_facts(row)
                 # Signed source facts travel with the candidate, so any web
                 # worker can confirm it without storing an unconfirmed guess.
                 token = "p_" + _gallery_photo_signer().dumps(facts)
                 candidates.append(dict(facts, artifact_id=token, discovery_status="unconfirmed",
-                                       confirmed=False, new_discovery=False, written=False,
+                                       confirmed=False, photo_match_verified=False, new_discovery=False, written=False,
                                        story_available=False, has_narrative=False, story_languages=[],
                                        story_url=None, provenance=None))
         candidates.sort(key=lambda row: _gallery_result_rank(row, q))
@@ -5407,7 +5408,7 @@ def api_gallery_search():
     lang = (request.args.get("lang") or "en").strip().lower()
     if lang not in _LANGS.CODES:
         lang = "en"
-    learn = request.args.get("discover") != "0"
+    learn = request.args.get("discover") != "0" and request.args.get("origin") != "photo"
     if len(q) < 2:
         return jsonify({"ok": False, "error": "Type at least two characters.", "results": []})
     if request.args.get("scope") == "archive":
@@ -5417,6 +5418,8 @@ def api_gallery_search():
                 for row in gallery_archive.search_known(q, lang=lang)]
         rows = sorted((row for row in rows if row),
                       key=lambda row: _gallery_result_rank(row, q))
+        if not learn:
+            rows = [dict(row, photo_match_verified=False) for row in rows]
         return jsonify({"ok": True, "query": q, "scope": "archive",
                         "results": rows[:16], "sources": ["Saved artifact archive"],
                         "lang": lang, "can_generate": _gallery_can_generate(),
@@ -5719,6 +5722,12 @@ def api_gallery_discover():
     data = request.get_json(silent=True) or {}
     if not isinstance(data, dict) or not isinstance(data.get("artifact_id"), str):
         return jsonify({"ok": False, "reason": "need_work"}), 400
+    # Older pages used an innocuous "Open artifact" button to confirm, queue
+    # and generate automatically. Fail closed for those stale callers too.
+    # Interest in a catalogue result never proves it matches a photograph.
+    if data.get("intent") != "write_story":
+        return jsonify({"ok": False, "reason": "story_request_required",
+                        "message": "Viewing an item does not save a match or request a story."}), 400
     lang = data.get("lang", "en")
     if lang not in _LANGS.CODES:
         lang = "en"
@@ -5728,12 +5737,15 @@ def api_gallery_discover():
             candidate = _gallery_photo_signer().loads(artifact_id[2:], max_age=900)
         except Exception:
             return jsonify({"ok": False, "reason": "candidate_expired", "message": "Search again to confirm this object."}), 410
-        remembered = gallery_archive.enrich([candidate], lang=lang)
-        artifact_id = remembered["results"][0]["artifact_id"]
-    artifact = gallery_archive.confirm(artifact_id, lang)
+        # Store the source record without search-demand side effects. The
+        # story request below queues only the language the visitor selected.
+        artifact_id = gallery_archive.remember(candidate)["artifact_id"]
+    artifact = gallery_archive.request_story(artifact_id, lang)
     if not artifact:
         return jsonify({"ok": False, "reason": "not_found"}), 404
     response = jsonify({"ok": True, "saved": True, "artifact": artifact,
+                        "requested_artifact_id": data["artifact_id"], "lang": lang,
+                        "photo_match_verified": False,
                         "can_generate": _gallery_can_generate(),
                         "writing_status": artifact.get("writing_status", "pending")})
     response.headers["Cache-Control"] = "no-store"

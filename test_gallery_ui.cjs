@@ -15,7 +15,7 @@ class Element {
   querySelector() { return null; }
   setAttribute(name, value) { this[name] = value; }
   removeAttribute(name) { delete this[name]; }
-  focus() {}
+  focus() { this.focused = true; }
   click() { ++this.clicks; this.dispatch('click'); }
   showModal() { this.open = true; }
   close() { this.open = false; }
@@ -72,27 +72,270 @@ async function photo(page) {
   await tick();
   return image;
 }
-function cardHost(page) {
-  const host = new Element(), children = new Map(), actions = new Map(); host.dataset.row = '0';
+function cardHost(page, row = 0) {
+  const host = new Element(), children = new Map(), actions = new Map(), actionAdds = []; host.dataset.row = String(row);
   for (const selector of ['.ug-card-status','.ug-photo-attachment','.ug-object-title','.ug-discovery','.ug-mark','.ug-story-note','.ug-actions','.ug-read-box']) children.set(selector, new Element());
   const text = new Element(); children.get('.ug-read-box').querySelector = selector => selector === '.ug-reading-text' ? text : null;
   function action(name) {
-    const btn = new Element(); btn.dataset.action = name; btn.closest = () => host; actions.set(name, btn); return btn;
+    const btn = new Element(); btn.dataset.action = name; btn.closest = () => host; actions.set(name, btn); actionAdds.push(name); return btn;
   }
-  const confirm = action('confirm');
+  const view = action('view-item');
+  const cardHTML = page.el('ugFound').innerHTML.match(new RegExp('<article[^>]*data-row="' + row + '"[^>]*>([\\s\\S]*?)<\\/article>'));
+  for (const match of (cardHTML?.[1] || '').matchAll(/data-action="([^"]+)"/g)) if (!actions.has(match[1])) action(match[1]);
   function select(selector) {
     const match = selector.match(/^\[data-action="([^"]+)"\]$/);
     if (match) return Array.from(actions.values()).find(btn => btn.isConnected && btn.dataset.action === match[1]) || null;
     const node = children.get(selector); return node && node.isConnected ? node : null;
   }
   host.querySelector = selector => selector.split(', ').map(select).find(Boolean) || null;
-  host.querySelectorAll = selector => selector.split(', ').map(select).filter(Boolean);
+  host.querySelectorAll = selector => selector.split(', ').flatMap(part => part === '[aria-expanded]'
+    ? Array.from(actions.values()).filter(btn => btn.isConnected && btn['aria-expanded'] !== undefined)
+    : [select(part)].filter(Boolean));
   children.get('.ug-actions').insertAdjacentHTML = (_position, html) => {
     for (const match of html.matchAll(/data-action="([^"]+)"/g)) action(match[1]);
   };
-  function click(btn = confirm) { page.el('ugFound').dispatch('click', {target: {closest: () => btn}}); }
-  return {host, children, actions, text, click};
+  function click(btn = view) { assert.ok(btn, 'the requested action must exist'); page.el('ugFound').dispatch('click', {target: {closest: () => btn}}); }
+  function close() {
+    assert.match(children.get('.ug-read-box').innerHTML, /data-action="close-story"/, 'Close must be a real rendered action, not an invented control');
+    click(actions.get('close-story') || action('close-story'));
+  }
+  return {host, children, actions, actionAdds, text, click, close};
 }
+
+function writes(page) { return page.requests.filter(request => ['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.options.method)); }
+
+test('Close item during a repeated saved-story GET keeps it closed after a transport delivers despite abort', async () => {
+  const page = setup('/universal-gallery?q=Vessel&origin=photo');
+  await page.respond(0, {ok: true, results: [{artifact_id: 'a_saved', title: 'Vessel', story_available: true}]});
+  const card = cardHost(page); card.click();
+  await page.respond(2, {ok: true, artifact_id: 'a_saved', lang: 'en', text: 'Previously opened story.'});
+  card.click(); assert.match(page.requests[3].url, /artifacts\/a_saved\/story\?lang=en$/);
+  const reading = card.children.get('.ug-read-box'), before = reading.innerHTML;
+  card.close();
+  assert.equal(page.requests[3].options.signal.aborted, true);
+  assert.equal(reading.hidden, true); assert.equal(card.actions.get('view-item')['aria-expanded'], 'false');
+  assert.equal(card.actions.get('view-item').focused, true);
+  await page.respond(3, {ok: true, artifact_id: 'a_saved', lang: 'en', text: 'Late response must not reopen this item.'});
+  assert.equal(reading.hidden, true); assert.equal(reading.innerHTML, before);
+  assert.equal(card.text.textContent, 'Previously opened story.');
+  assert.equal(card.children.get('.ug-card-status').textContent, '');
+  assert.equal(writes(page).length, 0);
+});
+
+test('Close item during discover prevents late save responses from opening or generating a story', async () => {
+  for (const storyAvailable of [false, true]) {
+    const page = setup('/universal-gallery?q=Vessel&origin=photo');
+    await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'p_selected', title: 'Vessel'}]});
+    const card = cardHost(page); card.click(); card.click(card.actions.get('write-selected'));
+    assert.equal(page.requests[2].url, '/api/gallery/discover');
+    card.close(); assert.equal(page.requests[2].options.signal.aborted, true);
+    await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_selected', lang: 'en', photo_match_verified: false,
+      can_generate: true, artifact: {artifact_id: 'a_selected', title: 'Vessel', story_available: storyAvailable}});
+    assert.equal(page.requests.length, 3, 'neither a follow-on story GET nor paid generation starts after Close');
+    assert.equal(card.children.get('.ug-read-box').hidden, true);
+    assert.equal(card.children.get('.ug-object-title').innerHTML, '');
+    assert.equal(card.children.get('.ug-card-status').textContent, '');
+    assert.notEqual(card.children.get('.ug-mark').textContent, 'Provided by us');
+    assert.equal(card.text.textContent, '');
+  }
+});
+
+test('Close item during generation permits no late UI reopen, story text or supplied badge', async () => {
+  const page = setup('/universal-gallery?q=Vessel&origin=photo');
+  await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'p_selected', title: 'Vessel'}]});
+  const card = cardHost(page); card.click(); card.click(card.actions.get('write-selected'));
+  await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_selected', lang: 'en', photo_match_verified: false,
+    can_generate: true, artifact: {artifact_id: 'a_selected', title: 'Vessel', story_available: false}});
+  assert.equal(page.requests[3].url, '/api/gallery/generate');
+  card.close(); assert.equal(page.requests[3].options.signal.aborted, true);
+  const reading = card.children.get('.ug-read-box'), before = reading.innerHTML;
+  // This intentionally does not pretend abort can cancel backend provider work.
+  await page.respond(3, {ok: true, artifact_id: 'a_selected', lang: 'en', text: 'The backend finished after Close.'});
+  assert.equal(reading.hidden, true); assert.equal(reading.innerHTML, before); assert.equal(card.text.textContent, '');
+  assert.equal(card.children.get('.ug-card-status').textContent, '');
+  assert.notEqual(card.children.get('.ug-mark').textContent, 'Provided by us');
+  assert.equal(page.requests.length, 4, 'late completion does not retry or start another job');
+});
+
+test('reopening after a closed save request restores an actionable explicit story button without an automatic retry', async () => {
+  const page = setup('/universal-gallery?q=Vessel&origin=photo');
+  await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'p_selected', title: 'Vessel'}]});
+  const card = cardHost(page); card.click(); const write = card.actions.get('write-selected'); card.click(write); card.close();
+  await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_selected', lang: 'en', photo_match_verified: false,
+    can_generate: true, artifact: {artifact_id: 'a_selected', title: 'Vessel'}});
+  card.click();
+  assert.equal(card.children.get('.ug-read-box').hidden, false);
+  assert.equal(card.actions.get('write-selected').disabled, false, 'Close must not leave the explicit story control permanently disabled');
+  assert.equal(page.requests.length, 3, 'reopening alone never retries the save');
+});
+
+test('curiosity about any photo result, including a wrong candidate, performs zero writes or queue requests', async () => {
+  for (const canGenerate of [false, true]) {
+    const page = setup('/universal-gallery?q=painted%20vase&origin=photo&discover=0');
+    await page.respond(0, {ok: true, can_generate: canGenerate, results: [
+      {artifact_id: 'p_guess', title: 'Possible vase', confirmed: false, medium: 'Painted ceramic'},
+      {artifact_id: 'p_other', title: 'Interesting but different bowl', confirmed: false, medium: 'Bronze', dimensions: '25 cm'}
+    ]});
+    const first = cardHost(page, 0), wrong = cardHost(page, 1);
+    first.click(); wrong.click(); wrong.click(); first.click();
+    assert.equal(page.requests.length, 2, 'only the two collection GETs have been sent');
+    assert.equal(writes(page).length, 0);
+    assert.match(wrong.children.get('.ug-read-box').innerHTML, /Interesting but different bowl/);
+    assert.match(wrong.children.get('.ug-read-box').innerHTML, /Bronze/);
+    assert.doesNotMatch(wrong.children.get('.ug-read-box').innerHTML, /Possible vase/);
+    assert.match(wrong.children.get('.ug-read-box').innerHTML, /Photo match not verified/);
+    assert.equal(wrong.actionAdds.filter(name => name === 'write-selected').length, 1);
+    assert.equal(wrong.actions.has('confirm'), false);
+    assert.notEqual(wrong.children.get('.ug-mark').textContent, 'Provided by us');
+    page.runTimers(90000); await tick();
+    assert.equal(writes(page).length, 0, 'time does not silently enqueue or generate a story');
+  }
+});
+
+test('different saved rows receive only their own GET story even when responses arrive in reverse order', async () => {
+  const page = setup('/universal-gallery?q=Vessel&origin=photo');
+  await page.respond(0, {ok: true, can_generate: true, results: [
+    {artifact_id: 'a_first', title: 'First vessel', story_available: true},
+    {artifact_id: 'a_second', title: 'Second vessel', story_available: true}
+  ]});
+  const first = cardHost(page, 0), second = cardHost(page, 1);
+  first.click(); second.click(); first.click(); second.click();
+  assert.match(page.requests[2].url, /artifacts\/a_first\/story\?lang=en/);
+  assert.match(page.requests[3].url, /artifacts\/a_second\/story\?lang=en/);
+  assert.equal(page.requests.length, 4);
+  await page.respond(3, {ok: true, artifact_id: 'a_second', lang: 'en', text: 'Second vessel story.'});
+  await page.respond(2, {ok: true, artifact_id: 'a_first', lang: 'en', text: 'First vessel story.'});
+  assert.equal(first.text.textContent, 'First vessel story.'); assert.equal(second.text.textContent, 'Second vessel story.');
+  assert.match(first.children.get('.ug-read-box').innerHTML, /artifacts\/a_first/);
+  assert.match(second.children.get('.ug-read-box').innerHTML, /artifacts\/a_second/);
+  first.click(); await page.respond(4, {ok: true, artifact_id: 'a_first', lang: 'en', text: 'First vessel story.'});
+  assert.equal(writes(page).length, 0, 'repeated reading remains read-only');
+});
+
+test('wrong artifact or language in a saved-story response is refused rather than displayed under the selected row', async () => {
+  for (const mismatch of [{artifact_id: 'a_wrong', lang: 'en'}, {artifact_id: 'a_right', lang: 'zh'}]) {
+    const page = setup('/universal-gallery?q=Vessel&origin=photo');
+    await page.respond(0, {ok: true, results: [{artifact_id: 'a_right', title: 'Selected vessel', story_available: true}]});
+    const card = cardHost(page); card.click();
+    await page.respond(2, {ok: true, ...mismatch, text: 'Wrong response must stay hidden.'});
+    assert.equal(card.text.textContent, '');
+    assert.notEqual(card.children.get('.ug-mark').textContent, 'Provided by us');
+    assert.ok(card.children.get('.ug-card-status').textContent);
+    assert.equal(writes(page).length, 0);
+  }
+});
+
+test('late saved-story responses cannot revive a query, removed photo, old language, or disconnected card', async () => {
+  for (const leave of ['query', 'photo', 'language', 'disconnect']) {
+    const page = setup('/universal-gallery?q=Vessel&origin=photo');
+    await page.respond(0, {ok: true, results: [{artifact_id: 'a_saved', title: 'Old vessel', story_available: true}]});
+    const card = cardHost(page); card.click();
+    if (leave === 'query') page.type('A different sculpture');
+    if (leave === 'photo') page.el('ugPhotoRemove').dispatch('click');
+    if (leave === 'language') page.changeLanguage('zh');
+    if (leave === 'disconnect') card.host.isConnected = false;
+    const currentHTML = page.el('ugFound').innerHTML;
+    await page.respond(2, {ok: true, artifact_id: 'a_saved', text: 'Stale old story.', lang: 'en'});
+    assert.equal(card.text.textContent, '', leave);
+    assert.equal(page.el('ugFound').innerHTML, currentHTML, leave);
+    assert.equal(writes(page).length, 0, leave);
+  }
+});
+
+test('explicit story writing selects the intended row exactly once and never confirms the photograph', async () => {
+  const page = setup('/universal-gallery?q=Vessel&origin=photo');
+  await page.respond(0, {ok: true, can_generate: true, results: [
+    {artifact_id: 'p_first', title: 'First vessel'}, {artifact_id: 'p_second', title: 'Second vessel'}
+  ]});
+  const card = cardHost(page, 1); card.click();
+  assert.equal(writes(page).length, 0);
+  const write = card.actions.get('write-selected'); card.click(write); card.click(write);
+  assert.equal(writes(page).length, 1);
+  assert.deepEqual(JSON.parse(page.requests[2].options.body), {artifact_id: 'p_second', lang: 'en', intent: 'write_story'});
+  await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_second', lang: 'en', photo_match_verified: false, can_generate: true, artifact: {artifact_id: 'a_second', title: 'Second vessel'}, writing_status: 'pending'});
+  assert.equal(page.requests[3].url, '/api/gallery/generate');
+  assert.deepEqual(JSON.parse(page.requests[3].options.body), {artifact_id: 'a_second', lang: 'en'});
+  card.click(write); card.click(card.actions.get('generate'));
+  assert.equal(writes(page).length, 2, 'one discovery request and one generation, no repeated provider work');
+  await page.respond(3, {ok: true, artifact_id: 'a_second', lang: 'en', text: 'Only the second vessel story.'});
+  assert.equal(card.text.textContent, 'Only the second vessel story.');
+  assert.equal(page.requests.some(request => /confirm|\/photo$/.test(request.url)), false);
+  assert.match(card.children.get('.ug-read-box').innerHTML, /Photo match not verified/);
+});
+
+test('late explicit-story save responses cannot generate after query, photo, language or card ownership changes', async () => {
+  for (const leave of ['query', 'photo', 'language', 'disconnect']) {
+    const page = setup('/universal-gallery?q=Vessel&origin=photo');
+    await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'p_saved', title: 'Old vessel'}]});
+    const card = cardHost(page); card.click(); card.click(card.actions.get('write-selected'));
+    if (leave === 'query') page.type('Another sculpture');
+    if (leave === 'photo') page.el('ugPhotoRemove').dispatch('click');
+    if (leave === 'language') page.changeLanguage('zh');
+    if (leave === 'disconnect') card.host.isConnected = false;
+    await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_saved', lang: 'en', photo_match_verified: false, can_generate: true, artifact: {artifact_id: 'a_saved', title: 'Old vessel'}});
+    assert.equal(page.requests.filter(request => request.url === '/api/gallery/generate').length, 0, leave);
+    assert.equal(card.text.textContent, '', leave);
+    assert.notEqual(card.children.get('.ug-mark').textContent, 'Provided by us', leave);
+  }
+});
+
+test('wrong artifact or language returned by generation is refused without a supplied-story badge', async () => {
+  for (const mismatch of [{artifact_id: 'a_wrong', lang: 'en'}, {artifact_id: 'a_saved', lang: 'zh'}]) {
+    const page = setup('/universal-gallery?q=Vessel&origin=photo');
+    await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'p_saved', title: 'Selected vessel'}]});
+    const card = cardHost(page); card.click(); card.click(card.actions.get('write-selected'));
+    await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_saved', lang: 'en', photo_match_verified: false, can_generate: true, artifact: {artifact_id: 'a_saved', title: 'Selected vessel'}});
+    await page.respond(3, {ok: true, ...mismatch, text: 'Mismatched generated story.'});
+    assert.equal(card.text.textContent, ''); assert.notEqual(card.children.get('.ug-mark').textContent, 'Provided by us');
+    assert.ok(card.children.get('.ug-card-status').textContent);
+  }
+});
+
+test('discover response cannot silently retarget an existing selected artifact before paid generation', async () => {
+  const page = setup('/universal-gallery?q=Vessel&origin=photo');
+  await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'a_selected', title: 'Selected vessel'}]});
+  const card = cardHost(page); card.click(); card.click(card.actions.get('write-selected'));
+  await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'a_selected', photo_match_verified: false, can_generate: true, artifact_id: 'a_other', lang: 'en', artifact: {artifact_id: 'a_other', title: 'Different vase'}});
+  assert.equal(page.requests.filter(request => request.url === '/api/gallery/generate').length, 0);
+  assert.doesNotMatch(card.children.get('.ug-object-title').innerHTML, /Different vase|a_other/);
+});
+
+test('wrong or missing discovery echo, wrong language and noncanonical artifacts are refused before generation', async () => {
+  const cases = [
+    {requested_artifact_id: 'p_other'}, {requested_artifact_id: undefined},
+    {lang: 'zh'}, {lang: undefined},
+    {artifact: {artifact_id: 'p_unresolved', title: 'Unresolved guess'}},
+    {artifact: {title: 'Missing identity'}}
+  ];
+  for (const mismatch of cases) {
+    const page = setup('/universal-gallery?q=Vessel&origin=photo');
+    await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'p_selected', title: 'Selected vessel'}]});
+    const card = cardHost(page); card.click(); card.click(card.actions.get('write-selected'));
+    await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_selected', lang: 'en', photo_match_verified: false,
+      can_generate: true, artifact: {artifact_id: 'a_selected', title: 'Selected vessel'}, ...mismatch});
+    assert.equal(page.requests.filter(request => request.url === '/api/gallery/generate').length, 0, JSON.stringify(mismatch));
+    assert.equal(card.children.get('.ug-object-title').innerHTML, '', 'a rejected response cannot rewrite the card');
+    assert.equal(card.actions.get('write-selected').disabled, false, 'the reader can retry an explicitly failed save');
+    assert.notEqual(card.children.get('.ug-mark').textContent, 'Provided by us');
+  }
+});
+
+test('an English-only saved story remains available as a read-only choice when Chinese is selected', async () => {
+  const page = setup('/universal-gallery?q=Vessel&origin=photo&lang=zh');
+  await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'a_english', title: 'Vessel',
+    story_available: false, has_narrative: false, written: true, story_languages: ['en']}]});
+  const card = cardHost(page); card.click();
+  assert.equal(page.requests.length, 2, 'view does not automatically generate the missing Chinese story');
+  assert.ok(card.actions.get('read-en')?.isConnected, 'the saved English story must remain discoverable');
+  assert.match(card.children.get('.ug-read-box').innerHTML, /已有其他语言版本/);
+  assert.doesNotMatch(card.children.get('.ug-read-box').innerHTML, /尚未撰写|还没有故事/);
+  card.click(card.actions.get('read-en'));
+  assert.match(page.requests[2].url, /artifacts\/a_english\/story\?lang=en$/);
+  await page.respond(2, {ok: true, artifact_id: 'a_english', lang: 'en', text: 'Existing English story.'});
+  assert.equal(card.text.textContent, 'Existing English story.');
+  assert.match(card.children.get('.ug-read-box').innerHTML, /lang="en"/);
+  assert.equal(writes(page).length, 0);
+});
 
 test('clearing input prevents a late response from restoring old results', async () => {
   const page = setup(); page.type('old work'); page.runTimers();
@@ -115,7 +358,7 @@ test('a newer query wins even when the older response arrives last', async () =>
   assert.doesNotMatch(page.el('ugFound').innerHTML, /First work/);
 });
 
-test('photo confirmation mode survives reload and the real document language event', async () => {
+test('read-only photo browsing survives reload and the real document language event', async () => {
   const page = setup('/universal-gallery?q=vessel&origin=photo&discover=0');
   assert.match(page.requests[0].url, /discover=0&origin=photo/);
   assert.equal(page.ctx.location.searchParams.get('origin'), 'photo');
@@ -125,11 +368,12 @@ test('photo confirmation mode survives reload and the real document language eve
   assert.match(page.requests[1].url, /discover=0&origin=photo/);
   assert.equal(page.ctx.location.searchParams.get('discover'), '0');
   await page.respond(1, {ok: true, results: [{artifact_id: 'p_candidate', confirmed: false, title: 'Vessel'}]});
-  assert.match(page.el('ugFound').innerHTML, /data-action="confirm"/);
+  assert.match(page.el('ugFound').innerHTML, /data-action="view-item"/);
+  assert.doesNotMatch(page.el('ugFound').innerHTML, /data-action="confirm"|data-action="generate"/);
   assert.doesNotMatch(page.el('ugFound').innerHTML, /artifacts\/p_candidate/);
 });
 
-test('editing a photo-derived query keeps confirmation mode until a deliberate text-only exit', () => {
+test('editing a photo-derived query keeps read-only browsing until a deliberate text-only exit', () => {
   const page = setup('/universal-gallery?q=vessel&origin=photo&discover=0');
   page.type('49.30'); page.runTimers();
   assert.equal(page.requests.length, 2);
@@ -441,8 +685,8 @@ test('identification automatically searches the strongest candidate in the galle
   assert.match(page.el('ugFound').innerHTML, /Cypresses/);
   await page.respond(2, {ok: true, results: [{artifact_id: 'a_existing', title: 'Cypresses'}]});
   assert.match(page.el('ugFound').innerHTML, /Provided by us/);
-  assert.match(page.el('ugFound').innerHTML, /data-action="confirm"/);
-  assert.match(page.el('ugFound').innerHTML, /Open artifact/);
+  assert.match(page.el('ugFound').innerHTML, /data-action="view-item"/);
+  assert.match(page.el('ugFound').innerHTML, /View item/);
   assert.doesNotMatch(page.el('ugFound').innerHTML, /data-action="read"/);
   assert.equal(page.el('ugFound').scrolled, true);
   assert.match(page.el('ugCandidates').innerHTML, /data-candidate="0"/);
@@ -456,7 +700,7 @@ test('empty archive results expand to catalogues without auto-saving photo guess
   assert.match(page.requests[1].url, /discover=0&origin=photo/);
   assert.doesNotMatch(page.requests[1].url, /scope=archive/);
   await page.respond(1, {ok: true, results: [{artifact_id: 'p_candidate', confirmed: false, title: 'Cypresses'}]});
-  assert.equal(page.requests.length, 2, 'no discover call occurs before confirmation');
+  assert.equal(page.requests.length, 2, 'a photo search does not save or queue its guesses');
   assert.doesNotMatch(page.el('ugFound').innerHTML, /Provided by us/);
 });
 
@@ -469,7 +713,7 @@ test('an archive match automatically checks other museum versions without asking
   assert.doesNotMatch(page.requests[1].url, /scope=archive/);
   await page.respond(1, {ok: true, results: [{artifact_id: 'a_saved', title: 'Sunflowers in London'}, {artifact_id: 'p_other', title: 'Sunflowers in Munich', confirmed: false}]});
   assert.match(page.el('ugFound').innerHTML, /Sunflowers in Munich/);
-  assert.match(page.el('ugFound').innerHTML, /data-action="confirm"/);
+  assert.match(page.el('ugFound').innerHTML, /data-action="view-item"/);
 });
 
 test('manual OCR correction keeps the photograph and its existing permission', async () => {
@@ -526,24 +770,28 @@ test('closing the photo panel or changing language preserves private preview wit
   assert.equal(page.el('ugPreviewImage').src, undefined);
 });
 
-test('confirmation opens an existing selected-language story without generating or uploading by default', async () => {
+test('view opens an existing selected-language story with one GET and no discover, generation or upload', async () => {
   const page = setup('/universal-gallery?q=Cypresses&origin=photo');
   await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'a_existing', title: 'Cypresses', story_available: true}]});
   const card = cardHost(page); card.click(); card.click();
-  assert.equal(page.requests.length, 3, 'double confirmation is single flight');
-  await page.respond(2, {ok: true, saved: true, attachment_token: 'token', can_generate: true, artifact: {artifact_id: 'a_existing', title: 'Cypresses', story_available: true}});
-  assert.match(page.requests[3].url, /artifacts\/a_existing\/story\?lang=en/);
-  await page.respond(3, {ok: true, text: 'An existing story.', lang: 'en', provenance: {kind: 'editorial'}});
+  assert.equal(page.requests.length, 3, 'double view shares the in-flight saved-story GET');
+  assert.match(page.requests[2].url, /artifacts\/a_existing\/story\?lang=en/);
+  assert.equal(page.requests[2].options.method, undefined);
+  await page.respond(2, {ok: true, artifact_id: 'a_existing', text: 'An existing story.', lang: 'en', provenance: {kind: 'editorial'}});
   assert.equal(card.text.textContent, 'An existing story.');
-  assert.equal(page.requests.length, 4);
-  assert.equal(page.requests.some(request => /\/generate|\/photo$/.test(request.url)), false);
+  assert.equal(page.requests.length, 3);
+  assert.equal(page.requests.some(request => /\/discover|\/generate|\/photo$/.test(request.url)), false);
 });
 
-test('a newly confirmed artifact writes once and is marked only after real story text returns', async () => {
+test('only the separate explicit story action saves and writes once, then marks real returned text', async () => {
   const page = setup('/universal-gallery?q=Vessel&origin=photo&lang=zh');
   await page.respond(0, {ok: true, can_generate: true, results: [{artifact_id: 'p_new', title: 'Vessel'}]});
   const card = cardHost(page); card.click();
-  await page.respond(2, {ok: true, saved: true, can_generate: true, artifact: {artifact_id: 'a_new', title: 'Vessel', story_available: false}, writing_status: 'pending'});
+  assert.equal(page.requests.length, 2, 'view itself performs no write or queue operation');
+  card.click(card.actions.get('write-selected')); card.click(card.actions.get('write-selected'));
+  assert.equal(page.requests.length, 3, 'the explicit story request is single flight');
+  assert.deepEqual(JSON.parse(page.requests[2].options.body), {artifact_id: 'p_new', lang: 'zh', intent: 'write_story'});
+  await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_new', lang: 'zh', photo_match_verified: false, can_generate: true, artifact: {artifact_id: 'a_new', title: 'Vessel', story_available: false}, writing_status: 'pending'});
   assert.equal(page.requests[3].url, '/api/gallery/generate');
   assert.equal(JSON.parse(page.requests[3].options.body).lang, 'zh');
   assert.notEqual(card.children.get('.ug-mark').textContent, '由我们提供');
@@ -554,23 +802,27 @@ test('a newly confirmed artifact writes once and is marked only after real story
   assert.equal(card.children.get('.ug-mark').textContent, '由我们提供');
 });
 
-test('no-engine confirmation keeps an honest pending discovery without a Written by us badge', async () => {
+test('no-engine view creates no queue; only explicit request can save a pending story', async () => {
   const page = setup('/universal-gallery?q=Vessel&origin=photo');
   await page.respond(0, {ok: true, can_generate: false, results: [{artifact_id: 'p_new', title: 'Vessel'}]});
   const card = cardHost(page); card.click();
-  await page.respond(2, {ok: true, saved: true, can_generate: false, artifact: {artifact_id: 'a_new', title: 'Vessel', story_available: false}, writing_status: 'pending'});
+  card.click(); assert.equal(page.requests.length, 2, 'read-only browsing must not silently queue a story');
+  card.click(card.actions.get('write-selected'));
+  await page.respond(2, {ok: true, saved: true, requested_artifact_id: 'p_new', lang: 'en', photo_match_verified: false, can_generate: false, artifact: {artifact_id: 'a_new', title: 'Vessel', story_available: false}, writing_status: 'pending'});
   assert.equal(page.requests.length, 3);
   assert.equal(card.children.get('.ug-card-status').textContent, 'Saved. A story will be added when writing is available.');
   assert.notEqual(card.children.get('.ug-mark').textContent, 'Provided by us');
 });
 
-test('even a legacy attachment token cannot cause a post-confirmation photograph upload', async () => {
+test('even a legacy attachment token cannot cause an explicit story request to upload a photograph', async () => {
   const page = setup(); await photo(page); page.el('ugPhotoForm').dispatch('submit');
   await page.respond(0, {ok: true, candidates: [{query: 'Vessel', confidence: 'high'}]});
   await page.respond(1, {ok: true, can_generate: false, results: [{artifact_id: 'a_vessel', title: 'Vessel'}]});
   assert.equal(page.requests.length, 3, 'no photo retained during identification or search');
   const card = cardHost(page); card.click();
-  await page.respond(3, {ok: true, saved: true, can_generate: false, attachment_token: 'signed-match', artifact: {artifact_id: 'a_vessel', title: 'Vessel'}, writing_status: 'pending'});
+  assert.equal(page.requests.length, 3);
+  card.click(card.actions.get('write-selected'));
+  await page.respond(3, {ok: true, saved: true, requested_artifact_id: 'a_vessel', lang: 'en', photo_match_verified: false, can_generate: false, attachment_token: 'signed-match', artifact: {artifact_id: 'a_vessel', title: 'Vessel'}, writing_status: 'pending'});
   assert.equal(page.requests.length, 4);
   assert.equal(page.requests.some(request => /\/photo$/.test(request.url)), false);
   assert.match(card.children.get('.ug-card-status').textContent, /Saved/);
@@ -578,30 +830,31 @@ test('even a legacy attachment token cannot cause a post-confirmation photograph
   page.el('ugPhotoRemove').dispatch('click');
 });
 
-test('removing the photo while opening an artifact is pending prevents publication', async () => {
+test('removing the photo during an explicit story request prevents a late write response from publishing or generating', async () => {
   const page = setup(); await photo(page); page.el('ugPhotoForm').dispatch('submit');
   await page.respond(0, {ok: true, candidates: [{query: 'Vessel'}]});
   await page.respond(1, {ok: true, can_generate: false, results: [{artifact_id: 'a_vessel', title: 'Vessel'}]});
   const card = cardHost(page); card.click();
+  card.click(card.actions.get('write-selected'));
   page.el('ugPhotoRemove').dispatch('click');
-  await page.respond(3, {ok: true, saved: true, can_generate: false, attachment_token: 'signed-match', artifact: {artifact_id: 'a_vessel', title: 'Vessel'}, writing_status: 'pending'});
+  await page.respond(3, {ok: true, saved: true, requested_artifact_id: 'a_vessel', lang: 'en', photo_match_verified: false, can_generate: false, attachment_token: 'signed-match', artifact: {artifact_id: 'a_vessel', title: 'Vessel'}, writing_status: 'pending'});
   assert.equal(page.requests.length, 4);
   assert.equal(page.requests.some(request => /\/photo$/.test(request.url)), false);
   page.el('ugPhotoRemove').dispatch('click');
 });
 
-test('confirmation opens the saved story immediately without a photograph publication request', async () => {
+test('view opens the saved story directly without a discovery or photograph-publication request', async () => {
   const page = setup(); await photo(page); page.el('ugPhotoForm').dispatch('submit');
   await page.respond(0, {ok: true, candidates: [{query: 'Vessel'}]});
   await page.respond(1, {ok: true, can_generate: true, results: [{artifact_id: 'a_vessel', title: 'Vessel', story_available: true}]});
   const card = cardHost(page); card.click();
-  await page.respond(3, {ok: true, saved: true, can_generate: true, attachment_token: 'signed-match', artifact: {artifact_id: 'a_vessel', title: 'Vessel', story_available: true}});
   assert.equal(page.requests.some(request => /\/photo$/.test(request.url)), false);
-  assert.match(page.requests[4].url, /\/story\?lang=en$/);
-  await page.respond(4, {ok: true, text: 'Saved story remains readable.', lang: 'en'});
+  assert.match(page.requests[3].url, /\/story\?lang=en$/);
+  await page.respond(3, {ok: true, artifact_id: 'a_vessel', text: 'Saved story remains readable.', lang: 'en'});
   assert.equal(card.text.textContent, 'Saved story remains readable.');
   assert.equal(card.actions.has('retry-photo'), false);
   assert.equal(page.requests.filter(request => /\/story\?/.test(request.url)).length, 1);
+  assert.equal(page.requests.some(request => /\/discover$/.test(request.url)), false);
   page.el('ugPhotoRemove').dispatch('click');
 });
 
@@ -856,15 +1109,15 @@ test('late museum results never replace an artifact the visitor already opened',
   const card = cardHost(page); card.click();
   await page.respond(1, {ok: true, results: [{artifact_id: 'p_other', title: 'Another work'}]});
   assert.equal(page.el('ugFound').innerHTML, original);
-  assert.equal(page.requests.filter(request => /\/discover$/.test(request.url)).length, 1);
+  assert.equal(page.requests.filter(request => /\/discover$/.test(request.url)).length, 0);
+  assert.equal(page.requests.filter(request => /\/story\?/.test(request.url)).length, 1);
 });
 
 test('researched readings credit the historical museum source, its license and AI adaptation', async () => {
   const page = setup('/universal-gallery?q=Vessel&origin=photo');
   await page.respond(0, {ok: true, results: [{artifact_id: 'a_saved', title: 'Vessel', story_available: true}]});
   const card = cardHost(page); card.click();
-  await page.respond(2, {ok: true, saved: true, artifact: {artifact_id: 'a_saved', title: 'Vessel', story_available: true}});
-  await page.respond(3, {ok: true, text: 'The researched story.', lang: 'en', research_source: {
+  await page.respond(2, {ok: true, artifact_id: 'a_saved', text: 'The researched story.', lang: 'en', research_source: {
     label: 'Museum & Collection', url: 'https://example.org/museum/vessel',
     license: 'CC BY 4.0', license_url: 'https://creativecommons.org/licenses/by/4.0/', adapted: true
   }});
@@ -879,12 +1132,11 @@ test('researched readings credit the historical museum source, its license and A
 
 test('row source attribution supports Chinese and never renders untrusted links or HTML', async () => {
   const page = setup('/universal-gallery?q=Vessel&origin=photo&lang=zh');
-  await page.respond(0, {ok: true, results: [{artifact_id: 'a_saved', title: 'Vessel', story_available: true}]});
-  const card = cardHost(page); card.click();
-  await page.respond(2, {ok: true, saved: true, artifact: {artifact_id: 'a_saved', title: 'Vessel', story_available: true,
+  await page.respond(0, {ok: true, results: [{artifact_id: 'a_saved', title: 'Vessel', story_available: true,
     research_source: {label: '<img src=x onerror=alert(1)>', url: 'javascript:alert(1)', license: '<script>unsafe</script>', license_url: 'data:text/html,unsafe', adapted: true}
-  }});
-  await page.respond(3, {ok: true, text: '藏品故事。', lang: 'zh'});
+  }]});
+  const card = cardHost(page); card.click();
+  await page.respond(2, {ok: true, artifact_id: 'a_saved', text: '藏品故事。', lang: 'zh'});
   const html = card.children.get('.ug-read-box').innerHTML;
   assert.match(html, /历史资料来源/);
   assert.match(html, /经 AI 辅助改编/);
