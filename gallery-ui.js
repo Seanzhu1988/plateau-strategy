@@ -15,7 +15,7 @@
   var pickerConsent = false, permittedPhoto = null, consentOpener = null, photoPickerTarget = 'ugCamera';
   var photoPreparing = false, photoPrepareController = null;
   var selectedResultSeq = -1;
-  var storyJobs = new Set(), confirmationJobs = new Set(), attachmentJobs = new Set(), attachmentRetries = new Map();
+  var storyJobs = new Set(), confirmationJobs = new Set();
   var researchJobs = new Set(), pendingResearch = null, researchSavedSeq = -1;
   var explicitLang = params.get('lang') || '';
   var copy = {
@@ -36,14 +36,12 @@
     removePhoto: ['Remove photograph', '移除照片'], museumHint: ['Museum or location, if you know it', '博物馆或所在地（选填）'],
     addDetails: ['Add a museum or location (optional)', '补充博物馆或所在地（选填）'],
     identify: ['Try photo search again', '重试照片搜索'], optional: ['Optional', '选填'],
-    photoDialogTitle: ['Search and save your photo?', '搜索并保存你的照片？'],
-    photoDialogText: ['We’ll send the photo to Anthropic to identify the artwork. When you open the matching artifact, we’ll add the photo to its public page.', '我们会将照片发送给 Anthropic 识别藏品。你打开匹配的藏品时，照片会加入该藏品的公开页面。'],
-    photoDialogNote: ['Continue only if you may share the photo and artwork. No people or private details. Metadata is removed.', '请确认你有权分享照片及其中的艺术作品。请勿包含人物或私人信息。元数据会被移除。'],
+    photoDialogTitle: ['Identify this artwork?', '识别这件藏品？'],
+    photoDialogText: ['We’ll send the photo to Anthropic to identify the artwork. We save the discovery and its story, never publish your photograph.', '我们会将照片发送给 Anthropic 识别藏品，保存发现及其故事，绝不公开你的照片。'],
+    photoDialogNote: ['Photo metadata is removed. No people or private details, please.', '照片元数据会被移除。请勿包含人物或私人信息。'],
     photoYes: ['Yes, continue', '好的，继续'], photoNo: ['Not now', '暂时不用'],
-    photoPrivacy: ['Shared only after you confirm the match. Please exclude people or private details. Photo metadata is removed.', '确认匹配后才会分享。照片请勿包含人物或私人信息。照片元数据会被移除。'],
+    photoPrivacy: ['Your photograph is used for identification, never published. Photo metadata is removed.', '照片仅用于识别，绝不公开。照片元数据会被移除。'],
     photoConsent: ['Send my photo and the details I enter to Anthropic to identify the artwork.', '同意将照片及填写的信息发送给 Anthropic 识别藏品。'],
-    photoPermissions: ['Photo permissions', '照片授权'],
-    photoPublish: ['Optional: Share my photo with this artifact. I have permission to publish the photo and artwork.', '选填：将照片分享至这件藏品。我有权公开照片及其中的艺术作品。'],
     research: ['Not found? Save for research', '没找到？保存供研究'],
     pendingDiscovery: ['New discovery', '新发现'], unverified: ['Identity not yet verified', '身份尚未核实'],
     pendingPrivate: ['Saved for research. Your photo stays private.', '已保存供研究，照片保持私密。'],
@@ -87,13 +85,6 @@
     saved: ['Object confirmed and saved to the gallery.', '藏品已确认并保存到艺廊。'],
     queued: ['Object saved. Its story is queued in your selected language and will join the archive when written.', '藏品已保存，所选语言的故事已加入待写队列，完成后会加入故事档案。'],
     queuedNoEngine: ['Saved. A story will be added when writing is available.', '已保存，写作服务可用后会添加故事。'],
-    photoAttaching: ['Adding your permitted photograph to this object…', '正在将已授权的照片加入这件藏品…'],
-    photoAttached: ['Your photograph is now part of this object’s public archive, credited as a visitor photograph.', '照片已加入这件藏品的公开档案，标注为访客照片。'],
-    photoAttachFailed: ['The object is saved, but your photo was not added. You can retry the photo separately.', '藏品已保存，但照片未能加入。可以单独重试保存照片。'],
-    photoAttachRetry: ['Retry adding photograph', '重试加入照片'],
-    photoConsentWithdrawn: ['Your photo has not been added because publication permission is not selected.', '未选择公开授权，因此照片没有加入档案。'],
-    visitorPhoto: ['Visitor photograph', '访客照片'],
-    visitorPhotoCredit: ['Shared with publication permission. Separate from the museum’s collection photograph.', '已获公开授权，与博物馆官方馆藏照片分开标注。'],
     saveFailed: ['The object could not be saved. Please try again.', '藏品保存失败，请重试。'], saving: ['Saving…', '正在保存…'],
     opening: ['Opening the story…', '正在打开故事…'], writing: ['Writing your story. This can take a little time…', '正在撰写故事，请稍候…'],
     hideStory: ['Close story', '收起故事'], originalCredit: ['Original story by Plateau Strategy', 'Plateau Strategy 原创故事'],
@@ -106,7 +97,7 @@
     storyBusy: ['This story is already being written. Please try opening it again shortly.', '这篇故事正在撰写中，请稍后再打开。'],
     storyMissing: ['We have not written this story in your selected language yet.', '这篇故事还没有当前所选语言的版本。'],
     collectionPhoto: ['Collection photograph', '馆藏照片'], noImage: ['Image unavailable. Check the collection source.', '暂无图片，请查阅馆藏来源。'],
-    photoWaiting: ['Choose a photograph first.', '请先选择照片。'], photoConsentNeeded: ['Please read and select the photo identification consent before continuing.', '继续前，请阅读并勾选照片识别授权。'],
+    photoWaiting: ['Choose a photograph first.', '请先选择照片。'], photoConsentNeeded: ['Tap the camera and allow identification to continue.', '请点击相机并同意识别后继续。'],
     photoLarge: ['This photo is too large. Take a new photo or choose a smaller copy.', '这张照片太大，请重新拍照或选择较小的副本。'],
     photoType: ['Please use a JPEG, PNG or WebP photograph. On iPhone, you can choose a compatible image from Photos.', '请使用 JPEG、PNG 或 WebP 照片。iPhone 用户可以从照片中选择兼容的图片。'],
     photoReady: ['Photo ready.', '照片已准备好。'],
@@ -143,7 +134,18 @@
   function esc(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function safeURL(value, local) {
     if (!value || typeof value !== 'string') return '';
+    // Also refuse stale API/cache responses containing retired visitor assets.
+    var decoded = value;
+    try { for (var i = 0; i < 3; i++) decoded = decodeURIComponent(decoded); } catch (_) { return ''; }
+    try { decoded = new URL(decoded.replace(/\\/g, '/'), location.origin).pathname.replace(/\/+/g, '/'); } catch (_) { return ''; }
+    if (/(?:^|\/)(?:api\/gallery\/photos|gallery_photos)(?:\/|[?#]|$)/i.test(decoded)) return '';
     try { var u = new URL(value, location.origin); if (!/^https?:$/.test(u.protocol)) return ''; if (!local && !/^https?:\/\//i.test(value)) return ''; return u.href; } catch (_) { return ''; }
+  }
+  function catalogueImage(row) {
+    if (row.copyright || [row.source_kind, row.image_kind, row.photo_kind].some(function (kind) {
+      return /^visitor[_ -]photo(?:graph)?$/i.test(kind || '');
+    })) return '';
+    return safeURL(row.image || (row.images || [])[0]);
   }
   function artifactURL(row, selectedLang) { return '/universal-gallery/artifacts/' + encodeURIComponent(row.artifact_id) + '?lang=' + encodeURIComponent(selectedLang || lang()); }
   function sourceLabel(row) { return row.source_kind === 'catalogue_search' ? t('sourceSearch') : row.source_label || t('source'); }
@@ -178,15 +180,8 @@
     var pagination = document.getElementById('ugPagination'); if (pagination) pagination.hidden = true;
   }
   function button(action, text, attributes) { return '<button type="button" data-action="' + action + '" ' + (attributes || '') + '>' + esc(text) + '</button>'; }
-  function communityPhotos(row) {
-    var photos = (row.community_photos || []).filter(function (photo) { return safeURL(photo.url, true); }).slice(0, 8);
-    if (!photos.length) return '';
-    return '<div class="ug-community-photos">' + photos.map(function (photo) {
-      return '<figure class="ug-community-photo"><img src="' + esc(safeURL(photo.url, true)) + '" alt="' + esc(t('visitorPhoto') + ': ' + row.title) + '" loading="lazy"><figcaption>' + esc(t('visitorPhoto')) + '. ' + esc(t('visitorPhotoCredit')) + '</figcaption></figure>';
-    }).join('') + '</div>';
-  }
   function card(row, index) {
-    var image = !row.copyright && safeURL(row.image || (row.images || [])[0]);
+    var image = catalogueImage(row);
     var source = safeURL(row.source_url);
     var languages = row.story_languages || [];
     var ourStory = !!(row.written || row.story_available || languages.length);
@@ -214,7 +209,7 @@
       '<div class="ug-actions">' + actions + '</div>' +
       (!available && !photoOrigin ? '<p class="ug-note ug-story-note">' + esc(ourStory ? t('storyOtherLanguage') : canGenerate ? t('aiCreate') : t('noStory')) + '</p>' : '') +
       (discovery ? '<p class="ug-discovery">' + esc(discovery) + '</p>' : '') +
-      '<p class="ug-card-status ug-status" role="status" aria-live="polite"></p><p class="ug-photo-attachment" role="status" aria-live="polite"></p></div>' + communityPhotos(row) +
+      '<p class="ug-card-status ug-status" role="status" aria-live="polite"></p></div>' +
       '<div id="ugReading' + index + '" class="ug-read-box" hidden></div></article>';
   }
   function render(list) {
@@ -366,7 +361,7 @@
   }
   function showStory(host, row, data, selectedLang) {
     var box = host.querySelector('.ug-read-box');
-    var image = !row.copyright && safeURL(row.image || (row.images || [])[0]);
+    var image = catalogueImage(row);
     var source = safeURL(row.source_url);
     var audio = data.lang === selectedLang || !data.lang ? safeURL(data.audio, true) : '';
     var attribution = [t('collectionPhoto'), row.image_credit || row.source || row.museum || ''].filter(Boolean).join(' · ');
@@ -415,35 +410,9 @@
       }
     } finally { storyJobs.delete(jobKey); cardControllers.delete(controller); if (host.isConnected) buttons.forEach(function (node) { node.disabled = false; }); }
   }
-  async function attachPhoto(host, row, attachment) {
-    var note = host.querySelector('.ug-photo-attachment'), mine = seq;
-    if (attachmentJobs.has(row.artifact_id)) return;
-    if (!permittedPhoto || permittedPhoto !== attachment.file || attachment.file !== photoFile) {
-      stamp(note, t('photoConsentWithdrawn')); return;
-    }
-    attachmentJobs.add(row.artifact_id);
-    var retry = host.querySelector('[data-action="retry-photo"]'); if (retry) retry.disabled = true;
-    stamp(note, '');
-    try {
-      var body = new FormData(); body.append('photo', attachment.file);
-      body.append('publication_consent', 'gallery-photo-publication-v1'); body.append('attachment_token', attachment.token);
-      var data = await jsonFetch('/api/gallery/artifacts/' + encodeURIComponent(row.artifact_id) + '/photo', {method: 'POST', body: body});
-      if (mine !== seq || !host.isConnected) return;
-      row.community_photos = data.photos || (row.community_photos || []).concat(data.photo ? [data.photo] : []);
-      attachmentRetries.delete(row.artifact_id);
-      if (retry) retry.remove();
-      var old = host.querySelector('.ug-community-photos'); if (old) old.remove();
-      host.insertAdjacentHTML('beforeend', communityPhotos(row)); stamp(note, '');
-    } catch (_) {
-      if (mine !== seq || !host.isConnected) return;
-      attachmentRetries.set(row.artifact_id, attachment); stamp(note, t('photoAttachFailed'), true);
-      if (!retry) host.querySelector('.ug-actions').insertAdjacentHTML('beforeend', button('retry-photo', t('photoAttachRetry')));
-    } finally { attachmentJobs.delete(row.artifact_id); if (retry && host.isConnected) retry.disabled = false; }
-  }
   async function confirmArtifact(host, row, btn) {
     if (confirmationJobs.has(row.artifact_id) || row.confirmedByVisitor) return;
     var jobKey = row.artifact_id, selectedLang = lang(); confirmationJobs.add(jobKey); selectedResultSeq = seq; stamp(status, '');
-    var consentFile = photoFile, permitPublication = !!(consentFile && permittedPhoto === consentFile);
     var mine = seq, note = host.querySelector('.ug-card-status'), controller = new AbortController();
     cardControllers.add(controller); btn.disabled = true; stamp(note, t('saving'));
     try {
@@ -453,8 +422,6 @@
       Object.assign(row, data.artifact || {}); row.confirmedByVisitor = true; stamp(note, t('saved')); stamp(status, '');
       host.querySelector('.ug-object-title').innerHTML = '<a href="' + artifactURL(row) + '">' + esc(row.title) + '</a>';
       btn.remove(); var hint = host.querySelector('.ug-discovery'); if (hint) hint.textContent = t('remembered');
-      if (permitPublication && data.attachment_token) attachPhoto(host, row, {file: consentFile, token: data.attachment_token});
-      else if (permitPublication) stamp(host.querySelector('.ug-photo-attachment'), t('photoAttachFailed'), true);
       var ready = row.story_available || row.has_narrative;
       var enabled = typeof data.can_generate === 'boolean' ? data.can_generate : canGenerate;
       if (ready && !host.querySelector('[data-action="read"]')) host.querySelector('.ug-actions').insertAdjacentHTML('afterbegin', button('read', t('read')));
@@ -472,7 +439,6 @@
     var row = rows[Number(host.dataset.row)]; if (!row) return;
     var action = btn.dataset.action;
     if (action === 'confirm') { confirmArtifact(host, row, btn); return; }
-    if (action === 'retry-photo') { var attachment = attachmentRetries.get(row.artifact_id); if (attachment) attachPhoto(host, row, attachment); return; }
     if (action === 'close-story') {
       var box = host.querySelector('.ug-read-box'); box.querySelectorAll('audio').forEach(function (audio) { audio.pause(); }); box.hidden = true;
       host.querySelectorAll('[aria-expanded]').forEach(function (node) { node.setAttribute('aria-expanded', 'false'); });
@@ -508,7 +474,7 @@
     // answers. Aborting only the browser would leave a paid provider call alive.
     if (photoController && !photoBusy) photoController.abort();
     if (photoURL) URL.revokeObjectURL(photoURL);
-    photoURL = null; photoFile = null; permittedPhoto = null; pickerConsent = false; candidates = []; labelText = ''; visualDescription = ''; attachmentRetries.clear();
+    photoURL = null; photoFile = null; permittedPhoto = null; pickerConsent = false; candidates = []; labelText = ''; visualDescription = '';
     var preview = document.getElementById('ugPhotoPreview'); if (!preview) return;
     preview.hidden = true; document.getElementById('ugPreviewImage').removeAttribute('src');
     document.getElementById('ugCamera').value = ''; document.getElementById('ugUpload').value = '';

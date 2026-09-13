@@ -193,7 +193,7 @@ class GalleryJourneyTests(unittest.TestCase):
         self.assertEqual(result["results"][0]["artifact_id"], original["artifact_id"])
         self.assertTrue(result["results"][0]["story_available"])
 
-    def test_photo_confirmation_queues_selected_language_and_grants_attachment(self):
+    def test_photo_confirmation_queues_selected_language_without_publication_token(self):
         candidate = self.client.get("/api/gallery/search?q=Acceptance&discover=0&lang=zh").get_json()["results"][0]
         self.assertTrue(candidate["artifact_id"].startswith("p_"))
         self.assertEqual(gallery_archive.search_known("Acceptance"), [])
@@ -205,39 +205,52 @@ class GalleryJourneyTests(unittest.TestCase):
         self.assertFalse(body["artifact"]["written"])
         self.assertEqual(body["writing_status"], "pending")
         self.assertEqual(response.headers["Cache-Control"], "no-store")
-        from itsdangerous import URLSafeTimedSerializer
-        payload = URLSafeTimedSerializer(site.app.secret_key, salt="gallery-photo-attachment-v1").loads(body["attachment_token"], max_age=900)
-        self.assertEqual(payload, {"artifact_id": body["artifact"]["artifact_id"]})
+        self.assertNotIn("attachment_token", body)
+        artifact_id = body["artifact"]["artifact_id"]
         with gallery_archive.database() as db:
-            row = db.execute("SELECT status FROM writing_queue WHERE artifact_id=? AND lang='zh'", (payload["artifact_id"],)).fetchone()
+            row = db.execute("SELECT status FROM writing_queue WHERE artifact_id=? AND lang='zh'", (artifact_id,)).fetchone()
         self.assertEqual(row[0], "pending")
         self.assertEqual(self.client.get("/api/gallery/archive?q=Acceptance&lang=zh").get_json()["total"], 0)
 
-    def test_confirmed_photo_is_retained_and_visible_on_repeat_lookup(self):
-        from PIL import Image
+    def test_confirmed_photo_is_private_on_every_public_lookup_and_asset_route(self):
+        from test_gallery_photos import seed_legacy_photo, PHOTO_ID, PHOTO_URL
         import gallery_photos
         artifact_id = self.find()["artifact_id"]
+        photo = seed_legacy_photo(self.data.name, artifact_id)
+        original = photo.read_bytes()
         confirmed = self.client.post("/api/gallery/discover", json={"artifact_id": artifact_id}).get_json()
-        image = io.BytesIO()
-        Image.new("RGB", (30, 30), "navy").save(image, "PNG")
-        raw = image.getvalue()
+        self.assertTrue(confirmed["saved"])
+        self.assertNotIn("attachment_token", confirmed)
         url = "/api/gallery/artifacts/%s/photo" % artifact_id
-        refused = self.client.post(url, data={"photo": (io.BytesIO(raw), "private.png"),
-                                           "attachment_token": confirmed["attachment_token"]})
-        self.assertEqual(refused.status_code, 400)
+        from itsdangerous import URLSafeTimedSerializer
+        token = URLSafeTimedSerializer(site.app.secret_key, salt=gallery_photos.TOKEN_SALT).dumps({"artifact_id": artifact_id})
+        refused = self.client.post(url, data={"photo": (io.BytesIO(b"synthetic"), "private.png"),
+                                            "publication_consent": gallery_photos.CONSENT_VERSION,
+                                            "attachment_token": token})
+        self.assertEqual(refused.status_code, 403)
+        self.assertIn("no-store", refused.headers["Cache-Control"])
         self.assertEqual(gallery_photos.list_photos(artifact_id), [])
-        uploaded = self.client.post(url, data={"photo": (io.BytesIO(raw), "private.png"),
-                                             "attachment_token": confirmed["attachment_token"],
-                                             "publication_consent": "gallery-photo-publication-v1"})
-        self.assertEqual(uploaded.status_code, 200, uploaded.get_json())
-        photo = uploaded.get_json()["photo"]
-        artifact = self.client.get("/api/gallery/artifacts/" + artifact_id).get_json()["artifact"]
-        self.assertEqual(artifact["community_photos"][0]["url"], photo["url"])
-        self.assertEqual(artifact["community_photos"][0]["kind"], "visitor_photo")
-        with self.client.get(photo["url"]) as image_response:
-            self.assertEqual(image_response.status_code, 200)
-            self.assertEqual(image_response.mimetype, "image/jpeg")
-            self.assertEqual(Image.open(io.BytesIO(image_response.data)).getexif(), {})
+        lease = gallery_archive.reserve(artifact_id, "en", 10)
+        self.assertTrue(gallery_archive.finish(artifact_id, "en", lease["token"], STORY, model="fixture"))
+        for endpoint in ("/api/gallery/artifacts/" + artifact_id,
+                         "/api/gallery/archive?q=Acceptance",
+                         "/api/gallery/search?q=Acceptance",
+                         "/api/gallery/search?q=Acceptance&scope=archive",
+                         "/api/gallery/search?q=Acceptance&discover=0"):
+            result = self.client.get(endpoint)
+            self.assertEqual(result.status_code, 200)
+            self.assertNotIn(PHOTO_ID, result.get_data(as_text=True))
+        story = self.client.get("/api/gallery/artifacts/" + artifact_id + "/story").get_json()
+        self.assertEqual(story["text"], STORY)
+        for method in ("GET", "HEAD"):
+            for headers in ({}, {"If-None-Match": "*"}, {"Range": "bytes=0-4"}):
+                response = self.client.open(PHOTO_URL, method=method, headers=headers)
+                self.assertEqual(response.status_code, 404)
+                self.assertIn("no-store", response.headers["Cache-Control"])
+                self.assertNotEqual(response.mimetype, "image/jpeg")
+        for alias in ("/gallery_photos/", "/media/gallery_photos/", "/static/gallery_photos/"):
+            self.assertEqual(self.client.get(alias + PHOTO_ID + ".jpg").status_code, 404)
+        self.assertEqual(photo.read_bytes(), original)
 
     def test_research_is_durable_private_and_deduplicated(self):
         clues = {"query": "Unidentified fixture carving", "museum": "Fixture museum", "lang": "zh",

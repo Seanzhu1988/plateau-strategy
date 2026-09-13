@@ -138,13 +138,14 @@ class ArchiveTests(unittest.TestCase):
         self.assertEqual(archive.confirm(a, "zh")["writing_status"], "complete")
         self.assertEqual(archive.queue_status()["items"], [])
 
-    def test_photo_attachments_are_separate_from_official_image(self):
+    def test_public_archive_ignores_legacy_photo_service_but_keeps_official_image(self):
         a = archive.remember(dict(FACTS, image="https://museum.example/official.jpg"))["artifact_id"]
         visitor = {"url": "/api/gallery/photos/p_example", "kind": "visitor_photo", "label": "Visitor photograph"}
         module = types.SimpleNamespace(list_photos=lambda artifact_id: [visitor])
         with patch.dict("sys.modules", {"gallery_photos": module}):
             artifact = archive.get_artifact(a)
-        self.assertEqual(artifact["community_photos"], [visitor])
+        self.assertEqual(artifact["community_photos"], [])
+        self.assertNotIn(visitor["url"], json.dumps(artifact))
         self.assertEqual(artifact["image"], "https://museum.example/official.jpg")
         def offline(artifact_id):
             raise OSError("Photo storage unavailable")

@@ -303,8 +303,8 @@ app = Flask(__name__)
 app.secret_key = _get_secret()
 
 # Phone photos are decoded in memory and may reach the fixed identification
-# provider only after the visitor's explicit consent. Publishing the clean
-# photo is a separate opt-in, available only after an artifact confirmation.
+# provider only after the visitor's consent. Visitor photographs are never
+# published; only the identified discovery and its written story may be shared.
 from gallery_identify import gallery_identify_bp
 from gallery_photos import gallery_photos_bp
 app.register_blueprint(gallery_identify_bp)
@@ -5733,13 +5733,9 @@ def api_gallery_discover():
     artifact = gallery_archive.confirm(artifact_id, lang)
     if not artifact:
         return jsonify({"ok": False, "reason": "not_found"}), 404
-    from itsdangerous import URLSafeTimedSerializer
-    attachment_token = URLSafeTimedSerializer(
-        app.secret_key, salt="gallery-photo-attachment-v1").dumps({"artifact_id": artifact_id})
     response = jsonify({"ok": True, "saved": True, "artifact": artifact,
                         "can_generate": _gallery_can_generate(),
-                        "writing_status": artifact.get("writing_status", "pending"),
-                        "attachment_token": attachment_token})
+                        "writing_status": artifact.get("writing_status", "pending")})
     response.headers["Cache-Control"] = "no-store"
     return response
 
@@ -6021,6 +6017,11 @@ def gallery_guide_page(slug):
         g = None
     if not g:
         return "No such guide.", 404
+    # Legacy guide records can predate the no-public-visitor-photo policy.
+    # Sanitize a copy for the hero, structured data and client payload without
+    # altering the remembered discovery or the privately retained original.
+    import gallery_archive
+    g = gallery_archive.public_facts(g)
     facts = _guide_facts(g)
     title, artist = g.get("title") or "", g.get("artist") or ""
     museum, num, image = g.get("museum") or "", g.get("item_number") or "", g.get("image") or ""

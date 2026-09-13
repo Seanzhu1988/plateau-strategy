@@ -4,8 +4,8 @@
 The site owner approved Anthropic photo identification with explicit visitor
 consent and metadata removal. This identification endpoint saves no photo.
 The frontend must explain the provider and obtain agreement before sending
-CONSENT_VERSION. A separate permission and confirmed collection match are
-required for the optional gallery_photos publication endpoint.
+CONSENT_VERSION. Visitor photographs are never published, including after an
+artifact is confirmed. Only the discovery and its written story may be public.
 Collection-source search and visitor confirmation follow this step. A vision
 hypothesis never creates an archive item or publishes a story.
 

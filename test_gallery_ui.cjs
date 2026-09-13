@@ -189,14 +189,31 @@ test('the photo entry link opens the same consent dialog instead of a form', () 
   assert.equal(page.requests.length, 0);
 });
 
-test('the one-question design declares both processing and publishing and has no questionnaire', () => {
+test('the one-question design identifies privately and saves only discovery and story', () => {
   const html = fs.readFileSync(path.join(__dirname, 'universal-gallery.html'), 'utf8');
   assert.match(html, /id="ugPhotoConsentDialog"/);
   assert.match(html, /send the photo to Anthropic/);
-  assert.match(html, /open the matching artifact.*public page/);
-  assert.match(html, /share the photo and artwork/);
+  assert.match(html, /save the discovery and its story, never publish your photograph/);
+  assert.doesNotMatch(html, /share the photo and artwork|add the photo to its public page/);
   assert.match(html, /No people or private details/);
   assert.doesNotMatch(html, /type="checkbox"|<fieldset/);
+  assert.match(source, /保存发现及其故事，绝不公开你的照片/);
+  assert.doesNotMatch(source, /publication_consent|attachment_token|attachPhoto\(/);
+});
+
+test('stale responses cannot display visitor originals but licensed museum images still render', async () => {
+  const page = setup(); page.type('vessel'); page.runTimers();
+  await page.respond(0, {ok: true, results: [
+    {artifact_id: 'a_museum', title: 'Museum vessel', image: 'https://museum.example/licensed.jpg',
+      community_photos: [{url: 'https://cdn.example/visitor-original.jpg', kind: 'visitor_photo'}]},
+    {artifact_id: 'a_old', title: 'Legacy vessel', image: 'https://example.test/api/gallery/photos/p_private'},
+    {artifact_id: 'a_encoded', title: 'Encoded vessel', image: 'https://example.test/%2561pi%252fgallery%252fphotos/p_private'},
+    {artifact_id: 'a_tagged', title: 'Tagged vessel', source_kind: 'visitor_photo', image: 'https://cdn.example/other-private.jpg'}
+  ]});
+  const html = page.el('ugFound').innerHTML;
+  assert.match(html, /museum\.example\/licensed\.jpg/);
+  assert.doesNotMatch(html, /visitor-original|p_private|other-private|ug-community-photo/);
+  assert.match(html, /Legacy vessel/);
 });
 
 test('canceling either native picker consumes consent so an unrelated file cannot upload later', async () => {
@@ -547,21 +564,17 @@ test('no-engine confirmation keeps an honest pending discovery without a Written
   assert.notEqual(card.children.get('.ug-mark').textContent, 'Provided by us');
 });
 
-test('publication permission uploads the exact photograph only after confirmed attachment token', async () => {
-  const page = setup(); const original = await photo(page); page.el('ugPhotoForm').dispatch('submit');
+test('even a legacy attachment token cannot cause a post-confirmation photograph upload', async () => {
+  const page = setup(); await photo(page); page.el('ugPhotoForm').dispatch('submit');
   await page.respond(0, {ok: true, candidates: [{query: 'Vessel', confidence: 'high'}]});
   await page.respond(1, {ok: true, can_generate: false, results: [{artifact_id: 'a_vessel', title: 'Vessel'}]});
   assert.equal(page.requests.length, 3, 'no photo retained during identification or search');
   const card = cardHost(page); card.click();
   await page.respond(3, {ok: true, saved: true, can_generate: false, attachment_token: 'signed-match', artifact: {artifact_id: 'a_vessel', title: 'Vessel'}, writing_status: 'pending'});
-  assert.equal(page.requests[4].url, '/api/gallery/artifacts/a_vessel/photo');
-  assert.equal(page.requests[4].options.body.fields.photo, original);
-  assert.equal(page.requests[4].options.body.fields.publication_consent, 'gallery-photo-publication-v1');
-  assert.equal(page.requests[4].options.body.fields.attachment_token, 'signed-match');
-  await page.respond(4, {ok: true, photo: {photo_id: 'photo_1', url: '/api/gallery/photos/photo_1', kind: 'visitor_photo'}});
-  assert.equal(card.children.get('.ug-photo-attachment').textContent, '');
-  assert.match(card.host.innerHTML, /Visitor photograph/);
-  assert.match(card.host.innerHTML, /Separate from the museum/);
+  assert.equal(page.requests.length, 4);
+  assert.equal(page.requests.some(request => /\/photo$/.test(request.url)), false);
+  assert.match(card.children.get('.ug-card-status').textContent, /Saved/);
+  assert.equal(card.actions.has('retry-photo'), false);
   page.el('ugPhotoRemove').dispatch('click');
 });
 
@@ -577,23 +590,18 @@ test('removing the photo while opening an artifact is pending prevents publicati
   page.el('ugPhotoRemove').dispatch('click');
 });
 
-test('photo attachment failure leaves the story independent and allows a separate retry', async () => {
+test('confirmation opens the saved story immediately without a photograph publication request', async () => {
   const page = setup(); await photo(page); page.el('ugPhotoForm').dispatch('submit');
   await page.respond(0, {ok: true, candidates: [{query: 'Vessel'}]});
   await page.respond(1, {ok: true, can_generate: true, results: [{artifact_id: 'a_vessel', title: 'Vessel', story_available: true}]});
   const card = cardHost(page); card.click();
   await page.respond(3, {ok: true, saved: true, can_generate: true, attachment_token: 'signed-match', artifact: {artifact_id: 'a_vessel', title: 'Vessel', story_available: true}});
-  assert.match(page.requests[4].url, /\/photo$/);
-  assert.match(page.requests[5].url, /\/story\?lang=en$/);
-  await page.respond(4, {ok: false, reason: 'temporary'}, 503);
-  await page.respond(5, {ok: true, text: 'Saved story remains readable.', lang: 'en'});
+  assert.equal(page.requests.some(request => /\/photo$/.test(request.url)), false);
+  assert.match(page.requests[4].url, /\/story\?lang=en$/);
+  await page.respond(4, {ok: true, text: 'Saved story remains readable.', lang: 'en'});
   assert.equal(card.text.textContent, 'Saved story remains readable.');
-  assert.match(card.children.get('.ug-photo-attachment').textContent, /photo was not added/);
-  card.click(card.actions.get('retry-photo'));
-  assert.match(page.requests[6].url, /\/photo$/);
-  assert.equal(page.requests[6].options.body.fields.attachment_token, 'signed-match');
+  assert.equal(card.actions.has('retry-photo'), false);
   assert.equal(page.requests.filter(request => /\/story\?/.test(request.url)).length, 1);
-  await page.respond(6, {ok: true, photos: [{url: '/api/gallery/photos/photo_2'}]});
   page.el('ugPhotoRemove').dispatch('click');
 });
 

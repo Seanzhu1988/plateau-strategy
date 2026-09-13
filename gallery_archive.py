@@ -9,12 +9,13 @@ import hashlib
 import hmac
 import json
 import os
+import posixpath
 import re
 import secrets
 import sqlite3
 import time
 import unicodedata
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, unquote, urlencode, urlsplit, urlunsplit
 import languages
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -65,7 +66,60 @@ def _url(value):
         return ""
 
 
+def _visitor_photo_url(value):
+    """Recognize retired assets even in absolute/encoded legacy URLs."""
+    if not isinstance(value, str):
+        return False
+    decoded = value
+    for _ in range(3):
+        decoded = unquote(decoded)
+    decoded = decoded.replace("\\", "/").lower()
+    try:
+        decoded = posixpath.normpath(urlsplit(decoded).path)
+    except ValueError:
+        pass
+    return bool(re.search(r"(?:^|/)(?:api/gallery/photos|gallery_photos)(?:/|[?#]|$)", decoded))
+
+
+def public_facts(facts):
+    """Remove visitor pixels from a public copy, never from persisted records.
+
+    Historical attachment fields and aliases cannot reappear via cached search,
+    a signed candidate, or a stale artifact row. Licensed catalogue images stay.
+    """
+    def public_value(value):
+        # Old imports can contain nested aliases rather than the current flat
+        # schema. Omit an explicitly visitor-sourced attachment in any shape.
+        if isinstance(value, dict):
+            if any(normalize(value.get(key)).replace("-", "_").replace(" ", "_")
+                   in ("visitor_photo", "visitor_photograph")
+                   for key in ("kind", "source_kind", "image_kind", "photo_kind")):
+                return None
+            return {key: public_value(item) for key, item in value.items()}
+        if isinstance(value, list):
+            return [clean for clean in (public_value(item) for item in value)
+                    if clean not in (None, "")]
+        return "" if _visitor_photo_url(value) else value
+
+    row = {key: public_value(value) for key, value in facts.items()}
+    for key in ("community_photos", "visitor_photos", "photo_attachments",
+                "visitor_photo", "attachment_token", "publication_consent"):
+        row.pop(key, None)
+    visitor_source = any(normalize(row.get(key)).replace("-", "_").replace(" ", "_")
+                         in ("visitor_photo", "visitor_photograph")
+                         for key in ("source_kind", "image_kind", "photo_kind"))
+    for key in ("image", "image_url", "photo_url", "thumbnail", "thumbnail_url",
+                "source_url", "research_source_url", "audio", "url"):
+        if _visitor_photo_url(row.get(key)) or (visitor_source and key in
+                ("image", "image_url", "photo_url", "thumbnail", "thumbnail_url")):
+            row[key] = ""
+    if "images" in row:
+        row["images"] = [] if visitor_source or not isinstance(row["images"], list) else row["images"]
+    return row
+
+
 def clean_facts(facts):
+    facts = public_facts(facts)
     row = {k: str(facts[k]).replace("<", "").replace(">", "").strip()[:n]
            for k, n in FIELDS.items() if facts.get(k) is not None}
     row["museum"] = row.get("museum") or row.get("source") or ""
@@ -434,7 +488,7 @@ def _artifact(db, artifact_id, lang):
     row = db.execute("SELECT * FROM artifacts WHERE id=?", (artifact_id,)).fetchone()
     if not row:
         return None
-    facts = json.loads(row["facts"])
+    facts = public_facts(json.loads(row["facts"]))
     evidence = _story_research(db, artifact_id, lang)
     facts.pop("historical_context", None)
     if not facts.get("source_url"):
@@ -456,20 +510,12 @@ def _artifact(db, artifact_id, lang):
     story = next((s for s in stories if s["lang"] == lang), None)
     queued = db.execute("SELECT status FROM writing_queue WHERE artifact_id=? AND lang=?",
                         (artifact_id, lang)).fetchone()
-    community_photos = []
-    try:
-        import gallery_photos
-        community_photos = gallery_photos.list_photos(artifact_id)
-    except (ImportError, OSError, sqlite3.Error):
-        # A missing optional photo module or unavailable image store must not
-        # prevent visitors from reading the original catalogue and its story.
-        pass
     return dict(facts, artifact_id=artifact_id, first_discovered_at=row["first_seen"],
                 last_seen_at=row["last_seen"], discovery_status="remembered", new_discovery=False,
                 written=bool(story), story_available=bool(story), has_narrative=bool(story),
                 story_languages=[s["lang"] for s in stories],
                 writing_status="complete" if story else (queued[0] if queued else "not_queued"),
-                community_photos=community_photos,
+                community_photos=[],
                 story_url="/api/gallery/artifacts/%s/story?lang=%s" % (artifact_id, lang) if story else None,
                 artifact_url="/universal-gallery/artifacts/" + artifact_id,
                 provenance=provenance(story) if story else None, research_source=evidence,
@@ -490,7 +536,7 @@ def get_story(artifact_id, lang="en"):
         story = db.execute("SELECT * FROM stories WHERE artifact_id=? AND lang=?", (artifact_id, lang)).fetchone()
         if not story:
             return None
-        facts = json.loads(db.execute("SELECT facts FROM artifacts WHERE id=?", (artifact_id,)).fetchone()[0])
+        facts = public_facts(json.loads(db.execute("SELECT facts FROM artifacts WHERE id=?", (artifact_id,)).fetchone()[0]))
         return {"artifact_id": artifact_id, "lang": lang, "text": story["text"],
                 "minutes": story["minutes"], "cached": True, "provenance": provenance(story),
                 "audio": facts.get("audio") if story["kind"] == "editorial" and lang == "en" else None,
