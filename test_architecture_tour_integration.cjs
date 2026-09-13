@@ -93,11 +93,11 @@ test('Boston stop IDs preserve walking order and distinguish the two State House
   assert.equal(trailKeys[2], 'state-house'); assert.equal(trailKeys[9], 'old-state-house');
   assert.equal(trailKeys[3], 'park-street'); assert.equal(trailKeys[15], 'constitution');
 });
-test('actual stop rows expose the new model, leaving the original photo carousel intact', () => {
+test('actual stop rows expose the model and an independent reusable photo slideshow', () => {
   assert.match(trail, /class="ft-model-open i18n-skip" data-ft-model=/);
   assert.match(trail, /class="ft-stop-model-host" id="ftStopModel_/);
-  assert.match(trail, /pic\(s\.photos\[0\], 560\)/);
-  assert.match(trail, /wireMiniShows\(\)/);
+  assert.match(trail, /class="ft-stop-photos i18n-skip" data-stop=/);
+  assert.match(trail, /module\.mountStopSlideshow\(host, module\.stopPhotosFor\(stop\)/);
   assert.match(trail, /selected\(\)\.forEach\(function \(s\) \{ var seg = recording\(s\.n\)/);
   assert.match(trail, /audioLang === 'zh' \? '查看立体建筑与故事'/);
   assert.match(trail, /CustomEvent\('ft:stops-rendered', \{ detail: \{ language: audioLang \} \}\)/);

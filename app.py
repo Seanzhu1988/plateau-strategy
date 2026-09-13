@@ -311,6 +311,8 @@ app.register_blueprint(gallery_identify_bp)
 app.register_blueprint(gallery_photos_bp)
 from architecture_routes import create_architecture_blueprint
 app.register_blueprint(create_architecture_blueprint(BASE_DIR))
+from tour_directory_routes import create_tour_directory_blueprint
+app.register_blueprint(create_tour_directory_blueprint(BASE_DIR))
 
 
 # ---------- owner authentication (protects the dispatch control center) ----------
@@ -2967,6 +2969,14 @@ def trip_planner_page():
 
 @app.route("/tours")
 def tours_page():
+    """City-first directory of the existing self-guided walks."""
+    response = send_file(os.path.join(BASE_DIR, "tour-directory.html"))
+    response.headers['Cache-Control'] = 'no-store'
+    return response
+
+
+@app.route("/tours/seattle")
+def seattle_tours_page():
     """Licensed Seattle walking tours: cruise-terminal, downtown, and private."""
     return send_file(os.path.join(BASE_DIR, "tours.html"))
 
@@ -3387,6 +3397,7 @@ PUBLIC_PAGES = [
     # a social post. For a licensed guide whose tours are the product, that
     # is the front door bricked up. [SEAN 2026-09-05: "check all of them".]
     ("/tours", "0.9", "weekly"),
+    ("/tours/seattle", "0.9", "weekly"),
     # THE SAME GAP, FOUND A THIRD TIME AND THEN CLOSED FOR GOOD.
     # [SEAN 2026-09-09: "mets museum had pages missing can you check that too".]
     # He was right, and it was not only the Met: ten pages answered 200, carried
@@ -3740,7 +3751,8 @@ SITE_MAP = [
          "Who stands behind the company."),
     ]),
     ("Ride with us", "Licensed, insured, and driven by a licensed guide.", [
-        ("/tours", "Walking Tours", "Seattle on foot with a licensed guide."),
+        ("/tours/seattle", "Guided Seattle tours", "Seattle on foot with a licensed guide."),
+        ("/tours", "Explore tours by city", "Self-guided walks, destination photographs and landmark stories."),
         ("/book", "Book a Ride", "Airport runs, tours, and long distance."),
         ("/rent-a-tesla", "Rent a Tesla", "The car, the rates and the rules."),
         ("/driver", "For Drivers", "Drive with us."),

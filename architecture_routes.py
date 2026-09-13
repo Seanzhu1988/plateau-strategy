@@ -19,7 +19,11 @@ THREE_FILES = {'three.module.min.js', 'three.core.min.js', 'OrbitControls.js', '
 
 def model_catalog(base_dir):
     with open(Path(base_dir, 'trails.json'), encoding='utf-8') as stream:
-        trails = json.load(stream)['trails']
+        seed = json.load(stream)
+    # The same public-safe, exact-stop photographs as the deployed tours.
+    # Raw private research references are never embedded in the viewer page.
+    from tour_photos import read_photo_manifest, with_stop_photos
+    trails = with_stop_photos(seed, read_photo_manifest(base_dir))['trails']
     stops = {stop['n']: stop for tour in trails if tour['id'] == 'freedom-trail'
              for stop in tour['stops']}
     result = {}
@@ -31,7 +35,10 @@ def model_catalog(base_dir):
         source = photo
         if 'commons.wikimedia.org/wiki/Special:FilePath/' in photo:
             source = photo.replace('/wiki/Special:FilePath/', '/wiki/File:').split('?')[0]
-        result[key] = {'name': stop['name'], 'photos': photos, 'photoSource': source,
+        detail = (stop.get('photo_details') or [{}])[0]
+        result[key] = {'name': stop['name'], 'photos': photos,
+                       'photoSource': detail.get('sourceUrl') or source,
+                       'photoCredit': ', '.join(filter(None, [detail.get('credit'), detail.get('license')])),
                        'destinationHref': '/freedom-trail#ft-stop-' + str(number), 'stop': number}
     # A real destination photograph, released into the public domain by its
     # creator Marco Almbauer. Keep the file-description page as the credit.
