@@ -82,4 +82,6 @@ test('public page uses public feeds, no private preview, rights notes, autoplay 
   assert.match(html,/href="\/tours\/seattle">Guided Seattle tours/);
   assert.match(script,/seattleAnchors/);assert.match(script,/location\.replace\('\/tours\/seattle'/);
   assert.match(read('landing-page.html'),/href="\/tours">Explore tours by city/);
+  assert.match(read('landing-page.html'), /aria-disabled="true">iTicket<\/span>\s*<a class="psx-btn psx-btn-ghost" href="\/tours">Explore tours by city<\/a>/);
+  assert.equal((read('landing-page.html').match(/Explore tours by city/g) || []).length, 1);
 });
