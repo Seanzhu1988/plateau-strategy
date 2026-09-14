@@ -1,24 +1,7 @@
 {
  "year": 2026,
- "week": 37,
+ "week": 38,
  "posts": [
-  {
-   "id": "trail-honest-en",
-   "lang": "en",
-   "pain": "the walk feels too big",
-   "page": "/freedom-trail",
-   "channels": [
-    "facebook",
-    "instagram"
-   ],
-   "text": "Boston's Freedom Trail is sixteen stops, and most visitors quit halfway because nobody tells them how long it really takes. We measured it: 44 minutes of actual walking. Every stop has its own five minute audio guide. Take all sixteen or the downtown half, your choice, free.",
-   "tags": "#Boston #FreedomTrail #travelUSA",
-   "visual": "Screenshot of the trail page with the bronze medallion and the pick row.",
-   "links": {
-    "facebook": "https://plateaustrategy.io/freedom-trail?utm_source=facebook",
-    "instagram": "https://plateaustrategy.io/freedom-trail?utm_source=instagram"
-   }
-  },
   {
    "id": "planner-en",
    "lang": "en",
@@ -37,20 +20,20 @@
    }
   },
   {
-   "id": "ug-zh",
-   "lang": "zh",
-   "pain": "博物馆标签看不懂",
-   "page": "/universal-gallery",
+   "id": "moma-en",
+   "lang": "en",
+   "pain": "museum day, no plan",
+   "page": "/moma",
    "channels": [
-    "xiaohongshu",
-    "wechat"
+    "facebook",
+    "instagram"
    ],
-   "text": "在美国逛博物馆,标签全是英文看不懂?记住这个免费网页:把标签上的小编号直接输进去,马上告诉你这件作品是什么、谁做的、现在挂在几号展厅。大都会、MoMA、芝加哥艺术博物馆都能查,还能看博物馆官方的高清图。不用注册。",
-   "tags": "#纽约旅游 #大都会博物馆 #MoMA #美国旅行攻略",
-   "visual": "截图:输入472.1941查出星夜的那一屏。",
+   "text": "MoMA is three floors of the last 140 years of art, and The Starry Night has a crowd at any hour. Our free footprint guide walks you floor by floor, room by room, checked every week against the museum's own collection data, so it never sends you to a painting that moved.",
+   "tags": "#MoMA #NYCart #StarryNight",
+   "visual": "Screenshot of the /moma sheet with rooms picked.",
    "links": {
-    "xiaohongshu": "https://plateaustrategy.io/universal-gallery?utm_source=xiaohongshu",
-    "wechat": "https://plateaustrategy.io/universal-gallery?utm_source=wechat"
+    "facebook": "https://plateaustrategy.io/moma?utm_source=facebook",
+    "instagram": "https://plateaustrategy.io/moma?utm_source=instagram"
    }
   },
   {
@@ -68,6 +51,23 @@
    "links": {
     "xiaohongshu": "https://plateaustrategy.io/met?utm_source=xiaohongshu",
     "wechat": "https://plateaustrategy.io/met?utm_source=wechat"
+   }
+  },
+  {
+   "id": "trail-zh",
+   "lang": "zh",
+   "pain": "父母听不懂英文讲解",
+   "page": "/freedom-trail",
+   "channels": [
+    "xiaohongshu",
+    "wechat"
+   ],
+   "text": "波士顿自由之路,全程中文语音讲解来了。16个景点,每个都有5分钟的深度讲解,是地道的普通话配音,不是那种机器翻译腔。全程走路其实只要44分钟,可以走全程,也可以只走市中心一半。免费,不用下载App,打开网页就能听。带爸妈来玩的,先收藏。",
+   "tags": "#波士顿旅游 #自由之路 #美国东部 #带父母旅行 #博物馆",
+   "visual": "小红书首图用步道铜牌照片,第二张放中文讲解播放界面截图。",
+   "links": {
+    "xiaohongshu": "https://plateaustrategy.io/freedom-trail?utm_source=xiaohongshu",
+    "wechat": "https://plateaustrategy.io/freedom-trail?utm_source=wechat"
    }
   },
   {
@@ -105,50 +105,35 @@
    }
   },
   {
-   "id": "rednote-planner",
+   "id": "rednote-langs",
    "lang": "zh",
-   "pain": "自由行一天路线排不好",
-   "page": "/trip-planner",
+   "pain": "一家人语言不一样,一份讲解只顾得上一个人",
+   "page": "/freedom-trail",
    "channels": [
     "rednote"
    ],
-   "title": "在美国玩一天 怎么排才不白跑?",
-   "text": "在纽约或者华盛顿玩一天,最怕排了半天路线,到地方发现关门了,或者全堵在路上。\n\n这个免费网页帮你排:把想去的地方放进去,它会按开车时间、路况和每个地方的关门时间,自动帮你把顺序排顺。\n\n不合理的行程,在你出门前就被拦下来了,不用等吃了闭门羹才知道。\n\n自由行的先收藏📌",
-   "tags": "#纽约自由行 #美国旅游攻略 #行程规划 #华盛顿 #自由行",
-   "visual": "首图放规划器上亮和灭的路线截图。",
+   "title": "一个网站六种语言｜全家各听各的",
+   "text": "在美国带一家人玩,常常语言对不上:爸妈只听得懂中文,自己习惯看英文,同行的朋友可能又是别的语言。一份讲解只能照顾一个人,别人干站着。\n\n分享一个免费网页,同一条路线、同一件作品,讲解可以切成六种语言:中文、英文、西班牙语、韩语、越南语、日语。谁点开都是自己的母语。\n\n比如波士顿自由之路,爸妈用中文听,你自己用英文,一部手机轮着来,谁都不落下。中文是地道真人配音,不是机器翻译腔。\n\n手机打开就能用,不用下载 App,也不用注册。带不同的人出门都用得上,先收藏📌",
+   "tags": "#美国旅游 #带父母旅行 #留学生 #自由之路 #中文讲解 #多语言",
+   "visual": "首图放语言切换的那一排按钮(六种语言);第二张放中文讲解正在播放的界面。",
    "links": {
-    "rednote": "https://plateaustrategy.io/trip-planner?utm_source=rednote"
+    "rednote": "https://plateaustrategy.io/freedom-trail?utm_source=rednote"
    }
   },
   {
-   "id": "rednote-roundup",
+   "id": "rednote-ug-reading",
    "lang": "zh",
-   "pain": "在美国旅游需要一份免费工具合集",
+   "pain": "看不懂的作品也想听讲解",
    "page": "/universal-gallery",
    "channels": [
     "rednote"
    ],
-   "title": "在美国旅游 必存的免费网站合集",
-   "text": "整理了几个在美国旅游一直在用的免费网页,都不用下载 App,网页打开就能用,先收藏:\n\n1 博物馆标签看不懂:输标签编号,中文告诉你这是什么、谁做的、在几号厅。\n\n2 博物馆里迷路:选好展厅,脚印地图一间一间带你走,时间是真人量的。\n\n3 一天怎么排:放进想去的地方,自动按路况和关门时间排顺。\n\n4 波士顿自由之路:16 个景点全程中文语音讲解。\n\n全部免费,中文界面。出发前先存起来📌",
-   "tags": "#美国旅游攻略 #纽约旅游 #免费好用 #旅行必备 #博物馆打卡",
-   "visual": "首图用大字封面 在美国旅游必存的免费网站,可以放四宫格拼图。",
+   "title": "看展神器｜对着任何一幅画都能听讲解",
+   "text": "在美国逛博物馆,很多画连标签都是英文,看得一头雾水。\n\n分享一个一直在用的免费网页。它不只是帮你查资料,是真的现场给你写一段讲解。\n\n比如站在 MoMA 的星夜前面,把标签上的编号 472.1941 输进去,它就用中文讲给你听:先看整幅画的尺寸,其实比你想的小很多;再走近看笔触,全是一道道厚厚的颜料;然后退后几步,那片天空就开始转起来了。\n\n重点是不只是名画。你在任何一家博物馆,对着任何一件看不懂的作品,它都能现场写一段给你,用你自己的语言。\n\n大都会 MoMA 芝加哥艺术博物馆都能用,不用下载 App,也不用注册。看展前先收藏一下📌",
+   "tags": "#纽约旅游 #看展攻略 #MoMA #星夜 #博物馆打卡 #美国旅行",
+   "visual": "首图放输入 472.1941 查出星夜、下面生成中文讲解的那一屏;第二张放讲解正在播放的截图。也可以用 media/universal-gallery-film.mp4 的封面。",
    "links": {
     "rednote": "https://plateaustrategy.io/universal-gallery?utm_source=rednote"
-   }
-  },
-  {
-   "id": "x-met",
-   "lang": "en",
-   "pain": "lost inside the museum",
-   "page": "/met",
-   "channels": [
-    "x"
-   ],
-   "text": "Your phone map goes grey the moment you step inside the Met. Ours does not. Pick the rooms you want and footprints walk you room to room, with times measured on foot by a person. Free.",
-   "tags": "#TheMet #NYC",
-   "visual": "Screenshot of the Met footprint sheet with a route drawn.",
-   "links": {
-    "x": "https://plateaustrategy.io/met?utm_source=x"
    }
   },
   {
@@ -179,6 +164,21 @@
    "visual": "Screenshot of the planner with a lit and dimmed route.",
    "links": {
     "x": "https://plateaustrategy.io/trip-planner?utm_source=x"
+   }
+  },
+  {
+   "id": "x-ug-label",
+   "lang": "en",
+   "pain": "cannot read the label",
+   "page": "/universal-gallery",
+   "channels": [
+    "x"
+   ],
+   "text": "Standing in a museum, staring at a label you cannot read? Type the number on it into our free Universal Gallery: what it is, who made it, where it hangs, in your language. No app, no account.",
+   "tags": "#travel #museums",
+   "visual": "The Universal Gallery film, or a screenshot of a result.",
+   "links": {
+    "x": "https://plateaustrategy.io/universal-gallery?utm_source=x"
    }
   }
  ]
