@@ -3854,3 +3854,99 @@ EXTRA.update({
     "Gaggin & Gaggin of Syracuse, opened the 4th of July 1914, at Second Avenue and Yesler Way. It stands in Pioneer Square, so unlike the Needle it is on the walking tours above.": [
         "锡拉丘兹的 Gaggin & Gaggin 事务所设计，1914 年 7 月 4 日启用，位于第二大道与耶斯勒路口。它坐落在先锋广场，因此与太空针塔不同，上面那些步行导览会走到它。", "Obra de Gaggin & Gaggin, de Syracuse, inaugurada el 4 de julio de 1914, en la Segunda Avenida con Yesler Way. Está en Pioneer Square, así que, a diferencia de la Needle, sí aparece en los recorridos a pie de arriba.", "시러큐스의 Gaggin & Gaggin 설계로 1914년 7월 4일 문을 열었으며, 2번가와 예슬러 웨이가 만나는 곳에 있습니다. 파이어니어 스퀘어에 있어서 스페이스 니들과 달리 위의 도보 투어에 포함됩니다.", "Do Gaggin & Gaggin ở Syracuse thiết kế, khánh thành ngày 4 tháng 7 năm 1914, tại góc Second Avenue và Yesler Way. Tòa nhà nằm ở Pioneer Square nên khác với Space Needle, nó có trong các tour đi bộ ở trên."],
 })
+
+# ---- visitor lines: freedom-trail audio, universal-gallery, landmarks Peace Fountain + WTC, tours link ----
+EXTRA.update({
+    "Play my whole route": [
+        "播放整段行程", "Reproducir toda mi ruta", "내 경로 전체 재생", "Phát toàn bộ lộ trình của tôi"],
+    "Introduction only": [
+        "只听行程介绍", "Solo la introducción", "소개만 듣기", "Chỉ nghe phần giới thiệu"],
+    "Previous": [
+        "上一站", "Anterior", "이전", "Trước"],
+    "Written by us artifact archives": [
+        "我们撰写的藏品故事档案", "Archivo de piezas escrito por nosotros", "우리가 직접 쓴 소장품 아카이브", "Kho lưu trữ hiện vật do chúng tôi viết"],
+    "Collection records belong to their museums. Our stories are separately credited, with AI assistance identified where used.": [
+        "馆藏记录归各自的博物馆所有。我们的故事单独署名，凡用到 AI 协助的地方都会注明。", "Los registros de las colecciones pertenecen a sus museos. Nuestras historias llevan su propio crédito, e indicamos dónde se usó asistencia de IA.", "소장품 기록은 각 박물관의 것입니다. 저희 이야기는 따로 출처를 밝히며, AI의 도움을 받은 곳은 그렇다고 표시합니다.", "Hồ sơ hiện vật thuộc về các bảo tàng sở hữu chúng. Câu chuyện của chúng tôi được ghi nguồn riêng, và chỗ nào có dùng AI hỗ trợ đều được ghi rõ."],
+    "Explore tours by city": [
+        "按城市浏览导览", "Explorar recorridos por ciudad", "도시별 투어 둘러보기", "Khám phá tour theo thành phố"],
+    "New York City 3D models · Bridge, Empire State and St John the Divine": [
+        "纽约市 3D 模型 · 大桥、帝国大厦与 St John the Divine", "Modelos 3D de Nueva York · el puente, el Empire State y St John the Divine", "뉴욕시 3D 모델 · 다리, 엠파이어 스테이트, St John the Divine", "Mô hình 3D thành phố New York · Cây cầu, Empire State và St John the Divine"],
+    "Explore New York landmarks from more than one angle, with stories to help you notice what matters when you visit. The 3D views are architectural reconstructions, and the Peace Fountain is shown in a photograph.": [
+        "从不止一个角度探索纽约地标，并配上故事，帮您在参观时留意真正值得看的地方。3D 视图是建筑复原模型，和平喷泉则以照片呈现。", "Explora los monumentos de Nueva York desde más de un ángulo, con historias que te ayudan a fijarte en lo que importa cuando los visites. Las vistas 3D son reconstrucciones arquitectónicas, y la Fuente de la Paz se muestra en una fotografía.", "뉴욕의 랜드마크를 여러 각도에서 살펴보고, 방문할 때 무엇을 눈여겨봐야 할지 알려 주는 이야기도 함께 읽어 보세요. 3D 보기는 건축 복원 모델이며, 평화의 샘은 사진으로 보여 드립니다.", "Khám phá các địa danh New York từ nhiều góc nhìn, kèm những câu chuyện giúp bạn nhận ra điều đáng chú ý khi đến thăm. Các góc nhìn 3D là mô hình dựng lại kiến trúc, còn Đài phun nước Hòa bình được giới thiệu bằng ảnh chụp."],
+    "One World Trade Center and the 9/11 Memorial": [
+        "世贸中心一号楼与 9/11 纪念园", "One World Trade Center y el Memorial del 9/11", "원 월드 트레이드 센터와 9/11 메모리얼", "One World Trade Center và Đài tưởng niệm 9/11"],
+    "Turn the glass tower, then move closer to the two memorial pools and the spaces they preserve.": [
+        "转动这座玻璃塔楼，再靠近两座纪念水池，看看它们守护着的空间。", "Gira la torre de cristal y luego acércate a los dos estanques del memorial y a los espacios que conservan.", "유리 타워를 돌려 본 뒤, 두 개의 추모 연못과 그것이 간직한 공간으로 가까이 다가가 보세요.", "Xoay tòa tháp kính, rồi tiến lại gần hai hồ tưởng niệm và những khoảng không mà chúng lưu giữ."],
+    "Explore the tower and memorial in 3D": [
+        "以 3D 探索塔楼与纪念园", "Explora la torre y el memorial en 3D", "타워와 메모리얼을 3D로 둘러보기", "Khám phá tòa tháp và đài tưởng niệm dạng 3D"],
+    "Rafael Guastavino Jr. laid a tile dome over the crossing in 1909 in fifteen weeks, without scaffolding underneath it, to cover the space until the great steeple could be raised. The steeple was never raised. The tile shell is still there; a bronze-hued, batten-seam copper enclosure completed in 2022 now protects it from water.": [
+        "1909 年，Rafael Guastavino Jr. 用十五周在十字交叉部上方砌起一座瓷砖穹顶，下方没有搭脚手架，只为在大尖塔建起之前把空间遮住。那座尖塔从未建起。瓷砖壳体至今仍在；2022 年完工的一层青铜色、压条接缝的铜质外罩，如今为它挡住雨水。", "Rafael Guastavino Jr. levantó en 1909 una cúpula de rasilla sobre el crucero en quince semanas, sin cimbra debajo, para cubrir el espacio hasta que pudiera alzarse la gran aguja. La aguja nunca se alzó. La cáscara de rasilla sigue ahí; una envoltura de cobre de tono bronce con juntas de listón, terminada en 2022, la protege ahora del agua.", "Rafael Guastavino Jr.는 1909년 열다섯 주 만에 교차부 위에 타일 돔을 올렸습니다. 아래에 비계도 없이, 거대한 첨탑이 올라갈 때까지 공간을 덮어 두려는 것이었습니다. 첨탑은 끝내 올라가지 않았습니다. 타일 껍질은 아직 그대로 있고, 2022년에 완공된 청동빛의 바텐심 구리 외피가 이제 물로부터 그것을 지켜 줍니다.", "Năm 1909, Rafael Guastavino Jr. xây một mái vòm gạch men trên phần giao trong mười lăm tuần, bên dưới không hề có giàn giáo, để che khoảng không cho tới khi dựng được ngọn tháp lớn. Ngọn tháp ấy không bao giờ được dựng. Lớp vỏ gạch men vẫn còn đó; một lớp bọc bằng đồng ánh màu đồng thiếc, ghép mí kiểu nẹp, hoàn thành năm 2022, nay giữ cho nó khỏi bị nước thấm."],
+    "Photograph of the monument": [
+        "纪念雕塑实景照片", "Fotografía del monumento", "기념물 사진", "Ảnh chụp tượng đài"],
+    "Peace Fountain, a closer look": [
+        "细看和平喷泉", "La Fuente de la Paz, de cerca", "평화의 샘, 가까이서 보기", "Đài phun nước Hòa bình, nhìn gần hơn"],
+    "Greg Wyatt created this bronze monument in 1985 for the 200th anniversary of the Episcopal Diocese of New York. It was dedicated to children's creativity, an idea that continues in the small bronze animals made by young artists around it.": [
+        "Greg Wyatt 于 1985 年创作了这座青铜纪念雕塑，纪念纽约圣公会教区成立 200 周年。作品献给儿童的创造力，周围那些由年轻艺术家创作的小型青铜动物，也延续着这个想法。", "Greg Wyatt creó este monumento de bronce en 1985 para el 200 aniversario de la Diócesis Episcopal de Nueva York. Está dedicado a la creatividad de los niños, una idea que continúa en los pequeños animales de bronce que lo rodean, hechos por jóvenes artistas.", "Greg Wyatt는 1985년 뉴욕 성공회 교구 설립 200주년을 기념해 이 청동 기념물을 만들었습니다. 아이들의 창의성에 바친 작품으로, 그 뜻은 주변에 놓인, 어린 작가들이 만든 작은 청동 동물들로 이어지고 있습니다.", "Greg Wyatt tạo nên tượng đài bằng đồng này năm 1985 nhân kỷ niệm 200 năm Giáo phận Episcopal New York. Tác phẩm được dành tặng cho sự sáng tạo của trẻ em, một ý tưởng còn tiếp nối trong những con thú nhỏ bằng đồng do các nghệ sĩ trẻ làm, đặt xung quanh."],
+    "Start with the winged Archangel Michael, then look for the giraffes, the sun and moon, and the twisting pedestal shaped like DNA. Wyatt brings these forms together as a story of life, conflict and peace. Walk around the sculpture to see how its figures connect.": [
+        "先看展开双翼的 Archangel Michael，再寻找长颈鹿、太阳与月亮，以及扭转成 DNA 形状的底座。Wyatt 把这些形象汇成一个关于生命、冲突与和平的故事。绕着雕塑走一圈，看看这些人物形象如何彼此相连。", "Empieza por el Archangel Michael alado, luego busca las jirafas, el sol y la luna, y el pedestal retorcido con forma de ADN. Wyatt reúne estas formas en una historia de vida, conflicto y paz. Rodea la escultura para ver cómo se conectan sus figuras.", "날개 달린 Archangel Michael부터 보고, 기린들, 해와 달, 그리고 DNA 모양으로 꼬인 받침대를 찾아보세요. Wyatt는 이 형상들을 삶과 갈등과 평화의 이야기로 엮어 냅니다. 조각 주위를 한 바퀴 돌며 형상들이 어떻게 이어지는지 보세요.", "Hãy bắt đầu với Archangel Michael có đôi cánh, rồi tìm những con hươu cao cổ, mặt trời và mặt trăng, cùng chiếc bệ xoắn có hình DNA. Wyatt kết hợp những hình khối này thành một câu chuyện về sự sống, xung đột và hòa bình. Hãy đi vòng quanh tác phẩm để thấy các hình tượng kết nối với nhau thế nào."],
+    "Greg Wyatt · bronze · 1985 · 40 ft": [
+        "Greg Wyatt · 青铜 · 1985 · 40 ft", "Greg Wyatt · bronce · 1985 · 40 ft", "Greg Wyatt · 청동 · 1985 · 40 ft", "Greg Wyatt · đồng · 1985 · 40 ft"],
+    "Photo: Jay Dobkin, 2019 ·": [
+        "照片：Jay Dobkin, 2019 ·", "Foto: Jay Dobkin, 2019 ·", "사진: Jay Dobkin, 2019 ·", "Ảnh: Jay Dobkin, 2019 ·"],
+    "Wikimedia Commons, CC BY-SA 4.0": [
+        "Wikimedia Commons, CC BY-SA 4.0", "Wikimedia Commons, CC BY-SA 4.0", "Wikimedia Commons, CC BY-SA 4.0", "Wikimedia Commons, CC BY-SA 4.0"],
+    "Greg Wyatt": [
+        "Greg Wyatt", "Greg Wyatt", "Greg Wyatt", "Greg Wyatt"],
+    "Cathedral, Animals of Freedom": [
+        "大教堂，Animals of Freedom", "Catedral, Animals of Freedom", "대성당, Animals of Freedom", "Nhà thờ chính tòa, Animals of Freedom"],
+    "Universal Gallery · Plateau Strategy": [
+        "Universal Gallery · Plateau Strategy", "Universal Gallery · Plateau Strategy", "Universal Gallery · Plateau Strategy", "Universal Gallery · Plateau Strategy"],
+    "Skip to search": [
+        "跳到搜索", "Saltar a la búsqueda", "검색으로 건너뛰기", "Bỏ qua tới tìm kiếm"],
+    "Art, objects and the stories they carry": [
+        "艺术、文物，以及它们承载的故事", "El arte, los objetos y las historias que guardan", "예술, 사물, 그리고 그 안에 담긴 이야기", "Nghệ thuật, đồ vật và những câu chuyện chúng mang theo"],
+    "Tap any object to read its story. If it is new to us, we’ll write and save its own story for the next visitor.": [
+        "点击任意藏品即可阅读它的故事。如果是我们还没收录的，我们会为这件藏品撰写并保存属于它自己的故事，留给下一位访客。", "Toca cualquier objeto para leer su historia. Si es nuevo para nosotros, escribiremos y guardaremos su propia historia para el próximo visitante.", "아무 작품이나 눌러 이야기를 읽어 보세요. 저희가 처음 보는 작품이라면, 그 작품만의 이야기를 써서 다음 방문객을 위해 저장해 둘게요.", "Chạm vào bất kỳ hiện vật nào để đọc câu chuyện của nó. Nếu đó là hiện vật mới với chúng tôi, chúng tôi sẽ viết và lưu lại câu chuyện riêng của nó cho vị khách tiếp theo."],
+    "Artwork, artist or label number": [
+        "作品、艺术家或藏品编号", "Obra, artista o número de la cartela", "작품, 작가 또는 라벨 번호", "Tác phẩm, nghệ sĩ hoặc số trên nhãn"],
+    "Try Cypresses or 49.30": [
+        "例如 Cypresses 或 49.30", "Prueba con Cypresses o 49.30", "Cypresses 또는 49.30으로 찾아보세요", "Thử Cypresses hoặc 49.30"],
+    "The number on the museum label is often the closest match.": [
+        "博物馆标签上的藏品编号通常能找到最准确的结果。", "El número de la cartela del museo suele dar la coincidencia más exacta.", "박물관 라벨에 적힌 번호로 찾으면 가장 정확한 경우가 많아요.", "Số trên nhãn của bảo tàng thường cho kết quả khớp nhất."],
+    "Search with a photograph": [
+        "用照片搜索", "Buscar con una fotografía", "사진으로 검색", "Tìm bằng ảnh chụp"],
+    "Choose a photo": [
+        "选择照片", "Elegir una foto", "사진 선택", "Chọn ảnh"],
+    "Identify this artwork?": [
+        "要识别这件藏品吗？", "¿Identificar esta obra?", "이 작품을 식별할까요?", "Nhận diện tác phẩm này?"],
+    "We’ll send the photo to Anthropic to identify the artwork. We save the discovery and its story, never publish your photograph.": [
+        "我们会把照片发送给 Anthropic 来识别这件作品。我们保存的是这项发现和它的故事，绝不公开您的照片。", "Enviaremos la foto a Anthropic para identificar la obra. Guardamos el hallazgo y su historia, y nunca publicamos tu fotografía.", "작품을 식별하기 위해 사진을 Anthropic에 보냅니다. 저희는 발견한 내용과 그 이야기를 저장할 뿐, 보내 주신 사진은 절대 공개하지 않습니다.", "Chúng tôi sẽ gửi ảnh tới Anthropic để nhận diện tác phẩm. Chúng tôi lưu lại phát hiện và câu chuyện của nó, không bao giờ công khai ảnh của bạn."],
+    "Photo metadata is removed. No people or private details, please.": [
+        "照片元数据会被移除。请勿拍到人物或私人信息。", "Se eliminan los metadatos de la foto. Por favor, sin personas ni datos privados.", "사진 메타데이터는 삭제됩니다. 사람이나 개인 정보는 담지 말아 주세요.", "Siêu dữ liệu của ảnh sẽ được xóa. Vui lòng không chụp người hoặc thông tin riêng tư."],
+    "Yes, continue": [
+        "好的，继续", "Sí, continuar", "네, 계속", "Có, tiếp tục"],
+    "Your photograph": [
+        "您的照片", "Tu fotografía", "내 사진", "Ảnh của bạn"],
+    "Take a photo and explore the collection results.": [
+        "拍张照片，浏览相关馆藏结果。", "Toma una foto y explora los resultados de la colección.", "사진을 찍고 소장품 검색 결과를 살펴보세요.", "Chụp một tấm ảnh và khám phá kết quả trong bộ sưu tập."],
+    "Take a photograph": [
+        "拍摄照片", "Tomar una fotografía", "사진 찍기", "Chụp ảnh"],
+    "Remove photograph": [
+        "移除照片", "Quitar la fotografía", "사진 삭제", "Xóa ảnh"],
+    "Try photo search again": [
+        "重试照片搜索", "Volver a intentar la búsqueda por foto", "사진 검색 다시 시도", "Thử tìm bằng ảnh lần nữa"],
+    "Use text search instead": [
+        "改用文字搜索", "Usar la búsqueda por texto", "텍스트 검색으로 찾기", "Dùng tìm kiếm bằng chữ"],
+    "No matching object yet": [
+        "暂未找到匹配的藏品", "Aún no hay ningún objeto que coincida", "아직 일치하는 작품이 없습니다", "Chưa có hiện vật nào khớp"],
+    "Try the title or accession number exactly as it appears on the label. A photograph of the label can help when the name is difficult to read.": [
+        "请按标签上的原样输入作品名或藏品编号。名称难以辨认时，拍一张标签的照片会有帮助。", "Prueba con el título o el número de inventario tal como aparece en la cartela. Una fotografía de la cartela puede ayudar cuando el nombre es difícil de leer.", "라벨에 적힌 그대로 제목이나 소장 번호를 입력해 보세요. 이름을 읽기 어려울 때는 라벨 사진이 도움이 될 수 있습니다.", "Hãy thử nhập tên tác phẩm hoặc số đăng ký đúng như trên nhãn. Nếu tên khó đọc, một tấm ảnh chụp nhãn có thể giúp ích."],
+    "Not found? Save for research": [
+        "没找到？保存供研究", "¿No aparece? Guardar para investigar", "못 찾으셨나요? 조사용으로 저장", "Không tìm thấy? Lưu lại để tra cứu"],
+    "Our stories stay with the objects. When you find an artwork we have written about, look for “Provided by us” beside it.": [
+        "我们的故事与藏品相连。找到我们撰写过的作品时，请留意它旁边的“由我们提供”。", "Nuestras historias acompañan a los objetos. Cuando encuentres una obra sobre la que hemos escrito, busca “Aportado por nosotros” a su lado.", "저희 이야기는 작품과 함께 있습니다. 저희가 글을 쓴 작품을 찾으면, 옆에 있는 “저희가 제공”을 찾아보세요.", "Câu chuyện của chúng tôi luôn đi cùng hiện vật. Khi bạn tìm thấy một tác phẩm chúng tôi đã viết về, hãy tìm dòng “Do chúng tôi cung cấp” bên cạnh."],
+    "Newly discovered objects help our collection grow. The archive has its own quiet home, ready when you want it.": [
+        "新发现的藏品让我们的收藏不断成长。档案有自己安静的角落，您想看的时候随时都在。", "Los objetos recién descubiertos hacen crecer nuestra colección. El archivo tiene su propio rincón tranquilo, listo para cuando lo quieras.", "새로 발견된 작품들이 저희 컬렉션을 키워 갑니다. 아카이브는 따로 조용한 자리에 마련되어 있어, 원할 때 언제든 볼 수 있어요.", "Những hiện vật mới được phát hiện giúp bộ sưu tập của chúng tôi lớn dần. Kho lưu trữ có một góc yên tĩnh riêng, sẵn sàng khi bạn muốn xem."],
+    "Explore our museum guides": [
+        "浏览我们的博物馆导览", "Explora nuestras guías de museos", "박물관 가이드 둘러보기", "Khám phá các hướng dẫn bảo tàng của chúng tôi"],
+})
