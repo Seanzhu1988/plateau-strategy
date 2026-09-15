@@ -79,7 +79,7 @@ test('public page uses public feeds, no private preview, rights notes, autoplay 
   assert.match(script,/fetch\("\/api\/trails"/);assert.match(script,/fetch\("\/tour-stop-photos\.json"/);
   assert.match(script,/showRightsNote: false/);assert.match(script,/\.\/ivy-branding-public\.js/);
   assert.doesNotMatch(script,/new Audio\(|\.play\(|\/api\/(?:tts|generate|audio|gallery)|\/audits\//);
-  assert.match(html,/href="\/tours\/seattle">Guided Seattle tours/);
+  assert.doesNotMatch(html,/Guided Seattle tours/);
   assert.match(script,/seattleAnchors/);assert.match(script,/location\.replace\('\/tours\/seattle'/);
   assert.match(read('landing-page.html'),/href="\/tours">Explore tours by city/);
   assert.match(read('landing-page.html'), /aria-disabled="true">iTicket<\/span>\s*<a class="psx-btn psx-btn-ghost" href="\/tours">Explore tours by city<\/a>/);
