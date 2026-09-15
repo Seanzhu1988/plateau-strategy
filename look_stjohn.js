@@ -25,7 +25,7 @@
  * re-reading the source would have found.
  */
 global.window = {};
-const BASE = "/Users/xiaojunzhu/Claude/worktrees/site/";
+const BASE = __dirname + "/";   /* the checkout this file sits in */
 require(BASE + "styles-3d.js");
 require(BASE + "nyc-3d.js");
 require(BASE + "nyc-form-stjohn.js");
@@ -46,7 +46,7 @@ function areaOf(p) {
    flat faces (ground, shadow) are KEPT, because at full size they are what
    makes the thing stand on something rather than float, and the labels are
    kept out because a leader line crossing the drawing is not the drawing. */
-function build(scene, cam0) {
+function build(scene, cam0, withMarks) {
   const N = window.NYC3D, P = N.helpers.project;
   const solid = scene.faces.filter(f => !f.flat);
   if (!solid.length) return null;
@@ -83,6 +83,13 @@ function build(scene, cam0) {
          + (f.stroke ? ` stroke="${f.stroke}" stroke-width="${f.width || 0.6}"` : "")
          + (f.opacity ? ` opacity="${f.opacity}"` : "") + ' stroke-linejoin="round"/>';
   }).filter(Boolean);
+  /* the page's labels, as anchor dots, only on the panel that uses the page's
+     own camera: a label is judged where the visitor will see it, nowhere else */
+  if (withMarks) (scene.marks || []).forEach(m => {
+    const q = P(m.at, cam2);
+    parts.push(`<circle cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r="4" fill="#c0392b"/>`
+      + `<text x="${(q.x + 7).toFixed(1)}" y="${(q.y + 4).toFixed(1)}" font-size="12" fill="#222">${m.text}</text>`);
+  });
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" `
        + `width="${W}" height="${H}">`
        + `<rect width="${W}" height="${H}" fill="#ffffff"/>`
@@ -99,27 +106,30 @@ function build(scene, cam0) {
  *
  *     y1 = x*sin(yaw) + y*cos(yaw),   and larger y1 is NEARER the eye.
  *
- * The west front is the most negative x and the south flank the most negative
- * y, so bringing the west front forward needs sin(yaw) < 0, and bringing the
- * south flank forward needs cos(yaw) < 0. That fixes every view below:
+ * The west front is the most negative x and the NORTH flank the most negative
+ * y (the form file writes south at +y, because the projector is left-handed;
+ * see its header), so bringing the west front forward needs sin(yaw) < 0,
+ * and bringing the north flank forward needs cos(yaw) < 0:
  *   west only        sin<0, cos=0    yaw = -pi/2
- *   south only       sin=0, cos<0    yaw = pi
- *   west AND south   both negative   yaw between -pi and -pi/2
+ *   north only       sin=0, cos<0    yaw = pi
+ *   west AND north   both negative   yaw between -pi and -pi/2
  *   east only        sin>0           yaw = +pi/2
- *   east AND south   sin>0, cos<0    yaw between pi/2 and pi
+ *   east AND north   sin>0, cos<0    yaw between pi/2 and pi
+ *   west AND south   sin<0, cos>0    yaw between -pi/2 and 0
  */
 const VIEWS = [
+  ["AS SHIPPED: the page's camera, labels on", -0.78, 0.17, "what a visitor sees first on /landmarks", true],
   ["West front, straight on",  -1.57, 0.16, "the Gothic end: rose, portals, the two unfinished towers"],
-  ["West front, three-quarter", -2.36, 0.22, "the towers against the nave flank"],
-  ["From the south",            Math.PI, 0.20, "the whole 601 ft length, both styles in one picture"],
-  ["From the south-east",       2.36,  0.24, "the Romanesque end: apse, chevet chapels, the dome"],
+  ["From the south-west",      -0.78, 0.22, "the postcard angle: St Paul's tower nearest, the concrete transept wall"],
+  ["From the north",            Math.PI, 0.20, "the whole 601 ft length, both styles in one picture, the built transept"],
+  ["From the north-east",       2.36,  0.24, "the Romanesque end: apse, chevet chapels, the dome"],
   ["East end, straight on",     1.57,  0.18, "the chevet as a half-round of chapels"],
   ["From above",                2.60,  0.95, "the plan: cross, chevet, crossing square"]
 ];
 
-const panels = VIEWS.map(([name, yaw, pitch, why]) => {
+const panels = VIEWS.map(([name, yaw, pitch, why, marks]) => {
   const cam = window.NYC3D.helpers.makeCam(yaw, pitch, 1, W / 2, H / 2);
-  const svg = build(window.NYC_FORMS.stjohn({}), cam);
+  const svg = build(window.NYC_FORMS.stjohn({}), cam, marks);
   return `<figure><div class="p">${svg || "<b>EMPTY SCENE</b>"}</div>`
        + `<figcaption><b>${name}</b><br><span>yaw ${yaw.toFixed(2)} · pitch ${pitch.toFixed(2)}</span>`
        + `<br><i>${why}</i></figcaption></figure>`;

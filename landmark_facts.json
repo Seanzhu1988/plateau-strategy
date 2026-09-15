@@ -172,13 +172,13 @@
     },
     {
      "kind": "height",
-     "value": 177,
+     "value": 130,
      "unit": "ft",
-     "measured": "north west tower, St Peter, AS BUILT",
-     "source": "Wikipedia",
-     "source_url": "https://en.wikipedia.org/wiki/Cathedral_of_St._John_the_Divine",
+     "measured": "north west tower, St Peter, AS BUILT: \"built only to the third stage\"",
+     "source": "NYC Landmarks Preservation Commission, LP-2585",
+     "source_url": "http://s-media.nyc.gov/agencies/lpc/lp/2585.pdf",
      "origin": "human",
-     "note": "level with the nave roof; unfinished",
+     "note": "The report gives the stage, not a height. About 130 ft is MEASURED from a photograph of the west front (Wikimedia Commons, \"Cathedral of Saint John the Divine, New York\"), scaled by the 40 ft rose: the centre gable measures about 177, agreeing with the ridge, and St Peter stands well below it. Wikipedia gives this tower 177 ft, which is the nave ridge figure.",
      "retrieved": "2026-09-10"
     },
     {
