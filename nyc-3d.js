@@ -96,7 +96,7 @@
     var z = 0;
     for (var i = 0; i < pts.length; i++) z += pts[i][0] * 0 + 0;
     return { pts: pts, colour: colour, stroke: o.stroke, width: o.width,
-             flat: o.flat, opacity: o.opacity, bias: o.bias || 0 };
+             flat: o.flat, opacity: o.opacity, bias: o.bias || 0, cull: o.cull };
   }
   function box(x0, x1, y0, y1, z0, z1, base) {
     /* six faces, each shaded by its own normal */
@@ -196,6 +196,20 @@
       f._d = d / f.pts.length + f.bias;
     });
     faces.sort(function (a, b) { return a._d - b._d; });
+    /* ONE-SIDED FACES, opt-in. Nothing else on the site is culled, so every
+       existing model draws exactly as before; a form marks `cull` only on
+       detail that lives on one face of a wall, like a rose window's tracery,
+       which otherwise needs a depth lead big enough to paint through the
+       roof when the building is turned round. Front-facing is decided with
+       the projector's own depth, not a sign worked out by hand: step off the
+       face along its normal, and if that step comes nearer, it faces us. */
+    faces = faces.filter(function (f) {
+      if (!f.cull || f.pts.length < 3) return true;
+      var nn = normal(f.pts[0], f.pts[1], f.pts[2]), c = [0, 0, 0];
+      f.pts.forEach(function (p) { c[0] += p[0]; c[1] += p[1]; c[2] += p[2]; });
+      c = [c[0] / f.pts.length, c[1] / f.pts.length, c[2] / f.pts.length];
+      return project([c[0] + nn[0], c[1] + nn[1], c[2] + nn[2]], cam).d > project(c, cam).d;
+    });
     faces.forEach(function (f) {
       var pts = f.pts.map(function (p) { return project(p, cam); });
       var d = pts.map(function (p) { return p.x.toFixed(1) + ',' + p.y.toFixed(1); }).join(' ');

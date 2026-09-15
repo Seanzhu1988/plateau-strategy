@@ -404,7 +404,12 @@
        keeps every face convex. The ring is what makes it read as built
        stone: the joints fan, because each is a true radius from the arc
        centre, and parallel joints are the tell of a hole cut in a slab. */
-    function opening(cx, cz, w, totalH, rise, plane, n, mat, ringMat) {
+    function opening(cx, cz, w, totalH, rise, plane, n, mat, ringMat, lead) {
+      /* `lead` lifts an opening that sits INSIDE another opening's field.
+         Both carried the same +6, so a lancet in a recessed arch tied with
+         the arch it sits in and lost: St Paul's left stage-3 lancet and all
+         five small panels under the rose were painted over by their field. */
+      var L = lead || 0;
       var a = w / 2, spring = totalH - rise;
       /* THE FIRST ARC POINT IS THE SPRINGING, AND IT WAS ALREADY PUSHED.
          pointedArch starts at [-a, 0] in its own frame, which lands on
@@ -431,7 +436,7 @@
           : [cx + u, plane.at, cz + v];       /* wall runs along x, faces y */
       }
       emit(pts.map(function (p) { return place(p[0], p[1]); }), n, mat || GLASS,
-           { bias: WALL_BIAS + 6 });
+           { bias: WALL_BIAS + 6 + L });
       /* the voussoir ring: one wedge face between consecutive joints */
       var J = ST.voussoirs(w, rise, Math.max(1.6, w * 0.16), 7), nj = J.length / 2;
       for (var h = 0; h < 2; h++) {
@@ -439,7 +444,7 @@
           var A = J[h * nj + i], B = J[h * nj + i + 1];
           emit([place(A[0][0], spring + A[0][1]), place(A[1][0], spring + A[1][1]),
                 place(B[1][0], spring + B[1][1]), place(B[0][0], spring + B[0][1])],
-               n, ringMat || TRIM, { bias: WALL_BIAS + 7, stroke: JOINT, width: 0.4 });
+               n, ringMat || TRIM, { bias: WALL_BIAS + 7 + L, stroke: JOINT, width: 0.4 });
         }
       }
       /* hand the frame back so tracery can be laid in the SAME plane by the
@@ -802,6 +807,11 @@
           emit([[xP, yy, 0], [X_W, yy, 0], [X_W, yy, base], [xP, yy, base]], [0, sd, 0], STONE, { bias: W_BIAS });
           emit([[xP, yy, base], [X_W, yy, base], [X_W, cy, ap], [xP, cy, ap]],
                [0, sd * 0.6, 0.8], TRIM, { bias: W_BIAS });
+          /* A COPING ON THE PORCH FACE, up each rake. A stone gable against
+             a stone screen has no edge to read by, and the review found the
+             centre gable showing as one stray diagonal running to the cross. */
+          emit([[xP - 0.3, yy, base], [xP - 0.3, cy, ap], [xP - 0.3, cy, ap + 1.8], [xP - 0.3, yy, base + 1.8]],
+               [-1, 0, 0], TRIM, { bias: W_BIAS + 2 });
         });
         /* the three stepped orders: ring, reveal, ring, reveal, ring, reveal */
         for (var k = 0; k < 3; k++) {
@@ -879,13 +889,19 @@
         tileTop(xB, X_NAVE_W, ya, yb, t.z, STONE);
         /* the slab's own returns at the outer corner, X_W to xB */
         var yOut = t.s * yFw, yOuter = t.s > 0 ? yb : ya;
-        emit([[X_W, yOut, 0], [xB, yOut, 0], [xB, yOut, t.z], [X_W, yOut, t.z]], [0, t.s, 0], STONE, { bias: W_BIAS });
+        /* tiled in height, like every other tall wall: as one 227 ft face its
+           centroid sat below the corner buttresses and painted over them */
+        wallQ(t.s > 0 ? [xB, yOut] : [X_W, yOut], t.s > 0 ? [X_W, yOut] : [xB, yOut], 0, t.z, STONE, { bias: W_BIAS });
         /* the west face of the tower, with the porch bitten out of it */
         var pw = 16, pH = 40, pg = 12, pap = 55;
         var sp0 = pH - lancetRise(pw), gb = pH + 2;
         faceAt(X_W, [[ya, 0], [cy - pg, 0], [cy - pg, gb], [ya, gb]], STONE);
         faceAt(X_W, [[cy + pg, 0], [yb, 0], [yb, gb], [cy + pg, gb]], STONE);
-        faceAt(X_W, [[ya, gb], [cy - pg, gb], [cy, pap], [cy + pg, gb], [yb, gb], [yb, t.z], [ya, t.z]], STONE);
+        faceAt(X_W, [[ya, gb], [cy - pg, gb], [cy, pap], [cy + pg, gb], [yb, gb], [yb, pap], [ya, pap]], STONE);
+        for (var zt0 = pap; zt0 < t.z - 0.01; zt0 += TILE_MAX) {
+          var zt1 = Math.min(t.z, zt0 + TILE_MAX);
+          faceAt(X_W, [[ya, zt0], [yb, zt0], [yb, zt1], [ya, zt1]], STONE);
+        }
         porch(cy, pw, pH, pg, pap, false);
         /* THE STOP: raw stone at the head, and no parapet, no spire. The
            most important thing on the front, drawn by not drawing more. */
@@ -898,16 +914,21 @@
             if (st[0] >= t.z - 10) return;
             var z1 = Math.min(st[1], t.z - 10), wdt = st[2], pr = st[3];
             var x0 = sx < 0 ? c[0] - pr : c[0] - wdt, x1 = sx < 0 ? c[0] + wdt : c[0] + pr;
-            var py = (c[1] === yOuter) ? Math.min(pr, 4) : pr;   /* never past 207 */
+            var yInner = t.s > 0 ? ya : yb;
+            /* never past 207 on the outer corner; and on the INNER front
+               corner no more than 2 ft, because at 7 it reached y=44.5 and
+               buried the aisle portal's jamb and half its porch */
+            var py = (c[1] === yOuter) ? Math.min(pr, 4)
+              : ((c[1] === yInner && c[0] === X_W) ? Math.min(pr, 2) : pr);
             var y0 = sy < 0 ? c[1] - py : c[1] - wdt, y1 = sy < 0 ? c[1] + wdt : c[1] + py;
-            block(x0, x1, y0, y1, st[0], z1, STONE);
+            block(x0, x1, y0, y1, st[0], z1, STONE, { bias: 2 });
           });
         });
         /* the stage moldings run round the tower on its three free faces */
         [Z1, Z2, Z3].forEach(function (zc) {
           if (zc >= t.z - 10) return;
           block(X_W - 1.2, X_NAVE_W + 1.2, ya - 1.2 * (t.s < 0 ? 1 : 0) - (t.s > 0 ? 0 : 0),
-                yb + 1.2 * (t.s > 0 ? 1 : 0), zc, zc + 1.6, TRIM);
+                yb + 1.2 * (t.s > 0 ? 1 : 0), zc, zc + 1.6, TRIM, { bias: 2 });
         });
         /* STAGE 2: the gallery runs across the tower too, paired open arches */
         for (var gy = cy - 15; gy <= cy + 15.1; gy += 6) {
@@ -921,7 +942,7 @@
         var archW = t.z > Z3 + 40 ? 32 : 30, archTop = Math.min(Z3, t.z - 10);
         opening(cy, 84, archW, archTop - 84, lancetRise(archW), { axis: 'y', at: X_W }, [-1, 0, 0], STONE_D, TRIM);
         [-1, 1].forEach(function (sd) {
-          opening(cy + sd * 7, 88, 5, 30, lancetRise(5), { axis: 'y', at: X_W }, [-1, 0, 0], GLASS, TRIM);
+          opening(cy + sd * 7, 88, 5, 30, lancetRise(5), { axis: 'y', at: X_W }, [-1, 0, 0], GLASS, TRIM, 3);
         });
         /* STAGE 4, St Paul only: the belfry stage that the stoneyard raised
            and left, two tall lancets and then the stop */
@@ -979,8 +1000,8 @@
       porch(0, cw, cH, cg, cap, true);
       /* THE FOURTEEN-FOOT CARVED CRUCIFIX stands on the CENTRE PORTAL'S
          gable [L], not on the nave gable where the first draft put it. */
-      block(X_W - 4.4, X_W - 2.2, -1.1, 1.1, cap, cap + 14, TRIM);
-      block(X_W - 4.4, X_W - 2.2, -4.2, 4.2, cap + 8.6, cap + 10.8, TRIM);
+      block(X_W - 4.4, X_W - 2.2, -1.1, 1.1, cap, cap + 14, TRIM, { bias: 3 });
+      block(X_W - 4.4, X_W - 2.2, -4.2, 4.2, cap + 8.6, cap + 10.8, TRIM, { bias: 3 });
       /* the aisle porches, small, between the piers */
       [-1, 1].forEach(function (s) {
         var cy = s * (yC + yT) / 2;
@@ -990,7 +1011,14 @@
       /* THE STAGE MOLDINGS across the screen, "heavily-carved" [L]: they are
          what divides four stages from one tall wall */
       [Z1, Z2, Z3].forEach(function (zc) {
-        block(X_W - 1.2, X_W + 0.2, -yT, yT, zc, zc + 1.6, TRIM);
+        /* Z1 stops at the centre porch: run straight across, it painted over
+           the porch head standing in front of it */
+        if (zc === Z1) {
+          block(X_W - 1.2, X_W + 0.2, -yT, -cg, zc, zc + 1.6, TRIM);
+          block(X_W - 1.2, X_W + 0.2, cg, yT, zc, zc + 1.6, TRIM);
+        } else {
+          block(X_W - 1.2, X_W + 0.2, -yT, yT, zc, zc + 1.6, TRIM);
+        }
       });
       /* a coping up both rakes of the gable */
       [-1, 1].forEach(function (s) {
@@ -1013,7 +1041,7 @@
         var filled = (by < 0);
         emit([[X_W - 5.6, by - 2.2, 60], [X_W - 5.6, by + 2.2, 60], [X_W - 5.6, by + 2.2, 74], [X_W - 5.6, by - 2.2, 74]],
              [-1, 0, 0], DARK, { bias: W_BIAS + 2 });
-        if (filled) block(X_W - 6.8, X_W - 5.4, by - 1.3, by + 1.3, 61, 72, TRIM);
+        if (filled) block(X_W - 6.8, X_W - 5.4, by - 1.3, by + 1.3, 61, 72, TRIM, { bias: 3 });
       });
 
       /* STAGE 2: "the arcaded gallery consists of paired, open arches,
@@ -1039,7 +1067,7 @@
               { axis: 'y', at: X_W }, [-1, 0, 0], STONE_D, TRIM);
       /* a row of small lancet panels under the rose, inside the arch */
       for (var ly = -16; ly <= 16.1; ly += 8) {
-        opening(ly, 92, 4.2, 6, lancetRise(4.2), { axis: 'y', at: X_W }, [-1, 0, 0], DARK, TRIM);
+        opening(ly, 92, 4.2, 6, lancetRise(4.2), { axis: 'y', at: X_W }, [-1, 0, 0], DARK, TRIM, 3);
       }
       (function theRose() {
         /* centred at 118 so the wheel sits in the lower two-thirds of the
@@ -1049,20 +1077,45 @@
            standing upright spreads about 20 units of depth top to bottom at
            the steeper pitches, and a one-unit lead put the lower spokes
            BEHIND their own glass. The lead exceeds the spread. */
-        var B_GLASS = WALL_BIAS + 8, B_SPOKE = WALL_BIAS + 30, B_EYE = WALL_BIAS + 44;
+        /* ...AND IT HAS TO STOP AT THE ROOF. Leads of +30 and +44 beat the
+           wheel's own spread, and also beat the nave roof when the building
+           is turned round, so from the east the tracery showed through the
+           roof as a pale wheel. Two changes remove the need for big leads:
+           the glass is laid as one wedge per spoke gap, so every piece of
+           tracery sorts against glass whose centre is beside it, not 20 ft
+           away; and every face of the rose is one-sided (`cull`), so from
+           behind the gable it is simply not drawn. */
+        /* With the rose one-sided the leads no longer have to be small, and
+           they cannot be: at +7 the lower wedges lost to the blind arch's
+           own field (lead +6), whose centre sits above them, and the bottom
+           half of the rose went pale. The glass beats the field by more than
+           the wheel's depth spread; stone beats glass by more than the 8 ft
+           between a wedge's centre and its outer rim. */
+        var B_GLASS = W_BIAS + 18, B_SPOKE = W_BIAS + 24, B_EYE = W_BIAS + 26;
         function at(u, v) { return [X_W - 0.2, u, cz + v]; }
         var ring = [];
         for (var i = 0; i < seg; i++) {
           var a = (i / seg) * Math.PI * 2;
           ring.push(at(R * Math.cos(a), R * Math.sin(a)));
         }
-        emit(ring, [-1, 0, 0], GLASS, { bias: B_GLASS });
+        for (var wg = 0; wg < spokes; wg++) {
+          var wa = [];
+          for (var ws = 0; ws <= 4; ws++) {
+            var aa = ((wg + ws / 4) / spokes) * Math.PI * 2;
+            wa.push(at(R * Math.cos(aa), R * Math.sin(aa)));
+          }
+          var ea = ((wg + 1) / spokes) * Math.PI * 2, eb = (wg / spokes) * Math.PI * 2;
+          wa.push(at(R * 0.22 * Math.cos(ea), R * 0.22 * Math.sin(ea)));
+          wa.push(at(R * 0.22 * Math.cos(eb), R * 0.22 * Math.sin(eb)));
+          emit(wa, [-1, 0, 0], GLASS, { bias: B_GLASS, cull: true });
+        }
+        void ring;
         /* the outer ring of stone, then spokes from the eye to the ring */
         for (var i2 = 0; i2 < seg; i2++) {
           var a0 = (i2 / seg) * Math.PI * 2, a1 = ((i2 + 1) / seg) * Math.PI * 2;
           emit([at(R * Math.cos(a0), R * Math.sin(a0)), at(R * Math.cos(a1), R * Math.sin(a1)),
                 at((R - 1.3) * Math.cos(a1), (R - 1.3) * Math.sin(a1)), at((R - 1.3) * Math.cos(a0), (R - 1.3) * Math.sin(a0))],
-               [-1, 0, 0], TRIM, { bias: B_SPOKE });
+               [-1, 0, 0], TRIM, { bias: B_SPOKE, cull: true });
         }
         for (var k = 0; k < spokes; k++) {
           var t = (k / spokes) * Math.PI * 2, wdt = 0.8;
@@ -1071,21 +1124,21 @@
                 at(R * c - wdt * s2, R * s2 + wdt * c),
                 at(R * c + wdt * s2, R * s2 - wdt * c),
                 at(R * 0.22 * c + wdt * s2, R * 0.22 * s2 - wdt * c)],
-               [-1, 0, 0], TRIM, { bias: B_SPOKE });
+               [-1, 0, 0], TRIM, { bias: B_SPOKE, cull: true });
           /* an inner ring at six tenths of the radius, one segment per spoke
              gap, so the tracery reads as two wheels. The first version drew
              short tilted bars that met nothing and read as scratches. */
           var t2 = ((k + 1) / spokes) * Math.PI * 2, r0 = R * 0.6, r1 = r0 + 0.9;
           emit([at(r0 * Math.cos(t), r0 * Math.sin(t)), at(r0 * Math.cos(t2), r0 * Math.sin(t2)),
                 at(r1 * Math.cos(t2), r1 * Math.sin(t2)), at(r1 * Math.cos(t), r1 * Math.sin(t))],
-               [-1, 0, 0], TRIM, { bias: B_SPOKE });
+               [-1, 0, 0], TRIM, { bias: B_SPOKE, cull: true });
         }
         var eye = [];
         for (var j = 0; j < seg; j++) {
           var b = (j / seg) * Math.PI * 2;
           eye.push(at(R * 0.22 * Math.cos(b), R * 0.22 * Math.sin(b)));
         }
-        emit(eye, [-1, 0, 0], TRIM, { bias: B_EYE });
+        emit(eye, [-1, 0, 0], TRIM, { bias: B_EYE, cull: true });
       })();
       /* "multi-faceted carvings in the spandrels above the central arch" */
       [-1, 1].forEach(function (s) {
@@ -1359,10 +1412,22 @@
         var axialL = HALL[3][0], room = P.apseL - AMB_R;
         var d0 = AMB_R;
         var d1 = AMB_R + room * (HALL[c][0] / axialL);
-        var hw = 15 * (HALL[c][1] / HALL[3][1]);
+        /* THE SEVEN MUST READ AS SEVEN. Drawn 30 ft wide at the ambulatory
+           wall, where neighbouring chapel axes are only 42 x pi/7 = 18.8 ft
+           apart, every chapel overlapped the next and the chevet read as one
+           drum with the turreted buttresses buried inside it. A radiating
+           chapel is a wedge, narrow where it leaves the ambulatory and wider
+           outward, so each is now sized to 85 percent of the gap its own
+           radius leaves, at both ends, and still scaled by Hall's widths so
+           St Ansgar and St James stay the broad ones. What that gives up is
+           Hall's absolute width, which the published 601 ft length had
+           already taken from the projection; the gap and the turret standing
+           in it are what a visitor on Amsterdam Avenue actually sees. */
+        var wr = HALL[c][1] / 41;
+        var hw0 = 0.85 * (d0 * Math.PI / 14) * wr, hw1 = 0.85 * (d1 * Math.PI / 14) * wr;
         var ax = cx + d0 * ct, ay = d0 * st, bx = cx + d1 * ct, by = d1 * st;
-        var px = -st * hw, py = ct * hw;
-        var quad = [[ax + px, ay + py], [bx + px, by + py], [bx - px, by - py], [ax - px, ay - py]];
+        var quad = [[ax - st * hw0, ay + ct * hw0], [bx - st * hw1, by + ct * hw1],
+                    [bx + st * hw1, by - ct * hw1], [ax + st * hw0, ay - ct * hw0]];
         for (var q = 0; q < 4; q++) {
           wallQ(quad[q], quad[(q + 1) % 4], 0, Z_CHAPEL, STONE_D, { bias: WALL_BIAS + 1 });
         }
@@ -1378,7 +1443,8 @@
            LaFarge's own work, and the chapels ringing them are pointed.
            The face points out along the chapel's own radius, so the opening
            frame is built from that radius. */
-        opening(0, 12, 14, 26, lancetRise(14),
+        var cwn = Math.min(14, 2 * hw1 - 4);
+        opening(0, 12, cwn, 26, lancetRise(cwn),
                 { axis: 'free', o: [bx, by], u: [-st, ct] }, [ct, st, 0], GLASS);
       }
     })();
@@ -1419,7 +1485,11 @@
        with the dot on the south-east chapel's roof the page lifts the label
        below the drawing with a leader to the dot, on 0 polygons and on no
        other label. The dot is on the thing it names, which is the promise. */
-    marks.push({ at: Pt(X_CHOIR_E + 39, 39, Z_CHAPEL),
+    /* re-aimed when the chapels were narrowed to read as seven: (39, 39)
+       had become the gap beside St Ambrose, so the dot now sits on the
+       middle of St Ambrose's own roof, 49 ft out at 51.4 degrees */
+    marks.push({ at: Pt(X_CHOIR_E + 49 * Math.cos(Math.PI * 5.5 / 7 - Math.PI / 2),
+                        49 * Math.sin(Math.PI * 5.5 / 7 - Math.PI / 2), Z_CHAPEL),
                  text: 'the Chapels of the Tongues' });
 
     return { w: 720, h: 620, faces: f, lines: lines, marks: marks };

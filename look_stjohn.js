@@ -63,7 +63,14 @@ function build(scene, cam0, withMarks) {
   const cam2 = Object.assign({}, cam0, {
     zoom: SC, ox: (W - bw * SC) / 2 - B[0] * SC, oy: (H - bh * SC) / 2 - B[1] * SC
   });
-  const drawn = scene.faces.map(f => {
+  /* the page's one-sided faces (f.cull), decided exactly as nyc-3d.js render does */
+  const facing = f => {
+    if (!f.cull || f.pts.length < 3) return true;
+    const nn = N.helpers.normal(f.pts[0], f.pts[1], f.pts[2]);
+    const c = [0, 1, 2].map(i => f.pts.reduce((a, p) => a + p[i], 0) / f.pts.length);
+    return P([c[0] + nn[0], c[1] + nn[1], c[2] + nn[2]], cam2).d > P(c, cam2).d;
+  };
+  const drawn = scene.faces.filter(facing).map(f => {
     let d = 0;
     f.pts.forEach(p => { d += P(p, cam2).d; });
     return { f: f, d: d / f.pts.length + (f.bias || 0) };
