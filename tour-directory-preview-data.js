@@ -7,10 +7,10 @@ export const CITY_NAMES = {
   dc: "Washington, DC", boston: "Boston", nyc: "New York",
   cambridge: "Cambridge, MA", "new-haven": "New Haven", princeton: "Princeton",
   philadelphia: "Philadelphia", providence: "Providence", hanover: "Hanover, NH",
-  ithaca: "Ithaca", keystone: "Keystone, SD"
+  ithaca: "Ithaca", keystone: "Keystone, SD", newport: "Newport, RI"
 };
 
-const CITY_ORDER = ["dc", "boston", "nyc", "cambridge", "new-haven", "princeton", "philadelphia", "providence", "hanover", "ithaca", "keystone"];
+const CITY_ORDER = ["dc", "boston", "nyc", "cambridge", "new-haven", "princeton", "philadelphia", "providence", "newport", "hanover", "ithaca", "keystone"];
 const BOSTON_MODELS = {
   "Massachusetts State House": "state-house", "Park Street Church": "park-street",
   "Old South Meeting House": "old-south", "Old State House": "old-state-house",
