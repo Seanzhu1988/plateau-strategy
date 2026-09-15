@@ -25,6 +25,7 @@ button,.word-link{border:0;border-bottom:1px solid var(--line);border-radius:0;b
 details.report{border-top:1px solid var(--line);padding:0}details.report>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:58px;padding:12px 0;cursor:pointer;font-size:17px;font-weight:600}summary::-webkit-details-marker{display:none}summary::after{content:'+';color:var(--navy);font-weight:400;font-size:22px}details[open]>summary::after{content:'−'}.report-body{padding:2px 0 22px}.report .caption{margin-bottom:10px}.report h3{margin:18px 0 5px}.report h3:first-child{margin-top:0}
 .status-item{padding:12px 0;border-top:1px solid var(--line);font-size:14px}.status-item:first-child{border-top:0}.status-item p+p{margin-top:4px}.status-heading{font-weight:600}.gallery-metrics{margin:19px 0 20px}.gallery-metrics dd{font-size:27px}.gallery-status{font-size:14px;line-height:1.6}.gallery-status p+p{margin-top:5px}
 .work-region{border-top:1px solid var(--line)}.work-region:first-child{border-top:0}.work-region>button{display:flex;justify-content:space-between;gap:16px;width:100%;text-align:left;min-height:48px;border-bottom:0}.work-region>button span:first-child{min-width:0;overflow-wrap:anywhere}.work-left{flex:none;font-size:13px;color:var(--muted)}.work-town{font-size:14px;margin:12px 0 3px;color:var(--muted)}.work-place{display:flex;align-items:baseline;gap:12px;width:100%;text-align:left;font-size:14px;min-height:48px;font-weight:400;padding:10px 0}.work-place .pn{flex:1;min-width:0;overflow-wrap:anywhere}.work-place .tick{color:var(--navy);width:20px;flex:none}.work-place[aria-pressed=true] .pn{color:var(--muted);text-decoration:line-through}.work-have{font-size:12px;color:var(--muted);max-width:58px;line-height:1.4}.work-note{font-size:13px;color:var(--muted);min-height:24px;margin-top:8px}
+a.row{text-decoration:none;min-height:44px;align-items:center}a.row .row-name{color:var(--navy);font-weight:550}a.row .row-value{color:var(--muted)}
 .me-actions{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:8px}.me-actions button{font-size:14px;color:var(--navy)}.foot{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:20px}.foot p+p{margin-top:5px}
 #login{max-width:340px;margin:36px auto 0}#login h2{margin-bottom:10px}#login .caption{margin-bottom:24px}#login label{display:block;font-size:14px;margin:18px 0 6px}#login input{width:100%;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;padding:10px 0;min-height:48px}#login button{color:var(--navy);border-bottom:2px solid var(--navy);margin-top:22px;min-width:72px}#lerr{font-size:14px;color:var(--error);min-height:24px;margin-top:10px}[hidden]{display:none!important}
 @media(min-width:580px){.wrap{padding-left:32px;padding-right:32px}.metrics{gap:24px 42px}}@media(max-width:360px){.wrap{padding-left:17px;padding-right:17px}.periods{gap:16px}.two-columns{grid-template-columns:1fr;gap:14px}.metric dd{font-size:28px}}
@@ -43,6 +44,16 @@ details.report{border-top:1px solid var(--line);padding:0}details.report>summary
     <button id="signIn" type="submit">Sign in</button><p id="lerr" role="alert"></p>
   </form>
   <div id="app" hidden>
+    <!-- [SEAN 2026-09-15 "move dispatch and board of directors to pulse"]
+         Taken off the public menus the same day. Inside #app, so the links
+         only appear once the owner is signed in. -->
+    <section class="section" aria-labelledby="pages-heading">
+      <h2 id="pages-heading">Owner pages</h2>
+      <div class="list">
+        <a class="row" href="/dispatch"><span class="row-name">Dispatch</span><span class="row-value">Bookings and drivers</span></a>
+        <a class="row" href="/board"><span class="row-name">Board of Directors</span><span class="row-value">Governance vault</span></a>
+      </div>
+    </section>
     <section class="section" aria-labelledby="traffic-heading">
       <div class="section-head"><h2 id="traffic-heading">Website traffic</h2><p class="online" id="online">Checking activity</p></div>
       <div class="periods" role="group" aria-label="Traffic period"><button type="button" data-days="1" aria-pressed="false">Today</button><button type="button" data-days="7" aria-pressed="true">7 days</button><button type="button" data-days="30" aria-pressed="false">30 days</button></div>
