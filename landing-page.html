@@ -1382,7 +1382,7 @@
         #view-overview .psx-section,#view-overview .psx-connects{padding:4.5rem 1.25rem;}
       }
       @media(max-width:520px){
-        nav .sections-trigger,nav #navArticles,nav a[href="/dispatch"],nav a[href="/board"]{display:none;}
+        nav .sections-trigger,nav #navArticles{display:none;}
       }
     </style>
     <style id="psx-blueprint">
@@ -1602,9 +1602,7 @@
         }
         /* only the primary CTA earns the space down here */
         nav .sections-trigger,
-        nav #navArticles,
-        nav a[href="/dispatch"],
-        nav a[href="/board"]{display:none !important;}
+        nav #navArticles{display:none !important;}
         .nav-back{padding:.42rem .7rem !important;font-size:.8rem !important;}
       }
 
@@ -2075,8 +2073,10 @@
                      many. The strip still opens on mouse-to-top on desktop, and
                      on a phone it is docked and always visible. -->
                 <a href="#" id="navArticles" onclick="showView('reinvestment', event)">Business Ideas</a>
-                <a href="/dispatch">Dispatch</a>
-                <a href="/board">Board of Directors</a>
+                <!-- Dispatch and Board of Directors were here until 2026-09-15
+                     [SEAN "hide dispatch and board of director from the menu"].
+                     Both are private; the owner reaches them at /dispatch and
+                     /board, and the owner list on /map still names them. -->
                 <a href="/book">Book a Ride</a>
                 <a href="/map">Everything here</a>
             </nav>
@@ -3231,8 +3231,6 @@
                         <h4>Company</h4>
                         <ul>
                             <li><a href="#" onclick="showView('reinvestment', event)">Business Ideas</a></li>
-                            <li><a href="/dispatch">Dispatch</a></li>
-                            <li><a href="/board">Board of Directors</a></li>
                             <li><a href="#" onclick="showView('security', event)">Security</a></li>
                             <li><a href="/privacy">Privacy</a></li>
                         </ul>

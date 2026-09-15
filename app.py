@@ -3747,8 +3747,6 @@ SITE_MAP = [
          "Ideas posted in the open, with the blueprint sealed until it is bought."),
         ("/professionals", "Professionals",
          "The people who price an opinion on an idea, and how to become one."),
-        ("/board", "Board of Directors",
-         "Who stands behind the company."),
     ]),
     ("Ride with us", "Licensed, insured, and driven by a licensed guide.", [
         ("/tours/seattle", "Guided Seattle tours", "Seattle on foot with a licensed guide."),
@@ -3768,6 +3766,7 @@ SITE_MAP = [
 # Owner pages. Listed so Sean can find them, never linked to visitors.
 SITE_MAP_PRIVATE = [
     ("/dispatch", "Dispatch", "Bookings, demand and who to call."),
+    ("/board", "Board of Directors", "The governance vault, for the managing members."),
     ("/partners", "Partners and Atlas", "The prospect pipeline and the scout."),
     ("/archive", "Archive", "Traffic, viewers and where they came from."),
     ("/setup", "Setup", "Keys, connections and the state of each."),
