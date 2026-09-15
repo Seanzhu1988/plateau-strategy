@@ -151,6 +151,10 @@
         .golink { font: inherit; font-size: .86rem; font-weight: 700; color: #1f3a5f;
                   background: none; border: 0; padding: 0; cursor: pointer;
                   text-decoration: underline; text-underline-offset: 2px; }
+        .entry .menu-sec { margin: .75rem 0 .15rem; font-size: .76rem; letter-spacing: .06em; text-transform: uppercase; color: #6b655b; }
+        .entry .menu-items { margin: 0; font-size: .9rem; line-height: 1.55; color: #2b2721; }
+        .entry .menu-note, .entry .menu-src { font-size: .82rem; color: #6b655b; margin: .4rem 0 0; }
+        .book-soon { display: inline-block; margin: .5rem 0 0; padding: .45rem .9rem; border-radius: 10px; background: #e8e5de; color: #6b655b; font-size: .88rem; cursor: default; }
         .entry .tip { font-size: 0.86rem; color: #4a453d; background: none; border: none;
             border-left: 2px solid #ddd8cd; border-radius: 0;
             padding: 0.1rem 0 0.1rem 0.75rem; margin-left: 0.1rem; line-height: 1.5;
@@ -417,6 +421,19 @@
     const LS_KEY = 'ps_tripplanner_v2';
     const CATS = [ ['history','History'], ['culture','Culture'], ['nature','Nature'], ['food','Food'], ['views','Views'] ];
     const TYPES = [ ['attraction','Attractions'], ['restaurant','Restaurants & food'] ];
+    // ONE PAGE, TWO BOOKS. [SEAN 2026-09-15 "separate restaurants from destination
+    // book and any food related infuse them in to restaurant book. owners can
+    // create their listing however gray my listing because we want to charge
+    // them in the future"] /restaurant-book serves this same file, so ratings,
+    // comments, send-to-trip and the 3D views stay one copy of code. Food means
+    // type "restaurant" or category "food". Nothing is deleted from the data:
+    // the Trip Planner still sees every place.
+    const BOOK_MODE = location.pathname.indexOf('/restaurant-book') === 0 ? 'restaurants' : 'destinations';
+    const isFood = e => e.type === 'restaurant' || e.cat === 'food';
+    const inBook = e => BOOK_MODE === 'restaurants' ? isFood(e) : !isFood(e);
+    const menuText = e => (e.menu && Array.isArray(e.menu.sections))
+        ? e.menu.sections.map(x => (x.name || '') + ' ' + (x.items || []).join(' ')).join(' ') : '';
+    const OPEN_MENU = (() => { try { return new URLSearchParams(location.search).get('menu') === '1'; } catch (e) { return false; } })();
     let DATA = { cities: {}, entries: [] };
     const f = { city: 'all', type: 'all', cats: new Set(CATS.map(c => c[0])),
                 allCats: true, minStars: 0 };
@@ -518,7 +535,7 @@
         // Alphabetical, except "Other" which is a bucket rather than a place
         // and belongs at the end of the row instead of between New York and
         // Seattle, where it read as a city nobody had heard of.
-        const cityList = Object.entries(DATA.cities).sort((x, y) =>
+        const cityList = Object.entries(DATA.cities).filter(([k]) => DATA.entries.some(e => e.city === k && inBook(e))).sort((x, y) =>
             x[0] === 'other' ? 1 : y[0] === 'other' ? -1 : x[1].localeCompare(y[1]));
         // Clicking the chip that is ALREADY lit clears the filter instead of
         // re-applying it. Category below has always worked this way; City and
@@ -539,6 +556,7 @@
             cc.appendChild(makeChip(T(label), f.city === k,
                                     b => clearable(cc, 'city', k, b)));
         });
+        try { const tr = $('typeChips').closest('.frow'); if (tr) tr.hidden = true; } catch (e) {}
         const tc = $('typeChips');
         [['all', T('All types')]].concat(TYPES).forEach(([k, label]) => {
             tc.appendChild(makeChip(T(label), f.type === k,
@@ -575,8 +593,9 @@
                 paintCats(); render();
             });
             ch.setAttribute('data-cat', k);
-            kc.appendChild(ch);
+            if (!(BOOK_MODE === 'destinations' && k === 'food')) kc.appendChild(ch);
         });
+        if (BOOK_MODE === 'restaurants') { try { kc.closest('.frow').hidden = true; } catch (e) {} }
         paintCats();
     }
 
@@ -960,11 +979,12 @@
         const groups = new Map();
         let shown = 0;
         DATA.entries.forEach((e, i) => {
+            if (!inBook(e)) return;
             if (f.city !== 'all' && e.city !== f.city) return;
             if (f.type !== 'all' && e.type !== f.type) return;
             if (!f.cats.has(e.cat)) return;
             if (f.minStars && (!e.stars || e.stars < f.minStars)) return;   // higher-value filter
-            if (q && !(e.name + ' ' + e.desc).toLowerCase().includes(q)) return;
+            if (q && !(e.name + ' ' + e.desc + ' ' + menuText(e)).toLowerCase().includes(q)) return;
             shown++;
             const catLabel = (CATS.find(c => c[0] === e.cat) || ['',''])[1];
             const added = inPlanner.has(e.name);
@@ -976,8 +996,9 @@
                     : esc(e.name)) + '</h3>'
                 + '<div class="badges">'
                 +   '<span class="badge b-city">' + esc(T(DATA.cities[e.city] || e.city)) + '</span>'
-                +   '<span class="badge ' + (e.type === 'restaurant' ? 'b-rest' : 'b-attr') + '">'
-                +       T(e.type === 'restaurant' ? 'Restaurant' : 'Attraction') + '</span>'
+                +   ((BOOK_MODE === 'restaurants' && e.type !== 'restaurant') ? ''
+                    : '<span class="badge ' + (e.type === 'restaurant' ? 'b-rest' : 'b-attr') + '">'
+                    +   T(e.type === 'restaurant' ? 'Restaurant' : 'Attraction') + '</span>')
                 +   '<span class="badge b-cat">' + T(catLabel) + '</span>'
                 +   (e.price ? '<span class="badge b-price">' + esc(e.price) + '</span>' : '')
                 +   (e.source === 'user' ? '<span class="badge b-comm">🌱 Community</span>' : '')
@@ -990,6 +1011,7 @@
                 + '<p class="desc">' + modelThumb(e, i) + esc(e.desc) + '</p>'
                 + '<div class="m3d" id="m3d_' + i + '"></div>'
                 + storyBlock(e)
+                + menuBlock(e)
                 + '<p class="meta">'
                 +   (e.typical_visit
                         ? T('Open till {time} · ', { time: fmt(e.close) })
@@ -1083,7 +1105,9 @@
                      + paintCity(k)).join('')
             : order.map(k => paintCity(k)).join('');
         $('empty').style.display = shown ? 'none' : 'block';
-        $('count').textContent = T('{shown} of {total} destinations', { shown: shown, total: DATA.entries.length })
+        $('count').textContent = (BOOK_MODE === 'restaurants'
+            ? T('{shown} of {total} restaurants', { shown: shown, total: DATA.entries.filter(inBook).length })
+            : T('{shown} of {total} destinations', { shown: shown, total: DATA.entries.filter(inBook).length }))
             + (f.minStars ? ' · showing ' + '★'.repeat(f.minStars) + ' & up' : '');
         renderSuggest(q, shown);
         observeDestViews();
@@ -1190,6 +1214,17 @@
         const box = $('suggest');
         if (!box) return;
         if (!q || q.length < 3) { box.innerHTML = ''; clearTimeout(autoTimer); return; }
+        if (BOOK_MODE === 'restaurants') {
+            clearTimeout(autoTimer);
+            if (shown) { box.innerHTML = ''; return; }
+            box.dataset.q = q;
+            box.innerHTML = '<div class="sugmiss" style="background:#f3f1ec;border-color:#e6e2da">'
+                + '<span class="mline" style="color:#6b655b">' + T('Not in the book yet') + ': <b>'
+                + esc($('q').value.trim()) + '</b></span>'
+                + '<span class="createbtn" aria-disabled="true" style="background:#b9b3a8;cursor:default">'
+                + T('Restaurant listings are coming soon') + '</span></div>';
+            return;
+        }
         if (box.dataset.q !== q) {
             box.dataset.q = q;
             const label = $('q').value.trim();
@@ -1212,6 +1247,22 @@
                 suggestSearch(true);
             }, 900);
         }
+    }
+    function menuBlock(e){
+        const m = e.menu;
+        if (!m || !Array.isArray(m.sections) || !m.sections.length) return '';
+        const n = m.sections.reduce((a, x) => a + (x.items || []).length, 0);
+        let body = '<p class="menu-note">' + esc(m.no_prices
+            ? T('Menu as the restaurant publishes it, checked {date}. It lists no prices, so ask when you order.', { date: m.checked || '' })
+            : T('Menu as the restaurant publishes it, checked {date}.', { date: m.checked || '' })) + '</p>';
+        m.sections.forEach(x => {
+            body += '<h4 class="menu-sec">' + esc(x.name || '') + '</h4>'
+                 +  '<p class="menu-items">' + (x.items || []).map(esc).join(' · ') + '</p>';
+        });
+        if (m.source) body += '<p class="menu-src"><a href="' + esc(m.source) + '" target="_blank" rel="noopener">'
+                           + esc(T('Full menu on the restaurant site')) + ' ↗</a></p>';
+        return '<details class="story menu"' + (OPEN_MENU ? ' open' : '') + '><summary>'
+             + T('See the menu ({n} dishes)', { n: n }) + '</summary>' + body + '</details>';
     }
     function missBeacon(q, outcome){
         try {
@@ -1507,6 +1558,29 @@
         } catch (e) {
             $('count').textContent = 'Could not load the book, refresh to try again.';
             return;
+        }
+        // A link into the wrong book (an old ?q= for a restaurant) moves to the right one.
+        try {
+            const q0 = (new URLSearchParams(location.search).get('q') || '').trim().toLowerCase();
+            if (q0 && BOOK_MODE === 'destinations') {
+                const hit = e => (e.name + ' ' + (e.desc || '')).toLowerCase().includes(q0);
+                if (!DATA.entries.some(e => !isFood(e) && hit(e)) && DATA.entries.some(e => isFood(e) && hit(e))) {
+                    location.replace('/restaurant-book' + location.search); return;
+                }
+            }
+        } catch (e) {}
+        if (BOOK_MODE === 'restaurants') {
+            document.title = T('Restaurant Book, where to eat city by city') + ' · Plateau Strategy';
+            const h = document.querySelector('.page-title'); if (h) h.textContent = '🍽️ ' + T('Restaurant Book');
+            const sub = document.querySelector('.page-sub');
+            if (sub) {
+                sub.textContent = T('Where to eat, city by city, with the menu wherever the restaurant publishes one. One tap sends any place into your trip.');
+                const soon = document.createElement('div');
+                soon.innerHTML = '<span class="book-soon" aria-disabled="true">🍽️ ' + esc(T('Own a restaurant? Create your listing'))
+                    + ' · ' + esc(T('Coming soon')) + '</span>';
+                sub.after(soon);
+            }
+            const qi = $('q'); if (qi) qi.placeholder = T('A restaurant or a dish…');
         }
         initFilters();
         renderStarFilter();

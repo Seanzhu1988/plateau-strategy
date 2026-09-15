@@ -3950,3 +3950,31 @@ EXTRA.update({
     "Explore our museum guides": [
         "浏览我们的博物馆导览", "Explora nuestras guías de museos", "박물관 가이드 둘러보기", "Khám phá các hướng dẫn bảo tàng của chúng tôi"],
 })
+
+# [2026-09-15] Restaurant Book, the three-card Convenient inventory, and the tour's
+# restaurant link. The book's labels are built in script, where the build does not
+# look, so they are listed here by hand rather than left to show in English.
+EXTRA.update({
+    "Free to use, and no account needed.": ["免费使用，无需账号。", "Gratis y sin necesidad de cuenta.", "무료이며 계정이 필요 없습니다.", "Miễn phí, không cần tài khoản."],
+    "Attractions and landmarks, city by city, with local tips from a licensed guide and stories in nine languages. One tap sends any place into your trip.": ["按城市整理的景点与地标，附持证导游的当地小贴士和九种语言的故事。轻点一下，即可把任何地点加入你的行程。", "Atracciones y monumentos, ciudad por ciudad, con consejos locales de un guía con licencia e historias en nueve idiomas. Con un toque, cualquier lugar pasa a tu viaje.", "도시별 명소와 랜드마크를 공인 가이드의 현지 팁, 9개 언어로 된 이야기와 함께 소개합니다. 한 번만 누르면 어떤 장소든 여행 일정에 담깁니다.", "Điểm tham quan và công trình nổi bật theo từng thành phố, kèm mẹo địa phương từ hướng dẫn viên có giấy phép và câu chuyện bằng chín ngôn ngữ. Chạm một lần để thêm bất kỳ địa điểm nào vào chuyến đi."],
+    "Open the Destination Book →": ["打开目的地手册 →", "Abrir el libro de destinos →", "여행지 북 열기 →", "Mở sổ điểm đến →"],
+    "Restaurant Book": ["餐厅手册", "Libro de restaurantes", "식당 북", "Sổ nhà hàng"],
+    "Where to eat, city by city, with the menu wherever the restaurant publishes one. Pick a place and send it straight into your trip.": ["按城市查找用餐去处，餐厅公布了菜单的，这里都能看到。选一家，直接加入你的行程。", "Dónde comer, ciudad por ciudad, con el menú siempre que el restaurante lo publique. Elige un lugar y envíalo directo a tu viaje.", "도시별로 어디서 먹을지 찾아보세요. 식당이 메뉴를 공개했다면 메뉴도 볼 수 있습니다. 한 곳을 골라 바로 여행 일정에 담으세요.", "Ăn ở đâu, theo từng thành phố, kèm thực đơn khi nhà hàng có công bố. Chọn một nơi và thêm thẳng vào chuyến đi."],
+    "Open the Restaurant Book →": ["打开餐厅手册 →", "Abrir el libro de restaurantes →", "식당 북 열기 →", "Mở sổ nhà hàng →"],
+    "Airbnb": ["Airbnb", "Airbnb", "Airbnb", "Airbnb"],
+    "My Airbnb listing is on its way.": ["我的 Airbnb 房源即将上线。", "Mi alojamiento en Airbnb llegará pronto.", "제 Airbnb 숙소가 곧 공개됩니다.", "Chỗ ở Airbnb của tôi sắp ra mắt."],
+    "Coming soon": ["即将推出", "Próximamente", "곧 공개", "Sắp ra mắt"],
+    "{shown} of {total} restaurants": ["共 {total} 家，显示 {shown} 家", "{shown} de {total} restaurantes", "전체 {total}곳 중 {shown}곳", "{shown} trong {total} nhà hàng"],
+    "Restaurant listings are coming soon": ["餐厅入驻即将开放", "Los anuncios de restaurantes llegarán pronto", "식당 등록은 곧 열립니다", "Sắp mở đăng ký nhà hàng"],
+    "Menu as the restaurant publishes it, checked {date}. It lists no prices, so ask when you order.": ["菜单以餐厅公布的内容为准，核对于 {date}。菜单未标价格，点餐时请询问。", "Menú tal como lo publica el restaurante, revisado el {date}. No incluye precios, así que pregunta al pedir.", "식당이 공개한 메뉴이며 {date}에 확인했습니다. 가격은 나와 있지 않으니 주문할 때 물어보세요.", "Thực đơn theo công bố của nhà hàng, kiểm tra ngày {date}. Thực đơn không ghi giá, hãy hỏi khi gọi món."],
+    "Menu as the restaurant publishes it, checked {date}.": ["菜单以餐厅公布的内容为准，核对于 {date}。", "Menú tal como lo publica el restaurante, revisado el {date}.", "식당이 공개한 메뉴이며 {date}에 확인했습니다.", "Thực đơn theo công bố của nhà hàng, kiểm tra ngày {date}."],
+    "Full menu on the restaurant site": ["在餐厅官网查看完整菜单", "Menú completo en la web del restaurante", "식당 홈페이지에서 전체 메뉴 보기", "Thực đơn đầy đủ trên trang của nhà hàng"],
+    "See the menu ({n} dishes)": ["查看菜单（{n} 道菜）", "Ver el menú ({n} platos)", "메뉴 보기 ({n}개 요리)", "Xem thực đơn ({n} món)"],
+    "Restaurant Book, where to eat city by city": ["餐厅手册：按城市查找用餐去处", "Libro de restaurantes: dónde comer, ciudad por ciudad", "식당 북: 도시별 맛집 안내", "Sổ nhà hàng: ăn ở đâu theo từng thành phố"],
+    "Where to eat, city by city, with the menu wherever the restaurant publishes one. One tap sends any place into your trip.": ["按城市查找用餐去处，餐厅公布了菜单的，这里都能看到。轻点一下，即可把任何地点加入你的行程。", "Dónde comer, ciudad por ciudad, con el menú siempre que el restaurante lo publique. Con un toque, cualquier lugar pasa a tu viaje.", "도시별로 어디서 먹을지 찾아보세요. 식당이 메뉴를 공개했다면 메뉴도 볼 수 있습니다. 한 번만 누르면 어떤 장소든 여행 일정에 담깁니다.", "Ăn ở đâu, theo từng thành phố, kèm thực đơn khi nhà hàng có công bố. Chạm một lần để thêm bất kỳ địa điểm nào vào chuyến đi."],
+    "Own a restaurant? Create your listing": ["您经营餐厅？创建您的餐厅页面", "¿Tienes un restaurante? Crea tu anuncio", "식당을 운영하시나요? 등록하기", "Bạn có nhà hàng? Tạo trang của bạn"],
+    "A restaurant or a dish…": ["餐厅或菜品…", "Un restaurante o un plato…", "식당 또는 요리…", "Nhà hàng hoặc món ăn…"],
+    "See the menu in the Restaurant Book": ["在餐厅手册中查看菜单", "Ver el menú en el libro de restaurantes", "식당 북에서 메뉴 보기", "Xem thực đơn trong sổ nhà hàng"],
+    "Open in the Restaurant Book": ["在餐厅手册中打开", "Abrir en el libro de restaurantes", "식당 북에서 열기", "Mở trong sổ nhà hàng"],
+    "Not in the book yet": ["手册里还没有", "Aún no está en el libro", "아직 북에 없습니다", "Chưa có trong sổ"],
+})

@@ -165,6 +165,7 @@
                     <p class="tw-noguide" id="twNoGuide" hidden>No recording for this stop yet.</p>
                     <p id="twNowDesc"></p>
                     <p class="tw-tip" id="twTip" hidden></p>
+                    <p class="tw-tip" id="twBook" hidden></p>
                 </div>
             </div>
             <div>
@@ -755,6 +756,17 @@
         var tip = document.getElementById("twTip");
         if (entry && entry.tip) { tip.hidden = false; tip.innerHTML = ""; var b = document.createElement("b"); b.textContent = T("Tip") + " "; tip.appendChild(b); tip.appendChild(document.createTextNode(entry.tip)); }
         else { tip.hidden = true; tip.textContent = ""; }
+        /* A FOOD STOP OPENS ITS RESTAURANT BOOK PAGE. [SEAN 2026-09-15 "they can
+           click and redirect to the resturant book"] Cleared on every path, like
+           the tip above it, so a restaurant link never lingers on the next stop. */
+        var bookLink = document.getElementById("twBook");
+        if (entry && (entry.type === "restaurant" || entry.cat === "food")) {
+            bookLink.hidden = false; bookLink.innerHTML = "";
+            var bl = document.createElement("a");
+            bl.href = "/restaurant-book?q=" + encodeURIComponent(entry.name || s.name) + (entry.menu ? "&menu=1" : "");
+            bl.textContent = entry.menu ? T("See the menu in the Restaurant Book") : T("Open in the Restaurant Book");
+            bookLink.appendChild(bl);
+        } else { bookLink.hidden = true; bookLink.textContent = ""; }
         showStopSlideshow(s, entry);
 
         silence();

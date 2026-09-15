@@ -644,6 +644,7 @@ TRAFFIC_MAX_DAYS = 120  # bound file growth; older days are just dropped
 # Pages tracked individually for the "which tool" breakdown; every other
 # page rolls into a single "other" bucket so the archive table stays short.
 TRAFFIC_TOOL_PATHS = {"/trip-planner": "trip_planner", "/destination-book": "destination_book",
+                       "/restaurant-book": "restaurant_book",
                        "/favorite-place": "favorite_place",
                        "/met": "met_map", "/walks": "walks_hub"}
 
@@ -3375,6 +3376,7 @@ PUBLIC_PAGES = [
     ("/", "1.0", "daily"),
     ("/trip-planner", "0.9", "weekly"),
     ("/destination-book", "0.9", "daily"),
+    ("/restaurant-book", "0.9", "daily"),
     ("/destinations", "0.8", "weekly"),
     ("/road-trip", "0.9", "weekly"),
     ("/factor-clock", "0.8", "weekly"),
@@ -3397,7 +3399,6 @@ PUBLIC_PAGES = [
     # a social post. For a licensed guide whose tours are the product, that
     # is the front door bricked up. [SEAN 2026-09-05: "check all of them".]
     ("/tours", "0.9", "weekly"),
-    ("/tours/seattle", "0.9", "weekly"),
     # THE SAME GAP, FOUND A THIRD TIME AND THEN CLOSED FOR GOOD.
     # [SEAN 2026-09-09: "mets museum had pages missing can you check that too".]
     # He was right, and it was not only the Met: ten pages answered 200, carried
@@ -3420,7 +3421,6 @@ PUBLIC_PAGES = [
     # /tour/<id>; they are added to the sitemap below, from the file, so a
     # tour cannot be built and left unreachable (TOUR_STANDARD.md, "a way in").
     ("/agent", "0.6", "monthly"),
-    ("/renter", "0.6", "monthly"),
     ("/deflator", "0.5", "monthly"),
     ("/board", "0.4", "monthly"),
 ]
@@ -3730,6 +3730,9 @@ SITE_MAP = [
         ("/destination-book", "Destination Book",
          "The places worth the detour, with a spoken guide for each in your "
          "own language."),
+        ("/restaurant-book", "Restaurant Book",
+         "Where to eat, city by city, with the menu wherever the restaurant "
+         "publishes one."),
         ("/walks", "The Walks",
          "Short walks worth doing on foot, timed and saved to your account."),
         ("/met", "The Met, corridor by corridor",
@@ -3749,12 +3752,10 @@ SITE_MAP = [
          "The people who price an opinion on an idea, and how to become one."),
     ]),
     ("Ride with us", "Licensed, insured, and driven by a licensed guide.", [
-        ("/tours/seattle", "Guided Seattle tours", "Seattle on foot with a licensed guide."),
         ("/tours", "Explore tours by city", "Self-guided walks, destination photographs and landmark stories."),
         ("/book", "Book a Ride", "Airport runs, tours, and long distance."),
         ("/rent-a-tesla", "Rent a Tesla", "The car, the rates and the rules."),
         ("/driver", "For Drivers", "Drive with us."),
-        ("/renter", "For Renters", "Rent from us."),
     ]),
     ("How this works", "The parts we are willing to show.", [
         ("/how-built", "How this was built", "The tools, in plain language."),
@@ -3850,7 +3851,9 @@ def llms_txt():
   finds the fuel, food, rest stops and viewpoints near your actual route,
   grouped by how many hours into the drive they are.
 - [Destination Book](%(o)s/destination-book): A growing guidebook of attractions
-  and restaurants with local tips from a licensed guide.
+  with local tips from a licensed guide.
+- [Restaurant Book](%(o)s/restaurant-book): Where to eat, city by city, with
+  menus where the restaurant publishes one.
 - [The Factor Clock](%(o)s/factor-clock): A prediction clock scored against what
   actually happened, and honest about when it does not know.
 - [The Walking Guide](%(o)s/walk): A spoken guide that names what is around you
@@ -4338,6 +4341,40 @@ def road_trip_page():
 def destination_book_page():
     """Free tool: curated guidebook of attractions + restaurants; feeds the trip planner."""
     return send_file(os.path.join(BASE_DIR, "destination-book.html"))
+
+
+# ONE PAGE, TWO BOOKS. [SEAN 2026-09-15 "separate restaurants from destination
+# book and any food related infuse them in to restaurant book"] The Restaurant
+# Book is destination-book.html in restaurants mode (the page reads its own
+# path). Only the head is rewritten here, so a search engine sees a page with
+# its own title, description and canonical address instead of a duplicate of
+# the Destination Book. Each rewrite is counted: if the page's head changes
+# shape and a pattern stops matching, the page is still served, and the miss
+# is logged rather than shipped silently as a duplicate.
+_RESTAURANT_BOOK_HEAD = [
+    (r"<title>[^<]*</title>", "<title>Restaurant Book, where to eat city by city &middot; Plateau Strategy</title>"),
+    (r'(<meta name="description" content=")[^"]*(")', r"\1Where to eat, city by city, with menus where the restaurant publishes one and local tips from a licensed guide. One tap sends any place into your trip. Free, no account.\2"),
+    (r'(<link rel="canonical" href=")[^"]*(")', r"\1https://plateaustrategy.io/restaurant-book\2"),
+    (r'(<meta property="og:url" content=")[^"]*(")', r"\1https://plateaustrategy.io/restaurant-book\2"),
+    (r'(<meta property="og:title" content=")[^"]*(")', r"\1Restaurant Book, where to eat city by city\2"),
+    (r'(<meta property="og:description" content=")[^"]*(")', r"\1Where to eat, city by city, with menus where the restaurant publishes one.\2"),
+    (r'(<meta name="twitter:title" content=")[^"]*(")', r"\1Restaurant Book, where to eat city by city\2"),
+    (r'(<meta name="twitter:description" content=")[^"]*(")', r"\1Where to eat, city by city, with menus where the restaurant publishes one.\2"),
+    (r'"name": "Destination Book"', '"name": "Restaurant Book"'),
+    (r'"url": "https://plateaustrategy.io/destination-book"', '"url": "https://plateaustrategy.io/restaurant-book"'),
+]
+
+
+@app.route("/restaurant-book")
+def restaurant_book_page():
+    """Free tool: restaurants and food, split out of the Destination Book, with menus."""
+    with open(os.path.join(BASE_DIR, "destination-book.html"), encoding="utf-8") as fh:
+        html = fh.read()
+    for pat, rep in _RESTAURANT_BOOK_HEAD:
+        html, n = re.subn(pat, rep, html, count=1)
+        if not n:
+            app.logger.warning("restaurant-book head rewrite missed: %s", pat)
+    return Response(html, mimetype="text/html")
 
 
 @app.route("/favorite-place")
@@ -4843,10 +4880,12 @@ def destination_page(slug):
         out.append('<section><h2>The story in other languages</h2>%s</section>' % "".join(others))
     q = urllib.parse.quote(name)
     out.append('<div class="cta">'
-               '<a class="primary" href="/destination-book?q=%s&utm_source=destination_page">'
-               'Open in the Destination Book &rarr;</a>'
+               '<a class="primary" href="/%s?q=%s&utm_source=destination_page">'
+               'Open in the %s &rarr;</a>'
                '<a href="/trip-planner?utm_source=destination_page">Plan a day around it &rarr;</a>'
-               '</div>' % q)
+               '</div>' % (("restaurant-book", q, "Restaurant Book")
+                          if (kind == "restaurant" or e.get("cat") == "food")
+                          else ("destination-book", q, "Destination Book")))
 
     # The three nearest public places in the same city, so every page leads on.
     near = []
