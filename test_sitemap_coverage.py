@@ -44,6 +44,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 DELIBERATE = {
     "/books": "Sean's own accounting; its data API is @owner_required",
     "/driver": "the driver portal, a login surface, not a page to be found",
+    "/renter": "the same page as /driver; the For Renters listing came off "
+               "the site map 2026-09-15 at Sean's word, the portal stays",
     "/partners": "the partner pipeline, sent to a hotel by hand, not searched for",
     "/guide-studio": "a build tool for making trips, not a page to read",
 }

@@ -615,5 +615,6 @@
  "A restaurant or a dish…": "Ein Restaurant oder ein Gericht…",
  "See the menu in the Restaurant Book": "Speisekarte im Restaurant-Buch ansehen",
  "Open in the Restaurant Book": "Im Restaurant-Buch öffnen",
- "Not in the book yet": "Noch nicht im Buch"
+ "Not in the book yet": "Noch nicht im Buch",
+ "~{mins} min visit": "Besuch etwa {mins} Min."
 }

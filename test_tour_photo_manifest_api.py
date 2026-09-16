@@ -15,6 +15,13 @@ with patch('requests.sessions.Session.request', side_effect=AssertionError('No n
 
 ROOT = Path(__file__).resolve().parent
 
+# A tour is usable before it is photographed: the page says "A photograph of
+# this stop is not available yet" and carries on. A trail named here is one we
+# know has no licensed photographs yet. Naming it is deliberate, so a new tour
+# cannot slip past this guard unnoticed, and the moment its photographs land
+# the name comes out and every row is checked like all the others.
+NO_PHOTOS_YET = {'newport': 'built 2026-09-15, no licensed photographs sourced yet'}
+
 
 class PhotoCatalogueAPITests(unittest.TestCase):
     def setUp(self):
@@ -28,6 +35,10 @@ class PhotoCatalogueAPITests(unittest.TestCase):
     def test_every_stop_has_an_exact_private_preview_photo_with_credit(self):
         count = images = 0
         for trail in self.seed['trails']:
+            if trail['id'] in NO_PHOTOS_YET:
+                self.assertNotIn(trail['id'], self.manifest['trails'],
+                                 '%s is listed as unphotographed but has manifest rows' % trail['id'])
+                continue
             for stop in trail.get('stops', []):
                 row = self.manifest['trails'][trail['id']][str(stop['n'])]
                 self.assertEqual(row['name'], stop['name'])

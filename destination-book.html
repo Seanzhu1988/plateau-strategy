@@ -39,6 +39,11 @@
             box-shadow: 0 4px 16px rgba(15,23,42,0.05); padding: 1rem 1.2rem; margin-bottom: 1.2rem; }
         .frow { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 0.6rem; }
         .frow:last-child { margin-bottom: 0; }
+        /* An author `display` beats the UA sheet's `[hidden] { display: none }`,
+           so the Type and Category rows this page hides per book stayed on
+           screen with the attribute set. Measured on /restaurant-book: both
+           rows 32px tall and visible. Hide them for real. */
+        .frow[hidden] { display: none; }
         /* The chips are injected into bare spans, so they flowed as inline text
            at the default line-height, and a 29px chip on a ~19px line sits on
            top of the row below it. They overlapped each other on the live page.
@@ -470,6 +475,10 @@
 
     const $ = id => document.getElementById(id);
     function fmt(m){ m = Math.round(m); return Math.floor(m/60) + ':' + ('0' + (m % 60)).slice(-2); }
+    /* Not every place publishes a closing time, and 107 entries in the book
+       carry none. fmt(undefined) is NaN, so those cards read "Open till
+       NaN:aN" on the live site. Say nothing about hours we do not have. */
+    function openTill(e){ return Number.isFinite(e.close) ? T('Open till {time} · ', { time: fmt(e.close) }) : ''; }
     // Strings this page assembles itself go through the shared formatter when
     // i18n.js is present, and fall straight through to English when it is not.
     function T(pattern, vals) {
@@ -1014,12 +1023,14 @@
                 + menuBlock(e)
                 + '<p class="meta">'
                 +   (e.typical_visit
-                        ? T('Open till {time} · ', { time: fmt(e.close) })
+                        ? openTill(e)
                           + '<span class="stay-crowd">'
                           + T('👥 travelers stay ~{stay}', { stay: stayLabel(e.typical_visit) })
                           + '</span> <span style="color:#6b655b">(' + e.visit_n + ')</span>'
-                        : T('Open till {time} · ~{mins} min visit',
-                            { time: fmt(e.close), mins: e.visit }))
+                        : (Number.isFinite(e.close)
+                            ? T('Open till {time} · ~{mins} min visit',
+                                { time: fmt(e.close), mins: e.visit })
+                            : T('~{mins} min visit', { mins: e.visit })))
                 + '</p>'
                 + advanceRow(e)
                 + diningRow(e)

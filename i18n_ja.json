@@ -1046,5 +1046,6 @@
  "A restaurant or a dish…": "レストランや料理…",
  "See the menu in the Restaurant Book": "レストラン・ブックでメニューを見る",
  "Open in the Restaurant Book": "レストラン・ブックで開く",
- "Not in the book yet": "まだブックにありません"
+ "Not in the book yet": "まだブックにありません",
+ "~{mins} min visit": "所要およそ {mins} 分"
 }

@@ -12,12 +12,12 @@ const payload = JSON.parse(read('trails.json'));
 const script = read('tour-directory-preview.js');
 const css = read('tour-directory-preview.css');
 
-test('catalog excludes the Ivy collection and retains 12 routes in 11 cities', async () => {
+test('catalog excludes the Ivy collection and retains 13 routes in 12 cities', async () => {
   const d = await dataReady, tours = d.buildDirectoryData(payload);
-  assert.equal(tours.length, 12);
-  assert.equal(d.citiesFor(tours).length, 11);
+  assert.equal(tours.length, 13);
+  assert.equal(d.citiesFor(tours).length, 12);
   assert.equal(tours.some(t => t.id === 'ivy-league'), false);
-  assert.equal(tours.flatMap(t => t.stops).length, 148);
+  assert.equal(tours.flatMap(t => t.stops).length, 163);
   assert.equal(d.citiesFor(tours)[0], 'dc');
 });
 
@@ -51,7 +51,7 @@ test('search supports city, school, combined terms and case/diacritic folding', 
   assert.deepEqual(d.searchTours(tours, 'Boston Old North').map(r => r.matchedStops), [[13]]);
   assert.deepEqual(d.searchTours(tours, 'Princeton', 'boston'), []);
   assert.deepEqual(d.searchTours(tours, 'not-a-real-destination-xyz'), []);
-  assert.equal(d.searchTours(tours, '').length, 12);
+  assert.equal(d.searchTours(tours, '').length, 13);
   assert.equal(d.searchTours(tours, '', 'philadelphia').length, 2);
 });
 

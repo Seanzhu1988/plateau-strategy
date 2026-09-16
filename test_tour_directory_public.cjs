@@ -8,10 +8,10 @@ const moduleFrom = name => import('data:text/javascript;base64,' + Buffer.from(r
 const ready = moduleFrom('tour-directory-data.js');
 const seed = JSON.parse(read('trails.json'));
 
-test('public directory preserves all 12 routes, 148 ordered stops and source narratives', async () => {
+test('public directory preserves all 13 routes, 163 ordered stops and source narratives', async () => {
   const d = await ready, before = JSON.stringify(seed), tours = d.buildDirectoryData(seed);
-  assert.equal(tours.length, 12); assert.equal(d.citiesFor(tours).length, 11);
-  assert.equal(tours.flatMap(t => t.stops).length, 148);
+  assert.equal(tours.length, 13); assert.equal(d.citiesFor(tours).length, 12);
+  assert.equal(tours.flatMap(t => t.stops).length, 163);
   for (const tour of tours) {
     const original = seed.trails.find(t => t.id === tour.id);
     assert.deepEqual(tour.stops.map(s => [s.n, s.name, s.description]), original.stops.map(s => [s.n, d.cleanCopy(s.name), d.cleanCopy(s.desc)]));

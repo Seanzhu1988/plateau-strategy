@@ -2029,6 +2029,11 @@ EXTRA.update({
     "Open till {time} · ": [
         "开放至 {time} · ", "Abierto hasta las {time} · ",
         "{time}까지 · ", "Mở tới {time} · "],
+    "~{mins} min visit": [
+        "建议游览约 {mins} 分钟",
+        "visita de ~{mins} min",
+        "관람 약 {mins}분",
+        "tham quan khoảng {mins} phút"],
     "👥 travelers stay ~{stay}": [
         "👥 旅客平均待约 {stay}",
         "👥 los viajeros se quedan ~{stay}",
