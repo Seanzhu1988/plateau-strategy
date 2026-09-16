@@ -2029,6 +2029,26 @@ EXTRA.update({
     "Open till {time} · ": [
         "开放至 {time} · ", "Abierto hasta las {time} · ",
         "{time}까지 · ", "Mở tới {time} · "],
+    "Convenient inventory · Plateau Strategy": [
+        "便捷库存 · Plateau Strategy",
+        "Inventario práctico · Plateau Strategy",
+        "편리한 인벤토리 · Plateau Strategy",
+        "Kho tiện lợi · Plateau Strategy"],
+    "NEW YORK CITY": [
+        "纽约市",
+        "NUEVA YORK",
+        "뉴욕",
+        "THÀNH PHỐ NEW YORK"],
+    "The plaque on the granite wall says plainly what you are looking at: the triumph of good over evil. The winged archangel Michael has just beheaded Satan. Look under the claw of the giant crab and Satan's head is still hanging there, while the body falls away into the water below.": [
+        "花岗岩墙上的铭牌把这件作品说得很清楚：善战胜恶。展开双翼的大天使米迦勒刚刚砍下了撒旦的头。看看那只巨蟹的螯下，撒旦的头颅还挂在那里，身体则坠向下面的水中。",
+        "La placa del muro de granito dice sin rodeos lo que está viendo: el triunfo del bien sobre el mal. El arcángel alado Miguel acaba de decapitar a Satanás. Mire bajo la pinza del cangrejo gigante y verá la cabeza de Satanás todavía colgando allí, mientras el cuerpo cae al agua de abajo.",
+        "화강암 벽에 붙은 명판이 무엇을 보고 있는지 분명하게 알려 줍니다. 선이 악을 이기는 장면입니다. 날개 달린 대천사 미카엘이 방금 사탄의 목을 베었습니다. 거대한 게의 집게발 아래를 보면 사탄의 머리가 아직 매달려 있고, 몸은 아래 물속으로 떨어지고 있습니다.",
+        "Tấm bảng trên bức tường đá granit nói rõ bạn đang nhìn thấy gì: cái thiện thắng cái ác. Tổng lãnh thiên thần Michael có cánh vừa chặt đầu Satan. Hãy nhìn dưới càng con cua khổng lồ, đầu của Satan vẫn còn treo ở đó, còn thân thì rơi xuống làn nước bên dưới."],
+    "Then work downward and outward. The pedestal Michael rises from is twisted into the double helix of DNA, the crab above it stands for life coming out of the sea and the struggle there, and when the water runs, four cascades fall into a churning pool meant for the chaos of the early Earth. Nine giraffes move around the centre, chosen because they are among the most peaceable animals alive, and one has laid its head against the archangel. A smiling sun faces east, a sleeping moon faces west, and beside the sun a lion and a lamb rest together. The 120 small bronze animals ringing the fountain were sculpted by schoolchildren over five years, which is why the monument is dedicated to the creativity of the world's children.": [
+        "然后顺着往下、往外看。米迦勒脚下的底座扭成DNA双螺旋的形状，上方的巨蟹代表生命从海洋和挣扎中诞生；喷泉开启时，四道水流落进翻腾的水池，象征地球最初的混沌。九只长颈鹿在中心四周走动，选它们是因为它们属于最温和的动物，其中一只把头靠在大天使身上。一轮带笑的太阳朝东，一弯沉睡的月亮朝西，太阳旁边还卧着一只狮子和一只羊羔。环绕喷泉的120只小青铜动物，是孩子们用五年时间做出来的，这也是这座纪念碑献给全世界儿童创造力的原因。",
+        "Después siga hacia abajo y hacia afuera. El pedestal del que se alza Miguel está retorcido como la doble hélice del ADN, el cangrejo que hay encima representa la vida que sale del mar y la lucha que hay en ello, y cuando corre el agua, cuatro cascadas caen en una poza revuelta que evoca el caos de la Tierra primitiva. Nueve jirafas se mueven alrededor del centro, elegidas por estar entre los animales más pacíficos que existen, y una ha apoyado la cabeza en el arcángel. Un sol sonriente mira al este, una luna dormida mira al oeste, y junto al sol descansan juntos un león y un cordero. Los 120 animalitos de bronce que rodean la fuente los esculpieron niños de escuela a lo largo de cinco años, y por eso el monumento está dedicado a la creatividad de los niños del mundo.",
+        "그다음에는 아래로, 바깥으로 훑어보세요. 미카엘이 서 있는 받침대는 DNA 이중나선처럼 비틀려 있고, 그 위의 게는 바다에서 나온 생명과 그 투쟁을 뜻합니다. 물이 흐르면 네 줄기 물살이 소용돌이치는 웅덩이로 떨어져 초기 지구의 혼돈을 나타냅니다. 기린 아홉 마리가 중앙을 돌고 있는데, 가장 온순한 동물에 속해서 선택되었고 그중 한 마리는 대천사에게 머리를 기대고 있습니다. 웃는 해는 동쪽을, 잠든 달은 서쪽을 향하고, 해 옆에는 사자와 어린 양이 함께 쉬고 있습니다. 분수를 둘러싼 120개의 작은 청동 동물은 학생들이 5년에 걸쳐 만든 것으로, 이 기념물이 세계 어린이의 창의성에 헌정된 이유입니다.",
+        "Rồi hãy nhìn dần xuống dưới và ra ngoài. Bệ đỡ mà Michael đứng lên được xoắn thành chuỗi xoắn kép DNA, con cua phía trên tượng trưng cho sự sống đi ra từ biển và cuộc vật lộn ở đó, và khi nước chảy, bốn dòng thác đổ vào một hồ nước cuộn xoáy gợi lại sự hỗn mang của Trái Đất thuở đầu. Chín con hươu cao cổ đi quanh phần giữa, được chọn vì chúng thuộc hàng những loài vật hiền hòa nhất, và một con tựa đầu vào vị tổng lãnh thiên thần. Một mặt trời tươi cười hướng về phía đông, một mặt trăng đang ngủ hướng về phía tây, và cạnh mặt trời có một con sư tử và một con cừu nằm nghỉ bên nhau. 120 con vật nhỏ bằng đồng vây quanh đài phun nước do các em học sinh nặn trong suốt năm năm, và đó là lý do công trình này được dành tặng cho sức sáng tạo của trẻ em toàn thế giới."],
     "~{mins} min visit": [
         "建议游览约 {mins} 分钟",
         "visita de ~{mins} min",

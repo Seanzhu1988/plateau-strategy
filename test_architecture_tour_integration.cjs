@@ -232,9 +232,14 @@ test('Peace Fountain offers bilingual sourced visitor information and remains a 
   for (const id of ['peaceFountainPhotoBadge', 'peaceFountainPhotoTitle', 'peaceFountainOrigin',
     'peaceFountainLook', 'worldTradeCenterLinkTitle', 'worldTradeCenterLinkCopy', 'worldTradeCenterExplore']) h.root('div', id);
   vm.runInContext(between(landmarks, '// BEGIN LANDMARK_VISITOR_COPY', '// END LANDMARK_VISITOR_COPY'), h.ctx);
-  assert.match(h.document.getElementById('peaceFountainOrigin').textContent, /Greg Wyatt.*bronze.*1985/);
+  // The copy carried a catalogue introduction, who made it and for which
+  // anniversary, until Sean asked for the story instead 2026-09-15. The
+  // sculptor and the date did not disappear, they moved to the facts line
+  // below the paragraphs, which is asserted here so it cannot go missing.
+  assert.match(landmarks, /Greg Wyatt · bronze · 1985/);
+  assert.match(h.document.getElementById('peaceFountainOrigin').textContent, /archangel Michael.*Satan/);
   assert.equal(h.document.getElementById('peaceFountainPhotoBadge').textContent, 'Photograph of the monument');
   h.setLanguage('zh'); h.fireDocument('psx:lang');
-  assert.match(h.document.getElementById('peaceFountainOrigin').textContent, /1985年.*青铜/);
+  assert.match(h.document.getElementById('peaceFountainOrigin').textContent, /米迦勒.*撒旦/);
   assert.match(h.document.getElementById('worldTradeCenterExplore').href, /model=world-trade-center&lang=zh/);
 });

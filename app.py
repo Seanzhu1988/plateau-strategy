@@ -643,7 +643,8 @@ def _save(path, items):
 TRAFFIC_MAX_DAYS = 120  # bound file growth; older days are just dropped
 # Pages tracked individually for the "which tool" breakdown; every other
 # page rolls into a single "other" bucket so the archive table stays short.
-TRAFFIC_TOOL_PATHS = {"/trip-planner": "trip_planner", "/destination-book": "destination_book",
+TRAFFIC_TOOL_PATHS = {"/trip-planner": "trip_planner", "/inventory": "inventory",
+                       "/destination-book": "destination_book",
                        "/restaurant-book": "restaurant_book",
                        "/favorite-place": "favorite_place",
                        "/met": "met_map", "/walks": "walks_hub"}
@@ -3375,6 +3376,7 @@ setTimeout(function(){b.textContent='Copy the post';},1500);}</script>
 PUBLIC_PAGES = [
     ("/", "1.0", "daily"),
     ("/trip-planner", "0.9", "weekly"),
+    ("/inventory", "0.9", "weekly"),
     ("/destination-book", "0.9", "daily"),
     ("/restaurant-book", "0.9", "daily"),
     ("/destinations", "0.8", "weekly"),
@@ -3727,6 +3729,9 @@ SITE_MAP = [
         ("/trip-planner", "Trip Planner",
          "Build a day, and it works out the driving, the traffic by hour, the "
          "ferries and the opening times, then offers a tighter order."),
+        ("/inventory", "Convenient inventory",
+         "Everything you can use today on one page: both books, and the "
+         "walking guides and 3D models behind them."),
         ("/destination-book", "Destination Book",
          "The places worth the detour, with a spoken guide for each in your "
          "own language."),
@@ -3850,6 +3855,8 @@ def llms_txt():
 - [Road Trip Planner](%(o)s/road-trip): For long drives. Give it two points and it
   finds the fuel, food, rest stops and viewpoints near your actual route,
   grouped by how many hours into the drive they are.
+- [Convenient inventory](%(o)s/inventory): One page listing everything a visitor
+  can use today, the two books and every walking guide and 3D model.
 - [Destination Book](%(o)s/destination-book): A growing guidebook of attractions
   with local tips from a licensed guide.
 - [Restaurant Book](%(o)s/restaurant-book): Where to eat, city by city, with
@@ -4335,6 +4342,17 @@ def road_trip_page():
     The city planner answers 'what can I reach from here'; this answers
     'what is on the way'."""
     return send_file(os.path.join(BASE_DIR, "road-trip.html"))
+
+
+# THE INVENTORY, A PAGE NOT AN ANCHOR. [SEAN 2026-09-15: "when click on
+# convenient inventory. It should show a fresh new page that contains
+# everything instead of jumping around it looks very unprofessional".] The
+# homepage button used to scroll to a section of itself; it is a link now, and
+# everything that section held lives here.
+@app.route("/inventory")
+def inventory_page():
+    """Everything a visitor can use today, on one page: the two books and the guides."""
+    return send_file(os.path.join(BASE_DIR, "inventory.html"))
 
 
 @app.route("/destination-book")

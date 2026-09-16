@@ -54,6 +54,29 @@
   --m-realestate:var(--m-rose-deep);
   --m-finance:   var(--m-rose-deep);
   --m-accent:    var(--m-rose-deep);
+
+  /* ---------- THE PORTAL COLOUR ----------
+     [SEAN 2026-09-15: "its pretty hard to find portal in the website i think
+     can you highlight their color so it will be easier to find? I would like
+     deep green or hermes orange".]
+
+     He is right, and the cause was measurable rather than a matter of taste:
+     the secondary actions were painted --m-muted grey and only turned navy on
+     hover, so a button like "Explore tours by city" read as a caption until
+     you touched it. Colour now marks the things you can click, and ONLY those.
+     Headings, section labels, figures and rules keep the navy, so the page
+     does not turn into one colour shouting.
+
+     ONE VALUE SWITCHES THE WHOLE SITE. Set --m-portal and every link, card
+     link and button follows. Set it back to var(--m-rose-deep) to undo all of
+     this in one line.
+
+       deep green    #0F5132   9.3:1 on white, passes AA and AAA at any size
+       hermes orange #F37021   2.9:1 on white, FAILS AA for normal text
+       darkened      #C2410C   5.2:1 on white, passes AA, still reads orange
+
+     Compare them on real components at /portal-preview. */
+  --m-portal: #0F5132;
   --m-accent-ink:#ffffff;
 
   --m-radius:    10px;
@@ -286,9 +309,9 @@ a.btn, a.btn.blue, a.btn.dark, a.btn-blue, a.cta,
 button:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.loc-btn):not(.chip):not(.here-btn) {
   background: transparent !important;
   background-image: none !important;
-  color: var(--m-ink) !important;
+  color: var(--m-portal) !important;
   border: 0 !important;
-  border-bottom: 2px solid var(--m-rose) !important;
+  border-bottom: 2px solid var(--m-portal) !important;
   border-radius: 0 !important;
   padding: .1rem 0 .18rem !important;
   font-family: var(--m-sans) !important;
@@ -407,7 +430,7 @@ button[title='Remove']:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.
    So the secondary keeps the underline language but at half the weight and
    in muted ink. The primary now leads on emphasis rather than on width. */
 a.psx-btn-ghost:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip), .btn.ghost:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip), .btn-ghost:not(.i18n-opt):not([id="i18nBtn"]):not(.cancel-btn):not(.pk-bubble):not([id="pollock"]):not(.chip) {
-  color: var(--m-muted) !important;
+  color: var(--m-portal) !important;
   border-bottom: 1px solid var(--m-line-firm) !important;
   border-top: 0 !important; border-left: 0 !important; border-right: 0 !important;
   font-weight: 600 !important;
@@ -475,7 +498,7 @@ a.btn:hover, .btn.dark:hover, .btn.blue:hover, .cta:hover {
 }
 
 /* ---------- links ---------- */
-a { color: var(--m-accent); }
+a { color: var(--m-portal); }
 p a, .sub a, .summary a, .note a {
   color: var(--m-accent) !important;
   text-underline-offset: 3px; text-decoration-thickness: 1px;

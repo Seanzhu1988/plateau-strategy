@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convenient inventory &middot; Plateau Strategy</title>
+    <meta name="description" content="Everything you can use today in one place: the Destination Book, the Restaurant Book, and the walking guides and 3D models behind them. Free, no account needed.">
+    <link rel="canonical" href="https://plateaustrategy.io/inventory">
+    <meta name="theme-color" content="#14110c">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Plateau Strategy Solution Lab">
+    <meta property="og:url" content="https://plateaustrategy.io/inventory">
+    <meta property="og:title" content="Convenient inventory">
+    <meta property="og:description" content="Everything you can use today in one place: the Destination Book, the Restaurant Book, and the walking guides and 3D models behind them. Free, no account needed.">
+    <meta property="og:image" content="https://plateaustrategy.io/share-card.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Convenient inventory">
+    <meta name="twitter:description" content="Everything you can use today in one place: the Destination Book, the Restaurant Book, and the walking guides and 3D models behind them. Free, no account needed.">
+    <meta name="twitter:image" content="https://plateaustrategy.io/share-card.jpg">
+    <link rel="icon" type="image/svg+xml" href="/plateau-logo.svg">
+    <link rel="stylesheet" href="/paper.css">
+    <link rel="stylesheet" href="/modern.css">
+    <style>
+      /* THIS PAGE EXISTS BECAUSE THE INVENTORY WAS AN ANCHOR.
+         [SEAN 2026-09-15: "when click on convenient inventory. It should show a
+         fresh new page that contains everything instead of jumping around it
+         looks very unprofessional".] The button used to scroll the homepage to
+         #psx-try, which left the visitor mid-document with the hero half off
+         the top. Everything that lived in that section lives here now, at its
+         own address, and the homepage no longer carries it at all.
+
+         The classes are the ones paper.css and modern.css already paint, so
+         the cards look exactly as they did on the homepage. Only the things
+         this page owns are written here. */
+
+      /* THE MASTHEAD. paper.css only sizes header img below 560px, so without
+         this the logo SVG painted at its own size: measured 968px square,
+         filling the whole first screen. Every standalone page on this site
+         carries its own masthead rule; this is the Destination Book's, so the
+         two pages wear the same one. */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          background: #faf8f4; color: #14110c; min-height: 100vh; }
+      header { background: #14110c; color: #fff; padding: 1rem 2rem; display: flex;
+          align-items: center; gap: 0.7rem; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+          position: sticky; top: 0; z-index: 100; }
+      header img { height: 42px; width: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); }
+      header .brand { font-weight: 800; font-size: 1.2rem; }
+      header .right { margin-left: auto; display: flex; gap: 1.2rem; }
+      header a { color: #6b655b; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+      header a:hover { color: #fff; }
+
+      .inv-wrap { max-width: 1180px; margin: 0 auto; padding: 2.6rem 1.25rem 4rem; }
+      .inv-head { max-width: 760px; margin: 0 auto; text-align: center; }
+      .inv-eyebrow { display: block; font-size: 0.72rem; font-weight: 700;
+          letter-spacing: 0.14em; color: var(--psx-accent, #1f3a5f); }
+      .inv-h1 { margin: 0.6rem 0 0; font-weight: 800; letter-spacing: -0.02em;
+          font-size: clamp(1.9rem, 3.6vw, 2.6rem); line-height: 1.14;
+          color: var(--psx-ink, #0b0809); }
+
+      /* THREE CARDS, THREE COLUMNS. paper.css sets a four column grid with
+         !important for the homepage, which is right there and wrong here: with
+         three cards it left a 230px empty column on the right, measured on the
+         live page. An id beats a class, so this wins without another
+         !important war. */
+      #inv-books.psx-cards { max-width: 1180px; margin: 2.4rem auto 0; display: grid;
+          grid-template-columns: repeat(3, 1fr) !important; gap: 1.5rem; }
+      @media (max-width: 860px) {
+          #inv-books.psx-cards { grid-template-columns: 1fr !important; max-width: 460px; }
+      }
+
+      /* The guides below the books. One family: same frame, same weight,
+         whether the subject is a museum, a street or a bridge. Carried over
+         from the homepage section with the rules it actually used. */
+      .mfx-card { max-width: 1180px; margin: 1.1rem auto 0; background: var(--psx-card, #fff);
+          border: 1px solid var(--psx-border, #e6e6ea); border-radius: 18px; overflow: hidden;
+          box-shadow: 0 18px 44px -22px rgba(20, 17, 12, .25);
+          transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+      .mfx-card:hover { transform: translateY(-4px); border-color: var(--psx-accent, #1f3a5f);
+          box-shadow: 0 26px 60px -24px rgba(20, 17, 12, .3); }
+      .mfx-card .mfx-body { padding: 2rem 1.9rem; }
+      .mfx-card .mfx-eyebrow { font-size: .72rem; font-weight: 700; letter-spacing: .14em;
+          color: var(--psx-accent, #1f3a5f); }
+      .mfx-card .mfx-title { margin: .55rem 0 0; font-size: 1.28rem; font-weight: 700;
+          color: var(--psx-ink, #14110c); letter-spacing: -.01em; }
+      .mfx-card .mfx-desc { margin: .7rem 0 0; font-size: .98rem; line-height: 1.6; color: #6b655b; }
+      .inv-guides { margin-top: 3rem; }
+      #psx-met-feature { margin-top: 1.5rem; }
+      @media (prefers-reduced-motion: reduce) { .mfx-card { transition: none; } }
+    </style>
+</head>
+<body data-arm="operations">
+    <header>
+        <img src="/plateau-logo.svg" alt="Plateau Strategy Solution Lab logo">
+        <span class="brand">Plateau Strategy Solution Lab</span>
+        <div class="right">
+            <a href="/">Home</a>
+            <a href="/trip-planner">Trip Planner</a>
+            <a href="/map">Everything here</a>
+        </div>
+    </header>
+
+    <main class="inv-wrap">
+        <!-- One heading, not two. With the old subtitle gone at Sean's word,
+             an eyebrow reading CONVENIENT INVENTORY above a title reading
+             Convenient inventory said the same thing twice. -->
+        <div class="inv-head">
+            <h1 class="inv-h1">Convenient inventory</h1>
+        </div>
+
+        <div class="psx-cards" id="inv-books">
+
+                        <!-- [SEAN 2026-09-15 "convenient inventory meant for destination book,
+                             restaurants, airBNB we dont have airbnb yet so gray it"]
+                             Three items only. Restaurants now live in their own book,
+                             split out of the Destination Book. The Airbnb card is greyed:
+                             no listing exists yet, so it carries no link. -->
+                        <div class="psx-card" data-arm="operations">
+                            <h3 class="psx-card-title">Destination Book</h3>
+                            <p class="psx-card-desc">Attractions and landmarks, city by city, with local tips from a licensed guide and stories in nine languages. One tap sends any place into your trip.</p>
+                            <a class="psx-card-link" href="/destination-book">Open the Destination Book →</a>
+                        </div>
+                        <div class="psx-card" data-arm="operations">
+                            <h3 class="psx-card-title">Restaurant Book</h3>
+                            <p class="psx-card-desc">Where to eat, city by city, with the menu wherever the restaurant publishes one. Pick a place and send it straight into your trip.</p>
+                            <a class="psx-card-link" href="/restaurant-book">Open the Restaurant Book →</a>
+                        </div>
+                        <div class="psx-card" data-arm="operations" aria-disabled="true" style="opacity:.55;filter:grayscale(1);pointer-events:none">
+                            <h3 class="psx-card-title">Airbnb</h3>
+                            <p class="psx-card-desc">My Airbnb listing is on its way.</p>
+                            <span class="psx-card-link" aria-disabled="true">Coming soon</span>
+                        </div>
+        </div>
+
+        <div class="inv-guides">
+<div id="psx-met-feature" class="mfx-card" data-arm="operations">
+                        <div class="mfx-body">
+                            <span class="mfx-eyebrow">NEW · THE INDOOR GUIDE</span>
+                            <h3 class="mfx-title">Metropolitan Museum Guide</h3>
+                            <p class="mfx-desc">A 3D model of the Metropolitan Museum you can turn and open: tap the building and it unfolds floor by floor, pick your galleries, and the guide narrates them room by room while footprints trace your route. This is the design behind our indoor guide, live today.</p>
+                            <a class="psx-card-link" href="/met">Open the museum →</a>
+                        </div>
+                    </div>
+<div id="psx-trail-feature" class="mfx-card" data-arm="operations">
+                        <div class="mfx-body">
+                            <span class="mfx-eyebrow">NEW · THE OUTDOOR GUIDE</span>
+                            <h3 class="mfx-title">Boston Walking Tour</h3>
+                            <p class="mfx-desc">Every stop on the Freedom Trail in walking order,
+                               with the time each one really takes and the walking time between
+                               them. Take the whole trail or the downtown half, and drop either
+                               onto your map in one tap.</p>
+                            <a class="psx-card-link" href="/freedom-trail">Walk the trail →</a>
+                        </div>
+                    </div>
+<div id="psx-mall-feature" class="mfx-card" data-arm="operations">
+                        <div class="mfx-body">
+                            <span class="mfx-eyebrow">WASHINGTON DC WALK</span>
+                            <h3 class="mfx-title">The National Mall</h3>
+                            <p class="mfx-desc">The Capitol to the Jefferson Memorial by way of the
+                               White House, in walking order, with the time each stop really takes.
+                               Turn the Capitol, the Lincoln and the Washington Monument in your
+                               hand before you stand in front of them. The walk is still growing.</p>
+                            <a class="psx-card-link" href="/national-mall">Walk the Mall →</a>
+                        </div>
+                    </div>
+<div id="psx-ivy-feature" class="mfx-card" data-arm="operations">
+                        <div class="mfx-body">
+                            <span class="mfx-eyebrow">NEW · EIGHT CAMPUSES</span>
+                            <h3 class="mfx-title">The Ivy League</h3>
+                            <p class="mfx-desc">Eight universities in eight cities, each a walking
+                               tour of its own, from Harvard Yard to Cornell's gorges, with every
+                               stop on a map, the time it really takes, and a guide's note at each.</p>
+                            <a class="psx-card-link" href="/tour/ivy-league">Pick a campus →</a>
+                        </div>
+                    </div>
+<div id="psx-philly-feature" class="mfx-card" data-arm="operations">
+                        <div class="mfx-body">
+                            <span class="mfx-eyebrow">PHILADELPHIA WALK</span>
+                            <h3 class="mfx-title">Independence Hall to the Art Museum</h3>
+                            <p class="mfx-desc">A walk across the city where the country was
+                               written: the Liberty Bell, the three halls of the first government,
+                               the oldest street of houses, the market, City Hall and the Rocky steps.</p>
+                            <a class="psx-card-link" href="/tour/philadelphia">Walk Philadelphia →</a>
+                        </div>
+                    </div>
+<div id="psx-moma-feature" class="mfx-card" data-arm="operations">
+                        <div class="mfx-body">
+                            <span class="mfx-eyebrow">NEW · THE MODERN MUSEUM</span>
+                            <h3 class="mfx-title">Inside MoMA, floor by floor</h3>
+                            <p class="mfx-desc">The Museum of Modern Art with the same footprint map:
+                               The Starry Night, the Demoiselles and Monet's Water Lilies room on
+                               Floor 5, Pollock and Warhol on Floor 4. Pick your galleries and the
+                               route walks itself, and the search bar answers any label number in
+                               the building, checked weekly against the museum's own collection
+                               data.</p>
+                            <a class="psx-card-link" href="/moma">Open MoMA →</a>
+                        </div>
+                    </div>
+                    <div id="psx-nyc-feature" class="mfx-card" data-arm="operations">
+                        <div class="mfx-body">
+                            <span class="mfx-eyebrow">NEW YORK CITY</span>
+                            <h3 class="mfx-title">New York City 3D models</h3>
+                            <p class="mfx-desc">The Brooklyn Bridge and the Empire State Building as models you can turn in your hand, drawn at their real dimensions, with the questions answered underneath: which way to walk the bridge, and which observatory is the one people mean.</p>
+                            <a class="psx-card-link" href="/landmarks">Turn the landmarks →</a>
+                        </div>
+                    </div>
+        </div>
+    </main>
+
+    <script src="/floatback.js"></script>
+    <script src="/jarvis-widget.js"></script>
+    <script src="/i18n.js"></script>
+</body>
+</html>

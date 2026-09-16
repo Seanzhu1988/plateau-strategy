@@ -82,6 +82,8 @@ test('public page uses public feeds, no private preview, rights notes, autoplay 
   assert.doesNotMatch(html,/Guided Seattle tours/);
   assert.match(script,/seattleAnchors/);assert.match(script,/location\.replace\('\/tours\/seattle'/);
   assert.match(read('landing-page.html'),/href="\/tours">Explore tours by city/);
-  assert.match(read('landing-page.html'), /aria-disabled="true">iTicket<\/span>\s*<a class="psx-btn psx-btn-ghost" href="\/tours">Explore tours by city<\/a>/);
+  // Order set by Sean 2026-09-15: tours, inventory, iTicket, then share your
+  // idea. The row is asserted whole, so a reorder has to be deliberate.
+  assert.match(read('landing-page.html'), /href="\/tours">Explore tours by city<\/a>\s*<a href="\/inventory" class="psx-btn psx-btn-ghost">Convenient inventory<\/a>\s*<span class="psx-btn psx-btn-soon" aria-disabled="true">iTicket<\/span>\s*<a href="#" onclick="showView\('reinvestment', event\)" class="psx-btn psx-btn-primary">Share your idea<\/a>/);
   assert.equal((read('landing-page.html').match(/Explore tours by city/g) || []).length, 1);
 });

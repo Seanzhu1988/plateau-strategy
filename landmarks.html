@@ -163,11 +163,48 @@
      with stories to help you notice what matters when you visit. The 3D views
      are architectural reconstructions, and the Peace Fountain is shown in a photograph.</p>
 
+  <!-- LISTED LIKE THE OTHER MODELS. [SEAN 2026-09-15: "it was hiding between
+       the brooklyn bridge by chat gpt i would like it to be listed like other
+       3D models".] It was a heading, one line and a text link: measured at
+       125px tall between neighbours of 1377, 2028 and 2352px, so on a page
+       called New York City 3D models the one model you could not see was this
+       one. The tower lives in the architecture viewer rather than in this
+       page's own canvas, so it is embedded here the way the 9/11 Memorial
+       destination page already embeds it: same turnable model, same height
+       handshake, same language handshake. The link below it still opens the
+       full view for anyone who wants the whole room. -->
   <section class="lm-sec" id="worldTradeCenterLink">
     <h2 class="lm-h" id="worldTradeCenterLinkTitle">One World Trade Center and the 9/11 Memorial</h2>
     <p class="lm-sub" id="worldTradeCenterLinkCopy">Turn the glass tower, then move closer to the two memorial pools and the spaces they preserve.</p>
+    <div class="lm-stage">
+      <iframe id="worldTradeCenterFrame" title="One World Trade Center and the 9/11 Memorial"
+              src="/architecture?model=world-trade-center&amp;embed=1&amp;lang=en" loading="lazy"
+              allow="fullscreen" style="width:100%;height:820px;border:0;display:block"></iframe>
+    </div>
     <p><a href="/architecture?model=world-trade-center&amp;lang=en&amp;source=landmarks" id="worldTradeCenterExplore"
           style="display:inline-flex;align-items:center;min-height:44px">Explore the tower and memorial in 3D</a></p>
+    <script>(function () {
+      var frame = document.getElementById('worldTradeCenterFrame');
+      if (!frame) return;
+      function updateLanguage() {
+        var lang = new URLSearchParams(location.search).get('lang')
+                || (window.psxLang && window.psxLang()) || document.documentElement.lang || 'en';
+        lang = String(lang).toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en';
+        var next = new URL('/architecture', location.origin);
+        next.searchParams.set('model', 'world-trade-center');
+        next.searchParams.set('embed', '1');
+        next.searchParams.set('lang', lang);
+        if (frame.src !== next.href) frame.src = next.href;
+      }
+      window.addEventListener('message', function (event) {
+        if (event.origin !== location.origin || event.source !== frame.contentWindow
+            || !event.data || event.data.type !== 'architecture:height') return;
+        var height = Number(event.data.height);
+        if (Number.isFinite(height)) frame.style.height = Math.min(4000, Math.max(400, height)) + 'px';
+      });
+      document.addEventListener('psx:lang', updateLanguage);
+      updateLanguage();
+    })();</script>
   </section>
 
   <section class="lm-sec">
@@ -300,8 +337,8 @@
       <div class="lm-photo-copy i18n-skip">
         <span class="proof-badge" id="peaceFountainPhotoBadge">Photograph of the monument</span>
         <h3 id="peaceFountainPhotoTitle">Peace Fountain, a closer look</h3>
-        <p id="peaceFountainOrigin">Greg Wyatt created this bronze monument in 1985 for the 200th anniversary of the Episcopal Diocese of New York. It was dedicated to children's creativity, an idea that continues in the small bronze animals made by young artists around it.</p>
-        <p id="peaceFountainLook">Start with the winged Archangel Michael, then look for the giraffes, the sun and moon, and the twisting pedestal shaped like DNA. Wyatt brings these forms together as a story of life, conflict and peace. Walk around the sculpture to see how its figures connect.</p>
+        <p id="peaceFountainOrigin">The plaque on the granite wall says plainly what you are looking at: the triumph of good over evil. The winged archangel Michael has just beheaded Satan. Look under the claw of the giant crab and Satan's head is still hanging there, while the body falls away into the water below.</p>
+        <p id="peaceFountainLook">Then work downward and outward. The pedestal Michael rises from is twisted into the double helix of DNA, the crab above it stands for life coming out of the sea and the struggle there, and when the water runs, four cascades fall into a churning pool meant for the chaos of the early Earth. Nine giraffes move around the centre, chosen because they are among the most peaceable animals alive, and one has laid its head against the archangel. A smiling sun faces east, a sleeping moon faces west, and beside the sun a lion and a lamb rest together. The 120 small bronze animals ringing the fountain were sculpted by schoolchildren over five years, which is why the monument is dedicated to the creativity of the world's children.</p>
         <p class="proof-facts">Greg Wyatt · bronze · 1985 · 40 ft</p>
         <p class="proof-credit">Photo: Jay Dobkin, 2019 ·
           <a href="https://commons.wikimedia.org/wiki/File:Peace_Fountain_at_cathedral_of_John_the_Divine_in_NYC_8.jpg"
@@ -548,8 +585,8 @@
     en: {
       peaceFountainPhotoBadge: 'Photograph of the monument',
       peaceFountainPhotoTitle: 'Peace Fountain, a closer look',
-      peaceFountainOrigin: "Greg Wyatt created this bronze monument in 1985 for the 200th anniversary of the Episcopal Diocese of New York. It was dedicated to children's creativity, an idea that continues in the small bronze animals made by young artists around it.",
-      peaceFountainLook: 'Start with the winged Archangel Michael, then look for the giraffes, the sun and moon, and the twisting pedestal shaped like DNA. Wyatt brings these forms together as a story of life, conflict and peace. Walk around the sculpture to see how its figures connect.',
+      peaceFountainOrigin: "The plaque on the granite wall says plainly what you are looking at: the triumph of good over evil. The winged archangel Michael has just beheaded Satan. Look under the claw of the giant crab and Satan's head is still hanging there, while the body falls away into the water below.",
+      peaceFountainLook: "Then work downward and outward. The pedestal Michael rises from is twisted into the double helix of DNA, the crab above it stands for life coming out of the sea and the struggle there, and when the water runs, four cascades fall into a churning pool meant for the chaos of the early Earth. Nine giraffes move around the centre, chosen because they are among the most peaceable animals alive, and one has laid its head against the archangel. A smiling sun faces east, a sleeping moon faces west, and beside the sun a lion and a lamb rest together. The 120 small bronze animals ringing the fountain were sculpted by schoolchildren over five years, which is why the monument is dedicated to the creativity of the world's children.",
       worldTradeCenterLinkTitle: 'One World Trade Center and the 9/11 Memorial',
       worldTradeCenterLinkCopy: 'Turn the glass tower, then move closer to the two memorial pools and the spaces they preserve.',
       worldTradeCenterExplore: 'Explore the tower and memorial in 3D'
@@ -557,8 +594,8 @@
     zh: {
       peaceFountainPhotoBadge: '纪念雕塑实景照片',
       peaceFountainPhotoTitle: '细看和平喷泉',
-      peaceFountainOrigin: '格雷格·怀亚特于1985年创作了这座青铜纪念雕塑，纪念纽约圣公会教区成立200周年。作品献给儿童的创造力，周围那些由孩子们创作的小型青铜动物，也延续着这个想法。',
-      peaceFountainLook: '先看展开双翼的大天使米迦勒，再寻找长颈鹿、太阳与月亮，以及形似DNA双螺旋的底座。怀亚特用这些形象讲述生命、冲突与和平。绕着雕塑走一圈，看看不同角度下的人物与动物如何相互呼应。',
+      peaceFountainOrigin: '花岗岩墙上的铭牌把这件作品说得很清楚：善战胜恶。展开双翼的大天使米迦勒刚刚砍下了撒旦的头。看看那只巨蟹的螯下，撒旦的头颅还挂在那里，身体则坠向下面的水中。',
+      peaceFountainLook: '然后顺着往下、往外看。米迦勒脚下的底座扭成DNA双螺旋的形状，上方的巨蟹代表生命从海洋和挣扎中诞生；喷泉开启时，四道水流落进翻腾的水池，象征地球最初的混沌。九只长颈鹿在中心四周走动，选它们是因为它们属于最温和的动物，其中一只把头靠在大天使身上。一轮带笑的太阳朝东，一弯沉睡的月亮朝西，太阳旁边还卧着一只狮子和一只羊羔。环绕喷泉的120只小青铜动物，是孩子们用五年时间做出来的，这也是这座纪念碑献给全世界儿童创造力的原因。',
       worldTradeCenterLinkTitle: '世贸中心一号楼与九一一纪念园',
       worldTradeCenterLinkCopy: '转动玻璃塔楼，再靠近两座纪念水池，看看这些留白所承载的记忆。',
       worldTradeCenterExplore: '立体探索塔楼与纪念园'

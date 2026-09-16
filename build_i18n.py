@@ -57,7 +57,7 @@ EXCLUDED = {
 # warns: an agent reading their own commission page in English is a smaller
 # harm than a build nobody can run.
 VISITOR = {
-    "landing-page.html", "booking.html", "trip-planner.html",
+    "landing-page.html", "inventory.html", "booking.html", "trip-planner.html",
     "destination-book.html", "road-trip.html", "trips.html", "walks.html",
     "met.html", "moma.html", "universal-gallery.html", "freedom-trail.html",
     "landmarks.html", "tours.html", "articles.html",

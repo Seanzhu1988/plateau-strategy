@@ -19,6 +19,8 @@
          ============================================================ */
 
       :root{
+        /* Mirrors modern.css so a page loading only this sheet still has it. */
+        --m-portal:#0F5132;
         /* Paper, not white, #fff under a headline looks like a login form.
            A little warmth reads as stock. */
         --psx-bg:#faf8f4; --psx-hero:#f5f1e8; --psx-connect:#faf8f4;
@@ -254,7 +256,7 @@
       .psx-stage-research{color:var(--psx-text2);border-color:var(--psx-border);background:rgba(20,17,12,.03);}
       .psx-card-link{
         display:inline-block;margin-top:1rem;
-        color:var(--psx-accent) !important;text-decoration:none;
+        color:var(--m-portal) !important;text-decoration:none;
         font-size:.9rem;font-weight:500;
       }
       .psx-card-link:hover{text-decoration:underline;}
@@ -714,7 +716,7 @@
 
       /* A link with nothing else claiming it is still a link. The bare
          rule goes last so any styled link above keeps its own colour. */
-      a:not([class]):not([id]){color:var(--psx-accent);}
+      a:not([class]):not([id]){color:var(--m-portal);}
 
       /* Destination Book category badges, a taxonomy, so they keep three
          distinguishable hues; they were just a shade off the ones the rest
