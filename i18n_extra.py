@@ -1064,7 +1064,7 @@ EXTRA.update({
     # narration starting by itself in a stranger's ear would be wrong anyway.
     "Follow me along the trail": ["沿路跟着我", "Sígueme por la ruta",
                                   "트레일을 따라가기", "Đi theo tôi trên tuyến"],
-    "Stop following": ["停止跟随", "Dejar de seguir", "따라가기 중지", "Ngừng theo dõi"],
+    "Stop following": ["停止跟随", "Dejar de seguir", "따라가기 중지", "Ngừng bám theo"],
     "Finding you…": ["正在定位…", "Buscándote…", "위치를 찾는 중…", "Đang tìm bạn…"],
     "Your phone works out which stop you are at. The location never leaves your device.": [
         "由你的手机判断你在哪一站。位置信息不会离开你的设备。",
@@ -3692,16 +3692,16 @@ EXTRA.update({
 EXTRA.update({
     "{name}, coming up ahead": [
         "{name}\uff0c\u5c31\u5728\u524d\u9762", "{name}, justo delante",
-        "{name}, \ubc14\ub85c \uc55e\uc5d0 \uc788\uc2b5\ub2c8\ub2e4", "{name}, ngay pha\u0301i tr\u01b0\u01a1\u0301c m\u0103\u0323t"],
+        "{name}, \ubc14\ub85c \uc55e\uc5d0 \uc788\uc2b5\ub2c8\ub2e4", "{name}, ngay ph\u00eda tr\u01b0\u1edbc m\u1eb7t"],
     "{name}, on your right": [
         "{name}\uff0c\u5728\u4f60\u53f3\u624b\u8fb9", "{name}, a su derecha",
-        "{name}, \uc624\ub978\ucabd\uc5d0 \uc788\uc2b5\ub2c8\ub2e4", "{name}, b\xean pha\u0309i cu\u0309a ba\u0323n"],
+        "{name}, \uc624\ub978\ucabd\uc5d0 \uc788\uc2b5\ub2c8\ub2e4", "{name}, bên phải của bạn"],
     "{name}, on your left": [
         "{name}\uff0c\u5728\u4f60\u5de6\u624b\u8fb9", "{name}, a su izquierda",
-        "{name}, \uc67c\ucabd\uc5d0 \uc788\uc2b5\ub2c8\ub2e4", "{name}, b\xean tra\u0301i cu\u0309a ba\u0323n"],
+        "{name}, \uc67c\ucabd\uc5d0 \uc788\uc2b5\ub2c8\ub2e4", "{name}, bên trái của bạn"],
     "{name}, behind you": [
         "{name}\uff0c\u5728\u4f60\u8eab\u540e", "{name}, detr\xe1s de usted",
-        "{name}, \ub4a4\ucabd\uc5d0 \uc788\uc2b5\ub2c8\ub2e4", "{name}, \u01a1\u0309 phi\u0301a sau ba\u0323n"],
+        "{name}, \ub4a4\ucabd\uc5d0 \uc788\uc2b5\ub2c8\ub2e4", "{name}, ở phía sau bạn"],
     "Look up.": ["\u62ac\u5934\u770b\u3002", "Mire hacia arriba.", "\uc704\ub97c \ubcf4\uc138\uc694.", "H\xe3y nh\xecn l\xean."],
 })
 
@@ -3763,13 +3763,13 @@ EXTRA.update({
     "Tip": [
         "提示", "Consejo", "팁", "Mẹo"],
     "This tour is not here": [
-        "没有这条路线", "Este recorrido no está aquí", "이 투어는 여기 없습니다", "Không có hành trình này"],
+        "没有这个导览", "Este recorrido no está aquí", "이 투어는 여기 없습니다", "Không có tour này"],
     "No tour was named in the address.": [
-        "网址中没有指定路线。", "La dirección no indica ningún recorrido.", "주소에 투어가 지정되지 않았습니다.", "Địa chỉ không nêu tên hành trình nào."],
+        "网址中没有指定导览。", "La dirección no indica ningún recorrido.", "주소에 투어가 지정되지 않았습니다.", "Địa chỉ không nêu tên tour nào."],
     "There is no tour called {id}.": [
-        "没有名为 {id} 的路线。", "No hay ningún recorrido llamado {id}.", "{id}(이)라는 투어는 없습니다.", "Không có hành trình nào tên là {id}."],
+        "没有名为 {id} 的导览。", "No hay ningún recorrido llamado {id}.", "{id}(이)라는 투어는 없습니다.", "Không có tour nào tên là {id}."],
     "The tour could not be loaded.": [
-        "路线加载失败。", "No se pudo cargar el recorrido.", "투어를 불러오지 못했습니다.", "Không tải được hành trình."],
+        "导览加载失败。", "No se pudo cargar el recorrido.", "투어를 불러오지 못했습니다.", "Không tải được tour."],
     "{city} · founded {year} · {n} stops · {walk} walking · {inside} inside": [
         "{city} · 建于 {year} 年 · {n} 站 · 步行 {walk} · 参观 {inside}", "{city} · fundada en {year} · {n} paradas · {walk} a pie · {inside} dentro", "{city} · {year}년 설립 · {n}개 정거장 · 도보 {walk} · 내부 {inside}", "{city} · thành lập {year} · {n} điểm dừng · đi bộ {walk} · bên trong {inside}"],
     "Distances are straight-line estimates between stops, not walking routes.": [
@@ -4002,4 +4002,29 @@ EXTRA.update({
     "See the menu in the Restaurant Book": ["在餐厅手册中查看菜单", "Ver el menú en el libro de restaurantes", "식당 북에서 메뉴 보기", "Xem thực đơn trong sổ nhà hàng"],
     "Open in the Restaurant Book": ["在餐厅手册中打开", "Abrir en el libro de restaurantes", "식당 북에서 열기", "Mở trong sổ nhà hàng"],
     "Not in the book yet": ["手册里还没有", "Aún no está en el libro", "아직 북에 없습니다", "Chưa có trong sổ"],
+})
+
+# [2026-09-16] Mount Rushmore audit. The tour page's walk bar and its location
+# messages were built in script and never reached a pack, so a Chinese reader got
+# an English button bar outdoors. Also the story link, the English-only note
+# caption, and a whole-sentence missing-recording line per language.
+EXTRA.update({
+    "Lock the walk": ["锁定路线", "Fijar el recorrido", "산책 경로 고정", "Khóa lộ trình"],
+    "Walk locked": ["路线已锁定", "Recorrido fijado", "경로 고정됨", "Đã khóa lộ trình"],
+    "Unlocked.": ["已解锁。", "Ya no está fijado.", "고정이 해제되었습니다.", "Đã mở khóa."],
+    "Tour overview": ["导览概览", "Presentación del recorrido", "투어 개요", "Giới thiệu tour"],
+    "Asking to use your location...": ["正在请求使用你的位置……", "Solicitando acceso a su ubicación...", "위치 사용 권한을 요청하는 중입니다...", "Đang xin quyền dùng vị trí của bạn..."],
+    "This browser cannot share a location.": ["这个浏览器无法共享位置。", "Este navegador no puede compartir la ubicación.", "이 브라우저는 위치를 공유할 수 없습니다.", "Trình duyệt này không thể chia sẻ vị trí."],
+    "Location was not shared. The walk stays locked; the map will not follow.": ["没有共享位置。路线仍然锁定，但地图不会跟随你。", "No se compartió la ubicación. El recorrido sigue fijado, pero el mapa no le seguirá.", "위치가 공유되지 않았습니다. 경로는 계속 고정되지만 지도는 따라가지 않습니다.", "Vị trí chưa được chia sẻ. Lộ trình vẫn được khóa, nhưng bản đồ sẽ không bám theo bạn."],
+    "No position yet. Try again outdoors.": ["还没有定位。请到室外再试一次。", "Todavía no hay posición. Inténtelo de nuevo al aire libre.", "아직 위치를 찾지 못했습니다. 야외에서 다시 시도해 보세요.", "Chưa xác định được vị trí. Hãy thử lại ở ngoài trời."],
+    "The map is no longer following you. Your walk stays locked.": ["地图不再跟随你。路线仍然锁定。", "El mapa ya no le sigue. Su recorrido sigue fijado.", "지도가 더 이상 따라가지 않습니다. 경로는 계속 고정됩니다.", "Bản đồ không còn bám theo bạn. Lộ trình vẫn được khóa."],
+    "{dist} m from {stop}": ["距 {stop} {dist} 米", "a {dist} m de {stop}", "{stop}에서 {dist} m", "cách {stop} {dist} m"],
+    "No recording in your language for this stop yet.": ["这个站点还没有中文录音。", "Todavía no hay grabación en español para esta parada.", "이 장소는 아직 한국어 녹음이 없습니다.", "Điểm dừng này chưa có bản ghi âm tiếng Việt."],
+    "No overview recording in your language for this tour yet.": ["这个导览还没有中文概览录音。", "Todavía no hay una presentación grabada en español para este recorrido.", "이 투어는 아직 한국어 개요 녹음이 없습니다.", "Tour này chưa có bản ghi âm giới thiệu bằng tiếng Việt."],
+    "{name}'s note, in English only:": ["{name}的讲解笔记（仅有英文）：", "Nota de {name}, solo en inglés:", "{name}의 메모 (영어로만 제공):", "Ghi chú của {name}, chỉ có bằng tiếng Anh:"],
+    "Read the full story": ["阅读完整故事", "Leer la historia completa", "전체 이야기 읽기", "Đọc toàn bộ câu chuyện"],
+    "Loading the tour…": ["正在加载导览……", "Cargando el recorrido…", "투어를 불러오는 중…", "Đang tải tour…"],
+    "Your position stays on this phone and is drawn on the map here. We never send it to our server.": ["你的位置只留在这部手机上，并显示在这里的地图上。我们绝不会把它发送到我们的服务器。", "Su posición se queda en este teléfono y solo se dibuja en este mapa. Nunca la enviamos a nuestro servidor.", "위치 정보는 이 휴대폰에만 남고 여기 지도에만 표시됩니다. 저희 서버로 보내는 일은 없습니다.", "Vị trí của bạn chỉ ở trên điện thoại này và chỉ được vẽ trên bản đồ ở đây. Chúng tôi không bao giờ gửi nó về máy chủ của mình."],
+    "±{acc} m": ["±{acc} 米", "±{acc} m", "±{acc} m", "±{acc} m"],
+    "{name}'s note:": ["{name}的讲解笔记：", "Nota de {name}:", "{name}의 메모:", "Ghi chú của {name}:"],
 })

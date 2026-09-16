@@ -92,6 +92,7 @@
         .tw-note { margin: .55rem 0 .6rem; padding-left: .85rem; border-left: 2px solid #cfc9bd;
                    color: #4a453d; font-size: .93rem; line-height: 1.6; }
         .tw-note .tw-guide { font-weight: 750; color: #12305b; margin-right: .5rem; }
+        .tw-note .tw-note-en { display: block; font-weight: 650; color: #12305b; }
         .tw-photo-host > img { width: 100%; border-radius: 8px; display: block; margin: .4rem 0 .6rem; }
         .tw-guideplay { display: flex; gap: .6rem; align-items: center; margin: .5rem 0 .8rem;
                         font-size: .88rem; color: #6b655b; }
@@ -152,7 +153,7 @@
                 <div id="twMap"></div>
                 <div class="tw-walkbar" id="twWalkbar" hidden>
                     <button type="button" id="twLock" aria-pressed="false">Lock the walk</button>
-                    <button type="button" id="twFollow" aria-pressed="false" hidden>Follow me on the map</button>
+                    <button type="button" id="twFollow" aria-pressed="false" hidden>Follow me with the map</button>
                     <span id="twLoc" aria-live="polite"></span>
                 </div>
                 <p class="tw-consent" id="twConsent" hidden>Your position stays on this phone and is drawn on the map here. We never send it to our server.</p>
@@ -166,6 +167,7 @@
                     <p id="twNowDesc"></p>
                     <p class="tw-tip" id="twTip" hidden></p>
                     <p class="tw-tip" id="twBook" hidden></p>
+                    <p class="tw-tip" id="twStory" hidden></p>
                 </div>
             </div>
             <div>
@@ -186,6 +188,10 @@
   .tw-walkbar #twLoc{font-size:.85rem;color:#55504a}
   .tw-consent{font-size:.8rem;color:#6b655b;line-height:1.5;margin:.2rem 0 .4rem}
   .tw-cue{display:block;font-size:.95rem;font-weight:600;color:#12305b;margin:.2rem 0 .4rem}
+  /* An author display rule beats the browser's own [hidden] style, so each of
+     these showed while hidden: an empty Listen player on every stop with no
+     recording, right above the line saying there is no recording. */
+  .tw-guideplay[hidden], .tw-cue[hidden], .tw-cards[hidden]{display:none}
   .tw-you{width:16px;height:16px;border-radius:50%;background:#a4161a;border:3px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.3)}
 </style>
 <script src="/i18n.js"></script>
@@ -350,14 +356,19 @@
     }
 
     function noRecordingText(place) {
-        var lang = activeLang();
-        if (lang === "en") return T(place === "overview"
+        /* ONE WHOLE SENTENCE PER LANGUAGE, NEVER A CODE IN A TEMPLATE. This
+           used to drop the raw language code into an English sentence, so a
+           Spanish reader was told "No ES recording for this stop yet." seven
+           times on one tour, and the pattern had no pack entry, so it could
+           not be translated either. The reader's language is the active one,
+           so the sentence can name it inside each translation. Chinese keeps
+           the exact wording it had when it was written here by hand. */
+        if (activeLang() === "en") return T(place === "overview"
             ? "No overview recording for this tour yet."
             : "No recording for this stop yet.");
-        if (lang === "zh") return place === "overview"
-            ? "这个导览还没有中文概览录音。" : "这个站点还没有中文录音。";
-        return F("No {language} recording for this {place} yet.",
-                 { language: lang.toUpperCase(), place: place === "overview" ? "tour overview" : "stop" });
+        return T(place === "overview"
+            ? "No overview recording in your language for this tour yet."
+            : "No recording in your language for this stop yet.");
     }
 
     function minutes(m) {
@@ -603,6 +614,29 @@
        position is read on the phone and drawn here, never sent to our server. */
     var trigger = null, locked = false, watchId = null, youMarker = null, wakeLock = null;
     var lockBtn, followBtn, locEl, consentEl, cueEl;
+    /* THE WALK BAR REPAINTS ITSELF ON A LANGUAGE SWITCH. Its labels and
+       messages are written after the pack has loaded, so the i18n engine
+       records the translated text as if it were the English source, and a
+       switch from Chinese to Japanese, or back to English, left the buttons
+       in Chinese. So the bar keeps what it last said in English and paints
+       from that, here and again on every psx:lang. */
+    var locMsg = null, lastCue = null;
+    function paintLoc() {
+        if (!locEl) return;
+        if (!locMsg) { locEl.textContent = ""; return; }
+        var line = locMsg.vals ? F(locMsg.key, locMsg.vals) : T(locMsg.key);
+        if (locMsg.acc) line += " · " + F("±{acc} m", { acc: locMsg.acc });
+        locEl.textContent = line;
+    }
+    function setLoc(key, vals, acc) {
+        locMsg = key ? { key: key, vals: vals || null, acc: acc || 0 } : null;
+        paintLoc();
+    }
+    function paintWalkLabels() {
+        if (!lockBtn) return;
+        lockBtn.textContent = locked ? T("Walk locked") + " · " + stops.length + " " + T("stops") : T("Lock the walk");
+        if (followBtn) followBtn.textContent = youMarker ? T("Stop following") : T("Follow me with the map");
+    }
 
     function nearestStop(lat, lon) {
         var best = null;
@@ -627,6 +661,7 @@
     }
     function sayCue(e, speak) {
         if (!cueEl) return;
+        lastCue = e;
         cueEl.textContent = cueText(e); cueEl.hidden = false;
         if (!speak) return;
         try {
@@ -660,31 +695,30 @@
     function stopFollow(msg) {
         if (watchId !== null) { try { navigator.geolocation.clearWatch(watchId); } catch (e) {} watchId = null; }
         if (youMarker && map) { try { map.removeLayer(youMarker); } catch (e) {} youMarker = null; }
-        if (followBtn) { followBtn.textContent = T("Follow me on the map"); followBtn.setAttribute("aria-pressed", "false"); }
+        if (followBtn) { paintWalkLabels(); followBtn.setAttribute("aria-pressed", "false"); }
         try { if (wakeLock) { wakeLock.release(); wakeLock = null; } } catch (e) {}
-        if (msg && locEl) locEl.textContent = msg;
+        if (msg) setLoc(msg);
     }
     function arm() {
-        if (!navigator.geolocation) { if (locEl) locEl.textContent = T("This browser cannot share a location."); return; }
+        if (!navigator.geolocation) { setLoc("This browser cannot share a location."); return; }
         var m = ensureMap();
-        if (locEl) locEl.textContent = T("Asking to use your location...");
+        setLoc("Asking to use your location...");
         if (followBtn) followBtn.hidden = false;
         watchId = navigator.geolocation.watchPosition(function (pos) {
             var lat = pos.coords.latitude, lon = pos.coords.longitude, acc = Math.round(pos.coords.accuracy || 0);
             if (!youMarker) {
                 youMarker = L.marker([lat, lon], { icon: L.divIcon({ className: "", iconSize: [16, 16],
                     iconAnchor: [8, 8], html: '<div class="tw-you"></div>' }) }).addTo(m);
-                if (followBtn) { followBtn.textContent = T("Stop following"); followBtn.setAttribute("aria-pressed", "true"); }
+                if (followBtn) { paintWalkLabels(); followBtn.setAttribute("aria-pressed", "true"); }
                 try { if (navigator.wakeLock) navigator.wakeLock.request("screen").then(function (w) { wakeLock = w; }).catch(function () {}); } catch (e) {}
             } else { youMarker.setLatLng([lat, lon]); }
             var best = nearestStop(lat, lon);
-            if (best && locEl) locEl.textContent = Math.round(best.d) + " m " + T("from") + " " + best.s.n + ". " + best.s.name + (acc ? " · ±" + acc + " m" : "");
+            if (best) setLoc("{dist} m from {stop}", { dist: Math.round(best.d), stop: best.s.n + ". " + best.s.name }, acc);
             if (trigger) trigger.update(lat, lon, acc, pos.coords.heading);
         }, function (err) {
-            if (locEl) locEl.textContent = (err && err.code === 1)
-                ? T("Location was not shared. The walk stays locked; the map will not follow.")
-                : T("No position yet. Try again outdoors.");
-            stopFollow();
+            stopFollow((err && err.code === 1)
+                ? "Location was not shared. The walk stays locked; the map will not follow."
+                : "No position yet. Try again outdoors.");
         }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
     }
     function wireWalk() {
@@ -694,15 +728,14 @@
         consentEl = document.getElementById("twConsent");
         cueEl = document.getElementById("twCue");
         if (!lockBtn) return;
-        lockBtn.textContent = T("Lock the walk");
-        followBtn.textContent = T("Follow me on the map");
+        paintWalkLabels();
         lockBtn.addEventListener("click", function () {
             if (!stops.length) return;
             locked = !locked;
-            lockBtn.textContent = locked ? T("Walk locked") + " · " + stops.length + " " + T("stops") : T("Lock the walk");
+            paintWalkLabels();
             lockBtn.setAttribute("aria-pressed", locked ? "true" : "false");
             if (consentEl) consentEl.hidden = !locked;
-            if (!locked) { if (trigger) trigger.reset(); stopFollow(T("Unlocked.")); return; }
+            if (!locked) { if (trigger) trigger.reset(); stopFollow("Unlocked."); return; }
             try {
                 var DOE = window.DeviceOrientationEvent;
                 if (DOE && typeof DOE.requestPermission === "function") {
@@ -712,7 +745,7 @@
             arm();
         });
         followBtn.addEventListener("click", function () {
-            if (watchId !== null) { stopFollow(T("The map is no longer following you. Your walk stays locked.")); return; }
+            if (watchId !== null) { stopFollow("The map is no longer following you. Your walk stays locked."); return; }
             if (locked) arm();
         });
     }
@@ -748,10 +781,35 @@
         var canUseEnglishAside = activeLang() === "en" && (isYikiFile || !picked);
         var label = who || ((s.yiki && canUseEnglishAside) ? "Yiki" : "");
         var aside = (s.yiki && canUseEnglishAside) ? s.yiki : "";
-        if (label || aside) {
+        /* A READER IN ANOTHER LANGUAGE STILL GETS THE NOTE, SAID TO BE ENGLISH.
+           The note used to vanish without a word outside English, on the same
+           panel where the audio line says plainly that a recording does not
+           exist yet, so a Chinese reader saw a tour with no guide's voice at
+           all. The note is not translated, so it is shown as what it is: her
+           written note, in English, under a caption in the reader's language.
+           It is captioned as a note, not as the speaker, because the file that
+           plays may be another guide's. */
+        var englishNote = (s.yiki && activeLang() !== "en") ? s.yiki : "";
+        /* Some notes are translated already (every Freedom Trail note has
+           Chinese, Spanish, Korean and Vietnamese in the packs), and calling
+           those English only would be false. So the pack is asked first. */
+        var noteTr = (englishNote && window.psxT) ? window.psxT(englishNote.replace(/\s+/g, " ").trim()) : null;
+        if (label || aside || englishNote) {
             note.hidden = false; note.innerHTML = "";
             if (label) { var g = document.createElement("span"); g.className = "tw-guide"; g.textContent = label; note.appendChild(g); }
             if (aside) note.appendChild(document.createTextNode(aside));
+            if (englishNote && noteTr) {
+                var capT = document.createElement("span"); capT.className = "tw-note-en";
+                capT.textContent = F("{name}'s note:", { name: "Yiki" });
+                note.appendChild(capT);
+                note.appendChild(document.createTextNode(noteTr));
+            } else if (englishNote) {
+                var cap = document.createElement("span"); cap.className = "tw-note-en";
+                cap.textContent = F("{name}'s note, in English only:", { name: "Yiki" });
+                note.appendChild(cap);
+                var en = document.createElement("span"); en.className = "i18n-skip"; en.lang = "en";
+                en.textContent = englishNote; note.appendChild(en);
+            }
         } else { note.hidden = true; note.textContent = ""; }
         var tip = document.getElementById("twTip");
         if (entry && entry.tip) { tip.hidden = false; tip.innerHTML = ""; var b = document.createElement("b"); b.textContent = T("Tip") + " "; tip.appendChild(b); tip.appendChild(document.createTextNode(entry.tip)); }
@@ -767,6 +825,20 @@
             bl.textContent = entry.menu ? T("See the menu in the Restaurant Book") : T("Open in the Restaurant Book");
             bookLink.appendChild(bl);
         } else { bookLink.hidden = true; bookLink.textContent = ""; }
+        /* A STOP WITH A STORY LINKS TO IT. The book entry's page holds the
+           written story in every language it has, and this panel used the
+           entry for its tip and its audio but never offered the page, so the
+           long story was unreachable from the tour. page_slug is stamped on
+           the entry by /api/destinations for exactly this. Cleared on every
+           path, like the tip and the book link above it. */
+        var storyLink = document.getElementById("twStory");
+        if (storyLink && entry && entry.page_slug && entry.story_en) {
+            storyLink.hidden = false; storyLink.innerHTML = "";
+            var sl = document.createElement("a");
+            sl.href = "/destination/" + encodeURIComponent(entry.page_slug);
+            sl.textContent = T("Read the full story");
+            storyLink.appendChild(sl);
+        } else if (storyLink) { storyLink.hidden = true; storyLink.textContent = ""; }
         showStopSlideshow(s, entry);
 
         silence();
@@ -797,6 +869,8 @@
        Both repaint paths are deliberately silent, so switching languages
        never starts audio without another user gesture. */
     document.addEventListener("psx:lang", function () {
+        paintWalkLabels(); paintLoc();
+        if (lastCue && cueEl && !cueEl.hidden) cueEl.textContent = cueText(lastCue);
         if (!trail || !stops.length) return;
         paintOverview(trail);
         show(current >= 0 ? current : 0, false);

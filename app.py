@@ -3427,10 +3427,16 @@ PUBLIC_PAGES = [
     ("/board", "0.4", "monthly"),
 ]
 
+# The two tours with a hand-built page of their own. Every other trail is
+# served at /tour/<id>. Read by the sitemap and by the destination pages, so
+# a tour's address is written down once.
+_HANDMADE_TOURS = {"freedom-trail": "/freedom-trail", "national-mall": "/national-mall"}
+
+
 def _tour_pages():
     """(/tour/<id>, priority, changefreq) for every trail without a hand-built
     page. The two that have one keep it; the rest are reachable only here."""
-    handmade = {"freedom-trail": "/freedom-trail", "national-mall": "/national-mall"}
+    handmade = _HANDMADE_TOURS
     out = []
     try:
         with open(os.path.join(BASE_DIR, "trails.json"), encoding="utf-8") as f:
@@ -4793,6 +4799,35 @@ def destinations_index():
     return "".join(body)
 
 
+def _tours_through(book_slug):
+    """(href, tour name, stop number, stop count) for every walking tour with a
+    stop whose book entry is this place.
+
+    A tour stop could open its place's page and the page could not find its
+    way back: no destination page linked to the tour it is part of, so a
+    reader who arrived from search never learned the walk existed. The link
+    is read from trails.json, fresh, the same way /tour/<id> reads it."""
+    if not book_slug:
+        return []
+    try:
+        with open(os.path.join(BASE_DIR, "trails.json"), encoding="utf-8") as f:
+            trails = json.load(f).get("trails") or []
+    except Exception:
+        return []
+    out = []
+    for t in trails:
+        tid = t.get("id")
+        stops = t.get("stops") or []
+        if not tid or t.get("kind") == "collection":
+            continue
+        for s in stops:
+            if s.get("book_slug") == book_slug:
+                out.append((_HANDMADE_TOURS.get(tid) or "/tour/" + tid,
+                            t.get("name") or tid, s.get("n"), len(stops)))
+                break
+    return out
+
+
 @app.route("/destination/<slug>")
 def destination_page(slug):
     """One place, one address: title, photo, the guide's tip, the story in every
@@ -4858,6 +4893,12 @@ def destination_page(slug):
         out.append('<p class="lead">%s</p>' % esc(desc))
     if tip:
         out.append('<p class="tip"><b>Guide\'s tip.</b> %s</p>' % esc(tip))
+    # The key a tour stop names is the book slug: the stored one, or for the
+    # places that carry none, the name-derived slug /api/destinations gives them.
+    for href, tour_name, n, total in _tours_through(e.get("slug") or _card_slug(e.get("name"))):
+        where = ("Stop %s of %d on the walking tour" % (n, total)) if n else "A stop on the walking tour"
+        out.append('<p class="tip"><b>On a walking tour.</b> %s <a href="%s">%s</a>, '
+                   'every stop on a map in walking order.</p>' % (where, esc(href), esc(tour_name)))
     if slug == '9-11-memorial-and-museum':
         out.append('''<section class="destination-architecture i18n-skip">
           <h2>One World Trade Center and the memorial</h2>

@@ -1,5 +1,11 @@
 // Audio snapshots captured immediately before the slideshow-only page edits.
 // These hashes deliberately lock byte-for-byte code, not guessed equivalence.
+// Re-pinned 2026-09-16 for two tour.html text-only edits inside these blocks, each
+// diffed line by line first: the missing-recording sentence now comes from the packs
+// instead of a raw language code, and the walk's distance line is a translatable
+// pattern. The walk bar then learned to repaint its own labels and location
+// messages on a language switch (review finding, same day), also inside the
+// second block. No line that chooses or plays a recording changed.
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -8,8 +14,8 @@ const crypto = require('node:crypto');
 const vm = require('node:vm');
 const read = name => fs.readFileSync(path.join(__dirname, name), 'utf8');
 const baselines = [
-  ['tour.html', 'function semanticMatch(row, expected) {', '    function minutes(m) {', '865a44e03ba510a2ee6432fbe7269c89f46d87dc5528bd83e99bd6fce5713916'],
-  ['tour.html', '    function stopRecording(s, entry) {', '    function wireWalk() {', '9f7e71f0e4fa683b41b13e532269e75160a7a1a2216f40670780fcd832a2da4f'],
+  ['tour.html', 'function semanticMatch(row, expected) {', '    function minutes(m) {', 'd590303262c761bc2bf303013381c7ea8db227b8e3e85918a7d5cffae3918cea'],
+  ['tour.html', '    function stopRecording(s, entry) {', '    function wireWalk() {', '51b7ade7d20ed85db17cdc72c0c86172f3f0d2b3411678c9efd3619d4ce95dba'],
   ['tour.html', '        silence();\n        if (fromUser)', '    /* Language changes happen in place.', '042f71964a7451e847e8553cda63bb7b262e7b14a08a8932d5d62573f0a6ef34'],
   ['national-mall.html', '    function playGuide() {', '    function T(en) {', '356a01e3303b1a3980521d00ee98d25ee553376e155ef7dcc73e95c49a3c5d1b'],
   ['national-mall.html', '        var g = document.getElementById("nmGuide"), a = document.getElementById("nmAudio");', '    function hideExtras() {', 'fcc571576eea5b48afb90f8069fc501a9856af4b15693e3a81737536fa1b6f9f'],

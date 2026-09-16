@@ -740,7 +740,7 @@
       "id": "mount-rushmore",
       "city": "keystone",
       "name": "Mount Rushmore",
-      "summary": "Eight stops around the memorial in walking order, from the Avenue of Flags to the base of the carving and back up past Borglum's studio. Under a mile on paved path, with 422 stairs on one side of the loop. No entrance fee, but parking is a concession charge and the America the Beautiful pass does not cover it.",
+      "summary": "Eight stops around the memorial in walking order, from the Avenue of Flags to the base of the carving and back up past Borglum's studio. Under a mile in all: the first 0.2 miles of the Presidential Trail are paved for wheelchairs, and the rest of the loop is 422 stairs. No entrance fee, but parking is a concession charge and the America the Beautiful pass does not cover it.",
       "stops": [
         {
           "name": "Avenue of Flags",
@@ -789,8 +789,8 @@
           "lat": 43.87718,
           "lon": -103.45741,
           "inside_min": 40,
-          "desc": "A 0.6 mile paved loop from the Grand View Terrace that takes you to the base of the mountain. The section down toward the Sculptor's Studio is 422 stairs, so the loop is one way round if steps are a problem.",
-          "yiki": "Walk it counter-clockwise. That puts the stairs going down rather than up, and it saves the closest viewpoint for last.",
+          "desc": "A 0.6 mile loop from the Grand View Terrace to the base of the mountain. The first 0.2 miles are paved and wheelchair accessible. The remaining 0.4 miles are 422 stairs: 262 down to the Sculptor's Studio, then 160 back up to the Grand View Terrace. If steps are a problem, walk the paved section to the base and come back the same way.",
+          "yiki": "Start with the paved section, which is what the park recommends. The longer flight then goes down, 262 steps to the studio, but there are still 160 to climb at the end, so save some legs for it.",
           "n": 4,
           "est": true,
           "walk_m_from_prev": 103,
