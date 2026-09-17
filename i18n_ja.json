@@ -1086,5 +1086,15 @@
  "The walk, in order": "歩く順番",
  "Distances are straight-line estimates between stops, not walking routes. Times inside are what a visitor who actually stops really spends.": "地点間の距離は直線での概算で、実際の徒歩ルートではありません。見学時間は、実際に立ち寄って見学する人が過ごす時間です。",
  "±{acc} m": "±{acc} m",
- "{name}'s note:": "{name}のメモ："
+ "{name}'s note:": "{name}のメモ：",
+ "Audio player": "オーディオプレーヤー",
+ "Play": "再生",
+ "Pause": "一時停止",
+ "Mute": "ミュート",
+ "Unmute": "ミュートを解除",
+ "Position in the recording": "再生位置",
+ "Volume": "音量",
+ "Language of the recording": "音声の言語",
+ "Language": "言語",
+ "Other languages are not recorded yet.": "ほかの言語の音声はまだありません。"
 }

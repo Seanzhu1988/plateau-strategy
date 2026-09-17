@@ -830,5 +830,15 @@
  "The walk, in order": "O passeio, em ordem",
  "Distances are straight-line estimates between stops, not walking routes. Times inside are what a visitor who actually stops really spends.": "As distâncias são estimativas em linha reta entre as paradas, não rotas a pé. Os tempos no local mostram quanto tempo passa ali um visitante que de fato se detém.",
  "±{acc} m": "±{acc} m",
- "{name}'s note:": "Nota de {name}:"
+ "{name}'s note:": "Nota de {name}:",
+ "Audio player": "Reprodutor de áudio",
+ "Play": "Reproduzir",
+ "Pause": "Pausar",
+ "Mute": "Silenciar",
+ "Unmute": "Ativar o som",
+ "Position in the recording": "Posição na gravação",
+ "Volume": "Volume",
+ "Language of the recording": "Idioma da gravação",
+ "Language": "Idioma",
+ "Other languages are not recorded yet.": "Os outros idiomas ainda não foram gravados."
 }

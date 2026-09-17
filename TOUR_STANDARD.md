@@ -115,6 +115,16 @@ in the trail voice (Yiki in English, Pangge in Chinese, per guide_voices.py).
   so in its own closing line, and without it the Destination Book and the Trip
   Planner still think the stop is silent.
 - A page must never discover recordings by probing for them. See the traps.
+- **Every player is the standard player, and nothing is downloadable.**
+  [SEAN 2026-09-16, a sketch: "do this now and it became standard, no download
+  is allowed".] Write a plain `<audio controls>` and nothing more. The server
+  injects `/psx-audio.js` into any page with an `<audio>` element, and it turns
+  each one into the site's pill: play, the time, a seek line, volume, and a
+  globe listing every recorded language with the guide who reads it. Never
+  build a second player, never add a download link, and never serve a
+  recording as a page: `/media` refuses that. A guide is named from the
+  recording ledger, and a row marked `adopted` names nobody, because its voice
+  was guessed. `test_audio_player_standard.py` holds all of this.
 
 ## The artifacts
 

@@ -4028,3 +4028,19 @@ EXTRA.update({
     "±{acc} m": ["±{acc} 米", "±{acc} m", "±{acc} m", "±{acc} m"],
     "{name}'s note:": ["{name}的讲解笔记：", "Nota de {name}:", "{name}의 메모:", "Ghi chú của {name}:"],
 })
+
+# [2026-09-16] The standard audio player (psx-audio.js). [SEAN, a sketch, and
+# "it became standard, no download is allowed"] Its labels are written in
+# script, so they are listed here by hand.
+EXTRA.update({
+    "Audio player": ["音频播放器", "Reproductor de audio", "오디오 플레이어", "Trình phát âm thanh"],
+    "Play": ["播放", "Reproducir", "재생", "Phát"],
+    "Pause": ["暂停", "Pausar", "일시정지", "Tạm dừng"],
+    "Mute": ["静音", "Silenciar", "음소거", "Tắt tiếng"],
+    "Unmute": ["取消静音", "Activar el sonido", "음소거 해제", "Bật tiếng"],
+    "Position in the recording": ["录音播放进度", "Posición en la grabación", "녹음 재생 위치", "Vị trí trong bản ghi âm"],
+    "Volume": ["音量", "Volumen", "볼륨", "Âm lượng"],
+    "Language of the recording": ["录音的语言", "Idioma de la grabación", "녹음 언어", "Ngôn ngữ của bản ghi âm"],
+    "Language": ["语言", "Idioma", "언어", "Ngôn ngữ"],
+    "Other languages are not recorded yet.": ["其他语言还没有录音。", "Todavía no hay grabaciones en otros idiomas.", "다른 언어는 아직 녹음되지 않았습니다.", "Các ngôn ngữ khác chưa được ghi âm."],
+})

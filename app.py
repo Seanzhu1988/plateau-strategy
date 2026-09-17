@@ -1462,6 +1462,20 @@ def _compress_and_cache(resp):
                     b"</body>",
                     b'<script src="/install.js?v=%s" defer></script></body>'
                     % _ASSET_V.encode(), 1)
+            # THE STANDARD AUDIO PLAYER, delivered the same way. [SEAN
+            # 2026-09-16 "it became standard, no download is allowed"] Any
+            # page with an <audio> element, or the gallery script that builds
+            # one, gets /psx-audio.js, which turns every <audio controls> into
+            # the site's own player with no Download item. A page added later
+            # gets it by having audio, not by someone remembering a tag.
+            if (not path.startswith(("/dispatch", "/archive", "/access", "/setup", "/pulse", "/architecture"))
+                    and b'src="/psx-audio.js' not in stamped
+                    and (b"<audio" in stamped or b"gallery-ui.js" in stamped)
+                    and b"</body>" in stamped):
+                stamped = stamped.replace(
+                    b"</body>",
+                    b'<script src="/psx-audio.js?v=%s" defer></script></body>'
+                    % ver.encode(), 1)
             if stamped != body:
                 resp.set_data(stamped)
 
@@ -2154,6 +2168,17 @@ def frame_preview_js():
     return send_file(os.path.join(BASE_DIR, "frame-preview.js"))
 
 
+@app.route("/psx-audio.js")
+def psx_audio_js():
+    """The one audio player every page uses: a pill with play, time, seek,
+    volume and a globe that lists each recorded language with its guide.
+    [SEAN 2026-09-16: "do this now and it became standard, no download is
+    allowed".] Injected by the response hook below into any page that has an
+    <audio> element, so no page has to remember it."""
+    return send_file(os.path.join(BASE_DIR, "psx-audio.js"),
+                     mimetype="application/javascript")
+
+
 @app.route("/guide-player.js")
 def guide_player_js():
     return send_file(os.path.join(BASE_DIR, "guide-player.js"))
@@ -2732,15 +2757,34 @@ def paper_css():
     return send_file(os.path.join(BASE_DIR, "paper.css"))
 
 
+# A browser asks for a recording as "audio" when a player loads it and as
+# "document" when someone opens the file's address in a tab, which is where
+# the browser offers to save it. [SEAN 2026-09-16 "no download is allowed"]
+# Only the second is refused. Browsers too old to send the header are let
+# through, because refusing them would silence the player too.
+_AUDIO_FILE = re.compile(r"\.(mp3|m4a|ogg|wav|aac)$", re.I)
+_NOT_A_PLAYER = ("document", "iframe", "frame", "embed", "object")
+
+
 @app.route("/media/<path:filename>")
 def media_file(filename):
     from flask import send_from_directory
+    if (_AUDIO_FILE.search(filename)
+            and (request.headers.get("Sec-Fetch-Dest") or "").lower() in _NOT_A_PLAYER):
+        return ("This recording plays on the page it belongs to.", 403,
+                {"Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store"})
     repo = os.path.join(BASE_DIR, "media")
     if os.path.exists(os.path.join(repo, filename)):
-        return send_from_directory(repo, filename)
-    # Runtime-made media (the hourly voice refine) lives on the persistent
-    # disk, because the repo copy is replaced on every deploy.
-    return send_from_directory(os.path.join(DATA_DIR, "media"), filename)
+        resp = send_from_directory(repo, filename)
+    else:
+        # Runtime-made media (the hourly voice refine) lives on the persistent
+        # disk, because the repo copy is replaced on every deploy.
+        resp = send_from_directory(os.path.join(DATA_DIR, "media"), filename)
+    if _AUDIO_FILE.search(filename):
+        # A cached copy fetched by the player must not be handed to a tab
+        # that opens the same address, so caches keep the two apart.
+        resp.headers.add("Vary", "Sec-Fetch-Dest")
+    return resp
 
 
 @app.route("/book")
