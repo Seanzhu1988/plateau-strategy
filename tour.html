@@ -75,6 +75,12 @@
                    border-radius: 8px !important; font: inherit; text-align: left;
                    padding: .62rem .5rem !important; cursor: pointer; color: inherit;
                    font-weight: inherit !important; }
+        /* NAVY, EVERY STOP. [SEAN 2026-09-16 "all walk order selection color navy
+           blue color"] modern.css paints every button with the green portal
+           colour and !important, so the unselected stops read green and only
+           the selected one turned navy. The whole list is navy now; the selected
+           stop is marked by weight and its left rule, never by a fill. */
+        #twList .tw-stop, #twList .tw-stop .tw-name { color: #12305b !important; }
         #twList .tw-stop[aria-current="true"] { border-left-color: #12305b !important; }
         .tw-stop[aria-current="true"] .tw-name { color: #12305b; font-weight: 750; }
         .tw-stop .n { font-size: .78rem; font-weight: 750; color: #12305b; min-width: 1.4rem; }
