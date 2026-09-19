@@ -57,3 +57,18 @@ EXTRA.update({
         ". 도보 거리는 야외 경로 기준이며 건물 내부 이동과 횡단에 추가 시간이 필요합니다.",
         ". Khoảng cách đi bộ chỉ tính đường ngoài trời; hãy dành thêm thời gian đi trong tòa nhà và qua đường."]
 })
+
+EXTRA.update({
+    "outside": ["室外参观", "al aire libre", "야외 관람", "tham quan ngoài trời"],
+    "visiting": ["参观", "de visita", "관람", "tham quan"],
+    "Public outside view only. No walk-in interior access on this tour. View from the Ellipse near the Zero Milestone; follow current security signs.": [
+        "此行仅在公共区域外观白宫，不提供直接入内参观。从椭圆形草坪零里程碑附近观赏，并遵循现场安保标识。",
+        "Esta visita es solo exterior, desde una zona pública. No incluye acceso al interior sin reserva. Observa desde la Elipse, cerca del Hito Cero, y sigue las indicaciones de seguridad.",
+        "이 투어는 공공장소에서 외관만 관람하며 예약 없는 내부 입장은 포함하지 않습니다. 엘립스의 제로 마일스톤 근처에서 바라보고 현장 보안 안내를 따르세요.",
+        "Chuyến này chỉ ngắm bên ngoài từ khu vực công cộng, không bao gồm vào trong trực tiếp. Ngắm từ Ellipse gần cột mốc Zero Milestone và tuân theo biển an ninh tại chỗ."],
+    "White House: public outside view only on this tour. No walk-in interior access. The route visits the Ellipse near the Zero Milestone, outside the White House grounds. Temporary security closures can change access;": [
+        "白宫：本行程仅在公共区域外观，不提供直接入内参观。路线前往白宫院落外的椭圆形草坪零里程碑附近。临时安保封闭可能影响通行；",
+        "Casa Blanca: esta ruta solo incluye la vista exterior pública, sin acceso directo al interior. Visita la Elipse cerca del Hito Cero, fuera del recinto de la Casa Blanca. Los cierres temporales de seguridad pueden cambiar el acceso;",
+        "백악관: 이 투어에서는 공공장소에서 외관만 관람하며 예약 없는 내부 입장은 불가합니다. 경로는 백악관 경내 밖 엘립스의 제로 마일스톤 근처를 방문합니다. 임시 보안 통제로 출입이 달라질 수 있습니다;",
+        "Nhà Trắng: tuyến này chỉ ngắm bên ngoài từ nơi công cộng, không vào trong trực tiếp. Tuyến đến Ellipse gần Zero Milestone, ngoài khuôn viên Nhà Trắng. Việc đóng cửa tạm thời vì an ninh có thể thay đổi lối đi;"],
+})

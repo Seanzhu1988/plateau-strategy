@@ -229,7 +229,7 @@
             <span class="nm-stat"><b id="nmStops"></b>stops</span>
             <span class="nm-stat"><b id="nmMiles"></b>mapped miles</span>
             <span class="nm-stat"><b id="nmWalk"></b>walking estimate</span>
-            <span class="nm-stat"><b id="nmInside"></b>inside</span>
+            <span class="nm-stat"><b id="nmInside"></b>visiting</span>
         </div>
 
         <div class="nm-cols">
@@ -259,7 +259,7 @@
                 </div>
                 <p class="nm-consent" id="nmConsent" hidden>Your position stays on this phone and is drawn on the map here. We never send it to our server. The map loads tiles for the area on screen, as any map does.</p>
                 <div id="nmMap"></div>
-                <p class="nm-foot">White House access changes with security restrictions. This map does not draw a path through its grounds. For the two unavailable White House legs, <a href="https://www.nps.gov/whho/planyourvisit/viewing-the-white-house.htm" target="_blank" rel="noopener noreferrer">check the National Park Service viewing guidance</a> and follow signs on site. The optional Moongate pause is extra to the main-route totals.</p>
+                <p class="nm-foot">White House: public outside view only on this tour. No walk-in interior access. The route visits the Ellipse near the Zero Milestone, outside the White House grounds. Temporary security closures can change access; <a href="https://www.nps.gov/whho/planyourvisit/viewing-the-white-house.htm" target="_blank" rel="noopener noreferrer">check the National Park Service viewing guidance</a> and follow signs on site. The optional Moongate pause is extra to the main-route totals.</p>
                 <details class="nm-foot" id="moongate-detour">
                   <summary>Optional beauty stop: the Moongate Garden</summary>
                   <h3>A circle that changes how you look</h3>
@@ -753,7 +753,7 @@
         if (s) {
             nowBox.hidden = false;
             nowName.textContent = s.n + ". " + s.name;
-            nowDesc.textContent = s.desc || "";
+            nowDesc.textContent = (s.model === "whitehouse" ? T("Public outside view only. No walk-in interior access on this tour. View from the Ellipse near the Zero Milestone; follow current security signs.") + " " : "") + (s.desc || "");
             renderExtras(s);
         } else {
             nowBox.hidden = true; hideExtras();
@@ -808,6 +808,8 @@
         } catch (err) {}
     }
 
+    function walkPoint(s) { return s.model === "whitehouse" ? [38.89512, -77.03655] : [s.lat, s.lon]; }
+
     function stopMeta(s, meters) {
         var parts = [];
         if (Number.isFinite(meters)) {
@@ -817,7 +819,7 @@
             parts.push(T(meters === null ? "Distance unavailable" : "Checking distance"));
             parts.push(T(meters === null ? "Walk time unavailable" : "Checking walk time"));
         }
-        if (Number.isFinite(s.inside_min)) parts.push(Math.round(s.inside_min) + " " + T("min") + " " + T("inside"));
+        if (Number.isFinite(s.inside_min)) parts.push(Math.round(s.inside_min) + " " + T("min") + " " + T(s.model === "whitehouse" ? "outside" : "inside"));
         return parts.join(" · ");
     }
 
@@ -870,7 +872,7 @@
             window.addEventListener("resize", function () { map.invalidateSize(); });
         }
         layer.clearLayers(); dots = {};
-        var pts = stops.map(function (s) { return [s.lat, s.lon]; });
+        var pts = stops.map(function (s) { return walkPoint(s); });
         // Use a checked pedestrian snapshot without contacting a router per visitor.
         var routeNote = document.getElementById("nmRouteStatus");
         routeNote.textContent = "Finding walking paths...";
@@ -901,7 +903,7 @@
             if (failed) routeNote.textContent += " Totals cover mapped legs only (+); allow additional time for missing legs. Walking time assumes 75 meters per minute, before stops.";
         })();
         stops.forEach(function (s) {
-            var d = L.circleMarker([s.lat, s.lon], { radius: 5, color: "#12305b", weight: 3,
+            var d = L.circleMarker(walkPoint(s), { radius: 5, color: "#12305b", weight: 3,
                 fillColor: "#fff", fillOpacity: 1, opacity: 1 }).addTo(layer);
             d.on("click", function () { show(s.model || "", true); });
             if (s.model) dots[s.model] = d;
@@ -1011,7 +1013,7 @@
             if (!youMarker) {
                 youMarker = L.marker([lat, lon], { icon: L.divIcon({ className: "", iconSize: [16, 16],
                     iconAnchor: [8, 8], html: '<div class="nm-you"></div>' }) }).addTo(map);
-                var pts = stops.map(function (s) { return [s.lat, s.lon]; }); pts.push([lat, lon]);
+                var pts = stops.map(function (s) { return walkPoint(s); }); pts.push([lat, lon]);
                 map.invalidateSize(); map.fitBounds(L.latLngBounds(pts), { padding: [24, 24] });
                 followBtn.textContent = T("Stop following"); followBtn.setAttribute("aria-pressed", "true");
                 /* A try/catch cannot catch a rejected promise. Chrome refuses the screen
@@ -1023,7 +1025,7 @@
                     .catch(function () {}); } catch (e) {}
             } else { youMarker.setLatLng([lat, lon]); }
             var best = null;
-            stops.forEach(function (s) { var d = dist(lat, lon, s.lat, s.lon); if (!best || d < best.d) best = { s: s, d: d }; });
+            stops.forEach(function (s) { var target = walkPoint(s), d = dist(lat, lon, target[0], target[1]); if (!best || d < best.d) best = { s: s, d: d }; });
             if (!best) return;
             locEl.textContent = Math.round(best.d) + " m " + T("from") + " " + best.s.n + ". " + best.s.name + (acc ? " \u00b7 \u00b1" + acc + " m" : "");
             /* The flat sixty metres that used to live here is now one case
@@ -1101,7 +1103,7 @@
            reach, never take it away. */
         if (window.ApproachTrigger) {
             trigger = window.ApproachTrigger.create({
-                stops: stops,
+                stops: stops.map(function (s) { var point = walkPoint(s); return Object.assign({}, s, {lat:point[0], lon:point[1]}); }),
                 onEvent: function (e) {
                     /* PHASE 2. The heads-up: seen from far enough away to be
                        worth turning your head for, and deliberately quiet. It

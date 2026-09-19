@@ -35,7 +35,7 @@ test('checked Mall snapshot preserves every leg and rejects restricted or stale 
   if(leg.unavailable) {unavailable++;assert.throws(()=>route.snapshotLeg(snapshot,stops[i],stop));}
   else {const result=route.snapshotLeg(snapshot,stops[i],stop);meters+=result.meters; assert.ok(result.points.length>2);}
  });
- assert.equal(unavailable,2);assert.equal(meters,10590);
+ assert.equal(unavailable,0);assert.equal(meters,11752);
  assert.throws(()=>route.snapshotLeg(snapshot,{lat:0,lon:0},stops[1]));
  assert.throws(()=>route.snapshotLeg({...snapshot,profile:'driving'},stops[0],stops[1]));
 });
@@ -49,4 +49,14 @@ test('Mall crossing uses park footways and the south approach instead of the nor
  assert.ok(leg.meters<350);
  assert.ok(leg.points.every(p=>p[1]>-77.0205 && p[0]<38.8911));
  assert.ok(leg.points.some(p=>p[0]>38.889 && p[0]<38.890));
+});
+
+test('White House arrival and departure share an exterior Ellipse viewpoint', () => {
+ const snapshot=require('./national-mall-walking.json');
+ const arrival=snapshot.legs[10],departure=snapshot.legs[11];
+ assert.deepEqual(arrival.points.at(-1),departure.points[0]);
+ assert.equal(arrival.meters,677);
+ assert.equal(departure.meters,485);
+ assert.ok(arrival.points.every(p=>p[0]<38.8952));
+ assert.ok(departure.points.every(p=>p[0]<38.8956 || p[1]<-77.0383));
 });
