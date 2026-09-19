@@ -88,6 +88,15 @@
            is already standing there, so it lives next to that stop's words and
            nowhere else. [SEAN "a slideshow for each one of them"] */
         #ftStops .ft-stop-photos { margin: .6rem 0 .2rem; max-width: 560px; min-width: 0; }
+        .ft-gallery-tool { margin-top: .7rem; color: #55504a; }
+        .ft-gallery-tool summary { min-height: 44px; padding: .55rem 0; color: #123456;
+                                   cursor: pointer; font-weight: 700; }
+        .ft-gallery-tool form { display: flex; flex-wrap: wrap; align-items: end; gap: .55rem; }
+        .ft-gallery-tool label { flex-basis: 100%; }
+        .ft-gallery-tool input { flex: 1 1 13rem; min-width: 0; min-height: 44px;
+                                 padding: .55rem; border: 1px solid #ddd7ce; }
+        #ftStops .ft-gallery-tool button { min-height: 44px; }
+        .ft-gallery-tool a { display: inline-flex; align-items: center; min-height: 44px; }
         .ft-yiki { margin-top: .55rem; color: #4a453d; font-size: .93rem; line-height: 1.6; }
         .ft-yiki .ft-guide { margin-right: .5rem; }
         /* Hung off the list's id: modern.css strips padding and background from
@@ -586,6 +595,18 @@ window.FT_MODEL_BY_STOP = {
         return (l || "en").toLowerCase().slice(0, 2);
     }
     function audioText(en, zh) { return audioLang === "zh" ? zh : en; }
+    function museumGalleryTool(s) {
+        if (s.universal_gallery !== true) return "";
+        return '<details class="ft-gallery-tool i18n-skip"><summary>' +
+               T('Explore this museum with Universal Gallery', {}) + '</summary>' +
+               '<form action="/universal-gallery" method="get">' +
+               '<label for="ftGalleryQuery_' + s.n + '">' +
+               T('Artist, artwork or label text', {}) + '</label>' +
+               '<input id="ftGalleryQuery_' + s.n + '" name="q" type="search">' +
+               '<button type="submit">' + T('Search artworks', {}) + '</button></form>' +
+               '<a href="/universal-gallery?photo=1">' +
+               T('Search with a photograph', {}) + '</a></details>';
+    }
 
     function render() {
         // One pass: the leg to each kept stop is the ground from the previous
@@ -642,6 +663,7 @@ window.FT_MODEL_BY_STOP = {
                    '<div class="ft-meta">' + meta + '</div>' +
                    '<div class="ft-desc">' + s.desc + '</div>' +
                    '<div class="ft-stop-photos i18n-skip" data-stop="' + s.n + '"></div>' +
+                   museumGalleryTool(s) +
                    (window.FT_MODEL_BY_STOP[s.n]
                      ? '<button type="button" class="ft-model-open i18n-skip" data-ft-model="' +
                        window.FT_MODEL_BY_STOP[s.n] + '" data-ft-stop="' + s.n +

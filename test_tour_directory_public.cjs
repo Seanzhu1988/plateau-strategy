@@ -103,8 +103,8 @@ test('public directory uses the requested palette, label and Open tour placement
 test('reviewed museum and collection stops carry the Universal Gallery tool flag', async () => {
   const d=await ready,tours=d.buildDirectoryData(seed);
   const tools=tours.flatMap(t=>t.stops.filter(s=>s.universalGallery).map(s=>s.name));
-  assert.equal(tools.length,21);
-  for(const required of ['National Air and Space Museum','Yale Center for British Art','Liberty Bell Center','Second Bank of the United States','National Constitution Center','Philadelphia Museum of Art and the Rocky Steps']) {
+  assert.equal(tools.length,25);
+  for(const required of ['National Air and Space Museum','Yale Center for British Art','Liberty Bell Center','Second Bank of the United States','National Constitution Center','Philadelphia Museum of Art and the Rocky Steps','Old South Meeting House','Old State House','Paul Revere House','USS Constitution']) {
     assert.ok(tools.includes(required),required);
   }
   for(const tour of seed.trails.filter(t=>Array.isArray(t.stops))) {

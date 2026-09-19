@@ -135,6 +135,7 @@
         {
           "n": 8,
           "name": "Old South Meeting House",
+          "universal_gallery": true,
           "lat": 42.35698,
           "lon": -71.05838,
           "inside_min": 25,
@@ -153,6 +154,7 @@
         {
           "n": 9,
           "name": "Old State House",
+          "universal_gallery": true,
           "lat": 42.35873,
           "lon": -71.05747,
           "inside_min": 30,
@@ -206,6 +208,7 @@
         {
           "n": 12,
           "name": "Paul Revere House",
+          "universal_gallery": true,
           "lat": 42.36374,
           "lon": -71.05368,
           "inside_min": 25,
@@ -260,6 +263,7 @@
         {
           "n": 15,
           "name": "USS Constitution",
+          "universal_gallery": true,
           "lat": 42.37244,
           "lon": -71.05655,
           "inside_min": 45,
