@@ -586,6 +586,13 @@
         layer = L.layerGroup().addTo(m);
         routeLines = {};
         var line = stops.map(function (s) { return [s.lat, s.lon]; });
+        var mappedPoints = [];
+        function fitTrailBounds() {
+            var points = line.concat(mappedPoints);
+            if (!points.length) return;
+            m.invalidateSize();
+            m.fitBounds(L.latLngBounds(points).pad(0.15));
+        }
         var routeStatus = document.getElementById("twRouteStatus");
         if (t.walking_snapshot) {
             routeStatus.textContent = T("Checking distance") + " · " + T("Checking walk time");
@@ -596,6 +603,7 @@
                         var leg = await PSXTourRouting.snapshotWalking(t.walking_snapshot, stops[j-1], stops[j]);
                         total += leg.meters;
                         stops[j]._mappedMeters = leg.meters;
+                        mappedPoints = mappedPoints.concat(leg.points);
                         paintStopMeta(stops[j], j, leg.meters);
                         routeLines[j] = L.polyline(leg.points, {
                             color: leg.band.color,
@@ -611,6 +619,7 @@
                 }
                 routeReady = true; routeTotal = total; routeFailed = failed;
                 paintRouteCopy();
+                fitTrailBounds();
             })();
         } else {
             paintRouteCopy();
@@ -623,8 +632,7 @@
             dots[i] = d;
         });
         setTimeout(function () {
-            m.invalidateSize();
-            if (line.length) m.fitBounds(L.latLngBounds(line).pad(0.15));
+            fitTrailBounds();
         }, 60);
         var wb = document.getElementById("twWalkbar"); if (wb) wb.hidden = false;
         makeTrigger();

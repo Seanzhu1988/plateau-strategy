@@ -8,7 +8,8 @@ def create_tour_directory_blueprint(base_dir):
     bp = Blueprint('tour_directory', __name__)
     assets = {'tour-directory.js', 'tour-directory-data.js',
               'tour-directory.css', 'ivy-branding-public.js', 'tour-routing.js',
-              'national-mall-walking.json', 'philadelphia-walking.json'}
+              'national-mall-walking.json', 'philadelphia-walking.json',
+              'harvard-walking.json'}
 
     @bp.get('/tour-directory.<extension>')
     def directory_asset(extension):
@@ -33,6 +34,10 @@ def create_tour_directory_blueprint(base_dir):
     @bp.get('/philadelphia-walking.json')
     def philadelphia_walking_snapshot():
         return serve('philadelphia-walking.json')
+
+    @bp.get('/harvard-walking.json')
+    def harvard_walking_snapshot():
+        return serve('harvard-walking.json')
 
     def serve(name):
         if name not in assets:

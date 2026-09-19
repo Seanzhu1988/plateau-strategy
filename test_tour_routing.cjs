@@ -103,3 +103,28 @@ test('Philadelphia uses all eighteen checked pedestrian legs and no straight-lin
  assert.doesNotMatch(page,/L\.polyline\(line/);
  assert.doesNotMatch(page,/google\.com\/maps\/dir/);
 });
+
+test('Harvard uses all nine checked pedestrian legs through and around the Yard', () => {
+ const fs=require('node:fs');
+ const snapshot=JSON.parse(fs.readFileSync('harvard-walking.json','utf8'));
+ const trail=JSON.parse(fs.readFileSync('trails.json','utf8')).trails.find(t=>t.id==='ivy-harvard');
+ assert.equal(trail.walking_snapshot,'/harvard-walking.json');
+ assert.equal(snapshot.legs.length,trail.stops.length-1);
+ assert.ok(trail.stops.every(stop=>stop.est!==true));
+ let meters=0;
+ trail.stops.slice(1).forEach((stop,i)=>{
+  const before=trail.stops[i],leg=snapshot.legs[i],result=route.snapshotLeg(snapshot,before,stop);
+  assert.deepEqual(leg.from,[before.lat,before.lon]);
+  assert.deepEqual(leg.to,[stop.lat,stop.lon]);
+  assert.equal(leg.from_name,before.name); assert.equal(leg.to_name,stop.name);
+  assert.equal(stop.walk_m_from_prev,result.meters);
+  assert.equal(stop.walk_min_from_prev,Math.ceil(result.meters/75));
+  assert.ok(result.points.length>=2);
+  assert.ok(result.points.every(p=>p[0]>42.36&&p[0]<42.39&&p[1]>-71.13&&p[1]<-71.10));
+  assert.equal(result.band.color,'#15803d');
+  meters+=result.meters;
+ });
+ assert.equal(meters,1781); assert.equal(trail.length_m,meters);
+ assert.equal(trail.walk_min_total,Math.ceil(meters/75));
+ assert.match(fs.readFileSync('tour.html','utf8'),/line\.concat\(mappedPoints\)/);
+});
