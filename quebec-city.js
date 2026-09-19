@@ -22,7 +22,7 @@ async function load(){
   stage.dataset.ready='true';document.querySelector('#poster').hidden=true;document.querySelectorAll('.controls button').forEach(b=>b.disabled=false);status.textContent='Ready to explore. Drag to turn the château.';
   renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();status.textContent='The 3D view stopped. Reload the page to try again.';document.querySelector('#poster').hidden=false;renderer.domElement.hidden=true;document.querySelectorAll('.controls button').forEach(b=>b.disabled=true);});
   stage.focus();new ResizeObserver(resize).observe(stage);
- }catch(error){if(renderer){renderer.dispose();renderer=null;}status.textContent='The interactive view could not load. The preview is still available; try again or download the model below.';start.textContent='Try 3D again';start.disabled=false;}
+ }catch(error){if(renderer){renderer.dispose();renderer=null;}status.textContent='The interactive view could not load. The preview is still available; please try again.';start.textContent='Try 3D again';start.disabled=false;}
  finally{busy=false;}
 }
 start.addEventListener('click',load);
