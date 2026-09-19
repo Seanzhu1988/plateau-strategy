@@ -1,7 +1,9 @@
 :root {
   --page: #ffffff;
-  --navy: #1f3a5f;
-  --ink: #0b0809;
+  --navy: #123456;
+  --teal: #033E3E;
+  --orange: #F37021;
+  --ink: #0F172A;
   --body: #3d3d42;
   --muted: #6e6e76;
   --line: #e6e6ea;
@@ -125,3 +127,8 @@ footer a { display: inline-flex; align-items: center; min-height: 44px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
 
+
+#open-tour { background: var(--orange); color: #0F172A; padding: .55rem 1rem; border: 0; border-radius: .35rem; }
+.brand { color: var(--teal); }
+.stop-list-heading { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem 1rem; }
+.stop-list-heading p { flex-basis: 100%; }

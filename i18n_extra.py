@@ -4052,3 +4052,7 @@ EXTRA.update(_MALL_EXTRA)
 # Private artwork research guidance uses the same language switcher.
 from i18n_gallery_private import EXTRA as _GALLERY_PRIVATE_EXTRA
 EXTRA.update(_GALLERY_PRIVATE_EXTRA)
+
+# Public tour-directory label and primary action.
+from i18n_tour_directory import EXTRA as _TOUR_DIRECTORY_EXTRA
+EXTRA.update(_TOUR_DIRECTORY_EXTRA)

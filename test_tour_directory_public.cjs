@@ -87,3 +87,15 @@ test('public page uses public feeds, no private preview, rights notes, autoplay 
   assert.match(read('landing-page.html'), /href="\/tours">Explore tours by city<\/a>\s*<a href="\/inventory" class="psx-btn psx-btn-ghost">Convenient inventory<\/a>\s*<span class="psx-btn psx-btn-soon" aria-disabled="true">iTicket<\/span>\s*<a href="#" onclick="showView\('reinvestment', event\)" class="psx-btn psx-btn-primary">Share your idea<\/a>/);
   assert.equal((read('landing-page.html').match(/Explore tours by city/g) || []).length, 1);
 });
+
+test('public directory uses the requested palette, label and Open tour placement', () => {
+  const html=read('tour-directory.html'),css=read('tour-directory.css');
+  assert.match(html,/Semi-Walking tours/);
+  assert.match(html,/<div class="stop-list-heading"><h3>Your stops, in order<\/h3><a id="open-tour"/);
+  assert.equal((html.match(/id="open-tour"/g)||[]).length,1);
+  assert.match(css,/--ink:\s*#0F172A/);
+  assert.match(css,/--teal:\s*#033E3E/);
+  assert.match(css,/--navy:\s*#123456/);
+  assert.match(css,/--orange:\s*#F37021/);
+  assert.match(css,/#open-tour\s*\{[^}]*background:\s*var\(--orange\)[^}]*color:\s*#0F172A/);
+});
