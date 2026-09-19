@@ -3440,6 +3440,7 @@ PUBLIC_PAGES = [
     # test client agreed. The row was never added when the page was.
     ("/freedom-trail", "0.8", "monthly"),
     ("/architecture", "0.7", "monthly"),
+    ("/quebec-city", "0.7", "monthly"),
     # The page that sells the tours. It was in neither this list, nor the
     # site index, nor any link on any page, so the only way to reach it was
     # a social post. For a licensed guide whose tours are the product, that

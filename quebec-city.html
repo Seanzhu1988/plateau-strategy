@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Québec City: Château Frontenac | Plateau Strategy</title>
+  <meta name="description" content="Explore an autumn 3D interpretation of Fairmont Le Château Frontenac in Québec City. Turn the model, explore the courtyard and look closer at its copper roofs.">
+  <link rel="canonical" href="https://plateaustrategy.io/quebec-city">
+  <meta property="og:title" content="Québec City: Château Frontenac">
+  <meta property="og:description" content="An autumn perspective on a Québec landmark. Explore the château in 3D.">
+  <meta property="og:image" content="https://plateaustrategy.io/quebec-assets/frontenac-autumn-v4.png">
+  <meta property="og:url" content="https://plateaustrategy.io/quebec-city">
+  <link rel="stylesheet" href="/quebec-assets/quebec-city.css">
+  <script type="importmap">{"imports":{"three":"/vendor/three/three.module.min.js"}}</script>
+</head>
+<body>
+  <header><a class="brand" href="/">Plateau Strategy</a><nav aria-label="Main navigation"><a href="/architecture">More landmarks</a><a href="/tours">Walking tours</a></nav></header>
+  <main>
+    <section class="intro"><div><p class="location">Québec, Canada</p><h1>Québec City</h1><h2>Château Frontenac in autumn</h2></div><p class="invitation">Copper rooftops. Red brick. A little autumn gold.<br>Take a closer look at the château, from the terrace to the towers.</p></section>
+    <section class="viewer" aria-label="Château Frontenac architectural model">
+      <div id="stage" tabindex="0" aria-label="Interactive model. Use arrow keys to turn and plus or minus to zoom.">
+        <img id="poster" src="/quebec-assets/frontenac-autumn-v4.png" width="1000" height="820" alt="3D architectural illustration of Château Frontenac, with green copper roofs and autumn trees around the terrace." fetchpriority="high">
+        <div class="launch"><button id="start" type="button">Explore in 3D</button><p id="status" role="status" aria-live="polite">Interactive view loads on request (23 MB).</p></div>
+      </div>
+      <div class="controls" aria-label="Model controls"><div><button data-view="front" disabled>Terrace view</button><button data-view="back" disabled>Courtyard view</button><button id="reset" disabled>Reset</button></div><div><button id="zoom-in" aria-label="Zoom in" disabled>+</button><button id="zoom-out" aria-label="Zoom out" disabled>−</button><button id="fullscreen" disabled>Full screen</button></div></div>
+      <p class="help">Drag to turn. Pinch to zoom. Keyboard: arrow keys to turn, + and − to zoom.</p>
+      <noscript><p>The rendered model is shown above. Enable JavaScript to rotate the 3D view.</p></noscript>
+    </section>
+    <section class="story" aria-labelledby="story-heading"><div><h2 id="story-heading">A château above the river</h2><p>Overlooking the St. Lawrence River from Old Québec, Fairmont Le Château Frontenac grew through successive additions. The hotel opened in 1893; its central tower followed in 1924.</p><p>The château style brings together steep roofs, turrets, brick and stone. In this model, autumn trees frame the terrace while the tower rises above the surrounding wings.</p><p class="disclosure">This is an independent architectural illustration, with approximate geometry and illustrative landscaping. It is not a surveyed replica or an official Fairmont model.</p></div><aside><h3>Look closer</h3><ul><li>The copper roofs and rows of dormer windows.</li><li>The projecting riverfront bay and stone arches.</li><li>The courtyard entrance and autumn trees.</li></ul><a class="download" href="/quebec-assets/frontenac-autumn-v4.glb" download="quebec-city-chateau-frontenac.glb">Download the 3D model (23 MB)</a><details><summary>Historical sources</summary><p><a href="https://www.fairmont.com/en/hotels/quebec-city/fairmont-le-chateau-frontenac/story.html" target="_blank" rel="noopener noreferrer">Fairmont: the hotel's history</a></p><p><a href="https://www.pc.gc.ca/apps/dfhd/page_nhs_eng.aspx?i=48857&amp;id=676" target="_blank" rel="noopener noreferrer">Parks Canada: Château Frontenac National Historic Site</a></p></details></aside></section>
+  </main>
+  <footer><a href="/architecture">Explore more architecture</a><span>Plateau Strategy</span></footer>
+  <script type="module" src="/quebec-assets/quebec-city.js"></script>
+</body>
+</html>

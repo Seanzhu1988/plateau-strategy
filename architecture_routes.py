@@ -14,7 +14,7 @@ MODULES = {
     'navigation.js', 'public.js', 'stories.js',
 }
 STYLES = {'preview.css', 'public.css'}
-THREE_FILES = {'three.module.min.js', 'three.core.min.js', 'OrbitControls.js', 'LICENSE'}
+THREE_FILES = {'three.module.min.js', 'three.core.min.js', 'OrbitControls.js', 'GLTFLoader.js', 'BufferGeometryUtils.js', 'LICENSE'}
 
 
 def model_catalog(base_dir):
@@ -55,6 +55,30 @@ def model_catalog(base_dir):
 def create_architecture_blueprint(base_dir):
     root = Path(base_dir).resolve()
     bp = Blueprint('architecture', __name__)
+
+    @bp.get('/quebec-city')
+    def quebec_page():
+        response = send_from_directory(root, 'quebec-city.html')
+        response.headers['Cache-Control'] = 'no-store'
+        return response
+
+    @bp.get('/quebec-assets/<name>')
+    def quebec_asset(name):
+        allowed = {
+            'quebec-city.css': (root, 'quebec-city.css'),
+            'quebec-city.js': (root, 'quebec-city.js'),
+            'frontenac-autumn-v4.glb': (root / 'media' / 'quebec', 'frontenac-autumn-v4.glb'),
+            'frontenac-autumn-v4.png': (root / 'media' / 'quebec', 'frontenac-autumn-v4.png'),
+        }
+        if name not in allowed:
+            abort(404)
+        directory, filename = allowed[name]
+        response = send_from_directory(directory, filename)
+        if name.endswith('.glb'):
+            response.headers['Content-Type'] = 'model/gltf-binary'
+        response.headers['Cache-Control'] = 'public, max-age=31536000, immutable' if '-v4.' in name else 'no-store'
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        return response
 
     @bp.get('/architecture')
     def architecture_page():
