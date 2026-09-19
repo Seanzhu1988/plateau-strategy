@@ -4048,3 +4048,7 @@ EXTRA.update({
 # National Mall additions share the existing language switcher and pack builder.
 from i18n_mall import EXTRA as _MALL_EXTRA
 EXTRA.update(_MALL_EXTRA)
+
+# Private artwork research guidance uses the same language switcher.
+from i18n_gallery_private import EXTRA as _GALLERY_PRIVATE_EXTRA
+EXTRA.update(_GALLERY_PRIVATE_EXTRA)

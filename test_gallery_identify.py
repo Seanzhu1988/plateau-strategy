@@ -74,6 +74,15 @@ def dimension_header(width, height):
 
 
 class PhotoIntakeTests(unittest.TestCase):
+    def test_private_art_prompt_supports_research_without_authentication_or_valuation(self):
+        prompt = G._SYSTEM.lower()
+        self.assertIn("private collections", prompt)
+        self.assertIn("signature", prompt)
+        self.assertIn("label", prompt)
+        self.assertIn("do not authenticate", prompt)
+        self.assertIn("estimate sale value", prompt)
+        self.assertIn("legal ownership", prompt)
+
     def test_jpeg_pixels_are_preserved_and_orientation_applied_without_metadata(self):
         raw = photo("JPEG", metadata=True)
         clean = G.prepare_image(raw)

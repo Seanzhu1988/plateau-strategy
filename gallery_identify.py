@@ -77,7 +77,11 @@ _OUTPUT_SCHEMA = {
     },
     "required": ["candidates", "label_text", "visual_description", "reason"], "additionalProperties": False,
 }
-_SYSTEM = """Help a museum visitor search for artworks and historical artifacts.
+_SYSTEM = """Help a visitor research artworks and historical artifacts in museums, private collections, artist studios, homes or galleries.
+A work need not be famous or publicly catalogued to deserve a useful description.
+Never assume a private artwork has a public catalogue match. Suggest readable
+signature, label, medium and title clues when supported by the image.
+Do not authenticate, estimate sale value, or infer legal ownership from a photo.
 Inspect the picture and any legible collection label. Return up to three
 tentative identities with useful collection-search queries. A candidate is a
 hypothesis: this step cannot verify an exact collection match.
