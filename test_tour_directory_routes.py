@@ -14,7 +14,7 @@ class DirectoryRoutesTests(unittest.TestCase):
         self.client = app.test_client()
 
     def test_only_public_assets_are_served_with_safe_types_and_fresh_versions(self):
-        for path in ['/tour-directory.js','/tour-directory-data.js','/tour-directory.css','/ivy-branding-public.js','/tour-routing.js','/national-mall-walking.json']:
+        for path in ['/tour-directory.js','/tour-directory-data.js','/tour-directory.css','/ivy-branding-public.js','/tour-routing.js','/national-mall-walking.json','/philadelphia-walking.json']:
             with self.subTest(path=path), self.client.get(path) as response:
                 self.assertEqual(response.status_code,200)
                 self.assertEqual(response.headers['Cache-Control'],'no-store')

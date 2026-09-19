@@ -17,7 +17,7 @@
     point(a); point(b);
     return 'https://www.google.com/maps/dir/?api=1&origin=' + encodeURIComponent(a.lat+','+a.lon) + '&destination=' + encodeURIComponent(b.lat+','+b.lon) + '&travelmode=' + (mode === 'driving' ? 'driving' : 'walking');
   }
-  var snapshotPromise;
+  var snapshotPromises = {};
   function snapshotLeg(snapshot, a, b) {
     point(a); point(b);
     if (!snapshot || snapshot.version !== 1 || snapshot.profile !== 'hiking-beta' || !Array.isArray(snapshot.legs)) throw new Error('Walking snapshot unavailable');
@@ -26,16 +26,20 @@
     leg.points.forEach(function (p) { point({lat:p[0],lon:p[1]}); });
     return {meters:leg.meters, points:leg.points, band:band(leg.meters)};
   }
-  async function mallWalking(a, b) {
-    if (!snapshotPromise) snapshotPromise = (async function () {
+  async function snapshotWalking(asset, a, b) {
+    if (!/^\/[a-z0-9-]+-walking\.json$/.test(asset || '')) throw new Error('Walking snapshot unavailable');
+    if (!snapshotPromises[asset]) snapshotPromises[asset] = (async function () {
       var controller = new AbortController(), timer = setTimeout(function () {controller.abort();}, 8000);
       try {
-        var response = await fetch('/national-mall-walking.json', {cache:'no-cache', signal:controller.signal});
+        var response = await fetch(asset, {cache:'no-cache', signal:controller.signal});
         if (!response.ok) throw new Error('Walking snapshot unavailable');
         return await response.json();
       } finally { clearTimeout(timer); }
     })();
-    return snapshotLeg(await snapshotPromise, a, b);
+    return snapshotLeg(await snapshotPromises[asset], a, b);
+  }
+  async function mallWalking(a, b) {
+    return snapshotWalking('/national-mall-walking.json', a, b);
   }
   async function walking(a, b, fetcher) {
     var url = 'https://brouter.de/brouter?lonlats=' + point(a) + '|' + point(b) + '&profile=hiking-beta&alternativeidx=0&format=geojson';
@@ -51,7 +55,7 @@
       return {meters:meters, points:path, band:band(meters)};
     } finally { clearTimeout(timer); }
   }
-  var api = {band:band, walking:walking, mallWalking:mallWalking, snapshotLeg:snapshotLeg, directions:directions};
+  var api = {band:band, walking:walking, mallWalking:mallWalking, snapshotWalking:snapshotWalking, snapshotLeg:snapshotLeg, directions:directions};
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.PSXTourRouting = api;
 })(typeof window !== 'undefined' ? window : globalThis);

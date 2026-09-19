@@ -22,6 +22,22 @@ test('walking geometry uses a foot profile and supplied path, never a car shortc
  await assert.rejects(route.walking(a,b,async()=>({ok:false})));
  await assert.rejects(route.walking(a,b,async()=>({ok:true,json:async()=>({features:[]})})));
 });
+test('generic tour snapshots accept only explicit same-origin walking assets', async () => {
+ const a={lat:40,lon:-75},b={lat:40.01,lon:-75.01};
+ const original=global.fetch;
+ global.fetch=async url=>{
+  assert.equal(url,'/test-walking.json');
+  return {ok:true,json:async()=>({version:1,profile:'hiking-beta',legs:[{
+   from:[a.lat,a.lon],to:[b.lat,b.lon],meters:1234,points:[[40,-75],[40.005,-75.002],[40.01,-75.01]]
+  }]})};
+ };
+ try {
+  const leg=await route.snapshotWalking('/test-walking.json',a,b);
+  assert.equal(leg.meters,1234); assert.equal(leg.points.length,3);
+  await assert.rejects(route.snapshotWalking('https://example.com/walking.json',a,b));
+  await assert.rejects(route.snapshotWalking('/app.py',a,b));
+ } finally { global.fetch=original; }
+});
 test('checked Mall snapshot preserves every leg and rejects restricted or stale coordinates', () => {
  const fs=require('node:fs');
  const snapshot=JSON.parse(fs.readFileSync('national-mall-walking.json','utf8'));
@@ -59,4 +75,31 @@ test('White House arrival and departure share an exterior Ellipse viewpoint', ()
  assert.equal(departure.meters,485);
  assert.ok(arrival.points.every(p=>p[0]<38.8952));
  assert.ok(departure.points.every(p=>p[0]<38.8956 || p[1]<-77.0383));
+});
+
+test('Philadelphia uses all eighteen checked pedestrian legs and no straight-line map fallback', () => {
+ const fs=require('node:fs');
+ const snapshot=JSON.parse(fs.readFileSync('philadelphia-walking.json','utf8'));
+ const trail=JSON.parse(fs.readFileSync('trails.json','utf8')).trails.find(t=>t.id==='philadelphia');
+ const page=fs.readFileSync('tour.html','utf8');
+ assert.equal(trail.walking_snapshot,'/philadelphia-walking.json');
+ assert.ok(trail.stops.every(stop=>stop.est!==true));
+ assert.equal(snapshot.legs.length,trail.stops.length-1);
+ let meters=0;
+ trail.stops.slice(1).forEach((stop,i)=>{
+  const before=trail.stops[i],leg=snapshot.legs[i],result=route.snapshotLeg(snapshot,before,stop);
+  assert.deepEqual(leg.from,[before.lat,before.lon]);
+  assert.deepEqual(leg.to,[stop.lat,stop.lon]);
+  assert.equal(leg.from_name,before.name); assert.equal(leg.to_name,stop.name);
+  assert.equal(stop.walk_m_from_prev,result.meters);
+  assert.equal(stop.walk_min_from_prev,Math.ceil(result.meters/75));
+  assert.ok(result.points.length>=2);
+  assert.ok(result.points.every(p=>p[0]>39.94&&p[0]<39.98&&p[1]>-75.19&&p[1]<-75.13));
+  meters+=result.meters;
+ });
+ assert.equal(meters,8528); assert.equal(trail.length_m,meters);
+ assert.equal(trail.walk_min_total,Math.ceil(meters/75));
+ assert.match(page,/PSXTourRouting\.snapshotWalking\(t\.walking_snapshot/);
+ assert.doesNotMatch(page,/L\.polyline\(line/);
+ assert.doesNotMatch(page,/google\.com\/maps\/dir/);
 });

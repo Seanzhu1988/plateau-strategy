@@ -121,6 +121,10 @@
         .tw-card p { margin: 0 0 .35rem; font-size: .9rem; line-height: 1.55; color: #55504a; }
         .tw-card .tw-meta { font-size: .8rem; }
         .tw-foot { margin: 1.6rem 0 0; font-size: .84rem; color: #8a8378; line-height: 1.55; }
+        .tw-route-status { margin: .55rem 0 0; font-size: .82rem; color: #6b655b; line-height: 1.5; }
+        .tw-route-legend { display: inline-flex; flex-wrap: wrap; gap: .25rem .7rem; margin-left: .35rem; }
+        .tw-route-key { display: inline-flex; align-items: center; gap: .25rem; white-space: nowrap; }
+        .tw-route-dot { width: .7rem; height: .7rem; border-radius: 999px; display: inline-block; }
         .tw-error { padding: 1rem; border: 1px solid #e6c9c9; border-radius: 10px; color: #6b3b3b; }
     </style>
 </head>
@@ -157,6 +161,7 @@
         <div class="tw-cols">
             <div>
                 <div id="twMap"></div>
+                <p class="tw-route-status" id="twRouteStatus" aria-live="polite"></p>
                 <div class="tw-walkbar" id="twWalkbar" hidden>
                     <button type="button" id="twLock" aria-pressed="false">Lock the walk</button>
                     <button type="button" id="twFollow" aria-pressed="false" hidden>Follow me with the map</button>
@@ -213,6 +218,7 @@
 <script src="/i18n.js"></script>
 <script src="/vendor/leaflet/leaflet.js"></script>
 <script src="/approach-trigger.js"></script>
+<script src="/tour-routing.js"></script>
 <script>
 (function () {
     "use strict";
@@ -227,7 +233,8 @@
 
     var id = (location.pathname.match(/\/tour\/([a-z0-9-]+)/) || [])[1] || "";
     var listEl = document.getElementById("twList"), cardsEl = document.getElementById("twCards");
-    var map = null, layer = null, dots = {}, stops = [], trail = null, dests = {}, recorded = {}, current = -1, VOICE_NAMES = {};
+    var map = null, layer = null, dots = {}, routeLines = {}, stops = [], trail = null, dests = {}, recorded = {}, current = -1, VOICE_NAMES = {};
+    var routeReady = false, routeTotal = 0, routeFailed = 0;
     var audioEl = document.getElementById("twAudio");
     var overviewAudioEl = document.getElementById("twOverviewAudio");
     overviewAudioEl.addEventListener("play", function () { try { audioEl.pause(); } catch (e) {} });
@@ -460,9 +467,69 @@
         return out;
     }
 
+    function stopMeta(s, i, meters) {
+        var parts = [];
+        if (i === 0 && trail && trail.walking_snapshot) {
+            parts.push("0.00 " + T("miles"));
+            parts.push(minutes(0) + " " + T("walk"));
+        }
+        else if (Number.isFinite(meters)) {
+            parts.push((meters / 1609.344).toFixed(2) + " " + T("miles"));
+            parts.push(minutes(Math.ceil(meters / 75)) + " " + T("walk"));
+        } else if (trail && trail.walking_snapshot) {
+            parts.push(T("Distance unavailable"));
+            parts.push(T("Walk time unavailable"));
+        } else if (s.walk_min_from_prev) {
+            parts.push(minutes(s.walk_min_from_prev) + " " + T("walk"));
+        }
+        if (s.inside_min) parts.push(minutes(s.inside_min) + " " + T("inside"));
+        return parts.join(" · ");
+    }
+
+    function paintStopMeta(s, i, meters) {
+        var label = document.getElementById("twMeta" + s.n);
+        if (!label) return;
+        label.textContent = stopMeta(s, i, meters);
+        label.style.color = Number.isFinite(meters) ? PSXTourRouting.band(meters).color : "";
+    }
+
+    function paintRouteLegend(host, unavailable) {
+        host.textContent = unavailable ? T("Distance unavailable") + "." : T("mapped miles") + ".";
+        var legend = document.createElement("span"); legend.className = "tw-route-legend";
+        [[800, "< 1"], [2000, "1 to 1.5"], [4000, "> 1.5"], [6000, "> 3"]].forEach(function (row) {
+            var item = document.createElement("span"); item.className = "tw-route-key";
+            var dot = document.createElement("span"); dot.className = "tw-route-dot";
+            dot.style.backgroundColor = PSXTourRouting.band(row[0]).color;
+            item.appendChild(dot); item.appendChild(document.createTextNode(row[1] + " " + T("miles")));
+            legend.appendChild(item);
+        });
+        host.appendChild(legend);
+    }
+
+    function paintRouteCopy() {
+        if (!trail) return;
+        var miles = document.getElementById("twMiles"), walk = document.getElementById("twWalk");
+        var status = document.getElementById("twRouteStatus"), foot = document.getElementById("twFoot");
+        if (trail.walking_snapshot) {
+            miles.textContent = routeReady && routeTotal ? (routeTotal / 1609.344).toFixed(1) + (routeFailed ? "+" : "") : T("Checking distance");
+            walk.textContent = routeReady && routeTotal ? minutes(Math.ceil(routeTotal / 75)) + (routeFailed ? "+" : "") : T("Checking walk time");
+            stops.forEach(function (s, i) { paintStopMeta(s, i, i === 0 ? 0 : s._mappedMeters); });
+            if (routeReady) paintRouteLegend(status, !routeTotal || routeFailed > 0);
+            else status.textContent = T("Checking distance") + " · " + T("Checking walk time");
+            foot.textContent = T(". Walking distances cover outdoor paths; allow extra time inside buildings and at crossings.").replace(/^[.。]\s*/, "");
+        } else {
+            miles.textContent = ((trail.length_m || 0) / 1609.344).toFixed(1);
+            walk.textContent = minutes(trail.walk_min_total);
+            stops.forEach(function (s, i) { paintStopMeta(s, i, null); });
+            status.textContent = "";
+            foot.textContent = T("Distances are straight-line estimates between stops, not walking routes.");
+        }
+    }
+
     /* ---------------- one trail ---------------- */
     function paintTrail(t, all) {
         trail = t; stops = t.stops || [];
+        routeReady = false; routeTotal = 0; routeFailed = 0;
         var city = cityName(t.city);
         var eyebrow = document.getElementById("twEyebrow");
         eyebrow.textContent = "";
@@ -482,8 +549,8 @@
 
         var st = document.getElementById("twStats"); st.hidden = false;
         document.getElementById("twStops").textContent = stops.length;
-        document.getElementById("twMiles").textContent = ((t.length_m || 0) / 1609.344).toFixed(1);
-        document.getElementById("twWalk").textContent = minutes(t.walk_min_total);
+        document.getElementById("twMiles").textContent = t.walking_snapshot ? T("Checking distance") : ((t.length_m || 0) / 1609.344).toFixed(1);
+        document.getElementById("twWalk").textContent = t.walking_snapshot ? T("Checking walk time") : minutes(t.walk_min_total);
         document.getElementById("twInside").textContent = minutes(t.inside_min_total);
 
         var also = document.getElementById("twAlso");
@@ -504,22 +571,50 @@
             var li = document.createElement("li");
             var b = document.createElement("button");
             b.type = "button"; b.className = "tw-stop";
-            var meta = [];
-            if (s.walk_min_from_prev) meta.push(minutes(s.walk_min_from_prev) + " " + T("walk"));
-            if (s.inside_min) meta.push(minutes(s.inside_min) + " " + T("inside"));
             b.innerHTML = '<span class="n"></span><span><span class="tw-name"></span><span class="tw-meta"></span></span><span class="tw-au"></span>';
             b.querySelector(".n").textContent = s.n;
             b.querySelector(".tw-name").textContent = s.name;
-            b.querySelector(".tw-meta").textContent = meta.join(" · ");
+            b.querySelector(".tw-meta").id = "twMeta" + s.n;
+            b.querySelector(".tw-meta").textContent = stopMeta(s, i, null);
             b.addEventListener("click", function () { show(i, true); });
             li.appendChild(b); listEl.appendChild(li);
         });
+        paintRouteCopy();
 
         var m = ensureMap();
         if (layer) layer.remove();
         layer = L.layerGroup().addTo(m);
+        routeLines = {};
         var line = stops.map(function (s) { return [s.lat, s.lon]; });
-        if (line.length > 1) L.polyline(line, { color: "#12305b", weight: 3, opacity: .75 }).addTo(layer);
+        var routeStatus = document.getElementById("twRouteStatus");
+        if (t.walking_snapshot) {
+            routeStatus.textContent = T("Checking distance") + " · " + T("Checking walk time");
+            (async function () {
+                var total = 0, failed = 0;
+                for (var j = 1; j < stops.length; j++) {
+                    try {
+                        var leg = await PSXTourRouting.snapshotWalking(t.walking_snapshot, stops[j-1], stops[j]);
+                        total += leg.meters;
+                        stops[j]._mappedMeters = leg.meters;
+                        paintStopMeta(stops[j], j, leg.meters);
+                        routeLines[j] = L.polyline(leg.points, {
+                            color: leg.band.color,
+                            weight: j === current ? 8 : 5,
+                            opacity: current < 1 || j === current ? 1 : .45
+                        }).addTo(layer).bindTooltip(stops[j-1].name + " to " + stops[j].name + ": " +
+                            (leg.meters / 1609.344).toFixed(2) + " " + T("miles"));
+                    } catch (error) {
+                        failed++;
+                        stops[j]._mappedMeters = null;
+                        paintStopMeta(stops[j], j, null);
+                    }
+                }
+                routeReady = true; routeTotal = total; routeFailed = failed;
+                paintRouteCopy();
+            })();
+        } else {
+            paintRouteCopy();
+        }
         stops.forEach(function (s, i) {
             var d = L.circleMarker([s.lat, s.lon], { radius: 6, color: "#12305b", weight: 2,
                                                      fillColor: "#fff", fillOpacity: 1 }).addTo(layer);
@@ -769,6 +864,11 @@
     function show(i, fromUser) {
         var s = stops[i]; if (!s) return;
         current = i;
+        Object.keys(routeLines).forEach(function (key) {
+            var selected = Number(key) === i;
+            routeLines[key].setStyle({ weight: selected ? 8 : 5,
+                                       opacity: i < 1 || selected ? 1 : .45 });
+        });
         Array.prototype.forEach.call(listEl.querySelectorAll(".tw-stop"), function (b, k) {
             b.setAttribute("aria-current", k === i ? "true" : "false");
         });
@@ -886,7 +986,7 @@
        Both repaint paths are deliberately silent, so switching languages
        never starts audio without another user gesture. */
     document.addEventListener("psx:lang", function () {
-        paintWalkLabels(); paintLoc();
+        paintWalkLabels(); paintLoc(); paintRouteCopy();
         if (lastCue && cueEl && !cueEl.hidden) cueEl.textContent = cueText(lastCue);
         if (!trail || !stops.length) return;
         paintOverview(trail);
