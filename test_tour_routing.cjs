@@ -128,3 +128,27 @@ test('Harvard uses all nine checked pedestrian legs through and around the Yard'
  assert.equal(trail.walk_min_total,Math.ceil(meters/75));
  assert.match(fs.readFileSync('tour.html','utf8'),/line\.concat\(mappedPoints\)/);
 });
+
+test('Yale uses all nine checked pedestrian legs through the Old Campus and libraries', () => {
+ const fs=require('node:fs');
+ const snapshot=JSON.parse(fs.readFileSync('yale-walking.json','utf8'));
+ const trail=JSON.parse(fs.readFileSync('trails.json','utf8')).trails.find(t=>t.id==='ivy-yale');
+ assert.equal(trail.walking_snapshot,'/yale-walking.json');
+ assert.equal(snapshot.legs.length,trail.stops.length-1);
+ assert.ok(trail.stops.every(stop=>stop.est!==true));
+ let meters=0;
+ trail.stops.slice(1).forEach((stop,i)=>{
+  const before=trail.stops[i],leg=snapshot.legs[i],result=route.snapshotLeg(snapshot,before,stop);
+  assert.deepEqual(leg.from,[before.lat,before.lon]);
+  assert.deepEqual(leg.to,[stop.lat,stop.lon]);
+  assert.equal(leg.from_name,before.name); assert.equal(leg.to_name,stop.name);
+  assert.equal(stop.walk_m_from_prev,result.meters);
+  assert.equal(stop.walk_min_from_prev,Math.ceil(result.meters/75));
+  assert.ok(result.points.length>=2);
+  assert.ok(result.points.every(p=>p[0]>41.29&&p[0]<41.33&&p[1]>-72.95&&p[1]<-72.90));
+  assert.equal(result.band.color,'#15803d');
+  meters+=result.meters;
+ });
+ assert.equal(meters,2095); assert.equal(trail.length_m,meters);
+ assert.equal(trail.walk_min_total,Math.ceil(meters/75));
+});
