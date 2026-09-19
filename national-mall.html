@@ -806,20 +806,34 @@
         } catch (err) {}
     }
 
+    function stopMeta(s, meters) {
+        var parts = [];
+        if (Number.isFinite(meters)) {
+            parts.push((meters/1609.344).toFixed(2) + " " + T("miles"));
+            parts.push(Math.ceil(meters/75) + " " + T("min") + " " + T("walk"));
+        } else {
+            parts.push(T(meters === null ? "Distance unavailable" : "Checking distance"));
+            parts.push(T(meters === null ? "Walk time unavailable" : "Checking walk time"));
+        }
+        if (Number.isFinite(s.inside_min)) parts.push(Math.round(s.inside_min) + " " + T("min") + " " + T("inside"));
+        return parts.join(" · ");
+    }
+
     function paintList() {
         listEl.innerHTML = "";
         stops.forEach(function (s) {
             var li = document.createElement("li");
             var b = document.createElement("button");
             b.type = "button"; b.className = "nm-stop"; b.dataset.model = s.model || "";
-            var meta = [];
-            if (s.walk_min_from_prev) meta.push(minutes(s.walk_min_from_prev) + " " + T("walk"));
-            if (s.inside_min) meta.push(minutes(s.inside_min) + " " + T("inside"));
+            var meters = s === stops[0] ? 0 : s._mappedMeters;
             b.innerHTML = '<span class="n"></span><span><span class="nm-name"></span>' +
                           '<span class="nm-meta"></span></span><span class="nm-au"></span>';
             b.querySelector(".n").textContent = s.n;
             b.querySelector(".nm-name").textContent = s.name;
-            b.querySelector(".nm-meta").textContent = meta.join(" · ");
+            var meta = b.querySelector(".nm-meta");
+            meta.id = "nmDistance" + s.n;
+            meta.textContent = stopMeta(s, meters);
+            if (Number.isFinite(meters) && s !== stops[0]) meta.style.color = PSXTourRouting.band(meters).color;
             /* Tapping the stop you are already on plays it, and tapping it
                again stops it where it is, so a third tap picks up rather than
                starts over. Tapping a different stop selects it and starts it.
@@ -833,15 +847,6 @@
                 show(key, true);
             });
             li.appendChild(b);
-            if (s.n > 1) {
-                var previous = stops[stops.indexOf(s)-1];
-                if (previous) {
-                    var distance = document.createElement("p");
-                    distance.id = "nmDistance" + s.n;
-                    distance.textContent = "Walking distance loading...";
-                    li.appendChild(distance);
-                }
-            }
             listEl.appendChild(li);
         });
     }
@@ -873,17 +878,19 @@
                 try {
                     var leg = await PSXTourRouting.mallWalking(stops[i-1], stops[i]);
                     total += leg.meters;
+                    stops[i]._mappedMeters = leg.meters;
                     var label = document.getElementById("nmDistance" + stops[i].n);
                     if (label) {
-                        label.textContent = (leg.meters/1609.344).toFixed(2) + " mi. " + leg.band.label;
+                        label.textContent = stopMeta(stops[i], leg.meters);
                         label.style.color = leg.band.color;
                     }
                     routeLines[stops[i].model || String(i)] = L.polyline(leg.points, {color:leg.band.color, weight:stops[i].model === current ? 8 : 5, opacity:!current || stops[i].model === current ? 1 : .45}).addTo(layer)
                       .bindTooltip(stops[i-1].name + " to " + stops[i].name + ": " + (leg.meters/1609.344).toFixed(2) + " mi. " + leg.band.label);
                 } catch (error) {
                     failed++;
+                    stops[i]._mappedMeters = null;
                     var unavailable = document.getElementById("nmDistance" + stops[i].n);
-                    if (unavailable) unavailable.textContent = "Walking distance unavailable. Follow current access signs.";
+                    if (unavailable) unavailable.textContent = stopMeta(stops[i], null);
                 }
             }
             routeNote.textContent = failed ? "Some walking paths are unavailable. Missing legs are not drawn. Follow current access signs." : "Walking paths loaded. Follow local signs and current closures.";
@@ -905,8 +912,11 @@
 
     function stats(t) {
         document.getElementById("nmStops").textContent = stops.length;
-        document.getElementById("nmMiles").textContent = "Checking";
-        document.getElementById("nmWalk").textContent = "Checking";
+        var legs = stops.slice(1), checked = legs.every(function (s) { return s._mappedMeters !== undefined; });
+        var total = legs.reduce(function (sum, s) {return sum + (s._mappedMeters || 0);}, 0);
+        var partial = legs.some(function (s) {return s._mappedMeters === null;});
+        document.getElementById("nmMiles").textContent = !checked ? "Checking" : total ? (total/1609.344).toFixed(1) + (partial ? "+" : "") : "Unavailable";
+        document.getElementById("nmWalk").textContent = !checked ? "Checking" : total ? minutes(Math.ceil(total/75)) + (partial ? "+" : "") : "Unavailable";
         document.getElementById("nmInside").textContent = minutes(t.inside_min_total);
     }
 
