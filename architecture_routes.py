@@ -58,7 +58,12 @@ def create_architecture_blueprint(base_dir):
 
     @bp.get('/quebec-city')
     def quebec_page():
-        response = send_from_directory(root, 'quebec-city.html')
+        body = (root / 'quebec-city.html').read_text(encoding='utf-8')
+        if request.args.get('embed') == '1':
+            body = body.replace('<body>', '<body class="embedded">', 1)
+            body = body.replace('<title>', '<meta name="robots" content="noindex,follow"><title>', 1)
+        response = Response(body, mimetype='text/html')
+        response.headers['X-Frame-Options'] = 'SAMEORIGIN'
         response.headers['Cache-Control'] = 'no-store'
         return response
 
