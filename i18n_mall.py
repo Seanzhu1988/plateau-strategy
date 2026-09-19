@@ -43,3 +43,17 @@ EXTRA = {
     "Checking distance": ["正在查询距离", "Consultando distancia", "거리 확인 중", "Đang kiểm tra khoảng cách"],
     "Checking walk time": ["正在查询步行时间", "Consultando tiempo a pie", "도보 시간 확인 중", "Đang kiểm tra thời gian đi bộ"],
 }
+
+EXTRA.update({
+    "Air and Space to the National Gallery: the mapped walk crosses the Mall from the museum's Mall-side exit to the Gallery's Madison Drive approach. This route includes steps. For wheelchair access, use the Gallery's Constitution Avenue entrance.": [
+        "从航空航天博物馆到国家美术馆：地图路线从博物馆面向国家广场的出口穿过广场，到达美术馆麦迪逊路一侧。这条路线包含台阶。轮椅通行请使用美术馆宪法大道入口。",
+        "Del Museo del Aire y el Espacio a la Galería Nacional: la ruta cruza el Mall desde la salida del museo orientada al parque hasta el acceso de Madison Drive de la Galería. Incluye escaleras. Para acceder en silla de ruedas, utiliza la entrada de Constitution Avenue.",
+        "항공우주박물관에서 국립미술관까지는 몰 쪽 출구에서 공원을 가로질러 미술관의 매디슨 드라이브 쪽으로 걷습니다. 계단이 있는 경로입니다. 휠체어 이용자는 미술관의 컨스티튜션 애비뉴 입구를 이용하세요.",
+        "Từ Bảo tàng Hàng không và Vũ trụ đến Phòng trưng bày Nghệ thuật Quốc gia: tuyến đi bộ băng qua Mall từ cửa ra phía công viên đến phía Madison Drive của phòng trưng bày. Tuyến có bậc thang. Người dùng xe lăn hãy sử dụng lối vào trên Constitution Avenue."],
+    "Gallery entrance information": ["美术馆入口信息", "Información de entradas de la Galería", "미술관 입구 안내", "Thông tin lối vào phòng trưng bày"],
+    ". Walking distances cover outdoor paths; allow extra time inside buildings and at crossings.": [
+        "。步行距离仅计算室外路线；请为馆内通行和过街预留时间。",
+        ". Las distancias incluyen los caminos exteriores; reserva tiempo adicional dentro de los edificios y en los cruces.",
+        ". 도보 거리는 야외 경로 기준이며 건물 내부 이동과 횡단에 추가 시간이 필요합니다.",
+        ". Khoảng cách đi bộ chỉ tính đường ngoài trời; hãy dành thêm thời gian đi trong tòa nhà và qua đường."]
+})

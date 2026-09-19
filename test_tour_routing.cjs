@@ -35,7 +35,18 @@ test('checked Mall snapshot preserves every leg and rejects restricted or stale 
   if(leg.unavailable) {unavailable++;assert.throws(()=>route.snapshotLeg(snapshot,stops[i],stop));}
   else {const result=route.snapshotLeg(snapshot,stops[i],stop);meters+=result.meters; assert.ok(result.points.length>2);}
  });
- assert.equal(unavailable,2);assert.equal(meters,11023);
+ assert.equal(unavailable,2);assert.equal(meters,10590);
  assert.throws(()=>route.snapshotLeg(snapshot,{lat:0,lon:0},stops[1]));
  assert.throws(()=>route.snapshotLeg({...snapshot,profile:'driving'},stops[0],stops[1]));
+});
+
+test('Mall crossing uses park footways and the south approach instead of the north-side detour', () => {
+ const snapshot=require('./national-mall-walking.json');
+ const leg=snapshot.legs.find(l=>l.from_name==='National Air and Space Museum');
+ assert.equal(leg.to_name,'National Gallery of Art');
+ assert.equal(leg.includes_steps,true);
+ assert.equal(leg.entrance_sources.length,2);
+ assert.ok(leg.meters<350);
+ assert.ok(leg.points.every(p=>p[1]>-77.0205 && p[0]<38.8911));
+ assert.ok(leg.points.some(p=>p[0]>38.889 && p[0]<38.890));
 });
