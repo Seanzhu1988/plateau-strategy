@@ -373,7 +373,7 @@
     var box = host.querySelector('.ug-read-box');
     var audio = data.lang === selectedLang || !data.lang ? safeURL(data.audio, true) : '';
     var credit = data.provenance && data.provenance.kind === 'ai_assisted' ? t('aiCredit') : t('editorialCredit');
-    box.innerHTML = '<h3>' + esc(row.title) + '</h3>' + (photoOrigin ? '<p class="ug-note">' + esc(t('storyAbout') + '. ' + t('photoUnverified')) + '</p>' : '') +
+    box.innerHTML = '<div class="ug-actions">' + button('close-story', t('closeItem')) + '</div><h3>' + esc(row.title) + '</h3>' + (photoOrigin ? '<p class="ug-note">' + esc(t('storyAbout') + '. ' + t('photoUnverified')) + '</p>' : '') +
       collectionFigure(row) +
       '<p class="ug-reading-credit">' + esc(t('originalCredit')) + '</p><p class="ug-reading-meta">' + esc(credit) + (data.minutes ? ' · ' + esc(data.minutes) + ' ' + esc(t('minuteRead')) : '') + '</p>' +
       (audio ? '<div class="ug-audio-wrap"><audio controls preload="none" aria-label="' + esc(t('listen')) + '" src="' + esc(audio) + '"></audio><p class="ug-note">' + esc(t('headphones')) + '</p></div>' : '') +
@@ -432,7 +432,7 @@
     // The tap asks for THIS item's story, even if it is unrelated to the photo.
     // Open a closeable reading panel before any asynchronous save/read/write.
     var box = host.querySelector('.ug-read-box');
-    box.innerHTML = '<h3>' + esc(row.title) + '</h3><p class="ug-note">' + esc(t('museumRecord') + (photoOrigin ? '. ' + t('photoUnverified') : '')) + '</p>' +
+    box.innerHTML = '<div class="ug-actions">' + button('close-story', t('closeItem')) + '</div><h3>' + esc(row.title) + '</h3><p class="ug-note">' + esc(t('museumRecord') + (photoOrigin ? '. ' + t('photoUnverified') : '')) + '</p>' +
       collectionFigure(row) +
       '<p class="ug-reading-text">' + esc([row.teaser, row.medium, row.culture, row.dimensions].filter(Boolean).join('\n\n')) + '</p>' +
       '<div class="ug-actions">' + button('close-story', t('closeItem')) + '</div>';
