@@ -227,8 +227,8 @@
 
         <div class="nm-stats">
             <span class="nm-stat"><b id="nmStops"></b>stops</span>
-            <span class="nm-stat"><b id="nmMiles"></b>miles</span>
-            <span class="nm-stat"><b id="nmWalk"></b>walking</span>
+            <span class="nm-stat"><b id="nmMiles"></b>mapped miles</span>
+            <span class="nm-stat"><b id="nmWalk"></b>walking estimate</span>
             <span class="nm-stat"><b id="nmInside"></b>inside</span>
         </div>
 
@@ -259,6 +259,18 @@
                 </div>
                 <p class="nm-consent" id="nmConsent" hidden>Your position stays on this phone and is drawn on the map here. We never send it to our server. The map loads tiles for the area on screen, as any map does.</p>
                 <div id="nmMap"></div>
+                <p class="nm-foot">White House access changes with security restrictions. This map does not draw a path through its grounds. For the two unavailable White House legs, <a href="https://www.nps.gov/whho/planyourvisit/viewing-the-white-house.htm" target="_blank" rel="noopener noreferrer">check the National Park Service viewing guidance</a> and follow signs on site. The optional Moongate pause is extra to the main-route totals.</p>
+                <details class="nm-foot" id="moongate-detour">
+                  <summary>Optional beauty stop: the Moongate Garden</summary>
+                  <h3>A circle that changes how you look</h3>
+                  <p>At the Smithsonian Castle, pause before continuing the monument walk. Follow the signed pedestrian route around the Castle into the Enid A. Haupt Garden. Near the Sackler pavilion, look for the pink granite moon gates framing the water and the view beyond.</p>
+                  <p>Stand a little to one side, then take a slow step toward the center of the opening. Notice how the circle gathers the garden into a picture. Look once through the gate and once at the reflection. This is a place to linger, not a landmark to check off.</p>
+                  <p>The garden draws on the Temple of Heaven in Beijing. When you return to the Mall, notice how its intimate circle contrasts with the long, open monument axis.</p>
+                  <p>Optional pause: allow 10 to 15 minutes plus walking. Open dawn to dusk, closed December 25. Check current access before visiting. Recorded audio for this new detour is not available yet.</p>
+                  <p><a href="https://www.google.com/maps/dir/?api=1&amp;destination=Moongate+Garden+Washington+DC&amp;travelmode=walking" target="_blank" rel="noopener noreferrer">Choose walking directions</a> · <a href="https://gardens.si.edu/gardens/haupt-garden/" target="_blank" rel="noopener noreferrer">Garden and access information</a></p>
+                  <form action="/universal-gallery" method="get"><label for="mallGallerySearch">Explore art with Universal Gallery</label><input id="mallGallerySearch" name="q" type="search" placeholder="Artist, artwork or inscription"><button type="submit">Search</button></form>
+                  <a href="/universal-gallery?photo=1">Identify an artwork from a photograph</a>
+                </details>
                 <p class="nm-list-h">The walk, in order</p>
                 <ul class="nm-list" id="nmList">
                     <li><span class="nm-stat">Loading the Mall&hellip;</span></li>
@@ -266,7 +278,10 @@
             </div>
         </div>
 
-        <p class="nm-foot">Distances are straight-line estimates between stops, not walking routes.
+        <p class="nm-foot" id="nmRouteStatus" role="status">Walking paths use a checked pedestrian-routing snapshot. A + means the total covers mapped legs only; unavailable legs add extra distance.</p>
+        <p class="nm-foot">Green: under 1 mile. Blue: 1 to 1.5 miles. Orange: over 1.5 miles. Red: over 3 miles; consider a ride. Colors apply to each leg.
+        Routes may change with construction. Walking paths by <a href="https://brouter.de" target="_blank" rel="noopener noreferrer">BRouter</a>, checked September 19, 2026. Opening external directions shares the selected public stops with that maps provider.</p>
+        <p class="nm-foot">
            Times inside are what a visitor who actually stops really spends.</p>
     </div>
 
@@ -275,6 +290,7 @@
 <script src="/dc-3d.js"></script>
 <script src="/scene-mount.js"></script>
 <script src="/approach-trigger.js"></script>
+<script src="/tour-routing.js"></script>
 <script>
 (function () {
     "use strict";
@@ -289,7 +305,7 @@
     var nowName = document.getElementById("nmNowName");
     var nowDesc = document.getElementById("nmNowDesc");
 
-    var stops = [], view = null, map = null, layer = null, dots = {};
+    var stops = [], view = null, map = null, layer = null, dots = {}, routeLines = {};
     var trail = null, current = "";
 
     /* ---------------- the guide remembers where it stopped ----------------
@@ -670,6 +686,9 @@
     }
     function show(key, fromUser) {
         current = key || "";
+        Object.keys(routeLines).forEach(function (name) {
+            routeLines[name].setStyle({weight:name === current ? 8 : 5, opacity:!current || name === current ? 1 : .45});
+        });
         var sc = sceneFor(key);
         if (!sc) return;
         /* The Mall is two miles long and its buildings are not tall, so the
@@ -813,7 +832,22 @@
                 playOnAttach = true;
                 show(key, true);
             });
-            li.appendChild(b); listEl.appendChild(li);
+            li.appendChild(b);
+            if (s.n > 1) {
+                var previous = stops[stops.indexOf(s)-1];
+                if (previous) {
+                    var nav = document.createElement("a");
+                    nav.textContent = "Walking directions";
+                    nav.href = PSXTourRouting.directions(previous, s);
+                    nav.target = "_blank"; nav.rel = "noopener noreferrer";
+                    li.appendChild(nav);
+                    var distance = document.createElement("p");
+                    distance.id = "nmDistance" + s.n;
+                    distance.textContent = "Walking distance loading...";
+                    li.appendChild(distance);
+                }
+            }
+            listEl.appendChild(li);
         });
     }
 
@@ -835,8 +869,40 @@
         }
         layer.clearLayers(); dots = {};
         var pts = stops.map(function (s) { return [s.lat, s.lon]; });
-        L.polyline(pts, { color: "#fff", weight: 10, opacity: .9 }).addTo(layer);
-        L.polyline(pts, { color: "#12305b", weight: 5, opacity: 1 }).addTo(layer);
+        // Use a checked pedestrian snapshot without contacting a router per visitor.
+        var routeNote = document.getElementById("nmRouteStatus");
+        routeNote.textContent = "Finding walking paths...";
+        (async function () {
+            var total = 0, failed = 0;
+            for (var i = 1; i < stops.length; i++) {
+                try {
+                    var leg = await PSXTourRouting.mallWalking(stops[i-1], stops[i]);
+                    total += leg.meters;
+                    var label = document.getElementById("nmDistance" + stops[i].n);
+                    if (label) {
+                        label.textContent = (leg.meters/1609.344).toFixed(2) + " mi. " + leg.band.label;
+                        label.style.color = leg.band.color;
+                        if (leg.meters > 3*1609.344) {
+                            var ride = document.createElement("a");
+                            ride.textContent = " Compare driving directions";
+                            ride.href = PSXTourRouting.directions(stops[i-1], stops[i], "driving");
+                            ride.target = "_blank"; ride.rel = "noopener noreferrer";
+                            label.appendChild(ride);
+                        }
+                    }
+                    routeLines[stops[i].model || String(i)] = L.polyline(leg.points, {color:leg.band.color, weight:stops[i].model === current ? 8 : 5, opacity:!current || stops[i].model === current ? 1 : .45}).addTo(layer)
+                      .bindTooltip(stops[i-1].name + " to " + stops[i].name + ": " + (leg.meters/1609.344).toFixed(2) + " mi. " + leg.band.label);
+                } catch (error) {
+                    failed++;
+                    var unavailable = document.getElementById("nmDistance" + stops[i].n);
+                    if (unavailable) unavailable.textContent = "Walking distance unavailable. Open directions to check.";
+                }
+            }
+            routeNote.textContent = failed ? "Some walking paths are unavailable. Missing legs are not drawn. Use Walking directions at each stop." : "Walking paths loaded. Follow local signs and current closures.";
+            document.getElementById("nmMiles").textContent = total ? (total/1609.344).toFixed(1) + (failed ? "+" : "") : "Unavailable";
+            document.getElementById("nmWalk").textContent = total ? minutes(Math.ceil(total/75)) + (failed ? "+" : "") : "Unavailable";
+            if (failed) routeNote.textContent += " Totals cover mapped legs only (+); allow additional time for missing legs. Walking time assumes 75 meters per minute, before stops.";
+        })();
         stops.forEach(function (s) {
             var d = L.circleMarker([s.lat, s.lon], { radius: 5, color: "#12305b", weight: 3,
                 fillColor: "#fff", fillOpacity: 1, opacity: 1 }).addTo(layer);
@@ -851,8 +917,8 @@
 
     function stats(t) {
         document.getElementById("nmStops").textContent = stops.length;
-        document.getElementById("nmMiles").textContent = (t.length_m / 1609.34).toFixed(1);
-        document.getElementById("nmWalk").textContent = minutes(t.walk_min_total);
+        document.getElementById("nmMiles").textContent = "Checking";
+        document.getElementById("nmWalk").textContent = "Checking";
         document.getElementById("nmInside").textContent = minutes(t.inside_min_total);
     }
 
