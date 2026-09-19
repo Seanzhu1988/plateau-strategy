@@ -4044,3 +4044,7 @@ EXTRA.update({
     "Language": ["语言", "Idioma", "언어", "Ngôn ngữ"],
     "Other languages are not recorded yet.": ["其他语言还没有录音。", "Todavía no hay grabaciones en otros idiomas.", "다른 언어는 아직 녹음되지 않았습니다.", "Các ngôn ngữ khác chưa được ghi âm."],
 })
+
+# National Mall additions share the existing language switcher and pack builder.
+from i18n_mall import EXTRA as _MALL_EXTRA
+EXTRA.update(_MALL_EXTRA)
