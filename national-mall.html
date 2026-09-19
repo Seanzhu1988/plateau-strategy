@@ -267,7 +267,7 @@
                   <p>Stand a little to one side, then take a slow step toward the center of the opening. Notice how the circle gathers the garden into a picture. Look once through the gate and once at the reflection. This is a place to linger, not a landmark to check off.</p>
                   <p>The garden draws on the Temple of Heaven in Beijing. When you return to the Mall, notice how its intimate circle contrasts with the long, open monument axis.</p>
                   <p>Optional pause: allow 10 to 15 minutes plus walking. Open dawn to dusk, closed December 25. Check current access before visiting. Recorded audio for this new detour is not available yet.</p>
-                  <p><a href="https://www.google.com/maps/dir/?api=1&amp;destination=Moongate+Garden+Washington+DC&amp;travelmode=walking" target="_blank" rel="noopener noreferrer">Choose walking directions</a> · <a href="https://gardens.si.edu/gardens/haupt-garden/" target="_blank" rel="noopener noreferrer">Garden and access information</a></p>
+                  <p><a href="https://gardens.si.edu/gardens/haupt-garden/" target="_blank" rel="noopener noreferrer">Garden and access information</a></p>
                   <form action="/universal-gallery" method="get"><label for="mallGallerySearch">Explore art with Universal Gallery</label><input id="mallGallerySearch" name="q" type="search" placeholder="Artist, artwork or inscription"><button type="submit">Search</button></form>
                   <a href="/universal-gallery?photo=1">Identify an artwork from a photograph</a>
                 </details>
@@ -280,7 +280,7 @@
 
         <p class="nm-foot" id="nmRouteStatus" role="status">Walking paths use a checked pedestrian-routing snapshot. A + means the total covers mapped legs only; unavailable legs add extra distance.</p>
         <p class="nm-foot">Green: under 1 mile. Blue: 1 to 1.5 miles. Orange: over 1.5 miles. Red: over 3 miles; consider a ride. Colors apply to each leg.
-        Routes may change with construction. Walking paths by <a href="https://brouter.de" target="_blank" rel="noopener noreferrer">BRouter</a>, checked September 19, 2026. Opening external directions shares the selected public stops with that maps provider.</p>
+        Routes may change with construction. Walking paths by <a href="https://brouter.de" target="_blank" rel="noopener noreferrer">BRouter</a>, checked September 19, 2026.</p>
         <p class="nm-foot">
            Times inside are what a visitor who actually stops really spends.</p>
     </div>
@@ -836,11 +836,6 @@
             if (s.n > 1) {
                 var previous = stops[stops.indexOf(s)-1];
                 if (previous) {
-                    var nav = document.createElement("a");
-                    nav.textContent = "Walking directions";
-                    nav.href = PSXTourRouting.directions(previous, s);
-                    nav.target = "_blank"; nav.rel = "noopener noreferrer";
-                    li.appendChild(nav);
                     var distance = document.createElement("p");
                     distance.id = "nmDistance" + s.n;
                     distance.textContent = "Walking distance loading...";
@@ -882,23 +877,16 @@
                     if (label) {
                         label.textContent = (leg.meters/1609.344).toFixed(2) + " mi. " + leg.band.label;
                         label.style.color = leg.band.color;
-                        if (leg.meters > 3*1609.344) {
-                            var ride = document.createElement("a");
-                            ride.textContent = " Compare driving directions";
-                            ride.href = PSXTourRouting.directions(stops[i-1], stops[i], "driving");
-                            ride.target = "_blank"; ride.rel = "noopener noreferrer";
-                            label.appendChild(ride);
-                        }
                     }
                     routeLines[stops[i].model || String(i)] = L.polyline(leg.points, {color:leg.band.color, weight:stops[i].model === current ? 8 : 5, opacity:!current || stops[i].model === current ? 1 : .45}).addTo(layer)
                       .bindTooltip(stops[i-1].name + " to " + stops[i].name + ": " + (leg.meters/1609.344).toFixed(2) + " mi. " + leg.band.label);
                 } catch (error) {
                     failed++;
                     var unavailable = document.getElementById("nmDistance" + stops[i].n);
-                    if (unavailable) unavailable.textContent = "Walking distance unavailable. Open directions to check.";
+                    if (unavailable) unavailable.textContent = "Walking distance unavailable. Follow current access signs.";
                 }
             }
-            routeNote.textContent = failed ? "Some walking paths are unavailable. Missing legs are not drawn. Use Walking directions at each stop." : "Walking paths loaded. Follow local signs and current closures.";
+            routeNote.textContent = failed ? "Some walking paths are unavailable. Missing legs are not drawn. Follow current access signs." : "Walking paths loaded. Follow local signs and current closures.";
             document.getElementById("nmMiles").textContent = total ? (total/1609.344).toFixed(1) + (failed ? "+" : "") : "Unavailable";
             document.getElementById("nmWalk").textContent = total ? minutes(Math.ceil(total/75)) + (failed ? "+" : "") : "Unavailable";
             if (failed) routeNote.textContent += " Totals cover mapped legs only (+); allow additional time for missing legs. Walking time assumes 75 meters per minute, before stops.";
