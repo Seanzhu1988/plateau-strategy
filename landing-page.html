@@ -1241,7 +1241,8 @@
         background:linear-gradient(180deg,#5b6069 0%,#363a41 42%,#24272c 56%,#4e535c 100%);
         -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
       }
-      #view-overview .psx-h1{
+      #view-finance .finance-intro{max-width:920px;margin:0 auto;padding:3rem 1.25rem 0;text-align:center;}
+      #view-overview .psx-h1, #view-finance .psx-h1{
         margin:.7rem auto 0;font-weight:800;color:var(--psx-text);
         /* Size is normally owned by modern.css with !important. The owner
            asked for this statement 17% smaller, so the hero copy overrides it
@@ -1255,14 +1256,14 @@
         background:linear-gradient(120deg,#7da2ff,#a78bfa);
         -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
       }
-      #view-overview .psx-sub{
+      #view-overview .psx-sub, #view-finance .psx-sub{
         margin:1.5rem auto 0;max-width:640px;color:var(--psx-text2);
         font-size:1.12rem;line-height:1.62;text-wrap:pretty;
       }
       @media (max-width: 640px){
         /* Seven centred lines of 18px under a 30px headline read as a wall.
            A step down and the same paragraph sets in five quieter lines. */
-        #view-overview .psx-sub{font-size:1.02rem;line-height:1.58;}
+        #view-overview .psx-sub, #view-finance .psx-sub{font-size:1.02rem;line-height:1.58;}
         /* Still the biggest line on the phone, a step above the h1's 1.7rem
            floor, just eased down from the desktop size so it does not fill the
            screen. */
@@ -2110,8 +2111,6 @@
                     <div class="psx-hero-inner">
                         <span class="psx-eyebrow-pill">Plateau Strategy Solution Lab</span>
                         <p class="psx-tagline">Your professional business companion</p>
-                        <h1 class="psx-h1">A financial institution built to grow businesses and ideas.</h1>
-                        <p class="psx-sub">We built this from scratch, out of our own ideas: rides and free trip tools that people use. Now we use what we have built to back other people's businesses and ideas. What is the economic moat you want to build? Let's sink it.</p>
                         <!-- Order set by Sean 2026-09-15: tours, inventory, iTicket,
                              then share your idea. Convenient inventory is a LINK to
                              its own page now, not an anchor into this one. Each
@@ -2673,6 +2672,10 @@
 
             <!-- ============ FINANCE ============ -->
             <div class="view" id="view-finance" data-arm="finance">
+                <header class="finance-intro">
+                        <h1 class="psx-h1">A financial institution built to grow businesses and ideas.</h1>
+                        <p class="psx-sub">We built this from scratch, out of our own ideas: rides and free trip tools that people use. Now we use what we have built to back other people's businesses and ideas. What is the economic moat you want to build? Let's sink it.</p>
+                </header>
                 <section class="phases">
                     <div class="container">
                         <div class="nd-stage" id="ndStage">
