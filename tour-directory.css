@@ -56,6 +56,9 @@ h1 { font-size: clamp(2.4rem, 6vw, 4rem); letter-spacing: -.035em; }
 .school-sources { margin-top: 1rem; font-size: .82rem; color: var(--muted); }
 .school-sources summary { display: list-item; min-height: 44px; padding: .65rem 0; cursor: pointer; color: var(--navy); }
 .school-sources a { display: flex; width: fit-content; min-height: 44px; }
+.school-sources form { display: flex; flex-wrap: wrap; align-items: end; gap: .55rem; margin: .2rem 0; }
+.school-sources input { flex: 1 1 13rem; min-width: 0; min-height: 44px; border: 1px solid var(--line); padding: .55rem; }
+.school-sources button { min-height: 44px; }
 .tour-choice[aria-pressed="true"] .tour-choice-name { color: var(--ink); font-weight: 600; }
 .tour-choice-meta { display: flex; gap: .35rem 1rem; flex-wrap: wrap; color: var(--muted); font-size: .83rem; margin-top: .2rem; }
 .tour-choice-match { display: block; color: var(--body); font-size: .83rem; margin-top: .28rem; }

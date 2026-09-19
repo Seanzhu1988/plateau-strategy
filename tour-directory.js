@@ -4,6 +4,7 @@ import { mountStopSlideshow } from "./tour-stop-slideshow.js";
 
 const state = { tours: [], query: "", city: "dc", tourId: "national-mall", stop: 1, branding: {} };
 let activeSlideshow = null, photoManifestPromise = null;
+const T = text => (typeof window !== "undefined" && window.psxT ? window.psxT(text) : text) || text;
 function clearStopSlideshow() { activeSlideshow?.destroy(); activeSlideshow = null; }
 const $ = id => document.getElementById(id);
 function element(tag, className, text) {
@@ -134,6 +135,15 @@ function fillStopPanel(panel, tour, stop) {
   if (tour.id === "freedom-trail") actions.append(link("Open this stop in the tour", `${tour.url}#ft-stop-${stop.n}`));
   else actions.append(link("Open tour", tour.url));
   panel.append(actions);
+  if (stop.universalGallery) {
+    const tool = element("details", "school-sources");
+    tool.append(element("summary", "", T("Universal Gallery: explore the art")));
+    const form = element("form"); form.action = "/universal-gallery"; form.method = "get";
+    const input = element("input"); input.type = "search"; input.name = "q";
+    input.setAttribute("aria-label", T("Artist, artwork or label text")); input.placeholder = T("Artist, artwork or label text");
+    const submit = element("button", "text-action", T("Search artworks")); submit.type = "submit";
+    form.append(input, submit); tool.append(form, link(T("Search with a photograph"), "/universal-gallery?photo=1")); panel.append(tool);
+  }
   const brand = state.branding[tour.school];
   if (brand && stop.n === tour.stops[0].n) {
     const sourceDetails = element("details", "school-sources");
@@ -196,4 +206,7 @@ async function boot() {
   import("./ivy-branding-public.js").then(module => { state.branding = module.IVY_BRANDING || {}; if (state.tours.length) render(); }).catch(() => {});
   await load();
 }
-if (typeof document !== "undefined") boot();
+if (typeof document !== "undefined") {
+  document.addEventListener("psx:lang", () => { if (state.tours.length) render(); });
+  boot();
+}

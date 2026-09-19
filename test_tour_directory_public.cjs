@@ -99,3 +99,22 @@ test('public directory uses the requested palette, label and Open tour placement
   assert.match(css,/--orange:\s*#F37021/);
   assert.match(css,/#open-tour\s*\{[^}]*background:\s*var\(--orange\)[^}]*color:\s*#0F172A/);
 });
+
+test('reviewed museum and collection stops carry the Universal Gallery tool flag', async () => {
+  const d=await ready,tours=d.buildDirectoryData(seed);
+  const tools=tours.flatMap(t=>t.stops.filter(s=>s.universalGallery).map(s=>s.name));
+  assert.equal(tools.length,21);
+  for(const required of ['National Air and Space Museum','Yale Center for British Art','Liberty Bell Center','Second Bank of the United States','National Constitution Center','Philadelphia Museum of Art and the Rocky Steps']) {
+    assert.ok(tools.includes(required),required);
+  }
+  for(const tour of seed.trails.filter(t=>Array.isArray(t.stops))) {
+    for(const stop of tour.stops.filter(s=>/museum|gallery|galleries/i.test(s.name))) {
+      assert.equal(stop.universal_gallery,true,`${tour.id}: ${stop.name}`);
+    }
+  }
+  const generic=read('tour.html'),directory=read('tour-directory.js');
+  assert.match(generic,/s\.universal_gallery !== true/);
+  assert.match(directory,/if \(stop\.universalGallery\)/);
+  assert.doesNotMatch(generic,/museum\|gallery\|galleries/i);
+  assert.doesNotMatch(directory,/museum\|gallery\|galleries/i);
+});

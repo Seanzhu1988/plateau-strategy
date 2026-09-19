@@ -171,6 +171,10 @@
                     <div class="tw-guideplay" id="twGuide" hidden><span>Listen:</span><audio id="twAudio" controls preload="none"></audio></div>
                     <p class="tw-noguide" id="twNoGuide" hidden>No recording for this stop yet.</p>
                     <p id="twNowDesc"></p>
+                    <details id="twGalleryTool" hidden><summary>Explore this museum with Universal Gallery</summary>
+                      <form action="/universal-gallery" method="get"><label for="twGalleryQuery">Artist, artwork or label text</label><input id="twGalleryQuery" name="q" type="search"><button type="submit">Search artworks</button></form>
+                      <a href="/universal-gallery?photo=1">Search with a photograph</a>
+                    </details>
                     <p class="tw-tip" id="twTip" hidden></p>
                     <p class="tw-tip" id="twBook" hidden></p>
                     <p class="tw-tip" id="twStory" hidden></p>
@@ -199,6 +203,12 @@
      recording, right above the line saying there is no recording. */
   .tw-guideplay[hidden], .tw-cue[hidden], .tw-cards[hidden]{display:none}
   .tw-you{width:16px;height:16px;border-radius:50%;background:#a4161a;border:3px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.3)}
+  #twGalleryTool{margin:1rem 0;color:var(--muted)}
+  #twGalleryTool summary{min-height:44px;color:#12305b;cursor:pointer;padding:.55rem 0}
+  #twGalleryTool form{display:flex;flex-wrap:wrap;align-items:end;gap:.55rem}
+  #twGalleryTool label{flex-basis:100%}
+  #twGalleryTool input{flex:1 1 13rem;min-width:0;min-height:44px;padding:.55rem;border:1px solid var(--line)}
+  #twGalleryTool button,#twGalleryTool a{min-height:44px}
 </style>
 <script src="/i18n.js"></script>
 <script src="/vendor/leaflet/leaflet.js"></script>
@@ -772,6 +782,7 @@
         if (fromUser) { try { box.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (e) {} }
         document.getElementById("twNowName").textContent = s.n + ". " + s.name;
         document.getElementById("twNowDesc").textContent = s.desc || (entry && entry.desc) || "";
+        document.getElementById("twGalleryTool").hidden = s.universal_gallery !== true;
         var note = document.getElementById("twNote");
         /* WHO IS SPEAKING comes from the ledger row of the file that will
            actually play, never from a literal. This line used to say "Yiki"

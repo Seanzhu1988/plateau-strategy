@@ -368,6 +368,7 @@
           "walk_min_from_prev": 4,
           "est": true,
           "book_slug": "national-museum-of-the-american-indian",
+          "universal_gallery": true,
           "desc": "Curved limestone meant to read as wind-carved rock, the only museum on the Mall whose building refuses the axis. The cafe is the best on the Mall.",
           "model": "indian",
           "photos": [
@@ -390,6 +391,7 @@
           "walk_min_from_prev": 4,
           "est": true,
           "book_slug": "air-and-space-museum",
+          "universal_gallery": true,
           "desc": "The Wright Flyer, the Spirit of St. Louis and the Apollo 11 command module under one roof. Timed passes, free, and they go fast.",
           "model": "airspace",
           "photos": [
@@ -412,6 +414,7 @@
           "walk_min_from_prev": 4,
           "est": true,
           "book_slug": "national-gallery-of-art",
+          "universal_gallery": true,
           "desc": "The West Building is the marble one, the East Building is the angles. Free, and the only Leonardo in the Americas is in the West.",
           "model": "gallery",
           "photos": [
@@ -434,6 +437,7 @@
           "walk_min_from_prev": 6,
           "est": true,
           "book_slug": "hirshhorn-museum",
+          "universal_gallery": true,
           "desc": "The concrete drum on legs, and the sculpture garden sunk beside it. Modern and contemporary, free, and the building is the first exhibit.",
           "model": "hirshhorn",
           "photos": [
@@ -475,6 +479,7 @@
           "walk_min_from_prev": 4,
           "est": true,
           "book_slug": "national-museum-of-natural-history",
+          "universal_gallery": true,
           "desc": "The elephant in the rotunda, the Hope Diamond upstairs, and more visitors than any other museum on the Mall. Go early or go at four.",
           "model": "natural",
           "photos": [
@@ -497,6 +502,7 @@
           "walk_min_from_prev": 4,
           "est": true,
           "book_slug": "museum-of-american-history",
+          "universal_gallery": true,
           "desc": "The Star-Spangled Banner in a dark room, Dorothy's ruby slippers, and the flag that was the anthem. Free.",
           "model": "american",
           "photos": [
@@ -516,6 +522,7 @@
           "walk_min_from_prev": 3,
           "est": true,
           "book_slug": "national-museum-of-african-american-history-and-culture",
+          "universal_gallery": true,
           "desc": "The bronze corona, three tiers widening as they rise, the newest museum on the Mall and the one that needs the most time. Timed passes, free.",
           "model": "nmaahc",
           "photos": [
@@ -965,6 +972,7 @@
           "walk_min_from_prev": 1,
           "est": true,
           "book_slug": "harvard-art-museums",
+          "universal_gallery": true,
           "desc": "Three museums under one glass roof by Renzo Piano, 2014: the Fogg, the Busch-Reisinger and the Sackler, with the Straus conservation labs visible from the top floor.",
           "yiki": "Go up to the top floor first and look down through the glass at the courtyard, then work your way down. The conservation labs are behind the glass up there."
         },
@@ -1071,6 +1079,7 @@
           "walk_min_from_prev": 2,
           "est": true,
           "book_slug": "yale-university-art-gallery",
+          "universal_gallery": true,
           "desc": "The oldest university art museum in the country, 1832, in three joined buildings, the newest Louis Kahn's of 1953, his first major work. Van Gogh's Night Cafe is here, and Trumbull's paintings of the Revolution.",
           "yiki": "Go straight to the Kahn building and look up at the concrete ceiling, a grid of tetrahedra. Then find the Night Cafe. Both are on the same visit and both are free."
         },
@@ -1084,6 +1093,7 @@
           "walk_min_from_prev": 1,
           "est": true,
           "book_slug": "yale-center-for-british-art",
+          "universal_gallery": true,
           "desc": "Louis Kahn's last building, finished in 1977 after his death, across Chapel Street from his first. Steel, concrete, white oak and travertine around two courtyards, holding the largest collection of British art outside Britain. Free.",
           "yiki": "Cross the street and you cross Kahn's whole career, first building to last. Go in and stand in the entrance court and look up four floors."
         },
@@ -1268,6 +1278,7 @@
           "walk_min_from_prev": 1,
           "est": true,
           "book_slug": "princeton-university-art-museum",
+          "universal_gallery": true,
           "desc": "The university's museum, free, with a collection from ancient China to Warhol. A new building by David Adjaye replaced the old one on this site; check the museum's own page for current hours and what is on view.",
           "yiki": "Ask at the desk for whatever is newest, then go and find the antiquities. Most people come for the modern rooms and leave the old ones empty."
         },
@@ -1571,6 +1582,7 @@
           "walk_min_from_prev": 6,
           "est": true,
           "book_slug": "penn-museum",
+          "universal_gallery": true,
           "desc": "The University of Pennsylvania Museum of Archaeology and Anthropology, opened in 1899, with its Egyptian sphinx, the Royal Tombs of Ur and galleries spanning the ancient world.",
           "yiki": "Allow at least ninety minutes and begin with the sphinx in the entrance hall. Check current admission and opening hours before going."
         },
@@ -1900,6 +1912,7 @@
           "walk_min_from_prev": 1,
           "est": true,
           "book_slug": "dartmouth-hood-museum",
+          "universal_gallery": true,
           "desc": "The college museum, Charles Moore's building of 1985 expanded by Tod Williams and Billie Tsien in 2019, with Assyrian reliefs from Nimrud among the oldest objects in any American college collection.",
           "yiki": "Find the Assyrian reliefs. They came to Hanover in 1856 and they are older than almost anything else in New England."
         }
@@ -2032,6 +2045,7 @@
           "walk_min_from_prev": 6,
           "est": true,
           "book_slug": "cornell-johnson-museum",
+          "universal_gallery": true,
           "desc": "I. M. Pei's concrete museum of 1973 on the edge of Fall Creek gorge, with broad views toward Cayuga Lake and collections spanning global art.",
           "yiki": "Admission is free; check current hours, then go high in the building for the lake view."
         },
@@ -2099,6 +2113,7 @@
           "walk_min_from_prev": 3,
           "est": true,
           "book_slug": "liberty-bell-center",
+          "universal_gallery": true,
           "desc": "The bell, cast in London in 1752, recast twice in Philadelphia, cracked beyond repair by 1846, and the words on it from Leviticus that the abolitionists made famous. Free, with an exhibition on the way in.",
           "yiki": "Read the crack from the bottom up. The famous split is the wide one; the hairline above it is the one that finally silenced it."
         },
@@ -2151,6 +2166,7 @@
           "walk_min_from_prev": 1,
           "est": true,
           "book_slug": "second-bank-of-the-united-states",
+          "universal_gallery": true,
           "desc": "William Strickland's marble Greek temple of 1824, the Parthenon on Chestnut Street, and the portrait gallery inside with Charles Willson Peale's paintings of the founders from life.",
           "yiki": "Go in and find Peale's portraits. These are the faces as they were, painted by a man who knew them, not the ones on the money."
         },
@@ -2177,6 +2193,7 @@
           "walk_min_from_prev": 1,
           "est": true,
           "book_slug": "museum-of-the-american-revolution",
+          "universal_gallery": true,
           "desc": "Opened 2017 on Third Street, with Washington's actual headquarters tent at the end of the visit, shown in a short film before the curtain rises on it.",
           "yiki": "Do not skip the tent at the end. It is the real one, the canvas he slept under for years, and the film before it is short."
         },
@@ -2190,6 +2207,7 @@
           "walk_min_from_prev": 2,
           "est": true,
           "book_slug": "franklin-court",
+          "universal_gallery": true,
           "desc": "The site of Franklin's house, marked by Robert Venturi's steel ghost frame of 1976, with the museum underground, the working print shop, and the post office he founded still selling stamps.",
           "yiki": "Stand inside the steel outline and look down through the portals at the foundations. The house is gone; the frame draws it in the air where it was."
         },
@@ -2242,6 +2260,7 @@
           "walk_min_from_prev": 7,
           "est": true,
           "book_slug": "national-constitution-center",
+          "universal_gallery": true,
           "desc": "The museum of the Constitution at the north end of Independence Mall, 2003, with the live show that opens every visit and the hall of bronze signers you can stand among.",
           "yiki": "In Signers' Hall, find the one man who refused to sign, and the delegate who was not there. Both are in bronze."
         },
@@ -2294,6 +2313,7 @@
           "walk_min_from_prev": 14,
           "est": true,
           "book_slug": "rodin-museum",
+          "universal_gallery": true,
           "desc": "The largest collection of Rodin outside Paris, in a small Beaux-Arts pavilion and garden of 1929 on the Parkway, with the Thinker at the gate and the Gates of Hell at the door.",
           "yiki": "Look at the Gates of Hell for a full minute before you go in. The Thinker at the gate is a figure from it, made big."
         },
@@ -2307,6 +2327,7 @@
           "walk_min_from_prev": 9,
           "est": true,
           "book_slug": "philadelphia-museum-of-art",
+          "universal_gallery": true,
           "desc": "The Greek temple on the hill at the end of the Parkway, 1928, with 72 steps that Rocky ran up in 1976 and the statue of him at the bottom. Inside, one of the great collections: Duchamp, Cezanne's Large Bathers, the medieval cloister, the Japanese teahouse.",
           "yiki": "Run the steps if you must; everybody does. Then go inside, because the collection is the reason the steps exist."
         },

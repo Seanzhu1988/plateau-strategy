@@ -4056,3 +4056,7 @@ EXTRA.update(_GALLERY_PRIVATE_EXTRA)
 # Public tour-directory label and primary action.
 from i18n_tour_directory import EXTRA as _TOUR_DIRECTORY_EXTRA
 EXTRA.update(_TOUR_DIRECTORY_EXTRA)
+
+# Mini Universal Gallery tools shown inside museum stops.
+from i18n_museum_tools import EXTRA as _MUSEUM_TOOLS_EXTRA
+EXTRA.update(_MUSEUM_TOOLS_EXTRA)

@@ -144,6 +144,7 @@ export function buildDirectoryData(payload, manifest = null) {
       n: Number.isFinite(Number(s.n)) ? Number(s.n) : index + 1,
       name: cleanCopy(s.name), description: cleanCopy(s.desc),
       bookSlug: typeof s.book_slug === "string" ? s.book_slug : null,
+      universalGallery: s.universal_gallery === true,
       photos,
       photo: photos[0] ? { ...photos[0], source: photos[0].sourceUrl, label: "Photo information" } : null,
       model: modelFor(t.id, s)
